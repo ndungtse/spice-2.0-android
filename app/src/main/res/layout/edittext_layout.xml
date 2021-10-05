@@ -1,0 +1,40 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/llRoot"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:animateLayoutChanges="true"
+    android:orientation="vertical"
+    android:paddingHorizontal="@dimen/_16sdp"
+    android:paddingVertical="@dimen/_12sdp">
+
+    <TextView
+        android:id="@+id/tvTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/dmsans_regular"
+        android:paddingEnd="@dimen/_10sdp"
+        android:textColor="@color/charcoal_grey"
+        android:textSize="@dimen/_14ssp"
+        tools:ignore="RtlSymmetry" />
+
+    <androidx.appcompat.widget.AppCompatEditText
+        android:id="@+id/etUserInput"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="@dimen/_8sdp"
+        android:background="@drawable/edittext_background"
+        android:padding="@dimen/_8sdp"
+        android:textColor="@color/navy_blue"
+        android:textSize="@dimen/_16ssp" />
+
+    <TextView
+        android:id="@+id/tvErrorMessage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/dmsans_regular"
+        android:textColor="@color/a_red_error"
+        android:textSize="@dimen/_12ssp"
+        android:visibility="gone" />
+
+</LinearLayout>

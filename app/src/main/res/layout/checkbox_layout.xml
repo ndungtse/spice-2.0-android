@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:animateLayoutChanges="true"
+    android:orientation="vertical"
+    android:paddingHorizontal="@dimen/_16sdp"
+    android:paddingVertical="@dimen/_12sdp">
+
+    <TextView
+        android:id="@+id/tvTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/dmsans_regular"
+        android:paddingEnd="@dimen/_10sdp"
+        android:textColor="@color/charcoal_grey"
+        android:textSize="@dimen/_14ssp"
+        tools:ignore="RtlSymmetry" />
+
+    <LinearLayout
+        android:id="@+id/checkBoxRoot"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="@dimen/_8sdp"
+        android:orientation="vertical">
+
+    </LinearLayout>
+
+
+    <TextView
+        android:id="@+id/tvErrorMessage"
+        android:paddingVertical="@dimen/_8sdp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/dmsans_regular"
+        android:textColor="@color/a_red_error"
+        android:textSize="@dimen/_12ssp"
+        android:visibility="gone" />
+
+
+</LinearLayout>
