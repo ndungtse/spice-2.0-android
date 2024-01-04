@@ -1,3 +1,17 @@
 <resources>
     <string name="app_name">Spice</string>
+    <string name="logo_description">Medtronic Logo</string>
+    <string name="welcome">Welcome</string>
+    <string name="login_to_your_account">Login to your account</string>
+    <string name="email">Email / Phone No</string>
+    <string name="password">Password</string>
+    <string name="email_place_holder">Enter Email / Phone No</string>
+    <string name="password_place_holder">Enter Password</string>
+    <string name="remember_me">Remember me</string>
+    <string name="forgot_password">Forgot password</string>
+    <string name="login">Login</string>
+    <string name="hide">Hide</string>
+    <string name="email_cannot_be_empty">Please enter email/phone number.</string>
+    <string name="password_cannot_be_empty">Please enter password.</string>
+    <string name="email_phone_invalid">Please enter a valid email/phone number.</string>
 </resources>

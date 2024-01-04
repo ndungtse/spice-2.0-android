@@ -16,7 +16,7 @@
             android:name="com.medtroniclabs.spice.ui.BaseActivity"
             android:exported="false" />
         <activity
-            android:name="com.medtroniclabs.spice.MainActivity"
+            android:name=".ui.boarding.LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

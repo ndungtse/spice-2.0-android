@@ -5,4 +5,10 @@
 
     <color name="blue">#2514BE</color>
     <color name="cobalt_blue">#2514BE</color>
+    <color name="navy_blue">#001E46</color>
+    <color name="text_input_color">@color/navy_blue</color>
+    <color name="text_label_color">@color/charcoal_grey</color>
+    <color name="charcoal_grey">#53565A</color>
+    <color name="edittext_stroke">#B1B3B3</color>
+    <color name="a_red_error">#E35205</color>
 </resources>

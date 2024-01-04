@@ -6,7 +6,7 @@ import com.medtroniclabs.spice.databinding.ActivityBaseBinding
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class BaseActivity : AppCompatActivity() {
+open class BaseActivity : AppCompatActivity() {
     private lateinit var binding: ActivityBaseBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
