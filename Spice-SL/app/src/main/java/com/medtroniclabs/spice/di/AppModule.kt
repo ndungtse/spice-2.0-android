@@ -1,6 +1,6 @@
 package com.medtroniclabs.spice.di
 
-import com.medtroniclabs.spice.sl.BuildConfig
+import com.medtroniclabs.spice.BuildConfig
 import com.medtroniclabs.spice.network.ApiHelper
 import com.medtroniclabs.spice.network.ApiHelperImpl
 import com.medtroniclabs.spice.network.ApiService

@@ -7,11 +7,11 @@ plugins {
 }
 
 android {
-    namespace = "com.medtroniclabs.spice.sl"
+    namespace = "com.medtroniclabs.spice"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.medtroniclabs.spice.sl"
+        applicationId = "com.medtroniclabs.spice"
         minSdk = 23
         targetSdk = 33
         versionCode = 1
@@ -22,10 +22,12 @@ android {
 
     buildTypes {
         getByName("debug") {
+            applicationIdSuffix = ".sl"
             isDebuggable = true
         }
         getByName("release") {
-            isMinifyEnabled = false
+            applicationIdSuffix = ".sl"
+            isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
