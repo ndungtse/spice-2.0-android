@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.drawerlayout.widget.DrawerLayout
+        android:id="@+id/drawer_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:openDrawer="end">
+
+        <include
+            android:id="@+id/appBarMain"
+            layout="@layout/activity_landing_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <com.google.android.material.navigation.NavigationView
+            android:id="@+id/navView"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="start"
+            android:background="@color/white"
+            android:fitsSystemWindows="true"
+            app:drawerLayoutCornerSize="@dimen/_0dp"
+            app:headerLayout="@layout/activity_landing_header"
+            app:itemBackground="@color/transparent"
+            app:itemIconTint="@color/navigation_selection_color"
+            app:itemRippleColor="@color/transparent"
+            app:itemTextColor="@color/navigation_selection_color"
+            app:menu="@menu/activity_landing_menu">
+
+            <View
+                android:id="@+id/divider"
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:layout_marginTop="@dimen/_66sdp"
+                android:background="@color/edittext_stroke" />
+
+            <include
+                android:id="@+id/appBarBottom"
+                layout="@layout/activity_landing_footer"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+        </com.google.android.material.navigation.NavigationView>
+    </androidx.drawerlayout.widget.DrawerLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

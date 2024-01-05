@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <application
-        android:name="com.medtroniclabs.spice.SpiceBaseApplication"
+        android:name=".SpiceBaseApplication"
         android:allowBackup="true"
         android:fullBackupContent="false"
         android:icon="@mipmap/ic_launcher"
@@ -13,7 +13,10 @@
         android:theme="@style/Theme.Spice_sl_mobile"
         tools:targetApi="31">
         <activity
-            android:name="com.medtroniclabs.spice.ui.BaseActivity"
+            android:name=".ui.landing.LandingActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.BaseActivity"
             android:exported="false" />
         <activity
             android:name=".ui.boarding.LoginActivity"

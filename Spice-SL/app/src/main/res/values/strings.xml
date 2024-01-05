@@ -14,4 +14,10 @@
     <string name="email_cannot_be_empty">Please enter email/phone number.</string>
     <string name="password_cannot_be_empty">Please enter password.</string>
     <string name="email_phone_invalid">Please enter a valid email/phone number.</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="logout">Logout</string>
+    <string name="home">Home</string>
+    <string name="app_version">Version</string>
+    <string name="community_health_worker">Community Health Worker</string>
 </resources>

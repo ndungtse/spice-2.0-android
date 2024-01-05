@@ -111,4 +111,12 @@
         <item name="android:background">@drawable/edittext_background</item>
     </style>
 
+    <style name="Form_Label_Style" parent="TextStyle">
+        <item name="android:textSize">@dimen/_14ssp</item>
+        <item name="android:textColor">@color/text_label_color</item>
+    </style>
+
+    <style name="Form_Label_Style_16" parent="Form_Label_Style">
+        <item name="android:textSize">@dimen/_16ssp</item>
+    </style>
 </resources>

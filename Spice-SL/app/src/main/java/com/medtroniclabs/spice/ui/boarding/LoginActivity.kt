@@ -1,16 +1,18 @@
 package com.medtroniclabs.spice.ui.boarding
 
+import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.view.View
-import com.medtroniclabs.spice.databinding.ActivityLoginBinding
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.hideKeyboard
 import com.medtroniclabs.spice.appextensions.markMandatory
 import com.medtroniclabs.spice.appextensions.safeClickListener
 import com.medtroniclabs.spice.common.Validator
 import com.medtroniclabs.spice.formgenerator.definedproperties.DefinedParams
+import com.medtroniclabs.spice.databinding.ActivityLoginBinding
 import com.medtroniclabs.spice.ui.BaseActivity
+import com.medtroniclabs.spice.ui.landing.LandingActivity
 
 class LoginActivity : BaseActivity(), View.OnClickListener {
     private lateinit var binding: ActivityLoginBinding
@@ -93,5 +95,6 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
 
     private fun doLogin(userName: String, password: String) {
         //TODO: API Call for login
+        startActivity(Intent(this, LandingActivity::class.java))
     }
 }
