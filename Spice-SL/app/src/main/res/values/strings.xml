@@ -22,4 +22,12 @@
     <string name="community_health_worker">Community Health Worker</string>
     <string name="chw">CHW</string>
     <string name="households">Households</string>
+    <string name="search">Search</string>
+    <string name="add_household">Add Household</string>
+    <string name="household_no">Household No</string>
+    <string name="no_of_people">No of people</string>
+    <string name="separator_colon">:</string>
+    <string name="members_registered">Members Registered</string>
+    <string name="filter">Filter</string>
+    <string name="people_registered">%1$d/%2$d</string>
 </resources>

@@ -87,4 +87,7 @@ dependencies {
 
     //Flexbox Layout
     implementation ("com.google.android.flexbox:flexbox:3.0.0")
+
+    //Lottie
+    implementation("com.airbnb.android:lottie:4.2.2")
 }
