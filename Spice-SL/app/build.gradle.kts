@@ -84,4 +84,7 @@ dependencies {
 
     //Glide
     implementation("com.github.bumptech.glide:glide:4.12.0")
+
+    //Flexbox Layout
+    implementation ("com.google.android.flexbox:flexbox:3.0.0")
 }

@@ -1,13 +1,25 @@
 package com.medtroniclabs.spice.ui.home
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.GridLayoutManager
+import com.google.android.flexbox.FlexDirection
+import com.google.android.flexbox.FlexboxLayoutManager
+import com.google.android.flexbox.JustifyContent
+import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.databinding.FragmentHomeScreenBinding
+import com.medtroniclabs.spice.db.entity.MenuEntity
+import com.medtroniclabs.spice.ui.ItemConstants
+import com.medtroniclabs.spice.ui.home.adapter.DashboardMenuItemsAdapter
+import com.medtroniclabs.spice.ui.household.HouseholdSearchActivity
 
-class HomeScreenFragment : Fragment() {
+
+class HomeScreenFragment : Fragment(), MenuSelectionListener {
 
     private lateinit var binding: FragmentHomeScreenBinding
 
@@ -24,5 +36,54 @@ class HomeScreenFragment : Fragment() {
     ): View? {
         binding = FragmentHomeScreenBinding.inflate(inflater, container, false)
         return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setAdapterViews()
+    }
+
+    private fun setAdapterViews() {
+        val menuList = ArrayList<MenuEntity>()
+        menuList.add(
+            MenuEntity(
+                id = 1,
+                name = ItemConstants.HOUSEHOLD_MENU_ID,
+                role = getString(R.string.chw),
+                menuId = ItemConstants.HOUSEHOLD_MENU_ID,
+                roleDisplayName = getString(R.string.community_health_worker),
+                displayOrder = 1
+            )
+        )
+        menuList.add(
+            MenuEntity(
+                id = 12,
+                name = ItemConstants.MYPATIENTS_MENU_ID,
+                role = getString(R.string.chw),
+                menuId = ItemConstants.MYPATIENTS_MENU_ID,
+                roleDisplayName = getString(R.string.community_health_worker),
+                displayOrder = 2
+            )
+        )
+        if (CommonUtils.checkIsTablet(requireContext())) {
+            val layoutManager = FlexboxLayoutManager(context)
+            layoutManager.flexDirection = FlexDirection.ROW
+            layoutManager.justifyContent = JustifyContent.CENTER
+            binding.rvActivitiesList.layoutManager = layoutManager
+        } else {
+            val layoutManager = GridLayoutManager(context, 2)
+            binding.rvActivitiesList.layoutManager = layoutManager
+        }
+
+        binding.rvActivitiesList.adapter = DashboardMenuItemsAdapter(menuList, this)
+
+    }
+
+    override fun onMenuSelected(name: String) {
+        when(name) {
+            ItemConstants.HOUSEHOLD_MENU_ID -> {
+                startActivity(Intent(requireContext(), HouseholdSearchActivity::class.java))
+            }
+        }
     }
 }

@@ -19,6 +19,9 @@
             android:name=".ui.BaseActivity"
             android:exported="false" />
         <activity
+            android:name=".ui.household.HouseholdSearchActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.boarding.LoginActivity"
             android:exported="true">
             <intent-filter>
