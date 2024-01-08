@@ -64,7 +64,7 @@ dependencies {
     //Retrofit
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
-    implementation("com.squareup.okhttp3:logging-interceptor:4.10.0")
+    implementation("com.squareup.okhttp3:logging-interceptor:4.11.0")
 
     //Room database
     val roomVersion = "2.6.1"
@@ -83,11 +83,11 @@ dependencies {
     implementation("androidx.fragment:fragment-ktx:1.6.2")
 
     //Glide
-    implementation("com.github.bumptech.glide:glide:4.12.0")
+    implementation("com.github.bumptech.glide:glide:4.16.0")
 
     //Flexbox Layout
     implementation ("com.google.android.flexbox:flexbox:3.0.0")
 
     //Lottie
-    implementation("com.airbnb.android:lottie:4.2.2")
+    implementation("com.airbnb.android:lottie:6.2.0")
 }

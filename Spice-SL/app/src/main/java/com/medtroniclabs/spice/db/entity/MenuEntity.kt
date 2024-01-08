@@ -8,6 +8,5 @@ data class MenuEntity(
     var name: String,
     var role: String,
     var menuId:String,
-    var roleDisplayName: String,
     val displayOrder: Int = 0,
 )

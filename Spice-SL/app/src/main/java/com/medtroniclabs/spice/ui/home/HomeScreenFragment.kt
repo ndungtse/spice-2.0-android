@@ -51,17 +51,15 @@ class HomeScreenFragment : Fragment(), MenuSelectionListener {
                 name = ItemConstants.HOUSEHOLD_MENU_ID,
                 role = getString(R.string.chw),
                 menuId = ItemConstants.HOUSEHOLD_MENU_ID,
-                roleDisplayName = getString(R.string.community_health_worker),
                 displayOrder = 1
             )
         )
         menuList.add(
             MenuEntity(
                 id = 12,
-                name = ItemConstants.MYPATIENTS_MENU_ID,
+                name = ItemConstants.MY_PATIENTS_MENU_ID,
                 role = getString(R.string.chw),
-                menuId = ItemConstants.MYPATIENTS_MENU_ID,
-                roleDisplayName = getString(R.string.community_health_worker),
+                menuId = ItemConstants.MY_PATIENTS_MENU_ID,
                 displayOrder = 2
             )
         )

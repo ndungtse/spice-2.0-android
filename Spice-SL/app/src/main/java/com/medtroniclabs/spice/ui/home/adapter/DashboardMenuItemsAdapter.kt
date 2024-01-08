@@ -62,7 +62,7 @@ class DashboardMenuItemsAdapter(
                 context,
                 R.drawable.ic_household
             )
-            ItemConstants.MYPATIENTS_MENU_ID -> return ContextCompat.getDrawable(
+            ItemConstants.MY_PATIENTS_MENU_ID -> return ContextCompat.getDrawable(
                 context,
                 R.drawable.ic_my_patient
             )

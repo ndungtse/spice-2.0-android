@@ -1,7 +1,7 @@
 package com.medtroniclabs.spice.ui.household.search.viewmodel
 
 import androidx.lifecycle.ViewModel
-import com.medtroniclabs.spice.formgenerator.definedproperties.DefinedParams
+import com.medtroniclabs.spice.common.DefinedParams
 import javax.inject.Inject
 
 class HouseholdListViewModel @Inject constructor() : ViewModel() {

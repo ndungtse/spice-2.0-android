@@ -1,4 +1,4 @@
-package com.medtroniclabs.spice.formgenerator.definedproperties
+package com.medtroniclabs.spice.common
 
 object DefinedParams {
 
@@ -9,5 +9,4 @@ object DefinedParams {
     const val HOUSEHOLD_NAME= "householdName"
     const val NO_OF_PEOPLE= "noOfPeople"
     const val NO_OF_PEOPLE_REGISTERED= "noOfPeopleRegistered"
-
 }

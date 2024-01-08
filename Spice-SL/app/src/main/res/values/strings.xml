@@ -26,8 +26,37 @@
     <string name="add_household">Add Household</string>
     <string name="household_no">Household No</string>
     <string name="no_of_people">No of people</string>
-    <string name="separator_colon">:</string>
     <string name="members_registered">Members Registered</string>
     <string name="filter">Filter</string>
     <string name="people_registered">%1$d/%2$d</string>
+
+    <!-- Form Related String-->
+    <string name="sugar_append">%1$.0f mmHg</string>
+    <string name="pulse_append">%1$.0f BPM</string>
+    <string name="dateofbirth">Date of Birth</string>
+    <string name="age_in_years">Age (in years)</string>
+    <string name="dd_mm_yyyy">DD/MM/YYYY</string>
+    <string name="please_select" translatable="false">--Select--</string>
+    <string name="enter_the_age">Enter the Age</string>
+    <string name="confirm">Confirm</string>
+    <string name="yesterday">Yesterday</string>
+    <string name="today">Today</string>
+    <string name="skip">SKIP</string>
+    <string name="hr">Hrs</string>
+    <string name="min">Mins</string>
+    <string name="am">AM</string>
+    <string name="pm">PM</string>
+    <string name="pulse">Pulse</string>
+    <string name="don_t_have_id_generate_id">Don\'t have ID? Generate ID</string>
+    <string name="separator_hyphen">-</string>
+    <string name="separator_colon">:</string>
+    <string name="hyphen_symbol" translatable="false">-</string>
+    <string name="hash_symbol">#</string>
+    <string name="next">Next</string>
+    <string name="default_user_input_error">Please enter a valid value</string>
+
+
+
+
+
 </resources>

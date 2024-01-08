@@ -8,8 +8,8 @@ import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.hideKeyboard
 import com.medtroniclabs.spice.appextensions.markMandatory
 import com.medtroniclabs.spice.appextensions.safeClickListener
+import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.Validator
-import com.medtroniclabs.spice.formgenerator.definedproperties.DefinedParams
 import com.medtroniclabs.spice.databinding.ActivityLoginBinding
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.landing.LandingActivity
