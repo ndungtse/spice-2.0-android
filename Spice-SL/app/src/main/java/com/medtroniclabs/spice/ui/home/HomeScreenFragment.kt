@@ -16,6 +16,7 @@ import com.medtroniclabs.spice.databinding.FragmentHomeScreenBinding
 import com.medtroniclabs.spice.db.entity.MenuEntity
 import com.medtroniclabs.spice.ui.ItemConstants
 import com.medtroniclabs.spice.ui.home.adapter.DashboardMenuItemsAdapter
+import com.medtroniclabs.spice.ui.household.HouseholdRegistrationActivity
 import com.medtroniclabs.spice.ui.household.HouseholdSearchActivity
 
 

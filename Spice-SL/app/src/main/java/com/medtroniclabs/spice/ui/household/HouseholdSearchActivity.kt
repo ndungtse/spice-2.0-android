@@ -27,7 +27,7 @@ class HouseholdSearchActivity : BaseActivity(), View.OnClickListener, HouseholdS
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityHouseholdSearchBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        setMainContentView(binding.root,isToolbarVisible = true, title = getString(R.string.households))
         initViews()
         setListeners()
         setHouseholdListAdapter()

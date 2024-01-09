@@ -1,0 +1,205 @@
+[
+  {
+    "familyOrder": 0,
+    "id": "householdInformation",
+    "title": "Household Information",
+    "viewType": "CardView"
+  },
+  {
+    "errorMessage": "Household Name is required and must be length of 1 to 100",
+    "family": "householdInformation",
+    "fieldName": "Household Name",
+    "hint": "Enter Household Name",
+    "id": "householdName",
+    "onlyAlphabets": true,
+    "inputType": 96,
+    "isEnabled": true,
+    "isMandatory": true,
+    "isNeededDefault": true,
+    "isNotDefault": false,
+    "isSummary": true,
+    "maxLength": 100,
+    "minLength": 1,
+    "orderId": 1,
+    "title": "Household Name",
+    "viewType": "EditText",
+    "visibility": "visible"
+  },
+  {
+    "condition": [],
+    "defaultValue": null,
+    "errorMessage": "Please select an village",
+    "family": "householdInformation",
+    "fieldName": "Village Name",
+    "id": "village",
+    "isEditable": true,
+    "isEnabled": true,
+    "isMandatory": true,
+    "isNeededDefault": true,
+    "optionsList": [
+      {
+        "id": "Village One",
+        "name": "Village One"
+      },
+      {
+        "id": "Village Two",
+        "name": "Village Two"
+      },
+      {
+        "id": "Village Three",
+        "name": "Village Three"
+      }
+    ],
+    "title": "Village Name",
+    "viewType": "Spinner",
+    "visibility": "visible"
+  },
+  {
+    "family": "householdInformation",
+    "fieldName": "Landmark",
+    "hint": "Enter Landmark",
+    "id": "landmark",
+    "inputType": 96,
+    "isEnabled": true,
+    "isMandatory": false,
+    "isNeededDefault": true,
+    "isNotDefault": false,
+    "isSummary": true,
+    "maxLength": 100,
+    "minLength": 1,
+    "orderId": 2,
+    "title": "Landmark",
+    "viewType": "EditText",
+    "visibility": "visible"
+  },
+  {
+    "errorMessage": "Household Head Mobile No is required and must be length of 1 to 100",
+    "family": "householdInformation",
+    "fieldName": "Household Head Mobile No",
+    "hint": "Enter Household Head Mobile No",
+    "id": "householdHeadMobileNo",
+    "inputType": 3,
+    "isEnabled": true,
+    "isMandatory": true,
+    "isNeededDefault": true,
+    "isNotDefault": false,
+    "isSummary": true,
+    "maxLength": 100,
+    "minLength": 1,
+    "orderId": 3,
+    "title": "Household Head Mobile No",
+    "viewType": "EditText",
+    "visibility": "visible"
+  },
+  {
+    "family": "householdInformation",
+    "fieldName": "No of People in Household",
+    "hint": "Enter Number",
+    "id": "peopleCount",
+    "inputType": 3,
+    "isEnabled": true,
+    "isMandatory": true,
+    "isNeededDefault": true,
+    "isNotDefault": false,
+    "isSummary": true,
+    "orderId": 4,
+    "title": "No.of People in Household",
+    "viewType": "EditText",
+    "visibility": "visible"
+  },
+  {
+    "family": "householdInformation",
+    "fieldName": "Owns an improved latrine",
+    "id": "ownsLatrine",
+    "isEnabled": true,
+    "isMandatory": true,
+    "isNeededDefault": true,
+    "isNotDefault": false,
+    "isSummary": true,
+    "orderId": 5,
+    "optionsList": [
+      {
+        "name": "Yes",
+        "id": "yes"
+      },
+      {
+        "name": "No",
+        "id": "no"
+      }
+    ],
+    "title": "Owns an improved latrine",
+    "viewType": "SingleSelectionView",
+    "visibility": "visible"
+  },
+  {
+    "family": "householdInformation",
+    "fieldName": "Owns hand washing facility with soap",
+    "id": "ownsHandWash",
+    "isEnabled": true,
+    "isMandatory": true,
+    "isNeededDefault": true,
+    "isNotDefault": false,
+    "isSummary": true,
+    "orderId": 6,
+    "optionsList": [
+      {
+        "name": "Yes",
+        "id": "yes"
+      },
+      {
+        "name": "No",
+        "id": "no"
+      }
+    ],
+    "title": "Owns hand washing facility with soap",
+    "viewType": "SingleSelectionView",
+    "visibility": "visible"
+  },
+  {
+    "family": "householdInformation",
+    "fieldName": "Owns a treated bed net?",
+    "id": "ownsTreatedBed",
+    "isEnabled": true,
+    "isMandatory": true,
+    "isNeededDefault": true,
+    "isNotDefault": false,
+    "isSummary": true,
+    "orderId": 7,
+    "optionsList": [
+      {
+        "name": "Yes",
+        "id": "yes"
+      },
+      {
+        "name": "No",
+        "id": "no"
+      }
+    ],
+    "title": "Owns a treated bed net",
+    "viewType": "SingleSelectionView",
+    "visibility": "visible",
+    "condition": [
+      {
+        "eq": "Yes",
+        "targetId": "numberOfBeds",
+        "visibility": "visible"
+      }
+    ]
+  },
+  {
+    "family": "householdInformation",
+    "fieldName": "How many bed nets?",
+    "hint": "Enter number of beds",
+    "id": "numberOfBeds",
+    "inputType": 3,
+    "isEnabled": true,
+    "isMandatory": false,
+    "isNeededDefault": true,
+    "isNotDefault": false,
+    "isSummary": true,
+    "orderId": 2,
+    "title": "How many bed nets?",
+    "viewType": "EditText",
+    "visibility": "gone"
+  }
+]

@@ -54,9 +54,13 @@
     <string name="hash_symbol">#</string>
     <string name="next">Next</string>
     <string name="default_user_input_error">Please enter a valid value</string>
-
-
-
+    <string name="arrow_back">back</string>
+    <string name="more">More</string>
+    <string name="arrow_home">home</string>
+    <string name="red_alert">(Red Alert)</string>
+    <string name="scroll_view">Scroll View</string>
+    <string name="household_registration">Household Registration</string>
+    <string name="cancel">Cancel</string>
 
 
 </resources>
