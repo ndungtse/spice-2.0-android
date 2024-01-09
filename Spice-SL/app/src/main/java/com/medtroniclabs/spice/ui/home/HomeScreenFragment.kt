@@ -18,6 +18,7 @@ import com.medtroniclabs.spice.ui.MenuConstants
 import com.medtroniclabs.spice.ui.home.adapter.DashboardMenuItemsAdapter
 import com.medtroniclabs.spice.ui.household.HouseholdSearchActivity
 import dagger.hilt.android.AndroidEntryPoint
+import com.medtroniclabs.spice.ui.medicalreview.MedicalReviewBaseActivity
 
 
 @AndroidEntryPoint
@@ -83,6 +84,9 @@ class HomeScreenFragment : Fragment(), MenuSelectionListener {
         when(name) {
             MenuConstants.HOUSEHOLD_MENU_ID -> {
                 startActivity(Intent(requireContext(), HouseholdSearchActivity::class.java))
+            }
+            MenuConstants.MY_PATIENTS_MENU_ID -> {
+                startActivity(Intent(requireContext(), MedicalReviewBaseActivity::class.java))
             }
         }
     }

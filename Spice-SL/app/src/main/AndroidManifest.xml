@@ -16,6 +16,10 @@
             android:name=".ui.assessment.AssessmentActivity"
             android:exported="false" />
         <activity
+            android:name=".ui.medicalreview.MedicalReviewBaseActivity"
+            android:screenOrientation="sensorLandscape"
+            android:exported="false" />
+        <activity
             android:name=".ui.household.summary.HouseholdSummaryActivity"
             android:exported="false" />
         <activity
@@ -41,7 +45,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        
+
     </application>
 
 </manifest>

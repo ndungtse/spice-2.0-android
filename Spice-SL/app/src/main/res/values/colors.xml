@@ -96,4 +96,5 @@
     <color name="start_color">#DFE0FD</color>
     <color name="end_color">#0E00B3</color>
     <color name="grey_black">#4C4C4C</color>
+    <color name="btn_disable_grey">#B3B3B3</color>
 </resources>

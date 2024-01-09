@@ -29,6 +29,29 @@
     <string name="members_registered">Members Registered</string>
     <string name="filter">Filter</string>
     <string name="people_registered">%1$d/%2$d</string>
+    <string name="investigation">Investigation</string>
+    <string name="investigation_caps">INVESTIGATION</string>
+    <string name="prescription">Prescription</string>
+    <string name="prescription_caps">PRESCRIPTION</string>
+    <string name="counselling_caps">COUNSELLING</string>
+    <string name="counselling">Counselling</string>
+    <string name="submit_caps">SUBMIT</string>
+    <string name="household_name_no">Household Name / No</string>
+    <string name="diagnoses">Diagnoses</string>
+    <string name="confirm_diagnoses">Confirm Diagnoses</string>
+    <string name="patient_status">Patient Status</string>
+    <string name="referred">Referred</string>
+    <string name="edit_diagnoses">Edit Diagnoses</string>
+    <string name="edit_status">Edit Status</string>
+    <string name="patient_category">Patient Category</string>
+    <string name="general">General</string>
+    <string name="edit_category">Edit Category</string>
+    <string name="presenting_complaints">Presenting Complaints</string>
+    <string name="type_notes">Type your notes</string>
+    <string name="clinical_notes">Clinical Notes</string>
+    <string name="systemic_examinations">Systemic Examinations</string>
+    <string name="other">Other</string>
+    <string name="none">None</string>
     <string name="assessment">Assessment</string>
     <string name="household_members">Household Members</string>
     <string name="finish_registration">Finish Registration</string>
@@ -39,7 +62,7 @@
     <string name="landmark">Landmark</string>
     <string name="hh_mobile_number">Household Head Mobile Number</string>
     <string name="household_summary_member_info">%1$s - %2$s - %3$s</string>
-
+    <string name="patient_medical_review" >Patient Medical Review</string>
 
     <!-- Form Related String-->
     <string name="sugar_append">%1$.0f mmHg</string>
@@ -117,7 +140,6 @@
     <string name="was_the_child">Was the child actually taken to the Clinic</string>
     <string name="next_follow_up_date">Next ANC Visits date</string>
     <string name="presumptive_tb_no">Presumptive TB No</string>
-    <string name="patient_status">Patient Status</string>
     <string name="tb_signs_symptoms"><![CDATA[TB Signs & Symptoms]]></string>
     <string name="symptoms">Symptoms</string>
     <string name="no_symptom_selected">No Symptoms Selected</string>

@@ -95,5 +95,6 @@ dependencies {
 
     implementation ("joda-time:joda-time:2.10.13")
 
-
+    //Swipe Refresh Layout
+    implementation ("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
 }

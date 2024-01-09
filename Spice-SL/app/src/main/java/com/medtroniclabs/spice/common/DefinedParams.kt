@@ -68,4 +68,5 @@ object DefinedParams {
     const val Summary = "summary"
     const val Other = "Other"
     const val NoSymptoms = "No symptoms"
+    const val ENABLED = "enabled"
 }
