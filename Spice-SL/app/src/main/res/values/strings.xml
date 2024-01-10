@@ -29,6 +29,7 @@
     <string name="members_registered">Members Registered</string>
     <string name="filter">Filter</string>
     <string name="people_registered">%1$d/%2$d</string>
+    <string name="assessment">Assessment</string>
 
     <!-- Form Related String-->
     <string name="sugar_append">%1$.0f mmHg</string>

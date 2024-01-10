@@ -11,7 +11,7 @@ import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.safeClickListener
 import com.medtroniclabs.spice.databinding.RowActivitiesBinding
 import com.medtroniclabs.spice.db.entity.MenuEntity
-import com.medtroniclabs.spice.ui.ItemConstants
+import com.medtroniclabs.spice.ui.MenuConstants
 import com.medtroniclabs.spice.ui.home.MenuSelectionListener
 
 class DashboardMenuItemsAdapter(
@@ -58,13 +58,37 @@ class DashboardMenuItemsAdapter(
 
     private fun getResourceActivityId(model: String, context: Context): Drawable? {
         return when (model) {
-            ItemConstants.HOUSEHOLD_MENU_ID -> return ContextCompat.getDrawable(
+            MenuConstants.HOUSEHOLD_MENU_ID -> return ContextCompat.getDrawable(
                 context,
                 R.drawable.ic_household
             )
-            ItemConstants.MY_PATIENTS_MENU_ID -> return ContextCompat.getDrawable(
+            MenuConstants.MY_PATIENTS_MENU_ID -> return ContextCompat.getDrawable(
                 context,
                 R.drawable.ic_my_patient
+            )
+            MenuConstants.SCREENER_MENU_ID -> return ContextCompat.getDrawable(
+                context,
+                R.drawable.ic_general_screener_tool
+            )
+
+            MenuConstants.ICCM_MENU_ID -> return ContextCompat.getDrawable(
+                context,
+                R.drawable.ic_iccm_tool
+            )
+
+            MenuConstants.CBS_MENU_ID -> return ContextCompat.getDrawable(
+                context,
+                R.drawable.ic_cbs_tool
+            )
+
+            MenuConstants.TB_MENU_ID -> return ContextCompat.getDrawable(
+                context,
+                R.drawable.ic_tb_tool
+            )
+
+            MenuConstants.NCD_MENU_ID -> return ContextCompat.getDrawable(
+                context,
+                R.drawable.ic_ncd_tool
             )
             else -> null
         }

@@ -1,32 +1,29 @@
 package com.medtroniclabs.spice.ui.home
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import com.google.android.flexbox.FlexDirection
 import com.google.android.flexbox.FlexboxLayoutManager
 import com.google.android.flexbox.JustifyContent
-import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.CommonUtils
-import com.medtroniclabs.spice.databinding.FragmentHomeScreenBinding
-import com.medtroniclabs.spice.db.entity.MenuEntity
+import com.medtroniclabs.spice.databinding.FragmentToolsMenuBinding
 import com.medtroniclabs.spice.ui.MenuConstants
 import com.medtroniclabs.spice.ui.home.adapter.DashboardMenuItemsAdapter
-import com.medtroniclabs.spice.ui.household.HouseholdSearchActivity
 
+class ToolsMenuFragment : Fragment(), MenuSelectionListener {
 
-class HomeScreenFragment : Fragment(), MenuSelectionListener {
-
-    private lateinit var binding: FragmentHomeScreenBinding
+    private lateinit var binding: FragmentToolsMenuBinding
+    private val viewModel: ToolsViewModel by viewModels()
 
     companion object {
-        const val TAG = "HomeScreenFragment"
-        fun newInstance(): HomeScreenFragment {
-            return HomeScreenFragment()
+        const val TAG = "ToolsMenuFragment"
+        fun newInstance(): ToolsMenuFragment {
+            return ToolsMenuFragment()
         }
     }
 
@@ -34,7 +31,7 @@ class HomeScreenFragment : Fragment(), MenuSelectionListener {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = FragmentHomeScreenBinding.inflate(inflater, container, false)
+        binding = FragmentToolsMenuBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -44,25 +41,6 @@ class HomeScreenFragment : Fragment(), MenuSelectionListener {
     }
 
     private fun setAdapterViews() {
-        val menuList = ArrayList<MenuEntity>()
-        menuList.add(
-            MenuEntity(
-                id = 1,
-                name = MenuConstants.HOUSEHOLD_MENU_ID,
-                role = getString(R.string.chw),
-                menuId = MenuConstants.HOUSEHOLD_MENU_ID,
-                displayOrder = 1
-            )
-        )
-        menuList.add(
-            MenuEntity(
-                id = 12,
-                name = MenuConstants.MY_PATIENTS_MENU_ID,
-                role = getString(R.string.chw),
-                menuId = MenuConstants.MY_PATIENTS_MENU_ID,
-                displayOrder = 2
-            )
-        )
         if (CommonUtils.checkIsTablet(requireContext())) {
             val layoutManager = FlexboxLayoutManager(context)
             layoutManager.flexDirection = FlexDirection.ROW
@@ -72,16 +50,23 @@ class HomeScreenFragment : Fragment(), MenuSelectionListener {
             val layoutManager = GridLayoutManager(context, 2)
             binding.rvActivitiesList.layoutManager = layoutManager
         }
-
-        binding.rvActivitiesList.adapter = DashboardMenuItemsAdapter(menuList, this)
-
+        binding.rvActivitiesList.adapter = DashboardMenuItemsAdapter(viewModel.getMenuItemsList(requireContext()), this)
     }
 
     override fun onMenuSelected(name: String) {
         when(name) {
-            MenuConstants.HOUSEHOLD_MENU_ID -> {
-                startActivity(Intent(requireContext(), HouseholdSearchActivity::class.java))
+            MenuConstants.ICCM_MENU_ID -> {
+                //startActivity
+            } MenuConstants.SCREENER_MENU_ID -> {
+                //startActivity
+            } MenuConstants.CBS_MENU_ID -> {
+                //startActivity
+            } MenuConstants.TB_MENU_ID -> {
+                //startActivity
+            } MenuConstants.NCD_MENU_ID -> {
+                //startActivity
             }
         }
     }
+
 }
