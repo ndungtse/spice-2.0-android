@@ -17,8 +17,10 @@ import com.medtroniclabs.spice.db.entity.MenuEntity
 import com.medtroniclabs.spice.ui.MenuConstants
 import com.medtroniclabs.spice.ui.home.adapter.DashboardMenuItemsAdapter
 import com.medtroniclabs.spice.ui.household.HouseholdSearchActivity
+import dagger.hilt.android.AndroidEntryPoint
 
 
+@AndroidEntryPoint
 class HomeScreenFragment : Fragment(), MenuSelectionListener {
 
     private lateinit var binding: FragmentHomeScreenBinding

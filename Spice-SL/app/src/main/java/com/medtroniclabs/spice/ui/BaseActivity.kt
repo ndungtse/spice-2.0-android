@@ -116,4 +116,12 @@ open class BaseActivity : AppCompatActivity() {
         binding.ivBack.visibility = View.VISIBLE
     }
 
+    fun showLoading() {
+        binding.loadingProgress.visibility = View.VISIBLE
+    }
+
+    fun hideLoading() {
+        binding.loadingProgress.visibility = View.GONE
+    }
+
 }

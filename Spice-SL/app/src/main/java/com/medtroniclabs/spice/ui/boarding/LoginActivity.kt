@@ -13,7 +13,9 @@ import com.medtroniclabs.spice.common.Validator
 import com.medtroniclabs.spice.databinding.ActivityLoginBinding
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.landing.LandingActivity
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class LoginActivity : BaseActivity(), View.OnClickListener {
     private lateinit var binding: ActivityLoginBinding
 

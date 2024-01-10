@@ -1202,7 +1202,7 @@ class FormGenerator(
     fun formSubmitAction(view: View) {
         if (validateInputs()) {
             hideKeyboard(view)
-
+            listener.onFormSubmit(resultMap = resultHashMap)
         } else {
             focusNeeded?.let { focusNeeded ->
                 scrollView?.let { scrollView ->
@@ -1267,6 +1267,8 @@ class FormGenerator(
                 ) {
                     isValid = false
                     requestFocusView(data)
+                } else {
+                    hideValidationField(data)
                 }
             }
         }
@@ -1318,5 +1320,15 @@ class FormGenerator(
             errorMessage
         else getString(R.string.default_user_input_error)
     }
+
+    private fun hideValidationField(serverViewModel: FormLayout) {
+        serverViewModel.apply {
+            val view = getViewByTag(serverViewModel.id + errorSuffix)
+            if (view != null && view is TextView && view.visibility == View.VISIBLE) {
+                view.visibility = View.GONE
+            }
+        }
+    }
+
 
 }

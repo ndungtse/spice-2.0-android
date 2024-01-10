@@ -1,0 +1,171 @@
+[
+  {
+    "familyOrder": 0,
+    "id": "bioData",
+    "title": "Bio Data",
+    "viewType": "CardView"
+  },
+  {
+    "errorMessage": "Name is required and must be length of 1 to 100",
+    "family": "bioData",
+    "fieldName": "Name",
+    "hint": "Enter Name",
+    "id": "name",
+    "onlyAlphabets": true,
+    "inputType": 96,
+    "isEnabled": true,
+    "isMandatory": true,
+    "isNeededDefault": true,
+    "isNotDefault": false,
+    "isSummary": true,
+    "maxLength": 100,
+    "minLength": 1,
+    "orderId": 1,
+    "title": "Name",
+    "viewType": "EditText",
+    "visibility": "visible"
+  },
+  {
+    "condition": [],
+    "defaultValue": null,
+    "errorMessage": "Please select an relationship",
+    "family": "bioData",
+    "fieldName": "Relationship to Household",
+    "id": "relationshipToHousehold",
+    "isEditable": true,
+    "isEnabled": true,
+    "isMandatory": true,
+    "isNeededDefault": true,
+    "optionsList": [
+      {
+        "id": "Household Head",
+        "name": "Household Head"
+      },
+      {
+        "id": "Wife",
+        "name": "Wife"
+      },
+      {
+        "id": "Son",
+        "name": "Son"
+      },
+      {
+        "id": "Daughter",
+        "name": "Daughter"
+      }
+    ],
+    "title": "Relationship to Household",
+    "viewType": "Spinner",
+    "orderId": 2,
+    "visibility": "visible"
+  },
+  {
+    "errorMessage": "Mobile Number is required and must be length of 1 to 100",
+    "family": "bioData",
+    "fieldName": "Mobile Number",
+    "hint": "Enter Mobile Number",
+    "id": "mobileNumber",
+    "inputType": 3,
+    "isEnabled": true,
+    "isMandatory": true,
+    "isNeededDefault": true,
+    "isNotDefault": false,
+    "isSummary": true,
+    "maxLength": 100,
+    "minLength": 1,
+    "orderId": 3,
+    "title": "Mobile Number",
+    "viewType": "EditText",
+    "visibility": "visible"
+  },
+  {
+    "condition": [],
+    "defaultValue": null,
+    "errorMessage": "Please select an Mobile number category",
+    "family": "bioData",
+    "fieldName": "Mobile Number Category",
+    "id": "mobileNumberCategory",
+    "isEditable": true,
+    "isEnabled": true,
+    "isMandatory": true,
+    "isNeededDefault": true,
+    "optionsList": [
+      {
+        "id": "Personal",
+        "name": "Personal"
+      },
+      {
+        "id": "Family Member",
+        "name": "Family Member"
+      },
+      {
+        "id": "Friend",
+        "name": "Friend"
+      }
+    ],
+    "title": "Mobile Number Category",
+    "orderId": 4,
+    "viewType": "Spinner",
+    "visibility": "visible"
+  },
+  {
+    "disableFutureDate": true,
+    "family": "bioMetrics",
+    "fieldName": "Age",
+    "id": "age",
+    "isEnabled": true,
+    "isMandatory": true,
+    "isNeededDefault": true,
+    "isSummary": true,
+    "title": "Age",
+    "viewType": "Age",
+    "orderId": 5,
+    "visibility": "visible"
+  },
+  {
+    "condition": [
+    ],
+    "errorMessage": "National ID is required",
+    "family": "bioData",
+    "fieldName": "National ID",
+    "hint": "Enter National ID",
+    "id": "nationalId",
+    "inputType": -1,
+    "isEnabled": true,
+    "isMandatory": true,
+    "isNeedAction": true,
+    "isNeededDefault": true,
+    "isNotDefault": false,
+    "isSummary": true,
+    "maxLength": 50,
+    "minLength": 1,
+    "orderId": 6,
+    "title": "National ID",
+    "viewType": "EditText",
+    "visibility": "visible"
+  },
+  {
+    "family": "bioData",
+    "fieldName": "Gender",
+    "id": "gender",
+    "isEnabled": true,
+    "isMandatory": true,
+    "isNeededDefault": true,
+    "isNotDefault": false,
+    "isSummary": true,
+    "orderId": 7,
+    "optionsList": [
+      {
+        "name": "Male",
+        "id": "male"
+      },
+      {
+        "name": "Female",
+        "id": "female"
+      }
+    ],
+    "title": "Gender",
+    "viewType": "SingleSelectionView",
+    "visibility": "visible"
+  }
+]

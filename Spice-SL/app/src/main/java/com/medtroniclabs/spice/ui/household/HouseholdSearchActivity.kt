@@ -12,7 +12,7 @@ import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.safeClickListener
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.databinding.ActivityHouseholdSearchBinding
-import com.medtroniclabs.spice.db.entity.HouseholdListModel
+import com.medtroniclabs.spice.db.entity.HouseholdEntity
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.household.adapter.HouseholdListAdapter
 import com.medtroniclabs.spice.ui.household.search.viewmodel.HouseholdListViewModel
@@ -71,15 +71,22 @@ class HouseholdSearchActivity : BaseActivity(), View.OnClickListener, HouseholdS
     }
 
     private fun setHouseholdListAdapter() {
-        val householdList = ArrayList<HouseholdListModel>()
+        val householdList = ArrayList<HouseholdEntity>()
         for (i in 1..20) {
             householdList.add(
-                HouseholdListModel(
+                HouseholdEntity(
                     id = i.toLong(),
-                    householdName = "${getString(R.string.households)} ${i}",
+                    name = "${getString(R.string.households)} ${i}",
                     noOfPeople = i,
                     noOfPeopleRegistered = i,
-                    householdNo = i.toLong()
+                    householdNo = i.toLong(),
+                    villageId = i.toLong(),
+                    isOwnedAnImprovedLatrine = true,
+                    isOwnedATreatedBedNet = true,
+                    isOwnedHandWashingFacilityWithSoap = true,
+                    landmark = "",
+                    bedNetCount = i,
+                    headPhoneNumber = ""
                 )
             )
         }
@@ -97,11 +104,11 @@ class HouseholdSearchActivity : BaseActivity(), View.OnClickListener, HouseholdS
     override fun onClick(view: View) {
         when(view.id){
             R.id.btnAddHousehold -> {
-                startActivity(Intent(this, HouseholdRegistrationActivity::class.java))
+                startActivity(Intent(this, HouseholdActivity::class.java))
             }
         }
     }
 
-    override fun onSelectedPatient(item: HouseholdListModel) {
+    override fun onSelectedPatient(item: HouseholdEntity) {
     }
 }

@@ -19,4 +19,7 @@ interface FormEventListener {
         informationList: ArrayList<String>? = null,
         description: String? = null
     )
+
+    fun onFormSubmit(resultMap: HashMap<String, Any>?)
+
 }
