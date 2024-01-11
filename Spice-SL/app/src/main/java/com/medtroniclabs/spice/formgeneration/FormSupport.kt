@@ -3,7 +3,6 @@ package com.medtroniclabs.spice.formgeneration
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.ClickableSpan
-import android.view.View
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams
 import java.lang.reflect.Field
 

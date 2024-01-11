@@ -46,7 +46,7 @@
     <string name="pulse_append">%1$.0f BPM</string>
     <string name="dateofbirth">Date of Birth</string>
     <string name="age_in_years">Age (in years)</string>
-    <string name="dd_mm_yyyy">DD/MM/YYYY</string>
+    <string name="dd_mm_yyyy">dd/mm/yyyy</string>
     <string name="please_select" translatable="false">--Select--</string>
     <string name="enter_the_age">Enter the Age</string>
     <string name="confirm">Confirm</string>
@@ -75,6 +75,12 @@
     <string name="member_registration">Member Registration</string>
     <string name="submit">Submit</string>
     <string name="start_assessment">Start Assessment</string>
+    <string name="date_of_birth">Date of Birth</string>
+    <string name="years">Years</string>
+    <string name="months">Months</string>
+    <string name="weeks">Weeks</string>
+    <string name="age">Age</string>
+    <string name="seperator_hyphen">-</string>
 
 
 </resources>

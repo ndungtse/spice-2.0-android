@@ -1,5 +1,6 @@
 package com.medtroniclabs.spice.formgeneration
 
+import android.app.DatePickerDialog
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.Intent
@@ -17,6 +18,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.ViewParent
 import android.widget.AdapterView
+import android.widget.DatePicker
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.RadioButton
@@ -24,7 +26,9 @@ import android.widget.RadioGroup
 import android.widget.Spinner
 import android.widget.TextView
 import androidx.activity.result.ActivityResultLauncher
+import androidx.appcompat.widget.AppCompatEditText
 import androidx.appcompat.widget.AppCompatSpinner
+import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.children
@@ -33,6 +37,9 @@ import androidx.core.widget.NestedScrollView
 import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.common.CommonUtils.displayAge
+import com.medtroniclabs.spice.common.DateUtils
+import com.medtroniclabs.spice.databinding.AgeDobLayoutBinding
 import com.medtroniclabs.spice.databinding.CardLayoutBinding
 import com.medtroniclabs.spice.databinding.CheckboxDialogSpinnerLayoutBinding
 import com.medtroniclabs.spice.databinding.CustomSpinnerBinding
@@ -48,11 +55,16 @@ import com.medtroniclabs.spice.formgeneration.FormSupport.isTranslatedOrNot
 import com.medtroniclabs.spice.formgeneration.FormSupport.translateTitle
 import com.medtroniclabs.spice.formgeneration.FormSupport.updateTitle
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams
+import com.medtroniclabs.spice.formgeneration.config.DefinedParams.DateOfBirth
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.DefaultIDLabel
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.GONE
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.INVISIBLE
+import com.medtroniclabs.spice.formgeneration.config.DefinedParams.Month
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.SSP16
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.VISIBLE
+import com.medtroniclabs.spice.formgeneration.config.DefinedParams.Week
+import com.medtroniclabs.spice.formgeneration.config.DefinedParams.Year
+import com.medtroniclabs.spice.formgeneration.config.DefinedParams.value
 import com.medtroniclabs.spice.formgeneration.config.ViewType.VIEW_INFORMATION_LABEL
 import com.medtroniclabs.spice.formgeneration.config.ViewType.VIEW_TYPE_DIALOG_CHECKBOX
 import com.medtroniclabs.spice.formgeneration.config.ViewType.VIEW_TYPE_FORM_AGE
@@ -79,6 +91,8 @@ import com.medtroniclabs.spice.formgeneration.ui.SingleSelectionCustomView
 import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
 import com.medtroniclabs.spice.formgeneration.utility.DigitsInputFilter
 import com.medtroniclabs.spice.formgeneration.utility.FormFieldValidator
+import java.util.Calendar
+
 
 class FormGenerator(
     var context: Context,
@@ -119,10 +133,10 @@ class FormGenerator(
                 VIEW_TYPE_INSTRUCTION -> createInstructionView(serverViewModel)
                 VIEW_TYPE_FORM_TEXTLABEL -> createTextLabel(serverViewModel)
                 VIEW_TYPE_METAL_HEALTH -> createMentalHealthView(serverViewModel)
+                VIEW_TYPE_FORM_AGE -> createAgeView(serverViewModel)
             }
         }
     }
-
 
     private fun createCardViewFamily(serverViewModel: FormLayout) {
         val binding = CardLayoutBinding.inflate(LayoutInflater.from(context))
@@ -750,6 +764,221 @@ class FormGenerator(
         }
     }
 
+    var isDobUpdated: Boolean = false
+    private fun createAgeView(serverViewModel: FormLayout) {
+        val binding = AgeDobLayoutBinding.inflate(LayoutInflater.from(context))
+        serverViewModel.apply {
+            binding.root.tag =id+rootSuffix
+            binding.etDateOfBirth.tag = DateOfBirth
+            binding.etYears.inputType = InputType.TYPE_CLASS_NUMBER
+            binding.etMonths.inputType = InputType.TYPE_CLASS_NUMBER
+            binding.etWeeks.inputType = InputType.TYPE_CLASS_NUMBER
+            binding.etYears.tag = id + Year
+            binding.etMonths.tag = id + Month
+            binding.etWeeks.tag = id + Week
+            binding.ageValue.tag = id + value
+            binding.tvErrorMessage.tag = id + errorSuffix
+            binding.tvDateOfBirth.tag = id + titleSuffix
+            binding.etDateOfBirth.safeClickListener {
+                val yearMonthWeek = if (binding.etDateOfBirth.text.isNotEmpty()){
+                    DateUtils.getYearMonthAndDate(binding.etDateOfBirth.text.toString())
+                } else null
+                serverViewModel.run {
+                    showDatePicker(
+                        context = context,
+                        disableFutureDate = disableFutureDate ?: false,
+                        minDate = minDate,
+                        maxDate = maxDate,
+                        date = yearMonthWeek
+                    ) { _, year, month, dayOfMonth ->
+                        val stringDate = "$dayOfMonth-$month-$year"
+                        val parsedDate = DateUtils.getDatePatternDDMMYYYY().parse(stringDate)
+                        parsedDate?.let {
+                            binding.etDateOfBirth.text = DateUtils.getDateDDMMYYYY().format(it)
+                            val yearMonthWeeks = DateUtils.getYearMonthAndWeek(stringDate)
+                            addOrUpdateDOB(
+                                DateUtils.getDateString(
+                                    parsedDate.time,
+                                    inputFormat = DateUtils.DATE_FORMAT_yyyyMMdd,
+                                    outputFormat = DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
+                                )
+                            )
+                            yearMonthWeeks.first?.let { binding.etYears.setText(it.toString()) }
+                            yearMonthWeeks.second?.let { binding.etMonths.setText(it.toString()) }
+                            yearMonthWeeks.third?.let { binding.etWeeks.setText(it.toString()) }
+                        }
+                    }
+                }
+            }
+
+            binding.etYears.addTextChangedListener { year ->
+                if (isYearsMonthsWeeksChanged(year, Year)) {
+                    removeDOB(binding.etDateOfBirth)
+                }
+                if (year.isNullOrBlank()) {
+                    removeIfContains(Year)
+                    setConditionalVisibility(serverViewModel, null)
+                } else {
+                    addOrUpdateAgeValue(year.toString(), Year)
+                    setConditionalVisibility(serverViewModel, year.toString())
+                }
+                addOrUpdateDateOfBirthIfNotPresent()
+                updateAgeView()
+            }
+
+            binding.etMonths.addTextChangedListener { months ->
+                if (isYearsMonthsWeeksChanged(months, Month)) {
+                    removeDOB(binding.etDateOfBirth)
+                }
+                if (months.isNullOrBlank()) {
+                    removeIfContains(Month)
+                    setConditionalVisibility(serverViewModel, null)
+                } else {
+                    addOrUpdateAgeValue(months.toString(), Month)
+                    setConditionalVisibility(serverViewModel, months.toString())
+                }
+                addOrUpdateDateOfBirthIfNotPresent()
+                updateAgeView()
+            }
+
+            binding.etWeeks.addTextChangedListener { weeks ->
+                if (isYearsMonthsWeeksChanged(weeks, Week)) {
+                    removeDOB(binding.etDateOfBirth)
+                }
+                if (weeks.isNullOrBlank()) {
+                    removeIfContains(Week)
+                    setConditionalVisibility(serverViewModel, null)
+                } else {
+                    addOrUpdateAgeValue(weeks.toString(), Week)
+                    setConditionalVisibility(serverViewModel, weeks.toString())
+                }
+                isDobUpdated = false
+                addOrUpdateDateOfBirthIfNotPresent()
+                updateAgeView()
+            }
+            updateAgeView()
+            if (isMandatory) {
+                binding.tvYear.markMandatory()
+                binding.tvWeeks.markMandatory()
+                binding.tvMonths.markMandatory()
+                binding.tvDateOfBirth.markMandatory()
+            }
+            getFamilyView(family)?.addView(binding.root) ?: kotlin.run {
+                parentLayout.addView(binding.root)
+            }
+            setViewVisibility(visibility, binding.root)
+            setViewEnableDisable(isEnabled, binding.root)
+        }
+    }
+
+    private fun addOrUpdateDateOfBirthIfNotPresent() {
+        val year = resultHashMap[Year] as? Int ?: 0
+        val month = resultHashMap[Month] as? Int ?: 0
+        val weeks = resultHashMap[Week] as? Int ?: 0
+        if (!isDobUpdated)
+            resultHashMap[DateOfBirth] = DateUtils.calculateBirthDate(year, month, weeks)
+        if (!resultHashMap.containsKey(Year) && !resultHashMap.containsKey(Month) && !resultHashMap.containsKey(
+                Week) && resultHashMap.containsKey(DateOfBirth)){
+            resultHashMap.remove(DateOfBirth)
+        }
+
+    }
+
+    private fun updateAgeView() {
+        val ageView = getViewByTag(DefinedParams.AgeValue)
+        val age = displayAge(resultHashMap, context)
+        ageView?.let {view ->
+            (view as? AppCompatTextView)?.text = age
+        }
+    }
+
+    private fun isYearsMonthsWeeksChanged(data: Editable?, key:String): Boolean {
+        return if ((!isDobUpdated) && resultHashMap.containsKey(key) && data!=null)
+            data.toString() != resultHashMap[key]
+        else false
+    }
+
+    private fun removeIfContains(key: String) {
+        if (resultHashMap.containsKey(key)) {
+            resultHashMap.remove(key)
+        }
+    }
+
+    private fun addOrUpdateAgeValue(value: String, key:String) {
+        value.toInt().let {
+            resultHashMap[key] = it
+        }
+    }
+
+    private fun removeDOB(etDateOfBirth: AppCompatTextView) {
+        if (!isDobUpdated && resultHashMap.containsKey(DateOfBirth)) {
+            etDateOfBirth.text = ""
+        }
+    }
+
+    private fun addOrUpdateDOB(dateOfBirth: String) {
+        isDobUpdated = true
+        resultHashMap[DateOfBirth] = dateOfBirth
+    }
+
+    fun showDatePicker(
+        context: Context,
+        disableFutureDate: Boolean = false,
+        minDate: Long? = null,
+        maxDate: Long? = null,
+        date : Triple<Int?,Int?,Int?>?=null,
+        cancelCallBack: (() -> Unit)? = null,
+        callBack: (dialog: DatePicker, year: Int, month: Int, dayOfMonth: Int) -> Unit,
+    ): DatePickerDialog {
+
+        val calendar = Calendar.getInstance()
+        var thisYear = calendar.get(Calendar.YEAR)
+        var thisMonth = calendar.get(Calendar.MONTH)
+        var thisDay = calendar.get(Calendar.DAY_OF_MONTH)
+        val dialog: DatePickerDialog?
+
+        if (date?.first != null && date.second != null && date.third != null) {
+            thisYear = date.first!!
+            thisMonth = date.second!!
+            thisDay = date.third!!
+        }
+
+        val dateSetListener =
+            DatePickerDialog.OnDateSetListener { datePicker, year, month, dayOfMonth ->
+                callBack.invoke(datePicker, year, month + 1, dayOfMonth)
+            }
+
+        dialog = DatePickerDialog(
+            context,
+            dateSetListener,
+            thisYear,
+            thisMonth,
+            thisDay
+        )
+
+        if (cancelCallBack != null) {
+            dialog.setOnCancelListener {
+                cancelCallBack.invoke()
+            }
+        }
+
+        minDate?.let {
+            dialog.datePicker.minDate = it
+        }
+        maxDate?.let {
+            dialog.datePicker.maxDate = it
+        }
+
+        if (disableFutureDate) dialog.datePicker.maxDate = System.currentTimeMillis()
+
+        dialog.setCancelable(false)
+
+        dialog.show()
+
+        return dialog
+
+    }
+
     private fun getFamilyView(family: String?): LinearLayout? {
         family ?: return null
         return parentLayout.findViewWithTag(family)
@@ -1183,7 +1412,16 @@ class FormGenerator(
 
     private fun resetAgeView(view: View, model: FormLayout) {
         resetEditTextDatePicker(view, model)
-        getViewByTag(R.id.etAgeInYears)?.let {
+        getViewByTag(R.id.etDateOfBirth)?.let {
+            resetEditTextDatePicker(it, model)
+        }
+        getViewByTag(R.id.etYears)?.let {
+            resetEditTextDatePicker(it, model)
+        }
+        getViewByTag(R.id.etMonths)?.let {
+            resetEditTextDatePicker(it, model)
+        }
+        getViewByTag(R.id.etWeeks)?.let {
             resetEditTextDatePicker(it, model)
         }
     }

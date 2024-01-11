@@ -110,7 +110,7 @@
   },
   {
     "disableFutureDate": true,
-    "family": "bioMetrics",
+    "family": "bioData",
     "fieldName": "Age",
     "id": "age",
     "isEnabled": true,
