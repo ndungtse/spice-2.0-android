@@ -9,4 +9,9 @@ object DefinedParams {
     const val HOUSEHOLD_NAME= "householdName"
     const val NO_OF_PEOPLE= "noOfPeople"
     const val NO_OF_PEOPLE_REGISTERED= "noOfPeopleRegistered"
+    const val HOUSE_NO = "houseNo"
+    const val VILLAGE = "village"
+    const val LANDMARK = "landmark"
+    const val HH_MOBILE_NUMBER = "hhMobNumber"
+    const val MALE = "Male"
 }

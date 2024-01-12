@@ -38,7 +38,7 @@ class HouseholdListAdapter(
             if (item.noOfPeople == item.noOfPeopleRegistered) View.INVISIBLE else View.VISIBLE
         houseHoldList[position].let { model ->
             holder.binding.cardPatient.safeClickListener {
-                listener.onSelectedPatient(model)
+                listener.onHouseHoldSelected(model)
             }
         }
     }

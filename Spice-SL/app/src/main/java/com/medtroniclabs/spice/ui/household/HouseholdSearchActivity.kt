@@ -16,6 +16,7 @@ import com.medtroniclabs.spice.db.entity.HouseholdEntity
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.household.adapter.HouseholdListAdapter
 import com.medtroniclabs.spice.ui.household.search.viewmodel.HouseholdListViewModel
+import com.medtroniclabs.spice.ui.household.summary.HouseholdSummaryActivity
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -109,6 +110,9 @@ class HouseholdSearchActivity : BaseActivity(), View.OnClickListener, HouseholdS
         }
     }
 
-    override fun onSelectedPatient(item: HouseholdEntity) {
+    override fun onHouseHoldSelected(item: HouseholdEntity) {
+        startActivity(Intent(this@HouseholdSearchActivity,HouseholdSummaryActivity::class.java))
     }
+
+
 }
