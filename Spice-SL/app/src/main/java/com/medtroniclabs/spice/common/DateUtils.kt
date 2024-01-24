@@ -1,6 +1,8 @@
 package com.medtroniclabs.spice.common
 
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams
+import org.joda.time.Period
+import org.joda.time.PeriodType
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -27,7 +29,7 @@ object DateUtils {
 
             val years = age.get(Calendar.YEAR) - 1970
             val months = age.get(Calendar.MONTH)
-            val weeks = (age.get(Calendar.DAY_OF_MONTH) - 1)/7
+            val weeks = (age.get(Calendar.DAY_OF_MONTH) - 1) / 7
 
             return Triple(years, months, weeks)
         } catch (exception: Exception) {
@@ -35,21 +37,28 @@ object DateUtils {
         }
     }
 
-    fun getYearMonthAndDate(dateString: String, defaultFormat: SimpleDateFormat = getDateDDMMYYYY()): Triple<Int?, Int?, Int?> {
+    fun getYearMonthAndDate(
+        dateString: String,
+        defaultFormat: SimpleDateFormat = getDateDDMMYYYY()
+    ): Triple<Int?, Int?, Int?> {
         try {
             val date = formatStringToDate(dateString, defaultFormat)
             date?.let {
                 val cal = Calendar.getInstance()
                 cal.time = date
-                return Triple(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DATE))
+                return Triple(
+                    cal.get(Calendar.YEAR),
+                    cal.get(Calendar.MONTH),
+                    cal.get(Calendar.DATE)
+                )
             }
-        }catch (exception:Exception){
+        } catch (exception: Exception) {
             return Triple(null, null, null)
         }
         return Triple(null, null, null)
     }
 
-    private fun formatStringToDate(dateString: String, format: SimpleDateFormat): Date? {
+    fun formatStringToDate(dateString: String, format: SimpleDateFormat): Date? {
         return format.parse(dateString)
     }
 
@@ -74,7 +83,7 @@ object DateUtils {
     }
 
     fun calculateBirthDate(years: Int, months: Int, weeks: Int): String {
-        val days = weeks*7
+        val days = weeks * 7
 
         val calendar = Calendar.getInstance()
         calendar.add(Calendar.YEAR, -years)
@@ -84,4 +93,16 @@ object DateUtils {
         val dateFormat = SimpleDateFormat(DATE_FORMAT_yyyyMMddHHmmssZZZZZ, Locale.ENGLISH)
         return dateFormat.format(calendar.time)
     }
+
+    fun calculateAge(birthYear: Int): Int {
+        val currentYear = Calendar.getInstance().get(Calendar.YEAR)
+        return currentYear - birthYear
+    }
+
+    fun calculateAgeInMonths(startDate: Date): Int {
+        val endDate = Calendar.getInstance().time
+        val period = Period(startDate.time, endDate.time, PeriodType.months())
+        return period.months
+    }
+
 }

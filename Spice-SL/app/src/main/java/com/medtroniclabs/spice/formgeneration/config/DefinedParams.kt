@@ -17,7 +17,6 @@ object DefinedParams {
 
     const val NationalId = "nationalId"
     const val PhoneNumber = "phoneNumber"
-    const val DateOfBirth = "dateOfBirth"
     const val Year = "year"
     const val Month = "month"
     const val Week = "week"

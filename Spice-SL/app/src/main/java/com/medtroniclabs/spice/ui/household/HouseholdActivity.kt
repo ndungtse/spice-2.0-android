@@ -6,12 +6,15 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.common.DefinedParams
+import com.medtroniclabs.spice.common.DefinedParams.isMemberRegistration
 import com.medtroniclabs.spice.databinding.ActivityHouseholdRegistrationBinding
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.household.fragment.HouseHoldRegistrationFragment
 import com.medtroniclabs.spice.ui.household.viewmodel.HouseRegistrationViewModel
 import com.medtroniclabs.spice.ui.member.MemberRegistrationFragment
+import com.medtroniclabs.spice.ui.member.MemberRegistrationViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -21,6 +24,9 @@ class HouseholdActivity : BaseActivity() {
 
     private val householdRegistrationViewModel: HouseRegistrationViewModel by viewModels()
 
+    private val memberRegistrationViewModel: MemberRegistrationViewModel by viewModels()
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityHouseholdRegistrationBinding.inflate(layoutInflater)
@@ -29,8 +35,16 @@ class HouseholdActivity : BaseActivity() {
             isToolbarVisible = true,
             title = getString(R.string.household_registration)
         )
-        loadFragment(if (householdRegistrationViewModel.houseHoldRegistration) 1 else 2)
+        initializeView()
         attachObserver()
+    }
+
+    private fun initializeView() {
+        householdRegistrationViewModel.isMemberRegistration =
+            intent.getBooleanExtra(isMemberRegistration, false)
+        memberRegistrationViewModel.householdId =
+            intent.getLongExtra(DefinedParams.houseHoldID, -1L)
+        loadFragment(if (householdRegistrationViewModel.isMemberRegistration) 2 else 1)
     }
 
 

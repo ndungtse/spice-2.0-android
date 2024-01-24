@@ -4,15 +4,17 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import com.medtroniclabs.spice.BuildConfig
 import com.medtroniclabs.spice.db.dao.HouseholdDAO
+import com.medtroniclabs.spice.db.dao.MemberDAO
 import com.medtroniclabs.spice.db.entity.HouseholdEntity
+import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
 
 @Database(
-    entities = [HouseholdEntity::class], version = 1
+    entities = [HouseholdEntity::class, HouseholdMemberEntity::class], version = 1
 )
 abstract class SpiceDataBase : RoomDatabase() {
     abstract fun householdDAO(): HouseholdDAO
+    abstract fun memberDAO(): MemberDAO
 
     companion object {
         private const val DATABASE_NAME = "SpiceDataBase"

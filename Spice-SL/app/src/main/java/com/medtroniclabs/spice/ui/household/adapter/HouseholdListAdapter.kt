@@ -7,19 +7,19 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.safeClickListener
-import com.medtroniclabs.spice.db.entity.HouseholdEntity
 import com.medtroniclabs.spice.databinding.ListItemHouseholdBinding
+import com.medtroniclabs.spice.db.response.HouseHoldEntityWithMemberCount
 import com.medtroniclabs.spice.ui.household.HouseholdSelectionListener
 
 class HouseholdListAdapter(
-    val listener: HouseholdSelectionListener,
-    private val houseHoldList: ArrayList<HouseholdEntity>
+    private val listener: HouseholdSelectionListener,
+    private val houseHoldList: ArrayList<HouseHoldEntityWithMemberCount>
 ) : RecyclerView.Adapter<HouseholdListAdapter.HouseholdListViewHolder>() {
 
     inner class HouseholdListViewHolder(val binding: ListItemHouseholdBinding) :
-        RecyclerView.ViewHolder(binding.root){
-            val context: Context = binding.root.context
-        }
+        RecyclerView.ViewHolder(binding.root) {
+        val context: Context = binding.root.context
+    }
 
     override fun onBindViewHolder(
         holder: HouseholdListViewHolder,
@@ -30,16 +30,14 @@ class HouseholdListAdapter(
         holder.binding.tvHouseholdNo.text = item.householdNo.toString()
         val membersText = holder.context.getString(
             R.string.people_registered,
-            item.noOfPeopleRegistered,
+            item.registerMemberCount,
             item.noOfPeople
         )
         holder.binding.tvMembersRegistered.text = membersText
         holder.binding.ivMemberRegCount.visibility =
-            if (item.noOfPeople == item.noOfPeopleRegistered) View.INVISIBLE else View.VISIBLE
-        houseHoldList[position].let { model ->
-            holder.binding.cardPatient.safeClickListener {
-                listener.onHouseHoldSelected(model)
-            }
+            if (item.noOfPeople == item.registerMemberCount) View.INVISIBLE else View.VISIBLE
+        holder.binding.cardPatient.safeClickListener {
+            listener.onHouseHoldSelected(item.id)
         }
     }
 

@@ -38,7 +38,7 @@
     <string name="village">Village</string>
     <string name="landmark">Landmark</string>
     <string name="hh_mobile_number">Household Head Mobile Number</string>
-    <string name="household_summary_member_info">%1$s - %2$d - %3$s</string>
+    <string name="household_summary_member_info">%1$s - %2$s - %3$s</string>
 
 
     <!-- Form Related String-->
@@ -46,7 +46,7 @@
     <string name="pulse_append">%1$.0f BPM</string>
     <string name="dateofbirth">Date of Birth</string>
     <string name="age_in_years">Age (in years)</string>
-    <string name="dd_mm_yyyy">dd/mm/yyyy</string>
+    <string name="dd_mm_yyyy">DD/MM/YYYY</string>
     <string name="please_select" translatable="false">--Select--</string>
     <string name="enter_the_age">Enter the Age</string>
     <string name="confirm">Confirm</string>
@@ -81,6 +81,11 @@
     <string name="weeks">Weeks</string>
     <string name="age">Age</string>
     <string name="seperator_hyphen">-</string>
+    <string name="household_empty_text">No Household found.</string>
+    <string name="household_name_or_no">Household Name / No</string>
+    <string name="member_deceased">Member Deceased</string>
+    <string name="male_prefix">M</string>
+    <string name="female_prefix">F</string>
 
 
 </resources>

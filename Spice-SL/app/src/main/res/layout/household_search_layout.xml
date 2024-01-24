@@ -7,7 +7,7 @@
     android:paddingHorizontal="@dimen/_15sdp">
 
     <androidx.appcompat.widget.AppCompatEditText
-        android:id="@+id/etPatientSearch"
+        android:id="@+id/etSearchTerm"
         style="@style/Form_Input_Style"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -32,7 +32,7 @@
         android:layout_width="50dp"
         android:background="@drawable/check_button_selector"
         android:enabled="false"
-        app:layout_constraintBottom_toBottomOf="@id/etPatientSearch"
+        app:layout_constraintBottom_toBottomOf="@id/etSearchTerm"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_weight="2" />
 

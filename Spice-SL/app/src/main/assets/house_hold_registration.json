@@ -31,22 +31,22 @@
     "errorMessage": "Please select an village",
     "family": "householdInformation",
     "fieldName": "Village Name",
-    "id": "village",
+    "id": "village_id",
     "isEditable": true,
     "isEnabled": true,
     "isMandatory": true,
     "isNeededDefault": true,
     "optionsList": [
       {
-        "id": "Village One",
+        "id": 1,
         "name": "Village One"
       },
       {
-        "id": "Village Two",
+        "id": 2,
         "name": "Village Two"
       },
       {
-        "id": "Village Three",
+        "id": 3,
         "name": "Village Three"
       }
     ],

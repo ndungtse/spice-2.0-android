@@ -2,9 +2,9 @@ package com.medtroniclabs.spice.ui
 
 import android.content.Intent
 import android.graphics.drawable.Drawable
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.databinding.ActivityBaseBinding
@@ -90,7 +90,7 @@ open class BaseActivity : AppCompatActivity() {
     }
 
     fun showVerticalMoreIcon(canVisible: Boolean, callback: ((view: View) -> Unit?)? = null) {
-        binding.ivMore.visibility = View.GONE
+        binding.ivMore.visibility = if (canVisible) View.VISIBLE else View.GONE
         binding.ivMore.safeClickListener {
             callback?.invoke(it)
         }

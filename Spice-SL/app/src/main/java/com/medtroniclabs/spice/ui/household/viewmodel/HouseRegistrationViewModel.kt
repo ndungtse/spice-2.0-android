@@ -3,12 +3,12 @@ package com.medtroniclabs.spice.ui.household.viewmodel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.appextensions.postSuccess
-import com.medtroniclabs.spice.appextensions.setError
-import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.CommonUtils.getIntegerOrNull
 import com.medtroniclabs.spice.common.CommonUtils.getIsBooleanFromString
+import com.medtroniclabs.spice.common.CommonUtils.getLongOrNull
 import com.medtroniclabs.spice.common.CommonUtils.getStringOrEmptyString
 import com.medtroniclabs.spice.db.entity.HouseholdEntity
 import com.medtroniclabs.spice.di.IoDispatcher
@@ -28,7 +28,9 @@ class HouseRegistrationViewModel @Inject constructor(
 
     var houseHoldRegistrationLiveData = MutableLiveData<Resource<Long>>()
 
-    var houseHoldRegistration: Boolean = true
+    var isMemberRegistration: Boolean = false
+
+    var householdEntityDetail: HouseholdEntity? = null
 
     fun registerHousehold(map: HashMap<String, Any>) {
         viewModelScope.launch(dispatcherIO) {
@@ -37,17 +39,20 @@ class HouseRegistrationViewModel @Inject constructor(
                 val householdName = map[HouseHoldRegistration.householdName]
                 val headPhoneNumber = map[HouseHoldRegistration.headPhoneNumber]
                 val landmark = map[HouseHoldRegistration.landmark]
+                val villageID = map[HouseHoldRegistration.villageId]
                 val noOfPeople = map[HouseHoldRegistration.noOfPeople]
                 val isOwnedAnImprovedLatrine = map[HouseHoldRegistration.isOwnedAnImprovedLatrine]
                 val isOwnedHandWashingFacilityWithSoap =
                     map[HouseHoldRegistration.isOwnedHandWashingFacilityWithSoap]
                 val isOwnedATreatedBedNet = map[HouseHoldRegistration.isOwnedATreatedBedNet]
                 val bedNetCount = map[HouseHoldRegistration.bedNetCount]
+                val villageLongID = getLongOrNull(villageID) ?: 0
+                val lastHouseHoldNo = houseHoldRepository.getLastHouseholdNo(villageLongID) ?: 0
                 val householdEntity = HouseholdEntity(
                     id = 0,
-                    householdNo = 1,
+                    householdNo = lastHouseHoldNo + 1,
                     name = getStringOrEmptyString(householdName),
-                    villageId = 2,
+                    villageId = villageLongID,
                     landmark = getStringOrEmptyString(landmark),
                     headPhoneNumber = getStringOrEmptyString(headPhoneNumber),
                     noOfPeople = getIntegerOrNull(noOfPeople) ?: 0,
@@ -58,10 +63,10 @@ class HouseRegistrationViewModel @Inject constructor(
                     isOwnedATreatedBedNet = getIsBooleanFromString(isOwnedATreatedBedNet),
                     bedNetCount = getIntegerOrNull(bedNetCount)
                 )
-                 val rowId: Long = houseHoldRepository.registerHousehold(householdEntity)
-                houseHoldRegistrationLiveData.postSuccess(rowId)
+                householdEntityDetail = householdEntity
+                houseHoldRegistrationLiveData.postSuccess()
             } catch (e: Exception) {
-                houseHoldRegistrationLiveData.setError()
+                houseHoldRegistrationLiveData.postError()
             }
         }
     }

@@ -4,6 +4,7 @@ import android.content.Context
 import com.medtroniclabs.spice.BuildConfig
 import com.medtroniclabs.spice.db.SpiceDataBase
 import com.medtroniclabs.spice.db.dao.HouseholdDAO
+import com.medtroniclabs.spice.db.dao.MemberDAO
 import com.medtroniclabs.spice.db.local.RoomHelper
 import com.medtroniclabs.spice.db.local.RoomHelperImpl
 import com.medtroniclabs.spice.network.ApiHelper
@@ -90,6 +91,12 @@ object AppModule {
     @Provides
     fun provideHouseholdDAO(db: SpiceDataBase): HouseholdDAO {
         return db.householdDAO()
+    }
+
+    @Singleton
+    @Provides
+    fun provideMemberDAO(db: SpiceDataBase): MemberDAO {
+        return db.memberDAO()
     }
 
     @DefaultDispatcher

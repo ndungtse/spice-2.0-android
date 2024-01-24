@@ -12,7 +12,8 @@ import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.safeClickListener
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.databinding.ActivityHouseholdSearchBinding
-import com.medtroniclabs.spice.db.entity.HouseholdEntity
+import com.medtroniclabs.spice.db.response.HouseHoldEntityWithMemberCount
+import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.household.adapter.HouseholdListAdapter
 import com.medtroniclabs.spice.ui.household.search.viewmodel.HouseholdListViewModel
@@ -23,19 +24,25 @@ import dagger.hilt.android.AndroidEntryPoint
 class HouseholdSearchActivity : BaseActivity(), View.OnClickListener, HouseholdSelectionListener {
 
     private lateinit var binding: ActivityHouseholdSearchBinding
-    private lateinit var householdListAdapter: HouseholdListAdapter
     private val householdListViewModel: HouseholdListViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityHouseholdSearchBinding.inflate(layoutInflater)
-        setMainContentView(binding.root,isToolbarVisible = true, title = getString(R.string.households))
+        setMainContentView(
+            binding.root,
+            isToolbarVisible = true,
+            title = getString(R.string.households)
+        )
         initViews()
         setListeners()
-        setHouseholdListAdapter()
+        attachObserver()
     }
+
 
     private fun initViews() {
         binding.llFilter.btnFilter.text = getString(R.string.filter)
+        binding.llExactSearch.etSearchTerm.hint = getString(R.string.household_name_or_no)
         val tabletSize =
             resources.getBoolean(R.bool.isLargeTablet) || resources.getBoolean(R.bool.isTablet)
         if (tabletSize) {
@@ -49,7 +56,7 @@ class HouseholdSearchActivity : BaseActivity(), View.OnClickListener, HouseholdS
 
     private fun setListeners() {
         binding.llExactSearch.btnSearch.safeClickListener(this)
-        binding.llExactSearch.etPatientSearch.addTextChangedListener(searchListener)
+        binding.llExactSearch.etSearchTerm.addTextChangedListener(searchListener)
         binding.btnAddHousehold.safeClickListener(this)
     }
 
@@ -71,48 +78,75 @@ class HouseholdSearchActivity : BaseActivity(), View.OnClickListener, HouseholdS
         }
     }
 
-    private fun setHouseholdListAdapter() {
-        val householdList = ArrayList<HouseholdEntity>()
-        for (i in 1..20) {
-            householdList.add(
-                HouseholdEntity(
-                    id = i.toLong(),
-                    name = "${getString(R.string.households)} ${i}",
-                    noOfPeople = i,
-                    noOfPeopleRegistered = i,
-                    householdNo = i.toLong(),
-                    villageId = i.toLong(),
-                    isOwnedAnImprovedLatrine = true,
-                    isOwnedATreatedBedNet = true,
-                    isOwnedHandWashingFacilityWithSoap = true,
-                    landmark = "",
-                    bedNetCount = i,
-                    headPhoneNumber = ""
-                )
-            )
-        }
-        binding.tvPatientCount.visibility =
-            if (householdList.isNotEmpty()) View.VISIBLE else View.GONE
-        binding.tvPatientCount.text = "${householdList.size} ${getString(R.string.households)}"
-        householdListAdapter = HouseholdListAdapter(this, householdList)
-        binding.rvHouseholdList.apply {
-            layoutManager =
-                GridLayoutManager(this@HouseholdSearchActivity, householdListViewModel.spanCount)
-            adapter = householdListAdapter
-        }
-    }
+    private fun attachObserver() {
+        householdListViewModel.houseHoldListLiveData.observe(this) { resource ->
+            when (resource.state) {
 
-    override fun onClick(view: View) {
-        when(view.id){
-            R.id.btnAddHousehold -> {
-                startActivity(Intent(this, HouseholdActivity::class.java))
+                ResourceState.SUCCESS -> {
+                    hideLoading()
+                    resource.data?.let {
+                        setHouseholdListAdapter(it)
+                    } ?: kotlin.run {
+                        setHouseholdListAdapter(ArrayList())
+                    }
+                }
+
+                ResourceState.ERROR -> {
+                    hideLoading()
+                }
+
+                ResourceState.LOADING -> {
+                    showLoading()
+                }
             }
         }
     }
 
-    override fun onHouseHoldSelected(item: HouseholdEntity) {
-        startActivity(Intent(this@HouseholdSearchActivity,HouseholdSummaryActivity::class.java))
+    private fun setHouseholdListAdapter(householdList: ArrayList<HouseHoldEntityWithMemberCount>) {
+        binding.tvHouseHoldCount.text = "${householdList.size} ${getString(R.string.households)}"
+        if (householdList.isNotEmpty()) {
+            binding.tvNoHouseHoldFound.visibility = View.GONE
+            binding.rvHouseholdList.visibility = View.VISIBLE
+            val householdListAdapter = HouseholdListAdapter(this, householdList)
+            binding.rvHouseholdList.apply {
+                layoutManager =
+                    GridLayoutManager(
+                        this@HouseholdSearchActivity,
+                        householdListViewModel.spanCount
+                    )
+                adapter = householdListAdapter
+            }
+        } else {
+            binding.tvNoHouseHoldFound.visibility = View.VISIBLE
+            binding.rvHouseholdList.visibility = View.GONE
+        }
     }
 
+    override fun onClick(view: View) {
+        when (view.id) {
+            R.id.btnAddHousehold -> {
+                startActivity(Intent(this, HouseholdActivity::class.java))
+            }
+
+            R.id.btnSearch -> {
+                val searchTerm = binding.llExactSearch.etSearchTerm.text
+                if (!searchTerm.isNullOrBlank()) {
+                    householdListViewModel.searchByHouseholdNameOrNo(searchTerm.toString())
+                }
+            }
+        }
+    }
+
+    override fun onHouseHoldSelected(id: Long) {
+        val intent = Intent(this@HouseholdSearchActivity, HouseholdSummaryActivity::class.java)
+        intent.putExtra(DefinedParams.houseHoldID, id)
+        intent.putExtra(DefinedParams.isFromHouseHoldRegistration,false)
+        startActivity(intent)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        householdListViewModel.getHouseHoldList()
+    }
 
 }

@@ -16,7 +16,7 @@
 
         <include
             android:id="@+id/llExactSearch"
-            layout="@layout/household_search_layout"/>
+            layout="@layout/household_search_layout" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -28,12 +28,13 @@
         app:layout_constraintTop_toBottomOf="@+id/clHeader" />
 
     <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/tvPatientCount"
+        android:id="@+id/tvHouseHoldCount"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/_10sdp"
         android:padding="@dimen/_5sdp"
-        android:textColor="@color/navy_blue"
+        android:fontFamily="@font/inter_bold"
+        android:textColor="@color/house_hold_title"
         android:textSize="@dimen/_18ssp"
         android:visibility="visible"
         app:layout_constraintEnd_toStartOf="@id/llFilter"
@@ -43,11 +44,11 @@
 
     <include
         android:id="@+id/llFilter"
-        android:visibility="visible"
         layout="@layout/filter_btn_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/_10sdp"
+        android:visibility="visible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/view" />
 
@@ -56,7 +57,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:barrierDirection="bottom"
-        app:constraint_referenced_ids="llFilter,tvPatientCount" />
+        app:constraint_referenced_ids="llFilter,tvHouseHoldCount" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvHouseholdList"
@@ -66,6 +67,20 @@
         android:padding="@dimen/_5sdp"
         app:layout_constraintBottom_toTopOf="@id/pbLoadMore"
         app:layout_constraintTop_toBottomOf="@id/filterBarrier" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tvNoHouseHoldFound"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_0dp"
+        android:gravity="center"
+        android:paddingHorizontal="@dimen/_15sdp"
+        android:text="@string/household_empty_text"
+        android:textColor="@color/medium_risk_color"
+        android:textSize="@dimen/_16ssp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@id/pbLoadMore"
+        app:layout_constraintTop_toBottomOf="@id/filterBarrier"
+        />
 
     <RelativeLayout
         android:id="@+id/pbLoadMore"

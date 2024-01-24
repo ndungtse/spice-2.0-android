@@ -37,6 +37,28 @@ object CommonUtils {
         }
     }
 
+    fun getLongOrNull(answer: Any?): Long? {
+        when (answer) {
+            is Long -> return answer
+            is String -> {
+                val answerNumber = answer.toLongOrNull()
+                return if (answerNumber is Long) {
+                    return answerNumber
+                } else {
+                    return null
+                }
+            }
+
+            is Double -> {
+                return answer.toLong()
+            }
+
+            else -> {
+                return null
+            }
+        }
+    }
+
     fun getStringOrEmptyString(answer: Any?): String {
         return if (answer is String) {
             answer

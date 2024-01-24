@@ -26,7 +26,6 @@ import android.widget.RadioGroup
 import android.widget.Spinner
 import android.widget.TextView
 import androidx.activity.result.ActivityResultLauncher
-import androidx.appcompat.widget.AppCompatEditText
 import androidx.appcompat.widget.AppCompatSpinner
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.content.ContextCompat
@@ -55,7 +54,6 @@ import com.medtroniclabs.spice.formgeneration.FormSupport.isTranslatedOrNot
 import com.medtroniclabs.spice.formgeneration.FormSupport.translateTitle
 import com.medtroniclabs.spice.formgeneration.FormSupport.updateTitle
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams
-import com.medtroniclabs.spice.formgeneration.config.DefinedParams.DateOfBirth
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.DefaultIDLabel
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.GONE
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.INVISIBLE
@@ -769,7 +767,7 @@ class FormGenerator(
         val binding = AgeDobLayoutBinding.inflate(LayoutInflater.from(context))
         serverViewModel.apply {
             binding.root.tag =id+rootSuffix
-            binding.etDateOfBirth.tag = DateOfBirth
+            binding.etDateOfBirth.tag = id
             binding.etYears.inputType = InputType.TYPE_CLASS_NUMBER
             binding.etMonths.inputType = InputType.TYPE_CLASS_NUMBER
             binding.etWeeks.inputType = InputType.TYPE_CLASS_NUMBER
@@ -801,7 +799,8 @@ class FormGenerator(
                                     parsedDate.time,
                                     inputFormat = DateUtils.DATE_FORMAT_yyyyMMdd,
                                     outputFormat = DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
-                                )
+                                ),
+                                id
                             )
                             yearMonthWeeks.first?.let { binding.etYears.setText(it.toString()) }
                             yearMonthWeeks.second?.let { binding.etMonths.setText(it.toString()) }
@@ -813,7 +812,7 @@ class FormGenerator(
 
             binding.etYears.addTextChangedListener { year ->
                 if (isYearsMonthsWeeksChanged(year, Year)) {
-                    removeDOB(binding.etDateOfBirth)
+                    removeDOB(binding.etDateOfBirth, id)
                 }
                 if (year.isNullOrBlank()) {
                     removeIfContains(Year)
@@ -822,13 +821,13 @@ class FormGenerator(
                     addOrUpdateAgeValue(year.toString(), Year)
                     setConditionalVisibility(serverViewModel, year.toString())
                 }
-                addOrUpdateDateOfBirthIfNotPresent()
+                addOrUpdateDateOfBirthIfNotPresent(id)
                 updateAgeView()
             }
 
             binding.etMonths.addTextChangedListener { months ->
                 if (isYearsMonthsWeeksChanged(months, Month)) {
-                    removeDOB(binding.etDateOfBirth)
+                    removeDOB(binding.etDateOfBirth, id)
                 }
                 if (months.isNullOrBlank()) {
                     removeIfContains(Month)
@@ -837,13 +836,13 @@ class FormGenerator(
                     addOrUpdateAgeValue(months.toString(), Month)
                     setConditionalVisibility(serverViewModel, months.toString())
                 }
-                addOrUpdateDateOfBirthIfNotPresent()
+                addOrUpdateDateOfBirthIfNotPresent(id)
                 updateAgeView()
             }
 
             binding.etWeeks.addTextChangedListener { weeks ->
                 if (isYearsMonthsWeeksChanged(weeks, Week)) {
-                    removeDOB(binding.etDateOfBirth)
+                    removeDOB(binding.etDateOfBirth,id)
                 }
                 if (weeks.isNullOrBlank()) {
                     removeIfContains(Week)
@@ -853,7 +852,7 @@ class FormGenerator(
                     setConditionalVisibility(serverViewModel, weeks.toString())
                 }
                 isDobUpdated = false
-                addOrUpdateDateOfBirthIfNotPresent()
+                addOrUpdateDateOfBirthIfNotPresent(id)
                 updateAgeView()
             }
             updateAgeView()
@@ -871,15 +870,15 @@ class FormGenerator(
         }
     }
 
-    private fun addOrUpdateDateOfBirthIfNotPresent() {
+    private fun addOrUpdateDateOfBirthIfNotPresent(id: String) {
         val year = resultHashMap[Year] as? Int ?: 0
         val month = resultHashMap[Month] as? Int ?: 0
         val weeks = resultHashMap[Week] as? Int ?: 0
         if (!isDobUpdated)
-            resultHashMap[DateOfBirth] = DateUtils.calculateBirthDate(year, month, weeks)
+            resultHashMap[id] = DateUtils.calculateBirthDate(year, month, weeks)
         if (!resultHashMap.containsKey(Year) && !resultHashMap.containsKey(Month) && !resultHashMap.containsKey(
-                Week) && resultHashMap.containsKey(DateOfBirth)){
-            resultHashMap.remove(DateOfBirth)
+                Week) && resultHashMap.containsKey(id)){
+            resultHashMap.remove(id)
         }
 
     }
@@ -910,18 +909,18 @@ class FormGenerator(
         }
     }
 
-    private fun removeDOB(etDateOfBirth: AppCompatTextView) {
-        if (!isDobUpdated && resultHashMap.containsKey(DateOfBirth)) {
+    private fun removeDOB(etDateOfBirth: AppCompatTextView, id: String) {
+        if (!isDobUpdated && resultHashMap.containsKey(id)) {
             etDateOfBirth.text = ""
         }
     }
 
-    private fun addOrUpdateDOB(dateOfBirth: String) {
+    private fun addOrUpdateDOB(dateOfBirth: String, id: String) {
         isDobUpdated = true
-        resultHashMap[DateOfBirth] = dateOfBirth
+        resultHashMap[id] = dateOfBirth
     }
 
-    fun showDatePicker(
+    private fun showDatePicker(
         context: Context,
         disableFutureDate: Boolean = false,
         minDate: Long? = null,

@@ -65,20 +65,18 @@ class HouseHoldRegistrationFragment : Fragment(), View.OnClickListener, FormEven
     override fun onClick(v: View?) {
         when (v?.id) {
             R.id.btnNext -> {
-                // formGenerator.formSubmitAction(v)
-                if (activity is HouseholdActivity) {
+                 formGenerator.formSubmitAction(v)
+                /*if (activity is HouseholdActivity) {
                     (activity as HouseholdActivity).loadFragment(2)
-                }
+                }*/
             }
         }
     }
 
     override fun loadLocalCache(id: String, localDataCache: Any, selectedParent: Long?) {
-        TODO("Not yet implemented")
     }
 
     override fun onPopulate(targetId: String) {
-        TODO("Not yet implemented")
     }
 
     override fun onCheckBoxDialogueClicked(
@@ -86,7 +84,6 @@ class HouseHoldRegistrationFragment : Fragment(), View.OnClickListener, FormEven
         serverViewModel: FormLayout,
         resultMap: Any?
     ) {
-        TODO("Not yet implemented")
     }
 
     override fun onInstructionClicked(
@@ -95,7 +92,6 @@ class HouseHoldRegistrationFragment : Fragment(), View.OnClickListener, FormEven
         informationList: ArrayList<String>?,
         description: String?
     ) {
-        TODO("Not yet implemented")
     }
 
     override fun onFormSubmit(resultMap: HashMap<String, Any>?) {
