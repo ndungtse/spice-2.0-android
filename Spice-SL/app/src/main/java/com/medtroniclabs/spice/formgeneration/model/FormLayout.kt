@@ -56,5 +56,6 @@ data class FormLayout(
     var isReferred: Boolean? = null,
     var onlyAlphabets: Boolean? = null,
     var applyDecimalFilter: Boolean? = null,
-    var backgroundColor: String? = null
+    var backgroundColor: String? = null,
+    var information: String? = null,
 ) : BaseViewParams

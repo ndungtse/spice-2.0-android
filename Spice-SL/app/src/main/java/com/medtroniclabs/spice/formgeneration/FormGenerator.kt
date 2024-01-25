@@ -47,6 +47,7 @@ import com.medtroniclabs.spice.databinding.InstructionLayoutBinding
 import com.medtroniclabs.spice.databinding.LayoutInformationLabelBinding
 import com.medtroniclabs.spice.databinding.LayoutSingleSelectionBinding
 import com.medtroniclabs.spice.databinding.MentalHealthLayoutBinding
+import com.medtroniclabs.spice.databinding.NoOfDaysLayoutBinding
 import com.medtroniclabs.spice.databinding.RadioGroupLayoutBinding
 import com.medtroniclabs.spice.databinding.TextLabelLayoutBinding
 import com.medtroniclabs.spice.formgeneration.FormSupport.getSpannableString
@@ -74,6 +75,7 @@ import com.medtroniclabs.spice.formgeneration.config.ViewType.VIEW_TYPE_FORM_SPI
 import com.medtroniclabs.spice.formgeneration.config.ViewType.VIEW_TYPE_FORM_TEXTLABEL
 import com.medtroniclabs.spice.formgeneration.config.ViewType.VIEW_TYPE_INSTRUCTION
 import com.medtroniclabs.spice.formgeneration.config.ViewType.VIEW_TYPE_METAL_HEALTH
+import com.medtroniclabs.spice.formgeneration.config.ViewType.VIEW_TYPE_NO_OF_DAYS
 import com.medtroniclabs.spice.formgeneration.config.ViewType.VIEW_TYPE_SINGLE_SELECTION
 import com.medtroniclabs.spice.formgeneration.config.ViewType.VIEW_TYPE_TIME
 import com.medtroniclabs.spice.formgeneration.extension.dp
@@ -132,6 +134,7 @@ class FormGenerator(
                 VIEW_TYPE_FORM_TEXTLABEL -> createTextLabel(serverViewModel)
                 VIEW_TYPE_METAL_HEALTH -> createMentalHealthView(serverViewModel)
                 VIEW_TYPE_FORM_AGE -> createAgeView(serverViewModel)
+                VIEW_TYPE_NO_OF_DAYS -> createNoOfDaysView(serverViewModel)
             }
         }
     }
@@ -148,6 +151,50 @@ class FormGenerator(
                 binding.cardTitle.text = title
             }
             if (parentLayout.findViewWithTag<LinearLayout>(id) == null) {
+                parentLayout.addView(binding.root)
+            }
+        }
+    }
+
+    private fun createNoOfDaysView(serverViewModel: FormLayout) {
+        val binding = NoOfDaysLayoutBinding.inflate(LayoutInflater.from(context))
+        serverViewModel.apply {
+            binding.root.tag = id + rootSuffix
+            binding.tvTitle.tag = id + titleSuffix
+            binding.etUserInput.tag = id
+            binding.tvErrorMessage.tag = id + errorSuffix
+            binding.tvTitle.text = title
+            binding.tvInfo.text = information
+            if (isMandatory) {
+                binding.tvTitle.markMandatory()
+            }
+            isEnabled?.let {
+                binding.etUserInput.isEnabled = it
+            }
+            inputType?.let {
+                binding.etUserInput.inputType = it
+            }
+            hint?.let {
+                if (translate) {
+                    binding.etUserInput.hint = hintCulture ?: it
+                } else {
+                    binding.etUserInput.hint = it
+                }
+            }
+            binding.etUserInput.addTextChangedListener { input ->
+                input?.let{
+                    val resultValue = input.trim().toString()
+                    if(resultValue.isNotBlank()){
+                        resultHashMap[id] = resultValue
+                    } else {
+                        if (resultHashMap.containsKey(id))
+                            resultHashMap.remove(id)
+                    }
+                }
+            }
+            setViewVisibility(visibility, binding.root)
+            setViewEnableDisable(isEnabled, binding.root)
+            getFamilyView(family)?.addView(binding.root) ?: kotlin.run {
                 parentLayout.addView(binding.root)
             }
         }
@@ -822,7 +869,7 @@ class FormGenerator(
                     setConditionalVisibility(serverViewModel, year.toString())
                 }
                 addOrUpdateDateOfBirthIfNotPresent(id)
-                updateAgeView()
+                updateAgeView(id)
             }
 
             binding.etMonths.addTextChangedListener { months ->
@@ -837,7 +884,7 @@ class FormGenerator(
                     setConditionalVisibility(serverViewModel, months.toString())
                 }
                 addOrUpdateDateOfBirthIfNotPresent(id)
-                updateAgeView()
+                updateAgeView(id)
             }
 
             binding.etWeeks.addTextChangedListener { weeks ->
@@ -853,9 +900,9 @@ class FormGenerator(
                 }
                 isDobUpdated = false
                 addOrUpdateDateOfBirthIfNotPresent(id)
-                updateAgeView()
+                updateAgeView(id)
             }
-            updateAgeView()
+            updateAgeView(id)
             if (isMandatory) {
                 binding.tvYear.markMandatory()
                 binding.tvWeeks.markMandatory()
@@ -883,8 +930,8 @@ class FormGenerator(
 
     }
 
-    private fun updateAgeView() {
-        val ageView = getViewByTag(DefinedParams.AgeValue)
+    private fun updateAgeView(id: String) {
+        val ageView = getViewByTag(id+ value)
         val age = displayAge(resultHashMap, context)
         ageView?.let {view ->
             (view as? AppCompatTextView)?.text = age
@@ -1321,7 +1368,7 @@ class FormGenerator(
             when (model?.viewType) {
                 VIEW_TYPE_FORM_DATEPICKER,
                 VIEW_TYPE_FORM_SPINNER,
-                VIEW_TYPE_FORM_EDITTEXT -> resetEditTextDatePicker(this, model)
+                VIEW_TYPE_FORM_EDITTEXT, VIEW_TYPE_NO_OF_DAYS -> resetEditTextDatePicker(this, model)
 
                 VIEW_TYPE_TIME -> resetTimeView(this, model)
                 VIEW_TYPE_FORM_AGE -> resetAgeView(this, model)
