@@ -9,6 +9,8 @@ import com.medtroniclabs.spice.ui.MenuConstants
 import javax.inject.Inject
 
 class ToolsViewModel @Inject constructor() : ViewModel() {
+    var selectedHouseholdMemberID = -1L
+
     fun getMenuItemsList(context: Context): ArrayList<MenuEntity> {
         val menuList = ArrayList<MenuEntity>()
         menuList.add(

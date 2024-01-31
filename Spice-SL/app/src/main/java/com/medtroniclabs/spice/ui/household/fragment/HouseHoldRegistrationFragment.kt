@@ -94,7 +94,7 @@ class HouseHoldRegistrationFragment : Fragment(), View.OnClickListener, FormEven
     ) {
     }
 
-    override fun onFormSubmit(resultMap: HashMap<String, Any>?) {
+    override fun onFormSubmit(resultMap: HashMap<String, Any>?, serverData: List<FormLayout?>?) {
         resultMap?.let { map ->
             householdRegistrationViewModel.registerHousehold(map)
         }

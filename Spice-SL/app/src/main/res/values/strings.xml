@@ -86,6 +86,14 @@
     <string name="member_deceased">Member Deceased</string>
     <string name="male_prefix">M</string>
     <string name="female_prefix">F</string>
+    <string name="iccm">ICCM</string>
+    <string name="national_id">National ID</string>
+    <string name="bio_data">Bio Data</string>
+    <string name="name">Name</string>
+    <string name="gender">Gender</string>
+    <string name="no_of_months">%1$s Months</string>
+    <string name="no_of_weeks">%1$s Weeks</string>
+    <string name="no_of_years">%1$s Years</string>
 
 
 </resources>

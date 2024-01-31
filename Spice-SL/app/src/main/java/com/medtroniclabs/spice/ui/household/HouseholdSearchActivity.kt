@@ -16,7 +16,7 @@ import com.medtroniclabs.spice.db.response.HouseHoldEntityWithMemberCount
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.household.adapter.HouseholdListAdapter
-import com.medtroniclabs.spice.ui.household.search.viewmodel.HouseholdListViewModel
+import com.medtroniclabs.spice.ui.household.viewmodel.HouseholdListViewModel
 import com.medtroniclabs.spice.ui.household.summary.HouseholdSummaryActivity
 import dagger.hilt.android.AndroidEntryPoint
 

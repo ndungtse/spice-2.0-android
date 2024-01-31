@@ -145,8 +145,10 @@ class HouseholdSummaryActivity : BaseActivity(), MemberSelectionListener, View.O
         popupMenu.show()
     }
 
-    override fun onMemberSelected(item: Long) {
-        startActivity(Intent(this@HouseholdSummaryActivity, ToolsActivity::class.java))
+    override fun onMemberSelected(id: Long) {
+        val intent = Intent(this, ToolsActivity::class.java)
+        intent.putExtra(DefinedParams.MemberID, id)
+        startActivity(intent)
     }
 
     private fun setListener() {

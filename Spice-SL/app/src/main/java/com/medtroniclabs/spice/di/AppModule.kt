@@ -3,6 +3,7 @@ package com.medtroniclabs.spice.di
 import android.content.Context
 import com.medtroniclabs.spice.BuildConfig
 import com.medtroniclabs.spice.db.SpiceDataBase
+import com.medtroniclabs.spice.db.dao.AssessmentDAO
 import com.medtroniclabs.spice.db.dao.HouseholdDAO
 import com.medtroniclabs.spice.db.dao.MemberDAO
 import com.medtroniclabs.spice.db.local.RoomHelper
@@ -97,6 +98,12 @@ object AppModule {
     @Provides
     fun provideMemberDAO(db: SpiceDataBase): MemberDAO {
         return db.memberDAO()
+    }
+
+    @Singleton
+    @Provides
+    fun provideAssessmentDAO(db: SpiceDataBase): AssessmentDAO {
+        return db.assessmentDAO()
     }
 
     @DefaultDispatcher

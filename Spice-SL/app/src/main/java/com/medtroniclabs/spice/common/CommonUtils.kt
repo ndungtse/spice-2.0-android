@@ -83,4 +83,15 @@ object CommonUtils {
             context.getString(R.string.separator_hyphen)
         }
     }
+
+    fun getDuration(input: String, context: Context): String {
+        val parts = input.split('/')
+
+        return when {
+            parts[0] == DefinedParams.ZERO && parts[1] == DefinedParams.ZERO -> context.getString(R.string.no_of_weeks, parts[2])
+            parts[0] == DefinedParams.ZERO -> context.getString(R.string.no_of_months, parts[1])
+            else -> context.getString(R.string.no_of_years, parts[0])
+        }
+    }
+
 }

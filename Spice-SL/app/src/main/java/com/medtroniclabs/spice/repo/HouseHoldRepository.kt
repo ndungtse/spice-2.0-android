@@ -18,5 +18,5 @@ class HouseHoldRepository @Inject constructor(
     suspend fun searchByHouseholdNameOrNo(searchTerm: String) = roomHelper.searchByHouseholdNameOrNo(searchTerm)
     suspend fun getHouseHoldDetailsById(houseHoldId:Long) = roomHelper.getHouseHoldDetailsById(houseHoldId)
     suspend fun getAllHouseHoldMemberList(houseHoldId: Long): ArrayList<HouseholdMemberEntity> = roomHelper.getAllHouseHoldMemberList(houseHoldId)
-
+    suspend fun getMemberDetailsByID(memberId: Long): HouseholdMemberEntity = roomHelper.getMemberDetailsByID(memberId)
 }

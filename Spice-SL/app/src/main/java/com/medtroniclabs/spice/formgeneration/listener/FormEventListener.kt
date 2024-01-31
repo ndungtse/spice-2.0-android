@@ -20,6 +20,6 @@ interface FormEventListener {
         description: String? = null
     )
 
-    fun onFormSubmit(resultMap: HashMap<String, Any>?)
+    fun onFormSubmit(resultMap: HashMap<String, Any>?, serverData: List<FormLayout?>? = null)
 
 }

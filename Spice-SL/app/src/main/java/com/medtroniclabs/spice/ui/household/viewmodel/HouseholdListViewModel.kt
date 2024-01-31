@@ -1,4 +1,4 @@
-package com.medtroniclabs.spice.ui.household.search.viewmodel
+package com.medtroniclabs.spice.ui.household.viewmodel
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel

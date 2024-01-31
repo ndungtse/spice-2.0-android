@@ -1,6 +1,7 @@
 package com.medtroniclabs.spice.common
 
 object DefinedParams {
+    const val ZERO = "0"
 
     const val male = "male"
     const val isFromHouseHoldRegistration = "isFromHouseHoldRegistration"
@@ -14,4 +15,7 @@ object DefinedParams {
     const val HH_MOBILE_NUMBER = "hhMobNumber"
     const val MALE = "Male"
     const val isMemberRegistration = "isMemberRegistration"
+    const val MemberID = "memberID"
+    const val isFrom= "isFrom"
+    const val iccm = "ICCM"
 }

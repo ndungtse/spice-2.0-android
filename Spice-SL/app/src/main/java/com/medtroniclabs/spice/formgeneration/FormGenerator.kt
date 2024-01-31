@@ -719,7 +719,6 @@ class FormGenerator(
         }
     }
 
-
     private fun createInformationLabel(serverViewModel: FormLayout) {
         val binding = LayoutInformationLabelBinding.inflate(LayoutInflater.from(context))
         serverViewModel.apply {
@@ -1486,7 +1485,7 @@ class FormGenerator(
     fun formSubmitAction(view: View) {
         if (validateInputs()) {
             hideKeyboard(view)
-            listener.onFormSubmit(resultMap = resultHashMap)
+            listener.onFormSubmit(resultMap = resultHashMap, serverData = serverData)
         } else {
             focusNeeded?.let { focusNeeded ->
                 scrollView?.let { scrollView ->

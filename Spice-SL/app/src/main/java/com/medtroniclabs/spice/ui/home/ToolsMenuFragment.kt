@@ -1,24 +1,27 @@
 package com.medtroniclabs.spice.ui.home
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import com.google.android.flexbox.FlexDirection
 import com.google.android.flexbox.FlexboxLayoutManager
 import com.google.android.flexbox.JustifyContent
 import com.medtroniclabs.spice.common.CommonUtils
+import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.databinding.FragmentToolsMenuBinding
 import com.medtroniclabs.spice.ui.MenuConstants
+import com.medtroniclabs.spice.ui.assessment.AssessmentActivity
 import com.medtroniclabs.spice.ui.home.adapter.DashboardMenuItemsAdapter
 
 class ToolsMenuFragment : Fragment(), MenuSelectionListener {
 
     private lateinit var binding: FragmentToolsMenuBinding
-    private val viewModel: ToolsViewModel by viewModels()
+    private val viewModel: ToolsViewModel by activityViewModels()
 
     companion object {
         const val TAG = "ToolsMenuFragment"
@@ -56,7 +59,9 @@ class ToolsMenuFragment : Fragment(), MenuSelectionListener {
     override fun onMenuSelected(name: String) {
         when(name) {
             MenuConstants.ICCM_MENU_ID -> {
-                //startActivity
+                val intent = Intent(requireContext(), AssessmentActivity::class.java)
+                intent.putExtra(DefinedParams.MemberID, viewModel.selectedHouseholdMemberID)
+                startActivity(intent)
             } MenuConstants.SCREENER_MENU_ID -> {
                 //startActivity
             } MenuConstants.CBS_MENU_ID -> {
