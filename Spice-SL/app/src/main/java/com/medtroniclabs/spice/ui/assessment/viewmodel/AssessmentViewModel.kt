@@ -1,11 +1,11 @@
 package com.medtroniclabs.spice.ui.assessment.viewmodel
+
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.appextensions.postSuccess
-import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.db.entity.AssessmentEntity
 import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
 import com.medtroniclabs.spice.di.IoDispatcher
@@ -24,8 +24,9 @@ class AssessmentViewModel @Inject constructor(
     private var assessmentRepository: AssessmentRepository
 ) : ViewModel() {
     var selectedHouseholdMemberId = -1L
-    private val assessmentLiveData  = MutableLiveData<Resource<Long>>()
+    private val assessmentLiveData = MutableLiveData<Resource<Long>>()
     val memberDetailsLiveData = MutableLiveData<Resource<HouseholdMemberEntity>>()
+    var menuId: String? = null
 
     fun getMemberDetailsById() {
         if (selectedHouseholdMemberId == -1L) {
@@ -34,7 +35,8 @@ class AssessmentViewModel @Inject constructor(
         try {
             viewModelScope.launch(dispatcherIO) {
                 memberDetailsLiveData.postLoading()
-                val memberEntity = houseHoldRepository.getMemberDetailsByID(selectedHouseholdMemberId)
+                val memberEntity =
+                    houseHoldRepository.getMemberDetailsByID(selectedHouseholdMemberId)
                 memberDetailsLiveData.postSuccess(memberEntity)
             }
         } catch (e: Exception) {
@@ -46,14 +48,18 @@ class AssessmentViewModel @Inject constructor(
         viewModelScope.launch(dispatcherIO) {
             try {
                 memberDetailsLiveData.value?.data?.householdId?.let {
-                    val assessmentEntity = AssessmentEntity(
-                        memberId = selectedHouseholdMemberId,
-                        householdId = it,
-                        assessmentType = DefinedParams.iccm.lowercase(),
-                        assessmentDetails = resultData,
-                        userId = 1
-                    )
-                    assessmentRepository.saveAssessment(assessmentEntity)
+                    val assessmentEntity = menuId?.let { menuId ->
+                        AssessmentEntity(
+                            memberId = selectedHouseholdMemberId,
+                            householdId = it,
+                            assessmentType = menuId.lowercase(),
+                            assessmentDetails = resultData,
+                            userId = 1
+                        )
+                    }
+                    assessmentEntity?.let {
+                        assessmentRepository.saveAssessment(assessmentEntity)
+                    }
                     assessmentLiveData.postSuccess()
                 }
             } catch (e: Exception) {

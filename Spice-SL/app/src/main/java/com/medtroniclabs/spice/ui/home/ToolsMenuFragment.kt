@@ -56,22 +56,14 @@ class ToolsMenuFragment : Fragment(), MenuSelectionListener {
         binding.rvActivitiesList.adapter = DashboardMenuItemsAdapter(viewModel.getMenuItemsList(requireContext()), this)
     }
 
-    override fun onMenuSelected(name: String) {
-        when(name) {
-            MenuConstants.ICCM_MENU_ID -> {
-                val intent = Intent(requireContext(), AssessmentActivity::class.java)
-                intent.putExtra(DefinedParams.MemberID, viewModel.selectedHouseholdMemberID)
-                startActivity(intent)
-            } MenuConstants.SCREENER_MENU_ID -> {
-                //startActivity
-            } MenuConstants.CBS_MENU_ID -> {
-                //startActivity
-            } MenuConstants.TB_MENU_ID -> {
-                //startActivity
-            } MenuConstants.NCD_MENU_ID -> {
-                //startActivity
-            }
-        }
+    override fun onMenuSelected(menuId: String) {
+        startAssessmentToolsActivity(menuId)
     }
 
+    private fun startAssessmentToolsActivity(menuId: String) {
+        val intent = Intent(requireContext(), AssessmentActivity::class.java)
+        intent.putExtra(DefinedParams.MemberID, viewModel.selectedHouseholdMemberID)
+        intent.putExtra(DefinedParams.MenuId, menuId)
+        startActivity(intent)
+    }
 }

@@ -63,7 +63,11 @@ class MemberRegistrationFragment : Fragment(), FormEventListener, View.OnClickLi
                 ResourceState.SUCCESS -> {
                     (activity as BaseActivity?)?.hideLoading()
                     if (memberRegistrationViewModel.startAssessment != null && memberRegistrationViewModel.startAssessment!!) {
-                        startActivity(Intent(requireActivity(), ToolsActivity::class.java))
+                        val intent = Intent(requireActivity(), ToolsActivity::class.java)
+                        resourceState.data.let {
+                            intent.putExtra(DefinedParams.MemberID, it ?: -1)
+                        }
+                        startActivity(intent)
                         (activity as HouseholdActivity).finish()
                     } else {
                         if (!householdRegistrationViewModel.isMemberRegistration) {

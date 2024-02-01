@@ -1,4 +1,4 @@
-package com.medtroniclabs.spice.ui.assessment
+package com.medtroniclabs.spice.ui.assessment.fragment
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -25,7 +25,7 @@ import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class AssessmentFragment : Fragment(), FormEventListener, View.OnClickListener{
+class AssessmentICCMFragment : Fragment(), FormEventListener, View.OnClickListener {
 
     private lateinit var binding: FragmentAssessmentBinding
     private lateinit var formGenerator: FormGenerator
@@ -76,6 +76,7 @@ class AssessmentFragment : Fragment(), FormEventListener, View.OnClickListener{
             requireContext(), binding.llForm, null, this, binding.scrollView,
             translate = false
         )
+
         val objectList = Gson().fromJson(
             CommonUtils.getStringFromAssets(
                 "iccm.json",
@@ -83,11 +84,12 @@ class AssessmentFragment : Fragment(), FormEventListener, View.OnClickListener{
             ),
             Array<FormLayout>::class.java
         ).asList()
+
         formGenerator.populateViews(objectList)
     }
 
     companion object {
-        val TAG = "AssessmentToolsFragment"
+        val TAG = "AssessmentICCMFragment"
     }
 
     override fun loadLocalCache(id: String, localDataCache: Any, selectedParent: Long?) {
@@ -142,7 +144,7 @@ class AssessmentFragment : Fragment(), FormEventListener, View.OnClickListener{
     }
 
     override fun onClick(view: View) {
-        when(view.id){
+        when (view.id) {
             binding.btnSubmit.id -> {
                 formGenerator.formSubmitAction(view)
             }
