@@ -11,6 +11,7 @@ data class AssessmentEntity(
     val householdId: Long,
     val assessmentType: String,
     val assessmentDetails:String,
+    var otherDetails: String? = null,
     var createdAt: Long = System.currentTimeMillis(),
     var userId: Long? = null,
     var isReferred: Boolean = false

@@ -6,6 +6,7 @@ import com.medtroniclabs.spice.db.dao.MemberDAO
 import com.medtroniclabs.spice.db.entity.AssessmentEntity
 import com.medtroniclabs.spice.db.entity.HouseholdEntity
 import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
+import com.medtroniclabs.spice.db.entity.SignsAndSymptomsEntity
 import com.medtroniclabs.spice.db.response.HouseHoldEntityWithMemberCount
 import javax.inject.Inject
 
@@ -42,11 +43,26 @@ class RoomHelperImpl @Inject constructor(
         return ArrayList(memberDAO.getAllHouseHoldMemberList(houseHoldId))
     }
 
-    override suspend fun getMemberDetailsByID(memberId: Long) : HouseholdMemberEntity {
+    override suspend fun getMemberDetailsByID(memberId: Long): HouseholdMemberEntity {
         return memberDAO.getMemberDetailsById(memberId)
     }
 
     override suspend fun saveAssessment(assessmentEntity: AssessmentEntity): Long {
         return assessmentDAO.insertAssessment(assessmentEntity)
+    }
+
+    override suspend fun updateOtherAssessmentDetails(assessmentEntity: AssessmentEntity) {
+        return assessmentDAO.updateOtherAssessmentDetails(assessmentEntity)
+    }
+
+    override suspend fun getLatestAssessmentForMember(memberId: Long): AssessmentEntity? {
+        return assessmentDAO.getLatestAssessmentForMember(memberId)
+    }
+
+    override suspend fun insertSymptomList(symptoms: List<SignsAndSymptomsEntity>) {
+        assessmentDAO.insertSymptoms(symptoms)
+    }
+    override suspend fun getSymptomListByType(type: String): List<SignsAndSymptomsEntity> {
+        return assessmentDAO.getSymptomListByType(type)
     }
 }

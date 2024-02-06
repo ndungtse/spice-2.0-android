@@ -10,9 +10,11 @@ import com.medtroniclabs.spice.db.dao.MemberDAO
 import com.medtroniclabs.spice.db.entity.AssessmentEntity
 import com.medtroniclabs.spice.db.entity.HouseholdEntity
 import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
+import com.medtroniclabs.spice.db.entity.SignsAndSymptomsEntity
 
 @Database(
-    entities = [HouseholdEntity::class, HouseholdMemberEntity::class, AssessmentEntity::class], version = 1
+    entities = [HouseholdEntity::class, HouseholdMemberEntity::class, AssessmentEntity::class, SignsAndSymptomsEntity::class],
+    version = 1
 )
 abstract class SpiceDataBase : RoomDatabase() {
     abstract fun householdDAO(): HouseholdDAO

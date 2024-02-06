@@ -14,7 +14,7 @@
     "isEnabled": true,
     "isMandatory": true,
     "isNeededDefault": true,
-    "isSummary": false,
+    "isSummary": true,
     "optionsList": [
       {
         "id": "Yes",
@@ -30,6 +30,7 @@
     "readOnly": true,
     "title": "Unconscious or unusually sleepy",
     "viewType": "SingleSelectionView",
+    "isInfo": "gone",
     "visibility": "visible"
   },
   {
@@ -41,7 +42,7 @@
     "isEnabled": true,
     "isMandatory": true,
     "isNeededDefault": true,
-    "isSummary": false,
+    "isSummary": true,
     "optionsList": [
       {
         "id": "Yes",
@@ -57,6 +58,7 @@
     "readOnly": true,
     "title": "Convulsions now or in the past few days",
     "viewType": "SingleSelectionView",
+    "isInfo": "gone",
     "visibility": "visible"
   },
   {
@@ -68,7 +70,7 @@
     "isEnabled": true,
     "isMandatory": true,
     "isNeededDefault": true,
-    "isSummary": false,
+    "isSummary": true,
     "optionsList": [
       {
         "id": "Yes",
@@ -84,6 +86,7 @@
     "readOnly": true,
     "title": "Vomiting everything",
     "viewType": "SingleSelectionView",
+    "isInfo": "gone",
     "visibility": "visible"
   },
   {
@@ -95,7 +98,7 @@
     "isEnabled": true,
     "isMandatory": true,
     "isNeededDefault": true,
-    "isSummary": false,
+    "isSummary": true,
     "optionsList": [
       {
         "id": "Yes",
@@ -111,6 +114,7 @@
     "readOnly": true,
     "title": "Not able to breastfeed or drink",
     "viewType": "SingleSelectionView",
+    "isInfo": "gone",
     "visibility": "visible"
   },
   {
@@ -132,6 +136,7 @@
     "family": "nutritionalStatus",
     "fieldName": "MUAC",
     "id": "muac",
+    "isSummary": true,
     "isEditable": true,
     "isEnabled": true,
     "isMandatory": true,
@@ -153,6 +158,7 @@
     ],
     "title": "MUAC",
     "viewType": "Spinner",
+    "isInfo": "visible",
     "visibility": "visible"
   },
   {
@@ -178,8 +184,9 @@
     "optionType": "boolean",
     "orderId": 2,
     "readOnly": true,
-    "title": "Oedema of both feet (SAM)*",
+    "title": "Oedema of both feet (SAM)",
     "viewType": "SingleSelectionView",
+    "isInfo": "visible",
     "visibility": "gone"
   },
   {
@@ -218,7 +225,7 @@
     "isEnabled": true,
     "isMandatory": true,
     "isNeededDefault": true,
-    "isSummary": false,
+    "isSummary": true,
     "optionsList": [
       {
         "id": "Yes",
@@ -234,6 +241,7 @@
     "readOnly": true,
     "title": "Cough or Difficult Breathing",
     "viewType": "SingleSelectionView",
+    "isInfo": "gone",
     "visibility": "visible"
   },
   {
@@ -251,6 +259,7 @@
     "title": "Number of days of cough",
     "viewType": "NoOfDaysView",
     "visibility": "gone",
+    "isInfo": "gone",
     "information": "> 21 Days"
   },
   {
@@ -278,6 +287,7 @@
     "readOnly": true,
     "title": "Chest Indrawing",
     "viewType": "SingleSelectionView",
+    "isInfo": "visible",
     "visibility": "gone"
   },
   {
@@ -297,6 +307,7 @@
     "title": "Breaths per minute",
     "viewType": "NoOfDaysView",
     "visibility": "gone",
+    "isInfo": "visible",
     "information": "Fast Breathing"
   },
   {
@@ -308,7 +319,7 @@
     "isEnabled": true,
     "isMandatory": false,
     "isNeededDefault": true,
-    "isSummary": false,
+    "isSummary": true,
     "optionsList": [
       {
         "id": "NA",
@@ -324,6 +335,7 @@
     "readOnly": true,
     "title": "Amoxicillin",
     "viewType": "SingleSelectionView",
+    "isInfo": "visible",
     "visibility": "gone"
   },
   {
@@ -357,7 +369,7 @@
     "isEnabled": true,
     "isMandatory": true,
     "isNeededDefault": true,
-    "isSummary": false,
+    "isSummary": true,
     "optionsList": [
       {
         "id": "Yes",
@@ -373,6 +385,7 @@
     "readOnly": true,
     "title": "Fever, History of Fever or hot body",
     "viewType": "SingleSelectionView",
+    "isInfo": "gone",
     "visibility": "visible"
   },
   {
@@ -392,6 +405,7 @@
     "title": "Number of days of fever",
     "viewType": "NoOfDaysView",
     "visibility": "gone",
+    "isInfo": "gone",
     "information": "> 7 Days"
   },
   {
@@ -403,7 +417,7 @@
     "isEnabled": true,
     "isMandatory": false,
     "isNeededDefault": true,
-    "isSummary": false,
+    "isSummary": true,
     "optionsList": [
       {
         "id": "+Ve",
@@ -423,6 +437,7 @@
     "readOnly": true,
     "title": "RDT-Test (+/-)",
     "viewType": "SingleSelectionView",
+    "isInfo": "gone",
     "visibility": "gone"
   },
   {
@@ -450,6 +465,7 @@
     "readOnly": true,
     "title": "ACT",
     "viewType": "SingleSelectionView",
+    "isInfo": "visible",
     "visibility": "gone"
   },
   {
@@ -493,7 +509,7 @@
     "isEnabled": true,
     "isMandatory": true,
     "isNeededDefault": true,
-    "isSummary": false,
+    "isSummary": true,
     "optionsList": [
       {
         "id": "Yes",
@@ -509,6 +525,7 @@
     "readOnly": true,
     "title": "Diarrhoea",
     "viewType": "SingleSelectionView",
+    "isInfo": "gone",
     "visibility": "visible"
   },
   {
@@ -528,6 +545,7 @@
     "title": "Number of days of diarrhoea",
     "viewType": "NoOfDaysView",
     "visibility": "gone",
+    "isInfo": "gone",
     "information": "> 14 Days"
   },
   {
@@ -555,13 +573,14 @@
     "readOnly": true,
     "title": "Bloody Diarrhoea",
     "viewType": "SingleSelectionView",
+    "isInfo": "gone",
     "visibility": "gone"
   },
   {
     "condition": [
       {
         "eq": "Other",
-        "targetId": "otherDiarrhoeaSymptoms",
+        "targetId": "otherDiarrhoeaSigns",
         "visibility": "visible"
       }
     ],
@@ -576,8 +595,10 @@
     "maxLength": 100,
     "minLength": 1,
     "orderId": 4,
+    "isSummary": true,
     "title": "Signs",
     "viewType": "DialogCheckbox",
+    "isInfo": "gone",
     "visibility": "gone"
   },
   {
@@ -592,8 +613,10 @@
     "isNeededDefault": true,
     "isNotDefault": false,
     "orderId": 5,
+    "isSummary": true,
     "title": "Other Signs",
     "viewType": "EditText",
+    "isInfo": "gone",
     "visibility": "gone"
   },
   {
@@ -605,7 +628,7 @@
     "isEnabled": true,
     "isMandatory": false,
     "isNeededDefault": true,
-    "isSummary": false,
+    "isSummary": true,
     "optionsList": [
       {
         "id": "NA",
@@ -622,6 +645,7 @@
     "title": "ORS",
     "viewType": "SingleSelectionView",
     "visibility": "gone",
+    "isInfo": "visible",
     "instruction": true
   },
   {
@@ -633,7 +657,7 @@
     "isEnabled": true,
     "isMandatory": false,
     "isNeededDefault": true,
-    "isSummary": false,
+    "isSummary": true,
     "optionsList": [
       {
         "id": "NA",
@@ -650,6 +674,7 @@
     "title": "Zinc",
     "viewType": "SingleSelectionView",
     "visibility": "gone",
+    "isInfo": "visible",
     "instruction": true
   }
 ]

@@ -31,4 +31,6 @@ object DefinedParams {
     const val AgeValue = "ageValue"
     const val value = "Value"
     const val ZERO = 0
+    const val Other = "Other"
+    const val NoSymptoms = "No symptoms"
 }

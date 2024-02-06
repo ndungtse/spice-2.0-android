@@ -7,6 +7,7 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+import java.util.TimeZone
 
 object DateUtils {
 
@@ -103,6 +104,80 @@ object DateUtils {
         val endDate = Calendar.getInstance().time
         val period = Period(startDate.time, endDate.time, PeriodType.months())
         return period.months
+    }
+
+
+    fun getTomorrowDate(): Long {
+        val chosenDate = Calendar.getInstance()
+        chosenDate.timeInMillis = System.currentTimeMillis()
+        chosenDate.add(Calendar.DAY_OF_MONTH, 1)
+        return chosenDate.timeInMillis
+    }
+
+    fun convertDateTimeToDate(
+        inputText: String?,
+        inputFormat: String,
+        outputFormat: String,
+        inUserTimeZone: Boolean? = false,
+        inUTC: Boolean? = null
+    ): String {
+        try {
+            inputText?.let {
+                if (it.isNotBlank()) {
+                    var userTimeZone: TimeZone? = null
+                    val isTimeZoneFormat = inputFormat == DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
+                    if (isTimeZoneFormat || inUserTimeZone == true) {
+                        getTimeZoneInput(inputText, isTimeZoneFormat)?.let { timeZone ->
+                            userTimeZone = timeZone
+                        }
+                    } else if (inUTC == true) {
+                        userTimeZone = getUTCFormat()
+                    }
+                    val sdfInput = SimpleDateFormat(inputFormat, Locale.ENGLISH)
+                    userTimeZone?.let {
+                        sdfInput.timeZone = userTimeZone
+                    }
+                    val date = sdfInput.parse(it)
+                    date?.let {
+                        val sdfOutput = SimpleDateFormat(outputFormat, Locale.ENGLISH)
+                        userTimeZone?.let {
+                            sdfOutput.timeZone = userTimeZone
+                        }
+                        return sdfOutput.format(date)
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            return ""
+        }
+        return ""
+    }
+
+    private fun getTimeZoneInput(inputText: String, timeZoneFormat: Boolean): TimeZone? {
+        var timeZoneInput = "GMT+00:00" // Take from secured preference in future
+        if (timeZoneInput.isNullOrBlank() && timeZoneFormat) {
+            timeZoneInput = "GMT${
+                if (inputText.contains("+")) inputText.substring(inputText.indexOf("+"))
+                else inputText.substring(inputText.indexOf("-"))
+            }"
+        } else if (!timeZoneInput.isNullOrBlank())
+            timeZoneInput = "GMT$timeZoneInput"
+        return TimeZone.getTimeZone(timeZoneInput)
+    }
+
+    private fun getUTCFormat(): TimeZone? {
+        return TimeZone.getTimeZone("GMT+00:00")
+    }
+
+    fun convertddMMMToddMM(inputDate: String): Triple<Int?, Int?, Int?> {
+        return try {
+            val inputFormat = SimpleDateFormat(DATE_ddMMyyyy, Locale.ENGLISH)
+            val outputFormat = SimpleDateFormat(DATE_ddMMyyyy, Locale.ENGLISH)
+            val date = inputFormat.parse(inputDate)
+            getYearMonthAndDate(outputFormat.format(date))
+        } catch (exception: Exception) {
+            Triple(null, null, null)
+        }
     }
 
 }

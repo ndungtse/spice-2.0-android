@@ -82,6 +82,7 @@ class AssessmentTBFragment : Fragment(), FormEventListener, View.OnClickListener
                 ),
                 Array<FormLayout>::class.java
             ).asList()
+        viewModel.formLayout = objectList
         formGenerator.populateViews(objectList)
     }
 

@@ -94,4 +94,8 @@ object CommonUtils {
         }
     }
 
+    fun convertListToString(dispensedList: ArrayList<String>): String {
+        return dispensedList.joinToString(separator = ", ")
+    }
+
 }

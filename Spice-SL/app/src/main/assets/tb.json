@@ -60,7 +60,7 @@
     "isEnabled": true,
     "isMandatory": true,
     "isNeededDefault": true,
-    "isSummary": false,
+    "isSummary": true,
     "optionsList": [
       {
         "id": "Yes",
@@ -87,7 +87,7 @@
     "isEnabled": true,
     "isMandatory": true,
     "isNeededDefault": true,
-    "isSummary": false,
+    "isSummary": true,
     "optionsList": [
       {
         "id": "Yes",
@@ -114,7 +114,7 @@
     "isEnabled": true,
     "isMandatory": true,
     "isNeededDefault": true,
-    "isSummary": false,
+    "isSummary": true,
     "optionsList": [
       {
         "id": "Yes",
@@ -141,7 +141,7 @@
     "isEnabled": true,
     "isMandatory": true,
     "isNeededDefault": true,
-    "isSummary": false,
+    "isSummary": true,
     "optionsList": [
       {
         "id": "Yes",

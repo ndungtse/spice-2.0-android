@@ -95,6 +95,33 @@
     <string name="no_of_months">%1$s Months</string>
     <string name="no_of_weeks">%1$s Weeks</string>
     <string name="no_of_years">%1$s Years</string>
-
-
+    <string name="result">Result</string>
+    <string name="patient_s_summary_could_not_be_fetched">Patient\'s Summary Could not be fetched</string>
+    <string name="referred_for_further_assessment">Referred for Further Assessment</string>
+    <string name="done">Done</string>
+    <string name="general_danger_signs">General Danger Signs</string>
+    <string name="muac">MUAC</string>
+    <string name="cough">Cough</string>
+    <string name="fever">Fever</string>
+    <string name="breathing_rate">Breathing Rate</string>
+    <string name="dispensed">Dispensed</string>
+    <string name="rdt_test">RDT Test</string>
+    <string name="diarrhoea">Diarrhoea</string>
+    <string name="signs">Signs</string>
+    <string name="label">Label</string>
+    <string name="write_your_observation">Write your observation</string>
+    <string name="notes">Notes</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="phu_referred_to">Nearest PHU Referred to</string>
+    <string name="was_the_child">Was the child actually taken to the Clinic</string>
+    <string name="next_follow_up_date">Next ANC Visits date</string>
+    <string name="presumptive_tb_no">Presumptive TB No</string>
+    <string name="patient_status">Patient Status</string>
+    <string name="tb_signs_symptoms"><![CDATA[TB Signs & Symptoms]]></string>
+    <string name="symptoms">Symptoms</string>
+    <string name="no_symptom_selected">No Symptoms Selected</string>
+    <string name="symptoms_selected">Symptoms Selected</string>
+    <string name="select_symptoms">Select Symptoms</string>
+    <string name="ok">OK</string>
 </resources>

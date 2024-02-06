@@ -19,6 +19,7 @@ import com.medtroniclabs.spice.formgeneration.extension.capitalizeFirstChar
 import com.medtroniclabs.spice.formgeneration.listener.FormEventListener
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.ui.FormResultComposer
+import com.medtroniclabs.spice.formgeneration.utility.CheckBoxDialog
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
@@ -45,6 +46,7 @@ class AssessmentICCMFragment : Fragment(), FormEventListener, View.OnClickListen
         viewModel.getMemberDetailsById()
         initializeFormGenerator()
         setListeners()
+        viewModel.insertSignsAndSymptoms()
         attachObservers()
     }
 
@@ -84,7 +86,7 @@ class AssessmentICCMFragment : Fragment(), FormEventListener, View.OnClickListen
             ),
             Array<FormLayout>::class.java
         ).asList()
-
+        viewModel.formLayout = objectList
         formGenerator.populateViews(objectList)
     }
 
@@ -103,6 +105,9 @@ class AssessmentICCMFragment : Fragment(), FormEventListener, View.OnClickListen
         serverViewModel: FormLayout,
         resultMap: Any?
     ) {
+        CheckBoxDialog.newInstance(id, resultMap) { resultMap ->
+            formGenerator.validateCheckboxDialogue(id, serverViewModel, resultMap)
+        }.show(childFragmentManager, CheckBoxDialog.TAG)
     }
 
     override fun onInstructionClicked(

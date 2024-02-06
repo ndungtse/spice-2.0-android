@@ -1613,5 +1613,96 @@ class FormGenerator(
         }
     }
 
+    fun validateCheckboxDialogue(
+        id: String,
+        serverViewModel: FormLayout,
+        resultMap: ArrayList<HashMap<String, Any>>
+    ) {
+        if (resultMap.isEmpty()) {
+            if (resultHashMap.containsKey(id)) {
+                resultHashMap.remove(id)
+            }
+        } else {
+            resultHashMap[id] = resultMap
+        }
+        getViewByTag(id)?.let { view ->
+            if (view is AppCompatTextView) {
+                view.text = setCheckBoxDialogText(resultHashMap, id)
+            }
+        }
+        if (isContainsOther(resultMap)) {
+            setConditionalVisibility(
+                serverViewModel,
+                DefinedParams.Other
+            )
+        } else {
+            setConditionalVisibility(
+                serverViewModel,
+                null
+            )
+        }
+    }
+    private fun setCheckBoxDialogText(
+        resultHashMap: HashMap<String, Any>,
+        id: String
+    ): String {
+        var text = getString(R.string.please_select)
+        if (resultHashMap.containsKey(id)) {
+            val mapList = resultHashMap[id]
+            if (mapList is java.util.ArrayList<*>) {
+                if (mapList.size == 1) {
+                    text = setDialogText(mapList)
+                } else if (mapList.size > 1) {
+                    text = if (isContainsOther(mapList)) {
+                        "${mapList.size - 1} and ${DefinedParams.Other} ${
+                            getString(R.string.symptoms_selected)
+                        }"
+                    } else {
+                        "${mapList.size} ${getString(R.string.symptoms_selected)}"
+                    }
+                } else {
+                    text = getString(R.string.please_select)
+                }
+            }
+        }
+        return text
+    }
+    private fun setDialogText(mapList: java.util.ArrayList<*>): String {
+        return if (isContainsOther(mapList)) {
+            "${DefinedParams.Other} ${
+                getString(R.string.symptoms_selected)
+            }"
+        } else if (isNoSymptomContain(mapList)) {
+            getString(R.string.no_symptom_selected)
+        } else {
+            "${mapList.size} ${getString(R.string.symptoms_selected)}"
+        }
+    }
+    private fun isNoSymptomContain(mapList: java.util.ArrayList<*>): Boolean {
+        var status = false
+        mapList.forEach { map ->
+            if (map is HashMap<*, *>) {
+                val name = map[DefinedParams.NAME]
+                if (name is String && name.startsWith(DefinedParams.NoSymptoms, true)) {
+                    status = true
+                    return@forEach
+                }
+            }
+        }
+        return status
+    }
+    private fun isContainsOther(mapList: ArrayList<*>): Boolean {
+        var status = false
+        mapList.forEach { map ->
+            if (map is HashMap<*, *>) {
+                val name = map[DefinedParams.NAME]
+                if (name is String && name.equals(DefinedParams.Other, true)) {
+                    status = true
+                    return@forEach
+                }
+            }
+        }
+        return status
+    }
 
 }

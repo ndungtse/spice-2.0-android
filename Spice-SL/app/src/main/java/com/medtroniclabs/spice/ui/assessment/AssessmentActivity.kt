@@ -1,5 +1,6 @@
 package com.medtroniclabs.spice.ui.assessment
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.fragment.app.Fragment
@@ -8,11 +9,14 @@ import androidx.fragment.app.replace
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.databinding.ActivityAssessmentBinding
+import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.MenuConstants
 import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentICCMFragment
+import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentICCMSummaryFragment
 import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentTBFragment
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
+import com.medtroniclabs.spice.ui.landing.LandingActivity
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -49,11 +53,47 @@ class AssessmentActivity : BaseActivity() {
                     tag = AssessmentTBFragment.TAG
                 )
             }
+
+            else -> {
+                // TODO remove after menu is fixed for backend Response
+                replaceFragmentInId<AssessmentICCMSummaryFragment>(
+                    binding.formsFragmentContainer.id,
+                    tag = AssessmentICCMSummaryFragment.TAG
+                )
+            }
         }
     }
 
     private fun attachObservers() {
+        viewModel.assessmentSaveLiveData.observe(this) { resource ->
+            when (resource.state) {
+                ResourceState.LOADING -> {
+                    showLoading()
+                }
 
+                ResourceState.SUCCESS -> {
+                    hideLoading()
+                    resource.data?.let { data ->
+                    }
+                }
+
+                ResourceState.ERROR -> {
+                    hideLoading()
+                }
+            }
+        }
+
+        viewModel.assessmentUpdateLiveData.observe(this) { resource ->
+            when (resource.state) {
+                ResourceState.SUCCESS -> {
+                    hideLoading()
+                    startActivity(Intent(this, LandingActivity::class.java))
+                    finish()
+                }
+
+                else -> {}
+            }
+        }
     }
 
     private fun getIntentValue() {
