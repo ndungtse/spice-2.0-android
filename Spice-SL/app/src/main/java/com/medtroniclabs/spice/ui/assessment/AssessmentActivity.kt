@@ -11,6 +11,7 @@ import com.medtroniclabs.spice.databinding.ActivityAssessmentBinding
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.MenuConstants
 import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentICCMFragment
+import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentTBFragment
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -38,6 +39,14 @@ class AssessmentActivity : BaseActivity() {
                 replaceFragmentInId<AssessmentICCMFragment>(
                     binding.formsFragmentContainer.id,
                     tag = AssessmentICCMFragment.TAG
+                )
+            }
+
+            MenuConstants.TB_MENU_ID -> {
+                setTitle(MenuConstants.TB_MENU_ID.uppercase())
+                replaceFragmentInId<AssessmentTBFragment>(
+                    binding.formsFragmentContainer.id,
+                    tag = AssessmentTBFragment.TAG
                 )
             }
         }

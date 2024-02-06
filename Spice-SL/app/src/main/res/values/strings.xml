@@ -87,6 +87,7 @@
     <string name="male_prefix">M</string>
     <string name="female_prefix">F</string>
     <string name="iccm">ICCM</string>
+    <string name="tb">TB</string>
     <string name="national_id">National ID</string>
     <string name="bio_data">Bio Data</string>
     <string name="name">Name</string>

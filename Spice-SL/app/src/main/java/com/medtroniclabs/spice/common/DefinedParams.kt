@@ -17,6 +17,5 @@ object DefinedParams {
     const val isMemberRegistration = "isMemberRegistration"
     const val MemberID = "memberID"
     const val isFrom= "isFrom"
-    const val iccm = "ICCM"
     const val MenuId = "MenuId"
 }
