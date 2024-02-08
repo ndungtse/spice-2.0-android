@@ -97,4 +97,8 @@ dependencies {
 
     //Swipe Refresh Layout
     implementation ("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
+
+    // Security hashing
+    implementation ("androidx.security:security-crypto-ktx:1.1.0-alpha06")
+
 }
