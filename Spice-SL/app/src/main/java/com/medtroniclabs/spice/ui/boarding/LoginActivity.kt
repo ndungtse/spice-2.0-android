@@ -4,21 +4,25 @@ import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.view.View
+import androidx.activity.viewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.hideKeyboard
 import com.medtroniclabs.spice.appextensions.markMandatory
 import com.medtroniclabs.spice.appextensions.safeClickListener
 import com.medtroniclabs.spice.common.DefinedParams
+import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.Validator
 import com.medtroniclabs.spice.databinding.ActivityLoginBinding
+import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
+import com.medtroniclabs.spice.ui.boarding.viewmodel.LoginViewModel
 import com.medtroniclabs.spice.ui.landing.LandingActivity
 import dagger.hilt.android.AndroidEntryPoint
-import java.util.Calendar
 
 @AndroidEntryPoint
 class LoginActivity : BaseActivity(), View.OnClickListener {
     private lateinit var binding: ActivityLoginBinding
+    private val viewModel: LoginViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,6 +30,54 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
         setContentView(binding.root)
         initView()
         setListeners()
+        attachObservers()
+    }
+
+    private fun attachObservers() {
+        viewModel.loginResponseLiveData.observe(this) { resourceState ->
+            when (resourceState.state) {
+                ResourceState.LOADING -> {
+                    showLoading()
+                }
+
+                ResourceState.SUCCESS -> {
+                    hideLoading()
+                    startActivity(Intent(this, LandingActivity::class.java))
+                }
+
+                ResourceState.ERROR -> {
+                    hideLoading()
+                    showErrorSnackBar(resourceState.message)
+                }
+            }
+        }
+
+        viewModel.noInternetResponse.observe(this) { isOffline ->
+            if (isOffline) {
+                showErrorDialogue(
+                    getString(R.string.alert),
+                    message = getString(R.string.offline_login_message),
+                    isNegativeButtonNeed = true
+                ) { buttonState ->
+                    if (buttonState) {
+                        handleOfflineLoginSuccess()
+                    }
+                }
+            }
+        }
+    }
+
+    private fun handleOfflineLoginSuccess() {
+        SecuredPreference.putBoolean(
+            SecuredPreference.EnvironmentKey.ISOFFLINELOGIN.name,
+            true
+        )
+        startAsNewActivity(
+            Intent(
+                this@LoginActivity,
+                LandingActivity::class.java
+            )
+        )
     }
 
     private fun setListeners() {
@@ -44,6 +96,7 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
                 hideKeyboard(view)
                 validateLoginInputs()
             }
+
             R.id.tvForgotPassword -> {
 
             }
@@ -74,7 +127,7 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
         if (isValid) {
             binding.tvUserEmailError.visibility = View.GONE
             binding.tvUserPasswordError.visibility = View.GONE
-            doLogin(userName.toString(), password.toString())
+            viewModel.doLogin(userName.toString().trim(), password.toString().trim(), this)
         }
     }
 
@@ -94,10 +147,5 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
             }
         }
         return isValid
-    }
-
-    private fun doLogin(userName: String, password: String) {
-        //TODO: API Call for login
-        startActivity(Intent(this, LandingActivity::class.java))
     }
 }

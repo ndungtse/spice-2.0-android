@@ -2,6 +2,7 @@ package com.medtroniclabs.spice.di
 
 import android.content.Context
 import com.medtroniclabs.spice.BuildConfig
+import com.medtroniclabs.spice.common.AppConstants
 import com.medtroniclabs.spice.db.SpiceDataBase
 import com.medtroniclabs.spice.db.dao.AssessmentDAO
 import com.medtroniclabs.spice.db.dao.HouseholdDAO
@@ -38,6 +39,13 @@ object AppModule {
         loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY)
         OkHttpClient.Builder()
             .addInterceptor(loggingInterceptor)
+            .addInterceptor { chain ->
+                // Add your headers here
+                val request = chain.request().newBuilder()
+                    .addHeader("client", AppConstants.CLIENT_CONSTANT)
+                    .build()
+                chain.proceed(request)
+            }
             .connectTimeout(60, TimeUnit.SECONDS)
             .writeTimeout(120, TimeUnit.SECONDS)
             .readTimeout(60, TimeUnit.SECONDS)

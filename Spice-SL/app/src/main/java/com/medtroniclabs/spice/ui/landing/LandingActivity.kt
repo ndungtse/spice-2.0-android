@@ -1,5 +1,6 @@
 package com.medtroniclabs.spice.ui.landing
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
@@ -10,8 +11,10 @@ import androidx.drawerlayout.widget.DrawerLayout
 import com.google.android.material.navigation.NavigationView
 import com.medtroniclabs.spice.BuildConfig
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.databinding.ActivityLandingBinding
 import com.medtroniclabs.spice.ui.BaseActivity
+import com.medtroniclabs.spice.ui.boarding.LoginActivity
 import com.medtroniclabs.spice.ui.home.HomeScreenFragment
 
 
@@ -21,6 +24,12 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
     private lateinit var binding: ActivityLandingBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        if (!SecuredPreference.getBoolean(SecuredPreference.EnvironmentKey.ISLOGGEDIN.name)) {
+            startActivity(Intent(this, LoginActivity::class.java))
+            finish()
+            return
+        }
+
         binding = ActivityLandingBinding.inflate(layoutInflater)
         setContentView(binding.root)
         initView()

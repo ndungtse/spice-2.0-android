@@ -1,5 +1,7 @@
 package com.medtroniclabs.spice.common
 
+import android.provider.ContactsContract
+
 object DefinedParams {
     const val ZERO = "0"
 
@@ -69,4 +71,7 @@ object DefinedParams {
     const val Other = "Other"
     const val NoSymptoms = "No symptoms"
     const val ENABLED = "enabled"
+    const val Username = "username"
+    const val Password = "password"
+    const val Authorization = "Authorization"
 }

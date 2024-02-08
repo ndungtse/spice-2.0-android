@@ -62,7 +62,7 @@
     <string name="landmark">Landmark</string>
     <string name="hh_mobile_number">Household Head Mobile Number</string>
     <string name="household_summary_member_info">%1$s - %2$s - %3$s</string>
-    <string name="patient_medical_review" >Patient Medical Review</string>
+
 
     <!-- Form Related String-->
     <string name="sugar_append">%1$.0f mmHg</string>
@@ -146,4 +146,11 @@
     <string name="symptoms_selected">Symptoms Selected</string>
     <string name="select_symptoms">Select Symptoms</string>
     <string name="ok">OK</string>
+    <string name="no_internet_error">Please check your internet connectivity.</string>
+    <string name="incorrect_username_password">Incorrect email or password</string>
+    <string name="close">Close</string>
+    <string name="error">Error</string>
+    <string name="alert">Alert</string>
+    <string name="session_expired">Session Expired! Please login again.</string>
+    <string name="offline_login_message">You does not have internet to connect our system.Though you can login offline for offline features.Do you wish to continue?</string>
 </resources>

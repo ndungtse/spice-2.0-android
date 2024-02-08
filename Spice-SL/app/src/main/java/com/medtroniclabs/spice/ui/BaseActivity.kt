@@ -1,13 +1,17 @@
 package com.medtroniclabs.spice.ui
 
 import android.content.Intent
+import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import com.google.android.material.snackbar.Snackbar
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.common.GeneralErrorDialog
 import com.medtroniclabs.spice.databinding.ActivityBaseBinding
+import com.medtroniclabs.spice.databinding.ErrorLayoutBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.ui.landing.LandingActivity
 import dagger.hilt.android.AndroidEntryPoint
@@ -124,4 +128,43 @@ open class BaseActivity : AppCompatActivity() {
         binding.loadingProgress.visibility = View.GONE
     }
 
+    fun showErrorSnackBar(
+        text: String? = null,
+    ) {
+        val rootView = findViewById<View>(android.R.id.content) ?: return
+        val snackBar = Snackbar.make(rootView, "", Snackbar.LENGTH_LONG)
+        val binding = ErrorLayoutBinding.inflate(layoutInflater)
+        text?.let { value ->
+            binding.tvErrorMessage.text =
+                value.ifBlank { getString(R.string.incorrect_username_password) }
+        }
+        snackBar.view.setBackgroundColor(Color.TRANSPARENT)
+        val snackBarLayout = snackBar.view as Snackbar.SnackbarLayout
+        snackBarLayout.setPadding(0, 0, 0, 0)
+        snackBarLayout.addView(binding.root)
+        snackBar.show()
+    }
+
+
+    fun showErrorDialogue(
+        title: String = getString(R.string.error),
+        message: String,
+        isNegativeButtonNeed: Boolean? = null,
+        positiveButtonName: String? = null,
+        okayBtnEnable: Boolean? = null,
+        callback: ((isPositiveResult: Boolean) -> Unit)
+    ) {
+        val generalErrorDialog =
+            GeneralErrorDialog.newInstance(
+                title,
+                callback,
+                this,
+                isNegativeButtonNeed ?: false,
+                okayButton = positiveButtonName ?: getString(R.string.ok),
+                messageBtnData = Pair(message, okayBtnEnable ?: true)
+            )
+        val errorFragment = supportFragmentManager.findFragmentByTag(GeneralErrorDialog.TAG)
+        if (errorFragment == null)
+            generalErrorDialog.show(supportFragmentManager, GeneralErrorDialog.TAG)
+    }
 }
