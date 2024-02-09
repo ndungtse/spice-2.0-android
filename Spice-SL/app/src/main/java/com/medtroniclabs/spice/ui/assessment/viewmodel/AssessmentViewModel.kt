@@ -3,6 +3,12 @@ package com.medtroniclabs.spice.ui.assessment.viewmodel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.medtroniclabs.spice.appextensions.postError
+import com.medtroniclabs.spice.appextensions.postLoading
+import com.medtroniclabs.spice.appextensions.postSuccess
+import com.medtroniclabs.spice.common.DefinedParams
+import com.medtroniclabs.spice.common.StringConverter
+import com.medtroniclabs.spice.db.entity.AssessmentEntity
 import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
 import com.medtroniclabs.spice.db.entity.SignsAndSymptomsEntity
 import com.medtroniclabs.spice.di.IoDispatcher

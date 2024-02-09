@@ -15,6 +15,7 @@ import com.medtroniclabs.spice.ui.MenuConstants
 import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentICCMFragment
 import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentICCMSummaryFragment
 import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentTBFragment
+import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentTBSummaryFragment
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
 import com.medtroniclabs.spice.ui.landing.LandingActivity
 import dagger.hilt.android.AndroidEntryPoint
@@ -34,6 +35,26 @@ class AssessmentActivity : BaseActivity() {
         getIntentValue()
         loadFragment()
         attachObservers()
+    }
+
+    private fun loadSummaryFragment() {
+        when (viewModel.menuId) {
+            MenuConstants.ICCM_MENU_ID -> {
+                setTitle(DefinedParams.Summary.uppercase())
+                replaceFragmentInId<AssessmentICCMSummaryFragment>(
+                    binding.formsFragmentContainer.id,
+                    tag = AssessmentICCMSummaryFragment.TAG
+                )
+            }
+
+            MenuConstants.TB_MENU_ID -> {
+                setTitle(DefinedParams.Summary.uppercase())
+                replaceFragmentInId<AssessmentTBSummaryFragment>(
+                    binding.formsFragmentContainer.id,
+                    tag = AssessmentTBSummaryFragment.TAG
+                )
+            }
+        }
     }
 
     private fun loadFragment() {
@@ -74,6 +95,7 @@ class AssessmentActivity : BaseActivity() {
                 ResourceState.SUCCESS -> {
                     hideLoading()
                     resource.data?.let { data ->
+                      loadSummaryFragment()
                     }
                 }
 
