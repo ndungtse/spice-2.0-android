@@ -132,4 +132,11 @@ object CommonUtils {
         }
     }
 
+    fun isProvider(): Boolean {
+        return SecuredPreference.getRole() == RoleConstant.PROVIDER
+    }
+
+    fun isChw(): Boolean {
+        return SecuredPreference.getRole() == RoleConstant.COMMUNITY_HEALTH_WORKER
+    }
 }

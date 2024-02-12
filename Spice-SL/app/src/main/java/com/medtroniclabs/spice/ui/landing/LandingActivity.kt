@@ -2,6 +2,7 @@ package com.medtroniclabs.spice.ui.landing
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import androidx.activity.OnBackPressedCallback
@@ -13,12 +14,14 @@ import androidx.drawerlayout.widget.DrawerLayout
 import com.google.android.material.navigation.NavigationView
 import com.medtroniclabs.spice.BuildConfig
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.databinding.ActivityLandingBinding
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.boarding.LoginActivity
 import com.medtroniclabs.spice.ui.home.HomeScreenFragment
 import com.medtroniclabs.spice.ui.landing.viewmodel.LandingViewModel
+import com.medtroniclabs.spice.ui.mypatients.fragment.PatientSearchFragment
 
 
 class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedListener,
@@ -44,12 +47,8 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
         setContentView(binding.root)
         initializeDrawerView()
         updateSideBarFooter()
-        initView()
     }
 
-    private fun initView() {
-        binding.appBarMain.tvTitle.text = getString(R.string.home)
-    }
     private val onBackPressedCallback: OnBackPressedCallback =
         object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
@@ -66,6 +65,11 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
     }
 
     private fun initializeDrawerView() {
+        val menu: Menu = binding.navView.menu
+        val menuItemToRemove: MenuItem? = menu.findItem(R.id.offline_sync)
+        if (CommonUtils.isProvider() && menuItemToRemove != null) {
+            menu.removeItem(menuItemToRemove.itemId)
+        }
         onNavigationItemSelected(binding.navView.menu.findItem(R.id.home))
         val toolBar = binding.appBarMain.toolbar
         val toggle = ActionBarDrawerToggle(
@@ -104,20 +108,29 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
         return true
     }
 
+
     private fun displayScreen(id: Int) {
         when (id) {
             R.id.home -> {
-                supportFragmentManager.beginTransaction()
-                    .replace(
-                        R.id.clParentLayout,
-                        HomeScreenFragment.newInstance(),
-                        HomeScreenFragment.TAG
-                    ).commit()
+                if (CommonUtils.isProvider()) {
+                    binding.appBarMain.tvTitle.text = getString(R.string.search_patient)
+                    replaceFragmentInId<PatientSearchFragment>(
+                        R.id.fragmentContainerView,
+                        tag = PatientSearchFragment.TAG
+                    )
+                } else {
+                    binding.appBarMain.tvTitle.text = getString(R.string.home)
+                    replaceFragmentInId<HomeScreenFragment>(
+                        R.id.fragmentContainerView,
+                        tag = HomeScreenFragment.TAG
+                    )
+                }
             }
+
             R.id.offline_sync -> {
                 supportFragmentManager.beginTransaction()
                     .replace(
-                        R.id.clParentLayout,
+                        R.id.fragmentContainerView,
                         OfflineSyncFragment(),
                         OfflineSyncFragment.TAG
                     ).commit()

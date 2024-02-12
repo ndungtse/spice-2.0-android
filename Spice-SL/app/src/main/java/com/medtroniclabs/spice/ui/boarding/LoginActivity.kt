@@ -7,7 +7,7 @@ import android.view.View
 import androidx.activity.viewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.hideKeyboard
-
+import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.Validator
@@ -18,6 +18,7 @@ import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.boarding.viewmodel.LoginViewModel
 import com.medtroniclabs.spice.ui.landing.LandingActivity
+import com.medtroniclabs.spice.ui.mypatients.PatientSearchActivity
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -28,7 +29,7 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityLoginBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        setMainContentView(binding.root)
         initView()
         setListeners()
         attachObservers()
@@ -58,7 +59,7 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
         }
 
         viewModel.noInternetResponse.observe(this) { isOffline ->
-            if (isOffline) {
+            if (isOffline && CommonUtils.isChw()) {
                 showErrorDialogue(
                     getString(R.string.alert),
                     message = getString(R.string.offline_login_message),

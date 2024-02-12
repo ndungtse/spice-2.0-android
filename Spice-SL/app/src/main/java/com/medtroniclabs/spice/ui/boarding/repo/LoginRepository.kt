@@ -5,6 +5,7 @@ import com.google.gson.Gson
 import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.appextensions.postSuccess
+import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.EncryptionUtil
@@ -128,29 +129,47 @@ class LoginRepository @Inject constructor(
                                 nearestHealthFacilities,
                                 defaultHealthFacility.id
                             )
+                            deleteAllVillages()
                             saveVillage(villages)
                             saveUserProfileDetailsInDb(userProfile)
                             saveMenusInDb(menu.menus, menu.roleName)
-                            meta.addAll(menu.meta)
+                            menu.meta?.let { meta.addAll(it) }
                             workflowNames.addAll(clinicalNames)
                         }
 
-                        val formsResponse =
-                            async { apiHelper.getForms(FormRequest(workflowNames)) }.await()
-                        if (formsResponse.isSuccessful && formsResponse.body()?.status == true) {
-                            formsResponse.body()?.entity?.apply {
-                                saveFormsInDb(formData)
-                                saveClinicalWorkflowsInDb(clinicalTools)
-                            } ?: metaDataCompleteLiveData.postError()
+                        if (CommonUtils.isChw()) {
+                            val formsResponse =
+                                async { apiHelper.getForms(FormRequest(workflowNames)) }.await()
+                            if (formsResponse.isSuccessful && formsResponse.body()?.status == true) {
+                                if (formsResponse.body()?.entity == null) {
+                                    metaDataCompleteLiveData.postError()
+                                    return@withContext
+                                }
+                                formsResponse.body()?.entity?.apply {
+                                    saveFormsInDb(formData)
+                                    saveClinicalWorkflowsInDb(clinicalTools)
+                                }
+                            } else {
+                                metaDataCompleteLiveData.postError()
+                                return@withContext
+                            }
                         }
-
-                        val metadataResponse =
-                            async { apiHelper.getFormMetadata(FormMetaRequest(meta)) }.await()
-                        if (metadataResponse.isSuccessful && metadataResponse.body()?.status == true) {
-                            metadataResponse.body()?.entity?.symptoms?.let {
-                                roomHelper.deleteAllSymptoms()
-                                roomHelper.insertSymptoms(it)
-                            } ?: metaDataCompleteLiveData.postError()
+                        if (meta.isNotEmpty()) {
+                            val metadataResponse =
+                                async { apiHelper.getFormMetadata(FormMetaRequest(meta)) }.await()
+                            if (metadataResponse.isSuccessful && metadataResponse.body()?.status == true) {
+                                if (metadataResponse.body()?.entity == null) {
+                                    metaDataCompleteLiveData.postError()
+                                    return@withContext
+                                }
+                                metadataResponse.body()?.entity?.symptoms?.let {
+                                    roomHelper.deleteAllSymptoms()
+                                    roomHelper.insertSymptoms(it)
+                                }
+                            } else {
+                                metaDataCompleteLiveData.postError()
+                                return@withContext
+                            }
                         }
                         saveUserIsLogin()
                         metaDataCompleteLiveData.postSuccess()
@@ -222,6 +241,9 @@ class LoginRepository @Inject constructor(
         )
     }
 
+    private suspend fun saveVillage( ) {
+
+    }
     private suspend fun saveMenusInDb(menus: ArrayList<MenuDetail>, roleName: String) {
         roomHelper.deleteAllMenus()
         menus.forEach { menu ->

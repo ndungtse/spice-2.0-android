@@ -16,16 +16,18 @@ import com.medtroniclabs.spice.databinding.FragmentHomeScreenBinding
 import com.medtroniclabs.spice.db.entity.MenuEntity
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
+import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.MenuConstants
 import com.medtroniclabs.spice.ui.home.adapter.DashboardMenuItemsAdapter
 import com.medtroniclabs.spice.ui.household.HouseholdSearchActivity
 import com.medtroniclabs.spice.ui.landing.viewmodel.LandingViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import com.medtroniclabs.spice.ui.medicalreview.MedicalReviewBaseActivity
+import com.medtroniclabs.spice.ui.mypatients.PatientSearchActivity
 
 
 @AndroidEntryPoint
-class HomeScreenFragment : Fragment(), MenuSelectionListener {
+class HomeScreenFragment : BaseFragment(), MenuSelectionListener {
 
     private lateinit var binding: FragmentHomeScreenBinding
 
@@ -94,7 +96,7 @@ class HomeScreenFragment : Fragment(), MenuSelectionListener {
             }
 
             MenuConstants.MY_PATIENTS_MENU_ID -> {
-                startActivity(Intent(requireContext(), MedicalReviewBaseActivity::class.java))
+                startActivity(Intent(requireContext(), PatientSearchActivity::class.java))
             }
         }
     }

@@ -21,7 +21,7 @@
     <string name="app_version">Application Version</string>
     <string name="profile">PROFILE</string>
     <string name="privacy_policy">PRIVACY POLICY</string>
-    <string name="offline_sync">Offline Sync</string>
+    <string name="offline_sync">OFFLINE SYNC</string>
     <string name="community_health_worker">Community Health Worker</string>
     <string name="chw">CHW</string>
     <string name="households">Households</string>
@@ -187,8 +187,14 @@
     <string name="pnc" translatable="false">PNC</string>
     <string name="child_hood_visit" translatable="false">Childhood Visit</string>
     <string name="other_value">%1$s - %2$s</string>
-
     <string name="gps_disabled_title">Location service disabled!</string>
     <string name="gps_disabled_message">Please turn on your Location service to get your current location to proceed</string>
-
+    <string name="search_patient">Search Patient</string>
+    <string name="advanced_search">Advanced Search</string>
+    <string name="first_name">First Name</string>
+    <string name="last_name">Last Name</string>
+    <string name="mobile_number">Mobile Number</string>
+    <string name="patients_found">%1d Patients</string>
+    <string name="no_patients_found">No patients found to upload.</string>
+    <string name="search_by_national_id">Search by National ID</string>
 </resources>

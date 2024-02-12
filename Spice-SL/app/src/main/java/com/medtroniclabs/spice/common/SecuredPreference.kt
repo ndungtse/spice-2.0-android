@@ -374,7 +374,7 @@ object SecuredPreference {
         return getUserDetails().country.phoneNumberCode
     }
 
-    fun getRoleName(): String? {
-        return getUserDetails().roles.joinToString { it.name }
+    fun getRole(): String? {
+        return getUserDetails().roles.first().name
     }
 }

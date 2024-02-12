@@ -61,7 +61,7 @@ data class Menu(
     val menus: ArrayList<MenuDetail>,
     val active: Boolean? = false,
     val deleted: Boolean? = false,
-    val meta: List<String>
+    val meta: List<String>?
 )
 
 data class MenuDetail(
