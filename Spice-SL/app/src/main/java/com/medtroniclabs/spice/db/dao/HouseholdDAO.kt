@@ -40,4 +40,6 @@ interface HouseholdDAO {
     @Query("SELECT * FROM household WHERE id= :houseHoldId")
     suspend fun getHouseHoldDetailsById(houseHoldId: Long): HouseholdEntity
 
+    @Query("UPDATE household SET no_of_people = :newNoOfPeople WHERE id = :householdId")
+    suspend fun updateHeadCount(householdId: Long, newNoOfPeople: Int)
 }

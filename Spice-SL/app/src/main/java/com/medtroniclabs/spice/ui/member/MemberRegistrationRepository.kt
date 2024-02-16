@@ -6,7 +6,6 @@ import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.appextensions.postSuccess
 import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
 import com.medtroniclabs.spice.db.local.RoomHelper
-import com.medtroniclabs.spice.network.ApiHelper
 import com.medtroniclabs.spice.network.resource.Resource
 import javax.inject.Inject
 
@@ -29,4 +28,10 @@ class MemberRegistrationRepository @Inject constructor(
         }
     }
 
+    suspend fun getMemberCountPerHouseHold(householdId: Long): Int {
+        return   roomHelper.getMemberCountPerHouseHold(householdId)
+    }
+    suspend fun updateHeadCount(householdId: Long, newNoOfPeople: Int) {
+        return roomHelper.updateHeadCount(householdId, newNoOfPeople)
+    }
 }

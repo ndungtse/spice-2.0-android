@@ -17,4 +17,6 @@ interface MemberDAO {
     @Query("SELECT * FROM household_member WHERE id = :memberId")
     suspend fun getMemberDetailsById(memberId: Long): HouseholdMemberEntity
 
+    @Query("SELECT COUNT(household_id) FROM household_member WHERE household_id = :householdId")
+    suspend fun getMemberCountPerHouseHold(householdId: Long): Int
 }

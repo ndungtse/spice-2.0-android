@@ -20,4 +20,6 @@ interface RoomHelper {
     suspend fun getLatestAssessmentForMember(memberId: Long): AssessmentEntity?
     suspend fun insertSymptomList(symptoms: List<SignsAndSymptomsEntity>)
     suspend fun getSymptomListByType(type: String): List<SignsAndSymptomsEntity>
+    suspend fun updateHeadCount(householdId: Long, newNoOfPeople: Int)
+    suspend fun getMemberCountPerHouseHold(householdId: Long): Int
 }

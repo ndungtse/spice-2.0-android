@@ -30,6 +30,8 @@ class MemberRegistrationViewModel @Inject constructor(
 
     var householdId: Long = -1L
 
+    private var noOfPerson: Int = 0
+
     var memberRegistrationLiveData = MutableLiveData<Resource<Long>>()
 
     var startAssessment: Boolean? = null
@@ -61,7 +63,12 @@ class MemberRegistrationViewModel @Inject constructor(
                     householdHeadRelationship = getStringOrEmptyString(householdHeadRelationship),
                     householdId = householdId
                 )
+
                 val rowId = memberRegistrationRepository.registerMember(memberRegistrationEntity)
+                val getCountOfHouseHold = memberRegistrationRepository.getMemberCountPerHouseHold(householdId)
+                if (getCountOfHouseHold > noOfPerson) {
+                    memberRegistrationRepository.updateHeadCount(householdId, getCountOfHouseHold)
+                }
                 memberRegistrationLiveData.postSuccess(rowId)
             }
         } catch (e: Exception) {
@@ -81,8 +88,10 @@ class MemberRegistrationViewModel @Inject constructor(
         memberResultMap: HashMap<String, Any>,
     ) {
         viewModelScope.launch(dispatcherIO) {
+            val count =  householdEntity.noOfPeople
             val rowId = houseHoldRepository.registerHousehold(householdEntity)
             householdId = rowId
+            noOfPerson = count
             registerMember(memberResultMap)
         }
     }

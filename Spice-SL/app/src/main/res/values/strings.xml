@@ -62,7 +62,7 @@
     <string name="landmark">Landmark</string>
     <string name="hh_mobile_number">Household Head Mobile Number</string>
     <string name="household_summary_member_info">%1$s - %2$s - %3$s</string>
-
+    <string name="patient_medical_review">Patient Medical Review</string>
 
     <!-- Form Related String-->
     <string name="sugar_append">%1$.0f mmHg</string>

@@ -47,6 +47,10 @@ class RoomHelperImpl @Inject constructor(
         return memberDAO.getMemberDetailsById(memberId)
     }
 
+    override suspend fun getMemberCountPerHouseHold(householdId: Long): Int {
+        return memberDAO.getMemberCountPerHouseHold(householdId)
+    }
+
     override suspend fun saveAssessment(assessmentEntity: AssessmentEntity): Long {
         return assessmentDAO.insertAssessment(assessmentEntity)
     }
@@ -64,5 +68,9 @@ class RoomHelperImpl @Inject constructor(
     }
     override suspend fun getSymptomListByType(type: String): List<SignsAndSymptomsEntity> {
         return assessmentDAO.getSymptomListByType(type)
+    }
+
+    override suspend fun updateHeadCount(householdId: Long, newNoOfPeople: Int) {
+        return householdDAO.updateHeadCount(householdId, newNoOfPeople)
     }
 }
