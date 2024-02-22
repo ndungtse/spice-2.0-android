@@ -1,12 +1,21 @@
 package com.medtroniclabs.spice.db.entity
 
+import androidx.room.Entity
 import androidx.room.PrimaryKey
 
+@Entity(tableName = "MenuEntity")
 data class MenuEntity(
     @PrimaryKey(autoGenerate = true)
-    var id: Int,
-    var name: String,
-    var role: String,
-    var menuId:String,
-    val displayOrder: Int = 0,
+    val id: Long,
+    val roleName: String,
+    val menus: String,
+    val active: Boolean?,
+    val deleted: Boolean?,
+    val menuType: String
+)
+
+data class Menu(
+    val id: Long,
+    val order: Long,
+    val name: String
 )

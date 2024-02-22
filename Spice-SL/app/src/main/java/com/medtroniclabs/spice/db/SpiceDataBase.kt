@@ -7,19 +7,28 @@ import androidx.room.RoomDatabase
 import com.medtroniclabs.spice.db.dao.AssessmentDAO
 import com.medtroniclabs.spice.db.dao.HouseholdDAO
 import com.medtroniclabs.spice.db.dao.MemberDAO
+import com.medtroniclabs.spice.db.dao.MetaDataDAO
 import com.medtroniclabs.spice.db.entity.AssessmentEntity
+import com.medtroniclabs.spice.db.entity.ClinicalWorkflowEntity
+import com.medtroniclabs.spice.db.entity.FormEntity
+import com.medtroniclabs.spice.db.entity.HealthFacilityEntity
 import com.medtroniclabs.spice.db.entity.HouseholdEntity
 import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
+import com.medtroniclabs.spice.db.entity.MenuEntity
 import com.medtroniclabs.spice.db.entity.SignsAndSymptomsEntity
+import com.medtroniclabs.spice.db.entity.UserProfileEntity
+import com.medtroniclabs.spice.db.entity.VillageEntity
 
 @Database(
-    entities = [HouseholdEntity::class, HouseholdMemberEntity::class, AssessmentEntity::class, SignsAndSymptomsEntity::class],
+    entities = [HouseholdEntity::class, HouseholdMemberEntity::class, SignsAndSymptomsEntity::class, AssessmentEntity::class, MenuEntity::class, UserProfileEntity::class,
+        VillageEntity::class, HealthFacilityEntity::class, ClinicalWorkflowEntity::class, FormEntity::class],
     version = 1
 )
 abstract class SpiceDataBase : RoomDatabase() {
     abstract fun householdDAO(): HouseholdDAO
     abstract fun memberDAO(): MemberDAO
     abstract fun assessmentDAO(): AssessmentDAO
+    abstract fun metaDataDAO(): MetaDataDAO
 
     companion object {
         private const val DATABASE_NAME = "SpiceDataBase"
@@ -41,8 +50,6 @@ abstract class SpiceDataBase : RoomDatabase() {
             )
             return db.build()
         }
-
-
     }
 
 }

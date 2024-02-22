@@ -12,6 +12,7 @@ import com.medtroniclabs.spice.db.SpiceDataBase
 import com.medtroniclabs.spice.db.dao.AssessmentDAO
 import com.medtroniclabs.spice.db.dao.HouseholdDAO
 import com.medtroniclabs.spice.db.dao.MemberDAO
+import com.medtroniclabs.spice.db.dao.MetaDataDAO
 import com.medtroniclabs.spice.db.local.RoomHelper
 import com.medtroniclabs.spice.db.local.RoomHelperImpl
 import com.medtroniclabs.spice.network.ApiHelper
@@ -146,6 +147,12 @@ object AppModule {
     @Provides
     fun provideAssessmentDAO(db: SpiceDataBase): AssessmentDAO {
         return db.assessmentDAO()
+    }
+
+    @Singleton
+    @Provides
+    fun provideMetaDataDAO(db: SpiceDataBase): MetaDataDAO {
+        return db.metaDataDAO()
     }
 
     @DefaultDispatcher

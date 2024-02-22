@@ -13,12 +13,12 @@ import com.google.android.flexbox.JustifyContent
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.databinding.FragmentHomeScreenBinding
-import com.medtroniclabs.spice.db.entity.MenuEntity
+import com.medtroniclabs.spice.db.entity.MenuAdapterModel
 import com.medtroniclabs.spice.ui.MenuConstants
 import com.medtroniclabs.spice.ui.home.adapter.DashboardMenuItemsAdapter
 import com.medtroniclabs.spice.ui.household.HouseholdSearchActivity
-import dagger.hilt.android.AndroidEntryPoint
 import com.medtroniclabs.spice.ui.medicalreview.MedicalReviewBaseActivity
+import dagger.hilt.android.AndroidEntryPoint
 
 
 @AndroidEntryPoint
@@ -47,9 +47,9 @@ class HomeScreenFragment : Fragment(), MenuSelectionListener {
     }
 
     private fun setAdapterViews() {
-        val menuList = ArrayList<MenuEntity>()
+        val menuList = ArrayList<MenuAdapterModel>()
         menuList.add(
-            MenuEntity(
+            MenuAdapterModel(
                 id = 1,
                 name = MenuConstants.HOUSEHOLD_MENU_ID,
                 role = getString(R.string.chw),
@@ -58,7 +58,7 @@ class HomeScreenFragment : Fragment(), MenuSelectionListener {
             )
         )
         menuList.add(
-            MenuEntity(
+            MenuAdapterModel(
                 id = 12,
                 name = MenuConstants.MY_PATIENTS_MENU_ID,
                 role = getString(R.string.chw),
@@ -81,10 +81,11 @@ class HomeScreenFragment : Fragment(), MenuSelectionListener {
     }
 
     override fun onMenuSelected(name: String) {
-        when(name) {
+        when (name) {
             MenuConstants.HOUSEHOLD_MENU_ID -> {
                 startActivity(Intent(requireContext(), HouseholdSearchActivity::class.java))
             }
+
             MenuConstants.MY_PATIENTS_MENU_ID -> {
                 startActivity(Intent(requireContext(), MedicalReviewBaseActivity::class.java))
             }

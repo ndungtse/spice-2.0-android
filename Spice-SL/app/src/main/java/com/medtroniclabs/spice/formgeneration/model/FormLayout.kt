@@ -59,3 +59,7 @@ data class FormLayout(
     var backgroundColor: String? = null,
     var information: String? = null,
 ) : BaseViewParams
+
+data class FormResponse(
+    var formLayout: List<FormLayout>, var time: Long
+)

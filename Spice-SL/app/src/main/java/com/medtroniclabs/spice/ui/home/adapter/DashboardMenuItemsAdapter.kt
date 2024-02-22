@@ -10,12 +10,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.safeClickListener
 import com.medtroniclabs.spice.databinding.RowActivitiesBinding
-import com.medtroniclabs.spice.db.entity.MenuEntity
+import com.medtroniclabs.spice.db.entity.MenuAdapterModel
 import com.medtroniclabs.spice.ui.MenuConstants
 import com.medtroniclabs.spice.ui.home.MenuSelectionListener
 
 class DashboardMenuItemsAdapter(
-    private val roleBasedActivitiesList: List<MenuEntity>,
+    private val roleBasedActivitiesList: List<MenuAdapterModel>,
     private val listener: MenuSelectionListener
 ) :
     RecyclerView.Adapter<DashboardMenuItemsAdapter.ActivitiesViewHolder>() {
@@ -43,9 +43,9 @@ class DashboardMenuItemsAdapter(
             model.menuId,
             holder.context
         )
-        if (imageModel == null){
+        if (imageModel == null) {
             holder.binding.ivActivity.visibility = View.INVISIBLE
-        }else{
+        } else {
             holder.binding.ivActivity.visibility = View.VISIBLE
             holder.binding.ivActivity.setImageDrawable(imageModel)
         }
@@ -62,10 +62,12 @@ class DashboardMenuItemsAdapter(
                 context,
                 R.drawable.ic_household
             )
+
             MenuConstants.MY_PATIENTS_MENU_ID -> return ContextCompat.getDrawable(
                 context,
                 R.drawable.ic_my_patient
             )
+
             MenuConstants.SCREENER_MENU_ID -> return ContextCompat.getDrawable(
                 context,
                 R.drawable.ic_general_screener_tool
@@ -90,6 +92,7 @@ class DashboardMenuItemsAdapter(
                 context,
                 R.drawable.ic_ncd_tool
             )
+
             else -> null
         }
     }
