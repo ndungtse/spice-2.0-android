@@ -32,6 +32,8 @@ class HouseRegistrationViewModel @Inject constructor(
 
     var householdEntityDetail: HouseholdEntity? = null
 
+    val formLayoutsLiveData = MutableLiveData<Resource<String>>()
+
     fun registerHousehold(map: HashMap<String, Any>) {
         viewModelScope.launch(dispatcherIO) {
             try {
@@ -63,6 +65,7 @@ class HouseRegistrationViewModel @Inject constructor(
                     isOwnedATreatedBedNet = getIsBooleanFromString(isOwnedATreatedBedNet),
                     bedNetCount = getIntegerOrNull(bedNetCount)
                 )
+
                 householdEntityDetail = householdEntity
                 houseHoldRegistrationLiveData.postSuccess()
             } catch (e: Exception) {
@@ -71,4 +74,10 @@ class HouseRegistrationViewModel @Inject constructor(
         }
     }
 
+
+    fun getFormData(formType: String) {
+        viewModelScope.launch(dispatcherIO) {
+            houseHoldRepository.getFormData(formType, formLayoutsLiveData)
+        }
+    }
 }

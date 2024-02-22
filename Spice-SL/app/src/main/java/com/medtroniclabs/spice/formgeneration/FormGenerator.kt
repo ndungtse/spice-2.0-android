@@ -36,8 +36,10 @@ import androidx.core.widget.NestedScrollView
 import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.CommonUtils.displayAge
 import com.medtroniclabs.spice.common.DateUtils
+import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.databinding.AgeDobLayoutBinding
 import com.medtroniclabs.spice.databinding.CardLayoutBinding
 import com.medtroniclabs.spice.databinding.CheckboxDialogSpinnerLayoutBinding
@@ -214,7 +216,7 @@ class FormGenerator(
             binding.bgLastMeal.tag = id + rootSummary
             checkGenerateAction(this, binding)
             binding.tvTitle.text = updateTitle(title, translate, titleCulture, unitMeasurement)
-
+            
             maxLines?.let { binding.etUserInput.setLines(it) }
                 ?: binding.etUserInput.setSingleLine()
 

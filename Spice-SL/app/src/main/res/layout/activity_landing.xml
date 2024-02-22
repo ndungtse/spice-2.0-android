@@ -26,7 +26,6 @@
             android:fitsSystemWindows="true"
             app:drawerLayoutCornerSize="@dimen/_0dp"
             app:headerLayout="@layout/activity_landing_header"
-            app:itemBackground="@color/transparent"
             app:itemIconTint="@color/navigation_selection_color"
             app:itemRippleColor="@color/transparent"
             app:itemTextColor="@color/navigation_selection_color"

@@ -33,6 +33,7 @@ class HouseholdListViewModel @Inject constructor(
         viewModelScope.launch(dispatcherIO) {
             try {
                 houseHoldListLiveData.postLoading()
+
                 val houseHoldList = houseHoldRepository.getHouseHoldList()
                 houseHoldListLiveData.postSuccess(houseHoldList)
             } catch (e: Exception) {

@@ -109,7 +109,6 @@ data class FormRequest(
 data class FormMetaRequest(
     val metaNames: List<String>
 )
-
 data class UserSymptomsEntity(
     val symptoms: ArrayList<SignsAndSymptomsEntity>
 )

@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DefinedParams
@@ -15,6 +16,7 @@ import com.medtroniclabs.spice.databinding.FragmentMemberRegistrationBinding
 import com.medtroniclabs.spice.formgeneration.FormGenerator
 import com.medtroniclabs.spice.formgeneration.listener.FormEventListener
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
+import com.medtroniclabs.spice.formgeneration.model.FormResponse
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.home.ToolsActivity
@@ -45,6 +47,7 @@ class MemberRegistrationFragment : Fragment(), FormEventListener, View.OnClickLi
         super.onViewCreated(view, savedInstanceState)
         initializeView()
         setListener()
+        memberRegistrationViewModel.getFormData(DefinedParams.HOUSEHOLD_MEMBER_REGISTRATION)
         attachObserver()
     }
 
@@ -86,6 +89,26 @@ class MemberRegistrationFragment : Fragment(), FormEventListener, View.OnClickLi
                 }
             }
         }
+        memberRegistrationViewModel.formLayoutsLiveData.observe(viewLifecycleOwner) { resources ->
+            when (resources.state) {
+                ResourceState.LOADING -> {
+                    (activity as? BaseActivity)?.showLoading()
+                }
+
+                ResourceState.SUCCESS -> {
+                    (activity as? BaseActivity)?.hideLoading()
+                    resources.data?.let { data ->
+                        val formFieldsType = object : TypeToken<FormResponse>() {}.type
+                        val formFields: FormResponse = Gson().fromJson(data, formFieldsType)
+                        formGenerator.populateViews(formFields.formLayout)
+                    }
+                }
+
+                ResourceState.ERROR -> {
+                    (activity as? BaseActivity)?.hideLoading()
+                }
+            }
+        }
     }
 
     private fun setListener() {
@@ -97,12 +120,6 @@ class MemberRegistrationFragment : Fragment(), FormEventListener, View.OnClickLi
         formGenerator = FormGenerator(
             requireContext(), binding.llForm, null, this, binding.scrollView, translate = false
         )
-        val objectList = Gson().fromJson(
-            CommonUtils.getStringFromAssets(
-                "house_hold_member_registration.json", requireActivity().assets
-            ), Array<FormLayout>::class.java
-        ).asList()
-        formGenerator.populateViews(objectList)
     }
 
 

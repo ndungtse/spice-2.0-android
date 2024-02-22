@@ -13,6 +13,7 @@ import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.Month
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.Week
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.Year
+import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.mappingkey.MemberRegistration
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.repo.HouseHoldRepository
@@ -36,6 +37,7 @@ class MemberRegistrationViewModel @Inject constructor(
 
     var startAssessment: Boolean? = null
 
+    val formLayoutsLiveData = MutableLiveData<Resource<String>>()
     fun registerMember(map: HashMap<String, Any>) {
         if (householdId == -1L)
             return
@@ -93,6 +95,12 @@ class MemberRegistrationViewModel @Inject constructor(
             householdId = rowId
             noOfPerson = count
             registerMember(memberResultMap)
+        }
+    }
+
+    fun getFormData(formType: String) {
+        viewModelScope.launch(dispatcherIO) {
+            houseHoldRepository.getFormData(formType, formLayoutsLiveData)
         }
     }
 }

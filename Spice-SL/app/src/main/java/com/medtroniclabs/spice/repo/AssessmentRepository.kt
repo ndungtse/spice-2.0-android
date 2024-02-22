@@ -2,6 +2,7 @@ package com.medtroniclabs.spice.repo
 
 import androidx.lifecycle.MutableLiveData
 import com.medtroniclabs.spice.appextensions.postError
+import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.appextensions.postSuccess
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.StringConverter
@@ -95,6 +96,20 @@ class AssessmentRepository @Inject constructor(
             symptomTypeListResponse.postValue(roomHelper.getSymptomListByType(type))
         } catch (_: Exception) {
             //Exception - Catch block
+        }
+    }
+
+    suspend fun getFormDataForWorkFlow(
+        formType: String,
+        workflowName: String,
+        formLayoutsLiveData: MutableLiveData<Resource<String>>
+    ) {
+        try {
+            formLayoutsLiveData.postLoading()
+            val response = roomHelper.getFomDataForWorkFlow(formType, workflowName)
+            formLayoutsLiveData.postSuccess(response)
+        } catch (e: Exception) {
+            formLayoutsLiveData.postError()
         }
     }
 }

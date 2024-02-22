@@ -7,12 +7,17 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.CommonUtils
+import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.databinding.FragmentHouseHoldRegistrationBinding
 import com.medtroniclabs.spice.formgeneration.FormGenerator
 import com.medtroniclabs.spice.formgeneration.listener.FormEventListener
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
+import com.medtroniclabs.spice.formgeneration.model.FormResponse
+import com.medtroniclabs.spice.network.resource.ResourceState
+import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.household.HouseholdActivity
 import com.medtroniclabs.spice.ui.household.viewmodel.HouseRegistrationViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -37,8 +42,33 @@ class HouseHoldRegistrationFragment : Fragment(), View.OnClickListener, FormEven
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        householdRegistrationViewModel.getFormData(DefinedParams.HOUSEHOLD_REGISTRATION)
         initializeFormGenerator()
         setListeners()
+        attachObservers()
+    }
+
+    private fun attachObservers() {
+        householdRegistrationViewModel.formLayoutsLiveData.observe(viewLifecycleOwner) { resources ->
+            when (resources.state) {
+                ResourceState.LOADING -> {
+                    (activity as? BaseActivity)?.showLoading()
+                }
+
+                ResourceState.SUCCESS -> {
+                    (activity as? BaseActivity)?.hideLoading()
+                    resources.data?.let { data ->
+                        val formFieldsType = object : TypeToken<FormResponse>() {}.type
+                        val formFields:FormResponse = Gson().fromJson(data, formFieldsType)
+                        formGenerator.populateViews(formFields.formLayout)
+                    }
+                }
+
+                ResourceState.ERROR -> {
+                    (activity as? BaseActivity)?.hideLoading()
+                }
+            }
+        }
     }
 
     private fun initializeFormGenerator() {
@@ -53,7 +83,6 @@ class HouseHoldRegistrationFragment : Fragment(), View.OnClickListener, FormEven
             ),
             Array<FormLayout>::class.java
         ).asList()
-        formGenerator.populateViews(objectList)
     }
 
 

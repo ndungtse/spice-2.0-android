@@ -4,6 +4,10 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import com.medtroniclabs.spice.data.LoginResponse
+import java.lang.reflect.Type
 
 
 object SecuredPreference {
@@ -13,7 +17,9 @@ object SecuredPreference {
         USERNAME,
         PASSWORD,
         ISLOGGEDIN,
-        ISOFFLINELOGIN
+        ISOFFLINELOGIN,
+        ISMETALOADED,
+        USER_RESPONSE,
     }
 
 
@@ -347,5 +353,20 @@ object SecuredPreference {
             putString(EnvironmentKey.USERNAME.name, username)
             putString(EnvironmentKey.PASSWORD.name, password)
         }
+    }
+
+    fun putUserDetails(loginResponse: LoginResponse) {
+        val loginResponseString = Gson().toJson(loginResponse)
+        putString(EnvironmentKey.USER_RESPONSE.name, loginResponseString)
+    }
+
+    fun getUserDetails(): LoginResponse {
+        val userResponseString = getString(EnvironmentKey.USER_RESPONSE.name)
+        val type: Type = object : TypeToken<LoginResponse>() {}.type
+        return Gson().fromJson(userResponseString, type)
+    }
+
+    fun getPhoneNumberCode(): String? {
+        return getUserDetails().country.phoneNumberCode
     }
 }

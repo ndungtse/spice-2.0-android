@@ -23,8 +23,8 @@ object DefinedParams {
     const val MenuId = "MenuId"
     const val NAME = "name"
     const val id = "id"
-    const val ICCM = "ICCM"
-    const val TB = "TB"
+    const val ICCM = "iccm"
+    const val TB = "tb"
     const val MenuType = "MenuType"
     const val No = "No"
     const val Yes = "Yes"
@@ -77,4 +77,8 @@ object DefinedParams {
     const val ACTION_SESSION_EXPIRED =
         "${ContactsContract.Directory.PACKAGE_NAME}.action.SL_SESSION_EXPIRED"
     const val SL_SESSION = "sl_session"
+    const val HOUSEHOLD_REGISTRATION = "hosuehold_registration"
+    const val GENERAL_SCREENING = "GENERAL_SCREENING"
+    const val SCREENING = "screening"
+    const val HOUSEHOLD_MEMBER_REGISTRATION = "household_member_registration"
 }

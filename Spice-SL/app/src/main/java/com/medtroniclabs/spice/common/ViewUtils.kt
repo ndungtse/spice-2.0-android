@@ -2,7 +2,11 @@ package com.medtroniclabs.spice.common
 
 import android.app.DatePickerDialog
 import android.content.Context
+import android.content.res.Resources
+import android.graphics.Rect
 import android.widget.DatePicker
+import android.widget.LinearLayout
+import androidx.fragment.app.DialogFragment
 import java.util.Calendar
 
 object ViewUtils {
@@ -51,5 +55,14 @@ object ViewUtils {
         dialog.setCancelable(false)
         dialog.show()
         return dialog
+    }
+
+
+    fun DialogFragment.setDialogHeightToWrapAndSetWidthPercent(percentage: Int) {
+        val percent = percentage.toFloat() / 100
+        val dm = Resources.getSystem().displayMetrics
+        val rect = dm.run { Rect(0, 0, widthPixels, heightPixels) }
+        val percentHeight = rect.height() * percent
+        dialog?.window?.setLayout(LinearLayout.LayoutParams.WRAP_CONTENT, percentHeight.toInt())
     }
 }

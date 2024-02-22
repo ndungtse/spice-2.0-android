@@ -34,4 +34,7 @@ class MemberRegistrationRepository @Inject constructor(
     suspend fun updateHeadCount(householdId: Long, newNoOfPeople: Int) {
         return roomHelper.updateHeadCount(householdId, newNoOfPeople)
     }
+    suspend fun getFomDataForWorkFlow(formType: String, workflowName: String) {
+        roomHelper.getFomDataForWorkFlow(formType, workflowName)
+    }
 }

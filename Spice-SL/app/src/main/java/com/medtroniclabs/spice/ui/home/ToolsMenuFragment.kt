@@ -14,6 +14,9 @@ import com.google.android.flexbox.JustifyContent
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.databinding.FragmentToolsMenuBinding
+import com.medtroniclabs.spice.db.entity.MenuAdapterModel
+import com.medtroniclabs.spice.network.resource.ResourceState
+import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.MenuConstants
 import com.medtroniclabs.spice.ui.assessment.AssessmentActivity
 import com.medtroniclabs.spice.ui.home.adapter.DashboardMenuItemsAdapter
@@ -40,10 +43,31 @@ class ToolsMenuFragment : Fragment(), MenuSelectionListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setAdapterViews()
+        viewModel.getMenus(MenuConstants.TOOL)
+        attachObservers()
     }
 
-    private fun setAdapterViews() {
+    private fun attachObservers() {
+        viewModel.menuListLiveData.observe(viewLifecycleOwner) { resourceState ->
+            when (resourceState.state) {
+                ResourceState.LOADING -> {
+                    (activity as BaseActivity).showLoading()
+                }
+
+                ResourceState.SUCCESS -> {
+                    (activity as BaseActivity).hideLoading()
+                    resourceState.data?.let {
+                        setAdapterViews(it)
+                    }
+                }
+
+                ResourceState.ERROR -> {
+                    (activity as BaseActivity).hideLoading()
+                }
+            }
+        }
+    }
+    private fun setAdapterViews(menuAdapterModels: List<MenuAdapterModel>) {
         if (CommonUtils.checkIsTablet(requireContext())) {
             val layoutManager = FlexboxLayoutManager(context)
             layoutManager.flexDirection = FlexDirection.ROW
@@ -53,7 +77,7 @@ class ToolsMenuFragment : Fragment(), MenuSelectionListener {
             val layoutManager = GridLayoutManager(context, 2)
             binding.rvActivitiesList.layoutManager = layoutManager
         }
-        binding.rvActivitiesList.adapter = DashboardMenuItemsAdapter(viewModel.getMenuItemsList(requireContext()), this)
+        binding.rvActivitiesList.adapter = DashboardMenuItemsAdapter(menuAdapterModels, this)
     }
 
     override fun onMenuSelected(menuId: String) {

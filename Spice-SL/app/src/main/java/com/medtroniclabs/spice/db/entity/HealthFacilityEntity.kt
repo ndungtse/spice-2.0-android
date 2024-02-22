@@ -9,14 +9,14 @@ data class HealthFacilityEntity(
     val id: Long,
     val name: String,
     val type: String?,
-    val districtId: Long,
-    val chiefdomId: Long,
     val latitude: String?,
     val longitude: String?,
     val postalCode: String?,
     val language: String?,
     val tenantId: Long,
-    val clinicalWorkflows: String?,
+    val clinicalWorkflows: String,
+    val districtId: Long,
+    val chiefdomId: Long,
     val isDefault: Boolean = false,
     val linkedVillages:String?
 )

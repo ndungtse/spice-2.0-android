@@ -33,4 +33,5 @@ object DefinedParams {
     const val ZERO = 0
     const val Other = "Other"
     const val NoSymptoms = "No symptoms"
+    const val Phone_Number = "phoneNumber"
 }

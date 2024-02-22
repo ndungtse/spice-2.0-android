@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
+import androidx.activity.viewModels
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.core.view.GravityCompat
 import androidx.core.view.forEach
@@ -13,18 +14,27 @@ import com.medtroniclabs.spice.BuildConfig
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.databinding.ActivityLandingBinding
+import com.medtroniclabs.spice.network.resource.Resource
+import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.boarding.LoginActivity
 import com.medtroniclabs.spice.ui.home.HomeScreenFragment
+import com.medtroniclabs.spice.ui.landing.viewmodel.LandingViewModel
 
 
 class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedListener,
-    DrawerLayout.DrawerListener, View.OnClickListener {
+    DrawerLayout.DrawerListener, View.OnClickListener, OnDialogDismissListener {
 
-    private lateinit var binding: ActivityLandingBinding
+    lateinit var binding: ActivityLandingBinding
+
+    private val viewModel: LandingViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (!SecuredPreference.getBoolean(SecuredPreference.EnvironmentKey.ISLOGGEDIN.name)) {
+        if (!SecuredPreference.getBoolean(SecuredPreference.EnvironmentKey.ISLOGGEDIN.name) && !SecuredPreference.getBoolean(
+                SecuredPreference.EnvironmentKey.ISMETALOADED.name
+            )
+        ) {
             startActivity(Intent(this, LoginActivity::class.java))
             finish()
             return
@@ -35,6 +45,13 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
         initView()
         initializeDrawerView()
         updateSideBarFooter()
+        attachObservers()
+        viewModel.getUserProfile()
+        viewModel.getAllVillagesName()
+        viewModel.getDefaultHealthFacility()
+    }
+
+    private fun attachObservers() {
     }
 
     private fun initView() {
@@ -65,6 +82,13 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.logout -> {
+            }
+
+            R.id.profile -> {
+                val profileDialogFragment =
+                    supportFragmentManager.findFragmentByTag(ProfileDialogFragment.TAG)
+                profileDialogFragment ?: ProfileDialogFragment.newInstance()
+                    .show(supportFragmentManager, ProfileDialogFragment.TAG)
             }
         }
         selectNavigationMenu(item)
@@ -112,5 +136,10 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
 
     override fun onClick(v: View?) {
 //        TODO("Not yet implemented")
+    }
+
+    override fun onDialogDismissListener() {
+        val homeMenuItem = binding.navView.menu.findItem(R.id.home)
+        onNavigationItemSelected(homeMenuItem)
     }
 }

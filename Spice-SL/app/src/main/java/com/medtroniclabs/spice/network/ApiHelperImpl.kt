@@ -1,6 +1,12 @@
 package com.medtroniclabs.spice.network
 
+import com.medtroniclabs.spice.data.APIResponse
+import com.medtroniclabs.spice.data.FormMetaRequest
+import com.medtroniclabs.spice.data.FormRequest
 import com.medtroniclabs.spice.data.LoginResponse
+import com.medtroniclabs.spice.data.MetaDataResponse
+import com.medtroniclabs.spice.data.UserSymptomsEntity
+import com.medtroniclabs.spice.db.entity.FormEntity
 import okhttp3.MultipartBody
 import retrofit2.Response
 import javax.inject.Inject
@@ -8,6 +14,18 @@ import javax.inject.Inject
 class ApiHelperImpl @Inject constructor(private val apiService: ApiService) : ApiHelper {
     override suspend fun doLogin(loginRequest: MultipartBody): Response<LoginResponse> {
         return apiService.doLogin(loginRequest)
+    }
+
+    override suspend fun getMetaDataInformation(): Response<APIResponse<MetaDataResponse>> {
+        return apiService.getMetaDataInformation()
+    }
+
+    override suspend fun getForms(formRequest: FormRequest): Response<APIResponse<List<FormEntity>>> {
+        return apiService.getForms(formRequest)
+    }
+
+    override suspend fun getFormMetadata(request: FormMetaRequest): Response<APIResponse<UserSymptomsEntity>> {
+        return apiService.getFormMetadata(request)
     }
 
 }

@@ -6,25 +6,30 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import com.google.android.flexbox.FlexDirection
 import com.google.android.flexbox.FlexboxLayoutManager
 import com.google.android.flexbox.JustifyContent
-import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.databinding.FragmentHomeScreenBinding
 import com.medtroniclabs.spice.db.entity.MenuAdapterModel
+import com.medtroniclabs.spice.network.resource.ResourceState
+import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.MenuConstants
 import com.medtroniclabs.spice.ui.home.adapter.DashboardMenuItemsAdapter
 import com.medtroniclabs.spice.ui.household.HouseholdSearchActivity
-import com.medtroniclabs.spice.ui.medicalreview.MedicalReviewBaseActivity
+import com.medtroniclabs.spice.ui.landing.viewmodel.LandingViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import com.medtroniclabs.spice.ui.medicalreview.MedicalReviewBaseActivity
 
 
 @AndroidEntryPoint
 class HomeScreenFragment : Fragment(), MenuSelectionListener {
 
     private lateinit var binding: FragmentHomeScreenBinding
+
+    private val viewModel: LandingViewModel by activityViewModels()
 
     companion object {
         const val TAG = "HomeScreenFragment"
@@ -36,36 +41,39 @@ class HomeScreenFragment : Fragment(), MenuSelectionListener {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentHomeScreenBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setAdapterViews()
+        attachObservers()
+        viewModel.getMenus(MenuConstants.DASHBOARD)
     }
 
-    private fun setAdapterViews() {
-        val menuList = ArrayList<MenuAdapterModel>()
-        menuList.add(
-            MenuAdapterModel(
-                id = 1,
-                name = MenuConstants.HOUSEHOLD_MENU_ID,
-                role = getString(R.string.chw),
-                menuId = MenuConstants.HOUSEHOLD_MENU_ID,
-                displayOrder = 1
-            )
-        )
-        menuList.add(
-            MenuAdapterModel(
-                id = 12,
-                name = MenuConstants.MY_PATIENTS_MENU_ID,
-                role = getString(R.string.chw),
-                menuId = MenuConstants.MY_PATIENTS_MENU_ID,
-                displayOrder = 2
-            )
-        )
+    private fun attachObservers() {
+        viewModel.menuListLiveData.observe(viewLifecycleOwner) { resourceState ->
+            when (resourceState.state) {
+                ResourceState.LOADING -> {
+                    (activity as BaseActivity).showLoading()
+                }
+
+                ResourceState.SUCCESS -> {
+                    (activity as BaseActivity).hideLoading()
+                    resourceState.data?.let {
+                        setAdapterViews(it)
+                    }
+                }
+
+                ResourceState.ERROR -> {
+                    (activity as BaseActivity).hideLoading()
+                }
+            }
+        }
+    }
+
+    private fun setAdapterViews(menuAdapterModels: List<MenuAdapterModel>) {
         if (CommonUtils.checkIsTablet(requireContext())) {
             val layoutManager = FlexboxLayoutManager(context)
             layoutManager.flexDirection = FlexDirection.ROW
@@ -75,8 +83,7 @@ class HomeScreenFragment : Fragment(), MenuSelectionListener {
             val layoutManager = GridLayoutManager(context, 2)
             binding.rvActivitiesList.layoutManager = layoutManager
         }
-
-        binding.rvActivitiesList.adapter = DashboardMenuItemsAdapter(menuList, this)
+        binding.rvActivitiesList.adapter = DashboardMenuItemsAdapter(menuAdapterModels, this)
 
     }
 

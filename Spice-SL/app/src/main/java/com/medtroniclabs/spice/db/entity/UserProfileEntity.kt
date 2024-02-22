@@ -23,7 +23,7 @@ data class UserProfile(
     val countryCode: String?,
     val country: CountryEntity?,
     val organizations: List<OrganizationEntity>? = null,
-    val tenantId: Int,
+    val tenantId: Long,
     val suiteAccess: List<String?>?,
     val supervisor: String?
 )

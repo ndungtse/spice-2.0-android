@@ -151,6 +151,15 @@
     <string name="close">Close</string>
     <string name="error">Error</string>
     <string name="alert">Alert</string>
+    <string name="retry">Retry</string>
     <string name="session_expired">Session Expired! Please login again.</string>
     <string name="offline_login_message">You does not have internet to connect our system.Though you can login offline for offline features.Do you wish to continue?</string>
+    <string name="profile">Profile</string>
+    <string name="role">Role</string>
+    <string name="email_cap">Email</string>
+    <string name="phone_no">Phone No</string>
+    <string name="assigned_health_facility">Assigned Health Facility</string>
+    <string name="suite_access">SPICE Suite Access</string>
+    <string name="back">Back</string>
+    <string name="firstname_lastname">%1$s %2$s</string>
 </resources>

@@ -42,7 +42,9 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
 
                 ResourceState.SUCCESS -> {
                     hideLoading()
-                    startActivity(Intent(this, LandingActivity::class.java))
+                    resourceState?.data?.let {
+                        triggerResourceLoading()
+                    }
                 }
 
                 ResourceState.ERROR -> {
@@ -67,6 +69,15 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
                 }
             }
         }
+    }
+
+    private fun triggerResourceLoading() {
+        startAsNewActivity(
+            Intent(
+                this@LoginActivity,
+                ResourceLoadingScreen::class.java
+            )
+        )
     }
 
     private fun handleOfflineLoginSuccess() {

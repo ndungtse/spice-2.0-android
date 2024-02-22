@@ -7,10 +7,11 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.safeClickListener
-import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.CommonUtils.getDuration
+import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.databinding.FragmentAssessmentBinding
 import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
@@ -18,6 +19,7 @@ import com.medtroniclabs.spice.formgeneration.FormGenerator
 import com.medtroniclabs.spice.formgeneration.extension.capitalizeFirstChar
 import com.medtroniclabs.spice.formgeneration.listener.FormEventListener
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
+import com.medtroniclabs.spice.formgeneration.model.FormResponse
 import com.medtroniclabs.spice.formgeneration.ui.FormResultComposer
 import com.medtroniclabs.spice.formgeneration.utility.CheckBoxDialog
 import com.medtroniclabs.spice.network.resource.ResourceState
@@ -45,6 +47,7 @@ class AssessmentICCMFragment : Fragment(), FormEventListener, View.OnClickListen
         super.onViewCreated(view, savedInstanceState)
         viewModel.getMemberDetailsById()
         initializeFormGenerator()
+        viewModel.getFormDataForWorkFlow(DefinedParams.SCREENING, DefinedParams.ICCM)
         setListeners()
         viewModel.insertSignsAndSymptoms()
         attachObservers()
@@ -71,6 +74,28 @@ class AssessmentICCMFragment : Fragment(), FormEventListener, View.OnClickListen
                 }
             }
         }
+
+        viewModel.formLayoutsLiveData.observe(viewLifecycleOwner) { resourceState ->
+            when (resourceState.state) {
+                ResourceState.LOADING -> {
+                    (activity as? BaseActivity)?.showLoading()
+                }
+
+                ResourceState.SUCCESS -> {
+                    (activity as? BaseActivity)?.hideLoading()
+                    resourceState.data?.let { data ->
+                        val formFieldsType = object : TypeToken<FormResponse>() {}.type
+                        val formFields: FormResponse = Gson().fromJson(data, formFieldsType)
+                        viewModel.formLayout = formFields.formLayout
+                        formGenerator.populateViews(formFields.formLayout)
+                    }
+                }
+
+                ResourceState.ERROR -> {
+                    (activity as? BaseActivity)?.hideLoading()
+                }
+            }
+        }
     }
 
     private fun initializeFormGenerator() {
@@ -78,16 +103,6 @@ class AssessmentICCMFragment : Fragment(), FormEventListener, View.OnClickListen
             requireContext(), binding.llForm, null, this, binding.scrollView,
             translate = false
         )
-
-        val objectList = Gson().fromJson(
-            CommonUtils.getStringFromAssets(
-                "iccm.json",
-                requireActivity().assets
-            ),
-            Array<FormLayout>::class.java
-        ).asList()
-        viewModel.formLayout = objectList
-        formGenerator.populateViews(objectList)
     }
 
     companion object {
