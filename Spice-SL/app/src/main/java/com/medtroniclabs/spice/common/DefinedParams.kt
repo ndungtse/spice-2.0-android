@@ -74,4 +74,7 @@ object DefinedParams {
     const val Username = "username"
     const val Password = "password"
     const val Authorization = "Authorization"
+    const val ACTION_SESSION_EXPIRED =
+        "${ContactsContract.Directory.PACKAGE_NAME}.action.SL_SESSION_EXPIRED"
+    const val SL_SESSION = "sl_session"
 }

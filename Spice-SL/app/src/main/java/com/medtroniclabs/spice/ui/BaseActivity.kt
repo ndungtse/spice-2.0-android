@@ -1,15 +1,21 @@
 package com.medtroniclabs.spice.ui
 
+import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.google.android.material.snackbar.Snackbar
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.GeneralErrorDialog
+import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.databinding.ActivityBaseBinding
 import com.medtroniclabs.spice.databinding.ErrorLayoutBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
@@ -20,10 +26,29 @@ import dagger.hilt.android.AndroidEntryPoint
 open class BaseActivity : AppCompatActivity() {
     private lateinit var binding: ActivityBaseBinding
 
+    private lateinit var sessionExpiredBroadcastReceiver: SessionExpiredBroadcastReceiver
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityBaseBinding.inflate(layoutInflater)
+        sessionExpiredBroadcastReceiver = SessionExpiredBroadcastReceiver()
         setContentView(binding.root)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        LocalBroadcastManager.getInstance(this).registerReceiver(
+            sessionExpiredBroadcastReceiver,
+            IntentFilter(
+                DefinedParams.ACTION_SESSION_EXPIRED
+            )
+        )
+    }
+
+    override fun onPause() {
+        super.onPause()
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(
+            sessionExpiredBroadcastReceiver
+        )
     }
 
     fun setMainContentView(
@@ -80,6 +105,30 @@ open class BaseActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Receiver for session expired broadcasts from [Retrofit API].
+     */
+    inner class SessionExpiredBroadcastReceiver : BroadcastReceiver() {
+
+        override fun onReceive(context: Context, intent: Intent) {
+            val sessionExpired = intent.getBooleanExtra(DefinedParams.SL_SESSION, false)
+            if (sessionExpired) {
+                showErrorDialogue(
+                    getString(R.string.alert),
+                    getString(R.string.session_expired),
+                    isNegativeButtonNeed = false
+                ) { status ->
+                    if (status) {
+                        SecuredPreference.clear(this@BaseActivity)
+                        val i = Intent(context, LandingActivity::class.java)
+                        i.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                        context.startActivity(i)
+                    }
+                }
+            }
+        }
+    }
+
     private fun checkVisibility(isVisible: Boolean): Int {
         return if (isVisible) View.VISIBLE else View.INVISIBLE
     }
@@ -129,15 +178,12 @@ open class BaseActivity : AppCompatActivity() {
     }
 
     fun showErrorSnackBar(
-        text: String? = null,
+        text: String,
     ) {
         val rootView = findViewById<View>(android.R.id.content) ?: return
         val snackBar = Snackbar.make(rootView, "", Snackbar.LENGTH_LONG)
         val binding = ErrorLayoutBinding.inflate(layoutInflater)
-        text?.let { value ->
-            binding.tvErrorMessage.text =
-                value.ifBlank { getString(R.string.incorrect_username_password) }
-        }
+        binding.tvErrorMessage.text = text
         snackBar.view.setBackgroundColor(Color.TRANSPARENT)
         val snackBarLayout = snackBar.view as Snackbar.SnackbarLayout
         snackBarLayout.setPadding(0, 0, 0, 0)

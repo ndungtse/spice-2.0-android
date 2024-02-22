@@ -30,7 +30,10 @@ data class TimeZoneModel(
 data class CountryModel(
     val id: Long,
     val name: String,
-    val countryCode: String? = null
+    val countryCode: String? = null,
+    val phoneNumberCode: String? = null,
+    val unitMeasurement:String? = null,
+    val tenantId: Long? = null
 )
 
 data class OrganizationModel(

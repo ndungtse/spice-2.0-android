@@ -1,8 +1,13 @@
 package com.medtroniclabs.spice.di
 
 import android.content.Context
+import android.content.Intent
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.medtroniclabs.spice.BuildConfig
 import com.medtroniclabs.spice.common.AppConstants
+import com.medtroniclabs.spice.common.DefinedParams.ACTION_SESSION_EXPIRED
+import com.medtroniclabs.spice.common.DefinedParams.SL_SESSION
+import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.db.SpiceDataBase
 import com.medtroniclabs.spice.db.dao.AssessmentDAO
 import com.medtroniclabs.spice.db.dao.HouseholdDAO
@@ -12,6 +17,7 @@ import com.medtroniclabs.spice.db.local.RoomHelperImpl
 import com.medtroniclabs.spice.network.ApiHelper
 import com.medtroniclabs.spice.network.ApiHelperImpl
 import com.medtroniclabs.spice.network.ApiService
+import com.medtroniclabs.spice.network.NetworkConstants
 import com.medtroniclabs.spice.network.NetworkConstants.BASE_URL
 import dagger.Module
 import dagger.Provides
@@ -20,10 +26,14 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import okhttp3.Interceptor
 import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.Response
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import timber.log.Timber
 import java.util.concurrent.TimeUnit
 import javax.inject.Qualifier
 import javax.inject.Singleton
@@ -34,30 +44,54 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun provideOkHttpClient() = if (BuildConfig.DEBUG) {
+    fun provideOkHttpClient(@ApplicationContext context: Context) = if (BuildConfig.DEBUG) {
         val loggingInterceptor = HttpLoggingInterceptor()
         loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY)
         OkHttpClient.Builder()
             .addInterceptor(loggingInterceptor)
-            .addInterceptor { chain ->
-                // Add your headers here
-                val request = chain.request().newBuilder()
-                    .addHeader("client", AppConstants.CLIENT_CONSTANT)
-                    .build()
-                chain.proceed(request)
-            }
+            .addInterceptor(AppInterceptor(context))
             .connectTimeout(60, TimeUnit.SECONDS)
             .writeTimeout(120, TimeUnit.SECONDS)
             .readTimeout(60, TimeUnit.SECONDS)
             .build()
     } else {
         OkHttpClient.Builder()
+            .addInterceptor(AppInterceptor(context))
             .connectTimeout(60, TimeUnit.SECONDS)
             .writeTimeout(120, TimeUnit.SECONDS)
             .readTimeout(60, TimeUnit.SECONDS)
             .build()
     }
 
+
+    class AppInterceptor(val context: Context) : Interceptor {
+        override fun intercept(chain: Interceptor.Chain): Response {
+            var request: Request = chain.request()
+            val requestBuilder = request.newBuilder()
+                .header(
+                    "Authorization",
+                    SecuredPreference.getString(SecuredPreference.EnvironmentKey.TOKEN.toString())
+                        ?: ""
+                )
+                .header("client", AppConstants.CLIENT_CONSTANT)
+
+            request = requestBuilder.build()
+            val response = chain.proceed(request)
+            Timber.i("HEADERS ->\n${request.headers}")
+            if (!request.url.toString().contains(NetworkConstants.AUTH_SESSION)
+                && !response.isSuccessful && response.code == 401
+            ) {
+                redirectLogin(context)
+            }
+            return response
+        }
+    }
+
+    private fun redirectLogin(context: Context) {
+        val intent = Intent(ACTION_SESSION_EXPIRED)
+        intent.putExtra(SL_SESSION, true)
+        LocalBroadcastManager.getInstance(context).sendBroadcast(intent)
+    }
 
     @Provides
     fun provideBaseUrl() = BASE_URL

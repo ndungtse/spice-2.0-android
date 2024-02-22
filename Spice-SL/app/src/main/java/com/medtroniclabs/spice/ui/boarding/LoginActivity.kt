@@ -47,7 +47,9 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
 
                 ResourceState.ERROR -> {
                     hideLoading()
-                    showErrorSnackBar(resourceState.message)
+                    resourceState.message?.let {
+                        showErrorSnackBar(it)
+                    }
                 }
             }
         }
