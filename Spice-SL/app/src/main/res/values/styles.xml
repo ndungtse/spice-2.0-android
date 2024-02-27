@@ -329,4 +329,25 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
     </style>
+
+    <style name="DialogStyle" parent="Theme.Design.Light.BottomSheetDialog">
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:windowSoftInputMode">adjustResize</item>
+        <item name="android:windowActivityTransitions">true</item>
+        <item name="bottomSheetStyle">@style/AppModalStyle</item>
+    </style>
+
+    <style name="AppModalStyle" parent="Widget.Design.BottomSheet.Modal">
+        <item name="android:background">@drawable/bg_bottomsheet</item>
+    </style>
+
+    <style name="Form_Header_Style_title" parent="TextStyle_Bold_16_NoBG">
+        <item name="android:textColor">@color/navy_blue</item>
+        <item name="android:textSize">@dimen/_16ssp</item>
+    </style>
+
+    <style name="TextStyle_Medium_16_NoBG" parent="TextStyle_Medium_16">
+        <item name="android:background">@null</item>
+    </style>
+
 </resources>

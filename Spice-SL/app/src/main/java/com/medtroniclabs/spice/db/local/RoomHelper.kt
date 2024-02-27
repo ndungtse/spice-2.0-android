@@ -51,7 +51,6 @@ interface RoomHelper {
         formType: String
     ): String
     suspend fun getFomDataForWorkFlow(formType: String, workflowName: String): String
-    suspend fun getMemberCountPerHouseHOld(memberId: Long): Int
     suspend fun insertSymptoms(symptomEntity: SignsAndSymptomsEntity)
     suspend fun deleteAllSymptoms()
 }

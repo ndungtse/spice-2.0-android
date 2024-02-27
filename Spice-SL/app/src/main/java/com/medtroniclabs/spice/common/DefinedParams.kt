@@ -7,11 +7,9 @@ object DefinedParams {
 
     const val ID = "id"
     const val male = "male"
-    const val isFromHouseHoldRegistration = "isFromHouseHoldRegistration"
     const val AT_CHAR = "@"
     const val span_count_1 = 1
     const val span_count_3 = 3
-    const val houseHoldID = "house_hold_id"
     const val HOUSE_NO = "houseNo"
     const val VILLAGE = "village"
     const val LANDMARK = "landmark"
@@ -77,7 +75,6 @@ object DefinedParams {
     const val ACTION_SESSION_EXPIRED =
         "${ContactsContract.Directory.PACKAGE_NAME}.action.SL_SESSION_EXPIRED"
     const val SL_SESSION = "sl_session"
-    const val HOUSEHOLD_REGISTRATION = "hosuehold_registration"
     const val GENERAL_SCREENING = "GENERAL_SCREENING"
     const val SCREENING = "screening"
     const val HOUSEHOLD_MEMBER_REGISTRATION = "household_member_registration"

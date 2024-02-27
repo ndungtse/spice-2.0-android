@@ -41,7 +41,7 @@ class HouseholdSearchActivity : BaseActivity(), View.OnClickListener, HouseholdS
 
 
     private fun initViews() {
-        binding.llFilter.btnFilter.text = getString(R.string.filter)
+        binding.llFilter.btnFilter.text = getString(R.string.filters)
         binding.llExactSearch.etSearchTerm.hint = getString(R.string.household_name_or_no)
         val tabletSize =
             resources.getBoolean(R.bool.isLargeTablet) || resources.getBoolean(R.bool.isTablet)
@@ -58,6 +58,7 @@ class HouseholdSearchActivity : BaseActivity(), View.OnClickListener, HouseholdS
         binding.llExactSearch.btnSearch.safeClickListener(this)
         binding.llExactSearch.etSearchTerm.addTextChangedListener(searchListener)
         binding.btnAddHousehold.safeClickListener(this)
+        binding.llFilter.btnFilter.safeClickListener(this)
     }
 
     private val searchListener = object : TextWatcher {
@@ -102,9 +103,22 @@ class HouseholdSearchActivity : BaseActivity(), View.OnClickListener, HouseholdS
         }
     }
 
+    private fun updateFilterCount() {
+        var count = 0
+        householdListViewModel.villageFilterList?.let { count++ }
+        householdListViewModel.statusFilterList?.let { count++ }
+        if (count!=0) {
+            binding.llFilter.btnFilter.text = this.getString(R.string.filter_count, count)
+        }
+        else {
+            binding.llFilter.btnFilter.text = getString(R.string.filters)
+        }
+    }
+
     private fun setHouseholdListAdapter(householdList: ArrayList<HouseHoldEntityWithMemberCount>) {
         binding.tvHouseHoldCount.text = "${householdList.size} ${getString(R.string.households)}"
         if (householdList.isNotEmpty()) {
+            binding.llFilter.btnFilter.visibility = View.VISIBLE
             binding.tvNoHouseHoldFound.visibility = View.GONE
             binding.rvHouseholdList.visibility = View.VISIBLE
             val householdListAdapter = HouseholdListAdapter(this, householdList)
@@ -117,6 +131,7 @@ class HouseholdSearchActivity : BaseActivity(), View.OnClickListener, HouseholdS
                 adapter = householdListAdapter
             }
         } else {
+            binding.llFilter.btnFilter.visibility = View.GONE
             binding.tvNoHouseHoldFound.visibility = View.VISIBLE
             binding.rvHouseholdList.visibility = View.GONE
         }
@@ -134,13 +149,17 @@ class HouseholdSearchActivity : BaseActivity(), View.OnClickListener, HouseholdS
                     householdListViewModel.searchByHouseholdNameOrNo(searchTerm.toString())
                 }
             }
+
+            R.id.btnFilter ->{
+                FilterBottomSheetDialogFragment.newInstance().show(supportFragmentManager,FilterBottomSheetDialogFragment.TAG)
+            }
         }
     }
 
     override fun onHouseHoldSelected(id: Long) {
         val intent = Intent(this@HouseholdSearchActivity, HouseholdSummaryActivity::class.java)
-        intent.putExtra(DefinedParams.houseHoldID, id)
-        intent.putExtra(DefinedParams.isFromHouseHoldRegistration,false)
+        intent.putExtra(HouseholdDefinedParams.ID, id)
+        intent.putExtra(HouseholdDefinedParams.isFromHouseHoldRegistration,false)
         startActivity(intent)
     }
 

@@ -7,7 +7,8 @@ import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.appextensions.postSuccess
 import com.medtroniclabs.spice.common.DefinedParams
-import com.medtroniclabs.spice.db.entity.HouseholdEntity
+import com.medtroniclabs.spice.data.model.ChipViewItemModel
+import com.medtroniclabs.spice.db.entity.VillageEntity
 import com.medtroniclabs.spice.db.response.HouseHoldEntityWithMemberCount
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.network.resource.Resource
@@ -25,15 +26,16 @@ class HouseholdListViewModel @Inject constructor(
 
     //Patient list - Grid count
     var spanCount: Int = DefinedParams.span_count_1
-
+    var villageListResponse = MutableLiveData<Resource<List<VillageEntity>>>()
     var houseHoldListLiveData = MutableLiveData<Resource<ArrayList<HouseHoldEntityWithMemberCount>>>()
+    var villageFilterList : List<ChipViewItemModel>? = null
+    var statusFilterList : List<ChipViewItemModel>? = null
 
 
     fun getHouseHoldList() {
         viewModelScope.launch(dispatcherIO) {
             try {
                 houseHoldListLiveData.postLoading()
-
                 val houseHoldList = houseHoldRepository.getHouseHoldList()
                 houseHoldListLiveData.postSuccess(houseHoldList)
             } catch (e: Exception) {
@@ -54,4 +56,9 @@ class HouseholdListViewModel @Inject constructor(
         }
     }
 
+    fun getAllVillagesName() {
+        viewModelScope.launch(dispatcherIO) {
+            houseHoldRepository.getAllVillagesName(villageListResponse)
+        }
+    }
 }

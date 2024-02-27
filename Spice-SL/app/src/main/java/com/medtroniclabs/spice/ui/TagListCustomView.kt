@@ -59,7 +59,7 @@ class TagListCustomView(
         chip.text = getChipViewText(chipData)
         chip.setChipBackgroundColorResource(R.color.diagnosis_confirmation_selector)
         chip.typeface = ResourcesCompat.getFont(context, R.font.inter_regular)
-        chip.chipStrokeWidth = 1f
+        chip.chipStrokeWidth = 2f
         chip.setTextColor(
             getColorStateList(
                 context.getColor(R.color.white),
@@ -161,11 +161,11 @@ class TagListCustomView(
         if (isSelectionRequired == true) {
             if (!chipGroup.checkedChipIds.contains(chip.id)) {
                 chip.typeface = ResourcesCompat.getFont(context, R.font.inter_regular)
-                chip.chipStrokeWidth = 1f
+                chip.chipStrokeWidth = 2f
             }
         } else {
             chip.typeface = ResourcesCompat.getFont(context, R.font.inter_regular)
-            chip.chipStrokeWidth = 1f
+            chip.chipStrokeWidth = 2f
         }
     }
 
@@ -305,12 +305,15 @@ class TagListCustomView(
         return ColorStateList(states, colors)
     }
 
-    fun getSelectedTags(): List<Any> {
-        val tags = arrayListOf<Any>()
+    fun getSelectedTags(): List<ChipViewItemModel> {
+        val tags = arrayListOf<ChipViewItemModel>()
         for (chipId in 0..chipGroup.childCount) {
             chipGroup.getChildAt(chipId)?.let {
                 if (it is Chip && it.isChecked) {
-                    tags.add(it.tag)
+                    val tagModel = it.tag as? ChipViewItemModel
+                    tagModel?.let {
+                        tags.add(tagModel)
+                    }
                 }
             }
         }

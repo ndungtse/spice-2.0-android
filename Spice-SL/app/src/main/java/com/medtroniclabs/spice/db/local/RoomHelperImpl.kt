@@ -147,10 +147,6 @@ class RoomHelperImpl @Inject constructor(
         return metaDataDAO.getFormDataForWorkFlow(formType, workflowName)
     }
 
-    override suspend fun getMemberCountPerHouseHOld(memberId: Long): Int {
-       return memberDAO.getMemberCountPerHouseHold(memberId)
-    }
-
     override suspend fun deleteAllMenus() {
         metaDataDAO.deleteAllMenus()
     }

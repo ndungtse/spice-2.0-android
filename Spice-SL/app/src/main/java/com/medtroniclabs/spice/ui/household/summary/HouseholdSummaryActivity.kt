@@ -9,8 +9,6 @@ import androidx.appcompat.widget.PopupMenu
 import androidx.recyclerview.widget.GridLayoutManager
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.DefinedParams
-import com.medtroniclabs.spice.common.DefinedParams.houseHoldID
-import com.medtroniclabs.spice.common.DefinedParams.isFromHouseHoldRegistration
 import com.medtroniclabs.spice.common.DefinedParams.isMemberRegistration
 import com.medtroniclabs.spice.databinding.ActivityHouseholdSummaryBinding
 import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
@@ -19,6 +17,8 @@ import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.home.ToolsActivity
 import com.medtroniclabs.spice.ui.household.HouseholdActivity
+import com.medtroniclabs.spice.ui.household.HouseholdDefinedParams.ID
+import com.medtroniclabs.spice.ui.household.HouseholdDefinedParams.isFromHouseHoldRegistration
 import com.medtroniclabs.spice.ui.household.HouseholdSearchActivity
 import com.medtroniclabs.spice.ui.household.MemberSelectionListener
 import com.medtroniclabs.spice.ui.household.viewmodel.HouseHoldSummaryViewModel
@@ -92,7 +92,7 @@ class HouseholdSummaryActivity : BaseActivity(), MemberSelectionListener, View.O
     }
 
     private fun initializeView() {
-        householdSummaryViewModel.houseHoldId = intent.getLongExtra(houseHoldID, -1)
+        householdSummaryViewModel.houseHoldId = intent.getLongExtra(ID, -1)
         householdSummaryViewModel.isFromHouseHoldRegistration = intent.getBooleanExtra(
             isFromHouseHoldRegistration, false
         )
@@ -189,7 +189,7 @@ class HouseholdSummaryActivity : BaseActivity(), MemberSelectionListener, View.O
             val intent =
                 Intent(this@HouseholdSummaryActivity, HouseholdActivity::class.java)
             intent.putExtra(isMemberRegistration, true)
-            intent.putExtra(houseHoldID, householdSummaryViewModel.houseHoldId)
+            intent.putExtra(ID, householdSummaryViewModel.houseHoldId)
             startActivity(intent)
         }
     }

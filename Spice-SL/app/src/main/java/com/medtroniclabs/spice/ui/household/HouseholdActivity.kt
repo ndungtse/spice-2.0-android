@@ -43,7 +43,7 @@ class HouseholdActivity : BaseActivity() {
         householdRegistrationViewModel.isMemberRegistration =
             intent.getBooleanExtra(isMemberRegistration, false)
         memberRegistrationViewModel.householdId =
-            intent.getLongExtra(DefinedParams.houseHoldID, -1L)
+            intent.getLongExtra(HouseholdDefinedParams.ID, -1L)
         loadFragment(if (householdRegistrationViewModel.isMemberRegistration) 2 else 1)
     }
 

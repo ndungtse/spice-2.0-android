@@ -19,6 +19,7 @@ import com.medtroniclabs.spice.formgeneration.model.FormResponse
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.household.HouseholdActivity
+import com.medtroniclabs.spice.ui.household.HouseholdDefinedParams
 import com.medtroniclabs.spice.ui.household.viewmodel.HouseRegistrationViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -42,7 +43,7 @@ class HouseHoldRegistrationFragment : Fragment(), View.OnClickListener, FormEven
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        householdRegistrationViewModel.getFormData(DefinedParams.HOUSEHOLD_REGISTRATION)
+        householdRegistrationViewModel.getFormData(HouseholdDefinedParams.REGISTRATION)
         initializeFormGenerator()
         setListeners()
         attachObservers()
@@ -76,13 +77,6 @@ class HouseHoldRegistrationFragment : Fragment(), View.OnClickListener, FormEven
             requireContext(), binding.llForm, null, this, binding.scrollView,
             translate = false
         )
-        val objectList = Gson().fromJson(
-            CommonUtils.getStringFromAssets(
-                "house_hold_registration.json",
-                requireActivity().assets
-            ),
-            Array<FormLayout>::class.java
-        ).asList()
     }
 
 

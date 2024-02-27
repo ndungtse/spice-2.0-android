@@ -21,6 +21,7 @@ import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.home.ToolsActivity
 import com.medtroniclabs.spice.ui.household.HouseholdActivity
+import com.medtroniclabs.spice.ui.household.HouseholdDefinedParams
 import com.medtroniclabs.spice.ui.household.summary.HouseholdSummaryActivity
 import com.medtroniclabs.spice.ui.household.viewmodel.HouseRegistrationViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -78,10 +79,10 @@ class MemberRegistrationFragment : Fragment(), FormEventListener, View.OnClickLi
                                 requireActivity(), HouseholdSummaryActivity::class.java
                             )
                             intent.putExtra(
-                                DefinedParams.houseHoldID,
+                                HouseholdDefinedParams.ID,
                                 memberRegistrationViewModel.householdId
                             )
-                            intent.putExtra(DefinedParams.isFromHouseHoldRegistration, true)
+                            intent.putExtra(HouseholdDefinedParams.isFromHouseHoldRegistration, true)
                             startActivity(intent)
                         }
                         (activity as HouseholdActivity).finish()
