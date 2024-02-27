@@ -20,18 +20,23 @@ import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.TagListCustomView
 import com.medtroniclabs.spice.ui.household.viewmodel.HouseholdListViewModel
 
-class FilterBottomSheetDialogFragment : BottomSheetDialogFragment(), View.OnClickListener {
+class FilterBottomSheetDialogFragment() : BottomSheetDialogFragment(), View.OnClickListener {
 
     private lateinit var binding: FragmentFilterBottomSheetDialogBinding
     private lateinit var villageListTagView: TagListCustomView
+    private var listener: HouseholdSelectionListener? = null
     private lateinit var statusListTagView: TagListCustomView
 
     private val householdListViewModel: HouseholdListViewModel by activityViewModels()
 
+    constructor(listener: HouseholdSelectionListener) : this() {
+        this.listener = listener
+    }
+
     companion object {
         const val TAG = "FilterBottomSheetDialogFragment"
-        fun newInstance(): FilterBottomSheetDialogFragment {
-            return FilterBottomSheetDialogFragment()
+        fun newInstance(listener: HouseholdSelectionListener): FilterBottomSheetDialogFragment {
+            return FilterBottomSheetDialogFragment(listener)
         }
     }
 
@@ -139,6 +144,7 @@ class FilterBottomSheetDialogFragment : BottomSheetDialogFragment(), View.OnClic
     private fun applyFilter() {
         householdListViewModel.villageFilterList = villageListTagView.getSelectedTags()
         householdListViewModel.statusFilterList = statusListTagView.getSelectedTags()
+        listener?.filterHouseholdList()
         dismiss()
     }
 

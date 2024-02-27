@@ -86,9 +86,9 @@ class HouseholdSearchActivity : BaseActivity(), View.OnClickListener, HouseholdS
                 ResourceState.SUCCESS -> {
                     hideLoading()
                     resource.data?.let {
-                        setHouseholdListAdapter(it)
+                        setHouseholdListAdapter(it, false)
                     } ?: kotlin.run {
-                        setHouseholdListAdapter(ArrayList())
+                        setHouseholdListAdapter(ArrayList(), false)
                     }
                 }
 
@@ -103,11 +103,11 @@ class HouseholdSearchActivity : BaseActivity(), View.OnClickListener, HouseholdS
         }
     }
 
-    private fun updateFilterCount() {
+    private fun updateFilterCount(isFromFilter: Boolean) {
         var count = 0
-        householdListViewModel.villageFilterList?.let { count++ }
-        householdListViewModel.statusFilterList?.let { count++ }
-        if (count!=0) {
+        householdListViewModel.villageFilterList?.let { if (it.isNotEmpty()) count++ }
+        householdListViewModel.statusFilterList?.let { if (it.isNotEmpty()) count++ }
+        if (isFromFilter && count!=0) {
             binding.llFilter.btnFilter.text = this.getString(R.string.filter_count, count)
         }
         else {
@@ -115,8 +115,12 @@ class HouseholdSearchActivity : BaseActivity(), View.OnClickListener, HouseholdS
         }
     }
 
-    private fun setHouseholdListAdapter(householdList: ArrayList<HouseHoldEntityWithMemberCount>) {
+    private fun setHouseholdListAdapter(
+        householdList: ArrayList<HouseHoldEntityWithMemberCount>,
+        isFromFilter: Boolean
+    ) {
         binding.tvHouseHoldCount.text = "${householdList.size} ${getString(R.string.households)}"
+        updateFilterCount(isFromFilter)
         if (householdList.isNotEmpty()) {
             binding.llFilter.btnFilter.visibility = View.VISIBLE
             binding.tvNoHouseHoldFound.visibility = View.GONE
@@ -131,7 +135,8 @@ class HouseholdSearchActivity : BaseActivity(), View.OnClickListener, HouseholdS
                 adapter = householdListAdapter
             }
         } else {
-            binding.llFilter.btnFilter.visibility = View.GONE
+            if (!isFromFilter)
+                binding.llFilter.btnFilter.visibility = View.GONE
             binding.tvNoHouseHoldFound.visibility = View.VISIBLE
             binding.rvHouseholdList.visibility = View.GONE
         }
@@ -151,7 +156,7 @@ class HouseholdSearchActivity : BaseActivity(), View.OnClickListener, HouseholdS
             }
 
             R.id.btnFilter ->{
-                FilterBottomSheetDialogFragment.newInstance().show(supportFragmentManager,FilterBottomSheetDialogFragment.TAG)
+                FilterBottomSheetDialogFragment.newInstance(this).show(supportFragmentManager,FilterBottomSheetDialogFragment.TAG)
             }
         }
     }
@@ -161,6 +166,20 @@ class HouseholdSearchActivity : BaseActivity(), View.OnClickListener, HouseholdS
         intent.putExtra(HouseholdDefinedParams.ID, id)
         intent.putExtra(HouseholdDefinedParams.isFromHouseHoldRegistration,false)
         startActivity(intent)
+    }
+
+    override fun filterHouseholdList() {
+        householdListViewModel.houseHoldListLiveData.value?.data?.let { householdList ->
+            val villageIds = householdListViewModel.villageFilterList?.map { it.id }
+            val patientStatus = householdListViewModel.statusFilterList?.map { it.name }?.firstOrNull()
+            val householdFilteredList = householdList.filter { household ->
+                (villageIds.isNullOrEmpty() || household.villageId in villageIds) &&
+                        (patientStatus == null ||
+                                (patientStatus == HouseholdDefinedParams.Pending && household.noOfPeople != household.registerMemberCount) ||
+                                (patientStatus == HouseholdDefinedParams.Finished && household.noOfPeople == household.registerMemberCount))
+            }
+            setHouseholdListAdapter(ArrayList(householdFilteredList), true)
+        }
     }
 
     override fun onResume() {
