@@ -16,9 +16,11 @@
     <string name="email_phone_invalid">Please enter a valid email/phone number.</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="logout">Logout</string>
-    <string name="home">Home</string>
-    <string name="app_version">Version</string>
+    <string name="logout">LOGOUT</string>
+    <string name="home">HOME</string>
+    <string name="app_version">Application Version</string>
+    <string name="profile">PROFILE</string>
+    <string name="privacy_policy">PRIVACY POLICY</string>
     <string name="community_health_worker">Community Health Worker</string>
     <string name="chw">CHW</string>
     <string name="households">Households</string>
@@ -154,7 +156,6 @@
     <string name="retry">Retry</string>
     <string name="session_expired">Session Expired! Please login again.</string>
     <string name="offline_login_message">You does not have internet to connect our system.Though you can login offline for offline features.Do you wish to continue?</string>
-    <string name="profile">Profile</string>
     <string name="role">Role</string>
     <string name="email_cap">Email</string>
     <string name="phone_no">Phone No</string>

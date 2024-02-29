@@ -19,8 +19,9 @@
             android:layout_width="0dp"
             android:background="@color/white"
             android:gravity="start"
-            android:padding="@dimen/_16sdp"
-            android:textSize="@dimen/_16ssp"
+            android:paddingVertical="@dimen/_20sdp"
+            android:paddingHorizontal="@dimen/_16ssp"
+            android:textSize="@dimen/_18ssp"
             app:layout_constraintBottom_toTopOf="@id/divider1"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -40,7 +41,7 @@
             app:layout_constraintBottom_toBottomOf="@id/tvName"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/tvName"
-            app:tint="@color/black" />
+            app:tint="@color/secondary_black" />
 
         <View
             android:id="@+id/divider1"
@@ -62,6 +63,7 @@
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
+                android:paddingBottom="@dimen/_16ssp"
                 android:layout_height="match_parent">
 
                 <androidx.constraintlayout.widget.Guideline
@@ -104,7 +106,9 @@
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/tvRoleText"
-                    style="@style/TextStyle_Regular_16"
+                    style="@style/TextStyle"
+                    android:textSize="@dimen/_16ssp"
+                    android:textColor="@color/secondary_black"
                     android:layout_width="@dimen/_0dp"
                     app:layout_constraintEnd_toEndOf="@id/endGuideline"
                     app:layout_constraintHorizontal_weight="0.6"
@@ -137,7 +141,9 @@
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/tvGenderText"
-                    style="@style/TextStyle_Regular_16"
+                    style="@style/TextStyle"
+                    android:textSize="@dimen/_16ssp"
+                    android:textColor="@color/secondary_black"
                     android:layout_width="@dimen/_0dp"
                     android:layout_height="wrap_content"
                     android:text=""
@@ -172,7 +178,9 @@
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/tvEmailText"
-                    style="@style/TextStyle_Regular_16"
+                    style="@style/TextStyle"
+                    android:textSize="@dimen/_16ssp"
+                    android:textColor="@color/secondary_black"
                     android:layout_width="@dimen/_0dp"
                     app:layout_constraintEnd_toEndOf="@id/endGuideline"
                     app:layout_constraintHorizontal_weight="0.6"
@@ -205,7 +213,9 @@
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/tvPhoneNumberText"
-                    style="@style/TextStyle_Regular_16"
+                    style="@style/TextStyle"
+                    android:textSize="@dimen/_16ssp"
+                    android:textColor="@color/secondary_black"
                     android:layout_width="@dimen/_0dp"
                     app:layout_constraintEnd_toEndOf="@id/endGuideline"
                     app:layout_constraintHorizontal_weight="0.6"
@@ -238,7 +248,9 @@
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/tvVillageText"
-                    style="@style/TextStyle_Regular_16"
+                    style="@style/TextStyle"
+                    android:textSize="@dimen/_16ssp"
+                    android:textColor="@color/secondary_black"
                     android:layout_width="@dimen/_0dp"
                     app:layout_constraintEnd_toEndOf="@id/endGuideline"
                     app:layout_constraintHorizontal_weight="0.6"
@@ -271,7 +283,9 @@
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/tvAssignedHealthFacilityText"
-                    style="@style/TextStyle_Regular_16"
+                    style="@style/TextStyle"
+                    android:textSize="@dimen/_16ssp"
+                    android:textColor="@color/secondary_black"
                     android:layout_width="@dimen/_0dp"
                     app:layout_constraintEnd_toEndOf="@id/endGuideline"
                     app:layout_constraintHorizontal_weight="0.6"
@@ -304,7 +318,9 @@
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/tvSuiteAccessText"
-                    style="@style/TextStyle_Regular_16"
+                    style="@style/TextStyle"
+                    android:textSize="@dimen/_16ssp"
+                    android:textColor="@color/secondary_black"
                     android:layout_width="@dimen/_0dp"
                     app:layout_constraintEnd_toEndOf="@id/endGuideline"
                     app:layout_constraintHorizontal_weight="0.6"
@@ -318,20 +334,20 @@
             android:id="@+id/bottomDivider"
             android:layout_width="match_parent"
             android:layout_height="@dimen/_1sdp"
-            android:layout_marginTop="@dimen/_20sdp"
-            android:background="@color/edittext_stroke"
+            android:background="@color/card_background"
             app:layout_constraintBottom_toTopOf="@id/btnCancel"
             app:layout_constraintTop_toBottomOf="@+id/nestedScrollView" />
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btnCancel"
-            style="@style/Button_Style_cancel"
+            style="@style/Button_Style_Border"
             android:layout_width="@dimen/_0dp"
             android:layout_marginStart="@dimen/_20sdp"
             android:layout_marginTop="@dimen/_10sdp"
             android:layout_marginEnd="@dimen/_20sdp"
             android:layout_marginBottom="@dimen/_10sdp"
-            android:paddingHorizontal="@dimen/_22sdp"
+            android:textStyle="bold"
+            android:textAllCaps="true"
             android:text="@string/back"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
