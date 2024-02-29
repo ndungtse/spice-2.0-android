@@ -155,6 +155,10 @@ class AssessmentTBFragment : Fragment(), FormEventListener, View.OnClickListener
         }
     }
 
+    override fun onRenderingComplete() {
+
+    }
+
     override fun onClick(view: View) {
         when (view.id) {
             binding.btnSubmit.id -> {

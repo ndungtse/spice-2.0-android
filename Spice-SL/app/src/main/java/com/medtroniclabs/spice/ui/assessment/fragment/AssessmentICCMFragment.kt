@@ -163,6 +163,10 @@ class AssessmentICCMFragment : Fragment(), FormEventListener, View.OnClickListen
         }
     }
 
+    override fun onRenderingComplete() {
+
+    }
+
     override fun onClick(view: View) {
         when (view.id) {
             binding.btnSubmit.id -> {

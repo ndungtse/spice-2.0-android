@@ -21,5 +21,5 @@ interface FormEventListener {
     )
 
     fun onFormSubmit(resultMap: HashMap<String, Any>?, serverData: List<FormLayout?>? = null)
-
+    fun onRenderingComplete()
 }

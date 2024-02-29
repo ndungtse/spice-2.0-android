@@ -4,22 +4,32 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.medtroniclabs.spice.R
-import com.medtroniclabs.spice.common.CommonUtils
-import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.databinding.FragmentHouseHoldRegistrationBinding
+import com.medtroniclabs.spice.db.entity.HouseholdEntity
 import com.medtroniclabs.spice.formgeneration.FormGenerator
 import com.medtroniclabs.spice.formgeneration.listener.FormEventListener
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.model.FormResponse
+import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.bedNetCount
+import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.headPhoneNumber
+import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.householdName
+import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.isOwnedATreatedBedNet
+import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.isOwnedAnImprovedLatrine
+import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.isOwnedHandWashingFacilityWithSoap
+import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.landmark
+import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.no
+import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.noOfPeople
+import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.yes
+import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.villageId
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
-import com.medtroniclabs.spice.ui.household.HouseholdActivity
-import com.medtroniclabs.spice.ui.household.HouseholdDefinedParams
+import com.medtroniclabs.spice.ui.household.HouseholdDefinedParams.REGISTRATION
 import com.medtroniclabs.spice.ui.household.viewmodel.HouseRegistrationViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -43,7 +53,7 @@ class HouseHoldRegistrationFragment : Fragment(), View.OnClickListener, FormEven
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        householdRegistrationViewModel.getFormData(HouseholdDefinedParams.REGISTRATION)
+        householdRegistrationViewModel.getFormData(REGISTRATION)
         initializeFormGenerator()
         setListeners()
         attachObservers()
@@ -70,6 +80,116 @@ class HouseHoldRegistrationFragment : Fragment(), View.OnClickListener, FormEven
                 }
             }
         }
+
+        householdRegistrationViewModel.houseHoldDetailLiveData.observe(viewLifecycleOwner) { resourceState ->
+            when (resourceState.state) {
+                ResourceState.LOADING -> {
+                    (activity as BaseActivity?)?.showLoading()
+                }
+
+                ResourceState.SUCCESS -> {
+                    (activity as BaseActivity?)?.hideLoading()
+                    resourceState.data?.let { houseHoldDetail ->
+                        autoPopulateFormFields(houseHoldDetail)
+                    }
+                }
+
+                ResourceState.ERROR -> {
+                    (activity as BaseActivity?)?.hideLoading()
+                }
+            }
+        }
+    }
+
+    private fun autoPopulateFormFields(details: HouseholdEntity) {
+        formGenerator.getViewByTag(householdName)?.let { view ->
+            formGenerator.setValueForView(details.name, view)
+        }
+        formGenerator.getViewByTag(villageId)?.let { view ->
+            formGenerator.setValueForView(details.villageId, view)
+        }
+        formGenerator.getViewByTag(landmark)?.let { view ->
+            formGenerator.setValueForView(details.landmark, view)
+        }
+        formGenerator.getViewByTag(headPhoneNumber)?.let { view ->
+            formGenerator.setValueForView(details.headPhoneNumber, view)
+        }
+        formGenerator.getViewByTag(noOfPeople)?.let { view ->
+            formGenerator.setValueForView(details.noOfPeople, view)
+        }
+        details.isOwnedAnImprovedLatrine.let {
+            when (getBooleanAsString(it)) {
+                yes -> {
+                    singleSelectValueOption(
+                        yes,
+                        isOwnedAnImprovedLatrine
+                    )
+                }
+
+                no -> {
+                    singleSelectValueOption(
+                        no,
+                        isOwnedAnImprovedLatrine
+                    )
+                }
+
+                else -> {}
+            }
+        }
+        details.isOwnedHandWashingFacilityWithSoap.let {
+            when (getBooleanAsString(it)) {
+                yes -> {
+                    singleSelectValueOption(
+                        yes,
+                        isOwnedHandWashingFacilityWithSoap
+                    )
+                }
+
+                no -> {
+                    singleSelectValueOption(
+                        no,
+                        isOwnedHandWashingFacilityWithSoap
+                    )
+                }
+
+                else -> {}
+            }
+        }
+        details.isOwnedATreatedBedNet.let {
+            when (getBooleanAsString(it)) {
+                yes -> {
+                    singleSelectValueOption(
+                        yes,
+                        isOwnedATreatedBedNet
+                    )
+                    formGenerator.getViewByTag(bedNetCount)?.let { view ->
+                        formGenerator.setValueForView(details.bedNetCount, view)
+                    }
+                }
+
+                no -> {
+                    singleSelectValueOption(
+                        no,
+                        isOwnedATreatedBedNet
+                    )
+                }
+
+                else -> {}
+            }
+        }
+    }
+
+    private fun singleSelectValueOption(value: String, key: String) {
+        formGenerator.getViewByTag("${value}_${key}")
+            ?.let { view ->
+                if (view is TextView) {
+                    view.performClick()
+                }
+            }
+    }
+
+    private fun getBooleanAsString(value: Boolean): String {
+        return if (value) yes else no
     }
 
     private fun initializeFormGenerator() {
@@ -119,7 +239,16 @@ class HouseHoldRegistrationFragment : Fragment(), View.OnClickListener, FormEven
 
     override fun onFormSubmit(resultMap: HashMap<String, Any>?, serverData: List<FormLayout?>?) {
         resultMap?.let { map ->
-            householdRegistrationViewModel.registerHousehold(map)
+            if (householdRegistrationViewModel.householdId != -1L){
+                householdRegistrationViewModel.updateHousehold(map)
+            } else
+                householdRegistrationViewModel.registerHousehold(map)
+        }
+    }
+
+    override fun onRenderingComplete() {
+        if (householdRegistrationViewModel.householdId != -1L){
+            householdRegistrationViewModel.getHouseholdDetailsByID(householdRegistrationViewModel.householdId)
         }
     }
 }

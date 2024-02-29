@@ -137,6 +137,9 @@ class HouseholdSummaryActivity : BaseActivity(), MemberSelectionListener, View.O
                     R.id.addNewMember -> {
                         addNewMember()
                     }
+                    R.id.editHousehold -> {
+                        editHouseholdDetails()
+                    }
                 }
                 return true
             }
@@ -175,7 +178,8 @@ class HouseholdSummaryActivity : BaseActivity(), MemberSelectionListener, View.O
     override fun onClick(v: View?) {
         when (v?.id) {
             R.id.btnFinishRegistration -> {
-
+                startActivity(Intent(this, HouseholdSearchActivity::class.java))
+                finish()
             }
 
             R.id.btnAddNewMember -> {
@@ -191,6 +195,17 @@ class HouseholdSummaryActivity : BaseActivity(), MemberSelectionListener, View.O
             intent.putExtra(isMemberRegistration, true)
             intent.putExtra(ID, householdSummaryViewModel.houseHoldId)
             startActivity(intent)
+        }
+    }
+
+    private fun editHouseholdDetails(){
+        if (householdSummaryViewModel.houseHoldId != -1L) {
+            val intent =
+                Intent(this@HouseholdSummaryActivity, HouseholdActivity::class.java)
+            intent.putExtra(isMemberRegistration, false)
+            intent.putExtra(ID, householdSummaryViewModel.houseHoldId)
+            startActivity(intent)
+            finish()
         }
     }
 

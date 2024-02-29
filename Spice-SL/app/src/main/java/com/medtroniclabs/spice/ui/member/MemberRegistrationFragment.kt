@@ -10,7 +10,6 @@ import androidx.fragment.app.activityViewModels
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.medtroniclabs.spice.R
-import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.databinding.FragmentMemberRegistrationBinding
 import com.medtroniclabs.spice.formgeneration.FormGenerator
@@ -30,11 +29,8 @@ import dagger.hilt.android.AndroidEntryPoint
 class MemberRegistrationFragment : Fragment(), FormEventListener, View.OnClickListener {
 
     private lateinit var binding: FragmentMemberRegistrationBinding
-
     private lateinit var formGenerator: FormGenerator
-
     private val memberRegistrationViewModel: MemberRegistrationViewModel by activityViewModels()
-
     private val householdRegistrationViewModel: HouseRegistrationViewModel by activityViewModels()
 
     override fun onCreateView(
@@ -80,7 +76,7 @@ class MemberRegistrationFragment : Fragment(), FormEventListener, View.OnClickLi
                             )
                             intent.putExtra(
                                 HouseholdDefinedParams.ID,
-                                memberRegistrationViewModel.householdId
+                                memberRegistrationViewModel.selectedHouseholdId
                             )
                             intent.putExtra(HouseholdDefinedParams.isFromHouseHoldRegistration, true)
                             startActivity(intent)
@@ -143,13 +139,17 @@ class MemberRegistrationFragment : Fragment(), FormEventListener, View.OnClickLi
     override fun onFormSubmit(resultMap: HashMap<String, Any>?, serverData: List<FormLayout?>?) {
         resultMap?.let { map ->
             if (householdRegistrationViewModel.isMemberRegistration) {
-                memberRegistrationViewModel.registerMember(map)
+                memberRegistrationViewModel.registerMember(map, householdRegistrationViewModel.householdId)
             } else {
                 householdRegistrationViewModel.householdEntityDetail?.let { householdEntity ->
                     memberRegistrationViewModel.registerHouseThenMember(householdEntity, map)
                 }
             }
         }
+    }
+
+    override fun onRenderingComplete() {
+
     }
 
     override fun onClick(v: View?) {

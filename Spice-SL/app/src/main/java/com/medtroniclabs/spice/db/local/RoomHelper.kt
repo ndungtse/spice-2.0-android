@@ -16,6 +16,7 @@ import com.medtroniclabs.spice.db.response.HouseHoldEntityWithMemberCount
 
 interface RoomHelper {
     suspend fun saveHouseHoldEntry(householdEntity: HouseholdEntity): Long
+    suspend fun updateHousehold(householdEntity: HouseholdEntity)
     suspend fun getHouseHoldList(): ArrayList<HouseHoldEntityWithMemberCount>
     suspend fun getLastHouseholdNo(villageId: Long): Long?
     suspend fun searchByHouseholdNameOrNo(searchTerm: String): ArrayList<HouseHoldEntityWithMemberCount>

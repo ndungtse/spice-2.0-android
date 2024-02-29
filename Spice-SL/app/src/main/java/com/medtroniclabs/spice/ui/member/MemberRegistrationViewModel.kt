@@ -13,7 +13,6 @@ import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.Month
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.Week
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.Year
-import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.mappingkey.MemberRegistration
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.repo.HouseHoldRepository
@@ -29,7 +28,7 @@ class MemberRegistrationViewModel @Inject constructor(
     private val houseHoldRepository: HouseHoldRepository
 ) : ViewModel() {
 
-    var householdId: Long = -1L
+    var selectedHouseholdId: Long = -1L
 
     private var noOfPerson: Int = 0
 
@@ -38,7 +37,7 @@ class MemberRegistrationViewModel @Inject constructor(
     var startAssessment: Boolean? = null
 
     val formLayoutsLiveData = MutableLiveData<Resource<String>>()
-    fun registerMember(map: HashMap<String, Any>) {
+    fun registerMember(map: HashMap<String, Any>, householdId: Long) {
         if (householdId == -1L)
             return
         try {
@@ -65,7 +64,7 @@ class MemberRegistrationViewModel @Inject constructor(
                     householdHeadRelationship = getStringOrEmptyString(householdHeadRelationship),
                     householdId = householdId
                 )
-
+                selectedHouseholdId = householdId
                 val rowId = memberRegistrationRepository.registerMember(memberRegistrationEntity)
                 val getCountOfHouseHold = memberRegistrationRepository.getMemberCountPerHouseHold(householdId)
                 if (getCountOfHouseHold > noOfPerson) {
@@ -92,9 +91,8 @@ class MemberRegistrationViewModel @Inject constructor(
         viewModelScope.launch(dispatcherIO) {
             val count =  householdEntity.noOfPeople
             val rowId = houseHoldRepository.registerHousehold(householdEntity)
-            householdId = rowId
             noOfPerson = count
-            registerMember(memberResultMap)
+            registerMember(memberResultMap, rowId)
         }
     }
 

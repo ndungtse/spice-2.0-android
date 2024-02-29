@@ -169,4 +169,7 @@
     <string name="apply">Apply</string>\
     <string name="filter_count">Filter (%1d)</string>
     <string name="villages">Villages</string>
+    <string name="start_with_validation">Phone number should starts with %1$s </string>
+    <string name="or">or</string>
+    <string name="edit_household">Edit Household</string>
 </resources>

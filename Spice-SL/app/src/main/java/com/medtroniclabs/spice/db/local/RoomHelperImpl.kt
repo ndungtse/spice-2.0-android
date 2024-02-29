@@ -27,6 +27,10 @@ class RoomHelperImpl @Inject constructor(
         return householdDAO.insertHouseHold(householdEntity)
     }
 
+    override suspend fun updateHousehold(householdEntity: HouseholdEntity) {
+        return householdDAO.updateHouseHold(householdEntity)
+    }
+
     override suspend fun getHouseHoldList(): ArrayList<HouseHoldEntityWithMemberCount> {
         return ArrayList(householdDAO.getAllHouseHold())
     }

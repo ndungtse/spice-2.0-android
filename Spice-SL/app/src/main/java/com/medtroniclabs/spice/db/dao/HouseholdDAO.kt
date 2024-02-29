@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
+import androidx.room.Update
 import com.medtroniclabs.spice.db.entity.HouseholdEntity
 import com.medtroniclabs.spice.db.response.HouseHoldEntityWithMemberCount
 
@@ -13,6 +14,9 @@ interface HouseholdDAO {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertHouseHold(houseHold: HouseholdEntity): Long
+
+    @Update
+    suspend fun updateHouseHold(houseHold: HouseholdEntity)
 
     @Transaction
     @Query(

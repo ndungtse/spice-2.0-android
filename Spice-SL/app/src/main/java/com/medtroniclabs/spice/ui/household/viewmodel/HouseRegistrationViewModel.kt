@@ -6,13 +6,8 @@ import androidx.lifecycle.viewModelScope
 import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.appextensions.postSuccess
-import com.medtroniclabs.spice.common.CommonUtils.getIntegerOrNull
-import com.medtroniclabs.spice.common.CommonUtils.getIsBooleanFromString
-import com.medtroniclabs.spice.common.CommonUtils.getLongOrNull
-import com.medtroniclabs.spice.common.CommonUtils.getStringOrEmptyString
 import com.medtroniclabs.spice.db.entity.HouseholdEntity
 import com.medtroniclabs.spice.di.IoDispatcher
-import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.repo.HouseHoldRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -27,50 +22,48 @@ class HouseRegistrationViewModel @Inject constructor(
 ) : ViewModel() {
 
     var houseHoldRegistrationLiveData = MutableLiveData<Resource<Long>>()
-
     var isMemberRegistration: Boolean = false
-
     var householdEntityDetail: HouseholdEntity? = null
-
     val formLayoutsLiveData = MutableLiveData<Resource<String>>()
+    var houseHoldUpdateLiveData = MutableLiveData<Resource<Long>>()
+    val houseHoldDetailLiveData = MutableLiveData<Resource<HouseholdEntity>>()
+    var householdId: Long = -1L
+
+    fun updateHousehold(map: HashMap<String, Any>) {
+        viewModelScope.launch(dispatcherIO) {
+            try {
+                houseHoldUpdateLiveData.postLoading()
+                houseHoldRepository.updateHousehold(map, houseHoldDetailLiveData, householdId)
+                houseHoldUpdateLiveData.postSuccess()
+            } catch (e: Exception) {
+                houseHoldUpdateLiveData.postError()
+            }
+        }
+    }
 
     fun registerHousehold(map: HashMap<String, Any>) {
         viewModelScope.launch(dispatcherIO) {
             try {
                 houseHoldRegistrationLiveData.postLoading()
-                val householdName = map[HouseHoldRegistration.householdName]
-                val headPhoneNumber = map[HouseHoldRegistration.headPhoneNumber]
-                val landmark = map[HouseHoldRegistration.landmark]
-                val villageID = map[HouseHoldRegistration.villageId]
-                val noOfPeople = map[HouseHoldRegistration.noOfPeople]
-                val isOwnedAnImprovedLatrine = map[HouseHoldRegistration.isOwnedAnImprovedLatrine]
-                val isOwnedHandWashingFacilityWithSoap =
-                    map[HouseHoldRegistration.isOwnedHandWashingFacilityWithSoap]
-                val isOwnedATreatedBedNet = map[HouseHoldRegistration.isOwnedATreatedBedNet]
-                val bedNetCount = map[HouseHoldRegistration.bedNetCount]
-                val villageLongID = getLongOrNull(villageID) ?: 0
-                val lastHouseHoldNo = houseHoldRepository.getLastHouseholdNo(villageLongID) ?: 0
-                val householdEntity = HouseholdEntity(
-                    id = 0,
-                    householdNo = lastHouseHoldNo + 1,
-                    name = getStringOrEmptyString(householdName),
-                    villageId = villageLongID,
-                    landmark = getStringOrEmptyString(landmark),
-                    headPhoneNumber = getStringOrEmptyString(headPhoneNumber),
-                    noOfPeople = getIntegerOrNull(noOfPeople) ?: 0,
-                    isOwnedAnImprovedLatrine = getIsBooleanFromString(isOwnedAnImprovedLatrine),
-                    isOwnedHandWashingFacilityWithSoap = getIsBooleanFromString(
-                        isOwnedHandWashingFacilityWithSoap
-                    ),
-                    isOwnedATreatedBedNet = getIsBooleanFromString(isOwnedATreatedBedNet),
-                    bedNetCount = getIntegerOrNull(bedNetCount)
-                )
-
-                householdEntityDetail = householdEntity
+                householdEntityDetail = houseHoldRepository.composeHouseholdEntityDetails(map, houseHoldDetailLiveData, householdId)
                 houseHoldRegistrationLiveData.postSuccess()
             } catch (e: Exception) {
                 houseHoldRegistrationLiveData.postError()
             }
+        }
+    }
+
+    fun getHouseholdDetailsByID(houseHoldId: Long){
+        if (houseHoldId == -1L)
+            return
+        try {
+            viewModelScope.launch(dispatcherIO) {
+                houseHoldDetailLiveData.postLoading()
+                val householdEntity = houseHoldRepository.getHouseHoldDetailsById(houseHoldId)
+                houseHoldDetailLiveData.postSuccess(householdEntity)
+            }
+        } catch (e: Exception) {
+            houseHoldDetailLiveData.postError()
         }
     }
 

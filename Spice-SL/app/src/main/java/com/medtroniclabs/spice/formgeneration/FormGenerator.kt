@@ -26,6 +26,7 @@ import android.widget.RadioGroup
 import android.widget.Spinner
 import android.widget.TextView
 import androidx.activity.result.ActivityResultLauncher
+import androidx.appcompat.widget.AppCompatEditText
 import androidx.appcompat.widget.AppCompatSpinner
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.content.ContextCompat
@@ -36,10 +37,8 @@ import androidx.core.widget.NestedScrollView
 import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.medtroniclabs.spice.R
-import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.CommonUtils.displayAge
 import com.medtroniclabs.spice.common.DateUtils
-import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.databinding.AgeDobLayoutBinding
 import com.medtroniclabs.spice.databinding.CardLayoutBinding
 import com.medtroniclabs.spice.databinding.CheckboxDialogSpinnerLayoutBinding
@@ -139,6 +138,7 @@ class FormGenerator(
                 VIEW_TYPE_NO_OF_DAYS -> createNoOfDaysView(serverViewModel)
             }
         }
+        listener.onRenderingComplete()
     }
 
     private fun createCardViewFamily(serverViewModel: FormLayout) {
@@ -216,7 +216,7 @@ class FormGenerator(
             binding.bgLastMeal.tag = id + rootSummary
             checkGenerateAction(this, binding)
             binding.tvTitle.text = updateTitle(title, translate, titleCulture, unitMeasurement)
-            
+
             maxLines?.let { binding.etUserInput.setLines(it) }
                 ?: binding.etUserInput.setSingleLine()
 
@@ -1427,7 +1427,7 @@ class FormGenerator(
         }
     }
 
-    private fun getViewByTag(tag: Any): View? {
+   fun getViewByTag(tag: Any): View? {
         return parentLayout.findViewWithTag(tag)
     }
 
@@ -1705,6 +1705,28 @@ class FormGenerator(
             }
         }
         return status
+    }
+
+    fun setValueForView(value: Any?, view: View) {
+        if (view is AppCompatEditText) {
+            if (value is String) {
+                view.setText(value)
+            } else if (value is Int){
+                view.setText(value.toString())
+            }
+            else {
+                view.setText("")
+            }
+        }
+
+        if (view is Spinner) {
+            val adapter = view.adapter
+            if (adapter != null && adapter is CustomSpinnerAdapter && value is Long) {
+                val selectedIndex = adapter.getIndexOfItem(value)
+                if (selectedIndex != -1)
+                    view.setSelection(selectedIndex, true)
+            }
+        }
     }
 
 }

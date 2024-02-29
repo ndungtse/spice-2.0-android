@@ -10,5 +10,6 @@ object HouseHoldRegistration {
     const val isOwnedATreatedBedNet = "is_owned_a_treated_bed_net"
     const val bedNetCount = "bed_net_count"
     const val yes = "yes"
+    const val no = "no"
     const val villageId = "village_id"
 }
