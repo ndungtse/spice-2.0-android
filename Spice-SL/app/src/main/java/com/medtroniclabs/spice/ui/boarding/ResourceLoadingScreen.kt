@@ -35,6 +35,7 @@ class ResourceLoadingScreen : BaseActivity() {
                 ResourceState.SUCCESS -> {
                     hideLoading()
                     startActivity(Intent(this, LandingActivity::class.java))
+                    finish()
                 }
 
                 ResourceState.ERROR -> {

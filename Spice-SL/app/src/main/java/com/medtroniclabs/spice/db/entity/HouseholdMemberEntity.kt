@@ -22,5 +22,9 @@ data class HouseholdMemberEntity(
     @ColumnInfo("household_id")
     val householdId:Long,
     @ColumnInfo("patient_id")
-    val patientId: String? = null
+    val patientId: String? = null,
+    @ColumnInfo("created_at")
+    val createdAt: Long,
+    @ColumnInfo("updated_at")
+    var updatedAt: Long
 )

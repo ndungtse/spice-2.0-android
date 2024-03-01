@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import com.medtroniclabs.spice.data.LastCreatedAtAndPatientId
 import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
 
 @Dao
@@ -19,4 +20,7 @@ interface MemberDAO {
 
     @Query("SELECT COUNT(household_id) FROM household_member WHERE household_id = :householdId")
     suspend fun getMemberCountPerHouseHold(householdId: Long): Int
+
+    @Query("SELECT MAX(created_at) AS lastCreatedAt, patient_id AS lastPatientId FROM household_member")
+    suspend fun getLastPatientId(): LastCreatedAtAndPatientId
 }

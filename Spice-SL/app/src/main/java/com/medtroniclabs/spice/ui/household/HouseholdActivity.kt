@@ -8,7 +8,9 @@ import androidx.fragment.app.commit
 import androidx.fragment.app.replace
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.DefinedParams.MemberID
+import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.isMemberRegistration
+import com.medtroniclabs.spice.data.VillageInfo
 import com.medtroniclabs.spice.databinding.ActivityHouseholdRegistrationBinding
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
@@ -16,6 +18,7 @@ import com.medtroniclabs.spice.ui.household.fragment.HouseHoldRegistrationFragme
 import com.medtroniclabs.spice.ui.household.summary.HouseholdSummaryActivity
 import com.medtroniclabs.spice.ui.household.viewmodel.HouseRegistrationViewModel
 import com.medtroniclabs.spice.ui.member.MemberRegistrationFragment
+import com.medtroniclabs.spice.ui.member.MemberRegistrationViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -24,6 +27,9 @@ class HouseholdActivity : BaseActivity() {
     private lateinit var binding: ActivityHouseholdRegistrationBinding
 
     private val householdRegistrationViewModel: HouseRegistrationViewModel by viewModels()
+
+    private val memberRegistrationViewModel: MemberRegistrationViewModel by viewModels()
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

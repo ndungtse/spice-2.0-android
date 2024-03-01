@@ -6,15 +6,9 @@ import androidx.lifecycle.viewModelScope
 import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.appextensions.postSuccess
-import com.medtroniclabs.spice.common.CommonUtils.getIntegerOrNull
-import com.medtroniclabs.spice.common.CommonUtils.getIsBooleanFromString
-import com.medtroniclabs.spice.common.CommonUtils.getLongOrNull
-import com.medtroniclabs.spice.common.CommonUtils.getStringOrEmptyString
 import com.medtroniclabs.spice.data.LocalSpinnerResponse
 import com.medtroniclabs.spice.db.entity.HouseholdEntity
 import com.medtroniclabs.spice.di.IoDispatcher
-import com.medtroniclabs.spice.formgeneration.config.DefinedParams
-import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration
 import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.villageId
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.repo.HouseHoldRepository
@@ -55,7 +49,11 @@ class HouseRegistrationViewModel @Inject constructor(
         viewModelScope.launch(dispatcherIO) {
             try {
                 houseHoldRegistrationLiveData.postLoading()
-                householdEntityDetail = houseHoldRepository.composeHouseholdEntityDetails(map, houseHoldDetailLiveData, householdId)
+                householdEntityDetail = houseHoldRepository.composeHouseholdEntityDetails(
+                    map,
+                    houseHoldDetailLiveData,
+                    householdId
+                )
                 houseHoldRegistrationLiveData.postSuccess()
             } catch (e: Exception) {
                 houseHoldRegistrationLiveData.postError()
@@ -63,7 +61,7 @@ class HouseRegistrationViewModel @Inject constructor(
         }
     }
 
-    fun getHouseholdDetailsByID(houseHoldId: Long){
+    fun getHouseholdDetailsByID(houseHoldId: Long) {
         if (houseHoldId == -1L)
             return
         try {

@@ -884,7 +884,11 @@ class FormGenerator(
                         disableFutureDate = disableFutureDate ?: false,
                         minDate = minDate,
                         maxDate = maxDate,
-                        date = yearMonthWeek
+                        date = yearMonthWeek,
+                        cancelCallBack = {
+                            isDOBUpdated = false
+                            addWatcher(binding.etYears,binding.etMonths,binding.etWeeks)
+                        }
                     ) { _, year, month, dayOfMonth ->
                         val stringDate = "$dayOfMonth-$month-$year"
                         val parsedDate = DateUtils.getDatePatternDDMMYYYY().parse(stringDate)

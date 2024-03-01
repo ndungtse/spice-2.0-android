@@ -1,5 +1,6 @@
 package com.medtroniclabs.spice.data
 
+import androidx.room.ColumnInfo
 import com.medtroniclabs.spice.db.entity.SignsAndSymptomsEntity
 import com.medtroniclabs.spice.db.entity.VillageEntity
 
@@ -111,4 +112,15 @@ data class FormMetaRequest(
 )
 data class UserSymptomsEntity(
     val symptoms: ArrayList<SignsAndSymptomsEntity>
+)
+data class VillageInfo(
+    val chiefdomId: Long,
+    val code: String
+)
+
+data class LastCreatedAtAndPatientId(
+    @ColumnInfo(name = "lastCreatedAt")
+    val lastCreatedAt: Long,
+    @ColumnInfo(name = "lastPatientId")
+    val lastPatientId: String?
 )

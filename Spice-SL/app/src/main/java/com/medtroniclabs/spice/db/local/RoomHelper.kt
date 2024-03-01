@@ -1,6 +1,7 @@
 package com.medtroniclabs.spice.db.local
 
-import androidx.room.Query
+import com.medtroniclabs.spice.data.LastCreatedAtAndPatientId
+import com.medtroniclabs.spice.data.VillageInfo
 import com.medtroniclabs.spice.db.entity.AssessmentEntity
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowEntity
 import com.medtroniclabs.spice.db.entity.FormEntity
@@ -56,4 +57,6 @@ interface RoomHelper {
     suspend fun deleteAllSymptoms()
     suspend fun getUserVillages(): List<VillageEntity>
     suspend fun getVillageByID(villageId: Long): VillageEntity
+    suspend fun getChiefDomAndVillageCodeByVillageId(id: Long): VillageInfo
+    suspend fun getLastPatientId(): LastCreatedAtAndPatientId
 }

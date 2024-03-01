@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.appextensions.postSuccess
+import com.medtroniclabs.spice.data.VillageInfo
 import com.medtroniclabs.spice.db.entity.HouseholdEntity
 import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
 import com.medtroniclabs.spice.db.entity.VillageEntity
@@ -29,6 +30,8 @@ class HouseHoldSummaryViewModel @Inject constructor(
     val villageDetailLiveData = MutableLiveData<Resource<VillageEntity>>()
     var selectedMemberId  = -1L
     var memberListLiveData = MutableLiveData<Resource<ArrayList<HouseholdMemberEntity>>>()
+    var villageId: Long = -1L
+    var  noOfPeople: Int = -1
 
     fun getHouseHoldDetailsById() {
         if (houseHoldId == -1L)

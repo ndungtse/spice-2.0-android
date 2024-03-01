@@ -15,6 +15,10 @@ import com.medtroniclabs.spice.databinding.ActivityHouseholdSearchBinding
 import com.medtroniclabs.spice.db.response.HouseHoldEntityWithMemberCount
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
+import com.medtroniclabs.spice.ui.household.HouseholdDefinedParams.ID
+import com.medtroniclabs.spice.ui.household.HouseholdDefinedParams.NoOfPeople
+import com.medtroniclabs.spice.ui.household.HouseholdDefinedParams.VillageId
+import com.medtroniclabs.spice.ui.household.HouseholdDefinedParams.isFromHouseHoldRegistration
 import com.medtroniclabs.spice.ui.household.adapter.HouseholdListAdapter
 import com.medtroniclabs.spice.ui.household.viewmodel.HouseholdListViewModel
 import com.medtroniclabs.spice.ui.household.summary.HouseholdSummaryActivity
@@ -165,8 +169,8 @@ class HouseholdSearchActivity : BaseActivity(), View.OnClickListener, HouseholdS
 
     override fun onHouseHoldSelected(id: Long) {
         val intent = Intent(this@HouseholdSearchActivity, HouseholdSummaryActivity::class.java)
-        intent.putExtra(HouseholdDefinedParams.ID, id)
-        intent.putExtra(HouseholdDefinedParams.isFromHouseHoldRegistration,false)
+        intent.putExtra(ID, id)
+        intent.putExtra(isFromHouseHoldRegistration, false)
         startActivity(intent)
     }
 

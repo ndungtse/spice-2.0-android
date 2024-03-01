@@ -25,6 +25,6 @@ data class HouseholdEntity(
     @ColumnInfo("is_owned_a_treated_bed_net")
     val isOwnedATreatedBedNet: Boolean,
     @ColumnInfo("bed_net_count")
-    val bedNetCount: Int? = null,
+    val bedNetCount: Int? = null
 )
 

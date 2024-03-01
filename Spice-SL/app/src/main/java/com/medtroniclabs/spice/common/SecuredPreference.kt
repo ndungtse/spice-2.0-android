@@ -366,6 +366,10 @@ object SecuredPreference {
         return Gson().fromJson(userResponseString, type)
     }
 
+    fun getUserId(): Long {
+        return getUserDetails().id
+    }
+
     fun getPhoneNumberCode(): String? {
         return getUserDetails().country.phoneNumberCode
     }

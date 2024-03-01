@@ -6,6 +6,9 @@ import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.appextensions.postSuccess
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.CommonUtils.calculateAgeString
+import com.medtroniclabs.spice.common.SecuredPreference
+import com.medtroniclabs.spice.data.LastCreatedAtAndPatientId
+import com.medtroniclabs.spice.data.VillageInfo
 import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
 import com.medtroniclabs.spice.db.local.RoomHelper
 import com.medtroniclabs.spice.mappingkey.MemberRegistration
@@ -20,15 +23,26 @@ class MemberRegistrationRepository @Inject constructor(
         householdId: Long,
         memberRegistrationLiveData: MutableLiveData<Resource<Long>>,
         memberDetails: MutableLiveData<Resource<HouseholdMemberEntity>>,
-        noOfPerson: Int
+        noOfPerson: Int,
+        villageId: Long
     ) {
         try {
             memberRegistrationLiveData.postLoading()
-            val memberRegistrationEntity = composeResultMapEntity(map, householdId, memberDetails)
+
+            val villageIdAndNoOfPeople: Pair<Int, Long> = if (villageId == -1L) {
+                roomHelper.getHouseHoldDetailsById(householdId).let {
+                    Pair(it.noOfPeople, it.villageId)
+                }
+            } else {
+                Pair(noOfPerson, villageId)
+            }
+            val memberRegistrationEntity = composeResultMapEntity(map, householdId, memberDetails,villageIdAndNoOfPeople)
+
             val rowId = roomHelper.registerMember(memberRegistrationEntity)
-            if (memberDetails.value == null){
+            if (memberDetails.value == null) {
                 val getCountOfHouseHold = getMemberCountPerHouseHold(householdId)
-                if (getCountOfHouseHold > noOfPerson) {
+                val getNoOfCount = if (noOfPerson == 0) villageIdAndNoOfPeople.first else noOfPerson
+                if (getCountOfHouseHold > getNoOfCount) {
                     updateHeadCount(householdId, getCountOfHouseHold)
                 }
             }
@@ -38,10 +52,11 @@ class MemberRegistrationRepository @Inject constructor(
         }
     }
 
-    private fun composeResultMapEntity(
+    private suspend fun composeResultMapEntity(
         map: HashMap<String, Any>,
         householdId: Long,
-        memberDetails: MutableLiveData<Resource<HouseholdMemberEntity>>
+        memberDetails: MutableLiveData<Resource<HouseholdMemberEntity>>,
+        villageIdAndNoOfPeople: Pair<Int, Long>
     ): HouseholdMemberEntity {
         val name = map[MemberRegistration.name]
         val phoneNumber = map[MemberRegistration.phoneNumber]
@@ -62,8 +77,24 @@ class MemberRegistrationRepository @Inject constructor(
             householdHeadRelationship = CommonUtils.getStringOrEmptyString(
                 householdHeadRelationship
             ),
-            householdId = householdId
+            householdId = householdId,
+            patientId = memberDetails.value?.data?.patientId ?: getChiefDomAndVillageCodeByVillageId(villageIdAndNoOfPeople.second).let { villageInfo ->
+                generatePatientId(
+                    villageInfo.chiefdomId,
+                    getLastPatientId(),
+                    villageInfo.code
+                )
+            },
+            createdAt = memberDetails.value?.data?.createdAt ?: System.currentTimeMillis(),
+            updatedAt = System.currentTimeMillis()
         )
+    }
+
+    private fun generatePatientId(chiefDomId: Long, lastCreatedAtAndPatientId: LastCreatedAtAndPatientId, villageCode: String): String {
+        val startIndex = chiefDomId.toString().length + villageCode.length + SecuredPreference.getUserId().toString().length
+        val lastPatientId = lastCreatedAtAndPatientId.lastPatientId?.substring(startIndex,lastCreatedAtAndPatientId.lastPatientId.length)?.toInt() ?: 0
+        val numericPart = (lastPatientId + 1).toString().padStart(4, '0')
+        return "$chiefDomId$villageCode${SecuredPreference.getUserId()}$numericPart"
     }
 
     suspend fun getMemberDetailsByID(
@@ -84,5 +115,13 @@ class MemberRegistrationRepository @Inject constructor(
     }
     suspend fun updateHeadCount(householdId: Long, newNoOfPeople: Int) {
         return roomHelper.updateHeadCount(householdId, newNoOfPeople)
+    }
+
+    suspend fun getLastPatientId(): LastCreatedAtAndPatientId {
+        return roomHelper.getLastPatientId()
+    }
+
+    suspend fun getChiefDomAndVillageCodeByVillageId(villageId: Long): VillageInfo {
+        return roomHelper.getChiefDomAndVillageCodeByVillageId(villageId)
     }
 }

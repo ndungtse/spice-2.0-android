@@ -4,6 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.appextensions.postSuccess
+import com.medtroniclabs.spice.data.VillageInfo
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.data.LocalSpinnerResponse
 import com.medtroniclabs.spice.db.entity.HouseholdEntity
@@ -52,6 +53,10 @@ class HouseHoldRepository @Inject constructor(
         }
     }
 
+    suspend fun getChiefDomAndVillageCodeByVillageId(id: Long): VillageInfo {
+       return roomHelper.getChiefDomAndVillageCodeByVillageId(id)
+    }
+
     suspend fun getAllVillagesName(villageListResponse: MutableLiveData<Resource<List<VillageEntity>>>) {
         val response = roomHelper.getAllVillageName()
         villageListResponse.postSuccess(response)
@@ -87,6 +92,7 @@ class HouseHoldRepository @Inject constructor(
         val bedNetCount = map[HouseHoldRegistration.bedNetCount]
         val villageLongID = CommonUtils.getLongOrNull(villageID) ?: 0
         val lastHouseHoldNo = getLastHouseholdNo(villageLongID) ?: 0
+        val headCount = getMemberCountPerHouseHold(householdId)
         return HouseholdEntity(
             id = getPrimaryId(householdId, houseHoldDetailLiveData),
             householdNo = getRegisteredHouseholdNo(
@@ -98,7 +104,10 @@ class HouseHoldRepository @Inject constructor(
             villageId = villageLongID,
             landmark = CommonUtils.getStringOrEmptyString(landmark),
             headPhoneNumber = CommonUtils.getStringOrEmptyString(headPhoneNumber),
-            noOfPeople = CommonUtils.getIntegerOrNull(noOfPeople) ?: 0,
+            noOfPeople = checkHeadCountOfHouseHold(
+                CommonUtils.getIntegerOrNull(noOfPeople) ?: 0,
+                headCount
+            ),
             isOwnedAnImprovedLatrine = CommonUtils.getIsBooleanFromString(isOwnedAnImprovedLatrine),
             isOwnedHandWashingFacilityWithSoap = CommonUtils.getIsBooleanFromString(
                 isOwnedHandWashingFacilityWithSoap
@@ -108,6 +117,16 @@ class HouseHoldRepository @Inject constructor(
         )
     }
 
+    private fun checkHeadCountOfHouseHold(
+        givenHeadCount: Int,
+        memberCount: Int
+    ): Int {
+        return if (memberCount > givenHeadCount) {
+            memberCount
+        } else {
+            givenHeadCount
+        }
+    }
     private fun getRegisteredHouseholdNo(
         lastHouseHoldNo: Long,
         householdId: Long,
@@ -148,5 +167,9 @@ class HouseHoldRepository @Inject constructor(
     suspend fun getVillageByID(villageId: Long, villageListResponse: MutableLiveData<Resource<VillageEntity>>) {
         val response = roomHelper.getVillageByID(villageId)
         villageListResponse.postSuccess(response)
+    }
+
+    suspend fun getMemberCountPerHouseHold(householdId: Long): Int {
+        return roomHelper.getMemberCountPerHouseHold(householdId)
     }
 }

@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import com.medtroniclabs.spice.data.VillageInfo
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowEntity
 import com.medtroniclabs.spice.db.entity.FormEntity
 import com.medtroniclabs.spice.db.entity.HealthFacilityEntity
@@ -84,6 +85,9 @@ interface MetaDataDAO {
 
     @Query("SELECT * FROM VillageEntity ORDER BY name ASC")
     suspend fun getVillages(): List<VillageEntity>
+
+    @Query("SELECT chiefdomId,code FROM VillageEntity WHERE id =:id")
+    suspend fun getChiefDomAndVillageCodeByVillageId(id: Long): VillageInfo
 
     @Query("SELECT * FROM VillageEntity where id = :villageId")
     suspend fun getVillageByID(villageId: Long): VillageEntity

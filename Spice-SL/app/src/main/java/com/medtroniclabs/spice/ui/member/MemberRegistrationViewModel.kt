@@ -4,6 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.medtroniclabs.spice.appextensions.postError
+import com.medtroniclabs.spice.data.VillageInfo
 import com.medtroniclabs.spice.db.entity.HouseholdEntity
 import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
 import com.medtroniclabs.spice.di.IoDispatcher
@@ -22,11 +23,12 @@ class MemberRegistrationViewModel @Inject constructor(
 ) : ViewModel() {
 
     var selectedHouseholdId: Long = -1L
-    private var noOfPerson: Int = 0
+    var noOfPerson: Int = 0
     var memberRegistrationLiveData = MutableLiveData<Resource<Long>>()
     var startAssessment: Boolean? = null
     val memberDetailsLiveData = MutableLiveData<Resource<HouseholdMemberEntity>>()
     val formLayoutsLiveData = MutableLiveData<Resource<String>>()
+    var villageId: Long = -1L
 
     fun registerMember(map: HashMap<String, Any>, householdId: Long) {
         if (householdId == -1L)
@@ -34,8 +36,9 @@ class MemberRegistrationViewModel @Inject constructor(
         try {
             viewModelScope.launch(dispatcherIO) {
                 selectedHouseholdId = householdId
+
                 memberRegistrationRepository.registerMember(
-                    map, householdId, memberRegistrationLiveData, memberDetailsLiveData, noOfPerson
+                    map, householdId, memberRegistrationLiveData, memberDetailsLiveData, noOfPerson,villageId
                 )
             }
         } catch (e: Exception) {
@@ -49,7 +52,9 @@ class MemberRegistrationViewModel @Inject constructor(
     ) {
         viewModelScope.launch(dispatcherIO) {
             val count =  householdEntity.noOfPeople
+            villageId = householdEntity.villageId
             val rowId = houseHoldRepository.registerHousehold(householdEntity)
+            selectedHouseholdId = rowId
             noOfPerson = count
             registerMember(memberResultMap, rowId)
         }

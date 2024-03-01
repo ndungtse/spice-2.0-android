@@ -1,5 +1,7 @@
 package com.medtroniclabs.spice.db.local
 
+import com.medtroniclabs.spice.data.LastCreatedAtAndPatientId
+import com.medtroniclabs.spice.data.VillageInfo
 import com.medtroniclabs.spice.db.dao.AssessmentDAO
 import com.medtroniclabs.spice.db.dao.HouseholdDAO
 import com.medtroniclabs.spice.db.dao.MemberDAO
@@ -61,6 +63,10 @@ class RoomHelperImpl @Inject constructor(
 
     override suspend fun getMemberCountPerHouseHold(householdId: Long): Int {
         return memberDAO.getMemberCountPerHouseHold(householdId)
+    }
+
+    override suspend fun getLastPatientId(): LastCreatedAtAndPatientId {
+        return memberDAO.getLastPatientId()
     }
 
     override suspend fun saveAssessment(assessmentEntity: AssessmentEntity): Long {
@@ -140,6 +146,10 @@ class RoomHelperImpl @Inject constructor(
 
     override suspend fun deleteAllSymptoms() {
         metaDataDAO.deleteAllSymptoms()
+    }
+
+    override suspend fun getChiefDomAndVillageCodeByVillageId(id: Long): VillageInfo {
+        return metaDataDAO.getChiefDomAndVillageCodeByVillageId(id)
     }
 
 
