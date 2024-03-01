@@ -2,6 +2,7 @@ package com.medtroniclabs.spice.common
 
 import android.content.Context
 import android.content.res.AssetManager
+import android.widget.TextView
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.MONTHS
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.Month
@@ -11,6 +12,9 @@ import com.medtroniclabs.spice.formgeneration.config.DefinedParams.YEARS
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.Year
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.ZERO
 import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration
+import java.time.LocalDate
+import java.util.Calendar
+import java.util.Date
 
 object CommonUtils {
     fun checkIsTablet(context: Context): Boolean {
@@ -96,6 +100,28 @@ object CommonUtils {
 
     fun convertListToString(dispensedList: ArrayList<String>): String {
         return dispensedList.joinToString(separator = ", ")
+    }
+
+    fun getYearMonthAndWeeks (dateString: String): Triple<String, String, String> {
+        val parts = dateString.split("/")
+        return Triple(parts[0], parts[1], parts[2])
+    }
+
+    fun calculateAgeString(map: HashMap<String, Any>): String {
+        val year = map[Year]
+        val month = map[Month]
+        val week = map[Week]
+        return "${year?.toString() ?: ""}/${month?.toString() ?: ""}/${week?.toString() ?: ""}"
+    }
+
+    fun getDurationInYMD(input: String, context: Context): String {
+        val parts = input.split('/')
+
+        return when {
+            parts[0] == DefinedParams.ZERO && parts[1] == DefinedParams.ZERO -> context.getString(R.string.weeks_w, parts[2])
+            parts[0] == DefinedParams.ZERO -> context.getString(R.string.months_m, parts[1])
+            else -> context.getString(R.string.years_y, parts[0])
+        }
     }
 
 }

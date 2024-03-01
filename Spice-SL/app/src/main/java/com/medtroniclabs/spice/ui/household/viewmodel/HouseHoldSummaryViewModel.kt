@@ -23,11 +23,9 @@ class HouseHoldSummaryViewModel @Inject constructor(
 ) : ViewModel() {
 
     var houseHoldId: Long = -1L
-
     var isFromHouseHoldRegistration: Boolean = false
-
     val houseHoldDetailLiveData = MutableLiveData<Resource<HouseholdEntity>>()
-
+    var selectedMemberId  = -1L
     var memberListLiveData = MutableLiveData<Resource<ArrayList<HouseholdMemberEntity>>>()
 
     fun getHouseHoldDetailsById() {

@@ -127,8 +127,6 @@ class AssessmentTBFragment : Fragment(), FormEventListener, View.OnClickListener
 
     private fun showPatientBioData(data: HouseholdMemberEntity?) {
         data?.let {
-            binding.nationalId.tvKey.text = getString(R.string.national_id)
-            binding.nationalId.tvValue.text = data.nationalId
             binding.patientName.tvKey.text = getString(R.string.name)
             binding.patientName.tvValue.text = data.name.capitalizeFirstChar()
             binding.gender.tvKey.text = getString(R.string.gender)

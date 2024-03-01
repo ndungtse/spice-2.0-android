@@ -28,6 +28,7 @@ class HouseRegistrationViewModel @Inject constructor(
     var houseHoldUpdateLiveData = MutableLiveData<Resource<Long>>()
     val houseHoldDetailLiveData = MutableLiveData<Resource<HouseholdEntity>>()
     var householdId: Long = -1L
+    var memberID: Long = -1L
 
     fun updateHousehold(map: HashMap<String, Any>) {
         viewModelScope.launch(dispatcherIO) {

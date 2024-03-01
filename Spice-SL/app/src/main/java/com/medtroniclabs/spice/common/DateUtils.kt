@@ -180,4 +180,14 @@ object DateUtils {
         }
     }
 
+    fun convertInputOutputFormat(inputDate: String, inputDateFormat: String, outputDateFormat: String):String? {
+        return try {
+            val inputFormat = SimpleDateFormat(inputDateFormat, Locale.ENGLISH)
+            val outputFormat = SimpleDateFormat(outputDateFormat, Locale.ENGLISH)
+            return inputFormat.parse(inputDate)?.let { outputFormat.format(it)}.toString()
+        } catch (exception: Exception) {
+            null
+        }
+    }
+
 }

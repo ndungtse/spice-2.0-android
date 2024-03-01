@@ -1719,10 +1719,31 @@ class FormGenerator(
             }
         }
 
+        if (view is AppCompatTextView) {
+            when (value) {
+                is String -> {
+                    view.text = value
+                }
+
+                is Int -> {
+                    view.text = value.toString()
+                }
+
+                else -> {
+                    view.text = ""
+                }
+            }
+        }
+
         if (view is Spinner) {
             val adapter = view.adapter
             if (adapter != null && adapter is CustomSpinnerAdapter && value is Long) {
                 val selectedIndex = adapter.getIndexOfItem(value)
+                if (selectedIndex != -1)
+                    view.setSelection(selectedIndex, true)
+            }
+            if (adapter != null && adapter is CustomSpinnerAdapter && value is String) {
+                val selectedIndex = adapter.getIndexOfItemByName(value)
                 if (selectedIndex != -1)
                     view.setSelection(selectedIndex, true)
             }

@@ -140,6 +140,10 @@ class HouseholdSummaryActivity : BaseActivity(), MemberSelectionListener, View.O
                     R.id.editHousehold -> {
                         editHouseholdDetails()
                     }
+                    R.id.editMember -> {
+                        MemberEditDialogFragment.newInstance(this@HouseholdSummaryActivity)
+                            .show(supportFragmentManager, MemberEditDialogFragment.TAG)
+                    }
                 }
                 return true
             }
@@ -148,10 +152,17 @@ class HouseholdSummaryActivity : BaseActivity(), MemberSelectionListener, View.O
         popupMenu.show()
     }
 
-    override fun onMemberSelected(id: Long) {
-        val intent = Intent(this, ToolsActivity::class.java)
-        intent.putExtra(DefinedParams.MemberID, id)
-        startActivity(intent)
+    override fun onMemberSelected(item: Long, isEdit: Boolean) {
+        if (isEdit){
+            val intent = Intent(this, HouseholdActivity::class.java)
+            intent.putExtra(DefinedParams.MemberID, item)
+            startActivity(intent)
+            this.finish()
+        } else {
+            val intent = Intent(this, ToolsActivity::class.java)
+            intent.putExtra(DefinedParams.MemberID, item)
+            startActivity(intent)
+        }
     }
 
     private fun setListener() {

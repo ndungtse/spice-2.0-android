@@ -24,7 +24,6 @@
             android:id="@+id/tvMemberName"
             android:layout_height="wrap_content"
             android:layout_width="0dp"
-            android:text="Moho Household"
             android:textColor="@color/grey_black"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"

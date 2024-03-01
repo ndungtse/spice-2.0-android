@@ -16,8 +16,6 @@ data class HouseholdMemberEntity(
     @ColumnInfo("date_of_birth")
     val dateOfBirth:String,
     val age:String,
-    @ColumnInfo("national_id")
-    val nationalId:String,
     val gender: String,
     @ColumnInfo("household_head_relationship")
     val householdHeadRelationship:String,

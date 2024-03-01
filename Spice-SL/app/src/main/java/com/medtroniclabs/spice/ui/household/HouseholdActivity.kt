@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.common.DefinedParams.MemberID
 import com.medtroniclabs.spice.common.DefinedParams.isMemberRegistration
 import com.medtroniclabs.spice.databinding.ActivityHouseholdRegistrationBinding
 import com.medtroniclabs.spice.network.resource.ResourceState
@@ -15,7 +16,6 @@ import com.medtroniclabs.spice.ui.household.fragment.HouseHoldRegistrationFragme
 import com.medtroniclabs.spice.ui.household.summary.HouseholdSummaryActivity
 import com.medtroniclabs.spice.ui.household.viewmodel.HouseRegistrationViewModel
 import com.medtroniclabs.spice.ui.member.MemberRegistrationFragment
-import com.medtroniclabs.spice.ui.member.MemberRegistrationViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -42,7 +42,8 @@ class HouseholdActivity : BaseActivity() {
             intent.getBooleanExtra(isMemberRegistration, false)
         householdRegistrationViewModel.householdId =
             intent.getLongExtra(HouseholdDefinedParams.ID, -1L)
-        loadFragment(if (householdRegistrationViewModel.isMemberRegistration) 2 else 1)
+        householdRegistrationViewModel.memberID = intent.getLongExtra(MemberID, -1L)
+        loadFragment(if (householdRegistrationViewModel.isMemberRegistration || (householdRegistrationViewModel.memberID != -1L)) 2 else 1)
     }
 
 

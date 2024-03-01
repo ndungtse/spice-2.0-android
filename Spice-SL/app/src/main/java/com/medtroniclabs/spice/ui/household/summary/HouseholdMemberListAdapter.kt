@@ -35,7 +35,7 @@ class HouseholdMemberListAdapter(
         val item = houseHoldMembersList[position]
         holder.binding.tvMemberName.text = getMemberInfoText(holder.context, item)
         holder.binding.cardPatient.safeClickListener {
-            listener.onMemberSelected(item.id)
+            listener.onMemberSelected(item.id, false)
         }
     }
 

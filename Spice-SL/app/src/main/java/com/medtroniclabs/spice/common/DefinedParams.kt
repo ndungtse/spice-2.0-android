@@ -7,6 +7,7 @@ object DefinedParams {
 
     const val ID = "id"
     const val male = "male"
+    const val female = "female"
     const val AT_CHAR = "@"
     const val span_count_1 = 1
     const val span_count_3 = 3
@@ -78,4 +79,6 @@ object DefinedParams {
     const val GENERAL_SCREENING = "GENERAL_SCREENING"
     const val SCREENING = "screening"
     const val HOUSEHOLD_MEMBER_REGISTRATION = "household_member_registration"
+    const val DefaultSelectID = -1L
+    const val DefaultIDLabel = "--Select--"
 }
