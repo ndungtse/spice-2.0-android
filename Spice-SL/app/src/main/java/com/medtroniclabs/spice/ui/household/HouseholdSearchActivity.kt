@@ -75,7 +75,9 @@ class HouseholdSearchActivity : BaseActivity(), View.OnClickListener, HouseholdS
         }
 
         override fun afterTextChanged(s: Editable?) {
-            binding.llExactSearch.btnSearch.isEnabled = (s?.trim()?.count() ?: 0) > 0
+            val input = s?.trim().toString()
+            binding.llExactSearch.btnSearch.isEnabled =
+                input.isNotEmpty() && ((input[0].isLetter() && input.length >= 3) || input[0].isDigit())
         }
     }
 

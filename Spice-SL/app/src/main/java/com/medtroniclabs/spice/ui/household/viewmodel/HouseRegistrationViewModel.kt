@@ -6,8 +6,16 @@ import androidx.lifecycle.viewModelScope
 import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.appextensions.postSuccess
+import com.medtroniclabs.spice.common.CommonUtils.getIntegerOrNull
+import com.medtroniclabs.spice.common.CommonUtils.getIsBooleanFromString
+import com.medtroniclabs.spice.common.CommonUtils.getLongOrNull
+import com.medtroniclabs.spice.common.CommonUtils.getStringOrEmptyString
+import com.medtroniclabs.spice.data.LocalSpinnerResponse
 import com.medtroniclabs.spice.db.entity.HouseholdEntity
 import com.medtroniclabs.spice.di.IoDispatcher
+import com.medtroniclabs.spice.formgeneration.config.DefinedParams
+import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration
+import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.villageId
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.repo.HouseHoldRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -28,6 +36,7 @@ class HouseRegistrationViewModel @Inject constructor(
     var houseHoldUpdateLiveData = MutableLiveData<Resource<Long>>()
     val houseHoldDetailLiveData = MutableLiveData<Resource<HouseholdEntity>>()
     var householdId: Long = -1L
+    var villageListResponse = MutableLiveData<Resource<LocalSpinnerResponse>>()
     var memberID: Long = -1L
 
     fun updateHousehold(map: HashMap<String, Any>) {
@@ -72,6 +81,16 @@ class HouseRegistrationViewModel @Inject constructor(
     fun getFormData(formType: String) {
         viewModelScope.launch(dispatcherIO) {
             houseHoldRepository.getFormData(formType, formLayoutsLiveData)
+        }
+    }
+
+    fun loadDataCacheByType(type: String, tag: String) {
+        viewModelScope.launch(dispatcherIO) {
+            when (type) {
+                villageId -> {
+                    houseHoldRepository.getUserVillages(villageListResponse, tag)
+                }
+            }
         }
     }
 }

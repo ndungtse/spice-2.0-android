@@ -15,11 +15,12 @@ class CustomSpinnerAdapter(context: Context,val translate:Boolean =false) :
     ArrayAdapter<String>(context, R.layout.spinner_drop_down_item) {
 
     var itemList = ArrayList<Map<String, Any>>()
-
+    var emptyLayoutResourceId: Int = R.layout.spinner_drop_down_item
     override fun getCount(): Int = itemList.size
 
     fun setData(listItems: ArrayList<Map<String, Any>>) {
         itemList = listItems
+        notifyDataSetChanged()
     }
 
     fun getData(position: Int) : Map<String, Any>? {
@@ -51,7 +52,13 @@ class CustomSpinnerAdapter(context: Context,val translate:Boolean =false) :
     }
 
     override fun getDropDownView(position: Int, mView: View?, parentGroup: ViewGroup): View {
-        return createView(position, parentGroup)
+        if (itemList.isEmpty()) {
+            // If itemList is empty, inflate the empty state layout
+            return LayoutInflater.from(parentGroup.context).inflate(emptyLayoutResourceId, parentGroup, false)
+        } else {
+            // If itemList is not empty, create and return the regular item view
+            return createView(position, parentGroup)
+        }
     }
 
     fun getIndexOfItem(id: Long): Int {

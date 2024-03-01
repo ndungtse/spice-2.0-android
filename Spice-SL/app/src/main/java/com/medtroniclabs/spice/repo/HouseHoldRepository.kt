@@ -5,6 +5,7 @@ import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.appextensions.postSuccess
 import com.medtroniclabs.spice.common.CommonUtils
+import com.medtroniclabs.spice.data.LocalSpinnerResponse
 import com.medtroniclabs.spice.db.entity.HouseholdEntity
 import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
 import com.medtroniclabs.spice.db.entity.VillageEntity
@@ -13,6 +14,7 @@ import com.medtroniclabs.spice.db.response.HouseHoldEntityWithMemberCount
 import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration
 import com.medtroniclabs.spice.network.ApiHelper
 import com.medtroniclabs.spice.network.resource.Resource
+import com.medtroniclabs.spice.network.resource.ResourceState
 import javax.inject.Inject
 
 class HouseHoldRepository @Inject constructor(
@@ -123,5 +125,23 @@ class HouseHoldRepository @Inject constructor(
         return if (householdId != -1L) {
             houseHoldDetailLiveData.value?.data?.id ?: -1
         } else 0
+    }
+
+    suspend fun getUserVillages(
+        villageListResponse: MutableLiveData<Resource<LocalSpinnerResponse>>,
+        tag: String
+    ) {
+        try {
+            villageListResponse.postLoading()
+            val response = roomHelper.getUserVillages()
+            villageListResponse.postValue(
+                Resource(
+                    ResourceState.SUCCESS,
+                    LocalSpinnerResponse(tag, response)
+                )
+            )
+        } catch (_: Exception) {
+            villageListResponse.postError()
+        }
     }
 }

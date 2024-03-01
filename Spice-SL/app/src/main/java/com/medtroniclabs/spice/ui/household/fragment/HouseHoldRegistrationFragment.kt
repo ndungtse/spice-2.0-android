@@ -5,17 +5,23 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.appcompat.widget.AppCompatSpinner
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.common.DefinedParams
+import com.medtroniclabs.spice.common.DefinedParams.Authorization
+import com.medtroniclabs.spice.data.LocalSpinnerResponse
 import com.medtroniclabs.spice.databinding.FragmentHouseHoldRegistrationBinding
 import com.medtroniclabs.spice.db.entity.HouseholdEntity
+import com.medtroniclabs.spice.db.entity.VillageEntity
 import com.medtroniclabs.spice.formgeneration.FormGenerator
 import com.medtroniclabs.spice.formgeneration.listener.FormEventListener
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.model.FormResponse
+import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
 import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.bedNetCount
 import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.headPhoneNumber
 import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.householdName
@@ -32,6 +38,7 @@ import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.household.HouseholdDefinedParams.REGISTRATION
 import com.medtroniclabs.spice.ui.household.viewmodel.HouseRegistrationViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import timber.log.Timber
 
 @AndroidEntryPoint
 class HouseHoldRegistrationFragment : Fragment(), View.OnClickListener, FormEventListener {
@@ -77,6 +84,45 @@ class HouseHoldRegistrationFragment : Fragment(), View.OnClickListener, FormEven
 
                 ResourceState.ERROR -> {
                     (activity as? BaseActivity)?.hideLoading()
+                }
+            }
+        }
+
+        householdRegistrationViewModel.villageListResponse.observe(viewLifecycleOwner) { resourceState ->
+            when (resourceState.state) {
+                ResourceState.SUCCESS -> {
+                    resourceState.data?.let { data ->
+                        val view = formGenerator.getViewByTag(data.tag) as AppCompatSpinner
+                        if (view is AppCompatSpinner && view.adapter is CustomSpinnerAdapter) {
+                            val mapList = ArrayList<Map<String, Any>>()
+                            if (data.response is List<*>) {
+                                data.response.forEach { properties ->
+                                    val map = HashMap<String, Any>()
+                                    mapsIdName(properties, map)
+                                    if (map.size > 1){
+                                        mapList.add(map)
+                                    } else {
+                                        mapList.remove(
+                                            hashMapOf<String, Any>(
+                                                DefinedParams.NAME to DefinedParams.DefaultIDLabel,
+                                                DefinedParams.ID to "-1"
+                                            )
+                                        )
+                                        mapList.add(map)
+                                    }
+                                }
+                                (view.adapter as CustomSpinnerAdapter).setData(mapList)
+                                val itemSize = data.response.size
+                                if (itemSize > 0) {
+                                    view.setSelection(1,true)
+                                    prefillVillageEntity(null, view)
+                                }
+                            }
+                        }
+                    }
+                }
+                else -> {
+                    //Invoked if response state is not success
                 }
             }
         }
@@ -217,6 +263,9 @@ class HouseHoldRegistrationFragment : Fragment(), View.OnClickListener, FormEven
     }
 
     override fun loadLocalCache(id: String, localDataCache: Any, selectedParent: Long?) {
+        if (localDataCache is String){
+            householdRegistrationViewModel.loadDataCacheByType(id, localDataCache)
+        }
     }
 
     override fun onPopulate(targetId: String) {
@@ -251,4 +300,30 @@ class HouseHoldRegistrationFragment : Fragment(), View.OnClickListener, FormEven
             householdRegistrationViewModel.getHouseholdDetailsByID(householdRegistrationViewModel.householdId)
         }
     }
+
+    fun mapsIdName(properties: Any?, map: HashMap<String, Any>) {
+        when (properties) {
+            is VillageEntity -> {
+                updateMapsIdName(map, properties.id, properties.name)
+            }
+        }
+    }
+
+    private fun updateMapsIdName(map: HashMap<String, Any>, id: Long, name: String) {
+        map[DefinedParams.ID] = id
+        map[DefinedParams.NAME] = name
+    }
+
+    fun prefillVillageEntity(prefillValue: String?, view: AppCompatSpinner) {
+        if (!prefillValue.isNullOrBlank()) {
+            val selectedIndex =
+                (view.adapter as CustomSpinnerAdapter).getIndexOfItemByName(
+                    prefillValue
+                )
+            if (selectedIndex != -1) {
+                view.setSelection(selectedIndex, true)
+            }
+        }
+    }
+
 }

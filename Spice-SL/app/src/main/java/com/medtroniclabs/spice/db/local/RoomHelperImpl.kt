@@ -170,4 +170,6 @@ class RoomHelperImpl @Inject constructor(
     override suspend fun getUserProfile(): UserProfileEntity {
         return metaDataDAO.getUserProfile()
     }
+
+    override suspend fun getUserVillages(): List<VillageEntity> = metaDataDAO.getVillages()
 }

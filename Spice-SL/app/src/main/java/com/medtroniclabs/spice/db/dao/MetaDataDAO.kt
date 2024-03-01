@@ -81,4 +81,7 @@ interface MetaDataDAO {
 
     @Query("DELETE FROM SymptomEntity")
     suspend fun deleteAllSymptoms()
+
+    @Query("SELECT * FROM VillageEntity ORDER BY name ASC")
+    suspend fun getVillages(): List<VillageEntity>
 }
