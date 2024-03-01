@@ -40,6 +40,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.CommonUtils.displayAge
 import com.medtroniclabs.spice.common.DateUtils
+import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.databinding.AgeDobLayoutBinding
 import com.medtroniclabs.spice.databinding.CardLayoutBinding
 import com.medtroniclabs.spice.databinding.CheckboxDialogSpinnerLayoutBinding
@@ -93,6 +94,8 @@ import com.medtroniclabs.spice.formgeneration.ui.SingleSelectionCustomView
 import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
 import com.medtroniclabs.spice.formgeneration.utility.DigitsInputFilter
 import com.medtroniclabs.spice.formgeneration.utility.FormFieldValidator
+import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.headPhoneNumber
+import com.medtroniclabs.spice.mappingkey.MemberRegistration.phoneNumber
 import java.util.Calendar
 
 
@@ -217,6 +220,13 @@ class FormGenerator(
             checkGenerateAction(this, binding)
             binding.tvTitle.text = updateTitle(title, translate, titleCulture, unitMeasurement)
 
+            if (serverViewModel.id.contains(phoneNumber) || serverViewModel.id.contains(headPhoneNumber)) {
+                SecuredPreference.getPhoneNumberCode()?.let { phoneNumberCode ->
+                    binding.llCountryCode.visibility = View.VISIBLE
+                    binding.tvCountryCode.text = phoneNumberCode
+                }
+            }
+
             maxLines?.let { binding.etUserInput.setLines(it) }
                 ?: binding.etUserInput.setSingleLine()
 
@@ -286,14 +296,6 @@ class FormGenerator(
 
             binding.etUserInput.addTextChangedListener { editable: Editable? ->
                 when {
-                    id.contains(
-                        DefinedParams.PhoneNumber,
-                        ignoreCase = true
-                    ) && !FormFieldValidator.isValidMobileNumber(editable.toString()) -> {
-                        resultHashMap.remove(id)
-                        setConditionalVisibility(serverViewModel, null)
-                    }
-
                     editable.isNullOrBlank() -> {
                         if (editScreen == true) {
                             if ((inputType != null && (inputType == InputType.TYPE_CLASS_NUMBER ||
@@ -1597,11 +1599,31 @@ class FormGenerator(
         focusNeeded = null
         serverData?.forEach { data ->
             data.apply {
-                if ((isMandatory && !resultHashMap.containsKey(id)
-                            && isViewVisible(id) && isViewEnabled(id)) ||
-                    (isMandatory && resultHashMap.containsKey(id)
-                            && resultHashMap[id] is String && (resultHashMap[id] as String).isEmpty())
-                ) {
+
+                if ((id == headPhoneNumber || id == phoneNumber) && isMandatory && resultHashMap.containsKey(id)) {
+                    val actualValue = resultHashMap[id] as? String
+                    actualValue?.let {
+                        if (!startsWith.isNullOrEmpty() && !checkPhoneNumberValidOrNot(it, startsWith)) {
+                            isValid = false
+                            requestFocusView(
+                                data, getString(
+                                    R.string.start_with_validation,
+                                    startsWith?.joinToString(separator = " ${getString(R.string.or)}") ?: ""
+                                )
+                            )
+                        } else if (!phoneNumberConatinMaxLength(maxLength, it) || !FormFieldValidator.isValidMobileNumber(it)) {
+                            isValid = false
+                            requestFocusView(data)
+                        } else {
+                            hideValidationField(data)
+                        }
+                    } ?: run {
+                        isValid = false
+                        requestFocusView(data)
+                    }
+                } else if (isMandatory && ((!resultHashMap.containsKey(id) && isViewVisible(id) && isViewEnabled(id))
+                            || (resultHashMap[id] is String && (resultHashMap[id] as String).isEmpty())))
+                {
                     isValid = false
                     requestFocusView(data)
                 } else {
@@ -1620,6 +1642,22 @@ class FormGenerator(
     private fun isViewEnabled(id: String): Boolean {
         val view = getViewByTag(id)
         return view != null && view.isEnabled
+    }
+
+    private fun phoneNumberConatinMaxLength(maxLength: Int?, actualValue: String): Boolean {
+        return (maxLength != null && actualValue.length == maxLength)
+    }
+    private fun checkPhoneNumberValidOrNot(
+        actualValue: String,
+        startsWithArray: ArrayList<String>?
+    ): Boolean {
+        var valid = false
+        startsWithArray?.forEach { value ->
+            if (actualValue.startsWith(value, true)) {
+                valid = true
+            }
+        }
+        return valid
     }
 
     private fun requestFocusView(serverViewModel: FormLayout, message: String? = null) {

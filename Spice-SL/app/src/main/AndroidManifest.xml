@@ -21,6 +21,7 @@
             android:exported="false" />
         <activity
             android:name=".ui.assessment.AssessmentActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
             android:exported="false" />
         <activity
             android:name=".ui.medicalreview.MedicalReviewBaseActivity"
@@ -34,6 +35,7 @@
             android:exported="false" />
         <activity
             android:name=".ui.household.HouseholdActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
             android:exported="false" />
         <activity
             android:name=".ui.landing.LandingActivity"
