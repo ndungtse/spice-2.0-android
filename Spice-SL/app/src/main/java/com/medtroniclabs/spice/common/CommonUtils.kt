@@ -73,19 +73,32 @@ object CommonUtils {
         return (answer is String) && answer.equals(HouseHoldRegistration.yes, true)
     }
 
-    fun displayAge(resultHashMap: HashMap<String, Any>, context: Context): String {
+    fun displayAge(resultHashMap: HashMap<String, Any>, context: Context): String? {
         val years = resultHashMap[Year] as? Int ?: 0
-        val months = resultHashMap[Month] as? Int ?: 0
-        val weeks = resultHashMap[Week] as? Int ?: 0
-        return if (years != ZERO) {
-            return if (months != ZERO) "$years $YEARS $months $MONTHS" else "$years $YEARS"
-        } else if (months != ZERO) {
-            return "$months $MONTHS"
-        } else if (weeks != ZERO) {
-            return "$weeks $WEEKS"
-        } else {
-            context.getString(R.string.separator_hyphen)
+        var months = resultHashMap[Month] as? Int ?: 0
+        var weeks = resultHashMap[Week] as? Int ?: 0
+
+        if (months == 0 && years == 0 && weeks == 0) {
+            return context.getString(R.string.separator_hyphen)
         }
+        val strBuilder = StringBuilder()
+
+        if (years >= 5)
+            strBuilder.append("$years $YEARS ")
+        else {
+            if (years > 0) {
+                months += (years * 12) + (weeks / 4)
+                weeks = 0
+            }
+        }
+
+        if (months > 0)
+            strBuilder.append("$months $MONTHS ")
+
+        if (weeks > 0)
+            strBuilder.append("$weeks $WEEKS")
+
+        return strBuilder.toString()
     }
 
     fun getDuration(input: String, context: Context): String {

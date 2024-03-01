@@ -182,7 +182,7 @@ class MemberRegistrationFragment : Fragment(), FormEventListener, View.OnClickLi
             }
         }
         details.dateOfBirth.let {
-            val dateOfBirth = DateUtils.convertInputOutputFormat(it, DATE_FORMAT_yyyyMMddHHmmssZZZZZ, DATE_ddMMyyyy)
+            val dateOfBirth = DateUtils.convertDateFormat(it, DATE_FORMAT_yyyyMMddHHmmssZZZZZ, DATE_ddMMyyyy)
             formGenerator.getViewByTag(MemberRegistration.dateOfBirth)?.let { view ->
                 formGenerator.setValueForView(dateOfBirth, view)
             }

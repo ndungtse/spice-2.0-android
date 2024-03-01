@@ -179,15 +179,19 @@ object DateUtils {
             Triple(null, null, null)
         }
     }
+    fun convertDateFormat(
+        inputDateString: String,
+        inputDateFormat: String,
+        outputDateFormat: String
+    ): String {
+        val inputFormat = SimpleDateFormat(inputDateFormat, Locale.getDefault())
 
-    fun convertInputOutputFormat(inputDate: String, inputDateFormat: String, outputDateFormat: String):String? {
         return try {
-            val inputFormat = SimpleDateFormat(inputDateFormat, Locale.ENGLISH)
-            val outputFormat = SimpleDateFormat(outputDateFormat, Locale.ENGLISH)
-            return inputFormat.parse(inputDate)?.let { outputFormat.format(it)}.toString()
-        } catch (exception: Exception) {
-            null
+            val date = inputFormat.parse(inputDateString)
+            val outputFormat = SimpleDateFormat(outputDateFormat, Locale.getDefault())
+            date?.let { outputFormat.format(it) } ?: " "
+        } catch (e: Exception) {
+            " "
         }
     }
-
 }
