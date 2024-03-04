@@ -28,9 +28,6 @@ class HouseholdActivity : BaseActivity() {
 
     private val householdRegistrationViewModel: HouseRegistrationViewModel by viewModels()
 
-    private val memberRegistrationViewModel: MemberRegistrationViewModel by viewModels()
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityHouseholdRegistrationBinding.inflate(layoutInflater)

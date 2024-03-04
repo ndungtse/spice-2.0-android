@@ -239,6 +239,9 @@ class HouseHoldRegistrationFragment : Fragment(), View.OnClickListener, FormEven
     }
 
     private fun initializeFormGenerator() {
+        if (householdRegistrationViewModel.householdId != -1L) {
+            binding.btnNext.text = getString(R.string.submit)
+        }
         formGenerator = FormGenerator(
             requireContext(), binding.llForm, null, this, binding.scrollView,
             translate = false

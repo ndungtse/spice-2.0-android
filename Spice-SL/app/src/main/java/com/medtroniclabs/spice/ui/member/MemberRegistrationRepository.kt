@@ -22,27 +22,19 @@ class MemberRegistrationRepository @Inject constructor(
         map: HashMap<String, Any>,
         householdId: Long,
         memberRegistrationLiveData: MutableLiveData<Resource<Long>>,
-        memberDetails: MutableLiveData<Resource<HouseholdMemberEntity>>,
-        noOfPerson: Int,
-        villageId: Long
+        memberDetails: MutableLiveData<Resource<HouseholdMemberEntity>>
     ) {
         try {
             memberRegistrationLiveData.postLoading()
-
-            val villageIdAndNoOfPeople: Pair<Int, Long> = if (villageId == -1L) {
-                roomHelper.getHouseHoldDetailsById(householdId).let {
-                    Pair(it.noOfPeople, it.villageId)
-                }
-            } else {
-                Pair(noOfPerson, villageId)
-            }
-            val memberRegistrationEntity = composeResultMapEntity(map, householdId, memberDetails,villageIdAndNoOfPeople)
+            val householdDetails = roomHelper.getHouseHoldDetailsById(householdId)
+            val villageId = householdDetails.villageId
+            val noOfPerson = householdDetails.noOfPeople
+            val memberRegistrationEntity = composeResultMapEntity(map, householdId, memberDetails,villageId)
 
             val rowId = roomHelper.registerMember(memberRegistrationEntity)
             if (memberDetails.value == null) {
                 val getCountOfHouseHold = getMemberCountPerHouseHold(householdId)
-                val getNoOfCount = if (noOfPerson == 0) villageIdAndNoOfPeople.first else noOfPerson
-                if (getCountOfHouseHold > getNoOfCount) {
+                if (getCountOfHouseHold > noOfPerson) {
                     updateHeadCount(householdId, getCountOfHouseHold)
                 }
             }
@@ -56,7 +48,7 @@ class MemberRegistrationRepository @Inject constructor(
         map: HashMap<String, Any>,
         householdId: Long,
         memberDetails: MutableLiveData<Resource<HouseholdMemberEntity>>,
-        villageIdAndNoOfPeople: Pair<Int, Long>
+        villageId: Long
     ): HouseholdMemberEntity {
         val name = map[MemberRegistration.name]
         val phoneNumber = map[MemberRegistration.phoneNumber]
@@ -78,7 +70,7 @@ class MemberRegistrationRepository @Inject constructor(
                 householdHeadRelationship
             ),
             householdId = householdId,
-            patientId = memberDetails.value?.data?.patientId ?: getChiefDomAndVillageCodeByVillageId(villageIdAndNoOfPeople.second).let { villageInfo ->
+            patientId = memberDetails.value?.data?.patientId ?: getChiefDomAndVillageCodeByVillageId(villageId).let { villageInfo ->
                 generatePatientId(
                     villageInfo.chiefdomId,
                     getLastPatientId(),

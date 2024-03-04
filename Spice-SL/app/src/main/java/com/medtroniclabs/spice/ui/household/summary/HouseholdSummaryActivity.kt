@@ -216,7 +216,6 @@ class HouseholdSummaryActivity : BaseActivity(), MemberSelectionListener, View.O
             val intent =
                 Intent(this@HouseholdSummaryActivity, HouseholdActivity::class.java)
             intent.putExtra(isMemberRegistration, false)
-            intent.putExtra(VillageId, householdSummaryViewModel.villageId)
             intent.putExtra(ID, householdSummaryViewModel.houseHoldId)
             startActivity(intent)
             finish()

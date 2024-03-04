@@ -180,4 +180,5 @@
     <string name="years_y">%1$s Y</string>
     <string name="household_successfully">Household registration \n completed successfully.</string>
     <string name="household_with_no">Household No : %1$s</string>
+    <string name="patient_id">Patient ID</string>
 </resources>

@@ -23,12 +23,10 @@ class MemberRegistrationViewModel @Inject constructor(
 ) : ViewModel() {
 
     var selectedHouseholdId: Long = -1L
-    var noOfPerson: Int = 0
     var memberRegistrationLiveData = MutableLiveData<Resource<Long>>()
     var startAssessment: Boolean? = null
     val memberDetailsLiveData = MutableLiveData<Resource<HouseholdMemberEntity>>()
     val formLayoutsLiveData = MutableLiveData<Resource<String>>()
-    var villageId: Long = -1L
 
     fun registerMember(map: HashMap<String, Any>, householdId: Long) {
         if (householdId == -1L)
@@ -36,9 +34,8 @@ class MemberRegistrationViewModel @Inject constructor(
         try {
             viewModelScope.launch(dispatcherIO) {
                 selectedHouseholdId = householdId
-
                 memberRegistrationRepository.registerMember(
-                    map, householdId, memberRegistrationLiveData, memberDetailsLiveData, noOfPerson,villageId
+                    map, householdId, memberRegistrationLiveData, memberDetailsLiveData
                 )
             }
         } catch (e: Exception) {
@@ -51,11 +48,8 @@ class MemberRegistrationViewModel @Inject constructor(
         memberResultMap: HashMap<String, Any>,
     ) {
         viewModelScope.launch(dispatcherIO) {
-            val count =  householdEntity.noOfPeople
-            villageId = householdEntity.villageId
             val rowId = houseHoldRepository.registerHousehold(householdEntity)
             selectedHouseholdId = rowId
-            noOfPerson = count
             registerMember(memberResultMap, rowId)
         }
     }

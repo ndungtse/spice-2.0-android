@@ -218,9 +218,6 @@ class MemberRegistrationFragment : Fragment(), FormEventListener, View.OnClickLi
     }
 
     private fun initializeView() {
-        memberRegistrationViewModel.noOfPerson =
-            householdRegistrationViewModel.householdEntityDetail?.noOfPeople ?: -1
-        memberRegistrationViewModel.villageId = householdRegistrationViewModel.householdEntityDetail?.villageId ?: -1L
         formGenerator = FormGenerator(
             requireContext(), binding.llForm, null, this, binding.scrollView, translate = false
         )
