@@ -5,61 +5,56 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
+import com.google.gson.Gson
+import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DefinedParams
-import com.medtroniclabs.spice.common.StringConverter
-import com.medtroniclabs.spice.databinding.FragmentAssessmentBinding
+import com.medtroniclabs.spice.databinding.FragmentAssessmentRmnchChildhoodVisitBinding
 import com.medtroniclabs.spice.formgeneration.FormGenerator
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.listener.FormEventListener
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
-import com.medtroniclabs.spice.formgeneration.ui.FormResultComposer
-import com.medtroniclabs.spice.formgeneration.utility.CheckBoxDialog
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
+import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
-import dagger.hilt.android.AndroidEntryPoint
 
-@AndroidEntryPoint
-class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickListener {
+class AssessmentRMNCHChildhoodVisitFragment : BaseFragment(), View.OnClickListener,
+    FormEventListener {
 
-    private lateinit var binding: FragmentAssessmentBinding
-    private lateinit var formGenerator: FormGenerator
+    private lateinit var binding: FragmentAssessmentRmnchChildhoodVisitBinding
     private val viewModel: AssessmentViewModel by activityViewModels()
+    private lateinit var formGenerator: FormGenerator
 
+    companion object {
+        const val TAG = "AssessmentRMNCHChildhoodVisitFragment"
+    }
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentAssessmentBinding.inflate(inflater, container, false)
+        binding = FragmentAssessmentRmnchChildhoodVisitBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initView()
-        viewModel.getFormDataForWorkFlow(DefinedParams.SCREENING, DefinedParams.ICCM)
-        setListeners()
-        viewModel.insertSignsAndSymptoms()
+        getFormDataForWorkflow()
         attachObservers()
+        setListener()
     }
 
-    private fun setListeners() {
+    private fun setListener() {
         binding.btnSubmit.safeClickListener(this)
     }
 
     private fun attachObservers() {
-
         viewModel.formLayoutsLiveData.observe(viewLifecycleOwner) { resourceState ->
             when (resourceState.state) {
-                ResourceState.LOADING -> {
-                    showProgress()
-                }
-
                 ResourceState.SUCCESS -> {
                     hideProgress()
                     resourceState.data?.let { data ->
-                        viewModel.formLayout = data.formLayout
                         formGenerator.populateViews(data.formLayout)
                     }
                 }
@@ -67,28 +62,48 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
                 ResourceState.ERROR -> {
                     hideProgress()
                 }
+
+                ResourceState.LOADING -> {
+                    showProgress()
+                }
             }
         }
     }
 
-    private fun initView() {
+    private fun getFormDataForWorkflow() {
+        viewModel.getFormDataForWorkFlow(DefinedParams.SCREENING, RMNCH.RMNCHChildHoodVisit)
+    }
 
+    private fun initView() {
         replaceFragmentInId<BioDataFragment>(
             binding.bioDataFragmentContainer.id,
             tag = BioDataFragment.TAG
         )
-
         formGenerator = FormGenerator(
             requireContext(), binding.llForm, null, this, binding.scrollView,
             translate = false
         )
+        val objectList = Gson().fromJson(
+            CommonUtils.getStringFromAssets(
+                "rmnch_childhood_visit.json",
+                requireActivity().assets
+            ),
+            Array<FormLayout>::class.java
+        ).asList()
+        formGenerator.populateViews(objectList)
+
     }
 
-    companion object {
-        const val TAG = "AssessmentICCMFragment"
+    override fun onClick(v: View) {
+        when(v.id){
+            binding.btnSubmit.id -> {
+                formGenerator.formSubmitAction(v)
+            }
+        }
     }
 
     override fun loadLocalCache(id: String, localDataCache: Any, selectedParent: Long?) {
+
     }
 
     override fun onPopulate(targetId: String) {
@@ -99,9 +114,6 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
         serverViewModel: FormLayout,
         resultMap: Any?
     ) {
-        CheckBoxDialog.newInstance(id, resultMap) { resultMap ->
-            formGenerator.validateCheckboxDialogue(id, serverViewModel, resultMap)
-        }.show(childFragmentManager, CheckBoxDialog.TAG)
     }
 
     override fun onInstructionClicked(
@@ -112,34 +124,10 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
     ) {
     }
 
-
     override fun onFormSubmit(resultMap: HashMap<String, Any>?, serverData: List<FormLayout?>?) {
-        resultMap?.let { details ->
-            val result = serverData?.let {
-                FormResultComposer().groupValues(
-                    context = requireContext(),
-                    serverData = it,
-                    details
-                )
-            }
-            result?.second?.let {
-                StringConverter.convertGivenMapToString(it)?.let { resultData ->
-                    viewModel.saveAssessment(resultData)
-                }
-            }
-        }
     }
 
     override fun onRenderingComplete() {
 
     }
-
-    override fun onClick(view: View) {
-        when (view.id) {
-            binding.btnSubmit.id -> {
-                formGenerator.formSubmitAction(view)
-            }
-        }
-    }
-
 }

@@ -1,6 +1,8 @@
 package com.medtroniclabs.spice.repo
 
 import androidx.lifecycle.MutableLiveData
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.appextensions.postSuccess
@@ -9,6 +11,7 @@ import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.db.entity.AssessmentEntity
 import com.medtroniclabs.spice.db.entity.SignsAndSymptomsEntity
 import com.medtroniclabs.spice.db.local.RoomHelper
+import com.medtroniclabs.spice.formgeneration.model.FormResponse
 import com.medtroniclabs.spice.network.resource.Resource
 import javax.inject.Inject
 
@@ -102,12 +105,14 @@ class AssessmentRepository @Inject constructor(
     suspend fun getFormDataForWorkFlow(
         formType: String,
         workflowName: String,
-        formLayoutsLiveData: MutableLiveData<Resource<String>>
+        formLayoutsLiveData: MutableLiveData<Resource<FormResponse>>
     ) {
         try {
             formLayoutsLiveData.postLoading()
             val response = roomHelper.getFomDataForWorkFlow(formType, workflowName)
-            formLayoutsLiveData.postSuccess(response)
+            val formFieldsType = object : TypeToken<FormResponse>() {}.type
+            val formFields: FormResponse = Gson().fromJson(response, formFieldsType)
+            formLayoutsLiveData.postSuccess(formFields)
         } catch (e: Exception) {
             formLayoutsLiveData.postError()
         }

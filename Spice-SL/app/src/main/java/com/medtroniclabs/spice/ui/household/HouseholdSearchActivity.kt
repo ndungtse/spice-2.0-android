@@ -9,10 +9,10 @@ import android.view.View
 import androidx.activity.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import com.medtroniclabs.spice.R
-import com.medtroniclabs.spice.appextensions.safeClickListener
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.databinding.ActivityHouseholdSearchBinding
 import com.medtroniclabs.spice.db.response.HouseHoldEntityWithMemberCount
+import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.household.HouseholdDefinedParams.ID

@@ -6,9 +6,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.medtroniclabs.spice.R
-import com.medtroniclabs.spice.appextensions.safeClickListener
 import com.medtroniclabs.spice.databinding.ListItemHouseholdBinding
 import com.medtroniclabs.spice.db.response.HouseHoldEntityWithMemberCount
+import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.ui.household.HouseholdSelectionListener
 
 class HouseholdListAdapter(

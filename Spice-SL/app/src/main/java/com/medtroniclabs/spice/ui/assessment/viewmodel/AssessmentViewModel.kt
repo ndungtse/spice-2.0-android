@@ -7,6 +7,7 @@ import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
 import com.medtroniclabs.spice.db.entity.SignsAndSymptomsEntity
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
+import com.medtroniclabs.spice.formgeneration.model.FormResponse
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.repo.AssessmentRepository
 import com.medtroniclabs.spice.ui.member.MemberRegistrationRepository
@@ -21,6 +22,7 @@ class AssessmentViewModel @Inject constructor(
     private var memberRegistrationRepository: MemberRegistrationRepository,
     private var assessmentRepository: AssessmentRepository
 ) : ViewModel() {
+
     var selectedHouseholdMemberId = -1L
     val assessmentSaveLiveData = MutableLiveData<Resource<String>>()
     val assessmentUpdateLiveData = MutableLiveData<Resource<String>>()
@@ -29,7 +31,7 @@ class AssessmentViewModel @Inject constructor(
     var formLayout: List<FormLayout>? = null
     var symptomTypeListResponse = MutableLiveData<List<SignsAndSymptomsEntity>>()
     var otherAssessmentDetails = HashMap<String, Any>()
-    val formLayoutsLiveData = MutableLiveData<Resource<String>>()
+    val formLayoutsLiveData = MutableLiveData<Resource<FormResponse>>()
 
     fun getMemberDetailsById() {
         if (selectedHouseholdMemberId == -1L) {

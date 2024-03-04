@@ -8,9 +8,9 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.medtroniclabs.spice.R
-import com.medtroniclabs.spice.appextensions.safeClickListener
 import com.medtroniclabs.spice.databinding.RowActivitiesBinding
 import com.medtroniclabs.spice.db.entity.MenuAdapterModel
+import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.ui.MenuConstants
 import com.medtroniclabs.spice.ui.home.MenuSelectionListener
 
@@ -91,6 +91,11 @@ class DashboardMenuItemsAdapter(
             MenuConstants.NCD_MENU_ID -> return ContextCompat.getDrawable(
                 context,
                 R.drawable.ic_ncd_tool
+            )
+
+            MenuConstants.RMNCH_MENU_ID -> return ContextCompat.getDrawable(
+                context,
+                R.drawable.ic_rmnch_tool
             )
 
             else -> null

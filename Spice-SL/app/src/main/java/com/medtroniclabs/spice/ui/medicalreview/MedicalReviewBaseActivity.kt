@@ -3,8 +3,8 @@ package com.medtroniclabs.spice.ui.medicalreview
 import android.os.Bundle
 import android.view.View
 import com.medtroniclabs.spice.R
-import com.medtroniclabs.spice.appextensions.safeClickListener
 import com.medtroniclabs.spice.databinding.ActivityMedicalReviewBaseBinding
+import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.ui.BaseActivity
 import dagger.hilt.android.AndroidEntryPoint
 

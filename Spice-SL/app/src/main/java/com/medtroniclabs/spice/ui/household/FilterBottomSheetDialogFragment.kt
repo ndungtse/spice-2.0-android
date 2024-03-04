@@ -12,10 +12,9 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.medtroniclabs.spice.R
-import com.medtroniclabs.spice.appextensions.safeClickListener
-import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.data.model.ChipViewItemModel
 import com.medtroniclabs.spice.databinding.FragmentFilterBottomSheetDialogBinding
+import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.TagListCustomView
 import com.medtroniclabs.spice.ui.household.viewmodel.HouseholdListViewModel

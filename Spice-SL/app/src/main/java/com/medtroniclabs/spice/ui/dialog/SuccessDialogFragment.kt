@@ -9,8 +9,8 @@ import android.view.WindowManager
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
-import com.medtroniclabs.spice.appextensions.safeClickListener
 import com.medtroniclabs.spice.databinding.FragmentSuccessDialogBinding
+import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.ui.household.viewmodel.HouseHoldSummaryViewModel
 import com.medtroniclabs.spice.ui.landing.OnDialogDismissListener
 

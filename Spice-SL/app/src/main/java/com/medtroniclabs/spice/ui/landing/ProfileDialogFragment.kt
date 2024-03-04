@@ -6,13 +6,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
-import com.medtroniclabs.spice.appextensions.safeClickListener
 import com.medtroniclabs.spice.common.ViewUtils.setDialogHeightToWrapAndSetWidthPercent
 import com.medtroniclabs.spice.databinding.FragmentProfileDialogBinding
 import com.medtroniclabs.spice.db.entity.UserProfile
+import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.landing.viewmodel.LandingViewModel
@@ -85,7 +86,7 @@ class ProfileDialogFragment : DialogFragment(), View.OnClickListener {
     private fun initView() {
         with(binding) {
             ivClose.safeClickListener(this@ProfileDialogFragment)
-            btnCancel.safeClickListener(this@ProfileDialogFragment)
+           // btnCancel.safeClickListener(this@ProfileDialogFragment)
         }
     }
 
@@ -119,12 +120,10 @@ class ProfileDialogFragment : DialogFragment(), View.OnClickListener {
     }
 
     private fun handleDialogHeight() {
-        val res = context?.resources?.configuration?.orientation
-        if (res != Configuration.ORIENTATION_PORTRAIT) {
-            setDialogHeightToWrapAndSetWidthPercent(90)
-        } else {
-            setDialogHeightToWrapAndSetWidthPercent(70)
-        }
+        dialog?.window?.setLayout(
+            WindowManager.LayoutParams.MATCH_PARENT,
+            WindowManager.LayoutParams.MATCH_PARENT
+        )
     }
 
     override fun onClick(v: View?) {

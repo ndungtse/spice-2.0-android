@@ -4,9 +4,9 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.activity.viewModels
-import com.medtroniclabs.spice.appextensions.safeClickListener
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.databinding.ActivityResourceLoadingScreenBinding
+import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.boarding.viewmodel.ResourceLoadingViewModel
@@ -29,17 +29,14 @@ class ResourceLoadingScreen : BaseActivity() {
         viewModel.metaDataCompleteLiveData.observe(this) { resourceState ->
             when (resourceState.state) {
                 ResourceState.LOADING -> {
-                    showLoading()
                 }
 
                 ResourceState.SUCCESS -> {
-                    hideLoading()
                     startActivity(Intent(this, LandingActivity::class.java))
                     finish()
                 }
 
                 ResourceState.ERROR -> {
-                    hideLoading()
                     SecuredPreference.putBoolean(
                         SecuredPreference.EnvironmentKey.ISMETALOADED.name,
                         false

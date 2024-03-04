@@ -45,6 +45,7 @@ import com.medtroniclabs.spice.databinding.AgeDobLayoutBinding
 import com.medtroniclabs.spice.databinding.CardLayoutBinding
 import com.medtroniclabs.spice.databinding.CheckboxDialogSpinnerLayoutBinding
 import com.medtroniclabs.spice.databinding.CustomSpinnerBinding
+import com.medtroniclabs.spice.databinding.DatepickerLayoutBinding
 import com.medtroniclabs.spice.databinding.EdittextLayoutBinding
 import com.medtroniclabs.spice.databinding.InstructionLayoutBinding
 import com.medtroniclabs.spice.databinding.LayoutInformationLabelBinding
@@ -139,6 +140,7 @@ class FormGenerator(
                 VIEW_TYPE_METAL_HEALTH -> createMentalHealthView(serverViewModel)
                 VIEW_TYPE_FORM_AGE -> createAgeView(serverViewModel)
                 VIEW_TYPE_NO_OF_DAYS -> createNoOfDaysView(serverViewModel)
+                VIEW_TYPE_FORM_DATEPICKER -> createDatePicker(serverViewModel)
             }
         }
         listener.onRenderingComplete()
@@ -187,9 +189,9 @@ class FormGenerator(
                 }
             }
             binding.etUserInput.addTextChangedListener { input ->
-                input?.let{
+                input?.let {
                     val resultValue = input.trim().toString()
-                    if(resultValue.isNotBlank()){
+                    if (resultValue.isNotBlank()) {
                         resultHashMap[id] = resultValue
                     } else {
                         if (resultHashMap.containsKey(id))
@@ -809,6 +811,53 @@ class FormGenerator(
             }
             setViewVisibility(visibility, binding.root)
             setViewEnableDisable(isEnabled, binding.root)
+        }
+    }
+
+    private fun createDatePicker(serverViewModel: FormLayout) {
+        val binding = DatepickerLayoutBinding.inflate(LayoutInflater.from(context))
+        serverViewModel.apply {
+            binding.root.tag = id + rootSuffix
+            binding.etUserInput.tag = id
+            binding.tvErrorMessage.tag = id + errorSuffix
+            if (translate) {
+                binding.tvTitle.text = titleCulture ?: title
+            } else {
+                binding.tvTitle.text = title
+            }
+            binding.tvTitle.tag = id + titleSuffix
+
+            binding.etUserInput.safeClickListener {
+                val dateInput = if (binding.etUserInput.text.toString().isNotEmpty())
+                    DateUtils.getYearMonthAndDate(binding.etUserInput.text.toString()) else null
+                showDatePicker(
+                    context = context,
+                    disableFutureDate = disableFutureDate ?: false,
+                    minDate = minDate,
+                    maxDate = maxDate,
+                    date = dateInput
+                ) { _, year, month, dayOfMonth ->
+                    val stringDate = "$dayOfMonth-$month-$year"
+                    val parsedDate = DateUtils.getDatePatternDDMMYYYY().parse(stringDate)
+                    parsedDate?.let {
+                        binding.etUserInput.text = DateUtils.getDateDDMMYYYY().format(it)
+                        resultHashMap[id] = DateUtils.getDateString(
+                            parsedDate.time,
+                            inputFormat = DateUtils.DATE_FORMAT_yyyyMMdd,
+                            outputFormat = DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
+                        )
+                    }
+                }
+            }
+
+            if (isMandatory) {
+                binding.tvTitle.markMandatory()
+            }
+
+            getFamilyView(family)?.addView(binding.root) ?: kotlin.run {
+                parentLayout.addView(binding.root)
+            }
+
         }
     }
 

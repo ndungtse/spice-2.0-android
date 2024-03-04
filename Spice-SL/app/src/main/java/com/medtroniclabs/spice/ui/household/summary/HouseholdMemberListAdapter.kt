@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.medtroniclabs.spice.R
-import com.medtroniclabs.spice.appextensions.safeClickListener
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
 import com.medtroniclabs.spice.common.DateUtils.calculateAge
@@ -14,6 +13,7 @@ import com.medtroniclabs.spice.common.DateUtils.calculateAgeInMonths
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.databinding.MembersSummaryListItemBinding
 import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
+import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.ui.household.MemberSelectionListener
 import java.text.SimpleDateFormat
 import java.util.Locale

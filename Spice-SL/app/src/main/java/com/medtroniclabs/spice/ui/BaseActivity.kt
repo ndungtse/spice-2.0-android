@@ -10,6 +10,9 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.commit
+import androidx.fragment.app.replace
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.google.android.material.snackbar.Snackbar
 import com.medtroniclabs.spice.R
@@ -212,5 +215,21 @@ open class BaseActivity : AppCompatActivity() {
         val errorFragment = supportFragmentManager.findFragmentByTag(GeneralErrorDialog.TAG)
         if (errorFragment == null)
             generalErrorDialog.show(supportFragmentManager, GeneralErrorDialog.TAG)
+    }
+
+
+    inline fun <reified fragment : Fragment> replaceFragmentInId(
+        id: Int,
+        bundle: Bundle? = null,
+        tag: String? = null
+    ) {
+        supportFragmentManager.commit {
+            setReorderingAllowed(true)
+            replace<fragment>(
+                id,
+                args = bundle,
+                tag = tag
+            )
+        }
     }
 }

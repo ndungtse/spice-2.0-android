@@ -7,9 +7,9 @@ import android.widget.CheckBox
 import android.widget.LinearLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.medtroniclabs.spice.R
-import com.medtroniclabs.spice.appextensions.safeClickListener
 import com.medtroniclabs.spice.db.entity.SignsAndSymptomsEntity
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams
+import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 
 class CheckboxDialogAdapter(
     private val dialogList: List<SignsAndSymptomsEntity>

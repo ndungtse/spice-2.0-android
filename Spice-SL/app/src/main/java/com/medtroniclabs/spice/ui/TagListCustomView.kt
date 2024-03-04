@@ -11,12 +11,12 @@ import androidx.core.content.res.ResourcesCompat
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import com.medtroniclabs.spice.R
-import com.medtroniclabs.spice.appextensions.safeClickListener
 import com.medtroniclabs.spice.common.DefinedParams.Other
 import com.medtroniclabs.spice.common.DefinedParams.ENABLED
 import com.medtroniclabs.spice.data.model.ChipViewItemModel
 import com.medtroniclabs.spice.databinding.CustomLayoutTagviewComponentBinding
 import com.medtroniclabs.spice.databinding.OtherChipLayoutBinding
+import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 
 class TagListCustomView(
     val context: Context,

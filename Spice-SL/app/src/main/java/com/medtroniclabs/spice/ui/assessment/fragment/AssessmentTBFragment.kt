@@ -4,28 +4,21 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
-import com.medtroniclabs.spice.R
-import com.medtroniclabs.spice.appextensions.safeClickListener
-import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.databinding.FragmentAssessmentTBBinding
-import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
 import com.medtroniclabs.spice.formgeneration.FormGenerator
-import com.medtroniclabs.spice.formgeneration.extension.capitalizeFirstChar
+import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.listener.FormEventListener
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
-import com.medtroniclabs.spice.formgeneration.model.FormResponse
 import com.medtroniclabs.spice.formgeneration.ui.FormResultComposer
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
+import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
 
-class AssessmentTBFragment : Fragment(), FormEventListener, View.OnClickListener {
+class AssessmentTBFragment : BaseFragment(), FormEventListener, View.OnClickListener {
 
     private lateinit var binding: FragmentAssessmentTBBinding
     private lateinit var formGenerator: FormGenerator
@@ -43,7 +36,7 @@ class AssessmentTBFragment : Fragment(), FormEventListener, View.OnClickListener
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewModel.getMemberDetailsById()
-        initializeFormGenerator()
+        initView()
         setListeners()
         viewModel.getFormDataForWorkFlow(DefinedParams.SCREENING,DefinedParams.TB)
         attachObservers()
@@ -54,46 +47,33 @@ class AssessmentTBFragment : Fragment(), FormEventListener, View.OnClickListener
     }
 
     private fun attachObservers() {
-        viewModel.memberDetailsLiveData.observe(viewLifecycleOwner) { resourceState ->
-            when (resourceState.state) {
-                ResourceState.LOADING -> {
-                    (activity as? BaseActivity)?.showLoading()
-                }
 
-                ResourceState.SUCCESS -> {
-                    (activity as? BaseActivity)?.hideLoading()
-                    showPatientBioData(resourceState.data)
-                }
-
-                ResourceState.ERROR -> {
-                    (activity as? BaseActivity)?.hideLoading()
-                }
-            }
-        }
         viewModel.formLayoutsLiveData.observe(viewLifecycleOwner) { resourceState ->
             when (resourceState.state) {
                 ResourceState.LOADING -> {
-                    (activity as? BaseActivity)?.showLoading()
+                    showProgress()
                 }
 
                 ResourceState.SUCCESS -> {
-                    (activity as? BaseActivity)?.hideLoading()
+                    hideProgress()
                     resourceState.data?.let { data ->
-                        val formFieldsType = object : TypeToken<FormResponse>() {}.type
-                        val formFields: FormResponse = Gson().fromJson(data, formFieldsType)
-                        viewModel.formLayout = formFields.formLayout
-                        formGenerator.populateViews(formFields.formLayout)
+                        viewModel.formLayout = data.formLayout
+                        formGenerator.populateViews(data.formLayout)
                     }
                 }
 
                 ResourceState.ERROR -> {
-                    (activity as? BaseActivity)?.hideLoading()
+                   hideProgress()
                 }
             }
         }
     }
 
-    private fun initializeFormGenerator() {
+    private fun initView() {
+        replaceFragmentInId<BioDataFragment>(
+            binding.bioDataFragmentContainer.id,
+            tag = BioDataFragment.TAG
+        )
         formGenerator = FormGenerator(
             requireContext(), binding.llForm, null, this, binding.scrollView,
             translate = false
@@ -123,17 +103,6 @@ class AssessmentTBFragment : Fragment(), FormEventListener, View.OnClickListener
         informationList: ArrayList<String>?,
         description: String?
     ) {
-    }
-
-    private fun showPatientBioData(data: HouseholdMemberEntity?) {
-        data?.let {
-            binding.patientName.tvKey.text = getString(R.string.name)
-            binding.patientName.tvValue.text = data.name.capitalizeFirstChar()
-            binding.gender.tvKey.text = getString(R.string.gender)
-            binding.gender.tvValue.text = data.gender.capitalizeFirstChar()
-            binding.dobAge.tvKey.text = getString(R.string.age)
-            binding.dobAge.tvValue.text = CommonUtils.getDuration(data.age, requireContext())
-        }
     }
 
     override fun onFormSubmit(resultMap: HashMap<String, Any>?, serverData: List<FormLayout?>?) {

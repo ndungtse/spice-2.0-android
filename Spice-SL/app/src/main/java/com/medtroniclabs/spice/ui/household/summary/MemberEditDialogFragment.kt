@@ -9,9 +9,9 @@ import android.view.WindowManager
 import android.widget.AdapterView
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
-import com.medtroniclabs.spice.appextensions.safeClickListener
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.databinding.FragmentMemberEditDialogBinding
+import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.model.MemberDetailsSpinnerModel
 import com.medtroniclabs.spice.ui.household.MemberSelectionListener
 import com.medtroniclabs.spice.ui.household.viewmodel.HouseHoldSummaryViewModel

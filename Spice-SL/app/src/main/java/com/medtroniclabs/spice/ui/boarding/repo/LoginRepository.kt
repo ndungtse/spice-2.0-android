@@ -129,7 +129,7 @@ class LoginRepository @Inject constructor(
                     with(roomHelper) {
                         data?.nearestHealthFacilities?.let { list ->
                             deleteAllHealthFacility()
-                            val defaultId = data?.defaultHealthFacility?.id
+                            val defaultId = data.defaultHealthFacility.id
                             list.forEach { healthFacility ->
                                 val baseType: Type =
                                     object : TypeToken<ArrayList<ClinicalWorkflow>>() {}.type
@@ -307,7 +307,6 @@ class LoginRepository @Inject constructor(
             .flatMap { data ->
                 val menuListType = object : TypeToken<List<Menu>>() {}.type
                 val menus: List<Menu> = Gson().fromJson(data.menus, menuListType)
-
                 menus.map {
                     MenuAdapterModel(
                         name = it.name,

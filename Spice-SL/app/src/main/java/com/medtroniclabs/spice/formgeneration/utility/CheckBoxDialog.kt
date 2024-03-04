@@ -6,10 +6,10 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.medtroniclabs.spice.R
-import com.medtroniclabs.spice.appextensions.safeClickListener
 import com.medtroniclabs.spice.databinding.CheckboxDialogLayoutBinding
 import com.medtroniclabs.spice.db.entity.SignsAndSymptomsEntity
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams
+import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
 
 class CheckBoxDialog() : DialogFragment(), View.OnClickListener {

@@ -7,12 +7,13 @@ import android.view.View
 import androidx.activity.viewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.hideKeyboard
-import com.medtroniclabs.spice.appextensions.markMandatory
-import com.medtroniclabs.spice.appextensions.safeClickListener
+
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.Validator
 import com.medtroniclabs.spice.databinding.ActivityLoginBinding
+import com.medtroniclabs.spice.formgeneration.extension.markMandatory
+import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.boarding.viewmodel.LoginViewModel

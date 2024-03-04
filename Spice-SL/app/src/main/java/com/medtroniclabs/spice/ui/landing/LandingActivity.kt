@@ -45,14 +45,11 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
         initView()
         initializeDrawerView()
         updateSideBarFooter()
-        attachObservers()
         viewModel.getUserProfile()
         viewModel.getAllVillagesName()
         viewModel.getDefaultHealthFacility()
     }
 
-    private fun attachObservers() {
-    }
 
     private fun initView() {
         onNavigationItemSelected(binding.navView.menu.findItem(R.id.home))
@@ -119,23 +116,18 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
     }
 
     override fun onDrawerSlide(drawerView: View, slideOffset: Float) {
-//        TODO("Not yet implemented")
     }
 
     override fun onDrawerOpened(drawerView: View) {
-//        TODO("Not yet implemented")
     }
 
     override fun onDrawerClosed(drawerView: View) {
-//        TODO("Not yet implemented")
     }
 
     override fun onDrawerStateChanged(newState: Int) {
-//        TODO("Not yet implemented")
     }
 
-    override fun onClick(v: View?) {
-//        TODO("Not yet implemented")
+    override fun onClick(v: View) {
     }
 
     override fun onDialogDismissListener() {

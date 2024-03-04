@@ -8,8 +8,6 @@ import android.widget.AdapterView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
-import com.medtroniclabs.spice.appextensions.safeClickListener
-import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.CommonUtils.convertListToString
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.DefaultID
@@ -19,6 +17,7 @@ import com.medtroniclabs.spice.common.DefinedParams.PHUSite3
 import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.databinding.FragmentAssessmentTBSummaryBinding
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.DefaultIDLabel
+import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
 import com.medtroniclabs.spice.model.AssessmentSummaryModel
 import com.medtroniclabs.spice.network.resource.ResourceState

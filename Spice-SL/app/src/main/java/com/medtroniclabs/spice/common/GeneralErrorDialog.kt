@@ -9,8 +9,8 @@ import android.view.Window
 import android.view.WindowManager
 import androidx.fragment.app.DialogFragment
 import com.medtroniclabs.spice.R
-import com.medtroniclabs.spice.appextensions.safeClickListener
 import com.medtroniclabs.spice.databinding.FragmentGeneralErrorDialogBinding
+import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 
 class GeneralErrorDialog() : DialogFragment() {
 

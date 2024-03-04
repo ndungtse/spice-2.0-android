@@ -1,0 +1,258 @@
+[
+  {
+    "familyOrder": 0,
+    "id": "childDetails",
+    "orderId": 1,
+    "title": "Child Details",
+    "viewType": "CardView"
+  },
+  {
+    "id": "childSymptoms",
+    "fieldName": "childSymptoms",
+    "family": "childDetails",
+    "orderId": 2,
+    "viewType": "DialogCheckbox",
+    "localDataCache": "childSymptoms",
+    "isMandatory": true,
+    "errorMessage": "Please select a valid option",
+    "isEnabled": true,
+    "title": "Is the newborn baby experiencing any of these danger signs?",
+    "visibility": "visible",
+    "isSummary": true
+  },
+  {
+    "family": "childDetails",
+    "fieldName": "fatherPersent",
+    "id": "fatherPresent",
+    "condition": [],
+    "orderId": 3,
+    "errorMessage": "Please select a valid option",
+    "isEnabled": true,
+    "isMandatory": true,
+    "isNeededDefault": true,
+    "isSummary": true,
+    "optionsList": [
+      {
+        "id": "Yes",
+        "name": "Yes"
+      },
+      {
+        "id": "No",
+        "name": "No"
+      }
+    ],
+    "optionType": "boolean",
+    "readOnly": true,
+    "viewType": "SingleSelectionView",
+    "title": "Father present?",
+    "visibility": "visible"
+  },
+  {
+    "family": "childDetails",
+    "fieldName": "breastFeeding",
+    "id": "breastFeeding",
+    "condition": [],
+    "orderId": 4,
+    "errorMessage": "Please select a valid option",
+    "isEnabled": true,
+    "isMandatory": true,
+    "isNeededDefault": true,
+    "isSummary": true,
+    "optionsList": [
+      {
+        "id": "Yes",
+        "name": "Yes"
+      },
+      {
+        "id": "No",
+        "name": "No"
+      }
+    ],
+    "optionType": "boolean",
+    "readOnly": true,
+    "viewType": "SingleSelectionView",
+    "title": "Exclusively breastfeeding?",
+    "visibility": "visible"
+  },
+  {
+    "family": "childDetails",
+    "fieldName": "sleepsUnderBednet",
+    "id": "sleepsUnderBednet",
+    "condition": [],
+    "orderId": 5,
+    "errorMessage": "Please select a valid option",
+    "isEnabled": true,
+    "isMandatory": true,
+    "isNeededDefault": true,
+    "isSummary": true,
+    "optionsList": [
+      {
+        "id": "Yes",
+        "name": "Yes"
+      },
+      {
+        "id": "No",
+        "name": "No"
+      }
+    ],
+    "optionType": "boolean",
+    "viewType": "SingleSelectionView",
+    "title": "Sleeps under Bednet",
+    "visibility": "visible"
+  },
+  {
+    "family": "childDetails",
+    "fieldName": "muac",
+    "id": "MUAC",
+    "viewType": "Spinner",
+    "orderId": 6,
+    "isEnabled": true,
+    "isMandatory": true,
+    "title": "MUAC",
+    "optionsList": [
+      {
+        "id": "Green",
+        "name": "Green"
+      },
+      {
+        "id": "Yellow",
+        "name": "Yellow"
+      },
+      {
+        "id": "Red",
+        "name": "Red"
+      }
+    ],
+    "errorMessage": "Please select a valid option"
+  },
+  {
+    "family": "childDetails",
+    "fieldName": "minimumMealsPerDay",
+    "id": "minimumMealsPerDay",
+    "condition": [],
+    "orderId": 7,
+    "errorMessage": "Please select a valid option",
+    "isEnabled": true,
+    "isMandatory": true,
+    "isNeededDefault": true,
+    "isSummary": true,
+    "optionsList": [
+      {
+        "id": "Yes",
+        "name": "Yes"
+      },
+      {
+        "id": "No",
+        "name": "No"
+      }
+    ],
+    "optionType": "boolean",
+    "viewType": "SingleSelectionView",
+    "title": "Taking minimum meals per day",
+    "visibility": "visible"
+  },
+  {
+    "family": "childDetails",
+    "fieldName": "minimumMealsPerDay",
+    "id": "minimumMealsPerDay",
+    "condition": [],
+    "orderId": 8,
+    "errorMessage": "Please select a valid option",
+    "isEnabled": true,
+    "isMandatory": true,
+    "isNeededDefault": true,
+    "isSummary": true,
+    "optionsList": [
+      {
+        "id": "Yes",
+        "name": "Yes"
+      },
+      {
+        "id": "No",
+        "name": "No"
+      }
+    ],
+    "optionType": "boolean",
+    "viewType": "SingleSelectionView",
+    "title": "Taking minimum meals per day",
+    "visibility": "visible"
+  },
+  {
+    "family": "childDetails",
+    "fieldName": "fedFromFoodGroups",
+    "id": "fedFromFoodGroups",
+    "condition": [],
+    "orderId": 9,
+    "errorMessage": "Please select a valid option",
+    "isEnabled": true,
+    "isMandatory": true,
+    "isNeededDefault": true,
+    "isSummary": true,
+    "optionsList": [
+      {
+        "id": "Yes",
+        "name": "Yes"
+      },
+      {
+        "id": "No",
+        "name": "No"
+      }
+    ],
+    "optionType": "boolean",
+    "viewType": "SingleSelectionView",
+    "title": "Fed from 4 food groups",
+    "visibility": "visible"
+  },
+  {
+    "family": "childDetails",
+    "fieldName": "mpUsingFamilyPlanning",
+    "id": "mpUsingFamilyPlanning",
+    "condition": [],
+    "orderId": 10,
+    "errorMessage": "Please select a valid option",
+    "isEnabled": true,
+    "isMandatory": true,
+    "isNeededDefault": true,
+    "isSummary": true,
+    "optionsList": [
+      {
+        "id": "Yes",
+        "name": "Yes"
+      },
+      {
+        "id": "No",
+        "name": "No"
+      }
+    ],
+    "optionType": "boolean",
+    "viewType": "SingleSelectionView",
+    "title": "Mother / Partner using family planning",
+    "visibility": "visible"
+  },
+  {
+    "family": "childDetails",
+    "fieldName": "deathOfBaby",
+    "id": "deathOfBaby",
+    "condition": [],
+    "orderId": 11,
+    "errorMessage": "Please select a valid option",
+    "isEnabled": true,
+    "isMandatory": true,
+    "isNeededDefault": true,
+    "isSummary": true,
+    "optionsList": [
+      {
+        "id": "Yes",
+        "name": "Yes"
+      },
+      {
+        "id": "No",
+        "name": "No"
+      }
+    ],
+    "optionType": "boolean",
+    "viewType": "SingleSelectionView",
+    "title": "Death of baby",
+    "visibility": "visible"
+  }
+]

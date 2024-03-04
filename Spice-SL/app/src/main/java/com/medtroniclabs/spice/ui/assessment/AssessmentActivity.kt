@@ -14,6 +14,7 @@ import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.MenuConstants
 import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentICCMFragment
 import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentICCMSummaryFragment
+import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentRMNCHChildhoodVisitFragment
 import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentTBFragment
 import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentTBSummaryFragment
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
@@ -75,13 +76,14 @@ class AssessmentActivity : BaseActivity() {
                 )
             }
 
-            else -> {
-                // TODO remove after menu is fixed for backend Response
-                replaceFragmentInId<AssessmentICCMSummaryFragment>(
+            MenuConstants.RMNCH_MENU_ID -> {
+                setTitle(MenuConstants.RMNCH_MENU_ID.uppercase())
+                replaceFragmentInId<AssessmentRMNCHChildhoodVisitFragment>(
                     binding.formsFragmentContainer.id,
-                    tag = AssessmentICCMSummaryFragment.TAG
+                    tag = AssessmentRMNCHChildhoodVisitFragment.TAG
                 )
             }
+
         }
     }
 
@@ -123,18 +125,5 @@ class AssessmentActivity : BaseActivity() {
         viewModel.menuId = intent.getStringExtra(DefinedParams.MenuId)
     }
 
-    private inline fun <reified fragment : Fragment> replaceFragmentInId(
-        id: Int? = null,
-        bundle: Bundle? = null,
-        tag: String? = null
-    ) {
-        supportFragmentManager.commit {
-            setReorderingAllowed(true)
-            replace<fragment>(
-                id ?: binding.formsFragmentContainer.id,
-                args = bundle,
-                tag = tag
-            )
-        }
-    }
+
 }
