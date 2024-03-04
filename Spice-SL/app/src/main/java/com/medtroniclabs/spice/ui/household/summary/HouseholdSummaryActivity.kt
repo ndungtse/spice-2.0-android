@@ -15,6 +15,7 @@ import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
 import com.medtroniclabs.spice.formgeneration.extension.safePopupMenuClickListener
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
+import com.medtroniclabs.spice.ui.dialog.SuccessDialogFragment
 import com.medtroniclabs.spice.ui.home.ToolsActivity
 import com.medtroniclabs.spice.ui.household.HouseholdActivity
 import com.medtroniclabs.spice.ui.household.HouseholdDefinedParams.ID
@@ -22,8 +23,9 @@ import com.medtroniclabs.spice.ui.household.HouseholdDefinedParams.isFromHouseHo
 import com.medtroniclabs.spice.ui.household.HouseholdSearchActivity
 import com.medtroniclabs.spice.ui.household.MemberSelectionListener
 import com.medtroniclabs.spice.ui.household.viewmodel.HouseHoldSummaryViewModel
+import com.medtroniclabs.spice.ui.landing.OnDialogDismissListener
 
-class HouseholdSummaryActivity : BaseActivity(), MemberSelectionListener, View.OnClickListener {
+class HouseholdSummaryActivity : BaseActivity(), MemberSelectionListener, View.OnClickListener, OnDialogDismissListener {
 
     private lateinit var binding: ActivityHouseholdSummaryBinding
 
@@ -189,8 +191,7 @@ class HouseholdSummaryActivity : BaseActivity(), MemberSelectionListener, View.O
     override fun onClick(v: View?) {
         when (v?.id) {
             R.id.btnFinishRegistration -> {
-                startActivity(Intent(this, HouseholdSearchActivity::class.java))
-                finish()
+                SuccessDialogFragment.newInstance().show(supportFragmentManager, SuccessDialogFragment.TAG)
             }
 
             R.id.btnAddNewMember -> {
@@ -218,6 +219,11 @@ class HouseholdSummaryActivity : BaseActivity(), MemberSelectionListener, View.O
             startActivity(intent)
             finish()
         }
+    }
+
+    override fun onDialogDismissListener() {
+        startActivity(Intent(this, HouseholdSearchActivity::class.java))
+        finish()
     }
 
 }

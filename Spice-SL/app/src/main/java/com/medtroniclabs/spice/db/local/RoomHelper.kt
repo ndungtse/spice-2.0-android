@@ -55,4 +55,5 @@ interface RoomHelper {
     suspend fun insertSymptoms(symptomEntity: SignsAndSymptomsEntity)
     suspend fun deleteAllSymptoms()
     suspend fun getUserVillages(): List<VillageEntity>
+    suspend fun getVillageByID(villageId: Long): VillageEntity
 }

@@ -172,4 +172,6 @@ class RoomHelperImpl @Inject constructor(
     }
 
     override suspend fun getUserVillages(): List<VillageEntity> = metaDataDAO.getVillages()
+
+    override suspend fun getVillageByID(villageId: Long): VillageEntity = metaDataDAO.getVillageByID(villageId)
 }

@@ -144,4 +144,9 @@ class HouseHoldRepository @Inject constructor(
             villageListResponse.postError()
         }
     }
+
+    suspend fun getVillageByID(villageId: Long, villageListResponse: MutableLiveData<Resource<VillageEntity>>) {
+        val response = roomHelper.getVillageByID(villageId)
+        villageListResponse.postSuccess(response)
+    }
 }

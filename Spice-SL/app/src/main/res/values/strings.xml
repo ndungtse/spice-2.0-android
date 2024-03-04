@@ -178,4 +178,6 @@
     <string name="months_m">%1$s M</string>
     <string name="weeks_w">%1$s W</string>
     <string name="years_y">%1$s Y</string>
+    <string name="household_successfully">Household registration \n completed successfully.</string>
+    <string name="household_with_no">Household No : %1$s</string>
 </resources>

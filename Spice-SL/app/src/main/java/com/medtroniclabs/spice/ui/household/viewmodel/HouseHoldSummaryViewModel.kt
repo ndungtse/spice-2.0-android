@@ -8,6 +8,7 @@ import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.appextensions.postSuccess
 import com.medtroniclabs.spice.db.entity.HouseholdEntity
 import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
+import com.medtroniclabs.spice.db.entity.VillageEntity
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.repo.HouseHoldRepository
@@ -25,6 +26,7 @@ class HouseHoldSummaryViewModel @Inject constructor(
     var houseHoldId: Long = -1L
     var isFromHouseHoldRegistration: Boolean = false
     val houseHoldDetailLiveData = MutableLiveData<Resource<HouseholdEntity>>()
+    val villageDetailLiveData = MutableLiveData<Resource<VillageEntity>>()
     var selectedMemberId  = -1L
     var memberListLiveData = MutableLiveData<Resource<ArrayList<HouseholdMemberEntity>>>()
 
@@ -51,6 +53,13 @@ class HouseHoldSummaryViewModel @Inject constructor(
             } catch (e: Exception) {
                 memberListLiveData.postError()
             }
+        }
+    }
+
+
+    fun getVillageByID(villageId: Long) {
+        viewModelScope.launch(dispatcherIO) {
+            houseHoldRepository.getVillageByID(villageId, villageDetailLiveData)
         }
     }
 
