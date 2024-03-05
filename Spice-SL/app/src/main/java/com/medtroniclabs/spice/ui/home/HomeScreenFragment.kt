@@ -13,7 +13,7 @@ import com.google.android.flexbox.FlexboxLayoutManager
 import com.google.android.flexbox.JustifyContent
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.databinding.FragmentHomeScreenBinding
-import com.medtroniclabs.spice.db.entity.MenuAdapterModel
+import com.medtroniclabs.spice.db.entity.MenuEntity
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.MenuConstants
@@ -49,7 +49,7 @@ class HomeScreenFragment : Fragment(), MenuSelectionListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         attachObservers()
-        viewModel.getMenus(MenuConstants.DASHBOARD)
+        viewModel.getMenus()
     }
 
     private fun attachObservers() {
@@ -73,7 +73,7 @@ class HomeScreenFragment : Fragment(), MenuSelectionListener {
         }
     }
 
-    private fun setAdapterViews(menuAdapterModels: List<MenuAdapterModel>) {
+    private fun setAdapterViews(menuEntity: List<MenuEntity>) {
         if (CommonUtils.checkIsTablet(requireContext())) {
             val layoutManager = FlexboxLayoutManager(context)
             layoutManager.flexDirection = FlexDirection.ROW
@@ -83,12 +83,12 @@ class HomeScreenFragment : Fragment(), MenuSelectionListener {
             val layoutManager = GridLayoutManager(context, 2)
             binding.rvActivitiesList.layoutManager = layoutManager
         }
-        binding.rvActivitiesList.adapter = DashboardMenuItemsAdapter(menuAdapterModels, this)
+        binding.rvActivitiesList.adapter = DashboardMenuItemsAdapter(menuEntity, this)
 
     }
 
-    override fun onMenuSelected(name: String) {
-        when (name) {
+    override fun onMenuSelected(menuId: String) {
+        when (menuId) {
             MenuConstants.HOUSEHOLD_MENU_ID -> {
                 startActivity(Intent(requireContext(), HouseholdSearchActivity::class.java))
             }

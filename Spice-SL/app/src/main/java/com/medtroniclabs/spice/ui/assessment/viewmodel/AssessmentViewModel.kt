@@ -70,9 +70,9 @@ class AssessmentViewModel @Inject constructor(
         }
     }
 
-    fun getFormDataForWorkFlow(formType: String, workflowName: String) {
+    fun getFormData(formType: String) {
         viewModelScope.launch(dispatcherIO) {
-            assessmentRepository.getFormDataForWorkFlow(formType, workflowName,formLayoutsLiveData)
+            assessmentRepository.getFormData(formType, formLayoutsLiveData)
         }
     }
 }

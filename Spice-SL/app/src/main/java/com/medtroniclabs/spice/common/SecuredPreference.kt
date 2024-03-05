@@ -373,4 +373,8 @@ object SecuredPreference {
     fun getPhoneNumberCode(): String? {
         return getUserDetails().country.phoneNumberCode
     }
+
+    fun getRoleName(): String? {
+        return getUserDetails().roles.joinToString { it.name }
+    }
 }

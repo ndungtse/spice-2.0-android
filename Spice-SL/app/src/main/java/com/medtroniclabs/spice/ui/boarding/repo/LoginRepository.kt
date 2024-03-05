@@ -2,7 +2,6 @@ package com.medtroniclabs.spice.ui.boarding.repo
 
 import androidx.lifecycle.MutableLiveData
 import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.appextensions.postSuccess
@@ -11,29 +10,28 @@ import com.medtroniclabs.spice.common.EncryptionUtil
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.ClinicalWorkflow
 import com.medtroniclabs.spice.data.ErrorResponse
+import com.medtroniclabs.spice.data.FormData
 import com.medtroniclabs.spice.data.FormMetaRequest
 import com.medtroniclabs.spice.data.FormRequest
+import com.medtroniclabs.spice.data.HealthFacility
 import com.medtroniclabs.spice.data.LoginResponse
 import com.medtroniclabs.spice.data.MenuDetail
-import com.medtroniclabs.spice.data.Village
+import com.medtroniclabs.spice.data.UserProfile
+import com.medtroniclabs.spice.db.entity.ClinicalWorkflowConditionEntity
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowEntity
+import com.medtroniclabs.spice.db.entity.FormEntity
 import com.medtroniclabs.spice.db.entity.HealthFacilityEntity
-import com.medtroniclabs.spice.db.entity.Menu
-import com.medtroniclabs.spice.db.entity.MenuAdapterModel
 import com.medtroniclabs.spice.db.entity.MenuEntity
-import com.medtroniclabs.spice.db.entity.UserProfile
 import com.medtroniclabs.spice.db.entity.UserProfileEntity
 import com.medtroniclabs.spice.db.entity.VillageEntity
 import com.medtroniclabs.spice.db.local.RoomHelper
 import com.medtroniclabs.spice.network.ApiHelper
 import com.medtroniclabs.spice.network.resource.Resource
-import com.medtroniclabs.spice.ui.MenuConstants
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
 import okhttp3.MultipartBody
 import okhttp3.ResponseBody
-import java.lang.reflect.Type
 import javax.inject.Inject
 
 class LoginRepository @Inject constructor(
@@ -113,156 +111,48 @@ class LoginRepository @Inject constructor(
 
     suspend fun getMetaDataInformation(
         metaDataCompleteLiveData: MutableLiveData<Resource<Boolean>>,
-        clinicalWorkflowIds: MutableList<Int>,
+        workflowNames: MutableList<String>,
         meta: MutableList<String>
     ) {
         try {
             metaDataCompleteLiveData.postLoading()
             withContext(Dispatchers.IO) {
-                val res = async {
-                    apiHelper.getMetaDataInformation()
-                }
-                val response = res.await()
+                val response = async { apiHelper.getMetaDataInformation() }.await()
 
                 if (response.isSuccessful && response.body()?.status == true) {
-                    val data = response.body()?.entity
                     with(roomHelper) {
-                        data?.nearestHealthFacilities?.let { list ->
-                            deleteAllHealthFacility()
-                            val defaultId = data.defaultHealthFacility.id
-                            list.forEach { healthFacility ->
-                                val baseType: Type =
-                                    object : TypeToken<ArrayList<ClinicalWorkflow>>() {}.type
-                                val resultString =
-                                    Gson().toJson(healthFacility.clinicalWorkflows, baseType)
-                                val baseTypeVillage: Type =
-                                    object : TypeToken<ArrayList<Village>>() {}.type
-                                val villageResultString =
-                                    Gson().toJson(healthFacility.linkedVillages, baseTypeVillage)
-                                saveHealthFacility(
-                                    HealthFacilityEntity(
-                                        id = healthFacility.id,
-                                        name = healthFacility.name,
-                                        type = healthFacility.type,
-                                        districtId = healthFacility.districtId,
-                                        chiefdomId = healthFacility.chiefdomId,
-                                        latitude = healthFacility.latitude,
-                                        longitude = healthFacility.longitude,
-                                        postalCode = healthFacility.postalCode,
-                                        language = healthFacility.language,
-                                        tenantId = healthFacility.tenantId,
-                                        clinicalWorkflows = resultString,
-                                        isDefault = healthFacility.id == defaultId,
-                                        linkedVillages = villageResultString
-                                    )
-                                )
-                            }
-                        }
-
-                        data?.villages?.let { villages ->
-                            deleteAllVillages()
+                        response.body()?.entity?.apply {
+                            saveHealthFacilityInDb(
+                                nearestHealthFacilities,
+                                defaultHealthFacility.id
+                            )
                             saveVillage(villages)
-                        }
-
-                        data?.userProfile?.let { userProfile ->
-                            deleteAllUserProfileDetails()
-                            saveUserProfileDetails(
-                                UserProfileEntity(
-                                    id = 0,
-                                    profileData = Gson().toJson(userProfile)
-                                )
-                            )
-                        }
-
-                        data?.menu?.let { menu ->
-                            deleteAllMenus()
-                            val baseType: Type =
-                                object : TypeToken<ArrayList<MenuDetail>>() {}.type
-                            val resultString =
-                                Gson().toJson(menu.menus, baseType)
-                            saveMenus(
-                                MenuEntity(
-                                    id = 0,
-                                    roleName = menu.roleName,
-                                    menus = resultString,
-                                    active = menu.active,
-                                    deleted = menu.deleted,
-                                    menuType = MenuConstants.DASHBOARD
-                                )
-                            )
+                            saveUserProfileDetailsInDb(userProfile)
+                            saveMenusInDb(menu.menus, menu.roleName)
                             meta.addAll(menu.meta)
-                            data?.clinicalWorkflows?.let { clinicalWorkflows ->
-                                val list = ArrayList<MenuDetail>()
-                                clinicalWorkflows.forEach {
-                                    list.add(MenuDetail(name = it.name, order = it.order))
-                                }
-
-                                val baseType: Type =
-                                    object : TypeToken<ArrayList<MenuDetail>>() {}.type
-                                val resultString =
-                                    Gson().toJson(list, baseType)
-                                saveMenus(
-                                    MenuEntity(
-                                        id = 0,
-                                        roleName = menu.roleName,
-                                        menus = resultString,
-                                        active = menu.active,
-                                        deleted = menu.deleted,
-                                        menuType = MenuConstants.TOOL
-                                    )
-                                )
-                            }
+                            workflowNames.addAll(clinicalNames)
                         }
 
-                        data?.clinicalWorkflows?.let { clinicalWorkflows ->
-                            clinicalWorkflows.forEach { clinicalWorkflow ->
-                                clinicalWorkflowIds.add(clinicalWorkflow.id.toInt())
-                                saveClinicalWorkflow(
-                                    ClinicalWorkflowEntity(
-                                        id = clinicalWorkflow.id,
-                                        name = clinicalWorkflow.name,
-                                        moduleType = clinicalWorkflow.moduleType,
-                                        workflowName = clinicalWorkflow.workflowName,
-                                        countryId = clinicalWorkflow.countryId,
-                                        active = clinicalWorkflow.active ?: false,
-                                        deleted = clinicalWorkflow.deleted ?: false,
-                                        order = clinicalWorkflow.order
-                                    )
-                                )
-                            }
+                        val formsResponse =
+                            async { apiHelper.getForms(FormRequest(workflowNames)) }.await()
+                        if (formsResponse.isSuccessful && formsResponse.body()?.status == true) {
+                            formsResponse.body()?.entity?.apply {
+                                saveFormsInDb(formData)
+                                saveClinicalWorkflowsInDb(clinicalTools)
+                            } ?: metaDataCompleteLiveData.postError()
                         }
 
-                    }
-                    val resForm = async {
-                        apiHelper.getForms(FormRequest(clinicalWorkflowIds))
-                    }
-                    val responseForm = resForm.await()
-                    if (responseForm.isSuccessful && responseForm.body()?.status == true) {
-                        responseForm.body()?.entity?.let { forms ->
-                            roomHelper.deleteAllForms()
-                            forms.forEach { form ->
-                                roomHelper.saveForm(form)
-                            }
+                        val metadataResponse =
+                            async { apiHelper.getFormMetadata(FormMetaRequest(meta)) }.await()
+                        if (metadataResponse.isSuccessful && metadataResponse.body()?.status == true) {
+                            metadataResponse.body()?.entity?.symptoms?.let {
+                                roomHelper.deleteAllSymptoms()
+                                roomHelper.insertSymptoms(it)
+                            } ?: metaDataCompleteLiveData.postError()
                         }
-                    } else {
-                        metaDataCompleteLiveData.postError()
+                        saveUserIsLogin()
+                        metaDataCompleteLiveData.postSuccess()
                     }
-                    val resMetadata = async {
-                        apiHelper.getFormMetadata(FormMetaRequest(meta))
-                    }
-                    val responseFormMetadata = resMetadata.await()
-                    if (responseFormMetadata.isSuccessful && responseFormMetadata.body()?.status == true) {
-                        responseFormMetadata.body()?.entity?.let { forms ->
-                            roomHelper.deleteAllSymptoms()
-                            forms.symptoms.forEach { symptoms ->
-                                roomHelper.insertSymptoms(symptoms)
-                            }
-                        }
-                    } else {
-                        metaDataCompleteLiveData.postError()
-                    }
-                    saveUserIsLogin()
-                    metaDataCompleteLiveData.postSuccess()
                 } else {
                     metaDataCompleteLiveData.postError()
                 }
@@ -271,6 +161,89 @@ class LoginRepository @Inject constructor(
             e.printStackTrace()
             metaDataCompleteLiveData.postError()
         }
+    }
+
+    private suspend fun saveClinicalWorkflowsInDb(clinicalTools: List<ClinicalWorkflow>) {
+        val clinicalWorkFlowList = mutableListOf<ClinicalWorkflowEntity>()
+        val clinicalWorkFlowConditions = mutableListOf<ClinicalWorkflowConditionEntity>()
+        clinicalTools.forEach { clinicalWorkflow ->
+            clinicalWorkFlowList.add(
+                ClinicalWorkflowEntity(
+                    id = clinicalWorkflow.id,
+                    name = clinicalWorkflow.name,
+                    moduleType = clinicalWorkflow.moduleType,
+                    workflowName = clinicalWorkflow.workflowName,
+                    countryId = clinicalWorkflow.countryId,
+                    displayOrder = clinicalWorkflow.displayOrder,
+                )
+            )
+            clinicalWorkFlowConditions.addAll(clinicalWorkflow.conditions?.map { condition ->
+                ClinicalWorkflowConditionEntity(
+                    id = 0,
+                    gender = condition.gender,
+                    maxAge = condition.maxAge,
+                    minAge = condition.minAge,
+                    clinicalWorkflowId = clinicalWorkflow.id
+                )
+
+            }?.toList() ?: listOf())
+        }
+        roomHelper.deleteAllClinicalWorkflow()
+        roomHelper.deleteClinicalWorkflowConditions()
+        roomHelper.saveClinicalWorkflows(clinicalWorkFlowList)
+        roomHelper.insertClinicalWorkflowConditions(clinicalWorkFlowConditions)
+    }
+
+    private suspend fun saveHealthFacilityInDb(list: List<HealthFacility>, defaultId: Long) {
+        roomHelper.deleteAllHealthFacility()
+        list.forEach { healthFacility ->
+            roomHelper.saveHealthFacility(
+                HealthFacilityEntity(
+                    id = healthFacility.id,
+                    name = healthFacility.name,
+                    districtId = healthFacility.districtId,
+                    chiefdomId = healthFacility.chiefdomId,
+                    tenantId = healthFacility.tenantId,
+                    isDefault = healthFacility.id == defaultId,
+                )
+            )
+        }
+    }
+
+    private suspend fun saveUserProfileDetailsInDb(userProfile: UserProfile) {
+        roomHelper.deleteAllUserProfileDetails()
+        roomHelper.saveUserProfileDetails(
+            UserProfileEntity(
+                id = 0,
+                profileData = Gson().toJson(userProfile)
+            )
+        )
+    }
+
+    private suspend fun saveMenusInDb(menus: ArrayList<MenuDetail>, roleName: String) {
+        roomHelper.deleteAllMenus()
+        menus.forEach { menu ->
+            roomHelper.saveMenus(
+                MenuEntity(
+                    id = 0,
+                    roleName = roleName,
+                    name = menu.name,
+                    displayOrder = menu.order,
+                    menuId = menu.name
+                )
+            )
+        }
+    }
+
+    private suspend fun saveFormsInDb(formData: List<FormData>) {
+        roomHelper.deleteAllForms()
+        roomHelper.saveForms(formData.map { formData ->
+            FormEntity(
+                id = formData.id,
+                formInput = formData.formInput,
+                formType = formData.formType
+            )
+        })
     }
 
     private fun saveUserIsLogin() {
@@ -285,39 +258,39 @@ class LoginRepository @Inject constructor(
     }
 
     suspend fun getMenu(
-        menuListLiveData: MutableLiveData<Resource<List<MenuAdapterModel>>>,
-        dashboard: String
+        menuListLiveData: MutableLiveData<Resource<List<MenuEntity>>>,
     ) {
         try {
             menuListLiveData.postLoading()
             val data = roomHelper.getMenus()
-            val adapterData = convertMenuEntityToAdapterModel(data, dashboard)
-            menuListLiveData.postSuccess(adapterData)
+            menuListLiveData.postSuccess(data)
         } catch (e: Exception) {
             menuListLiveData.postError()
         }
     }
 
-    private fun convertMenuEntityToAdapterModel(
-        list: List<MenuEntity>,
-        dashboard: String
-    ): List<MenuAdapterModel> {
-        return list
-            .filter { it.menuType == dashboard }
-            .flatMap { data ->
-                val menuListType = object : TypeToken<List<Menu>>() {}.type
-                val menus: List<Menu> = Gson().fromJson(data.menus, menuListType)
-                menus.map {
-                    MenuAdapterModel(
-                        name = it.name,
-                        role = data.roleName,
-                        menuId = it.name,
-                        displayOrder = it.id
-                    )
-                }
-            }
+    suspend fun getMenuForClinicalWorkflows(
+        menuListLiveData: MutableLiveData<Resource<List<MenuEntity>>>,
+    ) {
+        try {
+            menuListLiveData.postLoading()
+            val data = roomHelper.getMenuForClinicalWorkflows()
+            menuListLiveData.postSuccess(convertorClinicalWorkflowsToMenuEntity(data))
+        } catch (e: Exception) {
+            menuListLiveData.postError()
+        }
     }
 
+    private fun convertorClinicalWorkflowsToMenuEntity(clinicalWorkflows: List<ClinicalWorkflowEntity>): List<MenuEntity> {
+        return clinicalWorkflows.map { clinicalWorkflow ->
+            MenuEntity(
+                id = clinicalWorkflow.id,
+                menuId = clinicalWorkflow.name,
+                name = clinicalWorkflow.workflowName,
+                displayOrder = clinicalWorkflow.displayOrder?:0,
+            )
+        }
+    }
 
     suspend fun getUserProfile(userProfileLiveData: MutableLiveData<Resource<UserProfile>>) {
         try {
@@ -332,21 +305,25 @@ class LoginRepository @Inject constructor(
     }
 
 
-    suspend fun getAllVillagesName(villageListResponse: MutableLiveData<List<VillageEntity>>) {
+    suspend fun getAllVillagesName(villageListResponse: MutableLiveData<Resource<List<VillageEntity>>>) {
         try {
+            villageListResponse.postLoading()
             val response = roomHelper.getAllVillageName()
-            villageListResponse.postValue(response)
+            villageListResponse.postSuccess(response)
         } catch (e: Exception) {
             // occurred error response
+            villageListResponse.postError()
         }
     }
 
-    suspend fun getDefaultHealthFacility(defaultHealthFacilityLiveData: MutableLiveData<HealthFacilityEntity?>) {
+    suspend fun getDefaultHealthFacility(defaultHealthFacilityLiveData: MutableLiveData<Resource<HealthFacilityEntity?>>) {
         try {
+            defaultHealthFacilityLiveData.postLoading()
             val response = roomHelper.getDefaultHealthFacility()
-            defaultHealthFacilityLiveData.postValue(response)
+            defaultHealthFacilityLiveData.postSuccess(response)
         } catch (e: Exception) {
             // occurred error response
+            defaultHealthFacilityLiveData.postError()
         }
     }
 }

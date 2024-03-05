@@ -11,9 +11,11 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.ViewUtils.setDialogHeightToWrapAndSetWidthPercent
+import com.medtroniclabs.spice.data.UserProfile
 import com.medtroniclabs.spice.databinding.FragmentProfileDialogBinding
-import com.medtroniclabs.spice.db.entity.UserProfile
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
+import com.medtroniclabs.spice.db.entity.HealthFacilityEntity
+import com.medtroniclabs.spice.db.entity.VillageEntity
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.landing.viewmodel.LandingViewModel
@@ -49,6 +51,15 @@ class ProfileDialogFragment : DialogFragment(), View.OnClickListener {
         super.onViewCreated(view, savedInstanceState)
         initView()
         attachObservers()
+        getData()
+    }
+
+    private fun getData() {
+        with(viewModel) {
+            getUserProfile()
+            getAllVillagesName()
+            getDefaultHealthFacility()
+        }
     }
 
     private fun attachObservers() {
@@ -62,7 +73,6 @@ class ProfileDialogFragment : DialogFragment(), View.OnClickListener {
                     (activity as? BaseActivity)?.hideLoading()
                     resourceState.data?.let {
                         setUserProfileData(it)
-                        setAllVillageName()
                     }
                 }
 
@@ -71,26 +81,67 @@ class ProfileDialogFragment : DialogFragment(), View.OnClickListener {
                 }
             }
         }
+        viewModel.villageListResponse.observe(this) {
+                resourceState ->
+            when (resourceState.state) {
+                ResourceState.LOADING -> {
+                    (activity as? BaseActivity)?.showLoading()
+                }
+
+                ResourceState.SUCCESS -> {
+                    (activity as? BaseActivity)?.hideLoading()
+                    resourceState.data?.let {
+                        setAllVillageName(it)
+                    }
+                }
+
+                ResourceState.ERROR -> {
+                    (activity as? BaseActivity)?.hideLoading()
+                }
+            }
+        }
+        viewModel.defaultHealthFacilityLiveData.observe(this) {
+                resourceState ->
+            when (resourceState.state) {
+                ResourceState.LOADING -> {
+                    (activity as? BaseActivity)?.showLoading()
+                }
+
+                ResourceState.SUCCESS -> {
+                    (activity as? BaseActivity)?.hideLoading()
+                    resourceState.data?.let {
+                        setDefaultHealthFacility(it)
+                    }
+                }
+
+                ResourceState.ERROR -> {
+                    (activity as? BaseActivity)?.hideLoading()
+                }
+            }
+        }
+
     }
 
-    private fun setAllVillageName() {
-        binding.tvVillageText.text = viewModel.villageListResponse?.value?.let { list ->
-            list.joinToString { it.name }
-        } ?: getString(R.string.separator_hyphen)
+    private fun setDefaultHealthFacility(healthFacilityEntity: HealthFacilityEntity) {
         binding.tvAssignedHealthFacilityText.text =
-            viewModel.defaultHealthFacilityLiveData?.value?.let {
-                it.name
-            } ?: getString(R.string.separator_hyphen)
+            healthFacilityEntity.name
+    }
+
+    private fun setAllVillageName(villageEntities: List<VillageEntity>) {
+        binding.tvVillageText.text = villageEntities.let { list ->
+            list.joinToString { it.name }
+        }
     }
 
     private fun initView() {
+
         with(binding) {
             ivClose.safeClickListener(this@ProfileDialogFragment)
            // btnCancel.safeClickListener(this@ProfileDialogFragment)
         }
     }
 
-    fun setUserProfileData(user: UserProfile) {
+    private fun setUserProfileData(user: UserProfile) {
         with(binding) {
             tvName.text = user.firstName?.let {
                 requireContext().getString(

@@ -8,10 +8,8 @@ data class ClinicalWorkflowEntity(
     @PrimaryKey
     val id: Long,
     val name: String,
-    val moduleType: String,
+    val moduleType: String?=null,
     val workflowName: String,
     val countryId: Long,
-    val active: Boolean,
-    val deleted: Boolean,
-    val order:Int
+    val displayOrder:Int? = null,
 )

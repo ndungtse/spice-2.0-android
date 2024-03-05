@@ -7,15 +7,8 @@ import androidx.room.PrimaryKey
 data class MenuEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Long,
-    val roleName: String,
-    val menus: String,
-    val active: Boolean?,
-    val deleted: Boolean?,
-    val menuType: String
-)
-
-data class Menu(
-    val id: Long,
-    val order: Long,
-    val name: String
+    var menuId:String,
+    val roleName: String? = null,
+    val name: String,
+    val displayOrder: Int,
 )

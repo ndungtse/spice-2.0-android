@@ -22,8 +22,8 @@ class ResourceLoadingViewModel @Inject constructor(
     ViewModel() {
 
     val metaDataCompleteLiveData = MutableLiveData<Resource<Boolean>>()
-    val clinicalWorkflowIds = mutableListOf<Int>()
-    val meta = mutableListOf<String>()
+    private val workflowNames = mutableListOf<String>()
+    private val meta = mutableListOf<String>()
 
     init {
         getMetaDataInformation()
@@ -35,7 +35,7 @@ class ResourceLoadingViewModel @Inject constructor(
                 metaDataCompleteLiveData.postError()
                 return@launch
             }
-            loginRepository.getMetaDataInformation(metaDataCompleteLiveData,clinicalWorkflowIds,meta)
+            loginRepository.getMetaDataInformation(metaDataCompleteLiveData,workflowNames,meta)
         }
     }
 

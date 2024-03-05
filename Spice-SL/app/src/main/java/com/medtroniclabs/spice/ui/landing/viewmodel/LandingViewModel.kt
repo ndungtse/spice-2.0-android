@@ -3,9 +3,9 @@ package com.medtroniclabs.spice.ui.landing.viewmodel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.medtroniclabs.spice.data.UserProfile
 import com.medtroniclabs.spice.db.entity.HealthFacilityEntity
-import com.medtroniclabs.spice.db.entity.MenuAdapterModel
-import com.medtroniclabs.spice.db.entity.UserProfile
+import com.medtroniclabs.spice.db.entity.MenuEntity
 import com.medtroniclabs.spice.db.entity.VillageEntity
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.network.resource.Resource
@@ -21,14 +21,14 @@ class LandingViewModel @Inject constructor(
     @IoDispatcher private val dispatcherIO: CoroutineDispatcher
 ) : ViewModel() {
 
-    var villageListResponse = MutableLiveData<List<VillageEntity>>()
-    val menuListLiveData = MutableLiveData<Resource<List<MenuAdapterModel>>>()
+    var villageListResponse = MutableLiveData<Resource<List<VillageEntity>>>()
+    val menuListLiveData = MutableLiveData<Resource<List<MenuEntity>>>()
     val userProfileLiveData = MutableLiveData<Resource<UserProfile>>()
-    val defaultHealthFacilityLiveData = MutableLiveData<HealthFacilityEntity?>()
+    val defaultHealthFacilityLiveData = MutableLiveData<Resource<HealthFacilityEntity?>>()
 
-    fun getMenus(dashboard: String) {
+    fun getMenus() {
         viewModelScope.launch(dispatcherIO) {
-            loginRepository.getMenu(menuListLiveData,dashboard)
+            loginRepository.getMenu(menuListLiveData)
         }
     }
 

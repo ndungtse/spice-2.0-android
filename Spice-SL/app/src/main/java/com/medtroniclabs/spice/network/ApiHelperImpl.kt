@@ -3,6 +3,7 @@ package com.medtroniclabs.spice.network
 import com.medtroniclabs.spice.data.APIResponse
 import com.medtroniclabs.spice.data.FormMetaRequest
 import com.medtroniclabs.spice.data.FormRequest
+import com.medtroniclabs.spice.data.FormResponse
 import com.medtroniclabs.spice.data.LoginResponse
 import com.medtroniclabs.spice.data.MetaDataResponse
 import com.medtroniclabs.spice.data.UserSymptomsEntity
@@ -20,7 +21,7 @@ class ApiHelperImpl @Inject constructor(private val apiService: ApiService) : Ap
         return apiService.getMetaDataInformation()
     }
 
-    override suspend fun getForms(formRequest: FormRequest): Response<APIResponse<List<FormEntity>>> {
+    override suspend fun getForms(formRequest: FormRequest): Response<APIResponse<FormResponse>> {
         return apiService.getForms(formRequest)
     }
 

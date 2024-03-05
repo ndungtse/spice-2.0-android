@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.core.view.GravityCompat
@@ -14,8 +15,6 @@ import com.medtroniclabs.spice.BuildConfig
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.databinding.ActivityLandingBinding
-import com.medtroniclabs.spice.network.resource.Resource
-import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.boarding.LoginActivity
 import com.medtroniclabs.spice.ui.home.HomeScreenFragment
@@ -31,6 +30,7 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
         if (!SecuredPreference.getBoolean(SecuredPreference.EnvironmentKey.ISLOGGEDIN.name) && !SecuredPreference.getBoolean(
                 SecuredPreference.EnvironmentKey.ISMETALOADED.name
             )
@@ -42,20 +42,30 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
 
         binding = ActivityLandingBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        initView()
         initializeDrawerView()
         updateSideBarFooter()
-        viewModel.getUserProfile()
-        viewModel.getAllVillagesName()
-        viewModel.getDefaultHealthFacility()
+        initView()
     }
 
-
     private fun initView() {
-        onNavigationItemSelected(binding.navView.menu.findItem(R.id.home))
+    }
+    private val onBackPressedCallback: OnBackPressedCallback =
+        object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                backHandelFlow()
+            }
+        }
+
+    private fun backHandelFlow() {
+        if (binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            binding.drawerLayout.closeDrawer(GravityCompat.START)
+        } else {
+            finish()
+        }
     }
 
     private fun initializeDrawerView() {
+        onNavigationItemSelected(binding.navView.menu.findItem(R.id.home))
         val toolBar = binding.appBarMain.toolbar
         setSupportActionBar(toolBar)
         val toggle = ActionBarDrawerToggle(

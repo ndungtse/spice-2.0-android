@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import com.google.gson.Gson
 import com.medtroniclabs.spice.R
+import com.google.gson.reflect.TypeToken
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.databinding.FragmentAssessmentRmnchBinding
@@ -14,6 +15,7 @@ import com.medtroniclabs.spice.formgeneration.FormGenerator
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.listener.FormEventListener
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
+import com.medtroniclabs.spice.formgeneration.model.FormResponse
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
@@ -73,7 +75,7 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
     }
 
     private fun getFormDataForWorkflow() {
-        viewModel.getFormDataForWorkFlow(DefinedParams.SCREENING, RMNCH.RMNCHChildHoodVisit)
+        viewModel.getFormData(RMNCH.RMNCHChildHoodVisit)
     }
 
     private fun initView() {

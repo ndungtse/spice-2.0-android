@@ -3,6 +3,7 @@ package com.medtroniclabs.spice.db.local
 import com.medtroniclabs.spice.data.LastCreatedAtAndPatientId
 import com.medtroniclabs.spice.data.VillageInfo
 import com.medtroniclabs.spice.db.entity.AssessmentEntity
+import com.medtroniclabs.spice.db.entity.ClinicalWorkflowConditionEntity
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowEntity
 import com.medtroniclabs.spice.db.entity.FormEntity
 import com.medtroniclabs.spice.db.entity.HealthFacilityEntity
@@ -10,7 +11,6 @@ import com.medtroniclabs.spice.db.entity.HouseholdEntity
 import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
 import com.medtroniclabs.spice.db.entity.MenuEntity
 import com.medtroniclabs.spice.db.entity.SignsAndSymptomsEntity
-import com.medtroniclabs.spice.db.entity.SymptomEntity
 import com.medtroniclabs.spice.db.entity.UserProfileEntity
 import com.medtroniclabs.spice.db.entity.VillageEntity
 import com.medtroniclabs.spice.db.response.HouseHoldEntityWithMemberCount
@@ -44,17 +44,19 @@ interface RoomHelper {
     suspend fun getMenus(): List<MenuEntity>
     suspend fun getUserProfile(): UserProfileEntity
     suspend fun getDefaultHealthFacility(): HealthFacilityEntity?
-    suspend fun saveClinicalWorkflow(clinicalWorkflowEntity: ClinicalWorkflowEntity)
+    suspend fun saveClinicalWorkflows(clinicalWorkflows: List<ClinicalWorkflowEntity>)
     suspend fun deleteAllClinicalWorkflow()
     suspend fun getAllClinicalWorkflowIds(): List<Int>
-    suspend fun saveForm(form: FormEntity)
+    suspend fun saveForms(forms: List<FormEntity>)
     suspend fun deleteAllForms()
     suspend fun getFormData(
         formType: String
     ): String
-    suspend fun getFomDataForWorkFlow(formType: String, workflowName: String): String
-    suspend fun insertSymptoms(symptomEntity: SignsAndSymptomsEntity)
+    suspend fun insertSymptoms(symptomEntity: List<SignsAndSymptomsEntity>)
     suspend fun deleteAllSymptoms()
+    suspend fun getMenuForClinicalWorkflows() :List<ClinicalWorkflowEntity>
+    suspend fun deleteClinicalWorkflowConditions()
+    suspend fun insertClinicalWorkflowConditions(clinicalWorkflowConditions: List<ClinicalWorkflowConditionEntity>)
     suspend fun getUserVillages(): List<VillageEntity>
     suspend fun getVillageByID(villageId: Long): VillageEntity
     suspend fun getChiefDomAndVillageCodeByVillageId(id: Long): VillageInfo

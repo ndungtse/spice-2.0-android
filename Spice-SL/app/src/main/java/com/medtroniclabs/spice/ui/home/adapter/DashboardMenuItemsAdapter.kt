@@ -9,13 +9,13 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.databinding.RowActivitiesBinding
-import com.medtroniclabs.spice.db.entity.MenuAdapterModel
+import com.medtroniclabs.spice.db.entity.MenuEntity
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.ui.MenuConstants
 import com.medtroniclabs.spice.ui.home.MenuSelectionListener
 
 class DashboardMenuItemsAdapter(
-    private val roleBasedActivitiesList: List<MenuAdapterModel>,
+    private val roleBasedActivitiesList: List<MenuEntity>,
     private val listener: MenuSelectionListener
 ) :
     RecyclerView.Adapter<DashboardMenuItemsAdapter.ActivitiesViewHolder>() {

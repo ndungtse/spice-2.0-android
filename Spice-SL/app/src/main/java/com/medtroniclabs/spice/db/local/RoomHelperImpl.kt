@@ -7,6 +7,7 @@ import com.medtroniclabs.spice.db.dao.HouseholdDAO
 import com.medtroniclabs.spice.db.dao.MemberDAO
 import com.medtroniclabs.spice.db.dao.MetaDataDAO
 import com.medtroniclabs.spice.db.entity.AssessmentEntity
+import com.medtroniclabs.spice.db.entity.ClinicalWorkflowConditionEntity
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowEntity
 import com.medtroniclabs.spice.db.entity.FormEntity
 import com.medtroniclabs.spice.db.entity.HealthFacilityEntity
@@ -120,16 +121,16 @@ class RoomHelperImpl @Inject constructor(
         metaDataDAO.insertMenus(menuEntity)
     }
 
-    override suspend fun saveClinicalWorkflow(clinicalWorkflowEntity: ClinicalWorkflowEntity) {
-        return metaDataDAO.saveClinicalWorkflow(clinicalWorkflowEntity)
+    override suspend fun saveClinicalWorkflows(clinicalWorkflows: List<ClinicalWorkflowEntity>) {
+        return metaDataDAO.saveClinicalWorkflows(clinicalWorkflows)
     }
 
     override suspend fun deleteAllClinicalWorkflow() {
         return metaDataDAO.deleteAllClinicalWorkflow()
     }
 
-    override suspend fun saveForm(form: FormEntity) {
-        return metaDataDAO.saveForm(form)
+    override suspend fun saveForms(forms: List<FormEntity>) {
+        return metaDataDAO.saveForms(forms)
     }
 
     override suspend fun deleteAllForms() {
@@ -140,7 +141,7 @@ class RoomHelperImpl @Inject constructor(
         return metaDataDAO.getAllClinicalWorkflowIds()
     }
 
-    override suspend fun insertSymptoms(symptomEntity: SignsAndSymptomsEntity) {
+    override suspend fun insertSymptoms(symptomEntity: List<SignsAndSymptomsEntity>) {
         metaDataDAO.insertSymptoms(symptomEntity)
     }
 
@@ -155,10 +156,6 @@ class RoomHelperImpl @Inject constructor(
 
     override suspend fun getFormData(formType: String): String {
         return metaDataDAO.getFormData(formType)
-    }
-
-    override suspend fun getFomDataForWorkFlow(formType: String, workflowName: String): String {
-        return metaDataDAO.getFormDataForWorkFlow(formType, workflowName)
     }
 
     override suspend fun deleteAllMenus() {
@@ -184,4 +181,16 @@ class RoomHelperImpl @Inject constructor(
     override suspend fun getUserVillages(): List<VillageEntity> = metaDataDAO.getVillages()
 
     override suspend fun getVillageByID(villageId: Long): VillageEntity = metaDataDAO.getVillageByID(villageId)
+
+    override suspend fun getMenuForClinicalWorkflows() :List<ClinicalWorkflowEntity> {
+        return metaDataDAO.getMenuForClinicalWorkflows()
+    }
+
+    override suspend fun deleteClinicalWorkflowConditions() {
+        metaDataDAO.deleteClinicalWorkflowConditions()
+    }
+
+    override suspend fun insertClinicalWorkflowConditions(clinicalWorkflowConditions: List<ClinicalWorkflowConditionEntity>) {
+        metaDataDAO.insertClinicalWorkflowConditions(clinicalWorkflowConditions)
+    }
 }

@@ -5,6 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.databinding.FragmentAssessmentTBBinding
@@ -12,6 +14,7 @@ import com.medtroniclabs.spice.formgeneration.FormGenerator
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.listener.FormEventListener
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
+import com.medtroniclabs.spice.formgeneration.model.FormResponse
 import com.medtroniclabs.spice.formgeneration.ui.FormResultComposer
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
@@ -38,7 +41,7 @@ class AssessmentTBFragment : BaseFragment(), FormEventListener, View.OnClickList
         viewModel.getMemberDetailsById()
         initView()
         setListeners()
-        viewModel.getFormDataForWorkFlow(DefinedParams.SCREENING,DefinedParams.TB)
+        viewModel.getFormData(DefinedParams.TB)
         attachObservers()
     }
 
@@ -57,7 +60,6 @@ class AssessmentTBFragment : BaseFragment(), FormEventListener, View.OnClickList
                 ResourceState.SUCCESS -> {
                     hideProgress()
                     resourceState.data?.let { data ->
-                        viewModel.formLayout = data.formLayout
                         formGenerator.populateViews(data.formLayout)
                     }
                 }

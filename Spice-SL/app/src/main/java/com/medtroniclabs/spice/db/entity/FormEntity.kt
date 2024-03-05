@@ -9,5 +9,4 @@ data class FormEntity(
     val id: Long,
     val formInput: String,
     val formType: String,
-    val workflowName: String?
 )

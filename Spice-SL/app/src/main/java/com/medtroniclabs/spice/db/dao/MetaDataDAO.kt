@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.medtroniclabs.spice.data.VillageInfo
+import com.medtroniclabs.spice.db.entity.ClinicalWorkflowConditionEntity
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowEntity
 import com.medtroniclabs.spice.db.entity.FormEntity
 import com.medtroniclabs.spice.db.entity.HealthFacilityEntity
@@ -54,7 +55,7 @@ interface MetaDataDAO {
 
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun saveClinicalWorkflow(clinicalWorkflowEntity: ClinicalWorkflowEntity)
+    suspend fun saveClinicalWorkflows(clinicalWorkflows: List<ClinicalWorkflowEntity>)
 
     @Query("DELETE FROM ClinicalWorkflowEntity")
     suspend fun deleteAllClinicalWorkflow()
@@ -64,7 +65,7 @@ interface MetaDataDAO {
     suspend fun getAllClinicalWorkflowIds(): List<Int>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun saveForm(form: FormEntity)
+    suspend fun saveForms(forms: List<FormEntity>)
 
     @Query("DELETE FROM FormEntity")
     suspend fun deleteAllForms()
@@ -74,11 +75,8 @@ interface MetaDataDAO {
         formType: String
     ): String
 
-    @Query("SELECT formInput FROM FormEntity where formType =:formType AND workflowName =:workflowName")
-    suspend fun getFormDataForWorkFlow(formType: String, workflowName: String): String
-
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertSymptoms(symptomEntity: SignsAndSymptomsEntity)
+    suspend fun insertSymptoms(symptomEntity: List<SignsAndSymptomsEntity>)
 
     @Query("DELETE FROM SymptomEntity")
     suspend fun deleteAllSymptoms()
@@ -91,4 +89,13 @@ interface MetaDataDAO {
 
     @Query("SELECT * FROM VillageEntity where id = :villageId")
     suspend fun getVillageByID(villageId: Long): VillageEntity
+
+    @Query("SELECT * FROM ClinicalWorkflowEntity")
+    suspend fun getMenuForClinicalWorkflows() :List<ClinicalWorkflowEntity>
+
+    @Query("DELETE FROM SymptomEntity")
+    suspend fun deleteClinicalWorkflowConditions()
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertClinicalWorkflowConditions(clinicalWorkflowConditions: List<ClinicalWorkflowConditionEntity>)
 }

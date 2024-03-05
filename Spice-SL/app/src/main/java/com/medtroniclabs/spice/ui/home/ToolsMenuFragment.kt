@@ -14,7 +14,7 @@ import com.google.android.flexbox.JustifyContent
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.databinding.FragmentToolsMenuBinding
-import com.medtroniclabs.spice.db.entity.MenuAdapterModel
+import com.medtroniclabs.spice.db.entity.MenuEntity
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.MenuConstants
@@ -54,7 +54,7 @@ class ToolsMenuFragment : Fragment(), MenuSelectionListener {
             val result = bundle.getString(WorkFlowName)
             startAssessmentActivity(MenuConstants.RMNCH_MENU_ID,result)
         }
-        viewModel.getMenus(MenuConstants.TOOL)
+        viewModel.getMenuForClinicalWorkflows()
         attachObservers()
     }
 
@@ -78,8 +78,7 @@ class ToolsMenuFragment : Fragment(), MenuSelectionListener {
             }
         }
     }
-
-    private fun setAdapterViews(menuAdapterModels: List<MenuAdapterModel>) {
+    private fun setAdapterViews(menus: List<MenuEntity>) {
         if (CommonUtils.checkIsTablet(requireContext())) {
             val layoutManager = FlexboxLayoutManager(context)
             layoutManager.flexDirection = FlexDirection.ROW
@@ -89,7 +88,7 @@ class ToolsMenuFragment : Fragment(), MenuSelectionListener {
             val layoutManager = GridLayoutManager(context, 2)
             binding.rvActivitiesList.layoutManager = layoutManager
         }
-        binding.rvActivitiesList.adapter = DashboardMenuItemsAdapter(menuAdapterModels, this)
+        binding.rvActivitiesList.adapter = DashboardMenuItemsAdapter(menus, this)
     }
 
     override fun onMenuSelected(menuId: String) {

@@ -105,15 +105,13 @@ class AssessmentRepository @Inject constructor(
             //Exception - Catch block
         }
     }
-
-    suspend fun getFormDataForWorkFlow(
+    suspend fun getFormData(
         formType: String,
-        workflowName: String,
         formLayoutsLiveData: MutableLiveData<Resource<FormResponse>>
     ) {
         try {
             formLayoutsLiveData.postLoading()
-            val response = roomHelper.getFomDataForWorkFlow(formType, workflowName)
+            val response = roomHelper.getFormData(formType)
             val formFieldsType = object : TypeToken<FormResponse>() {}.type
             val formFields: FormResponse = Gson().fromJson(response, formFieldsType)
             formLayoutsLiveData.postSuccess(formFields)

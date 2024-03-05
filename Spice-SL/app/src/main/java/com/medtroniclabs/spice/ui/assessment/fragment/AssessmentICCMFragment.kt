@@ -5,6 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.databinding.FragmentAssessmentBinding
@@ -12,6 +14,7 @@ import com.medtroniclabs.spice.formgeneration.FormGenerator
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.listener.FormEventListener
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
+import com.medtroniclabs.spice.formgeneration.model.FormResponse
 import com.medtroniclabs.spice.formgeneration.ui.FormResultComposer
 import com.medtroniclabs.spice.formgeneration.utility.CheckBoxDialog
 import com.medtroniclabs.spice.network.resource.ResourceState
@@ -38,7 +41,7 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initView()
-        viewModel.getFormDataForWorkFlow(DefinedParams.SCREENING, DefinedParams.ICCM)
+        viewModel.getFormData(DefinedParams.ICCM)
         setListeners()
         viewModel.insertSignsAndSymptoms()
         attachObservers()
@@ -59,7 +62,6 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
                 ResourceState.SUCCESS -> {
                     hideProgress()
                     resourceState.data?.let { data ->
-                        viewModel.formLayout = data.formLayout
                         formGenerator.populateViews(data.formLayout)
                     }
                 }
@@ -72,12 +74,10 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
     }
 
     private fun initView() {
-
         replaceFragmentInId<BioDataFragment>(
             binding.bioDataFragmentContainer.id,
             tag = BioDataFragment.TAG
         )
-
         formGenerator = FormGenerator(
             requireContext(), binding.llForm, null, this, binding.scrollView,
             translate = false
