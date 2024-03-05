@@ -1,4 +1,4 @@
-package com.medtroniclabs.spice.ui.member
+package com.medtroniclabs.spice.repo
 
 import androidx.lifecycle.MutableLiveData
 import com.medtroniclabs.spice.appextensions.postError

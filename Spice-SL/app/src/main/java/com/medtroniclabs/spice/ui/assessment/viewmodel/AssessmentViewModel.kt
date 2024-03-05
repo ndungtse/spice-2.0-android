@@ -10,7 +10,7 @@ import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.model.FormResponse
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.repo.AssessmentRepository
-import com.medtroniclabs.spice.ui.member.MemberRegistrationRepository
+import com.medtroniclabs.spice.repo.MemberRegistrationRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
@@ -28,6 +28,7 @@ class AssessmentViewModel @Inject constructor(
     val assessmentUpdateLiveData = MutableLiveData<Resource<String>>()
     val memberDetailsLiveData = MutableLiveData<Resource<HouseholdMemberEntity>>()
     var menuId: String? = null
+    var workflowName:String? = null
     var formLayout: List<FormLayout>? = null
     var symptomTypeListResponse = MutableLiveData<List<SignsAndSymptomsEntity>>()
     var otherAssessmentDetails = HashMap<String, Any>()

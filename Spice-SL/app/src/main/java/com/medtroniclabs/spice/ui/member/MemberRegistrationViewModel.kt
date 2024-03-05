@@ -4,12 +4,12 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.medtroniclabs.spice.appextensions.postError
-import com.medtroniclabs.spice.data.VillageInfo
 import com.medtroniclabs.spice.db.entity.HouseholdEntity
 import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.repo.HouseHoldRepository
+import com.medtroniclabs.spice.repo.MemberRegistrationRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch

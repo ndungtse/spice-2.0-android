@@ -18,7 +18,10 @@ import com.medtroniclabs.spice.db.entity.MenuAdapterModel
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.MenuConstants
+import com.medtroniclabs.spice.ui.MenuConstants.DialogResult
+import com.medtroniclabs.spice.ui.MenuConstants.WorkFlowName
 import com.medtroniclabs.spice.ui.assessment.AssessmentActivity
+import com.medtroniclabs.spice.ui.dialog.RMNCHFlowSelectionDialog
 import com.medtroniclabs.spice.ui.home.adapter.DashboardMenuItemsAdapter
 
 class ToolsMenuFragment : Fragment(), MenuSelectionListener {
@@ -33,16 +36,24 @@ class ToolsMenuFragment : Fragment(), MenuSelectionListener {
         }
     }
 
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentToolsMenuBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        childFragmentManager.setFragmentResultListener(
+            DialogResult,
+            viewLifecycleOwner
+        ) { key, bundle ->
+            val result = bundle.getString(WorkFlowName)
+            startAssessmentActivity(MenuConstants.RMNCH_MENU_ID,result)
+        }
         viewModel.getMenus(MenuConstants.TOOL)
         attachObservers()
     }
@@ -67,6 +78,7 @@ class ToolsMenuFragment : Fragment(), MenuSelectionListener {
             }
         }
     }
+
     private fun setAdapterViews(menuAdapterModels: List<MenuAdapterModel>) {
         if (CommonUtils.checkIsTablet(requireContext())) {
             val layoutManager = FlexboxLayoutManager(context)
@@ -85,9 +97,25 @@ class ToolsMenuFragment : Fragment(), MenuSelectionListener {
     }
 
     private fun startAssessmentToolsActivity(menuId: String) {
+        when (menuId) {
+            MenuConstants.RMNCH_MENU_ID -> {
+                RMNCHFlowSelectionDialog.newInstance()
+                    .show(childFragmentManager, RMNCHFlowSelectionDialog.TAG)
+            }
+
+            else -> {
+                startAssessmentActivity(menuId, null)
+            }
+        }
+    }
+
+    private fun startAssessmentActivity(menuId: String, workFlowName: String?) {
         val intent = Intent(requireContext(), AssessmentActivity::class.java)
         intent.putExtra(DefinedParams.MemberID, viewModel.selectedHouseholdMemberID)
         intent.putExtra(DefinedParams.MenuId, menuId)
+        workFlowName?.let { name ->
+            intent.putExtra(WorkFlowName, name)
+        }
         startActivity(intent)
     }
 }

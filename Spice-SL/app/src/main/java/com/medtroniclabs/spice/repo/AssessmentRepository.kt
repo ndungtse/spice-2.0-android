@@ -3,6 +3,7 @@ package com.medtroniclabs.spice.repo
 import androidx.lifecycle.MutableLiveData
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.appextensions.postSuccess
@@ -18,6 +19,9 @@ import javax.inject.Inject
 class AssessmentRepository @Inject constructor(
     private var roomHelper: RoomHelper
 ) {
+
+    private val resultHashMap = HashMap<String, Any>()
+
     suspend fun saveAssessment(
         resultData: String,
         householdId: Long,
@@ -26,11 +30,11 @@ class AssessmentRepository @Inject constructor(
         memberId: Long
     ) {
         try {
-            val assessmentEntity = menuId?.let { menuId ->
+            val assessmentEntity = menuId?.let { menu ->
                 AssessmentEntity(
                     memberId = memberId,
                     householdId = householdId,
-                    assessmentType = menuId.lowercase(),
+                    assessmentType = menu.lowercase(),
                     assessmentDetails = resultData,
                     userId = 1
                 )
@@ -75,7 +79,7 @@ class AssessmentRepository @Inject constructor(
                 "No Symptoms",
                 "Other"
             )
-            var signsList = ArrayList<SignsAndSymptomsEntity>()
+            val signsList = ArrayList<SignsAndSymptomsEntity>()
             for (i in signs.indices) {
                 signsList.add(
                     SignsAndSymptomsEntity(
@@ -87,7 +91,7 @@ class AssessmentRepository @Inject constructor(
                 )
             }
             roomHelper.insertSymptomList(signsList)
-        } catch (e: Exception) {
+        } catch (_: Exception) {
         }
     }
 

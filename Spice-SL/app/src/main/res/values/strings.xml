@@ -181,4 +181,8 @@
     <string name="household_successfully">Household registration \n completed successfully.</string>
     <string name="household_with_no">Household No : %1$s</string>
     <string name="patient_id">Patient ID</string>
+    <string name="select_flow">Select Flow</string>
+    <string name="anc" translatable="false">ANC</string>
+    <string name="pnc" translatable="false">PNC</string>
+    <string name="child_hood_visit" translatable="false">Childhood Visit</string>
 </resources>

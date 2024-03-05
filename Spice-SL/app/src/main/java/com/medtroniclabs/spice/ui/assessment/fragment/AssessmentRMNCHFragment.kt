@@ -6,9 +6,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import com.google.gson.Gson
+import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DefinedParams
-import com.medtroniclabs.spice.databinding.FragmentAssessmentRmnchChildhoodVisitBinding
+import com.medtroniclabs.spice.databinding.FragmentAssessmentRmnchBinding
 import com.medtroniclabs.spice.formgeneration.FormGenerator
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.listener.FormEventListener
@@ -18,22 +19,23 @@ import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
 
-class AssessmentRMNCHChildhoodVisitFragment : BaseFragment(), View.OnClickListener,
+class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
     FormEventListener {
 
-    private lateinit var binding: FragmentAssessmentRmnchChildhoodVisitBinding
+    private lateinit var binding: FragmentAssessmentRmnchBinding
     private val viewModel: AssessmentViewModel by activityViewModels()
     private lateinit var formGenerator: FormGenerator
 
     companion object {
         const val TAG = "AssessmentRMNCHChildhoodVisitFragment"
     }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentAssessmentRmnchChildhoodVisitBinding.inflate(inflater, container, false)
+        binding = FragmentAssessmentRmnchBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -83,19 +85,37 @@ class AssessmentRMNCHChildhoodVisitFragment : BaseFragment(), View.OnClickListen
             requireContext(), binding.llForm, null, this, binding.scrollView,
             translate = false
         )
+        showRespectiveWorkflow()
+    }
+
+    private fun showRespectiveWorkflow() {
+        val resultJsonFileName: String
+        when (viewModel.workflowName) {
+            getString(R.string.anc) -> {
+                resultJsonFileName = "rmnch_anc_visit.json"
+                loadJson(resultJsonFileName)
+            }
+            getString(R.string.child_hood_visit) -> {
+                resultJsonFileName = "rmnch_childhood_visit.json"
+                loadJson(resultJsonFileName)
+            }
+        }
+    }
+
+    private fun loadJson(resultJsonFileName: String) {
         val objectList = Gson().fromJson(
             CommonUtils.getStringFromAssets(
-                "rmnch_childhood_visit.json",
+                resultJsonFileName,
                 requireActivity().assets
             ),
             Array<FormLayout>::class.java
         ).asList()
         formGenerator.populateViews(objectList)
-
     }
 
+
     override fun onClick(v: View) {
-        when(v.id){
+        when (v.id) {
             binding.btnSubmit.id -> {
                 formGenerator.formSubmitAction(v)
             }

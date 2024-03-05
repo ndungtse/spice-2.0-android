@@ -19,8 +19,6 @@ import com.medtroniclabs.spice.ui.dialog.SuccessDialogFragment
 import com.medtroniclabs.spice.ui.home.ToolsActivity
 import com.medtroniclabs.spice.ui.household.HouseholdActivity
 import com.medtroniclabs.spice.ui.household.HouseholdDefinedParams.ID
-import com.medtroniclabs.spice.ui.household.HouseholdDefinedParams.NoOfPeople
-import com.medtroniclabs.spice.ui.household.HouseholdDefinedParams.VillageId
 import com.medtroniclabs.spice.ui.household.HouseholdDefinedParams.isFromHouseHoldRegistration
 import com.medtroniclabs.spice.ui.household.HouseholdSearchActivity
 import com.medtroniclabs.spice.ui.household.MemberSelectionListener

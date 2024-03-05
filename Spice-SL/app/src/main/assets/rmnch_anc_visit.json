@@ -1,0 +1,318 @@
+[
+  {
+    "familyOrder": 0,
+    "id": "anc",
+    "orderId": 1,
+    "title": "ANC",
+    "viewType": "CardView"
+  },
+  {
+    "id": "lmp",
+    "family": "anc",
+    "fieldName": "lmp",
+    "orderId": 2,
+    "title": "Last Menstrual Period",
+    "viewType": "DatePicker",
+    "isMandatory": true,
+    "hint": "Select Date",
+    "errorMessage": "Please select a valid option",
+    "visibility": "visible"
+  },
+  {
+    "id": "motherDangerSign",
+    "fieldName": "motherDangerSign",
+    "family": "anc",
+    "orderId": 3,
+    "viewType": "DialogCheckbox",
+    "localDataCache": "motherDangerSign",
+    "isMandatory": true,
+    "errorMessage": "Please select a valid option",
+    "isEnabled": true,
+    "title": "Is the expectant mother experiencing any of these danger signs?",
+    "visibility": "visible",
+    "isSummary": true
+  },
+  {
+    "family": "anc",
+    "fieldName": "maleParterPresent",
+    "id": "maleParterPresent",
+    "condition": [],
+    "orderId": 4,
+    "errorMessage": "Please select a valid option",
+    "isEnabled": true,
+    "isMandatory": true,
+    "isNeededDefault": true,
+    "isSummary": true,
+    "optionsList": [
+      {
+        "id": "Yes",
+        "name": "Yes"
+      },
+      {
+        "id": "No",
+        "name": "No"
+      }
+    ],
+    "optionType": "boolean",
+    "readOnly": true,
+    "viewType": "SingleSelectionView",
+    "title": "Male Partner Present?",
+    "visibility": "visible"
+  },
+  {
+    "family": "anc",
+    "fieldName": "sleepsUnderBednet",
+    "id": "sleepsUnderBednet",
+    "condition": [],
+    "orderId": 4,
+    "errorMessage": "Please select a valid option",
+    "isEnabled": true,
+    "isMandatory": true,
+    "isNeededDefault": true,
+    "isSummary": true,
+    "optionsList": [
+      {
+        "id": "Yes",
+        "name": "Yes"
+      },
+      {
+        "id": "No",
+        "name": "No"
+      }
+    ],
+    "optionType": "boolean",
+    "readOnly": true,
+    "viewType": "SingleSelectionView",
+    "title": "Sleeps under Bednet?",
+    "visibility": "visible"
+  },
+  {
+    "family": "anc",
+    "fieldName": "eatsMoreThanBefore",
+    "id": "eatsMoreThanBefore",
+    "condition": [],
+    "orderId": 4,
+    "errorMessage": "Please select a valid option",
+    "isEnabled": true,
+    "isMandatory": true,
+    "isNeededDefault": true,
+    "isSummary": true,
+    "optionsList": [
+      {
+        "id": "Yes",
+        "name": "Yes"
+      },
+      {
+        "id": "No",
+        "name": "No"
+      }
+    ],
+    "optionType": "boolean",
+    "readOnly": true,
+    "viewType": "SingleSelectionView",
+    "title": "Eats more than before?",
+    "visibility": "visible"
+  },
+  {
+    "family": "anc",
+    "fieldName": "eatRichFoods",
+    "id": "eatRichFoods",
+    "condition": [],
+    "orderId": 4,
+    "errorMessage": "Please select a valid option",
+    "isEnabled": true,
+    "isMandatory": true,
+    "isNeededDefault": true,
+    "isSummary": true,
+    "optionsList": [
+      {
+        "id": "Yes",
+        "name": "Yes"
+      },
+      {
+        "id": "No",
+        "name": "No"
+      }
+    ],
+    "optionType": "boolean",
+    "readOnly": true,
+    "viewType": "SingleSelectionView",
+    "title": "Eats from 4 food groups plus iron-rich and vitamin-A rich foods?",
+    "visibility": "visible"
+  },
+  {
+    "family": "anc",
+    "fieldName": "ironTablets",
+    "id": "ironTablets",
+    "condition": [],
+    "orderId": 4,
+    "errorMessage": "Please select a valid option",
+    "isEnabled": true,
+    "isMandatory": true,
+    "isNeededDefault": true,
+    "isSummary": true,
+    "optionsList": [
+      {
+        "id": "Yes",
+        "name": "Yes"
+      },
+      {
+        "id": "No",
+        "name": "No"
+      }
+    ],
+    "optionType": "boolean",
+    "readOnly": true,
+    "viewType": "SingleSelectionView",
+    "title": "Takes iron-folate tablets",
+    "visibility": "visible"
+  },
+  {
+    "family": "anc",
+    "fieldName": "fancidarTablet",
+    "id": "fancidarTablet",
+    "condition": [],
+    "orderId": 4,
+    "errorMessage": "Please select a valid option",
+    "isEnabled": true,
+    "isMandatory": true,
+    "isNeededDefault": true,
+    "isSummary": true,
+    "optionsList": [
+      {
+        "id": "Yes",
+        "name": "Yes"
+      },
+      {
+        "id": "No",
+        "name": "No"
+      }
+    ],
+    "optionType": "boolean",
+    "readOnly": true,
+    "viewType": "SingleSelectionView",
+    "title": "Takes Fancidar tablets",
+    "visibility": "visible"
+  },
+  {
+    "family": "anc",
+    "fieldName": "priorityPregnancy",
+    "id": "priorityPregnancy",
+    "condition": [],
+    "orderId": 4,
+    "errorMessage": "Please select a valid option",
+    "isEnabled": true,
+    "isMandatory": true,
+    "isNeededDefault": true,
+    "isSummary": true,
+    "optionsList": [
+      {
+        "id": "Yes",
+        "name": "Yes"
+      },
+      {
+        "id": "No",
+        "name": "No"
+      }
+    ],
+    "optionType": "boolean",
+    "readOnly": true,
+    "viewType": "SingleSelectionView",
+    "title": "Priority pregnancy",
+    "visibility": "visible"
+  },
+  {
+    "family": "anc",
+    "fieldName": "miscarriageStillBirth",
+    "id": "miscarriageStillBirth",
+    "condition": [],
+    "orderId": 4,
+    "errorMessage": "Please select a valid option",
+    "isEnabled": true,
+    "isMandatory": true,
+    "isNeededDefault": true,
+    "isSummary": true,
+    "optionsList": [
+      {
+        "id": "Yes",
+        "name": "Yes"
+      },
+      {
+        "id": "No",
+        "name": "No"
+      }
+    ],
+    "optionType": "boolean",
+    "readOnly": true,
+    "viewType": "SingleSelectionView",
+    "title": "Miscarriage/Stillbirth",
+    "visibility": "visible"
+  },
+  {
+    "family": "anc",
+    "fieldName": "deathOfMother",
+    "id": "deathOfMother",
+    "condition": [],
+    "orderId": 4,
+    "errorMessage": "Please select a valid option",
+    "isEnabled": true,
+    "isMandatory": true,
+    "isNeededDefault": true,
+    "isSummary": true,
+    "optionsList": [
+      {
+        "id": "Yes",
+        "name": "Yes"
+      },
+      {
+        "id": "No",
+        "name": "No"
+      }
+    ],
+    "optionType": "boolean",
+    "readOnly": true,
+    "viewType": "SingleSelectionView",
+    "title": "Death of mother",
+    "visibility": "visible"
+  },
+  {
+    "family": "anc",
+    "fieldName": "birthPlanMade",
+    "id": "birthPlanMade",
+    "condition": [],
+    "orderId": 4,
+    "errorMessage": "Please select a valid option",
+    "isEnabled": true,
+    "isMandatory": true,
+    "isNeededDefault": true,
+    "isSummary": true,
+    "optionsList": [
+      {
+        "id": "Yes",
+        "name": "Yes"
+      },
+      {
+        "id": "No",
+        "name": "No"
+      }
+    ],
+    "optionType": "boolean",
+    "readOnly": true,
+    "viewType": "SingleSelectionView",
+    "title": "Birth plan made",
+    "visibility": "visible"
+  },
+  {
+    "family": "anc",
+    "fieldName": "placeOfBirth",
+    "id": "placeOfBirth",
+    "viewType": "Spinner",
+    "orderId": 6,
+    "localDataCache": "placeOfBirth",
+    "isEnabled": true,
+    "isMandatory": true,
+    "title": "Place of delivery (Intended per birth plan)",
+    "errorMessage": "Please select a valid option"
+  }
+]
+

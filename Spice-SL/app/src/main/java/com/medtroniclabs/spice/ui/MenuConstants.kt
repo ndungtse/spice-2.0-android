@@ -11,4 +11,6 @@ object MenuConstants {
     const val NCD_MENU_ID = "ncd"
     const val  DASHBOARD = "DASHBOARD"
     const val  TOOL = "TOOL"
+    const val WorkFlowName = "workflowName"
+    const val DialogResult = "DialogResult"
 }

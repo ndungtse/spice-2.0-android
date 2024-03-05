@@ -3,9 +3,6 @@ package com.medtroniclabs.spice.ui.assessment
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.viewModels
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.commit
-import androidx.fragment.app.replace
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.databinding.ActivityAssessmentBinding
@@ -14,7 +11,7 @@ import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.MenuConstants
 import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentICCMFragment
 import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentICCMSummaryFragment
-import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentRMNCHChildhoodVisitFragment
+import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentRMNCHFragment
 import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentTBFragment
 import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentTBSummaryFragment
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
@@ -78,9 +75,9 @@ class AssessmentActivity : BaseActivity() {
 
             MenuConstants.RMNCH_MENU_ID -> {
                 setTitle(MenuConstants.RMNCH_MENU_ID.uppercase())
-                replaceFragmentInId<AssessmentRMNCHChildhoodVisitFragment>(
+                replaceFragmentInId<AssessmentRMNCHFragment>(
                     binding.formsFragmentContainer.id,
-                    tag = AssessmentRMNCHChildhoodVisitFragment.TAG
+                    tag = AssessmentRMNCHFragment.TAG
                 )
             }
 
@@ -123,6 +120,7 @@ class AssessmentActivity : BaseActivity() {
     private fun getIntentValue() {
         viewModel.selectedHouseholdMemberId = intent.getLongExtra(DefinedParams.MemberID, -1L)
         viewModel.menuId = intent.getStringExtra(DefinedParams.MenuId)
+        viewModel.workflowName = intent.getStringExtra(MenuConstants.WorkFlowName)
     }
 
 
