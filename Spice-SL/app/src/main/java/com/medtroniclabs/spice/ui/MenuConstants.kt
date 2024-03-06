@@ -9,8 +9,7 @@ object MenuConstants {
     const val CBS_MENU_ID = "cbs"
     const val TB_MENU_ID = "TB"
     const val NCD_MENU_ID = "ncd"
-    const val  DASHBOARD = "DASHBOARD"
-    const val  TOOL = "TOOL"
     const val WorkFlowName = "workflowName"
     const val DialogResult = "DialogResult"
+    const val OTHER_SYMPTOMS = "OTHER SYMPTOMS"
 }

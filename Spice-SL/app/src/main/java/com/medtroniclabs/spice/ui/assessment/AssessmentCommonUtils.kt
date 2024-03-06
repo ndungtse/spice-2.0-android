@@ -25,6 +25,9 @@ object AssessmentCommonUtils {
                     if (nestedMap[keys] is String) {
                         return nestedMap[keys] as String
                     }
+                    if (nestedMap[keys] is Double) {
+                        return nestedMap[keys].toString()
+                    }
                     if (nestedMap[keys] is ArrayList<*>) {
                         val arrayListValue = nestedMap[keys] as ArrayList<*>
                         return getDialogValue(arrayListValue)

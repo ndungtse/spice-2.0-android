@@ -6,12 +6,15 @@ import androidx.activity.viewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.databinding.ActivityAssessmentBinding
+import com.medtroniclabs.spice.formgeneration.extension.capitalizeFirstChar
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.MenuConstants
 import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentICCMFragment
 import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentICCMSummaryFragment
 import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentRMNCHFragment
+import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentOtherSymptomSummaryFragment
+import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentOtherSymptomsFragment
 import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentTBFragment
 import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentTBSummaryFragment
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
@@ -38,7 +41,7 @@ class AssessmentActivity : BaseActivity() {
     private fun loadSummaryFragment() {
         when (viewModel.menuId) {
             MenuConstants.ICCM_MENU_ID -> {
-                setTitle(DefinedParams.Summary.uppercase())
+                setTitle(DefinedParams.Summary.capitalizeFirstChar())
                 replaceFragmentInId<AssessmentICCMSummaryFragment>(
                     binding.formsFragmentContainer.id,
                     tag = AssessmentICCMSummaryFragment.TAG
@@ -46,10 +49,18 @@ class AssessmentActivity : BaseActivity() {
             }
 
             MenuConstants.TB_MENU_ID -> {
-                setTitle(DefinedParams.Summary.uppercase())
+                setTitle(DefinedParams.Summary.capitalizeFirstChar())
                 replaceFragmentInId<AssessmentTBSummaryFragment>(
                     binding.formsFragmentContainer.id,
                     tag = AssessmentTBSummaryFragment.TAG
+                )
+            }
+
+            MenuConstants.OTHER_SYMPTOMS -> {
+                setTitle(DefinedParams.Summary.capitalizeFirstChar())
+                replaceFragmentInId<AssessmentOtherSymptomSummaryFragment>(
+                    binding.formsFragmentContainer.id,
+                    tag = AssessmentOtherSymptomSummaryFragment::class.simpleName
                 )
             }
         }
@@ -81,6 +92,13 @@ class AssessmentActivity : BaseActivity() {
                 )
             }
 
+            MenuConstants.OTHER_SYMPTOMS -> {
+                setTitle(MenuConstants.OTHER_SYMPTOMS.uppercase())
+                replaceFragmentInId<AssessmentOtherSymptomsFragment>(
+                    binding.formsFragmentContainer.id,
+                    tag = AssessmentOtherSymptomsFragment::class.simpleName
+                )
+            }
         }
     }
 

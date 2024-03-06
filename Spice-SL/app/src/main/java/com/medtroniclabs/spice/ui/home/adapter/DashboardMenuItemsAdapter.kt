@@ -98,6 +98,10 @@ class DashboardMenuItemsAdapter(
                 R.drawable.ic_rmnch_tool
             )
 
+            MenuConstants.OTHER_SYMPTOMS -> return ContextCompat.getDrawable(
+                context,
+                R.drawable.ic_iccm_tool
+            )
             else -> null
         }
     }

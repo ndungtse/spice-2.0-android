@@ -67,6 +67,8 @@ class BioDataFragment : BaseFragment() {
         data?.let {
             binding.patientName.tvKey.text = getString(R.string.name)
             binding.patientName.tvValue.text = data.name.capitalizeFirstChar()
+            binding.patientId.tvKey.text = getString(R.string.patient_id)
+            binding.patientId.tvValue.text = data.patientId
             binding.gender.tvKey.text = getString(R.string.gender)
             binding.gender.tvValue.text = data.gender.capitalizeFirstChar()
             binding.dobAge.tvKey.text = getString(R.string.age)

@@ -1,0 +1,205 @@
+[
+  {
+    "familyOrder": 1,
+    "id": "signsAndSymptoms",
+    "title": "Signs & Symptoms",
+    "viewType": "CardView"
+  },
+  {
+    "condition": [
+      {
+        "eq": "Other",
+        "targetId": "otherConcerningSymptoms",
+        "visibility": "visible"
+      }
+    ],
+    "errorMessage": "Please select a signs",
+    "family": "signsAndSymptoms",
+    "fieldName": "Signs",
+    "id": "concerningSymptoms",
+    "isEnabled": true,
+    "isMandatory": true,
+    "isNeededDefault": true,
+    "isNotDefault": false,
+    "maxLength": 100,
+    "minLength": 1,
+    "orderId": 1,
+    "isSummary": true,
+    "title": "Are you experiencing any concerning symptoms?",
+    "viewType": "DialogCheckbox",
+    "isInfo": "gone",
+    "visibility": "visible"
+  },
+  {
+    "errorMessage": "Please enter a valid sign",
+    "family": "signsAndSymptoms",
+    "fieldName": "Other Concerning Symptoms",
+    "hint": "Enter Other Symptoms",
+    "id": "otherConcerningSymptoms",
+    "inputType": 96,
+    "isEnabled": true,
+    "isMandatory": true,
+    "isNeededDefault": true,
+    "isNotDefault": false,
+    "orderId": 2,
+    "isSummary": true,
+    "title": "Other Concerning Symptoms",
+    "viewType": "EditText",
+    "isInfo": "gone",
+    "visibility": "gone"
+  },
+  {
+    "familyOrder": 2,
+    "id": "fever",
+    "title": "Fever",
+    "viewType": "CardView"
+  },
+  {
+    "condition": [
+      {
+        "eq": "Yes",
+        "targetId": "temperature",
+        "visibility": "visible"
+      },
+      {
+        "eq": "Yes",
+        "targetId": "feverDays",
+        "visibility": "visible"
+      },
+      {
+        "eq": "Yes",
+        "targetId": "rdt_test_result",
+        "visibility": "visible"
+      },
+      {
+        "eq": "Yes",
+        "targetId": "is_act_dispensed",
+        "visibility": "visible"
+      }
+    ],
+    "errorMessage": "Please select a valid option",
+    "family": "fever",
+    "fieldName": "Fever, History of Fever or hot body",
+    "id": "feverOrHotbody",
+    "isEnabled": true,
+    "isMandatory": true,
+    "isNeededDefault": true,
+    "isSummary": true,
+    "optionsList": [
+      {
+        "id": "Yes",
+        "name": "Yes"
+      },
+      {
+        "id": "No",
+        "name": "No"
+      }
+    ],
+    "optionType": "boolean",
+    "orderId": 1,
+    "readOnly": true,
+    "title": "Fever, History of Fever or hot body",
+    "viewType": "SingleSelectionView",
+    "visibility": "visible"
+  },
+  {
+    "fieldName": "Temperature",
+    "visibility": "gone",
+    "maxValue": 100,
+    "errorMessage": "",
+    "title": "Temperature (in °C)",
+    "condition": [],
+    "minValue": 1,
+    "hint": "Temperature",
+    "isEnabled": true,
+    "isEnrollment": true,
+    "viewType": "EditText",
+    "inputType": 8192,
+    "id": "temperature",
+    "isSummary": true,
+    "family": "fever",
+    "isMandatory": false,
+    "maxLength": 4
+  },
+  {
+    "condition": [],
+    "errorMessage": "No of Days is required",
+    "family": "fever",
+    "fieldName": "Number of days of fever",
+    "hint": "Enter No of Days",
+    "id": "feverDays",
+    "onlyAlphabets": true,
+    "inputType": 2,
+    "isEnabled": true,
+    "isMandatory": true,
+    "isNeededDefault": true,
+    "isNotDefault": false,
+    "isSummary": true,
+    "maxLength": 2,
+    "minLength": 1,
+    "orderId": 2,
+    "title": "Number of days of fever",
+    "viewType": "NoOfDaysView",
+    "visibility": "gone",
+    "noOfDays": 7,
+    "information": "> 7 days"
+  },
+  {
+    "condition": [],
+    "errorMessage": "Please select a valid option",
+    "family": "fever",
+    "fieldName": "RDT-Test (+/-)",
+    "id": "rdt_test_result",
+    "isEnabled": true,
+    "isMandatory": true,
+    "isNeededDefault": true,
+    "isSummary": false,
+    "optionsList": [
+      {
+        "id": "+Ve",
+        "name": "+Ve"
+      },
+      {
+        "id": "-Ve",
+        "name": "-Ve"
+      },
+      {
+        "id": "NA",
+        "name": "NA"
+      }
+    ],
+    "optionType": "boolean",
+    "orderId": 3,
+    "readOnly": true,
+    "title": "RDT-Test (+/-)",
+    "viewType": "SingleSelectionView",
+    "visibility": "gone"
+  },
+  {
+    "condition": [],
+    "errorMessage": "Please select a valid option",
+    "family": "fever",
+    "fieldName": "ACT",
+    "id": "is_act_dispensed",
+    "isEnabled": true,
+    "isMandatory": true,
+    "isNeededDefault": true,
+    "isSummary": true,
+    "optionsList": [
+      {
+        "id": "NA",
+        "name": "NA"
+      },
+      {
+        "id": "Dispensed",
+        "name": "Dispensed"
+      }
+    ],
+    "optionType": "boolean",
+    "orderId": 4,
+    "readOnly": true,
+    "title": "ACT",
+    "viewType": "SingleSelectionView",
+    "visibility": "gone"
+  }
+]

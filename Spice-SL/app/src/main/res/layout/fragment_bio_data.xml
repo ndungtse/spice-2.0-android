@@ -51,12 +51,11 @@
                     android:orientation="vertical">
 
                     <include
-                        android:id="@+id/nationalId"
-                        android:visibility="gone"
+                        android:id="@+id/patientName"
                         layout="@layout/summary_layout" />
 
                     <include
-                        android:id="@+id/patientName"
+                        android:id="@+id/patientId"
                         layout="@layout/summary_layout" />
 
                     <include

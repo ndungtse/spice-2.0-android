@@ -68,13 +68,8 @@ class CheckBoxDialog() : DialogFragment(), View.OnClickListener {
 
     private fun attachObserver() {
         viewModel.symptomTypeListResponse.observe(viewLifecycleOwner) { list ->
+            binding.labelHeader.text = "${getString(R.string.symptoms)}"
             if (list.isNotEmpty()) {
-                binding.labelHeader.text = "${
-                    (list[0].type)?.replace(
-                        getString(R.string.symptoms),
-                        ""
-                    )
-                } ${getString(R.string.symptoms)}"
                 if (resultMap != null && resultMap is ArrayList<*>) {
                     binding.rvItems.adapter = CheckboxDialogAdapter(
                         getSelectedSymptomList(
@@ -86,7 +81,6 @@ class CheckBoxDialog() : DialogFragment(), View.OnClickListener {
                     binding.rvItems.adapter = CheckboxDialogAdapter(list)
                 }
             } else {
-                binding.labelHeader.text = "${getString(R.string.symptoms)}"
                 binding.rvItems.adapter = null
             }
         }

@@ -69,11 +69,14 @@ class HouseholdActivity : BaseActivity() {
             }
 
             3 -> {
-                    val intent = Intent(this, HouseholdSummaryActivity::class.java)
-                    intent.putExtra(HouseholdDefinedParams.ID, householdRegistrationViewModel.householdId)
-                    intent.putExtra(HouseholdDefinedParams.isFromHouseHoldRegistration, false)
-                    startActivity(intent)
-                    finish()
+                val intent = Intent(this, HouseholdSummaryActivity::class.java)
+                intent.putExtra(
+                    HouseholdDefinedParams.ID,
+                    householdRegistrationViewModel.householdId
+                )
+                intent.putExtra(HouseholdDefinedParams.isFromHouseHoldRegistration, false)
+                startActivity(intent)
+                finish()
             }
         }
     }

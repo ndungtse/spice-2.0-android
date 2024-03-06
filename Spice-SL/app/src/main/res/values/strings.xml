@@ -186,4 +186,5 @@
     <string name="anc" translatable="false">ANC</string>
     <string name="pnc" translatable="false">PNC</string>
     <string name="child_hood_visit" translatable="false">Childhood Visit</string>
+    <string name="other_value">%1$s - %2$s</string>
 </resources>
