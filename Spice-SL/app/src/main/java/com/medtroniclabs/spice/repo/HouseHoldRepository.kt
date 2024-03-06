@@ -4,9 +4,9 @@ import androidx.lifecycle.MutableLiveData
 import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.appextensions.postSuccess
-import com.medtroniclabs.spice.data.VillageInfo
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.data.LocalSpinnerResponse
+import com.medtroniclabs.spice.data.VillageInfo
 import com.medtroniclabs.spice.db.entity.HouseholdEntity
 import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
 import com.medtroniclabs.spice.db.entity.VillageEntity
@@ -22,9 +22,6 @@ class HouseHoldRepository @Inject constructor(
     private var apiHelper: ApiHelper,
     private var roomHelper: RoomHelper
 ) {
-    suspend fun registerHousehold(householdEntity: HouseholdEntity): Long =
-        roomHelper.saveHouseHoldEntry(householdEntity)
-
     suspend fun getHouseHoldList(): ArrayList<HouseHoldEntityWithMemberCount> =
         roomHelper.getHouseHoldList()
 
@@ -62,59 +59,59 @@ class HouseHoldRepository @Inject constructor(
         villageListResponse.postSuccess(response)
     }
 
-    suspend fun updateHousehold(
-        map: HashMap<String, Any>,
-        houseHoldDetailLiveData: MutableLiveData<Resource<HouseholdEntity>>,
-        householdId: Long
-    ) =
-        roomHelper.updateHousehold(
-            composeHouseholdEntityDetails(
-                map,
-                houseHoldDetailLiveData,
-                householdId
-            )
-        )
+    suspend fun createOrUpdateHouseHoldEntity(map: HashMap<String, Any>, entity: HouseholdEntity? = null): HouseholdEntity {
+        val householdEntity = entity ?: HouseholdEntity()
 
-    suspend fun composeHouseholdEntityDetails(
-        map: HashMap<String, Any>,
-        houseHoldDetailLiveData: MutableLiveData<Resource<HouseholdEntity>>,
-        householdId: Long
-    ): HouseholdEntity {
         val householdName = map[HouseHoldRegistration.householdName]
+        householdEntity.name = CommonUtils.getStringOrEmptyString(householdName)
+
         val headPhoneNumber = map[HouseHoldRegistration.headPhoneNumber]
+        householdEntity.headPhoneNumber = CommonUtils.getStringOrEmptyString(headPhoneNumber)
+
         val landmark = map[HouseHoldRegistration.landmark]
+        householdEntity.landmark = CommonUtils.getStringOrEmptyString(landmark)
+
         val villageID = map[HouseHoldRegistration.villageId]
-        val noOfPeople = map[HouseHoldRegistration.noOfPeople]
+        val villageLongID = CommonUtils.getLongOrNull(villageID) ?: 0
+        householdEntity.villageId = villageLongID
+
         val isOwnedAnImprovedLatrine = map[HouseHoldRegistration.isOwnedAnImprovedLatrine]
+        householdEntity.isOwnedAnImprovedLatrine = CommonUtils.getIsBooleanFromString(isOwnedAnImprovedLatrine)
+
         val isOwnedHandWashingFacilityWithSoap =
             map[HouseHoldRegistration.isOwnedHandWashingFacilityWithSoap]
-        val isOwnedATreatedBedNet = map[HouseHoldRegistration.isOwnedATreatedBedNet]
-        val bedNetCount = map[HouseHoldRegistration.bedNetCount]
-        val villageLongID = CommonUtils.getLongOrNull(villageID) ?: 0
-        val lastHouseHoldNo = getLastHouseholdNo(villageLongID) ?: 0
-        val headCount = getMemberCountPerHouseHold(householdId)
-        return HouseholdEntity(
-            id = getPrimaryId(householdId, houseHoldDetailLiveData),
-            householdNo = getRegisteredHouseholdNo(
-                lastHouseHoldNo,
-                householdId,
-                houseHoldDetailLiveData
-            ),
-            name = CommonUtils.getStringOrEmptyString(householdName),
-            villageId = villageLongID,
-            landmark = CommonUtils.getStringOrEmptyString(landmark),
-            headPhoneNumber = CommonUtils.getStringOrEmptyString(headPhoneNumber),
-            noOfPeople = checkHeadCountOfHouseHold(
-                CommonUtils.getIntegerOrNull(noOfPeople) ?: 0,
-                headCount
-            ),
-            isOwnedAnImprovedLatrine = CommonUtils.getIsBooleanFromString(isOwnedAnImprovedLatrine),
-            isOwnedHandWashingFacilityWithSoap = CommonUtils.getIsBooleanFromString(
-                isOwnedHandWashingFacilityWithSoap
-            ),
-            isOwnedATreatedBedNet = CommonUtils.getIsBooleanFromString(isOwnedATreatedBedNet),
-            bedNetCount = CommonUtils.getIntegerOrNull(bedNetCount)
+        householdEntity.isOwnedHandWashingFacilityWithSoap = CommonUtils.getIsBooleanFromString(
+            isOwnedHandWashingFacilityWithSoap
         )
+
+        val isOwnedATreatedBedNet = map[HouseHoldRegistration.isOwnedATreatedBedNet]
+        householdEntity.isOwnedATreatedBedNet = CommonUtils.getIsBooleanFromString(isOwnedATreatedBedNet)
+
+        val bedNetCount = map[HouseHoldRegistration.bedNetCount]
+        householdEntity.bedNetCount = CommonUtils.getIntegerOrNull(bedNetCount)
+
+        val lastHouseHoldNo = getLastHouseholdNo(villageLongID) ?: 0
+
+        if (entity != null) {
+            householdEntity.updatedAt = System.currentTimeMillis()
+
+            val noOfPeople = map[HouseHoldRegistration.noOfPeople]
+            householdEntity.noOfPeople = checkHeadCountOfHouseHold(CommonUtils.getIntegerOrNull(noOfPeople) ?: 0, getMemberCountPerHouseHold(entity.id))
+        } else {
+            householdEntity.householdNo = lastHouseHoldNo + 1
+            val noOfPeople = map[HouseHoldRegistration.noOfPeople]
+            householdEntity.noOfPeople = CommonUtils.getIntegerOrNull(noOfPeople) ?: 0
+        }
+
+        return householdEntity
+    }
+
+    suspend fun insertHouseHoldEntity(householdEntity: HouseholdEntity): Long {
+        return roomHelper.saveHouseHoldEntry(householdEntity)
+    }
+
+    suspend fun updateHouseHoldEntity(householdEntity: HouseholdEntity) {
+        roomHelper.updateHousehold(householdEntity)
     }
 
     private fun checkHeadCountOfHouseHold(
@@ -129,12 +126,9 @@ class HouseHoldRepository @Inject constructor(
     }
     private fun getRegisteredHouseholdNo(
         lastHouseHoldNo: Long,
-        householdId: Long,
-        houseHoldDetailLiveData: MutableLiveData<Resource<HouseholdEntity>>
+        houseHoldEntity: HouseholdEntity? = null
     ): Long {
-        return if (householdId != -1L) {
-            houseHoldDetailLiveData.value?.data?.householdNo ?: 1
-        } else lastHouseHoldNo + 1
+        return houseHoldEntity?.householdNo ?: lastHouseHoldNo + 1
     }
 
     private fun getPrimaryId(

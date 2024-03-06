@@ -101,4 +101,7 @@ dependencies {
     // Security hashing
     implementation ("androidx.security:security-crypto-ktx:1.1.0-alpha06")
 
+    //Workmanager
+    implementation ("androidx.work:work-runtime:2.9.0")
+
 }

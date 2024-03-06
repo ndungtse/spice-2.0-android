@@ -114,9 +114,17 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
                         HomeScreenFragment.TAG
                     ).commit()
             }
+            R.id.offline_sync -> {
+                supportFragmentManager.beginTransaction()
+                    .replace(
+                        R.id.clParentLayout,
+                        OfflineSyncFragment(),
+                        OfflineSyncFragment.TAG
+                    ).commit()
+            }
         }
     }
-
+    
     private fun selectNavigationMenu(item: MenuItem) {
         if (binding.navView.menu.size() > 0) {
             binding.navView.menu.forEach { menuItem ->

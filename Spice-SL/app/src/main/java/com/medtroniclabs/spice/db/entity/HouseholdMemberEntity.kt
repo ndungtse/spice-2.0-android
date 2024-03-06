@@ -4,27 +4,42 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "household_member")
+@Entity(tableName = "HouseHoldMember")
 data class HouseholdMemberEntity(
+
     @PrimaryKey(autoGenerate = true)
-    val id : Long,
-    val name : String,
+    val id : Long = 0,
+
+    @ColumnInfo("name")
+    var name : String = "",
+
     @ColumnInfo("phone_number")
-    val phoneNumber:String,
+    var phoneNumber:String = "",
+
     @ColumnInfo("phone_number_category")
-    val phoneNumberCategory:String,
+    var phoneNumberCategory:String = "",
+
     @ColumnInfo("date_of_birth")
-    val dateOfBirth:String,
-    val age:String,
-    val gender: String,
+    var dateOfBirth:String = "",
+
+    @ColumnInfo("age")
+    var age:String = "",
+
+    @ColumnInfo("gender")
+    var gender: String = "",
+
     @ColumnInfo("household_head_relationship")
-    val householdHeadRelationship:String,
+    var householdHeadRelationship:String = "",
+
     @ColumnInfo("household_id")
-    val householdId:Long,
+    var householdId:Long = 0,
+
     @ColumnInfo("patient_id")
-    val patientId: String? = null,
+    var patientId: String? = null,
+
     @ColumnInfo("created_at")
-    val createdAt: Long,
+    val createdAt: Long = System.currentTimeMillis(),
+
     @ColumnInfo("updated_at")
-    var updatedAt: Long
+    var updatedAt: Long  = System.currentTimeMillis()
 )

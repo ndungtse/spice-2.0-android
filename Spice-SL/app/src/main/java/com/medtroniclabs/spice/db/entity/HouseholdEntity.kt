@@ -4,27 +4,46 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "household")
+@Entity(tableName = "HouseHold")
 data class HouseholdEntity(
     @PrimaryKey(autoGenerate = true)
-    val id: Long,
+    val id: Long = 0,
+
     @ColumnInfo(name = "household_no")
-    val householdNo: Long,
-    val name: String,
+    var householdNo: Long = 0,
+
+    @ColumnInfo(name = "name")
+    var name: String = "",
+
     @ColumnInfo(name = "village_id")
-    val villageId: Long,
-    val landmark: String? = null,
+    var villageId: Long = 0,
+
+    @ColumnInfo(name = "landmark")
+    var landmark: String? = null,
+
     @ColumnInfo(name = "head_phone_number")
-    val headPhoneNumber: String? = null,
+    var headPhoneNumber: String? = null,
+
     @ColumnInfo(name = "no_of_people")
-    val noOfPeople: Int,
+    var noOfPeople: Int = 0,
+
     @ColumnInfo("is_owned_an_improved_latrine")
-    val isOwnedAnImprovedLatrine: Boolean,
+    var isOwnedAnImprovedLatrine: Boolean = false,
+
     @ColumnInfo("is_owned_hand_washing_facility_with_soap")
-    val isOwnedHandWashingFacilityWithSoap: Boolean,
+    var isOwnedHandWashingFacilityWithSoap: Boolean = false,
+
     @ColumnInfo("is_owned_a_treated_bed_net")
-    val isOwnedATreatedBedNet: Boolean,
+    var isOwnedATreatedBedNet: Boolean = false,
+
     @ColumnInfo("bed_net_count")
-    val bedNetCount: Int? = null
+    var bedNetCount: Int? = null,
+
+    @ColumnInfo("created_at")
+    val createdAt: Long = System.currentTimeMillis(),
+
+    @ColumnInfo("updated_at")
+    var updatedAt: Long = System.currentTimeMillis()
+
 )
 

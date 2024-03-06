@@ -20,9 +20,9 @@ interface HouseholdDAO {
 
     @Transaction
     @Query(
-        "SELECT household.*, COUNT(household_member.id) AS member_count " +
-                "FROM household " +
-                "LEFT JOIN household_member ON household.id = household_member.household_id " +
+        "SELECT household.*, COUNT(HouseHoldMember.id) AS member_count " +
+                "FROM HouseHold " +
+                "LEFT JOIN HouseHoldMember ON household.id = HouseHoldMember.household_id " +
                 "GROUP BY household.id"
     )
     suspend fun getAllHouseHold(): List<HouseHoldEntityWithMemberCount>
@@ -33,17 +33,17 @@ interface HouseholdDAO {
 
     @Transaction
     @Query(
-        "SELECT household.*, COUNT(household_member.household_id) AS member_count " +
-                "FROM household " +
-                "LEFT JOIN household_member ON household.id = household_member.household_id " +
+        "SELECT household.*, COUNT(HouseHoldMember.household_id) AS member_count " +
+                "FROM HouseHold " +
+                "LEFT JOIN HouseHoldMember ON household.id = HouseHoldMember.household_id " +
                 "WHERE household.name LIKE '%' || :searchTerm || '%' OR household.household_no LIKE :searchTerm " +
                 "GROUP BY household.id"
     )
     suspend fun searchByHouseholdNameOrNo(searchTerm: String): List<HouseHoldEntityWithMemberCount>
 
-    @Query("SELECT * FROM household WHERE id= :houseHoldId")
+    @Query("SELECT * FROM HouseHold WHERE id= :houseHoldId")
     suspend fun getHouseHoldDetailsById(houseHoldId: Long): HouseholdEntity
 
-    @Query("UPDATE household SET no_of_people = :newNoOfPeople WHERE id = :householdId")
+    @Query("UPDATE HouseHold SET no_of_people = :newNoOfPeople WHERE id = :householdId")
     suspend fun updateHeadCount(householdId: Long, newNoOfPeople: Int)
 }

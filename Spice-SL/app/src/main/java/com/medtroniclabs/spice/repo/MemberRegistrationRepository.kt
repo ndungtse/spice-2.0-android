@@ -21,70 +21,85 @@ class MemberRegistrationRepository @Inject constructor(
     suspend fun registerMember(
         map: HashMap<String, Any>,
         householdId: Long,
-        memberRegistrationLiveData: MutableLiveData<Resource<Long>>,
-        memberDetails: MutableLiveData<Resource<HouseholdMemberEntity>>
-    ) {
-        try {
-            memberRegistrationLiveData.postLoading()
-            val householdDetails = roomHelper.getHouseHoldDetailsById(householdId)
-            val villageId = householdDetails.villageId
-            val noOfPerson = householdDetails.noOfPeople
-            val memberRegistrationEntity = composeResultMapEntity(map, householdId, memberDetails,villageId)
+        entity: HouseholdMemberEntity? = null
+    ): Long {
+        val memberEntity = createOrUpdateHouseHoldMemberEntity(map, householdId, entity)
+        val memberId = roomHelper.registerMember(memberEntity)
 
-            val rowId = roomHelper.registerMember(memberRegistrationEntity)
-            if (memberDetails.value == null) {
-                val getCountOfHouseHold = getMemberCountPerHouseHold(householdId)
-                if (getCountOfHouseHold > noOfPerson) {
-                    updateHeadCount(householdId, getCountOfHouseHold)
-                }
+        //Update Member count in household only in insert case
+        if (entity == null) {
+            val memberAddedForHouseHold = getMemberCountPerHouseHold(householdId)
+            val memberMentionedInHouseHold =
+                roomHelper.getHouseHoldDetailsById(householdId).noOfPeople
+            if (memberAddedForHouseHold > memberMentionedInHouseHold) {
+                updateHeadCount(householdId, memberAddedForHouseHold)
             }
-            memberRegistrationLiveData.postSuccess(rowId)
-        } catch (e: Exception) {
-            memberRegistrationLiveData.postError()
         }
+
+        return memberId
     }
 
-    private suspend fun composeResultMapEntity(
+    private suspend fun createOrUpdateHouseHoldMemberEntity(
         map: HashMap<String, Any>,
         householdId: Long,
-        memberDetails: MutableLiveData<Resource<HouseholdMemberEntity>>,
-        villageId: Long
+        entity: HouseholdMemberEntity? = null
     ): HouseholdMemberEntity {
-        val name = map[MemberRegistration.name]
-        val phoneNumber = map[MemberRegistration.phoneNumber]
-        val phoneNumberCategory = map[MemberRegistration.phoneNumberCategory]
-        val dateOfBirth = map[MemberRegistration.dateOfBirth]
-        val age = calculateAgeString(map)
-        val gender = map[MemberRegistration.gender]
-        val householdHeadRelationship = map[MemberRegistration.householdHeadRelationship]
+        val householdMemberEntity = entity ?: HouseholdMemberEntity()
 
-        return HouseholdMemberEntity(
-            id = memberDetails.value?.data?.id ?: 0,
-            name = CommonUtils.getStringOrEmptyString(name),
-            phoneNumber = CommonUtils.getStringOrEmptyString(phoneNumber),
-            phoneNumberCategory = CommonUtils.getStringOrEmptyString(phoneNumberCategory),
-            dateOfBirth = CommonUtils.getStringOrEmptyString(dateOfBirth),
-            age = age,
-            gender = CommonUtils.getStringOrEmptyString(gender),
-            householdHeadRelationship = CommonUtils.getStringOrEmptyString(
-                householdHeadRelationship
-            ),
-            householdId = householdId,
-            patientId = memberDetails.value?.data?.patientId ?: getChiefDomAndVillageCodeByVillageId(villageId).let { villageInfo ->
-                generatePatientId(
-                    villageInfo.chiefdomId,
-                    getLastPatientId(),
-                    villageInfo.code
-                )
-            },
-            createdAt = memberDetails.value?.data?.createdAt ?: System.currentTimeMillis(),
-            updatedAt = System.currentTimeMillis()
+        val name = map[MemberRegistration.name]
+        householdMemberEntity.name = CommonUtils.getStringOrEmptyString(name)
+
+        val phoneNumber = map[MemberRegistration.phoneNumber]
+        householdMemberEntity.phoneNumber = CommonUtils.getStringOrEmptyString(phoneNumber)
+
+        val phoneNumberCategory = map[MemberRegistration.phoneNumberCategory]
+        householdMemberEntity.phoneNumberCategory =
+            CommonUtils.getStringOrEmptyString(phoneNumberCategory)
+
+        val dateOfBirth = map[MemberRegistration.dateOfBirth]
+        householdMemberEntity.dateOfBirth = CommonUtils.getStringOrEmptyString(dateOfBirth)
+
+        val age = calculateAgeString(map)
+        householdMemberEntity.age = age
+
+        val gender = map[MemberRegistration.gender]
+        householdMemberEntity.gender = CommonUtils.getStringOrEmptyString(gender)
+
+        val householdHeadRelationship = map[MemberRegistration.householdHeadRelationship]
+        householdMemberEntity.householdHeadRelationship = CommonUtils.getStringOrEmptyString(
+            householdHeadRelationship
         )
+
+        if (entity == null) {
+            val householdDetails = roomHelper.getHouseHoldDetailsById(householdId)
+            householdMemberEntity.householdId = householdId
+            householdMemberEntity.patientId =
+                getChiefDomAndVillageCodeByVillageId(householdDetails.villageId).let { villageInfo ->
+                    generatePatientId(
+                        villageInfo.chiefdomId,
+                        getLastPatientId(),
+                        villageInfo.code
+                    )
+                }
+        } else {
+            householdMemberEntity.updatedAt = System.currentTimeMillis()
+        }
+
+        return householdMemberEntity
     }
 
-    private fun generatePatientId(chiefDomId: Long, lastCreatedAtAndPatientId: LastCreatedAtAndPatientId, villageCode: String): String {
-        val startIndex = chiefDomId.toString().length + villageCode.length + SecuredPreference.getUserId().toString().length
-        val lastPatientId = lastCreatedAtAndPatientId.lastPatientId?.substring(startIndex,lastCreatedAtAndPatientId.lastPatientId.length)?.toInt() ?: 0
+    private fun generatePatientId(
+        chiefDomId: Long,
+        lastCreatedAtAndPatientId: LastCreatedAtAndPatientId,
+        villageCode: String
+    ): String {
+        val startIndex =
+            chiefDomId.toString().length + villageCode.length + SecuredPreference.getUserId()
+                .toString().length
+        val lastPatientId = lastCreatedAtAndPatientId.lastPatientId?.substring(
+            startIndex,
+            lastCreatedAtAndPatientId.lastPatientId.length
+        )?.toInt() ?: 0
         val numericPart = (lastPatientId + 1).toString().padStart(4, '0')
         return "$chiefDomId$villageCode${SecuredPreference.getUserId()}$numericPart"
     }
@@ -102,18 +117,19 @@ class MemberRegistrationRepository @Inject constructor(
         }
     }
 
-    suspend fun getMemberCountPerHouseHold(householdId: Long): Int {
+    private suspend fun getMemberCountPerHouseHold(householdId: Long): Int {
         return roomHelper.getMemberCountPerHouseHold(householdId)
     }
-    suspend fun updateHeadCount(householdId: Long, newNoOfPeople: Int) {
+
+    private suspend fun updateHeadCount(householdId: Long, newNoOfPeople: Int) {
         return roomHelper.updateHeadCount(householdId, newNoOfPeople)
     }
 
-    suspend fun getLastPatientId(): LastCreatedAtAndPatientId {
+    private suspend fun getLastPatientId(): LastCreatedAtAndPatientId {
         return roomHelper.getLastPatientId()
     }
 
-    suspend fun getChiefDomAndVillageCodeByVillageId(villageId: Long): VillageInfo {
+    private suspend fun getChiefDomAndVillageCodeByVillageId(villageId: Long): VillageInfo {
         return roomHelper.getChiefDomAndVillageCodeByVillageId(villageId)
     }
 }

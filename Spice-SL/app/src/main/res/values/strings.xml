@@ -21,6 +21,7 @@
     <string name="app_version">Application Version</string>
     <string name="profile">PROFILE</string>
     <string name="privacy_policy">PRIVACY POLICY</string>
+    <string name="offline_sync">Offline Sync</string>
     <string name="community_health_worker">Community Health Worker</string>
     <string name="chw">CHW</string>
     <string name="households">Households</string>

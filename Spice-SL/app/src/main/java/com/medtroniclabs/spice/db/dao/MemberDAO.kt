@@ -12,15 +12,15 @@ interface MemberDAO {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertMember(memberEntity: HouseholdMemberEntity): Long
 
-    @Query("SELECT * FROM household_member WHERE household_id = :houseHoldId")
+    @Query("SELECT * FROM HouseHoldMember WHERE household_id = :houseHoldId")
     suspend fun getAllHouseHoldMemberList(houseHoldId: Long): List<HouseholdMemberEntity>
 
-    @Query("SELECT * FROM household_member WHERE id = :memberId")
+    @Query("SELECT * FROM HouseHoldMember WHERE id = :memberId")
     suspend fun getMemberDetailsById(memberId: Long): HouseholdMemberEntity
 
-    @Query("SELECT COUNT(household_id) FROM household_member WHERE household_id = :householdId")
+    @Query("SELECT COUNT(household_id) FROM HouseHoldMember WHERE household_id = :householdId")
     suspend fun getMemberCountPerHouseHold(householdId: Long): Int
 
-    @Query("SELECT MAX(created_at) AS lastCreatedAt, patient_id AS lastPatientId FROM household_member")
+    @Query("SELECT MAX(created_at) AS lastCreatedAt, patient_id AS lastPatientId FROM HouseHoldMember")
     suspend fun getLastPatientId(): LastCreatedAtAndPatientId
 }
