@@ -47,9 +47,9 @@ object CommonUtils {
             is String -> {
                 val answerNumber = answer.toLongOrNull()
                 return if (answerNumber is Long) {
-                    return answerNumber
+                     answerNumber
                 } else {
-                    return null
+                     null
                 }
             }
 

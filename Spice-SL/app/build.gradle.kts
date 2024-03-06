@@ -4,6 +4,8 @@ plugins {
     id("kotlin-kapt")
     id("dagger.hilt.android.plugin")
     id("org.jetbrains.kotlin.android")
+    id("com.google.gms.google-services")
+    id("com.google.firebase.crashlytics")
 }
 
 android {
@@ -20,20 +22,52 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
-    buildTypes {
-        getByName("debug") {
-            applicationIdSuffix = ".sl"
-            isDebuggable = true
+    signingConfigs {
+        create("release") {
+            keyAlias = "spice"
+            keyPassword = "spice@123"
+            storePassword = "spice@123"
+            storeFile = file("spice")
         }
-        getByName("release") {
-            applicationIdSuffix = ".sl"
+        create("staging") {
+            keyAlias = "spice"
+            keyPassword = "spice@123"
+            storePassword = "spice@123"
+            storeFile = file("spice")
+        }
+    }
+
+    buildTypes {
+
+        release {
+            applicationIdSuffix = ".sl.staging"
+            versionNameSuffix = "2024-03-06"
             isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            signingConfig = signingConfigs.getByName("release")
+        }
+
+        debug {
+            applicationIdSuffix = ".sl.staging"
+            isDebuggable = true
+        }
+
+        create("staging") {
+            initWith(getByName("release"))
+            applicationIdSuffix = ".sl.staging"
+            versionNameSuffix = "-(20240307_01)"
+            isMinifyEnabled = false
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+            signingConfig = signingConfigs.getByName("staging")
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
@@ -42,9 +76,10 @@ android {
         jvmTarget = "1.8"
     }
 
-    buildFeatures{
+    buildFeatures {
         viewBinding = true
     }
+
 }
 
 dependencies {
@@ -76,8 +111,8 @@ dependencies {
 
     //Kotlin coroutine dependencies
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0")
 
     implementation("androidx.activity:activity-ktx:1.8.2")
     implementation("androidx.fragment:fragment-ktx:1.6.2")
@@ -86,15 +121,18 @@ dependencies {
     implementation("com.github.bumptech.glide:glide:4.16.0")
 
     //Flexbox Layout
-    implementation ("com.google.android.flexbox:flexbox:3.0.0")
+    implementation("com.google.android.flexbox:flexbox:3.0.0")
 
     //Lottie
     implementation("com.airbnb.android:lottie:6.2.0")
 
     implementation("com.jakewharton.timber:timber:5.0.1")
 
-    implementation ("joda-time:joda-time:2.10.13")
+    implementation("joda-time:joda-time:2.12.5")
 
+    implementation(platform("com.google.firebase:firebase-bom:32.7.3"))
+    implementation("com.google.firebase:firebase-analytics")
+    implementation("com.google.firebase:firebase-crashlytics")
     //Swipe Refresh Layout
     implementation ("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
 

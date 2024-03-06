@@ -81,3 +81,6 @@
 -dontwarn org.bouncycastle.**
 -dontwarn org.openjsse.**
 -dontwarn org.slf4j.**
+
+#jod time
+-dontwarn org.joda.**
