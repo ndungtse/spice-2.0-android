@@ -258,6 +258,10 @@ class MemberRegistrationFragment : Fragment(), FormEventListener, View.OnClickLi
         }
     }
 
+    override fun onInformationHandling(id: String, noOfDays: Int, enteredDays: Int) {
+
+    }
+
     override fun onClick(v: View?) {
         when (v?.id) {
             R.id.btnStartAssessment -> {

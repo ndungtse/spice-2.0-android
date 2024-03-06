@@ -119,7 +119,7 @@ class FormGenerator(
     private val rootSummary = "summaryRoot"
     private var editScreen: Boolean? = null
     private var focusNeeded: View? = null
-
+    private val infoSuffix= "information"
 
     fun populateViews(
         serverData: List<FormLayout>,
@@ -172,15 +172,17 @@ class FormGenerator(
             binding.tvErrorMessage.tag = id + errorSuffix
             binding.tvTitle.text = title
             binding.tvInfo.text = information
+            binding.tvInfo.tag = id + infoSuffix
             if (isMandatory) {
                 binding.tvTitle.markMandatory()
             }
             isEnabled?.let {
                 binding.etUserInput.isEnabled = it
             }
-            inputType?.let {
-                binding.etUserInput.inputType = it
+            informationVisibility?.let { value ->
+                setViewVisibility(value, binding.tvInfo)
             }
+            binding.etUserInput.inputType = InputType.TYPE_CLASS_NUMBER
             hint?.let {
                 if (translate) {
                     binding.etUserInput.hint = hintCulture ?: it
@@ -188,11 +190,19 @@ class FormGenerator(
                     binding.etUserInput.hint = it
                 }
             }
+            val inputFilter = arrayListOf<InputFilter>()
+            maxLength?.let {
+                inputFilter.add(InputFilter.LengthFilter(it))
+            }
+            binding.etUserInput.filters = inputFilter.toTypedArray()
             binding.etUserInput.addTextChangedListener { input ->
                 input?.let {
-                    val resultValue = input.trim().toString()
-                    if (resultValue.isNotBlank()) {
-                        resultHashMap[id] = resultValue
+                    val enteredValue= input.trim().toString().toIntOrNull()
+                    if (enteredValue!=null) {
+                        noOfDays?.let {days ->
+                            listener.onInformationHandling(id, days, enteredValue)
+                        }
+                        resultHashMap[id] = enteredValue
                     } else {
                         if (resultHashMap.containsKey(id))
                             resultHashMap.remove(id)

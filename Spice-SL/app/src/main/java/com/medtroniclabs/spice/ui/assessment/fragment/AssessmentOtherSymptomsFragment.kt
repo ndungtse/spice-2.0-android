@@ -16,7 +16,6 @@ import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.ui.FormResultComposer
 import com.medtroniclabs.spice.formgeneration.utility.CheckBoxDialog
 import com.medtroniclabs.spice.network.resource.ResourceState
-import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.MenuConstants.OTHER_SYMPTOMS
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.OtherSymptoms
@@ -151,6 +150,10 @@ class AssessmentOtherSymptomsFragment : BaseFragment(), FormEventListener, View.
     }
 
     override fun onRenderingComplete() {
+
+    }
+
+    override fun onInformationHandling(id: String, noOfDays: Int, enteredDays: Int) {
 
     }
 

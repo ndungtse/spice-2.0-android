@@ -4,21 +4,30 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
+import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.common.CommonUtils.getYearMonthAndWeeks
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.databinding.FragmentAssessmentBinding
 import com.medtroniclabs.spice.formgeneration.FormGenerator
+import com.medtroniclabs.spice.formgeneration.config.DefinedParams.Information
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.listener.FormEventListener
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
-import com.medtroniclabs.spice.formgeneration.model.FormResponse
 import com.medtroniclabs.spice.formgeneration.ui.FormResultComposer
 import com.medtroniclabs.spice.formgeneration.utility.CheckBoxDialog
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.BreathPerMinute
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.FB_MAX_BREATHING
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.FB_MAX_MONTH
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.FB_MAX_YEAR
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.FB_MIN_BREATHING
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.FB_MIN_MONTH
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.FB_MIN_YEAR
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -132,6 +141,45 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
 
     override fun onRenderingComplete() {
 
+    }
+
+    override fun onInformationHandling(id: String, noOfDays: Int, enteredDays: Int) {
+        when (id) {
+            BreathPerMinute -> {
+                viewModel.memberDetailsLiveData.value?.data?.let { data ->
+                    getYearMonthAndWeeks(data.age).let { result ->
+                        val year = result.first.toInt()
+                        val month = result.second.toInt()
+                        if ((year == 0 && month > FB_MIN_MONTH && month < FB_MAX_MONTH) && enteredDays >= FB_MAX_BREATHING) {
+                            displayDaysInformation(id, View.VISIBLE)
+                        } else if ((month == FB_MAX_MONTH || year in FB_MIN_YEAR..FB_MAX_YEAR) && enteredDays >= FB_MIN_BREATHING) {
+                            displayDaysInformation(id, View.VISIBLE)
+                        } else {
+                            displayDaysInformation(id, View.INVISIBLE)
+                        }
+                    }
+                }
+            }
+            else -> {
+                if (enteredDays > noOfDays) {
+                    updateColorCode(id, ContextCompat.getColor(requireContext(), R.color.medium_high_risk_color))
+                } else {
+                    updateColorCode(id, ContextCompat.getColor(requireContext(), R.color.secondary_black))
+                }
+            }
+        }
+    }
+
+    private fun updateColorCode(id: String, colorCode: Int) {
+        formGenerator.getViewByTag(id + Information)?.let { view ->
+            if (view is TextView){
+                view.setTextColor(colorCode)
+            }
+        }
+    }
+
+    private fun displayDaysInformation(id: String, viewVisibility: Int) {
+        formGenerator.getViewByTag(id + Information)?.apply { visibility = viewVisibility }
     }
 
     override fun onClick(view: View) {

@@ -12,8 +12,6 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.DefinedParams
-import com.medtroniclabs.spice.common.DefinedParams.Authorization
-import com.medtroniclabs.spice.data.LocalSpinnerResponse
 import com.medtroniclabs.spice.databinding.FragmentHouseHoldRegistrationBinding
 import com.medtroniclabs.spice.db.entity.HouseholdEntity
 import com.medtroniclabs.spice.db.entity.VillageEntity
@@ -31,14 +29,13 @@ import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.isOwnedHandWashi
 import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.landmark
 import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.no
 import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.noOfPeople
-import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.yes
 import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.villageId
+import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.yes
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.household.HouseholdDefinedParams.REGISTRATION
 import com.medtroniclabs.spice.ui.household.viewmodel.HouseRegistrationViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import timber.log.Timber
 
 @AndroidEntryPoint
 class HouseHoldRegistrationFragment : Fragment(), View.OnClickListener, FormEventListener {
@@ -298,6 +295,10 @@ class HouseHoldRegistrationFragment : Fragment(), View.OnClickListener, FormEven
         if (householdRegistrationViewModel.householdId != -1L){
             householdRegistrationViewModel.getHouseholdDetailsByID(householdRegistrationViewModel.householdId)
         }
+    }
+
+    override fun onInformationHandling(id: String, noOfDays: Int, enteredDays: Int) {
+
     }
 
     fun mapsIdName(properties: Any?, map: HashMap<String, Any>) {

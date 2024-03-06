@@ -128,6 +128,10 @@ class AssessmentTBFragment : BaseFragment(), FormEventListener, View.OnClickList
 
     }
 
+    override fun onInformationHandling(id: String, noOfDays: Int, enteredDays: Int) {
+
+    }
+
     override fun onClick(view: View) {
         when (view.id) {
             binding.btnSubmit.id -> {

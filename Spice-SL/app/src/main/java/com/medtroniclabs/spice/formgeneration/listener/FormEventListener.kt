@@ -22,4 +22,6 @@ interface FormEventListener {
 
     fun onFormSubmit(resultMap: HashMap<String, Any>?, serverData: List<FormLayout?>? = null)
     fun onRenderingComplete()
+
+    fun onInformationHandling(id: String, noOfDays: Int, enteredDays: Int)
 }
