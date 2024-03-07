@@ -7,20 +7,23 @@ import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import com.google.gson.Gson
 import com.medtroniclabs.spice.R
-import com.google.gson.reflect.TypeToken
+import com.medtroniclabs.spice.appextensions.setSuccess
 import com.medtroniclabs.spice.common.CommonUtils
-import com.medtroniclabs.spice.common.DefinedParams
+import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.databinding.FragmentAssessmentRmnchBinding
 import com.medtroniclabs.spice.formgeneration.FormGenerator
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.listener.FormEventListener
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.model.FormResponse
+import com.medtroniclabs.spice.formgeneration.ui.FormResultComposer
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
     FormEventListener {
 
@@ -97,6 +100,7 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
                 resultJsonFileName = "rmnch_anc_visit.json"
                 loadJson(resultJsonFileName)
             }
+
             getString(R.string.child_hood_visit) -> {
                 resultJsonFileName = "rmnch_childhood_visit.json"
                 loadJson(resultJsonFileName)
@@ -112,7 +116,8 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
             ),
             Array<FormLayout>::class.java
         ).asList()
-        formGenerator.populateViews(objectList)
+
+        viewModel.formLayoutsLiveData.setSuccess(FormResponse(objectList, time = 123231231))
     }
 
 
@@ -147,6 +152,20 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
     }
 
     override fun onFormSubmit(resultMap: HashMap<String, Any>?, serverData: List<FormLayout?>?) {
+        resultMap?.let { details ->
+            val result = serverData?.let {
+                FormResultComposer().groupValues(
+                    context = requireContext(),
+                    serverData = it,
+                    details
+                )
+            }
+            result?.second?.let {
+                StringConverter.convertGivenMapToString(it)?.let { resultData ->
+                    viewModel.saveAssessment(resultData)
+                }
+            }
+        }
     }
 
     override fun onRenderingComplete() {

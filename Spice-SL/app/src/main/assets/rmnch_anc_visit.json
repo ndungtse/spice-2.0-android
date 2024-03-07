@@ -14,6 +14,7 @@
     "title": "Last Menstrual Period",
     "viewType": "DatePicker",
     "isMandatory": true,
+    "isSummary": true,
     "hint": "Select Date",
     "errorMessage": "Please select a valid option",
     "visibility": "visible"
@@ -23,14 +24,14 @@
     "fieldName": "motherDangerSign",
     "family": "anc",
     "orderId": 3,
+    "isSummary": true,
     "viewType": "DialogCheckbox",
     "localDataCache": "motherDangerSign",
-    "isMandatory": true,
+    "isMandatory": false,
     "errorMessage": "Please select a valid option",
     "isEnabled": true,
     "title": "Is the expectant mother experiencing any of these danger signs?",
-    "visibility": "visible",
-    "isSummary": true
+    "visibility": "visible"
   },
   {
     "family": "anc",
@@ -310,7 +311,7 @@
     "orderId": 6,
     "localDataCache": "placeOfBirth",
     "isEnabled": true,
-    "isMandatory": true,
+    "isMandatory": false,
     "title": "Place of delivery (Intended per birth plan)",
     "errorMessage": "Please select a valid option"
   }

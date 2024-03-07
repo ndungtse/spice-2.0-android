@@ -18,7 +18,6 @@ import com.medtroniclabs.spice.common.ViewUtils
 import com.medtroniclabs.spice.databinding.FragmentAssessmentIccmSummaryBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.model.AssessmentSummaryModel
-import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.assessment.AssessmentCommonUtils.addViewSummaryLayout
 import com.medtroniclabs.spice.ui.assessment.AssessmentCommonUtils.getListItemValue
 import com.medtroniclabs.spice.ui.assessment.AssessmentCommonUtils.getValueOfKeyFromMap
@@ -26,8 +25,10 @@ import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
 
 class AssessmentICCMSummaryFragment : Fragment(), View.OnClickListener {
     private val viewModel: AssessmentViewModel by activityViewModels()
+
     lateinit var binding: FragmentAssessmentIccmSummaryBinding
     private var datePickerDialog: DatePickerDialog? = null
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -173,14 +174,6 @@ class AssessmentICCMSummaryFragment : Fragment(), View.OnClickListener {
         }
     }
 
-    // Utility functions to show and hide loading indicators
-    private fun showLoading() {
-        (activity as? BaseActivity)?.showLoading()
-    }
-
-    private fun hideLoading() {
-        (activity as? BaseActivity)?.hideLoading()
-    }
 
     private fun composeDiarrhoeaResults(listSummaryData: MutableList<AssessmentSummaryModel>) {
         getListItemValue(DefinedParams.HasDiarrhoea, listSummaryData)?.let {

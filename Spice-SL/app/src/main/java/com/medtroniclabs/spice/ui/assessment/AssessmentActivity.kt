@@ -15,6 +15,7 @@ import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentICCMSummaryFragm
 import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentRMNCHFragment
 import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentOtherSymptomSummaryFragment
 import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentOtherSymptomsFragment
+import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentRMNCHSummaryFragment
 import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentTBFragment
 import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentTBSummaryFragment
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
@@ -61,6 +62,14 @@ class AssessmentActivity : BaseActivity() {
                 replaceFragmentInId<AssessmentOtherSymptomSummaryFragment>(
                     binding.formsFragmentContainer.id,
                     tag = AssessmentOtherSymptomSummaryFragment::class.simpleName
+                )
+            }
+
+            MenuConstants.RMNCH_MENU_ID -> {
+                setTitle(DefinedParams.Summary.uppercase())
+                replaceFragmentInId<AssessmentRMNCHSummaryFragment>(
+                    binding.formsFragmentContainer.id,
+                    tag = AssessmentRMNCHSummaryFragment.TAG
                 )
             }
         }
@@ -111,8 +120,8 @@ class AssessmentActivity : BaseActivity() {
 
                 ResourceState.SUCCESS -> {
                     hideLoading()
-                    resource.data?.let { data ->
-                      loadSummaryFragment()
+                    resource.data?.let { _ ->
+                        loadSummaryFragment()
                     }
                 }
 

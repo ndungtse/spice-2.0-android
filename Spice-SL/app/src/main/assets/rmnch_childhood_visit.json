@@ -13,7 +13,7 @@
     "orderId": 2,
     "viewType": "DialogCheckbox",
     "localDataCache": "childSymptoms",
-    "isMandatory": true,
+    "isMandatory": false,
     "errorMessage": "Please select a valid option",
     "isEnabled": true,
     "title": "Is the newborn baby experiencing any of these danger signs?",
