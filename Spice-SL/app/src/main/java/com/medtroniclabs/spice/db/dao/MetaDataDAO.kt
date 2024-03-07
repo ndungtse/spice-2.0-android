@@ -93,9 +93,12 @@ interface MetaDataDAO {
     @Query("SELECT * FROM ClinicalWorkflowEntity")
     suspend fun getMenuForClinicalWorkflows() :List<ClinicalWorkflowEntity>
 
-    @Query("DELETE FROM SymptomEntity")
+    @Query("DELETE FROM ClinicalWorkflowConditionEntity")
     suspend fun deleteClinicalWorkflowConditions()
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertClinicalWorkflowConditions(clinicalWorkflowConditions: List<ClinicalWorkflowConditionEntity>)
+
+    @Query("SELECT  DISTINCT wf.* FROM ClinicalWorkflowEntity AS wf LEFT JOIN  ClinicalWorkflowConditionEntity AS wfc ON wf.id = wfc.clinicalWorkflowId WHERE (wfc.gender IS NULL OR wfc.gender = :gender)  AND (wfc.maxAge is null OR wfc.maxAge >= :age) AND (wfc.minAge is null OR wfc.minAge <= :age)")
+    suspend fun getClinicalWorkflowId(gender: String, age: Int): List<ClinicalWorkflowEntity>
 }

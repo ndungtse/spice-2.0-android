@@ -5,6 +5,7 @@ import com.google.gson.Gson
 import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.appextensions.postSuccess
+import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.EncryptionUtil
 import com.medtroniclabs.spice.common.SecuredPreference
@@ -271,11 +272,20 @@ class LoginRepository @Inject constructor(
 
     suspend fun getMenuForClinicalWorkflows(
         menuListLiveData: MutableLiveData<Resource<List<MenuEntity>>>,
+        selectedHouseholdMemberID: Long,
     ) {
         try {
             menuListLiveData.postLoading()
-            val data = roomHelper.getMenuForClinicalWorkflows()
-            menuListLiveData.postSuccess(convertorClinicalWorkflowsToMenuEntity(data))
+            if (selectedHouseholdMemberID != -1L) {
+                val memberData = roomHelper.getDobAndGenderById(selectedHouseholdMemberID)
+                val list = roomHelper.getClinicalWorkflowId(
+                    memberData.gender,
+                    DateUtils.dateToMonths(memberData.dateOfBirth) ?: 0
+                )
+                menuListLiveData.postSuccess(convertorClinicalWorkflowsToMenuEntity(list))
+            } else {
+                menuListLiveData.postError()
+            }
         } catch (e: Exception) {
             menuListLiveData.postError()
         }

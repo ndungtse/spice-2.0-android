@@ -5,9 +5,13 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.graphics.Color
+import android.graphics.Rect
 import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.view.MotionEvent
 import android.view.View
+import android.view.inputmethod.InputMethodManager
+import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -24,12 +28,14 @@ import com.medtroniclabs.spice.databinding.ErrorLayoutBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.ui.landing.LandingActivity
 import dagger.hilt.android.AndroidEntryPoint
+import kotlin.math.abs
 
 @AndroidEntryPoint
 open class BaseActivity : AppCompatActivity() {
     private lateinit var binding: ActivityBaseBinding
 
     private lateinit var sessionExpiredBroadcastReceiver: SessionExpiredBroadcastReceiver
+    private var downX: Int = 0
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityBaseBinding.inflate(layoutInflater)
@@ -230,6 +236,54 @@ open class BaseActivity : AppCompatActivity() {
                 args = bundle,
                 tag = tag
             )
+        }
+    }
+    override fun dispatchTouchEvent(event: MotionEvent): Boolean {
+        if (event.action == MotionEvent.ACTION_DOWN) {
+            downX = event.rawX.toInt()
+        }
+        if (event.action == MotionEvent.ACTION_UP) {
+            val v = currentFocus
+            if (v is EditText) {
+                val x = event.rawX.toInt()
+                val y = event.rawY.toInt()
+                //Was it a scroll - If skip all
+                if (abs(downX - x) > 5) {
+                    return super.dispatchTouchEvent(event)
+                }
+                val reducePx = 2
+                val outRect = Rect()
+                v.getGlobalVisibleRect(outRect)
+                //Bounding box is to big, reduce it just a little bit
+                outRect.inset(reducePx, reducePx)
+                touchEvent(v, x, y, reducePx, outRect)
+            }
+        }
+        return super.dispatchTouchEvent(event)
+    }
+
+
+    private fun touchEvent(v: EditText, x: Int, y: Int, reducePx: Int, outRect: Rect) {
+        if (!outRect.contains(x, y)) {
+            v.clearFocus()
+            var touchTargetIsEditText = false
+            //Check if another editText has been touched
+            for (vi in v.rootView.touchables) {
+                if (vi is EditText) {
+                    val clickedViewRect = Rect()
+                    vi.getGlobalVisibleRect(clickedViewRect)
+                    //Bounding box is to big, reduce it just a little bit
+                    clickedViewRect.inset(reducePx, reducePx)
+                    if (clickedViewRect.contains(x, y)) {
+                        touchTargetIsEditText = true
+                        break
+                    }
+                }
+            }
+            if (!touchTargetIsEditText) {
+                val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+                imm.hideSoftInputFromWindow(v.getWindowToken(), 0)
+            }
         }
     }
 }

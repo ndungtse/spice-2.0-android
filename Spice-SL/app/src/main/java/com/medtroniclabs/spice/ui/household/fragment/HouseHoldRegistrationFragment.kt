@@ -93,34 +93,30 @@ class HouseHoldRegistrationFragment : Fragment(), View.OnClickListener, FormEven
                 ResourceState.SUCCESS -> {
                     resourceState.data?.let { data ->
                         val view = formGenerator.getViewByTag(data.tag) as AppCompatSpinner
-                        if (view is AppCompatSpinner && view.adapter is CustomSpinnerAdapter) {
+                        if (view.adapter is CustomSpinnerAdapter) {
                             val mapList = ArrayList<Map<String, Any>>()
                             if (data.response is List<*>) {
-                                data.response.forEach { properties ->
+                                mapList.addAll(data.response.map { properties ->
                                     val map = HashMap<String, Any>()
                                     mapsIdName(properties, map)
-                                    if (map.size > 1){
-                                        mapList.add(map)
-                                    } else {
-                                        mapList.remove(
-                                            hashMapOf<String, Any>(
-                                                DefinedParams.NAME to DefinedParams.DefaultIDLabel,
-                                                DefinedParams.ID to "-1"
-                                            )
+                                    map
+                                })
+                                if (mapList.size > 1) {
+                                    val defaultIdIndex = 0
+                                    mapList.add(
+                                        defaultIdIndex,
+                                        hashMapOf<String, Any>(
+                                            DefinedParams.NAME to DefinedParams.DefaultIDLabel,
+                                            DefinedParams.ID to "-1"
                                         )
-                                        mapList.add(map)
-                                    }
+                                    )
                                 }
                                 (view.adapter as CustomSpinnerAdapter).setData(mapList)
-                                val itemSize = data.response.size
-                                if (itemSize > 0) {
-                                    view.setSelection(1,true)
-                                    prefillVillageEntity(null, view)
-                                }
                             }
                         }
                     }
                 }
+
                 else -> {
                     //Invoked if response state is not success
                 }

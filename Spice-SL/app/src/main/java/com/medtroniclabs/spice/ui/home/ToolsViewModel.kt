@@ -24,7 +24,7 @@ class ToolsViewModel @Inject constructor(
 
     fun getMenuForClinicalWorkflows() {
         viewModelScope.launch(dispatcherIO) {
-            loginRepository.getMenuForClinicalWorkflows(menuListLiveData)
+            loginRepository.getMenuForClinicalWorkflows(menuListLiveData,selectedHouseholdMemberID)
         }
     }
 

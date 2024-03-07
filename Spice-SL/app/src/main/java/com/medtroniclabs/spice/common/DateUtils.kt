@@ -4,11 +4,12 @@ import com.medtroniclabs.spice.formgeneration.config.DefinedParams
 import org.joda.time.Period
 import org.joda.time.PeriodType
 import java.text.SimpleDateFormat
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
-
 object DateUtils {
 
     const val DATE_ddMMyyyy = "dd/MM/yyyy"
@@ -192,6 +193,22 @@ object DateUtils {
             date?.let { outputFormat.format(it) } ?: " "
         } catch (e: Exception) {
             " "
+        }
+    }
+
+    fun dateToMonths(
+        dateString: String,
+        givenFormat: String = DATE_FORMAT_yyyyMMddHHmmssZZZZZ
+    ): Int? {
+        return try {
+            val formatter = DateTimeFormatter.ofPattern(givenFormat)
+            val givenDateTime = LocalDateTime.parse(dateString, formatter)
+            val currentDateTime = LocalDateTime.now()
+            val months =
+                givenDateTime.toLocalDate().until(currentDateTime.toLocalDate()).toTotalMonths()
+            months.toInt()
+        } catch (e: Exception) {
+            null
         }
     }
 }

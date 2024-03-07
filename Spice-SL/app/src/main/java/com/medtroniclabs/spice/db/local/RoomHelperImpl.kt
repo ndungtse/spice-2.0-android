@@ -19,6 +19,7 @@ import com.medtroniclabs.spice.db.entity.SignsAndSymptomsEntity
 import com.medtroniclabs.spice.db.entity.UserProfileEntity
 import com.medtroniclabs.spice.db.entity.VillageEntity
 import com.medtroniclabs.spice.db.response.HouseHoldEntityWithMemberCount
+import com.medtroniclabs.spice.model.MemberDobGenderModel
 import com.medtroniclabs.spice.db.response.HouseholdMemberCount
 import javax.inject.Inject
 
@@ -119,6 +120,10 @@ class RoomHelperImpl @Inject constructor(
         return metaDataDAO.getDefaultHealthFacility()
     }
 
+    override suspend fun getClinicalWorkflowId(gender: String, age: Int): List<ClinicalWorkflowEntity> {
+        return metaDataDAO.getClinicalWorkflowId(gender, age)
+    }
+
     override suspend fun deleteAllVillages() {
         metaDataDAO.deleteAllVillages()
     }
@@ -198,5 +203,9 @@ class RoomHelperImpl @Inject constructor(
 
     override suspend fun insertClinicalWorkflowConditions(clinicalWorkflowConditions: List<ClinicalWorkflowConditionEntity>) {
         metaDataDAO.insertClinicalWorkflowConditions(clinicalWorkflowConditions)
+    }
+
+    override suspend fun getDobAndGenderById(memberId: Long): MemberDobGenderModel {
+        return memberDAO.getDobAndGenderById(memberId)
     }
 }

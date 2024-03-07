@@ -15,6 +15,7 @@ import com.medtroniclabs.spice.db.entity.SignsAndSymptomsEntity
 import com.medtroniclabs.spice.db.entity.UserProfileEntity
 import com.medtroniclabs.spice.db.entity.VillageEntity
 import com.medtroniclabs.spice.db.response.HouseHoldEntityWithMemberCount
+import com.medtroniclabs.spice.model.MemberDobGenderModel
 import com.medtroniclabs.spice.db.response.HouseholdMemberCount
 
 interface RoomHelper {
@@ -64,4 +65,6 @@ interface RoomHelper {
     suspend fun getChiefDomAndVillageCodeByVillageId(id: Long): VillageInfo
     suspend fun getLastPatientId(): LastCreatedAtAndPatientId
     fun getMemberCountInHouseholdLiveData(houseHoldId: Long): LiveData<HouseholdMemberCount>
+    suspend fun getClinicalWorkflowId(gender: String, age: Int): List<ClinicalWorkflowEntity>
+    suspend fun getDobAndGenderById(memberId: Long): MemberDobGenderModel
 }

@@ -2,7 +2,6 @@ package com.medtroniclabs.spice.common
 
 import android.content.Context
 import android.content.res.AssetManager
-import android.widget.TextView
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.MONTHS
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.Month
@@ -10,11 +9,7 @@ import com.medtroniclabs.spice.formgeneration.config.DefinedParams.WEEKS
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.Week
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.YEARS
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.Year
-import com.medtroniclabs.spice.formgeneration.config.DefinedParams.ZERO
 import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration
-import java.time.LocalDate
-import java.util.Calendar
-import java.util.Date
 
 object CommonUtils {
     fun checkIsTablet(context: Context): Boolean {
@@ -73,7 +68,7 @@ object CommonUtils {
         return (answer is String) && answer.equals(HouseHoldRegistration.yes, true)
     }
 
-    fun displayAge(resultHashMap: HashMap<String, Any>, context: Context): String? {
+    fun displayAge(resultHashMap: HashMap<String, Any>, context: Context): String {
         val years = resultHashMap[Year] as? Int ?: 0
         var months = resultHashMap[Month] as? Int ?: 0
         var weeks = resultHashMap[Week] as? Int ?: 0

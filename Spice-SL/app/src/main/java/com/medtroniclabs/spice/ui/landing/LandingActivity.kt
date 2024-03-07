@@ -48,6 +48,7 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
     }
 
     private fun initView() {
+        binding.appBarMain.tvTitle.text = getString(R.string.home)
     }
     private val onBackPressedCallback: OnBackPressedCallback =
         object : OnBackPressedCallback(true) {
@@ -67,7 +68,6 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
     private fun initializeDrawerView() {
         onNavigationItemSelected(binding.navView.menu.findItem(R.id.home))
         val toolBar = binding.appBarMain.toolbar
-        setSupportActionBar(toolBar)
         val toggle = ActionBarDrawerToggle(
             this,
             binding.drawerLayout,
