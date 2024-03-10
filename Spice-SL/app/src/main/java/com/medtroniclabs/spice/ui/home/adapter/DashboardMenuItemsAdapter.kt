@@ -102,6 +102,31 @@ class DashboardMenuItemsAdapter(
                 context,
                 R.drawable.ic_iccm_tool
             )
+
+            MenuConstants.GENERAL_ID -> return ContextCompat.getDrawable(
+                context,
+                R.drawable.ic_general
+            )
+
+            MenuConstants.MOTHER_AND_NEONATE_ID -> return ContextCompat.getDrawable(
+                context,
+                R.drawable.ic_mother_neonate
+            )
+
+            MenuConstants.UNDER_AGE_FIVE_TO_TWO_MONTHS_ID -> return ContextCompat.getDrawable(
+                context,
+                R.drawable.ic_child_above_5
+            )
+
+            MenuConstants.UNDER_AGE_ABOVE_FIVE_YEAR_ID -> return ContextCompat.getDrawable(
+                context,
+                R.drawable.ic_child_under_5
+            )
+
+            MenuConstants.EPI_ID -> return ContextCompat.getDrawable(
+                context,
+                R.drawable.ic_epi
+            )
             else -> null
         }
     }

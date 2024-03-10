@@ -6,6 +6,7 @@ import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.databinding.ActivityToolsBinding
 import com.medtroniclabs.spice.ui.BaseActivity
+import com.medtroniclabs.spice.ui.medicalreview.PatientMenuFragment
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -28,8 +29,13 @@ class ToolsActivity : BaseActivity() {
 
     private fun initializeView() {
         toolsViewModel.selectedHouseholdMemberID = intent.getLongExtra(DefinedParams.MemberID, -1)
+        val fragment = if (toolsViewModel.selectedHouseholdMemberID == -1L) {
+            PatientMenuFragment.newInstance()
+        } else {
+            ToolsMenuFragment.newInstance()
+        }
         supportFragmentManager.beginTransaction()
-            .add(R.id.menuItemsFragment, ToolsMenuFragment())
+            .add(R.id.menuItemsFragment, fragment)
             .commit()
     }
 }

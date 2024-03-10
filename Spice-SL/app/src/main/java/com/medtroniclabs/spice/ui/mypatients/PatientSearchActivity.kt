@@ -12,6 +12,7 @@ import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.databinding.ActivityPatientSearchBinding
 import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.ui.BaseActivity
+import com.medtroniclabs.spice.ui.home.ToolsActivity
 import com.medtroniclabs.spice.ui.medicalreview.MedicalReviewBaseActivity
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientListViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -100,7 +101,7 @@ class PatientSearchActivity : BaseActivity(), PatientSelectionListener {
 
 
     override fun onSelectedPatient(item: PatientListRespModel) {
-        startActivity(Intent(this, MedicalReviewBaseActivity::class.java))
+        startActivity(Intent(this, ToolsActivity::class.java))
     }
 
     private fun clearExactSearch() {

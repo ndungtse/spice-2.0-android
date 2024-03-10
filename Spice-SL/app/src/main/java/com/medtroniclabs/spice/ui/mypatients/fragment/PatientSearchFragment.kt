@@ -13,6 +13,7 @@ import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.databinding.FragmentPatientSearchBinding
 import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.ui.BaseFragment
+import com.medtroniclabs.spice.ui.home.ToolsActivity
 import com.medtroniclabs.spice.ui.medicalreview.MedicalReviewBaseActivity
 import com.medtroniclabs.spice.ui.mypatients.PatientSelectionListener
 import com.medtroniclabs.spice.ui.mypatients.PatientsListAdapter
@@ -110,6 +111,6 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener {
     }
 
     override fun onSelectedPatient(item: PatientListRespModel) {
-        startActivity(Intent(requireActivity(), MedicalReviewBaseActivity::class.java))
+        startActivity(Intent(requireActivity(), ToolsActivity::class.java))
     }
 }
