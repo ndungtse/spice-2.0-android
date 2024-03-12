@@ -1,15 +1,17 @@
 package com.medtroniclabs.spice.ui.household.viewmodel
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
 import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.appextensions.postSuccess
-import com.medtroniclabs.spice.data.VillageInfo
 import com.medtroniclabs.spice.db.entity.HouseholdEntity
 import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
 import com.medtroniclabs.spice.db.entity.VillageEntity
+import com.medtroniclabs.spice.db.response.HouseholdMemberCount
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.repo.HouseHoldRepository
@@ -24,14 +26,17 @@ class HouseHoldSummaryViewModel @Inject constructor(
     private val houseHoldRepository: HouseHoldRepository
 ) : ViewModel() {
 
+    private val houseHoldNoLiveData = MutableLiveData<Long>()
+    val householdMemberCountLiveData: LiveData<HouseholdMemberCount> = houseHoldNoLiveData.switchMap { input ->
+        houseHoldRepository.getMemberCountInHouseholdLiveData(input)
+    }
     var houseHoldId: Long = -1L
     var isFromHouseHoldRegistration: Boolean = false
     val houseHoldDetailLiveData = MutableLiveData<Resource<HouseholdEntity>>()
     val villageDetailLiveData = MutableLiveData<Resource<VillageEntity>>()
-    var selectedMemberId  = -1L
+    var selectedMemberId = -1L
     var memberListLiveData = MutableLiveData<Resource<ArrayList<HouseholdMemberEntity>>>()
     var villageId: Long = -1L
-    var  noOfPeople: Int = -1
 
     fun getHouseHoldDetailsById() {
         if (houseHoldId == -1L)
@@ -64,6 +69,11 @@ class HouseHoldSummaryViewModel @Inject constructor(
         viewModelScope.launch(dispatcherIO) {
             houseHoldRepository.getVillageByID(villageId, villageDetailLiveData)
         }
+    }
+
+    fun setHouseholdId(hhId: Long) {
+        this.houseHoldId = hhId
+        houseHoldNoLiveData.value = hhId
     }
 
 }

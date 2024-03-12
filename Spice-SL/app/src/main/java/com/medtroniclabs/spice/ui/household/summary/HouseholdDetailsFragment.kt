@@ -38,6 +38,17 @@ class HouseholdDetailsFragment : Fragment() {
     }
 
     private fun attachObserver() {
+        householdSummaryViewModel.householdMemberCountLiveData.observe(viewLifecycleOwner) {
+            binding.tvLabel.text = getString(R.string.member_registration)
+            binding.tvValue.text =
+                requireContext().getString(
+                    R.string.people_registered,
+                    it.memberCount,
+                    it.noOfPeople
+                )
+            binding.ivMemberRegCount.visibility =
+                if (it.noOfPeople == it.memberCount) View.INVISIBLE else View.VISIBLE
+        }
         householdSummaryViewModel.houseHoldDetailLiveData.observe(viewLifecycleOwner) { resourceState ->
             when (resourceState.state) {
                 ResourceState.LOADING -> {

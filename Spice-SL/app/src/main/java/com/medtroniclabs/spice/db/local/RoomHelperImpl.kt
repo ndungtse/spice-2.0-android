@@ -1,5 +1,6 @@
 package com.medtroniclabs.spice.db.local
 
+import androidx.lifecycle.LiveData
 import com.medtroniclabs.spice.data.LastCreatedAtAndPatientId
 import com.medtroniclabs.spice.data.VillageInfo
 import com.medtroniclabs.spice.db.dao.AssessmentDAO
@@ -18,6 +19,7 @@ import com.medtroniclabs.spice.db.entity.SignsAndSymptomsEntity
 import com.medtroniclabs.spice.db.entity.UserProfileEntity
 import com.medtroniclabs.spice.db.entity.VillageEntity
 import com.medtroniclabs.spice.db.response.HouseHoldEntityWithMemberCount
+import com.medtroniclabs.spice.db.response.HouseholdMemberCount
 import javax.inject.Inject
 
 class RoomHelperImpl @Inject constructor(
@@ -48,6 +50,10 @@ class RoomHelperImpl @Inject constructor(
 
     override suspend fun getHouseHoldDetailsById(houseHoldId: Long): HouseholdEntity {
         return householdDAO.getHouseHoldDetailsById(houseHoldId)
+    }
+
+    override fun getMemberCountInHouseholdLiveData(houseHoldId: Long): LiveData<HouseholdMemberCount> {
+        return householdDAO.getHouseholdMemberCountLiveData(houseHoldId)
     }
 
     override suspend fun registerMember(householdMemberEntity: HouseholdMemberEntity): Long {

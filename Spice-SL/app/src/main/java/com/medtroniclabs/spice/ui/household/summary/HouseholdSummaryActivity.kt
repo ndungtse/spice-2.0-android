@@ -94,7 +94,8 @@ class HouseholdSummaryActivity : BaseActivity(), MemberSelectionListener, View.O
     }
 
     private fun initializeView() {
-        householdSummaryViewModel.houseHoldId = intent.getLongExtra(ID, -1)
+        val householdId = intent.getLongExtra(ID, -1)
+        householdSummaryViewModel.setHouseholdId(householdId)
         householdSummaryViewModel.isFromHouseHoldRegistration = intent.getBooleanExtra(
             isFromHouseHoldRegistration, false
         )
