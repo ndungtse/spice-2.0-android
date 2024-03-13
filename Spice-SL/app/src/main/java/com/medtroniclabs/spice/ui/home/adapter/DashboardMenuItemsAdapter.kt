@@ -41,7 +41,8 @@ class DashboardMenuItemsAdapter(
 
         val imageModel = getResourceActivityId(
             model.menuId,
-            holder.context
+            holder.context,
+            model.name,
         )
         if (imageModel == null) {
             holder.binding.ivActivity.visibility = View.INVISIBLE
@@ -51,13 +52,21 @@ class DashboardMenuItemsAdapter(
         }
 
         holder.binding.root.safeClickListener {
-            listener.onMenuSelected(model.menuId)
+            if (model.menuId == MenuConstants.ICCM_MENU_ID && model.name.equals(
+                    MenuConstants.OTHER_SYMPTOMS,
+                    true
+                )
+            ) {
+                listener.onMenuSelected(model.name)
+            }else{
+                listener.onMenuSelected(model.menuId)
+            }
         }
     }
 
 
-    private fun getResourceActivityId(model: String, context: Context): Drawable? {
-        return when (model) {
+    private fun getResourceActivityId(menuID: String, context: Context, name: String): Drawable? {
+        return when (menuID) {
             MenuConstants.HOUSEHOLD_MENU_ID -> return ContextCompat.getDrawable(
                 context,
                 R.drawable.ic_household
@@ -73,10 +82,13 @@ class DashboardMenuItemsAdapter(
                 R.drawable.ic_general_screener_tool
             )
 
-            MenuConstants.ICCM_MENU_ID -> return ContextCompat.getDrawable(
-                context,
-                R.drawable.ic_iccm_tool
-            )
+            MenuConstants.ICCM_MENU_ID -> {
+                if (name == MenuConstants.OTHER_SYMPTOMS) {
+                    return ContextCompat.getDrawable(context, R.drawable.ic_iccm_tool)
+                } else {
+                    return ContextCompat.getDrawable(context, R.drawable.ic_iccm_tool)
+                }
+            }
 
             MenuConstants.CBS_MENU_ID -> return ContextCompat.getDrawable(
                 context,

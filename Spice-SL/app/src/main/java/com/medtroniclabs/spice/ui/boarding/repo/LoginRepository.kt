@@ -315,12 +315,12 @@ class LoginRepository @Inject constructor(
     }
 
     private fun convertorClinicalWorkflowsToMenuEntity(clinicalWorkflows: List<ClinicalWorkflowEntity>): List<MenuEntity> {
-        return clinicalWorkflows.map { clinicalWorkflow ->
+        return clinicalWorkflows.sortedBy { it.displayOrder }.map { clinicalWorkflow ->
             MenuEntity(
                 id = clinicalWorkflow.id,
-                menuId = clinicalWorkflow.name,
-                name = clinicalWorkflow.workflowName,
-                displayOrder = clinicalWorkflow.displayOrder?:0,
+                menuId = clinicalWorkflow.workflowName,
+                name = clinicalWorkflow.name,
+                displayOrder = clinicalWorkflow.displayOrder ?: 0,
             )
         }
     }

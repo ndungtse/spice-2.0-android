@@ -29,8 +29,6 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
 
     lateinit var binding: ActivityLandingBinding
 
-    private val viewModel: LandingViewModel by viewModels()
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         onBackPressedDispatcher.addCallback(this, onBackPressedCallback)

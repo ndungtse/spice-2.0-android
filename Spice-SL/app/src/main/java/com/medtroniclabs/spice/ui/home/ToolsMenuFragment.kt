@@ -50,7 +50,7 @@ class ToolsMenuFragment : Fragment(), MenuSelectionListener {
         childFragmentManager.setFragmentResultListener(
             DialogResult,
             viewLifecycleOwner
-        ) { key, bundle ->
+        ) { _, bundle ->
             val result = bundle.getString(WorkFlowName)
             startAssessmentActivity(MenuConstants.RMNCH_MENU_ID,result)
         }
