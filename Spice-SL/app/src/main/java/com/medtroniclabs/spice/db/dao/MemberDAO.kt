@@ -7,6 +7,7 @@ import androidx.room.Query
 import com.medtroniclabs.spice.data.LastCreatedAtAndPatientId
 import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
 import com.medtroniclabs.spice.model.MemberDobGenderModel
+import com.medtroniclabs.spice.offlinesync.model.HouseHoldMember
 
 @Dao
 interface MemberDAO {
@@ -27,4 +28,11 @@ interface MemberDAO {
 
     @Query("SELECT date_of_birth,gender FROM HouseHoldMember WHERE id = :memberId")
     suspend fun getDobAndGenderById(memberId: Long): MemberDobGenderModel
+
+    @Query("SELECT * FROM HouseHoldMember WHERE household_id = :houseHoldId AND (fhir_id is null OR is_synced = 0)")
+    suspend fun getAllUnSyncedHouseHoldMembers(houseHoldId: Long): List<HouseHoldMember>
+
+    @Query("SELECT * FROM HouseHoldMember WHERE household_id NOT IN (:ids) AND (fhir_id is null OR is_synced = 0)")
+    suspend fun getOtherHouseholdMembers(ids: List<Long>): List<HouseHoldMember>
+
 }

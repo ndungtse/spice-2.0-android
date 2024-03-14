@@ -7,8 +7,10 @@ import android.content.IntentFilter
 import android.graphics.Color
 import android.graphics.Rect
 import android.graphics.drawable.Drawable
+import android.net.Uri
 import android.os.Bundle
 import android.view.MotionEvent
+import android.provider.Settings
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
@@ -19,6 +21,7 @@ import androidx.fragment.app.commit
 import androidx.fragment.app.replace
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.google.android.material.snackbar.Snackbar
+import com.medtroniclabs.spice.BuildConfig
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.GeneralErrorDialog
@@ -283,6 +286,40 @@ open class BaseActivity : AppCompatActivity() {
             if (!touchTargetIsEditText) {
                 val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
                 imm.hideSoftInputFromWindow(v.getWindowToken(), 0)
+            }
+        }
+    }
+
+    fun showTurnOnGPSDialog() {
+        showErrorDialogue(
+            title = getString(R.string.gps_disabled_title),
+            message = getString(R.string.gps_disabled_message),
+            positiveButtonName = getString(R.string.ok),
+        ) {
+            if (it) {
+                val settingsIntent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+                startActivity(settingsIntent)
+            }
+        }
+    }
+
+    fun showAllowLocationServiceDialog() {
+        showErrorDialogue(
+            title = getString(R.string.gps_disabled_title),
+            message = getString(R.string.gps_disabled_message),
+            positiveButtonName = getString(R.string.ok),
+        ) {
+            if (it) {
+                val intent = Intent()
+                intent.action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
+                val uri = Uri.fromParts(
+                    "package",
+                    BuildConfig.APPLICATION_ID,
+                    null
+                )
+                intent.data = uri
+                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                startActivity(intent)
             }
         }
     }

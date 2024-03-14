@@ -1,5 +1,6 @@
 package com.medtroniclabs.spice.db.local
 
+import androidx.sqlite.db.SimpleSQLiteQuery
 import androidx.lifecycle.LiveData
 import com.medtroniclabs.spice.data.LastCreatedAtAndPatientId
 import com.medtroniclabs.spice.data.VillageInfo
@@ -19,6 +20,8 @@ import com.medtroniclabs.spice.db.entity.SignsAndSymptomsEntity
 import com.medtroniclabs.spice.db.entity.UserProfileEntity
 import com.medtroniclabs.spice.db.entity.VillageEntity
 import com.medtroniclabs.spice.db.response.HouseHoldEntityWithMemberCount
+import com.medtroniclabs.spice.offlinesync.model.HouseHold
+import com.medtroniclabs.spice.offlinesync.model.HouseHoldMember
 import com.medtroniclabs.spice.model.MemberDobGenderModel
 import com.medtroniclabs.spice.db.response.HouseholdMemberCount
 import javax.inject.Inject
@@ -75,6 +78,18 @@ class RoomHelperImpl @Inject constructor(
 
     override suspend fun getLastPatientId(): LastCreatedAtAndPatientId {
         return memberDAO.getLastPatientId()
+    }
+
+    override suspend fun getAllUnSyncedHouseHolds(): List<HouseHold> {
+        return householdDAO.getAllUnSyncedHouseHolds()
+    }
+
+    override suspend fun getAllUnSyncedHouseHoldMembers(houseHoldId: Long): List<HouseHoldMember> {
+        return memberDAO.getAllUnSyncedHouseHoldMembers(houseHoldId)
+    }
+
+    override suspend fun getOtherHouseholdMembers(ids: List<Long>): List<HouseHoldMember> {
+        return memberDAO.getOtherHouseholdMembers(ids)
     }
 
     override suspend fun saveAssessment(assessmentEntity: AssessmentEntity): Long {
@@ -207,5 +222,12 @@ class RoomHelperImpl @Inject constructor(
 
     override suspend fun getDobAndGenderById(memberId: Long): MemberDobGenderModel {
         return memberDAO.getDobAndGenderById(memberId)
+    }
+
+    override suspend fun updateFhirId(tableName: String, id: String, fhirId: String) {
+        val isSynced = true
+        val updatedAt = System.currentTimeMillis()
+        val query = "UPDATE $tableName SET fhir_id = $fhirId, is_synced = $isSynced, updated_at = $updatedAt WHERE id = $id"
+        householdDAO.updateFhirId(SimpleSQLiteQuery(query))
     }
 }

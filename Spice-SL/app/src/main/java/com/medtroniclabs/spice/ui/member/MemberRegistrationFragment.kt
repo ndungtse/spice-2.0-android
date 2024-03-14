@@ -246,7 +246,7 @@ class MemberRegistrationFragment : Fragment(), FormEventListener, View.OnClickLi
                 memberRegistrationViewModel.registerMember(map, householdRegistrationViewModel.householdId)
             } else {
                 householdRegistrationViewModel.householdEntityDetail?.let { householdEntity ->
-                    memberRegistrationViewModel.registerHouseThenMember(householdEntity, map)
+                    memberRegistrationViewModel.registerHouseThenMember(householdEntity, map, householdRegistrationViewModel.getCurrentLocation())
                 }
             }
         }

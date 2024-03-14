@@ -10,10 +10,14 @@ import androidx.work.Constraints
 import androidx.work.Data
 import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import com.medtroniclabs.spice.databinding.FragmentOfflineSyncBinding
+import com.medtroniclabs.spice.offlinesync.GetSyncStatusWorker
 import com.medtroniclabs.spice.offlinesync.PostSyncWorker
+import com.medtroniclabs.spice.offlinesync.utils.OfflineConstant.KEY_REQUESTS_ID
 import dagger.hilt.android.AndroidEntryPoint
+import java.util.concurrent.TimeUnit
 
 
 @AndroidEntryPoint
@@ -37,31 +41,63 @@ class OfflineSyncFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        binding.btnSync.isEnabled = false
+
         binding.btnSync.setOnClickListener {
-            startWorkManager()
+            //(requireActivity() as BaseActivity).showLoading()
+            binding.loadingProgress.visibility = View.VISIBLE
+            binding.btnSync.visibility = View.GONE
+            startPostWorkManager()
         }
     }
 
-    private fun startWorkManager() {
+    private fun startPostWorkManager() {
         val workManager = WorkManager.getInstance(requireContext())
-
-        val data = Data.Builder()
-            .putString(PostSyncWorker.KEY_INPUT,"Hello")
-            .build()
 
         val constrain = Constraints.Builder()
             .setRequiredNetworkType(NetworkType.CONNECTED)
             .build()
 
         val postSyncWorker = OneTimeWorkRequestBuilder<PostSyncWorker>()
-            .setInputData(data)
             .setConstraints(constrain)
             .build()
 
         workManager.enqueue(postSyncWorker)
 
         workManager.getWorkInfoByIdLiveData(postSyncWorker.id).observe(viewLifecycleOwner) { workerInfo ->
-            Log.e("Test", "Test")
+            if (workerInfo.state == WorkInfo.State.SUCCEEDED) {
+                val requestIds = workerInfo.outputData.getStringArray(KEY_REQUESTS_ID)
+                if (!requestIds.isNullOrEmpty())
+                    startGetSyncStatusWorkManager(requestIds, 1)
+            }
+        }
+    }
+
+    private fun startGetSyncStatusWorkManager(requestIds: Array<String>, duration: Long) {
+        val workManager = WorkManager.getInstance(requireContext())
+
+        val data = Data.Builder()
+            .putStringArray(KEY_REQUESTS_ID, requestIds)
+            .build()
+
+        val constrain = Constraints.Builder()
+            .setRequiredNetworkType(NetworkType.CONNECTED)
+            .build()
+
+        val getSyncStatusWorker = OneTimeWorkRequestBuilder<GetSyncStatusWorker>()
+            .setInitialDelay(duration, TimeUnit.MINUTES)
+            .setInputData(data)
+            .setConstraints(constrain)
+            .build()
+
+        workManager.enqueue(getSyncStatusWorker)
+
+        workManager.getWorkInfoByIdLiveData(getSyncStatusWorker.id).observe(viewLifecycleOwner) { workerInfo ->
+            if (workerInfo.state == WorkInfo.State.SUCCEEDED) {
+                Log.e("Test","Success")
+                binding.loadingProgress.visibility = View.GONE
+                binding.btnSync.visibility = View.VISIBLE
+            }
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.medtroniclabs.spice.ui.member
 
+import android.location.Location
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -48,10 +49,15 @@ class MemberRegistrationViewModel @Inject constructor(
     fun registerHouseThenMember(
         householdEntity: HouseholdEntity,
         memberResultMap: HashMap<String, Any>,
+        location: Location?
     ) {
          memberRegistrationLiveData.postLoading()
           try {
               viewModelScope.launch(dispatcherIO) {
+                  location?.let {
+                      householdEntity.latitude = it.latitude
+                      householdEntity.longitude = it.longitude
+                  }
                   val houseHoldId = houseHoldRepository.insertHouseHoldEntity(householdEntity)
                   registerMember(memberResultMap, houseHoldId)
               }

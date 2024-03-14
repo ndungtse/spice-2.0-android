@@ -1,14 +1,25 @@
 package com.medtroniclabs.spice.ui.household
 
+import android.Manifest
+import android.content.Context
 import android.content.Intent
 import android.content.pm.ActivityInfo
+import android.content.pm.PackageManager
+import android.location.LocationManager
 import android.os.Bundle
+import android.provider.Settings
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.View
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.appextensions.isFineAndCoarseLocationPermissionGranted
+import com.medtroniclabs.spice.appextensions.isGpsEnabled
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.databinding.ActivityHouseholdSearchBinding
 import com.medtroniclabs.spice.db.response.HouseHoldEntityWithMemberCount
@@ -16,12 +27,10 @@ import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.household.HouseholdDefinedParams.ID
-import com.medtroniclabs.spice.ui.household.HouseholdDefinedParams.NoOfPeople
-import com.medtroniclabs.spice.ui.household.HouseholdDefinedParams.VillageId
 import com.medtroniclabs.spice.ui.household.HouseholdDefinedParams.isFromHouseHoldRegistration
 import com.medtroniclabs.spice.ui.household.adapter.HouseholdListAdapter
-import com.medtroniclabs.spice.ui.household.viewmodel.HouseholdListViewModel
 import com.medtroniclabs.spice.ui.household.summary.HouseholdSummaryActivity
+import com.medtroniclabs.spice.ui.household.viewmodel.HouseholdListViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -113,10 +122,9 @@ class HouseholdSearchActivity : BaseActivity(), View.OnClickListener, HouseholdS
         var count = 0
         householdListViewModel.villageFilterList?.let { if (it.isNotEmpty()) count++ }
         householdListViewModel.statusFilterList?.let { if (it.isNotEmpty()) count++ }
-        if (isFromFilter && count!=0) {
+        if (isFromFilter && count != 0) {
             binding.llFilter.btnFilter.text = this.getString(R.string.filter_count, count)
-        }
-        else {
+        } else {
             binding.llFilter.btnFilter.text = getString(R.string.filters)
         }
     }
@@ -151,7 +159,8 @@ class HouseholdSearchActivity : BaseActivity(), View.OnClickListener, HouseholdS
     override fun onClick(view: View) {
         when (view.id) {
             R.id.btnAddHousehold -> {
-                startActivity(Intent(this, HouseholdActivity::class.java))
+                if (ableToGetLocation())
+                    launchHouseholdActivity()
             }
 
             R.id.btnSearch -> {
@@ -161,10 +170,15 @@ class HouseholdSearchActivity : BaseActivity(), View.OnClickListener, HouseholdS
                 }
             }
 
-            R.id.btnFilter ->{
-                FilterBottomSheetDialogFragment.newInstance(this).show(supportFragmentManager,FilterBottomSheetDialogFragment.TAG)
+            R.id.btnFilter -> {
+                FilterBottomSheetDialogFragment.newInstance(this)
+                    .show(supportFragmentManager, FilterBottomSheetDialogFragment.TAG)
             }
         }
+    }
+
+    private fun launchHouseholdActivity() {
+        startActivity(Intent(this, HouseholdActivity::class.java))
     }
 
     override fun onHouseHoldSelected(id: Long) {
@@ -177,7 +191,8 @@ class HouseholdSearchActivity : BaseActivity(), View.OnClickListener, HouseholdS
     override fun filterHouseholdList() {
         householdListViewModel.houseHoldListLiveData.value?.data?.let { householdList ->
             val villageIds = householdListViewModel.villageFilterList?.map { it.id }
-            val patientStatus = householdListViewModel.statusFilterList?.map { it.name }?.firstOrNull()
+            val patientStatus =
+                householdListViewModel.statusFilterList?.map { it.name }?.firstOrNull()
             val householdFilteredList = householdList.filter { household ->
                 (villageIds.isNullOrEmpty() || household.villageId in villageIds) &&
                         (patientStatus == null ||
@@ -193,4 +208,42 @@ class HouseholdSearchActivity : BaseActivity(), View.OnClickListener, HouseholdS
         householdListViewModel.getHouseHoldList()
     }
 
+    private fun ableToGetLocation(): Boolean {
+        //Check Location service is enabled
+        if (!isGpsEnabled()) {
+            showTurnOnGPSDialog()
+            return false
+        }
+
+        //Check Location permission for limit exceed
+        if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
+            showAllowLocationServiceDialog()
+            return false
+        }
+
+        //Check Location permission
+        if (!isFineAndCoarseLocationPermissionGranted()) {
+            requestPermissionLauncher.launch(
+                arrayOf(
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                )
+            )
+            return false
+        }
+
+        return true
+    }
+
+    private val requestPermissionLauncher =
+        registerForActivityResult(
+            ActivityResultContracts.RequestMultiplePermissions()
+        ) { permissions ->
+            val finePermission = permissions[Manifest.permission.ACCESS_FINE_LOCATION]
+            val coarsePermission = permissions[Manifest.permission.ACCESS_COARSE_LOCATION]
+
+            if (finePermission == true && coarsePermission == true) {
+                launchHouseholdActivity()
+            }
+        }
 }

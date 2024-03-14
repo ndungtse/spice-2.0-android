@@ -3,8 +3,9 @@ package com.medtroniclabs.spice.db.entity
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.medtroniclabs.spice.db.entity.EntitiesName.HOUSEHOLD
 
-@Entity(tableName = "HouseHold")
+@Entity(tableName = HOUSEHOLD)
 data class HouseholdEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
@@ -39,11 +40,22 @@ data class HouseholdEntity(
     @ColumnInfo("bed_net_count")
     var bedNetCount: Int? = null,
 
+    @ColumnInfo("fhir_id")
+    var fhirId: String? = null,
+
+    @ColumnInfo("latitude")
+    var latitude: Double = 0.0,
+
+    @ColumnInfo("longitude")
+    var longitude: Double = 0.0,
+
+    @ColumnInfo("is_synced")
+    var isSynced: Boolean = false,
+
     @ColumnInfo("created_at")
     val createdAt: Long = System.currentTimeMillis(),
 
     @ColumnInfo("updated_at")
-    var updatedAt: Long = System.currentTimeMillis()
-
+    var updatedAt: Long = System.currentTimeMillis(),
 )
 

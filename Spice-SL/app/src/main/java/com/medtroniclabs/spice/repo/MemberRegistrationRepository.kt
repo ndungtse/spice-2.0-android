@@ -83,6 +83,7 @@ class MemberRegistrationRepository @Inject constructor(
                 }
         } else {
             householdMemberEntity.updatedAt = System.currentTimeMillis()
+            householdMemberEntity.isSynced = false
         }
 
         return householdMemberEntity

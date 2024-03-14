@@ -187,4 +187,8 @@
     <string name="pnc" translatable="false">PNC</string>
     <string name="child_hood_visit" translatable="false">Childhood Visit</string>
     <string name="other_value">%1$s - %2$s</string>
+
+    <string name="gps_disabled_title">Location service disabled!</string>
+    <string name="gps_disabled_message">Please turn on your Location service to get your current location to proceed</string>
+
 </resources>

@@ -44,7 +44,7 @@ class LoginRepository @Inject constructor(
         username: String,
         password: String,
         loginResponseLiveDta: MutableLiveData<Resource<LoginResponse>>
-    ) {
+    ): String {
         try {
             loginResponseLiveDta.postLoading()
             val securePassword = EncryptionUtil.getSecurePassword(password)
@@ -68,6 +68,7 @@ class LoginRepository @Inject constructor(
         } catch (e: Exception) {
             loginResponseLiveDta.postError()
         }
+        return ""
     }
 
     private fun getErrorMessage(errorBody: ResponseBody?): String? {

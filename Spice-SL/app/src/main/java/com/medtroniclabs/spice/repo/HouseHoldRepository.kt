@@ -18,12 +18,18 @@ import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration
 import com.medtroniclabs.spice.network.ApiHelper
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.network.resource.ResourceState
+import com.medtroniclabs.spice.offlinesync.model.HouseHold
+import com.medtroniclabs.spice.offlinesync.model.HouseHoldMember
+import com.medtroniclabs.spice.offlinesync.model.RequestGetSyncStatus
+import com.medtroniclabs.spice.offlinesync.model.SyncResponse
+import retrofit2.Response
 import javax.inject.Inject
 
 class HouseHoldRepository @Inject constructor(
     private var apiHelper: ApiHelper,
     private var roomHelper: RoomHelper
 ) {
+
     suspend fun getHouseHoldList(): ArrayList<HouseHoldEntityWithMemberCount> =
         roomHelper.getHouseHoldList()
 
@@ -100,6 +106,7 @@ class HouseHoldRepository @Inject constructor(
 
         if (entity != null) {
             householdEntity.updatedAt = System.currentTimeMillis()
+            householdEntity.isSynced = false
 
             val noOfPeople = map[HouseHoldRegistration.noOfPeople]
             householdEntity.noOfPeople = checkHeadCountOfHouseHold(CommonUtils.getIntegerOrNull(noOfPeople) ?: 0, getMemberCountPerHouseHold(entity.id))
@@ -171,5 +178,29 @@ class HouseHoldRepository @Inject constructor(
 
     suspend fun getMemberCountPerHouseHold(householdId: Long): Int {
         return roomHelper.getMemberCountPerHouseHold(householdId)
+    }
+
+    suspend fun getAllUnSyncedHouseHolds(): List<HouseHold> {
+        return roomHelper.getAllUnSyncedHouseHolds()
+    }
+
+    suspend fun getAllUnSyncedMembers(householdId: Long): List<HouseHoldMember> {
+        return roomHelper.getAllUnSyncedHouseHoldMembers(householdId)
+    }
+
+    suspend fun getOtherHouseholdMembers(ids: List<Long>): List<HouseHoldMember> {
+        return roomHelper.getOtherHouseholdMembers(ids)
+    }
+
+    suspend fun postOfflineHouseHolds(map: Map<String,Any>): Response<SyncResponse> {
+        return apiHelper.postOfflineSync(map)
+    }
+
+    suspend fun getSyncStatus(request: RequestGetSyncStatus): Response<SyncResponse> {
+        return apiHelper.getOfflineSyncStatus(request)
+    }
+
+    suspend fun updateFhirId(tableName: String, id: String, fhirId: String) {
+        roomHelper.updateFhirId(tableName, id, fhirId)
     }
 }

@@ -1,5 +1,6 @@
 package com.medtroniclabs.spice.ui.household.viewmodel
 
+import android.location.Location
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -32,6 +33,7 @@ class HouseRegistrationViewModel @Inject constructor(
     var householdId: Long = -1L
     var villageListResponse = MutableLiveData<Resource<LocalSpinnerResponse>>()
     var memberID: Long = -1L
+    private var lastLocation: Location? = null
 
     fun getFormData(formType: String) {
         viewModelScope.launch(dispatcherIO) {
@@ -86,6 +88,11 @@ class HouseRegistrationViewModel @Inject constructor(
         }
     }
 
+    fun setCurrentLocation(location: Location) {
+        this.lastLocation = location
+    }
 
-
+    fun getCurrentLocation(): Location? {
+        return this.lastLocation
+    }
 }
