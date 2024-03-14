@@ -24,7 +24,9 @@ class SpiceLocationManager(private val context: Context) {
         ) {
 
             fusedLocationProviderClient.lastLocation.addOnSuccessListener { lastLocation ->
-                callback(lastLocation)
+                lastLocation?.let {
+                    callback(it)
+                }
 
                 val priority = Priority.PRIORITY_HIGH_ACCURACY
                 val cancellationTokenSource = CancellationTokenSource()
@@ -33,7 +35,9 @@ class SpiceLocationManager(private val context: Context) {
                     priority,
                     cancellationTokenSource.token
                 ).addOnSuccessListener { currentLocation ->
-                    callback(currentLocation)
+                    currentLocation?.let {
+                        callback(it)
+                    }
                 }
             }
         }

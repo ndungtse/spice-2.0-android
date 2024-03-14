@@ -222,7 +222,6 @@ class HouseholdSummaryActivity : BaseActivity(), MemberSelectionListener, View.O
     }
 
     override fun onDialogDismissListener() {
-        startActivity(Intent(this, HouseholdSearchActivity::class.java))
         finish()
     }
 
