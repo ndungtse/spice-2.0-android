@@ -1,0 +1,131 @@
+[
+  {
+    "familyOrder": 0,
+    "id": "pncVisitMother",
+    "orderId": 1,
+    "title": "PNC Visit - Mother",
+    "viewType": "CardView"
+  },
+  {
+    "id": "expectantMotherDangerSign",
+    "family": "pncVisitMother",
+    "fieldName": "expectantMotherDangerSign",
+    "orderId": 2,
+    "title": "Is the expectant mother experiencing any of these danger signs?",
+    "viewType": "Spinner",
+    "isMandatory": false,
+    "isSummary": true,
+    "hint": "Select Symptoms",
+    "localDataCache": "expectantMotherDangerSign",
+    "errorMessage": "Please select a valid option",
+    "visibility": "visible"
+  },
+  {
+    "family": "pncVisitMother",
+    "fieldName": "fatherPresent",
+    "id": "fatherPresent",
+    "condition": [],
+    "orderId": 4,
+    "errorMessage": "Please select a valid option",
+    "isEnabled": true,
+    "isMandatory": true,
+    "isNeededDefault": true,
+    "isSummary": true,
+    "optionsList": [
+      {
+        "id": "Yes",
+        "name": "Yes"
+      },
+      {
+        "id": "No",
+        "name": "No"
+      }
+    ],
+    "optionType": "boolean",
+    "readOnly": true,
+    "viewType": "SingleSelectionView",
+    "title": "Father present?",
+    "visibility": "visible"
+  },
+  {
+    "family": "pncVisitMother",
+    "fieldName": "exclusiveBreastFeeding",
+    "id": "exclusiveBreastFeeding",
+    "condition": [],
+    "orderId": 4,
+    "errorMessage": "Please select a valid option",
+    "isEnabled": true,
+    "isMandatory": true,
+    "isNeededDefault": true,
+    "isSummary": true,
+    "optionsList": [
+      {
+        "id": "Yes",
+        "name": "Yes"
+      },
+      {
+        "id": "No",
+        "name": "No"
+      }
+    ],
+    "optionType": "boolean",
+    "readOnly": true,
+    "viewType": "SingleSelectionView",
+    "title": "Exclusively breastfeeding?",
+    "visibility": "visible"
+  },
+  {
+    "family": "pncVisitMother",
+    "fieldName": "sleepsUnderBednet",
+    "id": "sleepsUnderBednet",
+    "condition": [],
+    "orderId": 4,
+    "errorMessage": "Please select a valid option",
+    "isEnabled": true,
+    "isMandatory": true,
+    "isNeededDefault": true,
+    "isSummary": true,
+    "optionsList": [
+      {
+        "id": "Yes",
+        "name": "Yes"
+      },
+      {
+        "id": "No",
+        "name": "No"
+      }
+    ],
+    "optionType": "boolean",
+    "readOnly": true,
+    "viewType": "SingleSelectionView",
+    "title": "Sleeps under Bednet",
+    "visibility": "visible"
+  },
+  {
+    "family": "pncVisitMother",
+    "fieldName": "chlorhexidine",
+    "id": "chlorhexidine",
+    "condition": [],
+    "orderId": 4,
+    "errorMessage": "Please select a valid option",
+    "isEnabled": true,
+    "isMandatory": true,
+    "isNeededDefault": true,
+    "isSummary": true,
+    "optionsList": [
+      {
+        "id": "Yes",
+        "name": "Yes"
+      },
+      {
+        "id": "No",
+        "name": "No"
+      }
+    ],
+    "optionType": "boolean",
+    "readOnly": true,
+    "viewType": "SingleSelectionView",
+    "title": "Chlorhexidine",
+    "visibility": "visible"
+  }
+]

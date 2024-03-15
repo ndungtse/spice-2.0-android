@@ -94,17 +94,22 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
     }
 
     private fun showRespectiveWorkflow() {
-        val resultJsonFileName: String
+        var resultJsonFileName: String? = null
         when (viewModel.workflowName) {
             getString(R.string.anc) -> {
                 resultJsonFileName = "rmnch_anc_visit.json"
-                loadJson(resultJsonFileName)
             }
 
             getString(R.string.child_hood_visit) -> {
                 resultJsonFileName = "rmnch_childhood_visit.json"
-                loadJson(resultJsonFileName)
             }
+
+            getString(R.string.pnc) -> {
+                resultJsonFileName = "rmnch_pnc_phu_delivery_child.json"
+            }
+        }
+        resultJsonFileName?.let { name ->
+            loadJson(name)
         }
     }
 

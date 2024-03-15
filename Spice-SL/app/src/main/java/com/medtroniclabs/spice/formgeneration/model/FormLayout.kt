@@ -58,6 +58,7 @@ data class FormLayout(
     var applyDecimalFilter: Boolean? = null,
     var backgroundColor: String? = null,
     var information: String? = null,
+    var titleSummary:String? = null
 ) : BaseViewParams
 
 data class FormResponse(
