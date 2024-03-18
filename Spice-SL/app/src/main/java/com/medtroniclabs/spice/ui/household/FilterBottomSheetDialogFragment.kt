@@ -2,11 +2,9 @@ package com.medtroniclabs.spice.ui.household
 
 import android.app.Dialog
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowManager
 import androidx.fragment.app.activityViewModels
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -19,23 +17,18 @@ import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.TagListCustomView
 import com.medtroniclabs.spice.ui.household.viewmodel.HouseholdListViewModel
 
-class FilterBottomSheetDialogFragment() : BottomSheetDialogFragment(), View.OnClickListener {
+class FilterBottomSheetDialogFragment : BottomSheetDialogFragment(), View.OnClickListener {
 
     private lateinit var binding: FragmentFilterBottomSheetDialogBinding
     private lateinit var villageListTagView: TagListCustomView
-    private var listener: HouseholdSelectionListener? = null
     private lateinit var statusListTagView: TagListCustomView
 
     private val householdListViewModel: HouseholdListViewModel by activityViewModels()
 
-    constructor(listener: HouseholdSelectionListener) : this() {
-        this.listener = listener
-    }
-
     companion object {
         const val TAG = "FilterBottomSheetDialogFragment"
-        fun newInstance(listener: HouseholdSelectionListener): FilterBottomSheetDialogFragment {
-            return FilterBottomSheetDialogFragment(listener)
+        fun newInstance(): FilterBottomSheetDialogFragment {
+            return FilterBottomSheetDialogFragment()
         }
     }
 
@@ -91,7 +84,7 @@ class FilterBottomSheetDialogFragment() : BottomSheetDialogFragment(), View.OnCl
                                 )
                             )
                         }
-                        villageListTagView.addChipItemList(chipItemList, householdListViewModel.villageFilterList)
+                        villageListTagView.addChipItemList(chipItemList, householdListViewModel.getFilterLiveData().value?.filterByVillage)
                     }
                 }
 
@@ -121,7 +114,7 @@ class FilterBottomSheetDialogFragment() : BottomSheetDialogFragment(), View.OnCl
                 ChipViewItemModel(name = it)
             )
         }
-        statusListTagView.addChipItemList(statusList, householdListViewModel.statusFilterList)
+        statusListTagView.addChipItemList(statusList, householdListViewModel.getFilterLiveData().value?.filterByStatus)
     }
 
     override fun onClick(view: View) {
@@ -130,20 +123,23 @@ class FilterBottomSheetDialogFragment() : BottomSheetDialogFragment(), View.OnCl
                 applyFilter()
             }
             R.id.btnCancel -> {
-                householdListViewModel.villageFilterList = null
-                householdListViewModel.statusFilterList = null
+                householdListViewModel.setFilterLiveData(
+                    villageFilter = listOf(),
+                    statusFilter = listOf()
+                )
+
                 villageListTagView.clearSelection()
                 statusListTagView.clearSelection()
-                householdListViewModel.getHouseHoldList()
                 dismiss()
             }
         }
     }
 
     private fun applyFilter() {
-        householdListViewModel.villageFilterList = villageListTagView.getSelectedTags()
-        householdListViewModel.statusFilterList = statusListTagView.getSelectedTags()
-        listener?.filterHouseholdList()
+        householdListViewModel.setFilterLiveData(
+            villageFilter = villageListTagView.getSelectedTags(),
+            statusFilter = statusListTagView.getSelectedTags()
+        )
         dismiss()
     }
 

@@ -9,12 +9,20 @@ import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.databinding.ListItemHouseholdBinding
 import com.medtroniclabs.spice.db.response.HouseHoldEntityWithMemberCount
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
-import com.medtroniclabs.spice.ui.household.HouseholdSelectionListener
 
 class HouseholdListAdapter(
-    private val listener: HouseholdSelectionListener,
-    private val houseHoldList: ArrayList<HouseHoldEntityWithMemberCount>
+    private val callback: (Long) -> Unit
 ) : RecyclerView.Adapter<HouseholdListAdapter.HouseholdListViewHolder>() {
+
+    private val houseHoldList = mutableListOf<HouseHoldEntityWithMemberCount>()
+
+    fun setHouseHoldList(list: List<HouseHoldEntityWithMemberCount>) {
+        val oldCount = houseHoldList.size
+        houseHoldList.clear()
+        houseHoldList.addAll(list)
+        notifyItemRangeRemoved(0,oldCount)
+        notifyItemRangeInserted(0, list.size)
+    }
 
     inner class HouseholdListViewHolder(val binding: ListItemHouseholdBinding) :
         RecyclerView.ViewHolder(binding.root) {
@@ -37,7 +45,7 @@ class HouseholdListAdapter(
         holder.binding.ivMemberRegCount.visibility =
             if (item.noOfPeople == item.registerMemberCount) View.INVISIBLE else View.VISIBLE
         holder.binding.cardPatient.safeClickListener {
-            listener.onHouseHoldSelected(item.id)
+            callback(item.id)
         }
     }
 
@@ -51,11 +59,7 @@ class HouseholdListAdapter(
     }
 
     override fun getItemCount(): Int {
-        return if (houseHoldList.isNullOrEmpty()) {
-            1
-        } else {
-            houseHoldList.size
-        }
+        return houseHoldList.size
     }
 
 }

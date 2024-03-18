@@ -1,16 +1,15 @@
 package com.medtroniclabs.spice.ui.household.viewmodel
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
-import com.medtroniclabs.spice.appextensions.postError
-import com.medtroniclabs.spice.appextensions.postLoading
-import com.medtroniclabs.spice.appextensions.postSuccess
-import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.data.model.ChipViewItemModel
 import com.medtroniclabs.spice.db.entity.VillageEntity
 import com.medtroniclabs.spice.db.response.HouseHoldEntityWithMemberCount
 import com.medtroniclabs.spice.di.IoDispatcher
+import com.medtroniclabs.spice.model.household.HouseHoldSearchFilter
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.repo.HouseHoldRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -24,36 +23,45 @@ class HouseholdListViewModel @Inject constructor(
     private val houseHoldRepository: HouseHoldRepository
 ) : ViewModel() {
 
-    //Patient list - Grid count
-    var spanCount: Int = DefinedParams.span_count_1
     var villageListResponse = MutableLiveData<Resource<List<VillageEntity>>>()
-    var houseHoldListLiveData = MutableLiveData<Resource<ArrayList<HouseHoldEntityWithMemberCount>>>()
-    var villageFilterList : List<ChipViewItemModel>? = null
-    var statusFilterList : List<ChipViewItemModel>? = null
 
+    private val filterLiveData = MutableLiveData<HouseHoldSearchFilter>()
+    val filteredHouseholdsLiveData: LiveData<List<HouseHoldEntityWithMemberCount>> =
+        filterLiveData.switchMap { filter ->
+            val status =
+                if (filter.filterByStatus.isEmpty()) "" else filter.filterByStatus.first().name
 
-    fun getHouseHoldList() {
-        viewModelScope.launch(dispatcherIO) {
-            try {
-                houseHoldListLiveData.postLoading()
-                val houseHoldList = houseHoldRepository.getHouseHoldList()
-                houseHoldListLiveData.postSuccess(houseHoldList)
-            } catch (e: Exception) {
-                houseHoldListLiveData.postError()
-            }
+            houseHoldRepository.getFilteredHouseholdsLiveData(
+                filter.searchInput,
+                filter.filterByVillage.map { it.id!! },
+                status
+            )
         }
+
+    init {
+        filterLiveData.value = HouseHoldSearchFilter()
     }
 
-    fun searchByHouseholdNameOrNo(searchTerm: String) {
-        viewModelScope.launch(dispatcherIO) {
-            try {
-                houseHoldListLiveData.postLoading()
-                val houseHoldSearchList = houseHoldRepository.searchByHouseholdNameOrNo(searchTerm)
-                houseHoldListLiveData.postSuccess(houseHoldSearchList)
-            } catch (e: Exception) {
-                houseHoldListLiveData.postError()
-            }
+    fun setFilterLiveData(
+        search: String? = null,
+        villageFilter: List<ChipViewItemModel>? = null,
+        statusFilter: List<ChipViewItemModel>? = null
+    ) {
+        val filter = filterLiveData.value ?: HouseHoldSearchFilter()
+        search?.let {
+            filter.searchInput = it
         }
+        villageFilter?.let {
+            filter.filterByVillage = it
+        }
+        statusFilter?.let {
+            filter.filterByStatus = it
+        }
+        filterLiveData.value = filter
+    }
+
+    fun getFilterLiveData(): LiveData<HouseHoldSearchFilter> {
+        return filterLiveData
     }
 
     fun getAllVillagesName() {
@@ -62,3 +70,4 @@ class HouseholdListViewModel @Inject constructor(
         }
     }
 }
+

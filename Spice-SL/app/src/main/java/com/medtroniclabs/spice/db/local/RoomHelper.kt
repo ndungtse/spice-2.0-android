@@ -15,17 +15,15 @@ import com.medtroniclabs.spice.db.entity.SignsAndSymptomsEntity
 import com.medtroniclabs.spice.db.entity.UserProfileEntity
 import com.medtroniclabs.spice.db.entity.VillageEntity
 import com.medtroniclabs.spice.db.response.HouseHoldEntityWithMemberCount
-import com.medtroniclabs.spice.model.MemberDobGenderModel
 import com.medtroniclabs.spice.db.response.HouseholdMemberCount
+import com.medtroniclabs.spice.model.MemberDobGenderModel
 import com.medtroniclabs.spice.offlinesync.model.HouseHold
 import com.medtroniclabs.spice.offlinesync.model.HouseHoldMember
 
 interface RoomHelper {
     suspend fun saveHouseHoldEntry(householdEntity: HouseholdEntity): Long
     suspend fun updateHousehold(householdEntity: HouseholdEntity)
-    suspend fun getHouseHoldList(): ArrayList<HouseHoldEntityWithMemberCount>
     suspend fun getLastHouseholdNo(villageId: Long): Long?
-    suspend fun searchByHouseholdNameOrNo(searchTerm: String): ArrayList<HouseHoldEntityWithMemberCount>
     suspend fun getHouseHoldDetailsById(houseHoldId: Long): HouseholdEntity
     suspend fun registerMember(householdMemberEntity: HouseholdMemberEntity): Long
     suspend fun getAllHouseHoldMemberList(houseHoldId: Long): ArrayList<HouseholdMemberEntity>
@@ -75,4 +73,9 @@ interface RoomHelper {
 
     suspend fun getOtherHouseholdMembers(ids:List<Long>): List<HouseHoldMember>
     suspend fun updateFhirId(tableName: String, id: String, fhirId: String)
+    fun getFilteredHouseholdsLiveData(
+        searchInput: String,
+        filterByVillage: List<Long>,
+        filterByStatus: String
+    ): LiveData<List<HouseHoldEntityWithMemberCount>>
 }

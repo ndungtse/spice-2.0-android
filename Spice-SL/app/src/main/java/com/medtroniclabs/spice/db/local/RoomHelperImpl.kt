@@ -1,7 +1,7 @@
 package com.medtroniclabs.spice.db.local
 
-import androidx.sqlite.db.SimpleSQLiteQuery
 import androidx.lifecycle.LiveData
+import androidx.sqlite.db.SimpleSQLiteQuery
 import com.medtroniclabs.spice.data.LastCreatedAtAndPatientId
 import com.medtroniclabs.spice.data.VillageInfo
 import com.medtroniclabs.spice.db.dao.AssessmentDAO
@@ -20,10 +20,10 @@ import com.medtroniclabs.spice.db.entity.SignsAndSymptomsEntity
 import com.medtroniclabs.spice.db.entity.UserProfileEntity
 import com.medtroniclabs.spice.db.entity.VillageEntity
 import com.medtroniclabs.spice.db.response.HouseHoldEntityWithMemberCount
+import com.medtroniclabs.spice.db.response.HouseholdMemberCount
+import com.medtroniclabs.spice.model.MemberDobGenderModel
 import com.medtroniclabs.spice.offlinesync.model.HouseHold
 import com.medtroniclabs.spice.offlinesync.model.HouseHoldMember
-import com.medtroniclabs.spice.model.MemberDobGenderModel
-import com.medtroniclabs.spice.db.response.HouseholdMemberCount
 import javax.inject.Inject
 
 class RoomHelperImpl @Inject constructor(
@@ -40,16 +40,8 @@ class RoomHelperImpl @Inject constructor(
         return householdDAO.updateHouseHold(householdEntity)
     }
 
-    override suspend fun getHouseHoldList(): ArrayList<HouseHoldEntityWithMemberCount> {
-        return ArrayList(householdDAO.getAllHouseHold())
-    }
-
     override suspend fun getLastHouseholdNo(villageId: Long): Long? {
         return householdDAO.getLastHouseholdNo(villageId)
-    }
-
-    override suspend fun searchByHouseholdNameOrNo(searchTerm: String): ArrayList<HouseHoldEntityWithMemberCount> {
-        return ArrayList(householdDAO.searchByHouseholdNameOrNo(searchTerm))
     }
 
     override suspend fun getHouseHoldDetailsById(houseHoldId: Long): HouseholdEntity {
@@ -229,5 +221,18 @@ class RoomHelperImpl @Inject constructor(
         val updatedAt = System.currentTimeMillis()
         val query = "UPDATE $tableName SET fhir_id = $fhirId, is_synced = $isSynced, updated_at = $updatedAt WHERE id = $id"
         householdDAO.updateFhirId(SimpleSQLiteQuery(query))
+    }
+
+    override fun getFilteredHouseholdsLiveData(
+        searchInput: String,
+        filterByVillage: List<Long>,
+        filterByStatus: String
+    ): LiveData<List<HouseHoldEntityWithMemberCount>> {
+        if (filterByVillage.isEmpty()) {
+            return householdDAO.getHouseholdsWithFilterLiveData(searchInput, filterByStatus)
+        } else {
+            return householdDAO.getHouseholdsWithFilterLiveData(searchInput, filterByStatus, filterByVillage)
+        }
+
     }
 }

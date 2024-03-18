@@ -6,7 +6,6 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.RawQuery
-import androidx.room.Transaction
 import androidx.room.Update
 import androidx.sqlite.db.SimpleSQLiteQuery
 import com.medtroniclabs.spice.db.entity.HouseholdEntity
@@ -23,28 +22,22 @@ interface HouseholdDAO {
     @Update
     suspend fun updateHouseHold(houseHold: HouseholdEntity)
 
-    @Transaction
-    @Query(
-        "SELECT household.*, COUNT(HouseHoldMember.id) AS member_count " +
-                "FROM HouseHold " +
-                "LEFT JOIN HouseHoldMember ON household.id = HouseHoldMember.household_id " +
-                "GROUP BY household.id"
-    )
-    suspend fun getAllHouseHold(): List<HouseHoldEntityWithMemberCount>
-
 
     @Query("SELECT MAX(household_no) FROM household WHERE village_id = :villageId")
     suspend fun getLastHouseholdNo(villageId: Long): Long?
 
-    @Transaction
-    @Query(
-        "SELECT household.*, COUNT(HouseHoldMember.household_id) AS member_count " +
-                "FROM HouseHold " +
-                "LEFT JOIN HouseHoldMember ON household.id = HouseHoldMember.household_id " +
-                "WHERE household.name LIKE '%' || :searchTerm || '%' OR household.household_no LIKE :searchTerm " +
-                "GROUP BY household.id"
-    )
-    suspend fun searchByHouseholdNameOrNo(searchTerm: String): List<HouseHoldEntityWithMemberCount>
+    @Query("SELECT * FROM (SELECT hh.*, COUNT(hhm.household_id) AS member_count, case when :status == '' then '' when COUNT(hhm.household_id) == hh.no_of_people then 'Finished' " +
+            " when COUNT(hhm.household_id) != hh.no_of_people then 'Pending' else '' end as status FROM Household AS hh LEFT JOIN HouseholdMember AS hhm ON hh.id = hhm.household_id WHERE (hh.name LIKE '%' || :searchTerm || '%' OR hh.household_no LIKE :searchTerm) GROUP BY hh.id) as subTable Where status=:status")
+    fun getHouseholdsWithFilterLiveData(
+        searchTerm: String, status: String): LiveData<List<HouseHoldEntityWithMemberCount>>
+
+    @Query("SELECT * FROM (SELECT hh.*, COUNT(hhm.household_id) AS member_count, case when :status == '' then '' when COUNT(hhm.household_id) == hh.no_of_people then 'Finished' " +
+            " when COUNT(hhm.household_id) != hh.no_of_people then 'Pending' else '' end as status FROM Household AS hh LEFT JOIN HouseholdMember AS hhm ON hh.id = hhm.household_id WHERE hh.village_id IN (:ids) AND (hh.name LIKE '%' || :searchTerm || '%' OR hh.household_no LIKE :searchTerm) GROUP BY hh.id) as subTable Where status=:status")
+    fun getHouseholdsWithFilterLiveData(
+        searchTerm: String,
+        status: String,
+            ids: List<Long>
+    ): LiveData<List<HouseHoldEntityWithMemberCount>>
 
     @Query("SELECT * FROM HouseHold WHERE id= :houseHoldId")
     suspend fun getHouseHoldDetailsById(houseHoldId: Long): HouseholdEntity

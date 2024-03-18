@@ -30,14 +30,8 @@ class HouseHoldRepository @Inject constructor(
     private var roomHelper: RoomHelper
 ) {
 
-    suspend fun getHouseHoldList(): ArrayList<HouseHoldEntityWithMemberCount> =
-        roomHelper.getHouseHoldList()
-
     suspend fun getLastHouseholdNo(villageId: Long): Long? =
         roomHelper.getLastHouseholdNo(villageId)
-
-    suspend fun searchByHouseholdNameOrNo(searchTerm: String) =
-        roomHelper.searchByHouseholdNameOrNo(searchTerm)
 
     suspend fun getHouseHoldDetailsById(houseHoldId: Long) =
         roomHelper.getHouseHoldDetailsById(houseHoldId)
@@ -48,6 +42,11 @@ class HouseHoldRepository @Inject constructor(
     fun getMemberCountInHouseholdLiveData(houseHoldId: Long): LiveData<HouseholdMemberCount> {
         return roomHelper.getMemberCountInHouseholdLiveData(houseHoldId)
     }
+
+    fun getFilteredHouseholdsLiveData(searchTerm: String, villageIds: List<Long>, status: String): LiveData<List<HouseHoldEntityWithMemberCount>> {
+        return roomHelper.getFilteredHouseholdsLiveData(searchTerm, villageIds, status)
+    }
+
 
     suspend fun getFormData(
         formType: String,
