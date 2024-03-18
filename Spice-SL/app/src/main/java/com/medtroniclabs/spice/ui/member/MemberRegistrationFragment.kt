@@ -258,6 +258,10 @@ class MemberRegistrationFragment : Fragment(), FormEventListener, View.OnClickLi
         }
     }
 
+    override fun onUpdateInstruction(id: String, selectedId: Any?) {
+
+    }
+
     override fun onInformationHandling(id: String, noOfDays: Int, enteredDays: Int) {
 
     }

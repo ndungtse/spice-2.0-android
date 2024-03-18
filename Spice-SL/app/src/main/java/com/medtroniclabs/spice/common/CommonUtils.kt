@@ -139,4 +139,11 @@ object CommonUtils {
     fun isChw(): Boolean {
         return SecuredPreference.getRole() == RoleConstant.COMMUNITY_HEALTH_WORKER
     }
+
+    fun getOptionMap(value: String): Map<String, Any> {
+        val map = HashMap<String, Any>()
+        map[DefinedParams.ID] = value
+        map[DefinedParams.NAME] = value
+        return map
+    }
 }

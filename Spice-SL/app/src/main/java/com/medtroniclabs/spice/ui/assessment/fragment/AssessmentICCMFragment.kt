@@ -9,7 +9,8 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.CommonUtils.getYearMonthAndWeeks
-import com.medtroniclabs.spice.common.DefinedParams
+import com.medtroniclabs.spice.common.DefinedParams.DefaultID
+import com.medtroniclabs.spice.common.DefinedParams.ICCM
 import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.databinding.FragmentAssessmentBinding
 import com.medtroniclabs.spice.formgeneration.FormGenerator
@@ -21,6 +22,7 @@ import com.medtroniclabs.spice.formgeneration.ui.FormResultComposer
 import com.medtroniclabs.spice.formgeneration.utility.CheckBoxDialog
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
+import com.medtroniclabs.spice.ui.assessment.AssessmentCommonUtils.getNutritionStatus
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.BreathPerMinute
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.FB_MAX_BREATHING
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.FB_MAX_MONTH
@@ -28,6 +30,11 @@ import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.FB_MAX_YEAR
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.FB_MIN_BREATHING
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.FB_MIN_MONTH
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.FB_MIN_YEAR
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.MUAC
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.muacCode
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.muacStatus
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.rootSuffix
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.summaryKey
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -50,9 +57,8 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initView()
-        viewModel.getFormData(DefinedParams.ICCM)
+        getFormDataForWorkflow()
         setListeners()
-        viewModel.insertSignsAndSymptoms()
         attachObservers()
     }
 
@@ -60,8 +66,11 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
         binding.btnSubmit.safeClickListener(this)
     }
 
-    private fun attachObservers() {
+    private fun getFormDataForWorkflow() {
+        viewModel.getFormData(ICCM)
+    }
 
+    private fun attachObservers() {
         viewModel.formLayoutsLiveData.observe(viewLifecycleOwner) { resourceState ->
             when (resourceState.state) {
                 ResourceState.LOADING -> {
@@ -108,8 +117,8 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
         serverViewModel: FormLayout,
         resultMap: Any?
     ) {
-        CheckBoxDialog.newInstance(id, resultMap) { resultMap ->
-            formGenerator.validateCheckboxDialogue(id, serverViewModel, resultMap)
+        CheckBoxDialog.newInstance(id, resultMap) { map ->
+            formGenerator.validateCheckboxDialogue(id, serverViewModel, map)
         }.show(childFragmentManager, CheckBoxDialog.TAG)
     }
 
@@ -128,7 +137,8 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
                 FormResultComposer().groupValues(
                     context = requireContext(),
                     serverData = it,
-                    details
+                    details,
+                    ICCM.lowercase()
                 )
             }
             result?.second?.let {
@@ -141,6 +151,33 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
 
     override fun onRenderingComplete() {
 
+    }
+
+    override fun onUpdateInstruction(id: String, selectedId: Any?) {
+        when(id) {
+            muacCode -> {
+                if (selectedId is String && selectedId != DefaultID)
+                {
+                    formGenerator.getViewByTag(muacStatus + rootSuffix )?.apply {
+                        visibility = View.VISIBLE
+                    }
+                    formGenerator.getViewByTag(muacStatus + summaryKey)?.let {
+                        if (it is TextView){
+                            it.text = requireContext().getString(R.string.firstname_lastname, MUAC.uppercase(), selectedId)
+                        }
+                    }
+                    formGenerator.getViewByTag(muacStatus )?.let {
+                        if (it is TextView){
+                            it.text = getNutritionStatus(selectedId, requireContext())
+                        }
+                    }
+                } else {
+                    formGenerator.getViewByTag(muacStatus + rootSuffix )?.apply {
+                        visibility = View.GONE
+                    }
+                }
+            }
+        }
     }
 
     override fun onInformationHandling(id: String, noOfDays: Int, enteredDays: Int) {

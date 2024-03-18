@@ -3,13 +3,12 @@ package com.medtroniclabs.spice.repo
 import androidx.lifecycle.MutableLiveData
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.appextensions.postSuccess
-import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.db.entity.AssessmentEntity
+import com.medtroniclabs.spice.db.entity.HealthFacilityEntity
 import com.medtroniclabs.spice.db.entity.SignsAndSymptomsEntity
 import com.medtroniclabs.spice.db.local.RoomHelper
 import com.medtroniclabs.spice.formgeneration.model.FormResponse
@@ -19,8 +18,6 @@ import javax.inject.Inject
 class AssessmentRepository @Inject constructor(
     private var roomHelper: RoomHelper
 ) {
-
-    private val resultHashMap = HashMap<String, Any>()
 
     suspend fun saveAssessment(
         resultData: String,
@@ -64,34 +61,6 @@ class AssessmentRepository @Inject constructor(
             assessmentUpdateLiveData.postSuccess()
         } catch (e: Exception) {
             assessmentUpdateLiveData.postError()
-        }
-    }
-
-    suspend fun insertSymptoms() {
-        try {
-            val signs = listOf(
-                "Sunken Eyes",
-                "No Tears when crying",
-                "Little or no urine",
-                "Unusually sleepy or uncoscious",
-                "Unable to drinking poorly",
-                "Skin pinch going back very slowly",
-                "No Symptoms",
-                "Other"
-            )
-            val signsList = ArrayList<SignsAndSymptomsEntity>()
-            for (i in signs.indices) {
-                signsList.add(
-                    SignsAndSymptomsEntity(
-                        _id = (i + 1).toLong(),
-                        symptom = signs[i],
-                        type = DefinedParams.DiarrhoeaSigns,
-                        displayOrder = i + 1
-                    )
-                )
-            }
-            roomHelper.insertSymptomList(signsList)
-        } catch (_: Exception) {
         }
     }
 

@@ -297,6 +297,10 @@ class HouseHoldRegistrationFragment : Fragment(), View.OnClickListener, FormEven
         }
     }
 
+    override fun onUpdateInstruction(id: String, selectedId: Any?) {
+
+    }
+
     override fun onInformationHandling(id: String, noOfDays: Int, enteredDays: Int) {
 
     }

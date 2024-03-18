@@ -1,6 +1,35 @@
 package com.medtroniclabs.spice.ui.assessment
 
 object AssessmentDefinedParams {
+    const val PHUSite1 = "PHU Site 1"
+    const val PHUSite2 = "PHU Site 2"
+    const val PHUSite3 = "PHU Site 3"
+    const val isUnusualSleepy = "isUnusualSleepy"
+    const val isConvulsionPastFewDays = "isConvulsionPastFewDays"
+    const val isVomiting = "isVomiting"
+    const val isBreastfeed = "isBreastfeed"
+    const val MUAC = "muac"
+    const val muacCode = "muacCode"
+    const val hasCough = "hasCough"
+    const val hasFever = "hasFever"
+    const val isDiarrhoea = "isDiarrhoea"
+    const val IsACTDispensed = "is_act_dispensed"
+    const val Dispensed = "Dispensed"
+    const val Amoxicillin = "Amoxicillin"
+    const val ACT = "ACT"
+    const val RDTTestResult = "rdt_test_result"
+    const val IsClinicTaken = "isClinicTaken"
+    const val AssessmentNotes = "assessmentNotes"
+    const val NextFollowupDate = "nextFollowupDate"
+    const val ReferredPHUSite = "referredPHUSite"
+    const val Positive = "+Ve"
+    const val Green = "Green"
+    const val Red = "Red"
+    const val Yellow = "Yellow"
+    const val HasNightSweats = "has_night_sweats"
+    const val CoughTBSummary = "Cough (>2 Weeks)"
+    const val DrenchingNightSweats = "Drenching Night Sweats"
+    const val Summary = "summary"
     const val ConcerningSymptoms= "concerningSymptoms"
     const val OtherSymptoms = "OTHER SYMPTOMS"
     const val feverOrHotbody = "feverOrHotbody"
@@ -8,6 +37,13 @@ object AssessmentDefinedParams {
     const val feverDays = "feverDays"
     const val RDT = "RDT"
     const val otherConcerningSymptoms = "otherConcerningSymptoms"
+    const val muacStatus = "muacStatus"
+    const val rootSuffix = "rootView"
+    const val summaryKey = "summaryKey"
+    const val General_Danger_Signs = "General Danger Signs"
+    const val NoOfDaysOfCough = "noOfDaysOfCough"
+    const val NoOfDaysOfFever = "noOfDaysOfFever"
+    const val NoOfDaysDiarrhoea = "noOfDaysOfDiarrhoea"
     const val BreathPerMinute = "breathPerMinute"
     const val FB_MIN_MONTH = 2
     const val FB_MAX_MONTH = 12
@@ -15,5 +51,7 @@ object AssessmentDefinedParams {
     const val FB_MAX_YEAR = 5
     const val FB_MAX_BREATHING = 50
     const val FB_MIN_BREATHING = 40
-
+    const val RMNCH = "rmnch"
+    const val OrsDispensedStatus = "orsDispensedStatus"
+    const val ZincDispensedStatus = "zincDispensedStatus"
 }

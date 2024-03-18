@@ -10,9 +10,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.DefinedParams
-import com.medtroniclabs.spice.common.DefinedParams.ACT
-import com.medtroniclabs.spice.common.DefinedParams.Dispensed
-import com.medtroniclabs.spice.common.DefinedParams.IsACTDispensed
 import com.medtroniclabs.spice.common.DefinedParams.Other
 import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.databinding.FragmentAssessmentOtherSymptomSummaryBinding
@@ -20,8 +17,16 @@ import com.medtroniclabs.spice.formgeneration.extension.capitalizeFirstChar
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.model.AssessmentSummaryModel
 import com.medtroniclabs.spice.ui.assessment.AssessmentCommonUtils
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.ACT
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.Amoxicillin
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.AssessmentNotes
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.ConcerningSymptoms
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.Dispensed
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.IsACTDispensed
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.OtherSymptoms
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.Positive
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.RDT
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.RDTTestResult
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.feverDays
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.feverOrHotbody
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.otherConcerningSymptoms
@@ -56,7 +61,7 @@ class AssessmentOtherSymptomSummaryFragment : Fragment(), View.OnClickListener {
             input?.let {
                 val resultValue = input.trim().toString()
                 if (resultValue.isNotBlank()) {
-                    viewModel.otherAssessmentDetails[DefinedParams.AssessmentNotes] = resultValue
+                    viewModel.otherAssessmentDetails[AssessmentNotes] = resultValue
                 }
             }
         }
@@ -87,20 +92,23 @@ class AssessmentOtherSymptomSummaryFragment : Fragment(), View.OnClickListener {
             getString(R.string.seperator_hyphen)
         )
         renderDangerSigns(summaryData)
-        renderFeverResults(summaryData)
+        summaryData.forEach { item ->
+            if (item.id == Amoxicillin && item.value == Dispensed) {
+                bindSummaryView(Dispensed, item.title)
+            } else {
+                bindSummaryView(item.title, item.value)
+            }
+        }
     }
 
     private fun renderDangerSigns(summaryData: MutableList<AssessmentSummaryModel>) {
         summaryData.find { it.id == ConcerningSymptoms }?.let { item ->
-            val result = if (item.value == Other) {
-                summaryData.find { it.id == otherConcerningSymptoms }?.let { otherItem ->
+            val result = if (item.value == Other ) {
+                summaryData.find { it.id == otherConcerningSymptoms }?.let {otherItem ->
                     requireContext().getString(R.string.other_value, item.value, otherItem.value)
                 }
             } else item.value
-            bindSummaryView(
-                getString(R.string.general_danger_signs),
-                result ?: getString(R.string.seperator_hyphen)
-            )
+            bindSummaryView(getString(R.string.general_danger_signs), result ?: getString(R.string.seperator_hyphen))
         }
     }
 
@@ -130,7 +138,7 @@ class AssessmentOtherSymptomSummaryFragment : Fragment(), View.OnClickListener {
                             item.value ?: getString(R.string.seperator_hyphen)
                         )
                     }
-                    listSummaryData.find { it.id == DefinedParams.RDTTestResult }?.let { item ->
+                listSummaryData.find { it.id == RDTTestResult }?.let { item ->
                         bindSummaryView(RDT, item.value ?: getString(R.string.seperator_hyphen))
                     }
                     listSummaryData.find { it.id == IsACTDispensed }?.let { item ->
@@ -145,11 +153,11 @@ class AssessmentOtherSymptomSummaryFragment : Fragment(), View.OnClickListener {
     }
 
     private fun renderOtherFeverMetrics(listSummaryData: MutableList<AssessmentSummaryModel>) {
-        AssessmentCommonUtils.getListItemValue(DefinedParams.RDTTestResult, listSummaryData)?.let {
+        AssessmentCommonUtils.getListItemValue(RDTTestResult, listSummaryData)?.let {
             bindSummaryView(
                 getString(R.string.rdt_test),
                 it.value,
-                if (it.value?.lowercase() == DefinedParams.Positive.lowercase()) ContextCompat.getColor(
+                if (it.value?.lowercase() == Positive.lowercase()) ContextCompat.getColor(
                     requireContext(),
                     R.color.medium_high_risk_color
                 ) else null
@@ -171,13 +179,15 @@ class AssessmentOtherSymptomSummaryFragment : Fragment(), View.OnClickListener {
     private fun createListSummaryData(data: String): MutableList<AssessmentSummaryModel>? {
         return viewModel.formLayout?.filter { it.isSummary == true }?.map { formLayout ->
             AssessmentSummaryModel(
-                title = formLayout.title,
+                title = formLayout.titleSummary ?: formLayout.title,
                 id = formLayout.id,
                 cultureValue = formLayout.titleCulture,
                 value = AssessmentCommonUtils.getValueOfKeyFromMap(
                     StringConverter.stringToMap(data),
-                    formLayout.id
-                )
+                    formLayout.id,
+                    OtherSymptoms
+                ),
+                noOfDays = formLayout.noOfDays
             )
         }?.toMutableList()
     }

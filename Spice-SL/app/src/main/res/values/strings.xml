@@ -197,4 +197,14 @@
     <string name="patients_found">%1d Patients</string>
     <string name="no_patients_found">No patients found to upload.</string>
     <string name="search_by_national_id">Search by National ID</string>
+    <string name="normal">Normal</string>
+    <string name="moderate_malnutrition">Moderate Malnutrition</string>
+    <string name="severe_nutrition">Severe Nutrition</string>
+    <string name="nutrition_summary">%1$s ( %2$s )</string>
+    <string name="severe_dehydration">Severe Dehydration</string>
+    <string name="pneumonia">Pneumonia</string>
+    <string name="bpm">BPM</string>
+    <string name="malaria">Malaria</string>
+    <string name="days_summary">%1$d ( %2$d days )</string>
+
 </resources>

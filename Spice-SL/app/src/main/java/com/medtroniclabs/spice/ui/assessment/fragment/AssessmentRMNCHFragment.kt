@@ -19,6 +19,7 @@ import com.medtroniclabs.spice.formgeneration.model.FormResponse
 import com.medtroniclabs.spice.formgeneration.ui.FormResultComposer
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -162,7 +163,8 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
                 FormResultComposer().groupValues(
                     context = requireContext(),
                     serverData = it,
-                    details
+                    details,
+                    AssessmentDefinedParams.RMNCH.lowercase()
                 )
             }
             result?.second?.let {
@@ -174,6 +176,10 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
     }
 
     override fun onRenderingComplete() {
+
+    }
+
+    override fun onUpdateInstruction(id: String, selectedId: Any?) {
 
     }
 

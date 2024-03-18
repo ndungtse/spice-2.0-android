@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import com.google.gson.Gson
 import com.medtroniclabs.spice.common.CommonUtils
+import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.databinding.FragmentAssessmentOtherSymptomsBinding
 import com.medtroniclabs.spice.formgeneration.FormGenerator
@@ -115,10 +116,7 @@ class AssessmentOtherSymptomsFragment : BaseFragment(), FormEventListener, View.
         serverViewModel: FormLayout,
         resultMap: Any?
     ) {
-        CheckBoxDialog.newInstance(
-            OtherSymptoms.lowercase(),
-            resultMap
-        ) { resultMap ->
+        CheckBoxDialog.newInstance(OtherSymptoms.lowercase(), resultMap) { resultMap ->
             formGenerator.validateCheckboxDialogue(id, serverViewModel, resultMap)
         }.show(childFragmentManager, CheckBoxDialog.TAG)
     }
@@ -138,7 +136,8 @@ class AssessmentOtherSymptomsFragment : BaseFragment(), FormEventListener, View.
                 FormResultComposer().groupValues(
                     context = requireContext(),
                     serverData = it,
-                    details
+                    details,
+                    OtherSymptoms.lowercase()
                 )
             }
             result?.second?.let {
@@ -150,6 +149,10 @@ class AssessmentOtherSymptomsFragment : BaseFragment(), FormEventListener, View.
     }
 
     override fun onRenderingComplete() {
+
+    }
+
+    override fun onUpdateInstruction(id: String, selectedId: Any?) {
 
     }
 

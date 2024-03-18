@@ -11,20 +11,24 @@ import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.CommonUtils.convertListToString
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.DefaultID
-import com.medtroniclabs.spice.common.DefinedParams.PHUSite1
-import com.medtroniclabs.spice.common.DefinedParams.PHUSite2
-import com.medtroniclabs.spice.common.DefinedParams.PHUSite3
+import com.medtroniclabs.spice.common.DefinedParams.TB
 import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.databinding.FragmentAssessmentTBSummaryBinding
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.DefaultIDLabel
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
 import com.medtroniclabs.spice.model.AssessmentSummaryModel
-import com.medtroniclabs.spice.network.resource.ResourceState
-import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.assessment.AssessmentCommonUtils
 import com.medtroniclabs.spice.ui.assessment.AssessmentCommonUtils.getListItemValue
 import com.medtroniclabs.spice.ui.assessment.AssessmentCommonUtils.getValueOfKeyFromMap
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.CoughTBSummary
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.DrenchingNightSweats
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.hasCough
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.HasNightSweats
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.PHUSite1
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.PHUSite2
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.PHUSite3
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.ReferredPHUSite
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
 
 class AssessmentTBSummaryFragment : Fragment(), View.OnClickListener {
@@ -74,7 +78,8 @@ class AssessmentTBSummaryFragment : Fragment(), View.OnClickListener {
                 cultureValue = formLayout.titleCulture,
                 value = getValueOfKeyFromMap(
                     StringConverter.stringToMap(data),
-                    formLayout.id
+                    formLayout.id,
+                    TB
                 )
             )
         }?.toMutableList()
@@ -111,13 +116,13 @@ class AssessmentTBSummaryFragment : Fragment(), View.OnClickListener {
 
     private fun signsAndSymptoms(listSummaryData: MutableList<AssessmentSummaryModel>) {
         val signsList = ArrayList<String>()
-        getListItemValue(DefinedParams.HasCough, listSummaryData)?.let {
+        getListItemValue(hasCough, listSummaryData)?.let {
             if (it.value?.lowercase() == DefinedParams.Yes.lowercase())
-                signsList.add(DefinedParams.CoughTBSummary)
+                signsList.add(CoughTBSummary)
         }
-        getListItemValue(DefinedParams.HasNightSweats, listSummaryData)?.let {
+        getListItemValue(HasNightSweats, listSummaryData)?.let {
             if (it.value?.lowercase() == DefinedParams.Yes.lowercase())
-                signsList.add(DefinedParams.DrenchingNightSweats)
+                signsList.add(DrenchingNightSweats)
         }
         if (signsList.isNotEmpty()) {
             bindTbSummaryView(
@@ -169,10 +174,10 @@ class AssessmentTBSummaryFragment : Fragment(), View.OnClickListener {
                     selectedItem?.let {
                         val selectedId = it[DefinedParams.id] as String?
                         if (selectedId != DefaultID) {
-                            viewModel.otherAssessmentDetails[DefinedParams.ReferredPHUSite] = selectedId.toString()
+                            viewModel.otherAssessmentDetails[ReferredPHUSite] = selectedId.toString()
                         } else {
-                            if (viewModel.otherAssessmentDetails.containsKey(DefinedParams.ReferredPHUSite))
-                                viewModel.otherAssessmentDetails.remove(DefinedParams.ReferredPHUSite)
+                            if (viewModel.otherAssessmentDetails.containsKey(ReferredPHUSite))
+                                viewModel.otherAssessmentDetails.remove(ReferredPHUSite)
                         }
                     }
                 }

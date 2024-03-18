@@ -5,27 +5,50 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat.getColor
 import androidx.core.widget.addTextChangedListener
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
-import com.medtroniclabs.spice.common.CommonUtils.convertListToString
+import com.medtroniclabs.spice.common.CommonUtils.getOptionMap
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
+import com.medtroniclabs.spice.common.DefinedParams.ICCM
+import com.medtroniclabs.spice.common.DefinedParams.Yes
 import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.common.ViewUtils
 import com.medtroniclabs.spice.databinding.FragmentAssessmentIccmSummaryBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
+import com.medtroniclabs.spice.formgeneration.model.FormLayout
+import com.medtroniclabs.spice.formgeneration.ui.SingleSelectionCustomView
 import com.medtroniclabs.spice.model.AssessmentSummaryModel
+import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.assessment.AssessmentCommonUtils.addViewSummaryLayout
-import com.medtroniclabs.spice.ui.assessment.AssessmentCommonUtils.getListItemValue
+import com.medtroniclabs.spice.ui.assessment.AssessmentCommonUtils.getNutritionStatus
 import com.medtroniclabs.spice.ui.assessment.AssessmentCommonUtils.getValueOfKeyFromMap
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.ACT
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.Amoxicillin
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.AssessmentNotes
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.BreathPerMinute
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.Dispensed
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.General_Danger_Signs
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.IsClinicTaken
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.NextFollowupDate
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.NoOfDaysDiarrhoea
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.NoOfDaysOfCough
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.NoOfDaysOfFever
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.OrsDispensedStatus
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.ZincDispensedStatus
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.hasCough
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.hasFever
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.isBreastfeed
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.isConvulsionPastFewDays
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.isDiarrhoea
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.isUnusualSleepy
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.isVomiting
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.muacCode
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
 
-class AssessmentICCMSummaryFragment : Fragment(), View.OnClickListener {
+class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
     private val viewModel: AssessmentViewModel by activityViewModels()
-
     lateinit var binding: FragmentAssessmentIccmSummaryBinding
     private var datePickerDialog: DatePickerDialog? = null
 
@@ -40,17 +63,46 @@ class AssessmentICCMSummaryFragment : Fragment(), View.OnClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initView()
+        initViews()
+        setListeners()
         attachObservers()
     }
 
-    private fun initView() {
+    private fun initViews() {
+        getClinicTakenData().let {
+            val view = SingleSelectionCustomView(binding.root.context)
+            view.tag = IsClinicTaken
+            view.addViewElements(
+                it,
+                false,
+                viewModel.otherAssessmentDetails,
+                IsClinicTaken,
+                FormLayout(viewType = "", id = "", title = "", visibility = "", optionsList = null),
+                singleSelectionCallback
+            )
+            binding.clinicTakenGroup.addView(view)
+        }
+    }
+
+    private var singleSelectionCallback: ((selectedID: Any?, elementId: String, serverViewModel: FormLayout, name: String?) -> Unit)? =
+        { selectedID, _, _, _ ->
+            viewModel.otherAssessmentDetails[IsClinicTaken] = selectedID as String
+        }
+
+    private fun getClinicTakenData(): ArrayList<Map<String, Any>> {
+        val flowList = ArrayList<Map<String, Any>>()
+        flowList.add(getOptionMap(getString(R.string.yes)))
+        flowList.add(getOptionMap(getString(R.string.no)))
+        return flowList
+    }
+
+    private fun setListeners() {
         binding.btnDone.safeClickListener(this)
         binding.etNotes.addTextChangedListener { input ->
             input?.let {
                 val resultValue = input.trim().toString()
                 if (resultValue.isNotBlank()) {
-                    viewModel.otherAssessmentDetails[DefinedParams.AssessmentNotes] = resultValue
+                    viewModel.otherAssessmentDetails[AssessmentNotes] = resultValue
                 }
             }
         }
@@ -89,14 +141,14 @@ class AssessmentICCMSummaryFragment : Fragment(), View.OnClickListener {
         }
     }
 
-
     private fun createListSummaryData(data: String): MutableList<AssessmentSummaryModel>? {
-        return viewModel.formLayout?.filter { it.isSummary == true }?.map { formLayout ->
+        return viewModel.formLayoutsLiveData.value?.data?.formLayout?.filter { it.isSummary == true }?.map { formLayout ->
             AssessmentSummaryModel(
-                title = formLayout.title,
+                title = formLayout.titleSummary ?: formLayout.title,
                 id = formLayout.id,
                 cultureValue = formLayout.titleCulture,
-                value = getValueOfKeyFromMap(StringConverter.stringToMap(data), formLayout.id)
+                value = getValueOfKeyFromMap(StringConverter.stringToMap(data), formLayout.id, ICCM),
+                noOfDays = formLayout.noOfDays
             )
         }?.toMutableList()
     }
@@ -107,151 +159,136 @@ class AssessmentICCMSummaryFragment : Fragment(), View.OnClickListener {
             getString(R.string.seperator_hyphen)
         )
         composeGeneralDangerSignsResult(listSummaryData)
-        composeMuacResults(listSummaryData)
-        composeCoughResults(listSummaryData)
-        composeFeverResults(listSummaryData)
-        composeDiarrhoeaResults(listSummaryData)
-        composeDispensedView(listSummaryData)
-    }
+        listSummaryData.filter { it.title?.lowercase() != General_Danger_Signs.lowercase() }.forEach { item ->
+            when (item.id) {
+                muacCode -> {
+                    bindICCMSummaryView(
+                        item.title,
+                        requireContext().getString(
+                            R.string.nutrition_summary,
+                            item.value,
+                            getNutritionStatus(item.value, requireContext())
+                        )
+                    )
+                }
 
-    private fun composeMuacResults(listSummaryData: MutableList<AssessmentSummaryModel>) {
-        getListItemValue(DefinedParams.MUAC, listSummaryData)?.let {
-            bindICCMSummaryView(getString(R.string.muac), it.value)
+                isDiarrhoea -> {
+                    if (item.value == Yes) {
+                        binding.diarrhoeaGroup.visibility = View.VISIBLE
+                        bindICCMSummaryView(
+                            item.title,
+                            requireContext().getString(
+                                R.string.nutrition_summary,
+                                item.value,
+                                getString(R.string.severe_dehydration)
+                            )
+                        )
+                    } else {
+                        bindICCMSummaryView(item.title, item.value)
+                    }
+                }
+
+                hasCough -> {
+                    if (item.value == Yes) {
+                        binding.coughMalariaGroup.visibility = View.VISIBLE
+                        bindICCMSummaryView(
+                            item.title,
+                            requireContext().getString(
+                                R.string.nutrition_summary,
+                                item.value,
+                                getString(R.string.pneumonia)
+                            )
+                        )
+                    } else {
+                        bindICCMSummaryView(item.title, item.value)
+                    }
+                }
+
+                BreathPerMinute -> {
+                    item.value?.let {result ->
+                        bindICCMSummaryView(
+                            item.title,
+                            requireContext().getString(
+                                R.string.firstname_lastname,
+                                result,
+                                getString(R.string.bpm)
+                            )
+                        )
+                    }
+                }
+
+                hasFever -> {
+                    if (item.value == Yes) {
+                        binding.coughMalariaGroup.visibility = View.VISIBLE
+                        bindICCMSummaryView(
+                            item.title,
+                            requireContext().getString(
+                                R.string.nutrition_summary,
+                                item.value,
+                                getString(R.string.malaria)
+                            )
+                        )
+                    } else {
+                        bindICCMSummaryView(item.title, item.value)
+                    }
+                }
+
+                NoOfDaysOfCough, NoOfDaysDiarrhoea, NoOfDaysOfFever -> {
+                    item.noOfDays?.let { maxDays ->
+                        item.value?.let { enteredDays ->
+                            bindICCMSummaryView(
+                                item.title,
+                                requireContext().getString(
+                                    R.string.days_summary,
+                                    enteredDays.toDouble().toInt(),
+                                    maxDays
+                                )
+                            )
+                        }
+                    } ?: kotlin.run {
+                        bindICCMSummaryView(item.title, item.value)
+                    }
+                }
+
+                Amoxicillin.lowercase(), ACT.lowercase(), OrsDispensedStatus, ZincDispensedStatus -> {
+                    if (item.value == Dispensed){
+                        bindICCMSummaryView(Dispensed, item.title)
+                    }
+                }
+
+                else -> {
+                    bindICCMSummaryView(item.title, item.value)
+                }
+            }
         }
     }
+
 
     private fun composeGeneralDangerSignsResult(listSummaryData: MutableList<AssessmentSummaryModel>) {
         val targetIds = setOf(
-            DefinedParams.HasSleptUnusually,
-            DefinedParams.HasConvulsions,
-            DefinedParams.HasVomitEverything,
-            DefinedParams.IsUnableToDrink
+            isUnusualSleepy,
+            isConvulsionPastFewDays,
+            isVomiting,
+            isBreastfeed
         )
         var result = DefinedParams.No
         for (assessment in listSummaryData) {
-            if (assessment.id in targetIds && assessment.value == DefinedParams.Yes) {
-                result = DefinedParams.Yes
+            if (assessment.id in targetIds && assessment.value == Yes) {
+                result = Yes
             }
         }
-        bindICCMSummaryView(getString(R.string.general_danger_signs), result)
+        bindICCMSummaryView(listSummaryData[0].title ?: getString(R.string.general_danger_signs), result)
     }
 
     private fun bindICCMSummaryView(title: String?, value: String?, valueTextColor: Int? = null) {
-        binding.parentLayout.addView(
-            addViewSummaryLayout(
-                title,
-                value,
-                valueTextColor,
-                requireContext()
-            )
-        )
-    }
-
-    private fun composeDispensedView(listSummaryData: MutableList<AssessmentSummaryModel>) {
-        val dispensedList = ArrayList<String>()
-        getListItemValue(DefinedParams.IsORSDispensed, listSummaryData)?.let {
-            if (it.value == DefinedParams.Dispensed)
-                dispensedList.add(DefinedParams.ORS)
-        }
-        getListItemValue(DefinedParams.IsZincDispensed, listSummaryData)?.let {
-            if (it.value == DefinedParams.Dispensed)
-                dispensedList.add(DefinedParams.Zinc)
-        }
-        getListItemValue(DefinedParams.IsACTDispensed, listSummaryData)?.let {
-            if (it.value == DefinedParams.Dispensed)
-                dispensedList.add(DefinedParams.ACT)
-        }
-        getListItemValue(DefinedParams.IsAmoxicillinDispensed, listSummaryData)?.let {
-            if (it.value == DefinedParams.Dispensed)
-                dispensedList.add(DefinedParams.Amoxicillin)
-        }
-        if (dispensedList.isNotEmpty()) {
-            bindICCMSummaryView(
-                getString(R.string.dispensed),
-                convertListToString(dispensedList),
-                getColor(requireContext(), R.color.primary_medium_blue)
-            )
-        }
-    }
-
-
-    private fun composeDiarrhoeaResults(listSummaryData: MutableList<AssessmentSummaryModel>) {
-        getListItemValue(DefinedParams.HasDiarrhoea, listSummaryData)?.let {
-            bindICCMSummaryView(
-                getString(R.string.diarrhoea),
-                it.value,
-                if (it.value?.lowercase() == DefinedParams.Yes.lowercase()) getColor(
-                    requireContext(),
-                    R.color.medium_high_risk_color
-                ) else null
-            )
-            if (it.value?.lowercase() == DefinedParams.Yes.lowercase()) {
-                composeOtherDiarrhoeaMetrics(listSummaryData)
-            }
-        }
-    }
-
-    private fun composeOtherDiarrhoeaMetrics(listSummaryData: MutableList<AssessmentSummaryModel>) {
-        getListItemValue(DefinedParams.DiarrhoeaSigns, listSummaryData)?.let {
-            bindICCMSummaryView(
-                getString(R.string.signs),
-                it.value,
-                getColor(requireContext(), R.color.medium_high_risk_color)
-            )
-        }
-    }
-
-
-
-    private fun composeFeverResults(listSummaryData: MutableList<AssessmentSummaryModel>) {
-        getListItemValue(DefinedParams.HasFever, listSummaryData)?.let {
-            val feverDisplay = if (it.value?.lowercase() == DefinedParams.Yes.lowercase()) getColor(
-                requireContext(),
-                R.color.medium_high_risk_color
-            ) else null
-            bindICCMSummaryView(getString(R.string.fever), it.value, feverDisplay)
-            if (it.value?.lowercase() == DefinedParams.Yes.lowercase()) {
-                binding.coughMalariaGroup.visibility = View.VISIBLE
-                composeOtherFeverMetrics(listSummaryData)
-            }
-        }
-    }
-
-    private fun composeOtherFeverMetrics(listSummaryData: MutableList<AssessmentSummaryModel>) {
-        getListItemValue(DefinedParams.RDTTestResult, listSummaryData)?.let {
-            bindICCMSummaryView(
-                getString(R.string.rdt_test),
-                it.value,
-                if (it.value?.lowercase() == DefinedParams.Positive.lowercase()) getColor(
-                    requireContext(),
-                    R.color.medium_high_risk_color
-                ) else null
-            )
-        }
-    }
-
-    private fun composeCoughResults(listSummaryData: MutableList<AssessmentSummaryModel>) {
-        getListItemValue(DefinedParams.HasCough, listSummaryData)?.let {
-            bindICCMSummaryView(
-                getString(R.string.cough),
-                it.value,
-                if (it.value?.lowercase() == DefinedParams.Yes.lowercase()) getColor(
-                    requireContext(),
-                    R.color.medium_high_risk_color
-                ) else null
-            )
-            if (it.value?.lowercase() == DefinedParams.Yes.lowercase()) {
-                binding.coughMalariaGroup.visibility = View.VISIBLE
-                composeOtherCoughMetrics(listSummaryData)
-            }
-        }
-    }
-
-    private fun composeOtherCoughMetrics(listSummaryData: MutableList<AssessmentSummaryModel>) {
-        getListItemValue(DefinedParams.NoOfBreaths, listSummaryData)?.let {
-            bindICCMSummaryView(
-                getString(R.string.breathing_rate),
-                it.value
+        value?.let {result ->
+            binding.parentLayout.addView(
+                addViewSummaryLayout(
+                    title,
+                    result,
+                    valueTextColor,
+                    requireContext()
+                )
             )
         }
     }
@@ -288,7 +325,7 @@ class AssessmentICCMSummaryFragment : Fragment(), View.OnClickListener {
                         DateUtils.DATE_FORMAT_ddMMyyyy,
                         DateUtils.DATE_ddMMyyyy
                     )
-                viewModel.otherAssessmentDetails[DefinedParams.NextFollowupDate] =
+                viewModel.otherAssessmentDetails[NextFollowupDate] =
                     binding.etNextFollowUpDate.text.toString()
                 datePickerDialog = null
             }

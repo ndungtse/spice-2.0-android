@@ -655,6 +655,8 @@ class FormGenerator(
                     )
                 }
             }
+
+            listener.onUpdateInstruction(id, selectedId)
             selectedIdVisibility(selectedId, serverViewModel, selectedName)
         }
     }

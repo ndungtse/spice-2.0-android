@@ -10,6 +10,7 @@ import com.medtroniclabs.spice.formgeneration.extension.capitalizeFirstChar
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.MenuConstants
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.Summary
 import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentICCMFragment
 import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentICCMSummaryFragment
 import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentRMNCHFragment
@@ -42,7 +43,7 @@ class AssessmentActivity : BaseActivity() {
     private fun loadSummaryFragment() {
         when (viewModel.menuId) {
             MenuConstants.ICCM_MENU_ID -> {
-                setTitle(DefinedParams.Summary.capitalizeFirstChar())
+                setTitle(Summary.capitalizeFirstChar())
                 replaceFragmentInId<AssessmentICCMSummaryFragment>(
                     binding.formsFragmentContainer.id,
                     tag = AssessmentICCMSummaryFragment.TAG
@@ -50,7 +51,7 @@ class AssessmentActivity : BaseActivity() {
             }
 
             MenuConstants.TB_MENU_ID -> {
-                setTitle(DefinedParams.Summary.capitalizeFirstChar())
+                setTitle(Summary.capitalizeFirstChar())
                 replaceFragmentInId<AssessmentTBSummaryFragment>(
                     binding.formsFragmentContainer.id,
                     tag = AssessmentTBSummaryFragment.TAG
@@ -58,7 +59,7 @@ class AssessmentActivity : BaseActivity() {
             }
 
             MenuConstants.OTHER_SYMPTOMS -> {
-                setTitle(DefinedParams.Summary.capitalizeFirstChar())
+                setTitle(Summary.capitalizeFirstChar())
                 replaceFragmentInId<AssessmentOtherSymptomSummaryFragment>(
                     binding.formsFragmentContainer.id,
                     tag = AssessmentOtherSymptomSummaryFragment::class.simpleName
@@ -66,7 +67,7 @@ class AssessmentActivity : BaseActivity() {
             }
 
             MenuConstants.RMNCH_MENU_ID -> {
-                setTitle(DefinedParams.Summary.uppercase())
+                setTitle(Summary.capitalizeFirstChar())
                 replaceFragmentInId<AssessmentRMNCHSummaryFragment>(
                     binding.formsFragmentContainer.id,
                     tag = AssessmentRMNCHSummaryFragment.TAG
@@ -135,7 +136,6 @@ class AssessmentActivity : BaseActivity() {
             when (resource.state) {
                 ResourceState.SUCCESS -> {
                     hideLoading()
-                    startActivity(Intent(this, LandingActivity::class.java))
                     finish()
                 }
 

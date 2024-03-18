@@ -10,6 +10,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResult
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.common.CommonUtils.getOptionMap
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.databinding.FragmentRmnchSelectionDialogBinding
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
@@ -103,13 +104,6 @@ class RMNCHFlowSelectionDialog : DialogFragment(), View.OnClickListener {
         flowList.add(getOptionMap(getString(R.string.pnc)))
         flowList.add(getOptionMap(getString(R.string.child_hood_visit)))
         return flowList
-    }
-
-    private fun getOptionMap(value: String): Map<String, Any> {
-        val map = HashMap<String, Any>()
-        map[DefinedParams.ID] = value
-        map[DefinedParams.NAME] = value
-        return map
     }
 
     override fun onClick(v: View) {

@@ -17,8 +17,9 @@ object AssessmentCommonUtils {
         return listSummaryData.find { it.id == givenId }
     }
 
-    fun getValueOfKeyFromMap(stringToMap: Map<String, Any>, keys: String): String? {
-        for (entry in stringToMap.entries) {
+    fun getValueOfKeyFromMap(stringToMap: Map<String, Any>, keys: String, menuType: String): String? {
+        val mapDataByType = stringToMap[menuType.lowercase()] as Map<*, *>
+        for (entry in mapDataByType.entries) {
             if (entry.value is Map<*, *>) {
                 val nestedMap = entry.value as? Map<*, *>
                 if (nestedMap?.containsKey(keys) == true) {
@@ -76,5 +77,14 @@ object AssessmentCommonUtils {
             summaryBinding.tvValue.typeface = Typeface.defaultFromStyle(Typeface.BOLD)
         }
         return summaryBinding.root
+    }
+
+    fun getNutritionStatus(selectedId: String?, context: Context): String {
+        return when (selectedId) {
+            AssessmentDefinedParams.Green -> context.getString(R.string.normal)
+            AssessmentDefinedParams.Yellow -> context.getString(R.string.moderate_malnutrition)
+            AssessmentDefinedParams.Red -> context.getString(R.string.severe_nutrition)
+            else -> context.getString(R.string.hyphen_symbol)
+        }
     }
 }

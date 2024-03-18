@@ -57,13 +57,6 @@ class AssessmentViewModel @Inject constructor(
         }
     }
 
-
-    fun insertSignsAndSymptoms() {
-        viewModelScope.launch(dispatcherIO) {
-            assessmentRepository.insertSymptoms()
-        }
-    }
-
     fun getSymptomListByType(type: String) {
         viewModelScope.launch(dispatcherIO) {
             assessmentRepository.getSymptomListByType(type, symptomTypeListResponse)
