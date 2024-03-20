@@ -235,4 +235,8 @@ class RoomHelperImpl @Inject constructor(
         }
 
     }
+
+    override suspend fun getNearestHealthFacility(): List<HealthFacilityEntity> {
+        return metaDataDAO.getNearestHealthFacility()
+    }
 }

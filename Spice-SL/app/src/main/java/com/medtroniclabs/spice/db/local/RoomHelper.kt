@@ -78,4 +78,5 @@ interface RoomHelper {
         filterByVillage: List<Long>,
         filterByStatus: String
     ): LiveData<List<HouseHoldEntityWithMemberCount>>
+    suspend fun getNearestHealthFacility(): List<HealthFacilityEntity>
 }

@@ -4,8 +4,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
 import com.google.gson.Gson
+import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.StringConverter
@@ -98,7 +101,6 @@ class AssessmentOtherSymptomsFragment : BaseFragment(), FormEventListener, View.
             ),
             Array<FormLayout>::class.java
         ).asList()
-        viewModel.formLayout = objectList
         formGenerator.populateViews(objectList)
     }
 
@@ -157,7 +159,19 @@ class AssessmentOtherSymptomsFragment : BaseFragment(), FormEventListener, View.
     }
 
     override fun onInformationHandling(id: String, noOfDays: Int, enteredDays: Int) {
+        if (enteredDays > noOfDays) {
+            updateColorCode(id, ContextCompat.getColor(requireContext(), R.color.medium_high_risk_color))
+        } else {
+            updateColorCode(id, ContextCompat.getColor(requireContext(), R.color.secondary_black))
+        }
+    }
 
+    private fun updateColorCode(id: String, colorCode: Int) {
+        formGenerator.getViewByTag(id + com.medtroniclabs.spice.formgeneration.config.DefinedParams.Information)?.let { view ->
+            if (view is TextView){
+                view.setTextColor(colorCode)
+            }
+        }
     }
 
     override fun onClick(view: View) {

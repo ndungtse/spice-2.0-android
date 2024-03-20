@@ -3,6 +3,7 @@ package com.medtroniclabs.spice.ui.assessment.viewmodel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.medtroniclabs.spice.db.entity.HealthFacilityEntity
 import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
 import com.medtroniclabs.spice.db.entity.SignsAndSymptomsEntity
 import com.medtroniclabs.spice.di.IoDispatcher
@@ -33,6 +34,7 @@ class AssessmentViewModel @Inject constructor(
     var symptomTypeListResponse = MutableLiveData<List<SignsAndSymptomsEntity>>()
     var otherAssessmentDetails = HashMap<String, Any>()
     val formLayoutsLiveData = MutableLiveData<Resource<FormResponse>>()
+    val nearestFacilityLiveData = MutableLiveData<Resource<List<HealthFacilityEntity>>>()
 
     fun getMemberDetailsById() {
         if (selectedHouseholdMemberId == -1L) {
@@ -66,6 +68,12 @@ class AssessmentViewModel @Inject constructor(
     fun getFormData(formType: String) {
         viewModelScope.launch(dispatcherIO) {
             assessmentRepository.getFormData(formType, formLayoutsLiveData)
+        }
+    }
+
+    fun getNearestHealthFacility(){
+        viewModelScope.launch (dispatcherIO) {
+            assessmentRepository.getNearestHealthFacility(nearestFacilityLiveData)
         }
     }
 }

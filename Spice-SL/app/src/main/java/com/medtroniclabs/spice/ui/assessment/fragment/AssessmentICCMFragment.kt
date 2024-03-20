@@ -68,6 +68,7 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
 
     private fun getFormDataForWorkflow() {
         viewModel.getFormData(ICCM)
+        viewModel.getNearestHealthFacility()
     }
 
     private fun attachObservers() {

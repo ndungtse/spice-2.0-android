@@ -17,6 +17,7 @@ import com.medtroniclabs.spice.formgeneration.extension.capitalizeFirstChar
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.model.AssessmentSummaryModel
 import com.medtroniclabs.spice.ui.assessment.AssessmentCommonUtils
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.ACT
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.Amoxicillin
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.AssessmentNotes
@@ -29,6 +30,7 @@ import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.RDT
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.RDTTestResult
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.feverDays
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.feverOrHotbody
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.hasFever
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.otherConcerningSymptoms
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.temperature
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
@@ -92,11 +94,32 @@ class AssessmentOtherSymptomSummaryFragment : Fragment(), View.OnClickListener {
             getString(R.string.seperator_hyphen)
         )
         renderDangerSigns(summaryData)
-        summaryData.forEach { item ->
-            if (item.id == Amoxicillin && item.value == Dispensed) {
-                bindSummaryView(Dispensed, item.title)
-            } else {
-                bindSummaryView(item.title, item.value)
+        summaryData.filter { it.title?.lowercase() != AssessmentDefinedParams.General_Danger_Signs.lowercase() }.forEach { item ->
+            when (item.id) {
+                hasFever -> {
+                    if (item.value == DefinedParams.Yes) {
+                        bindSummaryView(
+                            item.title,
+                            requireContext().getString(
+                                R.string.nutrition_summary,
+                                item.value,
+                                getString(R.string.malaria)
+                            )
+                        )
+                    } else {
+                        bindSummaryView(item.title, item.value)
+                    }
+                }
+
+                Amoxicillin.lowercase() -> {
+                    if (item.value == Dispensed){
+                        bindSummaryView(Dispensed, item.title)
+                    }
+                }
+
+                else -> {
+                        bindSummaryView(item.title, item.value)
+                }
             }
         }
     }
@@ -112,72 +135,21 @@ class AssessmentOtherSymptomSummaryFragment : Fragment(), View.OnClickListener {
         }
     }
 
-    private fun renderFeverResults(listSummaryData: MutableList<AssessmentSummaryModel>) {
-        AssessmentCommonUtils.getListItemValue(feverOrHotbody, listSummaryData)
-            ?.let { result ->
-                val feverDisplay =
-                    if (result.value?.lowercase() == DefinedParams.Yes.lowercase()) ContextCompat.getColor(
-                        requireContext(),
-                        R.color.medium_high_risk_color
-                    ) else null
-                bindSummaryView(
-                    getString(R.string.fever),
-                    result.value ?: getString(R.string.seperator_hyphen),
-                    feverDisplay
+    private fun bindSummaryView(title: String?, value: String?, valueTextColor: Int? = null) {
+        value?.let { result ->
+            binding.parentLayout.addView(
+                AssessmentCommonUtils.addViewSummaryLayout(
+                    title,
+                    result,
+                    valueTextColor,
+                    requireContext()
                 )
-                if (result.value?.lowercase() == DefinedParams.Yes.lowercase()) {
-                    listSummaryData.find { it.id == temperature }?.let { item ->
-                        bindSummaryView(
-                            item.title?.capitalizeFirstChar(),
-                            item.value ?: getString(R.string.seperator_hyphen)
-                        )
-                    }
-                    listSummaryData.find { it.id == feverDays }?.let { item ->
-                        bindSummaryView(
-                            item.title,
-                            item.value ?: getString(R.string.seperator_hyphen)
-                        )
-                    }
-                listSummaryData.find { it.id == RDTTestResult }?.let { item ->
-                        bindSummaryView(RDT, item.value ?: getString(R.string.seperator_hyphen))
-                    }
-                    listSummaryData.find { it.id == IsACTDispensed }?.let { item ->
-                        bindSummaryView(
-                            getString(R.string.dispensed),
-                            if (item.value == Dispensed) ACT else getString(R.string.hyphen_symbol)
-                        )
-                    }
-                    renderOtherFeverMetrics(listSummaryData)
-                }
-            }
-    }
-
-    private fun renderOtherFeverMetrics(listSummaryData: MutableList<AssessmentSummaryModel>) {
-        AssessmentCommonUtils.getListItemValue(RDTTestResult, listSummaryData)?.let {
-            bindSummaryView(
-                getString(R.string.rdt_test),
-                it.value,
-                if (it.value?.lowercase() == Positive.lowercase()) ContextCompat.getColor(
-                    requireContext(),
-                    R.color.medium_high_risk_color
-                ) else null
             )
         }
     }
 
-    private fun bindSummaryView(title: String?, value: String?, valueTextColor: Int? = null) {
-        binding.parentLayout.addView(
-            AssessmentCommonUtils.addViewSummaryLayout(
-                title,
-                value,
-                valueTextColor,
-                requireContext()
-            )
-        )
-    }
-
     private fun createListSummaryData(data: String): MutableList<AssessmentSummaryModel>? {
-        return viewModel.formLayout?.filter { it.isSummary == true }?.map { formLayout ->
+        return viewModel.formLayoutsLiveData.value?.data?.formLayout?.filter { it.isSummary == true }?.map { formLayout ->
             AssessmentSummaryModel(
                 title = formLayout.titleSummary ?: formLayout.title,
                 id = formLayout.id,

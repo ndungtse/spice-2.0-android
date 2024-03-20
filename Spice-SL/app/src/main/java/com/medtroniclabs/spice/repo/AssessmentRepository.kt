@@ -88,4 +88,10 @@ class AssessmentRepository @Inject constructor(
             formLayoutsLiveData.postError()
         }
     }
+
+    suspend fun getNearestHealthFacility(nearestFacilityLiveData: MutableLiveData<Resource<List<HealthFacilityEntity>>>) {
+        val response = roomHelper.getNearestHealthFacility()
+        nearestFacilityLiveData.postSuccess(response)
+    }
+
 }

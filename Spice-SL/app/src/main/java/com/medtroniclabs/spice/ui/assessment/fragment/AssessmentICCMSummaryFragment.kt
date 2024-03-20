@@ -5,21 +5,27 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.CommonUtils.getOptionMap
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
+import com.medtroniclabs.spice.common.DefinedParams.DefaultID
+import com.medtroniclabs.spice.common.DefinedParams.DefaultIDLabel
 import com.medtroniclabs.spice.common.DefinedParams.ICCM
 import com.medtroniclabs.spice.common.DefinedParams.Yes
 import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.common.ViewUtils
 import com.medtroniclabs.spice.databinding.FragmentAssessmentIccmSummaryBinding
+import com.medtroniclabs.spice.db.entity.HealthFacilityEntity
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.ui.SingleSelectionCustomView
+import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
 import com.medtroniclabs.spice.model.AssessmentSummaryModel
+import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.assessment.AssessmentCommonUtils.addViewSummaryLayout
 import com.medtroniclabs.spice.ui.assessment.AssessmentCommonUtils.getNutritionStatus
@@ -36,6 +42,8 @@ import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.NoOfDaysDia
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.NoOfDaysOfCough
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.NoOfDaysOfFever
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.OrsDispensedStatus
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.ReferredPHUSite
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.ReferredPHUSiteID
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.ZincDispensedStatus
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.hasCough
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.hasFever
@@ -96,6 +104,66 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
         return flowList
     }
 
+        private fun loadPhuSitesList(healthFacilityList: List<HealthFacilityEntity>) {
+            val dropDownList = ArrayList<Map<String, Any>>()
+            dropDownList.add(
+                hashMapOf<String, Any>(
+                    DefinedParams.NAME to DefaultIDLabel,
+                    DefinedParams.id to DefaultID
+                )
+            )
+            var defaultPosition = 0
+            //TODO("Instead of id need to give fhir Id once backend gives")
+            for ((index, healthFacilityEntity) in healthFacilityList.withIndex()) {
+                dropDownList.add(
+                    hashMapOf<String, Any>(
+                        DefinedParams.NAME to healthFacilityEntity.name,
+                        DefinedParams.id to healthFacilityEntity.id.toString()
+                    )
+                )
+                if (healthFacilityEntity.isDefault) {
+                    defaultPosition = index
+                }
+            }
+            val adapter = CustomSpinnerAdapter(requireContext())
+            adapter.setData(dropDownList)
+            binding.etPhuChange.adapter = adapter
+            binding.etPhuChange.setSelection(0, false)
+            binding.etPhuChange.post {
+                binding.etPhuChange.setSelection(defaultPosition + 1, false)
+            }
+            binding.etPhuChange.onItemSelectedListener =
+                object : AdapterView.OnItemSelectedListener {
+                    override fun onItemSelected(
+                        adapterView: AdapterView<*>?,
+                        view: View?,
+                        pos: Int,
+                        itemId: Long
+                    ) {
+                        val selectedItem = adapter.getData(position = pos)
+                        selectedItem?.let {
+                            val selectedId = it[DefinedParams.id] as String?
+                            val selectedSiteName = it[DefinedParams.NAME] as String?
+                            if (selectedId != DefaultID) {
+                                viewModel.otherAssessmentDetails[ReferredPHUSite] = selectedSiteName ?: ""
+                                viewModel.otherAssessmentDetails[ReferredPHUSiteID] = selectedId?.toLong() ?: -1L
+                            } else {
+                                if (viewModel.otherAssessmentDetails.containsKey(ReferredPHUSite))
+                                    viewModel.otherAssessmentDetails.remove(ReferredPHUSite)
+                                if (viewModel.otherAssessmentDetails.containsKey(ReferredPHUSiteID))
+                                    viewModel.otherAssessmentDetails.remove(ReferredPHUSiteID)
+                            }
+                        }
+                    }
+
+                    override fun onNothingSelected(p0: AdapterView<*>?) {
+                        /**
+                         * this method is not used
+                         */
+                    }
+                }
+        }
+
     private fun setListeners() {
         binding.btnDone.safeClickListener(this)
         binding.etNotes.addTextChangedListener { input ->
@@ -113,6 +181,25 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
     private fun attachObservers() {
         viewModel.assessmentSaveLiveData.value?.data?.let {
             createSummaryView(createListSummaryData(it))
+        }
+
+        viewModel.nearestFacilityLiveData.observe(viewLifecycleOwner) { resourceState ->
+            when (resourceState.state) {
+                ResourceState.LOADING -> {
+                    showProgress()
+                }
+
+                ResourceState.SUCCESS -> {
+                    hideProgress()
+                    resourceState.data?.let { siteList ->
+                        loadPhuSitesList(siteList)
+                    }
+                }
+
+                ResourceState.ERROR -> {
+                    hideProgress()
+                }
+            }
         }
     }
 

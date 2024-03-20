@@ -101,4 +101,7 @@ interface MetaDataDAO {
 
     @Query("SELECT  DISTINCT wf.* FROM ClinicalWorkflowEntity AS wf LEFT JOIN  ClinicalWorkflowConditionEntity AS wfc ON wf.id = wfc.clinicalWorkflowId WHERE (wfc.gender IS NULL OR wfc.gender = :gender)  AND (wfc.maxAge is null OR wfc.maxAge >= :age) AND (wfc.minAge is null OR wfc.minAge <= :age)")
     suspend fun getClinicalWorkflowId(gender: String, age: Int): List<ClinicalWorkflowEntity>
+
+    @Query("SELECT * FROM HealthFacilityEntity")
+    suspend fun getNearestHealthFacility(): List<HealthFacilityEntity>
 }

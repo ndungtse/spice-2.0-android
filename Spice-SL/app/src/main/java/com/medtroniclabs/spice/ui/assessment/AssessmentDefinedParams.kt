@@ -22,6 +22,7 @@ object AssessmentDefinedParams {
     const val AssessmentNotes = "assessmentNotes"
     const val NextFollowupDate = "nextFollowupDate"
     const val ReferredPHUSite = "referredPHUSite"
+    const val ReferredPHUSiteID = "referredPHUSiteId"
     const val Positive = "+Ve"
     const val Green = "Green"
     const val Red = "Red"
