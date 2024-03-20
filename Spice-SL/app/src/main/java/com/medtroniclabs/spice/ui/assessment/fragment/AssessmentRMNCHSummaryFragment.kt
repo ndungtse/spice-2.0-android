@@ -41,7 +41,7 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
 
     private fun initSummaryViewByWorkFlowName() {
         viewModel.assessmentSaveLiveData.value?.data?.let { mapString ->
-            val map = StringConverter.stringToMap(mapString)
+            val map = StringConverter.stringToMap(mapString.assessmentDetails)
             binding.parentLayout.removeAllViews()
             viewModel.formLayoutsLiveData.value?.data?.formLayout?.filter { it.isSummary == true }
                 ?.forEach { data ->

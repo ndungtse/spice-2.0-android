@@ -3,6 +3,7 @@ package com.medtroniclabs.spice.ui.assessment.viewmodel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.medtroniclabs.spice.db.entity.AssessmentEntity
 import com.medtroniclabs.spice.db.entity.HealthFacilityEntity
 import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
 import com.medtroniclabs.spice.db.entity.SignsAndSymptomsEntity
@@ -25,7 +26,7 @@ class AssessmentViewModel @Inject constructor(
 ) : ViewModel() {
 
     var selectedHouseholdMemberId = -1L
-    val assessmentSaveLiveData = MutableLiveData<Resource<String>>()
+    val assessmentSaveLiveData = MutableLiveData<Resource<AssessmentEntity>>()
     val assessmentUpdateLiveData = MutableLiveData<Resource<String>>()
     val memberDetailsLiveData = MutableLiveData<Resource<HouseholdMemberEntity>>()
     var menuId: String? = null
@@ -35,6 +36,7 @@ class AssessmentViewModel @Inject constructor(
     var otherAssessmentDetails = HashMap<String, Any>()
     val formLayoutsLiveData = MutableLiveData<Resource<FormResponse>>()
     val nearestFacilityLiveData = MutableLiveData<Resource<List<HealthFacilityEntity>>>()
+    var referralStatus:String? = null
 
     fun getMemberDetailsById() {
         if (selectedHouseholdMemberId == -1L) {
@@ -45,10 +47,11 @@ class AssessmentViewModel @Inject constructor(
         }
     }
 
-    fun saveAssessment(resultData: String) {
+    fun saveAssessment(resultData: String, referralResult: Pair<String?, ArrayList<String>>?) {
         viewModelScope.launch(dispatcherIO) {
-            memberDetailsLiveData.value?.data?.householdId?.let { householdId ->
-                assessmentRepository.saveAssessment(resultData, householdId, assessmentSaveLiveData, menuId, selectedHouseholdMemberId)
+            memberDetailsLiveData.value?.data?.let { details ->
+                referralStatus = referralResult?.first
+                assessmentRepository.saveAssessment(resultData, details, assessmentSaveLiveData, menuId, selectedHouseholdMemberId, referralResult)
             }
         }
     }

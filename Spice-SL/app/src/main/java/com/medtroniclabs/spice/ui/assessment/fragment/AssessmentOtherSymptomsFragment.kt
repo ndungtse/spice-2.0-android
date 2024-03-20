@@ -23,6 +23,7 @@ import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.MenuConstants.OTHER_SYMPTOMS
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.OtherSymptoms
+import com.medtroniclabs.spice.ui.assessment.referrallogic.ReferralResultGenerator
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -61,6 +62,7 @@ class AssessmentOtherSymptomsFragment : BaseFragment(), FormEventListener, View.
 
     private fun getFormDataForWorkflow() {
         viewModel.getFormData(OTHER_SYMPTOMS)
+        viewModel.getNearestHealthFacility()
     }
 
     private fun attachObservers() {
@@ -78,7 +80,7 @@ class AssessmentOtherSymptomsFragment : BaseFragment(), FormEventListener, View.
                 }
 
                 ResourceState.ERROR -> {
-                    showProgress()
+                    hideProgress()
                 }
             }
         }
@@ -93,15 +95,6 @@ class AssessmentOtherSymptomsFragment : BaseFragment(), FormEventListener, View.
             requireContext(), binding.llForm, null, this, binding.scrollView,
             translate = false
         )
-
-        val objectList = Gson().fromJson(
-            CommonUtils.getStringFromAssets(
-                "other_symptoms.json",
-                requireActivity().assets
-            ),
-            Array<FormLayout>::class.java
-        ).asList()
-        formGenerator.populateViews(objectList)
     }
 
 
@@ -118,7 +111,7 @@ class AssessmentOtherSymptomsFragment : BaseFragment(), FormEventListener, View.
         serverViewModel: FormLayout,
         resultMap: Any?
     ) {
-        CheckBoxDialog.newInstance(OtherSymptoms.lowercase(), resultMap) { resultMap ->
+        CheckBoxDialog.newInstance(id, resultMap) { resultMap ->
             formGenerator.validateCheckboxDialogue(id, serverViewModel, resultMap)
         }.show(childFragmentManager, CheckBoxDialog.TAG)
     }
@@ -134,17 +127,18 @@ class AssessmentOtherSymptomsFragment : BaseFragment(), FormEventListener, View.
 
     override fun onFormSubmit(resultMap: HashMap<String, Any>?, serverData: List<FormLayout?>?) {
         resultMap?.let { details ->
+            val referralResult = ReferralResultGenerator().calculateOtherSymptomsReferralResult(details)
             val result = serverData?.let {
                 FormResultComposer().groupValues(
                     context = requireContext(),
                     serverData = it,
                     details,
-                    OtherSymptoms.lowercase()
+                    OTHER_SYMPTOMS.lowercase()
                 )
             }
             result?.second?.let {
                 StringConverter.convertGivenMapToString(it)?.let { resultData ->
-                    viewModel.saveAssessment(resultData)
+                    viewModel.saveAssessment(resultData, referralResult)
                 }
             }
         }
@@ -158,9 +152,15 @@ class AssessmentOtherSymptomsFragment : BaseFragment(), FormEventListener, View.
 
     }
 
-    override fun onInformationHandling(id: String, noOfDays: Int, enteredDays: Int) {
+    override fun onInformationHandling(
+        id: String, noOfDays: Int, enteredDays: Int,
+        resultMap: HashMap<String, Any>?
+    ) {
         if (enteredDays > noOfDays) {
-            updateColorCode(id, ContextCompat.getColor(requireContext(), R.color.medium_high_risk_color))
+            updateColorCode(
+                id,
+                ContextCompat.getColor(requireContext(), R.color.medium_high_risk_color)
+            )
         } else {
             updateColorCode(id, ContextCompat.getColor(requireContext(), R.color.secondary_black))
         }

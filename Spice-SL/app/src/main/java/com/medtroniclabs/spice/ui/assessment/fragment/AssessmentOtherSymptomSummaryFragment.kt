@@ -1,38 +1,38 @@
 package com.medtroniclabs.spice.ui.assessment.fragment
 
+import android.app.DatePickerDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
 import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.Other
 import com.medtroniclabs.spice.common.StringConverter
+import com.medtroniclabs.spice.common.ViewUtils
 import com.medtroniclabs.spice.databinding.FragmentAssessmentOtherSymptomSummaryBinding
-import com.medtroniclabs.spice.formgeneration.extension.capitalizeFirstChar
+import com.medtroniclabs.spice.db.entity.HealthFacilityEntity
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
+import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
 import com.medtroniclabs.spice.model.AssessmentSummaryModel
+import com.medtroniclabs.spice.network.resource.ResourceState
+import com.medtroniclabs.spice.ui.MenuConstants.OTHER_SYMPTOMS
 import com.medtroniclabs.spice.ui.assessment.AssessmentCommonUtils
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
-import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.ACT
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.Amoxicillin
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.AssessmentNotes
-import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.ConcerningSymptoms
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.Dispensed
-import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.IsACTDispensed
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.OtherSymptoms
-import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.Positive
-import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.RDT
-import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.RDTTestResult
-import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.feverDays
-import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.feverOrHotbody
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.hasFever
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.otherConcerningSymptoms
-import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.temperature
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.otherSymptoms
+import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -41,6 +41,7 @@ class AssessmentOtherSymptomSummaryFragment : Fragment(), View.OnClickListener {
 
     lateinit var binding: FragmentAssessmentOtherSymptomSummaryBinding
     private val viewModel: AssessmentViewModel by activityViewModels()
+    private var datePickerDialog: DatePickerDialog? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -54,6 +55,7 @@ class AssessmentOtherSymptomSummaryFragment : Fragment(), View.OnClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initViews()
+        setListeners()
         attachObservers()
     }
 
@@ -69,10 +71,115 @@ class AssessmentOtherSymptomSummaryFragment : Fragment(), View.OnClickListener {
         }
     }
 
+    private fun setListeners() {
+        binding.btnDone.safeClickListener(this)
+        binding.etNotes.addTextChangedListener { input ->
+            input?.let {
+                val resultValue = input.trim().toString()
+                if (resultValue.isNotBlank()) {
+                    viewModel.otherAssessmentDetails[AssessmentNotes] = resultValue
+                }
+            }
+        }
+        binding.etNextFollowUpDate.safeClickListener(this)
+
+    }
+
     private fun attachObservers() {
         viewModel.assessmentSaveLiveData.value?.data?.let {
-            createSummaryView(createListSummaryData(it))
+            updateStatusBar()
+            createSummaryView(createListSummaryData(it.assessmentDetails))
         }
+
+        viewModel.nearestFacilityLiveData.observe(viewLifecycleOwner) { resourceState ->
+            when (resourceState.state) {
+                ResourceState.SUCCESS -> {
+                    resourceState.data?.let { siteList ->
+                        loadPhuSitesList(siteList)
+                    }
+                }
+
+                else -> {}
+            }
+        }
+    }
+
+    private fun updateStatusBar() {
+        when(viewModel.referralStatus){
+            ReferralStatus.Referred.name -> {
+                binding.phuReferredGroup.visibility = View.VISIBLE
+                binding.riskResultLayout.backgroundTintList = ContextCompat.getColorStateList(requireContext(), R.color.attention_color)
+                binding.riskResultLayout.text = getString(R.string.referred_for_further_assessment)
+            }
+            ReferralStatus.OnTreatment.name -> {
+                binding.coughMalariaGroup.visibility = View.VISIBLE
+                binding.etNextFollowUpDate.text = DateUtils.getDateAfterDays(3)
+                binding.riskResultLayout.backgroundTintList = ContextCompat.getColorStateList(requireContext(), R.color.red_risk_moderate)
+                binding.riskResultLayout.text = getString(R.string.patient_on_treatment)
+            }
+            else -> {
+                binding.riskResultLayout.backgroundTintList = ContextCompat.getColorStateList(requireContext(), R.color.green_attention_color)
+                binding.riskResultLayout.text = getString(R.string.no_refferral_treatment_required)
+            }
+        }
+    }
+
+    private fun loadPhuSitesList(healthFacilityList: List<HealthFacilityEntity>) {
+        val dropDownList = ArrayList<Map<String, Any>>()
+        dropDownList.add(
+            hashMapOf<String, Any>(
+                DefinedParams.NAME to DefinedParams.DefaultIDLabel,
+                DefinedParams.id to DefinedParams.DefaultID
+            )
+        )
+        var defaultPosition = 0
+        //TODO("Instead of id need to give fhir Id once backend gives")
+        for ((index, healthFacilityEntity) in healthFacilityList.withIndex()) {
+            dropDownList.add(
+                hashMapOf<String, Any>(
+                    DefinedParams.NAME to healthFacilityEntity.name,
+                    DefinedParams.id to healthFacilityEntity.id.toString()
+                )
+            )
+            if (healthFacilityEntity.isDefault) {
+                defaultPosition = index
+            }
+        }
+        val adapter = CustomSpinnerAdapter(requireContext())
+        adapter.setData(dropDownList)
+        binding.etPhuChange.adapter = adapter
+        binding.etPhuChange.setSelection(0, false)
+        binding.etPhuChange.post {
+            binding.etPhuChange.setSelection(defaultPosition + 1, false)
+        }
+        binding.etPhuChange.onItemSelectedListener =
+            object : AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(
+                    adapterView: AdapterView<*>?,
+                    view: View?,
+                    pos: Int,
+                    itemId: Long
+                ) {
+                    val selectedItem = adapter.getData(position = pos)
+                    selectedItem?.let {
+                        val selectedId = it[DefinedParams.id] as String?
+                        val selectedSiteName = it[DefinedParams.NAME] as String?
+                        if (selectedId != DefinedParams.DefaultID) {
+                            viewModel.otherAssessmentDetails[AssessmentDefinedParams.ReferredPHUSite] = selectedSiteName ?: ""
+                            viewModel.otherAssessmentDetails[AssessmentDefinedParams.ReferredPHUSiteID] = selectedId?.toLong() ?: -1L
+                        } else {
+                            if (viewModel.otherAssessmentDetails.containsKey(AssessmentDefinedParams.ReferredPHUSite))
+                                viewModel.otherAssessmentDetails.remove(AssessmentDefinedParams.ReferredPHUSite)
+                        }
+                    }
+                }
+
+                override fun onNothingSelected(p0: AdapterView<*>?) {
+                    /**
+                     * this method is not used
+                     */
+                }
+            }
     }
 
     private fun createSummaryView(
@@ -91,7 +198,7 @@ class AssessmentOtherSymptomSummaryFragment : Fragment(), View.OnClickListener {
     private fun renderSummaryView(summaryData: MutableList<AssessmentSummaryModel>) {
         bindSummaryView(
             getString(R.string.patient_status),
-            getString(R.string.seperator_hyphen)
+            viewModel.referralStatus ?: getString(R.string.seperator_hyphen)
         )
         renderDangerSigns(summaryData)
         summaryData.filter { it.title?.lowercase() != AssessmentDefinedParams.General_Danger_Signs.lowercase() }.forEach { item ->
@@ -125,7 +232,7 @@ class AssessmentOtherSymptomSummaryFragment : Fragment(), View.OnClickListener {
     }
 
     private fun renderDangerSigns(summaryData: MutableList<AssessmentSummaryModel>) {
-        summaryData.find { it.id == ConcerningSymptoms }?.let { item ->
+        summaryData.find { it.id == otherSymptoms }?.let { item ->
             val result = if (item.value == Other ) {
                 summaryData.find { it.id == otherConcerningSymptoms }?.let {otherItem ->
                     requireContext().getString(R.string.other_value, item.value, otherItem.value)
@@ -157,7 +264,7 @@ class AssessmentOtherSymptomSummaryFragment : Fragment(), View.OnClickListener {
                 value = AssessmentCommonUtils.getValueOfKeyFromMap(
                     StringConverter.stringToMap(data),
                     formLayout.id,
-                    OtherSymptoms
+                    OTHER_SYMPTOMS
                 ),
                 noOfDays = formLayout.noOfDays
             )
@@ -172,7 +279,47 @@ class AssessmentOtherSymptomSummaryFragment : Fragment(), View.OnClickListener {
     override fun onClick(view: View) {
         when (view.id) {
             binding.btnDone.id -> {
+                binding.etNextFollowUpDate.text?.let {
+                    viewModel.otherAssessmentDetails[AssessmentDefinedParams.NextFollowupDate] = it.toString()
+                }
+                addOtherDetailsToType(OtherSymptoms.lowercase())
                 viewModel.updateOtherAssessmentDetails()
+            }
+
+            binding.etNextFollowUpDate.id -> {
+                showDatePickerDialog()
+            }
+        }
+    }
+
+    private fun addOtherDetailsToType(key: String) {
+        val otherDetailsMap = HashMap<String,Any>()
+        otherDetailsMap[key] = viewModel.otherAssessmentDetails
+        viewModel.otherAssessmentDetails = otherDetailsMap
+    }
+
+    private fun showDatePickerDialog() {
+        var yearMonthDate: Triple<Int?, Int?, Int?>? = null
+        if (!binding.etNextFollowUpDate.text.isNullOrBlank())
+            yearMonthDate =
+                DateUtils.convertddMMMToddMM(binding.etNextFollowUpDate.text.toString())
+        if (datePickerDialog == null) {
+            datePickerDialog = ViewUtils.showDatePicker(
+                context = requireContext(),
+                minDate = DateUtils.getTomorrowDate(),
+                date = yearMonthDate,
+                cancelCallBack = { datePickerDialog = null }
+            ) { _, year, month, dayOfMonth ->
+                val stringDate = "$dayOfMonth-$month-$year"
+                binding.etNextFollowUpDate.text =
+                    DateUtils.convertDateTimeToDate(
+                        stringDate,
+                        DateUtils.DATE_FORMAT_ddMMyyyy,
+                        DateUtils.DATE_ddMMyyyy
+                    )
+                viewModel.otherAssessmentDetails[AssessmentDefinedParams.NextFollowupDate] =
+                    binding.etNextFollowUpDate.text.toString()
+                datePickerDialog = null
             }
         }
     }

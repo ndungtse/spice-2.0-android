@@ -274,7 +274,12 @@ class MemberRegistrationFragment : Fragment(), FormEventListener, View.OnClickLi
 
     }
 
-    override fun onInformationHandling(id: String, noOfDays: Int, enteredDays: Int) {
+    override fun onInformationHandling(
+        id: String,
+        noOfDays: Int,
+        enteredDays: Int,
+        resultMap: HashMap<String, Any>?
+    ) {
 
     }
 

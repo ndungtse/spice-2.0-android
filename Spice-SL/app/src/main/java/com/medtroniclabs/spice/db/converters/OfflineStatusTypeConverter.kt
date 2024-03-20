@@ -1,7 +1,11 @@
 package com.medtroniclabs.spice.db.converters
 
 import androidx.room.TypeConverter
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.medtroniclabs.spice.offlinesync.utils.OfflineSyncStatus
+import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
+import java.lang.reflect.Type
 
 class OfflineStatusTypeConverter {
 
@@ -13,5 +17,27 @@ class OfflineStatusTypeConverter {
     @TypeConverter
     fun toOfflineSyncStatus(syncStatusString: String): OfflineSyncStatus {
         return OfflineSyncStatus.valueOf(syncStatusString)
+    }
+
+    @TypeConverter
+    fun fromReferralStatus(referralStatus: ReferralStatus): String {
+        return referralStatus.name
+    }
+
+    @TypeConverter
+    fun toReferralStatus(referralStatusString: String): ReferralStatus {
+        return ReferralStatus.valueOf(referralStatusString)
+    }
+
+    @TypeConverter
+    fun fromString(value: String?): ArrayList<String?>? {
+        val listType: Type = object : TypeToken<ArrayList<String?>?>() {}.type
+        return Gson().fromJson(value, listType)
+    }
+
+    @TypeConverter
+    fun fromArrayList(list: ArrayList<String?>?): String? {
+        val gson = Gson()
+        return gson.toJson(list)
     }
 }

@@ -72,8 +72,15 @@ class BioDataFragment : BaseFragment() {
             binding.gender.tvKey.text = getString(R.string.gender)
             binding.gender.tvValue.text = data.gender.capitalizeFirstChar()
             binding.dobAge.tvKey.text = getString(R.string.age)
-           // binding.dobAge.tvValue.text = CommonUtils.getDuration(data.age, requireContext())
+            binding.dobAge.tvValue.text = getAgeValue(CommonUtils.getAgeFromDob(data.dateOfBirth, requireContext().getString(R.string.months)))
         }
+    }
+
+    private fun getAgeValue(ageFromDob: String): String {
+        return if (!ageFromDob.contains(" "))
+            requireContext().getString(R.string.firstname_lastname, ageFromDob, getString(R.string.years))
+        else
+            ageFromDob
     }
 
 }

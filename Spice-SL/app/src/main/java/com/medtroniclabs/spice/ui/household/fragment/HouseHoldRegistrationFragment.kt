@@ -304,7 +304,12 @@ class HouseHoldRegistrationFragment : Fragment(), View.OnClickListener, FormEven
 
     }
 
-    override fun onInformationHandling(id: String, noOfDays: Int, enteredDays: Int) {
+    override fun onInformationHandling(
+        id: String,
+        noOfDays: Int,
+        enteredDays: Int,
+        resultMap: HashMap<String, Any>?
+    ) {
 
     }
 

@@ -211,4 +211,10 @@
     <string name="title_sync_status" translatable="false">Sync Status</string>
     <string name="message_sync_error" translatable="false">Something went wrong during upload. Please try again later</string>
     <string name="display_un_synced_count" translatable="false">%1$d record yet to sync</string>
+    <string name="instructions">Instructions</string>
+    <string name="measuring_muac">Masuring MUAC</string>
+    <string name="checking_for_oedema">Checking for Oedema</string>
+    <string name="chest_in_drawing">Chest in-drawing</string>
+    <string name="patient_on_treatment">Patient On Treatment</string>
+    <string name="no_refferral_treatment_required">No Referral / Treatment Required</string>
 </resources>

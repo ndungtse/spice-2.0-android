@@ -8,12 +8,9 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
-import com.medtroniclabs.spice.common.CommonUtils.getYearMonthAndWeeks
-import com.medtroniclabs.spice.common.DefinedParams.DefaultID
-import com.medtroniclabs.spice.common.DefinedParams.ICCM
 import com.medtroniclabs.spice.common.DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
 import com.medtroniclabs.spice.common.DateUtils.getYearMonthAndWeek
-import com.medtroniclabs.spice.common.DefinedParams
+import com.medtroniclabs.spice.common.DefinedParams.DefaultID
 import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.databinding.FragmentAssessmentBinding
 import com.medtroniclabs.spice.formgeneration.FormGenerator
@@ -25,7 +22,9 @@ import com.medtroniclabs.spice.formgeneration.ui.FormResultComposer
 import com.medtroniclabs.spice.formgeneration.utility.CheckBoxDialog
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
+import com.medtroniclabs.spice.ui.MenuConstants.ICCM_MENU_ID
 import com.medtroniclabs.spice.ui.assessment.AssessmentCommonUtils.getNutritionStatus
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.Amoxicillin
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.BreathPerMinute
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.FB_MAX_BREATHING
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.FB_MAX_MONTH
@@ -38,6 +37,7 @@ import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.muacCode
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.muacStatus
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.rootSuffix
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.summaryKey
+import com.medtroniclabs.spice.ui.assessment.referrallogic.ReferralResultGenerator
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -70,7 +70,7 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
     }
 
     private fun getFormDataForWorkflow() {
-        viewModel.getFormData(ICCM)
+        viewModel.getFormData(ICCM_MENU_ID)
         viewModel.getNearestHealthFacility()
     }
 
@@ -137,17 +137,18 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
 
     override fun onFormSubmit(resultMap: HashMap<String, Any>?, serverData: List<FormLayout?>?) {
         resultMap?.let { details ->
+            val referralResult = ReferralResultGenerator().calculateIccmReferralResult(details, viewModel.memberDetailsLiveData.value?.data)
             val result = serverData?.let {
                 FormResultComposer().groupValues(
                     context = requireContext(),
                     serverData = it,
                     details,
-                    ICCM.lowercase()
+                    ICCM_MENU_ID
                 )
             }
             result?.second?.let {
                 StringConverter.convertGivenMapToString(it)?.let { resultData ->
-                    viewModel.saveAssessment(resultData)
+                    viewModel.saveAssessment(resultData, referralResult)
                 }
             }
         }
@@ -184,7 +185,12 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
         }
     }
 
-    override fun onInformationHandling(id: String, noOfDays: Int, enteredDays: Int) {
+    override fun onInformationHandling(
+        id: String,
+        noOfDays: Int,
+        enteredDays: Int,
+        resultMap: HashMap<String, Any>?
+    ) {
         when (id) {
             BreathPerMinute -> {
                 viewModel.memberDetailsLiveData.value?.data?.let { data ->
@@ -193,10 +199,13 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
                         val month = result.second ?: 0
                         if ((year == 0 && month > FB_MIN_MONTH && month < FB_MAX_MONTH) && enteredDays >= FB_MAX_BREATHING) {
                             displayDaysInformation(id, View.VISIBLE)
+                            getAmoxicillinStatus()
                         } else if ((month == FB_MAX_MONTH || year in FB_MIN_YEAR..FB_MAX_YEAR) && enteredDays >= FB_MIN_BREATHING) {
                             displayDaysInformation(id, View.VISIBLE)
+                            getAmoxicillinStatus()
                         } else {
                             displayDaysInformation(id, View.INVISIBLE)
+                            dismissAmoxicillinStatus(resultMap)
                         }
                     }
                 }
@@ -208,6 +217,24 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
                     updateColorCode(id, ContextCompat.getColor(requireContext(), R.color.secondary_black))
                 }
             }
+        }
+    }
+
+    private fun dismissAmoxicillinStatus(resultMap: HashMap<String, Any>?) {
+        formGenerator.getViewByTag((Amoxicillin.lowercase()) + rootSuffix )?.apply {
+            visibility = View.GONE
+            resultMap?.let {map ->
+                if (map.containsKey(Amoxicillin.lowercase())){
+                    map.remove(Amoxicillin.lowercase())
+                    formGenerator.resetSingleSelection(Amoxicillin.lowercase())
+                }
+            }
+        }
+    }
+
+    private fun getAmoxicillinStatus() {
+        formGenerator.getViewByTag((Amoxicillin.lowercase()) + rootSuffix )?.apply {
+            visibility = View.VISIBLE
         }
     }
 

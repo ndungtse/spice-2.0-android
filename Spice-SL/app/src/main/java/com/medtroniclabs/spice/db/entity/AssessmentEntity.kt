@@ -2,6 +2,7 @@ package com.medtroniclabs.spice.db.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
 
 @Entity(tableName = "AssessmentEntity")
 data class AssessmentEntity(
@@ -9,10 +10,13 @@ data class AssessmentEntity(
     val id: Long = 0,
     val memberId: Long,
     val householdId: Long,
+    val patientId: String,
     val assessmentType: String,
     val assessmentDetails:String,
     var otherDetails: String? = null,
     var createdAt: Long = System.currentTimeMillis(),
     var userId: Long? = null,
-    var isReferred: Boolean = false
+    var isReferred: Boolean = false,
+    val referralStatus: ReferralStatus,
+    val referredReason: ArrayList<String>?= null
 )

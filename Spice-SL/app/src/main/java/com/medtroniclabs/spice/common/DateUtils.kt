@@ -225,4 +225,12 @@ object DateUtils {
             0
         }
     }
+
+    fun getDateAfterDays(days: Int): String {
+        val calendar = Calendar.getInstance()
+        calendar.add(Calendar.DAY_OF_YEAR, days)
+
+        val dateFormat = SimpleDateFormat(DATE_ddMMyyyy, Locale.getDefault())
+        return dateFormat.format(calendar.time)
+    }
 }

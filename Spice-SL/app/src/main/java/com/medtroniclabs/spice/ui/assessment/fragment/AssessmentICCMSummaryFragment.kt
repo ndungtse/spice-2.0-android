@@ -6,11 +6,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
+import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.CommonUtils.getOptionMap
 import com.medtroniclabs.spice.common.DateUtils
+import com.medtroniclabs.spice.common.DateUtils.getDateAfterDays
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.DefaultID
 import com.medtroniclabs.spice.common.DefinedParams.DefaultIDLabel
@@ -53,6 +55,7 @@ import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.isDiarrhoea
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.isUnusualSleepy
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.isVomiting
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.muacCode
+import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
 
 class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
@@ -104,7 +107,7 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
         return flowList
     }
 
-        private fun loadPhuSitesList(healthFacilityList: List<HealthFacilityEntity>) {
+    private fun loadPhuSitesList(healthFacilityList: List<HealthFacilityEntity>) {
             val dropDownList = ArrayList<Map<String, Any>>()
             dropDownList.add(
                 hashMapOf<String, Any>(
@@ -179,8 +182,9 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
     }
 
     private fun attachObservers() {
-        viewModel.assessmentSaveLiveData.value?.data?.let {
-            createSummaryView(createListSummaryData(it))
+        viewModel.assessmentSaveLiveData.value?.data?.let {result ->
+            updateStatusBar()
+            createSummaryView(createListSummaryData(result.assessmentDetails))
         }
 
         viewModel.nearestFacilityLiveData.observe(viewLifecycleOwner) { resourceState ->
@@ -199,6 +203,27 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
                 ResourceState.ERROR -> {
                     hideProgress()
                 }
+            }
+        }
+    }
+
+    private fun updateStatusBar() {
+        when(viewModel.referralStatus){
+            ReferralStatus.Referred.name -> {
+                binding.phuReferredGroup.visibility = View.VISIBLE
+                binding.diarrhoeaGroup.visibility = View.VISIBLE
+                binding.riskResultLayout.backgroundTintList = ContextCompat.getColorStateList(requireContext(), R.color.attention_color)
+                binding.riskResultLayout.text = getString(R.string.referred_for_further_assessment)
+            }
+            ReferralStatus.OnTreatment.name -> {
+                binding.coughMalariaGroup.visibility = View.VISIBLE
+                binding.etNextFollowUpDate.text = getDateAfterDays(3)
+                binding.riskResultLayout.backgroundTintList = ContextCompat.getColorStateList(requireContext(), R.color.red_risk_moderate)
+                binding.riskResultLayout.text = getString(R.string.patient_on_treatment)
+            }
+            else -> {
+                binding.riskResultLayout.backgroundTintList = ContextCompat.getColorStateList(requireContext(), R.color.green_attention_color)
+                binding.riskResultLayout.text = getString(R.string.no_refferral_treatment_required)
             }
         }
     }
@@ -243,7 +268,7 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
     private fun composeIccmSummaryView(listSummaryData: MutableList<AssessmentSummaryModel>) {
         bindICCMSummaryView(
             getString(R.string.patient_status),
-            getString(R.string.seperator_hyphen)
+            viewModel.referralStatus ?: getString(R.string.seperator_hyphen)
         )
         composeGeneralDangerSignsResult(listSummaryData)
         listSummaryData.filter { it.title?.lowercase() != General_Danger_Signs.lowercase() }.forEach { item ->
@@ -261,7 +286,6 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
 
                 isDiarrhoea -> {
                     if (item.value == Yes) {
-                        binding.diarrhoeaGroup.visibility = View.VISIBLE
                         bindICCMSummaryView(
                             item.title,
                             requireContext().getString(
@@ -277,7 +301,6 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
 
                 hasCough -> {
                     if (item.value == Yes) {
-                        binding.coughMalariaGroup.visibility = View.VISIBLE
                         bindICCMSummaryView(
                             item.title,
                             requireContext().getString(
@@ -306,7 +329,6 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
 
                 hasFever -> {
                     if (item.value == Yes) {
-                        binding.coughMalariaGroup.visibility = View.VISIBLE
                         bindICCMSummaryView(
                             item.title,
                             requireContext().getString(
@@ -383,6 +405,10 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
     override fun onClick(v: View?) {
         when (v?.id) {
             binding.btnDone.id -> {
+                binding.etNextFollowUpDate.text?.let {
+                    viewModel.otherAssessmentDetails[NextFollowupDate] = it.toString()
+                }
+                addOtherDetailsToIccmType(ICCM.lowercase())
                 viewModel.updateOtherAssessmentDetails()
             }
 
@@ -392,6 +418,11 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
         }
     }
 
+    private fun addOtherDetailsToIccmType(key: String) {
+        val otherDetailsMap = HashMap<String,Any>()
+        otherDetailsMap[key] = viewModel.otherAssessmentDetails
+        viewModel.otherAssessmentDetails = otherDetailsMap
+    }
 
     private fun showDatePickerDialog() {
         var yearMonthDate: Triple<Int?, Int?, Int?>? = null

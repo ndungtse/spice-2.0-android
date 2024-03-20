@@ -6,13 +6,16 @@ import com.google.gson.reflect.TypeToken
 import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.appextensions.postSuccess
+import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.db.entity.AssessmentEntity
 import com.medtroniclabs.spice.db.entity.HealthFacilityEntity
+import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
 import com.medtroniclabs.spice.db.entity.SignsAndSymptomsEntity
 import com.medtroniclabs.spice.db.local.RoomHelper
 import com.medtroniclabs.spice.formgeneration.model.FormResponse
 import com.medtroniclabs.spice.network.resource.Resource
+import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
 import javax.inject.Inject
 
 class AssessmentRepository @Inject constructor(
@@ -21,28 +24,53 @@ class AssessmentRepository @Inject constructor(
 
     suspend fun saveAssessment(
         resultData: String,
-        householdId: Long,
-        assessmentSaveLiveData: MutableLiveData<Resource<String>>,
+        memberDetails: HouseholdMemberEntity,
+        assessmentSaveLiveData: MutableLiveData<Resource<AssessmentEntity>>,
         menuId: String?,
-        memberId: Long
+        memberId: Long,
+        referralResult: Pair<String?, ArrayList<String>>?
     ) {
         try {
             val assessmentEntity = menuId?.let { menu ->
-                AssessmentEntity(
-                    memberId = memberId,
-                    householdId = householdId,
-                    assessmentType = menu.lowercase(),
-                    assessmentDetails = resultData,
-                    userId = 1
-                )
+                memberDetails.patientId?.let {
+                    AssessmentEntity(
+                        memberId = memberId,
+                        householdId = memberDetails.householdId,
+                        patientId = it,
+                        assessmentType = menu.lowercase(),
+                        assessmentDetails = resultData,
+                        userId = SecuredPreference.getUserId(),
+                        isReferred = getReferralStatus(referralResult?.first),
+                        referralStatus = getReferralResult(referralResult?.first),
+                        referredReason = referralResult?.second
+                    )
+                }
             }
             assessmentEntity?.let {
                 roomHelper.saveAssessment(assessmentEntity)
             }
-            assessmentSaveLiveData.postSuccess(resultData)
+            assessmentSaveLiveData.postSuccess(assessmentEntity)
         } catch (e: Exception) {
             assessmentSaveLiveData.postError()
         }
+    }
+
+    private fun getReferralResult(result: String?): ReferralStatus {
+        return when (result) {
+            ReferralStatus.Referred.name -> {
+                ReferralStatus.Referred
+            }
+            ReferralStatus.OnTreatment.name -> {
+                ReferralStatus.OnTreatment
+            }
+            else -> {
+                ReferralStatus.Recovered
+            }
+        }
+    }
+
+    private fun getReferralStatus(value: String?): Boolean {
+        return value != null && value == ReferralStatus.Referred.name
     }
 
     suspend fun updateOtherAssessmentDetails(

@@ -6,6 +6,8 @@ import android.view.LayoutInflater
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.DefinedParams
+import com.medtroniclabs.spice.common.DefinedParams.No
+import com.medtroniclabs.spice.common.DefinedParams.Yes
 import com.medtroniclabs.spice.databinding.AssessmentSummaryLayoutBinding
 import com.medtroniclabs.spice.model.AssessmentSummaryModel
 
@@ -28,6 +30,9 @@ object AssessmentCommonUtils {
                     }
                     if (nestedMap[keys] is Double) {
                         return nestedMap[keys].toString()
+                    }
+                    if (nestedMap[keys] is Boolean) {
+                        return if (nestedMap[keys] == true) Yes else No
                     }
                     if (nestedMap[keys] is ArrayList<*>) {
                         val arrayListValue = nestedMap[keys] as ArrayList<*>
@@ -59,7 +64,7 @@ object AssessmentCommonUtils {
         return ""
     }
 
-    private fun getListActual(map: Any?): String? {
+    fun getListActual(map: Any?): String? {
         if (map is Map<*, *> && map.containsKey(DefinedParams.NAME)) {
             val actual = map[DefinedParams.NAME]
             if (actual is String)

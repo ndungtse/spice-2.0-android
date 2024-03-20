@@ -66,7 +66,7 @@ class AssessmentTBSummaryFragment : Fragment(), View.OnClickListener {
 
     private fun attachObservers() {
         viewModel.assessmentSaveLiveData.value?.data?.let {
-            createSummaryView(createTBListSummaryData(it))
+            createSummaryView(createTBListSummaryData(it.assessmentDetails))
         }
     }
 

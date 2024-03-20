@@ -200,7 +200,7 @@ class FormGenerator(
                     val enteredValue= input.trim().toString().toIntOrNull()
                     if (enteredValue!=null) {
                         noOfDays?.let {days ->
-                            listener.onInformationHandling(id, days, enteredValue)
+                            listener.onInformationHandling(id, days, enteredValue, resultHashMap)
                         }
                         resultHashMap[id] = enteredValue
                     } else {
@@ -1918,6 +1918,18 @@ class FormGenerator(
                 val selectedIndex = adapter.getIndexOfItemByName(value)
                 if (selectedIndex != -1)
                     view.setSelection(selectedIndex, true)
+            }
+        }
+    }
+
+    fun resetSingleSelection(id: String) {
+        getViewByTag(id)?.let {
+            if (it is ViewGroup) {
+                it.forEach { view ->
+                    if (view is TextView) {
+                        view.isSelected = false
+                    }
+                }
             }
         }
     }

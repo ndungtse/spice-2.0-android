@@ -1,0 +1,314 @@
+package com.medtroniclabs.spice.ui.assessment.referrallogic
+
+import com.medtroniclabs.spice.common.DateUtils
+import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
+import com.medtroniclabs.spice.formgeneration.config.DefinedParams.NoSymptoms
+import com.medtroniclabs.spice.ui.assessment.AssessmentCommonUtils.getListActual
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.Dispensed
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.LittleOrNoUrine
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.NoTearsWhenCrying
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.SkinPinch
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.SunkenEyes
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.VeryThirsty
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.otherSymptoms
+import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefinedParams.ACT
+import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefinedParams.Amoxicillin
+import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefinedParams.BreathPerMinute
+import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefinedParams.ChestInDrawing
+import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefinedParams.Diarrhoea
+import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefinedParams.DiarrhoeaSigns
+import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefinedParams.HasFever
+import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefinedParams.IsBloodyDiarrhoea
+import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefinedParams.IsDiarrhoea
+import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefinedParams.MaxDaysCough
+import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefinedParams.MaxDaysOfDiarrhoea
+import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefinedParams.MaxDaysOfFever
+import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefinedParams.MaxTemperature
+import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefinedParams.NA
+import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefinedParams.NoOfDaysOfCough
+import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefinedParams.NoOfDaysOfDiarrhoea
+import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefinedParams.NoOfDaysOfFever
+import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefinedParams.OrsDispensedStatus
+import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefinedParams.RdtNegative
+import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefinedParams.RdtPositive
+import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefinedParams.RdtTest
+import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefinedParams.Red
+import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefinedParams.Temperature
+import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefinedParams.Yellow
+import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefinedParams.Yes
+import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefinedParams.ZincDispensedStatus
+import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefinedParams.hasCough
+import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefinedParams.hasOedemaOfBothFeet
+import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefinedParams.isBreastfeed
+import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefinedParams.isConvulsionPastFewDays
+import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefinedParams.isUnusualSleepy
+import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefinedParams.isVomiting
+import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefinedParams.muacCode
+import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralReasons
+import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
+
+class ReferralResultGenerator {
+
+    private var patientStatus = HashMap<String, Any>()
+    private val referralReason = arrayListOf<String>()
+
+    fun calculateIccmReferralResult(map: HashMap<String, Any>, memberDetails: HouseholdMemberEntity?) : Pair<String?, ArrayList<String>>{
+        calculateDangerSignsResult(map)
+        calculateNutritionalStatusResult(map)
+        calculateCoughStatus(map, memberDetails)
+        calculateFeverStatus(map, ReferralReasons.Malaria.name)
+        calculateDiarrhoeaStatus(map)
+        return Pair(checkStatus(), referralReason)
+    }
+
+    fun calculateOtherSymptomsReferralResult(map: HashMap<String, Any>) : Pair<String?, ArrayList<String>>{
+        calculateSymptomsStatus(map, otherSymptoms)
+        calculateFeverStatus(map, ReferralReasons.Fever.name)
+        return Pair(checkStatus(), referralReason)
+    }
+
+    private fun addResultMap(key: String, value: String?) {
+        if (value is String) {
+            patientStatus[key] = value
+        }
+    }
+
+    /**
+     * Referral Logic for ICCM General Danger Signs
+     * If any of the signs is true, then the patient status is referred
+     */
+    private fun calculateDangerSignsResult(map: HashMap<String, Any>) {
+        val generalDangerSignsList = listOf(isUnusualSleepy, isConvulsionPastFewDays, isVomiting, isBreastfeed)
+        for(key in generalDangerSignsList) {
+            if (map.containsKey(key) && ((map[key] is Boolean && map[key] == true) || map[key] is String && map[key] == Yes)) {
+                addResultMap(ReferralReasons.GeneralDangerSigns.name.lowercase(), ReferralStatus.Referred.name)
+                addReferralReason(referralReason, ReferralReasons.GeneralDangerSigns.name)
+                break
+            }
+        }
+    }
+
+    /**
+     * Referral Logic for ICCM Nutritional Status
+     * If nutritional code is red or yellow, then patientStatus is referred
+     * If nutritional code is green and odema of both feet is true or Yes, then patientStatus is referred
+     */
+    private fun calculateNutritionalStatusResult(map: HashMap<String, Any>) {
+        if (map.containsKey(muacCode)) {
+            val muacCodeValue = map[muacCode]
+            if (muacCodeValue is String && (muacCodeValue.lowercase() == Red.lowercase() || muacCodeValue.lowercase() == Yellow.lowercase())) {
+                addResultMap(ReferralReasons.MUAC.name.lowercase(), ReferralStatus.Referred.name)
+                addReferralReason(referralReason, ReferralReasons.MUAC.name)
+            }
+            if (map.containsKey(hasOedemaOfBothFeet) &&
+                ((map[hasOedemaOfBothFeet] is String && map[hasOedemaOfBothFeet] == Yes) ||
+                        (map[hasOedemaOfBothFeet] is Boolean && map[hasOedemaOfBothFeet] == true))
+            ) {
+                addResultMap(ReferralReasons.MUAC.name.lowercase(), ReferralStatus.Referred.name)
+                addReferralReason(referralReason, ReferralReasons.MUAC.name)
+            }
+        }
+    }
+
+    /**
+     * Referral Logic for ICCM Cough
+     * If no of days is >= 21, then patientStatus is referred
+     * If no of days is < 21,
+     *  1. If chest indrawing is yes, then patientStatus is referred
+     *  2. If patient has Fast breathing & Amoxicillin is NA, then patientStatus is referred
+     *  3. If patient has Fast breathing & Amoxicillin is Dispensed, then patientStatus is on-treatment
+     */
+    private fun calculateCoughStatus(
+        map: HashMap<String, Any>,
+        memberDetails: HouseholdMemberEntity?
+    ) {
+        if (map.containsKey(hasCough)) {
+            if ((map[hasCough] is String && map[hasCough] == Yes) ||
+                (map[hasCough] is Boolean && map[hasCough] == true)
+            ) {
+                if (map.containsKey(NoOfDaysOfCough) && map[NoOfDaysOfCough] is Int){
+                    val noOfDays = map[NoOfDaysOfCough] as Int
+                    if (noOfDays >= MaxDaysCough){
+                        addResultMap(ReferralReasons.Pneumonia.name.lowercase(), ReferralStatus.Referred.name)
+                        addReferralReason(referralReason, ReferralReasons.Pneumonia.name)
+                    }else{
+                        if (map.containsKey(ChestInDrawing) && ((map[ChestInDrawing] is String && map[ChestInDrawing] == Yes) ||
+                                    (map[ChestInDrawing] is Boolean && map[ChestInDrawing] == true))
+                        ) {
+                            addResultMap(ReferralReasons.Pneumonia.name.lowercase(), ReferralStatus.Referred.name)
+                            addReferralReason(referralReason, ReferralReasons.Pneumonia.name)
+                        }
+                        if (map.containsKey(BreathPerMinute) && map[BreathPerMinute] is Int){
+                            val bpmValue = map[BreathPerMinute] as Int
+                            memberDetails?.let { details ->
+                                DateUtils.dateToMonths(details.dateOfBirth).let { month ->
+                                    month?.let {
+                                        if ((month in 3..11) && bpmValue >= 50) {
+                                            addResultMap(ReferralReasons.Pneumonia.name.lowercase(), getMedicationStatus(map, Amoxicillin))
+                                            addReferralReason(referralReason, ReferralReasons.Pneumonia.name)
+                                        } else if (month in 12..60 && bpmValue >= 45) {
+                                            addResultMap(ReferralReasons.Pneumonia.name.lowercase(), getMedicationStatus(map, Amoxicillin))
+                                            addReferralReason(referralReason, ReferralReasons.Pneumonia.name)
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Referral Logic for ICCM Fever
+     * If temperature is >=37.5, then patientStatus is referred
+     * If fever is yes no of days is >= 7, then patientStatus is referred
+     * If no of days is < 7,
+     *  1. If RDT test is -Ve or NA, then patientStatus is referred
+     *  2. If RDT test is positive & ACT is NA, then patientStatus is referred
+     *  3. If RDT test is positive & ACT is Dispensed, then patientStatus is on-treatment
+     */
+    private fun calculateFeverStatus(map: HashMap<String, Any>, referralKey: String) {
+        if (map.containsKey(HasFever)) {
+            if ((map[HasFever] is String && map[HasFever] == Yes) ||
+                (map[HasFever] is Boolean && map[HasFever] == true)
+            ) {
+                if (map.containsKey(Temperature) && map[Temperature] is Double && (map[Temperature] as Double) >= MaxTemperature) {
+                    addResultMap(referralKey.lowercase(), ReferralStatus.Referred.name)
+                    addReferralReason(referralReason, referralKey)
+                }
+                if (map.containsKey(NoOfDaysOfFever) && map[NoOfDaysOfFever] is Int) {
+                    val noOfDays = map[NoOfDaysOfFever] as Int
+                    if (noOfDays >= MaxDaysOfFever) {
+                        addResultMap(referralKey.lowercase(), ReferralStatus.Referred.name)
+                        addReferralReason(referralReason, referralKey)
+                    } else {
+                        if (map.containsKey(RdtTest) && map[RdtTest] == RdtPositive) {
+                            addResultMap(referralKey.lowercase(), getMedicationStatus(map, ACT))
+                            addReferralReason(referralReason, referralKey)
+                        } else if (map.containsKey(RdtTest) && (map[RdtTest] == RdtNegative ||  map[RdtTest] == NA)) {
+                            addResultMap(referralKey.lowercase(), ReferralStatus.Referred.name)
+                            addReferralReason(referralReason, referralKey)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Referral Logic for ICCM Diarrhoea
+     * If Bloody diarrhoea is yes, then patientStatus is referred
+     * If no of days is >= 14, then patientStatus is referred
+     * If no of days is < 14,
+     *  1. If Any one of the respective dehydration signs is present, then patientStatus is referred
+     *  2. If ORS or Zinc is NA, then patientStatus is referred
+     *  3. If ORS and Zinc is Dispensed, then patientStatus is On Treatment
+     */
+    private fun calculateDiarrhoeaStatus(map: HashMap<String, Any>) {
+        if (map.containsKey(IsDiarrhoea)) {
+            if ((map[IsDiarrhoea] is String && map[IsDiarrhoea] == Yes) ||
+                (map[IsDiarrhoea] is Boolean && map[IsDiarrhoea] == true)
+            ) {
+                if (map.containsKey(IsBloodyDiarrhoea) && ((map[IsBloodyDiarrhoea] is String && map[IsBloodyDiarrhoea] == Yes) ||
+                            (map[IsBloodyDiarrhoea] is Boolean && map[IsBloodyDiarrhoea] == true))
+                ) {
+                    addResultMap(ReferralReasons.Diarrhoea.name.lowercase(), ReferralStatus.Referred.name)
+                    addReferralReason(referralReason, ReferralReasons.Diarrhoea.name)
+                }
+                if (map.containsKey(NoOfDaysOfDiarrhoea) && map[NoOfDaysOfDiarrhoea] is Int) {
+                    val noOfDays = map[NoOfDaysOfDiarrhoea] as Int
+                    if (noOfDays >= MaxDaysOfDiarrhoea) {
+                        addResultMap(ReferralReasons.Diarrhoea.name.lowercase(), ReferralStatus.Referred.name)
+                        addReferralReason(referralReason, ReferralReasons.Diarrhoea.name)
+                    } else {
+                        if ((map.containsKey(DiarrhoeaSigns) && map[DiarrhoeaSigns] is ArrayList<*>)) {
+                            addResultMap(ReferralReasons.Diarrhoea.name.lowercase(), getDiarrhoeaSignsStatus(map[DiarrhoeaSigns]))
+                            if (patientStatus.containsKey(Diarrhoea) && patientStatus[Diarrhoea] == ReferralStatus.Referred.name)
+                                addReferralReason(referralReason, ReferralReasons.Diarrhoea.name)
+                        } else if ((map.containsKey(OrsDispensedStatus) && map[OrsDispensedStatus] == NA) || (map.containsKey(
+                                ZincDispensedStatus) && map[ZincDispensedStatus] == NA)) {
+                            addResultMap(ReferralReasons.Diarrhoea.name.lowercase(), ReferralStatus.Referred.name)
+                            addReferralReason(referralReason, ReferralReasons.Diarrhoea.name)
+                        } else if ((map.containsKey(OrsDispensedStatus) && map[OrsDispensedStatus] == Dispensed) && (map.containsKey(
+                                ZincDispensedStatus) && map[ZincDispensedStatus] == Dispensed)) {
+                            addResultMap(ReferralReasons.Diarrhoea.name.lowercase(), ReferralStatus.OnTreatment.name)
+                            addReferralReason(referralReason, ReferralReasons.Diarrhoea.name)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun getDiarrhoeaSignsStatus(value: Any?): String? {
+        var status:String? = null
+        val signsList = listOf(SunkenEyes.lowercase(), NoTearsWhenCrying.lowercase(), LittleOrNoUrine.lowercase(), SkinPinch.lowercase(), VeryThirsty.lowercase())
+        val selectedSignsList = ArrayList<String>()
+        if (value is ArrayList<*>) {
+            value.forEach { map ->
+                getListActual(map)?.let {
+                    selectedSignsList.add(it.lowercase())
+                }
+            }
+        }
+        for (item in signsList) {
+            if (selectedSignsList.contains(item)) {
+                status = ReferralStatus.Referred.name
+                break
+            }
+        }
+        return status
+    }
+
+    private fun addReferralReason(referralReason: ArrayList<String>, key: String) {
+        if (!referralReason.contains(key))
+            referralReason.add(key)
+    }
+
+    /**
+     * This method is to determine the medication status, according to ICCM
+     * 1. If Status is NA, then status is under referred
+     * 2. If Status is Dispensed, then status is under On Treatment
+     * 3. Else it will be null
+     */
+    private fun getMedicationStatus(map: HashMap<String, Any>, key: String): String? {
+       val status = if (map.containsKey(key) && map[key] is String){
+           if ( map[key] == NA){
+               ReferralStatus.Referred.name
+           }else if (map[key] == Dispensed){
+               ReferralStatus.OnTreatment.name
+           } else {
+               null
+           }
+       } else {
+           null
+       }
+        return status
+    }
+
+    private fun calculateSymptomsStatus(map: HashMap<String, Any>, symptomType: String) {
+        val selectedSignsList = ArrayList<String>()
+        if (map.containsKey(symptomType) && map[symptomType] is ArrayList<*>) {
+            (map[symptomType] as ArrayList<*>).forEach { result ->
+                getListActual(result)?.let {
+                    selectedSignsList.add(it.lowercase())
+                }
+            }
+        }
+        if (!selectedSignsList.contains(NoSymptoms.lowercase())) {
+            addResultMap(ReferralReasons.Symptoms.name.lowercase(), ReferralStatus.Referred.name)
+            addReferralReason(referralReason, ReferralReasons.Symptoms.name)
+        }
+    }
+
+    private fun checkStatus(): String? {
+        if (patientStatus.containsValue(ReferralStatus.Referred.name)) {
+            return ReferralStatus.Referred.name
+        } else if (patientStatus.containsValue(ReferralStatus.OnTreatment.name)) {
+            return ReferralStatus.OnTreatment.name
+        }
+        return null
+    }
+}

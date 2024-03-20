@@ -116,7 +116,7 @@ class AssessmentTBFragment : BaseFragment(), FormEventListener, View.OnClickList
             }
             result?.second?.let {
                 StringConverter.convertGivenMapToString(it)?.let { resultData ->
-                    viewModel.saveAssessment(resultData)
+                    viewModel.saveAssessment(resultData, null)
                 }
             }
         }
@@ -130,7 +130,12 @@ class AssessmentTBFragment : BaseFragment(), FormEventListener, View.OnClickList
 
     }
 
-    override fun onInformationHandling(id: String, noOfDays: Int, enteredDays: Int) {
+    override fun onInformationHandling(
+        id: String,
+        noOfDays: Int,
+        enteredDays: Int,
+        resultMap: HashMap<String, Any>?
+    ) {
 
     }
 
