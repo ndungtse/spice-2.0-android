@@ -145,6 +145,9 @@ class HouseHoldRegistrationFragment : Fragment(), View.OnClickListener, FormEven
             formGenerator.setValueForView(details.name, view)
         }
         formGenerator.getViewByTag(villageId)?.let { view ->
+            if (details.villageId != 0L) {
+                view.isEnabled = false
+            }
             formGenerator.setValueForView(details.villageId, view)
         }
         formGenerator.getViewByTag(landmark)?.let { view ->

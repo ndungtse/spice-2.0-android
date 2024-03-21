@@ -1497,6 +1497,23 @@ class FormGenerator(
         }
     }
 
+    fun disableSingleSelection(id:String) {
+        getViewByTag(id)?.let {
+            if (it is ViewGroup) {
+                it.forEach { view ->
+                    if (view is TextView) {
+                        view.isEnabled = false
+                    }
+                }
+            }
+        }
+    }
+
+    fun disableView(view: View, context: Context) {
+        view.isEnabled = false
+        view.setBackgroundColor(ContextCompat.getColor(context, R.color.border_gray))
+    }
+
     private fun resetChildFormViewGroupComponents(viewGroup: ViewGroup?) {
         viewGroup?.apply {
             val model = serverData?.find { it.id == tag }

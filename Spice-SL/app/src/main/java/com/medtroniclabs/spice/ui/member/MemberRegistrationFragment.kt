@@ -154,6 +154,9 @@ class MemberRegistrationFragment : Fragment(), FormEventListener, View.OnClickLi
             formGenerator.setValueForView(details.name, view)
         }
         formGenerator.getViewByTag(householdHeadRelationship)?.let { view ->
+            if (details.householdHeadRelationship.isNotBlank()) {
+                view.isEnabled = false
+            }
             formGenerator.setValueForView(details.householdHeadRelationship, view)
         }
         formGenerator.getViewByTag(phoneNumber)?.let { view ->
@@ -180,26 +183,36 @@ class MemberRegistrationFragment : Fragment(), FormEventListener, View.OnClickLi
 
                 else -> {}
             }
+            if (details.gender.isNotBlank()) {
+                formGenerator.disableSingleSelection(gender)
+            }
         }
         details.dateOfBirth.let {
             val dateOfBirth = DateUtils.convertDateFormat(it, DATE_FORMAT_yyyyMMddHHmmssZZZZZ, DATE_ddMMyyyy)
             formGenerator.getViewByTag(MemberRegistration.dateOfBirth)?.let { view ->
+                if (dateOfBirth.isNotBlank()) {
+                    formGenerator.disableView(view, requireContext())
+                }
                 formGenerator.setValueForView(dateOfBirth, view)
             }
         }
         details.age.let {
             val yearMonthAndWeeks = getYearMonthAndWeeks(it)
             formGenerator.getViewByTag(dateOfBirth + Year)?.let { view ->
+                formGenerator.disableView(view, requireContext())
                 formGenerator.setValueForView(yearMonthAndWeeks.first, view)
             }
             formGenerator.getViewByTag(dateOfBirth + Month)?.let { view ->
+                formGenerator.disableView(view, requireContext())
                 formGenerator.setValueForView(yearMonthAndWeeks.second, view)
             }
             formGenerator.getViewByTag(dateOfBirth + Week)?.let { view ->
+                formGenerator.disableView(view, requireContext())
                 formGenerator.setValueForView(yearMonthAndWeeks.third, view)
             }
         }
     }
+
 
     private fun singleSelectValueOption(value: String, key: String) {
         formGenerator.getViewByTag("${value}_${key}")
