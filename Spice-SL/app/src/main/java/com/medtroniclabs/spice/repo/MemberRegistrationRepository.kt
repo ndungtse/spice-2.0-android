@@ -67,6 +67,9 @@ class MemberRegistrationRepository @Inject constructor(
             householdHeadRelationship
         )
 
+        val isPregnantOrNot = map[MemberRegistration.isPregnant]
+        householdMemberEntity.isPregnant = isPregnantOrNot?.let {  CommonUtils.getIsBooleanFromString(isPregnantOrNot) }
+
         if (entity == null) {
             val householdDetails = roomHelper.getHouseHoldDetailsById(householdId)
             householdMemberEntity.householdId = householdId

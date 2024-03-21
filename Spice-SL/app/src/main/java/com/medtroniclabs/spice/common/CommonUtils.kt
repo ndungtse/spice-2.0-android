@@ -179,4 +179,8 @@ object CommonUtils {
             context.getString(R.string.female_prefix)
         }
     }
+
+    fun getBooleanAsString(value: Boolean): String {
+        return if (value) HouseHoldRegistration.yes else HouseHoldRegistration.no
+    }
 }

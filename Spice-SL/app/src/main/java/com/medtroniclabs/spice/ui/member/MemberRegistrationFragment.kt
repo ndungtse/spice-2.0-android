@@ -11,12 +11,15 @@ import androidx.fragment.app.activityViewModels
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.common.CommonUtils.getBooleanAsString
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
 import com.medtroniclabs.spice.common.DateUtils.DATE_ddMMyyyy
 import com.medtroniclabs.spice.common.DateUtils.getYearMonthAndWeek
 import com.medtroniclabs.spice.common.DefinedParams.HOUSEHOLD_MEMBER_REGISTRATION
 import com.medtroniclabs.spice.common.DefinedParams.MemberID
+import com.medtroniclabs.spice.common.DefinedParams.No
+import com.medtroniclabs.spice.common.DefinedParams.Yes
 import com.medtroniclabs.spice.common.DefinedParams.female
 import com.medtroniclabs.spice.common.DefinedParams.male
 import com.medtroniclabs.spice.databinding.FragmentMemberRegistrationBinding
@@ -28,9 +31,12 @@ import com.medtroniclabs.spice.formgeneration.config.DefinedParams.Year
 import com.medtroniclabs.spice.formgeneration.listener.FormEventListener
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.model.FormResponse
+import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.no
+import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.yes
 import com.medtroniclabs.spice.mappingkey.MemberRegistration
 import com.medtroniclabs.spice.mappingkey.MemberRegistration.gender
 import com.medtroniclabs.spice.mappingkey.MemberRegistration.householdHeadRelationship
+import com.medtroniclabs.spice.mappingkey.MemberRegistration.isPregnant
 import com.medtroniclabs.spice.mappingkey.MemberRegistration.name
 import com.medtroniclabs.spice.mappingkey.MemberRegistration.phoneNumber
 import com.medtroniclabs.spice.mappingkey.MemberRegistration.phoneNumberCategory
@@ -184,6 +190,23 @@ class MemberRegistrationFragment : Fragment(), FormEventListener, View.OnClickLi
             }
             if (details.gender.isNotBlank()) {
                 formGenerator.disableSingleSelection(gender)
+            }
+        }
+        details.isPregnant?.let {
+            when (getBooleanAsString(it)) {
+                yes -> {
+                    singleSelectValueOption(
+                        Yes.lowercase(),
+                        isPregnant
+                    )
+                }
+
+                no -> {
+                    singleSelectValueOption(
+                        No.lowercase(),
+                        isPregnant
+                    )
+                }
             }
         }
         details.dateOfBirth.let {

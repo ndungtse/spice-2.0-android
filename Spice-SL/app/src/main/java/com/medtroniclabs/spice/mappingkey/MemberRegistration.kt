@@ -8,4 +8,5 @@ object MemberRegistration {
     const val gender = "gender"
     const val householdHeadRelationship = "household_head_relationship"
     const val householdId = "household_id"
+    const val isPregnant= "isPregnant"
 }

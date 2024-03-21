@@ -11,6 +11,7 @@ import androidx.fragment.app.activityViewModels
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.common.CommonUtils.getBooleanAsString
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.databinding.FragmentHouseHoldRegistrationBinding
 import com.medtroniclabs.spice.db.entity.HouseholdEntity
@@ -228,10 +229,6 @@ class HouseHoldRegistrationFragment : Fragment(), View.OnClickListener, FormEven
                     view.performClick()
                 }
             }
-    }
-
-    private fun getBooleanAsString(value: Boolean): String {
-        return if (value) yes else no
     }
 
     private fun initializeFormGenerator() {
