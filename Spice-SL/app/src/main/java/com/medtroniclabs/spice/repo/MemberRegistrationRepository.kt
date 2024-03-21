@@ -5,12 +5,14 @@ import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.appextensions.postSuccess
 import com.medtroniclabs.spice.common.CommonUtils
+import com.medtroniclabs.spice.common.CommonUtils.getStringOrEmptyString
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.LastCreatedAtAndPatientId
 import com.medtroniclabs.spice.data.VillageInfo
 import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
 import com.medtroniclabs.spice.db.local.RoomHelper
 import com.medtroniclabs.spice.mappingkey.MemberRegistration
+import com.medtroniclabs.spice.mappingkey.MemberRegistration.otherFamilyMember
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.offlinesync.utils.OfflineSyncStatus
 import javax.inject.Inject
@@ -63,9 +65,8 @@ class MemberRegistrationRepository @Inject constructor(
         householdMemberEntity.gender = CommonUtils.getStringOrEmptyString(gender)
 
         val householdHeadRelationship = map[MemberRegistration.householdHeadRelationship]
-        householdMemberEntity.householdHeadRelationship = CommonUtils.getStringOrEmptyString(
-            householdHeadRelationship
-        )
+        val otherHouseholdRelationship = if(map.containsKey(otherFamilyMember)) map [otherFamilyMember] else null
+        householdMemberEntity.householdHeadRelationship = householdRelationshipStatus(householdHeadRelationship, otherHouseholdRelationship)
 
         val isPregnantOrNot = map[MemberRegistration.isPregnant]
         householdMemberEntity.isPregnant = isPregnantOrNot?.let {  CommonUtils.getIsBooleanFromString(isPregnantOrNot) }
@@ -87,6 +88,14 @@ class MemberRegistrationRepository @Inject constructor(
         }
 
         return householdMemberEntity
+    }
+
+    private fun householdRelationshipStatus(householdHeadRelationship: Any?, otherHouseholdRelationship: Any?): String {
+        return if (otherHouseholdRelationship != null){
+             "${getStringOrEmptyString(householdHeadRelationship)}-${getStringOrEmptyString(otherHouseholdRelationship)}"
+        } else {
+            getStringOrEmptyString(householdHeadRelationship)
+        }
     }
 
     private fun generatePatientId(

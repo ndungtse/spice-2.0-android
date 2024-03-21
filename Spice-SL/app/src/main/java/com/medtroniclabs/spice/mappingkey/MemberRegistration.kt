@@ -7,6 +7,7 @@ object MemberRegistration {
     const val dateOfBirth = "date_of_birth"
     const val gender = "gender"
     const val householdHeadRelationship = "household_head_relationship"
+    const val otherFamilyMember = "otherFamilyMember"
     const val householdId = "household_id"
     const val isPregnant= "isPregnant"
 }

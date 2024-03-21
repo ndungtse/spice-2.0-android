@@ -38,6 +38,7 @@ import com.medtroniclabs.spice.mappingkey.MemberRegistration.gender
 import com.medtroniclabs.spice.mappingkey.MemberRegistration.householdHeadRelationship
 import com.medtroniclabs.spice.mappingkey.MemberRegistration.isPregnant
 import com.medtroniclabs.spice.mappingkey.MemberRegistration.name
+import com.medtroniclabs.spice.mappingkey.MemberRegistration.otherFamilyMember
 import com.medtroniclabs.spice.mappingkey.MemberRegistration.phoneNumber
 import com.medtroniclabs.spice.mappingkey.MemberRegistration.phoneNumberCategory
 import com.medtroniclabs.spice.network.resource.ResourceState
@@ -159,10 +160,18 @@ class MemberRegistrationFragment : Fragment(), FormEventListener, View.OnClickLi
             formGenerator.setValueForView(details.name, view)
         }
         formGenerator.getViewByTag(householdHeadRelationship)?.let { view ->
-            if (details.householdHeadRelationship.isNotBlank()) {
-                view.isEnabled = false
-            }
-            formGenerator.setValueForView(details.householdHeadRelationship, view)
+            val relationship =
+                if (details.householdHeadRelationship.contains(getString(R.string.separator_hyphen))) {
+                    details.householdHeadRelationship.substringBefore(getString(R.string.separator_hyphen))
+                } else details.householdHeadRelationship
+            formGenerator.setValueForView(relationship, view)
+        }
+        formGenerator.getViewByTag(otherFamilyMember)?.let { view ->
+            val relationship =
+                if (details.householdHeadRelationship.contains(getString(R.string.separator_hyphen))) {
+                    details.householdHeadRelationship.substringAfter(getString(R.string.separator_hyphen))
+                } else details.householdHeadRelationship
+            formGenerator.setValueForView(relationship, view)
         }
         formGenerator.getViewByTag(phoneNumber)?.let { view ->
             formGenerator.setValueForView(details.phoneNumber, view)
