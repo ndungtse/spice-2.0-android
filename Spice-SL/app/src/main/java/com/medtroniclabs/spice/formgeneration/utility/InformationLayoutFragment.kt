@@ -1,0 +1,89 @@
+package com.medtroniclabs.spice.formgeneration.utility
+
+import android.icu.text.CaseMap.Title
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.view.Window
+import android.view.WindowManager
+import androidx.fragment.app.DialogFragment
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.common.DefinedParams.ID
+import com.medtroniclabs.spice.databinding.FragmentInformationLayoutBinding
+import com.medtroniclabs.spice.formgeneration.config.DefinedParams
+import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
+import com.medtroniclabs.spice.formgeneration.model.InformationModel
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.chestInDrawing
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.hasOedemaOfBothFeet
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.muacCode
+
+class InformationLayoutFragment : DialogFragment(), View.OnClickListener {
+    lateinit var binding : FragmentInformationLayoutBinding
+
+    companion object {
+        const val TAG = "InformationLayoutFragment"
+        fun newInstance(id: String, title: String): InformationLayoutFragment {
+            val fragment = InformationLayoutFragment()
+            fragment.arguments = Bundle().apply {
+                putString(DefinedParams.ID, id)
+                putString(DefinedParams.Title, title)
+            }
+            return fragment
+        }
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        binding = FragmentInformationLayoutBinding.inflate(inflater, container, false)
+        val window: Window? = dialog?.window
+        window?.setBackgroundDrawableResource(android.R.color.transparent)
+        return  binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        isCancelable = false
+        initializeViews()
+        setListeners()
+    }
+
+    private fun initializeViews() {
+        binding.tvTitle.text = arguments?.getString(DefinedParams.Title) ?: getString(R.string.instructions)
+        val informationListByType: ArrayList<InformationModel>? = when(arguments?.getString(ID)){
+            muacCode -> InformationUtils().getMuacInformationListItem(requireContext())
+            hasOedemaOfBothFeet -> InformationUtils().getOedemaInformationList(requireContext())
+            chestInDrawing -> InformationUtils().getChestIndrawingInformation(requireContext())
+            else -> null
+        }
+        binding.rvInfoList.apply {
+            layoutManager = LinearLayoutManager(requireContext())
+            adapter  = informationListByType?.let { InformationListAdapter(requireContext(), it) }
+        }
+    }
+
+    private fun setListeners() {
+        binding.ivClose.safeClickListener(this)
+        binding.btnClose.safeClickListener(this)
+    }
+
+    override fun onClick(view: View) {
+        when(view.id){
+            binding.ivClose.id, binding.btnClose.id -> {
+                dismiss()
+            }
+        }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        dialog?.window?.setLayout(
+            WindowManager.LayoutParams.WRAP_CONTENT,
+            WindowManager.LayoutParams.WRAP_CONTENT
+        )
+    }
+}

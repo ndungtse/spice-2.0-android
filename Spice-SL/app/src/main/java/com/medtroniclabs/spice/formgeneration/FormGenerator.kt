@@ -179,6 +179,14 @@ class FormGenerator(
             isEnabled?.let {
                 binding.etUserInput.isEnabled = it
             }
+            isInfo?.let {
+                binding.ivInfo.visibility = getVisibility(it)
+            }
+
+            binding.ivInfo.setOnClickListener {
+                listener.onInstructionClicked(id, title)
+            }
+
             informationVisibility?.let { value ->
                 setViewVisibility(value, binding.tvInfo)
             }
@@ -214,6 +222,14 @@ class FormGenerator(
             getFamilyView(family)?.addView(binding.root) ?: kotlin.run {
                 parentLayout.addView(binding.root)
             }
+        }
+    }
+
+    private fun getVisibility(visibility: String): Int {
+        return when(visibility){
+            VISIBLE -> View.VISIBLE
+            INVISIBLE -> View.INVISIBLE
+            else -> View.GONE
         }
     }
 
@@ -512,6 +528,14 @@ class FormGenerator(
             if (isMandatory)
                 binding.tvTitle.markMandatory()
 
+            isInfo?.let {
+                binding.ivInfo.visibility = getVisibility(it)
+            }
+
+            binding.ivInfo.setOnClickListener {
+                listener.onInstructionClicked(id, title)
+            }
+
             getFamilyView(family)?.addView(binding.root) ?: kotlin.run {
                 parentLayout.addView(binding.root)
             }
@@ -563,6 +587,13 @@ class FormGenerator(
             )
             if (isMandatory) {
                 binding.tvTitle.markMandatory()
+            }
+            isInfo?.let {
+                binding.ivInfo.visibility = getVisibility(it)
+            }
+
+            binding.ivInfo.setOnClickListener {
+                listener.onInstructionClicked(id, title)
             }
             val adapter = CustomSpinnerAdapter(context, translate)
             optionsList?.let { list ->

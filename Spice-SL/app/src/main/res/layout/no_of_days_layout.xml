@@ -9,10 +9,23 @@
     <TextView
         android:id="@+id/tvTitle"
         style="@style/Form_Label_Style"
+        android:layout_width="@dimen/_0dp"
         android:paddingEnd="@dimen/_10sdp"
         tools:ignore="RtlSymmetry"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"/>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/ivInfo"/>
+
+    <ImageView
+        android:id="@+id/ivInfo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_form_info"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/tvTitle"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/tvTitle"
+        app:layout_constraintTop_toTopOf="@id/tvTitle" />
 
     <androidx.appcompat.widget.AppCompatEditText
         android:id="@+id/etUserInput"

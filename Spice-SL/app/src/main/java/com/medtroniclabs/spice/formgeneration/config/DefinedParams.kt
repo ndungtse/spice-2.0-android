@@ -29,4 +29,5 @@ object DefinedParams {
     const val Other = "Other"
     const val NoSymptoms = "No symptoms"
     const val Information= "information"
+    const val Title = "Title"
 }

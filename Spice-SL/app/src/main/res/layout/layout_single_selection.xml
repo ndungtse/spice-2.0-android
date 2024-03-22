@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/llRoot"
     android:layout_width="match_parent"
@@ -14,16 +14,32 @@
     <TextView
         android:id="@+id/tvTitle"
         style="@style/Form_Label_Style"
+        android:layout_width="0dp"
         android:paddingStart="@dimen/_0dp"
-        android:paddingEnd="@dimen/_10sdp" />
+        android:paddingEnd="@dimen/_10sdp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/ivInfo"/>
 
+    <ImageView
+        android:id="@+id/ivInfo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:src="@drawable/ic_form_info"
+        app:layout_constraintStart_toEndOf="@id/tvTitle"
+        app:layout_constraintTop_toTopOf="@id/tvTitle"
+        app:layout_constraintBottom_toBottomOf="@id/tvTitle"
+        app:layout_constraintEnd_toEndOf="parent"/>
 
     <LinearLayout
         android:id="@+id/selectionGroup"
         android:layout_width="match_parent"
         android:orientation="horizontal"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/_8sdp">
+        android:layout_marginTop="@dimen/_8sdp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvTitle">
 
     </LinearLayout>
 
@@ -34,6 +50,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingVertical="@dimen/_8sdp"
-        android:visibility="gone" />
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/selectionGroup"
+        app:layout_constraintStart_toStartOf="parent"/>
 
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

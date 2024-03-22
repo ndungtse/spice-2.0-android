@@ -60,7 +60,8 @@ data class FormLayout(
     var information: String? = null,
     var titleSummary:String? = null,
     var noOfDays: Int?= null,
-    var informationVisibility: String? = null
+    var informationVisibility: String? = null,
+    var isInfo: String? = null
 ) : BaseViewParams
 
 data class FormResponse(

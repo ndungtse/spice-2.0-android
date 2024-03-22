@@ -20,6 +20,7 @@ import com.medtroniclabs.spice.formgeneration.listener.FormEventListener
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.ui.FormResultComposer
 import com.medtroniclabs.spice.formgeneration.utility.CheckBoxDialog
+import com.medtroniclabs.spice.formgeneration.utility.InformationLayoutFragment
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.MenuConstants.ICCM_MENU_ID
@@ -33,6 +34,8 @@ import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.FB_MIN_BREA
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.FB_MIN_MONTH
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.FB_MIN_YEAR
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.MUAC
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.chestInDrawing
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.hasOedemaOfBothFeet
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.muacCode
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.muacStatus
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.rootSuffix
@@ -132,6 +135,18 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
         informationList: ArrayList<String>?,
         description: String?
     ) {
+        val titleById = getTitleById(id)
+        InformationLayoutFragment.newInstance(id, titleById)
+            .show(childFragmentManager, InformationLayoutFragment.TAG)
+    }
+
+    private fun getTitleById(id: String): String {
+        return when (id) {
+            muacCode -> getString(R.string.measuring_muac)
+            hasOedemaOfBothFeet -> getString(R.string.checking_for_oedema)
+            chestInDrawing -> getString(R.string.chest_in_drawing)
+            else -> {id}
+        }
     }
 
 

@@ -54,4 +54,6 @@ object AssessmentDefinedParams {
     const val VeryThirsty = "Very thirsty"
     const val otherSymptoms = "otherSymptoms"
     const val symptoms = "Symptoms"
+    const val hasOedemaOfBothFeet = "hasOedemaOfBothFeet"
+    const val chestInDrawing = "chestInDrawing"
 }
