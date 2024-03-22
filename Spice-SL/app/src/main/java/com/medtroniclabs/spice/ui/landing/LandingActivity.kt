@@ -22,6 +22,7 @@ import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.boarding.LoginActivity
 import com.medtroniclabs.spice.ui.home.HomeScreenFragment
 import com.medtroniclabs.spice.ui.landing.viewmodel.LandingViewModel
+import com.medtroniclabs.spice.ui.medicalreview.ExaminationCardFragment
 import com.medtroniclabs.spice.ui.mypatients.fragment.PatientSearchFragment
 
 
@@ -130,7 +131,7 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
                     )
                 } else {
                     binding.appBarMain.tvTitle.text = getString(R.string.home)
-                    replaceFragmentInId<HomeScreenFragment>(
+                    replaceFragmentInId<ExaminationCardFragment>(
                         R.id.fragmentContainerView,
                         tag = HomeScreenFragment.TAG
                     )

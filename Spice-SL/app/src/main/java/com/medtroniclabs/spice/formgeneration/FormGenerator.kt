@@ -522,7 +522,7 @@ class FormGenerator(
                     it,
                     translate,
                     resultHashMap,
-                    id,
+                    Pair(id,null),
                     serverViewModel,
                     singleSelectionCallback
                 )
@@ -547,7 +547,7 @@ class FormGenerator(
         }
     }
 
-    private var singleSelectionCallback: ((selectedID: Any?, elementId: String, serverViewModel: FormLayout, name: String?) -> Unit)? =
+    private var singleSelectionCallback: ((selectedID: Any?, elementId: Pair<String,String?>, serverViewModel: FormLayout, name: String?) -> Unit)? =
         { selectedId, elementID, serverViewModel, name ->
             saveSelectedOptionValue(elementID, selectedId, serverViewModel, name)
             if (selectedId == female) {
@@ -559,13 +559,13 @@ class FormGenerator(
         return resultHashMap.contains(gender) && resultHashMap[gender] == female
     }
     private fun saveSelectedOptionValue(
-        id: String,
+        id: Pair<String,String?>,
         idValue: Any?,
         serverViewModel: FormLayout,
         name: String?
     ) {
         idValue?.let {
-            resultHashMap[id] = it
+            resultHashMap[id.first] = it
             setConditionalVisibility(
                 serverViewModel,
                 name

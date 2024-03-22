@@ -53,10 +53,10 @@ class SingleSelectionCustomView : LinearLayout {
     fun addViewElements(
         optionList: ArrayList<Map<String, Any>>,
         translate: Boolean,
-        resultMap: HashMap<String, Any>,
-        elementID: String,
+        resultMap: HashMap<String, Any>?,
+        elementID: Pair<String, String?>,
         serverViewModel: FormLayout,
-        callback: ((SelectedID: Any?, elementID: String, serverViewModel: FormLayout, name:String?) -> Unit?)?
+        callback: ((SelectedID: Any?, elementID: Pair<String,String?>, serverViewModel: FormLayout, name:String?) -> Unit?)?
     ) {
         removeAllViews()
         this.optionList = optionList
@@ -70,7 +70,7 @@ class SingleSelectionCustomView : LinearLayout {
                 LayoutParams.MATCH_PARENT,
                 1.0f
             )
-            val selectedValue = resultMap[elementID]
+            val selectedValue = if (resultMap!= null)  resultMap[elementID.first] else null
             textView.tag = "${idValue}_${elementID}"
             textView.isSelected = selectedValue != null && selectedValue == idValue
             textView.layoutParams = param

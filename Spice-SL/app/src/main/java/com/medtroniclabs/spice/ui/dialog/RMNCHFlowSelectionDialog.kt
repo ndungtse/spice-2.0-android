@@ -11,7 +11,6 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResult
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.CommonUtils.getOptionMap
-import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.databinding.FragmentRmnchSelectionDialogBinding
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.ui.SingleSelectionCustomView
@@ -72,7 +71,7 @@ class RMNCHFlowSelectionDialog : DialogFragment(), View.OnClickListener {
                 it,
                 false,
                 viewModel.resultRMNCHFlowHashMap,
-                TAG,
+                Pair(TAG,null),
                 FormLayout(viewType = "", id = "", title = "", visibility = "", optionsList = null),
                 singleSelectionCallback
             )
@@ -85,7 +84,7 @@ class RMNCHFlowSelectionDialog : DialogFragment(), View.OnClickListener {
         binding.ivClose.setOnClickListener(this)
     }
 
-    private var singleSelectionCallback: ((selectedID: Any?, elementId: String, serverViewModel: FormLayout, name: String?) -> Unit)? =
+    private var singleSelectionCallback: ((selectedID: Any?, elementId: Pair<String,String?>, serverViewModel: FormLayout, name: String?) -> Unit)? =
         { selectedID, _, _, _ ->
             saveSelectedOptionValue(selectedID)
         }
