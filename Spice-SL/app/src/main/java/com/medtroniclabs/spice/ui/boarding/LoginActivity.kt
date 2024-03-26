@@ -139,6 +139,17 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
             binding.tvUserPasswordError.text = getString(R.string.password_cannot_be_empty)
         }
 
+        val oldUserName = SecuredPreference.getString(SecuredPreference.EnvironmentKey.USERNAME.name)
+        if (oldUserName != null && oldUserName != userName.toString().trim()) {
+            isValid = false
+            showErrorDialogue(
+                getString(R.string.warning_different_login_title),
+                getString(R.string.warning_different_login_message, oldUserName)
+            ) {
+
+            }
+        }
+
         if (isValid) {
             binding.tvUserEmailError.visibility = View.GONE
             binding.tvUserPasswordError.visibility = View.GONE

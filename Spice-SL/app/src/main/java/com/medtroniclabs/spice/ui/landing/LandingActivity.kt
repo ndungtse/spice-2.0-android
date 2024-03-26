@@ -2,6 +2,7 @@ package com.medtroniclabs.spice.ui.landing
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -32,10 +33,11 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
-        if (!SecuredPreference.getBoolean(SecuredPreference.EnvironmentKey.ISLOGGEDIN.name) && !SecuredPreference.getBoolean(
-                SecuredPreference.EnvironmentKey.ISMETALOADED.name
-            )
-        ) {
+
+        val isLoggedIn = SecuredPreference.getBoolean(SecuredPreference.EnvironmentKey.ISLOGGEDIN.name)
+        val isMetaLoaded = SecuredPreference.getBoolean(SecuredPreference.EnvironmentKey.ISMETALOADED.name)
+
+        if (!(isLoggedIn && isMetaLoaded)) {
             startActivity(Intent(this, LoginActivity::class.java))
             finish()
             return
@@ -91,6 +93,10 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.logout -> {
+                if (SecuredPreference.logout()) {
+                    startActivity(Intent(this, LoginActivity::class.java))
+                    finish()
+                }
             }
 
             R.id.profile -> {
@@ -98,6 +104,12 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
                     supportFragmentManager.findFragmentByTag(ProfileDialogFragment.TAG)
                 profileDialogFragment ?: ProfileDialogFragment.newInstance()
                     .show(supportFragmentManager, ProfileDialogFragment.TAG)
+            }
+
+            R.id.offline_sync -> {
+                startActivity(Intent(this, OfflineSyncActivity::class.java))
+                binding.drawerLayout.closeDrawer(GravityCompat.START)
+                return true
             }
         }
         selectNavigationMenu(item)
@@ -125,14 +137,6 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
                 }
             }
 
-            R.id.offline_sync -> {
-                supportFragmentManager.beginTransaction()
-                    .replace(
-                        R.id.fragmentContainerView,
-                        OfflineSyncFragment(),
-                        OfflineSyncFragment.TAG
-                    ).commit()
-            }
         }
     }
     

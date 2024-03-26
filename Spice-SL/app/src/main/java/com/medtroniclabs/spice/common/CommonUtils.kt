@@ -10,6 +10,8 @@ import com.medtroniclabs.spice.formgeneration.config.DefinedParams.Week
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.YEARS
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.Year
 import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 object CommonUtils {
     fun checkIsTablet(context: Context): Boolean {
@@ -115,13 +117,6 @@ object CommonUtils {
         return Triple(parts[0], parts[1], parts[2])
     }
 
-    fun calculateAgeString(map: HashMap<String, Any>): String {
-        val year = map[Year]
-        val month = map[Month]
-        val week = map[Week]
-        return "${year?.toString() ?: ""}/${month?.toString() ?: ""}/${week?.toString() ?: ""}"
-    }
-
     fun getDurationInYMD(input: String, context: Context): String {
         val parts = input.split('/')
 
@@ -145,5 +140,43 @@ object CommonUtils {
         map[DefinedParams.ID] = value
         map[DefinedParams.NAME] = value
         return map
+    }
+
+    fun getAgeFromDob(dateOfBirth: String?, month: String): String {
+        if (dateOfBirth != null) {
+            val ageTriplet = DateUtils.getYearMonthAndDate(
+                dateOfBirth, SimpleDateFormat(
+                    DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+                    Locale.ENGLISH
+                )
+            )
+            val year = ageTriplet.first
+            val age = year?.let { DateUtils.calculateAge(it) }
+            return if (age != null && age > 5) {
+                "$age"
+            } else {
+                val startDate = DateUtils.formatStringToDate(
+                    dateOfBirth, SimpleDateFormat(
+                        DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+                        Locale.ENGLISH
+                    )
+                )
+                startDate?.let { date ->
+                    "${DateUtils.calculateAgeInMonths(date)} $month"
+                } ?: kotlin.run {
+                    return ""
+                }
+            }
+        } else {
+            return ""
+        }
+    }
+
+    fun getGenderText(gender: String, context: Context): String {
+        return if (gender.equals(DefinedParams.male, true)) {
+            context.getString(R.string.male_prefix)
+        } else {
+            context.getString(R.string.female_prefix)
+        }
     }
 }

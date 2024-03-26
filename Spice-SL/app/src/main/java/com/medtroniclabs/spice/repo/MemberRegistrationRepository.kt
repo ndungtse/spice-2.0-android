@@ -5,7 +5,6 @@ import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.appextensions.postSuccess
 import com.medtroniclabs.spice.common.CommonUtils
-import com.medtroniclabs.spice.common.CommonUtils.calculateAgeString
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.LastCreatedAtAndPatientId
 import com.medtroniclabs.spice.data.VillageInfo
@@ -13,6 +12,7 @@ import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
 import com.medtroniclabs.spice.db.local.RoomHelper
 import com.medtroniclabs.spice.mappingkey.MemberRegistration
 import com.medtroniclabs.spice.network.resource.Resource
+import com.medtroniclabs.spice.offlinesync.utils.OfflineSyncStatus
 import javax.inject.Inject
 
 class MemberRegistrationRepository @Inject constructor(
@@ -59,9 +59,6 @@ class MemberRegistrationRepository @Inject constructor(
         val dateOfBirth = map[MemberRegistration.dateOfBirth]
         householdMemberEntity.dateOfBirth = CommonUtils.getStringOrEmptyString(dateOfBirth)
 
-        val age = calculateAgeString(map)
-        householdMemberEntity.age = age
-
         val gender = map[MemberRegistration.gender]
         householdMemberEntity.gender = CommonUtils.getStringOrEmptyString(gender)
 
@@ -83,7 +80,7 @@ class MemberRegistrationRepository @Inject constructor(
                 }
         } else {
             householdMemberEntity.updatedAt = System.currentTimeMillis()
-            householdMemberEntity.isSynced = false
+            householdMemberEntity.sync_status = OfflineSyncStatus.NotSynced
         }
 
         return householdMemberEntity
@@ -91,13 +88,13 @@ class MemberRegistrationRepository @Inject constructor(
 
     private fun generatePatientId(
         chiefDomId: Long,
-        lastCreatedAtAndPatientId: LastCreatedAtAndPatientId,
+        lastCreatedAtAndPatientId: LastCreatedAtAndPatientId?,
         villageCode: String
     ): String {
         val startIndex =
             chiefDomId.toString().length + villageCode.length + SecuredPreference.getUserId()
                 .toString().length
-        val lastPatientId = lastCreatedAtAndPatientId.lastPatientId?.substring(
+        val lastPatientId = lastCreatedAtAndPatientId?.lastPatientId?.substring(
             startIndex,
             lastCreatedAtAndPatientId.lastPatientId.length
         )?.toInt() ?: 0
@@ -126,7 +123,7 @@ class MemberRegistrationRepository @Inject constructor(
         return roomHelper.updateHeadCount(householdId, newNoOfPeople)
     }
 
-    private suspend fun getLastPatientId(): LastCreatedAtAndPatientId {
+    private suspend fun getLastPatientId(): LastCreatedAtAndPatientId? {
         return roomHelper.getLastPatientId()
     }
 

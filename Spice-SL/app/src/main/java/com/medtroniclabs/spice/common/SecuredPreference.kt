@@ -20,6 +20,7 @@ object SecuredPreference {
         ISOFFLINELOGIN,
         ISMETALOADED,
         USER_RESPONSE,
+        IS_INITIAL_DATA_LOADED
     }
 
 
@@ -376,5 +377,14 @@ object SecuredPreference {
 
     fun getRole(): String? {
         return getUserDetails().roles.first().name
+    }
+
+    fun logout(): Boolean {
+        remove(EnvironmentKey.ISLOGGEDIN.name)
+        remove(EnvironmentKey.TOKEN.name)
+        remove(EnvironmentKey.ISOFFLINELOGIN.name)
+        remove(EnvironmentKey.USER_RESPONSE.name)
+
+        return true
     }
 }

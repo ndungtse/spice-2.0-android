@@ -2,11 +2,16 @@ package com.medtroniclabs.spice.offlinesync.model
 
 import androidx.room.ColumnInfo
 import androidx.room.Ignore
+import com.medtroniclabs.spice.db.entity.HouseholdEntity
+import com.medtroniclabs.spice.offlinesync.utils.OfflineSyncStatus
 
 data class HouseHold(
 
     @ColumnInfo(name = "id")
-    val referenceId: String,
+    val referenceId: String?,
+
+    @ColumnInfo(name = "fhir_id")
+    var id: String? = null,
 
     @ColumnInfo(name = "name")
     val name: String,
@@ -27,7 +32,7 @@ data class HouseHold(
     val noOfPeople: Int,
 
     @ColumnInfo(name = "household_no")
-    val householdNo: Int,
+    val householdNo: Long,
 
     @ColumnInfo(name = "is_owned_hand_washing_facility_with_soap")
     val ownedHandWashingFacilityWithSoap: Boolean,
@@ -57,4 +62,23 @@ data class HouseHold(
     var provenance: ProvanceDto = ProvanceDto()
     @Ignore
     var householdMembers: MutableList<HouseHoldMember> = mutableListOf()
+
+    fun toHouseholdEntity(villageMap: Map<String,Long>, status: OfflineSyncStatus): HouseholdEntity {
+        return HouseholdEntity(
+            householdNo = this.householdNo,
+            name = this.name,
+            villageId = villageMap[this.village] ?: 0L, // get by village name
+            landmark = this.landmark,
+            headPhoneNumber = this.headPhoneNumber,
+            noOfPeople = this.noOfPeople,
+            isOwnedAnImprovedLatrine = this.ownedAnImprovedLatrine,
+            isOwnedHandWashingFacilityWithSoap = this.ownedHandWashingFacilityWithSoap,
+            isOwnedATreatedBedNet = this.ownedTreatedBedNet,
+            bedNetCount = this.bedNetCount,
+            latitude = this.latitude,
+            longitude = this.longitude).apply {
+                fhirId = this@HouseHold.id.toString()
+                sync_status = status
+        }
+    }
 }

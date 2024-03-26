@@ -11,10 +11,10 @@ import androidx.fragment.app.activityViewModels
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.medtroniclabs.spice.R
-import com.medtroniclabs.spice.common.CommonUtils.getYearMonthAndWeeks
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
 import com.medtroniclabs.spice.common.DateUtils.DATE_ddMMyyyy
+import com.medtroniclabs.spice.common.DateUtils.getYearMonthAndWeek
 import com.medtroniclabs.spice.common.DefinedParams.HOUSEHOLD_MEMBER_REGISTRATION
 import com.medtroniclabs.spice.common.DefinedParams.MemberID
 import com.medtroniclabs.spice.common.DefinedParams.female
@@ -29,7 +29,6 @@ import com.medtroniclabs.spice.formgeneration.listener.FormEventListener
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.model.FormResponse
 import com.medtroniclabs.spice.mappingkey.MemberRegistration
-import com.medtroniclabs.spice.mappingkey.MemberRegistration.dateOfBirth
 import com.medtroniclabs.spice.mappingkey.MemberRegistration.gender
 import com.medtroniclabs.spice.mappingkey.MemberRegistration.householdHeadRelationship
 import com.medtroniclabs.spice.mappingkey.MemberRegistration.name
@@ -195,22 +194,22 @@ class MemberRegistrationFragment : Fragment(), FormEventListener, View.OnClickLi
                 }
                 formGenerator.setValueForView(dateOfBirth, view)
             }
+
+            val yearMonthWeeks = getYearMonthAndWeek(dateOfBirth, DATE_ddMMyyyy)
+            formGenerator.getViewByTag(MemberRegistration.dateOfBirth + Year)?.let { view ->
+                formGenerator.disableView(view, requireContext())
+                formGenerator.setValueForView(yearMonthWeeks.first, view)
+            }
+            formGenerator.getViewByTag(MemberRegistration.dateOfBirth + Month)?.let { view ->
+                formGenerator.disableView(view, requireContext())
+                formGenerator.setValueForView(yearMonthWeeks.second, view)
+            }
+            formGenerator.getViewByTag(MemberRegistration.dateOfBirth + Week)?.let { view ->
+                formGenerator.disableView(view, requireContext())
+                formGenerator.setValueForView(yearMonthWeeks.third, view)
+            }
         }
-        details.age.let {
-            val yearMonthAndWeeks = getYearMonthAndWeeks(it)
-            formGenerator.getViewByTag(dateOfBirth + Year)?.let { view ->
-                formGenerator.disableView(view, requireContext())
-                formGenerator.setValueForView(yearMonthAndWeeks.first, view)
-            }
-            formGenerator.getViewByTag(dateOfBirth + Month)?.let { view ->
-                formGenerator.disableView(view, requireContext())
-                formGenerator.setValueForView(yearMonthAndWeeks.second, view)
-            }
-            formGenerator.getViewByTag(dateOfBirth + Week)?.let { view ->
-                formGenerator.disableView(view, requireContext())
-                formGenerator.setValueForView(yearMonthAndWeeks.third, view)
-            }
-        }
+
     }
 
 

@@ -7,6 +7,7 @@ import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.network.utils.ConnectivityManager
+import com.medtroniclabs.spice.repo.HouseHoldRepository
 import com.medtroniclabs.spice.ui.boarding.repo.LoginRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
@@ -16,12 +17,15 @@ import javax.inject.Inject
 @HiltViewModel
 class ResourceLoadingViewModel @Inject constructor(
     private val loginRepository: LoginRepository,
+    private val houseHoldRepository: HouseHoldRepository,
     private val connectivityManager: ConnectivityManager,
     @IoDispatcher private val dispatcherIO: CoroutineDispatcher
 ) :
     ViewModel() {
 
     val metaDataCompleteLiveData = MutableLiveData<Resource<Boolean>>()
+    val householdsLiveData = MutableLiveData<Resource<Boolean>>()
+
     private val workflowNames = mutableListOf<String>()
     private val meta = mutableListOf<String>()
 
@@ -36,6 +40,12 @@ class ResourceLoadingViewModel @Inject constructor(
                 return@launch
             }
             loginRepository.getMetaDataInformation(metaDataCompleteLiveData,workflowNames,meta)
+        }
+    }
+
+    fun downloadInitialDetails() {
+        viewModelScope.launch(dispatcherIO) {
+            houseHoldRepository.getHouseholdAndMembers(householdsLiveData)
         }
     }
 

@@ -7,6 +7,8 @@ import com.medtroniclabs.spice.data.FormResponse
 import com.medtroniclabs.spice.data.LoginResponse
 import com.medtroniclabs.spice.data.MetaDataResponse
 import com.medtroniclabs.spice.data.UserSymptomsEntity
+import com.medtroniclabs.spice.model.resource.RequestAllEntities
+import com.medtroniclabs.spice.offlinesync.model.HouseHold
 import com.medtroniclabs.spice.offlinesync.model.RequestGetSyncStatus
 import com.medtroniclabs.spice.offlinesync.model.SyncResponse
 import okhttp3.MultipartBody
@@ -21,4 +23,6 @@ interface ApiHelper {
     suspend fun postOfflineSync(request: Map<String,Any>): Response<SyncResponse>
 
     suspend fun getOfflineSyncStatus(request: RequestGetSyncStatus): Response<SyncResponse>
+
+    suspend fun getHouseholdAndMembers(request: RequestAllEntities): Response<APIResponse<List<HouseHold>>>
 }

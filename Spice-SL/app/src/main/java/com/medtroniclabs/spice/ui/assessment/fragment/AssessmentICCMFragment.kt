@@ -11,6 +11,9 @@ import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.CommonUtils.getYearMonthAndWeeks
 import com.medtroniclabs.spice.common.DefinedParams.DefaultID
 import com.medtroniclabs.spice.common.DefinedParams.ICCM
+import com.medtroniclabs.spice.common.DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
+import com.medtroniclabs.spice.common.DateUtils.getYearMonthAndWeek
+import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.databinding.FragmentAssessmentBinding
 import com.medtroniclabs.spice.formgeneration.FormGenerator
@@ -185,9 +188,9 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
         when (id) {
             BreathPerMinute -> {
                 viewModel.memberDetailsLiveData.value?.data?.let { data ->
-                    getYearMonthAndWeeks(data.age).let { result ->
-                        val year = result.first.toInt()
-                        val month = result.second.toInt()
+                    getYearMonthAndWeek(data.dateOfBirth, DATE_FORMAT_yyyyMMddHHmmssZZZZZ).let { result ->
+                        val year = result.first ?: 0
+                        val month = result.second ?: 0
                         if ((year == 0 && month > FB_MIN_MONTH && month < FB_MAX_MONTH) && enteredDays >= FB_MAX_BREATHING) {
                             displayDaysInformation(id, View.VISIBLE)
                         } else if ((month == FB_MAX_MONTH || year in FB_MIN_YEAR..FB_MAX_YEAR) && enteredDays >= FB_MIN_BREATHING) {

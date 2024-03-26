@@ -32,25 +32,51 @@ class ResourceLoadingScreen : BaseActivity() {
                 }
 
                 ResourceState.SUCCESS -> {
-                    startActivity(Intent(this, LandingActivity::class.java))
-                    finish()
+                    //val isHouseholdLoaded = SecuredPreference.getBoolean(SecuredPreference.EnvironmentKey.IS_INITIAL_DATA_LOADED.name)
+                    val isHouseholdLoaded = true
+                    if (isHouseholdLoaded) {
+                        startActivity(Intent(this, LandingActivity::class.java))
+                        finish()
+                    } else {
+                        viewModel.downloadInitialDetails()
+                    }
+                }
+                ResourceState.ERROR -> {
+                    handleError()
+                }
+            }
+        }
+
+        viewModel.householdsLiveData.observe(this) { resourceState ->
+            when (resourceState.state) {
+                ResourceState.LOADING -> {
+                }
+
+                ResourceState.SUCCESS -> {
+//                    SecuredPreference.putBoolean(SecuredPreference.EnvironmentKey.IS_INITIAL_DATA_LOADED.name, true)
+//                    startActivity(Intent(this, LandingActivity::class.java))
+//                    finish()
                 }
 
                 ResourceState.ERROR -> {
-                    SecuredPreference.putBoolean(
-                        SecuredPreference.EnvironmentKey.ISMETALOADED.name,
-                        false
-                    )
-                    SecuredPreference.putBoolean(
-                        SecuredPreference.EnvironmentKey.ISLOGGEDIN.name,
-                        false
-                    )
-                    binding.actionButton.visibility = View.VISIBLE
+                    handleError()
                 }
             }
         }
     }
 
+
+    private fun handleError() {
+        SecuredPreference.putBoolean(
+            SecuredPreference.EnvironmentKey.ISMETALOADED.name,
+            false
+        )
+        SecuredPreference.putBoolean(
+            SecuredPreference.EnvironmentKey.ISLOGGEDIN.name,
+            false
+        )
+        binding.actionButton.visibility = View.VISIBLE
+    }
 
     private fun setViewListener() {
         binding.actionButton.safeClickListener {

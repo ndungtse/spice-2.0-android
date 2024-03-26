@@ -341,7 +341,7 @@ class LoginRepository @Inject constructor(
     suspend fun getAllVillagesName(villageListResponse: MutableLiveData<Resource<List<VillageEntity>>>) {
         try {
             villageListResponse.postLoading()
-            val response = roomHelper.getAllVillageName()
+            val response = roomHelper.getAllVillageEntity()
             villageListResponse.postSuccess(response)
         } catch (e: Exception) {
             // occurred error response

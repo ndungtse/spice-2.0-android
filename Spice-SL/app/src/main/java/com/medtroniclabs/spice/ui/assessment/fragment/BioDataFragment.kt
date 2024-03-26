@@ -72,7 +72,7 @@ class BioDataFragment : BaseFragment() {
             binding.gender.tvKey.text = getString(R.string.gender)
             binding.gender.tvValue.text = data.gender.capitalizeFirstChar()
             binding.dobAge.tvKey.text = getString(R.string.age)
-            binding.dobAge.tvValue.text = CommonUtils.getDuration(data.age, requireContext())
+           // binding.dobAge.tvValue.text = CommonUtils.getDuration(data.age, requireContext())
         }
     }
 

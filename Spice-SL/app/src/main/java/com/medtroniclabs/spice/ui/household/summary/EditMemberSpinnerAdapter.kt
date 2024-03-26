@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.CommonUtils
+import com.medtroniclabs.spice.common.CommonUtils.getAgeFromDob
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.databinding.SpinnerDropDownBinding
 import com.medtroniclabs.spice.formgeneration.extension.capitalizeFirstChar
@@ -39,7 +40,7 @@ class EditMemberSpinnerAdapter(context: Context, val translate: Boolean = false)
             context.getString(
                 R.string.household_summary_member_info,
                 itemList.name,
-                itemList.age?.let { CommonUtils.getDurationInYMD(it, context) },
+                getAgeFromDob(itemList.dob, context.getString(R.string.months)),
                 genderPrefix
             )
         }

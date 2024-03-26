@@ -42,7 +42,7 @@ class PostSyncWorker @AssistedInject constructor(
         val householdIds = mutableListOf<Long>()
         val houseHoldList = houseHoldRepository.getAllUnSyncedHouseHolds()
         houseHoldList.forEach { householdEntity ->
-            householdIds.add(householdEntity.referenceId.toLong())
+            householdIds.add(householdEntity.referenceId!!.toLong())
             val memberList =
                 houseHoldRepository.getAllUnSyncedMembers(householdEntity.referenceId.toLong())
             householdEntity.householdMembers.addAll(memberList)
@@ -54,9 +54,13 @@ class PostSyncWorker @AssistedInject constructor(
         request[OfflineConstant.HOUSE_HOLDS] = houseHoldList
         request[OfflineConstant.HOUSE_HOLD_MEMBERS] = otherHouseholdMembers
 
-        val apiResponse = houseHoldRepository.postOfflineHouseHolds(request)
-        if (apiResponse.isSuccessful) {
-            return request[OfflineConstant.REQUEST_ID] as String
+        try {
+            val apiResponse = houseHoldRepository.postOfflineHouseHolds(request)
+            if (apiResponse.isSuccessful) {
+                return request[OfflineConstant.REQUEST_ID] as String
+            }
+        } catch (e: Exception) {
+            return null
         }
 
         return null

@@ -23,9 +23,6 @@ data class HouseholdMemberEntity(
     @ColumnInfo("date_of_birth")
     var dateOfBirth: String = "",
 
-    @ColumnInfo("age")
-    var age: String = "",
-
     @ColumnInfo("gender")
     var gender: String = "",
 
@@ -38,15 +35,4 @@ data class HouseholdMemberEntity(
     @ColumnInfo("patient_id")
     var patientId: String? = null,
 
-    @ColumnInfo("fhir_id")
-    var fhirId: String? = null,
-
-    @ColumnInfo("is_synced")
-    var isSynced: Boolean = false,
-
-    @ColumnInfo("created_at")
-    val createdAt: Long = System.currentTimeMillis(),
-
-    @ColumnInfo("updated_at")
-    var updatedAt: Long = System.currentTimeMillis()
-)
+) : BaseEntity()

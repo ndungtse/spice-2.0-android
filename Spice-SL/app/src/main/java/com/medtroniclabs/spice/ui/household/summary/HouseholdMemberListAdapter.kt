@@ -6,6 +6,8 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.common.CommonUtils.getAgeFromDob
+import com.medtroniclabs.spice.common.CommonUtils.getGenderText
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
 import com.medtroniclabs.spice.common.DateUtils.calculateAge
@@ -45,44 +47,10 @@ class HouseholdMemberListAdapter(
             context.getString(
                 R.string.household_summary_member_info,
                 item.name,
-                getAgeFromDob(item.dateOfBirth, context),
+                getAgeFromDob(item.dateOfBirth, context.getString(R.string.months)),
                 getGenderText(item.gender, context)
             )
         )
-    }
-
-    private fun getGenderText(gender: String, context: Context): String {
-        return if (gender.equals(DefinedParams.male, true)) {
-            context.getString(R.string.male_prefix)
-        } else {
-            context.getString(R.string.female_prefix)
-        }
-    }
-
-    private fun getAgeFromDob(dateOfBirth: String, context: Context): String {
-        val ageTriplet = DateUtils.getYearMonthAndDate(
-            dateOfBirth, SimpleDateFormat(
-                DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-                Locale.ENGLISH
-            )
-        )
-        val year = ageTriplet.first
-        val age = year?.let { calculateAge(it) }
-        return if (age != null && age > 5) {
-            "$age"
-        } else {
-            val startDate = DateUtils.formatStringToDate(
-                dateOfBirth, SimpleDateFormat(
-                    DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-                    Locale.ENGLISH
-                )
-            )
-            startDate?.let { date ->
-                "${calculateAgeInMonths(date)} ${context.getString(R.string.months)}"
-            } ?: kotlin.run {
-                return ""
-            }
-        }
     }
 
     override fun onCreateViewHolder(

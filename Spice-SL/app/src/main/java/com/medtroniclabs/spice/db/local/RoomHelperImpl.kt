@@ -2,6 +2,7 @@ package com.medtroniclabs.spice.db.local
 
 import androidx.lifecycle.LiveData
 import androidx.sqlite.db.SimpleSQLiteQuery
+import androidx.sqlite.db.SupportSQLiteQueryBuilder
 import com.medtroniclabs.spice.data.LastCreatedAtAndPatientId
 import com.medtroniclabs.spice.data.VillageInfo
 import com.medtroniclabs.spice.db.dao.AssessmentDAO
@@ -24,6 +25,7 @@ import com.medtroniclabs.spice.db.response.HouseholdMemberCount
 import com.medtroniclabs.spice.model.MemberDobGenderModel
 import com.medtroniclabs.spice.offlinesync.model.HouseHold
 import com.medtroniclabs.spice.offlinesync.model.HouseHoldMember
+import com.medtroniclabs.spice.offlinesync.utils.OfflineSyncStatus
 import javax.inject.Inject
 
 class RoomHelperImpl @Inject constructor(
@@ -68,7 +70,7 @@ class RoomHelperImpl @Inject constructor(
         return memberDAO.getMemberCountPerHouseHold(householdId)
     }
 
-    override suspend fun getLastPatientId(): LastCreatedAtAndPatientId {
+    override suspend fun getLastPatientId(): LastCreatedAtAndPatientId? {
         return memberDAO.getLastPatientId()
     }
 
@@ -119,7 +121,7 @@ class RoomHelperImpl @Inject constructor(
         metaDataDAO.insertVillages(villageEntityList)
     }
 
-    override suspend fun getAllVillageName(): List<VillageEntity> {
+    override suspend fun getAllVillageEntity(): List<VillageEntity> {
         return metaDataDAO.getAllVillageName()
     }
 
@@ -217,10 +219,10 @@ class RoomHelperImpl @Inject constructor(
     }
 
     override suspend fun updateFhirId(tableName: String, id: String, fhirId: String) {
-        val isSynced = true
+        val status = OfflineSyncStatus.Success.name
         val updatedAt = System.currentTimeMillis()
-        val query = "UPDATE $tableName SET fhir_id = $fhirId, is_synced = $isSynced, updated_at = $updatedAt WHERE id = $id"
-        householdDAO.updateFhirId(SimpleSQLiteQuery(query))
+        val query = "UPDATE $tableName SET sync_status = ?, fhir_id = ?, updated_at = ? WHERE id = ?"
+        householdDAO.updateFhirId(SimpleSQLiteQuery(query, arrayOf(status, fhirId, updatedAt, id)))
     }
 
     override fun getFilteredHouseholdsLiveData(
@@ -234,6 +236,14 @@ class RoomHelperImpl @Inject constructor(
             return householdDAO.getHouseholdsWithFilterLiveData(searchInput, filterByStatus, filterByVillage)
         }
 
+    }
+
+    override suspend fun getUnSyncedHouseholdCount(): Int {
+        return householdDAO.getUnSyncedCount()
+    }
+
+    override suspend fun getUnSyncedHouseholdMemberCount(): Int {
+        return memberDAO.getUnSyncedCount()
     }
 
     override suspend fun getNearestHealthFacility(): List<HealthFacilityEntity> {

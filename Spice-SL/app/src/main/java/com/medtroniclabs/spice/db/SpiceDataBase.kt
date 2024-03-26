@@ -4,6 +4,8 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
+import com.medtroniclabs.spice.db.converters.OfflineStatusTypeConverter
 import com.medtroniclabs.spice.db.dao.AssessmentDAO
 import com.medtroniclabs.spice.db.dao.HouseholdDAO
 import com.medtroniclabs.spice.db.dao.MemberDAO
@@ -25,6 +27,7 @@ import com.medtroniclabs.spice.db.entity.VillageEntity
         VillageEntity::class, HealthFacilityEntity::class, ClinicalWorkflowEntity::class, FormEntity::class, ClinicalWorkflowConditionEntity::class],
     version = 1
 )
+@TypeConverters(OfflineStatusTypeConverter::class)
 abstract class SpiceDataBase : RoomDatabase() {
     abstract fun householdDAO(): HouseholdDAO
     abstract fun memberDAO(): MemberDAO

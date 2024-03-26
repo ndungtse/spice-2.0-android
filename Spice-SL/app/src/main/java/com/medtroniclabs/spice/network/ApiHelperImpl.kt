@@ -8,6 +8,8 @@ import com.medtroniclabs.spice.data.LoginResponse
 import com.medtroniclabs.spice.data.MetaDataResponse
 import com.medtroniclabs.spice.data.UserSymptomsEntity
 import com.medtroniclabs.spice.db.entity.FormEntity
+import com.medtroniclabs.spice.model.resource.RequestAllEntities
+import com.medtroniclabs.spice.offlinesync.model.HouseHold
 import com.medtroniclabs.spice.offlinesync.model.RequestGetSyncStatus
 import com.medtroniclabs.spice.offlinesync.model.SyncResponse
 import okhttp3.MultipartBody
@@ -39,4 +41,7 @@ class ApiHelperImpl @Inject constructor(private val apiService: ApiService) : Ap
         return apiService.getOfflineSyncStatus(request)
     }
 
+    override suspend fun getHouseholdAndMembers(request: RequestAllEntities): Response<APIResponse<List<HouseHold>>> {
+        return apiService.getHouseholdDetails(request)
+    }
 }

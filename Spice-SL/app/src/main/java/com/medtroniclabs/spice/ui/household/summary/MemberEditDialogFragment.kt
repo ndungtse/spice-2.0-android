@@ -66,8 +66,9 @@ class MemberEditDialogFragment() : DialogFragment(), View.OnClickListener {
                     MemberDetailsSpinnerModel(
                         id = item.id,
                         name = item.name,
-                        age = item.age,
-                        gender = item.gender
+                        age = "",
+                        gender = item.gender,
+                        dob = item.dateOfBirth
                     )
                 )
             }

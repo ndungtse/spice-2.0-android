@@ -12,6 +12,7 @@ import com.medtroniclabs.spice.db.entity.HouseholdEntity
 import com.medtroniclabs.spice.db.response.HouseHoldEntityWithMemberCount
 import com.medtroniclabs.spice.db.response.HouseholdMemberCount
 import com.medtroniclabs.spice.offlinesync.model.HouseHold
+import com.medtroniclabs.spice.offlinesync.utils.OfflineSyncStatus
 
 @Dao
 interface HouseholdDAO {
@@ -45,10 +46,13 @@ interface HouseholdDAO {
     @Query("SELECT hh.no_of_people as noOfPeople, count(hhm.id) AS memberCount FROM HouseHold AS hh INNER JOIN HouseHoldMember AS hhm ON hhm.household_id = hh.id WHERE household_id =:householdId")
     fun getHouseholdMemberCountLiveData(householdId: Long): LiveData<HouseholdMemberCount>
 
-    @Query("UPDATE HouseHold SET no_of_people =:newNoOfPeople, is_synced =:isSynced, updated_at =:updatedAt WHERE id =:householdId")
-    suspend fun updateHeadCount(householdId: Long, newNoOfPeople: Int, isSynced: Boolean = false, updatedAt: Long = System.currentTimeMillis())
-    @Query("SELECT hh.*, ve.name as villageName FROM HouseHold as hh INNER JOIN VillageEntity as ve ON hh.village_id = ve.id WHERE (hh.fhir_id is null OR hh.is_synced = 0)")
-    suspend fun getAllUnSyncedHouseHolds(): List<HouseHold>
+    @Query("UPDATE HouseHold SET no_of_people =:newNoOfPeople, sync_status =:syncStatus, updated_at =:updatedAt WHERE id =:householdId")
+    suspend fun updateHeadCount(householdId: Long, newNoOfPeople: Int, syncStatus: String = OfflineSyncStatus.NotSynced.name, updatedAt: Long = System.currentTimeMillis())
+    @Query("SELECT hh.*, ve.name as villageName FROM HouseHold as hh INNER JOIN VillageEntity AS ve ON hh.village_id = ve.id WHERE hh.sync_status =:status")
+    suspend fun getAllUnSyncedHouseHolds(status: String = OfflineSyncStatus.NotSynced.name): List<HouseHold>
     @RawQuery
     suspend fun updateFhirId(query: SimpleSQLiteQuery) : Long
+
+    @Query("SELECT COUNT(id) FROM Household where sync_status =:syncStatus OR fhir_id is null")
+    suspend fun getUnSyncedCount(syncStatus: String = OfflineSyncStatus.NotSynced.name): Int
 }

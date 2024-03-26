@@ -17,9 +17,9 @@ object DateUtils {
     const val DATE_FORMAT_yyyyMMdd = "yyyy-MM-dd"
     const val DATE_FORMAT_yyyyMMddHHmmssZZZZZ = "yyyy-MM-dd'T'HH:mm:ssZZZZZ"
 
-    fun getYearMonthAndWeek(inputDate: String): Triple<Int?, Int?, Int?> {
+    fun getYearMonthAndWeek(inputDate: String, inputFormat: String = DATE_FORMAT_ddMMyyyy ): Triple<Int?, Int?, Int?> {
         try {
-            val dateFormat = SimpleDateFormat(DATE_FORMAT_ddMMyyyy, Locale.getDefault())
+            val dateFormat = SimpleDateFormat(inputFormat, Locale.getDefault())
             val birthDate = dateFormat.parse(inputDate)
 
             val currentDate = Calendar.getInstance().time

@@ -36,6 +36,9 @@
             android:name=".ui.household.summary.HouseholdSummaryActivity"
             android:exported="false" />
         <activity
+            android:name=".ui.landing.OfflineSyncActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.home.ToolsActivity"
             android:exported="false" />
         <activity
