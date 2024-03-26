@@ -1,5 +1,6 @@
 package com.medtroniclabs.spice.db.dao
 
+import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -13,6 +14,7 @@ import com.medtroniclabs.spice.db.entity.MenuEntity
 import com.medtroniclabs.spice.db.entity.SignsAndSymptomsEntity
 import com.medtroniclabs.spice.db.entity.UserProfileEntity
 import com.medtroniclabs.spice.db.entity.VillageEntity
+import com.medtroniclabs.spice.db.response.VillageBasicDetails
 
 @Dao
 interface MetaDataDAO {
@@ -104,4 +106,7 @@ interface MetaDataDAO {
 
     @Query("SELECT * FROM HealthFacilityEntity")
     suspend fun getNearestHealthFacility(): List<HealthFacilityEntity>
+
+    @Query("SELECT id,name FROM VillageEntity")
+    suspend fun getVillageIdName(): List<VillageBasicDetails>
 }

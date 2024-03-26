@@ -4,8 +4,14 @@ import android.os.Bundle
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
+import com.medtroniclabs.spice.network.utils.ConnectivityManager
+import javax.inject.Inject
 
 open class BaseFragment : Fragment() {
+
+    @Inject
+    lateinit var connectivityManager: ConnectivityManager
+
 
     fun showProgress() {
         if (activity is BaseActivity) {

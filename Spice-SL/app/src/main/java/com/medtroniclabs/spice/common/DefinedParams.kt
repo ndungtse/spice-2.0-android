@@ -32,4 +32,6 @@ object DefinedParams {
     const val DefaultSelectID = -1L
     const val DefaultID = "-1"
     const val DefaultIDLabel = "--Select--"
+    const val LIST_LIMIT = 15
+    const val PAGE_INDEX = 0
 }

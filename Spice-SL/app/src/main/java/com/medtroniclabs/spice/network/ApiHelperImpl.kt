@@ -7,11 +7,12 @@ import com.medtroniclabs.spice.data.FormResponse
 import com.medtroniclabs.spice.data.LoginResponse
 import com.medtroniclabs.spice.data.MetaDataResponse
 import com.medtroniclabs.spice.data.UserSymptomsEntity
-import com.medtroniclabs.spice.db.entity.FormEntity
 import com.medtroniclabs.spice.model.resource.RequestAllEntities
 import com.medtroniclabs.spice.offlinesync.model.HouseHold
 import com.medtroniclabs.spice.offlinesync.model.RequestGetSyncStatus
 import com.medtroniclabs.spice.offlinesync.model.SyncResponse
+import com.medtroniclabs.spice.model.PatientListRespModel
+import com.medtroniclabs.spice.model.PatientsDataModel
 import okhttp3.MultipartBody
 import retrofit2.Response
 import javax.inject.Inject
@@ -33,6 +34,9 @@ class ApiHelperImpl @Inject constructor(private val apiService: ApiService) : Ap
         return apiService.getFormMetadata(request)
     }
 
+    override suspend fun getPatients(request: PatientsDataModel): APIResponse<List<PatientListRespModel>> {
+        return apiService.getPatients(request)
+    }
     override suspend fun postOfflineSync(request: Map<String, Any>): Response<SyncResponse> {
         return apiService.postOfflineSyncData(request)
     }
@@ -43,5 +47,9 @@ class ApiHelperImpl @Inject constructor(private val apiService: ApiService) : Ap
 
     override suspend fun getHouseholdAndMembers(request: RequestAllEntities): Response<APIResponse<List<HouseHold>>> {
         return apiService.getHouseholdDetails(request)
+    }
+
+    override suspend fun patientSearch(request: PatientsDataModel): APIResponse<List<PatientListRespModel>> {
+        return apiService.patientSearch(request)
     }
 }

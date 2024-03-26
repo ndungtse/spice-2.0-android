@@ -26,6 +26,7 @@ import com.medtroniclabs.spice.model.MemberDobGenderModel
 import com.medtroniclabs.spice.offlinesync.model.HouseHold
 import com.medtroniclabs.spice.offlinesync.model.HouseHoldMember
 import com.medtroniclabs.spice.offlinesync.utils.OfflineSyncStatus
+import com.medtroniclabs.spice.db.response.VillageBasicDetails
 import javax.inject.Inject
 
 class RoomHelperImpl @Inject constructor(
@@ -248,5 +249,9 @@ class RoomHelperImpl @Inject constructor(
 
     override suspend fun getNearestHealthFacility(): List<HealthFacilityEntity> {
         return metaDataDAO.getNearestHealthFacility()
+    }
+
+    override suspend fun getVillageIdName(): List<VillageBasicDetails> {
+        return metaDataDAO.getVillageIdName()
     }
 }

@@ -39,20 +39,20 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/tvLabelNationalID"
+                android:id="@+id/tvLabelPatientID"
                 style="@style/TextStyle_Regular_12"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/_10sdp"
                 android:text="@string/patient_id"
                 android:textColor="@color/charcoal_grey"
-                app:layout_constraintEnd_toStartOf="@id/tvLabelPatientID"
+                app:layout_constraintEnd_toStartOf="@id/tvLabelVillage"
                 app:layout_constraintHorizontal_weight="5"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tvCardPatientName" />
 
             <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/tvLabelPatientID"
+                android:id="@+id/tvLabelVillage"
                 style="@style/TextStyle_Regular_12"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -61,39 +61,39 @@
                 android:textColor="@color/charcoal_grey"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_weight="5"
-                app:layout_constraintStart_toEndOf="@+id/tvLabelNationalID"
+                app:layout_constraintStart_toEndOf="@+id/tvLabelPatientID"
                 app:layout_constraintTop_toBottomOf="@+id/tvCardPatientName" />
 
             <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/tvCardNationalID"
+                android:id="@+id/tvCardPatientId"
                 style="@style/TextStyle_Regular_16_Blue"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:paddingStart="@dimen/_0dp"
                 android:paddingEnd="@dimen/_8sdp"
                 android:textColor="@color/secondary_black"
-                app:layout_constraintEnd_toStartOf="@+id/tvCardPatientID"
+                app:layout_constraintEnd_toStartOf="@+id/tvCardVillage"
                 app:layout_constraintHorizontal_weight="5"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tvLabelNationalID" />
+                app:layout_constraintTop_toBottomOf="@+id/tvLabelPatientID" />
 
             <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/tvCardPatientID"
+                android:id="@+id/tvCardVillage"
                 style="@style/TextStyle_Regular_16_Blue"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:textColor="@color/secondary_black"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_weight="5"
-                app:layout_constraintStart_toEndOf="@+id/tvCardNationalID"
-                app:layout_constraintTop_toBottomOf="@+id/tvLabelPatientID" />
+                app:layout_constraintStart_toEndOf="@+id/tvCardPatientId"
+                app:layout_constraintTop_toBottomOf="@+id/tvLabelVillage" />
 
             <androidx.constraintlayout.widget.Group
                 android:id="@+id/patientIdGroup"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:visibility="visible"
-                app:constraint_referenced_ids="tvLabelNationalID, tvLabelPatientID, tvCardNationalID, tvCardPatientID" />
+                app:constraint_referenced_ids="tvLabelPatientID, tvLabelVillage, tvCardPatientId, tvCardVillage" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -211,4 +211,18 @@ object DateUtils {
             null
         }
     }
+
+    fun calculateAge(birthDateString: String, givenFormat: String = DATE_FORMAT_yyyyMMddHHmmssZZZZZ): Int {
+       return try {
+           val yearConvert = 1000L * 60 * 60 * 24 * 365.25
+            val dateFormat = SimpleDateFormat(givenFormat, Locale.getDefault())
+            val birthDate = dateFormat.parse(birthDateString)
+            val today = Calendar.getInstance().time
+            val diff = today.time - birthDate.time
+            val age = diff / yearConvert
+            age.toInt()
+        } catch (e: Exception) {
+            0
+        }
+    }
 }

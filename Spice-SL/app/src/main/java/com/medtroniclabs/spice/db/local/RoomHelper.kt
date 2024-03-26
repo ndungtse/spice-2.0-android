@@ -19,6 +19,7 @@ import com.medtroniclabs.spice.db.response.HouseholdMemberCount
 import com.medtroniclabs.spice.model.MemberDobGenderModel
 import com.medtroniclabs.spice.offlinesync.model.HouseHold
 import com.medtroniclabs.spice.offlinesync.model.HouseHoldMember
+import com.medtroniclabs.spice.db.response.VillageBasicDetails
 
 interface RoomHelper {
     suspend fun saveHouseHoldEntry(householdEntity: HouseholdEntity): Long
@@ -79,8 +80,7 @@ interface RoomHelper {
         filterByStatus: String
     ): LiveData<List<HouseHoldEntityWithMemberCount>>
     suspend fun getNearestHealthFacility(): List<HealthFacilityEntity>
-
     suspend fun getUnSyncedHouseholdCount(): Int
-
     suspend fun getUnSyncedHouseholdMemberCount(): Int
+    suspend fun getVillageIdName(): List<VillageBasicDetails>
 }

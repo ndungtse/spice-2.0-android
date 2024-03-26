@@ -16,7 +16,6 @@
         android:paddingEnd="@dimen/_2sdp"
         app:layout_constraintStart_toStartOf="parent"
         android:paddingVertical="6dp"
-        android:text="Filter"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         android:drawableStart="@drawable/ic_filter_icon"

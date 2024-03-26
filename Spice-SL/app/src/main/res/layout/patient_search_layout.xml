@@ -33,7 +33,7 @@
         style="@style/Button_Style"
         android:layout_width="0dp"
         android:background="@drawable/button_selector_cobalt"
-        android:enabled="true"
+        android:enabled="false"
         android:text="@string/search"
         android:paddingBottom="@dimen/_1sdp"
         android:paddingTop="@dimen/_1sdp"
