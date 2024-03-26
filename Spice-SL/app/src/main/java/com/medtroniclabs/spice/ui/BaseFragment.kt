@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
+import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.network.utils.ConnectivityManager
 import javax.inject.Inject
 
@@ -40,4 +41,20 @@ open class BaseFragment : Fragment() {
         }
     }
 
+    fun setTitle(title: String) {
+        (activity as? BaseActivity)?.setTitle(title)
+    }
+
+    fun getTitle() :String? {
+       return (activity as? BaseActivity)?.getString()
+    }
+
+
+    fun showErrorDialog(title: String, message: String) {
+        (requireActivity() as BaseActivity).showErrorDialogue(
+            title,
+            message,
+            isNegativeButtonNeed = false,
+        ) {}
+    }
 }

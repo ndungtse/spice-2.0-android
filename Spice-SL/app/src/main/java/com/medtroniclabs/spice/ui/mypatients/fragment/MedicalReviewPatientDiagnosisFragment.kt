@@ -1,4 +1,4 @@
-package com.medtroniclabs.spice.ui.medicalreview
+package com.medtroniclabs.spice.ui.mypatients.fragment
 
 import android.os.Bundle
 import android.view.LayoutInflater

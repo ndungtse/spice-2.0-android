@@ -1,11 +1,15 @@
-package com.medtroniclabs.spice.ui.medicalreview
+package com.medtroniclabs.spice.ui.mypatients
 
 import android.os.Bundle
 import android.view.View
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.databinding.ActivityMedicalReviewBaseBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.ui.BaseActivity
+import com.medtroniclabs.spice.ui.mypatients.fragment.MedicalReviewPatientDiagnosisFragment
+import com.medtroniclabs.spice.ui.mypatients.fragment.MedicalReviewPatientExaminationFragment
+import com.medtroniclabs.spice.ui.mypatients.fragment.PatientInfoFragment
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -32,6 +36,12 @@ class MedicalReviewBaseActivity : BaseActivity(), View.OnClickListener {
     private fun initializeFragments() {
         binding.patientDiagnosisContainer.visibility = View.VISIBLE
         binding.btnSubmit.isEnabled = true
+        supportFragmentManager.beginTransaction()
+            .add(
+                R.id.patientDetailFragment,
+                PatientInfoFragment.newInstance(intent.getStringExtra(DefinedParams.PatientId))
+            )
+            .commit()
         supportFragmentManager.beginTransaction()
             .add(R.id.patientDiagnosisContainer, MedicalReviewPatientDiagnosisFragment())
             .commit()

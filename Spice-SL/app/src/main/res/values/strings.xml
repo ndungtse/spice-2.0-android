@@ -197,6 +197,17 @@
     <string name="patients_found">%1d Patients</string>
     <string name="no_patients_found">No patients found to upload.</string>
     <string name="search_by_national_id">Search by National ID</string>
+    <string name="referral_ticket">Referral Ticket</string>
+    <string name="cost">Cost</string>
+    <string name="next_medical_review">Next Medical Review</string>
+    <string name="summary">Summary</string>
+    <string name="pregnancy_summary">Pregnancy Summary</string>
+    <string name="pregnancy_history">Pregnancy History</string>
+    <string name="diagnosis">Diagnosis</string>
+    <string name="disease_category">Disease Category</string>
+    <string name="disease_condition">Disease Condition</string>
+    <string name="prescriptions">Prescriptions</string>
+    <string name="medical_supplies">Medical Supplies</string>
     <string name="normal">Normal</string>
     <string name="moderate_malnutrition">Moderate Malnutrition</string>
     <string name="severe_nutrition">Severe Nutrition</string>
@@ -206,6 +217,8 @@
     <string name="bpm">BPM</string>
     <string name="malaria">Malaria</string>
     <string name="days_summary">%1$d ( %2$d days )</string>
+    <string name="hh_id">HH ID</string>
+    <string name="date_of_onset">Date of Onset</string>
     <string name="warning_different_login_title" translatable="false">Different Login!</string>
     <string name="warning_different_login_message" translatable="false">Last logged in user was %1$s. From this version it is prohibited</string>
     <string name="title_sync_status" translatable="false">Sync Status</string>

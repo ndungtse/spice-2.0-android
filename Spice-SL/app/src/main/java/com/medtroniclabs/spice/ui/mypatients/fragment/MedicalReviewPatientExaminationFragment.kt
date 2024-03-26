@@ -1,4 +1,4 @@
-package com.medtroniclabs.spice.ui.medicalreview
+package com.medtroniclabs.spice.ui.mypatients.fragment
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.databinding.FragmentMedicalReviewPatientExaminationBinding
 import com.medtroniclabs.spice.ui.TagListCustomView
+import com.medtroniclabs.spice.ui.mypatients.viewmodel.MedicalReviewBaseViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 

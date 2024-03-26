@@ -9,6 +9,7 @@ import com.medtroniclabs.spice.data.MetaDataResponse
 import com.medtroniclabs.spice.data.UserSymptomsEntity
 import com.medtroniclabs.spice.model.resource.RequestAllEntities
 import com.medtroniclabs.spice.offlinesync.model.HouseHold
+import com.medtroniclabs.spice.model.PatientDetailReq
 import com.medtroniclabs.spice.offlinesync.model.RequestGetSyncStatus
 import com.medtroniclabs.spice.offlinesync.model.SyncResponse
 import com.medtroniclabs.spice.model.PatientListRespModel
@@ -51,5 +52,9 @@ class ApiHelperImpl @Inject constructor(private val apiService: ApiService) : Ap
 
     override suspend fun patientSearch(request: PatientsDataModel): APIResponse<List<PatientListRespModel>> {
         return apiService.patientSearch(request)
+    }
+
+    override suspend fun getPatient(request: PatientDetailReq): Response<APIResponse<PatientListRespModel>> {
+        return apiService.getPatient(request)
     }
 }

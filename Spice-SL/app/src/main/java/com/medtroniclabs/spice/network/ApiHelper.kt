@@ -9,6 +9,7 @@ import com.medtroniclabs.spice.data.MetaDataResponse
 import com.medtroniclabs.spice.data.UserSymptomsEntity
 import com.medtroniclabs.spice.model.resource.RequestAllEntities
 import com.medtroniclabs.spice.offlinesync.model.HouseHold
+import com.medtroniclabs.spice.model.PatientDetailReq
 import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.model.PatientsDataModel
 import com.medtroniclabs.spice.offlinesync.model.RequestGetSyncStatus
@@ -21,12 +22,10 @@ interface ApiHelper {
     suspend fun getMetaDataInformation(): Response<APIResponse<MetaDataResponse>>
     suspend fun getForms(formRequest: FormRequest): Response<APIResponse<FormResponse>>
     suspend fun getFormMetadata(request: FormMetaRequest): Response<APIResponse<UserSymptomsEntity>>
-
     suspend fun postOfflineSync(request: Map<String,Any>): Response<SyncResponse>
-
     suspend fun getOfflineSyncStatus(request: RequestGetSyncStatus): Response<SyncResponse>
-
     suspend fun getHouseholdAndMembers(request: RequestAllEntities): Response<APIResponse<List<HouseHold>>>
     suspend fun getPatients(request: PatientsDataModel): APIResponse<List<PatientListRespModel>>
     suspend fun patientSearch(request: PatientsDataModel): APIResponse<List<PatientListRespModel>>
+    suspend fun getPatient(request: PatientDetailReq): Response<APIResponse<PatientListRespModel>>
 }

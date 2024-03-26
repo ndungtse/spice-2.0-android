@@ -9,6 +9,7 @@ import com.medtroniclabs.spice.data.MetaDataResponse
 import com.medtroniclabs.spice.data.UserSymptomsEntity
 import com.medtroniclabs.spice.model.resource.RequestAllEntities
 import com.medtroniclabs.spice.offlinesync.model.HouseHold
+import com.medtroniclabs.spice.model.PatientDetailReq
 import com.medtroniclabs.spice.offlinesync.model.RequestGetSyncStatus
 import com.medtroniclabs.spice.offlinesync.model.SyncResponse
 import com.medtroniclabs.spice.model.PatientListRespModel
@@ -47,4 +48,7 @@ interface ApiService {
 
     @POST("spice-service/patient/search")
     suspend fun patientSearch(@Body request: PatientsDataModel): APIResponse<List<PatientListRespModel>>
+
+    @POST("spice-service/patient/patientDetails")
+    suspend fun getPatient(@Body request: PatientDetailReq): Response<APIResponse<PatientListRespModel>>
 }

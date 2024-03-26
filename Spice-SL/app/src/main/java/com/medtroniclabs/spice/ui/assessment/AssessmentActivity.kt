@@ -10,6 +10,7 @@ import com.medtroniclabs.spice.formgeneration.extension.capitalizeFirstChar
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.MenuConstants
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.OtherSymptoms
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.Summary
 import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentICCMFragment
 import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentICCMSummaryFragment
@@ -103,7 +104,7 @@ class AssessmentActivity : BaseActivity() {
             }
 
             MenuConstants.OTHER_SYMPTOMS -> {
-                setTitle(MenuConstants.OTHER_SYMPTOMS.uppercase())
+                setTitle(OtherSymptoms)
                 replaceFragmentInId<AssessmentOtherSymptomsFragment>(
                     binding.formsFragmentContainer.id,
                     tag = AssessmentOtherSymptomsFragment::class.simpleName

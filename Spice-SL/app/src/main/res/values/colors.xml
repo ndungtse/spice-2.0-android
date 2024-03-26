@@ -97,4 +97,5 @@
     <color name="end_color">#0E00B3</color>
     <color name="grey_black">#4C4C4C</color>
     <color name="btn_disable_grey">#B3B3B3</color>
+    <color name="fragment_bg">#F8F8FD</color>
 </resources>

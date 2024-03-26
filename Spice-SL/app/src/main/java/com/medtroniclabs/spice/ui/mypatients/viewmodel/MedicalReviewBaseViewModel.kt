@@ -1,4 +1,4 @@
-package com.medtroniclabs.spice.ui.medicalreview
+package com.medtroniclabs.spice.ui.mypatients.viewmodel
 
 import androidx.lifecycle.ViewModel
 import com.medtroniclabs.spice.data.model.ChipViewItemModel

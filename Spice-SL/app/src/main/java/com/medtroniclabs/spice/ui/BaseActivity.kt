@@ -31,13 +31,18 @@ import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.databinding.ActivityBaseBinding
 import com.medtroniclabs.spice.databinding.ErrorLayoutBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
+import com.medtroniclabs.spice.network.utils.ConnectivityManager
 import com.medtroniclabs.spice.ui.landing.LandingActivity
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 import kotlin.math.abs
 
 @AndroidEntryPoint
 open class BaseActivity : AppCompatActivity() {
     private lateinit var binding: ActivityBaseBinding
+
+    @Inject
+    lateinit var connectivityManager: ConnectivityManager
 
     private lateinit var sessionExpiredBroadcastReceiver: SessionExpiredBroadcastReceiver
     private var downX: Int = 0
@@ -165,6 +170,10 @@ open class BaseActivity : AppCompatActivity() {
 
     fun setTitle(title: String) {
         binding.titleToolbar.text = title
+    }
+
+    fun getString(): String {
+        return binding.titleToolbar.text.toString()
     }
 
     fun hideHomeButton(status: Boolean) {
@@ -324,5 +333,15 @@ open class BaseActivity : AppCompatActivity() {
                 startActivity(intent)
             }
         }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        connectivityManager.registerConnectionObserver(this)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        connectivityManager.unregisterConnectionObserver(this)
     }
 }

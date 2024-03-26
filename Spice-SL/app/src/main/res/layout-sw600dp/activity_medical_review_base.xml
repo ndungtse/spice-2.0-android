@@ -4,18 +4,18 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="true"
     android:background="@color/white"
-    tools:context=".ui.medicalreview.MedicalReviewBaseActivity">
+    android:fillViewport="true"
+    tools:context=".ui.mypatients.MedicalReviewBaseActivity">
 
     <LinearLayout
         android:id="@+id/bottomNavigationView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@color/white"
         android:gravity="bottom"
         android:orientation="horizontal"
         android:padding="@dimen/_12sdp"
-        android:background="@color/white"
         app:layout_constraintBottom_toBottomOf="parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -128,53 +128,6 @@
             android:background="@color/medium_blue"
             android:visibility="visible" />
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/clCounsellingMenu"
-            android:layout_width="@dimen/_0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.2"
-            android:orientation="vertical"
-            android:visibility="visible">
-
-            <ImageView
-                android:id="@+id/ivCounsellingMenu"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:contentDescription="@string/counselling"
-                android:src="@drawable/ic_counselling"
-                app:layout_constraintBottom_toTopOf="@+id/tvCounselingMenu"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
-
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/ivCounsellingBadgeCount"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/ic_notification_dot"
-                android:gravity="center"
-                android:padding="@dimen/_4sdp"
-                android:textColor="@color/white"
-                android:textSize="@dimen/_10ssp"
-                android:textStyle="bold"
-                android:visibility="invisible"
-                app:layout_constraintBottom_toTopOf="@+id/ivCounsellingMenu"
-                app:layout_constraintEnd_toEndOf="@id/ivCounsellingMenu"
-                app:layout_constraintStart_toEndOf="@+id/ivCounsellingMenu"
-                app:layout_constraintTop_toTopOf="@id/ivCounsellingMenu" />
-
-
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/tvCounselingMenu"
-                style="@style/TextStyle_Bold_16_PrimaryMediumBlue"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/counselling_caps"
-                android:visibility="gone"
-                app:layout_constraintBottom_toBottomOf="parent" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
         <View
             android:layout_width="@dimen/_1sdp"
             android:layout_height="match_parent"
@@ -197,9 +150,9 @@
                 android:layout_marginTop="@dimen/_8sdp"
                 android:layout_marginEnd="@dimen/_8sdp"
                 android:layout_marginBottom="@dimen/_8sdp"
+                android:background="@drawable/button_selector_cobalt"
                 android:enabled="false"
                 android:text="@string/submit_caps"
-                android:background="@drawable/button_selector_cobalt"
                 app:layout_constraintTop_toTopOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
@@ -230,6 +183,7 @@
                     android:id="@+id/patientDetailFragment"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_25sdp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />

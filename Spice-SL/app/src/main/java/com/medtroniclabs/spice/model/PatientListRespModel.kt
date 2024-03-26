@@ -11,8 +11,11 @@ data class PatientListRespModel(
     val nationalID: Long? = null,
     val phoneNumber: String? = null,
     val memberId: String? = null,
+    val occupation:String? =null,
+    val location:String? = null,
     val fhirUrl: String? = null,
     val performer: String? = null,
-    val houseHoldId: String? = null,
-    val chw:String? = null
+    val chw: String? = null,
+    val hhid: Long? = null,
+    val dateOfOnset:String? = null
 )

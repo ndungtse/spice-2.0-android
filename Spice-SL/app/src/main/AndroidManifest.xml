@@ -19,6 +19,9 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".ui.mypatients.ReferralTicketActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.boarding.ResourceLoadingScreen"
             android:exported="false" />
         <activity
@@ -29,9 +32,9 @@
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:exported="false" />
         <activity
-            android:name=".ui.medicalreview.MedicalReviewBaseActivity"
-            android:screenOrientation="sensorLandscape"
-            android:exported="false" />
+            android:name=".ui.mypatients.MedicalReviewBaseActivity"
+            android:exported="false"
+            android:screenOrientation="sensorLandscape" />
         <activity
             android:name=".ui.household.summary.HouseholdSummaryActivity"
             android:exported="false" />

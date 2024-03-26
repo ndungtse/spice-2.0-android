@@ -34,4 +34,8 @@ object DefinedParams {
     const val DefaultIDLabel = "--Select--"
     const val LIST_LIMIT = 15
     const val PAGE_INDEX = 0
+    const val label = "label"
+    const val value = "value"
+    const val MenuTitle = "MenuTitle"
+    const val PatientId = "PatientId"
 }

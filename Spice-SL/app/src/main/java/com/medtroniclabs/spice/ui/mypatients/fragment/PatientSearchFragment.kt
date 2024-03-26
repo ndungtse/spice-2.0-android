@@ -20,9 +20,9 @@ import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.BaseFragment
-import com.medtroniclabs.spice.ui.home.ToolsActivity
 import com.medtroniclabs.spice.ui.mypatients.PatientSelectionListener
 import com.medtroniclabs.spice.ui.mypatients.PatientsListAdapter
+import com.medtroniclabs.spice.ui.mypatients.ReferralTicketActivity
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientListViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
@@ -123,12 +123,18 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
     }
 
     override fun onSelectedPatient(item: PatientListRespModel) {
-        startActivity(Intent(requireActivity(), ToolsActivity::class.java))
+        if (connectivityManager.isNetworkAvailable()) {
+            val intent = Intent(requireActivity(), ReferralTicketActivity::class.java)
+            intent.putExtra(DefinedParams.PatientId, item.id)
+            startActivity(intent)
+        } else {
+            showErrorDialog(getString(R.string.error),getString(R.string.no_internet_error))
+        }
     }
 
     private fun getPatientList() {
         viewLifecycleOwner.lifecycleScope.launch {
-            patientListViewModel.patientsDataSource?.collectLatest { pagedData ->
+            patientListViewModel.patientsDataSource.collectLatest { pagedData ->
                 patientsListAdapter.submitData(pagedData)
             }
         }
@@ -149,11 +155,7 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
                 binding.llExactSearch.etPatientSearch.text?.trim().toString()
             getPatientList()
         } else {
-            (requireActivity() as BaseActivity).showErrorDialogue(
-                getString(R.string.error),
-                getString(R.string.no_internet_error),
-                isNegativeButtonNeed = false,
-            ) {}
+            showErrorDialog(getString(R.string.error),getString(R.string.no_internet_error))
         }
     }
 }

@@ -1,4 +1,4 @@
-package com.medtroniclabs.spice.ui.medicalreview
+package com.medtroniclabs.spice.ui.mypatients.fragment
 
 import android.content.Intent
 import android.os.Bundle
@@ -10,13 +10,16 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.google.android.flexbox.FlexDirection
 import com.google.android.flexbox.FlexboxLayoutManager
 import com.google.android.flexbox.JustifyContent
+import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.CommonUtils
+import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.databinding.FragmentPatientMenuBinding
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.MenuConstants
 import com.medtroniclabs.spice.ui.home.MenuSelectionListener
 import com.medtroniclabs.spice.ui.home.ToolsViewModel
 import com.medtroniclabs.spice.ui.home.adapter.DashboardMenuItemsAdapter
+import com.medtroniclabs.spice.ui.mypatients.MedicalReviewBaseActivity
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -55,6 +58,14 @@ class PatientMenuFragment : BaseFragment(), MenuSelectionListener {
     companion object {
         fun newInstance() =
             PatientMenuFragment()
+
+        fun newInstance(patientId: String?): PatientMenuFragment {
+            val fragment = PatientMenuFragment()
+            val bundle = Bundle()
+            bundle.putString(DefinedParams.PatientId, patientId)
+            fragment.arguments = bundle
+            return fragment
+        }
     }
 
     override fun onMenuSelected(menuId: String) {
@@ -67,6 +78,7 @@ class PatientMenuFragment : BaseFragment(), MenuSelectionListener {
             }
 
             MenuConstants.GENERAL_ID -> {
+                startAssessmentActivity()
             }
 
             MenuConstants.MOTHER_AND_NEONATE_ID -> {
@@ -89,7 +101,15 @@ class PatientMenuFragment : BaseFragment(), MenuSelectionListener {
 
 
     private fun startAssessmentActivity() {
-        val intent = Intent(requireContext(), MedicalReviewBaseActivity::class.java)
-        startActivity(intent)
+        if (connectivityManager.isNetworkAvailable()) {
+            val intent = Intent(requireContext(), MedicalReviewBaseActivity::class.java)
+            val patientId = arguments?.getString(DefinedParams.PatientId, "")
+            if (patientId?.isNotBlank() == true) {
+                intent.putExtra(DefinedParams.PatientId, patientId)
+            }
+            startActivity(intent)
+        } else {
+            showErrorDialog(getString(R.string.error), getString(R.string.no_internet_error))
+        }
     }
 }
