@@ -1,6 +1,5 @@
 package com.medtroniclabs.spice.ui.assessment
 
-import android.content.Intent
 import android.os.Bundle
 import androidx.activity.viewModels
 import com.medtroniclabs.spice.R
@@ -14,14 +13,13 @@ import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.OtherSympto
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.Summary
 import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentICCMFragment
 import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentICCMSummaryFragment
-import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentRMNCHFragment
 import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentOtherSymptomSummaryFragment
 import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentOtherSymptomsFragment
+import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentRMNCHFragment
 import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentRMNCHSummaryFragment
 import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentTBFragment
 import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentTBSummaryFragment
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
-import com.medtroniclabs.spice.ui.landing.LandingActivity
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

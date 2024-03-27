@@ -9,6 +9,7 @@ import com.medtroniclabs.spice.data.VillageInfo
 import com.medtroniclabs.spice.db.dao.AssessmentDAO
 import com.medtroniclabs.spice.db.dao.DiagnosisDAO
 import com.medtroniclabs.spice.db.dao.HouseholdDAO
+import com.medtroniclabs.spice.db.dao.MemberClinicalDAO
 import com.medtroniclabs.spice.db.dao.MemberDAO
 import com.medtroniclabs.spice.db.dao.MetaDataDAO
 import com.medtroniclabs.spice.db.dao.ExaminationsComplaintsDAO
@@ -19,6 +20,7 @@ import com.medtroniclabs.spice.db.entity.FormEntity
 import com.medtroniclabs.spice.db.entity.HealthFacilityEntity
 import com.medtroniclabs.spice.db.entity.HouseholdEntity
 import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
+import com.medtroniclabs.spice.db.entity.MemberClinicalEntity
 import com.medtroniclabs.spice.db.entity.MenuEntity
 import com.medtroniclabs.spice.db.entity.SignsAndSymptomsEntity
 import com.medtroniclabs.spice.db.entity.UserProfileEntity
@@ -39,6 +41,7 @@ class RoomHelperImpl @Inject constructor(
     private val metaDataDAO: MetaDataDAO,
     private val examinationsComplaintsDAO: ExaminationsComplaintsDAO,
     private val diagnosisDAO: DiagnosisDAO
+    private val memberClinicalDAO: MemberClinicalDAO
 ) : RoomHelper {
     override suspend fun saveHouseHoldEntry(householdEntity: HouseholdEntity): Long {
         return householdDAO.insertHouseHold(householdEntity)
@@ -111,8 +114,9 @@ class RoomHelperImpl @Inject constructor(
     override suspend fun getSymptomListByType(type: String): List<SignsAndSymptomsEntity> {
         return assessmentDAO.getSymptomListByType(type)
     }
+
     override suspend fun saveHealthFacility(healthFacilityEntityList: HealthFacilityEntity) {
-         metaDataDAO.insertHealthFacility(healthFacilityEntityList)
+        metaDataDAO.insertHealthFacility(healthFacilityEntityList)
     }
 
     override suspend fun updateHeadCount(householdId: Long, newNoOfPeople: Int) {
@@ -135,7 +139,10 @@ class RoomHelperImpl @Inject constructor(
         return metaDataDAO.getDefaultHealthFacility()
     }
 
-    override suspend fun getClinicalWorkflowId(gender: String, age: Int): List<ClinicalWorkflowEntity> {
+    override suspend fun getClinicalWorkflowId(
+        gender: String,
+        age: Int
+    ): List<ClinicalWorkflowEntity> {
         return metaDataDAO.getClinicalWorkflowId(gender, age)
     }
 
@@ -196,7 +203,7 @@ class RoomHelperImpl @Inject constructor(
         metaDataDAO.deleteAllUserProfileDetails()
     }
 
-    override suspend fun getMenus() : List<MenuEntity> {
+    override suspend fun getMenus(): List<MenuEntity> {
         return metaDataDAO.getMenus()
     }
 
@@ -206,9 +213,10 @@ class RoomHelperImpl @Inject constructor(
 
     override suspend fun getUserVillages(): List<VillageEntity> = metaDataDAO.getVillages()
 
-    override suspend fun getVillageByID(villageId: Long): VillageEntity = metaDataDAO.getVillageByID(villageId)
+    override suspend fun getVillageByID(villageId: Long): VillageEntity =
+        metaDataDAO.getVillageByID(villageId)
 
-    override suspend fun getMenuForClinicalWorkflows() :List<ClinicalWorkflowEntity> {
+    override suspend fun getMenuForClinicalWorkflows(): List<ClinicalWorkflowEntity> {
         return metaDataDAO.getMenuForClinicalWorkflows()
     }
 
@@ -227,7 +235,8 @@ class RoomHelperImpl @Inject constructor(
     override suspend fun updateFhirId(tableName: String, id: String, fhirId: String) {
         val status = OfflineSyncStatus.Success.name
         val updatedAt = System.currentTimeMillis()
-        val query = "UPDATE $tableName SET sync_status = ?, fhir_id = ?, updated_at = ? WHERE id = ?"
+        val query =
+            "UPDATE $tableName SET sync_status = ?, fhir_id = ?, updated_at = ? WHERE id = ?"
         householdDAO.updateFhirId(SimpleSQLiteQuery(query, arrayOf(status, fhirId, updatedAt, id)))
     }
 
@@ -239,7 +248,11 @@ class RoomHelperImpl @Inject constructor(
         if (filterByVillage.isEmpty()) {
             return householdDAO.getHouseholdsWithFilterLiveData(searchInput, filterByStatus)
         } else {
-            return householdDAO.getHouseholdsWithFilterLiveData(searchInput, filterByStatus, filterByVillage)
+            return householdDAO.getHouseholdsWithFilterLiveData(
+                searchInput,
+                filterByStatus,
+                filterByVillage
+            )
         }
 
     }
@@ -258,6 +271,17 @@ class RoomHelperImpl @Inject constructor(
 
     override suspend fun getVillageIdName(): List<VillageBasicDetails> {
         return metaDataDAO.getVillageIdName()
+    }
+
+    override suspend fun getPatientVisitCountByType(
+        type: String,
+        patientId: String
+    ): MemberClinicalEntity? {
+        return memberClinicalDAO.getPatientVisitCountByType(type, patientId)
+    }
+
+    override suspend fun savePatientVisitCountByType(memberClinicalEntity: MemberClinicalEntity) {
+        return memberClinicalDAO.savePatientVisitCountByType(memberClinicalEntity = memberClinicalEntity)
     }
 
     override suspend fun deleteExaminationsComplaints() {

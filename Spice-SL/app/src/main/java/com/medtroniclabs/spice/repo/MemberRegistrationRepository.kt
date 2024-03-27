@@ -1,5 +1,6 @@
 package com.medtroniclabs.spice.repo
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.appextensions.postLoading
@@ -10,6 +11,7 @@ import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.LastCreatedAtAndPatientId
 import com.medtroniclabs.spice.data.VillageInfo
 import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
+import com.medtroniclabs.spice.db.entity.MemberClinicalEntity
 import com.medtroniclabs.spice.db.local.RoomHelper
 import com.medtroniclabs.spice.mappingkey.MemberRegistration
 import com.medtroniclabs.spice.mappingkey.MemberRegistration.otherFamilyMember
@@ -27,7 +29,6 @@ class MemberRegistrationRepository @Inject constructor(
     ): Long {
         val memberEntity = createOrUpdateHouseHoldMemberEntity(map, householdId, entity)
         val memberId = roomHelper.registerMember(memberEntity)
-
         //Update Member count in household only in insert case
         if (entity == null) {
             val memberAddedForHouseHold = getMemberCountPerHouseHold(householdId)
@@ -49,27 +50,30 @@ class MemberRegistrationRepository @Inject constructor(
         val householdMemberEntity = entity ?: HouseholdMemberEntity()
 
         val name = map[MemberRegistration.name]
-        householdMemberEntity.name = CommonUtils.getStringOrEmptyString(name)
+        householdMemberEntity.name = getStringOrEmptyString(name)
 
         val phoneNumber = map[MemberRegistration.phoneNumber]
-        householdMemberEntity.phoneNumber = CommonUtils.getStringOrEmptyString(phoneNumber)
+        householdMemberEntity.phoneNumber = getStringOrEmptyString(phoneNumber)
 
         val phoneNumberCategory = map[MemberRegistration.phoneNumberCategory]
         householdMemberEntity.phoneNumberCategory =
-            CommonUtils.getStringOrEmptyString(phoneNumberCategory)
+            getStringOrEmptyString(phoneNumberCategory)
 
         val dateOfBirth = map[MemberRegistration.dateOfBirth]
-        householdMemberEntity.dateOfBirth = CommonUtils.getStringOrEmptyString(dateOfBirth)
+        householdMemberEntity.dateOfBirth = getStringOrEmptyString(dateOfBirth)
 
         val gender = map[MemberRegistration.gender]
-        householdMemberEntity.gender = CommonUtils.getStringOrEmptyString(gender)
+        householdMemberEntity.gender = getStringOrEmptyString(gender)
 
         val householdHeadRelationship = map[MemberRegistration.householdHeadRelationship]
-        val otherHouseholdRelationship = if(map.containsKey(otherFamilyMember)) map [otherFamilyMember] else null
-        householdMemberEntity.householdHeadRelationship = householdRelationshipStatus(householdHeadRelationship, otherHouseholdRelationship)
+        val otherHouseholdRelationship =
+            if (map.containsKey(otherFamilyMember)) map[otherFamilyMember] else null
+        householdMemberEntity.householdHeadRelationship =
+            householdRelationshipStatus(householdHeadRelationship, otherHouseholdRelationship)
 
         val isPregnantOrNot = map[MemberRegistration.isPregnant]
-        householdMemberEntity.isPregnant = isPregnantOrNot?.let {  CommonUtils.getIsBooleanFromString(isPregnantOrNot) }
+        householdMemberEntity.isPregnant =
+            isPregnantOrNot?.let { CommonUtils.getIsBooleanFromString(isPregnantOrNot) }
 
         if (entity == null) {
             val householdDetails = roomHelper.getHouseHoldDetailsById(householdId)
@@ -90,9 +94,16 @@ class MemberRegistrationRepository @Inject constructor(
         return householdMemberEntity
     }
 
-    private fun householdRelationshipStatus(householdHeadRelationship: Any?, otherHouseholdRelationship: Any?): String {
-        return if (otherHouseholdRelationship != null){
-             "${getStringOrEmptyString(householdHeadRelationship)}-${getStringOrEmptyString(otherHouseholdRelationship)}"
+    private fun householdRelationshipStatus(
+        householdHeadRelationship: Any?,
+        otherHouseholdRelationship: Any?
+    ): String {
+        return if (otherHouseholdRelationship != null) {
+            "${getStringOrEmptyString(householdHeadRelationship)}-${
+                getStringOrEmptyString(
+                    otherHouseholdRelationship
+                )
+            }"
         } else {
             getStringOrEmptyString(householdHeadRelationship)
         }
@@ -142,4 +153,17 @@ class MemberRegistrationRepository @Inject constructor(
     private suspend fun getChiefDomAndVillageCodeByVillageId(villageId: Long): VillageInfo {
         return roomHelper.getChiefDomAndVillageCodeByVillageId(villageId)
     }
+
+    suspend fun getPatientVisitCountByType(
+        type: String,
+        patientId: String
+    ): MemberClinicalEntity? {
+       return roomHelper.getPatientVisitCountByType(type, patientId)
+    }
+
+    suspend fun savePatientVisitCountByType(memberClinicalEntity: MemberClinicalEntity) {
+        roomHelper.savePatientVisitCountByType(memberClinicalEntity)
+    }
+
+
 }

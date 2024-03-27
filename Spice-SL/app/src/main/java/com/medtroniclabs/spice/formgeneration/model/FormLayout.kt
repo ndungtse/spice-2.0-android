@@ -58,9 +58,10 @@ data class FormLayout(
     var applyDecimalFilter: Boolean? = null,
     var backgroundColor: String? = null,
     var information: String? = null,
-    var titleSummary:String? = null,
-    var noOfDays: Int?= null,
+    var titleSummary: String? = null,
+    var noOfDays: Int? = null,
     var informationVisibility: String? = null,
+    var isBooleanAnswer: Boolean = false,
     var isInfo: String? = null
 ) : BaseViewParams
 

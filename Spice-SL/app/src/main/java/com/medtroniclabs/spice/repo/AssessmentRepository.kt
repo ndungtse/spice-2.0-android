@@ -8,6 +8,7 @@ import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.appextensions.postSuccess
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.StringConverter
+import com.medtroniclabs.spice.data.LocalSpinnerResponse
 import com.medtroniclabs.spice.db.entity.AssessmentEntity
 import com.medtroniclabs.spice.db.entity.HealthFacilityEntity
 import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
@@ -15,6 +16,7 @@ import com.medtroniclabs.spice.db.entity.SignsAndSymptomsEntity
 import com.medtroniclabs.spice.db.local.RoomHelper
 import com.medtroniclabs.spice.formgeneration.model.FormResponse
 import com.medtroniclabs.spice.network.resource.Resource
+import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
 import javax.inject.Inject
 
@@ -102,6 +104,7 @@ class AssessmentRepository @Inject constructor(
             //Exception - Catch block
         }
     }
+
     suspend fun getFormData(
         formType: String,
         formLayoutsLiveData: MutableLiveData<Resource<FormResponse>>
@@ -120,6 +123,24 @@ class AssessmentRepository @Inject constructor(
     suspend fun getNearestHealthFacility(nearestFacilityLiveData: MutableLiveData<Resource<List<HealthFacilityEntity>>>) {
         val response = roomHelper.getNearestHealthFacility()
         nearestFacilityLiveData.postSuccess(response)
+    }
+
+   suspend fun getNearestHealthFacility(
+        facilitySpinnerLiveData: MutableLiveData<Resource<LocalSpinnerResponse>>,
+        tag: String
+    ) {
+        try {
+            facilitySpinnerLiveData.postLoading()
+            val response = roomHelper.getNearestHealthFacility()
+            facilitySpinnerLiveData.postValue(
+                Resource(
+                    ResourceState.SUCCESS,
+                    LocalSpinnerResponse(tag, response)
+                )
+            )
+        } catch (_: Exception) {
+            facilitySpinnerLiveData.postError()
+        }
     }
 
 }

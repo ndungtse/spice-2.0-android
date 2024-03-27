@@ -15,8 +15,8 @@
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/etUserInput"
+        android:hint="@string/select"
         style="@style/Form_Input_Style_BG"
-        android:text="@string/please_select"
         android:layout_marginVertical="@dimen/_8sdp"
         android:drawableEnd="@drawable/ic_spinner_arrow_down"
         android:padding="@dimen/_8sdp"/>

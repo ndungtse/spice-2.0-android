@@ -6,21 +6,26 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import com.google.gson.Gson
-import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.setSuccess
 import com.medtroniclabs.spice.common.CommonUtils
+import com.medtroniclabs.spice.common.EntityMapper
 import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.databinding.FragmentAssessmentRmnchBinding
+import com.medtroniclabs.spice.db.entity.MemberClinicalEntity
 import com.medtroniclabs.spice.formgeneration.FormGenerator
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.listener.FormEventListener
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.model.FormResponse
 import com.medtroniclabs.spice.formgeneration.ui.FormResultComposer
+import com.medtroniclabs.spice.formgeneration.utility.CheckBoxDialog
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
+import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.PlaceOfDelivery
+import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.visitCount
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -76,6 +81,37 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
                 }
             }
         }
+        viewModel.facilitySpinnerLiveData.observe(viewLifecycleOwner) { resourceState ->
+            when (resourceState.state) {
+                ResourceState.SUCCESS -> {
+                    hideProgress()
+                    resourceState.data?.let { data ->
+                        formGenerator.spinnerDataInjection(
+                            data,
+                            EntityMapper.getResultSpinnerMapList(data)
+                        )
+                    }
+                }
+
+                ResourceState.LOADING -> {
+                    showProgress()
+                }
+
+                ResourceState.ERROR -> {
+                    hideProgress()
+                }
+            }
+        }
+
+        viewModel.memberClinicalLiveData.observe(viewLifecycleOwner){data ->
+            data?.clinicalDate?.let {date ->
+                if (date.isNotEmpty()) {
+                    formGenerator.getViewByTag(RMNCH.lastMenstrualPeriod + formGenerator.rootSuffix)?.let {
+                        it.gone()
+                    }
+                }
+            }
+        }
     }
 
     private fun getFormDataForWorkflow() {
@@ -97,15 +133,15 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
     private fun showRespectiveWorkflow() {
         var resultJsonFileName: String? = null
         when (viewModel.workflowName) {
-            getString(R.string.anc) -> {
+            RMNCH.ANC -> {
                 resultJsonFileName = "rmnch_anc_visit.json"
             }
 
-            getString(R.string.child_hood_visit) -> {
+            RMNCH.ChildHoodVisit -> {
                 resultJsonFileName = "rmnch_childhood_visit.json"
             }
 
-            getString(R.string.pnc) -> {
+            RMNCH.PNC -> {
                 resultJsonFileName = "rmnch_pnc_phu_delivery_child.json"
             }
         }
@@ -136,7 +172,13 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
     }
 
     override fun loadLocalCache(id: String, localDataCache: Any, selectedParent: Long?) {
-
+        when (id) {
+            PlaceOfDelivery -> {
+                if (localDataCache is String) {
+                    viewModel.loadDataCacheByType(id, localDataCache)
+                }
+            }
+        }
     }
 
     override fun onPopulate(targetId: String) {
@@ -147,6 +189,9 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
         serverViewModel: FormLayout,
         resultMap: Any?
     ) {
+        CheckBoxDialog.newInstance(id, resultMap) { map ->
+            formGenerator.validateCheckboxDialogue(id, serverViewModel, map)
+        }.show(childFragmentManager, CheckBoxDialog.TAG)
     }
 
     override fun onInstructionClicked(
@@ -167,8 +212,11 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
                     AssessmentDefinedParams.RMNCH.lowercase()
                 )
             }
-            result?.second?.let {
-                StringConverter.convertGivenMapToString(it)?.let { resultData ->
+            result?.second?.let { second ->
+                viewModel.workflowName?.let {
+                    handlePregnancy(second, workflowName = it)
+                }
+                StringConverter.convertGivenMapToString(second)?.let { resultData ->
                     viewModel.saveAssessment(resultData, null)
                 }
             }
@@ -176,11 +224,14 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
     }
 
     override fun onRenderingComplete() {
-
+        viewModel.memberClinicalLiveData.value?.clinicalDate?.let {
+            formGenerator.getViewByTag(RMNCH.lastMenstrualPeriod + formGenerator.rootSuffix)?.let {
+                it.gone()
+            }
+        }
     }
 
     override fun onUpdateInstruction(id: String, selectedId: Any?) {
-
     }
 
     override fun onInformationHandling(
@@ -189,6 +240,58 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
         enteredDays: Int,
         resultMap: HashMap<String, Any>?
     ) {
+    }
 
+    private fun handlePregnancy(details: HashMap<String, Any>, workflowName: String) {
+        viewModel.memberDetailsLiveData.value?.data?.apply {
+            val pregnancyMap =
+                details[AssessmentDefinedParams.RMNCH.lowercase()] as HashMap<String, Any>
+            if (pregnancyMap.containsKey(workflowName.lowercase()) && pregnancyMap[workflowName.lowercase()] is Map<*, *>) {
+                val map = pregnancyMap[workflowName.lowercase()] as HashMap<String, Any>
+                viewModel.memberClinicalLiveData.value?.let {
+                    map[visitCount] = it.visitCount + 1
+                    map[RMNCH.lastMenstrualPeriod] = it.clinicalDate
+                    savePatientClinicalInformation(patientId,workflowName,map,it.id)
+                } ?: kotlin.run {
+                    map[visitCount] = 1L
+                    savePatientClinicalInformation(patientId, workflowName, map)
+                }
+            }
+        }
+    }
+
+    private fun savePatientClinicalInformation(
+        patientId: String?,
+        workflowName: String,
+        map: HashMap<String, Any>,
+        rowId: Long = 0
+    ) {
+        patientId?.let { id ->
+            getClinicalDateAndVisitCount(map, workflowName)?.let {
+                val clinicalEntity = MemberClinicalEntity(
+                    id = rowId,
+                    patientId = id,
+                    type = workflowName,
+                    visitCount = it.first,
+                    clinicalDate = it.second
+                )
+                viewModel.savePatientVisitCountByType(clinicalEntity)
+            }
+        }
+    }
+
+    private fun getClinicalDateAndVisitCount(
+        details: HashMap<String, Any>,
+        workflowName: String
+    ): Pair<Long, String>? {
+        return when (workflowName) {
+            RMNCH.ANC -> {
+                Pair(details[visitCount] as Long, details[RMNCH.lastMenstrualPeriod] as String)
+            }
+
+            else -> {
+                null
+            }
+        }
     }
 }

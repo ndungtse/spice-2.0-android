@@ -3,9 +3,11 @@ package com.medtroniclabs.spice.ui.assessment.viewmodel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.medtroniclabs.spice.data.LocalSpinnerResponse
 import com.medtroniclabs.spice.db.entity.AssessmentEntity
 import com.medtroniclabs.spice.db.entity.HealthFacilityEntity
 import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
+import com.medtroniclabs.spice.db.entity.MemberClinicalEntity
 import com.medtroniclabs.spice.db.entity.SignsAndSymptomsEntity
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
@@ -13,8 +15,10 @@ import com.medtroniclabs.spice.formgeneration.model.FormResponse
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.repo.AssessmentRepository
 import com.medtroniclabs.spice.repo.MemberRegistrationRepository
+import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -22,7 +26,7 @@ import javax.inject.Inject
 class AssessmentViewModel @Inject constructor(
     @IoDispatcher private val dispatcherIO: CoroutineDispatcher,
     private var memberRegistrationRepository: MemberRegistrationRepository,
-    private var assessmentRepository: AssessmentRepository
+    private var assessmentRepository: AssessmentRepository,
 ) : ViewModel() {
 
     var selectedHouseholdMemberId = -1L
@@ -30,20 +34,25 @@ class AssessmentViewModel @Inject constructor(
     val assessmentUpdateLiveData = MutableLiveData<Resource<String>>()
     val memberDetailsLiveData = MutableLiveData<Resource<HouseholdMemberEntity>>()
     var menuId: String? = null
-    var workflowName:String? = null
+    var workflowName: String? = null
     var formLayout: List<FormLayout>? = null
     var symptomTypeListResponse = MutableLiveData<List<SignsAndSymptomsEntity>>()
     var otherAssessmentDetails = HashMap<String, Any>()
     val formLayoutsLiveData = MutableLiveData<Resource<FormResponse>>()
     val nearestFacilityLiveData = MutableLiveData<Resource<List<HealthFacilityEntity>>>()
-    var referralStatus:String? = null
+    var referralStatus: String? = null
+    val facilitySpinnerLiveData = MutableLiveData<Resource<LocalSpinnerResponse>>()
+    val memberClinicalLiveData = MutableLiveData<MemberClinicalEntity?>()
 
     fun getMemberDetailsById() {
         if (selectedHouseholdMemberId == -1L) {
             return
         }
         viewModelScope.launch(dispatcherIO) {
-            memberRegistrationRepository.getMemberDetailsByID(selectedHouseholdMemberId,memberDetailsLiveData)
+            memberRegistrationRepository.getMemberDetailsByID(
+                selectedHouseholdMemberId,
+                memberDetailsLiveData
+            )
         }
     }
 
@@ -51,15 +60,32 @@ class AssessmentViewModel @Inject constructor(
         viewModelScope.launch(dispatcherIO) {
             memberDetailsLiveData.value?.data?.let { details ->
                 referralStatus = referralResult?.first
-                assessmentRepository.saveAssessment(resultData, details, assessmentSaveLiveData, menuId, selectedHouseholdMemberId, referralResult)
+                assessmentRepository.saveAssessment(
+                    resultData,
+                    details,
+                    assessmentSaveLiveData,
+                    menuId,
+                    selectedHouseholdMemberId,
+                    referralResult
+                )
             }
         }
     }
 
     fun updateOtherAssessmentDetails() {
         viewModelScope.launch(dispatcherIO) {
-            assessmentRepository.updateOtherAssessmentDetails(selectedHouseholdMemberId, otherAssessmentDetails, assessmentUpdateLiveData)
+            assessmentRepository.updateOtherAssessmentDetails(
+                selectedHouseholdMemberId,
+                otherAssessmentDetails,
+                assessmentUpdateLiveData
+            )
         }
+    }
+
+    fun addOtherDetailsToType(key: String) {
+        val otherDetailsMap = HashMap<String,Any>()
+        otherDetailsMap[key] = otherAssessmentDetails
+        otherAssessmentDetails = otherDetailsMap
     }
 
     fun getSymptomListByType(type: String) {
@@ -74,9 +100,37 @@ class AssessmentViewModel @Inject constructor(
         }
     }
 
-    fun getNearestHealthFacility(){
-        viewModelScope.launch (dispatcherIO) {
+    fun getNearestHealthFacility() {
+        viewModelScope.launch(dispatcherIO) {
             assessmentRepository.getNearestHealthFacility(nearestFacilityLiveData)
         }
     }
+
+    fun loadDataCacheByType(type: String, tag: String) {
+        viewModelScope.launch(dispatcherIO) {
+            when (type) {
+                RMNCH.PlaceOfDelivery -> {
+                    assessmentRepository.getNearestHealthFacility(facilitySpinnerLiveData, tag)
+                }
+            }
+        }
+    }
+
+    fun getPatientVisitCountByType(type: String, patientId: String) {
+        viewModelScope.launch(dispatcherIO) {
+            memberClinicalLiveData.postValue(
+                memberRegistrationRepository.getPatientVisitCountByType(
+                    type,
+                    patientId
+                )
+            )
+        }
+    }
+
+    fun savePatientVisitCountByType(memberClinicalEntity: MemberClinicalEntity) {
+        viewModelScope.launch(Dispatchers.IO) {
+            memberRegistrationRepository.savePatientVisitCountByType(memberClinicalEntity)
+        }
+    }
+
 }

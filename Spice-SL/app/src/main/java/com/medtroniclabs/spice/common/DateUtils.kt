@@ -1,6 +1,7 @@
 package com.medtroniclabs.spice.common
 
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams
+import org.joda.time.LocalDate
 import org.joda.time.Period
 import org.joda.time.PeriodType
 import java.text.SimpleDateFormat
@@ -10,6 +11,8 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
+import java.util.concurrent.TimeUnit
+
 object DateUtils {
 
     const val DATE_ddMMyyyy = "dd/MM/yyyy"
@@ -233,4 +236,20 @@ object DateUtils {
         val dateFormat = SimpleDateFormat(DATE_ddMMyyyy, Locale.getDefault())
         return dateFormat.format(calendar.time)
     }
+
+    fun calculateGestationalAge(lastMenstrualDate: Calendar): Pair<Long, Long> {
+        val currentDate = Calendar.getInstance()
+        val diffInMillis = currentDate.timeInMillis - lastMenstrualDate.timeInMillis
+        val diffInDays = TimeUnit.MILLISECONDS.toDays(diffInMillis)
+        val weeks = diffInDays / 7
+        val days = diffInDays % 7
+        return Pair(weeks, days)
+    }
+
+    fun calculateEstimatedDeliveryDate(lastMenstrualDate: Calendar): Calendar {
+        val estimatedDeliveryDate = lastMenstrualDate.clone() as Calendar
+        estimatedDeliveryDate.add(Calendar.DAY_OF_YEAR, 280)
+        return estimatedDeliveryDate
+    }
+
 }

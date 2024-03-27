@@ -408,7 +408,7 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
                 binding.etNextFollowUpDate.text?.let {
                     viewModel.otherAssessmentDetails[NextFollowupDate] = it.toString()
                 }
-                addOtherDetailsToIccmType(ICCM.lowercase())
+                viewModel.addOtherDetailsToType(ICCM.lowercase())
                 viewModel.updateOtherAssessmentDetails()
             }
 
@@ -418,11 +418,6 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
         }
     }
 
-    private fun addOtherDetailsToIccmType(key: String) {
-        val otherDetailsMap = HashMap<String,Any>()
-        otherDetailsMap[key] = viewModel.otherAssessmentDetails
-        viewModel.otherAssessmentDetails = otherDetailsMap
-    }
 
     private fun showDatePickerDialog() {
         var yearMonthDate: Triple<Int?, Int?, Int?>? = null

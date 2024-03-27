@@ -7,9 +7,9 @@
     "viewType": "CardView"
   },
   {
-    "id": "lmp",
+    "id": "lastMenstrualPeriod",
     "family": "anc",
-    "fieldName": "lmp",
+    "fieldName": "lastMenstrualPeriod",
     "orderId": 2,
     "title": "Last Menstrual Period",
     "viewType": "DatePicker",
@@ -20,8 +20,8 @@
     "visibility": "visible"
   },
   {
-    "id": "motherDangerSign",
-    "fieldName": "motherDangerSign",
+    "id": "ancSigns",
+    "fieldName": "ancSigns",
     "family": "anc",
     "orderId": 3,
     "isSummary": true,
@@ -32,13 +32,39 @@
     "errorMessage": "Please select a valid option",
     "isEnabled": true,
     "title": "Is the expectant mother experiencing any of these danger signs?",
-    "visibility": "visible"
+    "visibility": "visible",
+    "condition": [
+      {
+        "eq": "Other",
+        "targetId": "otherAncSigns",
+        "visibility": "visible"
+      }
+    ]
+  },
+  {
+    "errorMessage": "Please enter a valid sign",
+    "family": "anc",
+    "fieldName": "Other Signs",
+    "hint": "Enter Other Sign",
+    "id": "otherAncSigns",
+    "inputType": 96,
+    "isEnabled": true,
+    "isMandatory": true,
+    "isNeededDefault": true,
+    "isNotDefault": false,
+    "orderId": 5,
+    "isSummary": false,
+    "title": "Other Signs",
+    "viewType": "EditText",
+    "isInfo": "gone",
+    "visibility": "gone"
   },
   {
     "family": "anc",
-    "fieldName": "maleParterPresent",
-    "id": "maleParterPresent",
+    "fieldName": "isMalePartnerPresent",
+    "id": "isMalePartnerPresent",
     "condition": [],
+    "isBooleanAnswer": true,
     "orderId": 4,
     "errorMessage": "Please select a valid option",
     "isEnabled": true,
@@ -47,11 +73,11 @@
     "isSummary": true,
     "optionsList": [
       {
-        "id": "Yes",
+        "id": true,
         "name": "Yes"
       },
       {
-        "id": "No",
+        "id": false,
         "name": "No"
       }
     ],
@@ -63,22 +89,23 @@
   },
   {
     "family": "anc",
-    "fieldName": "sleepsUnderBednet",
-    "id": "sleepsUnderBednet",
+    "fieldName": "sleepsUnderBedNet",
+    "id": "sleepsUnderBedNet",
     "condition": [],
     "orderId": 4,
     "errorMessage": "Please select a valid option",
     "isEnabled": true,
+    "isBooleanAnswer": true,
     "isMandatory": true,
     "isNeededDefault": true,
     "isSummary": true,
     "optionsList": [
       {
-        "id": "Yes",
+        "id": true,
         "name": "Yes"
       },
       {
-        "id": "No",
+        "id": false,
         "name": "No"
       }
     ],
@@ -94,6 +121,7 @@
     "id": "eatsMoreThanBefore",
     "condition": [],
     "orderId": 4,
+    "isBooleanAnswer": true,
     "errorMessage": "Please select a valid option",
     "isEnabled": true,
     "isMandatory": true,
@@ -101,11 +129,11 @@
     "isSummary": true,
     "optionsList": [
       {
-        "id": "Yes",
+        "id": true,
         "name": "Yes"
       },
       {
-        "id": "No",
+        "id": false,
         "name": "No"
       }
     ],
@@ -117,8 +145,8 @@
   },
   {
     "family": "anc",
-    "fieldName": "eatRichFoods",
-    "id": "eatRichFoods",
+    "fieldName": "eats4GroupIronVitARichFoods",
+    "id": "eats4GroupIronVitARichFoods",
     "condition": [],
     "orderId": 4,
     "errorMessage": "Please select a valid option",
@@ -127,13 +155,14 @@
     "titleSummary": "4 food groups+  iron-rich & vit-A rich foods?",
     "isNeededDefault": true,
     "isSummary": true,
+    "isBooleanAnswer": true,
     "optionsList": [
       {
-        "id": "Yes",
+        "id": true,
         "name": "Yes"
       },
       {
-        "id": "No",
+        "id": false,
         "name": "No"
       }
     ],
@@ -145,9 +174,10 @@
   },
   {
     "family": "anc",
-    "fieldName": "ironTablets",
-    "id": "ironTablets",
+    "fieldName": "takesIronFloatTablets",
+    "id": "takesIronFloatTablets",
     "condition": [],
+    "isBooleanAnswer": true,
     "orderId": 4,
     "errorMessage": "Please select a valid option",
     "isEnabled": true,
@@ -156,11 +186,11 @@
     "isSummary": true,
     "optionsList": [
       {
-        "id": "Yes",
+        "id": true,
         "name": "Yes"
       },
       {
-        "id": "No",
+        "id": false,
         "name": "No"
       }
     ],
@@ -172,10 +202,11 @@
   },
   {
     "family": "anc",
-    "fieldName": "fancidarTablet",
-    "id": "fancidarTablet",
+    "fieldName": "takesFancidarTablets",
+    "id": "takesFancidarTablets",
     "condition": [],
     "orderId": 4,
+    "isBooleanAnswer": true,
     "errorMessage": "Please select a valid option",
     "isEnabled": true,
     "isMandatory": true,
@@ -183,11 +214,11 @@
     "isSummary": true,
     "optionsList": [
       {
-        "id": "Yes",
+        "id": true,
         "name": "Yes"
       },
       {
-        "id": "No",
+        "id": false,
         "name": "No"
       }
     ],
@@ -205,16 +236,17 @@
     "orderId": 4,
     "errorMessage": "Please select a valid option",
     "isEnabled": true,
+    "isBooleanAnswer": true,
     "isMandatory": true,
     "isNeededDefault": true,
     "isSummary": true,
     "optionsList": [
       {
-        "id": "Yes",
+        "id": true,
         "name": "Yes"
       },
       {
-        "id": "No",
+        "id": false,
         "name": "No"
       }
     ],
@@ -226,10 +258,11 @@
   },
   {
     "family": "anc",
-    "fieldName": "miscarriageStillBirth",
-    "id": "miscarriageStillBirth",
+    "fieldName": "miscarriage",
+    "id": "miscarriage",
     "condition": [],
     "orderId": 4,
+    "isBooleanAnswer": true,
     "errorMessage": "Please select a valid option",
     "isEnabled": true,
     "isMandatory": true,
@@ -237,11 +270,11 @@
     "isSummary": true,
     "optionsList": [
       {
-        "id": "Yes",
+        "id": true,
         "name": "Yes"
       },
       {
-        "id": "No",
+        "id": false,
         "name": "No"
       }
     ],
@@ -260,15 +293,16 @@
     "errorMessage": "Please select a valid option",
     "isEnabled": true,
     "isMandatory": true,
+    "isBooleanAnswer": true,
     "isNeededDefault": true,
     "isSummary": true,
     "optionsList": [
       {
-        "id": "Yes",
+        "id": true,
         "name": "Yes"
       },
       {
-        "id": "No",
+        "id": false,
         "name": "No"
       }
     ],
@@ -287,15 +321,16 @@
     "errorMessage": "Please select a valid option",
     "isEnabled": true,
     "isMandatory": true,
+    "isBooleanAnswer": true,
     "isNeededDefault": true,
     "isSummary": true,
     "optionsList": [
       {
-        "id": "Yes",
+        "id": true,
         "name": "Yes"
       },
       {
-        "id": "No",
+        "id": false,
         "name": "No"
       }
     ],
@@ -307,13 +342,13 @@
   },
   {
     "family": "anc",
-    "fieldName": "placeOfBirth",
-    "id": "placeOfBirth",
+    "fieldName": "placeOfDelivery",
+    "id": "placeOfDelivery",
     "viewType": "Spinner",
     "orderId": 6,
     "isSummary": true,
     "titleSummary": "Place of delivery",
-    "localDataCache": "placeOfBirth",
+    "localDataCache": "placeOfDelivery",
     "isEnabled": true,
     "isMandatory": false,
     "title": "Place of delivery (Intended per birth plan)",

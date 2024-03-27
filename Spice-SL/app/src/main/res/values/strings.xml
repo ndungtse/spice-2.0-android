@@ -141,7 +141,7 @@
     <string name="no">No</string>
     <string name="phu_referred_to">Nearest PHU Referred to</string>
     <string name="was_the_child">Was the child actually taken to the Clinic</string>
-    <string name="next_follow_up_date">Next ANC Visits date</string>
+    <string name="next_follow_up_date">Next visit date</string>
     <string name="presumptive_tb_no">Presumptive TB No</string>
     <string name="tb_signs_symptoms"><![CDATA[TB Signs & Symptoms]]></string>
     <string name="symptoms">Symptoms</string>
@@ -231,6 +231,7 @@
     <string name="chest_in_drawing">Chest in-drawing</string>
     <string name="patient_on_treatment">Patient On Treatment</string>
     <string name="no_refferral_treatment_required">No Referral / Treatment Required</string>
+    <string name="select" translatable="false">Select</string>
     <string name="muac_info_1"> Ask the mother to remove any clothing that covers the child’s left arm.</string>
     <string name="muac_info_2"> Identify the midpoint of the child’s left upper arm. This can be done by taking a piece of string (or the tape itself), place one end on the tip of the child’s shoulder and the other on the elbow</string>
     <string name="muac_info_3"> Now bend the string up in a loop to double it so the point at the elbow is placed together with the point on the shoulder with a loop hanging down – the end of the straightened loop indicates the midpoint.</string>
@@ -242,6 +243,10 @@
     <string name="oedema_info_3"> The child has oedema if a pit remains in both feet when you lift your thumbs</string>
     <string name="chest_info_1"> The child has chest in-drawing if the lower chest wall goes IN when the child breathes IN. Chest in-drawing is not visible when the child breathes out.</string>
     <string name="chest_info_2"> For chest in-drawing to be present, it must be clearly visible and present at every breath.</string>
+    <string name="last_menstrual_period">"Last Menstrual Period "</string>
+    <string name="gestational_age">Gestational Age</string>
+    <string name="estimated_delivery_date">Estimated Delivery Date</string>
+
     <string name="refer_patient">Refer Patient</string>
     <string name="treatment">Treatment</string>
     <string name="next_visit_date">Next visit date</string>

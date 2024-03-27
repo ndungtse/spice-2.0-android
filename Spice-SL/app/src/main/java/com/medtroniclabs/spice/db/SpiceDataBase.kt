@@ -11,6 +11,7 @@ import com.medtroniclabs.spice.db.converters.OfflineStatusTypeConverter
 import com.medtroniclabs.spice.db.dao.AssessmentDAO
 import com.medtroniclabs.spice.db.dao.DiagnosisDAO
 import com.medtroniclabs.spice.db.dao.HouseholdDAO
+import com.medtroniclabs.spice.db.dao.MemberClinicalDAO
 import com.medtroniclabs.spice.db.dao.MemberDAO
 import com.medtroniclabs.spice.db.dao.MetaDataDAO
 import com.medtroniclabs.spice.db.dao.ExaminationsComplaintsDAO
@@ -21,6 +22,7 @@ import com.medtroniclabs.spice.db.entity.FormEntity
 import com.medtroniclabs.spice.db.entity.HealthFacilityEntity
 import com.medtroniclabs.spice.db.entity.HouseholdEntity
 import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
+import com.medtroniclabs.spice.db.entity.MemberClinicalEntity
 import com.medtroniclabs.spice.db.entity.MenuEntity
 import com.medtroniclabs.spice.db.entity.SignsAndSymptomsEntity
 import com.medtroniclabs.spice.db.entity.UserProfileEntity
@@ -28,7 +30,7 @@ import com.medtroniclabs.spice.db.entity.VillageEntity
 
 @Database(
     entities = [HouseholdEntity::class, HouseholdMemberEntity::class, SignsAndSymptomsEntity::class, AssessmentEntity::class, MenuEntity::class, UserProfileEntity::class,
-        VillageEntity::class, HealthFacilityEntity::class, ClinicalWorkflowEntity::class, FormEntity::class, ClinicalWorkflowConditionEntity::class, ExaminationsComplaintItems::class, DiseaseCategoryItems::class],
+        VillageEntity::class, HealthFacilityEntity::class, ClinicalWorkflowEntity::class, FormEntity::class, ClinicalWorkflowConditionEntity::class,MemberClinicalEntity::class,ExaminationsComplaintItems::class, DiseaseCategoryItems::class],
     version = 1
 )
 @TypeConverters(OfflineStatusTypeConverter::class)
@@ -39,6 +41,7 @@ abstract class SpiceDataBase : RoomDatabase() {
     abstract fun metaDataDAO(): MetaDataDAO
     abstract fun examinationsComplaintsDAO(): ExaminationsComplaintsDAO
     abstract fun diagnosisDAO(): DiagnosisDAO
+    abstract fun memberClinicalDAO():MemberClinicalDAO
 
     companion object {
         private const val DATABASE_NAME = "SpiceDataBase"

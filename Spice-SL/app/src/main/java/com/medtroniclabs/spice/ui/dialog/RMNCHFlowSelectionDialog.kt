@@ -17,6 +17,7 @@ import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.ui.SingleSelectionCustomView
 import com.medtroniclabs.spice.ui.MenuConstants.DialogResult
 import com.medtroniclabs.spice.ui.MenuConstants.WorkFlowName
+import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
 import com.medtroniclabs.spice.ui.home.ToolsViewModel
 
 class RMNCHFlowSelectionDialog : DialogFragment(), View.OnClickListener {
@@ -100,9 +101,9 @@ class RMNCHFlowSelectionDialog : DialogFragment(), View.OnClickListener {
 
     private fun getRMNCHFlowData(): ArrayList<Map<String, Any>> {
         val flowList = ArrayList<Map<String, Any>>()
-        flowList.add(getOptionMap(getString(R.string.anc)))
-        flowList.add(getOptionMap(getString(R.string.pnc)))
-        flowList.add(getOptionMap(getString(R.string.child_hood_visit)))
+        flowList.add(getOptionMap(RMNCH.ANC))
+        flowList.add(getOptionMap(RMNCH.PNC))
+        flowList.add(getOptionMap(RMNCH.ChildHoodVisit))
         return flowList
     }
 

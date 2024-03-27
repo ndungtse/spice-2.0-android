@@ -12,6 +12,7 @@ import com.medtroniclabs.spice.db.entity.FormEntity
 import com.medtroniclabs.spice.db.entity.HealthFacilityEntity
 import com.medtroniclabs.spice.db.entity.HouseholdEntity
 import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
+import com.medtroniclabs.spice.db.entity.MemberClinicalEntity
 import com.medtroniclabs.spice.db.entity.MenuEntity
 import com.medtroniclabs.spice.db.entity.SignsAndSymptomsEntity
 import com.medtroniclabs.spice.db.entity.UserProfileEntity
@@ -38,7 +39,7 @@ interface RoomHelper {
     suspend fun getSymptomListByType(type: String): List<SignsAndSymptomsEntity>
     suspend fun updateHeadCount(householdId: Long, newNoOfPeople: Int)
     suspend fun getMemberCountPerHouseHold(householdId: Long): Int
-    suspend fun saveHealthFacility(healthFacilityEntityList:HealthFacilityEntity)
+    suspend fun saveHealthFacility(healthFacilityEntityList: HealthFacilityEntity)
     suspend fun deleteAllHealthFacility()
     suspend fun saveVillage(villageEntityList: List<VillageEntity>)
     suspend fun getAllVillageEntity(): List<VillageEntity>
@@ -58,9 +59,10 @@ interface RoomHelper {
     suspend fun getFormData(
         formType: String
     ): String
+
     suspend fun insertSymptoms(symptomEntity: List<SignsAndSymptomsEntity>)
     suspend fun deleteAllSymptoms()
-    suspend fun getMenuForClinicalWorkflows() :List<ClinicalWorkflowEntity>
+    suspend fun getMenuForClinicalWorkflows(): List<ClinicalWorkflowEntity>
     suspend fun deleteClinicalWorkflowConditions()
     suspend fun insertClinicalWorkflowConditions(clinicalWorkflowConditions: List<ClinicalWorkflowConditionEntity>)
     suspend fun getUserVillages(): List<VillageEntity>
@@ -74,17 +76,20 @@ interface RoomHelper {
 
     suspend fun getAllUnSyncedHouseHoldMembers(houseHoldId: Long): List<HouseHoldMember>
 
-    suspend fun getOtherHouseholdMembers(ids:List<Long>): List<HouseHoldMember>
+    suspend fun getOtherHouseholdMembers(ids: List<Long>): List<HouseHoldMember>
     suspend fun updateFhirId(tableName: String, id: String, fhirId: String)
     fun getFilteredHouseholdsLiveData(
         searchInput: String,
         filterByVillage: List<Long>,
         filterByStatus: String
     ): LiveData<List<HouseHoldEntityWithMemberCount>>
+
     suspend fun getNearestHealthFacility(): List<HealthFacilityEntity>
     suspend fun getUnSyncedHouseholdCount(): Int
     suspend fun getUnSyncedHouseholdMemberCount(): Int
     suspend fun getVillageIdName(): List<VillageBasicDetails>
+    suspend fun getPatientVisitCountByType(type:String,patientId: String):MemberClinicalEntity?
+    suspend fun savePatientVisitCountByType(memberClinicalEntity: MemberClinicalEntity)
     suspend fun deleteExaminationsComplaints()
     suspend fun insertExaminationsComplaint(symptomEntity: List<ExaminationsComplaintItems>)
     suspend fun deleteDiagnosisList()

@@ -13,6 +13,8 @@ import com.google.gson.reflect.TypeToken
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.CommonUtils.getBooleanAsString
 import com.medtroniclabs.spice.common.DefinedParams
+import com.medtroniclabs.spice.common.EntityMapper.getResultSpinnerMapList
+import com.medtroniclabs.spice.data.LocalSpinnerResponse
 import com.medtroniclabs.spice.databinding.FragmentHouseHoldRegistrationBinding
 import com.medtroniclabs.spice.db.entity.HouseholdEntity
 import com.medtroniclabs.spice.db.entity.VillageEntity
@@ -75,7 +77,7 @@ class HouseHoldRegistrationFragment : Fragment(), View.OnClickListener, FormEven
                     (activity as? BaseActivity)?.hideLoading()
                     resources.data?.let { data ->
                         val formFieldsType = object : TypeToken<FormResponse>() {}.type
-                        val formFields:FormResponse = Gson().fromJson(data, formFieldsType)
+                        val formFields: FormResponse = Gson().fromJson(data, formFieldsType)
                         formGenerator.populateViews(formFields.formLayout)
                     }
                 }
@@ -90,31 +92,9 @@ class HouseHoldRegistrationFragment : Fragment(), View.OnClickListener, FormEven
             when (resourceState.state) {
                 ResourceState.SUCCESS -> {
                     resourceState.data?.let { data ->
-                        val view = formGenerator.getViewByTag(data.tag) as AppCompatSpinner
-                        if (view.adapter is CustomSpinnerAdapter) {
-                            val mapList = ArrayList<Map<String, Any>>()
-                            if (data.response is List<*>) {
-                                mapList.addAll(data.response.map { properties ->
-                                    val map = HashMap<String, Any>()
-                                    mapsIdName(properties, map)
-                                    map
-                                })
-                                if (mapList.size > 1) {
-                                    val defaultIdIndex = 0
-                                    mapList.add(
-                                        defaultIdIndex,
-                                        hashMapOf<String, Any>(
-                                            DefinedParams.NAME to DefinedParams.DefaultIDLabel,
-                                            DefinedParams.ID to "-1"
-                                        )
-                                    )
-                                }
-                                (view.adapter as CustomSpinnerAdapter).setData(mapList)
-                            }
-                        }
+                        formGenerator.spinnerDataInjection(data, getResultSpinnerMapList(data))
                     }
                 }
-
                 else -> {
                     //Invoked if response state is not success
                 }
@@ -250,7 +230,7 @@ class HouseHoldRegistrationFragment : Fragment(), View.OnClickListener, FormEven
     override fun onClick(v: View?) {
         when (v?.id) {
             R.id.btnNext -> {
-                 formGenerator.formSubmitAction(v)
+                formGenerator.formSubmitAction(v)
                 /*if (activity is HouseholdActivity) {
                     (activity as HouseholdActivity).loadFragment(2)
                 }*/
@@ -259,7 +239,7 @@ class HouseHoldRegistrationFragment : Fragment(), View.OnClickListener, FormEven
     }
 
     override fun loadLocalCache(id: String, localDataCache: Any, selectedParent: Long?) {
-        if (localDataCache is String){
+        if (localDataCache is String) {
             householdRegistrationViewModel.loadDataCacheByType(id, localDataCache)
         }
     }
@@ -284,7 +264,7 @@ class HouseHoldRegistrationFragment : Fragment(), View.OnClickListener, FormEven
 
     override fun onFormSubmit(resultMap: HashMap<String, Any>?, serverData: List<FormLayout?>?) {
         resultMap?.let { map ->
-            if (householdRegistrationViewModel.householdId != -1L){
+            if (householdRegistrationViewModel.householdId != -1L) {
                 householdRegistrationViewModel.updateHousehold(map)
             } else
                 householdRegistrationViewModel.registerHousehold(map)
@@ -292,7 +272,7 @@ class HouseHoldRegistrationFragment : Fragment(), View.OnClickListener, FormEven
     }
 
     override fun onRenderingComplete() {
-        if (householdRegistrationViewModel.householdId != -1L){
+        if (householdRegistrationViewModel.householdId != -1L) {
             householdRegistrationViewModel.getHouseholdDetailsByID(householdRegistrationViewModel.householdId)
         }
     }
@@ -310,29 +290,5 @@ class HouseHoldRegistrationFragment : Fragment(), View.OnClickListener, FormEven
 
     }
 
-    fun mapsIdName(properties: Any?, map: HashMap<String, Any>) {
-        when (properties) {
-            is VillageEntity -> {
-                updateMapsIdName(map, properties.id, properties.name)
-            }
-        }
-    }
-
-    private fun updateMapsIdName(map: HashMap<String, Any>, id: Long, name: String) {
-        map[DefinedParams.ID] = id
-        map[DefinedParams.NAME] = name
-    }
-
-    fun prefillVillageEntity(prefillValue: String?, view: AppCompatSpinner) {
-        if (!prefillValue.isNullOrBlank()) {
-            val selectedIndex =
-                (view.adapter as CustomSpinnerAdapter).getIndexOfItemByName(
-                    prefillValue
-                )
-            if (selectedIndex != -1) {
-                view.setSelection(selectedIndex, true)
-            }
-        }
-    }
 
 }

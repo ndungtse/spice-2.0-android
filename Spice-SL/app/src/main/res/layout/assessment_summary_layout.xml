@@ -37,7 +37,7 @@
         android:fontFamily="@font/inter_regular"
         android:text=""
         android:textColor="@color/navy_blue"
-        android:textSize="@dimen/_14ssp"
+        android:textSize="@dimen/_16ssp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_weight="1"
         app:layout_constraintStart_toEndOf="@+id/tvRowSeparator"

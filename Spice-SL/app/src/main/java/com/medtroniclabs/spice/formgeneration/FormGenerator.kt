@@ -41,6 +41,7 @@ import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.CommonUtils.displayAge
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.SecuredPreference
+import com.medtroniclabs.spice.data.LocalSpinnerResponse
 import com.medtroniclabs.spice.databinding.AgeDobLayoutBinding
 import com.medtroniclabs.spice.databinding.CardLayoutBinding
 import com.medtroniclabs.spice.databinding.CheckboxDialogSpinnerLayoutBinding
@@ -110,7 +111,7 @@ class FormGenerator(
 ) : ContextWrapper(context) {
 
     private var serverData: List<FormLayout>? = null
-    private val rootSuffix = "rootView"
+    val rootSuffix = "rootView"
     private val titleSuffix = "titleTextView"
     private val errorSuffix = "errorMessageView"
     private val resultHashMap = HashMap<String, Any>()
@@ -119,7 +120,7 @@ class FormGenerator(
     private val rootSummary = "summaryRoot"
     private var editScreen: Boolean? = null
     private var focusNeeded: View? = null
-    private val infoSuffix= "information"
+    private val infoSuffix = "information"
 
     fun populateViews(
         serverData: List<FormLayout>,
@@ -753,6 +754,10 @@ class FormGenerator(
             binding.tvErrorMessage.tag = id + errorSuffix
             binding.tvTitle.text = translateTitle(titleCulture, title, false)
 
+            hint?.let {
+                binding.etUserInput.hint = it
+            }
+
             if (isMandatory) {
                 binding.tvTitle.markMandatory()
             }
@@ -862,6 +867,9 @@ class FormGenerator(
         serverViewModel.apply {
             binding.root.tag = id + rootSuffix
             binding.etUserInput.tag = id
+            hint?.let {
+                binding.etUserInput.hint = it
+            }
             binding.tvErrorMessage.tag = id + errorSuffix
             if (translate) {
                 binding.tvTitle.text = titleCulture ?: title
@@ -1088,7 +1096,7 @@ class FormGenerator(
         }
     }
 
-    private fun addOrUpdateAgeValue(value: String, key:String) {
+    private fun addOrUpdateAgeValue(value: String, key: String) {
         value.toInt().let {
             resultHashMap[key] = it
         }
@@ -1641,7 +1649,7 @@ class FormGenerator(
     }
 
     private fun resetCheckBoxDialogView(view: View, model: FormLayout) {
-        (view as TextView).text = model.defaultValue ?: getString(R.string.please_select)
+        (view as TextView).text = model.defaultValue ?: ""
         resultHashMap.remove(model.id)
     }
 
@@ -1851,7 +1859,7 @@ class FormGenerator(
         resultHashMap: HashMap<String, Any>,
         id: String
     ): String {
-        var text = getString(R.string.please_select)
+        var text = ""
         if (resultHashMap.containsKey(id)) {
             val mapList = resultHashMap[id]
             if (mapList is java.util.ArrayList<*>) {
@@ -1866,7 +1874,7 @@ class FormGenerator(
                         "${mapList.size} ${getString(R.string.symptoms_selected)}"
                     }
                 } else {
-                    text = getString(R.string.please_select)
+                    text = ""
                 }
             }
         }
@@ -1950,6 +1958,23 @@ class FormGenerator(
                 if (selectedIndex != -1)
                     view.setSelection(selectedIndex, true)
             }
+        }
+    }
+
+    fun spinnerDataInjection(data: LocalSpinnerResponse, mapList: ArrayList<Map<String, Any>>) {
+        val view = getViewByTag(data.tag) as AppCompatSpinner
+        if (view.adapter is CustomSpinnerAdapter) {
+            if (mapList.size > 1) {
+                val defaultIdIndex = 0
+                mapList.add(
+                    defaultIdIndex,
+                    hashMapOf<String, Any>(
+                        com.medtroniclabs.spice.common.DefinedParams.NAME to com.medtroniclabs.spice.common.DefinedParams.DefaultIDLabel,
+                        com.medtroniclabs.spice.common.DefinedParams.ID to "-1"
+                    )
+                )
+            }
+            (view.adapter as CustomSpinnerAdapter).setData(mapList)
         }
     }
 
