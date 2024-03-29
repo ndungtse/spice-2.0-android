@@ -3,20 +3,22 @@ package com.medtroniclabs.spice.ui.mypatients
 import android.os.Bundle
 import android.view.View
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.appextensions.gone
+import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.databinding.ActivityMedicalReviewBaseBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.mypatients.fragment.MedicalReviewPatientDiagnosisFragment
 import com.medtroniclabs.spice.ui.mypatients.fragment.MedicalReviewPatientExaminationFragment
+import com.medtroniclabs.spice.ui.mypatients.fragment.MedicalReviewTreatmentPlanSummary
 import com.medtroniclabs.spice.ui.mypatients.fragment.PatientInfoFragment
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MedicalReviewBaseActivity : BaseActivity(), View.OnClickListener {
 
-    private lateinit var binding : ActivityMedicalReviewBaseBinding
-
+    private lateinit var binding: ActivityMedicalReviewBaseBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMedicalReviewBaseBinding.inflate(layoutInflater)
@@ -25,7 +27,7 @@ class MedicalReviewBaseActivity : BaseActivity(), View.OnClickListener {
             true,
             getString(R.string.patient_medical_review)
         )
-        initializeFragments()
+        initializeFragments(true)
         initializeListeners()
     }
 
@@ -33,8 +35,25 @@ class MedicalReviewBaseActivity : BaseActivity(), View.OnClickListener {
         binding.btnSubmit.safeClickListener(this)
     }
 
-    private fun initializeFragments() {
-        binding.patientDiagnosisContainer.visibility = View.VISIBLE
+    private fun initializeFragments(isInitView: Boolean) {
+        binding.nestedScrollViewID.smoothScrollTo(0, 0)
+        val fragment = if (isInitView) {
+            MedicalReviewPatientExaminationFragment()
+        } else {
+            MedicalReviewTreatmentPlanSummary.newInstance()
+        }
+        if (isInitView) {
+            binding.bottomNavigationView.visible()
+            binding.btnLayout.btnLayout.gone()
+            binding.patientExaminationsContainer.gone()
+            binding.patientDiagnosisContainer.visible()
+        } else {
+            binding.patientDiagnosisContainer.gone()
+            binding.bottomNavigationView.gone()
+            binding.patientExaminationsContainer.visible()
+            binding.btnLayout.btnLayout.visible()
+        }
+
         binding.btnSubmit.isEnabled = true
         supportFragmentManager.beginTransaction()
             .add(
@@ -46,20 +65,16 @@ class MedicalReviewBaseActivity : BaseActivity(), View.OnClickListener {
             .add(R.id.patientDiagnosisContainer, MedicalReviewPatientDiagnosisFragment())
             .commit()
         supportFragmentManager.beginTransaction()
-            .add(R.id.patientExaminationsContainer, MedicalReviewPatientExaminationFragment())
+            .replace(R.id.patientExaminationsContainer, fragment)
             .commit()
     }
 
     override fun onClick(view: View) {
         when (view.id) {
             R.id.btnSubmit -> {
-                supportFragmentManager.findFragmentById(R.id.patientExaminationsContainer)
-                    ?.let {
-                        if (it is MedicalReviewPatientExaminationFragment) {
-                            it.getSelectedExamsAndComplaints()
-                        }
-                    }
+                initializeFragments(false)
             }
         }
     }
+
 }

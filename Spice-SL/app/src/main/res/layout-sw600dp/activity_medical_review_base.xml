@@ -176,8 +176,13 @@
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@color/background_ligt_blue"
-                android:paddingHorizontal="@dimen/_12sdp">
+                android:background="@color/background_ligt_blue">
+
+                <androidx.constraintlayout.widget.Group
+                    android:id="@+id/medicalReviewAssessmentGroup"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:constraint_referenced_ids="patientDiagnosisContainer, patientExaminationsContainer" />
 
                 <androidx.fragment.app.FragmentContainerView
                     android:id="@+id/patientDetailFragment"
@@ -188,12 +193,11 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
-
                 <androidx.fragment.app.FragmentContainerView
                     android:id="@+id/patientDiagnosisContainer"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:visibility="gone"
+                    android:paddingHorizontal="@dimen/_12sdp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/patientDetailFragment" />
@@ -202,6 +206,7 @@
                     android:id="@+id/patientExaminationsContainer"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:paddingHorizontal="@dimen/_12sdp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/patientDiagnosisContainer" />
 
@@ -211,6 +216,16 @@
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
+    <include
+        android:id="@+id/btnLayout"
+        layout="@layout/medical_review_summary_layout"
+        android:layout_width="0dp"
+        android:visibility="gone"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        />
 </androidx.constraintlayout.widget.ConstraintLayout>
 
 

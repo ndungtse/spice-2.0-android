@@ -9,7 +9,6 @@ import com.medtroniclabs.spice.databinding.FragmentMedicalReviewTreatmentPlanSum
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
 import com.medtroniclabs.spice.ui.BaseFragment
-import java.util.ArrayList
 
 class MedicalReviewTreatmentPlanSummary : BaseFragment() {
 
@@ -27,9 +26,7 @@ class MedicalReviewTreatmentPlanSummary : BaseFragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        // Inflate the layout for this fragment
-        binding =
-            FragmentMedicalReviewTreatmentPlanSummaryBinding.inflate(inflater, container, false)
+        binding = FragmentMedicalReviewTreatmentPlanSummaryBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -61,7 +58,6 @@ class MedicalReviewTreatmentPlanSummary : BaseFragment() {
         costAdapter?.setData(listCost)
         binding.tvCostLabelText.adapter = adapter
         binding.tvMedicalSuppliesText.safeClickListener {
-//            CheckBoxDialog.newInstance().show(parentFragmentManager, CheckBoxDialog.TAG)
         }
     }
 }

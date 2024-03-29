@@ -219,6 +219,7 @@
     <string name="days_summary">%1$d ( %2$d days )</string>
     <string name="hh_id">HH ID</string>
     <string name="date_of_onset">Date of Onset</string>
+    <string name="date_of_review">Date of Review</string>
     <string name="warning_different_login_title" translatable="false">Different Login!</string>
     <string name="warning_different_login_message" translatable="false">Last logged in user was %1$s. From this version it is prohibited</string>
     <string name="title_sync_status" translatable="false">Sync Status</string>
@@ -241,5 +242,7 @@
     <string name="oedema_info_3"> The child has oedema if a pit remains in both feet when you lift your thumbs</string>
     <string name="chest_info_1"> The child has chest in-drawing if the lower chest wall goes IN when the child breathes IN. Chest in-drawing is not visible when the child breathes out.</string>
     <string name="chest_info_2"> For chest in-drawing to be present, it must be clearly visible and present at every breath.</string>
-
+    <string name="refer_patient">Refer Patient</string>
+    <string name="treatment">Treatment</string>
+    <string name="next_visit_date">Next visit date</string>
 </resources>
