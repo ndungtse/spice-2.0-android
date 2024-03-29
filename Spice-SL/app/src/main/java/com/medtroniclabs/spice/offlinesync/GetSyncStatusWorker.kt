@@ -39,7 +39,7 @@ class GetSyncStatusWorker @AssistedInject constructor(
                 delay(timeDelayForPolling)
         }
 
-        return Result.success()
+        return Result.failure()
     }
 
     private suspend fun getSyncStatusForHouseHolds(id: String): Boolean {

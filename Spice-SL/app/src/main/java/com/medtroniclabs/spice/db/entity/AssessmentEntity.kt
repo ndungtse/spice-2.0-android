@@ -3,8 +3,9 @@ package com.medtroniclabs.spice.db.entity
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
+import com.medtroniclabs.spice.db.entity.EntitiesName.ASSESSMENT
 
-@Entity(tableName = "AssessmentEntity")
+@Entity(tableName = ASSESSMENT)
 data class AssessmentEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,

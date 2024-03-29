@@ -44,7 +44,7 @@ class PostSyncWorker @AssistedInject constructor(
         houseHoldList.forEach { householdEntity ->
             householdIds.add(householdEntity.referenceId!!.toLong())
             val memberList =
-                houseHoldRepository.getAllUnSyncedMembers(householdEntity.referenceId.toLong())
+                houseHoldRepository.getAllUnSyncedMembers(householdEntity.referenceId!!.toLong())
             householdEntity.householdMembers.addAll(memberList)
         }
 

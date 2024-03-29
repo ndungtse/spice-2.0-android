@@ -68,7 +68,7 @@ class OfflineSyncActivity : BaseActivity() {
     private fun initObserver() {
         viewModel.unSyncedCountLiveData.observe(this) { list ->
             val totalUnSyncedCount = list.sumOf { it.unSyncedCount }
-            //binding.btnSync.isEnabled = totalUnSyncedCount > 0
+           // binding.btnSync.isEnabled = totalUnSyncedCount > 0
             adapter.updateList(list)
         }
     }
@@ -123,8 +123,9 @@ class OfflineSyncActivity : BaseActivity() {
                 viewModel.getUnSyncedCount()
                 dismissLoadingDialog()
                 Toast.makeText(this, "Sync Success!", Toast.LENGTH_LONG).show()
-            } else {
-                //Error trwo
+            } else if(workerInfo.state == WorkInfo.State.FAILED) {
+                dismissLoadingDialog()
+                Toast.makeText(this, "Sync Failed! Please try again later", Toast.LENGTH_LONG).show()
             }
         }
     }

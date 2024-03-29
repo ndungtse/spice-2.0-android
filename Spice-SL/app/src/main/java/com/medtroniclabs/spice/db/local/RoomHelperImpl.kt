@@ -276,4 +276,20 @@ class RoomHelperImpl @Inject constructor(
         diagnosisDAO.saveDiagnosisList(diagnosisList)
     }
 
+
+    override suspend fun getHouseholdIdByFhirId(fhirId: String?): Long? {
+        return if (fhirId!= null) {
+            householdDAO.getHouseholdIdByFhirId(fhirId)
+        } else {
+            null
+        }
+    }
+
+    override suspend fun getHouseholdMemberIdByFhirId(fhirId: String?): Long? {
+        return if (fhirId != null) {
+            memberDAO.getHouseholdMemberIdByFhirId(fhirId)
+        } else {
+            return null
+        }
+    }
 }

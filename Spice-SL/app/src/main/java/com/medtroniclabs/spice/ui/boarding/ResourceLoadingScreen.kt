@@ -53,9 +53,9 @@ class ResourceLoadingScreen : BaseActivity() {
                 }
 
                 ResourceState.SUCCESS -> {
-//                    SecuredPreference.putBoolean(SecuredPreference.EnvironmentKey.IS_INITIAL_DATA_LOADED.name, true)
-//                    startActivity(Intent(this, LandingActivity::class.java))
-//                    finish()
+                    SecuredPreference.putBoolean(SecuredPreference.EnvironmentKey.IS_INITIAL_DATA_LOADED.name, true)
+                    startActivity(Intent(this, LandingActivity::class.java))
+                    finish()
                 }
 
                 ResourceState.ERROR -> {

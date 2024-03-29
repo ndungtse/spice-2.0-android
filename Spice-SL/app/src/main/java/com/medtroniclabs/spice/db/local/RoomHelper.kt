@@ -89,4 +89,9 @@ interface RoomHelper {
     suspend fun insertExaminationsComplaint(symptomEntity: List<ExaminationsComplaintItems>)
     suspend fun deleteDiagnosisList()
     suspend fun saveDiagnosisList(diagnosisList: ArrayList<DiseaseCategoryItems>)
+
+    suspend fun getHouseholdIdByFhirId(fhirId: String?): Long?
+
+    suspend fun getHouseholdMemberIdByFhirId(fhirId: String?): Long?
+
 }

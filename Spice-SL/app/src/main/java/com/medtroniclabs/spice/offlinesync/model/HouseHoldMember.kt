@@ -38,7 +38,7 @@ data class HouseHoldMember(
     val gender: String,
 
     @ColumnInfo("household_head_relationship")
-    val householdRelationship: String,
+    val householdRelationship: String?,
 
     @ColumnInfo("created_at")
     val createdAt: Long,
@@ -49,14 +49,15 @@ data class HouseHoldMember(
     @Ignore
     var provenance: ProvanceDto = ProvanceDto()
 
-    fun toHouseholdMemberEntity(hhId: Long, status: OfflineSyncStatus): HouseholdMemberEntity {
+    fun toHouseholdMemberEntity(hhId: Long, status: OfflineSyncStatus, id: Long = 0): HouseholdMemberEntity {
         return HouseholdMemberEntity(
+            id = id,
             name = this.name,
             phoneNumber = this.phoneNumber,
             phoneNumberCategory = "", // Need to check with backend
             dateOfBirth = this.dateOfBirth,
             gender = this.gender,
-            householdHeadRelationship = this.householdRelationship,
+            householdHeadRelationship = this.householdRelationship ?: "",
             householdId = hhId,
             patientId = this.patientId
         ).apply {

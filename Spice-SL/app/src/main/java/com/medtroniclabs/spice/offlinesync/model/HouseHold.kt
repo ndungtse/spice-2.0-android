@@ -8,7 +8,7 @@ import com.medtroniclabs.spice.offlinesync.utils.OfflineSyncStatus
 data class HouseHold(
 
     @ColumnInfo(name = "id")
-    val referenceId: String?,
+    var referenceId: String?,
 
     @ColumnInfo(name = "fhir_id")
     var id: String? = null,
@@ -63,8 +63,9 @@ data class HouseHold(
     @Ignore
     var householdMembers: MutableList<HouseHoldMember> = mutableListOf()
 
-    fun toHouseholdEntity(villageMap: Map<String,Long>, status: OfflineSyncStatus): HouseholdEntity {
+    fun toHouseholdEntity(villageMap: Map<String,Long>, status: OfflineSyncStatus = OfflineSyncStatus.Success, id: Long = 0): HouseholdEntity {
         return HouseholdEntity(
+            id = id,
             householdNo = this.householdNo,
             name = this.name,
             villageId = villageMap[this.village] ?: 0L, // get by village name

@@ -17,7 +17,7 @@ interface AssessmentDAO {
     @Update
     suspend fun updateOtherAssessmentDetails(assessmentEntity: AssessmentEntity)
 
-    @Query("SELECT * FROM AssessmentEntity WHERE memberId = :memberId ORDER BY id DESC LIMIT 1")
+    @Query("SELECT * FROM Assessment WHERE memberId = :memberId ORDER BY id DESC LIMIT 1")
     suspend fun getLatestAssessmentForMember(memberId: Long): AssessmentEntity?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

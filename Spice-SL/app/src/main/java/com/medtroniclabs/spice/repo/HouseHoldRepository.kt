@@ -1,6 +1,5 @@
 package com.medtroniclabs.spice.repo
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.google.gson.Gson
@@ -28,6 +27,7 @@ import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.offlinesync.model.HouseHold
 import com.medtroniclabs.spice.offlinesync.model.HouseHoldMember
 import com.medtroniclabs.spice.offlinesync.model.RequestGetSyncStatus
+import com.medtroniclabs.spice.offlinesync.model.SyncEntityList
 import com.medtroniclabs.spice.offlinesync.model.SyncResponse
 import com.medtroniclabs.spice.offlinesync.utils.OfflineSyncStatus
 import retrofit2.Response
@@ -226,38 +226,11 @@ class HouseHoldRepository @Inject constructor(
                 insertHouseholdAndMembers(syncedResponse.body()?.entityList, villageNameId, OfflineSyncStatus.Success)
 
                 // Insert UnSynced Entities
-                val hhMap = linkedMapOf<String, HouseHold>()
-                val members = mutableListOf<HouseHoldMember>()
-                unSyncedResponse.body()?.entityList?.forEach { entity ->
-                    entity.type?.let {
-                        when(it) {
-                            HOUSEHOLD -> {
-                                Gson().fromJson(entity.data, HouseHold::class.java)?.let { houseHold ->
-                                    houseHold.householdMembers.clear()
-                                    hhMap.put(houseHold.referenceId!!, houseHold)
-                                }
-                            }
+                val householdList = unSyncedResponse.body()?.entityList?.filter { it.type == HOUSEHOLD }
+                val hhMap = insertHouseholds(householdList, villageNameId)
 
-                            HOUSEHOLD_MEMBER -> {
-                                Gson().fromJson(entity.data, HouseHoldMember::class.java)?.let { houseHoldMember ->
-                                    members.add(houseHoldMember)
-                                }
-                            }
-                        }
-                    }
-                }
-
-                val ungroupedMember = mutableListOf<HouseHoldMember>()
-                members.forEach { member ->
-                    if (hhMap.containsKey(member.householdReferenceId)) {
-                        val household = hhMap[member.householdReferenceId]
-                        household?.householdMembers?.add(member)
-                    } else {
-                        ungroupedMember.add(member)
-                    }
-                }
-
-                insertHouseholdAndMembers(hhMap.values.toList(), villageNameId, OfflineSyncStatus.Failed)
+                val householdMemberList = unSyncedResponse.body()?.entityList?.filter { it.type == HOUSEHOLD_MEMBER }
+                insertHouseholdMembers(householdMemberList, hhMap)
 
                 liveData.postSuccess(true)
             } else {
@@ -279,6 +252,51 @@ class HouseHoldRepository @Inject constructor(
             household.householdMembers.forEach { householdMember ->
                 val householdMemberEntity = householdMember.toHouseholdMemberEntity(hhId, status)
                 roomHelper.registerMember(householdMemberEntity)
+            }
+        }
+    }
+
+    private suspend fun insertHouseholds(households: List<SyncEntityList>?, villageNameId : Map<String,Long>): Map<String, HouseHold> {
+        // Response apiReferenceId, Household
+        val hhMap = mutableMapOf<String, HouseHold>()
+        households?.forEach { entity ->
+            Gson().fromJson(entity.data, HouseHold::class.java)?.let { houseHold ->
+                val apiRefId = houseHold.referenceId
+                var dbHHId: Long?
+                if (houseHold.id != null) { // Fhir id is not null - Success
+                    dbHHId = roomHelper.getHouseholdIdByFhirId(houseHold.id)
+                    if (dbHHId != null) { // Update Flow
+                        roomHelper.updateHousehold(houseHold.toHouseholdEntity(villageNameId, OfflineSyncStatus.Success, dbHHId))
+                    } else { // Insert Flow
+                        dbHHId = roomHelper.saveHouseHoldEntry(houseHold.toHouseholdEntity(villageNameId, OfflineSyncStatus.Success))
+                    }
+                } else { // Fhir id is null - Failed
+                    dbHHId = roomHelper.saveHouseHoldEntry(houseHold.toHouseholdEntity(villageNameId, OfflineSyncStatus.Failed))
+                }
+
+                houseHold.referenceId = dbHHId.toString()
+                hhMap[apiRefId!!] = houseHold
+            }
+        }
+        return hhMap
+    }
+
+    private suspend fun insertHouseholdMembers(householdMemberList: List<SyncEntityList>?, hhMap: Map<String, HouseHold>) {
+        householdMemberList?.forEach { entity ->
+            Gson().fromJson(entity.data, HouseHoldMember::class.java)?.let { member ->
+                val dbHHId = roomHelper.getHouseholdIdByFhirId(member.householdId) ?: hhMap[member.householdReferenceId]?.referenceId?.toLong()
+                if (dbHHId != null) { // HouseholdId found in local
+                    if (member.id != null) { //  Fhir id is not null - Success
+                        val dbHHMId = roomHelper.getHouseholdMemberIdByFhirId(member.id)
+                        if (dbHHMId != null) { // Update Flow
+                            roomHelper.registerMember(member.toHouseholdMemberEntity(dbHHId, OfflineSyncStatus.Success, dbHHMId))
+                        } else { // Insert Flow
+                            roomHelper.registerMember(member.toHouseholdMemberEntity(dbHHId, OfflineSyncStatus.Success))
+                        }
+                    } else { // Fhir id is null - Failed
+                        roomHelper.registerMember(member.toHouseholdMemberEntity(dbHHId, OfflineSyncStatus.Failed))
+                    }
+                }
             }
         }
     }
