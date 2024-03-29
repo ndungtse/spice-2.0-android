@@ -1,6 +1,7 @@
 package com.medtroniclabs.spice.network
 
 import com.medtroniclabs.spice.data.APIResponse
+import com.medtroniclabs.spice.data.AboveFiveYearsMetaResponse
 import com.medtroniclabs.spice.data.FormMetaRequest
 import com.medtroniclabs.spice.data.FormRequest
 import com.medtroniclabs.spice.data.FormResponse
@@ -51,4 +52,8 @@ interface ApiService {
 
     @POST("spice-service/patient/patientDetails")
     suspend fun getPatient(@Body request: PatientDetailReq): Response<APIResponse<PatientListRespModel>>
+
+    @POST("/spice-service/static-data/meta-data/iccm-abovefive")
+    suspend fun getAboveFiveYearsMetaData(): Response<APIResponse<AboveFiveYearsMetaResponse>>
+
 }

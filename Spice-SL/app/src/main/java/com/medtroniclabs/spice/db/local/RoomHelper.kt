@@ -1,6 +1,8 @@
 package com.medtroniclabs.spice.db.local
 
 import androidx.lifecycle.LiveData
+import com.medtroniclabs.spice.data.DiseaseCategoryItems
+import com.medtroniclabs.spice.data.ExaminationsComplaintItems
 import com.medtroniclabs.spice.data.LastCreatedAtAndPatientId
 import com.medtroniclabs.spice.data.VillageInfo
 import com.medtroniclabs.spice.db.entity.AssessmentEntity
@@ -16,10 +18,10 @@ import com.medtroniclabs.spice.db.entity.UserProfileEntity
 import com.medtroniclabs.spice.db.entity.VillageEntity
 import com.medtroniclabs.spice.db.response.HouseHoldEntityWithMemberCount
 import com.medtroniclabs.spice.db.response.HouseholdMemberCount
+import com.medtroniclabs.spice.db.response.VillageBasicDetails
 import com.medtroniclabs.spice.model.MemberDobGenderModel
 import com.medtroniclabs.spice.offlinesync.model.HouseHold
 import com.medtroniclabs.spice.offlinesync.model.HouseHoldMember
-import com.medtroniclabs.spice.db.response.VillageBasicDetails
 
 interface RoomHelper {
     suspend fun saveHouseHoldEntry(householdEntity: HouseholdEntity): Long
@@ -83,4 +85,8 @@ interface RoomHelper {
     suspend fun getUnSyncedHouseholdCount(): Int
     suspend fun getUnSyncedHouseholdMemberCount(): Int
     suspend fun getVillageIdName(): List<VillageBasicDetails>
+    suspend fun deleteExaminationsComplaints()
+    suspend fun insertExaminationsComplaint(symptomEntity: List<ExaminationsComplaintItems>)
+    suspend fun deleteDiagnosisList()
+    suspend fun saveDiagnosisList(diagnosisList: ArrayList<DiseaseCategoryItems>)
 }

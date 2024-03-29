@@ -5,11 +5,15 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import com.medtroniclabs.spice.data.DiseaseCategoryItems
+import com.medtroniclabs.spice.data.ExaminationsComplaintItems
 import com.medtroniclabs.spice.db.converters.OfflineStatusTypeConverter
 import com.medtroniclabs.spice.db.dao.AssessmentDAO
+import com.medtroniclabs.spice.db.dao.DiagnosisDAO
 import com.medtroniclabs.spice.db.dao.HouseholdDAO
 import com.medtroniclabs.spice.db.dao.MemberDAO
 import com.medtroniclabs.spice.db.dao.MetaDataDAO
+import com.medtroniclabs.spice.db.dao.ExaminationsComplaintsDAO
 import com.medtroniclabs.spice.db.entity.AssessmentEntity
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowConditionEntity
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowEntity
@@ -24,7 +28,7 @@ import com.medtroniclabs.spice.db.entity.VillageEntity
 
 @Database(
     entities = [HouseholdEntity::class, HouseholdMemberEntity::class, SignsAndSymptomsEntity::class, AssessmentEntity::class, MenuEntity::class, UserProfileEntity::class,
-        VillageEntity::class, HealthFacilityEntity::class, ClinicalWorkflowEntity::class, FormEntity::class, ClinicalWorkflowConditionEntity::class],
+        VillageEntity::class, HealthFacilityEntity::class, ClinicalWorkflowEntity::class, FormEntity::class, ClinicalWorkflowConditionEntity::class, ExaminationsComplaintItems::class, DiseaseCategoryItems::class],
     version = 1
 )
 @TypeConverters(OfflineStatusTypeConverter::class)
@@ -33,6 +37,8 @@ abstract class SpiceDataBase : RoomDatabase() {
     abstract fun memberDAO(): MemberDAO
     abstract fun assessmentDAO(): AssessmentDAO
     abstract fun metaDataDAO(): MetaDataDAO
+    abstract fun examinationsComplaintsDAO(): ExaminationsComplaintsDAO
+    abstract fun diagnosisDAO(): DiagnosisDAO
 
     companion object {
         private const val DATABASE_NAME = "SpiceDataBase"

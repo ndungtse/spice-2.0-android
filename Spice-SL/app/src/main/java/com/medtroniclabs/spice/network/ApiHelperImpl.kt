@@ -1,6 +1,7 @@
 package com.medtroniclabs.spice.network
 
 import com.medtroniclabs.spice.data.APIResponse
+import com.medtroniclabs.spice.data.AboveFiveYearsMetaResponse
 import com.medtroniclabs.spice.data.FormMetaRequest
 import com.medtroniclabs.spice.data.FormRequest
 import com.medtroniclabs.spice.data.FormResponse
@@ -57,4 +58,9 @@ class ApiHelperImpl @Inject constructor(private val apiService: ApiService) : Ap
     override suspend fun getPatient(request: PatientDetailReq): Response<APIResponse<PatientListRespModel>> {
         return apiService.getPatient(request)
     }
+
+    override suspend fun getAboveFiveYearsMetaData(): Response<APIResponse<AboveFiveYearsMetaResponse>> {
+        return apiService.getAboveFiveYearsMetaData()
+    }
+
 }

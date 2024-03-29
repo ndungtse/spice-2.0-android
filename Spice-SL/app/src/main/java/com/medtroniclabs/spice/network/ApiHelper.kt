@@ -1,6 +1,7 @@
 package com.medtroniclabs.spice.network
 
 import com.medtroniclabs.spice.data.APIResponse
+import com.medtroniclabs.spice.data.AboveFiveYearsMetaResponse
 import com.medtroniclabs.spice.data.FormMetaRequest
 import com.medtroniclabs.spice.data.FormRequest
 import com.medtroniclabs.spice.data.FormResponse
@@ -28,4 +29,5 @@ interface ApiHelper {
     suspend fun getPatients(request: PatientsDataModel): APIResponse<List<PatientListRespModel>>
     suspend fun patientSearch(request: PatientsDataModel): APIResponse<List<PatientListRespModel>>
     suspend fun getPatient(request: PatientDetailReq): Response<APIResponse<PatientListRespModel>>
+    suspend fun getAboveFiveYearsMetaData(): Response<APIResponse<AboveFiveYearsMetaResponse>>
 }

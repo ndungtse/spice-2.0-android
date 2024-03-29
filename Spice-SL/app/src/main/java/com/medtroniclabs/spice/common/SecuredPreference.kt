@@ -20,7 +20,8 @@ object SecuredPreference {
         ISOFFLINELOGIN,
         ISMETALOADED,
         USER_RESPONSE,
-        IS_INITIAL_DATA_LOADED
+        IS_INITIAL_DATA_LOADED,
+        IS_ABOVE_FIVE_YEARS_LOADED
     }
 
 

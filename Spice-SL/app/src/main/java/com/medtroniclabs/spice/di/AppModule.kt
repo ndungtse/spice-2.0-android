@@ -10,9 +10,11 @@ import com.medtroniclabs.spice.common.DefinedParams.SL_SESSION
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.db.SpiceDataBase
 import com.medtroniclabs.spice.db.dao.AssessmentDAO
+import com.medtroniclabs.spice.db.dao.DiagnosisDAO
 import com.medtroniclabs.spice.db.dao.HouseholdDAO
 import com.medtroniclabs.spice.db.dao.MemberDAO
 import com.medtroniclabs.spice.db.dao.MetaDataDAO
+import com.medtroniclabs.spice.db.dao.ExaminationsComplaintsDAO
 import com.medtroniclabs.spice.db.local.RoomHelper
 import com.medtroniclabs.spice.db.local.RoomHelperImpl
 import com.medtroniclabs.spice.network.ApiHelper
@@ -153,6 +155,18 @@ object AppModule {
     @Provides
     fun provideMetaDataDAO(db: SpiceDataBase): MetaDataDAO {
         return db.metaDataDAO()
+    }
+
+    @Singleton
+    @Provides
+    fun provideExaminationComplaintsDAO(db: SpiceDataBase): ExaminationsComplaintsDAO {
+        return db.examinationsComplaintsDAO()
+    }
+
+    @Singleton
+    @Provides
+    fun provideDiagnosisDAO(db: SpiceDataBase): DiagnosisDAO {
+        return db.diagnosisDAO()
     }
 
     @DefaultDispatcher

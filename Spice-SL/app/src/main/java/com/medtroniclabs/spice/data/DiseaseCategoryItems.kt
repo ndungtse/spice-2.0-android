@@ -1,0 +1,13 @@
+package com.medtroniclabs.spice.data
+
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
+@Entity(tableName = "DiagnosisEntity")
+data class DiseaseCategoryItems(
+    @PrimaryKey
+    val id: Long,
+    val name: String,
+    val displayOrder: Int,
+    val diseaseCondition: ArrayList<DiseaseConditionItems>,
+)

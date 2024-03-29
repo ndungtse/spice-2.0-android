@@ -2,13 +2,16 @@ package com.medtroniclabs.spice.db.local
 
 import androidx.lifecycle.LiveData
 import androidx.sqlite.db.SimpleSQLiteQuery
-import androidx.sqlite.db.SupportSQLiteQueryBuilder
+import com.medtroniclabs.spice.data.DiseaseCategoryItems
+import com.medtroniclabs.spice.data.ExaminationsComplaintItems
 import com.medtroniclabs.spice.data.LastCreatedAtAndPatientId
 import com.medtroniclabs.spice.data.VillageInfo
 import com.medtroniclabs.spice.db.dao.AssessmentDAO
+import com.medtroniclabs.spice.db.dao.DiagnosisDAO
 import com.medtroniclabs.spice.db.dao.HouseholdDAO
 import com.medtroniclabs.spice.db.dao.MemberDAO
 import com.medtroniclabs.spice.db.dao.MetaDataDAO
+import com.medtroniclabs.spice.db.dao.ExaminationsComplaintsDAO
 import com.medtroniclabs.spice.db.entity.AssessmentEntity
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowConditionEntity
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowEntity
@@ -22,18 +25,20 @@ import com.medtroniclabs.spice.db.entity.UserProfileEntity
 import com.medtroniclabs.spice.db.entity.VillageEntity
 import com.medtroniclabs.spice.db.response.HouseHoldEntityWithMemberCount
 import com.medtroniclabs.spice.db.response.HouseholdMemberCount
+import com.medtroniclabs.spice.db.response.VillageBasicDetails
 import com.medtroniclabs.spice.model.MemberDobGenderModel
 import com.medtroniclabs.spice.offlinesync.model.HouseHold
 import com.medtroniclabs.spice.offlinesync.model.HouseHoldMember
 import com.medtroniclabs.spice.offlinesync.utils.OfflineSyncStatus
-import com.medtroniclabs.spice.db.response.VillageBasicDetails
 import javax.inject.Inject
 
 class RoomHelperImpl @Inject constructor(
     private val householdDAO: HouseholdDAO,
     private val memberDAO: MemberDAO,
     private val assessmentDAO: AssessmentDAO,
-    private val metaDataDAO: MetaDataDAO
+    private val metaDataDAO: MetaDataDAO,
+    private val examinationsComplaintsDAO: ExaminationsComplaintsDAO,
+    private val diagnosisDAO: DiagnosisDAO
 ) : RoomHelper {
     override suspend fun saveHouseHoldEntry(householdEntity: HouseholdEntity): Long {
         return householdDAO.insertHouseHold(householdEntity)
@@ -254,4 +259,21 @@ class RoomHelperImpl @Inject constructor(
     override suspend fun getVillageIdName(): List<VillageBasicDetails> {
         return metaDataDAO.getVillageIdName()
     }
+
+    override suspend fun deleteExaminationsComplaints() {
+        examinationsComplaintsDAO.deleteExaminationsComplaints()
+    }
+
+    override suspend fun insertExaminationsComplaint(symptomEntity: List<ExaminationsComplaintItems>) {
+        examinationsComplaintsDAO.insertExaminationsComplaints(symptomEntity)
+    }
+
+    override suspend fun deleteDiagnosisList() {
+        diagnosisDAO.deleteDiagnosisList()
+    }
+
+    override suspend fun saveDiagnosisList(diagnosisList: ArrayList<DiseaseCategoryItems>) {
+        diagnosisDAO.saveDiagnosisList(diagnosisList)
+    }
+
 }
