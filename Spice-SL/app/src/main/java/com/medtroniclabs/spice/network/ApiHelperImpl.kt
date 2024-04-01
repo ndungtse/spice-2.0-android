@@ -15,6 +15,8 @@ import com.medtroniclabs.spice.offlinesync.model.RequestGetSyncStatus
 import com.medtroniclabs.spice.offlinesync.model.SyncResponse
 import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.model.PatientsDataModel
+import com.medtroniclabs.spice.model.ReferralData
+import com.medtroniclabs.spice.network.resource.Resource
 import okhttp3.MultipartBody
 import retrofit2.Response
 import javax.inject.Inject
@@ -63,4 +65,7 @@ class ApiHelperImpl @Inject constructor(private val apiService: ApiService) : Ap
         return apiService.getAboveFiveYearsMetaData()
     }
 
+    override suspend fun getReferralsDetails(request: PatientDetailReq): Response<APIResponse<ReferralData>> {
+        return apiService.getReferralsDetails(request)
+    }
 }

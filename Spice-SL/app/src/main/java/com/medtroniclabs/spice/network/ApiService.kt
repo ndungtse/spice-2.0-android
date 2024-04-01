@@ -15,6 +15,7 @@ import com.medtroniclabs.spice.offlinesync.model.RequestGetSyncStatus
 import com.medtroniclabs.spice.offlinesync.model.SyncResponse
 import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.model.PatientsDataModel
+import com.medtroniclabs.spice.model.ReferralData
 import okhttp3.RequestBody
 import retrofit2.Response
 import retrofit2.http.Body
@@ -56,4 +57,6 @@ interface ApiService {
     @POST("/spice-service/static-data/meta-data/iccm-abovefive")
     suspend fun getAboveFiveYearsMetaData(): Response<APIResponse<AboveFiveYearsMetaResponse>>
 
+    @POST("/spice-service/assessment/referral-tickets")
+    suspend fun getReferralsDetails(@Body request: PatientDetailReq): Response<APIResponse<ReferralData>>
 }

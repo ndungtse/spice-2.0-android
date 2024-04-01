@@ -246,8 +246,14 @@
     <string name="last_menstrual_period">"Last Menstrual Period "</string>
     <string name="gestational_age">Gestational Age</string>
     <string name="estimated_delivery_date">Estimated Delivery Date</string>
-
     <string name="refer_patient">Refer Patient</string>
     <string name="treatment">Treatment</string>
     <string name="next_visit_date">Next visit date</string>
+    <string name="reload">reload</string>
+    <string name="select_review_date">Select Review Date</string>
+    <string name="selected">Selected</string>
+    <string name="referral_date">Referral Date</string>
+    <string name="referral_reason">Referral Reason</string>
+    <string name="referral_to">Referred To</string>
+    <string name="referral_by">Referred By</string>
 </resources>

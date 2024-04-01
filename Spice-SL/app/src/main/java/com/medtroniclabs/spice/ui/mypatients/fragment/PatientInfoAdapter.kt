@@ -2,12 +2,16 @@ package com.medtroniclabs.spice.ui.mypatients.fragment
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.databinding.PatientInfoItemBinding
 
-class PatientInfoAdapter(private val data: List<Map<String, String?>?> = emptyList()) :
+class PatientInfoAdapter(
+    private val data: List<Map<String, String?>?> = emptyList(),
+    private val fragmentBg: Int
+) :
     RecyclerView.Adapter<PatientInfoAdapter.ViewHolder>() {
 
     inner class ViewHolder(private val binding: PatientInfoItemBinding) :
@@ -19,6 +23,7 @@ class PatientInfoAdapter(private val data: List<Map<String, String?>?> = emptyLi
                     ?: binding.root.context.getString(R.string.hyphen_symbol)
                 tvValue.text = label[DefinedParams.value]
                     ?: binding.root.context.getString(R.string.hyphen_symbol)
+                root.background = ContextCompat.getDrawable(binding.root.context, fragmentBg)
             }
         }
     }

@@ -40,6 +40,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.CommonUtils.displayAge
 import com.medtroniclabs.spice.common.DateUtils
+import com.medtroniclabs.spice.common.DefinedParams.female
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.LocalSpinnerResponse
 import com.medtroniclabs.spice.databinding.AgeDobLayoutBinding
@@ -97,6 +98,7 @@ import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
 import com.medtroniclabs.spice.formgeneration.utility.DigitsInputFilter
 import com.medtroniclabs.spice.formgeneration.utility.FormFieldValidator
 import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.headPhoneNumber
+import com.medtroniclabs.spice.mappingkey.MemberRegistration.gender
 import com.medtroniclabs.spice.mappingkey.MemberRegistration.phoneNumber
 import java.util.Calendar
 
@@ -540,7 +542,6 @@ class FormGenerator(
             getFamilyView(family)?.addView(binding.root) ?: kotlin.run {
                 parentLayout.addView(binding.root)
             }
-
             setViewVisibility(visibility, binding.root)
             setViewEnableDisable(isEnabled, binding.root)
         }
@@ -549,8 +550,14 @@ class FormGenerator(
     private var singleSelectionCallback: ((selectedID: Any?, elementId: String, serverViewModel: FormLayout, name: String?) -> Unit)? =
         { selectedId, elementID, serverViewModel, name ->
             saveSelectedOptionValue(elementID, selectedId, serverViewModel, name)
+            if (selectedId == female) {
+                listener.onAgeCheckForPregnancy()
+            }
         }
 
+    fun isResultAvaliable(key: String, value: String): Boolean {
+        return resultHashMap.contains(gender) && resultHashMap[gender] == female
+    }
     private fun saveSelectedOptionValue(
         id: String,
         idValue: Any?,
@@ -946,7 +953,7 @@ class FormGenerator(
                     val year =  binding.etYears.text.toString().toIntOrNull() ?: 0
                     val month =  binding.etMonths.text.toString().toIntOrNull() ?: 0
                     val weeks =  binding.etWeeks.text.toString().toIntOrNull() ?: 0
-                    if (!isDOBUpdated){
+                    if (!isDOBUpdated) {
                         if (!(year == 0 && month == 0 && weeks == 0)) {
                             updateDateOfBirthFromFields(
                                 binding.etYears,
@@ -966,6 +973,7 @@ class FormGenerator(
                             addWatcher(binding.etYears,binding.etMonths,binding.etWeeks)
                         }
                     }
+                    listener.onAgeCheckForPregnancy()
                 }
 
                 override fun afterTextChanged(s: Editable?) {
@@ -1017,6 +1025,7 @@ class FormGenerator(
                                 resultHashMap[Week] = week
                             }
                         }
+                        listener.onAgeCheckForPregnancy()
                         updateAgeView(id)
                         addWatcher(binding.etYears,binding.etMonths,binding.etWeeks)
                     }
@@ -1090,7 +1099,7 @@ class FormGenerator(
         }
     }
 
-    private fun removeIfContains(key: String) {
+    fun removeIfContains(key: String) {
         if (resultHashMap.containsKey(key)) {
             resultHashMap.remove(key)
         }

@@ -290,5 +290,7 @@ class HouseHoldRegistrationFragment : Fragment(), View.OnClickListener, FormEven
 
     }
 
-
+    override fun onAgeCheckForPregnancy() {
+        TODO("Not yet implemented")
+    }
 }

@@ -10,6 +10,7 @@ import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.home.ToolsActivity
 import com.medtroniclabs.spice.ui.mypatients.fragment.PatientInfoFragment
+import com.medtroniclabs.spice.ui.mypatients.fragment.ReferralTicketFragment
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.ReferralTicketViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -35,6 +36,12 @@ class ReferralTicketActivity : BaseActivity() {
             .add(
                 R.id.patientDetailsContainer,
                 PatientInfoFragment.newInstance(intent.getStringExtra(DefinedParams.PatientId))
+            ).commit()
+
+        supportFragmentManager.beginTransaction()
+            .add(
+                R.id.cardReferralTicket,
+                ReferralTicketFragment.newInstance(intent.getStringExtra(DefinedParams.PatientId))
             ).commit()
 
         binding.btnMedicalReview.safeClickListener {

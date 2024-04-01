@@ -13,6 +13,8 @@ import com.medtroniclabs.spice.offlinesync.model.HouseHold
 import com.medtroniclabs.spice.model.PatientDetailReq
 import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.model.PatientsDataModel
+import com.medtroniclabs.spice.model.ReferralData
+import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.offlinesync.model.RequestGetSyncStatus
 import com.medtroniclabs.spice.offlinesync.model.SyncResponse
 import okhttp3.MultipartBody
@@ -30,4 +32,5 @@ interface ApiHelper {
     suspend fun patientSearch(request: PatientsDataModel): APIResponse<List<PatientListRespModel>>
     suspend fun getPatient(request: PatientDetailReq): Response<APIResponse<PatientListRespModel>>
     suspend fun getAboveFiveYearsMetaData(): Response<APIResponse<AboveFiveYearsMetaResponse>>
+    suspend fun getReferralsDetails(request: PatientDetailReq): Response<APIResponse<ReferralData>>
 }

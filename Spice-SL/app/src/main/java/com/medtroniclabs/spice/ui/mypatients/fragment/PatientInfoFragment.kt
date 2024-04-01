@@ -124,7 +124,7 @@ class PatientInfoFragment : BaseFragment() {
                     DefinedParams.value to date
                 ),
             )
-            val adapter = PatientInfoAdapter(dataList)
+            val adapter = PatientInfoAdapter(dataList,R.color.fragment_bg)
             val isLandscape =
                 resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
 

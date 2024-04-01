@@ -6,11 +6,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.appcompat.widget.AppCompatTextView
+import androidx.core.view.forEach
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.appextensions.gone
+import com.medtroniclabs.spice.appextensions.isGone
+import com.medtroniclabs.spice.appextensions.isVisible
+import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils.getBooleanAsString
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
@@ -314,6 +320,46 @@ class MemberRegistrationFragment : Fragment(), FormEventListener, View.OnClickLi
     ) {
 
     }
+
+    override fun onAgeCheckForPregnancy() {
+        val dateOfBirthView = formGenerator.getViewByTag(MemberRegistration.dateOfBirth) as? AppCompatTextView ?: return
+        val dateOfBirth = dateOfBirthView.text?.toString()?.trim() ?: return
+
+        if (DateUtils.calculateAge(dateOfBirth, DATE_ddMMyyyy) !in 18..48) {
+            handleAgeBelowThreshold()
+        } else {
+            handleAgeAboveThreshold()
+        }
+    }
+
+    private fun handleAgeBelowThreshold() {
+        if (formGenerator.isResultAvaliable(gender, female)) {
+            val isPregnantRootView =
+                formGenerator.getViewByTag(isPregnant + formGenerator.rootSuffix) as? ViewGroup
+                    ?: return
+            formGenerator.removeIfContains(isPregnant)
+            (formGenerator.getViewByTag(isPregnant) as? ViewGroup)?.forEach { view ->
+                if (view is TextView) {
+                    view.isSelected = false
+                }
+            }
+            if (isPregnantRootView.isVisible()) {
+                isPregnantRootView.gone()
+            }
+        }
+    }
+
+    private fun handleAgeAboveThreshold() {
+        if (formGenerator.isResultAvaliable(gender, female)) {
+            val isPregnantRootView =
+                formGenerator.getViewByTag(isPregnant + formGenerator.rootSuffix) as? ViewGroup
+                    ?: return
+            if (isPregnantRootView.isGone()) {
+                isPregnantRootView.visible()
+            }
+        }
+    }
+
 
     override fun onClick(v: View?) {
         when (v?.id) {

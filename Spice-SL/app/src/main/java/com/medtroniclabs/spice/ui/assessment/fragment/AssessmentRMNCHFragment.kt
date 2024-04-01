@@ -280,6 +280,10 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
         }
     }
 
+    override fun onAgeCheckForPregnancy() {
+        TODO("Not yet implemented")
+    }
+
     private fun getClinicalDateAndVisitCount(
         details: HashMap<String, Any>,
         workflowName: String

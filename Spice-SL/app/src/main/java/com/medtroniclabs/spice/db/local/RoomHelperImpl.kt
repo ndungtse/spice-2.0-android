@@ -40,7 +40,7 @@ class RoomHelperImpl @Inject constructor(
     private val assessmentDAO: AssessmentDAO,
     private val metaDataDAO: MetaDataDAO,
     private val examinationsComplaintsDAO: ExaminationsComplaintsDAO,
-    private val diagnosisDAO: DiagnosisDAO
+    private val diagnosisDAO: DiagnosisDAO,
     private val memberClinicalDAO: MemberClinicalDAO
 ) : RoomHelper {
     override suspend fun saveHouseHoldEntry(householdEntity: HouseholdEntity): Long {

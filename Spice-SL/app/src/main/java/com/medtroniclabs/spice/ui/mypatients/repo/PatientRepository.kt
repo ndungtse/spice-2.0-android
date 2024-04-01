@@ -9,6 +9,7 @@ import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.appextensions.postSuccess
 import com.medtroniclabs.spice.model.PatientDetailReq
 import com.medtroniclabs.spice.model.PatientListRespModel
+import com.medtroniclabs.spice.model.ReferralData
 import com.medtroniclabs.spice.network.resource.Resource
 import javax.inject.Inject
 
@@ -37,6 +38,25 @@ class PatientRepository @Inject constructor(
             }
         } catch (e: Exception) {
             patientsLiveData.postError()
+        }
+    }
+
+    suspend fun getReferralTicket(
+        referralTicketLiveData: MutableLiveData<Resource<ReferralData>>,
+        request: PatientDetailReq
+    ) {
+        try {
+            referralTicketLiveData.postLoading()
+            val response = apiHelper.getReferralsDetails(request)
+            if (response.isSuccessful) {
+                response.body()?.entity?.let {
+                    referralTicketLiveData.postSuccess(it)
+                }
+            } else {
+                referralTicketLiveData.postError()
+            }
+        } catch (e: Exception) {
+            referralTicketLiveData.postError()
         }
     }
 }
