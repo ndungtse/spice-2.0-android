@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.appcompat.widget.AppCompatSpinner
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.view.forEach
 import androidx.fragment.app.Fragment
@@ -23,6 +24,7 @@ import com.medtroniclabs.spice.common.DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
 import com.medtroniclabs.spice.common.DateUtils.DATE_ddMMyyyy
 import com.medtroniclabs.spice.common.DateUtils.getYearMonthAndWeek
 import com.medtroniclabs.spice.common.DefinedParams.HOUSEHOLD_MEMBER_REGISTRATION
+import com.medtroniclabs.spice.common.DefinedParams.HouseholdHead
 import com.medtroniclabs.spice.common.DefinedParams.MemberID
 import com.medtroniclabs.spice.common.DefinedParams.No
 import com.medtroniclabs.spice.common.DefinedParams.Yes
@@ -31,12 +33,14 @@ import com.medtroniclabs.spice.common.DefinedParams.male
 import com.medtroniclabs.spice.databinding.FragmentMemberRegistrationBinding
 import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
 import com.medtroniclabs.spice.formgeneration.FormGenerator
+import com.medtroniclabs.spice.formgeneration.config.DefinedParams
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.Month
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.Week
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.Year
 import com.medtroniclabs.spice.formgeneration.listener.FormEventListener
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.model.FormResponse
+import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
 import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.no
 import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.yes
 import com.medtroniclabs.spice.mappingkey.MemberRegistration
@@ -129,6 +133,7 @@ class MemberRegistrationFragment : Fragment(), FormEventListener, View.OnClickLi
                         val formFieldsType = object : TypeToken<FormResponse>() {}.type
                         val formFields: FormResponse = Gson().fromJson(data, formFieldsType)
                         formGenerator.populateViews(formFields.formLayout)
+                        handleRelationshipSpinner()
                     }
                 }
 
@@ -170,6 +175,7 @@ class MemberRegistrationFragment : Fragment(), FormEventListener, View.OnClickLi
                 if (details.householdHeadRelationship.contains(getString(R.string.separator_hyphen))) {
                     details.householdHeadRelationship.substringBefore(getString(R.string.separator_hyphen))
                 } else details.householdHeadRelationship
+            view.isEnabled = false
             formGenerator.setValueForView(relationship, view)
         }
         formGenerator.getViewByTag(otherFamilyMember)?.let { view ->
@@ -273,6 +279,18 @@ class MemberRegistrationFragment : Fragment(), FormEventListener, View.OnClickLi
         )
     }
 
+    private fun handleRelationshipSpinner() {
+        householdRegistrationViewModel.householdEntityDetail?.let {
+            if (it.id == 0L) {
+                val view =
+                    formGenerator.getViewByTag(DefinedParams.HouseholdHeadRelationship) as AppCompatSpinner
+                val index =
+                    (view.adapter as CustomSpinnerAdapter).getIndexOfItemById(HouseholdHead)
+                view.setSelection(index, true)
+                view.isEnabled = false
+            }
+        }
+    }
 
     override fun loadLocalCache(id: String, localDataCache: Any, selectedParent: Long?) {
     }

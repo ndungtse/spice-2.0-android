@@ -29,5 +29,6 @@ object DefinedParams {
     const val Other = "Other"
     const val NoSymptoms = "No symptoms"
     const val Information= "information"
+    const val HouseholdHeadRelationship = "household_head_relationship"
     const val Title = "Title"
 }

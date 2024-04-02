@@ -38,4 +38,5 @@ object DefinedParams {
     const val value = "value"
     const val MenuTitle = "MenuTitle"
     const val PatientId = "PatientId"
+    const val HouseholdHead = "HouseholdHead"
 }

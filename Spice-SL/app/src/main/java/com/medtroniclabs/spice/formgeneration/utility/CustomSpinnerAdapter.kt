@@ -81,4 +81,13 @@ class CustomSpinnerAdapter(context: Context,val translate:Boolean =false) :
         }
         return -1
     }
+
+    fun getIndexOfItemById(id: String): Int {
+        itemList.forEachIndexed { index, map ->
+            if (map[DefinedParams.ID] == id) {
+                return index
+            }
+        }
+        return -1
+    }
 }
