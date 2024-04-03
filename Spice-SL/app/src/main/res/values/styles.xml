@@ -17,6 +17,17 @@
     </style>
 
 
+    <style name="Form_Min_Style_with_padding" parent="TextStyle">
+        <item name="android:textSize">@dimen/_14ssp</item>
+        <item name="android:paddingStart">@dimen/_6sdp</item>
+        <item name="android:paddingEnd">@dimen/_6sdp</item>
+        <item name="android:paddingTop">@dimen/_9sdp</item>
+        <item name="android:paddingBottom">@dimen/_9sdp</item>
+        <item name="android:background">@drawable/mental_health_button_bg</item>
+        <item name="android:textColor">@color/mental_health_text_selector</item>
+        <item name="android:gravity">center</item>
+    </style>
+
     <style name="CardView_Style">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
@@ -353,5 +364,14 @@
     <style name="TextStyle_18_NavyBlue" parent="TextStyle_Regular_14">
         <item name="android:textColor">@color/text_input_color</item>
         <item name="android:textSize">@dimen/_18ssp</item>
+    </style>
+
+    <style name="Labour_Delivery_Spinner_Style" parent="TextStyle">
+        <item name="android:textSize">@dimen/_16ssp</item>
+        <item name="android:layout_marginTop">@dimen/_5sdp</item>
+        <item name="android:layout_marginEnd">@dimen/_25sdp</item>
+        <item name="android:textColor">@color/text_input_color</item>
+        <item name="android:textColorHint">@color/edittext_stroke</item>
+        <item name="android:background">@null</item>
     </style>
 </resources>

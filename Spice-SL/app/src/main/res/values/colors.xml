@@ -99,4 +99,5 @@
     <color name="btn_disable_grey">#B3B3B3</color>
     <color name="grey_line_divider">#D0D0D0</color>
     <color name="fragment_bg">#F8F8FD</color>
+    <color name="light_purple">#DDDEFF</color>
 </resources>
