@@ -103,12 +103,13 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
             }
         }
 
-        viewModel.memberClinicalLiveData.observe(viewLifecycleOwner){data ->
-            data?.clinicalDate?.let {date ->
+        viewModel.memberClinicalLiveData.observe(viewLifecycleOwner) { data ->
+            data?.clinicalDate?.let { date ->
                 if (date.isNotEmpty()) {
-                    formGenerator.getViewByTag(RMNCH.lastMenstrualPeriod + formGenerator.rootSuffix)?.let {
-                        it.gone()
-                    }
+                    formGenerator.getViewByTag(RMNCH.lastMenstrualPeriod + formGenerator.rootSuffix)
+                        ?.let {
+                            it.gone()
+                        }
                 }
             }
         }
@@ -142,7 +143,7 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
             }
 
             RMNCH.PNC -> {
-                resultJsonFileName = "rmnch_pnc_phu_delivery_child.json"
+                resultJsonFileName = "rmnch_pnc_phu_delivery_mother.json"
             }
         }
         resultJsonFileName?.let { name ->
@@ -244,12 +245,12 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
         viewModel.memberDetailsLiveData.value?.data?.apply {
             val pregnancyMap =
                 details[AssessmentDefinedParams.RMNCH.lowercase()] as HashMap<String, Any>
-            if (pregnancyMap.containsKey(workflowName.lowercase()) && pregnancyMap[workflowName.lowercase()] is Map<*, *>) {
-                val map = pregnancyMap[workflowName.lowercase()] as HashMap<String, Any>
+            if (pregnancyMap.containsKey(workflowName) && pregnancyMap[workflowName] is Map<*, *>) {
+                val map = pregnancyMap[workflowName] as HashMap<String, Any>
                 viewModel.memberClinicalLiveData.value?.let {
                     map[visitCount] = it.visitCount + 1
                     map[RMNCH.lastMenstrualPeriod] = it.clinicalDate
-                    savePatientClinicalInformation(patientId,workflowName,map,it.id)
+                    savePatientClinicalInformation(patientId, workflowName, map, it.id)
                 } ?: kotlin.run {
                     map[visitCount] = 1L
                     savePatientClinicalInformation(patientId, workflowName, map)
@@ -265,13 +266,13 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
         rowId: Long = 0
     ) {
         patientId?.let { id ->
-            getClinicalDateAndVisitCount(map, workflowName)?.let {
+            getClinicalDateAndVisitCount(map, workflowName).let {
                 val clinicalEntity = MemberClinicalEntity(
                     id = rowId,
                     patientId = id,
                     type = workflowName,
                     visitCount = it.first,
-                    clinicalDate = it.second
+                    clinicalDate = it.second ?: ""
                 )
                 viewModel.savePatientVisitCountByType(clinicalEntity)
             }
@@ -285,14 +286,14 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
     private fun getClinicalDateAndVisitCount(
         details: HashMap<String, Any>,
         workflowName: String
-    ): Pair<Long, String>? {
+    ): Pair<Long, String?> {
         return when (workflowName) {
             RMNCH.ANC -> {
                 Pair(details[visitCount] as Long, details[RMNCH.lastMenstrualPeriod] as String)
             }
 
             else -> {
-                null
+                Pair(details[visitCount] as Long, null)
             }
         }
     }

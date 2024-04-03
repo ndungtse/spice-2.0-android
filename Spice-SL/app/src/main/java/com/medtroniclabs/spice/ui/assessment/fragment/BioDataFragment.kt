@@ -83,6 +83,14 @@ class BioDataFragment : BaseFragment() {
                 showAncRelatedInformation(entity)
             }
 
+            RMNCH.PNC -> {
+                title = getString(R.string.pnc)
+            }
+
+            RMNCH.ChildHoodVisit -> {
+                title = getString(R.string.child_hood_visit)
+            }
+
             else -> {
                 title = getString(R.string.hyphen_symbol)
             }
@@ -112,10 +120,16 @@ class BioDataFragment : BaseFragment() {
                 )
             )
             val lastMenstrualDate = getLastMenstrualDate(clinicalDate)
-            createSummary(getString(R.string.gestational_age),"${calculateGestationalAge(lastMenstrualDate).first} ${getString(R.string.weeks)}")
+            createSummary(
+                getString(R.string.gestational_age),
+                "${calculateGestationalAge(lastMenstrualDate).first} ${getString(R.string.weeks)}"
+            )
             val estimatedDeliveryDate = calculateEstimatedDeliveryDate(lastMenstrualDate)
             val formattedEstimatedDeliveryDate = getDateFormat().format(estimatedDeliveryDate.time)
-            createSummary(getString(R.string.estimated_delivery_date),formattedEstimatedDeliveryDate)
+            createSummary(
+                getString(R.string.estimated_delivery_date),
+                formattedEstimatedDeliveryDate
+            )
         }
     }
 
@@ -127,7 +141,7 @@ class BioDataFragment : BaseFragment() {
     }
 
     private fun getLastMenstrualDate(clinicalDate: String): Calendar {
-         // Define the format of the input date string
+        // Define the format of the input date string
         val lastMenstrualDateString = DateUtils.convertDateFormat(
             clinicalDate,
             DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,

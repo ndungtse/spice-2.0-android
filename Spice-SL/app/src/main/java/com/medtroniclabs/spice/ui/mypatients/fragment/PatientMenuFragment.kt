@@ -68,7 +68,7 @@ class PatientMenuFragment : BaseFragment(), MenuSelectionListener {
         }
     }
 
-    override fun onMenuSelected(menuId: String) {
+    override fun onMenuSelected(menuId: String, subModule: String?) {
         startAssessmentToolsActivity(menuId)
     }
 

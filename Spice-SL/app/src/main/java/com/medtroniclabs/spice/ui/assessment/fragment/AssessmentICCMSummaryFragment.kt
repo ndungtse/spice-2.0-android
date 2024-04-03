@@ -104,8 +104,8 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
 
     private fun getClinicTakenData(): ArrayList<Map<String, Any>> {
         val flowList = ArrayList<Map<String, Any>>()
-        flowList.add(getOptionMap(getString(R.string.yes)))
-        flowList.add(getOptionMap(getString(R.string.no)))
+        flowList.add(getOptionMap(getString(R.string.yes), getString(R.string.anc)))
+        flowList.add(getOptionMap(getString(R.string.no), getString(R.string.anc)))
         return flowList
     }
 

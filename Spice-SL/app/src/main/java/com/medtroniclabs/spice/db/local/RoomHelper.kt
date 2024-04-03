@@ -8,6 +8,7 @@ import com.medtroniclabs.spice.data.VillageInfo
 import com.medtroniclabs.spice.db.entity.AssessmentEntity
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowConditionEntity
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowEntity
+import com.medtroniclabs.spice.db.entity.ClinicalWorkflowEntityWithSubmodule
 import com.medtroniclabs.spice.db.entity.FormEntity
 import com.medtroniclabs.spice.db.entity.HealthFacilityEntity
 import com.medtroniclabs.spice.db.entity.HouseholdEntity
@@ -71,7 +72,7 @@ interface RoomHelper {
     suspend fun getChiefDomAndVillageCodeByVillageId(id: Long): VillageInfo
     suspend fun getLastPatientId(): LastCreatedAtAndPatientId?
     fun getMemberCountInHouseholdLiveData(houseHoldId: Long): LiveData<HouseholdMemberCount>
-    suspend fun getClinicalWorkflowId(gender: String, age: Int): List<ClinicalWorkflowEntity>
+    suspend fun getClinicalWorkflowId(gender: String, age: Int): List<ClinicalWorkflowEntityWithSubmodule>
     suspend fun getDobAndGenderById(memberId: Long): MemberDobGenderModel
     suspend fun getAllUnSyncedHouseHolds(): List<HouseHold>
 

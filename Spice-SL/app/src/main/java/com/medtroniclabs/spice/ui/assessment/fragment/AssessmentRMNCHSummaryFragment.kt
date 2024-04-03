@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.DateUtils
@@ -45,6 +46,10 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
     private fun setListener() {
         binding.btnDone.safeClickListener(this)
         binding.etNextFollowUpDate.safeClickListener(this)
+
+        binding.etNextFollowUpDate.addTextChangedListener {
+            binding.btnDone.isEnabled = !it.isNullOrEmpty()
+        }
     }
 
     private fun initSummaryViewByWorkFlowName() {
@@ -122,8 +127,10 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
     override fun onClick(v: View) {
         when (v.id) {
             R.id.btnDone -> {
-                viewModel.addOtherDetailsToType(AssessmentDefinedParams.RMNCH.lowercase())
-                viewModel.updateOtherAssessmentDetails()
+                if (binding.etNextFollowUpDate.text.isNotEmpty()){
+                    viewModel.addOtherDetailsToType(AssessmentDefinedParams.RMNCH.lowercase())
+                    viewModel.updateOtherAssessmentDetails()
+                }
             }
 
             binding.etNextFollowUpDate.id -> {

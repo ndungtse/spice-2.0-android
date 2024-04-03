@@ -21,6 +21,7 @@ import com.medtroniclabs.spice.ui.MenuConstants
 import com.medtroniclabs.spice.ui.MenuConstants.DialogResult
 import com.medtroniclabs.spice.ui.MenuConstants.WorkFlowName
 import com.medtroniclabs.spice.ui.assessment.AssessmentActivity
+import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
 import com.medtroniclabs.spice.ui.dialog.RMNCHFlowSelectionDialog
 import com.medtroniclabs.spice.ui.home.adapter.DashboardMenuItemsAdapter
 
@@ -52,7 +53,7 @@ class ToolsMenuFragment : Fragment(), MenuSelectionListener {
             viewLifecycleOwner
         ) { _, bundle ->
             val result = bundle.getString(WorkFlowName)
-            startAssessmentActivity(MenuConstants.RMNCH_MENU_ID,result)
+            startAssessmentActivity(MenuConstants.RMNCH_MENU_ID, result)
         }
         viewModel.getMenuForClinicalWorkflows()
         attachObservers()
@@ -78,6 +79,7 @@ class ToolsMenuFragment : Fragment(), MenuSelectionListener {
             }
         }
     }
+
     private fun setAdapterViews(menus: List<MenuEntity>) {
         if (CommonUtils.checkIsTablet(requireContext())) {
             val layoutManager = FlexboxLayoutManager(context)
@@ -91,15 +93,19 @@ class ToolsMenuFragment : Fragment(), MenuSelectionListener {
         binding.rvActivitiesList.adapter = DashboardMenuItemsAdapter(menus, this)
     }
 
-    override fun onMenuSelected(menuId: String) {
-        startAssessmentToolsActivity(menuId)
+    override fun onMenuSelected(menuId: String, subModule: String?) {
+        startAssessmentToolsActivity(menuId, subModule)
     }
 
-    private fun startAssessmentToolsActivity(menuId: String) {
+    private fun startAssessmentToolsActivity(menuId: String, subModule: String?) {
         when (menuId) {
             MenuConstants.RMNCH_MENU_ID -> {
-                RMNCHFlowSelectionDialog.newInstance()
-                    .show(childFragmentManager, RMNCHFlowSelectionDialog.TAG)
+                if (subModule == null) {
+                    RMNCHFlowSelectionDialog.newInstance()
+                        .show(childFragmentManager, RMNCHFlowSelectionDialog.TAG)
+                } else {
+                    startAssessmentActivity(MenuConstants.RMNCH_MENU_ID, RMNCH.ChildHoodVisit)
+                }
             }
 
             else -> {

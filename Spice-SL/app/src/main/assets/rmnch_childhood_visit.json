@@ -1,15 +1,15 @@
 [
   {
     "familyOrder": 0,
-    "id": "childDetails",
+    "id": "pncChild",
     "orderId": 1,
     "title": "Child Details",
     "viewType": "CardView"
   },
   {
-    "id": "childSymptoms",
-    "fieldName": "childSymptoms",
-    "family": "childDetails",
+    "id": "dangerSigns",
+    "fieldName": "dangerSigns",
+    "family": "pncChild",
     "orderId": 2,
     "viewType": "DialogCheckbox",
     "localDataCache": "childSymptoms",
@@ -21,11 +21,12 @@
     "isSummary": true
   },
   {
-    "family": "childDetails",
-    "fieldName": "fatherPersent",
+    "family": "pncChild",
+    "fieldName": "fatherPresent",
     "id": "fatherPresent",
     "condition": [],
     "orderId": 3,
+    "isBooleanAnswer": true,
     "errorMessage": "Please select a valid option",
     "isEnabled": true,
     "isMandatory": true,
@@ -33,11 +34,11 @@
     "isSummary": true,
     "optionsList": [
       {
-        "id": "Yes",
+        "id": true,
         "name": "Yes"
       },
       {
-        "id": "No",
+        "id": false,
         "name": "No"
       }
     ],
@@ -48,11 +49,12 @@
     "visibility": "visible"
   },
   {
-    "family": "childDetails",
-    "fieldName": "breastFeeding",
-    "id": "breastFeeding",
+    "family": "pncChild",
+    "fieldName": "exclusivelyBreastfeeding",
+    "id": "exclusivelyBreastfeeding",
     "condition": [],
     "orderId": 4,
+    "isBooleanAnswer": true,
     "errorMessage": "Please select a valid option",
     "isEnabled": true,
     "isMandatory": true,
@@ -60,11 +62,11 @@
     "isSummary": true,
     "optionsList": [
       {
-        "id": "Yes",
+        "id": true,
         "name": "Yes"
       },
       {
-        "id": "No",
+        "id": false,
         "name": "No"
       }
     ],
@@ -75,10 +77,11 @@
     "visibility": "visible"
   },
   {
-    "family": "childDetails",
-    "fieldName": "sleepsUnderBednet",
-    "id": "sleepsUnderBednet",
+    "family": "pncChild",
+    "fieldName": "sleepsUnderBedNet",
+    "id": "sleepsUnderBedNet",
     "condition": [],
+    "isBooleanAnswer": true,
     "orderId": 5,
     "errorMessage": "Please select a valid option",
     "isEnabled": true,
@@ -87,11 +90,11 @@
     "isSummary": true,
     "optionsList": [
       {
-        "id": "Yes",
+        "id": true,
         "name": "Yes"
       },
       {
-        "id": "No",
+        "id": false,
         "name": "No"
       }
     ],
@@ -101,11 +104,12 @@
     "visibility": "visible"
   },
   {
-    "family": "childDetails",
+    "family": "pncChild",
     "fieldName": "muac",
-    "id": "MUAC",
+    "id": "muac",
     "viewType": "Spinner",
     "orderId": 6,
+    "isSummary": true,
     "isEnabled": true,
     "isMandatory": true,
     "title": "MUAC",
@@ -126,10 +130,11 @@
     "errorMessage": "Please select a valid option"
   },
   {
-    "family": "childDetails",
-    "fieldName": "minimumMealsPerDay",
-    "id": "minimumMealsPerDay",
+    "family": "pncChild",
+    "fieldName": "takingMinimumMealsPerDay",
+    "id": "takingMinimumMealsPerDay",
     "condition": [],
+    "isBooleanAnswer": true,
     "orderId": 7,
     "errorMessage": "Please select a valid option",
     "isEnabled": true,
@@ -138,11 +143,11 @@
     "isSummary": true,
     "optionsList": [
       {
-        "id": "Yes",
+        "id": true,
         "name": "Yes"
       },
       {
-        "id": "No",
+        "id": false,
         "name": "No"
       }
     ],
@@ -152,36 +157,11 @@
     "visibility": "visible"
   },
   {
-    "family": "childDetails",
-    "fieldName": "minimumMealsPerDay",
-    "id": "minimumMealsPerDay",
+    "family": "pncChild",
+    "fieldName": "fedFrom4FoodGroups",
+    "id": "fedFrom4FoodGroups",
     "condition": [],
-    "orderId": 8,
-    "errorMessage": "Please select a valid option",
-    "isEnabled": true,
-    "isMandatory": true,
-    "isNeededDefault": true,
-    "isSummary": true,
-    "optionsList": [
-      {
-        "id": "Yes",
-        "name": "Yes"
-      },
-      {
-        "id": "No",
-        "name": "No"
-      }
-    ],
-    "optionType": "boolean",
-    "viewType": "SingleSelectionView",
-    "title": "Taking minimum meals per day",
-    "visibility": "visible"
-  },
-  {
-    "family": "childDetails",
-    "fieldName": "fedFromFoodGroups",
-    "id": "fedFromFoodGroups",
-    "condition": [],
+    "isBooleanAnswer": true,
     "orderId": 9,
     "errorMessage": "Please select a valid option",
     "isEnabled": true,
@@ -190,11 +170,11 @@
     "isSummary": true,
     "optionsList": [
       {
-        "id": "Yes",
+        "id": true,
         "name": "Yes"
       },
       {
-        "id": "No",
+        "id": false,
         "name": "No"
       }
     ],
@@ -204,11 +184,12 @@
     "visibility": "visible"
   },
   {
-    "family": "childDetails",
-    "fieldName": "mpUsingFamilyPlanning",
-    "id": "mpUsingFamilyPlanning",
+    "family": "pncChild",
+    "fieldName": "motherOrPartnerUsingFamilyPlanning",
+    "id": "motherOrPartnerUsingFamilyPlanning",
     "condition": [],
     "orderId": 10,
+    "isBooleanAnswer": true,
     "errorMessage": "Please select a valid option",
     "isEnabled": true,
     "isMandatory": true,
@@ -216,11 +197,11 @@
     "isSummary": true,
     "optionsList": [
       {
-        "id": "Yes",
+        "id": true,
         "name": "Yes"
       },
       {
-        "id": "No",
+        "id": false,
         "name": "No"
       }
     ],
@@ -230,23 +211,24 @@
     "visibility": "visible"
   },
   {
-    "family": "childDetails",
+    "family": "pncChild",
     "fieldName": "deathOfBaby",
     "id": "deathOfBaby",
     "condition": [],
     "orderId": 11,
     "errorMessage": "Please select a valid option",
     "isEnabled": true,
+    "isBooleanAnswer": true,
     "isMandatory": true,
     "isNeededDefault": true,
     "isSummary": true,
     "optionsList": [
       {
-        "id": "Yes",
+        "id": true,
         "name": "Yes"
       },
       {
-        "id": "No",
+        "id": false,
         "name": "No"
       }
     ],

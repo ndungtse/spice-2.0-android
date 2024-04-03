@@ -16,6 +16,7 @@ import com.medtroniclabs.spice.db.dao.ExaminationsComplaintsDAO
 import com.medtroniclabs.spice.db.entity.AssessmentEntity
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowConditionEntity
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowEntity
+import com.medtroniclabs.spice.db.entity.ClinicalWorkflowEntityWithSubmodule
 import com.medtroniclabs.spice.db.entity.FormEntity
 import com.medtroniclabs.spice.db.entity.HealthFacilityEntity
 import com.medtroniclabs.spice.db.entity.HouseholdEntity
@@ -143,7 +144,7 @@ class RoomHelperImpl @Inject constructor(
     override suspend fun getClinicalWorkflowId(
         gender: String,
         age: Int
-    ): List<ClinicalWorkflowEntity> {
+    ): List<ClinicalWorkflowEntityWithSubmodule> {
         return metaDataDAO.getClinicalWorkflowId(gender, age)
     }
 

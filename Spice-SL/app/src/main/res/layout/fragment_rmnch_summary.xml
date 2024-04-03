@@ -38,8 +38,10 @@
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btnDone"
             style="@style/Button_Style"
+            android:background="@drawable/button_selector_cobalt"
             android:layout_width="match_parent"
             android:layout_gravity="center"
+            android:enabled="false"
             android:layout_margin="@dimen/_8sdp"
             android:text="@string/done"
             android:textAllCaps="true"

@@ -13,3 +13,13 @@ data class ClinicalWorkflowEntity(
     val countryId: Long,
     val displayOrder:Int? = null,
 )
+
+data class ClinicalWorkflowEntityWithSubmodule(
+    val id: Long,
+    val name: String,
+    val moduleType: String?=null,
+    val workflowName: String,
+    val countryId: Long,
+    val displayOrder:Int? = null,
+    val subModule: String? = null
+)

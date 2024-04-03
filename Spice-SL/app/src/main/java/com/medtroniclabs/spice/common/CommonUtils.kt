@@ -135,10 +135,10 @@ object CommonUtils {
         return SecuredPreference.getRole() == RoleConstant.COMMUNITY_HEALTH_WORKER
     }
 
-    fun getOptionMap(value: String): Map<String, Any> {
+    fun getOptionMap(value: String, name: String): Map<String, Any> {
         val map = HashMap<String, Any>()
         map[DefinedParams.ID] = value
-        map[DefinedParams.NAME] = value
+        map[DefinedParams.NAME] = name
         return map
     }
 

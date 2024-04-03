@@ -21,6 +21,7 @@ import com.medtroniclabs.spice.data.MenuDetail
 import com.medtroniclabs.spice.data.UserProfile
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowConditionEntity
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowEntity
+import com.medtroniclabs.spice.db.entity.ClinicalWorkflowEntityWithSubmodule
 import com.medtroniclabs.spice.db.entity.FormEntity
 import com.medtroniclabs.spice.db.entity.HealthFacilityEntity
 import com.medtroniclabs.spice.db.entity.MenuEntity
@@ -215,7 +216,8 @@ class LoginRepository @Inject constructor(
                     gender = condition.gender,
                     maxAge = condition.maxAge,
                     minAge = condition.minAge,
-                    clinicalWorkflowId = clinicalWorkflow.id
+                    clinicalWorkflowId = clinicalWorkflow.id,
+                    subModule = condition.subModule
                 )
 
             }?.toList() ?: listOf())
@@ -253,9 +255,10 @@ class LoginRepository @Inject constructor(
         )
     }
 
-    private suspend fun saveVillage( ) {
+    private suspend fun saveVillage() {
 
     }
+
     private suspend fun saveMenusInDb(menus: ArrayList<MenuDetail>, roleName: String) {
         roomHelper.deleteAllMenus()
         menus.forEach { menu ->
@@ -317,7 +320,9 @@ class LoginRepository @Inject constructor(
                     memberData.gender,
                     DateUtils.dateToMonths(memberData.dateOfBirth) ?: 0
                 )
-                menuListLiveData.postSuccess(convertorClinicalWorkflowsToMenuEntity(list))
+                menuListLiveData.postSuccess(
+                    convertorClinicalWorkflowsToMenuEntity(list)
+                )
             } else {
                 menuListLiveData.postError()
             }
@@ -326,13 +331,14 @@ class LoginRepository @Inject constructor(
         }
     }
 
-    private fun convertorClinicalWorkflowsToMenuEntity(clinicalWorkflows: List<ClinicalWorkflowEntity>): List<MenuEntity> {
+    private fun convertorClinicalWorkflowsToMenuEntity(clinicalWorkflows: List<ClinicalWorkflowEntityWithSubmodule>): List<MenuEntity> {
         return clinicalWorkflows.sortedBy { it.displayOrder }.map { clinicalWorkflow ->
             MenuEntity(
                 id = clinicalWorkflow.id,
                 menuId = clinicalWorkflow.workflowName,
                 name = clinicalWorkflow.name,
                 displayOrder = clinicalWorkflow.displayOrder ?: 0,
+                subModule = clinicalWorkflow.subModule
             )
         }
     }

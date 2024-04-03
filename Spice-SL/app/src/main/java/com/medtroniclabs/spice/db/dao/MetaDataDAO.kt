@@ -8,6 +8,7 @@ import androidx.room.Query
 import com.medtroniclabs.spice.data.VillageInfo
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowConditionEntity
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowEntity
+import com.medtroniclabs.spice.db.entity.ClinicalWorkflowEntityWithSubmodule
 import com.medtroniclabs.spice.db.entity.FormEntity
 import com.medtroniclabs.spice.db.entity.HealthFacilityEntity
 import com.medtroniclabs.spice.db.entity.MenuEntity
@@ -101,8 +102,8 @@ interface MetaDataDAO {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertClinicalWorkflowConditions(clinicalWorkflowConditions: List<ClinicalWorkflowConditionEntity>)
 
-    @Query("SELECT  DISTINCT wf.* FROM ClinicalWorkflowEntity AS wf LEFT JOIN  ClinicalWorkflowConditionEntity AS wfc ON wf.id = wfc.clinicalWorkflowId WHERE (wfc.gender IS NULL OR wfc.gender = :gender)  AND (wfc.maxAge is null OR wfc.maxAge >= :age) AND (wfc.minAge is null OR wfc.minAge <= :age)")
-    suspend fun getClinicalWorkflowId(gender: String, age: Int): List<ClinicalWorkflowEntity>
+    @Query("SELECT  DISTINCT wf.*,wfc.subModule FROM ClinicalWorkflowEntity AS wf LEFT JOIN  ClinicalWorkflowConditionEntity AS wfc ON wf.id = wfc.clinicalWorkflowId WHERE (wfc.gender = 'both' OR wfc.gender = :gender)  AND (wfc.maxAge is null OR wfc.maxAge >= :age) AND (wfc.minAge is null OR wfc.minAge <= :age) order by wf.displayOrder")
+    suspend fun getClinicalWorkflowId(gender: String, age: Int): List<ClinicalWorkflowEntityWithSubmodule>
 
     @Query("SELECT * FROM HealthFacilityEntity")
     suspend fun getNearestHealthFacility(): List<HealthFacilityEntity>

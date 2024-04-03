@@ -87,7 +87,7 @@ class HomeScreenFragment : BaseFragment(), MenuSelectionListener {
 
     }
 
-    override fun onMenuSelected(menuId: String) {
+    override fun onMenuSelected(menuId: String, subModule: String?) {
         when (menuId) {
             MenuConstants.HOUSEHOLD_MENU_ID -> {
                 startActivity(Intent(requireContext(), HouseholdSearchActivity::class.java))

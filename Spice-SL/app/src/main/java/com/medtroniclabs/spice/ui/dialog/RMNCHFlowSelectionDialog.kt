@@ -100,9 +100,8 @@ class RMNCHFlowSelectionDialog : DialogFragment(), View.OnClickListener {
 
     private fun getRMNCHFlowData(): ArrayList<Map<String, Any>> {
         val flowList = ArrayList<Map<String, Any>>()
-        flowList.add(getOptionMap(RMNCH.ANC))
-        flowList.add(getOptionMap(RMNCH.PNC))
-        flowList.add(getOptionMap(RMNCH.ChildHoodVisit))
+        flowList.add(getOptionMap(RMNCH.ANC,getString(R.string.anc)))
+        flowList.add(getOptionMap(RMNCH.PNC,getString(R.string.pnc)))
         return flowList
     }
 

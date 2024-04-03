@@ -57,9 +57,9 @@ class DashboardMenuItemsAdapter(
                     true
                 )
             ) {
-                listener.onMenuSelected(model.name)
+                listener.onMenuSelected(model.name, model.subModule)
             }else{
-                listener.onMenuSelected(model.menuId)
+                listener.onMenuSelected(model.menuId,model.subModule)
             }
         }
     }
