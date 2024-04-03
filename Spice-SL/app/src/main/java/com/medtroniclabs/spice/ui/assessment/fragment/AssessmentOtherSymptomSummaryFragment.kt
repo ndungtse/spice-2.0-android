@@ -29,6 +29,7 @@ import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.Amoxicillin
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.AssessmentNotes
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.Dispensed
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.OtherSymptoms
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.Summary
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.hasFever
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.otherConcerningSymptoms
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.otherSymptoms
@@ -86,9 +87,9 @@ class AssessmentOtherSymptomSummaryFragment : Fragment(), View.OnClickListener {
     }
 
     private fun attachObservers() {
-        viewModel.assessmentSaveLiveData.value?.data?.let {
+        viewModel.assessmentStringLiveData.value?.let {
             updateStatusBar()
-            createSummaryView(createListSummaryData(it.assessmentDetails))
+            createSummaryView(createListSummaryData(it))
         }
 
         viewModel.nearestFacilityLiveData.observe(viewLifecycleOwner) { resourceState ->
@@ -133,12 +134,11 @@ class AssessmentOtherSymptomSummaryFragment : Fragment(), View.OnClickListener {
             )
         )
         var defaultPosition = 0
-        //TODO("Instead of id need to give fhir Id once backend gives")
         for ((index, healthFacilityEntity) in healthFacilityList.withIndex()) {
             dropDownList.add(
                 hashMapOf<String, Any>(
                     DefinedParams.NAME to healthFacilityEntity.name,
-                    DefinedParams.id to healthFacilityEntity.id.toString()
+                    DefinedParams.id to healthFacilityEntity.fhirId.toString()
                 )
             )
             if (healthFacilityEntity.isDefault) {
@@ -280,9 +280,9 @@ class AssessmentOtherSymptomSummaryFragment : Fragment(), View.OnClickListener {
         when (view.id) {
             binding.btnDone.id -> {
                 binding.etNextFollowUpDate.text?.let {
-                    viewModel.otherAssessmentDetails[AssessmentDefinedParams.NextFollowupDate] = it.toString()
+                    updateFollowUpDate(it.trim().toString())
                 }
-                addOtherDetailsToType(OtherSymptoms.lowercase())
+                //addOtherDetailsToType(Summary.lowercase())
                 viewModel.updateOtherAssessmentDetails()
             }
 
@@ -317,10 +317,20 @@ class AssessmentOtherSymptomSummaryFragment : Fragment(), View.OnClickListener {
                         DateUtils.DATE_FORMAT_ddMMyyyy,
                         DateUtils.DATE_ddMMyyyy
                     )
-                viewModel.otherAssessmentDetails[AssessmentDefinedParams.NextFollowupDate] =
-                    binding.etNextFollowUpDate.text.toString()
+                updateFollowUpDate(binding.etNextFollowUpDate.text.toString().trim())
                 datePickerDialog = null
             }
+        }
+    }
+
+    private fun updateFollowUpDate(date: String) {
+        if (date.isNotEmpty()) {
+            viewModel.otherAssessmentDetails[AssessmentDefinedParams.NextFollowupDate] =
+                DateUtils.convertDateTimeToDate(
+                    date,
+                    DateUtils.DATE_ddMMyyyy,
+                    DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
+                )
         }
     }
 

@@ -9,6 +9,7 @@ import androidx.work.WorkerParameters
 import com.medtroniclabs.spice.offlinesync.utils.OfflineConstant
 import com.medtroniclabs.spice.offlinesync.utils.OfflineConstant.KEY_REQUESTS_ID
 import com.medtroniclabs.spice.offlinesync.utils.OfflineUtils
+import com.medtroniclabs.spice.repo.AssessmentRepository
 import com.medtroniclabs.spice.repo.HouseHoldRepository
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
@@ -17,7 +18,8 @@ import dagger.assisted.AssistedInject
 class PostSyncWorker @AssistedInject constructor(
     @Assisted context: Context,
     @Assisted userParameter: WorkerParameters,
-    val houseHoldRepository: HouseHoldRepository
+    val houseHoldRepository: HouseHoldRepository,
+    val assessmentRepository: AssessmentRepository
 ) : CoroutineWorker(context, userParameter) {
 
     override suspend fun doWork(): Result {
@@ -40,19 +42,35 @@ class PostSyncWorker @AssistedInject constructor(
 
     private suspend fun syncHouseHoldsAndMembers(): String? {
         val householdIds = mutableListOf<Long>()
+        val coveredPatientIds = mutableListOf<String>()
         val houseHoldList = houseHoldRepository.getAllUnSyncedHouseHolds()
         houseHoldList.forEach { householdEntity ->
             householdIds.add(householdEntity.referenceId!!.toLong())
             val memberList =
                 houseHoldRepository.getAllUnSyncedMembers(householdEntity.referenceId!!.toLong())
+
+            //Assessment
+            memberList.forEach { hhm ->
+                coveredPatientIds.add(hhm.patientId)
+                hhm.assessments = assessmentRepository.getUnSyncedAssessmentByPatientId(hhm.patientId)
+            }
+
             householdEntity.householdMembers.addAll(memberList)
         }
 
         val otherHouseholdMembers = houseHoldRepository.getOtherHouseholdMembers(householdIds)
+        //Assessment
+        otherHouseholdMembers.forEach { hhm ->
+            coveredPatientIds.add(hhm.patientId)
+            hhm.assessments = assessmentRepository.getUnSyncedAssessmentByPatientId(hhm.patientId)
+        }
+
+        val otherAssessments = assessmentRepository.getOtherUnSyncedAssessments(coveredPatientIds)
 
         val request = OfflineUtils.getRequestObject()
         request[OfflineConstant.HOUSE_HOLDS] = houseHoldList
         request[OfflineConstant.HOUSE_HOLD_MEMBERS] = otherHouseholdMembers
+        request[OfflineConstant.ASSESSMENTS] = otherAssessments
 
         try {
             val apiResponse = houseHoldRepository.postOfflineHouseHolds(request)

@@ -45,7 +45,7 @@ class OfflineSyncActivity : BaseActivity() {
     }
 
     private fun initView() {
-        binding.btnSync.isEnabled = false
+        //binding.btnSync.isEnabled = false
 
         adapter = OfflineSyncEntitiesAdapter()
         binding.rvEntityList.layoutManager = LinearLayoutManager(this)
@@ -54,7 +54,6 @@ class OfflineSyncActivity : BaseActivity() {
         binding.btnSync.setOnClickListener {
             showLoadingDialog()
             startPostWorkManager()
-            //startGetSyncStatusWorkManager(arrayOf("20e4515e-bd2d-4340-9247-ffc99efc26e5"), 1)
         }
     }
 
@@ -68,7 +67,7 @@ class OfflineSyncActivity : BaseActivity() {
     private fun initObserver() {
         viewModel.unSyncedCountLiveData.observe(this) { list ->
             val totalUnSyncedCount = list.sumOf { it.unSyncedCount }
-           // binding.btnSync.isEnabled = totalUnSyncedCount > 0
+            binding.btnSync.isEnabled = totalUnSyncedCount > 0
             adapter.updateList(list)
         }
     }

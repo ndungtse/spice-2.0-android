@@ -12,7 +12,7 @@ import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.repo.HouseHoldRepository
-import com.medtroniclabs.spice.repo.MemberRegistrationRepository
+import com.medtroniclabs.spice.repo.HouseholdMemberRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
@@ -21,7 +21,7 @@ import javax.inject.Inject
 @HiltViewModel
 class MemberRegistrationViewModel @Inject constructor(
     @IoDispatcher private val dispatcherIO: CoroutineDispatcher,
-    private val memberRegistrationRepository: MemberRegistrationRepository,
+    private val memberRegistrationRepository: HouseholdMemberRepository,
     private val houseHoldRepository: HouseHoldRepository
 ) : ViewModel() {
 

@@ -15,6 +15,7 @@ import com.medtroniclabs.spice.databinding.FragmentBioDataBinding
 import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
 import com.medtroniclabs.spice.db.entity.MemberClinicalEntity
 import com.medtroniclabs.spice.formgeneration.extension.capitalizeFirstChar
+import com.medtroniclabs.spice.model.assessment.AssessmentMemberDetails
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.assessment.AssessmentCommonUtils
@@ -159,7 +160,7 @@ class BioDataFragment : BaseFragment() {
         viewModel.getMemberDetailsById()
     }
 
-    private fun showPatientBioData(data: HouseholdMemberEntity?) {
+    private fun showPatientBioData(data: AssessmentMemberDetails?) {
         data?.apply {
             binding.patientName.tvKey.text = getString(R.string.name)
             binding.patientName.tvValue.text = name.capitalizeFirstChar()

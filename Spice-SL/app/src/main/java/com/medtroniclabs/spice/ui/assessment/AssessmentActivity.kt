@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.viewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.DefinedParams
+import com.medtroniclabs.spice.common.SpiceLocationManager
 import com.medtroniclabs.spice.databinding.ActivityAssessmentBinding
 import com.medtroniclabs.spice.formgeneration.extension.capitalizeFirstChar
 import com.medtroniclabs.spice.network.resource.ResourceState
@@ -37,6 +38,14 @@ class AssessmentActivity : BaseActivity() {
         getIntentValue()
         loadFragment()
         attachObservers()
+        getCurrentLocation()
+    }
+
+    private fun getCurrentLocation() {
+        val locationManager = SpiceLocationManager(this)
+        locationManager.getCurrentLocation {
+            viewModel.setCurrentLocation(it)
+        }
     }
 
     private fun loadSummaryFragment() {

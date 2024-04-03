@@ -15,11 +15,12 @@ import com.medtroniclabs.spice.db.entity.MemberClinicalEntity
 import com.medtroniclabs.spice.db.local.RoomHelper
 import com.medtroniclabs.spice.mappingkey.MemberRegistration
 import com.medtroniclabs.spice.mappingkey.MemberRegistration.otherFamilyMember
+import com.medtroniclabs.spice.model.assessment.AssessmentMemberDetails
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.offlinesync.utils.OfflineSyncStatus
 import javax.inject.Inject
 
-class MemberRegistrationRepository @Inject constructor(
+class HouseholdMemberRepository @Inject constructor(
     private var roomHelper: RoomHelper
 ) {
     suspend fun registerMember(
@@ -132,6 +133,19 @@ class MemberRegistrationRepository @Inject constructor(
         try {
             memberDetailsLiveData.postLoading()
             val memberEntity = roomHelper.getMemberDetailsByID(memberId)
+            memberDetailsLiveData.postSuccess(memberEntity)
+        } catch (e: Exception) {
+            memberDetailsLiveData.postError()
+        }
+    }
+
+    suspend fun getAssessmentMemberDetails(
+        id: Long,
+        memberDetailsLiveData: MutableLiveData<Resource<AssessmentMemberDetails>>
+    ) {
+        try {
+            memberDetailsLiveData.postLoading()
+            val memberEntity = roomHelper.getAssessmentMemberDetails(id)
             memberDetailsLiveData.postSuccess(memberEntity)
         } catch (e: Exception) {
             memberDetailsLiveData.postError()

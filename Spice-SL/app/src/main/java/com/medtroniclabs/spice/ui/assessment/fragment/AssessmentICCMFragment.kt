@@ -161,10 +161,9 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
                     ICCM_MENU_ID
                 )
             }
+
             result?.second?.let {
-                StringConverter.convertGivenMapToString(it)?.let { resultData ->
-                    viewModel.saveAssessment(resultData, referralResult)
-                }
+                viewModel.saveAssessment(it, referralResult)
             }
         }
     }

@@ -21,6 +21,7 @@ import com.medtroniclabs.spice.db.response.HouseHoldEntityWithMemberCount
 import com.medtroniclabs.spice.db.response.HouseholdMemberCount
 import com.medtroniclabs.spice.db.response.VillageBasicDetails
 import com.medtroniclabs.spice.model.MemberDobGenderModel
+import com.medtroniclabs.spice.model.assessment.AssessmentMemberDetails
 import com.medtroniclabs.spice.offlinesync.model.HouseHold
 import com.medtroniclabs.spice.offlinesync.model.HouseHoldMember
 
@@ -98,5 +99,13 @@ interface RoomHelper {
     suspend fun getHouseholdIdByFhirId(fhirId: String?): Long?
 
     suspend fun getHouseholdMemberIdByFhirId(fhirId: String?): Long?
+
+    suspend fun getAssessmentMemberDetails(id: Long): AssessmentMemberDetails
+
+    suspend fun getUnSyncedAssessmentByPatientId(patientId: String): List<AssessmentEntity>
+
+    suspend fun getOtherUnSyncedAssessments(patientIds: List<String>): List<AssessmentEntity>
+
+    suspend fun getUnSyncedAssessmentCount(): Int
 
 }

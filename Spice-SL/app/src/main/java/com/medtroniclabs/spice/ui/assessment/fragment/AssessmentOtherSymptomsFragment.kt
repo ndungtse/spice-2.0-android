@@ -1,6 +1,7 @@
 package com.medtroniclabs.spice.ui.assessment.fragment
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -23,6 +24,7 @@ import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.MenuConstants.OTHER_SYMPTOMS
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.OtherSymptoms
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.otherSymptoms
 import com.medtroniclabs.spice.ui.assessment.referrallogic.ReferralResultGenerator
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -133,13 +135,12 @@ class AssessmentOtherSymptomsFragment : BaseFragment(), FormEventListener, View.
                     context = requireContext(),
                     serverData = it,
                     details,
-                    OTHER_SYMPTOMS.lowercase()
+                    OTHER_SYMPTOMS
                 )
             }
+
             result?.second?.let {
-                StringConverter.convertGivenMapToString(it)?.let { resultData ->
-                    viewModel.saveAssessment(resultData, referralResult)
-                }
+                viewModel.saveAssessment(it, referralResult)
             }
         }
     }

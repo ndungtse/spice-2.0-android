@@ -11,5 +11,6 @@ data class HealthFacilityEntity(
     val tenantId: Long,
     val districtId: Long,
     val chiefdomId: Long,
+    val fhirId: String? = null,
     val isDefault: Boolean = false
 )

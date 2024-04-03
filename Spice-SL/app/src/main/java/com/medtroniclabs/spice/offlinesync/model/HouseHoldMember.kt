@@ -2,6 +2,7 @@ package com.medtroniclabs.spice.offlinesync.model
 
 import androidx.room.ColumnInfo
 import androidx.room.Ignore
+import com.medtroniclabs.spice.db.entity.AssessmentEntity
 import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
 import com.medtroniclabs.spice.offlinesync.utils.OfflineSyncStatus
 
@@ -44,10 +45,19 @@ data class HouseHoldMember(
     val createdAt: Long,
 
     @ColumnInfo("updated_at")
-    val updatedAt: Long
+    val updatedAt: Long,
+
+    @ColumnInfo(name= "village_name")
+    val village: String,
+
+    @ColumnInfo(name = "village_id")
+    val villageId: Long,
 ) {
     @Ignore
     var provenance: ProvanceDto = ProvanceDto()
+
+    @Ignore
+    var assessments = listOf<Assessment>()
 
     fun toHouseholdMemberEntity(hhId: Long, status: OfflineSyncStatus, id: Long = 0): HouseholdMemberEntity {
         return HouseholdMemberEntity(

@@ -3,6 +3,7 @@ package com.medtroniclabs.spice.ui.assessment.referrallogic
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.NoSymptoms
+import com.medtroniclabs.spice.model.assessment.AssessmentMemberDetails
 import com.medtroniclabs.spice.ui.assessment.AssessmentCommonUtils.getListActual
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.Dispensed
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.LittleOrNoUrine
@@ -52,7 +53,7 @@ class ReferralResultGenerator {
     private var patientStatus = HashMap<String, Any>()
     private val referralReason = arrayListOf<String>()
 
-    fun calculateIccmReferralResult(map: HashMap<String, Any>, memberDetails: HouseholdMemberEntity?) : Pair<String?, ArrayList<String>>{
+    fun calculateIccmReferralResult(map: HashMap<String, Any>, memberDetails: AssessmentMemberDetails?) : Pair<String?, ArrayList<String>>{
         calculateDangerSignsResult(map)
         calculateNutritionalStatusResult(map)
         calculateCoughStatus(map, memberDetails)
@@ -61,10 +62,36 @@ class ReferralResultGenerator {
         return Pair(checkStatus(), referralReason)
     }
 
+    private fun formatDiarrhoeaSigns(map: HashMap<String, Any>) {
+        if (map.containsKey(DiarrhoeaSigns) && map[DiarrhoeaSigns] is List<*>) {
+            val signsList = mutableListOf<String>()
+            val list = map[DiarrhoeaSigns] as List<*>
+            list.forEach { it ->
+                if (it is HashMap<*,*>) {
+                    signsList.add(it["name"] as String)
+                }
+            }
+            map[DiarrhoeaSigns] = signsList
+        }
+    }
+
     fun calculateOtherSymptomsReferralResult(map: HashMap<String, Any>) : Pair<String?, ArrayList<String>>{
         calculateSymptomsStatus(map, otherSymptoms)
         calculateFeverStatus(map, ReferralReasons.Fever.name)
         return Pair(checkStatus(), referralReason)
+    }
+
+    private fun formatSignsAndSymptoms(map: HashMap<String, Any>) {
+        if (map.containsKey(otherSymptoms) && map[otherSymptoms] is List<*>) {
+            val signsList = mutableListOf<String>()
+            val list = map[otherSymptoms] as List<*>
+            list.forEach { it ->
+                if (it is HashMap<*,*>) {
+                    signsList.add(it["name"] as String)
+                }
+            }
+            map[otherSymptoms] = signsList
+        }
     }
 
     private fun addResultMap(key: String, value: String?) {
@@ -120,7 +147,7 @@ class ReferralResultGenerator {
      */
     private fun calculateCoughStatus(
         map: HashMap<String, Any>,
-        memberDetails: HouseholdMemberEntity?
+        memberDetails: AssessmentMemberDetails?
     ) {
         if (map.containsKey(hasCough)) {
             if ((map[hasCough] is String && map[hasCough] == Yes) ||

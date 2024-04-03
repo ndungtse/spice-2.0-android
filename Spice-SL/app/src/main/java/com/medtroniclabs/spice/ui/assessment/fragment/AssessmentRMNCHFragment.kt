@@ -216,9 +216,7 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
                 viewModel.workflowName?.let {
                     handlePregnancy(second, workflowName = it)
                 }
-                StringConverter.convertGivenMapToString(second)?.let { resultData ->
-                    viewModel.saveAssessment(resultData, null)
-                }
+                viewModel.saveAssessment(second, null)
             }
         }
     }

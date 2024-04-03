@@ -17,6 +17,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class ResourceLoadingScreen : BaseActivity() {
     private lateinit var binding: ActivityResourceLoadingScreenBinding
     private val viewModel: ResourceLoadingViewModel by viewModels()
+    private val ROLE_CHW = "CHW"
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityResourceLoadingScreenBinding.inflate(layoutInflater)
@@ -32,13 +33,13 @@ class ResourceLoadingScreen : BaseActivity() {
                 }
 
                 ResourceState.SUCCESS -> {
-                    //val isHouseholdLoaded = SecuredPreference.getBoolean(SecuredPreference.EnvironmentKey.IS_INITIAL_DATA_LOADED.name)
-                    val isHouseholdLoaded = true
-                    if (isHouseholdLoaded) {
+                    val userRole = SecuredPreference.getUserDetails().roles.joinToString { it.name }
+                    val isHouseholdLoaded = SecuredPreference.getBoolean(SecuredPreference.EnvironmentKey.IS_INITIAL_DATA_LOADED.name)
+                    if (userRole == ROLE_CHW && !isHouseholdLoaded) {
+                        viewModel.downloadInitialDetails()
+                    } else {
                         startActivity(Intent(this, LandingActivity::class.java))
                         finish()
-                    } else {
-                        viewModel.downloadInitialDetails()
                     }
                 }
                 ResourceState.ERROR -> {

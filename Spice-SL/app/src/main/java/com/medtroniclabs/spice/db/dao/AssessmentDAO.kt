@@ -6,8 +6,8 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import com.medtroniclabs.spice.db.entity.AssessmentEntity
-import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
 import com.medtroniclabs.spice.db.entity.SignsAndSymptomsEntity
+import com.medtroniclabs.spice.offlinesync.utils.OfflineSyncStatus
 
 @Dao
 interface AssessmentDAO {
@@ -25,4 +25,20 @@ interface AssessmentDAO {
 
     @Query("SELECT * FROM SymptomEntity WHERE LOWER(type) = LOWER(:type) ORDER BY display_order")
     suspend fun getSymptomListByType(type: String): List<SignsAndSymptomsEntity>
+
+    @Query("SELECT * FROM Assessment WHERE sync_status=:status AND patientId =:patientId ")
+    suspend fun getUnSyncedAssessmentByPatientId(
+        patientId: String,
+        status: String = OfflineSyncStatus.NotSynced.name
+    ): List<AssessmentEntity>
+
+    @Query("SELECT * FROM Assessment WHERE sync_status=:status AND patientId NOT IN (:patientIds)")
+    suspend fun getOtherUnSyncedAssessments(
+        patientIds: List<String>,
+        status: String = OfflineSyncStatus.NotSynced.name
+    ): List<AssessmentEntity>
+
+    @Query("SELECT COUNT(id) FROM Assessment where sync_status =:syncStatus OR fhir_id is null")
+    suspend fun getUnSyncedCount(syncStatus: String = OfflineSyncStatus.NotSynced.name): Int
+
 }

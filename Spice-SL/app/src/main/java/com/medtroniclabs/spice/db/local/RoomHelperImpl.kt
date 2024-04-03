@@ -29,6 +29,7 @@ import com.medtroniclabs.spice.db.response.HouseHoldEntityWithMemberCount
 import com.medtroniclabs.spice.db.response.HouseholdMemberCount
 import com.medtroniclabs.spice.db.response.VillageBasicDetails
 import com.medtroniclabs.spice.model.MemberDobGenderModel
+import com.medtroniclabs.spice.model.assessment.AssessmentMemberDetails
 import com.medtroniclabs.spice.offlinesync.model.HouseHold
 import com.medtroniclabs.spice.offlinesync.model.HouseHoldMember
 import com.medtroniclabs.spice.offlinesync.utils.OfflineSyncStatus
@@ -315,5 +316,21 @@ class RoomHelperImpl @Inject constructor(
         } else {
             return null
         }
+    }
+
+    override suspend fun getAssessmentMemberDetails(id: Long): AssessmentMemberDetails {
+        return memberDAO.getAssessmentMemberDetails(id)
+    }
+
+    override suspend fun getOtherUnSyncedAssessments(patientIds: List<String>): List<AssessmentEntity> {
+        return assessmentDAO.getOtherUnSyncedAssessments(patientIds)
+    }
+
+    override suspend fun getUnSyncedAssessmentByPatientId(patientId: String): List<AssessmentEntity> {
+        return assessmentDAO.getUnSyncedAssessmentByPatientId(patientId)
+    }
+
+    override suspend fun getUnSyncedAssessmentCount(): Int {
+        return assessmentDAO.getUnSyncedCount()
     }
 }

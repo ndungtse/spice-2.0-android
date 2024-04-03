@@ -24,6 +24,7 @@ data class HealthFacility(
     val postalCode: String?,
     val language: String?,
     val tenantId: Long,
+    val fhirId: String?,
     val clinicalWorkflows: ArrayList<ClinicalWorkflow>,
     val linkedVillages: ArrayList<Village>
 )
@@ -80,6 +81,7 @@ data class UserProfile(
     val username: String,
     val countryCode: String?,
     val country: Country?,
+    val fhirId: String?,
     val organizations: List<Organization>? = null,
     val tenantId: Long,
     val suiteAccess: List<String>? = null,

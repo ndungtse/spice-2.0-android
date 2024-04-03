@@ -1,23 +1,27 @@
 package com.medtroniclabs.spice.repo
 
+import android.location.Location
 import androidx.lifecycle.MutableLiveData
 import com.google.gson.Gson
+import com.google.gson.JsonParser
 import com.google.gson.reflect.TypeToken
 import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.appextensions.postSuccess
-import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.data.LocalSpinnerResponse
 import com.medtroniclabs.spice.db.entity.AssessmentEntity
 import com.medtroniclabs.spice.db.entity.HealthFacilityEntity
-import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
 import com.medtroniclabs.spice.db.entity.SignsAndSymptomsEntity
 import com.medtroniclabs.spice.db.local.RoomHelper
 import com.medtroniclabs.spice.formgeneration.model.FormResponse
+import com.medtroniclabs.spice.model.assessment.AssessmentMemberDetails
 import com.medtroniclabs.spice.network.resource.Resource
+import com.medtroniclabs.spice.offlinesync.model.Assessment
+import com.medtroniclabs.spice.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
+import java.util.Locale
 import javax.inject.Inject
 
 class AssessmentRepository @Inject constructor(
@@ -26,30 +30,30 @@ class AssessmentRepository @Inject constructor(
 
     suspend fun saveAssessment(
         resultData: String,
-        memberDetails: HouseholdMemberEntity,
+        memberDetails: AssessmentMemberDetails,
         assessmentSaveLiveData: MutableLiveData<Resource<AssessmentEntity>>,
         menuId: String?,
-        memberId: Long,
-        referralResult: Pair<String?, ArrayList<String>>?
+        referralResult: Pair<String?, ArrayList<String>>?,
+        lastLocation: Location?
     ) {
         try {
             val assessmentEntity = menuId?.let { menu ->
-                memberDetails.patientId?.let {
-                    AssessmentEntity(
-                        memberId = memberId,
-                        householdId = memberDetails.householdId,
-                        patientId = it,
-                        assessmentType = menu.lowercase(),
-                        assessmentDetails = resultData,
-                        userId = SecuredPreference.getUserId(),
-                        isReferred = getReferralStatus(referralResult?.first),
-                        referralStatus = getReferralResult(referralResult?.first),
-                        referredReason = referralResult?.second
-                    )
-                }
+                AssessmentEntity(
+                    memberId = memberDetails.memberId,
+                    householdId = memberDetails.householdId,
+                    patientId = memberDetails.patientId,
+                    assessmentType = menu.uppercase(Locale.getDefault()),
+                    assessmentDetails = resultData,
+                    isReferred = getReferralStatus(referralResult?.first),
+                    referralStatus = getReferralResult(referralResult?.first),
+                    referredReason = referralResult?.second,
+                    latitude = lastLocation?.latitude ?: 0.0,
+                    longitude = lastLocation?.longitude ?: 0.0
+                )
             }
             assessmentEntity?.let {
-                roomHelper.saveAssessment(assessmentEntity)
+                val id = roomHelper.saveAssessment(assessmentEntity)
+                assessmentEntity.id = id
             }
             assessmentSaveLiveData.postSuccess(assessmentEntity)
         } catch (e: Exception) {
@@ -76,17 +80,20 @@ class AssessmentRepository @Inject constructor(
     }
 
     suspend fun updateOtherAssessmentDetails(
-        selectedHouseholdMemberId: Long,
+        assessmentEntity: AssessmentEntity?,
         otherAssessmentDetails: HashMap<String, Any>,
-        assessmentUpdateLiveData: MutableLiveData<Resource<String>>
+        assessmentUpdateLiveData: MutableLiveData<Resource<String>>,
+        lastLocation: Location?
     ) {
         try {
-            val latestAssessment =
-                roomHelper.getLatestAssessmentForMember(selectedHouseholdMemberId)
-            if (latestAssessment != null) {
-                latestAssessment.otherDetails =
+            if (assessmentEntity != null) {
+                assessmentEntity.otherDetails =
                     StringConverter.convertGivenMapToString(otherAssessmentDetails)
-                roomHelper.updateOtherAssessmentDetails(latestAssessment)
+                lastLocation?.let {
+                    assessmentEntity.latitude = it.latitude
+                    assessmentEntity.longitude = it.longitude
+                }
+                roomHelper.updateOtherAssessmentDetails(assessmentEntity)
             }
             assessmentUpdateLiveData.postSuccess()
         } catch (e: Exception) {
@@ -125,6 +132,34 @@ class AssessmentRepository @Inject constructor(
         nearestFacilityLiveData.postSuccess(response)
     }
 
+    suspend fun getUnSyncedAssessmentByPatientId(patientId: String): List<Assessment> {
+        return convertEntityToRequest(roomHelper.getUnSyncedAssessmentByPatientId(patientId))
+    }
+
+    suspend fun getOtherUnSyncedAssessments(patientIds: List<String>): List<Assessment> {
+        return convertEntityToRequest(roomHelper.getOtherUnSyncedAssessments(patientIds))
+    }
+
+    private fun convertEntityToRequest(list: List<AssessmentEntity>): List<Assessment> {
+        return list.map { entity ->
+            Assessment(
+                referenceId = entity.id,
+                householdId = entity.householdId,
+                memberId = entity.memberId,
+                assessmentType = entity.assessmentType,
+                assessmentDetails = JsonParser.parseString(entity.assessmentDetails),
+                patientId = entity.patientId,
+                startTime = null,
+                endTime = null,
+                referred = entity.isReferred,
+                referredReasons = entity.referredReason.toString(),
+                provenance = ProvanceDto(),
+                latitude = entity.latitude,
+                longitude = entity.longitude,
+                summary = JsonParser.parseString(entity.otherDetails)
+            )
+        }
+    }
    suspend fun getNearestHealthFacility(
         facilitySpinnerLiveData: MutableLiveData<Resource<LocalSpinnerResponse>>,
         tag: String
@@ -141,6 +176,10 @@ class AssessmentRepository @Inject constructor(
         } catch (_: Exception) {
             facilitySpinnerLiveData.postError()
         }
+    }
+
+    suspend fun getUnSyncedAssessmentCount(): Int {
+        return roomHelper.getUnSyncedAssessmentCount()
     }
 
 }

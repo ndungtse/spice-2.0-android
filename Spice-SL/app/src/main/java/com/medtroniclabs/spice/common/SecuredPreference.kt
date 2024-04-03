@@ -21,7 +21,9 @@ object SecuredPreference {
         ISMETALOADED,
         USER_RESPONSE,
         IS_INITIAL_DATA_LOADED,
-        IS_ABOVE_FIVE_YEARS_LOADED
+        IS_ABOVE_FIVE_YEARS_LOADED,
+        USER_FHIR_ID,
+        ORGANIZATION_FHIR_ID
     }
 
 
@@ -387,5 +389,13 @@ object SecuredPreference {
         remove(EnvironmentKey.USER_RESPONSE.name)
 
         return true
+    }
+
+    fun getUserFhirId(): String {
+        return getString(EnvironmentKey.USER_FHIR_ID.name) ?: ""
+    }
+
+    fun getOrganizationFhirId(): String {
+        return getString(EnvironmentKey.ORGANIZATION_FHIR_ID.name) ?: ""
     }
 }

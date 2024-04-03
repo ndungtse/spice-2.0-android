@@ -1,7 +1,9 @@
 package com.medtroniclabs.spice.offlinesync.model
 
+import com.medtroniclabs.spice.common.SecuredPreference
+
 data class ProvanceDto(
-    val userId: String = "1",
-    val organizationId: String = "2",
+    val userId: String = SecuredPreference.getUserFhirId(),
+    val organizationId: String = SecuredPreference.getOrganizationFhirId(),
     var createdDateTime: String = ""
 )

@@ -7,5 +7,6 @@ object OfflineConstant {
     const val REQUEST_ID = "requestId"
     const val HOUSE_HOLDS = "households"
     const val HOUSE_HOLD_MEMBERS = "householdMembers"
+    const val ASSESSMENTS = "assessments"
 
 }

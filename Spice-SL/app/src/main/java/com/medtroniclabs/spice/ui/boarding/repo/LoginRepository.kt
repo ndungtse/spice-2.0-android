@@ -131,6 +131,7 @@ class LoginRepository @Inject constructor(
                             )
                             deleteAllVillages()
                             saveVillage(villages)
+                            saveFhirId(userProfile.fhirId, defaultHealthFacility.fhirId)
                             saveUserProfileDetailsInDb(userProfile)
                             saveMenusInDb(menu.menus, menu.roleName)
                             menu.meta?.let { meta.addAll(it) }
@@ -184,6 +185,16 @@ class LoginRepository @Inject constructor(
         }
     }
 
+    private fun saveFhirId(userId: String?, organizationId: String?) {
+        userId?.let {
+            SecuredPreference.putString(SecuredPreference.EnvironmentKey.USER_FHIR_ID.name, it)
+        }
+
+        organizationId?.let {
+            SecuredPreference.putString(SecuredPreference.EnvironmentKey.ORGANIZATION_FHIR_ID.name, it)
+        }
+    }
+
     private suspend fun saveClinicalWorkflowsInDb(clinicalTools: List<ClinicalWorkflow>) {
         val clinicalWorkFlowList = mutableListOf<ClinicalWorkflowEntity>()
         val clinicalWorkFlowConditions = mutableListOf<ClinicalWorkflowConditionEntity>()
@@ -225,6 +236,7 @@ class LoginRepository @Inject constructor(
                     districtId = healthFacility.districtId,
                     chiefdomId = healthFacility.chiefdomId,
                     tenantId = healthFacility.tenantId,
+                    fhirId = healthFacility.fhirId,
                     isDefault = healthFacility.id == defaultId,
                 )
             )

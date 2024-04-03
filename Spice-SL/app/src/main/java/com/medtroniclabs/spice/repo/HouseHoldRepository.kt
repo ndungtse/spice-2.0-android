@@ -219,7 +219,7 @@ class HouseHoldRepository @Inject constructor(
         }
 
         try {
-            val syncedResponse = getSyncedEntities(villageNameId.keys.toList())
+            val syncedResponse = getSyncedEntities(villageNameId.values.toList())
             val unSyncedResponse = getUnSyncedEntities()
             if (syncedResponse.isSuccessful && unSyncedResponse.isSuccessful) {
                 // Insert Synced Entities
@@ -301,7 +301,7 @@ class HouseHoldRepository @Inject constructor(
         }
     }
 
-    private suspend fun getSyncedEntities(villageList: List<String>): Response<APIResponse<List<HouseHold>>> {
+    private suspend fun getSyncedEntities(villageList: List<Long>): Response<APIResponse<List<HouseHold>>> {
         // Getting village name only. For mapping I have used following code
         val request = RequestAllEntities(villageList)
         return apiHelper.getHouseholdAndMembers(request)

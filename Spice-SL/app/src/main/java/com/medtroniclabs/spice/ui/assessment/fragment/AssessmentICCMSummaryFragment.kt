@@ -46,6 +46,7 @@ import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.NoOfDaysOfF
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.OrsDispensedStatus
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.ReferredPHUSite
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.ReferredPHUSiteID
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.Summary
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.ZincDispensedStatus
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.hasCough
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.hasFever
@@ -100,6 +101,7 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
             viewModel.otherAssessmentDetails[IsClinicTaken] = selectedID as String
         }
 
+
     private fun getClinicTakenData(): ArrayList<Map<String, Any>> {
         val flowList = ArrayList<Map<String, Any>>()
         flowList.add(getOptionMap(getString(R.string.yes)))
@@ -116,12 +118,11 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
                 )
             )
             var defaultPosition = 0
-            //TODO("Instead of id need to give fhir Id once backend gives")
             for ((index, healthFacilityEntity) in healthFacilityList.withIndex()) {
                 dropDownList.add(
                     hashMapOf<String, Any>(
                         DefinedParams.NAME to healthFacilityEntity.name,
-                        DefinedParams.id to healthFacilityEntity.id.toString()
+                        DefinedParams.id to healthFacilityEntity.fhirId.toString()
                     )
                 )
                 if (healthFacilityEntity.isDefault) {
@@ -182,9 +183,9 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
     }
 
     private fun attachObservers() {
-        viewModel.assessmentSaveLiveData.value?.data?.let {result ->
+        viewModel.assessmentStringLiveData.value?.let {result ->
             updateStatusBar()
-            createSummaryView(createListSummaryData(result.assessmentDetails))
+            createSummaryView(createListSummaryData(result))
         }
 
         viewModel.nearestFacilityLiveData.observe(viewLifecycleOwner) { resourceState ->
@@ -406,9 +407,9 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
         when (v?.id) {
             binding.btnDone.id -> {
                 binding.etNextFollowUpDate.text?.let {
-                    viewModel.otherAssessmentDetails[NextFollowupDate] = it.toString()
+                    updateFollowUpDate(it.trim().toString())
                 }
-                viewModel.addOtherDetailsToType(ICCM.lowercase())
+                //addOtherDetailsToIccmType(Summary.lowercase())
                 viewModel.updateOtherAssessmentDetails()
             }
 
@@ -438,10 +439,20 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
                         DateUtils.DATE_FORMAT_ddMMyyyy,
                         DateUtils.DATE_ddMMyyyy
                     )
-                viewModel.otherAssessmentDetails[NextFollowupDate] =
-                    binding.etNextFollowUpDate.text.toString()
+                updateFollowUpDate(binding.etNextFollowUpDate.text.toString().trim())
                 datePickerDialog = null
             }
+        }
+    }
+
+    private fun updateFollowUpDate(date: String) {
+        if (date.isNotEmpty()) {
+            viewModel.otherAssessmentDetails[NextFollowupDate] =
+                DateUtils.convertDateTimeToDate(
+                    date,
+                    DateUtils.DATE_ddMMyyyy,
+                    DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
+                )
         }
     }
 }

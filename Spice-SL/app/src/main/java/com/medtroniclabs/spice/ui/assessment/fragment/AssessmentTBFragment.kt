@@ -115,9 +115,7 @@ class AssessmentTBFragment : BaseFragment(), FormEventListener, View.OnClickList
                 )
             }
             result?.second?.let {
-                StringConverter.convertGivenMapToString(it)?.let { resultData ->
-                    viewModel.saveAssessment(resultData, null)
-                }
+                viewModel.saveAssessment(it, null)
             }
         }
     }
