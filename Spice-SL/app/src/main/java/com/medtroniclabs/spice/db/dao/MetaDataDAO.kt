@@ -107,6 +107,6 @@ interface MetaDataDAO {
     @Query("SELECT * FROM HealthFacilityEntity")
     suspend fun getNearestHealthFacility(): List<HealthFacilityEntity>
 
-    @Query("SELECT id,name FROM VillageEntity")
+    @Query("SELECT id,name,districtId FROM VillageEntity")
     suspend fun getVillageIdName(): List<VillageBasicDetails>
 }

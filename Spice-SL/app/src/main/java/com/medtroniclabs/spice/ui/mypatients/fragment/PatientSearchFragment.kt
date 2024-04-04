@@ -125,7 +125,7 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
     override fun onSelectedPatient(item: PatientListRespModel) {
         if (connectivityManager.isNetworkAvailable()) {
             val intent = Intent(requireActivity(), ReferralTicketActivity::class.java)
-            intent.putExtra(DefinedParams.PatientId, item.id)
+            intent.putExtra(DefinedParams.PatientId, item.patientId)
             startActivity(intent)
         } else {
             showErrorDialog(getString(R.string.error),getString(R.string.no_internet_error))

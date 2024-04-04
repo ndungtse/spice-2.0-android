@@ -31,7 +31,7 @@ class ReferralTicketViewModel @Inject constructor(
 
     fun getPatients(id: String) {
         viewModelScope.launch(dispatcherIO) {
-            patientRepository.getPatients(patientsLiveData, PatientDetailReq(id))
+            patientRepository.getPatients(patientsLiveData, PatientDetailReq(patientId = id))
         }
     }
 

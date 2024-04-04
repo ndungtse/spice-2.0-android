@@ -21,7 +21,8 @@ class PatientsDataSource(
 
     private var loadedCount = 0
     private var totalCount = 0
-    private var villages: List<String> = mutableListOf()
+    private var villages: List<Long> = mutableListOf()
+    private var districtId: Long? = null
     override fun getRefreshKey(state: PagingState<Int, PatientListRespModel>): Int? {
         return state.anchorPosition?.let { anchorPosition ->
             state.closestPageToPosition(anchorPosition)?.prevKey?.plus(1)
@@ -33,14 +34,16 @@ class PatientsDataSource(
         val pageIndex = params.key ?: PAGE_INDEX
         return try {
             if (villages.isEmpty()) {
-                villages = patientRepository.getVillageIdName().map { it.name }
+                val villageIdNameList = patientRepository.getVillageIdName()
+                villages = villageIdNameList.map { it.id }
+                districtId = districtId ?: villageIdNameList.firstOrNull()?.districtId
             }
             val response: APIResponse<List<PatientListRespModel>> = if (searchText.isEmpty()) {
                 apiHelper.getPatients(
                     PatientsDataModel(
                         skip = loadedCount,
                         limit = LIST_LIMIT,
-                        villageNames = villages
+                        villageIds = villages
                     )
                 )
             } else {
@@ -48,8 +51,8 @@ class PatientsDataSource(
                     PatientsDataModel(
                         skip = loadedCount,
                         limit = LIST_LIMIT,
-                        villageNames = villages,
-                        searchText = searchText.ifEmpty { null }
+                        searchText = searchText.ifEmpty { null },
+                        districtId = districtId
                     )
                 )
             }
