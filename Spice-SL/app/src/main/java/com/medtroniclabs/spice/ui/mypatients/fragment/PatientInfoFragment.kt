@@ -67,10 +67,10 @@ class PatientInfoFragment : BaseFragment() {
                 }
 
                 ResourceState.SUCCESS -> {
-                    hideProgress()
                     resource.data?.let {
                         setDataInInfo(it)
                     }
+                    hideProgress()
                 }
 
                 ResourceState.ERROR -> {

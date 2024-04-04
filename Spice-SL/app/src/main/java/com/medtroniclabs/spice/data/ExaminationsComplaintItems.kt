@@ -9,7 +9,8 @@ data class ExaminationsComplaintItems(
     val itemId: Long,
     val id: Long,
     val name: String,
-    val ageCondition: String? = null,
+    var category: String? = null,
     var type: String? = null,
-    val displayOrder: Int
+    val displayOrder: Int,
+    val value: String? = null
 )

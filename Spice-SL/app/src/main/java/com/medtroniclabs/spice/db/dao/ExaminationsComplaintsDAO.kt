@@ -11,6 +11,9 @@ interface ExaminationsComplaintsDAO {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertExaminationsComplaints(entityList: List<ExaminationsComplaintItems>)
 
-    @Query("DELETE FROM ExaminationComplaintsEntity")
-    suspend fun deleteExaminationsComplaints()
+    @Query("DELETE FROM ExaminationComplaintsEntity WHERE type = :menuType")
+    suspend fun deleteExaminationsComplaints(menuType: String)
+
+    @Query("SELECT * FROM ExaminationComplaintsEntity WHERE type = :workflow ORDER BY displayOrder ASC")
+    suspend fun getExaminationsComplaintByType(workflow: String) : List<ExaminationsComplaintItems>
 }

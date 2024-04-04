@@ -9,16 +9,15 @@ import android.graphics.Rect
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Bundle
-import android.view.MotionEvent
 import android.provider.Settings
+import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.FragmentTransaction
+import androidx.fragment.app.add
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
@@ -241,11 +240,15 @@ open class BaseActivity : AppCompatActivity() {
     inline fun <reified fragment : Fragment> replaceFragmentInId(
         id: Int,
         bundle: Bundle? = null,
-        tag: String? = null
+        tag: String? = null,
+        isAdd: Boolean= false
     ) {
         supportFragmentManager.commit {
             setReorderingAllowed(true)
-            replace<fragment>(
+            if (isAdd)
+                add<fragment>(id , args = bundle, tag = tag)
+            else
+                replace<fragment>(
                 id,
                 args = bundle,
                 tag = tag

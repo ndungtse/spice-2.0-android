@@ -1,11 +1,12 @@
 package com.medtroniclabs.spice.common
 
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams
-import org.joda.time.LocalDate
 import org.joda.time.Period
 import org.joda.time.PeriodType
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Calendar
 import java.util.Date
@@ -250,6 +251,12 @@ object DateUtils {
         val estimatedDeliveryDate = lastMenstrualDate.clone() as Calendar
         estimatedDeliveryDate.add(Calendar.DAY_OF_YEAR, 280)
         return estimatedDeliveryDate
+    }
+
+    fun getCurrentDateAndTime(format: String):String {
+        val currentDateTime = ZonedDateTime.now(ZoneId.systemDefault())
+        val formatter = DateTimeFormatter.ofPattern(format)
+        return currentDateTime.format(formatter)
     }
 
 }

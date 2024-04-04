@@ -8,15 +8,15 @@ import com.medtroniclabs.spice.data.FormResponse
 import com.medtroniclabs.spice.data.LoginResponse
 import com.medtroniclabs.spice.data.MetaDataResponse
 import com.medtroniclabs.spice.data.UserSymptomsEntity
-import com.medtroniclabs.spice.model.resource.RequestAllEntities
-import com.medtroniclabs.spice.offlinesync.model.HouseHold
+import com.medtroniclabs.spice.data.model.AboveFiveYearsSubmitRequest
 import com.medtroniclabs.spice.model.PatientDetailReq
-import com.medtroniclabs.spice.offlinesync.model.RequestGetSyncStatus
-import com.medtroniclabs.spice.offlinesync.model.SyncResponse
 import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.model.PatientsDataModel
 import com.medtroniclabs.spice.model.ReferralData
-import com.medtroniclabs.spice.network.resource.Resource
+import com.medtroniclabs.spice.model.resource.RequestAllEntities
+import com.medtroniclabs.spice.offlinesync.model.HouseHold
+import com.medtroniclabs.spice.offlinesync.model.RequestGetSyncStatus
+import com.medtroniclabs.spice.offlinesync.model.SyncResponse
 import okhttp3.MultipartBody
 import retrofit2.Response
 import javax.inject.Inject
@@ -68,4 +68,9 @@ class ApiHelperImpl @Inject constructor(private val apiService: ApiService) : Ap
     override suspend fun getReferralsDetails(request: PatientDetailReq): Response<APIResponse<ReferralData>> {
         return apiService.getReferralsDetails(request)
     }
+
+    override suspend fun createAboveFiveYearsResult(request: AboveFiveYearsSubmitRequest): Response<APIResponse<HashMap<String, Any>>> {
+        return apiService.createAboveFiveYearsResult(request)
+    }
+
 }

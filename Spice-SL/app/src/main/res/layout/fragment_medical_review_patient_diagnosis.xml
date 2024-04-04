@@ -114,6 +114,7 @@
                 android:ellipsize="end"
                 android:gravity="center"
                 android:maxLines="1"
+                android:visibility="gone"
                 android:text="@string/edit_status"
                 android:textColor="@color/medium_blue"
                 app:layout_constraintEnd_toEndOf="parent"

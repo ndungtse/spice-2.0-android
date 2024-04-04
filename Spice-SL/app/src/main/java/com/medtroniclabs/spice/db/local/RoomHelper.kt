@@ -92,21 +92,15 @@ interface RoomHelper {
     suspend fun getVillageIdName(): List<VillageBasicDetails>
     suspend fun getPatientVisitCountByType(type:String,patientId: String):MemberClinicalEntity?
     suspend fun savePatientVisitCountByType(memberClinicalEntity: MemberClinicalEntity)
-    suspend fun deleteExaminationsComplaints()
+    suspend fun deleteExaminationsComplaints(menuType: String)
     suspend fun insertExaminationsComplaint(symptomEntity: List<ExaminationsComplaintItems>)
     suspend fun deleteDiagnosisList()
     suspend fun saveDiagnosisList(diagnosisList: ArrayList<DiseaseCategoryItems>)
-
     suspend fun getHouseholdIdByFhirId(fhirId: String?): Long?
-
     suspend fun getHouseholdMemberIdByFhirId(fhirId: String?): Long?
-
+    suspend fun getExaminationsComplaintByType(type: String): List <ExaminationsComplaintItems>
     suspend fun getAssessmentMemberDetails(id: Long): AssessmentMemberDetails
-
     suspend fun getUnSyncedAssessmentByPatientId(patientId: String): List<AssessmentEntity>
-
     suspend fun getOtherUnSyncedAssessments(patientIds: List<String>): List<AssessmentEntity>
-
     suspend fun getUnSyncedAssessmentCount(): Int
-
 }

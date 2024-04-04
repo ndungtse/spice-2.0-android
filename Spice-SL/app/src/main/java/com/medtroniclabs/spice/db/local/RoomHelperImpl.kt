@@ -286,8 +286,8 @@ class RoomHelperImpl @Inject constructor(
         return memberClinicalDAO.savePatientVisitCountByType(memberClinicalEntity = memberClinicalEntity)
     }
 
-    override suspend fun deleteExaminationsComplaints() {
-        examinationsComplaintsDAO.deleteExaminationsComplaints()
+    override suspend fun deleteExaminationsComplaints(menuType: String) {
+        examinationsComplaintsDAO.deleteExaminationsComplaints(menuType)
     }
 
     override suspend fun insertExaminationsComplaint(symptomEntity: List<ExaminationsComplaintItems>) {
@@ -317,6 +317,10 @@ class RoomHelperImpl @Inject constructor(
         } else {
             return null
         }
+    }
+
+    override suspend fun getExaminationsComplaintByType(type:String): List<ExaminationsComplaintItems> {
+        return examinationsComplaintsDAO.getExaminationsComplaintByType(type)
     }
 
     override suspend fun getAssessmentMemberDetails(id: Long): AssessmentMemberDetails {

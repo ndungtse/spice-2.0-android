@@ -387,7 +387,7 @@ object SecuredPreference {
         remove(EnvironmentKey.TOKEN.name)
         remove(EnvironmentKey.ISOFFLINELOGIN.name)
         remove(EnvironmentKey.USER_RESPONSE.name)
-
+        remove(EnvironmentKey.IS_ABOVE_FIVE_YEARS_LOADED.name)
         return true
     }
 

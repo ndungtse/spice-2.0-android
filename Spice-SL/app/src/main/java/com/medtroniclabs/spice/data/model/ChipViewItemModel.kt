@@ -4,5 +4,6 @@ data class ChipViewItemModel(
     val id: Long? = null,
     val name: String,
     val cultureValue: String? = null,
-    val type: String? = null
+    val type: String? = null,
+    val value: String? = null
 )

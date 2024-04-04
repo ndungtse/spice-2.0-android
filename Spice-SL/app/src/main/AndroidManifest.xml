@@ -22,6 +22,11 @@
             android:name=".ui.mypatients.ReferralTicketActivity"
             android:exported="false" />
         <activity
+            android:name=".ui.medicalreview.abovefiveyears.AboveFiveYearsBaseActivity"
+            android:exported="false"
+            android:screenOrientation="sensorLandscape"
+            android:windowSoftInputMode="adjustPan"/>
+        <activity
             android:name=".ui.boarding.ResourceLoadingScreen"
             android:exported="false" />
         <activity

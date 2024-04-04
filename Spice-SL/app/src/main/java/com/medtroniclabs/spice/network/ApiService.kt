@@ -8,6 +8,7 @@ import com.medtroniclabs.spice.data.FormResponse
 import com.medtroniclabs.spice.data.LoginResponse
 import com.medtroniclabs.spice.data.MetaDataResponse
 import com.medtroniclabs.spice.data.UserSymptomsEntity
+import com.medtroniclabs.spice.data.model.AboveFiveYearsSubmitRequest
 import com.medtroniclabs.spice.model.resource.RequestAllEntities
 import com.medtroniclabs.spice.offlinesync.model.HouseHold
 import com.medtroniclabs.spice.model.PatientDetailReq
@@ -59,4 +60,8 @@ interface ApiService {
 
     @POST("/spice-service/assessment/referral-tickets")
     suspend fun getReferralsDetails(@Body request: PatientDetailReq): Response<APIResponse<ReferralData>>
+
+    @POST("/fhir-mapper/medical-review/iccm-general/create")
+    suspend fun createAboveFiveYearsResult(@Body request: AboveFiveYearsSubmitRequest): Response<APIResponse<HashMap<String, Any>>>
+
 }

@@ -13,6 +13,7 @@ import com.google.android.flexbox.JustifyContent
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DefinedParams
+import com.medtroniclabs.spice.common.DefinedParams.PatientId
 import com.medtroniclabs.spice.databinding.FragmentPatientMenuBinding
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.MenuConstants
@@ -20,6 +21,7 @@ import com.medtroniclabs.spice.ui.home.MenuSelectionListener
 import com.medtroniclabs.spice.ui.home.ToolsViewModel
 import com.medtroniclabs.spice.ui.home.adapter.DashboardMenuItemsAdapter
 import com.medtroniclabs.spice.ui.mypatients.MedicalReviewBaseActivity
+import com.medtroniclabs.spice.ui.medicalreview.abovefiveyears.AboveFiveYearsBaseActivity
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -62,7 +64,7 @@ class PatientMenuFragment : BaseFragment(), MenuSelectionListener {
         fun newInstance(patientId: String?): PatientMenuFragment {
             val fragment = PatientMenuFragment()
             val bundle = Bundle()
-            bundle.putString(DefinedParams.PatientId, patientId)
+            bundle.putString(PatientId, patientId)
             fragment.arguments = bundle
             return fragment
         }
@@ -78,7 +80,9 @@ class PatientMenuFragment : BaseFragment(), MenuSelectionListener {
             }
 
             MenuConstants.GENERAL_ID -> {
-                startAssessmentActivity()
+                val intent = Intent(requireContext(), AboveFiveYearsBaseActivity::class.java)
+                intent.putExtra(PatientId, arguments?.getString(PatientId))
+                startActivity(intent)
             }
 
             MenuConstants.MOTHER_AND_NEONATE_ID -> {
