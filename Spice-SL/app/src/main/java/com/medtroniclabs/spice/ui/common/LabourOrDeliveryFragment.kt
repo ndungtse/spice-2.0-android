@@ -128,6 +128,7 @@ class LabourOrDeliveryFragment : BaseFragment() {
             datePickerDialog = ViewUtils.showDatePicker(
                 requireContext(),
                 date = yearMonthDate,
+                disableFutureDate = true,
                 cancelCallBack = { datePickerDialog = null }
             ) { _, year, month, dayOfMonth ->
                 val stringDate = "$dayOfMonth-$month-$year"

@@ -41,4 +41,8 @@ object DefinedParams {
     const val TimeOfDelivery = "timeOfDelivery"
     const val TimeOfLabourOnset = "timeOfLabourOnset"
     const val HouseholdHead = "HouseholdHead"
+    const val StateOfPerineum = "stateOfPerineum"
+    const val Tear = "tear"
+    const val Gender = "gender"
+    const val StateOfBaby = "stateOfBaby"
 }

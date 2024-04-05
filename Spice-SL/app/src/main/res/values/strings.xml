@@ -276,4 +276,29 @@
     <string name="member_registered_successfully">Member registration \n completed successfully.</string>
     <string name="patient_with_id">Patient ID : %1$s</string>
 
+    <string name="title_mother">Mother</string>
+    <string name="signs_Symptoms_observed">Signs/Symptoms observed</string>
+    <string name="general_condition_of_mother">General Condition Of Mother</string>
+    <string name="risk_factor">Risk Factors</string>
+    <string name="state_of_the_perineum">State Of The Perineum</string>
+    <string name="episotomy">Episotomy</string>
+    <string name="tear">Tear</string>
+    <string name="TT_does_taken_so_far">TT Dose taken so far</string>
+    <string name="status">Status</string>
+    <string name="title_neonate">Neonate</string>
+    <string name="neonate_outcome">Neonate Outcome</string>
+    <string name="male">Male</string>
+    <string name="female">Female</string>
+    <string name="state_of_baby">State Of Baby</string>
+    <string name="abnormal">Abnormal</string>
+    <string name="birth_weight">Birth Weight (in Kg)</string>
+    <string name="signs_symptoms_observed">Signs/Symptoms observed</string>
+    <string name="state_of_the_baby">State of the Baby</string>
+    <string name="apgar_score">APGAR Score</string>
+    <string name="deg_1">1 Deg</string>
+    <string name="deg_2">2 Deg</string>
+    <string name="deg_3">3 Deg</string>
+    <string name="deg_4">4 Deg</string>
+    <string name="title_labour_delivery">Labour/Delivery</string>
+    <string name="labour_delivery_medical_review">Medical Review Labour/Delivery</string>
 </resources>

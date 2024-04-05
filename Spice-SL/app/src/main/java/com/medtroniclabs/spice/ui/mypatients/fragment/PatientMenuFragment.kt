@@ -20,6 +20,7 @@ import com.medtroniclabs.spice.ui.MenuConstants
 import com.medtroniclabs.spice.ui.home.MenuSelectionListener
 import com.medtroniclabs.spice.ui.home.ToolsViewModel
 import com.medtroniclabs.spice.ui.home.adapter.DashboardMenuItemsAdapter
+import com.medtroniclabs.spice.ui.medicalreview.LabourDeliveryBaseActivity
 import com.medtroniclabs.spice.ui.mypatients.MedicalReviewBaseActivity
 import com.medtroniclabs.spice.ui.medicalreview.abovefiveyears.AboveFiveYearsBaseActivity
 import dagger.hilt.android.AndroidEntryPoint
@@ -86,6 +87,12 @@ class PatientMenuFragment : BaseFragment(), MenuSelectionListener {
             }
 
             MenuConstants.MOTHER_AND_NEONATE_ID -> {
+                val intent = Intent(requireContext(), LabourDeliveryBaseActivity::class.java)
+                val patientId = arguments?.getString(DefinedParams.PatientId, "")
+                if (patientId?.isNotBlank() == true) {
+                    intent.putExtra(DefinedParams.PatientId, patientId)
+                }
+                startActivity(intent)
             }
 
             MenuConstants.UNDER_AGE_FIVE_TO_TWO_MONTHS_ID -> {
