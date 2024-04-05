@@ -1668,16 +1668,18 @@ class FormGenerator(
         }
     }
 
-    fun formSubmitAction(view: View) {
-        if (validateInputs()) {
+    fun formSubmitAction(view: View): Boolean {
+        return if (validateInputs()) {
             hideKeyboard(view)
             listener.onFormSubmit(resultMap = resultHashMap, serverData = serverData)
+            true
         } else {
             focusNeeded?.let { focusNeeded ->
                 scrollView?.let { scrollView ->
                     scrollToView(scrollView, focusNeeded)
                 }
             }
+            false
         }
     }
 

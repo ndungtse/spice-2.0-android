@@ -6,5 +6,7 @@ data class AssessmentMemberDetails(
     val dateOfBirth: String,
     val patientId: String,
     val memberId: String? = null,
-    val householdId: String? = null
+    val householdId: String? = null,
+    val householdLocalId:Long,
+    val id:Long,
 )

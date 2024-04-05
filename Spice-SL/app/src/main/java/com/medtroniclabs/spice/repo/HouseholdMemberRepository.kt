@@ -1,6 +1,5 @@
 package com.medtroniclabs.spice.repo
 
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.appextensions.postLoading
@@ -26,9 +25,10 @@ class HouseholdMemberRepository @Inject constructor(
     suspend fun registerMember(
         map: HashMap<String, Any>,
         householdId: Long,
-        entity: HouseholdMemberEntity? = null
+        entity: HouseholdMemberEntity? = null,
+        parentId: Long? = null
     ): Long {
-        val memberEntity = createOrUpdateHouseHoldMemberEntity(map, householdId, entity)
+        val memberEntity = createOrUpdateHouseHoldMemberEntity(map, householdId, entity, parentId)
         val memberId = roomHelper.registerMember(memberEntity)
         //Update Member count in household only in insert case
         if (entity == null) {
@@ -46,12 +46,17 @@ class HouseholdMemberRepository @Inject constructor(
     private suspend fun createOrUpdateHouseHoldMemberEntity(
         map: HashMap<String, Any>,
         householdId: Long,
-        entity: HouseholdMemberEntity? = null
+        entity: HouseholdMemberEntity? = null,
+        parentId: Long?
     ): HouseholdMemberEntity {
         val householdMemberEntity = entity ?: HouseholdMemberEntity()
 
         val name = map[MemberRegistration.name]
         householdMemberEntity.name = getStringOrEmptyString(name)
+
+        parentId?.let {
+            householdMemberEntity.parentId = it
+        }
 
         val phoneNumber = map[MemberRegistration.phoneNumber]
         householdMemberEntity.phoneNumber = getStringOrEmptyString(phoneNumber)
@@ -139,6 +144,19 @@ class HouseholdMemberRepository @Inject constructor(
         }
     }
 
+    suspend fun getMemberDetailsByParentId(
+        memberId: Long,
+        memberDetailsLiveData: MutableLiveData<Resource<List<HouseholdMemberEntity>>>
+    ) {
+        try {
+            memberDetailsLiveData.postLoading()
+            val memberEntity = roomHelper.getMemberDetailsByParentId(memberId)
+            memberDetailsLiveData.postSuccess(memberEntity)
+        } catch (e: Exception) {
+            memberDetailsLiveData.postError()
+        }
+    }
+
     suspend fun getAssessmentMemberDetails(
         id: Long,
         memberDetailsLiveData: MutableLiveData<Resource<AssessmentMemberDetails>>
@@ -172,7 +190,7 @@ class HouseholdMemberRepository @Inject constructor(
         type: String,
         patientId: String
     ): MemberClinicalEntity? {
-       return roomHelper.getPatientVisitCountByType(type, patientId)
+        return roomHelper.getPatientVisitCountByType(type, patientId)
     }
 
     suspend fun savePatientVisitCountByType(memberClinicalEntity: MemberClinicalEntity) {

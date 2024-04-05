@@ -71,7 +71,11 @@ class MemberRegistrationViewModel @Inject constructor(
         try {
             viewModelScope.launch(dispatcherIO) {
                 selectedHouseholdId = householdId
-                val memberId = memberRegistrationRepository.registerMember(map, householdId, memberDetailsLiveData.value?.data)
+                val memberId = memberRegistrationRepository.registerMember(
+                    map,
+                    householdId,
+                    memberDetailsLiveData.value?.data,
+                )
                 memberRegistrationLiveData.postSuccess(memberId)
             }
         } catch (e: Exception) {

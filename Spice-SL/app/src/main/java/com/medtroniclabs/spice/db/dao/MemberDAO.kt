@@ -22,6 +22,9 @@ interface MemberDAO {
     @Query("SELECT * FROM HouseHoldMember WHERE id = :memberId")
     suspend fun getMemberDetailsById(memberId: Long): HouseholdMemberEntity
 
+    @Query("SELECT * FROM HouseHoldMember WHERE parentId = :memberId")
+    suspend fun getMemberDetailsByParentId(memberId: Long): List<HouseholdMemberEntity>
+
     @Query("SELECT COUNT(household_id) FROM HouseHoldMember WHERE household_id = :householdId")
     suspend fun getMemberCountPerHouseHold(householdId: Long): Int
 
@@ -49,7 +52,7 @@ interface MemberDAO {
     @Query("SELECT id FROM HouseholdMember WHERE fhir_id =:fhirId")
     suspend fun getHouseholdMemberIdByFhirId(fhirId: String): Long?
 
-    @Query("SELECT hhm.name, hhm.gender, hhm.date_of_birth AS dateOfBirth, hhm.patient_id AS patientId, hhm.fhir_id AS memberId, hh.fhir_id AS householdId FROM HouseholdMember AS hhm INNER JOIN Household AS hh ON hh.id = hhm.household_id WHERE hhm.id=:id")
+    @Query("SELECT hhm.name, hhm.gender, hhm.date_of_birth AS dateOfBirth, hhm.patient_id AS patientId, hhm.fhir_id AS memberId, hh.fhir_id AS householdId, hhm.id AS id,hhm.household_id AS householdLocalId  FROM HouseholdMember AS hhm INNER JOIN Household AS hh ON hh.id = hhm.household_id WHERE hhm.id=:id")
     suspend fun getAssessmentMemberDetails(id: Long): AssessmentMemberDetails
 
 }

@@ -35,5 +35,7 @@ data class HouseholdMemberEntity(
     @ColumnInfo("patient_id")
     var patientId: String? = null,
 
-    var isPregnant : Boolean? = null
+    var isPregnant: Boolean? = null,
+
+    var parentId: Long? = null
 ) : BaseEntity()

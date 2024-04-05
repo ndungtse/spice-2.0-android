@@ -77,6 +77,10 @@ class RoomHelperImpl @Inject constructor(
         return memberDAO.getMemberDetailsById(memberId)
     }
 
+    override suspend fun getMemberDetailsByParentId(memberId: Long): List<HouseholdMemberEntity> {
+        return memberDAO.getMemberDetailsByParentId(memberId)
+    }
+
     override suspend fun getMemberCountPerHouseHold(householdId: Long): Int {
         return memberDAO.getMemberCountPerHouseHold(householdId)
     }

@@ -1,0 +1,95 @@
+package com.medtroniclabs.spice.ui.assessment.viewmodel
+
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.medtroniclabs.spice.common.StringConverter
+import com.medtroniclabs.spice.db.entity.AssessmentEntity
+import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
+import com.medtroniclabs.spice.di.IoDispatcher
+import com.medtroniclabs.spice.formgeneration.model.FormResponse
+import com.medtroniclabs.spice.model.assessment.AssessmentMemberDetails
+import com.medtroniclabs.spice.network.resource.Resource
+import com.medtroniclabs.spice.repo.AssessmentRepository
+import com.medtroniclabs.spice.repo.HouseholdMemberRepository
+import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.launch
+import javax.inject.Inject
+
+@HiltViewModel
+class AssessmentRMNCHNeonateViewModel @Inject constructor(
+    @IoDispatcher private val dispatcherIO: CoroutineDispatcher,
+    private var householdMemberRepository: HouseholdMemberRepository,
+    private var assessmentRepository: AssessmentRepository,
+) : ViewModel() {
+
+    var memberMap: HashMap<String, Any>? = null
+
+    val formLayoutsLiveData = MutableLiveData<Resource<FormResponse>>()
+
+    val memberFormLayoutsLiveData = MutableLiveData<Resource<FormResponse>>()
+
+    val assessmentSaveLiveData = MutableLiveData<Resource<AssessmentEntity>>()
+
+    val childMemberDetailsLiveData = MutableLiveData<Resource<List<HouseholdMemberEntity>>>()
+
+
+    fun getFormData(formType: String, liveData: MutableLiveData<Resource<FormResponse>>) {
+        viewModelScope.launch(dispatcherIO) {
+            assessmentRepository.getFormData(formType, liveData)
+        }
+    }
+
+
+    fun savePNCDetail(
+        childDetailMap: HashMap<String, Any>,
+        householdId: Long,
+        motherDetailMap: HashMap<String, Any>,
+        memberDetail: AssessmentMemberDetails
+    ) {
+        viewModelScope.launch(dispatcherIO) {
+            if (memberMap != null) {
+                householdMemberRepository.registerMember(
+                    memberMap!!,
+                    householdId,
+                    null,
+                    memberDetail.id
+                )
+                savePNCDetails(motherDetailMap, childDetailMap, memberDetail)
+            } else {
+                savePNCDetails(motherDetailMap, childDetailMap, memberDetail)
+            }
+        }
+    }
+
+    private suspend fun savePNCDetails(
+        motherDetailMap: HashMap<String, Any>,
+        childDetailMap: HashMap<String, Any>,
+        memberDetail: AssessmentMemberDetails
+    ) {
+        val groupMap = HashMap<String, Any>()
+        groupMap[RMNCH.PNC] = motherDetailMap[RMNCH.PNC] as Any
+        groupMap[RMNCH.PNCNeonatal] = childDetailMap
+        StringConverter.convertGivenMapToString(groupMap)?.let { resultData ->
+            assessmentRepository.saveAssessment(
+                resultData,
+                memberDetail,
+                assessmentSaveLiveData,
+                RMNCH.PNC_MENU,
+                null,
+                null,
+            )
+        }
+    }
+
+    fun getMemberDetailsByParentId(memberId: Long) {
+        viewModelScope.launch(dispatcherIO) {
+            householdMemberRepository.getMemberDetailsByParentId(
+                memberId,
+                childMemberDetailsLiveData
+            )
+        }
+    }
+}

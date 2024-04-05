@@ -59,6 +59,7 @@ class AssessmentViewModel @Inject constructor(
     private var lastLocation: Location? = null
     val facilitySpinnerLiveData = MutableLiveData<Resource<LocalSpinnerResponse>>()
     val memberClinicalLiveData = MutableLiveData<MemberClinicalEntity?>()
+    var pncMotherDetailMap: HashMap<String, Any>? = null
 
     fun getMemberDetailsById() {
         if (selectedHouseholdMemberId == -1L) {
@@ -199,9 +200,83 @@ class AssessmentViewModel @Inject constructor(
         }
     }
 
-    fun savePatientVisitCountByType(memberClinicalEntity: MemberClinicalEntity) {
+    private fun savePatientVisitCountByType(memberClinicalEntity: MemberClinicalEntity) {
         viewModelScope.launch(Dispatchers.IO) {
             memberRegistrationRepository.savePatientVisitCountByType(memberClinicalEntity)
+        }
+    }
+
+
+    fun handlePregnancy(
+        details: HashMap<String, Any>,
+        workflowName: String,
+        memberDetail: AssessmentMemberDetails,
+        memberClinicalEntity: MemberClinicalEntity?
+    ) {
+        memberDetail.apply {
+            if (details.containsKey(workflowName) && details[workflowName] is Map<*, *>) {
+                val map = details[workflowName] as HashMap<String, Any>
+                memberClinicalEntity?.let {
+                    map[RMNCH.visitNo] = it.visitCount + 1
+                    map[getClinicalDateKey()] = it.clinicalDate
+                    savePatientClinicalInformation(patientId, workflowName, map, it.id)
+                } ?: kotlin.run {
+                    map[RMNCH.visitNo] = 1L
+                    savePatientClinicalInformation(patientId, workflowName, map)
+                }
+            }
+        }
+    }
+
+    private fun getClinicalDateKey(): String {
+        when (workflowName) {
+            RMNCH.ANC -> {
+                return RMNCH.lastMenstrualPeriod
+            }
+
+            RMNCH.PNC -> {
+                return RMNCH.DateOfDelivery
+            }
+        }
+        return ""
+    }
+
+    private fun savePatientClinicalInformation(
+        patientId: String?,
+        workflowName: String,
+        map: HashMap<String, Any>,
+        rowId: Long = 0
+    ) {
+        patientId?.let { id ->
+            getClinicalDateAndVisitCount(map, workflowName).let {
+                val clinicalEntity = MemberClinicalEntity(
+                    id = rowId,
+                    patientId = id,
+                    type = workflowName,
+                    visitCount = it.first,
+                    clinicalDate = it.second ?: ""
+                )
+                savePatientVisitCountByType(clinicalEntity)
+            }
+        }
+    }
+
+    private fun getClinicalDateAndVisitCount(
+        details: HashMap<String, Any>,
+        workflowName: String
+    ): Pair<Long, String?> {
+        return when (workflowName) {
+            RMNCH.ANC -> {
+                Pair(details[RMNCH.visitNo] as Long, details[RMNCH.lastMenstrualPeriod] as String)
+            }
+
+            RMNCH.PNC -> {
+                Pair(details[RMNCH.visitNo] as Long, details[RMNCH.DateOfDelivery] as String)
+            }
+
+            else -> {
+                Pair(details[RMNCH.visitNo] as Long, null)
+            }
         }
     }
 

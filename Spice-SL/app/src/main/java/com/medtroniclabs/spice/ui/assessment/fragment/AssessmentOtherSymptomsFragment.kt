@@ -8,9 +8,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
-import com.google.gson.Gson
 import com.medtroniclabs.spice.R
-import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.databinding.FragmentAssessmentOtherSymptomsBinding
@@ -101,11 +99,10 @@ class AssessmentOtherSymptomsFragment : BaseFragment(), FormEventListener, View.
 
 
     override fun loadLocalCache(id: String, localDataCache: Any, selectedParent: Long?) {
-        TODO("Not yet implemented")
     }
 
     override fun onPopulate(targetId: String) {
-        TODO("Not yet implemented")
+        
     }
 
     override fun onCheckBoxDialogueClicked(
@@ -124,7 +121,7 @@ class AssessmentOtherSymptomsFragment : BaseFragment(), FormEventListener, View.
         informationList: ArrayList<String>?,
         description: String?
     ) {
-        TODO("Not yet implemented")
+        
     }
 
     override fun onFormSubmit(resultMap: HashMap<String, Any>?, serverData: List<FormLayout?>?) {
@@ -168,7 +165,7 @@ class AssessmentOtherSymptomsFragment : BaseFragment(), FormEventListener, View.
     }
 
     override fun onAgeCheckForPregnancy() {
-        TODO("Not yet implemented")
+        
     }
 
     private fun updateColorCode(id: String, colorCode: Int) {

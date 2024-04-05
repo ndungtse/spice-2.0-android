@@ -6,13 +6,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import com.google.gson.Gson
+import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.setSuccess
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.EntityMapper
-import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.databinding.FragmentAssessmentRmnchBinding
-import com.medtroniclabs.spice.db.entity.MemberClinicalEntity
 import com.medtroniclabs.spice.formgeneration.FormGenerator
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.listener.FormEventListener
@@ -22,10 +21,9 @@ import com.medtroniclabs.spice.formgeneration.ui.FormResultComposer
 import com.medtroniclabs.spice.formgeneration.utility.CheckBoxDialog
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
-import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
+import com.medtroniclabs.spice.ui.assessment.AssessmentActivity
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.PlaceOfDelivery
-import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.visitCount
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -38,7 +36,7 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
     private lateinit var formGenerator: FormGenerator
 
     companion object {
-        const val TAG = "AssessmentRMNCHChildhoodVisitFragment"
+        const val TAG = "AssessmentRMNCHFragment"
     }
 
     override fun onCreateView(
@@ -107,9 +105,10 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
             data?.clinicalDate?.let { date ->
                 if (date.isNotEmpty()) {
                     formGenerator.getViewByTag(RMNCH.lastMenstrualPeriod + formGenerator.rootSuffix)
-                        ?.let {
-                            it.gone()
-                        }
+                        ?.gone()
+                    formGenerator.getViewByTag(RMNCH.DateOfDelivery + formGenerator.rootSuffix)
+                        ?.gone()
+                    formGenerator.getViewByTag(RMNCH.NoOfNeonate + formGenerator.rootSuffix)?.gone()
                 }
             }
         }
@@ -136,14 +135,18 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
         when (viewModel.workflowName) {
             RMNCH.ANC -> {
                 resultJsonFileName = "rmnch_anc_visit.json"
+                binding.btnSubmit.text = getString(R.string.submit)
             }
 
             RMNCH.ChildHoodVisit -> {
                 resultJsonFileName = "rmnch_childhood_visit.json"
+                binding.btnSubmit.text = getString(R.string.submit)
             }
 
             RMNCH.PNC -> {
                 resultJsonFileName = "rmnch_pnc_phu_delivery_mother.json"
+                binding.btnSubmit.text = getString(R.string.next)
+
             }
         }
         resultJsonFileName?.let { name ->
@@ -209,24 +212,40 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
                 FormResultComposer().groupValues(
                     context = requireContext(),
                     serverData = it,
-                    details,
-                    AssessmentDefinedParams.RMNCH.lowercase()
+                    details
                 )
             }
             result?.second?.let { second ->
-                viewModel.workflowName?.let {
-                    handlePregnancy(second, workflowName = it)
+                handleNextPregnancyFlow(second)
+            }
+        }
+    }
+
+    private fun handleNextPregnancyFlow(second: HashMap<String, Any>) {
+        viewModel.workflowName?.let { name ->
+            when (name) {
+                RMNCH.PNC -> {
+                    viewModel.pncMotherDetailMap = second
+                    (requireActivity() as AssessmentActivity).replaceAssessmentRMNCHNeonateFragment()
                 }
-                viewModel.saveAssessment(second, null)
+                else -> {
+                    viewModel.memberDetailsLiveData.value?.data?.let { memberDetail ->
+                        viewModel.handlePregnancy(
+                            second,
+                            workflowName = name,
+                            memberDetail,
+                            viewModel.memberClinicalLiveData.value
+                        )
+                    }
+                    viewModel.saveAssessment(second, null)
+                }
             }
         }
     }
 
     override fun onRenderingComplete() {
         viewModel.memberClinicalLiveData.value?.clinicalDate?.let {
-            formGenerator.getViewByTag(RMNCH.lastMenstrualPeriod + formGenerator.rootSuffix)?.let {
-                it.gone()
-            }
+            formGenerator.getViewByTag(RMNCH.lastMenstrualPeriod + formGenerator.rootSuffix)?.gone()
         }
     }
 
@@ -241,60 +260,8 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
     ) {
     }
 
-    private fun handlePregnancy(details: HashMap<String, Any>, workflowName: String) {
-        viewModel.memberDetailsLiveData.value?.data?.apply {
-            val pregnancyMap =
-                details[AssessmentDefinedParams.RMNCH.lowercase()] as HashMap<String, Any>
-            if (pregnancyMap.containsKey(workflowName) && pregnancyMap[workflowName] is Map<*, *>) {
-                val map = pregnancyMap[workflowName] as HashMap<String, Any>
-                viewModel.memberClinicalLiveData.value?.let {
-                    map[visitCount] = it.visitCount + 1
-                    map[RMNCH.lastMenstrualPeriod] = it.clinicalDate
-                    savePatientClinicalInformation(patientId, workflowName, map, it.id)
-                } ?: kotlin.run {
-                    map[visitCount] = 1L
-                    savePatientClinicalInformation(patientId, workflowName, map)
-                }
-            }
-        }
-    }
-
-    private fun savePatientClinicalInformation(
-        patientId: String?,
-        workflowName: String,
-        map: HashMap<String, Any>,
-        rowId: Long = 0
-    ) {
-        patientId?.let { id ->
-            getClinicalDateAndVisitCount(map, workflowName).let {
-                val clinicalEntity = MemberClinicalEntity(
-                    id = rowId,
-                    patientId = id,
-                    type = workflowName,
-                    visitCount = it.first,
-                    clinicalDate = it.second ?: ""
-                )
-                viewModel.savePatientVisitCountByType(clinicalEntity)
-            }
-        }
-    }
 
     override fun onAgeCheckForPregnancy() {
-        TODO("Not yet implemented")
     }
 
-    private fun getClinicalDateAndVisitCount(
-        details: HashMap<String, Any>,
-        workflowName: String
-    ): Pair<Long, String?> {
-        return when (workflowName) {
-            RMNCH.ANC -> {
-                Pair(details[visitCount] as Long, details[RMNCH.lastMenstrualPeriod] as String)
-            }
-
-            else -> {
-                Pair(details[visitCount] as Long, null)
-            }
-        }
-    }
 }

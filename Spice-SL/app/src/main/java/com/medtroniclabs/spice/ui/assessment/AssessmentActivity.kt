@@ -17,6 +17,7 @@ import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentICCMSummaryFragm
 import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentOtherSymptomSummaryFragment
 import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentOtherSymptomsFragment
 import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentRMNCHFragment
+import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentRMNCHNeonateFragment
 import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentRMNCHSummaryFragment
 import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentTBFragment
 import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentTBSummaryFragment
@@ -25,6 +26,7 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class AssessmentActivity : BaseActivity() {
+
     private lateinit var binding: ActivityAssessmentBinding
     private val viewModel: AssessmentViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -158,5 +160,11 @@ class AssessmentActivity : BaseActivity() {
         viewModel.workflowName = intent.getStringExtra(MenuConstants.WorkFlowName)
     }
 
+    fun replaceAssessmentRMNCHNeonateFragment() {
+        replaceFragmentInId<AssessmentRMNCHNeonateFragment>(
+            binding.formsFragmentContainer.id,
+            tag = AssessmentRMNCHNeonateFragment::class.simpleName
+        )
+    }
 
 }

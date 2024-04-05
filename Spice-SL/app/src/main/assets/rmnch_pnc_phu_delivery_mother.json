@@ -1,15 +1,42 @@
 [
   {
     "familyOrder": 0,
-    "id": "pncVisitMother",
+    "id": "pncMother",
     "orderId": 1,
     "title": "PNC Visit - Mother",
     "viewType": "CardView"
   },
   {
-    "id": "expectantMotherDangerSign",
-    "family": "pncVisitMother",
-    "fieldName": "expectantMotherDangerSign",
+    "id": "dateOfDelivery",
+    "family": "pncMother",
+    "fieldName": "dateOfDelivery",
+    "orderId": 2,
+    "title": "Date of Delivery",
+    "viewType": "DatePicker",
+    "isMandatory": true,
+    "isSummary": true,
+    "hint": "Select Date",
+    "errorMessage": "Please select a valid option",
+    "visibility": "visible"
+  },
+  {
+    "family": "pncMother",
+    "fieldName": "noOfNeonate",
+    "id": "noOfNeonate",
+    "viewType": "EditText",
+    "orderId": 6,
+    "isSummary": true,
+    "hint": "Enter number",
+    "titleSummary": "No of Neonate",
+    "isEnabled": true,
+    "isMandatory": false,
+    "title": "No of Neonate",
+    "errorMessage": "Please enter a valid option"
+  },
+  {
+    "id": "dangerSigns",
+    "family": "pncMother",
+    "fieldName": "dangerSigns",
     "orderId": 2,
     "title": "Is the expectant mother experiencing any of these danger signs?",
     "viewType": "Spinner",
@@ -21,7 +48,7 @@
     "visibility": "visible"
   },
   {
-    "family": "pncVisitMother",
+    "family": "pncMother",
     "fieldName": "fatherPresent",
     "id": "fatherPresent",
     "condition": [],
@@ -31,13 +58,14 @@
     "isMandatory": true,
     "isNeededDefault": true,
     "isSummary": true,
+    "isBooleanAnswer": true,
     "optionsList": [
       {
-        "id": "Yes",
+        "id": true,
         "name": "Yes"
       },
       {
-        "id": "No",
+        "id": false,
         "name": "No"
       }
     ],
@@ -48,23 +76,24 @@
     "visibility": "visible"
   },
   {
-    "family": "pncVisitMother",
-    "fieldName": "exclusiveBreastFeeding",
-    "id": "exclusiveBreastFeeding",
+    "family": "pncMother",
+    "fieldName": "exclusivelyBreastfeeding",
+    "id": "exclusivelyBreastfeeding",
     "condition": [],
     "orderId": 4,
     "errorMessage": "Please select a valid option",
     "isEnabled": true,
+    "isBooleanAnswer": true,
     "isMandatory": true,
     "isNeededDefault": true,
     "isSummary": true,
     "optionsList": [
       {
-        "id": "Yes",
+        "id": true,
         "name": "Yes"
       },
       {
-        "id": "No",
+        "id": false,
         "name": "No"
       }
     ],
@@ -75,23 +104,24 @@
     "visibility": "visible"
   },
   {
-    "family": "pncVisitMother",
-    "fieldName": "sleepsUnderBednet",
-    "id": "sleepsUnderBednet",
+    "family": "pncMother",
+    "fieldName": "sleepsUnderBedNet",
+    "id": "sleepsUnderBedNet",
     "condition": [],
     "orderId": 4,
     "errorMessage": "Please select a valid option",
     "isEnabled": true,
     "isMandatory": true,
+    "isBooleanAnswer": true,
     "isNeededDefault": true,
     "isSummary": true,
     "optionsList": [
       {
-        "id": "Yes",
+        "id": true,
         "name": "Yes"
       },
       {
-        "id": "No",
+        "id": false,
         "name": "No"
       }
     ],
@@ -102,7 +132,7 @@
     "visibility": "visible"
   },
   {
-    "family": "pncVisitMother",
+    "family": "pncMother",
     "fieldName": "chlorhexidine",
     "id": "chlorhexidine",
     "condition": [],
@@ -110,15 +140,16 @@
     "errorMessage": "Please select a valid option",
     "isEnabled": true,
     "isMandatory": true,
+    "isBooleanAnswer": true,
     "isNeededDefault": true,
     "isSummary": true,
     "optionsList": [
       {
-        "id": "Yes",
+        "id": true,
         "name": "Yes"
       },
       {
-        "id": "No",
+        "id": false,
         "name": "No"
       }
     ],

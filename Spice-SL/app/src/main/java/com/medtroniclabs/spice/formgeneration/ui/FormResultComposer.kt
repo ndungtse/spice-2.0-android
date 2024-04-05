@@ -13,7 +13,7 @@ class FormResultComposer {
         context: Context,
         serverData: List<FormLayout?>,
         resultMap: HashMap<String, *>,
-        menutype: String?
+        menuType: String? = null
     ): Pair<String?, HashMap<String, Any>> {
         serverData.forEach { serverViewModel ->
            when (serverViewModel?.viewType) {
@@ -28,10 +28,10 @@ class FormResultComposer {
                 }
             }
         }
-        return Pair(StringConverter.convertGivenMapToString(groupedResultMap), addToMenuGroup(groupedResultMap, menutype))
+        return Pair(StringConverter.convertGivenMapToString(groupedResultMap), addToMenuGroup(groupedResultMap, menuType))
     }
 
-    private fun addToMenuGroup(groupedResultMap: HashMap<String, Any>, menuType: String?): HashMap<String, Any> {
+    fun addToMenuGroup(groupedResultMap: HashMap<String, Any>, menuType: String?): HashMap<String, Any> {
         val menuGroupMap = HashMap<String, Any>()
         menuType?.let {
             menuGroupMap[menuType] = groupedResultMap

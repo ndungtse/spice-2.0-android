@@ -34,6 +34,7 @@ interface RoomHelper {
     suspend fun registerMember(householdMemberEntity: HouseholdMemberEntity): Long
     suspend fun getAllHouseHoldMemberList(houseHoldId: Long): ArrayList<HouseholdMemberEntity>
     suspend fun getMemberDetailsByID(memberId: Long): HouseholdMemberEntity
+    suspend fun getMemberDetailsByParentId(memberId: Long): List<HouseholdMemberEntity>
     suspend fun saveAssessment(assessmentEntity: AssessmentEntity): Long
     suspend fun updateOtherAssessmentDetails(assessmentEntity: AssessmentEntity)
     suspend fun getLatestAssessmentForMember(memberId: Long): AssessmentEntity?

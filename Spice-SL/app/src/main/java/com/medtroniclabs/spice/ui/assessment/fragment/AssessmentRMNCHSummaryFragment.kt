@@ -67,7 +67,7 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
                                     id,
                                     family,
                                     viewType,
-                                    AssessmentDefinedParams.RMNCH.lowercase(),
+                                    viewModel.workflowName,
                                     isBooleanAnswer
                                 ),
                                 null,
@@ -88,33 +88,31 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
         isBooleanAnswer: Boolean
     ): String {
         if (resultMap.containsKey(workflowName)) {
-            val map = resultMap[workflowName]
-            if (map is Map<*, *> && map.containsKey(groupName)) {
-                val actualMap = map[groupName]
-                if (actualMap is Map<*, *>) {
-                    val value = actualMap[id]
-                    if (viewType == ViewType.VIEW_TYPE_FORM_DATEPICKER && value is String) {
-                        return DateUtils.convertDateFormat(
-                            value,
-                            DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-                            DateUtils.DATE_ddMMyyyy
-                        )
-                    } else {
-                        when (value) {
-                            is String -> {
-                                return value
-                            }
+            val actualMap = resultMap[workflowName]
+            if (actualMap is Map<*, *>) {
+                val value = actualMap[id]
+                if (viewType == ViewType.VIEW_TYPE_FORM_DATEPICKER && value is String) {
+                    return DateUtils.convertDateFormat(
+                        value,
+                        DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+                        DateUtils.DATE_ddMMyyyy
+                    )
+                } else {
+                    when (value) {
+                        is String -> {
+                            return value
+                        }
 
-                            is Boolean -> {
-                                return if (isBooleanAnswer) {
-                                    if (value) getString(R.string.yes) else getString(R.string.no)
-                                } else {
-                                    value.toString()
-                                }
+                        is Boolean -> {
+                            return if (isBooleanAnswer) {
+                                if (value) getString(R.string.yes) else getString(R.string.no)
+                            } else {
+                                value.toString()
                             }
                         }
                     }
                 }
+
             }
         }
         return getString(R.string.hyphen_symbol)
@@ -127,7 +125,7 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
     override fun onClick(v: View) {
         when (v.id) {
             R.id.btnDone -> {
-                if (binding.etNextFollowUpDate.text.isNotEmpty()){
+                if (binding.etNextFollowUpDate.text.isNotEmpty()) {
                     viewModel.addOtherDetailsToType(AssessmentDefinedParams.RMNCH.lowercase())
                     viewModel.updateOtherAssessmentDetails()
                 }
