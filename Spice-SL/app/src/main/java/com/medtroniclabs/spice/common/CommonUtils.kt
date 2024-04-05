@@ -183,4 +183,10 @@ object CommonUtils {
     fun getBooleanAsString(value: Boolean): String {
         return if (value) HouseHoldRegistration.yes else HouseHoldRegistration.no
     }
+
+    fun formatListToStringWithOther(list: ArrayList<String>, otherText: String?): String {
+        return if (otherText != null) "${list.joinToString(separator = ", ")} - $otherText" else list.joinToString(
+            separator = ", "
+        )
+    }
 }

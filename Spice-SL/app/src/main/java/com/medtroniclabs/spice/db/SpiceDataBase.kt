@@ -8,6 +8,7 @@ import androidx.room.TypeConverters
 import com.medtroniclabs.spice.data.DiseaseCategoryItems
 import com.medtroniclabs.spice.data.ExaminationsComplaintItems
 import com.medtroniclabs.spice.db.converters.OfflineStatusTypeConverter
+import com.medtroniclabs.spice.db.dao.AboveFiveYearsDAO
 import com.medtroniclabs.spice.db.dao.AssessmentDAO
 import com.medtroniclabs.spice.db.dao.DiagnosisDAO
 import com.medtroniclabs.spice.db.dao.HouseholdDAO
@@ -42,6 +43,7 @@ abstract class SpiceDataBase : RoomDatabase() {
     abstract fun examinationsComplaintsDAO(): ExaminationsComplaintsDAO
     abstract fun diagnosisDAO(): DiagnosisDAO
     abstract fun memberClinicalDAO():MemberClinicalDAO
+    abstract fun aboveFiveYearsDAO(): AboveFiveYearsDAO
 
     companion object {
         private const val DATABASE_NAME = "SpiceDataBase"

@@ -1,5 +1,7 @@
 package com.medtroniclabs.spice.data.model
 
+import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
+
 data class AboveFiveYearsSubmitRequest(
     val assessmentType: String? = null,
     val patientId: String,
@@ -8,7 +10,7 @@ data class AboveFiveYearsSubmitRequest(
     val householdId: Long,
     val memberId: String? = null,
     val referred: Boolean = true,
-    val provenance :ProvenanceRequestItem? = null,
+    val provenance :ProvanceDto? = null,
     val startTime: String? = null,
     val endTime: String? = null,
     val presentingComplaints: List<String?>? = null,

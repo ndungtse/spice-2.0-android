@@ -5,8 +5,13 @@ import android.view.View
 import android.widget.ScrollView
 import androidx.activity.viewModels
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.common.DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
+import com.medtroniclabs.spice.common.DateUtils.getCurrentDateAndTime
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.SecuredPreference
+import com.medtroniclabs.spice.data.AboveFiveYearsSummaryRequest
+import com.medtroniclabs.spice.data.model.AboveFiveYearsSubmitRequest
+import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.databinding.ActivityAboveFiveYearsBaseBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.network.resource.ResourceState
@@ -15,12 +20,10 @@ import com.medtroniclabs.spice.ui.medicalreview.ClinicalNotesFragment
 import com.medtroniclabs.spice.ui.medicalreview.PresentingComplaintsFragment
 import com.medtroniclabs.spice.ui.medicalreview.SystemicExaminationsFragment
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.CLINICAL_NOTES
-import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.PC_5YEARS
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.PC_ITEM
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.SE_ITEM
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import com.medtroniclabs.spice.ui.mypatients.fragment.MedicalReviewPatientDiagnosisFragment
-import com.medtroniclabs.spice.ui.mypatients.fragment.MedicalReviewTreatmentPlanSummary
 import com.medtroniclabs.spice.ui.mypatients.fragment.PatientInfoFragment
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.ReferralTicketViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -38,7 +41,10 @@ class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener {
         setMainContentView(
             binding.root,
             true,
-            getString(R.string.patient_medical_review)
+            getString(R.string.patient_medical_review),
+            callback = {
+                backNavigation()
+            }
         )
         initializeViews()
         initializeFragments()
@@ -46,8 +52,44 @@ class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener {
         attachObserver()
     }
 
+    private fun backNavigation() {
+        showErrorDialogue(
+            getString(R.string.alert),
+            getString(R.string.exit_reason),
+            isNegativeButtonNeed = true
+        ) { isPositive ->
+            if (isPositive) {
+                onBackPressPopStack()
+            }
+        }
+    }
+
+    private fun onBackPressPopStack() {
+        this@AboveFiveYearsBaseActivity.finish()
+    }
+
     private fun initializeListeners() {
         binding.btnSubmit.safeClickListener(this)
+        binding.refreshLayout.setOnRefreshListener {
+            swipeRefresh()
+        }
+    }
+
+    private fun swipeRefresh() {
+        supportFragmentManager.findFragmentById(R.id.presentingComplaintsContainer)
+            .let { currentFragment ->
+                if (currentFragment is AboveFiveYearsTreatmentSummaryFragment) {
+                    viewModel.aboveFiveYearsCreateResponse.value?.data?.let {
+                        viewModel.getAboveFiveYearsSummaryDetails(AboveFiveYearsSummaryRequest(id = it.id))
+                    }
+                } else {
+                    patientViewModel.patientsLiveData.value?.data?.let { details ->
+                        details.patientId?.let { id ->
+                            patientViewModel.getPatients(id)
+                        }
+                    }
+                }
+            }
     }
 
     private fun initializeViews() {
@@ -109,6 +151,9 @@ class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener {
                 ResourceState.SUCCESS -> {
                     hideLoading()
                     binding.nestedScrollViewID.fullScroll(ScrollView.FOCUS_UP)
+                    resourceState.data?.let {
+                        viewModel.getAboveFiveYearsSummaryDetails(AboveFiveYearsSummaryRequest(id = it.id))
+                    }
                     initializeSummaryFragments()
                 }
             }
@@ -121,6 +166,9 @@ class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener {
 
                 ResourceState.SUCCESS -> {
                     hideLoading()
+                    if (binding.refreshLayout.isRefreshing) {
+                        binding.refreshLayout.isRefreshing = false
+                    }
                 }
 
                 ResourceState.ERROR -> {
@@ -134,9 +182,9 @@ class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener {
         binding.apply {
             patientDiagnosisContainer.visibility = View.GONE
         }
-        replaceFragmentInId<MedicalReviewTreatmentPlanSummary>(
+        replaceFragmentInId<AboveFiveYearsTreatmentSummaryFragment>(
             binding.presentingComplaintsContainer.id,
-            tag = MedicalReviewTreatmentPlanSummary::class.simpleName
+            tag = AboveFiveYearsTreatmentSummaryFragment::class.simpleName
         )
         val complaintsFragment =
             supportFragmentManager.findFragmentById(R.id.systemicExaminationsContainer)
@@ -186,7 +234,35 @@ class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener {
     }
 
     private fun postResultInput() {
-
+        patientViewModel.patientsLiveData.value?.data?.let { details ->
+            details.patientId?.let {id ->
+                //TODO: Location for Lat and Long should be implemented,for householdId and organizationId once given means we need to integrate
+                val request = AboveFiveYearsSubmitRequest(
+                    patientId = id,
+                    latitude = 11.21,
+                    longitude = 10.75,
+                    householdId = 23,
+                    assessmentType = MedicalReviewTypeEnums.AboveFiveYears.name,
+                    presentingComplaints = viewModel.selectedPresentingComplaints.map { it.value },
+                    presentingComplaintsNotes = viewModel.enteredComplaintNotes,
+                    systemicExaminationsNotes = viewModel.enteredExaminationNotes,
+                    provenance = ProvanceDto(
+                        createdDateTime = getCurrentDateAndTime(
+                            DATE_FORMAT_yyyyMMddHHmmssZZZZZ
+                        )
+                    ),
+                    systemicExaminations = viewModel.selectedSystemicExaminations.map { it.value },
+                    clinicalNotes = viewModel.enteredClinicalNotes,
+                    startTime = getCurrentDateAndTime(
+                        DATE_FORMAT_yyyyMMddHHmmssZZZZZ
+                    ),
+                    endTime = getCurrentDateAndTime(
+                        DATE_FORMAT_yyyyMMddHHmmssZZZZZ
+                    )
+                )
+                viewModel.createAboveFiveYearsResult(request)
+            }
+        }
     }
 
     private fun enableSubmitBtn() {

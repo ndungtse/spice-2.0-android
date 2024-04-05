@@ -5,6 +5,8 @@ import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.appextensions.postSuccess
 import com.medtroniclabs.spice.common.SecuredPreference
+import com.medtroniclabs.spice.data.AboveFiveYearsSummaryDetails
+import com.medtroniclabs.spice.data.AboveFiveYearsSummaryRequest
 import com.medtroniclabs.spice.data.ExaminationsComplaintItems
 import com.medtroniclabs.spice.data.model.AboveFiveYearsSubmitRequest
 import com.medtroniclabs.spice.db.local.RoomHelper
@@ -30,7 +32,7 @@ class AboveFiveYearsRepository @Inject constructor(
                 if (response.isSuccessful){
                     response.body()?.entity?.apply {
                         roomHelper.deleteExaminationsComplaints(menuType)
-                        roomHelper.insertExaminationsComplaint(generateChipItemByType(presentingComplaints ,systemicExaminations, medicalSupplies))
+                        roomHelper.insertExaminationsComplaint(generateChipItemByType(presentingComplaints ,systemicExaminations, medicalSupplies, cost, patientStatus))
                         roomHelper.deleteDiagnosisList()
                         roomHelper.saveDiagnosisList(diseaseCategories)
                     }
@@ -55,20 +57,25 @@ class AboveFiveYearsRepository @Inject constructor(
     private fun generateChipItemByType(
         presentingComplaints: List<ExaminationsComplaintItems>,
         systemicExaminations: List<ExaminationsComplaintItems>,
-        medicalSupplies: List<ExaminationsComplaintItems>
+        medicalSupplies: List<ExaminationsComplaintItems>,
+        cost: List<ExaminationsComplaintItems>,
+        patientStatus: List<ExaminationsComplaintItems>
     ): List<ExaminationsComplaintItems> {
         val chipItemList = ArrayList<ExaminationsComplaintItems>()
         presentingComplaints.forEach { it.category = MedicalReviewTypeEnums.PresentingComplaints.name }
         systemicExaminations.forEach { it.category = MedicalReviewTypeEnums.SystemicExaminations.name }
+        patientStatus.forEach { it.type = MedicalReviewTypeEnums.AboveFiveYears.name }
         chipItemList.addAll(presentingComplaints)
         chipItemList.addAll(systemicExaminations)
         chipItemList.addAll(medicalSupplies)
+        chipItemList.addAll(cost)
+        chipItemList.addAll(patientStatus)
         return chipItemList
     }
 
     suspend fun createAboveFiveYears(
         request: AboveFiveYearsSubmitRequest,
-        aboveFiveYearsCreateResponse: MutableLiveData<Resource<HashMap<String, Any>>>
+        aboveFiveYearsCreateResponse: MutableLiveData<Resource<AboveFiveYearsSummaryDetails>>
     ) {
         try {
             aboveFiveYearsCreateResponse.postLoading()
@@ -83,6 +90,38 @@ class AboveFiveYearsRepository @Inject constructor(
                 aboveFiveYearsCreateResponse.postError()
         } catch (e: Exception) {
             aboveFiveYearsCreateResponse.postError()
+        }
+    }
+
+    suspend fun getSummaryDetailMetaItems(
+        type: String,
+        summaryMetaListItems: MutableLiveData<Resource<List<ExaminationsComplaintItems>>>
+    ) {
+        try {
+            summaryMetaListItems.postLoading()
+            val response = roomHelper.getSummaryDetailMetaItems(type)
+            summaryMetaListItems.postSuccess(response)
+        } catch (e: Exception) {
+            summaryMetaListItems.postError()
+        }
+    }
+
+    suspend fun getAboveFiveYearsSummaryDetails(
+        request: AboveFiveYearsSummaryRequest,
+        summaryDetailsLiveData: MutableLiveData<Resource<AboveFiveYearsSummaryDetails>>
+    ) {
+        try {
+            summaryDetailsLiveData.postLoading()
+            val response = apiHelper.getAboveFiveYearsSummaryDetails(request)
+            if (response.isSuccessful) {
+                response.body()?.entity?.let {
+                    summaryDetailsLiveData.postSuccess(it)
+                }
+            } else {
+                summaryDetailsLiveData.postError()
+            }
+        } catch (e: Exception) {
+            summaryDetailsLiveData.postError()
         }
     }
 }

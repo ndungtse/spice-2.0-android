@@ -169,7 +169,6 @@ class HouseholdSummaryActivity : BaseActivity(), MemberSelectionListener, View.O
             val intent = Intent(this, HouseholdActivity::class.java)
             intent.putExtra(DefinedParams.MemberID, item)
             startActivity(intent)
-            this.finish()
         } else {
             val intent = Intent(this, ToolsActivity::class.java)
             intent.putExtra(DefinedParams.MemberID, item)
@@ -228,7 +227,6 @@ class HouseholdSummaryActivity : BaseActivity(), MemberSelectionListener, View.O
             intent.putExtra(isMemberRegistration, false)
             intent.putExtra(ID, householdSummaryViewModel.houseHoldId)
             startActivity(intent)
-            finish()
         }
     }
 

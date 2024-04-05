@@ -2,6 +2,8 @@ package com.medtroniclabs.spice.network
 
 import com.medtroniclabs.spice.data.APIResponse
 import com.medtroniclabs.spice.data.AboveFiveYearsMetaResponse
+import com.medtroniclabs.spice.data.AboveFiveYearsSummaryDetails
+import com.medtroniclabs.spice.data.AboveFiveYearsSummaryRequest
 import com.medtroniclabs.spice.data.FormMetaRequest
 import com.medtroniclabs.spice.data.FormRequest
 import com.medtroniclabs.spice.data.FormResponse
@@ -65,7 +67,10 @@ interface ApiService {
     @POST("/spice-service/assessment/referral-tickets")
     suspend fun getReferralsDetails(@Body request: PatientDetailReq): Response<APIResponse<ReferralData>>
 
-    @POST("/fhir-mapper/medical-review/iccm-general/create")
-    suspend fun createAboveFiveYearsResult(@Body request: AboveFiveYearsSubmitRequest): Response<APIResponse<HashMap<String, Any>>>
+    @POST("/spice-service/medical-review/iccm-general/create")
+    suspend fun createAboveFiveYearsResult(@Body request: AboveFiveYearsSubmitRequest): Response<APIResponse<AboveFiveYearsSummaryDetails>>
+
+    @POST("/spice-service/medical-review/iccm-general/details")
+    suspend fun getAboveFiveYearsSummaryDetails(@Body id: AboveFiveYearsSummaryRequest): Response<APIResponse<AboveFiveYearsSummaryDetails>>
 
 }

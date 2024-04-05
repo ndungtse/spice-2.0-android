@@ -1,7 +1,5 @@
 package com.medtroniclabs.spice.data
 
-import com.google.gson.annotations.SerializedName
-
 data class LoginResponse(
     val username: String?,
     val isActive: Boolean,
@@ -18,7 +16,7 @@ data class LoginResponse(
     val organizations: ArrayList<OrganizationModel>? = null,
     val isSuperUser: Boolean,
     val suiteAccess: List<String>,
-    val client: String,
+    val client: String
 )
 
 data class TimeZoneModel(

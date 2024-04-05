@@ -6,6 +6,7 @@ import com.medtroniclabs.spice.data.DiseaseCategoryItems
 import com.medtroniclabs.spice.data.ExaminationsComplaintItems
 import com.medtroniclabs.spice.data.LastCreatedAtAndPatientId
 import com.medtroniclabs.spice.data.VillageInfo
+import com.medtroniclabs.spice.db.dao.AboveFiveYearsDAO
 import com.medtroniclabs.spice.db.dao.AssessmentDAO
 import com.medtroniclabs.spice.db.dao.DiagnosisDAO
 import com.medtroniclabs.spice.db.dao.HouseholdDAO
@@ -43,7 +44,8 @@ class RoomHelperImpl @Inject constructor(
     private val metaDataDAO: MetaDataDAO,
     private val examinationsComplaintsDAO: ExaminationsComplaintsDAO,
     private val diagnosisDAO: DiagnosisDAO,
-    private val memberClinicalDAO: MemberClinicalDAO
+    private val memberClinicalDAO: MemberClinicalDAO,
+    private val aboveFiveYearsDAO: AboveFiveYearsDAO
 ) : RoomHelper {
     override suspend fun saveHouseHoldEntry(householdEntity: HouseholdEntity): Long {
         return householdDAO.insertHouseHold(householdEntity)
@@ -350,4 +352,8 @@ class RoomHelperImpl @Inject constructor(
     override suspend fun getUnSyncedAssessmentCount(): Int {
         return assessmentDAO.getUnSyncedCount()
     }
+    override suspend fun getSummaryDetailMetaItems(type:String): List<ExaminationsComplaintItems> {
+        return aboveFiveYearsDAO.getSummaryDetailMetaItems(type)
+    }
+
 }

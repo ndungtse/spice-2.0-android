@@ -9,6 +9,7 @@ import com.medtroniclabs.spice.common.DefinedParams.ACTION_SESSION_EXPIRED
 import com.medtroniclabs.spice.common.DefinedParams.SL_SESSION
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.db.SpiceDataBase
+import com.medtroniclabs.spice.db.dao.AboveFiveYearsDAO
 import com.medtroniclabs.spice.db.dao.AssessmentDAO
 import com.medtroniclabs.spice.db.dao.DiagnosisDAO
 import com.medtroniclabs.spice.db.dao.HouseholdDAO
@@ -174,6 +175,12 @@ object AppModule {
     @Provides
     fun provideMemberClinicalDAO(db: SpiceDataBase): MemberClinicalDAO {
         return db.memberClinicalDAO()
+    }
+
+    @Singleton
+    @Provides
+    fun provideAboveFiveYearsDAO(db: SpiceDataBase): AboveFiveYearsDAO {
+        return db.aboveFiveYearsDAO()
     }
 
     @DefaultDispatcher

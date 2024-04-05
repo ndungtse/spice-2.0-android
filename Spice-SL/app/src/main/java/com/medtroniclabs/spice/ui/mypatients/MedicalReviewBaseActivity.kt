@@ -11,7 +11,7 @@ import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.mypatients.fragment.MedicalReviewPatientDiagnosisFragment
 import com.medtroniclabs.spice.ui.mypatients.fragment.MedicalReviewPatientExaminationFragment
-import com.medtroniclabs.spice.ui.mypatients.fragment.MedicalReviewTreatmentPlanSummary
+import com.medtroniclabs.spice.ui.medicalreview.abovefiveyears.AboveFiveYearsTreatmentSummaryFragment
 import com.medtroniclabs.spice.ui.mypatients.fragment.PatientInfoFragment
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -40,7 +40,7 @@ class MedicalReviewBaseActivity : BaseActivity(), View.OnClickListener {
         val fragment = if (isInitView) {
             MedicalReviewPatientExaminationFragment()
         } else {
-            MedicalReviewTreatmentPlanSummary.newInstance()
+            AboveFiveYearsTreatmentSummaryFragment.newInstance()
         }
         if (isInitView) {
             binding.bottomNavigationView.visible()

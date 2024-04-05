@@ -3,6 +3,8 @@ package com.medtroniclabs.spice.ui.medicalreview.abovefiveyears
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.medtroniclabs.spice.data.AboveFiveYearsSummaryDetails
+import com.medtroniclabs.spice.data.AboveFiveYearsSummaryRequest
 import com.medtroniclabs.spice.data.ExaminationsComplaintItems
 import com.medtroniclabs.spice.data.model.AboveFiveYearsSubmitRequest
 import com.medtroniclabs.spice.data.model.ChipViewItemModel
@@ -26,7 +28,9 @@ class AboveFiveYearsViewModel @Inject constructor(
     @Inject
     lateinit var connectivityManager: ConnectivityManager
     val aboveFiveYearsMetaLiveData = MutableLiveData<Resource<Boolean>>()
+    val summaryDetailsLiveData = MutableLiveData<Resource<AboveFiveYearsSummaryDetails>>()
     val examinationsComplaintsList = MutableLiveData<Resource<List<ExaminationsComplaintItems>>>()
+    val summaryMetaListItems = MutableLiveData<Resource<List<ExaminationsComplaintItems>>>()
     var presentingComplaintsType : String = ""
     var systemicExaminationsType : String = ""
     var selectedPresentingComplaints = ArrayList<ChipViewItemModel>()
@@ -34,7 +38,11 @@ class AboveFiveYearsViewModel @Inject constructor(
     var enteredClinicalNotes = ""
     var enteredExaminationNotes = ""
     var enteredComplaintNotes = ""
-    val aboveFiveYearsCreateResponse = MutableLiveData<Resource<HashMap<String, Any>>>()
+    val aboveFiveYearsCreateResponse = MutableLiveData<Resource<AboveFiveYearsSummaryDetails>>()
+    var selectedPatientStatus = ""
+    var selectedMedicalSupply = ""
+    var selectedCostItem = ""
+    var nextFollowupDate:String? = null
 
     fun getStaticMetaData(menuType: String) {
         viewModelScope.launch(dispatcherIO){
@@ -52,6 +60,20 @@ class AboveFiveYearsViewModel @Inject constructor(
         if (connectivityManager.isNetworkAvailable()){
             viewModelScope.launch(dispatcherIO) {
                 repository.createAboveFiveYears(request, aboveFiveYearsCreateResponse)
+            }
+        }
+    }
+
+    fun getSummaryListMetaItems(type: String) {
+        viewModelScope.launch(dispatcherIO) {
+            repository.getSummaryDetailMetaItems(type, summaryMetaListItems)
+        }
+    }
+
+    fun getAboveFiveYearsSummaryDetails(request: AboveFiveYearsSummaryRequest){
+        if (connectivityManager.isNetworkAvailable()){
+            viewModelScope.launch(dispatcherIO) {
+                repository.getAboveFiveYearsSummaryDetails(request, summaryDetailsLiveData)
             }
         }
     }

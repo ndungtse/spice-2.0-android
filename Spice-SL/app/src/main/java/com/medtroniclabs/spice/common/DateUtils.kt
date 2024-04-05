@@ -20,6 +20,7 @@ object DateUtils {
     const val DATE_FORMAT_ddMMyyyy = "dd-MM-yyyy"
     const val DATE_FORMAT_yyyyMMdd = "yyyy-MM-dd"
     const val DATE_FORMAT_yyyyMMddHHmmssZZZZZ = "yyyy-MM-dd'T'HH:mm:ssZZZZZ"
+    const val DATE_FORMAT_ddMMMyyyy = "dd MMM, yyyy"
 
     fun getYearMonthAndWeek(inputDate: String, inputFormat: String = DATE_FORMAT_ddMMyyyy ): Triple<Int?, Int?, Int?> {
         try {
