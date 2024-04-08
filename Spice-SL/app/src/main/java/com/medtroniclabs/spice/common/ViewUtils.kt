@@ -56,13 +56,4 @@ object ViewUtils {
         dialog.show()
         return dialog
     }
-
-
-    fun DialogFragment.setDialogHeightToWrapAndSetWidthPercent(percentage: Int) {
-        val percent = percentage.toFloat() / 100
-        val dm = Resources.getSystem().displayMetrics
-        val rect = dm.run { Rect(0, 0, widthPixels, heightPixels) }
-        val percentHeight = rect.height() * percent
-        dialog?.window?.setLayout(LinearLayout.LayoutParams.WRAP_CONTENT, percentHeight.toInt())
-    }
 }

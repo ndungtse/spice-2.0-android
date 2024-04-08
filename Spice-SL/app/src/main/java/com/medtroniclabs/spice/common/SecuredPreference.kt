@@ -23,7 +23,8 @@ object SecuredPreference {
         IS_INITIAL_DATA_LOADED,
         IS_ABOVE_FIVE_YEARS_LOADED,
         USER_FHIR_ID,
-        ORGANIZATION_FHIR_ID
+        ORGANIZATION_FHIR_ID,
+        IS_MOTHER_NEONATE_LOADEDANC
     }
 
 
@@ -383,11 +384,12 @@ object SecuredPreference {
     }
 
     fun logout(): Boolean {
-        remove(EnvironmentKey.ISLOGGEDIN.name)
+//        remove(EnvironmentKey.ISLOGGEDIN.name)
         remove(EnvironmentKey.TOKEN.name)
-        remove(EnvironmentKey.ISOFFLINELOGIN.name)
-        remove(EnvironmentKey.USER_RESPONSE.name)
+//        remove(EnvironmentKey.ISOFFLINELOGIN.name)
+//        remove(EnvironmentKey.USER_RESPONSE.name)
         remove(EnvironmentKey.IS_ABOVE_FIVE_YEARS_LOADED.name)
+        remove(EnvironmentKey.IS_MOTHER_NEONATE_LOADEDANC.name)
         return true
     }
 

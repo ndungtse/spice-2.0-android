@@ -2,16 +2,20 @@ package com.medtroniclabs.spice.appextensions
 
 import android.app.Activity
 import android.content.Context
-import android.graphics.Color
+import android.content.res.Configuration
+import android.content.res.Resources
+import android.graphics.Rect
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
+import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
-import android.widget.TextView
-import androidx.core.text.buildSpannedString
-import androidx.core.text.color
-import com.medtroniclabs.spice.common.SafeClickListener
+import android.widget.LinearLayout
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.constraintlayout.widget.ConstraintSet
+import androidx.fragment.app.DialogFragment
+import com.medtroniclabs.spice.common.CommonUtils
 
 fun Context.hideKeyboard(view: View) {
     val inputMethodManager = getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
@@ -68,4 +72,26 @@ fun View.isGone() : Boolean{
 
 fun View.isInvisible(): Boolean {
     return this.visibility == View.INVISIBLE
+}
+
+
+fun DialogFragment.setWidth(percentage: Int) {
+    val percent = percentage.toFloat() / 100
+    val dm = Resources.getSystem().displayMetrics
+    val rect = dm.run { Rect(0, 0, widthPixels, heightPixels) }
+    val percentWidth = rect.width() * percent
+    dialog?.window?.setLayout(percentWidth.toInt(), LinearLayout.LayoutParams.WRAP_CONTENT)
+}
+
+
+fun ConstraintLayout.setPercentWidth(viewId: Int, percentage: Float) {
+    val constraintSet = ConstraintSet()
+    constraintSet.clone(this)
+    constraintSet.constrainPercentWidth(viewId, percentage)
+    constraintSet.applyTo(this)
+}
+
+fun Context.isNotTabletAndPortrait(): Boolean {
+    val orientation = resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT
+    return !CommonUtils.checkIsTablet(this) && orientation
 }

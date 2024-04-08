@@ -365,4 +365,13 @@ class RoomHelperImpl @Inject constructor(
         return aboveFiveYearsDAO.getSummaryDetailMetaItems(type)
     }
 
+    override suspend fun deleteExaminationsComplaintsForAnc(type: String) {
+        examinationsComplaintsDAO.deleteExaminationsComplaintsForAnc(type)
+    }
+
+    override fun getExaminationsComplaintsForAnc(
+        category: String
+    ): LiveData<List<ExaminationsComplaintItems>> {
+        return examinationsComplaintsDAO.getExaminationsComplaintsForAnc(category)
+    }
 }

@@ -22,6 +22,11 @@
             android:name=".ui.medicalreview.prescription.PrescriptionActivity"
             android:exported="false" />
         <activity
+            android:name=".ui.mypatients.activity.MotherNeonateANCActivity"
+            android:exported="false"
+            android:screenOrientation="sensorLandscape"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
             android:name=".ui.medicalreview.LabourDeliveryBaseActivity"
             android:exported="false"
             android:screenOrientation="sensorLandscape"

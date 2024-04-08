@@ -41,7 +41,6 @@ object DefinedParams {
     const val TimeOfDelivery = "timeOfDelivery"
     const val TimeOfLabourOnset = "timeOfLabourOnset"
     const val HouseholdHead = "HouseholdHead"
-
     const val CHIEF_DOM_CODE_LENGTH = 3
     const val VILLAGE_CODE_LENGTH = 4
     const val PATIENT_NUMBER_LENGTH = 4
@@ -49,4 +48,5 @@ object DefinedParams {
     const val Tear = "tear"
     const val Gender = "gender"
     const val StateOfBaby = "stateOfBaby"
+    const val Unit_Measurement_Metric_Type = "metric"
 }

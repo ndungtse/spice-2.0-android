@@ -189,4 +189,13 @@ object CommonUtils {
             separator = ", "
         )
     }
+
+    fun getBMI(heightInCM: Double, weight: Double,context: Context): String {
+        val heightInMeter = heightInCM / 100
+        val bmi = weight / (heightInMeter * heightInMeter)
+        if (bmi.isInfinite() || bmi.isNaN()) {
+            return context.getString(R.string.hyphen_symbol)
+        }
+        return String.format("%.2f", bmi)
+    }
 }

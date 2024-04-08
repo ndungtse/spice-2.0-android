@@ -23,6 +23,7 @@ class ToolsViewModel @Inject constructor(
     var selectedHouseholdMemberID = -1L
     val resultRMNCHFlowHashMap = HashMap<String, Any>()
     val menuListLiveData = MutableLiveData<Resource<List<MenuEntity>>>()
+    val resultANCFlowHashMap = HashMap<String, Any>()
 
     fun getMenuForClinicalWorkflows() {
         viewModelScope.launch(dispatcherIO) {

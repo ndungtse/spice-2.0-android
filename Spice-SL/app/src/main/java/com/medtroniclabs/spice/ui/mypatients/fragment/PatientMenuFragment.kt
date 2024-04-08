@@ -87,12 +87,17 @@ class PatientMenuFragment : BaseFragment(), MenuSelectionListener {
             }
 
             MenuConstants.MOTHER_AND_NEONATE_ID -> {
-                val intent = Intent(requireContext(), LabourDeliveryBaseActivity::class.java)
+//                val intent = Intent(requireContext(), LabourDeliveryBaseActivity::class.java)
+//                val patientId = arguments?.getString(DefinedParams.PatientId, "")
+//                if (patientId?.isNotBlank() == true) {
+//                    intent.putExtra(DefinedParams.PatientId, patientId)
+//                }
+//                startActivity(intent)
+                // selectFlow
                 val patientId = arguments?.getString(DefinedParams.PatientId, "")
                 if (patientId?.isNotBlank() == true) {
-                    intent.putExtra(DefinedParams.PatientId, patientId)
+                    SelectFlowDialog.newInstance(patientId).show(childFragmentManager, SelectFlowDialog.TAG)
                 }
-                startActivity(intent)
             }
 
             MenuConstants.UNDER_AGE_FIVE_TO_TWO_MONTHS_ID -> {

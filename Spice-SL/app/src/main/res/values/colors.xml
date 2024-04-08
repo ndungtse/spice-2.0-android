@@ -13,7 +13,7 @@
     <color name="text_label_color">@color/charcoal_grey</color>
     <color name="charcoal_grey">#53565A</color>
     <color name="edittext_stroke">#B1B3B3</color>
-    <color name="card_background">#EFEFEF</color>
+    <color name="card_background">#EFEEEB</color>
     <color name="secondary_black">#000000</color>
     <color name="medium_blue">#2514BE</color>
     <color name="primary_medium_blue">#6165DE</color>

@@ -311,4 +311,22 @@
     <string name="frequency">Frequency</string>
     <string name="prescribed_days">Prescribed days</string>
     <string name="quantity">Quantity</string>
+    <string name="no_of_fetus">No. of fetus</string>
+    <string name="pregnancy_details">Pregnancy Details</string>
+    <string name="gravida">Gravida</string>
+    <string name="height">Height (in cm)</string>
+    <string name="weight">Weight (in kg)</string>
+    <string name="bmi">BMI</string>
+    <string name="semicolon">:</string>
+    <string name="systolic">Systolic(hhHg)</string>
+    <string name="diastolic">Diastolic(mmhg)</string>
+    <string name="plus">+</string>
+    <string name="parity">Parity</string>
+    <string name="weight_error">"Please enter weight between 10 to 400"</string>
+    <string name="height_error">"Please enter weight between 50 to 300"</string>
+    <string name="gestational_error">"Please enter Gestational age below 60"</string>
+    <string name="patient_blood_group">Patient Blood Group</string>
+    <string name="diastolic_error">Diastolic pressure should be above 30</string>
+    <string name="pulse_error">Pulse should be above 35</string>
+    <string name="systolic_error">Systolic pressure should be above 30</string>
 </resources>

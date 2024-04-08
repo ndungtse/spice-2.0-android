@@ -291,6 +291,7 @@ class AssessmentRMNCHNeonateFragment : BaseFragment(), View.OnClickListener,
     }
 
     override fun onAgeCheckForPregnancy() {
+        childFormGenerator.handlePregnancyCardBasedOnAge()
     }
 
 

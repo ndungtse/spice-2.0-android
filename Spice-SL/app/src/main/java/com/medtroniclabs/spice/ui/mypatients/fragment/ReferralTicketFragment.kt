@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
+import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.databinding.FragmentReferralTicketBinding
@@ -66,6 +67,7 @@ class ReferralTicketFragment : BaseFragment(), View.OnClickListener {
     }
 
     private fun initView() {
+        binding.root.gone()
         patientId = arguments?.getString(DefinedParams.PatientId, "")
         if (patientId?.isNotBlank() == true) {
             viewModel.getReferralTicket(patientId = patientId)
@@ -110,6 +112,7 @@ class ReferralTicketFragment : BaseFragment(), View.OnClickListener {
                 ResourceState.SUCCESS -> {
                     hideProgress()
                     resource.data?.let {
+                        binding.root.visible()
                         setReferralTicket(it)
                     } ?: kotlin.run {
                         binding.root.gone()

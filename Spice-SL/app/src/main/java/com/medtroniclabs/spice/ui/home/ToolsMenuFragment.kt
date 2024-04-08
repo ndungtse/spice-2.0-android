@@ -17,6 +17,7 @@ import com.medtroniclabs.spice.databinding.FragmentToolsMenuBinding
 import com.medtroniclabs.spice.db.entity.MenuEntity
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
+import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.MenuConstants
 import com.medtroniclabs.spice.ui.MenuConstants.DialogResult
 import com.medtroniclabs.spice.ui.MenuConstants.WorkFlowName
@@ -25,7 +26,7 @@ import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
 import com.medtroniclabs.spice.ui.dialog.RMNCHFlowSelectionDialog
 import com.medtroniclabs.spice.ui.home.adapter.DashboardMenuItemsAdapter
 
-class ToolsMenuFragment : Fragment(), MenuSelectionListener {
+class ToolsMenuFragment : BaseFragment(), MenuSelectionListener {
 
     private lateinit var binding: FragmentToolsMenuBinding
     private val viewModel: ToolsViewModel by activityViewModels()

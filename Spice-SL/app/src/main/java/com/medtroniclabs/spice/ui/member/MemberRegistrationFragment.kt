@@ -344,44 +344,8 @@ class MemberRegistrationFragment : Fragment(), FormEventListener, View.OnClickLi
     }
 
     override fun onAgeCheckForPregnancy() {
-        val dateOfBirthView = formGenerator.getViewByTag(MemberRegistration.dateOfBirth) as? AppCompatTextView ?: return
-        val dateOfBirth = dateOfBirthView.text?.toString()?.trim() ?: return
-
-        if (DateUtils.calculateAge(dateOfBirth, DATE_ddMMyyyy) !in 18..48) {
-            handleAgeBelowThreshold()
-        } else {
-            handleAgeAboveThreshold()
-        }
+        formGenerator.handlePregnancyCardBasedOnAge()
     }
-
-    private fun handleAgeBelowThreshold() {
-        if (formGenerator.isResultAvaliable(gender, female)) {
-            val isPregnantRootView =
-                formGenerator.getViewByTag(isPregnant + formGenerator.rootSuffix) as? ViewGroup
-                    ?: return
-            formGenerator.removeIfContains(isPregnant)
-            (formGenerator.getViewByTag(isPregnant) as? ViewGroup)?.forEach { view ->
-                if (view is TextView) {
-                    view.isSelected = false
-                }
-            }
-            if (isPregnantRootView.isVisible()) {
-                isPregnantRootView.gone()
-            }
-        }
-    }
-
-    private fun handleAgeAboveThreshold() {
-        if (formGenerator.isResultAvaliable(gender, female)) {
-            val isPregnantRootView =
-                formGenerator.getViewByTag(isPregnant + formGenerator.rootSuffix) as? ViewGroup
-                    ?: return
-            if (isPregnantRootView.isGone()) {
-                isPregnantRootView.visible()
-            }
-        }
-    }
-
 
     override fun onClick(v: View?) {
         when (v?.id) {

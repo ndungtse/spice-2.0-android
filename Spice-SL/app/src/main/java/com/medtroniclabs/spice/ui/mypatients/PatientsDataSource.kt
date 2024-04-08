@@ -9,7 +9,6 @@ import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.model.PatientsDataModel
 import com.medtroniclabs.spice.network.ApiHelper
 import com.medtroniclabs.spice.ui.mypatients.repo.PatientRepository
-import timber.log.Timber
 
 
 class PatientsDataSource(

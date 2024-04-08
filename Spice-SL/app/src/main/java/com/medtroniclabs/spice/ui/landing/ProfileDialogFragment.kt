@@ -10,7 +10,6 @@ import android.view.WindowManager
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
-import com.medtroniclabs.spice.common.ViewUtils.setDialogHeightToWrapAndSetWidthPercent
 import com.medtroniclabs.spice.data.UserProfile
 import com.medtroniclabs.spice.databinding.FragmentProfileDialogBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
@@ -40,7 +39,7 @@ class ProfileDialogFragment : DialogFragment(), View.OnClickListener {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentProfileDialogBinding.inflate(inflater, container, false)
         dialog?.window?.setBackgroundDrawableResource(android.R.color.transparent)
         isCancelable = false
@@ -154,7 +153,7 @@ class ProfileDialogFragment : DialogFragment(), View.OnClickListener {
             tvEmailText.text = user.username
             tvPhoneNumberText.text = user.phoneNumber ?: getString(R.string.separator_hyphen)
             tvSuiteAccessText.text = user.suiteAccess?.let {
-                user.suiteAccess[0] ?: getString(R.string.separator_hyphen)
+                user.suiteAccess[0]
             } ?: getString(R.string.separator_hyphen)
             tvRoleText.text = user.roles.joinToString { it.name }
         }

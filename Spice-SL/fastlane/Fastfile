@@ -24,11 +24,14 @@ platform :android do
 desc "Submit a new dev Build to firebase"
      lane :fireInternal do
      gradle(task: "clean assemble",build_type: "staging" )
+       # Read release notes from file
+       release_notes_file_path = "./release_notes/staging/release_notes.txt"
+       release_notes = File.read(release_notes_file_path)
      firebase_app_distribution(
           app: "1:791794371431:android:7a2a8380609de61d247dc2",
           firebase_cli_token:"1//0g-ubz1wdEX-PCgYIARAAGBASNgF-L9IrhmA36Ph_Q2GsqM0iBncWG-1GxUatwrJZ9kmgx-5LVJtzMBY3TYisMHTy5gBU90UXKA",
           testers: "hariharan@ideas2it.com,suganth.sakthivel@ideas2it.com,parthasarathy.elumalai@ideas2it.com,vijayakumar@ideas2it.com",
-          release_notes: "Spice-SL Mobile Development Build"
+          release_notes: release_notes
       )
   end
 
@@ -36,11 +39,14 @@ desc "Submit a new dev Build to firebase"
   desc "Submit a new dev Build to firebase"
      lane :fireStaging do
      gradle(task: "clean assemble",build_type: "staging" )
+     # Read release notes from file
+            release_notes_file_path = "./release_notes/staging/release_notes.txt"
+            release_notes = File.read(release_notes_file_path)
      firebase_app_distribution(
           app: "1:791794371431:android:7a2a8380609de61d247dc2",
           firebase_cli_token:"1//0g-ubz1wdEX-PCgYIARAAGBASNgF-L9IrhmA36Ph_Q2GsqM0iBncWG-1GxUatwrJZ9kmgx-5LVJtzMBY3TYisMHTy5gBU90UXKA",
-          testers: "hariharan@ideas2it.com,suganth.sakthivel@ideas2it.com,narayanan.b@ideas2it.com,nithyanandakumar@ideas2it.com,saddamhussain.mohammed@ideas2it.com,praveenrajr@ideas2it.com,vijayakumar@ideas2it.com,parthasarathy.elumalai@ideas2it.com,mdt-build@ideas2it.com",
-          release_notes: "Spice-SL Mobile Development Build"
+          testers: "hariharan@ideas2it.com,suganth.sakthivel@ideas2it.com,narayanan.b@ideas2it.com,nithyanandakumar@ideas2it.com,saddamhussain.mohammed@ideas2it.com,praveenrajr@ideas2it.com,vijayakumar@ideas2it.com,parthasarathy.elumalai@ideas2it.com,mdt-build@ideas2it.com,muthusamy.sudalaiyandi@ideas2it.com",
+           release_notes: release_notes
       )
   end
 
@@ -48,7 +54,7 @@ desc "Submit a new dev Build to firebase"
   lane :beta do
     gradle(task: "clean assembleRelease")
     crashlytics
-  
+
     # sh "your_script.sh"
     # You can also use other beta testing services here
   end

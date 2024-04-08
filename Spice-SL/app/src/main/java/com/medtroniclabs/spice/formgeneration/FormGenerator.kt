@@ -38,6 +38,10 @@ import androidx.core.widget.NestedScrollView
 import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.appextensions.gone
+import com.medtroniclabs.spice.appextensions.isGone
+import com.medtroniclabs.spice.appextensions.isVisible
+import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils.displayAge
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams.female
@@ -98,6 +102,7 @@ import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
 import com.medtroniclabs.spice.formgeneration.utility.DigitsInputFilter
 import com.medtroniclabs.spice.formgeneration.utility.FormFieldValidator
 import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.headPhoneNumber
+import com.medtroniclabs.spice.mappingkey.MemberRegistration
 import com.medtroniclabs.spice.mappingkey.MemberRegistration.gender
 import com.medtroniclabs.spice.mappingkey.MemberRegistration.phoneNumber
 import java.util.Calendar
@@ -2001,4 +2006,43 @@ class FormGenerator(
         }
     }
 
+    fun handlePregnancyCardBasedOnAge() {
+        val dateOfBirthView =
+            getViewByTag(MemberRegistration.dateOfBirth) as? AppCompatTextView ?: return
+        val dateOfBirth = dateOfBirthView.text?.toString()?.trim() ?: return
+
+        if (DateUtils.calculateAge(dateOfBirth, DateUtils.DATE_ddMMyyyy) !in 18..48) {
+            handleAgeBelowThreshold()
+        } else {
+            handleAgeAboveThreshold()
+        }
+    }
+
+    private fun handleAgeBelowThreshold() {
+        if (isResultAvaliable(gender, female)) {
+            val isPregnantRootView =
+                getViewByTag(MemberRegistration.isPregnant + rootSuffix) as? ViewGroup
+                    ?: return
+            removeIfContains(MemberRegistration.isPregnant)
+            (getViewByTag(MemberRegistration.isPregnant) as? ViewGroup)?.forEach { view ->
+                if (view is TextView) {
+                    view.isSelected = false
+                }
+            }
+            if (isPregnantRootView.isVisible()) {
+                isPregnantRootView.gone()
+            }
+        }
+    }
+
+    private fun handleAgeAboveThreshold() {
+        if (isResultAvaliable(gender, female)) {
+            val isPregnantRootView =
+                getViewByTag(MemberRegistration.isPregnant + rootSuffix) as? ViewGroup
+                    ?: return
+            if (isPregnantRootView.isGone()) {
+                isPregnantRootView.visible()
+            }
+        }
+    }
 }

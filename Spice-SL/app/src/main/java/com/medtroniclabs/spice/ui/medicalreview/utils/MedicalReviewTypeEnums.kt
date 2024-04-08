@@ -6,5 +6,8 @@ enum class MedicalReviewTypeEnums{
     medical_supplies,
     AboveFiveYears,
     cost,
-    patient_status
+    patient_status,
+    ObstetricExaminations,
+    PregnancyHistories,
+    BloodGroup
 }

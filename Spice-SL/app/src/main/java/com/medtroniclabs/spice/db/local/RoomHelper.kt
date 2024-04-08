@@ -46,9 +46,7 @@ interface RoomHelper {
     suspend fun saveVillage(villageEntityList: List<VillageEntity>)
     suspend fun getAllVillageEntity(): List<VillageEntity>
     suspend fun deleteAllVillages()
-
     suspend fun deleteAllHouseholds()
-
     suspend fun deleteAllHouseholdMembers()
     suspend fun saveMenus(menuEntity: MenuEntity)
     suspend fun deleteAllMenus()
@@ -119,4 +117,10 @@ interface RoomHelper {
         clinicalDate: String?
     )
     suspend fun getSummaryDetailMetaItems(type: String): List <ExaminationsComplaintItems>
+    suspend fun deleteExaminationsComplaintsForAnc(type: String)
+
+    fun getExaminationsComplaintsForAnc(
+        category: String
+    ): LiveData<List<ExaminationsComplaintItems>>
+
 }
