@@ -11,6 +11,12 @@ import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.APIResponse
 import com.medtroniclabs.spice.data.LocalSpinnerResponse
 import com.medtroniclabs.spice.data.VillageInfo
+import com.medtroniclabs.spice.data.offlinesync.model.HouseHold
+import com.medtroniclabs.spice.data.offlinesync.model.HouseHoldMember
+import com.medtroniclabs.spice.data.offlinesync.model.RequestGetSyncStatus
+import com.medtroniclabs.spice.data.offlinesync.model.SyncEntityList
+import com.medtroniclabs.spice.data.offlinesync.model.SyncResponse
+import com.medtroniclabs.spice.data.resource.RequestAllEntities
 import com.medtroniclabs.spice.db.entity.EntitiesName.HOUSEHOLD
 import com.medtroniclabs.spice.db.entity.EntitiesName.HOUSEHOLD_MEMBER
 import com.medtroniclabs.spice.db.entity.HouseholdEntity
@@ -20,16 +26,10 @@ import com.medtroniclabs.spice.db.local.RoomHelper
 import com.medtroniclabs.spice.db.response.HouseHoldEntityWithMemberCount
 import com.medtroniclabs.spice.db.response.HouseholdMemberCount
 import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration
-import com.medtroniclabs.spice.model.resource.RequestAllEntities
 import com.medtroniclabs.spice.network.ApiHelper
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.network.resource.ResourceState
-import com.medtroniclabs.spice.offlinesync.model.HouseHold
-import com.medtroniclabs.spice.offlinesync.model.HouseHoldMember
-import com.medtroniclabs.spice.offlinesync.model.RequestGetSyncStatus
-import com.medtroniclabs.spice.offlinesync.model.SyncEntityList
-import com.medtroniclabs.spice.offlinesync.model.SyncResponse
-import com.medtroniclabs.spice.offlinesync.utils.OfflineSyncStatus
+import com.medtroniclabs.spice.data.offlinesync.utils.OfflineSyncStatus
 import retrofit2.Response
 import javax.inject.Inject
 
@@ -213,7 +213,7 @@ class HouseHoldRepository @Inject constructor(
 
     suspend fun getHouseholdAndMembers(liveData: MutableLiveData<Resource<Boolean>>) {
         liveData.postLoading()
-        val villageNameId = mutableMapOf<String,Long>()
+        val villageNameId = mutableMapOf<String, Long>()
         roomHelper.getAllVillageEntity().forEach {
             villageNameId[it.name] = it.id
         }
@@ -223,13 +223,19 @@ class HouseHoldRepository @Inject constructor(
             val unSyncedResponse = getUnSyncedEntities()
             if (syncedResponse.isSuccessful && unSyncedResponse.isSuccessful) {
                 // Insert Synced Entities
-                insertHouseholdAndMembers(syncedResponse.body()?.entityList, villageNameId, OfflineSyncStatus.Success)
+                insertHouseholdAndMembers(
+                    syncedResponse.body()?.entityList,
+                    villageNameId,
+                    OfflineSyncStatus.Success
+                )
 
                 // Insert UnSynced Entities
-                val householdList = unSyncedResponse.body()?.entityList?.filter { it.type == HOUSEHOLD }
+                val householdList =
+                    unSyncedResponse.body()?.entityList?.filter { it.type == HOUSEHOLD }
                 val hhMap = insertHouseholds(householdList, villageNameId)
 
-                val householdMemberList = unSyncedResponse.body()?.entityList?.filter { it.type == HOUSEHOLD_MEMBER }
+                val householdMemberList =
+                    unSyncedResponse.body()?.entityList?.filter { it.type == HOUSEHOLD_MEMBER }
                 insertHouseholdMembers(householdMemberList, hhMap)
 
                 liveData.postSuccess(true)
@@ -242,7 +248,7 @@ class HouseHoldRepository @Inject constructor(
         }
     }
 
-    private suspend fun insertHouseholdAndMembers(households: List<HouseHold>?, villageNameId : Map<String,Long>, status: OfflineSyncStatus ) {
+    private suspend fun insertHouseholdAndMembers(households: List<HouseHold>?, villageNameId : Map<String,Long>, status: OfflineSyncStatus) {
         households?.forEach { household ->
             //Inserting Household
             val householdEntity = household.toHouseholdEntity(villageNameId, status)

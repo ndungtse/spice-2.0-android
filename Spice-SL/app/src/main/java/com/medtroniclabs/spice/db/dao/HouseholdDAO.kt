@@ -11,8 +11,8 @@ import androidx.sqlite.db.SimpleSQLiteQuery
 import com.medtroniclabs.spice.db.entity.HouseholdEntity
 import com.medtroniclabs.spice.db.response.HouseHoldEntityWithMemberCount
 import com.medtroniclabs.spice.db.response.HouseholdMemberCount
-import com.medtroniclabs.spice.offlinesync.model.HouseHold
-import com.medtroniclabs.spice.offlinesync.utils.OfflineSyncStatus
+import com.medtroniclabs.spice.data.offlinesync.model.HouseHold
+import com.medtroniclabs.spice.data.offlinesync.utils.OfflineSyncStatus
 
 @Dao
 interface HouseholdDAO {

@@ -1,14 +1,13 @@
 package com.medtroniclabs.spice.offlinesync
 
 import android.content.Context
-import android.util.Log
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.Data
 import androidx.work.WorkerParameters
-import com.medtroniclabs.spice.offlinesync.utils.OfflineConstant
-import com.medtroniclabs.spice.offlinesync.utils.OfflineConstant.KEY_REQUESTS_ID
-import com.medtroniclabs.spice.offlinesync.utils.OfflineUtils
+import com.medtroniclabs.spice.data.offlinesync.utils.OfflineConstant
+import com.medtroniclabs.spice.data.offlinesync.utils.OfflineConstant.KEY_REQUESTS_ID
+import com.medtroniclabs.spice.data.offlinesync.utils.OfflineUtils
 import com.medtroniclabs.spice.repo.AssessmentRepository
 import com.medtroniclabs.spice.repo.HouseHoldRepository
 import dagger.assisted.Assisted

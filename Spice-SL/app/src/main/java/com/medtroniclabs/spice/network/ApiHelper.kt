@@ -9,14 +9,14 @@ import com.medtroniclabs.spice.data.LoginResponse
 import com.medtroniclabs.spice.data.MetaDataResponse
 import com.medtroniclabs.spice.data.UserSymptomsEntity
 import com.medtroniclabs.spice.data.model.AboveFiveYearsSubmitRequest
+import com.medtroniclabs.spice.data.offlinesync.model.HouseHold
+import com.medtroniclabs.spice.data.offlinesync.model.RequestGetSyncStatus
+import com.medtroniclabs.spice.data.offlinesync.model.SyncResponse
+import com.medtroniclabs.spice.data.resource.RequestAllEntities
 import com.medtroniclabs.spice.model.PatientDetailReq
 import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.model.PatientsDataModel
 import com.medtroniclabs.spice.model.ReferralData
-import com.medtroniclabs.spice.model.resource.RequestAllEntities
-import com.medtroniclabs.spice.offlinesync.model.HouseHold
-import com.medtroniclabs.spice.offlinesync.model.RequestGetSyncStatus
-import com.medtroniclabs.spice.offlinesync.model.SyncResponse
 import okhttp3.MultipartBody
 import retrofit2.Response
 

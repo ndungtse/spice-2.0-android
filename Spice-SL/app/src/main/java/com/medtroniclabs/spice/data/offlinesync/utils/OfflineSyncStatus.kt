@@ -1,4 +1,4 @@
-package com.medtroniclabs.spice.offlinesync.utils
+package com.medtroniclabs.spice.data.offlinesync.utils
 
 enum class OfflineSyncStatus() {
     NotSynced,

@@ -15,7 +15,7 @@ import com.medtroniclabs.spice.databinding.FragmentOfflineSyncBinding
 import com.medtroniclabs.spice.model.landing.LoadingDialogFragment
 import com.medtroniclabs.spice.offlinesync.GetSyncStatusWorker
 import com.medtroniclabs.spice.offlinesync.PostSyncWorker
-import com.medtroniclabs.spice.offlinesync.utils.OfflineConstant.KEY_REQUESTS_ID
+import com.medtroniclabs.spice.data.offlinesync.utils.OfflineConstant.KEY_REQUESTS_ID
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.landing.adapter.OfflineSyncEntitiesAdapter
 import com.medtroniclabs.spice.ui.landing.viewmodel.OfflineSyncViewModel

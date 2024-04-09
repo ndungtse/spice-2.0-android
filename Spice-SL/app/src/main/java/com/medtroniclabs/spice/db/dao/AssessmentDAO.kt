@@ -7,7 +7,7 @@ import androidx.room.Query
 import androidx.room.Update
 import com.medtroniclabs.spice.db.entity.AssessmentEntity
 import com.medtroniclabs.spice.db.entity.SignsAndSymptomsEntity
-import com.medtroniclabs.spice.offlinesync.utils.OfflineSyncStatus
+import com.medtroniclabs.spice.data.offlinesync.utils.OfflineSyncStatus
 
 @Dao
 interface AssessmentDAO {

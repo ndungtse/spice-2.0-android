@@ -16,7 +16,7 @@ import com.medtroniclabs.spice.mappingkey.MemberRegistration
 import com.medtroniclabs.spice.mappingkey.MemberRegistration.otherFamilyMember
 import com.medtroniclabs.spice.model.assessment.AssessmentMemberDetails
 import com.medtroniclabs.spice.network.resource.Resource
-import com.medtroniclabs.spice.offlinesync.utils.OfflineSyncStatus
+import com.medtroniclabs.spice.data.offlinesync.utils.OfflineSyncStatus
 import javax.inject.Inject
 
 class HouseholdMemberRepository @Inject constructor(

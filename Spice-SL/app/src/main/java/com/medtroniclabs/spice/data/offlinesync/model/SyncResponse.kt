@@ -1,4 +1,4 @@
-package com.medtroniclabs.spice.offlinesync.model
+package com.medtroniclabs.spice.data.offlinesync.model
 
 data class SyncResponse(
     val message: String,

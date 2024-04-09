@@ -5,9 +5,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.model.landing.OfflineSyncEntityDetail
-import com.medtroniclabs.spice.offlinesync.utils.OfflineConstant.ASSESSMENTS
-import com.medtroniclabs.spice.offlinesync.utils.OfflineConstant.HOUSE_HOLDS
-import com.medtroniclabs.spice.offlinesync.utils.OfflineConstant.HOUSE_HOLD_MEMBERS
+import com.medtroniclabs.spice.data.offlinesync.utils.OfflineConstant.ASSESSMENTS
+import com.medtroniclabs.spice.data.offlinesync.utils.OfflineConstant.HOUSE_HOLDS
+import com.medtroniclabs.spice.data.offlinesync.utils.OfflineConstant.HOUSE_HOLD_MEMBERS
 import com.medtroniclabs.spice.repo.AssessmentRepository
 import com.medtroniclabs.spice.repo.HouseHoldRepository
 import dagger.hilt.android.lifecycle.HiltViewModel

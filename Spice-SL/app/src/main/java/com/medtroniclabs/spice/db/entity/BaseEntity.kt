@@ -3,7 +3,7 @@ package com.medtroniclabs.spice.db.entity
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import com.medtroniclabs.spice.common.SecuredPreference
-import com.medtroniclabs.spice.offlinesync.utils.OfflineSyncStatus
+import com.medtroniclabs.spice.data.offlinesync.utils.OfflineSyncStatus
 
 @Entity
 open class BaseEntity {

@@ -1,9 +1,9 @@
-package com.medtroniclabs.spice.offlinesync.model
+package com.medtroniclabs.spice.data.offlinesync.model
 
 import androidx.room.ColumnInfo
 import androidx.room.Ignore
 import com.medtroniclabs.spice.db.entity.HouseholdEntity
-import com.medtroniclabs.spice.offlinesync.utils.OfflineSyncStatus
+import com.medtroniclabs.spice.data.offlinesync.utils.OfflineSyncStatus
 
 data class HouseHold(
 

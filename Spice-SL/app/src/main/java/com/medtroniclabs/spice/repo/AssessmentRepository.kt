@@ -19,8 +19,8 @@ import com.medtroniclabs.spice.db.local.RoomHelper
 import com.medtroniclabs.spice.formgeneration.model.FormResponse
 import com.medtroniclabs.spice.model.assessment.AssessmentMemberDetails
 import com.medtroniclabs.spice.network.resource.Resource
-import com.medtroniclabs.spice.offlinesync.model.Assessment
-import com.medtroniclabs.spice.offlinesync.model.ProvanceDto
+import com.medtroniclabs.spice.data.offlinesync.model.Assessment
+import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
