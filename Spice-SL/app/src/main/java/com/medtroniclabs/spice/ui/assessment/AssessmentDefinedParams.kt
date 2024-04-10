@@ -12,7 +12,7 @@ object AssessmentDefinedParams {
     const val muacCode = "muacCode"
     const val hasCough = "hasCough"
     const val hasFever = "hasFever"
-    const val isDiarrhoea = "isDiarrhoea"
+    const val hasDiarrhoea = "hasDiarrhoea"
     const val Dispensed = "Dispensed"
     const val Amoxicillin = "Amoxicillin"
     const val ACT = "ACT"
@@ -36,7 +36,7 @@ object AssessmentDefinedParams {
     const val General_Danger_Signs = "General Danger Signs"
     const val NoOfDaysOfCough = "noOfDaysOfCough"
     const val NoOfDaysOfFever = "noOfDaysOfFever"
-    const val NoOfDaysDiarrhoea = "noOfDaysOfDiarrhoea"
+    const val NoOfDaysDiarrhoea = "numberOfDaysDiarrhoea"
     const val BreathPerMinute = "breathPerMinute"
     const val FB_MIN_MONTH = 2
     const val FB_MAX_MONTH = 12

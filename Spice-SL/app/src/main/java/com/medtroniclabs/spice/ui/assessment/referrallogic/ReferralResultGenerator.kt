@@ -1,7 +1,6 @@
 package com.medtroniclabs.spice.ui.assessment.referrallogic
 
 import com.medtroniclabs.spice.common.DateUtils
-import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.NoSymptoms
 import com.medtroniclabs.spice.model.assessment.AssessmentMemberDetails
 import com.medtroniclabs.spice.ui.assessment.AssessmentCommonUtils.getListActual
@@ -20,7 +19,7 @@ import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefined
 import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefinedParams.DiarrhoeaSigns
 import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefinedParams.HasFever
 import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefinedParams.IsBloodyDiarrhoea
-import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefinedParams.IsDiarrhoea
+import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefinedParams.hasDiarrhoea
 import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefinedParams.MaxDaysCough
 import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefinedParams.MaxDaysOfDiarrhoea
 import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefinedParams.MaxDaysOfFever
@@ -234,9 +233,9 @@ class ReferralResultGenerator {
      *  3. If ORS and Zinc is Dispensed, then patientStatus is On Treatment
      */
     private fun calculateDiarrhoeaStatus(map: HashMap<String, Any>) {
-        if (map.containsKey(IsDiarrhoea)) {
-            if ((map[IsDiarrhoea] is String && map[IsDiarrhoea] == Yes) ||
-                (map[IsDiarrhoea] is Boolean && map[IsDiarrhoea] == true)
+        if (map.containsKey(hasDiarrhoea)) {
+            if ((map[hasDiarrhoea] is String && map[hasDiarrhoea] == Yes) ||
+                (map[hasDiarrhoea] is Boolean && map[hasDiarrhoea] == true)
             ) {
                 if (map.containsKey(IsBloodyDiarrhoea) && ((map[IsBloodyDiarrhoea] is String && map[IsBloodyDiarrhoea] == Yes) ||
                             (map[IsBloodyDiarrhoea] is Boolean && map[IsBloodyDiarrhoea] == true))

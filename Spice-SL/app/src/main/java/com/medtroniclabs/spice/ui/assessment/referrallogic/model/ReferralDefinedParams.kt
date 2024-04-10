@@ -27,8 +27,8 @@ object ReferralDefinedParams {
     const val RdtPositive = "+Ve"
     const val RdtNegative = "-Ve"
     const val ACT = "act"
-    const val IsDiarrhoea = "isDiarrhoea"
-    const val NoOfDaysOfDiarrhoea = "noOfDaysOfDiarrhoea"
+    const val hasDiarrhoea = "hasDiarrhoea"
+    const val NoOfDaysOfDiarrhoea = "numberOfDaysDiarrhoea"
     const val MaxDaysOfDiarrhoea = 14
     const val Diarrhoea = "diarrhoea"
     const val IsBloodyDiarrhoea = "isBloodyDiarrhoea"

@@ -308,7 +308,7 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
     override fun onInformationHandling(
         id: String,
         noOfDays: Int,
-        enteredDays: Int,
+        enteredDays: Int?,
         resultMap: HashMap<String, Any>?
     ) {
     }

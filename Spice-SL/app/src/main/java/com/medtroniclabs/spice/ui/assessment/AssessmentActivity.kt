@@ -36,7 +36,10 @@ class AssessmentActivity : BaseActivity() {
         setMainContentView(
             binding.root,
             isToolbarVisible = true,
-            title = getString(R.string.assessment)
+            title = getString(R.string.assessment),
+            callback = {
+                backNavigation()
+            }
         )
         getIntentValue()
         loadFragment()
@@ -48,6 +51,18 @@ class AssessmentActivity : BaseActivity() {
         val locationManager = SpiceLocationManager(this)
         locationManager.getCurrentLocation {
             viewModel.setCurrentLocation(it)
+        }
+    }
+
+    private fun backNavigation() {
+        showErrorDialogue(
+            getString(R.string.alert),
+            getString(R.string.exit_reason),
+            isNegativeButtonNeed = true
+        ) { isPositive ->
+            if (isPositive) {
+                this@AssessmentActivity.finish()
+            }
         }
     }
 

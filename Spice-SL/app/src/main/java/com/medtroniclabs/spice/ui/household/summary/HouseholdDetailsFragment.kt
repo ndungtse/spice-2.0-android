@@ -39,7 +39,7 @@ class HouseholdDetailsFragment : Fragment() {
 
     private fun attachObserver() {
         householdSummaryViewModel.householdMemberCountLiveData.observe(viewLifecycleOwner) {
-            binding.tvLabel.text = getString(R.string.member_registration)
+            binding.tvLabel.text = getString(R.string.members_registered)
             binding.tvValue.text =
                 requireContext().getString(
                     R.string.people_registered,

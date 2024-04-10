@@ -202,30 +202,32 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
     override fun onInformationHandling(
         id: String,
         noOfDays: Int,
-        enteredDays: Int,
+        enteredDays: Int?,
         resultMap: HashMap<String, Any>?
     ) {
         when (id) {
             BreathPerMinute -> {
-                viewModel.memberDetailsLiveData.value?.data?.let { data ->
-                    getYearMonthAndWeek(data.dateOfBirth, DATE_FORMAT_yyyyMMddHHmmssZZZZZ).let { result ->
-                        val year = result.first ?: 0
-                        val month = result.second ?: 0
-                        if ((year == 0 && month > FB_MIN_MONTH && month < FB_MAX_MONTH) && enteredDays >= FB_MAX_BREATHING) {
-                            displayDaysInformation(id, View.VISIBLE)
-                            getAmoxicillinStatus()
-                        } else if ((month == FB_MAX_MONTH || year in FB_MIN_YEAR..FB_MAX_YEAR) && enteredDays >= FB_MIN_BREATHING) {
-                            displayDaysInformation(id, View.VISIBLE)
-                            getAmoxicillinStatus()
-                        } else {
-                            displayDaysInformation(id, View.INVISIBLE)
-                            dismissAmoxicillinStatus(resultMap)
+                enteredDays?.let {
+                    viewModel.memberDetailsLiveData.value?.data?.let { data ->
+                        getYearMonthAndWeek(data.dateOfBirth, DATE_FORMAT_yyyyMMddHHmmssZZZZZ).let { result ->
+                            val year = result.first ?: 0
+                            val month = result.second ?: 0
+                            if ((year == 0 && month > FB_MIN_MONTH && month < FB_MAX_MONTH) && enteredDays >= FB_MAX_BREATHING) {
+                                displayDaysInformation(id, View.VISIBLE)
+                                getAmoxicillinStatus()
+                            } else if ((month == FB_MAX_MONTH || year in FB_MIN_YEAR..FB_MAX_YEAR) && enteredDays >= FB_MIN_BREATHING) {
+                                displayDaysInformation(id, View.VISIBLE)
+                                getAmoxicillinStatus()
+                            } else {
+                                displayDaysInformation(id, View.INVISIBLE)
+                                dismissAmoxicillinStatus(resultMap)
+                            }
                         }
                     }
                 }
             }
             else -> {
-                if (enteredDays > noOfDays) {
+                if (enteredDays!=null && enteredDays > noOfDays) {
                     updateColorCode(id, ContextCompat.getColor(requireContext(), R.color.medium_high_risk_color))
                 } else {
                     updateColorCode(id, ContextCompat.getColor(requireContext(), R.color.secondary_black))

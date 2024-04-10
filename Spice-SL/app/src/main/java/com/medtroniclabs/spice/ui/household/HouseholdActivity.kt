@@ -16,11 +16,12 @@ import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.household.fragment.HouseHoldRegistrationFragment
 import com.medtroniclabs.spice.ui.household.summary.HouseholdSummaryActivity
 import com.medtroniclabs.spice.ui.household.viewmodel.HouseRegistrationViewModel
+import com.medtroniclabs.spice.ui.landing.OnDialogDismissListener
 import com.medtroniclabs.spice.ui.member.MemberRegistrationFragment
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class HouseholdActivity : BaseActivity() {
+class HouseholdActivity : BaseActivity(), OnDialogDismissListener {
 
     private lateinit var binding: ActivityHouseholdRegistrationBinding
 
@@ -32,11 +33,26 @@ class HouseholdActivity : BaseActivity() {
         setMainContentView(
             binding.root,
             isToolbarVisible = true,
-            title = getString(R.string.household_registration)
+            title = getString(R.string.household_registration),
+            callback = {
+                backNavigation()
+            }
         )
         initializeView()
         attachObserver()
         getCurrentLocation()
+    }
+
+    private fun backNavigation() {
+        showErrorDialogue(
+            getString(R.string.alert),
+            getString(R.string.exit_reason),
+            isNegativeButtonNeed = true
+        ) { isPositive ->
+            if (isPositive) {
+                this@HouseholdActivity.finish()
+            }
+        }
     }
 
     private fun getCurrentLocation() {
@@ -141,6 +157,10 @@ class HouseholdActivity : BaseActivity() {
                 }
             }
         }
+    }
+
+    override fun onDialogDismissListener() {
+        finish()
     }
 
 }

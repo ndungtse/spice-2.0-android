@@ -1,28 +1,24 @@
 package com.medtroniclabs.spice.ui.household.fragment
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.appcompat.widget.AppCompatSpinner
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.CommonUtils.getBooleanAsString
-import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.EntityMapper.getResultSpinnerMapList
-import com.medtroniclabs.spice.data.LocalSpinnerResponse
 import com.medtroniclabs.spice.databinding.FragmentHouseHoldRegistrationBinding
 import com.medtroniclabs.spice.db.entity.HouseholdEntity
-import com.medtroniclabs.spice.db.entity.VillageEntity
 import com.medtroniclabs.spice.formgeneration.FormGenerator
 import com.medtroniclabs.spice.formgeneration.listener.FormEventListener
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.model.FormResponse
-import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
 import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.bedNetCount
 import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.headPhoneNumber
 import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.householdName
@@ -38,16 +34,21 @@ import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.household.HouseholdDefinedParams.REGISTRATION
 import com.medtroniclabs.spice.ui.household.viewmodel.HouseRegistrationViewModel
+import com.medtroniclabs.spice.ui.landing.OnDialogDismissListener
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class HouseHoldRegistrationFragment : Fragment(), View.OnClickListener, FormEventListener {
 
     lateinit var binding: FragmentHouseHoldRegistrationBinding
-
     private lateinit var formGenerator: FormGenerator
-
+    private var onDismissListener: OnDialogDismissListener? = null
     private val householdRegistrationViewModel: HouseRegistrationViewModel by activityViewModels()
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        onDismissListener = context as OnDialogDismissListener
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -235,6 +236,9 @@ class HouseHoldRegistrationFragment : Fragment(), View.OnClickListener, FormEven
                     (activity as HouseholdActivity).loadFragment(2)
                 }*/
             }
+            R.id.btnCancel -> {
+                onDismissListener?.onDialogDismissListener()
+            }
         }
     }
 
@@ -284,7 +288,7 @@ class HouseHoldRegistrationFragment : Fragment(), View.OnClickListener, FormEven
     override fun onInformationHandling(
         id: String,
         noOfDays: Int,
-        enteredDays: Int,
+        enteredDays: Int?,
         resultMap: HashMap<String, Any>?
     ) {
 

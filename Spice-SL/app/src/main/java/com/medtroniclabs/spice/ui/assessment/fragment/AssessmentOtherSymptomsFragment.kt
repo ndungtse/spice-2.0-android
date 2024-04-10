@@ -151,10 +151,10 @@ class AssessmentOtherSymptomsFragment : BaseFragment(), FormEventListener, View.
     }
 
     override fun onInformationHandling(
-        id: String, noOfDays: Int, enteredDays: Int,
+        id: String, noOfDays: Int, enteredDays: Int?,
         resultMap: HashMap<String, Any>?
     ) {
-        if (enteredDays > noOfDays) {
+        if (enteredDays!=null && enteredDays > noOfDays) {
             updateColorCode(
                 id,
                 ContextCompat.getColor(requireContext(), R.color.medium_high_risk_color)

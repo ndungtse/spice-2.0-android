@@ -209,10 +209,10 @@ class FormGenerator(
             binding.etUserInput.addTextChangedListener { input ->
                 input?.let {
                     val enteredValue= input.trim().toString().toIntOrNull()
+                    noOfDays?.let {days ->
+                        listener.onInformationHandling(id, days, enteredValue, resultHashMap)
+                    }
                     if (enteredValue!=null) {
-                        noOfDays?.let {days ->
-                            listener.onInformationHandling(id, days, enteredValue, resultHashMap)
-                        }
                         resultHashMap[id] = enteredValue
                     } else {
                         if (resultHashMap.containsKey(id))
@@ -1740,7 +1740,7 @@ class FormGenerator(
                             requestFocusView(
                                 data, getString(
                                     R.string.start_with_validation,
-                                    startsWith?.joinToString(separator = " ${getString(R.string.or)}") ?: ""
+                                    startsWith?.joinToString(separator = " ${getString(R.string.or)} ") ?: ""
                                 )
                             )
                         } else if (!phoneNumberConatinMaxLength(maxLength, it) || !FormFieldValidator.isValidMobileNumber(it)) {

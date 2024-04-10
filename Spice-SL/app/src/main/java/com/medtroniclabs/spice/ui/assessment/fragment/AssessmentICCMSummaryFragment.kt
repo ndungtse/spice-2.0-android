@@ -46,13 +46,12 @@ import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.NoOfDaysOfF
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.OrsDispensedStatus
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.ReferredPHUSite
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.ReferredPHUSiteID
-import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.Summary
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.ZincDispensedStatus
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.hasCough
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.hasFever
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.isBreastfeed
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.isConvulsionPastFewDays
-import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.isDiarrhoea
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.hasDiarrhoea
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.isUnusualSleepy
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.isVomiting
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.muacCode
@@ -104,8 +103,8 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
 
     private fun getClinicTakenData(): ArrayList<Map<String, Any>> {
         val flowList = ArrayList<Map<String, Any>>()
-        flowList.add(getOptionMap(getString(R.string.yes), getString(R.string.anc)))
-        flowList.add(getOptionMap(getString(R.string.no), getString(R.string.anc)))
+        flowList.add(getOptionMap(getString(R.string.yes), getString(R.string.yes)))
+        flowList.add(getOptionMap(getString(R.string.no), getString(R.string.no)))
         return flowList
     }
 
@@ -285,7 +284,7 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
                     )
                 }
 
-                isDiarrhoea -> {
+                hasDiarrhoea -> {
                     if (item.value == Yes) {
                         bindICCMSummaryView(
                             item.title,
