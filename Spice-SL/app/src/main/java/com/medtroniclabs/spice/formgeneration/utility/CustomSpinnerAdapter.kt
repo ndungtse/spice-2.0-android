@@ -90,4 +90,11 @@ class CustomSpinnerAdapter(context: Context,val translate:Boolean =false) :
         }
         return -1
     }
+
+    fun removeItemById(id: String) {
+        val removeIndex  = itemList.indexOfFirst { it[DefinedParams.ID] == id }
+        if (removeIndex != -1) {
+            itemList.removeAt(removeIndex)
+        }
+    }
 }

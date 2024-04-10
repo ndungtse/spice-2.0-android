@@ -280,14 +280,18 @@ class MemberRegistrationFragment : Fragment(), FormEventListener, View.OnClickLi
     }
 
     private fun handleRelationshipSpinner() {
+        val view =
+            formGenerator.getViewByTag(DefinedParams.HouseholdHeadRelationship) as AppCompatSpinner
         householdRegistrationViewModel.householdEntityDetail?.let {
             if (it.id == 0L) {
-                val view =
-                    formGenerator.getViewByTag(DefinedParams.HouseholdHeadRelationship) as AppCompatSpinner
                 val index =
                     (view.adapter as CustomSpinnerAdapter).getIndexOfItemById(HouseholdHead)
                 view.setSelection(index, true)
                 view.isEnabled = false
+            }
+        } ?: kotlin.run {
+            if (householdRegistrationViewModel.memberID == -1L) {
+                (view.adapter as CustomSpinnerAdapter).removeItemById(HouseholdHead)
             }
         }
     }
