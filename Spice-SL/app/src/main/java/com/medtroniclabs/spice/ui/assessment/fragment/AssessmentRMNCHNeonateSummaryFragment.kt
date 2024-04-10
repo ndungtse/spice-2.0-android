@@ -5,43 +5,71 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.DateUtils
-import com.medtroniclabs.spice.common.StringConverter
+import com.medtroniclabs.spice.common.StringConverter.stringToMap
 import com.medtroniclabs.spice.common.ViewUtils
-import com.medtroniclabs.spice.databinding.FragmentRmnchSummaryBinding
+import com.medtroniclabs.spice.databinding.FragmentAssessmentRmnchNeonateSummaryBinding
 import com.medtroniclabs.spice.formgeneration.config.ViewType
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
+import com.medtroniclabs.spice.formgeneration.model.FormResponse
+import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.assessment.AssessmentCommonUtils
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.getValueFromMap
+import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentRMNCHNeonateViewModel
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
 
-class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
+class AssessmentRMNCHNeonateSummaryFragment : BaseFragment(), View.OnClickListener {
 
-    lateinit var binding: FragmentRmnchSummaryBinding
+    private lateinit var binding: FragmentAssessmentRmnchNeonateSummaryBinding
+
+    private val assessmentRMNCHNeonateViewModel: AssessmentRMNCHNeonateViewModel by activityViewModels()
 
     private val viewModel: AssessmentViewModel by activityViewModels()
 
     private var datePickerDialog: DatePickerDialog? = null
 
+
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
-        binding = FragmentRmnchSummaryBinding.inflate(inflater, container, false)
+        binding = FragmentAssessmentRmnchNeonateSummaryBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initSummaryViewByWorkFlowName()
+        initView()
         setListener()
+    }
+
+    private fun initView() {
+        assessmentRMNCHNeonateViewModel.assessmentSaveLiveData.value?.data?.let {
+            val map = stringToMap(it.assessmentDetails)
+            if (map.containsKey(RMNCH.PNC)) {
+                addDefaultSummaryView(map)
+                showSummaryDetail(
+                    map,
+                    RMNCH.PNC,
+                    binding.motherParentLayout,
+                    viewModel.formLayoutsLiveData.value
+                )
+            }
+            if (map.containsKey(RMNCH.PNCNeonatal)) {
+                showSummaryDetail(
+                    map,
+                    RMNCH.PNCNeonatal,
+                    binding.neonateParentLayout,
+                    assessmentRMNCHNeonateViewModel.formLayoutsLiveData.value
+                )
+            }
+        }
     }
 
     private fun setListener() {
@@ -53,33 +81,38 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
         }
     }
 
-    private fun initSummaryViewByWorkFlowName() {
-        viewModel.assessmentStringLiveData.value?.let { mapString ->
-            val map = StringConverter.stringToMap(mapString)
-            binding.parentLayout.removeAllViews()
-            addDefaultSummaryView(map)
-            viewModel.formLayoutsLiveData.value?.data?.formLayout?.filter { it.isSummary == true }
-                ?.forEach { data ->
-                    with(data) {
-                        binding.parentLayout.addView(
-                            AssessmentCommonUtils.addViewSummaryLayout(
-                                titleSummary ?: (titleCulture ?: title),
-                                getValueFromMap(
-                                    map,
-                                    id,
-                                    viewType,
-                                    viewModel.workflowName,
-                                    isBooleanAnswer,
-                                    Triple(getString(R.string.yes),getString(R.string.no),getString(R.string.hyphen_symbol))
-                                ),
-                                null,
-                                requireContext()
-                            )
+    private fun showSummaryDetail(
+        map: Map<*, *>,
+        pnc: String,
+        parentLayout: LinearLayout,
+        value: Resource<FormResponse>?
+    ) {
+        value?.data?.formLayout?.filter { it.family == pnc && it.isSummary == true }
+            ?.forEach { formlayout ->
+                formlayout.apply {
+                    parentLayout.addView(
+                        AssessmentCommonUtils.addViewSummaryLayout(
+                            titleSummary ?: (titleCulture ?: title),
+                            getValueFromMap(
+                                map as HashMap<String, Any>,
+                                id,
+                                viewType,
+                                pnc,
+                                isBooleanAnswer,
+                                Triple(
+                                    getString(R.string.yes),
+                                    getString(R.string.no),
+                                    getString(R.string.hyphen_symbol)
+                                )
+                            ),
+                            null,
+                            requireContext()
                         )
-                    }
+                    )
                 }
-        }
+            }
     }
+
 
     private fun addDefaultSummaryView(map: HashMap<String, Any>) {
 
@@ -90,25 +123,7 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
             else -> getString(R.string.hyphen_symbol)
         }
 
-        if (viewModel.workflowName == RMNCH.ANC) {
-            binding.parentLayout.addView(
-                AssessmentCommonUtils.addViewSummaryLayout(
-                    getString(R.string.gestational_age),
-                    getValueFromMap(
-                        map,
-                        RMNCH.gestationalAge,
-                        ViewType.VIEW_TYPE_FORM_EDITTEXT,
-                        viewModel.workflowName,
-                        false,
-                        Triple(getString(R.string.yes),getString(R.string.no),getString(R.string.hyphen_symbol))
-                    ),
-                    null,
-                    requireContext()
-                )
-            )
-        }
-
-        binding.parentLayout.addView(
+        binding.motherParentLayout.addView(
             AssessmentCommonUtils.addViewSummaryLayout(
                 title,
                 getValueFromMap(
@@ -117,7 +132,11 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
                     ViewType.VIEW_TYPE_FORM_EDITTEXT,
                     viewModel.workflowName,
                     false,
-                    Triple(getString(R.string.yes),getString(R.string.no),getString(R.string.hyphen_symbol))
+                    Triple(
+                        getString(R.string.yes),
+                        getString(R.string.no),
+                        getString(R.string.hyphen_symbol)
+                    )
                 ),
                 null,
                 requireContext()
@@ -126,17 +145,16 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
 
     }
 
-
-    companion object {
-        const val TAG: String = "AssessmentRMNCHSummaryFragment"
-    }
-
     override fun onClick(v: View) {
         when (v.id) {
             R.id.btnDone -> {
                 if (binding.etNextFollowUpDate.text.isNotEmpty()) {
                     viewModel.addOtherDetailsToType(AssessmentDefinedParams.RMNCH.lowercase())
-                    viewModel.updateOtherAssessmentDetails()
+                    assessmentRMNCHNeonateViewModel.updateOtherAssessmentDetails(
+                        viewModel.otherAssessmentDetails,
+                        viewModel.getCurrentLocation(),
+                        viewModel.assessmentUpdateLiveData
+                    )
                 }
             }
 
@@ -171,6 +189,4 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
             }
         }
     }
-
-
 }

@@ -18,6 +18,7 @@ import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentOtherSymptomSumm
 import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentOtherSymptomsFragment
 import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentRMNCHFragment
 import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentRMNCHNeonateFragment
+import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentRMNCHNeonateSummaryFragment
 import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentRMNCHSummaryFragment
 import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentTBFragment
 import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentTBSummaryFragment
@@ -164,6 +165,13 @@ class AssessmentActivity : BaseActivity() {
         replaceFragmentInId<AssessmentRMNCHNeonateFragment>(
             binding.formsFragmentContainer.id,
             tag = AssessmentRMNCHNeonateFragment::class.simpleName
+        )
+    }
+
+    fun replaceAssessmentRMNCHNeonateSummaryFragment() {
+        replaceFragmentInId<AssessmentRMNCHNeonateSummaryFragment>(
+            binding.formsFragmentContainer.id,
+            tag = AssessmentRMNCHNeonateSummaryFragment::class.simpleName
         )
     }
 

@@ -10,6 +10,7 @@ import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.setSuccess
 import com.medtroniclabs.spice.common.CommonUtils
+import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.EntityMapper
 import com.medtroniclabs.spice.databinding.FragmentAssessmentRmnchBinding
 import com.medtroniclabs.spice.formgeneration.FormGenerator
@@ -21,11 +22,15 @@ import com.medtroniclabs.spice.formgeneration.ui.FormResultComposer
 import com.medtroniclabs.spice.formgeneration.utility.CheckBoxDialog
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
+import com.medtroniclabs.spice.ui.MenuConstants
 import com.medtroniclabs.spice.ui.assessment.AssessmentActivity
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.PlaceOfDelivery
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
 
 @AndroidEntryPoint
 class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
@@ -228,6 +233,7 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
                     viewModel.pncMotherDetailMap = second
                     (requireActivity() as AssessmentActivity).replaceAssessmentRMNCHNeonateFragment()
                 }
+
                 else -> {
                     viewModel.memberDetailsLiveData.value?.data?.let { memberDetail ->
                         viewModel.handlePregnancy(
@@ -237,11 +243,58 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
                             viewModel.memberClinicalLiveData.value
                         )
                     }
-                    viewModel.saveAssessment(second, null)
+                    calculateGestationalAge(second, name)
+                    viewModel.saveAssessment(second, null,getMenuName(viewModel.workflowName))
                 }
             }
         }
     }
+
+    private fun getMenuName(workflowName: String?): String {
+        when(workflowName){
+            RMNCH.ANC -> return RMNCH.ANC_MENU
+            RMNCH.ChildHoodVisit -> return RMNCH.CHILD_MENU
+            RMNCH.PNC -> return RMNCH.PNC_MENU
+        }
+        return MenuConstants.RMNCH_MENU_ID
+    }
+
+    private fun calculateGestationalAge(details: HashMap<String, Any>, name: String) {
+        if (details.containsKey(name) && details[name] is Map<*, *>) {
+            val second = details[name] as HashMap<String, Any>
+            if (second.containsKey(RMNCH.lastMenstrualPeriod)) {
+                val lastMenstrualDate = second[RMNCH.lastMenstrualPeriod]
+                if (lastMenstrualDate is String) {
+                    val calendar = getLastMenstrualDate(lastMenstrualDate)
+                    second[RMNCH.gestationalAge] = "${
+                        DateUtils.calculateGestationalAge(
+                            calendar
+                        ).first
+                    } ${getString(R.string.weeks)}"
+                }
+            }
+        }
+    }
+
+    private fun getLastMenstrualDate(clinicalDate: String): Calendar {
+        // Define the format of the input date string
+        val lastMenstrualDateString = DateUtils.convertDateFormat(
+            clinicalDate,
+            DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+            DateUtils.DATE_ddMMyyyy
+        )
+        return Calendar.getInstance().apply {
+            time = getDateFormat().parse(lastMenstrualDateString)
+        }
+    }
+
+    private fun getDateFormat(): SimpleDateFormat {
+        return SimpleDateFormat(
+            DateUtils.DATE_ddMMyyyy,
+            Locale.getDefault()
+        )
+    }
+
 
     override fun onRenderingComplete() {
         viewModel.memberClinicalLiveData.value?.clinicalDate?.let {

@@ -14,7 +14,6 @@
     "title": "Date of Delivery",
     "viewType": "DatePicker",
     "isMandatory": true,
-    "isSummary": true,
     "hint": "Select Date",
     "errorMessage": "Please select a valid option",
     "visibility": "visible"
@@ -25,7 +24,6 @@
     "id": "noOfNeonate",
     "viewType": "EditText",
     "orderId": 6,
-    "isSummary": true,
     "hint": "Enter number",
     "titleSummary": "No of Neonate",
     "isEnabled": true,
@@ -34,18 +32,44 @@
     "errorMessage": "Please enter a valid option"
   },
   {
-    "id": "dangerSigns",
+    "id": "pncMotherSigns",
     "family": "pncMother",
-    "fieldName": "dangerSigns",
+    "fieldName": "pncMotherSigns",
     "orderId": 2,
     "title": "Is the expectant mother experiencing any of these danger signs?",
-    "viewType": "Spinner",
+    "viewType": "DialogCheckbox",
     "isMandatory": false,
     "isSummary": true,
+    "titleSummary": "Danger Signs in mother",
     "hint": "Select Symptoms",
-    "localDataCache": "expectantMotherDangerSign",
+    "localDataCache": "pncMotherSigns",
     "errorMessage": "Please select a valid option",
-    "visibility": "visible"
+    "visibility": "visible",
+    "condition": [
+      {
+        "eq": "Other",
+        "targetId": "otherPncMotherSigns",
+        "visibility": "visible"
+      }
+    ]
+  },
+  {
+    "errorMessage": "Please enter a valid sign",
+    "family": "pncMother",
+    "fieldName": "Other Signs",
+    "hint": "Enter Other Sign",
+    "id": "otherPncMotherSigns",
+    "inputType": 96,
+    "isEnabled": true,
+    "isMandatory": true,
+    "isNeededDefault": true,
+    "isNotDefault": false,
+    "orderId": 5,
+    "isSummary": false,
+    "title": "Other Signs",
+    "viewType": "EditText",
+    "isInfo": "gone",
+    "visibility": "gone"
   },
   {
     "family": "pncMother",

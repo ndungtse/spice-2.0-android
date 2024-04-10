@@ -12,7 +12,6 @@ import com.medtroniclabs.spice.common.DateUtils.DATE_ddMMyyyy
 import com.medtroniclabs.spice.common.DateUtils.calculateEstimatedDeliveryDate
 import com.medtroniclabs.spice.common.DateUtils.calculateGestationalAge
 import com.medtroniclabs.spice.databinding.FragmentBioDataBinding
-import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
 import com.medtroniclabs.spice.db.entity.MemberClinicalEntity
 import com.medtroniclabs.spice.formgeneration.extension.capitalizeFirstChar
 import com.medtroniclabs.spice.model.assessment.AssessmentMemberDetails
@@ -21,6 +20,7 @@ import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.assessment.AssessmentCommonUtils
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
+import java.text.DecimalFormat
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -85,6 +85,7 @@ class BioDataFragment : BaseFragment() {
 
             RMNCH.PNC -> {
                 title = getString(R.string.pnc)
+                showPncRelatedInformation(entity)
             }
 
             RMNCH.ChildHoodVisit -> {
@@ -104,6 +105,31 @@ class BioDataFragment : BaseFragment() {
                 binding.root.context
             )
         )
+    }
+
+    private fun showPncRelatedInformation(entity: MemberClinicalEntity?) {
+        entity?.apply {
+            binding.llPatientInfo.addView(
+                AssessmentCommonUtils.addViewSummaryLayout(
+                    title = getString(R.string.date_of_delivery),
+                    value = DateUtils.convertDateFormat(
+                        clinicalDate,
+                        DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+                        DATE_ddMMyyyy
+                    ),
+                    context = binding.llPatientInfo.context
+                )
+            )
+            if (numberOfNeonate != null){
+                binding.llPatientInfo.addView(
+                    AssessmentCommonUtils.addViewSummaryLayout(
+                        title = getString(R.string.no_of_neonates),
+                        value = DecimalFormat("##.#").format(numberOfNeonate),
+                        context = binding.llPatientInfo.context
+                    )
+                )
+            }
+        }
     }
 
     private fun showAncRelatedInformation(entity: MemberClinicalEntity?) {

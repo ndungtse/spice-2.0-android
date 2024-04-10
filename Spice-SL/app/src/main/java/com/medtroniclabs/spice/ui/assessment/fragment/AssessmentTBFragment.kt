@@ -115,7 +115,7 @@ class AssessmentTBFragment : BaseFragment(), FormEventListener, View.OnClickList
                 )
             }
             result?.second?.let {
-                viewModel.saveAssessment(it, null)
+                viewModel.saveAssessment(it, null,viewModel.menuId)
             }
         }
     }

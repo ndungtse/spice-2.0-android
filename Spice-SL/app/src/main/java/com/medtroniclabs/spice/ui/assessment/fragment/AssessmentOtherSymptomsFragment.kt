@@ -137,7 +137,7 @@ class AssessmentOtherSymptomsFragment : BaseFragment(), FormEventListener, View.
             }
 
             result?.second?.let {
-                viewModel.saveAssessment(it, referralResult)
+                viewModel.saveAssessment(it, referralResult,viewModel.menuId)
             }
         }
     }

@@ -263,7 +263,7 @@
     <string name="date_of_labour_onset">Date of Labour onset</string>
     <string name="delivery_type">Delivery Type</string>
     <string name="delivery_at">Delivery At</string>
-    <string name="no_of_deonates">No of Neonates</string>
+    <string name="no_of_neonates">No of Neonates</string>
     <string name="time_of_delivery">Time of Delivery</string>
     <string name="time_of_labour_onset">Time of Labour Onset</string>
     <string name="delivery_by">Delivery By</string>
@@ -275,6 +275,10 @@
     <string name="minutes">Minutes</string>
     <string name="member_registered_successfully">Member registration \n completed successfully.</string>
     <string name="patient_with_id">Patient ID : %1$s</string>
+    <string name="result_mother">Result - Mother</string>
+    <string name="result_neonate">Result - Neonatal</string>
+    <string name="anc_visit">ANC Visit</string>
+    <string name="pnc_visit">PNC Visit</string>
 
     <string name="title_mother">Mother</string>
     <string name="signs_Symptoms_observed">Signs/Symptoms observed</string>

@@ -11,6 +11,7 @@
     "family": "anc",
     "fieldName": "lastMenstrualPeriod",
     "orderId": 2,
+    "disableFutureDate": true,
     "title": "Last Menstrual Period",
     "viewType": "DatePicker",
     "isMandatory": true,

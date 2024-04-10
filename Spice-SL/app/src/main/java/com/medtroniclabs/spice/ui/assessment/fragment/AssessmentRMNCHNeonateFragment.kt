@@ -17,10 +17,12 @@ import com.medtroniclabs.spice.formgeneration.FormGenerator
 import com.medtroniclabs.spice.formgeneration.listener.FormEventListener
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.model.FormResponse
+import com.medtroniclabs.spice.formgeneration.utility.CheckBoxDialog
 import com.medtroniclabs.spice.mappingkey.MemberRegistration
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.BaseFragment
+import com.medtroniclabs.spice.ui.assessment.AssessmentActivity
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentRMNCHNeonateViewModel
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
@@ -133,19 +135,19 @@ class AssessmentRMNCHNeonateFragment : BaseFragment(), View.OnClickListener,
         assessmentRMNCHNeonateViewModel.memberFormLayoutsLiveData.observe(viewLifecycleOwner) { resources ->
             when (resources.state) {
                 ResourceState.LOADING -> {
-                    (activity as? BaseActivity)?.showLoading()
+                    showProgress()
                 }
 
                 ResourceState.SUCCESS -> {
-                    (activity as? BaseActivity)?.hideLoading()
+                    hideProgress()
                     resources.data?.let { data ->
                         childFormGenerator.populateViews(data.formLayout)
-                        disableDateOfBirth()
+                        //disableDateOfBirth()
                     }
                 }
 
                 ResourceState.ERROR -> {
-                    (activity as? BaseActivity)?.hideLoading()
+                    hideProgress()
                 }
             }
         }
@@ -153,18 +155,18 @@ class AssessmentRMNCHNeonateFragment : BaseFragment(), View.OnClickListener,
         assessmentRMNCHNeonateViewModel.assessmentSaveLiveData.observe(viewLifecycleOwner) { resources ->
             when (resources.state) {
                 ResourceState.LOADING -> {
-                    (activity as? BaseActivity)?.showLoading()
+                    showProgress()
                 }
 
                 ResourceState.SUCCESS -> {
-                    (activity as? BaseActivity)?.hideLoading()
+                    hideProgress()
                     resources.data?.let { _ ->
-                        (activity as? BaseActivity?)?.finish()
+                        (requireActivity() as AssessmentActivity).replaceAssessmentRMNCHNeonateSummaryFragment()
                     }
                 }
 
                 ResourceState.ERROR -> {
-                    (activity as? BaseActivity)?.hideLoading()
+                    hideProgress()
                 }
             }
         }
@@ -233,6 +235,9 @@ class AssessmentRMNCHNeonateFragment : BaseFragment(), View.OnClickListener,
         serverViewModel: FormLayout,
         resultMap: Any?
     ) {
+        CheckBoxDialog.newInstance(id, resultMap) { map ->
+            formGenerator.validateCheckboxDialogue(id, serverViewModel, map)
+        }.show(childFragmentManager, CheckBoxDialog.TAG)
     }
 
     override fun onInstructionClicked(

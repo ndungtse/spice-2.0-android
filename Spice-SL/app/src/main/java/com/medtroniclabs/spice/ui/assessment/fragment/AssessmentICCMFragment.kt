@@ -163,7 +163,7 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
             }
 
             result?.second?.let {
-                viewModel.saveAssessment(it, referralResult)
+                viewModel.saveAssessment(it, referralResult,viewModel.menuId)
             }
         }
     }

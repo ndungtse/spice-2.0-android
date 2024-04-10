@@ -1,7 +1,6 @@
 package com.medtroniclabs.spice.ui.assessment.viewmodel
 
 import android.location.Location
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -18,10 +17,8 @@ import com.medtroniclabs.spice.model.assessment.AssessmentMemberDetails
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.repo.AssessmentRepository
 import com.medtroniclabs.spice.repo.HouseholdMemberRepository
-import com.medtroniclabs.spice.ui.MenuConstants
 import com.medtroniclabs.spice.ui.MenuConstants.ICCM_MENU_ID
 import com.medtroniclabs.spice.ui.MenuConstants.OTHER_SYMPTOMS
-import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.IsClinicTaken
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.otherSymptoms
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.signsAndSymptoms
@@ -34,7 +31,6 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import kotlin.math.sin
 
 @HiltViewModel
 class AssessmentViewModel @Inject constructor(
@@ -55,7 +51,7 @@ class AssessmentViewModel @Inject constructor(
     var otherAssessmentDetails = HashMap<String, Any>()
     val formLayoutsLiveData = MutableLiveData<Resource<FormResponse>>()
     val nearestFacilityLiveData = MutableLiveData<Resource<List<HealthFacilityEntity>>>()
-    var referralStatus:String? = null
+    var referralStatus: String? = null
     private var lastLocation: Location? = null
     val facilitySpinnerLiveData = MutableLiveData<Resource<LocalSpinnerResponse>>()
     val memberClinicalLiveData = MutableLiveData<MemberClinicalEntity?>()
@@ -66,34 +62,52 @@ class AssessmentViewModel @Inject constructor(
             return
         }
         viewModelScope.launch(dispatcherIO) {
-            memberRegistrationRepository.getAssessmentMemberDetails(selectedHouseholdMemberId,memberDetailsLiveData)
+            memberRegistrationRepository.getAssessmentMemberDetails(
+                selectedHouseholdMemberId,
+                memberDetailsLiveData
+            )
         }
     }
 
-    fun saveAssessment(assessmentMap: HashMap<*,*>, referralResult: Pair<String?, ArrayList<String>>?) {
+    fun saveAssessment(
+        assessmentMap: HashMap<*, *>,
+        referralResult: Pair<String?, ArrayList<String>>?,
+        menuId: String?
+    ) {
         viewModelScope.launch(dispatcherIO) {
             memberDetailsLiveData.value?.data?.let { details ->
                 referralStatus = referralResult?.first
-                val assessmentDetail = getAssessmentDetails(assessmentMap as HashMap<Any, Any>, menuId)
+                val assessmentDetail =
+                    getAssessmentDetails(assessmentMap as HashMap<Any, Any>, menuId)
                 assessmentStringLiveData.postValue(assessmentDetail.first)
-                assessmentRepository.saveAssessment(assessmentDetail.second, details, assessmentSaveLiveData, menuId, referralResult, lastLocation)
+                assessmentRepository.saveAssessment(
+                    assessmentDetail.second,
+                    details,
+                    assessmentSaveLiveData,
+                    menuId,
+                    referralResult,
+                    lastLocation
+                )
             }
         }
     }
 
-    private fun getAssessmentDetails(map: HashMap<Any,Any>, menuId: String?): Pair<String, String> {
+    private fun getAssessmentDetails(
+        map: HashMap<Any, Any>,
+        menuId: String?
+    ): Pair<String, String> {
         val assessmentDetail = StringConverter.convertGivenMapToString(map) ?: ""
 
         // Request modification for syncing ICCM to Backend
         if (map.containsKey(ICCM_MENU_ID)) {
-            val iccm = map[ICCM_MENU_ID] as HashMap<*,*>
+            val iccm = map[ICCM_MENU_ID] as HashMap<*, *>
             if (iccm.containsKey(Diarrhoea)) {
-                val diarrhoea = iccm[Diarrhoea] as HashMap<Any,Any>
+                val diarrhoea = iccm[Diarrhoea] as HashMap<Any, Any>
                 if (diarrhoea.containsKey(DiarrhoeaSigns)) {
                     val signsList = mutableListOf<String>()
                     val list = diarrhoea[DiarrhoeaSigns] as List<*>
                     list.forEach { it ->
-                        if (it is HashMap<*,*>) {
+                        if (it is HashMap<*, *>) {
                             signsList.add(it["name"] as String)
                         }
                     }
@@ -104,14 +118,14 @@ class AssessmentViewModel @Inject constructor(
 
         // Request modification for syncing ICCM to Backend
         if (map.containsKey(OTHER_SYMPTOMS)) {
-            val otherSymptom = map[OTHER_SYMPTOMS] as HashMap<Any,Any>
+            val otherSymptom = map[OTHER_SYMPTOMS] as HashMap<Any, Any>
             if (otherSymptom.containsKey(signsAndSymptoms)) {
-                val signsAndSymptom = otherSymptom[signsAndSymptoms] as HashMap<Any,Any>
+                val signsAndSymptom = otherSymptom[signsAndSymptoms] as HashMap<Any, Any>
                 if (signsAndSymptom.containsKey(otherSymptoms)) {
                     val signsList = mutableListOf<String>()
                     val list = signsAndSymptom[otherSymptoms] as List<*>
                     list.forEach { it ->
-                        if (it is HashMap<*,*>) {
+                        if (it is HashMap<*, *>) {
                             signsList.add(it["name"] as String)
                         }
                     }
@@ -128,14 +142,6 @@ class AssessmentViewModel @Inject constructor(
         return Pair(assessmentDetail, assessmentDetailBE)
     }
 
-    private fun getICCMAssessment(map: HashMap<*, *>) {
-        Log.e("Test","")
-    }
-
-    private fun getOtherSymptomsAssessment(map: HashMap<*, *>) {
-        Log.e("Test","")
-    }
-
     fun updateOtherAssessmentDetails() {
         viewModelScope.launch(dispatcherIO) {
             if (otherAssessmentDetails.containsKey(IsClinicTaken)) {
@@ -143,12 +149,17 @@ class AssessmentViewModel @Inject constructor(
                 otherAssessmentDetails[IsClinicTaken] = (isTakenToClinical == "Yes")
             }
 
-            assessmentRepository.updateOtherAssessmentDetails(assessmentSaveLiveData.value?.data, otherAssessmentDetails, assessmentUpdateLiveData, lastLocation)
+            assessmentRepository.updateOtherAssessmentDetails(
+                assessmentSaveLiveData.value?.data,
+                otherAssessmentDetails,
+                assessmentUpdateLiveData,
+                lastLocation
+            )
         }
     }
 
     fun addOtherDetailsToType(key: String) {
-        val otherDetailsMap = HashMap<String,Any>()
+        val otherDetailsMap = HashMap<String, Any>()
         otherDetailsMap[key] = otherAssessmentDetails
         otherAssessmentDetails = otherDetailsMap
     }
@@ -219,6 +230,7 @@ class AssessmentViewModel @Inject constructor(
                 memberClinicalEntity?.let {
                     map[RMNCH.visitNo] = it.visitCount + 1
                     map[getClinicalDateKey()] = it.clinicalDate
+                    map[RMNCH.NoOfNeonate] = it.numberOfNeonate ?: 0L
                     savePatientClinicalInformation(patientId, workflowName, map, it.id)
                 } ?: kotlin.run {
                     map[RMNCH.visitNo] = 1L
@@ -254,7 +266,8 @@ class AssessmentViewModel @Inject constructor(
                     patientId = id,
                     type = workflowName,
                     visitCount = it.first,
-                    clinicalDate = it.second ?: ""
+                    clinicalDate = it.second ?: "",
+                    numberOfNeonate = it.third
                 )
                 savePatientVisitCountByType(clinicalEntity)
             }
@@ -264,20 +277,33 @@ class AssessmentViewModel @Inject constructor(
     private fun getClinicalDateAndVisitCount(
         details: HashMap<String, Any>,
         workflowName: String
-    ): Pair<Long, String?> {
+    ): Triple<Long, String?, Long?> {
         return when (workflowName) {
             RMNCH.ANC -> {
-                Pair(details[RMNCH.visitNo] as Long, details[RMNCH.lastMenstrualPeriod] as String)
+                Triple(
+                    details[RMNCH.visitNo] as Long,
+                    details[RMNCH.lastMenstrualPeriod] as String,
+                    null
+                )
             }
 
             RMNCH.PNC -> {
-                Pair(details[RMNCH.visitNo] as Long, details[RMNCH.DateOfDelivery] as String)
+                Triple(
+                    details[RMNCH.visitNo] as Long,
+                    details[RMNCH.DateOfDelivery] as String,
+                    getNumberOfNeonates(details)
+                )
             }
 
             else -> {
-                Pair(details[RMNCH.visitNo] as Long, null)
+                Triple(details[RMNCH.visitNo] as Long, null, null)
             }
         }
+    }
+
+    private fun getNumberOfNeonates(details: HashMap<String, Any>): Long? {
+        val value = details[RMNCH.NoOfNeonate]
+        return value.toString().toLongOrNull()
     }
 
 }

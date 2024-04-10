@@ -1,5 +1,6 @@
 package com.medtroniclabs.spice.ui.assessment.viewmodel
 
+import android.location.Location
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -12,6 +13,7 @@ import com.medtroniclabs.spice.model.assessment.AssessmentMemberDetails
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.repo.AssessmentRepository
 import com.medtroniclabs.spice.repo.HouseholdMemberRepository
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
@@ -34,7 +36,6 @@ class AssessmentRMNCHNeonateViewModel @Inject constructor(
     val assessmentSaveLiveData = MutableLiveData<Resource<AssessmentEntity>>()
 
     val childMemberDetailsLiveData = MutableLiveData<Resource<List<HouseholdMemberEntity>>>()
-
 
     fun getFormData(formType: String, liveData: MutableLiveData<Resource<FormResponse>>) {
         viewModelScope.launch(dispatcherIO) {
@@ -89,6 +90,28 @@ class AssessmentRMNCHNeonateViewModel @Inject constructor(
             householdMemberRepository.getMemberDetailsByParentId(
                 memberId,
                 childMemberDetailsLiveData
+            )
+        }
+    }
+
+    fun updateOtherAssessmentDetails(
+        otherAssessmentDetails: HashMap<String, Any>,
+        lastLocation: Location?,
+        assessmentUpdateLiveData:MutableLiveData<Resource<String>>
+    ) {
+        viewModelScope.launch(dispatcherIO) {
+            if (otherAssessmentDetails.containsKey(AssessmentDefinedParams.IsClinicTaken)) {
+                val isTakenToClinical =
+                    otherAssessmentDetails[AssessmentDefinedParams.IsClinicTaken] as String
+                otherAssessmentDetails[AssessmentDefinedParams.IsClinicTaken] =
+                    (isTakenToClinical == "Yes")
+            }
+
+            assessmentRepository.updateOtherAssessmentDetails(
+                assessmentSaveLiveData.value?.data,
+                otherAssessmentDetails,
+                assessmentUpdateLiveData,
+                lastLocation
             )
         }
     }

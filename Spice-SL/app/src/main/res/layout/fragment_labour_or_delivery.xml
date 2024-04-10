@@ -217,7 +217,7 @@
             android:layout_marginStart="@dimen/_20sdp"
             android:layout_marginTop="@dimen/_20sdp"
             android:fontFamily="@font/inter_medium"
-            android:text="@string/no_of_deonates"
+            android:text="@string/no_of_neonates"
             android:textColor="@color/table_title"
             android:textSize="@dimen/_16ssp"
             app:layout_constraintStart_toStartOf="parent"

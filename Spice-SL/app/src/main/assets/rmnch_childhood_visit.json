@@ -7,19 +7,43 @@
     "viewType": "CardView"
   },
   {
-    "id": "dangerSigns",
-    "fieldName": "dangerSigns",
+    "id": "childhoodVisitSigns",
+    "fieldName": "childhoodVisitSigns",
     "family": "pncChild",
     "orderId": 2,
     "viewType": "DialogCheckbox",
-    "localDataCache": "childSymptoms",
+    "localDataCache": "childhoodVisitSigns",
     "isMandatory": false,
     "errorMessage": "Please select a valid option",
     "isEnabled": true,
     "title": "Is the newborn baby experiencing any of these danger signs?",
     "visibility": "visible",
-    "isSummary": true
-  },
+    "isSummary": true,
+    "condition": [
+      {
+        "eq": "Other",
+        "targetId": "otherChildhoodVisitSigns",
+        "visibility": "visible"
+      }
+    ]
+  },{
+  "errorMessage": "Please enter a valid sign",
+  "family": "pncChild",
+  "fieldName": "Other Signs",
+  "hint": "Enter Other Sign",
+  "id": "otherChildhoodVisitSigns",
+  "inputType": 96,
+  "isEnabled": true,
+  "isMandatory": true,
+  "isNeededDefault": true,
+  "isNotDefault": false,
+  "orderId": 5,
+  "isSummary": false,
+  "title": "Other Signs",
+  "viewType": "EditText",
+  "isInfo": "gone",
+  "visibility": "gone"
+},
   {
     "family": "pncChild",
     "fieldName": "fatherPresent",

@@ -1,27 +1,53 @@
 [
   {
     "familyOrder": 0,
-    "id": "pncVisitNeonate",
+    "id": "pncNeonatal",
     "orderId": 1,
     "title": "PNC Visit - Neonate",
     "viewType": "CardView"
   },
   {
-    "id": "newBornDangerSign",
-    "family": "pncVisitNeonate",
-    "fieldName": "newBornDangerSign",
+    "id": "pncNeonateSigns",
+    "family": "pncNeonatal",
+    "fieldName": "pncNeonateSigns",
     "orderId": 2,
     "title": "Is the newborn baby experiencing any of these danger signs?",
-    "viewType": "Spinner",
+    "viewType": "DialogCheckbox",
     "isMandatory": false,
     "isSummary": true,
+    "titleSummary": "Danger Signs in newborn baby",
     "hint": "Select Symptoms",
-    "localDataCache": "newBornDangerSign",
+    "localDataCache": "pncNeonateSigns",
     "errorMessage": "Please select a valid option",
-    "visibility": "visible"
+    "visibility": "visible",
+    "condition": [
+      {
+        "eq": "Other",
+        "targetId": "otherPncNeonateSigns",
+        "visibility": "visible"
+      }
+    ]
   },
   {
-    "family": "pncVisitNeonate",
+    "errorMessage": "Please enter a valid sign",
+    "family": "pncNeonatal",
+    "fieldName": "Other Signs",
+    "hint": "Enter Other Sign",
+    "id": "otherPncNeonateSigns",
+    "inputType": 96,
+    "isEnabled": true,
+    "isMandatory": true,
+    "isNeededDefault": true,
+    "isNotDefault": false,
+    "orderId": 5,
+    "isSummary": false,
+    "title": "Other Signs",
+    "viewType": "EditText",
+    "isInfo": "gone",
+    "visibility": "gone"
+  },
+  {
+    "family": "pncNeonatal",
     "fieldName": "newbornReferredToSBCU",
     "id": "newbornReferredToSBCU",
     "condition": [],
@@ -48,7 +74,7 @@
     "visibility": "visible"
   },
   {
-    "family": "pncVisitNeonate",
+    "family": "pncNeonatal",
     "fieldName": "lowBirthWeight",
     "id": "lowBirthWeight",
     "condition": [],
@@ -75,7 +101,7 @@
     "visibility": "visible"
   },
   {
-    "family": "pncVisitNeonate",
+    "family": "pncNeonatal",
     "fieldName": "deathOfNewborn",
     "id": "deathOfNewborn",
     "condition": [],
