@@ -37,6 +37,7 @@ class HouseHoldSummaryViewModel @Inject constructor(
     var selectedMemberId = -1L
     var memberListLiveData = MutableLiveData<Resource<ArrayList<HouseholdMemberEntity>>>()
     var villageId: Long = -1L
+    var previousCount: Int = 0
 
     fun getHouseHoldDetailsById() {
         if (houseHoldId == -1L)

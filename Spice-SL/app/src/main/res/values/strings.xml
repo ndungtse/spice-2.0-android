@@ -273,5 +273,7 @@
     <string name="number">Number</string>
     <string name="hour">Hour</string>
     <string name="minutes">Minutes</string>
+    <string name="member_registered_successfully">Member registration \n completed successfully.</string>
+    <string name="patient_with_id">Patient ID : %1$s</string>
 
 </resources>

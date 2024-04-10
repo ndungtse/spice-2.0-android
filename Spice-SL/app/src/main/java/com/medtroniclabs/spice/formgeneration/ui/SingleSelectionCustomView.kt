@@ -71,7 +71,7 @@ class SingleSelectionCustomView : LinearLayout {
                 1.0f
             )
             val selectedValue = if (resultMap!= null)  resultMap[elementID.first] else null
-            textView.tag = "${idValue}_${elementID}"
+            textView.tag = "${idValue}_${elementID.first}"
             textView.isSelected = selectedValue != null && selectedValue == idValue
             textView.layoutParams = param
             if (translate && translatedName != null && translatedName is String) {

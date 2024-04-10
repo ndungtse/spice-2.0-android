@@ -34,7 +34,6 @@
             android:layout_marginBottom="@dimen/_20sdp"
             android:gravity="center"
             android:padding="@dimen/_4sdp"
-            android:text="@string/household_successfully"
             android:textColor="@color/grey_black"
             app:layout_constraintBottom_toTopOf="@id/householdNo"
             app:layout_constraintStart_toStartOf="parent"

@@ -49,6 +49,15 @@ class HouseholdSummaryActivity : BaseActivity(), MemberSelectionListener, View.O
                     hideLoading()
                     resourceState.data?.let { data ->
                         initializeAdapter(data)
+                        if (householdSummaryViewModel.previousCount != 0 && (householdSummaryViewModel.previousCount < data.size)) {
+                            data.last().patientId?.let {
+                                SuccessDialogFragment.newInstance(
+                                    householdNo = -1L,
+                                    patientId = it
+                                ).show(supportFragmentManager, SuccessDialogFragment.TAG)
+                            }
+                        }
+                        householdSummaryViewModel.previousCount = data.size
                     } ?: kotlin.run {
                         hideLoading()
                     }
@@ -192,7 +201,9 @@ class HouseholdSummaryActivity : BaseActivity(), MemberSelectionListener, View.O
     override fun onClick(v: View?) {
         when (v?.id) {
             R.id.btnFinishRegistration -> {
-                SuccessDialogFragment.newInstance().show(supportFragmentManager, SuccessDialogFragment.TAG)
+                SuccessDialogFragment.newInstance(householdNo = householdSummaryViewModel.houseHoldId,
+                    DefinedParams.DefaultID
+                ).show(supportFragmentManager, SuccessDialogFragment.TAG)
             }
 
             R.id.btnAddNewMember -> {

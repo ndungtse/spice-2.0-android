@@ -7,18 +7,18 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import androidx.fragment.app.DialogFragment
-import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.common.DefinedParams.DefaultID
+import com.medtroniclabs.spice.common.DefinedParams.PatientId
 import com.medtroniclabs.spice.databinding.FragmentSuccessDialogBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
-import com.medtroniclabs.spice.ui.household.viewmodel.HouseHoldSummaryViewModel
+import com.medtroniclabs.spice.ui.household.HouseholdDefinedParams.HouseholdNo
 import com.medtroniclabs.spice.ui.landing.OnDialogDismissListener
 
 class SuccessDialogFragment : DialogFragment(), View.OnClickListener {
 
     private lateinit var binding: FragmentSuccessDialogBinding
     private var onDismissListener: OnDialogDismissListener? = null
-    private val householdSummaryViewModel: HouseHoldSummaryViewModel by activityViewModels ()
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -38,8 +38,13 @@ class SuccessDialogFragment : DialogFragment(), View.OnClickListener {
     companion object {
         const val TAG = "SuccessDialogFragment"
 
-        fun newInstance(): SuccessDialogFragment {
-            return SuccessDialogFragment()
+        fun newInstance(householdNo : Long, patientId : String): SuccessDialogFragment {
+            val bundle = Bundle()
+            bundle.putLong(HouseholdNo, householdNo)
+            bundle.putString(PatientId, patientId)
+            val fragment =  SuccessDialogFragment()
+            fragment.arguments = bundle
+            return fragment
         }
     }
 
@@ -62,8 +67,19 @@ class SuccessDialogFragment : DialogFragment(), View.OnClickListener {
     }
 
     private fun attachObserver() {
-        householdSummaryViewModel.houseHoldDetailLiveData.value?.data?.let {
-            binding.householdNo.text = requireContext().getString(R.string.household_with_no, it.householdNo.toString())
+        arguments?.getLong(HouseholdNo, -1)?.let { householdNo ->
+            if (householdNo != -1L) {
+                binding.successMessage.text = getString(R.string.household_successfully)
+                binding.householdNo.text =
+                    requireContext().getString(R.string.household_with_no, householdNo.toString())
+            }
+        }
+        arguments?.getString(PatientId, DefaultID)?.let { patientId ->
+            if (patientId != DefaultID) {
+                binding.successMessage.text = getString(R.string.member_registered_successfully)
+                binding.householdNo.text =
+                    requireContext().getString(R.string.patient_with_id, patientId)
+            }
         }
     }
 
