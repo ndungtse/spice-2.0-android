@@ -222,6 +222,8 @@ class HouseHoldRepository @Inject constructor(
             val syncedResponse = getSyncedEntities(villageNameId.values.toList())
             val unSyncedResponse = getUnSyncedEntities()
             if (syncedResponse.isSuccessful && unSyncedResponse.isSuccessful) {
+                roomHelper.deleteAllHouseholds()
+                roomHelper.deleteAllHouseholdMembers()
                 // Insert Synced Entities
                 insertHouseholdAndMembers(
                     syncedResponse.body()?.entityList,

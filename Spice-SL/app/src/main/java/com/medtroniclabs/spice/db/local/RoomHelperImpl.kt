@@ -85,8 +85,8 @@ class RoomHelperImpl @Inject constructor(
         return memberDAO.getMemberCountPerHouseHold(householdId)
     }
 
-    override suspend fun getLastPatientId(): LastCreatedAtAndPatientId? {
-        return memberDAO.getLastPatientId()
+    override suspend fun getLastPatientId(villageId: Long): String? {
+        return memberDAO.getLastPatientId(villageId)
     }
 
     override suspend fun getAllUnSyncedHouseHolds(): List<HouseHold> {
@@ -154,6 +154,14 @@ class RoomHelperImpl @Inject constructor(
 
     override suspend fun deleteAllVillages() {
         metaDataDAO.deleteAllVillages()
+    }
+
+    override suspend fun deleteAllHouseholds() {
+        householdDAO.deleteAllHouseholds()
+    }
+
+    override suspend fun deleteAllHouseholdMembers() {
+        memberDAO.deleteAllHouseholdMembers()
     }
 
     override suspend fun saveMenus(menuEntity: MenuEntity) {

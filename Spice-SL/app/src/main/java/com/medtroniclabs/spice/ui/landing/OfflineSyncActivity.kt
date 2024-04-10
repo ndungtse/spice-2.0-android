@@ -3,7 +3,6 @@ package com.medtroniclabs.spice.ui.landing
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.viewModels
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.work.Constraints
 import androidx.work.Data
 import androidx.work.NetworkType
@@ -11,11 +10,11 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.data.offlinesync.utils.OfflineConstant.KEY_REQUESTS_ID
 import com.medtroniclabs.spice.databinding.FragmentOfflineSyncBinding
 import com.medtroniclabs.spice.model.landing.LoadingDialogFragment
 import com.medtroniclabs.spice.offlinesync.GetSyncStatusWorker
 import com.medtroniclabs.spice.offlinesync.PostSyncWorker
-import com.medtroniclabs.spice.data.offlinesync.utils.OfflineConstant.KEY_REQUESTS_ID
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.landing.adapter.OfflineSyncEntitiesAdapter
 import com.medtroniclabs.spice.ui.landing.viewmodel.OfflineSyncViewModel
@@ -48,7 +47,6 @@ class OfflineSyncActivity : BaseActivity() {
         //binding.btnSync.isEnabled = false
 
         adapter = OfflineSyncEntitiesAdapter()
-        binding.rvEntityList.layoutManager = LinearLayoutManager(this)
         binding.rvEntityList.adapter = adapter
 
         binding.btnSync.setOnClickListener {

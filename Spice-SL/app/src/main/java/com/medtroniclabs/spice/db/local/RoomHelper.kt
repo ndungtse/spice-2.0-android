@@ -47,6 +47,10 @@ interface RoomHelper {
     suspend fun saveVillage(villageEntityList: List<VillageEntity>)
     suspend fun getAllVillageEntity(): List<VillageEntity>
     suspend fun deleteAllVillages()
+
+    suspend fun deleteAllHouseholds()
+
+    suspend fun deleteAllHouseholdMembers()
     suspend fun saveMenus(menuEntity: MenuEntity)
     suspend fun deleteAllMenus()
     suspend fun saveUserProfileDetails(userProfileEntity: UserProfileEntity)
@@ -71,7 +75,7 @@ interface RoomHelper {
     suspend fun getUserVillages(): List<VillageEntity>
     suspend fun getVillageByID(villageId: Long): VillageEntity
     suspend fun getChiefDomAndVillageCodeByVillageId(id: Long): VillageInfo
-    suspend fun getLastPatientId(): LastCreatedAtAndPatientId?
+    suspend fun getLastPatientId(villageId: Long): String?
     fun getMemberCountInHouseholdLiveData(houseHoldId: Long): LiveData<HouseholdMemberCount>
     suspend fun getClinicalWorkflowId(gender: String, age: Int): List<ClinicalWorkflowEntityWithSubmodule>
     suspend fun getDobAndGenderById(memberId: Long): MemberDobGenderModel

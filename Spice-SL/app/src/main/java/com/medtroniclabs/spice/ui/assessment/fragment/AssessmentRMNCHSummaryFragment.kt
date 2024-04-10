@@ -135,7 +135,7 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
         when (v.id) {
             R.id.btnDone -> {
                 if (binding.etNextFollowUpDate.text.isNotEmpty()) {
-                    viewModel.addOtherDetailsToType(AssessmentDefinedParams.RMNCH.lowercase())
+                   // viewModel.addOtherDetailsToType(AssessmentDefinedParams.RMNCH.lowercase())
                     viewModel.updateOtherAssessmentDetails()
                 }
             }

@@ -4,6 +4,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Ignore
 import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
 import com.medtroniclabs.spice.data.offlinesync.utils.OfflineSyncStatus
+import java.util.Locale
 
 data class HouseHoldMember(
 
@@ -38,7 +39,7 @@ data class HouseHoldMember(
     val gender: String,
 
     @ColumnInfo("household_head_relationship")
-    val householdRelationship: String?,
+    val householdHeadRelationship: String?,
 
     @ColumnInfo("created_at")
     val createdAt: Long,
@@ -63,15 +64,20 @@ data class HouseHoldMember(
             id = id,
             name = this.name,
             phoneNumber = this.phoneNumber,
-            phoneNumberCategory = "", // Need to check with backend
+            phoneNumberCategory = toRegularCase(this.phoneNumberCategory),
             dateOfBirth = this.dateOfBirth,
             gender = this.gender,
-            householdHeadRelationship = this.householdRelationship ?: "",
+            householdHeadRelationship = this.householdHeadRelationship ?: "",
             householdId = hhId,
             patientId = this.patientId
         ).apply {
             fhirId = this@HouseHoldMember.id.toString()
             sync_status = status
         }
+    }
+
+    private fun toRegularCase(sentence: String): String {
+        return sentence.split(" ")
+            .joinToString(" ") { it.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() } }
     }
 }

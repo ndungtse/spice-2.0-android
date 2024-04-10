@@ -6,9 +6,11 @@ import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.appextensions.postSuccess
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.CommonUtils.getStringOrEmptyString
+import com.medtroniclabs.spice.common.DefinedParams.CHIEF_DOM_CODE_LENGTH
+import com.medtroniclabs.spice.common.DefinedParams.PATIENT_NUMBER_LENGTH
+import com.medtroniclabs.spice.common.DefinedParams.VILLAGE_CODE_LENGTH
 import com.medtroniclabs.spice.common.SecuredPreference
-import com.medtroniclabs.spice.data.LastCreatedAtAndPatientId
-import com.medtroniclabs.spice.data.VillageInfo
+import com.medtroniclabs.spice.data.offlinesync.utils.OfflineSyncStatus
 import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
 import com.medtroniclabs.spice.db.entity.MemberClinicalEntity
 import com.medtroniclabs.spice.db.local.RoomHelper
@@ -16,7 +18,6 @@ import com.medtroniclabs.spice.mappingkey.MemberRegistration
 import com.medtroniclabs.spice.mappingkey.MemberRegistration.otherFamilyMember
 import com.medtroniclabs.spice.model.assessment.AssessmentMemberDetails
 import com.medtroniclabs.spice.network.resource.Resource
-import com.medtroniclabs.spice.data.offlinesync.utils.OfflineSyncStatus
 import javax.inject.Inject
 
 class HouseholdMemberRepository @Inject constructor(
@@ -84,14 +85,7 @@ class HouseholdMemberRepository @Inject constructor(
         if (entity == null) {
             val householdDetails = roomHelper.getHouseHoldDetailsById(householdId)
             householdMemberEntity.householdId = householdId
-            householdMemberEntity.patientId =
-                getChiefDomAndVillageCodeByVillageId(householdDetails.villageId).let { villageInfo ->
-                    generatePatientId(
-                        villageInfo.chiefdomId,
-                        getLastPatientId(),
-                        villageInfo.code
-                    )
-                }
+            householdMemberEntity.patientId = getNextPatientId(householdDetails.villageId)
         } else {
             householdMemberEntity.updatedAt = System.currentTimeMillis()
             householdMemberEntity.sync_status = OfflineSyncStatus.NotSynced
@@ -114,21 +108,17 @@ class HouseholdMemberRepository @Inject constructor(
             getStringOrEmptyString(householdHeadRelationship)
         }
     }
+    private suspend fun getNextPatientId(villageId: Long): String {
+        val villageDetail = roomHelper.getVillageByID(villageId)
+        // Todo replace chief dom id with chief dom code
+        val chiefDomCode = villageDetail.chiefdomId.toString().padStart(CHIEF_DOM_CODE_LENGTH, '0')
+        val villageCode = villageDetail.code.padStart(VILLAGE_CODE_LENGTH,'0')
+        val chwUserId = SecuredPreference.getUserId().toString()
+        val startIndex = chiefDomCode.length + villageCode.length + chwUserId.length
 
-    private fun generatePatientId(
-        chiefDomId: Long,
-        lastCreatedAtAndPatientId: LastCreatedAtAndPatientId?,
-        villageCode: String
-    ): String {
-        val startIndex =
-            chiefDomId.toString().length + villageCode.length + SecuredPreference.getUserId()
-                .toString().length
-        val lastPatientId = lastCreatedAtAndPatientId?.lastPatientId?.substring(
-            startIndex,
-            lastCreatedAtAndPatientId.lastPatientId.length
-        )?.toInt() ?: 0
-        val numericPart = (lastPatientId + 1).toString().padStart(4, '0')
-        return "$chiefDomId$villageCode${SecuredPreference.getUserId()}$numericPart"
+        val lastPatientId = roomHelper.getLastPatientId(villageId)?.let { it.substring(startIndex, it.length) }?.toInt() ?: 0
+        val nextPatientId = (lastPatientId + 1).toString().padStart(PATIENT_NUMBER_LENGTH, '0')
+        return "$chiefDomCode$villageCode$chwUserId$nextPatientId"
     }
 
     suspend fun getMemberDetailsByID(
@@ -176,14 +166,6 @@ class HouseholdMemberRepository @Inject constructor(
 
     private suspend fun updateHeadCount(householdId: Long, newNoOfPeople: Int) {
         return roomHelper.updateHeadCount(householdId, newNoOfPeople)
-    }
-
-    private suspend fun getLastPatientId(): LastCreatedAtAndPatientId? {
-        return roomHelper.getLastPatientId()
-    }
-
-    private suspend fun getChiefDomAndVillageCodeByVillageId(villageId: Long): VillageInfo {
-        return roomHelper.getChiefDomAndVillageCodeByVillageId(villageId)
     }
 
     suspend fun getPatientVisitCountByType(

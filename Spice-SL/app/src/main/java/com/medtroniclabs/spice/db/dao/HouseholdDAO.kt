@@ -58,4 +58,7 @@ interface HouseholdDAO {
 
     @Query("SELECT id FROM Household WHERE fhir_id =:fhirId")
     suspend fun getHouseholdIdByFhirId(fhirId: String): Long?
+
+    @Query("DELETE FROM Household")
+    suspend fun deleteAllHouseholds()
 }

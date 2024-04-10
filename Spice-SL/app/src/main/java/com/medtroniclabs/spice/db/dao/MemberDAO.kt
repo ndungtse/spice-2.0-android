@@ -28,8 +28,8 @@ interface MemberDAO {
     @Query("SELECT COUNT(household_id) FROM HouseHoldMember WHERE household_id = :householdId")
     suspend fun getMemberCountPerHouseHold(householdId: Long): Int
 
-    @Query("SELECT created_at as lastCreatedAt, patient_id AS lastPatientId FROM HouseHoldMember ORDER BY id desc LIMIT 1")
-    suspend fun getLastPatientId(): LastCreatedAtAndPatientId?
+    @Query("SELECT hhm.patient_id FROM HouseholdMember AS hhm INNER JOIN household AS hh ON hhm.household_id = hh.id INNER JOIN villageentity AS vil ON hh.village_id = vil.id WHERE vil.id =:villageId ORDER BY hhm.patient_id DESC LIMIT 1")
+    suspend fun getLastPatientId(villageId: Long): String?
 
     @Query("SELECT date_of_birth,gender FROM HouseHoldMember WHERE id = :memberId")
     suspend fun getDobAndGenderById(memberId: Long): MemberDobGenderModel
@@ -54,5 +54,8 @@ interface MemberDAO {
 
     @Query("SELECT hhm.name, hhm.gender, hhm.date_of_birth AS dateOfBirth, hhm.patient_id AS patientId, hhm.fhir_id AS memberId, hh.fhir_id AS householdId, hhm.id AS id,hhm.household_id AS householdLocalId  FROM HouseholdMember AS hhm INNER JOIN Household AS hh ON hh.id = hhm.household_id WHERE hhm.id=:id")
     suspend fun getAssessmentMemberDetails(id: Long): AssessmentMemberDetails
+
+    @Query("DELETE FROM HouseholdMember")
+    suspend fun deleteAllHouseholdMembers()
 
 }
