@@ -33,6 +33,8 @@ class AssessmentRMNCHNeonateViewModel @Inject constructor(
 
     val memberFormLayoutsLiveData = MutableLiveData<Resource<FormResponse>>()
 
+    val assessmentStringSaveLiveData = MutableLiveData<String?>()
+
     val assessmentSaveLiveData = MutableLiveData<Resource<AssessmentEntity>>()
 
     val childMemberDetailsLiveData = MutableLiveData<Resource<List<HouseholdMemberEntity>>>()
@@ -56,7 +58,7 @@ class AssessmentRMNCHNeonateViewModel @Inject constructor(
                     memberMap!!,
                     householdId,
                     null,
-                    memberDetail.id
+                    memberDetail.patientId
                 )
                 savePNCDetails(motherDetailMap, childDetailMap, memberDetail)
             } else {
@@ -73,16 +75,71 @@ class AssessmentRMNCHNeonateViewModel @Inject constructor(
         val groupMap = HashMap<String, Any>()
         groupMap[RMNCH.PNC] = motherDetailMap[RMNCH.PNC] as Any
         groupMap[RMNCH.PNCNeonatal] = childDetailMap
-        StringConverter.convertGivenMapToString(groupMap)?.let { resultData ->
-            assessmentRepository.saveAssessment(
-                resultData,
-                memberDetail,
-                assessmentSaveLiveData,
-                RMNCH.PNC_MENU,
-                null,
-                null,
-            )
+
+        val assessmentDetail =
+            getAssessmentDetails(groupMap as HashMap<Any, Any>)
+        assessmentStringSaveLiveData.postValue(assessmentDetail.first)
+        assessmentRepository.saveAssessment(
+            assessmentDetail.second,
+            memberDetail,
+            assessmentSaveLiveData,
+            RMNCH.PNC_MENU,
+            null,
+            null,
+        )
+    }
+
+    private fun getAssessmentDetails(
+        map: HashMap<Any, Any>
+    ): Pair<String, String> {
+        val assessmentDetail = StringConverter.convertGivenMapToString(map) ?: ""
+
+        // Request modification for syncing PNC Mother to Backend
+        if (map.containsKey(RMNCH.PNC)) {
+            val pnc = map[RMNCH.PNC] as HashMap<Any, Any>
+            if (pnc.containsKey(RMNCH.pncMotherSigns)) {
+                val signsList = mutableListOf<String>()
+                val list = pnc[RMNCH.pncMotherSigns] as List<*>
+                list.forEach { it ->
+                    if (it is HashMap<*, *>) {
+                        signsList.add(it["name"] as String)
+                    }
+                }
+                pnc[RMNCH.pncMotherSigns] = signsList
+            }
+
+            if (pnc.containsKey(RMNCH.otherPncMotherSigns)) {
+                val os = pnc[RMNCH.otherPncMotherSigns] as Any
+                pnc.remove(RMNCH.otherPncMotherSigns)
+                pnc[RMNCH.otherSigns] = os
+            }
         }
+
+        // Request modification for syncing PNC neonatal to Backend
+        if (map.containsKey(RMNCH.PNCNeonatal)) {
+            val pncNeonate = map[RMNCH.PNCNeonatal] as HashMap<Any, Any>
+            if (pncNeonate.containsKey(RMNCH.pncNeonateSigns)) {
+                val signsList = mutableListOf<String>()
+                val list = pncNeonate[RMNCH.pncNeonateSigns] as List<*>
+                list.forEach { it ->
+                    if (it is HashMap<*, *>) {
+                        signsList.add(it["name"] as String)
+                    }
+                }
+
+                pncNeonate.remove(RMNCH.pncNeonateSigns)
+                pncNeonate[RMNCH.pncNeonatalSigns] = signsList
+            }
+
+            if (pncNeonate.containsKey(RMNCH.otherPncNeonateSigns)) {
+                val os = pncNeonate[RMNCH.otherPncNeonateSigns] as Any
+                pncNeonate.remove(RMNCH.otherPncNeonateSigns)
+                pncNeonate[RMNCH.otherSigns] = os
+            }
+        }
+
+        val assessmentDetailBE = StringConverter.convertGivenMapToString(map) ?: ""
+        return Pair(assessmentDetail, assessmentDetailBE)
     }
 
     fun getMemberDetailsByParentId(memberId: Long) {

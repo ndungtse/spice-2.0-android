@@ -57,13 +57,14 @@
     "isMandatory": true,
     "isNeededDefault": true,
     "isSummary": true,
+    "isBooleanAnswer": true,
     "optionsList": [
       {
-        "id": "Yes",
+        "id": true,
         "name": "Yes"
       },
       {
-        "id": "No",
+        "id": false,
         "name": "No"
       }
     ],
@@ -84,13 +85,14 @@
     "isMandatory": true,
     "isNeededDefault": true,
     "isSummary": true,
+    "isBooleanAnswer": true,
     "optionsList": [
       {
-        "id": "Yes",
+        "id": true,
         "name": "Yes"
       },
       {
-        "id": "No",
+        "id": false,
         "name": "No"
       }
     ],
@@ -111,13 +113,14 @@
     "isMandatory": true,
     "isNeededDefault": true,
     "isSummary": true,
+    "isBooleanAnswer": true,
     "optionsList": [
       {
-        "id": "Yes",
+        "id": true,
         "name": "Yes"
       },
       {
-        "id": "No",
+        "id": false,
         "name": "No"
       }
     ],

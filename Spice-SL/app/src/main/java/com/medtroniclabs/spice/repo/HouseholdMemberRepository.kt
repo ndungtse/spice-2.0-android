@@ -27,7 +27,7 @@ class HouseholdMemberRepository @Inject constructor(
         map: HashMap<String, Any>,
         householdId: Long,
         entity: HouseholdMemberEntity? = null,
-        parentId: Long? = null
+        parentId: String? = null
     ): Long {
         val memberEntity = createOrUpdateHouseHoldMemberEntity(map, householdId, entity, parentId)
         val memberId = roomHelper.registerMember(memberEntity)
@@ -48,7 +48,7 @@ class HouseholdMemberRepository @Inject constructor(
         map: HashMap<String, Any>,
         householdId: Long,
         entity: HouseholdMemberEntity? = null,
-        parentId: Long?
+        parentId: String?
     ): HouseholdMemberEntity {
         val householdMemberEntity = entity ?: HouseholdMemberEntity()
 

@@ -37,5 +37,5 @@ data class HouseholdMemberEntity(
 
     var isPregnant: Boolean? = null,
 
-    var parentId: Long? = null
+    var parentId: String? = null
 ) : BaseEntity()

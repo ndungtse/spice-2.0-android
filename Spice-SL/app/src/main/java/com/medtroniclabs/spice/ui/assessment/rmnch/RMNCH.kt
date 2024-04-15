@@ -17,10 +17,23 @@ object RMNCH {
     const val visitNo = "visitNo"
     const val PNC_MENU = "pnc"
     const val ANC_MENU = "anc"
-    const val CHILD_MENU = "ChildHoodVisit"
+    const val CHILD_MENU = "ChildHood_Visit"
     const val DateOfDelivery = "dateOfDelivery"
     const val NoOfNeonate = "noOfNeonate"
     const val gestationalAge = "gestationalAge"
+    const val childhoodVisitSigns = "childhoodVisitSigns"
+    const val pncChildSigns = "pncChildSigns"
+    const val otherChildhoodVisitSigns = "otherChildhoodVisitSigns"
+    const val otherSigns = "otherSigns"
+    const val ancSigns = "ancSigns"
+    const val otherAncSigns = "otherAncSigns"
+    const val pncNeonateSigns = "pncNeonateSigns"
+    const val pncNeonatalSigns = "pncNeonatalSigns"
+    const val otherPncNeonateSigns = "otherPncNeonateSigns"
+    const val pncMotherSigns = "pncMotherSigns"
+    const val otherPncMotherSigns = "otherPncMotherSigns"
+
+
 
     fun getValueFromMap(
         resultMap: HashMap<String, Any>,

@@ -26,6 +26,14 @@ import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.symptoms
 import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefinedParams.Diarrhoea
 import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefinedParams.DiarrhoeaSigns
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
+import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.ANC_MENU
+import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.ChildHoodVisit
+import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.ancSigns
+import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.childhoodVisitSigns
+import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.otherAncSigns
+import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.otherChildhoodVisitSigns
+import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.otherSigns
+import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.pncChildSigns
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -78,7 +86,7 @@ class AssessmentViewModel @Inject constructor(
             memberDetailsLiveData.value?.data?.let { details ->
                 referralStatus = referralResult?.first
                 val assessmentDetail =
-                    getAssessmentDetails(assessmentMap as HashMap<Any, Any>, menuId)
+                    getAssessmentDetails(assessmentMap as HashMap<Any, Any>)
                 assessmentStringLiveData.postValue(assessmentDetail.first)
                 assessmentRepository.saveAssessment(
                     assessmentDetail.second,
@@ -93,8 +101,7 @@ class AssessmentViewModel @Inject constructor(
     }
 
     private fun getAssessmentDetails(
-        map: HashMap<Any, Any>,
-        menuId: String?
+        map: HashMap<Any, Any>
     ): Pair<String, String> {
         val assessmentDetail = StringConverter.convertGivenMapToString(map) ?: ""
 
@@ -116,7 +123,7 @@ class AssessmentViewModel @Inject constructor(
             }
         }
 
-        // Request modification for syncing ICCM to Backend
+        // Request modification for syncing Other Symptoms to Backend
         if (map.containsKey(OTHER_SYMPTOMS)) {
             val otherSymptom = map[OTHER_SYMPTOMS] as HashMap<Any, Any>
             if (otherSymptom.containsKey(signsAndSymptoms)) {
@@ -136,6 +143,50 @@ class AssessmentViewModel @Inject constructor(
             }
             map.remove(OTHER_SYMPTOMS)
             map[otherSymptoms] = otherSymptom
+        }
+
+        // Request modification for syncing RMNCH Childhood Visit to Backend
+        if (map.containsKey(ChildHoodVisit)) {
+            val childHoodVisit = map[ChildHoodVisit] as HashMap<Any, Any>
+            if (childHoodVisit.containsKey(childhoodVisitSigns)) {
+                val signsList = mutableListOf<String>()
+                val list = childHoodVisit[childhoodVisitSigns] as List<*>
+                list.forEach { it ->
+                    if (it is HashMap<*, *>) {
+                        signsList.add(it["name"] as String)
+                    }
+                }
+
+                childHoodVisit.remove(childhoodVisitSigns)
+                childHoodVisit[pncChildSigns] = signsList
+            }
+
+            if (childHoodVisit.containsKey(otherChildhoodVisitSigns)) {
+                val os = childHoodVisit[otherChildhoodVisitSigns] as Any
+                childHoodVisit.remove(otherChildhoodVisitSigns)
+                childHoodVisit[otherSigns] = os
+            }
+        }
+
+        // Request modification for syncing RMNCH ANC Visit to Backend
+        if (map.containsKey(ANC_MENU)) {
+            val anc = map[ANC_MENU] as HashMap<Any, Any>
+            if (anc.containsKey(ancSigns)) {
+                val signsList = mutableListOf<String>()
+                val list = anc[ancSigns] as List<*>
+                list.forEach { it ->
+                    if (it is HashMap<*, *>) {
+                        signsList.add(it["name"] as String)
+                    }
+                }
+                anc[ancSigns] = signsList
+            }
+
+            if (anc.containsKey(otherAncSigns)) {
+                val os = anc[otherAncSigns] as Any
+                anc.remove(otherAncSigns)
+                anc[otherSigns] = os
+            }
         }
 
         val assessmentDetailBE = StringConverter.convertGivenMapToString(map) ?: ""
@@ -227,11 +278,13 @@ class AssessmentViewModel @Inject constructor(
         memberDetail.apply {
             if (details.containsKey(workflowName) && details[workflowName] is Map<*, *>) {
                 val map = details[workflowName] as HashMap<String, Any>
-                memberClinicalEntity?.let {
-                    map[RMNCH.visitNo] = it.visitCount + 1
-                    map[getClinicalDateKey()] = it.clinicalDate
-                    map[RMNCH.NoOfNeonate] = it.numberOfNeonate ?: 0L
-                    savePatientClinicalInformation(patientId, workflowName, map, it.id)
+                memberClinicalEntity?.let { memberClinicalEntity ->
+                    map[RMNCH.visitNo] = memberClinicalEntity.visitCount + 1
+                    getClinicalDateKey()?.let {
+                        map[it] = memberClinicalEntity.clinicalDate
+                    }
+                    map[RMNCH.NoOfNeonate] = memberClinicalEntity.numberOfNeonate ?: 0L
+                    savePatientClinicalInformation(patientId, workflowName, map, memberClinicalEntity.id)
                 } ?: kotlin.run {
                     map[RMNCH.visitNo] = 1L
                     savePatientClinicalInformation(patientId, workflowName, map)
@@ -240,7 +293,7 @@ class AssessmentViewModel @Inject constructor(
         }
     }
 
-    private fun getClinicalDateKey(): String {
+    private fun getClinicalDateKey(): String? {
         when (workflowName) {
             RMNCH.ANC -> {
                 return RMNCH.lastMenstrualPeriod
@@ -250,7 +303,7 @@ class AssessmentViewModel @Inject constructor(
                 return RMNCH.DateOfDelivery
             }
         }
-        return ""
+        return null
     }
 
     private fun savePatientClinicalInformation(

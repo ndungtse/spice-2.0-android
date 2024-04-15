@@ -50,8 +50,8 @@ class AssessmentRMNCHNeonateSummaryFragment : BaseFragment(), View.OnClickListen
     }
 
     private fun initView() {
-        assessmentRMNCHNeonateViewModel.assessmentSaveLiveData.value?.data?.let {
-            val map = stringToMap(it.assessmentDetails)
+        assessmentRMNCHNeonateViewModel.assessmentStringSaveLiveData.value?.let {
+            val map = stringToMap(it)
             if (map.containsKey(RMNCH.PNC)) {
                 addDefaultSummaryView(map)
                 showSummaryDetail(
@@ -149,7 +149,7 @@ class AssessmentRMNCHNeonateSummaryFragment : BaseFragment(), View.OnClickListen
         when (v.id) {
             R.id.btnDone -> {
                 if (binding.etNextFollowUpDate.text.isNotEmpty()) {
-                    viewModel.addOtherDetailsToType(AssessmentDefinedParams.RMNCH.lowercase())
+                    //viewModel.addOtherDetailsToType(AssessmentDefinedParams.RMNCH.lowercase())
                     assessmentRMNCHNeonateViewModel.updateOtherAssessmentDetails(
                         viewModel.otherAssessmentDetails,
                         viewModel.getCurrentLocation(),
@@ -183,10 +183,20 @@ class AssessmentRMNCHNeonateSummaryFragment : BaseFragment(), View.OnClickListen
                         DateUtils.DATE_FORMAT_ddMMyyyy,
                         DateUtils.DATE_ddMMyyyy
                     )
-                viewModel.otherAssessmentDetails[AssessmentDefinedParams.NextFollowupDate] =
-                    binding.etNextFollowUpDate.text.toString()
+                updateFollowUpDate(binding.etNextFollowUpDate.text.toString())
                 datePickerDialog = null
             }
+        }
+    }
+
+    private fun updateFollowUpDate(date: String) {
+        if (date.isNotEmpty()) {
+            viewModel.otherAssessmentDetails[AssessmentDefinedParams.NextFollowupDate] =
+                DateUtils.convertDateTimeToDate(
+                    date,
+                    DateUtils.DATE_ddMMyyyy,
+                    DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
+                )
         }
     }
 }

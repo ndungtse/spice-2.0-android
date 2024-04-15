@@ -165,12 +165,21 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
                         DateUtils.DATE_FORMAT_ddMMyyyy,
                         DateUtils.DATE_ddMMyyyy
                     )
-                viewModel.otherAssessmentDetails[AssessmentDefinedParams.NextFollowupDate] =
-                    binding.etNextFollowUpDate.text.toString()
+                updateFollowUpDate(binding.etNextFollowUpDate.text.toString())
                 datePickerDialog = null
             }
         }
     }
 
+    private fun updateFollowUpDate(date: String) {
+        if (date.isNotEmpty()) {
+            viewModel.otherAssessmentDetails[AssessmentDefinedParams.NextFollowupDate] =
+                DateUtils.convertDateTimeToDate(
+                    date,
+                    DateUtils.DATE_ddMMyyyy,
+                    DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
+                )
+        }
+    }
 
 }

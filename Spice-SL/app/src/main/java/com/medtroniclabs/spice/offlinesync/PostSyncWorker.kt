@@ -50,6 +50,7 @@ class PostSyncWorker @AssistedInject constructor(
 
             //Assessment
             memberList.forEach { hhm ->
+                hhm.motherPatientId?.let { hhm.isChild = true }
                 coveredPatientIds.add(hhm.patientId)
                 hhm.assessments = assessmentRepository.getUnSyncedAssessmentByPatientId(hhm.patientId)
             }
@@ -60,6 +61,7 @@ class PostSyncWorker @AssistedInject constructor(
         val otherHouseholdMembers = houseHoldRepository.getOtherHouseholdMembers(householdIds)
         //Assessment
         otherHouseholdMembers.forEach { hhm ->
+            hhm.motherPatientId?.let { hhm.isChild = true }
             coveredPatientIds.add(hhm.patientId)
             hhm.assessments = assessmentRepository.getUnSyncedAssessmentByPatientId(hhm.patientId)
         }

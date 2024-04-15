@@ -52,7 +52,14 @@ data class HouseHoldMember(
 
     @ColumnInfo(name = "village_id")
     val villageId: Long,
+
+    @ColumnInfo(name = "parentId")
+    val motherPatientId: String? = null
 ) {
+
+    @Ignore
+    var isChild: Boolean? = false
+
     @Ignore
     var provenance: ProvanceDto = ProvanceDto()
 
