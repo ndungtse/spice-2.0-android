@@ -18,6 +18,7 @@ import com.medtroniclabs.spice.db.dao.MemberDAO
 import com.medtroniclabs.spice.db.dao.MetaDataDAO
 import com.medtroniclabs.spice.db.dao.ExaminationsComplaintsDAO
 import com.medtroniclabs.spice.db.dao.ExaminationsDAO
+import com.medtroniclabs.spice.db.dao.LabourDeliveryDAO
 import com.medtroniclabs.spice.db.local.RoomHelper
 import com.medtroniclabs.spice.db.local.RoomHelperImpl
 import com.medtroniclabs.spice.network.ApiHelper
@@ -203,6 +204,11 @@ object AppModule {
     fun providesMainDispatcher(): CoroutineDispatcher = Dispatchers.Main
 
 
+    @Singleton
+    @Provides
+    fun provideLabourDeliveryDAO(db: SpiceDataBase): LabourDeliveryDAO {
+        return db.labourDeliveryDAO()
+    }
 }
 
 @Retention(AnnotationRetention.BINARY)

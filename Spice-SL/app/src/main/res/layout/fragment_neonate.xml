@@ -284,7 +284,6 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/_16sdp"
-            app:singleSelection="true"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/rightGuideline"
             app:layout_constraintTop_toTopOf="@+id/seperatorColon6"

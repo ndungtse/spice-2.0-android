@@ -8,22 +8,26 @@ import android.view.ViewGroup
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.ViewUtils
+import com.medtroniclabs.spice.data.LabourDeliveryMetaEntity
 import com.medtroniclabs.spice.databinding.FragmentLabourOrDeliveryBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.ui.SingleSelectionCustomView
 import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
+import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
-import com.medtroniclabs.spice.ui.mypatients.viewmodel.MedicalReviewBaseViewModel
+import com.medtroniclabs.spice.ui.medicalreview.labourDelivery.LabourDeliveryViewModel
+import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 
 class LabourOrDeliveryFragment : BaseFragment() {
 
     private lateinit var binding: FragmentLabourOrDeliveryBinding
     private var datePickerDialog: DatePickerDialog? = null
-    private val viewModel: MedicalReviewBaseViewModel by activityViewModels()
+    private val viewModel: LabourDeliveryViewModel by activityViewModels()
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -42,13 +46,13 @@ class LabourOrDeliveryFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        spinnerForDeliveryType()
+        attachObserver()
         initializeDatePicker()
-        setListenerToTimeOfDelivery()
-        setListenerToTimeOfLabourOnset()
+        initializeTimeOfDelivery()
+        initializeTimeOfLabourOnset()
     }
 
-    private fun setListenerToTimeOfLabourOnset() {
+    private fun initializeTimeOfLabourOnset() {
         getDataFlowData().let {
             val view = SingleSelectionCustomView(binding.root.context)
             view.tag = TAG
@@ -56,7 +60,7 @@ class LabourOrDeliveryFragment : BaseFragment() {
                 it,
                 false,
                 viewModel.timeOfLabourOnsetMap,
-                Pair(DefinedParams.TimeOfLabourOnset,null),
+                Pair(DefinedParams.TimeOfLabourOnset, null),
                 FormLayout(viewType = "", id = "", title = "", visibility = "", optionsList = null),
                 timeOfLabourOnsetSingleSelectionCallback
             )
@@ -64,7 +68,7 @@ class LabourOrDeliveryFragment : BaseFragment() {
         }
     }
 
-    private fun setListenerToTimeOfDelivery() {
+    private fun initializeTimeOfDelivery() {
         getDataFlowData().let {
             val view = SingleSelectionCustomView(binding.root.context)
             view.tag = TAG
@@ -72,7 +76,7 @@ class LabourOrDeliveryFragment : BaseFragment() {
                 it,
                 false,
                 viewModel.timeOfDeliveryMap,
-                Pair(DefinedParams.TimeOfDelivery,null),
+                Pair(DefinedParams.TimeOfDelivery, null),
                 FormLayout(
                     viewType = "",
                     id = "",
@@ -86,28 +90,21 @@ class LabourOrDeliveryFragment : BaseFragment() {
         }
     }
 
-    private var timeOfDeliverySingleSelectionCallback: ((selectedID: Any?, elementId: Pair<String,String?>, serverViewModel: FormLayout, name: String?) -> Unit)? =
+    private var timeOfDeliverySingleSelectionCallback: ((selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit)? =
         { selectedID, _, _, _ ->
             viewModel.timeOfDeliveryMap[DefinedParams.TimeOfDelivery] = selectedID as String
         }
 
-    private var timeOfLabourOnsetSingleSelectionCallback: ((selectedID: Any?, elementId: Pair<String,String?>, serverViewModel: FormLayout, name: String?) -> Unit)? =
+    private var timeOfLabourOnsetSingleSelectionCallback: ((selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit)? =
         { selectedID, _, _, _ ->
             viewModel.timeOfLabourOnsetMap[DefinedParams.TimeOfLabourOnset] = selectedID as String
         }
 
     private fun getDataFlowData(): ArrayList<Map<String, Any>> {
         val flowList = ArrayList<Map<String, Any>>()
-        flowList.add(getOptionMap(getString(R.string.am)))
-        flowList.add(getOptionMap(getString(R.string.pm)))
+        flowList.add(CommonUtils.getOptionMap(getString(R.string.am), getString(R.string.am)))
+        flowList.add(CommonUtils.getOptionMap(getString(R.string.pm), getString(R.string.pm)))
         return flowList
-    }
-
-    private fun getOptionMap(value: String): Map<String, Any> {
-        val map = HashMap<String, Any>()
-        map[DefinedParams.ID] = value
-        map[DefinedParams.NAME] = value
-        return map
     }
 
     private fun initializeDatePicker() {
@@ -143,51 +140,111 @@ class LabourOrDeliveryFragment : BaseFragment() {
         }
     }
 
-    private fun spinnerForDeliveryType() {
+
+    private fun attachObserver() {
+        viewModel.labourDeliveryMetaList.observe(viewLifecycleOwner) { resource ->
+            when (resource.state) {
+                ResourceState.LOADING -> {
+                    showProgress()
+                }
+
+                ResourceState.SUCCESS -> {
+                    resource.data?.let { listItems ->
+                        initializeDeliveryTypeItem(listItems)
+                        initializeDeliveryAtItem(listItems)
+                        initializeDeliveryByItem(listItems)
+                        initializeDeliveryStatusItem(listItems)
+                    }
+                    hideProgress()
+                }
+
+                ResourceState.ERROR -> {
+                    hideProgress()
+                }
+            }
+
+        }
+    }
+
+    private fun initializeDeliveryStatusItem(listItems: List<LabourDeliveryMetaEntity>) {
         val list = arrayListOf<Map<String, Any>>()
         list.add(
             hashMapOf<String, Any>(
-                DefinedParams.NAME to "Select",
-                DefinedParams.ID to DefinedParams.DefaultSelectID
+                DefinedParams.NAME to DefinedParams.DefaultIDLabel,
+                DefinedParams.ID to DefinedParams.DefaultID
             )
         )
-        list.add(
-            hashMapOf<String, Any>(
-                DefinedParams.NAME to "Type 2",
-                DefinedParams.ID to "1L"
+        listItems.filter { it.category == MedicalReviewTypeEnums.DeliveryStatus.name }.forEach {
+            list.add(
+                hashMapOf<String, Any>(
+                    DefinedParams.NAME to it.name,
+                    DefinedParams.ID to it.id
+                )
             )
-        )
-        list.add(
-            hashMapOf<String, Any>(
-                DefinedParams.NAME to "Type 3",
-                DefinedParams.ID to "2L"
-            )
-        )
-        setListenerToDeliveryType(list)
-        setListenerToDeliveryAt(list)
-        setListenerToDeliveryBy(list)
-        setListenerToDeliveryStatus(list)
-    }
-
-    private fun setListenerToDeliveryStatus(list: ArrayList<Map<String, Any>>) {
+        }
         val adapter = CustomSpinnerAdapter(requireContext())
         adapter.setData(list)
         binding.etDeliveryStatus.adapter = adapter
     }
 
-    private fun setListenerToDeliveryBy(list: ArrayList<Map<String, Any>>) {
-        val adapter = CustomSpinnerAdapter(requireContext())
-        adapter.setData(list)
-        binding.etDeliveryBy.adapter = adapter
-    }
-
-    private fun setListenerToDeliveryAt(list: ArrayList<Map<String, Any>>) {
+    private fun initializeDeliveryAtItem(listItems: List<LabourDeliveryMetaEntity>) {
+        val list = arrayListOf<Map<String, Any>>()
+        list.add(
+            hashMapOf<String, Any>(
+                DefinedParams.NAME to DefinedParams.DefaultIDLabel,
+                DefinedParams.ID to DefinedParams.DefaultID
+            )
+        )
+        listItems.filter { it.category == MedicalReviewTypeEnums.DeliveryAt.name }.forEach {
+            list.add(
+                hashMapOf<String, Any>(
+                    DefinedParams.NAME to it.name,
+                    DefinedParams.ID to it.id
+                )
+            )
+        }
         val adapter = CustomSpinnerAdapter(requireContext())
         adapter.setData(list)
         binding.etDeliveryAt.adapter = adapter
     }
 
-    private fun setListenerToDeliveryType(list: ArrayList<Map<String, Any>>) {
+    private fun initializeDeliveryByItem(listItems: List<LabourDeliveryMetaEntity>) {
+        val list = arrayListOf<Map<String, Any>>()
+        list.add(
+            hashMapOf<String, Any>(
+                DefinedParams.NAME to DefinedParams.DefaultIDLabel,
+                DefinedParams.ID to DefinedParams.DefaultID
+            )
+        )
+        listItems.filter { it.category == MedicalReviewTypeEnums.DeliveryBy.name }.forEach {
+            list.add(
+                hashMapOf<String, Any>(
+                    DefinedParams.NAME to it.name,
+                    DefinedParams.ID to it.id
+                )
+            )
+        }
+        val adapter = CustomSpinnerAdapter(requireContext())
+        adapter.setData(list)
+        binding.etDeliveryBy.adapter = adapter
+    }
+
+    private fun initializeDeliveryTypeItem(listItems: List<LabourDeliveryMetaEntity>) {
+        val list = arrayListOf<Map<String, Any>>()
+        list.add(
+            hashMapOf<String, Any>(
+                DefinedParams.NAME to DefinedParams.DefaultIDLabel,
+                DefinedParams.ID to DefinedParams.DefaultID
+            )
+        )
+        listItems.filter { it.category == MedicalReviewTypeEnums.DeliveryType.name }.forEach {
+            list.add(
+                hashMapOf<String, Any>(
+                    DefinedParams.NAME to it.name,
+                    DefinedParams.ID to it.id
+                )
+            )
+        }
         val adapter = CustomSpinnerAdapter(requireContext())
         adapter.setData(list)
         binding.etDeliveryType.adapter = adapter

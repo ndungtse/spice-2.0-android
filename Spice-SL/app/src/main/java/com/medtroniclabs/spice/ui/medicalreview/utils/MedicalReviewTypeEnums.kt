@@ -9,5 +9,16 @@ enum class MedicalReviewTypeEnums{
     patient_status,
     ObstetricExaminations,
     PregnancyHistories,
-    BloodGroup
+    BloodGroup,
+    Mother,
+    LabourDelivery,
+    Neonate,
+    DeliveryAt,
+    DeliveryBy,
+    DeliveryType,
+    DeliveryStatus,
+    NeonateOutcome,
+    RiskFactors,
+    ConditionOfMother,
+    MotherDeliveryStatus
 }

@@ -25,7 +25,8 @@ object SecuredPreference {
         USER_FHIR_ID,
         ORGANIZATION_FHIR_ID,
         IS_MOTHER_NEONATE_LOADEDANC,
-        IS_UNDER_TWO_MONTHS_LOADED
+        IS_UNDER_TWO_MONTHS_LOADED,
+        IS_LABOUR_DELIVERY_LOADED
     }
 
 
@@ -392,6 +393,7 @@ object SecuredPreference {
         remove(EnvironmentKey.IS_ABOVE_FIVE_YEARS_LOADED.name)
         remove(EnvironmentKey.IS_MOTHER_NEONATE_LOADEDANC.name)
         remove(EnvironmentKey.IS_UNDER_TWO_MONTHS_LOADED.name)
+        remove(EnvironmentKey.IS_LABOUR_DELIVERY_LOADED.name)
         return true
     }
 

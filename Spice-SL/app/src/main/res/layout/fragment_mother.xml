@@ -191,7 +191,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/seperatorColon3"
             app:layout_constraintTop_toTopOf="@+id/tvRiskFactorLabel"
-            app:singleSelection="true" />
+             />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/cgRiskFactorsError"

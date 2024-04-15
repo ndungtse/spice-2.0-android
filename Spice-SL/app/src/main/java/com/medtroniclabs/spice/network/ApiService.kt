@@ -8,6 +8,7 @@ import com.medtroniclabs.spice.data.AboveFiveYearsSummarySubmitRequest
 import com.medtroniclabs.spice.data.FormMetaRequest
 import com.medtroniclabs.spice.data.FormRequest
 import com.medtroniclabs.spice.data.FormResponse
+import com.medtroniclabs.spice.data.LabourDeliveryMetaResponse
 import com.medtroniclabs.spice.data.LoginResponse
 import com.medtroniclabs.spice.data.MetaDataResponse
 import com.medtroniclabs.spice.data.MotherNeonateAncMetaResponse
@@ -84,4 +85,6 @@ interface ApiService {
     @POST("/spice-service/medical-review/summary-create")
     suspend fun aboveFiveYearsSummaryCreate(@Body request: AboveFiveYearsSummarySubmitRequest): Response<APIResponse<HashMap<String,Any>>>
 
+    @POST("/spice-service/static-data/meta-data/mother-delivery")
+    suspend fun getLabourDeliveryMetaData() : Response<APIResponse<LabourDeliveryMetaResponse>>
 }

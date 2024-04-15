@@ -8,6 +8,7 @@ import com.medtroniclabs.spice.data.AboveFiveYearsSummarySubmitRequest
 import com.medtroniclabs.spice.data.FormMetaRequest
 import com.medtroniclabs.spice.data.FormRequest
 import com.medtroniclabs.spice.data.FormResponse
+import com.medtroniclabs.spice.data.LabourDeliveryMetaResponse
 import com.medtroniclabs.spice.data.LoginResponse
 import com.medtroniclabs.spice.data.MetaDataResponse
 import com.medtroniclabs.spice.data.MotherNeonateAncMetaResponse
@@ -99,4 +100,7 @@ class ApiHelperImpl @Inject constructor(private val apiService: ApiService) : Ap
         return apiService.aboveFiveYearsSummaryCreate(request)
     }
 
+    override suspend fun getLabourDeliveryMetaData(): Response<APIResponse<LabourDeliveryMetaResponse>> {
+        return apiService.getLabourDeliveryMetaData()
+    }
 }

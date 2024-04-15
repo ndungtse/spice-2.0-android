@@ -4,6 +4,8 @@ import androidx.lifecycle.LiveData
 import com.medtroniclabs.spice.data.DiseaseCategoryItems
 import com.medtroniclabs.spice.data.ExaminationListItems
 import com.medtroniclabs.spice.data.ExaminationsComplaintItems
+import com.medtroniclabs.spice.data.LabourDeliveryMetaEntity
+import com.medtroniclabs.spice.data.LastCreatedAtAndPatientId
 import com.medtroniclabs.spice.data.VillageInfo
 import com.medtroniclabs.spice.data.offlinesync.model.HouseHold
 import com.medtroniclabs.spice.data.offlinesync.model.HouseHoldMember
@@ -125,4 +127,8 @@ interface RoomHelper {
     ): LiveData<List<ExaminationsComplaintItems>>
     suspend fun deleteExaminationsList()
     suspend fun saveExaminationsList(diagnosisList: ArrayList<ExaminationListItems>)
+
+    suspend fun insertLabourDelivery(symptomEntity: List<LabourDeliveryMetaEntity>)
+    suspend fun deleteLabourDelivery()
+    suspend fun getLabourDelivery(): List<LabourDeliveryMetaEntity>
 }

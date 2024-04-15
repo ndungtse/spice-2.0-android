@@ -8,20 +8,25 @@ import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DefinedParams
+import com.medtroniclabs.spice.data.LabourDeliveryMetaEntity
+import com.medtroniclabs.spice.data.model.ChipViewItemModel
 import com.medtroniclabs.spice.databinding.FragmentNeonateBinding
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.ui.SingleSelectionCustomView
+import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.TagListCustomView
-import com.medtroniclabs.spice.ui.mypatients.viewmodel.MedicalReviewBaseViewModel
+import com.medtroniclabs.spice.ui.medicalreview.labourDelivery.LabourDeliveryViewModel
+import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 
 class NeonateFragment : BaseFragment() {
 
     private lateinit var binding: FragmentNeonateBinding
     private lateinit var cgNeonateOutcome: TagListCustomView
     private lateinit var cgSignSymptomsObserved: TagListCustomView
-    private val viewModel: MedicalReviewBaseViewModel by activityViewModels()
+    private val viewModel: LabourDeliveryViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -34,8 +39,60 @@ class NeonateFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initializeTagView()
+        attachObserver()
         initializeGenderLabel()
         initializeStateOfBabyLabel()
+    }
+
+    private fun attachObserver() {
+        viewModel.labourDeliveryMetaList.observe(viewLifecycleOwner) { resource ->
+            when (resource.state) {
+                ResourceState.LOADING -> {
+                    showProgress()
+                }
+
+                ResourceState.SUCCESS -> {
+                    resource.data?.let { listItems ->
+                        initializeNeonateOutcomeItems(listItems)
+                        initializeSignsSymptomsItems(listItems)
+                    }
+                    hideProgress()
+                }
+
+                ResourceState.ERROR -> {
+                    hideProgress()
+                }
+            }
+
+        }
+    }
+
+    private fun initializeSignsSymptomsItems(listItems: List<LabourDeliveryMetaEntity>) {
+        val chipItemList = ArrayList<ChipViewItemModel>()
+        listItems.filter { it.type == MedicalReviewTypeEnums.Neonate.name }.forEach {
+            chipItemList.add(
+                ChipViewItemModel(
+                    id = it.id,
+                    name = it.name,
+                    type = it.type
+                )
+            )
+        }
+        cgSignSymptomsObserved.addChipItemList(chipItemList)
+    }
+
+    private fun initializeNeonateOutcomeItems(listItems: List<LabourDeliveryMetaEntity>) {
+        val chipItemList = ArrayList<ChipViewItemModel>()
+        listItems.filter { it.category == MedicalReviewTypeEnums.NeonateOutcome.name }.forEach {
+            chipItemList.add(
+                ChipViewItemModel(
+                    id = it.id,
+                    name = it.name,
+                    type = it.type
+                )
+            )
+        }
+        cgNeonateOutcome.addChipItemList(chipItemList)
     }
 
     private fun initializeStateOfBabyLabel() {
@@ -90,15 +147,15 @@ class NeonateFragment : BaseFragment() {
 
     private fun getGenderFlowData(): ArrayList<Map<String, Any>> {
         val flowList = ArrayList<Map<String, Any>>()
-        flowList.add(getOptionMap(getString(R.string.male)))
-        flowList.add(getOptionMap(getString(R.string.female)))
+        flowList.add(CommonUtils.getOptionMap(getString(R.string.male), getString(R.string.male)))
+        flowList.add(CommonUtils.getOptionMap(getString(R.string.female), getString(R.string.female)))
         return flowList
     }
 
     private fun getStateOfBabyFlowData(): ArrayList<Map<String, Any>> {
         val flowList = ArrayList<Map<String, Any>>()
-        flowList.add(getOptionMap(getString(R.string.normal)))
-        flowList.add(getOptionMap(getString(R.string.abnormal)))
+        flowList.add(CommonUtils.getOptionMap(getString(R.string.normal), getString(R.string.normal)))
+        flowList.add(CommonUtils.getOptionMap(getString(R.string.abnormal), getString(R.string.abnormal)))
         return flowList
     }
 
@@ -113,8 +170,6 @@ class NeonateFragment : BaseFragment() {
         cgNeonateOutcome = TagListCustomView(binding.root.context, binding.cgNeonateOutcome)
         cgSignSymptomsObserved =
             TagListCustomView(binding.root.context, binding.cgSignsSymptomsObserved)
-        cgNeonateOutcome.addChipItemList(viewModel.getNeonateOutcome())
-        cgSignSymptomsObserved.addChipItemList(viewModel.getSignSymptomsObserved())
     }
 
     fun validateInput(): Boolean {
