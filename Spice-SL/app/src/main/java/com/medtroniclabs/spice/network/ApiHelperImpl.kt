@@ -10,6 +10,7 @@ import com.medtroniclabs.spice.data.FormResponse
 import com.medtroniclabs.spice.data.LoginResponse
 import com.medtroniclabs.spice.data.MetaDataResponse
 import com.medtroniclabs.spice.data.MotherNeonateAncMetaResponse
+import com.medtroniclabs.spice.data.UnderTwoMonthsMetaResponse
 import com.medtroniclabs.spice.data.UserSymptomsEntity
 import com.medtroniclabs.spice.data.model.AboveFiveYearsSubmitRequest
 import com.medtroniclabs.spice.data.offlinesync.model.HouseHold
@@ -87,5 +88,9 @@ class ApiHelperImpl @Inject constructor(private val apiService: ApiService) : Ap
 
     override suspend fun getMotherNeoNateAncStaticData(): Response<APIResponse<MotherNeonateAncMetaResponse>> {
         return apiService.getMotherNeoNateAncStaticData()
+    }
+
+    override suspend fun getUnderTwoMonthsMetaData(): Response<APIResponse<UnderTwoMonthsMetaResponse>> {
+        return apiService.getUnderTwoMonthsMetaData()
     }
 }

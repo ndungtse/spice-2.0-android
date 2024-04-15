@@ -3,17 +3,21 @@ package com.medtroniclabs.spice.db.local
 import androidx.lifecycle.LiveData
 import androidx.sqlite.db.SimpleSQLiteQuery
 import com.medtroniclabs.spice.data.DiseaseCategoryItems
+import com.medtroniclabs.spice.data.ExaminationListItems
 import com.medtroniclabs.spice.data.ExaminationsComplaintItems
-import com.medtroniclabs.spice.data.LastCreatedAtAndPatientId
 import com.medtroniclabs.spice.data.VillageInfo
 import com.medtroniclabs.spice.db.dao.AboveFiveYearsDAO
+import com.medtroniclabs.spice.data.offlinesync.model.HouseHold
+import com.medtroniclabs.spice.data.offlinesync.model.HouseHoldMember
+import com.medtroniclabs.spice.data.offlinesync.utils.OfflineSyncStatus
 import com.medtroniclabs.spice.db.dao.AssessmentDAO
 import com.medtroniclabs.spice.db.dao.DiagnosisDAO
+import com.medtroniclabs.spice.db.dao.ExaminationsComplaintsDAO
+import com.medtroniclabs.spice.db.dao.ExaminationsDAO
 import com.medtroniclabs.spice.db.dao.HouseholdDAO
 import com.medtroniclabs.spice.db.dao.MemberClinicalDAO
 import com.medtroniclabs.spice.db.dao.MemberDAO
 import com.medtroniclabs.spice.db.dao.MetaDataDAO
-import com.medtroniclabs.spice.db.dao.ExaminationsComplaintsDAO
 import com.medtroniclabs.spice.db.entity.AssessmentEntity
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowConditionEntity
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowEntity
@@ -32,9 +36,6 @@ import com.medtroniclabs.spice.db.response.HouseholdMemberCount
 import com.medtroniclabs.spice.db.response.VillageBasicDetails
 import com.medtroniclabs.spice.model.MemberDobGenderModel
 import com.medtroniclabs.spice.model.assessment.AssessmentMemberDetails
-import com.medtroniclabs.spice.data.offlinesync.model.HouseHold
-import com.medtroniclabs.spice.data.offlinesync.model.HouseHoldMember
-import com.medtroniclabs.spice.data.offlinesync.utils.OfflineSyncStatus
 import javax.inject.Inject
 
 class RoomHelperImpl @Inject constructor(
@@ -45,7 +46,8 @@ class RoomHelperImpl @Inject constructor(
     private val examinationsComplaintsDAO: ExaminationsComplaintsDAO,
     private val diagnosisDAO: DiagnosisDAO,
     private val memberClinicalDAO: MemberClinicalDAO,
-    private val aboveFiveYearsDAO: AboveFiveYearsDAO
+    private val aboveFiveYearsDAO: AboveFiveYearsDAO,
+    private val examinationsDAO: ExaminationsDAO
 ) : RoomHelper {
     override suspend fun saveHouseHoldEntry(householdEntity: HouseholdEntity): Long {
         return householdDAO.insertHouseHold(householdEntity)
@@ -373,5 +375,12 @@ class RoomHelperImpl @Inject constructor(
         category: String
     ): LiveData<List<ExaminationsComplaintItems>> {
         return examinationsComplaintsDAO.getExaminationsComplaintsForAnc(category)
+    }
+
+    override suspend fun deleteExaminationsList() {
+        examinationsDAO.deleteExaminationsList()
+    }
+    override suspend fun saveExaminationsList(examinationList: ArrayList<ExaminationListItems>) {
+        examinationsDAO.saveExaminationsList(examinationList)
     }
 }

@@ -1,0 +1,395 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/CardView_Style"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardUseCompatPadding="true">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <View
+            android:id="@+id/viewClinicalSummaryFragment"
+            android:layout_width="@dimen/_0dp"
+            android:layout_height="@dimen/_0dp"
+            android:background="@color/card_background"
+            app:layout_constraintBottom_toBottomOf="@id/titleClinicalSummaryFragment"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/titleClinicalSummaryFragment"
+            style="@style/Form_Header_Style"
+            android:layout_width="@dimen/_0dp"
+            android:gravity="center"
+            android:paddingHorizontal="@dimen/_10sdp"
+            android:paddingVertical="@dimen/_10sdp"
+            android:text="@string/clinical_summary"
+            android:textColor="@color/house_hold_title"
+            android:textSize="@dimen/_16ssp"
+            app:layout_constraintEnd_toEndOf="@id/viewClinicalSummaryFragment"
+            app:layout_constraintStart_toStartOf="@id/viewClinicalSummaryFragment"
+            app:layout_constraintTop_toTopOf="@id/viewClinicalSummaryFragment" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/centerGuideline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.5" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/rightCenterGuideline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.75" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvWeightLabel"
+            android:layout_width="@dimen/_0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_24sdp"
+            android:layout_marginTop="@dimen/_16sdp"
+            android:hint="@string/weight_in_kgs"
+            android:textColor="@color/table_title"
+            android:textSize="@dimen/_16ssp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/titleClinicalSummaryFragment" />
+
+        <androidx.appcompat.widget.AppCompatEditText
+            android:id="@+id/etWeight"
+            style="@style/Form_MH_Style_with_padding"
+            android:layout_width="@dimen/_0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_8sdp"
+            android:layout_marginEnd="@dimen/_24sdp"
+            android:background="@drawable/edittext_background"
+            android:hint="@string/weight"
+            android:inputType="numberDecimal"
+            android:maxLength="5"
+            android:paddingStart="@dimen/_10sdp"
+            android:textAlignment="textStart"
+            android:textColor="@color/grey_black"
+            android:textColorHint="@color/btn_disable_grey"
+            android:textSize="@dimen/_16ssp"
+            app:layout_constraintEnd_toEndOf="@+id/centerGuideline"
+            app:layout_constraintStart_toStartOf="@+id/tvWeightLabel"
+            app:layout_constraintTop_toBottomOf="@+id/tvWeightLabel" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvWAZLabel"
+            android:layout_width="@dimen/_0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_16sdp"
+            android:text="@string/waz"
+            android:textColor="@color/table_title"
+            android:textSize="@dimen/_16ssp"
+            app:layout_constraintStart_toStartOf="@+id/tvWeightLabel"
+            app:layout_constraintTop_toBottomOf="@+id/etWeight" />
+
+        <androidx.appcompat.widget.AppCompatEditText
+            android:id="@+id/etWAZ"
+            style="@style/Form_MH_Style_with_padding"
+            android:layout_width="@dimen/_0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_8sdp"
+            android:layout_marginEnd="@dimen/_24sdp"
+            android:background="@drawable/edittext_background"
+            android:hint="@string/waz"
+            android:paddingStart="@dimen/_10sdp"
+            android:textAlignment="textStart"
+            android:textColor="@color/grey_black"
+            android:textColorHint="@color/btn_disable_grey"
+            android:textSize="@dimen/_16ssp"
+            app:layout_constraintEnd_toEndOf="@+id/centerGuideline"
+            app:layout_constraintStart_toStartOf="@+id/tvWAZLabel"
+            app:layout_constraintTop_toBottomOf="@+id/tvWAZLabel" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvTemperatureLabel"
+            android:layout_width="@dimen/_0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_16sdp"
+            android:text="@string/temperature_in_c"
+            android:textColor="@color/table_title"
+            android:textSize="@dimen/_16ssp"
+            app:layout_constraintStart_toStartOf="@+id/tvWAZLabel"
+            app:layout_constraintTop_toBottomOf="@+id/etWAZ" />
+
+        <androidx.appcompat.widget.AppCompatEditText
+            android:id="@+id/etTemperature"
+            style="@style/Form_MH_Style_with_padding"
+            android:layout_width="@dimen/_0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_8sdp"
+            android:layout_marginEnd="@dimen/_24sdp"
+            android:background="@drawable/edittext_background"
+            android:hint="@string/temperature"
+            android:inputType="numberDecimal"
+            android:maxLength="3"
+            android:paddingStart="@dimen/_10sdp"
+            android:textAlignment="textStart"
+            android:textColor="@color/grey_black"
+            android:textColorHint="@color/btn_disable_grey"
+            android:textSize="@dimen/_16ssp"
+            app:layout_constraintEnd_toEndOf="@+id/centerGuideline"
+            app:layout_constraintStart_toStartOf="@+id/tvTemperatureLabel"
+            app:layout_constraintTop_toBottomOf="@+id/tvTemperatureLabel" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvRespirationRateLabel"
+            android:layout_width="@dimen/_0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_16sdp"
+            android:text="@string/respiration_rate"
+            android:textColor="@color/table_title"
+            android:textSize="@dimen/_16ssp"
+            app:layout_constraintStart_toStartOf="@+id/tvWAZLabel"
+            app:layout_constraintTop_toBottomOf="@+id/etTemperature" />
+
+        <androidx.appcompat.widget.AppCompatEditText
+            android:id="@+id/etRespirationRate"
+            style="@style/Form_MH_Style_with_padding"
+            android:layout_width="@dimen/_0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_8sdp"
+            android:layout_marginEnd="@dimen/_24sdp"
+            android:background="@drawable/edittext_background"
+            android:hint="@string/rate"
+            android:inputType="number"
+            android:maxLength="2"
+            android:paddingStart="@dimen/_10sdp"
+            android:textAlignment="textStart"
+            android:textColor="@color/grey_black"
+            android:textColorHint="@color/btn_disable_grey"
+            android:textSize="@dimen/_16ssp"
+            app:layout_constraintEnd_toEndOf="@+id/centerGuideline"
+            app:layout_constraintStart_toStartOf="@+id/tvRespirationRateLabel"
+            app:layout_constraintTop_toBottomOf="@+id/tvRespirationRateLabel" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvRespirationRateMinute"
+            android:layout_width="@dimen/_0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/_16sdp"
+            android:text="@string/minute"
+            android:textColor="@color/table_title"
+            android:textSize="@dimen/_14ssp"
+            app:layout_constraintBottom_toBottomOf="@+id/etRespirationRate"
+            app:layout_constraintEnd_toEndOf="@+id/etRespirationRate"
+            app:layout_constraintTop_toTopOf="@+id/etRespirationRate" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvHeightLabel"
+            android:layout_width="@dimen/_0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_8sdp"
+            android:text="@string/height_in_cms"
+            android:textColor="@color/table_title"
+            android:textSize="@dimen/_16ssp"
+            app:layout_constraintStart_toStartOf="@+id/centerGuideline"
+            app:layout_constraintTop_toBottomOf="@+id/titleClinicalSummaryFragment"
+            app:layout_constraintTop_toTopOf="@+id/tvWeightLabel" />
+
+        <androidx.appcompat.widget.AppCompatEditText
+            android:id="@+id/etHeight"
+            style="@style/Form_MH_Style_with_padding"
+            android:layout_width="@dimen/_0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/_24sdp"
+            android:background="@drawable/edittext_background"
+            android:hint="@string/height"
+            android:inputType="numberDecimal"
+            android:maxLength="5"
+            android:paddingStart="@dimen/_10sdp"
+            android:textAlignment="textStart"
+            android:textColor="@color/grey_black"
+            android:textColorHint="@color/btn_disable_grey"
+            android:textSize="@dimen/_16ssp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/tvHeightLabel"
+            app:layout_constraintTop_toBottomOf="@+id/tvHeightLabel"
+            app:layout_constraintTop_toTopOf="@+id/etWeight" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvWHZLabel"
+            android:layout_width="@dimen/_0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_8sdp"
+            android:text="@string/whz"
+            android:textColor="@color/table_title"
+            android:textSize="@dimen/_16ssp"
+            app:layout_constraintStart_toStartOf="@+id/centerGuideline"
+            app:layout_constraintTop_toBottomOf="@+id/etHeight"
+            app:layout_constraintTop_toTopOf="@+id/tvWAZLabel" />
+
+        <androidx.appcompat.widget.AppCompatEditText
+            android:id="@+id/etWHZ"
+            style="@style/Form_MH_Style_with_padding"
+            android:layout_width="@dimen/_0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/_24sdp"
+            android:background="@drawable/edittext_background"
+            android:hint="@string/whz"
+            android:paddingStart="@dimen/_10sdp"
+            android:textAlignment="textStart"
+            android:textColor="@color/grey_black"
+            android:textColorHint="@color/btn_disable_grey"
+            android:textSize="@dimen/_16ssp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/tvWHZLabel"
+            app:layout_constraintTop_toBottomOf="@+id/tvWHZLabel"
+            app:layout_constraintTop_toTopOf="@+id/etWAZ" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvImmunisationLabel"
+            android:layout_width="@dimen/_0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_8sdp"
+            android:text="@string/immunisation_status"
+            android:textColor="@color/table_title"
+            android:textSize="@dimen/_16ssp"
+            app:layout_constraintStart_toStartOf="@+id/centerGuideline"
+            app:layout_constraintTop_toBottomOf="@+id/etWHZ"
+            app:layout_constraintTop_toTopOf="@+id/tvTemperatureLabel" />
+
+        <androidx.appcompat.widget.AppCompatSpinner
+            android:id="@+id/etImmunisationStatus"
+            style="@style/Form_Spinner_Style"
+            android:layout_width="@dimen/_0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_5sdp"
+            android:layout_marginEnd="@dimen/_24sdp"
+            android:background="@drawable/edittext_background"
+            android:textColor="#D0D0D0"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/tvImmunisationLabel"
+            app:layout_constraintTop_toBottomOf="@+id/tvImmunisationLabel"
+            app:layout_constraintTop_toTopOf="@+id/etTemperature" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvRepeatLabel"
+            android:layout_width="@dimen/_0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_8sdp"
+            android:text="@string/repeat_if_60"
+            android:textColor="@color/table_title"
+            android:textSize="@dimen/_16ssp"
+            app:layout_constraintStart_toStartOf="@+id/centerGuideline"
+            app:layout_constraintTop_toBottomOf="@+id/etImmunisationStatus"
+            app:layout_constraintTop_toTopOf="@+id/tvRespirationRateLabel" />
+
+        <androidx.appcompat.widget.AppCompatEditText
+            android:id="@+id/etRepeat"
+            style="@style/Form_MH_Style_with_padding"
+            android:layout_width="@dimen/_0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/_24sdp"
+            android:background="@drawable/edittext_background"
+            android:hint="@string/rate"
+            android:inputType="number"
+            android:maxLength="2"
+            android:paddingStart="@dimen/_10sdp"
+            android:textAlignment="textStart"
+            android:textColor="@color/grey_black"
+            android:textColorHint="@color/btn_disable_grey"
+            android:textSize="@dimen/_16ssp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/tvRepeatLabel"
+            app:layout_constraintTop_toBottomOf="@+id/tvRepeatLabel"
+            app:layout_constraintTop_toTopOf="@+id/etRespirationRate" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvRepeatMinute"
+            android:layout_width="@dimen/_0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/_16sdp"
+            android:text=" /minute"
+            android:textColor="@color/table_title"
+            android:textSize="@dimen/_14ssp"
+            app:layout_constraintBottom_toBottomOf="@+id/etRepeat"
+            app:layout_constraintEnd_toEndOf="@+id/etRepeat"
+            app:layout_constraintTop_toTopOf="@+id/etRepeat" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvBreastFeedingLabel"
+            android:layout_width="@dimen/_0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_16sdp"
+            android:textColor="@color/table_title"
+            android:textSize="@dimen/_16ssp"
+            android:text="@string/breast_feeding"
+            app:layout_constraintStart_toStartOf="@+id/tvWAZLabel"
+            app:layout_constraintTop_toBottomOf="@+id/etRespirationRate" />
+
+        <LinearLayout
+            android:id="@+id/llBreastFeedingStatus"
+            android:layout_width="@dimen/_0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_8sdp"
+            style="@style/Activities_Card_Style"
+            android:orientation="horizontal"
+            android:paddingBottom="@dimen/_16sdp"
+            app:layout_constraintEnd_toEndOf="@+id/etRespirationRate"
+            app:layout_constraintStart_toStartOf="@+id/tvBreastFeedingLabel"
+            app:layout_constraintTop_toBottomOf="@+id/tvBreastFeedingLabel" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvExclusiveBreastFeedingLabel"
+            android:layout_width="@dimen/_0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_16sdp"
+            android:text="@string/exclusive_breast_feeding"
+            android:textColor="@color/table_title"
+            android:textSize="@dimen/_16ssp"
+            app:layout_constraintStart_toStartOf="@+id/tvWAZLabel"
+            app:layout_constraintTop_toBottomOf="@+id/llBreastFeedingStatus" />
+
+        <LinearLayout
+            android:id="@+id/llExclusiveBreastFeedingStatus"
+            android:layout_width="@dimen/_0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_8sdp"
+            android:orientation="horizontal"
+            android:paddingBottom="@dimen/_16sdp"
+            app:layout_constraintEnd_toEndOf="@+id/etRespirationRate"
+            app:layout_constraintStart_toStartOf="@+id/tvExclusiveBreastFeedingLabel"
+            app:layout_constraintTop_toBottomOf="@+id/tvExclusiveBreastFeedingLabel" />
+
+        <androidx.constraintlayout.widget.Group
+            android:visibility="gone"
+            android:id="@+id/exclusiveBreastFeedingGroup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:constraint_referenced_ids="tvExclusiveBreastFeedingLabel, llExclusiveBreastFeedingStatus" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvVitaminAForMotherLabel"
+            android:layout_width="@dimen/_0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_8sdp"
+            android:text="@string/vitamin_a_for_mother"
+            android:textColor="@color/table_title"
+            android:textSize="@dimen/_16ssp"
+            app:layout_constraintStart_toStartOf="@+id/centerGuideline"
+            app:layout_constraintTop_toBottomOf="@+id/etRepeat"
+            app:layout_constraintTop_toTopOf="@+id/tvBreastFeedingLabel" />
+
+        <LinearLayout
+            android:id="@+id/etVitaminAForMother"
+            android:layout_width="@dimen/_0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_8sdp"
+            android:orientation="horizontal"
+            android:paddingBottom="@dimen/_16sdp"
+            app:layout_constraintEnd_toEndOf="@+id/etRepeat"
+            app:layout_constraintStart_toStartOf="@+id/tvVitaminAForMotherLabel"
+            app:layout_constraintTop_toBottomOf="@+id/tvVitaminAForMotherLabel" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</com.google.android.material.card.MaterialCardView>

@@ -10,6 +10,7 @@ import com.medtroniclabs.spice.data.FormResponse
 import com.medtroniclabs.spice.data.LoginResponse
 import com.medtroniclabs.spice.data.MetaDataResponse
 import com.medtroniclabs.spice.data.MotherNeonateAncMetaResponse
+import com.medtroniclabs.spice.data.UnderTwoMonthsMetaResponse
 import com.medtroniclabs.spice.data.UserSymptomsEntity
 import com.medtroniclabs.spice.data.model.AboveFiveYearsSubmitRequest
 import com.medtroniclabs.spice.data.offlinesync.model.HouseHold
@@ -52,7 +53,6 @@ interface ApiService {
     @POST("/offline-service/offline-sync/fetch-synced-data")
     suspend fun fetchSyncedData(@Body request: RequestAllEntities): Response<APIResponse<ResponseInitialDownload>>
 
-
     @POST("spice-service/patient/list")
     suspend fun getPatients(@Body request: PatientsDataModel): APIResponse<List<PatientListRespModel>>
 
@@ -76,4 +76,8 @@ interface ApiService {
 
     @POST("/spice-service/static-data/meta-data/mother-neonate-anc")
     suspend fun getMotherNeoNateAncStaticData(): Response<APIResponse<MotherNeonateAncMetaResponse>>
+
+    @POST("/spice-service/static-data/meta-data/iccm-under-two-months")
+    suspend fun getUnderTwoMonthsMetaData(): Response<APIResponse<UnderTwoMonthsMetaResponse>>
+
 }

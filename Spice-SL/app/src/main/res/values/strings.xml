@@ -281,6 +281,24 @@
     <string name="pnc_visit">PNC Visit</string>
     <string name="exit_reason">If you leave this screen, your entered data will not be saved.</string>
     <string name="add_new_member_small">Add New Member</string>
+    <string name="birth_history">Birth History</string>
+    <string name="breathing_problem_at_birth">Breathing Problem at birth</string>
+    <string name="birth_weight">Birth Weight</string>
+    <string name="clinical_summary"><![CDATA[Clinical Summary & Vital Signs]]></string>
+    <string name="weight_in_kgs">Weight (in Kgs)</string>
+    <string name="waz">WAZ</string>
+    <string name="temperature_in_c">Temperature (in C)</string>
+    <string name="temperature">Temperature</string>
+    <string name="respiration_rate">Respiration Rate</string>
+    <string name="rate">Rate</string>
+    <string name="minute">minute</string>
+    <string name="height_in_cms">Height (in cms)</string>
+    <string name="whz">WHZ</string>
+    <string name="immunisation_status">Immunisation Status</string>
+    <string name="repeat_if_60"><![CDATA[Repeat (if >60)]]></string>
+    <string name="breast_feeding">Breast feeding</string>
+    <string name="exclusive_breast_feeding">Exclusive Breast feeding</string>
+    <string name="vitamin_a_for_mother">Vitamin A for mother</string>
     <string name="title_mother">Mother</string>
     <string name="signs_Symptoms_observed">Signs/Symptoms observed</string>
     <string name="general_condition_of_mother">General Condition Of Mother</string>
@@ -296,7 +314,6 @@
     <string name="female">Female</string>
     <string name="state_of_baby">State Of Baby</string>
     <string name="abnormal">Abnormal</string>
-    <string name="birth_weight">Birth Weight (in Kg)</string>
     <string name="signs_symptoms_observed">Signs/Symptoms observed</string>
     <string name="state_of_the_baby">State of the Baby</string>
     <string name="apgar_score">APGAR Score</string>
@@ -329,4 +346,5 @@
     <string name="diastolic_error">Diastolic pressure should be above 30</string>
     <string name="pulse_error">Pulse should be above 35</string>
     <string name="systolic_error">Systolic pressure should be above 30</string>
+    <string name="examination">Examination</string>
 </resources>

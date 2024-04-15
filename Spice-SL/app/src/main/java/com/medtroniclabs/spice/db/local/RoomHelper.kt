@@ -2,6 +2,7 @@ package com.medtroniclabs.spice.db.local
 
 import androidx.lifecycle.LiveData
 import com.medtroniclabs.spice.data.DiseaseCategoryItems
+import com.medtroniclabs.spice.data.ExaminationListItems
 import com.medtroniclabs.spice.data.ExaminationsComplaintItems
 import com.medtroniclabs.spice.data.VillageInfo
 import com.medtroniclabs.spice.data.offlinesync.model.HouseHold
@@ -122,5 +123,6 @@ interface RoomHelper {
     fun getExaminationsComplaintsForAnc(
         category: String
     ): LiveData<List<ExaminationsComplaintItems>>
-
+    suspend fun deleteExaminationsList()
+    suspend fun saveExaminationsList(diagnosisList: ArrayList<ExaminationListItems>)
 }

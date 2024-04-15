@@ -10,6 +10,7 @@ import com.medtroniclabs.spice.data.FormResponse
 import com.medtroniclabs.spice.data.LoginResponse
 import com.medtroniclabs.spice.data.MetaDataResponse
 import com.medtroniclabs.spice.data.MotherNeonateAncMetaResponse
+import com.medtroniclabs.spice.data.UnderTwoMonthsMetaResponse
 import com.medtroniclabs.spice.data.UserSymptomsEntity
 import com.medtroniclabs.spice.data.model.AboveFiveYearsSubmitRequest
 import com.medtroniclabs.spice.data.offlinesync.model.HouseHold
@@ -43,4 +44,5 @@ interface ApiHelper {
     suspend fun createAboveFiveYearsResult(request: AboveFiveYearsSubmitRequest): Response<APIResponse<AboveFiveYearsSummaryDetails>>
     suspend fun getAboveFiveYearsSummaryDetails(patientId: AboveFiveYearsSummaryRequest): Response<APIResponse<AboveFiveYearsSummaryDetails>>
     suspend fun getMotherNeoNateAncStaticData(): Response<APIResponse<MotherNeonateAncMetaResponse>>
+    suspend fun getUnderTwoMonthsMetaData(): Response<APIResponse<UnderTwoMonthsMetaResponse>>
 }

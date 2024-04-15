@@ -27,6 +27,11 @@
             android:screenOrientation="sensorLandscape"
             android:windowSoftInputMode="adjustPan" />
         <activity
+            android:name=".ui.medicalreview.undertwomonths.UnderTwoMonthsBaseActivity"
+            android:exported="false"
+            android:screenOrientation="sensorLandscape"
+            android:windowSoftInputMode="adjustPan"/>
+        <activity
             android:name=".ui.medicalreview.LabourDeliveryBaseActivity"
             android:exported="false"
             android:screenOrientation="sensorLandscape"

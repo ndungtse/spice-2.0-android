@@ -12,7 +12,6 @@ import com.google.android.flexbox.FlexboxLayoutManager
 import com.google.android.flexbox.JustifyContent
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.CommonUtils
-import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.PatientId
 import com.medtroniclabs.spice.databinding.FragmentPatientMenuBinding
 import com.medtroniclabs.spice.ui.BaseFragment
@@ -20,9 +19,9 @@ import com.medtroniclabs.spice.ui.MenuConstants
 import com.medtroniclabs.spice.ui.home.MenuSelectionListener
 import com.medtroniclabs.spice.ui.home.ToolsViewModel
 import com.medtroniclabs.spice.ui.home.adapter.DashboardMenuItemsAdapter
-import com.medtroniclabs.spice.ui.medicalreview.LabourDeliveryBaseActivity
-import com.medtroniclabs.spice.ui.mypatients.MedicalReviewBaseActivity
 import com.medtroniclabs.spice.ui.medicalreview.abovefiveyears.AboveFiveYearsBaseActivity
+import com.medtroniclabs.spice.ui.medicalreview.undertwomonths.UnderTwoMonthsBaseActivity
+import com.medtroniclabs.spice.ui.mypatients.MedicalReviewBaseActivity
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -94,13 +93,16 @@ class PatientMenuFragment : BaseFragment(), MenuSelectionListener {
 //                }
 //                startActivity(intent)
                 // selectFlow
-                val patientId = arguments?.getString(DefinedParams.PatientId, "")
+                val patientId = arguments?.getString(PatientId, "")
                 if (patientId?.isNotBlank() == true) {
                     SelectFlowDialog.newInstance(patientId).show(childFragmentManager, SelectFlowDialog.TAG)
                 }
             }
 
             MenuConstants.UNDER_AGE_FIVE_TO_TWO_MONTHS_ID -> {
+                val intent = Intent(requireContext(), UnderTwoMonthsBaseActivity::class.java)
+                intent.putExtra(PatientId, arguments?.getString(PatientId))
+                startActivity(intent)
             }
 
             MenuConstants.UNDER_AGE_ABOVE_FIVE_YEAR_ID -> {
@@ -119,9 +121,9 @@ class PatientMenuFragment : BaseFragment(), MenuSelectionListener {
     private fun startAssessmentActivity() {
         if (connectivityManager.isNetworkAvailable()) {
             val intent = Intent(requireContext(), MedicalReviewBaseActivity::class.java)
-            val patientId = arguments?.getString(DefinedParams.PatientId, "")
+            val patientId = arguments?.getString(PatientId, "")
             if (patientId?.isNotBlank() == true) {
-                intent.putExtra(DefinedParams.PatientId, patientId)
+                intent.putExtra(PatientId, patientId)
             }
             startActivity(intent)
         } else {
