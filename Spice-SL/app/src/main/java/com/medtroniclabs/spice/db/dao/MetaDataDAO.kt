@@ -87,7 +87,7 @@ interface MetaDataDAO {
     @Query("SELECT * FROM VillageEntity ORDER BY name ASC")
     suspend fun getVillages(): List<VillageEntity>
 
-    @Query("SELECT chiefdomId,code FROM VillageEntity WHERE id =:id")
+    @Query("SELECT chiefdomId,villagecode AS code FROM VillageEntity WHERE id =:id")
     suspend fun getChiefDomAndVillageCodeByVillageId(id: Long): VillageInfo
 
     @Query("SELECT * FROM VillageEntity where id = :villageId")

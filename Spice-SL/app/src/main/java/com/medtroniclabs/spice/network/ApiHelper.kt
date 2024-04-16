@@ -11,6 +11,7 @@ import com.medtroniclabs.spice.data.UserSymptomsEntity
 import com.medtroniclabs.spice.data.model.AboveFiveYearsSubmitRequest
 import com.medtroniclabs.spice.data.offlinesync.model.HouseHold
 import com.medtroniclabs.spice.data.offlinesync.model.RequestGetSyncStatus
+import com.medtroniclabs.spice.data.offlinesync.model.ResponseInitialDownload
 import com.medtroniclabs.spice.data.offlinesync.model.SyncResponse
 import com.medtroniclabs.spice.data.resource.RequestAllEntities
 import com.medtroniclabs.spice.model.PatientDetailReq
@@ -28,6 +29,9 @@ interface ApiHelper {
     suspend fun postOfflineSync(request: Map<String,Any>): Response<SyncResponse>
     suspend fun getOfflineSyncStatus(request: RequestGetSyncStatus): Response<SyncResponse>
     suspend fun getHouseholdAndMembers(request: RequestAllEntities): Response<APIResponse<List<HouseHold>>>
+
+    suspend fun fetchSyncedData(request: RequestAllEntities): Response<APIResponse<ResponseInitialDownload>>
+
     suspend fun getPatients(request: PatientsDataModel): APIResponse<List<PatientListRespModel>>
     suspend fun patientSearch(request: PatientsDataModel): APIResponse<List<PatientListRespModel>>
     suspend fun getPatient(request: PatientDetailReq): Response<APIResponse<PatientListRespModel>>

@@ -8,8 +8,10 @@ data class VillageEntity(
     @PrimaryKey
     val id: Long,
     val name: String,
-    val code: String,
+    val villagecode: String,
     val chiefdomId: Long,
     val countryId: Long,
-    val districtId: Long
+    val districtId: Long,
+    val chiefdomCode: String,
+    val districtCode: String
 )

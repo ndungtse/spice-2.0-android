@@ -11,6 +11,7 @@ import com.medtroniclabs.spice.data.UserSymptomsEntity
 import com.medtroniclabs.spice.data.model.AboveFiveYearsSubmitRequest
 import com.medtroniclabs.spice.data.offlinesync.model.HouseHold
 import com.medtroniclabs.spice.data.offlinesync.model.RequestGetSyncStatus
+import com.medtroniclabs.spice.data.offlinesync.model.ResponseInitialDownload
 import com.medtroniclabs.spice.data.offlinesync.model.SyncResponse
 import com.medtroniclabs.spice.data.resource.RequestAllEntities
 import com.medtroniclabs.spice.model.PatientDetailReq
@@ -47,6 +48,10 @@ class ApiHelperImpl @Inject constructor(private val apiService: ApiService) : Ap
 
     override suspend fun getOfflineSyncStatus(request: RequestGetSyncStatus): Response<SyncResponse> {
         return apiService.getOfflineSyncStatus(request)
+    }
+
+    override suspend fun fetchSyncedData(request: RequestAllEntities): Response<APIResponse<ResponseInitialDownload>> {
+        return apiService.fetchSyncedData(request)
     }
 
     override suspend fun getHouseholdAndMembers(request: RequestAllEntities): Response<APIResponse<List<HouseHold>>> {

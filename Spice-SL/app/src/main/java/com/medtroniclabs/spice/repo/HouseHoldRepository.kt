@@ -14,8 +14,10 @@ import com.medtroniclabs.spice.data.VillageInfo
 import com.medtroniclabs.spice.data.offlinesync.model.HouseHold
 import com.medtroniclabs.spice.data.offlinesync.model.HouseHoldMember
 import com.medtroniclabs.spice.data.offlinesync.model.RequestGetSyncStatus
+import com.medtroniclabs.spice.data.offlinesync.model.ResponseInitialDownload
 import com.medtroniclabs.spice.data.offlinesync.model.SyncEntityList
 import com.medtroniclabs.spice.data.offlinesync.model.SyncResponse
+import com.medtroniclabs.spice.data.offlinesync.utils.OfflineSyncStatus
 import com.medtroniclabs.spice.data.resource.RequestAllEntities
 import com.medtroniclabs.spice.db.entity.EntitiesName.HOUSEHOLD
 import com.medtroniclabs.spice.db.entity.EntitiesName.HOUSEHOLD_MEMBER
@@ -29,7 +31,6 @@ import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration
 import com.medtroniclabs.spice.network.ApiHelper
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.network.resource.ResourceState
-import com.medtroniclabs.spice.data.offlinesync.utils.OfflineSyncStatus
 import retrofit2.Response
 import javax.inject.Inject
 
@@ -225,20 +226,18 @@ class HouseHoldRepository @Inject constructor(
                 roomHelper.deleteAllHouseholds()
                 roomHelper.deleteAllHouseholdMembers()
                 // Insert Synced Entities
-                insertHouseholdAndMembers(
-                    syncedResponse.body()?.entityList,
-                    villageNameId,
-                    OfflineSyncStatus.Success
-                )
+                val hhMapping = insertHouseholds(syncedResponse.body()?.entity?.households, villageNameId)
+                insertHouseholdMembers(syncedResponse.body()?.entity?.members, hhMapping)
+
 
                 // Insert UnSynced Entities
                 val householdList =
                     unSyncedResponse.body()?.entityList?.filter { it.type == HOUSEHOLD }
-                val hhMap = insertHouseholds(householdList, villageNameId)
+                val hhMap = insertFailedHouseholds(householdList, villageNameId)
 
                 val householdMemberList =
                     unSyncedResponse.body()?.entityList?.filter { it.type == HOUSEHOLD_MEMBER }
-                insertHouseholdMembers(householdMemberList, hhMap)
+                insertFailedHouseholdMembers(householdMemberList, hhMap)
 
                 liveData.postSuccess(true)
             } else {
@@ -250,21 +249,34 @@ class HouseHoldRepository @Inject constructor(
         }
     }
 
-    private suspend fun insertHouseholdAndMembers(households: List<HouseHold>?, villageNameId : Map<String,Long>, status: OfflineSyncStatus) {
-        households?.forEach { household ->
-            //Inserting Household
-            val householdEntity = household.toHouseholdEntity(villageNameId, status)
-            val hhId = roomHelper.saveHouseHoldEntry(householdEntity)
+    private suspend fun insertHouseholds(
+        households: List<HouseHold>?,
+        villageNameId: Map<String, Long>
+    ): Map<String, Long> {
+        // fhir id, local id
+        val hhMap = mutableMapOf<String, Long>()
 
-            //Inserting HouseholdMember
-            household.householdMembers.forEach { householdMember ->
-                val householdMemberEntity = householdMember.toHouseholdMemberEntity(hhId, status)
-                roomHelper.registerMember(householdMemberEntity)
+        households?.forEach { entity ->
+            hhMap[entity.id!!] = roomHelper.saveHouseHoldEntry(
+                entity.toHouseholdEntity(
+                    villageNameId,
+                    OfflineSyncStatus.Success
+                )
+            )
+        }
+
+        return hhMap
+    }
+
+    private suspend fun insertHouseholdMembers(householdMembers: List<HouseHoldMember>?, hhIdMap: Map<String, Long>) {
+        householdMembers?.forEach { member ->
+            hhIdMap[member.householdId]?.let {
+                roomHelper.registerMember(member.toHouseholdMemberEntity(it, OfflineSyncStatus.Success))
             }
         }
     }
 
-    private suspend fun insertHouseholds(households: List<SyncEntityList>?, villageNameId : Map<String,Long>): Map<String, HouseHold> {
+    private suspend fun insertFailedHouseholds(households: List<SyncEntityList>?, villageNameId : Map<String,Long>): Map<String, HouseHold> {
         // Response apiReferenceId, Household
         val hhMap = mutableMapOf<String, HouseHold>()
         households?.forEach { entity ->
@@ -289,7 +301,7 @@ class HouseHoldRepository @Inject constructor(
         return hhMap
     }
 
-    private suspend fun insertHouseholdMembers(householdMemberList: List<SyncEntityList>?, hhMap: Map<String, HouseHold>) {
+    private suspend fun insertFailedHouseholdMembers(householdMemberList: List<SyncEntityList>?, hhMap: Map<String, HouseHold>) {
         householdMemberList?.forEach { entity ->
             Gson().fromJson(entity.data, HouseHoldMember::class.java)?.let { member ->
                 val dbHHId = roomHelper.getHouseholdIdByFhirId(member.householdId) ?: hhMap[member.householdReferenceId]?.referenceId?.toLong()
@@ -309,10 +321,10 @@ class HouseHoldRepository @Inject constructor(
         }
     }
 
-    private suspend fun getSyncedEntities(villageList: List<Long>): Response<APIResponse<List<HouseHold>>> {
+    private suspend fun getSyncedEntities(villageList: List<Long>): Response<APIResponse<ResponseInitialDownload>> {
         // Getting village name only. For mapping I have used following code
         val request = RequestAllEntities(villageList)
-        return apiHelper.getHouseholdAndMembers(request)
+        return apiHelper.fetchSyncedData(request)
     }
 
     private suspend fun getUnSyncedEntities(): Response<SyncResponse> {

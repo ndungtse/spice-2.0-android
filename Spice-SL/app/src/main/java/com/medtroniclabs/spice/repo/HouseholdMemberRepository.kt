@@ -110,9 +110,8 @@ class HouseholdMemberRepository @Inject constructor(
     }
     private suspend fun getNextPatientId(villageId: Long): String {
         val villageDetail = roomHelper.getVillageByID(villageId)
-        // Todo replace chief dom id with chief dom code
-        val chiefDomCode = villageDetail.chiefdomId.toString().padStart(CHIEF_DOM_CODE_LENGTH, '0')
-        val villageCode = villageDetail.code.padStart(VILLAGE_CODE_LENGTH,'0')
+        val chiefDomCode = villageDetail.chiefdomCode.padStart(CHIEF_DOM_CODE_LENGTH, '0')
+        val villageCode = villageDetail.villagecode.padStart(VILLAGE_CODE_LENGTH,'0')
         val chwUserId = SecuredPreference.getUserId().toString()
         val startIndex = chiefDomCode.length + villageCode.length + chwUserId.length
 

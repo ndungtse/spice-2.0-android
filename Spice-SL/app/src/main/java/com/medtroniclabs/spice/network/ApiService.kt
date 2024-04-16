@@ -11,6 +11,7 @@ import com.medtroniclabs.spice.data.UserSymptomsEntity
 import com.medtroniclabs.spice.data.model.AboveFiveYearsSubmitRequest
 import com.medtroniclabs.spice.data.offlinesync.model.HouseHold
 import com.medtroniclabs.spice.data.offlinesync.model.RequestGetSyncStatus
+import com.medtroniclabs.spice.data.offlinesync.model.ResponseInitialDownload
 import com.medtroniclabs.spice.data.offlinesync.model.SyncResponse
 import com.medtroniclabs.spice.data.resource.RequestAllEntities
 import com.medtroniclabs.spice.model.PatientDetailReq
@@ -44,6 +45,9 @@ interface ApiService {
 
     @POST("/spice-service/household/list")
     suspend fun getHouseholdDetails(@Body request: RequestAllEntities): Response<APIResponse<List<HouseHold>>>
+
+    @POST("/offline-service/offline-sync/fetch-synced-data")
+    suspend fun fetchSyncedData(@Body request: RequestAllEntities): Response<APIResponse<ResponseInitialDownload>>
 
 
     @POST("spice-service/patient/list")
