@@ -60,7 +60,7 @@ class PatientInfoFragment : BaseFragment() {
     }
 
     private fun attachObservers() {
-        viewModel.patientsLiveData.observe(viewLifecycleOwner) { resource ->
+        viewModel.patientDetailsLiveData.observe(viewLifecycleOwner) { resource ->
             when (resource.state) {
                 ResourceState.LOADING -> {
                     showProgress()

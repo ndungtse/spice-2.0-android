@@ -14,6 +14,7 @@ import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.TagListCustomView
 import com.medtroniclabs.spice.ui.medicalreview.abovefiveyears.AboveFiveYearsViewModel
+import com.medtroniclabs.spice.ui.medicalreview.abovefiveyears.ExaminationsComplaintsViewModel
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import dagger.hilt.android.AndroidEntryPoint
@@ -23,7 +24,7 @@ class SystemicExaminationsFragment : BaseFragment() {
 
     private lateinit var binding: FragmentSystemicExaminationsBinding
     private lateinit var examinationsTagView: TagListCustomView
-    private val viewModel : AboveFiveYearsViewModel by activityViewModels()
+    private val viewModel : ExaminationsComplaintsViewModel by activityViewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

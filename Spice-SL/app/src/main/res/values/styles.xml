@@ -143,6 +143,11 @@
         <item name="android:textSize">@dimen/_16ssp</item>
     </style>
 
+    <style name="TextStyle_Regular_16_Bold" parent="TextStyle_Regular_12">
+        <item name="android:textSize">@dimen/_16ssp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
     <style name="TextStyle_Medium_20" parent="TextStyle_Medium">
         <item name="android:textSize">@dimen/_20ssp</item>
         <item name="font">@font/inter_medium</item>

@@ -347,4 +347,8 @@
     <string name="pulse_error">Pulse should be above 35</string>
     <string name="systolic_error">Systolic pressure should be above 30</string>
     <string name="examination">Examination</string>
+    <string name="clinician_name">Clinician Name</string>
+    <string name="the_review_has_been_successfully_submitted">The review has been successfully submitted.</string>
+    <string name="review_completed">Review Completed</string>
+    <string name="finish">Finish</string>
 </resources>

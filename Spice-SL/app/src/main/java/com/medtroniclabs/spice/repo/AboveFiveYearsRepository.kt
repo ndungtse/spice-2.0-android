@@ -7,6 +7,7 @@ import com.medtroniclabs.spice.appextensions.postSuccess
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.AboveFiveYearsSummaryDetails
 import com.medtroniclabs.spice.data.AboveFiveYearsSummaryRequest
+import com.medtroniclabs.spice.data.AboveFiveYearsSummarySubmitRequest
 import com.medtroniclabs.spice.data.ExaminationsComplaintItems
 import com.medtroniclabs.spice.data.model.AboveFiveYearsSubmitRequest
 import com.medtroniclabs.spice.db.local.RoomHelper
@@ -122,6 +123,26 @@ class AboveFiveYearsRepository @Inject constructor(
             }
         } catch (e: Exception) {
             summaryDetailsLiveData.postError()
+        }
+    }
+
+    suspend fun aboveFiveYearsSummaryCreate(
+        request: AboveFiveYearsSummarySubmitRequest,
+        summaryCreateResponse: MutableLiveData<Resource<HashMap<String,Any>>>
+    ) {
+        try {
+            summaryCreateResponse.postLoading()
+            val response = apiHelper.aboveFiveYearsSummaryCreate(request)
+            if (response.isSuccessful) {
+                val res = response.body()
+                if (res?.status == true)
+                    summaryCreateResponse.postSuccess()
+                else
+                    summaryCreateResponse.postError()
+            } else
+                summaryCreateResponse.postError()
+        } catch (e: Exception) {
+            summaryCreateResponse.postError()
         }
     }
 }

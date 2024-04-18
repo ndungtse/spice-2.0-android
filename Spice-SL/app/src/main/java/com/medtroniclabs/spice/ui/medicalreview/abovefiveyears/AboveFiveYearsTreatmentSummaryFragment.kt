@@ -6,12 +6,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
+import androidx.core.os.bundleOf
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.setFragmentResult
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.CommonUtils.formatListToStringWithOther
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
+import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.ViewUtils.showDatePicker
 import com.medtroniclabs.spice.data.AboveFiveYearsSummaryDetails
 import com.medtroniclabs.spice.data.ExaminationsComplaintItems
@@ -20,6 +23,7 @@ import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
+import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 
 class AboveFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListener {
@@ -32,13 +36,15 @@ class AboveFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
 
     private lateinit var binding: FragmentMedicalReviewTreatmentPlanSummaryBinding
     private val viewModel: AboveFiveYearsViewModel by activityViewModels()
+    private val chipItemViewModel: ExaminationsComplaintsViewModel by activityViewModels()
     private var datePickerDialog: DatePickerDialog? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentMedicalReviewTreatmentPlanSummaryBinding.inflate(inflater, container, false)
+        binding =
+            FragmentMedicalReviewTreatmentPlanSummaryBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -93,8 +99,9 @@ class AboveFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
                     resourceState.data?.let {
                         renderSummaryDetails(it)
                     }
-                    val swipeRefresh = (activity as AboveFiveYearsBaseActivity).findViewById<SwipeRefreshLayout>(R.id.refreshLayout)
-                    if (swipeRefresh.isRefreshing){
+                    val swipeRefresh =
+                        (activity as AboveFiveYearsBaseActivity).findViewById<SwipeRefreshLayout>(R.id.refreshLayout)
+                    if (swipeRefresh.isRefreshing) {
                         swipeRefresh.isRefreshing = false
                     }
                 }
@@ -103,13 +110,22 @@ class AboveFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
     }
 
     private fun renderSummaryDetails(details: AboveFiveYearsSummaryDetails) {
-        binding.tvPresentingComplaintsText.text = details.presentingComplaints?.let {
+        binding.tvPresentingComplaintsText.text = chipItemViewModel.selectedPresentingComplaints.map { it.name }.let {
             formatListToStringWithOther(
                 it, details.presentingComplaintsNotes
             )
         }
-        binding.tvClinicalNotesText.text =
-            details.clinicalNotes ?: getString(R.string.seperator_hyphen)
+        binding.tvClinicalNotesText.text = chipItemViewModel.enteredClinicalNotes
+        binding.tvClinicalName.text = requireContext().getString(
+            R.string.firstname_lastname,
+            SecuredPreference.getUserDetails().firstName,
+            SecuredPreference.getUserDetails().lastName
+        )
+        binding.tvDateOfReviewValue.text = DateUtils.convertDateTimeToDate(
+            DateUtils.getTodayDateDDMMYYYY(),
+            DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+            DateUtils.DATE_ddMMyyyy
+        )
     }
 
     private fun initView() {
@@ -146,13 +162,16 @@ class AboveFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
                 ) {
                     val selectedItem = adapter.getData(position = pos)
                     selectedItem?.let {
-                        val selectedId = it[DefinedParams.id] as String?
-                        if (selectedId != DefinedParams.DefaultID) {
-                            selectedId?.let { id ->
+                        val selectedName = it[DefinedParams.NAME] as String?
+                        if (selectedName != DefinedParams.DefaultIDLabel) {
+                            selectedName?.let { id ->
                                 viewModel.selectedPatientStatus = id
                             }
+                        } else {
+                            viewModel.selectedPatientStatus = null
                         }
                     }
+                    summaryListener()
                 }
 
                 override fun onNothingSelected(p0: AdapterView<*>?) {
@@ -193,13 +212,16 @@ class AboveFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
                 ) {
                     val selectedItem = adapter.getData(position = pos)
                     selectedItem?.let {
-                        val selectedId = it[DefinedParams.NAME] as String?
-                        if (selectedId != DefinedParams.DefaultID) {
-                            selectedId?.let { name ->
+                        val selectedName = it[DefinedParams.NAME] as String?
+                        if (selectedName != DefinedParams.DefaultIDLabel) {
+                            selectedName?.let { name ->
                                 viewModel.selectedCostItem = name
                             }
+                        } else {
+                            viewModel.selectedCostItem = null
                         }
                     }
+                    summaryListener()
                 }
 
                 override fun onNothingSelected(p0: AdapterView<*>?) {
@@ -240,13 +262,16 @@ class AboveFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
                 ) {
                     val selectedItem = adapter.getData(position = pos)
                     selectedItem?.let {
-                        val selectedId = it[DefinedParams.NAME] as String?
-                        if (selectedId != DefinedParams.DefaultID) {
-                            selectedId?.let { name ->
+                        val selectedName = it[DefinedParams.NAME] as String?
+                        if (selectedName != DefinedParams.DefaultIDLabel) {
+                            selectedName?.let { name ->
                                 viewModel.selectedMedicalSupply = name
                             }
+                        } else {
+                            viewModel.selectedMedicalSupply = null
                         }
                     }
+                    summaryListener()
                 }
 
                 override fun onNothingSelected(p0: AdapterView<*>?) {
@@ -258,7 +283,7 @@ class AboveFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
     }
 
     override fun onClick(view: View) {
-        when(view.id){
+        when (view.id) {
             binding.tvNextMedicalReviewLabelText.id -> {
                 showDatePickerDialog()
             }
@@ -283,12 +308,21 @@ class AboveFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
                     DateUtils.convertDateTimeToDate(
                         stringDate,
                         DateUtils.DATE_FORMAT_ddMMyyyy,
-                        DateUtils.DATE_FORMAT_ddMMMyyyy
+                        DateUtils.DATE_ddMMyyyy
                     )
                 viewModel.nextFollowupDate = binding.tvNextMedicalReviewLabelText.text.toString()
                 datePickerDialog = null
+                summaryListener()
             }
         }
+    }
+
+    private fun summaryListener() {
+        setFragmentResult(
+            MedicalReviewDefinedParams.SUMMARY_ITEM, bundleOf(
+                MedicalReviewDefinedParams.SUMMARY_ITEM to true
+            )
+        )
     }
 
 }

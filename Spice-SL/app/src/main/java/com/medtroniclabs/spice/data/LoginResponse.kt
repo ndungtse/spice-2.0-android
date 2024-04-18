@@ -1,6 +1,8 @@
 package com.medtroniclabs.spice.data
 
 data class LoginResponse(
+    val firstName: String?,
+    val lastName: String?,
     val username: String?,
     val isActive: Boolean,
     val roles: List<UserRole>,

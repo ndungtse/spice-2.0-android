@@ -1,6 +1,6 @@
 package com.medtroniclabs.spice.model
 
-data class PatientDetailReq(
+data class PatientDetailRequest(
     val id: String? = null,
     val patientId: String? = null,
     val ticketId:String? = null

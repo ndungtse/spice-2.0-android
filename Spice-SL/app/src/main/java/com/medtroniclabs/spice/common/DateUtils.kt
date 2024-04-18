@@ -75,7 +75,7 @@ object DateUtils {
         return SimpleDateFormat(DATE_ddMMyyyy, Locale.ENGLISH)
     }
 
-    fun getDateString(time: Long, inputFormat: String?, outputFormat: String?): String {
+    fun getDateString(time: Long, inputFormat: String?=null, outputFormat: String?=null): String {
         val date = Date(time)
         val format = SimpleDateFormat(
             inputFormat,
@@ -131,7 +131,7 @@ object DateUtils {
             inputText?.let {
                 if (it.isNotBlank()) {
                     var userTimeZone: TimeZone? = null
-                    val isTimeZoneFormat = inputFormat == DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
+                    val isTimeZoneFormat = inputFormat == DATE_FORMAT_yyyyMMddHHmmssZZZZZ
                     if (isTimeZoneFormat || inUserTimeZone == true) {
                         getTimeZoneInput(inputText, isTimeZoneFormat)?.let { timeZone ->
                             userTimeZone = timeZone
@@ -260,4 +260,8 @@ object DateUtils {
         return currentDateTime.format(formatter)
     }
 
+    fun getTodayDateDDMMYYYY(): String {
+        val calendar = Calendar.getInstance()
+        return getDateString(calendar.time.time, DATE_FORMAT_yyyyMMddHHmmssZZZZZ)
+    }
 }

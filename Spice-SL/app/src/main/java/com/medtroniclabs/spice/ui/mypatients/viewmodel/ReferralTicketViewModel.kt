@@ -4,7 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.medtroniclabs.spice.di.IoDispatcher
-import com.medtroniclabs.spice.model.PatientDetailReq
+import com.medtroniclabs.spice.model.PatientDetailRequest
 import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.model.ReferralData
 import com.medtroniclabs.spice.model.ReferredDate
@@ -24,14 +24,14 @@ class ReferralTicketViewModel @Inject constructor(
 
     @Inject
     lateinit var connectivityManager: ConnectivityManager
-    val patientsLiveData = MutableLiveData<Resource<PatientListRespModel>>()
+    val patientDetailsLiveData = MutableLiveData<Resource<PatientListRespModel>>()
     val referralTicketLiveData = MutableLiveData<Resource<ReferralData>>()
     var referralDates = listOf<ReferredDate>()
     var ticketId: String? = null
 
     fun getPatients(id: String) {
         viewModelScope.launch(dispatcherIO) {
-            patientRepository.getPatients(patientsLiveData, PatientDetailReq(patientId = id))
+            patientRepository.getPatients(patientDetailsLiveData, PatientDetailRequest(patientId = id))
         }
     }
 
@@ -39,7 +39,7 @@ class ReferralTicketViewModel @Inject constructor(
         viewModelScope.launch(dispatcherIO) {
             patientRepository.getReferralTicket(
                 referralTicketLiveData,
-                PatientDetailReq(patientId = patientId, ticketId = ticketId)
+                PatientDetailRequest(patientId = patientId, ticketId = ticketId)
             )
         }
     }

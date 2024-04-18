@@ -76,13 +76,13 @@
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvDiagnosisText"
-                style="@style/TextStyle_18_NavyBlue"
+                style="@style/TextStyle_Regular_16_Bold"
                 android:layout_width="@dimen/_0dp"
+                android:text="@string/seperator_hyphen"
                 app:layout_constraintEnd_toEndOf="@id/endGuideline"
                 app:layout_constraintHorizontal_weight="0.6"
                 app:layout_constraintStart_toEndOf="@id/tvDiagnosisSeparator"
-                app:layout_constraintTop_toTopOf="@id/tvDiagnosisLabel"
-                tools:text="Malaria" />
+                app:layout_constraintTop_toTopOf="@id/tvDiagnosisLabel"/>
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvPatientStatus"
@@ -157,13 +157,13 @@
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvPresentingComplaintsText"
-                style="@style/TextStyle_18_NavyBlue"
+                style="@style/TextStyle_Regular_16_Bold"
                 android:layout_width="@dimen/_0dp"
                 app:layout_constraintEnd_toEndOf="@id/endGuideline"
                 app:layout_constraintHorizontal_weight="0.6"
                 app:layout_constraintStart_toEndOf="@id/tvPresentingComplaintsSeparator"
                 app:layout_constraintTop_toTopOf="@id/tvPresentingComplaintsLabel"
-                tools:text="Abdominal pain, chest pain" />
+                android:text="@string/seperator_hyphen"/>
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvDiseaseCategoryLabel"
@@ -190,13 +190,13 @@
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvDiseaseCategoryText"
-                style="@style/TextStyle_18_NavyBlue"
+                style="@style/TextStyle_Regular_16_Bold"
                 android:layout_width="@dimen/_0dp"
                 app:layout_constraintEnd_toEndOf="@id/endGuideline"
                 app:layout_constraintHorizontal_weight="0.6"
                 app:layout_constraintStart_toEndOf="@id/tvDiseaseCategorySeparator"
                 app:layout_constraintTop_toTopOf="@id/tvDiseaseCategoryLabel"
-                tools:text="Malaria" />
+                android:text="@string/seperator_hyphen" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvDiseaseConditionLabel"
@@ -223,13 +223,13 @@
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvDiseaseConditionText"
-                style="@style/TextStyle_18_NavyBlue"
+                style="@style/TextStyle_Regular_16_Bold"
                 android:layout_width="@dimen/_0dp"
                 app:layout_constraintEnd_toEndOf="@id/endGuideline"
                 app:layout_constraintHorizontal_weight="0.6"
                 app:layout_constraintStart_toEndOf="@id/tvDiseaseConditionSeparator"
                 app:layout_constraintTop_toTopOf="@id/tvDiseaseConditionLabel"
-                tools:text="Malaria" />
+                android:text="@string/seperator_hyphen"/>
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvClinicalNotesLabel"
@@ -256,13 +256,13 @@
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvClinicalNotesText"
-                style="@style/TextStyle_18_NavyBlue"
+                style="@style/TextStyle_Regular_16_Bold"
                 android:layout_width="@dimen/_0dp"
                 app:layout_constraintEnd_toEndOf="@id/endGuideline"
                 app:layout_constraintHorizontal_weight="0.6"
                 app:layout_constraintStart_toEndOf="@id/tvClinicalNotesSeparator"
                 app:layout_constraintTop_toTopOf="@id/tvClinicalNotesLabel"
-                tools:text="Looks like a case of mild malaria" />
+                android:text="@string/seperator_hyphen"/>
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvInvestigationLabel"
@@ -289,13 +289,13 @@
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvInvestigationText"
-                style="@style/TextStyle_18_NavyBlue"
+                style="@style/TextStyle_Regular_16_Bold"
                 android:layout_width="@dimen/_0dp"
                 app:layout_constraintEnd_toEndOf="@id/endGuideline"
                 app:layout_constraintHorizontal_weight="0.6"
                 app:layout_constraintStart_toEndOf="@id/tvInvestigationSeparator"
                 app:layout_constraintTop_toTopOf="@id/tvInvestigationLabel"
-                tools:text="Looks like a case of mild malaria" />
+                android:text="@string/seperator_hyphen" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvPrescriptionsLabel"
@@ -322,13 +322,13 @@
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvPrescriptionsText"
-                style="@style/TextStyle_18_NavyBlue"
+                style="@style/TextStyle_Regular_16_Bold"
                 android:layout_width="@dimen/_0dp"
                 app:layout_constraintEnd_toEndOf="@id/endGuideline"
                 app:layout_constraintHorizontal_weight="0.6"
                 app:layout_constraintStart_toEndOf="@id/tvPrescriptionsSeparator"
                 app:layout_constraintTop_toTopOf="@id/tvPrescriptionsLabel"
-                tools:text="ACT (AL-24 Tab Blister or ASAQ-6 TAb (adult)) Blister" />
+                android:text="@string/seperator_hyphen"/>
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvMedicalSuppliesLabel"
@@ -488,7 +488,7 @@
         style="@style/TextStyle_Regular_16"
         android:layout_width="@dimen/_0dp"
         android:layout_marginTop="@dimen/_30sdp"
-        android:text="@string/clinical_notes"
+        android:text="@string/clinician_name"
         android:layout_marginBottom="@dimen/_30sdp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/tvClinicalNameSeparator"
@@ -515,6 +515,7 @@
         android:layout_width="@dimen/_0dp"
         android:fontFamily="@font/inter_regular"
         android:textColor="@color/grey_black"
+        android:text="@string/seperator_hyphen"
         app:layout_constraintBottom_toBottomOf="@id/tvClinicalNameLabel"
         app:layout_constraintEnd_toEndOf="@id/centreGuideline"
         app:layout_constraintHorizontal_weight="0.5"
@@ -561,6 +562,7 @@
         android:layout_marginEnd="@dimen/_30sdp"
         android:fontFamily="@font/inter_regular"
         android:textColor="@color/grey_black"
+        android:text="@string/seperator_hyphen"
         app:layout_constraintBottom_toBottomOf="@id/tvDateOfReviewLabel"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_weight="0.5"

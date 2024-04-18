@@ -4,6 +4,7 @@ import com.medtroniclabs.spice.data.APIResponse
 import com.medtroniclabs.spice.data.AboveFiveYearsMetaResponse
 import com.medtroniclabs.spice.data.AboveFiveYearsSummaryDetails
 import com.medtroniclabs.spice.data.AboveFiveYearsSummaryRequest
+import com.medtroniclabs.spice.data.AboveFiveYearsSummarySubmitRequest
 import com.medtroniclabs.spice.data.FormMetaRequest
 import com.medtroniclabs.spice.data.FormRequest
 import com.medtroniclabs.spice.data.FormResponse
@@ -18,7 +19,7 @@ import com.medtroniclabs.spice.data.offlinesync.model.RequestGetSyncStatus
 import com.medtroniclabs.spice.data.offlinesync.model.ResponseInitialDownload
 import com.medtroniclabs.spice.data.offlinesync.model.SyncResponse
 import com.medtroniclabs.spice.data.resource.RequestAllEntities
-import com.medtroniclabs.spice.model.PatientDetailReq
+import com.medtroniclabs.spice.model.PatientDetailRequest
 import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.model.PatientsDataModel
 import com.medtroniclabs.spice.model.ReferralData
@@ -60,13 +61,13 @@ interface ApiService {
     suspend fun patientSearch(@Body request: PatientsDataModel): APIResponse<List<PatientListRespModel>>
 
     @POST("spice-service/patient/patientDetails")
-    suspend fun getPatient(@Body request: PatientDetailReq): Response<APIResponse<PatientListRespModel>>
+    suspend fun getPatient(@Body request: PatientDetailRequest): Response<APIResponse<PatientListRespModel>>
 
     @POST("/spice-service/static-data/meta-data/iccm-abovefive")
     suspend fun getAboveFiveYearsMetaData(): Response<APIResponse<AboveFiveYearsMetaResponse>>
 
     @POST("/spice-service/assessment/referral-tickets")
-    suspend fun getReferralsDetails(@Body request: PatientDetailReq): Response<APIResponse<ReferralData>>
+    suspend fun getReferralsDetails(@Body request: PatientDetailRequest): Response<APIResponse<ReferralData>>
 
     @POST("/spice-service/medical-review/iccm-general/create")
     suspend fun createAboveFiveYearsResult(@Body request: AboveFiveYearsSubmitRequest): Response<APIResponse<AboveFiveYearsSummaryDetails>>
@@ -79,5 +80,8 @@ interface ApiService {
 
     @POST("/spice-service/static-data/meta-data/iccm-under-two-months")
     suspend fun getUnderTwoMonthsMetaData(): Response<APIResponse<UnderTwoMonthsMetaResponse>>
+
+    @POST("/spice-service/medical-review/summary-create")
+    suspend fun aboveFiveYearsSummaryCreate(@Body request: AboveFiveYearsSummarySubmitRequest): Response<APIResponse<HashMap<String,Any>>>
 
 }

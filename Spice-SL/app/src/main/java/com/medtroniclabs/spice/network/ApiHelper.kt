@@ -4,6 +4,7 @@ import com.medtroniclabs.spice.data.APIResponse
 import com.medtroniclabs.spice.data.AboveFiveYearsMetaResponse
 import com.medtroniclabs.spice.data.AboveFiveYearsSummaryDetails
 import com.medtroniclabs.spice.data.AboveFiveYearsSummaryRequest
+import com.medtroniclabs.spice.data.AboveFiveYearsSummarySubmitRequest
 import com.medtroniclabs.spice.data.FormMetaRequest
 import com.medtroniclabs.spice.data.FormRequest
 import com.medtroniclabs.spice.data.FormResponse
@@ -18,7 +19,7 @@ import com.medtroniclabs.spice.data.offlinesync.model.RequestGetSyncStatus
 import com.medtroniclabs.spice.data.offlinesync.model.ResponseInitialDownload
 import com.medtroniclabs.spice.data.offlinesync.model.SyncResponse
 import com.medtroniclabs.spice.data.resource.RequestAllEntities
-import com.medtroniclabs.spice.model.PatientDetailReq
+import com.medtroniclabs.spice.model.PatientDetailRequest
 import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.model.PatientsDataModel
 import com.medtroniclabs.spice.model.ReferralData
@@ -38,11 +39,12 @@ interface ApiHelper {
 
     suspend fun getPatients(request: PatientsDataModel): APIResponse<List<PatientListRespModel>>
     suspend fun patientSearch(request: PatientsDataModel): APIResponse<List<PatientListRespModel>>
-    suspend fun getPatient(request: PatientDetailReq): Response<APIResponse<PatientListRespModel>>
+    suspend fun getPatient(request: PatientDetailRequest): Response<APIResponse<PatientListRespModel>>
     suspend fun getAboveFiveYearsMetaData(): Response<APIResponse<AboveFiveYearsMetaResponse>>
-    suspend fun getReferralsDetails(request: PatientDetailReq): Response<APIResponse<ReferralData>>
+    suspend fun getReferralsDetails(request: PatientDetailRequest): Response<APIResponse<ReferralData>>
     suspend fun createAboveFiveYearsResult(request: AboveFiveYearsSubmitRequest): Response<APIResponse<AboveFiveYearsSummaryDetails>>
     suspend fun getAboveFiveYearsSummaryDetails(patientId: AboveFiveYearsSummaryRequest): Response<APIResponse<AboveFiveYearsSummaryDetails>>
     suspend fun getMotherNeoNateAncStaticData(): Response<APIResponse<MotherNeonateAncMetaResponse>>
     suspend fun getUnderTwoMonthsMetaData(): Response<APIResponse<UnderTwoMonthsMetaResponse>>
+    suspend fun aboveFiveYearsSummaryCreate(request: AboveFiveYearsSummarySubmitRequest): Response<APIResponse<HashMap<String,Any>>>
 }

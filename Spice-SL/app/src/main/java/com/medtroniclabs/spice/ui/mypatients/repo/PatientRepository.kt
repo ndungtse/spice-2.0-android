@@ -7,7 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.appextensions.postSuccess
-import com.medtroniclabs.spice.model.PatientDetailReq
+import com.medtroniclabs.spice.model.PatientDetailRequest
 import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.model.ReferralData
 import com.medtroniclabs.spice.network.resource.Resource
@@ -24,7 +24,7 @@ class PatientRepository @Inject constructor(
 
     suspend fun getPatients(
         patientsLiveData: MutableLiveData<Resource<PatientListRespModel>>,
-        request: PatientDetailReq
+        request: PatientDetailRequest
     ) {
         try {
             patientsLiveData.postLoading()
@@ -43,7 +43,7 @@ class PatientRepository @Inject constructor(
 
     suspend fun getReferralTicket(
         referralTicketLiveData: MutableLiveData<Resource<ReferralData>>,
-        request: PatientDetailReq
+        request: PatientDetailRequest
     ) {
         try {
             referralTicketLiveData.postLoading()

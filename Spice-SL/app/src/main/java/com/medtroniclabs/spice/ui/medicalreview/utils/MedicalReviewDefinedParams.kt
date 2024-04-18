@@ -10,4 +10,5 @@ object MedicalReviewDefinedParams {
     const val MOTHER_VITAMIN_TAG = "motherVitaminSelection"
     const val BREAST_FEEDING_TAG = "breastFeedingTag"
     const val EXCLUSIVE_BREAST_FEED_TAG = "exclusiveBreastFeedTag"
+    const val SUMMARY_ITEM = "SummaryItem"
 }

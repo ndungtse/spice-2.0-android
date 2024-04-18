@@ -14,6 +14,7 @@ import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.TagListCustomView
 import com.medtroniclabs.spice.ui.medicalreview.abovefiveyears.AboveFiveYearsViewModel
+import com.medtroniclabs.spice.ui.medicalreview.abovefiveyears.ExaminationsComplaintsViewModel
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.CHIP_ITEMS
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.PC_ITEM
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
@@ -24,7 +25,7 @@ class PresentingComplaintsFragment : BaseFragment() {
 
     private lateinit var binding: FragmentPresentingComplaintsBinding
     private lateinit var complaintsTagView: TagListCustomView
-    private val viewModel : AboveFiveYearsViewModel by activityViewModels()
+    private val viewModel : ExaminationsComplaintsViewModel by activityViewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

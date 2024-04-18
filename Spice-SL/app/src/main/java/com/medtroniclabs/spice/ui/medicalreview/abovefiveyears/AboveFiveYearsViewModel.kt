@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.medtroniclabs.spice.data.AboveFiveYearsSummaryDetails
 import com.medtroniclabs.spice.data.AboveFiveYearsSummaryRequest
+import com.medtroniclabs.spice.data.AboveFiveYearsSummarySubmitRequest
 import com.medtroniclabs.spice.data.ExaminationsComplaintItems
 import com.medtroniclabs.spice.data.model.AboveFiveYearsSubmitRequest
 import com.medtroniclabs.spice.data.model.ChipViewItemModel
@@ -21,38 +22,24 @@ import javax.inject.Inject
 @HiltViewModel
 class AboveFiveYearsViewModel @Inject constructor(
     @IoDispatcher private val dispatcherIO : CoroutineDispatcher,
-    private var repository: AboveFiveYearsRepository,
-    private var chipItemRepository: ExaminationComplaintsRepository
+    private var repository: AboveFiveYearsRepository
 ): ViewModel(){
 
     @Inject
     lateinit var connectivityManager: ConnectivityManager
     val aboveFiveYearsMetaLiveData = MutableLiveData<Resource<Boolean>>()
     val summaryDetailsLiveData = MutableLiveData<Resource<AboveFiveYearsSummaryDetails>>()
-    val examinationsComplaintsList = MutableLiveData<Resource<List<ExaminationsComplaintItems>>>()
     val summaryMetaListItems = MutableLiveData<Resource<List<ExaminationsComplaintItems>>>()
-    var presentingComplaintsType : String = ""
-    var systemicExaminationsType : String = ""
-    var selectedPresentingComplaints = ArrayList<ChipViewItemModel>()
-    var selectedSystemicExaminations = ArrayList<ChipViewItemModel>()
-    var enteredClinicalNotes = ""
-    var enteredExaminationNotes = ""
-    var enteredComplaintNotes = ""
     val aboveFiveYearsCreateResponse = MutableLiveData<Resource<AboveFiveYearsSummaryDetails>>()
-    var selectedPatientStatus = ""
-    var selectedMedicalSupply = ""
-    var selectedCostItem = ""
-    var nextFollowupDate:String? = null
+    val summaryCreateResponse = MutableLiveData<Resource<HashMap<String,Any>>>()
+    var selectedPatientStatus: String? = null
+    var selectedMedicalSupply: String? = null
+    var selectedCostItem: String? = null
+    var nextFollowupDate: String? = null
 
     fun getStaticMetaData(menuType: String) {
         viewModelScope.launch(dispatcherIO){
             repository.getStaticMetaData(aboveFiveYearsMetaLiveData, menuType)
-        }
-    }
-
-    fun getComplaintsList(type: String) {
-        viewModelScope.launch(dispatcherIO) {
-            chipItemRepository.getComplaintsListByType(type, examinationsComplaintsList)
         }
     }
 
@@ -74,6 +61,14 @@ class AboveFiveYearsViewModel @Inject constructor(
         if (connectivityManager.isNetworkAvailable()){
             viewModelScope.launch(dispatcherIO) {
                 repository.getAboveFiveYearsSummaryDetails(request, summaryDetailsLiveData)
+            }
+        }
+    }
+
+    fun aboveFiveYearsSummaryCreate(request: AboveFiveYearsSummarySubmitRequest){
+        if (connectivityManager.isNetworkAvailable()){
+            viewModelScope.launch(dispatcherIO) {
+                repository.aboveFiveYearsSummaryCreate(request, summaryCreateResponse)
             }
         }
     }
