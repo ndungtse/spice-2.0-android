@@ -2,6 +2,7 @@ package com.medtroniclabs.spice.data.offlinesync.model
 
 import androidx.room.ColumnInfo
 import androidx.room.Ignore
+import com.medtroniclabs.spice.appextensions.convertToUtcDateTime
 import com.medtroniclabs.spice.db.entity.HouseholdEntity
 import com.medtroniclabs.spice.data.offlinesync.utils.OfflineSyncStatus
 
@@ -59,7 +60,8 @@ data class HouseHold(
     val updatedAt: Long,
 ) {
     @Ignore
-    var provenance: ProvanceDto = ProvanceDto()
+    var provenance: ProvanceDto = ProvanceDto(createdDateTime = createAt.convertToUtcDateTime())
+
     @Ignore
     var householdMembers: MutableList<HouseHoldMember> = mutableListOf()
 

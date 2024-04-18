@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import com.google.gson.Gson
 import com.google.gson.JsonParser
 import com.google.gson.reflect.TypeToken
+import com.medtroniclabs.spice.appextensions.convertToUtcDateTime
 import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.appextensions.postSuccess
@@ -155,8 +156,8 @@ class AssessmentRepository @Inject constructor(
                 startTime = null,
                 endTime = null,
                 referred = entity.isReferred,
-                referredReasons = entity.referredReason.toString(),
-                provenance = ProvanceDto(),
+                referredReasons = entity.referredReason?.let { it.toString() },
+                provenance = ProvanceDto(createdDateTime = entity.createdAt.convertToUtcDateTime()),
                 latitude = entity.latitude,
                 longitude = entity.longitude,
                 summary = JsonParser.parseString(entity.otherDetails)

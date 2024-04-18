@@ -2,6 +2,7 @@ package com.medtroniclabs.spice.data.offlinesync.model
 
 import androidx.room.ColumnInfo
 import androidx.room.Ignore
+import com.medtroniclabs.spice.appextensions.convertToUtcDateTime
 import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
 import com.medtroniclabs.spice.data.offlinesync.utils.OfflineSyncStatus
 import java.util.Locale
@@ -61,7 +62,7 @@ data class HouseHoldMember(
     var isChild: Boolean? = false
 
     @Ignore
-    var provenance: ProvanceDto = ProvanceDto()
+    var provenance: ProvanceDto = ProvanceDto(createdDateTime = createdAt.convertToUtcDateTime())
 
     @Ignore
     var assessments = listOf<Assessment>()
