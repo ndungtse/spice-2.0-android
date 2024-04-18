@@ -19,6 +19,9 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".ui.medicalreview.prescription.PrescriptionActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.medicalreview.LabourDeliveryBaseActivity"
             android:exported="false"
             android:screenOrientation="sensorLandscape"
@@ -30,7 +33,7 @@
             android:name=".ui.medicalreview.abovefiveyears.AboveFiveYearsBaseActivity"
             android:exported="false"
             android:screenOrientation="sensorLandscape"
-            android:windowSoftInputMode="adjustPan"/>
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".ui.boarding.ResourceLoadingScreen"
             android:exported="false" />
@@ -60,8 +63,8 @@
             android:exported="false" />
         <activity
             android:name=".ui.landing.LandingActivity"
-            android:windowSoftInputMode="adjustPan"
-            android:exported="true">
+            android:exported="true"
+            android:windowSoftInputMode="adjustPan">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -76,13 +79,12 @@
             android:exported="false" />
         <activity
             android:name=".ui.boarding.LoginActivity"
-            android:exported="false" />
-
+            android:exported="false"/>
         <provider
             android:name="androidx.startup.InitializationProvider"
             android:authorities="${applicationId}.androidx-startup"
             android:exported="false"
-            tools:node="remove"></provider>
+            tools:node="remove" />
     </application>
 
 </manifest>

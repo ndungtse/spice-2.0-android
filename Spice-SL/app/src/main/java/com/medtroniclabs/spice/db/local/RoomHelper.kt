@@ -3,8 +3,9 @@ package com.medtroniclabs.spice.db.local
 import androidx.lifecycle.LiveData
 import com.medtroniclabs.spice.data.DiseaseCategoryItems
 import com.medtroniclabs.spice.data.ExaminationsComplaintItems
-import com.medtroniclabs.spice.data.LastCreatedAtAndPatientId
 import com.medtroniclabs.spice.data.VillageInfo
+import com.medtroniclabs.spice.data.offlinesync.model.HouseHold
+import com.medtroniclabs.spice.data.offlinesync.model.HouseHoldMember
 import com.medtroniclabs.spice.db.entity.AssessmentEntity
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowConditionEntity
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowEntity
@@ -23,8 +24,6 @@ import com.medtroniclabs.spice.db.response.HouseholdMemberCount
 import com.medtroniclabs.spice.db.response.VillageBasicDetails
 import com.medtroniclabs.spice.model.MemberDobGenderModel
 import com.medtroniclabs.spice.model.assessment.AssessmentMemberDetails
-import com.medtroniclabs.spice.data.offlinesync.model.HouseHold
-import com.medtroniclabs.spice.data.offlinesync.model.HouseHoldMember
 
 interface RoomHelper {
     suspend fun saveHouseHoldEntry(householdEntity: HouseholdEntity): Long
@@ -77,7 +76,11 @@ interface RoomHelper {
     suspend fun getChiefDomAndVillageCodeByVillageId(id: Long): VillageInfo
     suspend fun getLastPatientId(villageId: Long): String?
     fun getMemberCountInHouseholdLiveData(houseHoldId: Long): LiveData<HouseholdMemberCount>
-    suspend fun getClinicalWorkflowId(gender: String, age: Int): List<ClinicalWorkflowEntityWithSubmodule>
+    suspend fun getClinicalWorkflowId(
+        gender: String,
+        age: Int
+    ): List<ClinicalWorkflowEntityWithSubmodule>
+
     suspend fun getDobAndGenderById(memberId: Long): MemberDobGenderModel
     suspend fun getAllUnSyncedHouseHolds(): List<HouseHold>
 
@@ -95,7 +98,7 @@ interface RoomHelper {
     suspend fun getUnSyncedHouseholdCount(): Int
     suspend fun getUnSyncedHouseholdMemberCount(): Int
     suspend fun getVillageIdName(): List<VillageBasicDetails>
-    suspend fun getPatientVisitCountByType(type:String,patientId: String):MemberClinicalEntity?
+    suspend fun getPatientVisitCountByType(type: String, patientId: String): MemberClinicalEntity?
     suspend fun savePatientVisitCountByType(memberClinicalEntity: MemberClinicalEntity)
     suspend fun deleteExaminationsComplaints(menuType: String)
     suspend fun insertExaminationsComplaint(symptomEntity: List<ExaminationsComplaintItems>)
@@ -103,10 +106,17 @@ interface RoomHelper {
     suspend fun saveDiagnosisList(diagnosisList: ArrayList<DiseaseCategoryItems>)
     suspend fun getHouseholdIdByFhirId(fhirId: String?): Long?
     suspend fun getHouseholdMemberIdByFhirId(fhirId: String?): Long?
-    suspend fun getExaminationsComplaintByType(type: String): List <ExaminationsComplaintItems>
+    suspend fun getExaminationsComplaintByType(type: String): List<ExaminationsComplaintItems>
     suspend fun getAssessmentMemberDetails(id: Long): AssessmentMemberDetails
     suspend fun getUnSyncedAssessmentByPatientId(patientId: String): List<AssessmentEntity>
     suspend fun getOtherUnSyncedAssessments(patientIds: List<String>): List<AssessmentEntity>
     suspend fun getUnSyncedAssessmentCount(): Int
+
+    suspend fun updateMemberClinicalData(
+        patientId: String,
+        type: String,
+        visitCount: Long,
+        clinicalDate: String?
+    )
     suspend fun getSummaryDetailMetaItems(type: String): List <ExaminationsComplaintItems>
 }

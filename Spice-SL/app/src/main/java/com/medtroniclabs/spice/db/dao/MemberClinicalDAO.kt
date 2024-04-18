@@ -15,5 +15,12 @@ interface MemberClinicalDAO {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun savePatientVisitCountByType(memberClinicalEntity: MemberClinicalEntity)
 
+    @Query("UPDATE MemberClinical SET visitcount = :visitCount, clinicalDate = :clinicalDate WHERE patient_id = :patientId AND type =:type")
+    suspend fun updateMemberClinicalData(
+        visitCount: Long,
+        clinicalDate: String?,
+        patientId: String,
+        type: String
+    )
 
 }

@@ -306,4 +306,9 @@
     <string name="deg_4">4 Deg</string>
     <string name="title_labour_delivery">Labour/Delivery</string>
     <string name="labour_delivery_medical_review">Medical Review Labour/Delivery</string>
+    <string name="search_and_add">Search medication and add</string>
+    <string name="medication_name">Medication Name</string>
+    <string name="frequency">Frequency</string>
+    <string name="prescribed_days">Prescribed days</string>
+    <string name="quantity">Quantity</string>
 </resources>

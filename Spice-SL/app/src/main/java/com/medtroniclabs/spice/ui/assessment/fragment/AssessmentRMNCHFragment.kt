@@ -25,6 +25,7 @@ import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.MenuConstants
 import com.medtroniclabs.spice.ui.assessment.AssessmentActivity
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
+import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.Miscarriage
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.PlaceOfDelivery
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -244,14 +245,29 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
                         )
                     }
                     calculateGestationalAge(second, name)
-                    viewModel.saveAssessment(second, null,getMenuName(viewModel.workflowName))
+                    checkForOtherMetrics(second, name)
+                    viewModel.saveAssessment(second, null, getMenuName(viewModel.workflowName))
+                }
+            }
+        }
+    }
+
+    private fun checkForOtherMetrics(details: HashMap<String, Any>, name: String) {
+        if (details.containsKey(name) && details[name] is Map<*, *>) {
+            val second = details[name] as HashMap<String, Any>
+            if (second.containsKey(Miscarriage)) {
+                val miscarriage = second[Miscarriage]
+                if (miscarriage is Boolean && miscarriage) {
+                    viewModel.memberDetailsLiveData.value?.data?.let {
+                        viewModel.updateMemberClinicalData(it.patientId,RMNCH.ANC,0L,null)
+                    }
                 }
             }
         }
     }
 
     private fun getMenuName(workflowName: String?): String {
-        when(workflowName){
+        when (workflowName) {
             RMNCH.ANC -> return RMNCH.ANC_MENU
             RMNCH.ChildHoodVisit -> return RMNCH.CHILD_MENU
             RMNCH.PNC -> return RMNCH.PNC_MENU

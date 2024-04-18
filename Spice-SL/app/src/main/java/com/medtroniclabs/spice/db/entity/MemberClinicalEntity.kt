@@ -12,6 +12,6 @@ data class MemberClinicalEntity(
     val patientId: String,
     val type: String,
     val visitCount: Long,
-    val clinicalDate: String,
+    val clinicalDate: String?,
     val numberOfNeonate: Long? = null
 )

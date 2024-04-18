@@ -21,6 +21,7 @@ object RMNCH {
     const val DateOfDelivery = "dateOfDelivery"
     const val NoOfNeonate = "noOfNeonate"
     const val gestationalAge = "gestationalAge"
+    const val Miscarriage = "miscarriage"
     const val childhoodVisitSigns = "childhoodVisitSigns"
     const val pncChildSigns = "pncChildSigns"
     const val otherChildhoodVisitSigns = "otherChildhoodVisitSigns"

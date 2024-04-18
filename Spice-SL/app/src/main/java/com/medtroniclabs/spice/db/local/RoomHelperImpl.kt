@@ -352,6 +352,15 @@ class RoomHelperImpl @Inject constructor(
     override suspend fun getUnSyncedAssessmentCount(): Int {
         return assessmentDAO.getUnSyncedCount()
     }
+
+    override suspend fun updateMemberClinicalData(
+        patientId: String,
+        type: String,
+        visitCount: Long,
+        clinicalDate: String?
+    ) {
+        memberClinicalDAO.updateMemberClinicalData(visitCount, clinicalDate,patientId,type)
+    }
     override suspend fun getSummaryDetailMetaItems(type:String): List<ExaminationsComplaintItems> {
         return aboveFiveYearsDAO.getSummaryDetailMetaItems(type)
     }

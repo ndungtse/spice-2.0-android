@@ -11,20 +11,17 @@ import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.appextensions.postSuccess
 import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.data.LocalSpinnerResponse
+import com.medtroniclabs.spice.data.offlinesync.model.Assessment
+import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.db.entity.AssessmentEntity
 import com.medtroniclabs.spice.db.entity.HealthFacilityEntity
-import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
-import com.medtroniclabs.spice.db.entity.MemberClinicalEntity
 import com.medtroniclabs.spice.db.entity.SignsAndSymptomsEntity
 import com.medtroniclabs.spice.db.local.RoomHelper
 import com.medtroniclabs.spice.formgeneration.model.FormResponse
 import com.medtroniclabs.spice.model.assessment.AssessmentMemberDetails
 import com.medtroniclabs.spice.network.resource.Resource
-import com.medtroniclabs.spice.data.offlinesync.model.Assessment
-import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
-import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
 import java.util.Locale
 import javax.inject.Inject
 
@@ -70,9 +67,11 @@ class AssessmentRepository @Inject constructor(
             ReferralStatus.Referred.name -> {
                 ReferralStatus.Referred
             }
+
             ReferralStatus.OnTreatment.name -> {
                 ReferralStatus.OnTreatment
             }
+
             else -> {
                 ReferralStatus.Recovered
             }
@@ -164,7 +163,8 @@ class AssessmentRepository @Inject constructor(
             )
         }
     }
-   suspend fun getNearestHealthFacility(
+
+    suspend fun getNearestHealthFacility(
         facilitySpinnerLiveData: MutableLiveData<Resource<LocalSpinnerResponse>>,
         tag: String
     ) {
@@ -186,60 +186,13 @@ class AssessmentRepository @Inject constructor(
         return roomHelper.getUnSyncedAssessmentCount()
     }
 
-
-    fun handlePregnancy(
-        details: HashMap<String, Any>,
-        workflowName: String,
-        memberDetail: HouseholdMemberEntity,
-        memberClinicalEntity: MemberClinicalEntity?
+    suspend fun updateMemberClinicalData(
+        patientId: String,
+        type: String,
+        visitCount: Long,
+        clinicalDate: String?
     ) {
-        memberDetail.apply {
-            if (details.containsKey(workflowName) && details[workflowName] is Map<*, *>) {
-                val map = details[workflowName] as HashMap<String, Any>
-                memberClinicalEntity?.let {
-                    map[RMNCH.visitNo] = it.visitCount + 1
-                    map[RMNCH.lastMenstrualPeriod] = it.clinicalDate
-                    savePatientClinicalInformation(patientId, workflowName, map, it.id)
-                } ?: kotlin.run {
-                    map[RMNCH.visitNo] = 1L
-                    savePatientClinicalInformation(patientId, workflowName, map)
-                }
-            }
-        }
-    }
-
-    private fun savePatientClinicalInformation(
-        patientId: String?,
-        workflowName: String,
-        map: HashMap<String, Any>,
-        rowId: Long = 0
-    ) {
-        patientId?.let { id ->
-            getClinicalDateAndVisitCount(map, workflowName).let {
-                val clinicalEntity = MemberClinicalEntity(
-                    id = rowId,
-                    patientId = id,
-                    type = workflowName,
-                    visitCount = it.first,
-                    clinicalDate = it.second ?: ""
-                )
-
-            }
-        }
-    }
-
-    private fun getClinicalDateAndVisitCount(
-        details: HashMap<String, Any>,
-        workflowName: String
-    ): Pair<Long, String?> {
-        return when (workflowName) {
-            RMNCH.ANC -> {
-                Pair(details[RMNCH.visitNo] as Long, details[RMNCH.lastMenstrualPeriod] as String)
-            }
-            else -> {
-                Pair(details[RMNCH.visitNo] as Long, null)
-            }
-        }
+        roomHelper.updateMemberClinicalData(patientId, type, visitCount, clinicalDate)
     }
 
 }

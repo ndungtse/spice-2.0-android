@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingVertical="@dimen/_16sdp"
+    android:weightSum="1.2"
+    android:orientation="horizontal">
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:layout_width="@dimen/_0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.3"
+        android:fontFamily="@font/inter_medium"
+        android:gravity="start"
+        android:padding="@dimen/_12sdp"
+        android:text="Albendazole, 500mg, Tablet"
+        android:textColor="@color/grey_black"
+        android:textSize="@dimen/_16ssp" />
+
+    <androidx.appcompat.widget.AppCompatSpinner
+        android:layout_width="@dimen/_0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="0.3"
+        android:fontFamily="@font/inter_regular"
+        android:gravity="start"
+        android:padding="@dimen/_12sdp"
+        android:background="@drawable/edittext_background"
+        android:layout_marginHorizontal="@dimen/_24sdp"
+        android:text="@string/frequency"
+        android:textColor="@color/grey_black"
+        android:textSize="@dimen/_16ssp" />
+
+    <androidx.appcompat.widget.AppCompatEditText
+        android:layout_width="@dimen/_0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.2"
+        android:fontFamily="@font/inter_regular"
+        android:gravity="start"
+        android:layout_marginHorizontal="@dimen/_24sdp"
+        android:padding="@dimen/_12sdp"
+        android:background="@drawable/edittext_background"
+        android:textColor="@color/grey_black"
+        android:textSize="@dimen/_16ssp" />
+
+    <androidx.appcompat.widget.AppCompatEditText
+        android:layout_width="@dimen/_0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.2"
+        android:layout_marginHorizontal="@dimen/_24sdp"
+        android:fontFamily="@font/inter_regular"
+        android:gravity="start"
+        android:background="@drawable/edittext_background"
+        android:padding="@dimen/_12sdp"
+        android:textColor="@color/grey_black"
+        android:textSize="@dimen/_16ssp" />
+
+
+</LinearLayout>

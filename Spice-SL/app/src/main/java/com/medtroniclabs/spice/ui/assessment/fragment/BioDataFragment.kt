@@ -109,18 +109,20 @@ class BioDataFragment : BaseFragment() {
 
     private fun showPncRelatedInformation(entity: MemberClinicalEntity?) {
         entity?.apply {
-            binding.llPatientInfo.addView(
-                AssessmentCommonUtils.addViewSummaryLayout(
-                    title = getString(R.string.date_of_delivery),
-                    value = DateUtils.convertDateFormat(
-                        clinicalDate,
-                        DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-                        DATE_ddMMyyyy
-                    ),
-                    context = binding.llPatientInfo.context
+            clinicalDate?.let {
+                binding.llPatientInfo.addView(
+                    AssessmentCommonUtils.addViewSummaryLayout(
+                        title = getString(R.string.date_of_delivery),
+                        value = DateUtils.convertDateFormat(
+                            clinicalDate,
+                            DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+                            DATE_ddMMyyyy
+                        ),
+                        context = binding.llPatientInfo.context
+                    )
                 )
-            )
-            if (numberOfNeonate != null){
+            }
+            if (numberOfNeonate != null) {
                 binding.llPatientInfo.addView(
                     AssessmentCommonUtils.addViewSummaryLayout(
                         title = getString(R.string.no_of_neonates),
@@ -134,28 +136,32 @@ class BioDataFragment : BaseFragment() {
 
     private fun showAncRelatedInformation(entity: MemberClinicalEntity?) {
         entity?.apply {
-            binding.llPatientInfo.addView(
-                AssessmentCommonUtils.addViewSummaryLayout(
-                    title = getString(R.string.last_menstrual_period),
-                    value = DateUtils.convertDateFormat(
-                        clinicalDate,
-                        DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-                        DATE_ddMMyyyy
-                    ),
-                    context = binding.llPatientInfo.context
+            if (!clinicalDate.isNullOrEmpty()) {
+                binding.llPatientInfo.addView(
+                    AssessmentCommonUtils.addViewSummaryLayout(
+                        title = getString(R.string.last_menstrual_period),
+                        value = DateUtils.convertDateFormat(
+                            clinicalDate,
+                            DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+                            DATE_ddMMyyyy
+                        ),
+                        context = binding.llPatientInfo.context
+                    )
                 )
-            )
-            val lastMenstrualDate = getLastMenstrualDate(clinicalDate)
-            createSummary(
-                getString(R.string.gestational_age),
-                "${calculateGestationalAge(lastMenstrualDate).first} ${getString(R.string.weeks)}"
-            )
-            val estimatedDeliveryDate = calculateEstimatedDeliveryDate(lastMenstrualDate)
-            val formattedEstimatedDeliveryDate = getDateFormat().format(estimatedDeliveryDate.time)
-            createSummary(
-                getString(R.string.estimated_delivery_date),
-                formattedEstimatedDeliveryDate
-            )
+                val lastMenstrualDate = getLastMenstrualDate(clinicalDate)
+                createSummary(
+                    getString(R.string.gestational_age),
+                    "${calculateGestationalAge(lastMenstrualDate).first} ${getString(R.string.weeks)}"
+                )
+                val estimatedDeliveryDate = calculateEstimatedDeliveryDate(lastMenstrualDate)
+                val formattedEstimatedDeliveryDate =
+                    getDateFormat().format(estimatedDeliveryDate.time)
+                createSummary(
+                    getString(R.string.estimated_delivery_date),
+                    formattedEstimatedDeliveryDate
+                )
+
+            }
         }
     }
 
@@ -216,7 +222,7 @@ class BioDataFragment : BaseFragment() {
                 )
             )
             viewModel.workflowName?.let { workFlowName ->
-                patientId?.let { patientId ->
+                patientId.let { patientId ->
                     viewModel.getPatientVisitCountByType(workFlowName, patientId)
                 }
             }

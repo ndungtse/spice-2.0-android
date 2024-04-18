@@ -140,14 +140,14 @@ object DateUtils {
                         userTimeZone = getUTCFormat()
                     }
                     val sdfInput = SimpleDateFormat(inputFormat, Locale.ENGLISH)
-                    userTimeZone?.let {
-                        sdfInput.timeZone = userTimeZone
+                    userTimeZone?.let {timeZone ->
+                        sdfInput.timeZone = timeZone
                     }
                     val date = sdfInput.parse(it)
                     date?.let {
                         val sdfOutput = SimpleDateFormat(outputFormat, Locale.ENGLISH)
-                        userTimeZone?.let {
-                            sdfOutput.timeZone = userTimeZone
+                        userTimeZone?.let {timeZone ->
+                            sdfOutput.timeZone = timeZone
                         }
                         return sdfOutput.format(date)
                     }
@@ -161,7 +161,7 @@ object DateUtils {
 
     private fun getTimeZoneInput(inputText: String, timeZoneFormat: Boolean): TimeZone? {
         var timeZoneInput = "GMT+00:00" // Take from secured preference in future
-        if (timeZoneInput.isNullOrBlank() && timeZoneFormat) {
+        if (timeZoneInput.isBlank() && timeZoneFormat) {
             timeZoneInput = "GMT${
                 if (inputText.contains("+")) inputText.substring(inputText.indexOf("+"))
                 else inputText.substring(inputText.indexOf("-"))

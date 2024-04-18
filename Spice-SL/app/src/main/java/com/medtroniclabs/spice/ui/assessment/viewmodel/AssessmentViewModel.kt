@@ -280,8 +280,10 @@ class AssessmentViewModel @Inject constructor(
                 val map = details[workflowName] as HashMap<String, Any>
                 memberClinicalEntity?.let { memberClinicalEntity ->
                     map[RMNCH.visitNo] = memberClinicalEntity.visitCount + 1
-                    getClinicalDateKey()?.let {
-                        map[it] = memberClinicalEntity.clinicalDate
+                    memberClinicalEntity.clinicalDate?.let { date ->
+                        getClinicalDateKey()?.let {
+                            map[it] = date
+                        }
                     }
                     map[RMNCH.NoOfNeonate] = memberClinicalEntity.numberOfNeonate ?: 0L
                     savePatientClinicalInformation(patientId, workflowName, map, memberClinicalEntity.id)
@@ -319,7 +321,7 @@ class AssessmentViewModel @Inject constructor(
                     patientId = id,
                     type = workflowName,
                     visitCount = it.first,
-                    clinicalDate = it.second ?: "",
+                    clinicalDate = it.second,
                     numberOfNeonate = it.third
                 )
                 savePatientVisitCountByType(clinicalEntity)
@@ -357,6 +359,18 @@ class AssessmentViewModel @Inject constructor(
     private fun getNumberOfNeonates(details: HashMap<String, Any>): Long? {
         val value = details[RMNCH.NoOfNeonate]
         return value.toString().toLongOrNull()
+    }
+
+
+    fun updateMemberClinicalData(
+        patientId: String,
+        type: String,
+        visitCount: Long,
+        clinicalDate: String?
+    ) {
+        viewModelScope.launch(dispatcherIO) {
+            assessmentRepository.updateMemberClinicalData(patientId, type, visitCount, clinicalDate)
+        }
     }
 
 }
