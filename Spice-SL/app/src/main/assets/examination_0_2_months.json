@@ -1,0 +1,528 @@
+[
+  {
+    "diseaseName": "Very Severe Disease (PSBI)",
+    "questionnaires": [
+      {
+        "viewType": "SingleSelectionView",
+        "id": "StoppedFeedingWellOrNotFeedingAtAll",
+        "title": "Stopped feeding well or not feeding at all",
+        "family": "Very Severe Disease (PSBI)",
+        "optionsList": [
+          {
+            "id": "Yes",
+            "name": "Yes"
+          },
+          {
+            "id": "No",
+            "name": "No"
+          }
+        ]
+      },
+      {
+        "viewType": "SingleSelectionView",
+        "id": "Convulsions",
+        "title": "Convulsions",
+        "family": "Very Severe Disease (PSBI)",
+        "optionsList": [
+          {
+            "id": "Yes",
+            "name": "Yes"
+          },
+          {
+            "id": "No",
+            "name": "No"
+          }
+        ]
+      },
+      {
+        "viewType": "SingleSelectionView",
+        "id": "SevereChestIndrawing",
+        "title": "Severe chest indrawing",
+        "family": "Very Severe Disease (PSBI)",
+        "optionsList": [
+          {
+            "id": "Yes",
+            "name": "Yes"
+          },
+          {
+            "id": "No",
+            "name": "No"
+          }
+        ]
+      },
+      {
+        "viewType": "SingleSelectionView",
+        "id": "movementStimulation",
+        "title": "Move only when stimulated or no movement when stimulated.",
+        "family": "Very Severe Disease (PSBI)",
+        "optionsList": [
+          {
+            "id": "Yes",
+            "name": "Yes"
+          },
+          {
+            "id": "No",
+            "name": "No"
+          }
+        ]
+      },
+      {
+        "viewType": "SingleSelectionView",
+        "id": "LowBodyTemperature",
+        "title": "Low body temperature (less than 35.5*C)",
+        "family": "Very Severe Disease (PSBI)",
+        "optionsList": [
+          {
+            "id": "Yes",
+            "name": "Yes"
+          },
+          {
+            "id": "No",
+            "name": "No"
+          }
+        ]
+      },
+      {
+        "viewType": "SingleSelectionView",
+        "id": "SkinPustules",
+        "title": "Skin pustules?",
+        "family": "Very Severe Disease (PSBI)",
+        "optionsList": [
+          {
+            "id": "Yes",
+            "name": "Yes"
+          },
+          {
+            "id": "No",
+            "name": "No"
+          }
+        ]
+      },
+      {
+        "viewType": "SingleSelectionView",
+        "id": "UmbilicusRedOrDraining pus? ",
+        "title": "Umbilicus red or draining pus? ",
+        "family": "Very Severe Disease (PSBI)",
+        "optionsList": [
+          {
+            "id": "Yes",
+            "name": "Yes"
+          },
+          {
+            "id": "No",
+            "name": "No"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "diseaseName": "Jaundice",
+    "questionnaires": [
+      {
+        "viewType": "SingleSelectionView",
+        "id": "YellowSkinOrFaceLessThan24hrs",
+        "title": "Yellow skin or face less than 24 hrs",
+        "family": "Jaundice",
+        "optionsList": [
+          {
+            "id": "Yes",
+            "name": "Yes"
+          },
+          {
+            "id": "No",
+            "name": "No"
+          }
+        ]
+      },
+      {
+        "viewType": "SingleSelectionView",
+        "id": "YellowPalmsAndSolesAtAnyAge",
+        "title": "Yellow palms and soles at any age",
+        "family": "Jaundice",
+        "optionsList": [
+          {
+            "id": "Yes",
+            "name": "Yes"
+          },
+          {
+            "id": "No",
+            "name": "No"
+          }
+        ]
+      },
+      {
+        "viewType": "SingleSelectionView",
+        "id": "JaundiceAppearingAfter24HrsOfAgeAndPalms",
+        "title": "Jaundice appearing after 24 hrs of age and palms",
+        "family": "Jaundice",
+        "optionsList": [
+          {
+            "id": "Yes",
+            "name": "Yes"
+          },
+          {
+            "id": "No",
+            "name": "No"
+          }
+        ]
+      },
+      {
+        "viewType": "SingleSelectionView",
+        "id": "SolesNotYellow",
+        "title": "Soles not yellow",
+        "family": "Jaundice",
+        "optionsList": [
+          {
+            "id": "Yes",
+            "name": "Yes"
+          },
+          {
+            "id": "No",
+            "name": "No"
+          }
+        ]
+      },
+      {
+        "viewType": "SingleSelectionView",
+        "id": "NoJaundice",
+        "title": "No jaundice",
+        "family": "Jaundice",
+        "optionsList": [
+          {
+            "id": "Yes",
+            "name": "Yes"
+          },
+          {
+            "id": "No",
+            "name": "No"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "diseaseName": "Diarrhoea",
+    "questionnaires": [
+      {
+        "viewType": "EditText",
+        "id": "HowLong",
+        "title": "How long?",
+        "family": "Diarrhoea",
+        "hint": "How long"
+      },
+      {
+        "viewType": "SingleSelectionView",
+        "id": "BloodInTheStool",
+        "title": "Blood in the stool",
+        "family": "Diarrhoea",
+        "optionsList": [
+          {
+            "id": "Yes",
+            "name": "Yes"
+          },
+          {
+            "id": "No",
+            "name": "No"
+          }
+        ]
+      },
+      {
+        "viewType": "SingleSelectionView",
+        "id": "MovesOnlyWhenStimulated",
+        "title": "Moves only when stimulated",
+        "family": "Diarrhoea",
+        "optionsList": [
+          {
+            "id": "Yes",
+            "name": "Yes"
+          },
+          {
+            "id": "No",
+            "name": "No"
+          }
+        ]
+      },
+      {
+        "viewType": "SingleSelectionView",
+        "id": "NoMovementWhenStimulated",
+        "title": "No Movement when stimulated",
+        "family": "Diarrhoea",
+        "optionsList": [
+          {
+            "id": "Yes",
+            "name": "Yes"
+          },
+          {
+            "id": "No",
+            "name": "No"
+          }
+        ]
+      },
+      {
+        "viewType": "SingleSelectionView",
+        "id": "Restless/Irritable",
+        "title": "Restless/Irritable",
+        "family": "Diarrhoea",
+        "optionsList": [
+          {
+            "id": "Yes",
+            "name": "Yes"
+          },
+          {
+            "id": "No",
+            "name": "No"
+          }
+        ]
+      },
+      {
+        "viewType": "SingleSelectionView",
+        "id": "SunkenEyes",
+        "title": "Sunken eyes",
+        "family": "Diarrhoea",
+        "optionsList": [
+          {
+            "id": "Yes",
+            "name": "Yes"
+          },
+          {
+            "id": "No",
+            "name": "No"
+          }
+        ]
+      },
+      {
+        "viewType": "SingleSelectionView",
+        "id": "SkinPinch",
+        "title": "Skin Pinch",
+        "family": "Diarrhoea",
+        "optionsList": [
+          {
+            "id": "Goes back Slowly",
+            "name": "Goes back Slowly"
+          },
+          {
+            "id": "Goes back very slowly",
+            "name": "Goes back very slowly"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "diseaseName": "Check for HIV Infection",
+    "questionnaires": [
+      {
+        "viewType": "SingleSelectionView",
+        "id": "InfantHas+veVirologicalTest",
+        "title": "Infant has +ve virological test",
+        "family": "Check for HIV Infection",
+        "optionsList": [
+          {
+            "id": "Yes",
+            "name": "Yes"
+          },
+          {
+            "id": "No",
+            "name": "No"
+          }
+        ]
+      },
+      {
+        "viewType": "SingleSelectionView",
+        "id": "Mother+veAndChild-ve",
+        "title": "Mother +ve and child -ve",
+        "family": "Check for HIV Infection",
+        "optionsList": [
+          {
+            "id": "Yes",
+            "name": "Yes"
+          },
+          {
+            "id": "No",
+            "name": "No"
+          }
+        ]
+      },
+      {
+        "viewType": "SingleSelectionView",
+        "id": "Mother+veAndInfantNotTested",
+        "title": "Mother +ve and infant not tested",
+        "family": "Check for HIV Infection",
+        "optionsList": [
+          {
+            "id": "Yes",
+            "name": "Yes"
+          },
+          {
+            "id": "No",
+            "name": "No"
+          }
+        ]
+      },
+      {
+        "viewType": "SingleSelectionView",
+        "id": "InfantHas+veAntibodyTest",
+        "title": "Infant has +ve antibody test",
+        "family": "Check for HIV Infection",
+        "optionsList": [
+          {
+            "id": "Yes",
+            "name": "Yes"
+          },
+          {
+            "id": "No",
+            "name": "No"
+          }
+        ]
+      },
+      {
+        "viewType": "SingleSelectionView",
+        "id": "NegativeTestFor mother or child",
+        "title": "Negative test for mother or child",
+        "family": "Check for HIV Infection",
+        "optionsList": [
+          {
+            "id": "Yes",
+            "name": "Yes"
+          },
+          {
+            "id": "No",
+            "name": "No"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "diseaseName": "Feeding Problem (For all Non-Breastfeeding)",
+    "questionnaires": [
+      {
+        "viewType": "SingleSelectionView",
+        "id": "GivingInappropriateReplacementFeeds",
+        "title": "Giving inappropriate replacement feeds",
+        "family": "Feeding Problem (For all Non-Breastfeeding)",
+        "optionsList": [
+          {
+            "id": "Yes",
+            "name": "Yes"
+          },
+          {
+            "id": "No",
+            "name": "No"
+          }
+        ]
+      },
+      {
+        "viewType": "SingleSelectionView",
+        "id": "GivingInsufficientReplacementFeeds",
+        "title": "Giving insufficient replacement feeds",
+        "family": "Feeding Problem (For all Non-Breastfeeding)",
+        "optionsList": [
+          {
+            "id": "Yes",
+            "name": "Yes"
+          },
+          {
+            "id": "No",
+            "name": "No"
+          }
+        ]
+      },
+      {
+        "viewType": "SingleSelectionView",
+        "id": "MilkIncorrectlyOrUnhygienicallyPrepared",
+        "title": "Milk incorrectly or unhygienically prepared",
+        "family": "Feeding Problem (For all Non-Breastfeeding)",
+        "optionsList": [
+          {
+            "id": "Yes",
+            "name": "Yes"
+          },
+          {
+            "id": "No",
+            "name": "No"
+          }
+        ]
+      },{
+        "viewType": "SingleSelectionView",
+        "id": "UsingAfeedingBottle",
+        "title": "Using a feeding bottle",
+        "family": "Feeding Problem (For all Non-Breastfeeding)",
+        "optionsList": [
+          {
+            "id": "Yes",
+            "name": "Yes"
+          },
+          {
+            "id": "No",
+            "name": "No"
+          }
+        ]
+      },{
+        "viewType": "SingleSelectionView",
+        "id": "HIVPositiveMotherMixingBreastMilkAndOtherFeeds",
+        "title": "HIV positive mother mixing breast milk and other feeds ",
+        "family": "Feeding Problem (For all Non-Breastfeeding)",
+        "optionsList": [
+          {
+            "id": "Yes",
+            "name": "Yes"
+          },
+          {
+            "id": "No",
+            "name": "No"
+          }
+        ]
+      },
+      {
+        "viewType": "SingleSelectionView",
+        "id": "BottleFeeding",
+        "title": "Bottle feeding ",
+        "family": "Feeding Problem (For all Non-Breastfeeding)",
+        "optionsList": [
+          {
+            "id": "Yes",
+            "name": "Yes"
+          },
+          {
+            "id": "No",
+            "name": "No"
+          }
+        ]
+      },
+      {
+        "viewType": "SingleSelectionView",
+        "id": "LowWeightForAge ",
+        "title": "Low weight for age ",
+        "family": "Feeding Problem (For all Non-Breastfeeding)",
+        "optionsList": [
+          {
+            "id": "Yes",
+            "name": "Yes"
+          },
+          {
+            "id": "No",
+            "name": "No"
+          }
+        ]
+      },
+      {
+        "viewType": "SingleSelectionView",
+        "id": "Thrush",
+        "title": "Thrush",
+        "family": "Feeding Problem (For all Non-Breastfeeding)",
+        "optionsList": [
+          {
+            "id": "Good",
+            "name": "Good"
+          },
+          {
+            "id": "Poor",
+            "name": "Poor"
+          }
+        ]
+      }
+    ]
+  }
+]

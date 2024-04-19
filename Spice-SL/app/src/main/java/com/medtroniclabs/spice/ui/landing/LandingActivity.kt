@@ -19,6 +19,7 @@ import com.medtroniclabs.spice.databinding.ActivityLandingBinding
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.boarding.LoginActivity
 import com.medtroniclabs.spice.ui.home.HomeScreenFragment
+import com.medtroniclabs.spice.ui.medicalreview.ExaminationCardFragment
 import com.medtroniclabs.spice.ui.mypatients.fragment.PatientSearchFragment
 
 
