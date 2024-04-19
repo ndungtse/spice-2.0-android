@@ -18,10 +18,12 @@ import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.ViewUtils.showDatePicker
 import com.medtroniclabs.spice.data.AboveFiveYearsSummaryDetails
 import com.medtroniclabs.spice.data.MedicalReviewMetaItems
+import com.medtroniclabs.spice.data.model.MultiSelectDropDownModel
 import com.medtroniclabs.spice.databinding.FragmentMedicalReviewTreatmentPlanSummaryBinding
 import com.medtroniclabs.spice.formgeneration.extension.markMandatory
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
+import com.medtroniclabs.spice.formgeneration.utility.MultiSelectSpinnerAdapter
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
@@ -236,53 +238,30 @@ class AboveFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
     }
 
     private fun initializeMedicalSupplies(supplyList: List<MedicalReviewMetaItems>) {
-        val dropDownList = ArrayList<Map<String, Any>>()
-        dropDownList.add(
-            hashMapOf<String, Any>(
-                DefinedParams.NAME to DefinedParams.DefaultIDLabel,
-                DefinedParams.id to DefinedParams.DefaultID
-            )
-        )
+        val dropDownList = ArrayList<MultiSelectDropDownModel>()
         for (item in supplyList) {
             dropDownList.add(
-                hashMapOf<String, Any>(
-                    DefinedParams.NAME to item.name,
-                    DefinedParams.id to item.id.toString()
+                MultiSelectDropDownModel(
+                    id = item.id,
+                    name = item.name
                 )
             )
         }
-        val adapter = CustomSpinnerAdapter(requireContext())
-        adapter.setData(dropDownList)
+        val adapter = MultiSelectSpinnerAdapter(requireContext(), dropDownList, viewModel.selectedMedicalSupplyListItem)
         binding.tvMedicalSupplySpinner.adapter = adapter
-        binding.tvMedicalSupplySpinner.setSelection(0, false)
-        binding.tvMedicalSupplySpinner.onItemSelectedListener =
-            object : AdapterView.OnItemSelectedListener {
-                override fun onItemSelected(
-                    adapterView: AdapterView<*>?,
-                    view: View?,
-                    pos: Int,
-                    itemId: Long
-                ) {
-                    val selectedItem = adapter.getData(position = pos)
-                    selectedItem?.let {
-                        val selectedName = it[DefinedParams.NAME] as String?
-                        if (selectedName != DefinedParams.DefaultIDLabel) {
-                            selectedName?.let { name ->
-                                viewModel.selectedMedicalSupply = name
-                            }
-                        } else {
-                            viewModel.selectedMedicalSupply = null
-                        }
-                    }
-                    summaryListener()
+        adapter.setOnItemSelectedListener(object :
+            MultiSelectSpinnerAdapter.OnItemSelectedListener {
+            override fun onItemSelected(
+                selectedItems: List<MultiSelectDropDownModel>,
+                pos: Int,
+            ) {
+                if (selectedItems.isNotEmpty()){
+                    viewModel.selectedMedicalSupplyListItem = ArrayList(selectedItems)
                 }
-
-                override fun onNothingSelected(p0: AdapterView<*>?) {
-                    /**
-                     * this method is not used
-                     */
-                }
+                summaryListener()
             }
+        }
+        )
     }
 
     override fun onClick(view: View) {

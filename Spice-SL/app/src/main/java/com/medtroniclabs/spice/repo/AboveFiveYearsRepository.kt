@@ -11,6 +11,7 @@ import com.medtroniclabs.spice.data.AboveFiveYearsSummarySubmitRequest
 import com.medtroniclabs.spice.data.DiseaseCategoryItems
 import com.medtroniclabs.spice.data.MedicalReviewMetaItems
 import com.medtroniclabs.spice.data.model.AboveFiveYearsSubmitRequest
+import com.medtroniclabs.spice.data.model.MultiSelectDropDownModel
 import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.db.local.RoomHelper
 import com.medtroniclabs.spice.model.PatientListRespModel
@@ -185,7 +186,7 @@ class AboveFiveYearsRepository @Inject constructor(
     suspend fun aboveFiveYearsSummaryCreate(
         details: PatientListRespModel,
         submitCreateId: String,
-        selectedMedicalSupply: String?,
+        selectedMedicalSupply: ArrayList<MultiSelectDropDownModel>?,
         selectedCostItem: String?,
         selectedPatientStatus: String?,
         nextFollowupDate: String?
@@ -219,7 +220,7 @@ class AboveFiveYearsRepository @Inject constructor(
     private fun createSummarySubmitRequest(
         details: PatientListRespModel,
         submitCreateId: String,
-        selectedMedicalSupply: String?,
+        selectedMedicalSupply: ArrayList<MultiSelectDropDownModel>?,
         selectedCostItem: String?,
         selectedPatientStatus: String?,
         nextFollowupDate: String?
@@ -227,7 +228,7 @@ class AboveFiveYearsRepository @Inject constructor(
         val assessmentTypeList = ArrayList<String>()
         val medicalSupplyList = ArrayList<String>()
         assessmentTypeList.add(MedicalReviewTypeEnums.AboveFiveYears.name)
-        selectedMedicalSupply?.let { medicalSupplyList.add(it) }
+        selectedMedicalSupply?.map { medicalSupplyList.add(it.name) }
         return details.patientId?.let { patientId ->
             details.memberId?.let { memberId ->
                 AboveFiveYearsSummarySubmitRequest(
@@ -241,7 +242,7 @@ class AboveFiveYearsRepository @Inject constructor(
                         )
                     ),
                     patientReference = details.id,
-                    medicalSupplies = medicalSupplyList.nullIfEmpty(),
+                    medicalSupplies = medicalSupplyList,
                     cost = selectedCostItem,
                     patientStatus = selectedPatientStatus,
                     nextVisitDate = DateUtils.convertDateTimeToDate(

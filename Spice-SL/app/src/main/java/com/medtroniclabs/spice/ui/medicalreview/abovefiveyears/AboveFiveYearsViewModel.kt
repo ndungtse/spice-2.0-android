@@ -8,6 +8,7 @@ import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.data.AboveFiveYearsSummaryDetails
 import com.medtroniclabs.spice.data.AboveFiveYearsSummaryRequest
 import com.medtroniclabs.spice.data.MedicalReviewMetaItems
+import com.medtroniclabs.spice.data.model.MultiSelectDropDownModel
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.network.resource.Resource
@@ -32,7 +33,7 @@ class AboveFiveYearsViewModel @Inject constructor(
     val aboveFiveYearsCreateResponse = MutableLiveData<Resource<AboveFiveYearsSummaryDetails>>()
     val summaryCreateResponse = MutableLiveData<Resource<HashMap<String, Any>>>()
     var selectedPatientStatus: String? = null
-    var selectedMedicalSupply: String? = null
+    var selectedMedicalSupplyListItem= ArrayList<MultiSelectDropDownModel>()
     var selectedCostItem: String? = null
     var nextFollowupDate: String? = null
     var lastLocation: Location? = null
@@ -88,7 +89,7 @@ class AboveFiveYearsViewModel @Inject constructor(
                     repository.aboveFiveYearsSummaryCreate(
                         details,
                         submitCreateId,
-                        selectedMedicalSupply,
+                        selectedMedicalSupplyListItem,
                         selectedCostItem,
                         selectedPatientStatus,
                         nextFollowupDate

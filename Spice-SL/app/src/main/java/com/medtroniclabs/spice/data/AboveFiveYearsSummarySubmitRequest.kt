@@ -10,7 +10,7 @@ data class AboveFiveYearsSummarySubmitRequest(
     val id: String,
     val provenance: ProvanceDto,
     val cost: String? = null,
-    val medicalSupplies: ArrayList<String>? = null,
+    val medicalSupplies: List<String>? = null,
     val patientStatus: String? = null,
     val nextVisitDate:String? = null
 )
