@@ -16,6 +16,7 @@ import com.medtroniclabs.spice.data.MedicationSearchRequest
 import com.medtroniclabs.spice.data.MetaDataResponse
 import com.medtroniclabs.spice.data.MotherNeonateAncMetaResponse
 import com.medtroniclabs.spice.data.UnderTwoMonthsMetaResponse
+import com.medtroniclabs.spice.data.PatientStatusResponse
 import com.medtroniclabs.spice.data.UserSymptomsEntity
 import com.medtroniclabs.spice.data.model.AboveFiveYearsSubmitRequest
 import com.medtroniclabs.spice.data.offlinesync.model.HouseHold
@@ -98,5 +99,7 @@ interface ApiService {
     @POST("/spice-service/medical-review/iccm-under-2months/create")
     suspend fun createMedicalReviewForUnderTwoMonths(@Body request: CreateUnderTwoMonthsRequest): Response<APIResponse<CreateUnderTwoMonthsResponse>>
 
+    @POST("/spice-service/patient/patient-status-list")
+    suspend fun getPatientStatus(@Body request: AboveFiveYearsSummaryRequest): Response<APIResponse<ArrayList<PatientStatusResponse>>>
 
 }

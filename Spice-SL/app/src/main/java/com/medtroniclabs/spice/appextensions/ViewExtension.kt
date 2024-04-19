@@ -75,6 +75,14 @@ fun View.isInvisible(): Boolean {
     return this.visibility == View.INVISIBLE
 }
 
+fun <T> ArrayList<T>.nullIfEmpty(): ArrayList<T>? {
+    return if (this.isEmpty()) {
+        null
+    } else {
+        this
+    }
+}
+
 
 fun DialogFragment.setWidth(percentage: Int) {
     val percent = percentage.toFloat() / 100

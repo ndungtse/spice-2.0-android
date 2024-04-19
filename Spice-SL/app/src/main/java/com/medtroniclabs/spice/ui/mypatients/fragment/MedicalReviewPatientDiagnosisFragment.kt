@@ -4,13 +4,17 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.visible
+import com.medtroniclabs.spice.common.CommonUtils.formatListToStringWithOther
 import com.medtroniclabs.spice.databinding.FragmentMedicalReviewPatientDiagnosisBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
+import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.ANC
 import com.medtroniclabs.spice.ui.medicalreview.diagnosis.DiagnosisDialogFragment
+import com.medtroniclabs.spice.ui.medicalreview.viewmodel.PatientStatusViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 
@@ -18,6 +22,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListener {
 
     private lateinit var binding: FragmentMedicalReviewPatientDiagnosisBinding
+    private val viewModel: PatientStatusViewModel by activityViewModels()
 
     companion object {
         fun newInstance(): MedicalReviewPatientDiagnosisFragment {
@@ -42,6 +47,8 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        initializeViews()
+        attachObserver()
         handleFlow()
         initializeListeners()
     }
@@ -82,6 +89,34 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
 
     private fun initializeListeners() {
         binding.tvDiagnosisConfirm.safeClickListener(this)
+    }
+
+    private fun attachObserver() {
+        viewModel.patientStatusLiveData.observe(viewLifecycleOwner) { resourceState ->
+            when (resourceState.state) {
+                ResourceState.LOADING -> {
+                    showProgress()
+                }
+
+                ResourceState.SUCCESS -> {
+                    hideProgress()
+                    resourceState.data?.let { list ->
+                        binding.tvPatientStatusValue.text =
+                            formatListToStringWithOther(list.map { it.status })
+                    }
+                }
+
+                ResourceState.ERROR -> {
+                    hideProgress()
+                }
+            }
+        }
+    }
+
+    private fun initializeViews() {
+        viewModel.patientId?.let {
+            viewModel.getPatientStatus(it)
+        }
     }
 
 }

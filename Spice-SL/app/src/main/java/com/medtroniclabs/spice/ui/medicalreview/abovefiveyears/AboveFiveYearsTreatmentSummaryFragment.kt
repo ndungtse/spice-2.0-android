@@ -19,6 +19,7 @@ import com.medtroniclabs.spice.common.ViewUtils.showDatePicker
 import com.medtroniclabs.spice.data.AboveFiveYearsSummaryDetails
 import com.medtroniclabs.spice.data.MedicalReviewMetaItems
 import com.medtroniclabs.spice.databinding.FragmentMedicalReviewTreatmentPlanSummaryBinding
+import com.medtroniclabs.spice.formgeneration.extension.markMandatory
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
 import com.medtroniclabs.spice.network.resource.ResourceState
@@ -130,6 +131,7 @@ class AboveFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
     }
 
     private fun initView() {
+        binding.tvNextMedicalReviewLabel.markMandatory()
         viewModel.getSummaryListMetaItems(MedicalReviewTypeEnums.AboveFiveYears.name)
     }
 

@@ -190,7 +190,7 @@ object CommonUtils {
         return if (value) HouseHoldRegistration.yes else HouseHoldRegistration.no
     }
 
-    fun formatListToStringWithOther(list: List<String?>, otherText: String?): String {
+    fun formatListToStringWithOther(list: List<String?>, otherText: String? = null): String {
         return when {
             list.filterNotNull().isNotEmpty() && otherText != null -> "${list.filterNotNull().joinToString(separator = ", ")} - $otherText"
             list.filterNotNull().isNotEmpty() -> list.filterNotNull().joinToString(separator = ", ")

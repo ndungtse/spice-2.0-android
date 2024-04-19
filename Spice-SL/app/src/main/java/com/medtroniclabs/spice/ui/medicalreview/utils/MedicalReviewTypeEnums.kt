@@ -20,5 +20,6 @@ enum class MedicalReviewTypeEnums{
     NeonateOutcome,
     RiskFactors,
     ConditionOfMother,
-    MotherDeliveryStatus
+    MotherDeliveryStatus,
+    medicalReview
 }

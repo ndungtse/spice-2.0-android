@@ -1,5 +1,9 @@
 package com.medtroniclabs.spice.repo
 
+import android.location.Location
+import androidx.lifecycle.MutableLiveData
+import com.medtroniclabs.spice.appextensions.nullIfEmpty
+import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.AboveFiveYearsSummaryDetails
 import com.medtroniclabs.spice.data.AboveFiveYearsSummaryRequest
@@ -7,7 +11,9 @@ import com.medtroniclabs.spice.data.AboveFiveYearsSummarySubmitRequest
 import com.medtroniclabs.spice.data.DiseaseCategoryItems
 import com.medtroniclabs.spice.data.MedicalReviewMetaItems
 import com.medtroniclabs.spice.data.model.AboveFiveYearsSubmitRequest
+import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.db.local.RoomHelper
+import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.network.ApiHelper
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.network.resource.ResourceState
@@ -66,8 +72,12 @@ class AboveFiveYearsRepository @Inject constructor(
         patientStatus: List<MedicalReviewMetaItems>
     ): List<MedicalReviewMetaItems> {
         val chipItemList = ArrayList<MedicalReviewMetaItems>()
-        presentingComplaints.forEach { it.category = MedicalReviewTypeEnums.PresentingComplaints.name }
-        systemicExaminations.forEach { it.category = MedicalReviewTypeEnums.SystemicExaminations.name }
+        presentingComplaints.forEach {
+            it.category = MedicalReviewTypeEnums.PresentingComplaints.name
+        }
+        systemicExaminations.forEach {
+            it.category = MedicalReviewTypeEnums.SystemicExaminations.name
+        }
         patientStatus.forEach { it.type = MedicalReviewTypeEnums.AboveFiveYears.name }
         chipItemList.addAll(presentingComplaints)
         chipItemList.addAll(systemicExaminations)
@@ -78,22 +88,71 @@ class AboveFiveYearsRepository @Inject constructor(
     }
 
     suspend fun createAboveFiveYears(
-        request: AboveFiveYearsSubmitRequest
+        details: PatientListRespModel,
+        selectedComplaintsExaminationsPair: Pair<List<String?>, List<String?>>,
+        enteredComplaintsExaminationsClinicalNotes: Triple<String, String, String>,
+        lastLocation: Location?
     ): Resource<AboveFiveYearsSummaryDetails> {
         return try {
-            val response = apiHelper.createAboveFiveYearsResult(request)
-            if (response.isSuccessful) {
+            val request = createSubmitRequest(
+                details,
+                selectedComplaintsExaminationsPair,
+                enteredComplaintsExaminationsClinicalNotes,
+                lastLocation
+            )
+            val response = request?.let { apiHelper.createAboveFiveYearsResult(it) }
+            if (response != null && response.isSuccessful) {
                 val res = response.body()
                 if (res?.status == true) {
                     Resource(state = ResourceState.SUCCESS, data = res.entity)
                 } else {
                     Resource(state = ResourceState.ERROR)
                 }
-            } else{
+            } else {
                 Resource(state = ResourceState.ERROR)
             }
         } catch (e: Exception) {
             Resource(state = ResourceState.ERROR)
+        }
+    }
+
+    private fun createSubmitRequest(
+        details: PatientListRespModel,
+        selectedComplaintsExaminationsPair: Pair<List<String?>, List<String?>>,
+        enteredComplaintsExaminationsClinicalNotes: Triple<String, String, String>,
+        lastLocation: Location?
+    ): AboveFiveYearsSubmitRequest? {
+        return details.patientId?.let { id ->
+            lastLocation?.let { location ->
+                details.houseHoldId?.let { hhId ->
+                    details.memberId?.let { memberId ->
+                        AboveFiveYearsSubmitRequest(
+                            patientId = id,
+                            latitude = location.latitude,
+                            longitude = lastLocation.longitude,
+                            householdId = hhId,
+                            memberId = memberId,
+                            assessmentType = MedicalReviewTypeEnums.AboveFiveYears.name,
+                            presentingComplaints = selectedComplaintsExaminationsPair.first.filterNotNull(),
+                            presentingComplaintsNotes = enteredComplaintsExaminationsClinicalNotes.first,
+                            systemicExaminationsNotes = enteredComplaintsExaminationsClinicalNotes.second,
+                            provenance = ProvanceDto(
+                                createdDateTime = DateUtils.getCurrentDateAndTime(
+                                    DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
+                                )
+                            ),
+                            systemicExaminations = selectedComplaintsExaminationsPair.second.filterNotNull(),
+                            clinicalNotes = enteredComplaintsExaminationsClinicalNotes.third,
+                            startTime = DateUtils.getCurrentDateAndTime(
+                                DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
+                            ),
+                            endTime = DateUtils.getCurrentDateAndTime(
+                                DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
+                            )
+                        )
+                    }
+                }
+            }
         }
     }
 
@@ -124,18 +183,31 @@ class AboveFiveYearsRepository @Inject constructor(
     }
 
     suspend fun aboveFiveYearsSummaryCreate(
-        request: AboveFiveYearsSummarySubmitRequest,
+        details: PatientListRespModel,
+        submitCreateId: String,
+        selectedMedicalSupply: String?,
+        selectedCostItem: String?,
+        selectedPatientStatus: String?,
+        nextFollowupDate: String?
     ): Resource<HashMap<String, Any>> {
         return try {
-            val response = apiHelper.aboveFiveYearsSummaryCreate(request)
-            if (response.isSuccessful) {
+            val request = createSummarySubmitRequest(
+                details,
+                submitCreateId,
+                selectedMedicalSupply,
+                selectedCostItem,
+                selectedPatientStatus,
+                nextFollowupDate
+            )
+            val response = request?.let { apiHelper.aboveFiveYearsSummaryCreate(it) }
+            if (response != null && response.isSuccessful) {
                 val res = response.body()
                 if (res?.status == true) {
                     Resource(state = ResourceState.SUCCESS)
                 } else {
                     Resource(state = ResourceState.ERROR)
                 }
-            } else{
+            } else {
                 Resource(state = ResourceState.ERROR)
             }
 
@@ -144,8 +216,46 @@ class AboveFiveYearsRepository @Inject constructor(
         }
     }
 
-    suspend fun getDiagnosisList() : Resource<List<DiseaseCategoryItems>> {
-      return  try {
+    private fun createSummarySubmitRequest(
+        details: PatientListRespModel,
+        submitCreateId: String,
+        selectedMedicalSupply: String?,
+        selectedCostItem: String?,
+        selectedPatientStatus: String?,
+        nextFollowupDate: String?
+    ): AboveFiveYearsSummarySubmitRequest? {
+        val assessmentTypeList = ArrayList<String>()
+        val medicalSupplyList = ArrayList<String>()
+        assessmentTypeList.add(MedicalReviewTypeEnums.AboveFiveYears.name)
+        selectedMedicalSupply?.let { medicalSupplyList.add(it) }
+        return details.patientId?.let { patientId ->
+            details.memberId?.let { memberId ->
+                AboveFiveYearsSummarySubmitRequest(
+                    assessmentType = assessmentTypeList,
+                    patientId = patientId,
+                    memberId = memberId,
+                    id = submitCreateId,
+                    provenance = ProvanceDto(
+                        createdDateTime = DateUtils.getCurrentDateAndTime(
+                            DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
+                        )
+                    ),
+                    patientReference = details.id,
+                    medicalSupplies = medicalSupplyList.nullIfEmpty(),
+                    cost = selectedCostItem,
+                    patientStatus = selectedPatientStatus,
+                    nextVisitDate = DateUtils.convertDateTimeToDate(
+                        nextFollowupDate,
+                        DateUtils.DATE_ddMMyyyy,
+                        DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
+                    )
+                )
+            }
+        }
+    }
+
+    suspend fun getDiagnosisList(): Resource<List<DiseaseCategoryItems>> {
+        return try {
             val response = roomHelper.getDiagnosisList()
             Resource(state = ResourceState.SUCCESS, response)
         } catch (e: Exception) {

@@ -8,9 +8,9 @@ data class AboveFiveYearsSubmitRequest(
     val latitude: Double,
     val longitude: Double,
     val householdId: Long,
-    val memberId: String? = null,
+    val memberId: String,
     val referred: Boolean = true,
-    val provenance :ProvanceDto? = null,
+    val provenance: ProvanceDto? = null,
     val startTime: String? = null,
     val endTime: String? = null,
     val presentingComplaints: List<String?>? = null,
@@ -18,10 +18,5 @@ data class AboveFiveYearsSubmitRequest(
     val systemicExaminations: List<String?>? = null,
     val systemicExaminationsNotes: String? = null,
     val clinicalNotes: String? = null
-    )
-
-data class ProvenanceRequestItem(
-    val createdDataTime: String?= null,
-    val userId: Long?= null,
-    val organizationId: Long?= null
 )
+

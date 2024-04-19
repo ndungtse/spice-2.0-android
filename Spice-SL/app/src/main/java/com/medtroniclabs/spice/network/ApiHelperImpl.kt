@@ -16,6 +16,7 @@ import com.medtroniclabs.spice.data.MedicationSearchRequest
 import com.medtroniclabs.spice.data.MetaDataResponse
 import com.medtroniclabs.spice.data.MotherNeonateAncMetaResponse
 import com.medtroniclabs.spice.data.UnderTwoMonthsMetaResponse
+import com.medtroniclabs.spice.data.PatientStatusResponse
 import com.medtroniclabs.spice.data.UserSymptomsEntity
 import com.medtroniclabs.spice.data.model.AboveFiveYearsSubmitRequest
 import com.medtroniclabs.spice.data.offlinesync.model.HouseHold
@@ -106,6 +107,10 @@ class ApiHelperImpl @Inject constructor(private val apiService: ApiService) : Ap
 
     override suspend fun getLabourDeliveryMetaData(): Response<APIResponse<LabourDeliveryMetaResponse>> {
         return apiService.getLabourDeliveryMetaData()
+    }
+
+    override suspend fun getPatientStatus(request: AboveFiveYearsSummaryRequest): Response<APIResponse<ArrayList<PatientStatusResponse>>> {
+        return apiService.getPatientStatus(request)
     }
 
     override suspend fun searchMedicationByName(request: MedicationSearchRequest): Response<APIResponse<ArrayList<MedicationResponse>>> {

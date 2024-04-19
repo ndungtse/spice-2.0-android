@@ -12,6 +12,7 @@ import com.google.android.flexbox.FlexboxLayoutManager
 import com.google.android.flexbox.JustifyContent
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.CommonUtils
+import com.medtroniclabs.spice.common.DefinedParams.ID
 import com.medtroniclabs.spice.common.DefinedParams.PatientId
 import com.medtroniclabs.spice.databinding.FragmentPatientMenuBinding
 import com.medtroniclabs.spice.ui.BaseFragment
@@ -61,10 +62,11 @@ class PatientMenuFragment : BaseFragment(), MenuSelectionListener {
         fun newInstance() =
             PatientMenuFragment()
 
-        fun newInstance(patientId: String?): PatientMenuFragment {
+        fun newInstance(patientId: String?, id: String?): PatientMenuFragment {
             val fragment = PatientMenuFragment()
             val bundle = Bundle()
             bundle.putString(PatientId, patientId)
+            bundle.putString(ID, id)
             fragment.arguments = bundle
             return fragment
         }
@@ -82,17 +84,11 @@ class PatientMenuFragment : BaseFragment(), MenuSelectionListener {
             MenuConstants.GENERAL_ID -> {
                 val intent = Intent(requireContext(), AboveFiveYearsBaseActivity::class.java)
                 intent.putExtra(PatientId, arguments?.getString(PatientId))
+                intent.putExtra(ID, arguments?.getString(ID))
                 startActivity(intent)
             }
 
             MenuConstants.MOTHER_AND_NEONATE_ID -> {
-//                val intent = Intent(requireContext(), LabourDeliveryBaseActivity::class.java)
-//                val patientId = arguments?.getString(DefinedParams.PatientId, "")
-//                if (patientId?.isNotBlank() == true) {
-//                    intent.putExtra(DefinedParams.PatientId, patientId)
-//                }
-//                startActivity(intent)
-                // selectFlow
                 val patientId = arguments?.getString(PatientId, "")
                 if (patientId?.isNotBlank() == true) {
                     SelectFlowDialog.newInstance(patientId).show(childFragmentManager, SelectFlowDialog.TAG)

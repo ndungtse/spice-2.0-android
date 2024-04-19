@@ -13,10 +13,12 @@ import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
 import com.medtroniclabs.spice.common.DateUtils.DATE_ddMMyyyy
 import com.medtroniclabs.spice.common.DefinedParams
+import com.medtroniclabs.spice.common.DefinedParams.ID
 import com.medtroniclabs.spice.databinding.FragmentPatientInfoBinding
 import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
+import com.medtroniclabs.spice.ui.medicalreview.viewmodel.PatientStatusViewModel
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.ReferralTicketViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -26,6 +28,7 @@ class PatientInfoFragment : BaseFragment() {
 
     private lateinit var binding: FragmentPatientInfoBinding
     val viewModel: PatientDetailViewModel by activityViewModels()
+    private val patientStatusViewModel: PatientStatusViewModel by activityViewModels()
 
     companion object {
         const val TAG = "PatientInfoFragment"
@@ -34,10 +37,11 @@ class PatientInfoFragment : BaseFragment() {
             return PatientInfoFragment()
         }
 
-        fun newInstance(patientId: String?): PatientInfoFragment {
+        fun newInstance(patientId: String?, id: String? = null): PatientInfoFragment {
             val fragment = PatientInfoFragment()
             val bundle = Bundle()
             bundle.putString(DefinedParams.PatientId, patientId)
+            bundle.putString(ID, id)
             fragment.arguments = bundle
             return fragment
         }
@@ -54,6 +58,7 @@ class PatientInfoFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val patientId = arguments?.getString(DefinedParams.PatientId, "")
+        patientStatusViewModel.patientId = arguments?.getString(ID, null)
         if (patientId?.isNotBlank() == true) {
             viewModel.getPatients(patientId)
         }
@@ -102,7 +107,7 @@ class PatientInfoFragment : BaseFragment() {
                 ),
                 mapOf(
                     DefinedParams.label to requireContext().getString(R.string.hh_id),
-                    DefinedParams.value to (patientListRespModel.hhid ?: 0).toString()
+                    DefinedParams.value to (patientListRespModel.houseHoldId ?: 0).toString()
                 ),
                 mapOf(
                     DefinedParams.label to requireContext().getString(R.string.village),

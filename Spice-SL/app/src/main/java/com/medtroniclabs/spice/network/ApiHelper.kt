@@ -15,6 +15,7 @@ import com.medtroniclabs.spice.data.MedicationResponse
 import com.medtroniclabs.spice.data.MedicationSearchRequest
 import com.medtroniclabs.spice.data.MetaDataResponse
 import com.medtroniclabs.spice.data.MotherNeonateAncMetaResponse
+import com.medtroniclabs.spice.data.PatientStatusResponse
 import com.medtroniclabs.spice.data.UnderTwoMonthsMetaResponse
 import com.medtroniclabs.spice.data.UserSymptomsEntity
 import com.medtroniclabs.spice.data.model.AboveFiveYearsSubmitRequest
@@ -53,6 +54,7 @@ interface ApiHelper {
     suspend fun getUnderTwoMonthsMetaData(): Response<APIResponse<UnderTwoMonthsMetaResponse>>
     suspend fun aboveFiveYearsSummaryCreate(request: AboveFiveYearsSummarySubmitRequest): Response<APIResponse<HashMap<String,Any>>>
     suspend fun getLabourDeliveryMetaData(): Response<APIResponse<LabourDeliveryMetaResponse>>
+    suspend fun getPatientStatus(request: AboveFiveYearsSummaryRequest): Response<APIResponse<ArrayList<PatientStatusResponse>>>
     suspend fun searchMedicationByName(request: MedicationSearchRequest): Response<APIResponse<ArrayList<MedicationResponse>>>
     suspend fun createMedicalReviewForUnderTwoMonths(request: CreateUnderTwoMonthsRequest): Response<APIResponse<CreateUnderTwoMonthsResponse>>
 

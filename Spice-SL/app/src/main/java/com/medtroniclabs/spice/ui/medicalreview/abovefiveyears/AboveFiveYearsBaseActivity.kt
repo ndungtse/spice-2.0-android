@@ -5,16 +5,10 @@ import android.view.View
 import android.widget.ScrollView
 import androidx.activity.viewModels
 import com.medtroniclabs.spice.R
-import com.medtroniclabs.spice.common.DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
-import com.medtroniclabs.spice.common.DateUtils.DATE_ddMMyyyy
-import com.medtroniclabs.spice.common.DateUtils.convertDateTimeToDate
-import com.medtroniclabs.spice.common.DateUtils.getCurrentDateAndTime
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.SecuredPreference
+import com.medtroniclabs.spice.common.SpiceLocationManager
 import com.medtroniclabs.spice.data.AboveFiveYearsSummaryRequest
-import com.medtroniclabs.spice.data.AboveFiveYearsSummarySubmitRequest
-import com.medtroniclabs.spice.data.model.AboveFiveYearsSubmitRequest
-import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.databinding.ActivityAboveFiveYearsBaseBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.network.resource.ResourceState
@@ -31,6 +25,7 @@ import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import com.medtroniclabs.spice.ui.mypatients.fragment.MedicalReviewPatientDiagnosisFragment
 import com.medtroniclabs.spice.ui.mypatients.fragment.PatientInfoFragment
+import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.ReferralTicketViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -39,7 +34,7 @@ class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
 
     private lateinit var binding: ActivityAboveFiveYearsBaseBinding
     private val viewModel: AboveFiveYearsViewModel by viewModels()
-    private val patientViewModel: ReferralTicketViewModel by viewModels()
+    private val patientViewModel: PatientDetailViewModel by viewModels()
     private val chipItemViewModel: ClinicalNotesViewModel by viewModels()
     private val presentingComplaintsViewModel: PresentingComplaintsViewModel by viewModels()
     private val systemicExaminationViewModel: SystemicExaminationViewModel by viewModels()
@@ -59,6 +54,7 @@ class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
         initializeFragments()
         initializeListeners()
         attachObserver()
+        getCurrentLocation()
     }
 
     private fun backNavigation() {
@@ -131,7 +127,7 @@ class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
         supportFragmentManager.beginTransaction()
             .add(
                 R.id.patientDetailFragment,
-                PatientInfoFragment.newInstance(intent.getStringExtra(DefinedParams.PatientId))
+                PatientInfoFragment.newInstance(intent.getStringExtra(DefinedParams.PatientId), intent.getStringExtra(DefinedParams.ID))
             ).commit()
     }
 
@@ -163,7 +159,6 @@ class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
                 }
 
                 ResourceState.SUCCESS -> {
-                    hideLoading()
                     binding.nestedScrollViewID.fullScroll(ScrollView.FOCUS_UP)
                     resourceState.data?.let {
                         viewModel.getAboveFiveYearsSummaryDetails(AboveFiveYearsSummaryRequest(id = it.id))
@@ -272,34 +267,12 @@ class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
             }
 
             binding.btnDone.id -> {
-                //TODO: In summary submit request assessmentType should be string, but it kept as list, our side changes will be done, onc backend changes done
-                //TODO: Reg Medical Supplies, multi selection spinner need to implement, for now single select spinner is implemented
-                val assessmentTypeList = ArrayList<String>()
-                val medicalSupplyList = ArrayList<String>()
-                assessmentTypeList.add(MedicalReviewTypeEnums.AboveFiveYears.name)
-                viewModel.selectedMedicalSupply?.let { medicalSupplyList.add(it) }
                 patientViewModel.patientDetailsLiveData.value?.data?.let { details ->
                     details.patientId?.let { patientId ->
                         details.memberId?.let { memberId ->
                             viewModel.aboveFiveYearsCreateResponse.value?.data?.id
                                 ?.let { submitCreateId ->
-                                    val request = AboveFiveYearsSummarySubmitRequest(
-                                        assessmentType = assessmentTypeList,
-                                        patientId = patientId,
-                                        memberId = memberId,
-                                        id = submitCreateId,
-                                        provenance = ProvanceDto(
-                                            createdDateTime = getCurrentDateAndTime(
-                                                DATE_FORMAT_yyyyMMddHHmmssZZZZZ
-                                            )
-                                        ),
-                                        patientReference = details.id,
-                                        medicalSupplies = medicalSupplyList,
-                                        cost = viewModel.selectedCostItem,
-                                        patientStatus = viewModel.selectedPatientStatus,
-                                        nextVisitDate = convertDateTimeToDate(viewModel.nextFollowupDate, DATE_ddMMyyyy, DATE_FORMAT_yyyyMMddHHmmssZZZZZ)
-                                    )
-                                    viewModel.aboveFiveYearsSummaryCreate(request)
+                                    viewModel.aboveFiveYearsSummaryCreate(details, submitCreateId)
                                 }
                         }
                     }
@@ -311,38 +284,22 @@ class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
     private fun postResultInput() {
         patientViewModel.patientDetailsLiveData.value?.data?.let { details ->
             details.patientId?.let { id ->
-                //TODO: Location for Lat and Long should be implemented,for householdId and organizationId once given means we need to integrate
-                val request = AboveFiveYearsSubmitRequest(
-                    patientId = id,
-                    latitude = 11.21,
-                    longitude = 10.75,
-                    householdId = 23,
-                    assessmentType = MedicalReviewTypeEnums.AboveFiveYears.name,
-                    presentingComplaints = presentingComplaintsViewModel.selectedPresentingComplaints.map { it.value },
-                    presentingComplaintsNotes = presentingComplaintsViewModel.enteredComplaintNotes,
-                    systemicExaminationsNotes = systemicExaminationViewModel.enteredExaminationNotes,
-                    provenance = ProvanceDto(
-                        createdDateTime = getCurrentDateAndTime(
-                            DATE_FORMAT_yyyyMMddHHmmssZZZZZ
-                        )
-                    ),
-                    systemicExaminations = systemicExaminationViewModel.selectedSystemicExaminations.map { it.value },
-                    clinicalNotes = chipItemViewModel.enteredClinicalNotes,
-                    startTime = getCurrentDateAndTime(
-                        DATE_FORMAT_yyyyMMddHHmmssZZZZZ
-                    ),
-                    endTime = getCurrentDateAndTime(
-                        DATE_FORMAT_yyyyMMddHHmmssZZZZZ
+                viewModel.createAboveFiveYearsResult(
+                    details,
+                    Pair(presentingComplaintsViewModel.selectedPresentingComplaints.map { it.value },
+                        systemicExaminationViewModel.selectedSystemicExaminations.map { it.value }),
+                    Triple(
+                        presentingComplaintsViewModel.enteredComplaintNotes,
+                        systemicExaminationViewModel.enteredExaminationNotes,
+                        chipItemViewModel.enteredClinicalNotes
                     )
                 )
-                viewModel.createAboveFiveYearsResult(request)
             }
         }
     }
 
     private fun enableSubmitBtn() {
-        binding.btnSubmit.isEnabled =
-            presentingComplaintsViewModel.selectedPresentingComplaints.isNotEmpty() || systemicExaminationViewModel.selectedSystemicExaminations.isNotEmpty() || chipItemViewModel.enteredClinicalNotes.isNotBlank() || presentingComplaintsViewModel.enteredComplaintNotes.isNotBlank() || systemicExaminationViewModel.enteredExaminationNotes.isNotBlank()
+        binding.btnSubmit.isEnabled = chipItemViewModel.enteredClinicalNotes.isNotBlank()
     }
 
     private fun enableReferralDoneBtn() {
@@ -351,10 +308,17 @@ class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
     }
 
     private fun getSummaryStatus(): Boolean {
-        return viewModel.selectedPatientStatus != null || viewModel.selectedCostItem != null || viewModel.selectedMedicalSupply != null || viewModel.nextFollowupDate != null
+        return viewModel.nextFollowupDate != null
     }
 
     override fun onDialogDismissListener(isFinish: Boolean) {
         finish()
+    }
+
+    private fun getCurrentLocation() {
+        val locationManager = SpiceLocationManager(this)
+        locationManager.getCurrentLocation {
+            viewModel.lastLocation = it
+        }
     }
 }

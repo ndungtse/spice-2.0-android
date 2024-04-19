@@ -1,12 +1,14 @@
 package com.medtroniclabs.spice.ui.dialog
 
 import android.content.Context
+import android.content.res.Configuration
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowManager
 import androidx.fragment.app.DialogFragment
+import com.medtroniclabs.spice.appextensions.setWidth
+import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.databinding.FragmentMedicalReviewSucessDialogBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.ui.landing.OnDialogDismissListener
@@ -56,10 +58,17 @@ class MedicalReviewSuccessDialogFragment : DialogFragment(), View.OnClickListene
 
     override fun onStart() {
         super.onStart()
-        dialog?.window?.setLayout(
-            WindowManager.LayoutParams.WRAP_CONTENT,
-            WindowManager.LayoutParams.WRAP_CONTENT
-        )
+        handleDialogSize()
+    }
+
+    private fun handleDialogSize() {
+        val isLandscape = resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+        val width = if (CommonUtils.checkIsTablet(requireContext())) {
+            if (isLandscape) 50 else 60
+        } else {
+            if (isLandscape) 50 else 60
+        }
+        setWidth(width)
     }
 
 }
