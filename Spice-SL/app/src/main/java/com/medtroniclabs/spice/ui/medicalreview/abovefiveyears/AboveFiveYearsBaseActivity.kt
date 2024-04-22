@@ -354,7 +354,7 @@ class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
         return viewModel.selectedPatientStatus != null || viewModel.selectedCostItem != null || viewModel.selectedMedicalSupply != null || viewModel.nextFollowupDate != null
     }
 
-    override fun onDialogDismissListener() {
+    override fun onDialogDismissListener(isFinish: Boolean) {
         finish()
     }
 }

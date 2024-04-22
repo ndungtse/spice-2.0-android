@@ -32,16 +32,15 @@
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/titleToolbar"
-            android:layout_width="@dimen/_0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/inter_medium"
             android:gravity="center"
             android:paddingHorizontal="@dimen/_60sdp"
             android:textColor="@color/white"
-            android:textSize="@dimen/_16ssp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/ivHomeHolder"
-            app:layout_constraintStart_toEndOf="@+id/ivBack"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <androidx.appcompat.widget.LinearLayoutCompat
@@ -51,7 +50,6 @@
             android:gravity="center"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/titleToolbar"
             app:layout_constraintTop_toTopOf="parent">
 
             <ImageView

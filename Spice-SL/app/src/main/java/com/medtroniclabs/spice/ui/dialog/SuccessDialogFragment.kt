@@ -86,7 +86,12 @@ class SuccessDialogFragment : DialogFragment(), View.OnClickListener {
     override fun onClick(view: View) {
         when(view.id){
             binding.btnDone.id -> {
-                onDismissListener?.onDialogDismissListener()
+                onDismissListener?.onDialogDismissListener(
+                    arguments?.getLong(
+                        HouseholdNo,
+                        -1
+                    ) != -1L
+                )
                 dismiss()
             }
         }

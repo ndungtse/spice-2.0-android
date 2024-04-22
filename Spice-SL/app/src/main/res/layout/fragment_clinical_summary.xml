@@ -9,7 +9,8 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/_16sdp">
 
         <View
             android:id="@+id/viewClinicalSummaryFragment"
@@ -28,7 +29,7 @@
             android:gravity="center"
             android:paddingHorizontal="@dimen/_10sdp"
             android:paddingVertical="@dimen/_10sdp"
-            android:text="@string/clinical_summary"
+            android:text="@string/title_clinical_summary_vital_signs"
             android:textColor="@color/house_hold_title"
             android:textSize="@dimen/_16ssp"
             app:layout_constraintEnd_toEndOf="@id/viewClinicalSummaryFragment"
@@ -55,7 +56,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/_24sdp"
             android:layout_marginTop="@dimen/_16sdp"
-            android:hint="@string/weight_in_kgs"
+            android:text="@string/weight_in_kgs"
             android:textColor="@color/table_title"
             android:textSize="@dimen/_16ssp"
             app:layout_constraintStart_toStartOf="parent"
@@ -82,6 +83,28 @@
             app:layout_constraintTop_toBottomOf="@+id/tvWeightLabel" />
 
         <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvWeightError"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/_5sdp"
+            android:text="@string/default_user_input_error"
+            android:textColor="@color/a_red_error"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="@+id/etWeight"
+            app:layout_constraintStart_toStartOf="@+id/etWeight"
+            app:layout_constraintTop_toBottomOf="@+id/etWeight" />
+
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/groupWeightHeight"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:barrierDirection="bottom"
+            app:layout_constraintBottom_toBottomOf="@id/tvWAZLabel"
+            app:layout_constraintTop_toTopOf="@id/etWeight"
+            app:constraint_referenced_ids="tvWeightError,tvHeightError" />
+
+        <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tvWAZLabel"
             android:layout_width="@dimen/_0dp"
             android:layout_height="wrap_content"
@@ -90,7 +113,7 @@
             android:textColor="@color/table_title"
             android:textSize="@dimen/_16ssp"
             app:layout_constraintStart_toStartOf="@+id/tvWeightLabel"
-            app:layout_constraintTop_toBottomOf="@+id/etWeight" />
+            app:layout_constraintTop_toBottomOf="@+id/groupWeightHeight" />
 
         <androidx.appcompat.widget.AppCompatEditText
             android:id="@+id/etWAZ"
@@ -111,6 +134,28 @@
             app:layout_constraintTop_toBottomOf="@+id/tvWAZLabel" />
 
         <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvWAZError"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/_5sdp"
+            android:text="@string/default_user_input_error"
+            android:textColor="@color/a_red_error"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="@+id/etWAZ"
+            app:layout_constraintStart_toStartOf="@+id/etWAZ"
+            app:layout_constraintTop_toBottomOf="@+id/etWAZ" />
+
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/groupWAZWHZ"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:barrierDirection="bottom"
+            app:layout_constraintBottom_toBottomOf="@id/tvTemperatureLabel"
+            app:layout_constraintTop_toTopOf="@id/etWAZ"
+            app:constraint_referenced_ids="tvWAZError,tvWHZError" />
+
+        <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tvTemperatureLabel"
             android:layout_width="@dimen/_0dp"
             android:layout_height="wrap_content"
@@ -119,7 +164,7 @@
             android:textColor="@color/table_title"
             android:textSize="@dimen/_16ssp"
             app:layout_constraintStart_toStartOf="@+id/tvWAZLabel"
-            app:layout_constraintTop_toBottomOf="@+id/etWAZ" />
+            app:layout_constraintTop_toBottomOf="@+id/groupWAZWHZ" />
 
         <androidx.appcompat.widget.AppCompatEditText
             android:id="@+id/etTemperature"
@@ -142,6 +187,28 @@
             app:layout_constraintTop_toBottomOf="@+id/tvTemperatureLabel" />
 
         <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvTemperatureLabelError"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/_5sdp"
+            android:text="@string/default_user_input_error"
+            android:textColor="@color/a_red_error"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="@+id/etTemperature"
+            app:layout_constraintStart_toStartOf="@+id/etTemperature"
+            app:layout_constraintTop_toBottomOf="@+id/etTemperature" />
+
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/groupTemperatureImmunisationStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:barrierDirection="bottom"
+            app:layout_constraintBottom_toBottomOf="@id/tvRespirationRateLabel"
+            app:layout_constraintTop_toTopOf="@id/etTemperature"
+            app:constraint_referenced_ids="tvTemperatureLabelError,tvImmunisationError" />
+
+        <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tvRespirationRateLabel"
             android:layout_width="@dimen/_0dp"
             android:layout_height="wrap_content"
@@ -150,7 +217,7 @@
             android:textColor="@color/table_title"
             android:textSize="@dimen/_16ssp"
             app:layout_constraintStart_toStartOf="@+id/tvWAZLabel"
-            app:layout_constraintTop_toBottomOf="@+id/etTemperature" />
+            app:layout_constraintTop_toBottomOf="@+id/groupTemperatureImmunisationStatus" />
 
         <androidx.appcompat.widget.AppCompatEditText
             android:id="@+id/etRespirationRate"
@@ -173,16 +240,38 @@
             app:layout_constraintTop_toBottomOf="@+id/tvRespirationRateLabel" />
 
         <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvRespirationRateError"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/_5sdp"
+            android:text="@string/default_user_input_error"
+            android:textColor="@color/a_red_error"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="@+id/etRespirationRate"
+            app:layout_constraintStart_toStartOf="@+id/etRespirationRate"
+            app:layout_constraintTop_toBottomOf="@+id/etRespirationRate" />
+
+        <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tvRespirationRateMinute"
             android:layout_width="@dimen/_0dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/_16sdp"
-            android:text="@string/minute"
+            android:text="@string/minute_slash"
             android:textColor="@color/table_title"
             android:textSize="@dimen/_14ssp"
             app:layout_constraintBottom_toBottomOf="@+id/etRespirationRate"
             app:layout_constraintEnd_toEndOf="@+id/etRespirationRate"
             app:layout_constraintTop_toTopOf="@+id/etRespirationRate" />
+
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/groupRespirationRateRepeat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:barrierDirection="bottom"
+            app:layout_constraintBottom_toBottomOf="@id/tvBreastFeedingLabel"
+            app:layout_constraintTop_toTopOf="@id/etRespirationRate"
+            app:constraint_referenced_ids="tvRespirationRateError,tvRepeatError" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tvHeightLabel"
@@ -217,6 +306,18 @@
             app:layout_constraintTop_toTopOf="@+id/etWeight" />
 
         <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvHeightError"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/_5sdp"
+            android:text="@string/default_user_input_error"
+            android:textColor="@color/a_red_error"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="@+id/etHeight"
+            app:layout_constraintStart_toStartOf="@+id/etHeight"
+            app:layout_constraintTop_toBottomOf="@+id/etHeight" />
+
+        <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tvWHZLabel"
             android:layout_width="@dimen/_0dp"
             android:layout_height="wrap_content"
@@ -225,7 +326,7 @@
             android:textColor="@color/table_title"
             android:textSize="@dimen/_16ssp"
             app:layout_constraintStart_toStartOf="@+id/centerGuideline"
-            app:layout_constraintTop_toBottomOf="@+id/etHeight"
+            app:layout_constraintTop_toBottomOf="@+id/tvWeightError"
             app:layout_constraintTop_toTopOf="@+id/tvWAZLabel" />
 
         <androidx.appcompat.widget.AppCompatEditText
@@ -247,6 +348,18 @@
             app:layout_constraintTop_toTopOf="@+id/etWAZ" />
 
         <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvWHZError"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/_5sdp"
+            android:text="@string/default_user_input_error"
+            android:textColor="@color/a_red_error"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="@+id/etWHZ"
+            app:layout_constraintStart_toStartOf="@+id/etWHZ"
+            app:layout_constraintTop_toBottomOf="@+id/etWHZ" />
+
+        <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tvImmunisationLabel"
             android:layout_width="@dimen/_0dp"
             android:layout_height="wrap_content"
@@ -255,7 +368,7 @@
             android:textColor="@color/table_title"
             android:textSize="@dimen/_16ssp"
             app:layout_constraintStart_toStartOf="@+id/centerGuideline"
-            app:layout_constraintTop_toBottomOf="@+id/etWHZ"
+            app:layout_constraintTop_toBottomOf="@+id/tvWHZError"
             app:layout_constraintTop_toTopOf="@+id/tvTemperatureLabel" />
 
         <androidx.appcompat.widget.AppCompatSpinner
@@ -263,7 +376,6 @@
             style="@style/Form_Spinner_Style"
             android:layout_width="@dimen/_0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/_5sdp"
             android:layout_marginEnd="@dimen/_24sdp"
             android:background="@drawable/edittext_background"
             android:textColor="#D0D0D0"
@@ -271,6 +383,18 @@
             app:layout_constraintStart_toStartOf="@+id/tvImmunisationLabel"
             app:layout_constraintTop_toBottomOf="@+id/tvImmunisationLabel"
             app:layout_constraintTop_toTopOf="@+id/etTemperature" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvImmunisationError"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/_5sdp"
+            android:text="@string/default_user_input_error"
+            android:textColor="@color/a_red_error"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="@+id/etImmunisationStatus"
+            app:layout_constraintStart_toStartOf="@+id/etImmunisationStatus"
+            app:layout_constraintTop_toBottomOf="@+id/etImmunisationStatus" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tvRepeatLabel"
@@ -281,7 +405,7 @@
             android:textColor="@color/table_title"
             android:textSize="@dimen/_16ssp"
             app:layout_constraintStart_toStartOf="@+id/centerGuideline"
-            app:layout_constraintTop_toBottomOf="@+id/etImmunisationStatus"
+            app:layout_constraintTop_toBottomOf="@+id/tvImmunisationError"
             app:layout_constraintTop_toTopOf="@+id/tvRespirationRateLabel" />
 
         <androidx.appcompat.widget.AppCompatEditText
@@ -305,11 +429,23 @@
             app:layout_constraintTop_toTopOf="@+id/etRespirationRate" />
 
         <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvRepeatError"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/_5sdp"
+            android:text="@string/default_user_input_error"
+            android:textColor="@color/a_red_error"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="@+id/etRepeat"
+            app:layout_constraintStart_toStartOf="@+id/etRepeat"
+            app:layout_constraintTop_toBottomOf="@+id/etRepeat" />
+
+        <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tvRepeatMinute"
             android:layout_width="@dimen/_0dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/_16sdp"
-            android:text=" /minute"
+            android:text="@string/minute_slash"
             android:textColor="@color/table_title"
             android:textSize="@dimen/_14ssp"
             app:layout_constraintBottom_toBottomOf="@+id/etRepeat"
@@ -321,23 +457,34 @@
             android:layout_width="@dimen/_0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/_16sdp"
+            android:text="@string/breast_feeding"
             android:textColor="@color/table_title"
             android:textSize="@dimen/_16ssp"
-            android:text="@string/breast_feeding"
             app:layout_constraintStart_toStartOf="@+id/tvWAZLabel"
-            app:layout_constraintTop_toBottomOf="@+id/etRespirationRate" />
+            app:layout_constraintTop_toBottomOf="@+id/groupRespirationRateRepeat" />
 
         <LinearLayout
             android:id="@+id/llBreastFeedingStatus"
+            style="@style/Activities_Card_Style"
             android:layout_width="@dimen/_0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/_8sdp"
-            style="@style/Activities_Card_Style"
             android:orientation="horizontal"
-            android:paddingBottom="@dimen/_16sdp"
             app:layout_constraintEnd_toEndOf="@+id/etRespirationRate"
             app:layout_constraintStart_toStartOf="@+id/tvBreastFeedingLabel"
             app:layout_constraintTop_toBottomOf="@+id/tvBreastFeedingLabel" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvBreastFeedingError"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/_5sdp"
+            android:text="@string/default_user_input_error"
+            android:textColor="@color/a_red_error"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="@+id/llBreastFeedingStatus"
+            app:layout_constraintStart_toStartOf="@+id/llBreastFeedingStatus"
+            app:layout_constraintTop_toBottomOf="@+id/llBreastFeedingStatus" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tvExclusiveBreastFeedingLabel"
@@ -348,7 +495,7 @@
             android:textColor="@color/table_title"
             android:textSize="@dimen/_16ssp"
             app:layout_constraintStart_toStartOf="@+id/tvWAZLabel"
-            app:layout_constraintTop_toBottomOf="@+id/llBreastFeedingStatus" />
+            app:layout_constraintTop_toBottomOf="@+id/tvBreastFeedingError" />
 
         <LinearLayout
             android:id="@+id/llExclusiveBreastFeedingStatus"
@@ -356,16 +503,27 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/_8sdp"
             android:orientation="horizontal"
-            android:paddingBottom="@dimen/_16sdp"
             app:layout_constraintEnd_toEndOf="@+id/etRespirationRate"
             app:layout_constraintStart_toStartOf="@+id/tvExclusiveBreastFeedingLabel"
             app:layout_constraintTop_toBottomOf="@+id/tvExclusiveBreastFeedingLabel" />
 
-        <androidx.constraintlayout.widget.Group
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvExclusiveBreastFeedingStatusError"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/_5sdp"
+            android:text="@string/default_user_input_error"
+            android:textColor="@color/a_red_error"
             android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="@+id/llExclusiveBreastFeedingStatus"
+            app:layout_constraintStart_toStartOf="@+id/llExclusiveBreastFeedingStatus"
+            app:layout_constraintTop_toBottomOf="@+id/llExclusiveBreastFeedingStatus" />
+
+        <androidx.constraintlayout.widget.Group
             android:id="@+id/exclusiveBreastFeedingGroup"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:visibility="gone"
             app:constraint_referenced_ids="tvExclusiveBreastFeedingLabel, llExclusiveBreastFeedingStatus" />
 
         <androidx.appcompat.widget.AppCompatTextView
@@ -386,10 +544,22 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/_8sdp"
             android:orientation="horizontal"
-            android:paddingBottom="@dimen/_16sdp"
             app:layout_constraintEnd_toEndOf="@+id/etRepeat"
             app:layout_constraintStart_toStartOf="@+id/tvVitaminAForMotherLabel"
             app:layout_constraintTop_toBottomOf="@+id/tvVitaminAForMotherLabel" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvVitaminAForMotherError"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/_5sdp"
+            android:text="@string/default_user_input_error"
+            android:textColor="@color/a_red_error"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="@+id/etVitaminAForMother"
+            app:layout_constraintStart_toStartOf="@+id/etVitaminAForMother"
+            app:layout_constraintTop_toBottomOf="@+id/etVitaminAForMother" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </com.google.android.material.card.MaterialCardView>

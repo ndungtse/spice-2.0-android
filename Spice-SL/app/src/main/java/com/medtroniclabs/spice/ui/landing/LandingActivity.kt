@@ -19,7 +19,6 @@ import com.medtroniclabs.spice.databinding.ActivityLandingBinding
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.boarding.LoginActivity
 import com.medtroniclabs.spice.ui.home.HomeScreenFragment
-import com.medtroniclabs.spice.ui.medicalreview.ExaminationCardFragment
 import com.medtroniclabs.spice.ui.mypatients.fragment.PatientSearchFragment
 
 
@@ -32,7 +31,7 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
         super.onCreate(savedInstanceState)
         onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
 
-        val isLoggedIn = SecuredPreference.getBoolean(SecuredPreference.EnvironmentKey.ISLOGGEDIN.name)
+        val isLoggedIn = SecuredPreference.getBoolean(SecuredPreference.EnvironmentKey.ISLOGGEDIN.name) || SecuredPreference.getBoolean(SecuredPreference.EnvironmentKey.ISOFFLINELOGIN.name)
         val isMetaLoaded = SecuredPreference.getBoolean(SecuredPreference.EnvironmentKey.ISMETALOADED.name)
 
         if (!(isLoggedIn && isMetaLoaded)) {
@@ -161,7 +160,7 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
     override fun onClick(v: View) {
     }
 
-    override fun onDialogDismissListener() {
+    override fun onDialogDismissListener(isFinish: Boolean) {
         val homeMenuItem = binding.navView.menu.findItem(R.id.home)
         onNavigationItemSelected(homeMenuItem)
     }

@@ -245,8 +245,10 @@
     <string name="oedema_info_3"> The child has oedema if a pit remains in both feet when you lift your thumbs</string>
     <string name="chest_info_1"> The child has chest in-drawing if the lower chest wall goes IN when the child breathes IN. Chest in-drawing is not visible when the child breathes out.</string>
     <string name="chest_info_2"> For chest in-drawing to be present, it must be clearly visible and present at every breath.</string>
-    <string name="last_menstrual_period">"Last Menstrual Period "</string>
+    <string name="_34_weeks_premature">34 weeks(Premature)</string>
     <string name="gestational_age">Gestational Age</string>
+    <string name="_1780gms_weeks_low_birth_weight">1780gms weeks(Low birth weight)</string>
+    <string name="last_menstrual_period">"Last Menstrual Period "</string>
     <string name="estimated_delivery_date">Estimated Delivery Date</string>
     <string name="refer_patient">Refer Patient</string>
     <string name="treatment">Treatment</string>
@@ -285,7 +287,6 @@
     <string name="add_new_member_small">Add New Member</string>
     <string name="birth_history">Birth History</string>
     <string name="breathing_problem_at_birth">Breathing Problem at birth</string>
-    <string name="birth_weight">Birth Weight</string>
     <string name="clinical_summary"><![CDATA[Clinical Summary & Vital Signs]]></string>
     <string name="weight_in_kgs">Weight (in Kgs)</string>
     <string name="waz">WAZ</string>
@@ -316,6 +317,7 @@
     <string name="female">Female</string>
     <string name="state_of_baby">State Of Baby</string>
     <string name="abnormal">Abnormal</string>
+    <string name="birth_weight">Birth Weight (in Kg)</string>
     <string name="signs_symptoms_observed">Signs/Symptoms observed</string>
     <string name="state_of_the_baby">State of the Baby</string>
     <string name="apgar_score">APGAR Score</string>
@@ -398,4 +400,14 @@
     <string name="select_disease_category">Select Disease Category</string>
     <string name="select_disease_condition">Select Disease Condition</string>
     <string name="add_diagnosis">Add Diagnoses</string>
+    <string name="jaundice">Jaundice</string>
+    <string name="gene_expert">Gene Expert</string>
+    <string name="_1_jaundice">1.Jaundice</string>
+    <string name="empty__">--</string>
+    <string name="child">child</string>
+    <string name="june">June</string>
+    <string name="breathing_problems_at_birth">Breathing problems at birth</string>
+    <string name="title_birth_history">Birth History</string>
+    <string name="title_clinical_summary_vital_signs">Clinical Summary &amp; Vital Signs</string>
+    <string name="minute_slash">/minute</string>
 </resources>

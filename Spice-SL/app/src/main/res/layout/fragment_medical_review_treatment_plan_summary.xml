@@ -535,7 +535,7 @@
         style="@style/TextStyle_Regular_16"
         android:layout_width="@dimen/_0dp"
         android:layout_marginStart="@dimen/_8sdp"
-        android:text="@string/date_of_review"
+        android:text="@string/date_of_birth"
         app:layout_constraintBottom_toBottomOf="@id/tvClinicalNameLabel"
         app:layout_constraintEnd_toStartOf="@id/tvDateOfReviewSeparator"
         app:layout_constraintHorizontal_weight="0.4"

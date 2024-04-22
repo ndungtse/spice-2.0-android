@@ -400,9 +400,9 @@ object SecuredPreference {
     }
 
     fun logout(): Boolean {
-//        remove(EnvironmentKey.ISLOGGEDIN.name)
+        remove(EnvironmentKey.ISLOGGEDIN.name)
         remove(EnvironmentKey.TOKEN.name)
-//        remove(EnvironmentKey.ISOFFLINELOGIN.name)
+        remove(EnvironmentKey.ISOFFLINELOGIN.name)
 //        remove(EnvironmentKey.USER_RESPONSE.name)
         remove(EnvironmentKey.IS_ABOVE_FIVE_YEARS_LOADED.name)
         remove(EnvironmentKey.IS_MOTHER_NEONATE_LOADEDANC.name)

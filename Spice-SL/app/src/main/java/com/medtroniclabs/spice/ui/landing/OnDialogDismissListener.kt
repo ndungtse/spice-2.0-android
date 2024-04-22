@@ -1,5 +1,5 @@
 package com.medtroniclabs.spice.ui.landing
 
 interface OnDialogDismissListener {
-    fun onDialogDismissListener()
+    fun onDialogDismissListener(isFinish: Boolean = false)
 }

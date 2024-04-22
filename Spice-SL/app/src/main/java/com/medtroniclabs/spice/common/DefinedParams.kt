@@ -40,6 +40,7 @@ object DefinedParams {
     const val PatientId = "PatientId"
     const val TimeOfDelivery = "timeOfDelivery"
     const val TimeOfLabourOnset = "timeOfLabourOnset"
+    const val NextVisitDate = "nextVisitDate"
     const val HouseholdHead = "HouseholdHead"
     const val CHIEF_DOM_CODE_LENGTH = 3
     const val VILLAGE_CODE_LENGTH = 4

@@ -216,8 +216,10 @@ class HouseholdSummaryActivity : BaseActivity(), MemberSelectionListener, View.O
         }
     }
 
-    override fun onDialogDismissListener() {
-        finish()
+    override fun onDialogDismissListener(isFinish: Boolean) {
+        if (isFinish){
+            finish()
+        }
     }
 
 }

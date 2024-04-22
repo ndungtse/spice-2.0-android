@@ -21,6 +21,8 @@ class UnderTwoMonthViewModel @Inject constructor(
     val resultBreastFeedingHashMap = HashMap<String, Any>()
     val resultMotherVitaminHashMap = HashMap<String, Any>()
     val exclusiveBreastFeedHashMap = HashMap<String, Any>()
+    var nextVisitDateHashMap = HashMap<String, Any>()
+    var selectedImmunisationStatus: String? = null
 
     fun getStaticMetaData() {
         viewModelScope.launch(dispatcherIO){

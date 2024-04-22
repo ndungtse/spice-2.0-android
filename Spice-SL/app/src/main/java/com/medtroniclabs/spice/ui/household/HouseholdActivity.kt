@@ -159,7 +159,7 @@ class HouseholdActivity : BaseActivity(), OnDialogDismissListener {
         }
     }
 
-    override fun onDialogDismissListener() {
+    override fun onDialogDismissListener(isFinish: Boolean) {
         finish()
     }
 

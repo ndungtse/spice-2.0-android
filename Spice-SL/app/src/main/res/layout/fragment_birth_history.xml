@@ -42,6 +42,7 @@
                 android:paddingVertical="@dimen/_10sdp"
                 android:text="@string/birth_history"
                 android:textSize="@dimen/_16ssp"
+                android:textColor="@color/house_hold_title"
                 app:layout_constraintBottom_toBottomOf="@id/viewBirthHistroyCardBG"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -96,7 +97,7 @@
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvGestationalAgeDot"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:text="@string/separator_colon"
                 android:textColor="@color/table_title"
