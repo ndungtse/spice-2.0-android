@@ -4,14 +4,17 @@ import android.os.Bundle
 import android.view.View
 import androidx.activity.viewModels
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.isNotTabletAndPortrait
 import com.medtroniclabs.spice.appextensions.setPercentWidth
+import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.databinding.ActivityMedicalReviewAncactivityBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
+import com.medtroniclabs.spice.ui.mypatients.fragment.MedicalReviewPatientDiagnosisFragment
 import com.medtroniclabs.spice.ui.mypatients.fragment.PatientInfoFragment
 import com.medtroniclabs.spice.ui.mypatients.fragment.PregnancyDetailsFragment
 import com.medtroniclabs.spice.ui.mypatients.fragment.PregnancyPastObstetricHistoryFragment
@@ -108,6 +111,17 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener {
         }
     }
 
+    private fun handleSubmit() {
+        supportFragmentManager.beginTransaction()
+            .replace(
+                R.id.pregnancyDetailsConatiner,
+                MedicalReviewPatientDiagnosisFragment.newInstance(true)
+            )
+            .commit()
+        binding.btnLayout.btnNext.gone()
+        binding.bottomNavigationView.visible()
+    }
+
     private fun isAnyEditTextFilled(): Boolean {
         val pregnancyDetailsFragment =
             supportFragmentManager.findFragmentById(R.id.pregnancyDetailsConatiner) as? PregnancyDetailsFragment
@@ -125,8 +139,12 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener {
             supportFragmentManager.findFragmentById(R.id.pregnancyDetailsConatiner) as? PregnancyDetailsFragment
         val pregnancyHistoryFragment =
             supportFragmentManager.findFragmentById(R.id.pregnancyHistoryConatiner) as? PregnancyPastObstetricHistoryFragment
-        pregnancyDetailsFragment?.getPregnancyDetailsFromEditText()
-        pregnancyHistoryFragment?.getPregnancyHistoryDetails()
+
+        if (pregnancyDetailsFragment?.validateInput() == true) {
+            pregnancyDetailsFragment.getPregnancyDetailsFromEditText()
+            pregnancyHistoryFragment?.getPregnancyHistoryDetails()
+            handleSubmit()
+        }
     }
 
     fun updateNextButtonState() {

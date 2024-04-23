@@ -340,7 +340,7 @@
     <string name="plus">+</string>
     <string name="parity">Parity</string>
     <string name="weight_error">"Please enter weight between 10 to 400"</string>
-    <string name="height_error">"Please enter weight between 50 to 300"</string>
+    <string name="height_error">"Please enter height between 50 to 300"</string>
     <string name="gestational_error">"Please enter Gestational age below 60"</string>
     <string name="patient_blood_group">Patient Blood Group</string>
     <string name="diastolic_error">Diastolic pressure should be above 30</string>
@@ -351,4 +351,15 @@
     <string name="the_review_has_been_successfully_submitted">The review has been successfully submitted.</string>
     <string name="review_completed">Review Completed</string>
     <string name="finish">Finish</string>
+    <string name="add_weight">Add Weight</string>
+    <string name="blood_pressure">Blood Pressure</string>
+    <string name="add_blood_pressure">Add Blood Pressure</string>
+    <string name="enter_the_weight">Enter the weight</string>
+    <string name="diastolic_error_min">Diastolic pressure should be above 30</string>
+    <string name="pulse_error_min">Pulse should be above 35</string>
+    <string name="systolic_error_min">Systolic pressure should be above 30</string>
+    <string name="diastolic_error_max">Diastolic pressure should be lesser than 300</string>
+    <string name="pulse_error_max">Pulse should  be lesser than 300</string>
+    <string name="systolic_error_max">Systolic pressure should be lesser than 300</string>
+    <string name="systolic_diastolic_error">Systolic pressure should be greater than Diastolic pressure</string>
 </resources>

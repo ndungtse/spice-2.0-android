@@ -13,6 +13,7 @@ import com.medtroniclabs.spice.data.model.ChipViewItemModel
 import com.medtroniclabs.spice.databinding.FragmentPregnancyPastObstetricHistoryBinding
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.ui.SingleSelectionCustomView
+import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.yes
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.TagListCustomView
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
@@ -58,7 +59,7 @@ class PregnancyPastObstetricHistoryFragment : BaseFragment() {
         val flowValue = viewModel.resultFlowHashMap[TAG] as? String
         viewModel.pregnancyDetailsModel.apply {
             pregnancyHistory = complaintsTagView.getSelectedTags().map { it.name }
-            doesMotherHaveDeliveryKit = flowValue?.equals("yes", ignoreCase = true) ?: false
+            doesMotherHaveDeliveryKit = flowValue?.equals(yes, ignoreCase = true) ?: false
         }
     }
 
@@ -101,7 +102,7 @@ class PregnancyPastObstetricHistoryFragment : BaseFragment() {
     }
 
     private fun attachObservers() {
-        viewModel.ancMetaLiveDataForPregnancyHistory.observe(viewLifecycleOwner) { it ->
+        viewModel.ancMetaLiveDataForPregnancyHistory.observe(viewLifecycleOwner) {
             val complaintList = it.map { item ->
                 ChipViewItemModel(
                     id = item.id,

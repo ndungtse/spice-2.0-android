@@ -1,0 +1,192 @@
+package com.medtroniclabs.spice.ui.mypatients.fragment
+
+import android.content.res.Configuration
+import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.TextView
+import androidx.appcompat.widget.AppCompatEditText
+import androidx.fragment.app.DialogFragment
+import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.appextensions.gone
+import com.medtroniclabs.spice.appextensions.setWidth
+import com.medtroniclabs.spice.appextensions.visible
+import com.medtroniclabs.spice.common.CommonUtils
+import com.medtroniclabs.spice.databinding.FragmentAddBpDialogBinding
+import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
+
+class AddBpDialog : DialogFragment(), View.OnClickListener {
+
+    private lateinit var binding: FragmentAddBpDialogBinding
+
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        binding = FragmentAddBpDialogBinding.inflate(inflater, container, false)
+        dialog?.window?.setBackgroundDrawableResource(android.R.color.transparent)
+        isCancelable = false
+        return binding.root
+    }
+
+    companion object {
+        const val TAG = "AddBpDialog"
+        fun newInstance(): AddBpDialog {
+            return AddBpDialog()
+        }
+    }
+
+    private fun handleDialogSize() {
+        val isLandscape = resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+        val width = if (CommonUtils.checkIsTablet(requireContext())) {
+            if (isLandscape) 65 else 90
+        } else {
+            if (isLandscape) 65 else 90
+        }
+        setWidth(width)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        initView()
+    }
+
+    private fun initView() {
+        with(binding) {
+            btnOkay.safeClickListener(this@AddBpDialog)
+            btnCancel.safeClickListener(this@AddBpDialog)
+            ivClose.safeClickListener(this@AddBpDialog)
+            etPulse.addTextChangedListener(textWatcher)
+            etSystolic.addTextChangedListener(textWatcher)
+            etDiastolic.addTextChangedListener(textWatcher)
+        }
+    }
+
+    private val textWatcher = object : TextWatcher {
+        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            // Not needed for your use case
+        }
+
+        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+            // Not needed for your use case
+        }
+
+        override fun afterTextChanged(s: Editable?) {
+            val pulseFilled = binding.etPulse.text?.isNotBlank() == true
+            val systolicFilled = binding.etSystolic.text?.isNotBlank() == true
+            val diastolicFilled = binding.etDiastolic.text?.isNotBlank() == true
+
+            // Check if only one of the EditText fields is filled
+            val onlyOneFilled = pulseFilled || systolicFilled || diastolicFilled
+
+            // Enable the button if only one EditText field is filled
+            binding.btnOkay.isEnabled = onlyOneFilled
+        }
+
+    }
+
+    override fun onStart() {
+        super.onStart()
+        handleDialogSize()
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        handleDialogSize()
+    }
+
+    private fun inputValidate(): Boolean {
+        val isSystolicValid = isValidMeasurement(
+            binding.etSystolic.text.toString(),
+            binding.tvSystolicError,
+            30,
+            300,
+            binding.etDiastolic,
+            minErrorMessage = getString(R.string.systolic_error_min),
+            maxErrorMessage = getString(R.string.systolic_error_max)
+        )
+        val isDiastolicValid = isValidMeasurement(
+            binding.etDiastolic.text.toString(),
+            binding.tvDiastolicError,
+            30,
+            300,
+            binding.etDiastolic,
+            getString(R.string.diastolic_error_min),
+            maxErrorMessage = getString(R.string.diastolic_error_max)
+        )
+        val isPulseValid = isValidMeasurement(
+            binding.etPulse.text.toString(),
+            binding.tvPulseError,
+            35,
+            300,
+            minErrorMessage = getString(R.string.pulse_error_min),
+            maxErrorMessage = getString(R.string.pulse_error_max),
+            isPulseRequired = (isDiastolicValid == isSystolicValid)
+        )
+        return isSystolicValid && isDiastolicValid && isPulseValid
+    }
+
+    private fun isValidMeasurement(
+        valueText: String?,
+        errorTextView: TextView,
+        minValue: Int,
+        maxValue: Int,
+        text: AppCompatEditText? = null,
+        minErrorMessage: String,
+        maxErrorMessage: String,
+        isPulseRequired: Boolean = false
+    ): Boolean {
+        val value = valueText?.toIntOrNull()
+        val diastolic = text?.text.toString().toIntOrNull()
+        if (value == null) {
+            // Invalid input, display error message
+            if (isPulseRequired) {
+                return true
+            }
+            errorTextView.text = getText(R.string.error_label)
+            errorTextView.visible()
+            return false
+        }
+        if (value < minValue) {
+            // Value is less than minimum allowed value, display error message
+            errorTextView.text = minErrorMessage
+            errorTextView.visible()
+            return false
+        }
+        if (value > maxValue) {
+            errorTextView.text = maxErrorMessage
+            errorTextView.visible()
+            return false
+        }
+
+        if (diastolic != null && value < diastolic) {
+            errorTextView.text = getText(R.string.systolic_diastolic_error)
+            errorTextView.visible()
+            return false
+        }
+        // Valid input
+        errorTextView.gone()
+        return true
+    }
+
+    override fun onClick(v: View?) {
+        when (v?.id) {
+            binding.btnOkay.id -> {
+                if (inputValidate()) {
+//                    dismiss()
+                }
+            }
+
+            binding.btnCancel.id -> {
+                dismiss()
+            }
+
+            binding.ivClose.id -> {
+                dismiss()
+            }
+        }
+    }
+}

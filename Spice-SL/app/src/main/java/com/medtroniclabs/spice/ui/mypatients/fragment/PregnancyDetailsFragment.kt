@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.EditText
 import android.widget.TextView
+import androidx.appcompat.widget.AppCompatEditText
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
@@ -97,26 +98,34 @@ class PregnancyDetailsFragment : BaseFragment(), View.OnClickListener {
         return true
     }
 
-    private fun validateInput(): Boolean {
+    fun validateInput(): Boolean {
         val isWeightValid = isWeightValid()
         val isHeightValid = isHeightValid()
         val isSystolicValid = isValidMeasurement(
             binding.etSystolic.text.toString(),
             binding.tvSystolicError,
             30,
-            getString(R.string.systolic)
+            300,
+            binding.etDiastolic,
+            minErrorMessage = getString(R.string.systolic_error_min),
+            maxErrorMessage = getString(R.string.systolic_error_max)
         )
         val isDiastolicValid = isValidMeasurement(
             binding.etDiastolic.text.toString(),
             binding.tvDiastolicError,
             30,
-            getString(R.string.diastolic)
+            300,
+            binding.etDiastolic,
+            getString(R.string.diastolic_error_min),
+            maxErrorMessage = getString(R.string.diastolic_error_max)
         )
         val isPulseValid = isValidMeasurement(
             binding.etPulse.text.toString(),
             binding.tvPulseError,
             35,
-            getString(R.string.pulse)
+            300,
+            minErrorMessage = getString(R.string.pulse_error_min),
+            maxErrorMessage = getString(R.string.pulse_error_max)
         )
         val isGestationalAgeValid = isBasicValid(
             binding.etGestationalAge.text.toString(),
@@ -189,9 +198,13 @@ class PregnancyDetailsFragment : BaseFragment(), View.OnClickListener {
         valueText: String?,
         errorTextView: TextView,
         minValue: Int,
-        errorMessage: String
+        maxValue: Int,
+        text: AppCompatEditText? = null,
+        minErrorMessage: String,
+        maxErrorMessage: String,
     ): Boolean {
         val value = valueText?.toIntOrNull()
+        val diastolic = text?.text.toString().toIntOrNull()
         if (value == null) {
             // Invalid input, display error message
             errorTextView.gone()
@@ -199,7 +212,18 @@ class PregnancyDetailsFragment : BaseFragment(), View.OnClickListener {
         }
         if (value < minValue) {
             // Value is less than minimum allowed value, display error message
-            errorTextView.text = errorMessage
+            errorTextView.text = minErrorMessage
+            errorTextView.visible()
+            return false
+        }
+        if (value > maxValue) {
+            errorTextView.text = maxErrorMessage
+            errorTextView.visible()
+            return false
+        }
+
+        if (diastolic != null && value < diastolic) {
+            errorTextView.text = getText(R.string.systolic_diastolic_error)
             errorTextView.visible()
             return false
         }
