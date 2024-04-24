@@ -255,6 +255,40 @@
             app:layout_constraintTop_toBottomOf="@id/stateOfBabyGroup" />
 
         <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvAgparScoreLabel"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_32sdp"
+            android:text="@string/apgar_score"
+            android:textSize="@dimen/_16ssp"
+            android:textColor="@color/table_title"
+            app:layout_constraintEnd_toEndOf="@id/leftGuideline"
+            app:layout_constraintStart_toStartOf="@+id/tvStateOfBabyLabel"
+            app:layout_constraintTop_toTopOf="@+id/tvStateOfBabyError" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/seperatorColon5"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/separator_colon"
+            app:layout_constraintEnd_toStartOf="@+id/rightGuideline"
+            app:layout_constraintStart_toEndOf="@+id/leftGuideline"
+            app:layout_constraintTop_toTopOf="@+id/tvAgparScoreLabel" />
+
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvAgparScores"
+            android:layout_width="@dimen/_0dp"
+            android:layout_height="wrap_content"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            android:orientation="vertical"
+            android:layout_marginEnd="@dimen/_64sdp"
+            app:layout_constraintStart_toEndOf="@id/rightGuideline"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/tvAgparScoreLabel" />
+
+        <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tvSignsSymptomsObservedLabel"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -265,8 +299,8 @@
             android:textColor="@color/table_title"
             android:paddingTop="@dimen/_10sdp"
             app:layout_constraintEnd_toEndOf="@+id/leftGuideline"
-            app:layout_constraintStart_toStartOf="@+id/tvStateOfBabyLabel"
-            app:layout_constraintTop_toBottomOf="@+id/tvStateOfBabyError" />
+            app:layout_constraintStart_toStartOf="@+id/tvAgparScoreLabel"
+            app:layout_constraintTop_toBottomOf="@+id/rvAgparScores" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/seperatorColon6"

@@ -16,6 +16,7 @@ import com.medtroniclabs.spice.databinding.FragmentSelectFlowDialogBinding
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.ui.SingleSelectionCustomView
 import com.medtroniclabs.spice.ui.home.ToolsViewModel
+import com.medtroniclabs.spice.ui.medicalreview.LabourDeliveryBaseActivity
 import com.medtroniclabs.spice.ui.mypatients.activity.MotherNeonateANCActivity
 
 class SelectFlowDialog : DialogFragment(), View.OnClickListener {
@@ -93,7 +94,12 @@ class SelectFlowDialog : DialogFragment(), View.OnClickListener {
             }
 
             getString(R.string.pnc) -> {
-
+                val patientId = arguments?.getString(DefinedParams.PatientId, "")
+                val intent = Intent(requireContext(), LabourDeliveryBaseActivity::class.java)
+                if (patientId?.isNotBlank() == true) {
+                    intent.putExtra(DefinedParams.PatientId, patientId)
+                }
+                startActivity(intent)
             }
 
             getString(R.string.child_hood_visit) -> {

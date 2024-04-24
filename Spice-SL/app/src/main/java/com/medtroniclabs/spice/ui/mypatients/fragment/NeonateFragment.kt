@@ -18,6 +18,7 @@ import com.medtroniclabs.spice.formgeneration.ui.SingleSelectionCustomView
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.TagListCustomView
+import com.medtroniclabs.spice.ui.mypatients.adapter.AgparScoreAdapter
 import com.medtroniclabs.spice.ui.medicalreview.labourDelivery.LabourDeliveryViewModel
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 
@@ -26,6 +27,7 @@ class NeonateFragment : BaseFragment() {
     private lateinit var binding: FragmentNeonateBinding
     private lateinit var cgNeonateOutcome: TagListCustomView
     private lateinit var cgSignSymptomsObserved: TagListCustomView
+    private lateinit var agparScoreAdapter: AgparScoreAdapter
     private val viewModel: LabourDeliveryViewModel by activityViewModels()
 
     override fun onCreateView(
@@ -38,7 +40,7 @@ class NeonateFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initializeTagView()
+        initUI()
         attachObserver()
         initializeGenderLabel()
         initializeStateOfBabyLabel()
@@ -64,6 +66,10 @@ class NeonateFragment : BaseFragment() {
                 }
             }
 
+        }
+
+        viewModel.agparScoreLiveData.observe(viewLifecycleOwner) {
+            agparScoreAdapter.submitData(it)
         }
     }
 
@@ -103,7 +109,7 @@ class NeonateFragment : BaseFragment() {
                 it,
                 false,
                 viewModel.stateOfBaby,
-                Pair(DefinedParams.StateOfBaby,null),
+                Pair(DefinedParams.StateOfBaby, null),
                 FormLayout(viewType = "", id = "", title = "", visibility = "", optionsList = null),
                 stateOfBabySingleSelectionCallback
             )
@@ -127,7 +133,7 @@ class NeonateFragment : BaseFragment() {
                 it,
                 false,
                 viewModel.genderFlow,
-                Pair(DefinedParams.Gender,null),
+                Pair(DefinedParams.Gender, null),
                 FormLayout(viewType = "", id = "", title = "", visibility = "", optionsList = null),
                 genderSingleSelectionCallback
             )
@@ -135,12 +141,12 @@ class NeonateFragment : BaseFragment() {
         }
     }
 
-    private var genderSingleSelectionCallback: ((selectedID: Any?, elementId: Pair<String,String?>, serverViewModel: FormLayout, name: String?) -> Unit)? =
+    private var genderSingleSelectionCallback: ((selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit)? =
         { selectedID, _, _, _ ->
             viewModel.genderFlow[DefinedParams.Gender] = selectedID as String
         }
 
-    private var stateOfBabySingleSelectionCallback: ((selectedID: Any?, elementId: Pair<String,String?>, serverViewModel: FormLayout, name: String?) -> Unit)? =
+    private var stateOfBabySingleSelectionCallback: ((selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit)? =
         { selectedID, _, _, _ ->
             viewModel.stateOfBaby[DefinedParams.StateOfBaby] = selectedID as String
         }
@@ -148,14 +154,29 @@ class NeonateFragment : BaseFragment() {
     private fun getGenderFlowData(): ArrayList<Map<String, Any>> {
         val flowList = ArrayList<Map<String, Any>>()
         flowList.add(CommonUtils.getOptionMap(getString(R.string.male), getString(R.string.male)))
-        flowList.add(CommonUtils.getOptionMap(getString(R.string.female), getString(R.string.female)))
+        flowList.add(
+            CommonUtils.getOptionMap(
+                getString(R.string.female),
+                getString(R.string.female)
+            )
+        )
         return flowList
     }
 
     private fun getStateOfBabyFlowData(): ArrayList<Map<String, Any>> {
         val flowList = ArrayList<Map<String, Any>>()
-        flowList.add(CommonUtils.getOptionMap(getString(R.string.normal), getString(R.string.normal)))
-        flowList.add(CommonUtils.getOptionMap(getString(R.string.abnormal), getString(R.string.abnormal)))
+        flowList.add(
+            CommonUtils.getOptionMap(
+                getString(R.string.normal),
+                getString(R.string.normal)
+            )
+        )
+        flowList.add(
+            CommonUtils.getOptionMap(
+                getString(R.string.abnormal),
+                getString(R.string.abnormal)
+            )
+        )
         return flowList
     }
 
@@ -166,10 +187,24 @@ class NeonateFragment : BaseFragment() {
         return map
     }
 
-    private fun initializeTagView() {
+    private fun initUI() {
+        agparScoreAdapter = AgparScoreAdapter { rowType, columnType, selectedScore ->
+            viewModel.agparRowIdentifier = rowType
+            viewModel.agparColumnIdentifier = columnType
+            viewModel.agparSelectedScore = selectedScore
+            showAgparScoreDialog()
+
+        }
+        binding.rvAgparScores.adapter = agparScoreAdapter
+        viewModel.getAgparScoreData()
+
         cgNeonateOutcome = TagListCustomView(binding.root.context, binding.cgNeonateOutcome)
         cgSignSymptomsObserved =
             TagListCustomView(binding.root.context, binding.cgSignsSymptomsObserved)
+    }
+
+    private fun showAgparScoreDialog() {
+        AddAgparScoreDialog.newInstance().show(childFragmentManager, AddAgparScoreDialog.TAG)
     }
 
     fun validateInput(): Boolean {

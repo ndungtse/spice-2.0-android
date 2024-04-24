@@ -75,6 +75,7 @@
     <string name="dd_mm_yyyy">DD/MM/YYYY</string>
     <string name="please_select" translatable="false">--Select--</string>
     <string name="enter_the_age">Enter the Age</string>
+    <string name="enter_the_value">Enter the value</string>
     <string name="confirm">Confirm</string>
     <string name="yesterday">Yesterday</string>
     <string name="today">Today</string>
@@ -86,6 +87,7 @@
     <string name="pulse">Pulse</string>
     <string name="don_t_have_id_generate_id">Don\'t have ID? Generate ID</string>
     <string name="separator_hyphen">-</string>
+    <string name="separator_double_hyphen">--</string>
     <string name="separator_colon">:</string>
     <string name="hyphen_symbol" translatable="false">-</string>
     <string name="hash_symbol">#</string>
@@ -362,4 +364,15 @@
     <string name="pulse_error_max">Pulse should  be lesser than 300</string>
     <string name="systolic_error_max">Systolic pressure should be lesser than 300</string>
     <string name="systolic_diastolic_error">Systolic pressure should be greater than Diastolic pressure</string>
+
+    <string name="indicator_header">Indicator</string>
+    <string name="one_minute_header">1 MINUTE</string>
+    <string name="five_minute_header">5 MINUTE</string>
+    <string name="ten_minute_header">10 MINUTE</string>
+    <string name="activity_label">A-Activity</string>
+    <string name="pulse_label">P-Pulse</string>
+    <string name="grimace_label">G-Grimace</string>
+    <string name="appearance_label">A-Appearance</string>
+    <string name="respiration_label">R-Respiration</string>
+    <string name="total_label">Total</string>
 </resources>
