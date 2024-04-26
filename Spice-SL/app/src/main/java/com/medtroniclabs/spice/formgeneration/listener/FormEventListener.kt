@@ -1,5 +1,6 @@
 package com.medtroniclabs.spice.formgeneration.listener
 
+import com.medtroniclabs.spice.data.model.RecommendedDosageListModel
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
 
 interface FormEventListener {
@@ -17,7 +18,8 @@ interface FormEventListener {
         id: String,
         title: String,
         informationList: ArrayList<String>? = null,
-        description: String? = null
+        description: String? = null,
+        dosageListModel: ArrayList<RecommendedDosageListModel>? = null
     )
 
     fun onFormSubmit(resultMap: HashMap<String, Any>?, serverData: List<FormLayout?>? = null)

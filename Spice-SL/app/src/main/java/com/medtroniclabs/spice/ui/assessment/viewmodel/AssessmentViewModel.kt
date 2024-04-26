@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.data.LocalSpinnerResponse
+import com.medtroniclabs.spice.data.model.RecommendedDosageListModel
 import com.medtroniclabs.spice.db.entity.AssessmentEntity
 import com.medtroniclabs.spice.db.entity.HealthFacilityEntity
 import com.medtroniclabs.spice.db.entity.MemberClinicalEntity
@@ -65,6 +66,8 @@ class AssessmentViewModel @Inject constructor(
     val facilitySpinnerLiveData = MutableLiveData<Resource<LocalSpinnerResponse>>()
     val memberClinicalLiveData = MutableLiveData<MemberClinicalEntity?>()
     var pncMotherDetailMap: HashMap<String, Any>? = null
+    var dosageListModel: ArrayList<RecommendedDosageListModel>? = null
+    var instructionId: String? = null
 
     fun getMemberDetailsById() {
         if (selectedHouseholdMemberId == -1L) {

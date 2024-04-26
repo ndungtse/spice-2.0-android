@@ -1,6 +1,5 @@
 package com.medtroniclabs.spice.formgeneration.utility
 
-import android.icu.text.CaseMap.Title
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -62,7 +61,7 @@ class InformationLayoutFragment : DialogFragment(), View.OnClickListener {
         }
         binding.rvInfoList.apply {
             layoutManager = LinearLayoutManager(requireContext())
-            adapter  = informationListByType?.let { InformationListAdapter(requireContext(), it) }
+            adapter  = informationListByType?.let { InformationListAdapter(it) }
         }
     }
 

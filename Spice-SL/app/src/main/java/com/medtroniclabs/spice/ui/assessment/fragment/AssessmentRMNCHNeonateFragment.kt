@@ -12,6 +12,7 @@ import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
+import com.medtroniclabs.spice.data.model.RecommendedDosageListModel
 import com.medtroniclabs.spice.databinding.FragmentChildRegistrationBinding
 import com.medtroniclabs.spice.formgeneration.FormGenerator
 import com.medtroniclabs.spice.formgeneration.listener.FormEventListener
@@ -22,7 +23,6 @@ import com.medtroniclabs.spice.mappingkey.MemberRegistration
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.assessment.AssessmentActivity
-import com.medtroniclabs.spice.ui.assessment.referrallogic.ReferralResultGenerator
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentRMNCHNeonateViewModel
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
@@ -243,7 +243,8 @@ class AssessmentRMNCHNeonateFragment : BaseFragment(), View.OnClickListener,
         id: String,
         title: String,
         informationList: ArrayList<String>?,
-        description: String?
+        description: String?,
+        dosageListModel: ArrayList<RecommendedDosageListModel>?
     ) {
     }
 

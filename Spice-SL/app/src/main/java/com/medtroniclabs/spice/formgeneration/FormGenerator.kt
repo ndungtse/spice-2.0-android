@@ -128,6 +128,7 @@ class FormGenerator(
     private var editScreen: Boolean? = null
     private var focusNeeded: View? = null
     private val infoSuffix = "information"
+    private val infoSuffixText = "informationSuffixText"
 
     fun populateViews(
         serverData: List<FormLayout>,
@@ -192,7 +193,7 @@ class FormGenerator(
             }
 
             binding.ivInfo.setOnClickListener {
-                listener.onInstructionClicked(id, title)
+                listener.onInstructionClicked(id, title, dosageListModel = serverViewModel.dosageListItems)
             }
 
             informationVisibility?.let { value ->
@@ -541,7 +542,7 @@ class FormGenerator(
             }
 
             binding.ivInfo.setOnClickListener {
-                listener.onInstructionClicked(id, title)
+                listener.onInstructionClicked(id, title, dosageListModel = serverViewModel.dosageListItems)
             }
 
             getFamilyView(family)?.addView(binding.root) ?: kotlin.run {
@@ -558,6 +559,7 @@ class FormGenerator(
             if (selectedId == female) {
                 listener.onAgeCheckForPregnancy()
             }
+            listener.onUpdateInstruction(elementID.first, selectedId)
         }
 
     fun isResultAvaliable(key: String, value: String): Boolean {
@@ -606,7 +608,7 @@ class FormGenerator(
             }
 
             binding.ivInfo.setOnClickListener {
-                listener.onInstructionClicked(id, title)
+                listener.onInstructionClicked(id, title, dosageListModel = serverViewModel.dosageListItems)
             }
             val adapter = CustomSpinnerAdapter(context, translate)
             optionsList?.let { list ->
@@ -790,6 +792,7 @@ class FormGenerator(
         serverViewModel.apply {
             binding.root.tag = id + rootSuffix
             binding.tvValue.tag = id
+            binding.tvSubValue.tag = id + infoSuffixText
             binding.tvKey.tag = id + tvKey
             binding.tvValue.text = getString(R.string.hyphen_symbol)
             binding.tvKey.text = updateTitle(title, translate, titleCulture, unitMeasurement)
@@ -821,9 +824,9 @@ class FormGenerator(
             binding.tvTitle.text = translateTitle(titleCulture, title, false)
             binding.clInstructionRoot.safeClickListener {
                 instructionsList?.let {
-                    listener.onInstructionClicked(id, title, it)
+                    listener.onInstructionClicked(id, title, it, dosageListModel = serverViewModel.dosageListItems)
                 } ?: kotlin.run {
-                    listener.onInstructionClicked(id, title)
+                    listener.onInstructionClicked(id, title, dosageListModel = serverViewModel.dosageListItems)
                 }
             }
             getFamilyView(family)?.addView(binding.root) ?: kotlin.run {

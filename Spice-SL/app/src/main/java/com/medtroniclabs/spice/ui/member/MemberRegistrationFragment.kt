@@ -7,17 +7,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.appcompat.widget.AppCompatSpinner
-import androidx.appcompat.widget.AppCompatTextView
-import androidx.core.view.forEach
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.medtroniclabs.spice.R
-import com.medtroniclabs.spice.appextensions.gone
-import com.medtroniclabs.spice.appextensions.isGone
-import com.medtroniclabs.spice.appextensions.isVisible
-import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils.getBooleanAsString
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
@@ -30,6 +24,7 @@ import com.medtroniclabs.spice.common.DefinedParams.No
 import com.medtroniclabs.spice.common.DefinedParams.Yes
 import com.medtroniclabs.spice.common.DefinedParams.female
 import com.medtroniclabs.spice.common.DefinedParams.male
+import com.medtroniclabs.spice.data.model.RecommendedDosageListModel
 import com.medtroniclabs.spice.databinding.FragmentMemberRegistrationBinding
 import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
 import com.medtroniclabs.spice.formgeneration.FormGenerator
@@ -308,7 +303,7 @@ class MemberRegistrationFragment : Fragment(), FormEventListener, View.OnClickLi
     }
 
     override fun onInstructionClicked(
-        id: String, title: String, informationList: ArrayList<String>?, description: String?
+        id: String, title: String, informationList: ArrayList<String>?, description: String?, dosageListModel: ArrayList<RecommendedDosageListModel>?
     ) {
     }
 

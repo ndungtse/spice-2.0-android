@@ -1,17 +1,20 @@
 package com.medtroniclabs.spice.ui.assessment.fragment
 
+import android.content.res.Configuration
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
 import com.medtroniclabs.spice.common.DateUtils.getYearMonthAndWeek
 import com.medtroniclabs.spice.common.DefinedParams.DefaultID
-import com.medtroniclabs.spice.common.StringConverter
+import com.medtroniclabs.spice.data.model.RecommendedDosageListModel
 import com.medtroniclabs.spice.databinding.FragmentAssessmentBinding
 import com.medtroniclabs.spice.formgeneration.FormGenerator
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.Information
@@ -21,12 +24,17 @@ import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.ui.FormResultComposer
 import com.medtroniclabs.spice.formgeneration.utility.CheckBoxDialog
 import com.medtroniclabs.spice.formgeneration.utility.InformationLayoutFragment
+import com.medtroniclabs.spice.formgeneration.utility.RecommendedDosageFragment
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.MenuConstants.ICCM_MENU_ID
 import com.medtroniclabs.spice.ui.assessment.AssessmentCommonUtils.getNutritionStatus
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.ACT
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.ACTStatus
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.Amoxicillin
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.AmoxicillinStatus
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.BreathPerMinute
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.Dispensed
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.FB_MAX_BREATHING
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.FB_MAX_MONTH
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.FB_MAX_YEAR
@@ -34,8 +42,13 @@ import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.FB_MIN_BREA
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.FB_MIN_MONTH
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.FB_MIN_YEAR
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.MUAC
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.ORSStatus
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.OrsDispensedStatus
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.ZincDispensedStatus
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.ZincStatus
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.chestInDrawing
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.hasOedemaOfBothFeet
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.infoSuffixText
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.muacCode
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.muacStatus
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.rootSuffix
@@ -133,11 +146,27 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
         id: String,
         title: String,
         informationList: ArrayList<String>?,
-        description: String?
+        description: String?,
+        dosageListModel: ArrayList<RecommendedDosageListModel>?
     ) {
+        viewModel.instructionId = id
+        viewModel.dosageListModel = dosageListModel
+        showInstructionDialog(id)
+    }
+
+    private fun showInstructionDialog(id: String) {
         val titleById = getTitleById(id)
-        InformationLayoutFragment.newInstance(id, titleById)
-            .show(childFragmentManager, InformationLayoutFragment.TAG)
+        when (id) {
+            muacCode, hasOedemaOfBothFeet, chestInDrawing -> {
+                InformationLayoutFragment.newInstance(id, titleById)
+                    .show(childFragmentManager, InformationLayoutFragment.TAG)
+            }
+
+            Amoxicillin.lowercase(), ZincDispensedStatus, ACT.lowercase(), OrsDispensedStatus -> {
+                RecommendedDosageFragment.newInstance(id, titleById)
+                    .show(childFragmentManager, RecommendedDosageFragment.TAG)
+            }
+        }
     }
 
     private fun getTitleById(id: String): String {
@@ -173,28 +202,196 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
     }
 
     override fun onUpdateInstruction(id: String, selectedId: Any?) {
-        when(id) {
+        val age = viewModel.memberDetailsLiveData.value?.data?.dateOfBirth?.let { dob ->
+            CommonUtils.convertStringDobToMonths(
+                dob
+            )
+        }
+        when (id) {
             muacCode -> {
-                if (selectedId is String && selectedId != DefaultID)
-                {
-                    formGenerator.getViewByTag(muacStatus + rootSuffix )?.apply {
+                if (selectedId is String && selectedId != DefaultID) {
+                    formGenerator.getViewByTag(muacStatus + rootSuffix)?.apply {
                         visibility = View.VISIBLE
                     }
                     formGenerator.getViewByTag(muacStatus + summaryKey)?.let {
-                        if (it is TextView){
-                            it.text = requireContext().getString(R.string.firstname_lastname, MUAC.uppercase(), selectedId)
+                        if (it is TextView) {
+                            it.text = requireContext().getString(
+                                R.string.firstname_lastname,
+                                MUAC.uppercase(),
+                                selectedId
+                            )
                         }
                     }
-                    formGenerator.getViewByTag(muacStatus )?.let {
-                        if (it is TextView){
+                    formGenerator.getViewByTag(muacStatus)?.let {
+                        if (it is TextView) {
                             it.text = getNutritionStatus(selectedId, requireContext())
                         }
                     }
                 } else {
-                    formGenerator.getViewByTag(muacStatus + rootSuffix )?.apply {
+                    formGenerator.getViewByTag(muacStatus + rootSuffix)?.apply {
                         visibility = View.GONE
                     }
                 }
+            }
+
+            Amoxicillin.lowercase() -> {
+                age?.let {
+                    if (age > 2 && selectedId is String && selectedId == Dispensed) {
+                        formGenerator.getViewByTag(AmoxicillinStatus + rootSuffix)?.apply {
+                            visibility = View.VISIBLE
+                        }
+                        formGenerator.getViewByTag(AmoxicillinStatus)?.let {
+                            if (it is TextView) {
+                                it.text = requireContext().getString(R.string.amoxicillin_250_mg)
+                            }
+                        }
+                        formGenerator.getViewByTag(AmoxicillinStatus + infoSuffixText)?.let {
+                            if (it is TextView) {
+                                it.text =
+                                    getSuffixText(viewModel.memberDetailsLiveData.value?.data?.dateOfBirth?.let { dob ->
+                                        CommonUtils.convertStringDobToMonths(
+                                            dob
+                                        )
+                                    })
+                                it.visibility = View.VISIBLE
+                            }
+                        }
+                    } else {
+                        formGenerator.getViewByTag(AmoxicillinStatus + rootSuffix)?.apply {
+                            visibility = View.GONE
+                        }
+                    }
+                }
+            }
+
+            ZincDispensedStatus -> {
+                age?.let {
+                    if (age > 2 && selectedId is String && selectedId == Dispensed) {
+                        formGenerator.getViewByTag(ZincStatus + rootSuffix)?.apply {
+                            visibility = View.VISIBLE
+                        }
+                        formGenerator.getViewByTag(ZincStatus)?.let {
+                            if (it is TextView) {
+                                it.text = requireContext().getString(R.string.zinc_tablet)
+                            }
+                        }
+                        formGenerator.getViewByTag(ZincStatus + infoSuffixText)?.let {
+                            if (it is TextView) {
+                                it.text = getZincSuffixText(viewModel.memberDetailsLiveData.value?.data?.dateOfBirth?.let { dob ->
+                                    CommonUtils.convertStringDobToMonths(
+                                        dob
+                                    )
+                                })
+                                it.visibility = View.VISIBLE
+                            }
+                        }
+                    } else {
+                        formGenerator.getViewByTag(ZincStatus + rootSuffix)?.apply {
+                            visibility = View.GONE
+                        }
+                    }
+                }
+            }
+
+            OrsDispensedStatus -> {
+                if (selectedId is String && selectedId == Dispensed) {
+                    formGenerator.getViewByTag(ORSStatus + rootSuffix)?.apply {
+                        visibility = View.VISIBLE
+                    }
+                    formGenerator.getViewByTag(ORSStatus)?.let {
+                        if (it is TextView) {
+                            it.text = requireContext().getString(R.string.ors_packet)
+                        }
+                    }
+                    formGenerator.getViewByTag(ORSStatus + infoSuffixText)?.let {
+                        if (it is TextView) {
+                            it.text = requireContext().getString(R.string.with_one_litre_of_water)
+                            it.visibility = View.VISIBLE
+                        }
+                    }
+                } else {
+                    formGenerator.getViewByTag(ORSStatus + rootSuffix)?.apply {
+                        visibility = View.GONE
+                    }
+                }
+            }
+
+            ACT.lowercase() -> {
+                age?.let {
+                    if (age > 6 && selectedId is String && selectedId == Dispensed) {
+                        formGenerator.getViewByTag(ACTStatus + rootSuffix)?.apply {
+                            visibility = View.VISIBLE
+                        }
+                        formGenerator.getViewByTag(ACTStatus)?.let {
+                            if (it is TextView) {
+                                it.text = requireContext().getString(R.string.act_6)
+                            }
+                        }
+                        formGenerator.getViewByTag(ACTStatus + infoSuffixText)?.let {
+                            if (it is TextView) {
+                                it.text =
+                                    getACTSuffixText(viewModel.memberDetailsLiveData.value?.data?.dateOfBirth?.let { dob ->
+                                        CommonUtils.convertStringDobToMonths(
+                                            dob
+                                        )
+                                    })
+                                it.visibility = View.VISIBLE
+                            }
+                        }
+                    } else {
+                        formGenerator.getViewByTag(ACTStatus + rootSuffix)?.apply {
+                            visibility = View.GONE
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun getZincSuffixText(age: Int?): CharSequence? {
+        return when(age){
+            in 2..6 -> {
+                requireContext().getString(R.string.no_of_tablets_no_of_days, 1/2, 10)
+            }
+            in 7..60 -> {
+                requireContext().getString(R.string.no_of_tablets_no_of_days, 1, 10)
+            }
+            else ->{
+                null
+            }
+        }
+    }
+
+    private fun getSuffixText(age: Int?): String? {
+        return when(age){
+            in 2..12 -> {
+               requireContext().getString(R.string.no_of_tablets_no_of_days, 2, 5)
+            }
+            in 12..36 -> {
+                requireContext().getString(R.string.no_of_tablets_no_of_days, 4, 5)
+            }
+            in 36..60 -> {
+                requireContext().getString(R.string.no_of_tablets_no_of_days, 6, 5)
+            }
+            else ->{
+                null
+            }
+        }
+    }
+
+    private fun getACTSuffixText(age: Int?): String {
+        return when(age){
+            in 6..36 -> {
+               requireContext().getString(R.string.no_of_tablets_no_of_days, 2, 3)
+            }
+            in 37..96 -> {
+                requireContext().getString(R.string.no_of_tablets_no_of_days, 4, 3)
+            }
+            in 97..168 -> {
+                requireContext().getString(R.string.no_of_tablets_no_of_days, 6, 3)
+            }
+            else ->{
+                requireContext().getString(R.string.no_of_tablets_no_of_days, 8, 3)
             }
         }
     }
@@ -275,6 +472,27 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
             binding.btnSubmit.id -> {
                 formGenerator.formSubmitAction(view)
             }
+        }
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        val dosageDialog = childFragmentManager.findFragmentByTag("RecommendedDosageFragment") as? DialogFragment
+        val instructionDialog = childFragmentManager.findFragmentByTag("InformationLayoutFragment") as? DialogFragment
+        if (dosageDialog != null && dosageDialog.showsDialog) {
+            dosageDialog.dismiss()
+            showDialogBasedOnId()
+        }
+
+        if (instructionDialog != null && instructionDialog.showsDialog) {
+            instructionDialog.dismiss()
+            showDialogBasedOnId()
+        }
+    }
+
+    private fun showDialogBasedOnId() {
+        viewModel.instructionId?.let {
+            showInstructionDialog(it)
         }
     }
 

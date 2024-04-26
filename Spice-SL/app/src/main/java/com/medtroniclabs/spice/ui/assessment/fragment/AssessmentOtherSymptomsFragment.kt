@@ -1,16 +1,17 @@
 package com.medtroniclabs.spice.ui.assessment.fragment
 
+import android.content.res.Configuration
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
-import com.medtroniclabs.spice.common.DefinedParams
-import com.medtroniclabs.spice.common.StringConverter
+import com.medtroniclabs.spice.common.CommonUtils
+import com.medtroniclabs.spice.data.model.RecommendedDosageListModel
 import com.medtroniclabs.spice.databinding.FragmentAssessmentOtherSymptomsBinding
 import com.medtroniclabs.spice.formgeneration.FormGenerator
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
@@ -18,11 +19,11 @@ import com.medtroniclabs.spice.formgeneration.listener.FormEventListener
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.ui.FormResultComposer
 import com.medtroniclabs.spice.formgeneration.utility.CheckBoxDialog
+import com.medtroniclabs.spice.formgeneration.utility.RecommendedDosageFragment
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.MenuConstants.OTHER_SYMPTOMS
-import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.OtherSymptoms
-import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.otherSymptoms
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
 import com.medtroniclabs.spice.ui.assessment.referrallogic.ReferralResultGenerator
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -119,9 +120,22 @@ class AssessmentOtherSymptomsFragment : BaseFragment(), FormEventListener, View.
         id: String,
         title: String,
         informationList: ArrayList<String>?,
-        description: String?
+        description: String?,
+        dosageListModel: ArrayList<RecommendedDosageListModel>?
     ) {
-        
+        viewModel.instructionId = id
+        viewModel.dosageListModel = dosageListModel
+        showInstructionDialog(id)
+    }
+
+    private fun showInstructionDialog(id: String) {
+        val titleById = getTitleById(id)
+        when (id) {
+            AssessmentDefinedParams.ACT.lowercase()-> {
+                RecommendedDosageFragment.newInstance(id, titleById)
+                    .show(childFragmentManager, RecommendedDosageFragment.TAG)
+            }
+        }
     }
 
     override fun onFormSubmit(resultMap: HashMap<String, Any>?, serverData: List<FormLayout?>?) {
@@ -147,7 +161,61 @@ class AssessmentOtherSymptomsFragment : BaseFragment(), FormEventListener, View.
     }
 
     override fun onUpdateInstruction(id: String, selectedId: Any?) {
+        when (id) {
+            AssessmentDefinedParams.ACT.lowercase() -> {
+                if (selectedId is String && selectedId == AssessmentDefinedParams.Dispensed) {
+                    formGenerator.getViewByTag(AssessmentDefinedParams.ACTStatus + AssessmentDefinedParams.rootSuffix)?.apply {
+                        visibility = View.VISIBLE
+                    }
+                    formGenerator.getViewByTag(AssessmentDefinedParams.ACTStatus)?.let {
+                        if (it is TextView) {
+                            it.text = requireContext().getString(R.string.act_6)
+                        }
+                    }
+                    formGenerator.getViewByTag(AssessmentDefinedParams.ACTStatus + AssessmentDefinedParams.infoSuffixText)?.let {
+                        if (it is TextView) {
+                            it.text =
+                                getACTSuffixText(viewModel.memberDetailsLiveData.value?.data?.dateOfBirth?.let { dob ->
+                                    CommonUtils.convertStringDobToMonths(
+                                        dob
+                                    )
+                                })
+                            it.visibility = View.VISIBLE
+                        }
+                    }
+                } else {
+                    formGenerator.getViewByTag(AssessmentDefinedParams.ACTStatus + AssessmentDefinedParams.rootSuffix)?.apply {
+                        visibility = View.GONE
+                    }
+                }
+            }
+        }
+    }
 
+    private fun getTitleById(id: String): String {
+        return when (id) {
+            AssessmentDefinedParams.muacCode -> getString(R.string.measuring_muac)
+            AssessmentDefinedParams.hasOedemaOfBothFeet -> getString(R.string.checking_for_oedema)
+            AssessmentDefinedParams.chestInDrawing -> getString(R.string.chest_in_drawing)
+            else -> {id}
+        }
+    }
+
+    private fun getACTSuffixText(age: Int?): String {
+        return when(age){
+            in 6..36 -> {
+                requireContext().getString(R.string.no_of_tablets_no_of_days, 2, 3)
+            }
+            in 37..96 -> {
+                requireContext().getString(R.string.no_of_tablets_no_of_days, 4, 3)
+            }
+            in 97..168 -> {
+                requireContext().getString(R.string.no_of_tablets_no_of_days, 6, 3)
+            }
+            else ->{
+                requireContext().getString(R.string.no_of_tablets_no_of_days, 8, 3)
+            }
+        }
     }
 
     override fun onInformationHandling(
@@ -181,6 +249,21 @@ class AssessmentOtherSymptomsFragment : BaseFragment(), FormEventListener, View.
             binding.btnSubmit.id -> {
                 formGenerator.formSubmitAction(view)
             }
+        }
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        val dosageDialog = childFragmentManager.findFragmentByTag("RecommendedDosageFragment") as? DialogFragment
+        if (dosageDialog != null && dosageDialog.showsDialog) {
+            dosageDialog.dismiss()
+            showDialogBasedOnId()
+        }
+    }
+
+    private fun showDialogBasedOnId() {
+        viewModel.instructionId?.let {
+            showInstructionDialog(it)
         }
     }
 }

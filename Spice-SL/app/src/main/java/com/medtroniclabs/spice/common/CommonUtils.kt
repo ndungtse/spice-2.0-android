@@ -3,6 +3,7 @@ package com.medtroniclabs.spice.common
 import android.content.Context
 import android.content.res.AssetManager
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.common.DateUtils.calculateAge
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.MONTHS
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.Month
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.WEEKS
@@ -174,7 +175,7 @@ object CommonUtils {
             )
         )
         val year = ageTriplet.first
-        return year?.let { DateUtils.calculateAge(it) }
+        return year?.let { calculateAge(it) }
     }
 
     fun getGenderText(gender: String?, context: Context): String {
@@ -205,5 +206,17 @@ object CommonUtils {
             return context.getString(R.string.hyphen_symbol)
         }
         return String.format("%.2f", bmi)
+    }
+
+    fun convertStringDobToMonths(dateOfBirth:String): Int? {
+        val startDate = DateUtils.formatStringToDate(
+            dateOfBirth, SimpleDateFormat(
+                DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+                Locale.ENGLISH
+            )
+        )
+        return startDate?.let { date ->
+            DateUtils.calculateAgeInMonths(date)
+        }
     }
 }

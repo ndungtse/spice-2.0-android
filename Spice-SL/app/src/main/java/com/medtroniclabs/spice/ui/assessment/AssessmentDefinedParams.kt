@@ -31,6 +31,7 @@ object AssessmentDefinedParams {
     const val OtherSymptoms = "OTHER SYMPTOMS"
     const val otherConcerningSymptoms = "otherConcerningSymptoms"
     const val muacStatus = "muacStatus"
+    const val AmoxicillinStatus = "amoxicillinStatus"
     const val rootSuffix = "rootView"
     const val summaryKey = "summaryKey"
     const val General_Danger_Signs = "General Danger Signs"
@@ -47,6 +48,9 @@ object AssessmentDefinedParams {
     const val RMNCH = "rmnch"
     const val OrsDispensedStatus = "orsDispensedStatus"
     const val ZincDispensedStatus = "zincDispensedStatus"
+    const val ZincStatus = "zincStatus"
+    const val ORSStatus = "orsStatus"
+    const val ACTStatus = "actStatus"
     const val SunkenEyes = "Sunken eyes"
     const val NoTearsWhenCrying = "No tears when crying"
     const val LittleOrNoUrine = "Little or no urine"
@@ -57,4 +61,5 @@ object AssessmentDefinedParams {
     const val hasOedemaOfBothFeet = "hasOedemaOfBothFeet"
     const val chestInDrawing = "chestInDrawing"
     const val signsAndSymptoms = "signsAndSymptoms"
+    const val infoSuffixText = "informationSuffixText"
 }

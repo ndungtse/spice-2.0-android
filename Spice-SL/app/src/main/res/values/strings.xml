@@ -409,4 +409,18 @@
     <string name="title_birth_history">Birth History</string>
     <string name="title_clinical_summary_vital_signs">Clinical Summary &amp; Vital Signs</string>
     <string name="minute_slash">/minute</string>
+    <string name="day">Day</string>
+    <string name="morning">Morning</string>
+    <string name="night">Night</string>
+    <string name="no_of_tablets_no_of_days">(%1$d tablets per day- %2$d days)</string>
+    <string name="amoxicillin_250_mg">Amoxicillin 250mg</string>
+    <string name="zinc_tablet">Zinc Tablet</string>
+    <string name="with_one_litre_of_water">(with 1 litre of water)</string>
+    <string name="ors_packet">ORS Packet</string>
+    <string name="act_6">ACT-6</string>
+    <string name="no_of_tablets">%1$d %2$s</string>
+    <string name="tablet">Tablet</string>
+    <string name="tablets">Tablets</string>
+    <string name="no_recommended_dosages">No Dosage Recommended for this age group</string>
+
 </resources>

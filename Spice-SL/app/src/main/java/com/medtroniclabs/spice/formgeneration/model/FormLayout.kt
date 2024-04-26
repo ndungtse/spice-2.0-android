@@ -1,5 +1,7 @@
 package com.medtroniclabs.spice.formgeneration.model
 
+import com.medtroniclabs.spice.data.model.RecommendedDosageListModel
+
 data class FormLayout(
     override val viewType: String,
     override val id: String,
@@ -62,7 +64,8 @@ data class FormLayout(
     var noOfDays: Int? = null,
     var informationVisibility: String? = null,
     var isBooleanAnswer: Boolean = false,
-    var isInfo: String? = null
+    var isInfo: String? = null,
+    var dosageListItems: ArrayList<RecommendedDosageListModel>? = null
 ) : BaseViewParams
 
 data class FormResponse(

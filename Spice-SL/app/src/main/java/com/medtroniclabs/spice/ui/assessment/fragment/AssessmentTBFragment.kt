@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.TB
-import com.medtroniclabs.spice.common.StringConverter
+import com.medtroniclabs.spice.data.model.RecommendedDosageListModel
 import com.medtroniclabs.spice.databinding.FragmentAssessmentTBBinding
 import com.medtroniclabs.spice.formgeneration.FormGenerator
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
@@ -100,7 +100,8 @@ class AssessmentTBFragment : BaseFragment(), FormEventListener, View.OnClickList
         id: String,
         title: String,
         informationList: ArrayList<String>?,
-        description: String?
+        description: String?,
+        dosageListModel: ArrayList<RecommendedDosageListModel>?
     ) {
     }
 

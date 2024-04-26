@@ -13,6 +13,7 @@ import com.google.gson.reflect.TypeToken
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.CommonUtils.getBooleanAsString
 import com.medtroniclabs.spice.common.EntityMapper.getResultSpinnerMapList
+import com.medtroniclabs.spice.data.model.RecommendedDosageListModel
 import com.medtroniclabs.spice.databinding.FragmentHouseHoldRegistrationBinding
 import com.medtroniclabs.spice.db.entity.HouseholdEntity
 import com.medtroniclabs.spice.formgeneration.FormGenerator
@@ -262,7 +263,8 @@ class HouseHoldRegistrationFragment : Fragment(), View.OnClickListener, FormEven
         id: String,
         title: String,
         informationList: ArrayList<String>?,
-        description: String?
+        description: String?,
+        dosageListModel: ArrayList<RecommendedDosageListModel>?
     ) {
     }
 

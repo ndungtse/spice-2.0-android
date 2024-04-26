@@ -3,7 +3,6 @@ package com.medtroniclabs.spice.ui.medicalreview.undertwomonths
 import android.os.Bundle
 import android.view.View
 import androidx.activity.viewModels
-import androidx.fragment.app.Fragment
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.SecuredPreference
@@ -19,8 +18,8 @@ import com.medtroniclabs.spice.ui.medicalreview.abovefiveyears.PresentingComplai
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import com.medtroniclabs.spice.ui.mypatients.fragment.MedicalReviewPatientDiagnosisFragment
-import com.medtroniclabs.spice.ui.mypatients.fragment.UnderTwoMonthsTreatmentSummaryFragment
 import com.medtroniclabs.spice.ui.mypatients.fragment.PatientInfoFragment
+import com.medtroniclabs.spice.ui.mypatients.fragment.UnderTwoMonthsTreatmentSummaryFragment
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

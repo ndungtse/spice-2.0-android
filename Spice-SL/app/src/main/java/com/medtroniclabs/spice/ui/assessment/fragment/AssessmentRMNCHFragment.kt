@@ -12,6 +12,7 @@ import com.medtroniclabs.spice.appextensions.setSuccess
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.EntityMapper
+import com.medtroniclabs.spice.data.model.RecommendedDosageListModel
 import com.medtroniclabs.spice.databinding.FragmentAssessmentRmnchBinding
 import com.medtroniclabs.spice.formgeneration.FormGenerator
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
@@ -209,7 +210,8 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
         id: String,
         title: String,
         informationList: ArrayList<String>?,
-        description: String?
+        description: String?,
+        dosageListModel: ArrayList<RecommendedDosageListModel>?
     ) {
     }
 

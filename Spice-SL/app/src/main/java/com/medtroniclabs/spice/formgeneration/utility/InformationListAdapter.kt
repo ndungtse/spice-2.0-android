@@ -4,13 +4,11 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.text.HtmlCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.medtroniclabs.spice.databinding.InformationItemListBinding
 import com.medtroniclabs.spice.formgeneration.model.InformationModel
 
 class InformationListAdapter(
-    context: Context,
     private val infoList: ArrayList<InformationModel>
 ) : RecyclerView.Adapter<InformationListAdapter.InformationListViewHolder>() {
 

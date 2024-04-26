@@ -9,8 +9,8 @@
         android:id="@+id/llBase"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingHorizontal="@dimen/_16sdp"
         android:layout_marginBottom="@dimen/_10sdp"
+        android:paddingHorizontal="@dimen/_16sdp"
         android:paddingVertical="@dimen/_8sdp">
 
         <TextView
@@ -20,7 +20,7 @@
             android:layout_height="wrap_content"
             android:paddingEnd="@dimen/_10sdp"
             android:text=""
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:textColor="@color/black"
             app:layout_constraintEnd_toStartOf="@+id/tvRowSeparator"
             app:layout_constraintHorizontal_weight="1"
             app:layout_constraintStart_toStartOf="parent"
@@ -35,11 +35,10 @@
             android:text="@string/separator_colon"
             android:textColor="@color/charcoal_grey"
             android:textSize="@dimen/_14ssp"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/tvValue"
             app:layout_constraintHorizontal_weight="0.3"
             app:layout_constraintStart_toEndOf="@id/tvKey"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="@id/tvKey" />
 
         <TextView
             android:id="@+id/tvValue"
@@ -47,11 +46,26 @@
             android:layout_width="@dimen/_0dp"
             android:layout_height="wrap_content"
             android:text=""
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:textColor="@color/black"
+            android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_weight="1"
             app:layout_constraintStart_toEndOf="@+id/tvRowSeparator"
             app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tvSubValue"
+            style="@style/Form_Input_Style"
+            android:layout_width="@dimen/_0dp"
+            android:layout_height="wrap_content"
+            android:textColor="@color/grey_black"
+            android:textSize="@dimen/_14ssp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@id/tvValue"
+            app:layout_constraintStart_toStartOf="@id/tvValue"
+            app:layout_constraintTop_toBottomOf="@id/tvValue" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </LinearLayout>
