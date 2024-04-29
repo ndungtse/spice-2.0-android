@@ -42,7 +42,8 @@ class MemberRegistrationViewModel @Inject constructor(
             return
         }
         viewModelScope.launch(dispatcherIO) {
-            memberRegistrationRepository.getMemberDetailsByID(memberId, memberDetailsLiveData)
+            memberDetailsLiveData.postLoading()
+            memberDetailsLiveData.postValue(memberRegistrationRepository.getMemberDetailsByID(memberId))
         }
     }
 

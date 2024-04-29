@@ -18,6 +18,7 @@ import com.medtroniclabs.spice.mappingkey.MemberRegistration
 import com.medtroniclabs.spice.mappingkey.MemberRegistration.otherFamilyMember
 import com.medtroniclabs.spice.model.assessment.AssessmentMemberDetails
 import com.medtroniclabs.spice.network.resource.Resource
+import com.medtroniclabs.spice.network.resource.ResourceState
 import javax.inject.Inject
 
 class HouseholdMemberRepository @Inject constructor(
@@ -108,54 +109,51 @@ class HouseholdMemberRepository @Inject constructor(
             getStringOrEmptyString(householdHeadRelationship)
         }
     }
+
     private suspend fun getNextPatientId(villageId: Long): String {
         val villageDetail = roomHelper.getVillageByID(villageId)
         val chiefDomCode = villageDetail.chiefdomCode.padStart(CHIEF_DOM_CODE_LENGTH, '0')
-        val villageCode = villageDetail.villagecode.padStart(VILLAGE_CODE_LENGTH,'0')
+        val villageCode = villageDetail.villagecode.padStart(VILLAGE_CODE_LENGTH, '0')
         val chwUserId = SecuredPreference.getUserId().toString()
         val startIndex = chiefDomCode.length + villageCode.length + chwUserId.length
 
-        val lastPatientId = roomHelper.getLastPatientId(villageId)?.let { it.substring(startIndex, it.length) }?.toInt() ?: 0
+        val lastPatientId =
+            roomHelper.getLastPatientId(villageId)?.let { it.substring(startIndex, it.length) }
+                ?.toInt() ?: 0
         val nextPatientId = (lastPatientId + 1).toString().padStart(PATIENT_NUMBER_LENGTH, '0')
         return "$chiefDomCode$villageCode$chwUserId$nextPatientId"
     }
 
     suspend fun getMemberDetailsByID(
         memberId: Long,
-        memberDetailsLiveData: MutableLiveData<Resource<HouseholdMemberEntity>>
-    ) {
-        try {
-            memberDetailsLiveData.postLoading()
+    ): Resource<HouseholdMemberEntity> {
+        return try {
             val memberEntity = roomHelper.getMemberDetailsByID(memberId)
-            memberDetailsLiveData.postSuccess(memberEntity)
+            Resource(state = ResourceState.SUCCESS, data = memberEntity)
         } catch (e: Exception) {
-            memberDetailsLiveData.postError()
+            Resource(state = ResourceState.SUCCESS)
         }
     }
 
     suspend fun getMemberDetailsByParentId(
         memberId: String,
-        memberDetailsLiveData: MutableLiveData<Resource<List<HouseholdMemberEntity>>>
-    ) {
-        try {
-            memberDetailsLiveData.postLoading()
+    ): Resource<List<HouseholdMemberEntity>> {
+        return try {
             val memberEntity = roomHelper.getMemberDetailsByParentId(memberId)
-            memberDetailsLiveData.postSuccess(memberEntity)
+            Resource(state = ResourceState.SUCCESS, data = memberEntity)
         } catch (e: Exception) {
-            memberDetailsLiveData.postError()
+            Resource(state = ResourceState.ERROR)
         }
     }
 
     suspend fun getAssessmentMemberDetails(
-        id: Long,
-        memberDetailsLiveData: MutableLiveData<Resource<AssessmentMemberDetails>>
-    ) {
-        try {
-            memberDetailsLiveData.postLoading()
+        id: Long
+    ): Resource<AssessmentMemberDetails> {
+        return try {
             val memberEntity = roomHelper.getAssessmentMemberDetails(id)
-            memberDetailsLiveData.postSuccess(memberEntity)
+            Resource(state = ResourceState.SUCCESS, data = memberEntity)
         } catch (e: Exception) {
-            memberDetailsLiveData.postError()
+            Resource(state = ResourceState.ERROR)
         }
     }
 

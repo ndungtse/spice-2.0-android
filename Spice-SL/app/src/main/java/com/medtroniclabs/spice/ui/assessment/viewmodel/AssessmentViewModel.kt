@@ -4,6 +4,7 @@ import android.location.Location
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.data.LocalSpinnerResponse
 import com.medtroniclabs.spice.db.entity.AssessmentEntity
@@ -70,10 +71,10 @@ class AssessmentViewModel @Inject constructor(
             return
         }
         viewModelScope.launch(dispatcherIO) {
-            memberRegistrationRepository.getAssessmentMemberDetails(
-                selectedHouseholdMemberId,
-                memberDetailsLiveData
-            )
+            memberDetailsLiveData.postLoading()
+            memberDetailsLiveData.postValue(memberRegistrationRepository.getAssessmentMemberDetails(
+                selectedHouseholdMemberId
+            ))
         }
     }
 

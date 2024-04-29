@@ -4,6 +4,7 @@ import android.location.Location
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.db.entity.AssessmentEntity
@@ -148,10 +149,8 @@ class AssessmentRMNCHNeonateViewModel @Inject constructor(
 
     fun getMemberDetailsByParentId(memberId: String) {
         viewModelScope.launch(dispatcherIO) {
-            householdMemberRepository.getMemberDetailsByParentId(
-                memberId,
-                childMemberDetailsLiveData
-            )
+            childMemberDetailsLiveData.postLoading()
+            childMemberDetailsLiveData.postValue(householdMemberRepository.getMemberDetailsByParentId(memberId))
         }
     }
 
