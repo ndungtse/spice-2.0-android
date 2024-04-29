@@ -120,6 +120,20 @@ object DateUtils {
         return chosenDate.timeInMillis
     }
 
+    fun convertDateToLong(date: String?, format: String? = DATE_FORMAT_yyyyMMddHHmmssZZZZZ): Long? {
+        try{
+            val testedDate = date?.let{dateStr ->
+                SimpleDateFormat(
+                    format,
+                    Locale.ENGLISH
+                ).parse(dateStr)?.time
+            }
+            return testedDate ?: 0L
+        }catch (e: Exception){
+            return null
+        }
+    }
+
     fun convertDateTimeToDate(
         inputText: String?,
         inputFormat: String,

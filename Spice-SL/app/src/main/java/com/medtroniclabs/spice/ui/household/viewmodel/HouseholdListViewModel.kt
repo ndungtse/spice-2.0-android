@@ -45,7 +45,9 @@ class HouseholdListViewModel @Inject constructor(
     fun setFilterLiveData(
         search: String? = null,
         villageFilter: List<ChipViewItemModel>? = null,
-        statusFilter: List<ChipViewItemModel>? = null
+        statusFilter: List<ChipViewItemModel>? = null,
+        dataRangesFilter: List<ChipViewItemModel>? = null
+
     ) {
         val filter = filterLiveData.value ?: HouseHoldSearchFilter()
         search?.let {
@@ -55,6 +57,9 @@ class HouseholdListViewModel @Inject constructor(
             filter.filterByVillage = it
         }
         statusFilter?.let {
+            filter.filterByStatus = it
+        }
+        dataRangesFilter?.let {
             filter.filterByStatus = it
         }
         filterLiveData.value = filter

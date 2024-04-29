@@ -22,6 +22,7 @@ import com.medtroniclabs.spice.ui.household.HouseholdSearchActivity
 import com.medtroniclabs.spice.ui.landing.viewmodel.LandingViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import com.medtroniclabs.spice.ui.mypatients.PatientSearchActivity
+import com.medtroniclabs.spice.ui.mypatient.FollowUpMyPatientActivity
 
 
 @AndroidEntryPoint
@@ -94,7 +95,9 @@ class HomeScreenFragment : BaseFragment(), MenuSelectionListener {
             }
 
             MenuConstants.MY_PATIENTS_MENU_ID -> {
-                startActivity(Intent(requireContext(), PatientSearchActivity::class.java))
+                val intent = Intent(requireContext(), FollowUpMyPatientActivity::class.java)
+                intent.putExtra(MenuConstants.MY_PATIENTS_MENU_ID,MenuConstants.MY_PATIENTS_MENU_ID)
+                startActivity(intent)
             }
         }
     }

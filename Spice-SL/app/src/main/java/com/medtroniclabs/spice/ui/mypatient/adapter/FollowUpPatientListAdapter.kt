@@ -1,0 +1,37 @@
+package com.medtroniclabs.spice.ui.mypatient.adapter
+
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
+import androidx.lifecycle.Lifecycle
+import androidx.viewpager2.adapter.FragmentStateAdapter
+import com.medtroniclabs.spice.ui.mypatient.fragment.FollowUpMyPatientHhVisitFragment
+import com.medtroniclabs.spice.ui.mypatient.fragment.FollowUpMyPatientMedicalReviewFragment
+import com.medtroniclabs.spice.ui.mypatient.fragment.FollowUpMyPatientReferredFragment
+
+class FollowUpPatientListAdapter(fragmentManager: FragmentManager, lifecycle: Lifecycle) :
+    FragmentStateAdapter(fragmentManager, lifecycle) {
+    override fun getItemCount(): Int {
+        return 3
+    }
+
+    override fun createFragment(p0: Int): Fragment {
+        return when (p0) {
+            0 -> {
+                FollowUpMyPatientHhVisitFragment()
+            }
+
+            1 -> {
+                FollowUpMyPatientReferredFragment()
+            }
+
+            2 -> {
+                FollowUpMyPatientMedicalReviewFragment()
+            }
+
+            else -> {
+                FollowUpMyPatientHhVisitFragment()
+            }
+        }
+    }
+
+}

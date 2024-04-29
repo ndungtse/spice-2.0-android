@@ -52,6 +52,10 @@
             android:name=".ui.mypatients.PatientSearchActivity"
             android:exported="false" />
         <activity
+            android:name=".ui.mypatient.FollowUpMyPatientActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"/>
+        <activity
             android:name=".ui.assessment.AssessmentActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:exported="false" />

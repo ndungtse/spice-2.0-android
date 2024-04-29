@@ -9,6 +9,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.LinearLayout
@@ -94,4 +95,12 @@ fun ConstraintLayout.setPercentWidth(viewId: Int, percentage: Float) {
 fun Context.isNotTabletAndPortrait(): Boolean {
     val orientation = resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT
     return !CommonUtils.checkIsTablet(this) && orientation
+}
+
+fun DialogFragment.setDialogWidthAndHeightAsWrapPercent(widthPercent: Int) {
+    val widthPercent = widthPercent.toFloat() / 100
+    val dm = Resources.getSystem().displayMetrics
+    val rect = dm.run { Rect(0, 0, widthPixels, heightPixels) }
+    val percentWidth = rect.width() * widthPercent
+    dialog?.window?.setLayout(percentWidth.toInt(), WindowManager.LayoutParams.WRAP_CONTENT)
 }
