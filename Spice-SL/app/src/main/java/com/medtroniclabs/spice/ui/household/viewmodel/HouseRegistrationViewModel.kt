@@ -37,7 +37,8 @@ class HouseRegistrationViewModel @Inject constructor(
 
     fun getFormData(formType: String) {
         viewModelScope.launch(dispatcherIO) {
-            houseHoldRepository.getFormData(formType, formLayoutsLiveData)
+            formLayoutsLiveData.postLoading()
+            formLayoutsLiveData.postValue(houseHoldRepository.getFormData(formType))
         }
     }
 
@@ -45,7 +46,8 @@ class HouseRegistrationViewModel @Inject constructor(
         viewModelScope.launch(dispatcherIO) {
             when (type) {
                 villageId -> {
-                    houseHoldRepository.getUserVillages(villageListResponse, tag)
+                    villageListResponse.postLoading()
+                    villageListResponse.postValue(houseHoldRepository.getUserVillages(tag))
                 }
             }
         }

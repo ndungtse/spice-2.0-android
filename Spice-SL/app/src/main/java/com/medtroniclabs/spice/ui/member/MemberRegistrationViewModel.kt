@@ -33,7 +33,7 @@ class MemberRegistrationViewModel @Inject constructor(
 
     fun getFormData(formType: String) {
         viewModelScope.launch(dispatcherIO) {
-            houseHoldRepository.getFormData(formType, formLayoutsLiveData)
+            formLayoutsLiveData.postValue(houseHoldRepository.getFormData(formType))
         }
     }
 

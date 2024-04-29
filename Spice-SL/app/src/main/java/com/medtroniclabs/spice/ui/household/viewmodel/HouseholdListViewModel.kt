@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
+import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.data.model.ChipViewItemModel
 import com.medtroniclabs.spice.db.entity.VillageEntity
 import com.medtroniclabs.spice.db.response.HouseHoldEntityWithMemberCount
@@ -71,7 +72,8 @@ class HouseholdListViewModel @Inject constructor(
 
     fun getAllVillagesName() {
         viewModelScope.launch(dispatcherIO) {
-            houseHoldRepository.getAllVillagesName(villageListResponse)
+            villageListResponse.postLoading()
+            villageListResponse.postValue(houseHoldRepository.getAllVillagesName())
         }
     }
 }

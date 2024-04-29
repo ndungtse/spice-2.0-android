@@ -68,7 +68,7 @@ class HouseHoldSummaryViewModel @Inject constructor(
 
     fun getVillageByID(villageId: Long) {
         viewModelScope.launch(dispatcherIO) {
-            houseHoldRepository.getVillageByID(villageId, villageDetailLiveData)
+            villageDetailLiveData.postValue(houseHoldRepository.getVillageByID(villageId))
         }
     }
 
