@@ -3,13 +3,12 @@ package com.medtroniclabs.spice.offlinesync
 import android.content.Context
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
-import androidx.work.Data
+import androidx.work.WorkContinuation
 import androidx.work.WorkerParameters
+import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.offlinesync.utils.OfflineConstant
-import com.medtroniclabs.spice.data.offlinesync.utils.OfflineConstant.KEY_REQUESTS_ID
 import com.medtroniclabs.spice.data.offlinesync.utils.OfflineUtils
-import com.medtroniclabs.spice.repo.AssessmentRepository
-import com.medtroniclabs.spice.repo.HouseHoldRepository
+import com.medtroniclabs.spice.repo.OfflineSyncRepository
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 
@@ -17,8 +16,7 @@ import dagger.assisted.AssistedInject
 class PostSyncWorker @AssistedInject constructor(
     @Assisted context: Context,
     @Assisted userParameter: WorkerParameters,
-    val houseHoldRepository: HouseHoldRepository,
-    val assessmentRepository: AssessmentRepository
+    private val offlineSyncRepo: OfflineSyncRepository
 ) : CoroutineWorker(context, userParameter) {
 
     override suspend fun doWork(): Result {
@@ -29,10 +27,12 @@ class PostSyncWorker @AssistedInject constructor(
                 requestsId.add(it)
             }
 
-            val outputData =
-                Data.Builder().putStringArray(KEY_REQUESTS_ID, requestsId.toTypedArray()).build()
+            SecuredPreference.saveStringArray(
+                SecuredPreference.EnvironmentKey.OFFLINE_SYNC_REQUEST_ID.name,
+                requestsId.toTypedArray()
+            )
 
-            return Result.success(outputData)
+            return Result.success()
         } catch (e: Exception) {
             e.printStackTrace()
             return Result.failure()
@@ -42,31 +42,31 @@ class PostSyncWorker @AssistedInject constructor(
     private suspend fun syncHouseHoldsAndMembers(): String? {
         val householdIds = mutableListOf<Long>()
         val coveredPatientIds = mutableListOf<String>()
-        val houseHoldList = houseHoldRepository.getAllUnSyncedHouseHolds()
+        val houseHoldList = offlineSyncRepo.getAllUnSyncedHouseHolds()
         houseHoldList.forEach { householdEntity ->
             householdIds.add(householdEntity.referenceId!!.toLong())
             val memberList =
-                houseHoldRepository.getAllUnSyncedMembers(householdEntity.referenceId!!.toLong())
+                offlineSyncRepo.getAllUnSyncedMembers(householdEntity.referenceId!!.toLong())
 
             //Assessment
             memberList.forEach { hhm ->
                 hhm.motherPatientId?.let { hhm.isChild = true }
                 coveredPatientIds.add(hhm.patientId)
-                hhm.assessments = assessmentRepository.getUnSyncedAssessmentByPatientId(hhm.patientId)
+                hhm.assessments = offlineSyncRepo.getUnSyncedAssessmentByPatientId(hhm.patientId)
             }
 
             householdEntity.householdMembers.addAll(memberList)
         }
 
-        val otherHouseholdMembers = houseHoldRepository.getOtherHouseholdMembers(householdIds)
+        val otherHouseholdMembers = offlineSyncRepo.getOtherHouseholdMembers(householdIds)
         //Assessment
         otherHouseholdMembers.forEach { hhm ->
             hhm.motherPatientId?.let { hhm.isChild = true }
             coveredPatientIds.add(hhm.patientId)
-            hhm.assessments = assessmentRepository.getUnSyncedAssessmentByPatientId(hhm.patientId)
+            hhm.assessments = offlineSyncRepo.getUnSyncedAssessmentByPatientId(hhm.patientId)
         }
 
-        val otherAssessments = assessmentRepository.getOtherUnSyncedAssessments(coveredPatientIds)
+        val otherAssessments = offlineSyncRepo.getOtherUnSyncedAssessments(coveredPatientIds)
 
         val request = OfflineUtils.getRequestObject()
         request[OfflineConstant.HOUSE_HOLDS] = houseHoldList
@@ -74,7 +74,7 @@ class PostSyncWorker @AssistedInject constructor(
         request[OfflineConstant.ASSESSMENTS] = otherAssessments
 
         try {
-            val apiResponse = houseHoldRepository.postOfflineHouseHolds(request)
+            val apiResponse = offlineSyncRepo.postOfflineHouseHolds(request)
             if (apiResponse.isSuccessful) {
                 return request[OfflineConstant.REQUEST_ID] as String
             }

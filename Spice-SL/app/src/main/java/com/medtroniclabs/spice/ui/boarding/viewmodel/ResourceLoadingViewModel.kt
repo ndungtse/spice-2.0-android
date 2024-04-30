@@ -8,6 +8,7 @@ import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.network.utils.ConnectivityManager
 import com.medtroniclabs.spice.repo.HouseHoldRepository
+import com.medtroniclabs.spice.repo.OfflineSyncRepository
 import com.medtroniclabs.spice.ui.boarding.repo.LoginRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
@@ -17,7 +18,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ResourceLoadingViewModel @Inject constructor(
     private val loginRepository: LoginRepository,
-    private val houseHoldRepository: HouseHoldRepository,
+    private val offlineSyncRepository: OfflineSyncRepository,
     private val connectivityManager: ConnectivityManager,
     @IoDispatcher private val dispatcherIO: CoroutineDispatcher
 ) :
@@ -45,7 +46,7 @@ class ResourceLoadingViewModel @Inject constructor(
 
     fun downloadInitialDetails() {
         viewModelScope.launch(dispatcherIO) {
-            houseHoldRepository.getHouseholdAndMembers(householdsLiveData)
+            offlineSyncRepository.getHouseholdAndMembers(householdsLiveData)
         }
     }
 

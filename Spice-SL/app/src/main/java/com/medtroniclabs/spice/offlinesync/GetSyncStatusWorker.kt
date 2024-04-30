@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
+import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.offlinesync.model.RequestGetSyncStatus
 import com.medtroniclabs.spice.data.offlinesync.utils.OfflineConstant.KEY_REQUESTS_ID
 import com.medtroniclabs.spice.data.offlinesync.utils.OfflineSyncStatus
@@ -33,9 +34,10 @@ class GetSyncStatusWorker @AssistedInject constructor(
                 isAllEntitiesSynced = getSyncStatusForHouseHolds(requestIds[0])
             }
 
-            if (isAllEntitiesSynced)
+            if (isAllEntitiesSynced) {
+                SecuredPreference.remove(SecuredPreference.EnvironmentKey.OFFLINE_SYNC_REQUEST_ID.name)
                 return Result.success()
-            else
+            } else
                 delay(timeDelayForPolling)
         }
 

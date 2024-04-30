@@ -26,7 +26,8 @@ object SecuredPreference {
         ORGANIZATION_FHIR_ID,
         IS_MOTHER_NEONATE_LOADEDANC,
         IS_UNDER_TWO_MONTHS_LOADED,
-        IS_LABOUR_DELIVERY_LOADED
+        IS_LABOUR_DELIVERY_LOADED,
+        OFFLINE_SYNC_REQUEST_ID
     }
 
 
@@ -345,6 +346,19 @@ object SecuredPreference {
      */
     operator fun contains(key: String): Boolean {
         return preferences.contains(key)
+    }
+
+    fun saveStringArray(key: String, array: Array<String>) {
+        val editor = preferences.edit()
+        val set = HashSet<String>()
+        set.addAll(array)
+        editor.putStringSet(key, set)
+        editor.apply()
+    }
+
+    fun getStringArray(key: String): Array<String>? {
+        val set = preferences.getStringSet(key, null)
+        return set?.toTypedArray()
     }
 
     fun clear(context: Context) {

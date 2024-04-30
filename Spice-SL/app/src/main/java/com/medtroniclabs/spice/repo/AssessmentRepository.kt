@@ -3,16 +3,12 @@ package com.medtroniclabs.spice.repo
 import android.location.Location
 import androidx.lifecycle.MutableLiveData
 import com.google.gson.Gson
-import com.google.gson.JsonParser
 import com.google.gson.reflect.TypeToken
-import com.medtroniclabs.spice.appextensions.convertToUtcDateTime
 import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.appextensions.postSuccess
 import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.data.LocalSpinnerResponse
-import com.medtroniclabs.spice.data.offlinesync.model.Assessment
-import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.db.entity.AssessmentEntity
 import com.medtroniclabs.spice.db.entity.HealthFacilityEntity
 import com.medtroniclabs.spice.db.entity.SignsAndSymptomsEntity
@@ -43,6 +39,7 @@ class AssessmentRepository @Inject constructor(
                     memberId = memberDetails.memberId,
                     householdId = memberDetails.householdId,
                     patientId = memberDetails.patientId,
+                    villageId = memberDetails.villageId,
                     assessmentType = menu.uppercase(Locale.getDefault()),
                     assessmentDetails = resultData,
                     isReferred = getReferralStatus(referralResult?.first),
@@ -133,35 +130,6 @@ class AssessmentRepository @Inject constructor(
     suspend fun getNearestHealthFacility(nearestFacilityLiveData: MutableLiveData<Resource<List<HealthFacilityEntity>>>) {
         val response = roomHelper.getNearestHealthFacility()
         nearestFacilityLiveData.postSuccess(response)
-    }
-
-    suspend fun getUnSyncedAssessmentByPatientId(patientId: String): List<Assessment> {
-        return convertEntityToRequest(roomHelper.getUnSyncedAssessmentByPatientId(patientId))
-    }
-
-    suspend fun getOtherUnSyncedAssessments(patientIds: List<String>): List<Assessment> {
-        return convertEntityToRequest(roomHelper.getOtherUnSyncedAssessments(patientIds))
-    }
-
-    private fun convertEntityToRequest(list: List<AssessmentEntity>): List<Assessment> {
-        return list.map { entity ->
-            Assessment(
-                referenceId = entity.id,
-                householdId = entity.householdId,
-                memberId = entity.memberId,
-                assessmentType = entity.assessmentType,
-                assessmentDetails = JsonParser.parseString(entity.assessmentDetails),
-                patientId = entity.patientId,
-                startTime = null,
-                endTime = null,
-                referred = entity.isReferred,
-                referredReasons = entity.referredReason?.let { it.toString() },
-                provenance = ProvanceDto(createdDateTime = entity.createdAt.convertToUtcDateTime()),
-                latitude = entity.latitude,
-                longitude = entity.longitude,
-                summary = JsonParser.parseString(entity.otherDetails)
-            )
-        }
     }
 
     suspend fun getNearestHealthFacility(

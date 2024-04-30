@@ -5,5 +5,10 @@ import com.medtroniclabs.spice.common.SecuredPreference
 data class RequestAllEntities(
     var villageIds: List<Long> = listOf(),
     val lastSyncedTime: String? = null,
-    val lastSyncedUserId: String = SecuredPreference.getUserFhirId()
+    val lastSyncedUserId: LastSyncedUser = LastSyncedUser()
+)
+
+data class LastSyncedUser(
+    val fhirId: String = SecuredPreference.getUserFhirId(),
+    val id: Int = 0
 )

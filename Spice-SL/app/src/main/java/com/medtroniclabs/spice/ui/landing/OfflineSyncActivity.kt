@@ -10,6 +10,7 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.offlinesync.utils.OfflineConstant.KEY_REQUESTS_ID
 import com.medtroniclabs.spice.databinding.FragmentOfflineSyncBinding
 import com.medtroniclabs.spice.model.landing.LoadingDialogFragment
@@ -85,12 +86,16 @@ class OfflineSyncActivity : BaseActivity() {
 
         workManager.getWorkInfoByIdLiveData(postSyncWorker.id).observe(this) { workerInfo ->
             if (workerInfo.state == WorkInfo.State.SUCCEEDED) {
-                val requestIds = workerInfo.outputData.getStringArray(KEY_REQUESTS_ID)
+                val requestIds =
+                    SecuredPreference.getStringArray(SecuredPreference.EnvironmentKey.OFFLINE_SYNC_REQUEST_ID.name)
                 if (!requestIds.isNullOrEmpty()) {
                     startGetSyncStatusWorkManager(requestIds, getStatusStartTimer)
                 } else {
                     dismissLoadingDialog()
-                    showErrorDialogue(getString(R.string.title_sync_status),getString(R.string.message_sync_error)){}
+                    showErrorDialogue(
+                        getString(R.string.title_sync_status),
+                        getString(R.string.message_sync_error)
+                    ) {}
                 }
             }
         }
@@ -120,9 +125,10 @@ class OfflineSyncActivity : BaseActivity() {
                 viewModel.getUnSyncedCount()
                 dismissLoadingDialog()
                 Toast.makeText(this, "Sync Success!", Toast.LENGTH_LONG).show()
-            } else if(workerInfo.state == WorkInfo.State.FAILED) {
+            } else if (workerInfo.state == WorkInfo.State.FAILED) {
                 dismissLoadingDialog()
-                Toast.makeText(this, "Sync Failed! Please try again later", Toast.LENGTH_LONG).show()
+                Toast.makeText(this, "Sync Failed! Please try again later", Toast.LENGTH_LONG)
+                    .show()
             }
         }
     }

@@ -13,6 +13,7 @@ data class AssessmentEntity(
     val memberId: String?, // Member -FHIR id
     val householdId: String?, // Household - FHIR id
     val patientId: String, // member - patient Id
+    val villageId: String, // Village Id of household
     val assessmentType: String,
     val assessmentDetails:String,
     var otherDetails: String? = null,
