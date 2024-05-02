@@ -26,15 +26,14 @@ interface AssessmentDAO {
     @Query("SELECT * FROM SymptomEntity WHERE LOWER(type) = LOWER(:type) ORDER BY display_order")
     suspend fun getSymptomListByType(type: String): List<SignsAndSymptomsEntity>
 
-    @Query("SELECT * FROM Assessment WHERE sync_status=:status AND patientId =:patientId ")
+    @Query("SELECT * FROM Assessment WHERE sync_status=:status AND patientId =:patientId AND memberId IS NULL")
     suspend fun getUnSyncedAssessmentByPatientId(
         patientId: String,
         status: String = OfflineSyncStatus.NotSynced.name
     ): List<AssessmentEntity>
 
-    @Query("SELECT * FROM Assessment WHERE sync_status=:status AND patientId NOT IN (:patientIds)")
+    @Query("SELECT * FROM Assessment WHERE memberId IS NOT NULL AND householdId IS NOT NULL AND sync_status=:status")
     suspend fun getOtherUnSyncedAssessments(
-        patientIds: List<String>,
         status: String = OfflineSyncStatus.NotSynced.name
     ): List<AssessmentEntity>
 

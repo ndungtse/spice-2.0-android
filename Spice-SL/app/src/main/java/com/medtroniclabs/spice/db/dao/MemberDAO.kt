@@ -33,15 +33,14 @@ interface MemberDAO {
     @Query("SELECT date_of_birth,gender FROM HouseHoldMember WHERE id = :memberId")
     suspend fun getDobAndGenderById(memberId: Long): MemberDobGenderModel
 
-    @Query("SELECT hhm.*, hh.fhir_id as household_fhir_id, hh.village_id as village_id, ve.name as village_name  FROM HouseHoldMember AS hhm INNER JOIN Household as hh ON hh.id = hhm.household_id INNER JOIN VillageEntity AS ve ON hh.village_id = ve.id WHERE hhm.household_id = :houseHoldId AND hhm.sync_status =:status")
+    @Query("SELECT hhm.*, hh.fhir_id as household_fhir_id, hh.village_id as village_id, ve.name as village_name  FROM HouseHoldMember AS hhm INNER JOIN Household as hh ON hh.id = hhm.household_id INNER JOIN VillageEntity AS ve ON hh.village_id = ve.id WHERE hh.fhir_id IS NULL AND hhm.household_id = :houseHoldId AND hhm.sync_status =:status")
     suspend fun getAllUnSyncedHouseHoldMembers(
         houseHoldId: Long,
         status: String = OfflineSyncStatus.NotSynced.name
     ): List<HouseHoldMember>
 
-    @Query("SELECT hhm.*, hh.fhir_id as household_fhir_id, hh.village_id as village_id, ve.name as village_name FROM HouseHoldMember AS hhm INNER JOIN Household as hh ON hh.id = hhm.household_id INNER JOIN VillageEntity AS ve ON hh.village_id = ve.id WHERE hhm.household_id NOT IN (:ids) AND hhm.sync_status=:status")
+    @Query("SELECT hhm.*, hh.fhir_id as household_fhir_id, hh.village_id as village_id, ve.name as village_name FROM HouseHoldMember AS hhm INNER JOIN Household as hh ON hh.id = hhm.household_id INNER JOIN VillageEntity AS ve ON hh.village_id = ve.id WHERE hh.fhir_id IS NOT NULL AND hhm.sync_status=:status")
     suspend fun getOtherHouseholdMembers(
-        ids: List<Long>,
         status: String = OfflineSyncStatus.NotSynced.name
     ): List<HouseHoldMember>
 

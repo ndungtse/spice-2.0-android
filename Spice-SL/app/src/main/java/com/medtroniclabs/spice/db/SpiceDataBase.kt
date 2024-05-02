@@ -19,10 +19,12 @@ import com.medtroniclabs.spice.db.dao.MemberDAO
 import com.medtroniclabs.spice.db.dao.MetaDataDAO
 import com.medtroniclabs.spice.db.dao.ExaminationsComplaintsDAO
 import com.medtroniclabs.spice.db.dao.ExaminationsDAO
+import com.medtroniclabs.spice.db.dao.FollowUpDao
 import com.medtroniclabs.spice.db.dao.LabourDeliveryDAO
 import com.medtroniclabs.spice.db.entity.AssessmentEntity
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowConditionEntity
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowEntity
+import com.medtroniclabs.spice.db.entity.FollowUp
 import com.medtroniclabs.spice.db.entity.FormEntity
 import com.medtroniclabs.spice.db.entity.HealthFacilityEntity
 import com.medtroniclabs.spice.db.entity.HouseholdEntity
@@ -35,7 +37,7 @@ import com.medtroniclabs.spice.db.entity.VillageEntity
 
 @Database(
     entities = [HouseholdEntity::class, HouseholdMemberEntity::class, SignsAndSymptomsEntity::class, AssessmentEntity::class, MenuEntity::class, UserProfileEntity::class,
-        VillageEntity::class, HealthFacilityEntity::class, ClinicalWorkflowEntity::class, FormEntity::class, ClinicalWorkflowConditionEntity::class,MemberClinicalEntity::class,MedicalReviewMetaItems::class, DiseaseCategoryItems::class, ExaminationListItems::class, LabourDeliveryMetaEntity::class],
+        VillageEntity::class, HealthFacilityEntity::class, ClinicalWorkflowEntity::class, FormEntity::class, ClinicalWorkflowConditionEntity::class,MemberClinicalEntity::class,MedicalReviewMetaItems::class, DiseaseCategoryItems::class, ExaminationListItems::class, LabourDeliveryMetaEntity::class, FollowUp::class],
     version = 1
 )
 @TypeConverters(OfflineStatusTypeConverter::class)
@@ -50,6 +52,7 @@ abstract class SpiceDataBase : RoomDatabase() {
     abstract fun aboveFiveYearsDAO(): AboveFiveYearsDAO
     abstract fun examinationsDAO(): ExaminationsDAO
     abstract fun labourDeliveryDAO(): LabourDeliveryDAO
+    abstract fun followUpDao(): FollowUpDao
 
     companion object {
         private const val DATABASE_NAME = "SpiceDataBase"

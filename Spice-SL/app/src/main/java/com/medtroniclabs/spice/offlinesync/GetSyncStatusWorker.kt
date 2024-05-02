@@ -9,7 +9,8 @@ import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.offlinesync.model.RequestGetSyncStatus
 import com.medtroniclabs.spice.data.offlinesync.utils.OfflineConstant.KEY_REQUESTS_ID
 import com.medtroniclabs.spice.data.offlinesync.utils.OfflineSyncStatus
-import com.medtroniclabs.spice.repo.HouseHoldRepository
+import com.medtroniclabs.spice.db.local.RoomHelper
+import com.medtroniclabs.spice.repo.OfflineSyncRepository
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.delay
@@ -18,7 +19,8 @@ import kotlinx.coroutines.delay
 class GetSyncStatusWorker @AssistedInject constructor(
     @Assisted context: Context,
     @Assisted userParameter: WorkerParameters,
-    val houseHoldRepository: HouseHoldRepository
+    val roomHelper: RoomHelper,
+    val offlineSyncRepository: OfflineSyncRepository
 ) : CoroutineWorker(context, userParameter) {
 
     private val retryCount = 4 // 1 initial Call + 3 retry
@@ -36,6 +38,7 @@ class GetSyncStatusWorker @AssistedInject constructor(
 
             if (isAllEntitiesSynced) {
                 SecuredPreference.remove(SecuredPreference.EnvironmentKey.OFFLINE_SYNC_REQUEST_ID.name)
+                offlineSyncRepository.fetchSyncedData()
                 return Result.success()
             } else
                 delay(timeDelayForPolling)
@@ -49,12 +52,13 @@ class GetSyncStatusWorker @AssistedInject constructor(
         val req = RequestGetSyncStatus(requestId = id)
 
         try {
-            val response = houseHoldRepository.getSyncStatus(req)
+            // Get Sync Status
+            val response = offlineSyncRepository.getSyncStatus(req)
             if (response.isSuccessful) {
                 var isAllEntitiesSynced = true
                 response.body()?.entityList?.forEach { entity ->
                     if (entity.status == OfflineSyncStatus.Success.name && entity.type != null && entity.referenceId != null && entity.fhirId != null)
-                        houseHoldRepository.updateFhirId(
+                        offlineSyncRepository.updateFhirId(
                             entity.type,
                             entity.referenceId,
                             entity.fhirId
@@ -71,7 +75,5 @@ class GetSyncStatusWorker @AssistedInject constructor(
             Log.e("Test","Exception : "+e.message)
             return false
         }
-
     }
-
 }

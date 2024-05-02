@@ -3,7 +3,6 @@ package com.medtroniclabs.spice.offlinesync
 import android.content.Context
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
-import androidx.work.WorkContinuation
 import androidx.work.WorkerParameters
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.offlinesync.utils.OfflineConstant
@@ -40,33 +39,28 @@ class PostSyncWorker @AssistedInject constructor(
     }
 
     private suspend fun syncHouseHoldsAndMembers(): String? {
-        val householdIds = mutableListOf<Long>()
-        val coveredPatientIds = mutableListOf<String>()
         val houseHoldList = offlineSyncRepo.getAllUnSyncedHouseHolds()
         houseHoldList.forEach { householdEntity ->
-            householdIds.add(householdEntity.referenceId!!.toLong())
             val memberList =
                 offlineSyncRepo.getAllUnSyncedMembers(householdEntity.referenceId!!.toLong())
 
             //Assessment
             memberList.forEach { hhm ->
                 hhm.motherPatientId?.let { hhm.isChild = true }
-                coveredPatientIds.add(hhm.patientId)
                 hhm.assessments = offlineSyncRepo.getUnSyncedAssessmentByPatientId(hhm.patientId)
             }
 
             householdEntity.householdMembers.addAll(memberList)
         }
 
-        val otherHouseholdMembers = offlineSyncRepo.getOtherHouseholdMembers(householdIds)
+        val otherHouseholdMembers = offlineSyncRepo.getOtherHouseholdMembers()
         //Assessment
         otherHouseholdMembers.forEach { hhm ->
             hhm.motherPatientId?.let { hhm.isChild = true }
-            coveredPatientIds.add(hhm.patientId)
             hhm.assessments = offlineSyncRepo.getUnSyncedAssessmentByPatientId(hhm.patientId)
         }
 
-        val otherAssessments = offlineSyncRepo.getOtherUnSyncedAssessments(coveredPatientIds)
+        val otherAssessments = offlineSyncRepo.getOtherUnSyncedAssessments()
 
         val request = OfflineUtils.getRequestObject()
         request[OfflineConstant.HOUSE_HOLDS] = houseHoldList

@@ -21,8 +21,7 @@ import com.medtroniclabs.spice.ui.home.adapter.DashboardMenuItemsAdapter
 import com.medtroniclabs.spice.ui.household.HouseholdSearchActivity
 import com.medtroniclabs.spice.ui.landing.viewmodel.LandingViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import com.medtroniclabs.spice.ui.mypatients.PatientSearchActivity
-import com.medtroniclabs.spice.ui.mypatient.FollowUpMyPatientActivity
+import com.medtroniclabs.spice.ui.followup.FollowUpMyPatientActivity
 
 
 @AndroidEntryPoint

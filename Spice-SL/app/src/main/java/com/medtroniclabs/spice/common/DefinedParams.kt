@@ -52,7 +52,7 @@ object DefinedParams {
     const val Unit_Measurement_Metric_Type = "metric"
     const val isFrom= "isFrom"
     const val iccm = "ICCM"
-    const val HH_VISIT = "HHVisit"
+    const val HH_VISIT = "HH_Visit"
     const val REFERRED = "Referred"
     const val MEDICAL_REVIEW = "MedicalReview"
     const val CallResult = "CallResult"
@@ -60,4 +60,8 @@ object DefinedParams {
     const val UnSuccessful = "UnSuccessful"
     const val SUCCESSFUL = "successful"
     const val UNSUCCESSFUL = "unSuccessful"
+
+    const val FU_TYPE_HH_VISIT = "HH_VISIT"
+    const val FU_TYPE_REFERRED = "REFERRED"
+    const val FU_TYPE_MEDICAL_REVIEW = "MEDICAL_REVIEW"
 }

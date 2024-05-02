@@ -165,6 +165,7 @@ object CommonUtils {
         }
     }
 
+
     private fun calculateAge(dateOfBirth: String): Int? {
         val ageTriplet = DateUtils.getYearMonthAndDate(
             dateOfBirth, SimpleDateFormat(
@@ -176,7 +177,7 @@ object CommonUtils {
         return year?.let { DateUtils.calculateAge(it) }
     }
 
-    fun getGenderText(gender: String, context: Context): String {
+    fun getGenderText(gender: String?, context: Context): String {
         return if (gender.equals(DefinedParams.male, true)) {
             context.getString(R.string.male_prefix)
         } else {

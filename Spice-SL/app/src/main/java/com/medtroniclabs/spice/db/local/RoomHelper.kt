@@ -3,8 +3,9 @@ package com.medtroniclabs.spice.db.local
 import androidx.lifecycle.LiveData
 import com.medtroniclabs.spice.data.DiseaseCategoryItems
 import com.medtroniclabs.spice.data.ExaminationListItems
-import com.medtroniclabs.spice.data.MedicalReviewMetaItems
+import com.medtroniclabs.spice.data.FollowUpPatientModel
 import com.medtroniclabs.spice.data.LabourDeliveryMetaEntity
+import com.medtroniclabs.spice.data.MedicalReviewMetaItems
 import com.medtroniclabs.spice.data.VillageInfo
 import com.medtroniclabs.spice.data.offlinesync.model.HouseHold
 import com.medtroniclabs.spice.data.offlinesync.model.HouseHoldMember
@@ -12,6 +13,7 @@ import com.medtroniclabs.spice.db.entity.AssessmentEntity
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowConditionEntity
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowEntity
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowEntityWithSubmodule
+import com.medtroniclabs.spice.db.entity.FollowUp
 import com.medtroniclabs.spice.db.entity.FormEntity
 import com.medtroniclabs.spice.db.entity.HealthFacilityEntity
 import com.medtroniclabs.spice.db.entity.HouseholdEntity
@@ -26,6 +28,7 @@ import com.medtroniclabs.spice.db.response.HouseholdMemberCount
 import com.medtroniclabs.spice.db.response.VillageBasicDetails
 import com.medtroniclabs.spice.model.MemberDobGenderModel
 import com.medtroniclabs.spice.model.assessment.AssessmentMemberDetails
+import com.medtroniclabs.spice.model.followup.FollowUpFilter
 
 interface RoomHelper {
     suspend fun saveHouseHoldEntry(householdEntity: HouseholdEntity): Long
@@ -86,7 +89,7 @@ interface RoomHelper {
 
     suspend fun getAllUnSyncedHouseHoldMembers(houseHoldId: Long): List<HouseHoldMember>
 
-    suspend fun getOtherHouseholdMembers(ids: List<Long>): List<HouseHoldMember>
+    suspend fun getOtherHouseholdMembers(): List<HouseHoldMember>
     suspend fun updateFhirId(tableName: String, id: String, fhirId: String)
     fun getFilteredHouseholdsLiveData(
         searchInput: String,
@@ -109,7 +112,7 @@ interface RoomHelper {
     suspend fun getExaminationsComplaintByType(type: String): List<MedicalReviewMetaItems>
     suspend fun getAssessmentMemberDetails(id: Long): AssessmentMemberDetails
     suspend fun getUnSyncedAssessmentByPatientId(patientId: String): List<AssessmentEntity>
-    suspend fun getOtherUnSyncedAssessments(patientIds: List<String>): List<AssessmentEntity>
+    suspend fun getOtherUnSyncedAssessments(): List<AssessmentEntity>
     suspend fun getUnSyncedAssessmentCount(): Int
 
     suspend fun updateMemberClinicalData(
@@ -131,4 +134,10 @@ interface RoomHelper {
     suspend fun deleteLabourDelivery()
     suspend fun getLabourDelivery(): List<LabourDeliveryMetaEntity>
     suspend fun getDiagnosisList(): List <DiseaseCategoryItems>
+
+    suspend fun insertFollowUps(list: List<FollowUp>)
+
+    suspend fun deleteAllFollowUps()
+
+    fun getFollowUpPatientListLiveData(filter: FollowUpFilter): LiveData<List<FollowUpPatientModel>>
 }

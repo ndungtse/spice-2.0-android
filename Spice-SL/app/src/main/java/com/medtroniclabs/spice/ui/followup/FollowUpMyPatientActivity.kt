@@ -1,31 +1,21 @@
-package com.medtroniclabs.spice.ui.mypatient
+package com.medtroniclabs.spice.ui.followup
 
-import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.view.LayoutInflater
 import android.view.View
-import android.widget.TextView
 import androidx.activity.viewModels
-import androidx.core.content.ContextCompat
-import androidx.recyclerview.widget.GridLayoutManager
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.DefinedParams
-import com.medtroniclabs.spice.data.FollowUpPatientModel
 import com.medtroniclabs.spice.databinding.ActivityFollowUpMyPatientBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
-import com.medtroniclabs.spice.network.resource.Resource
-import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.MenuConstants
 import com.medtroniclabs.spice.ui.household.FilterBottomSheetDialogFragment
-import com.medtroniclabs.spice.ui.mypatient.adapter.FollowUpPatientListAdapter
-import com.medtroniclabs.spice.ui.mypatient.adapter.PatientListAdapter
-import com.medtroniclabs.spice.ui.mypatient.fragment.FollowUpDialogFragment
-import com.medtroniclabs.spice.ui.mypatient.viewmodel.FollowUpViewModel
+import com.medtroniclabs.spice.ui.followup.adapter.FollowUpPatientListAdapter
+import com.medtroniclabs.spice.ui.followup.viewmodel.FollowUpViewModel
 
 class FollowUpMyPatientActivity : BaseActivity(), View.OnClickListener {
     private lateinit var binding: ActivityFollowUpMyPatientBinding
@@ -38,7 +28,7 @@ class FollowUpMyPatientActivity : BaseActivity(), View.OnClickListener {
             binding.root, isToolbarVisible = true, title = getString(R.string.households)
         )
         initView()
-        setPatientCount()
+        initObserver()
         setTabLayout()
     }
 
@@ -61,6 +51,7 @@ class FollowUpMyPatientActivity : BaseActivity(), View.OnClickListener {
             TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab?) {
                 tab?.let {
+                    viewModel.updateFollowUpFilter(type = it.position)
                     binding.viewPager.currentItem = it.position
                 }
             }
@@ -76,13 +67,6 @@ class FollowUpMyPatientActivity : BaseActivity(), View.OnClickListener {
     }
 
 
-    private fun setPatientCount() {
-        viewModel.setPatientDateList.observe(this) {
-            binding.tvHPatientCount.text = getString(R.string.patient_count, it.size)
-        }
-    }
-
-
     private fun initView() {
         with(binding) {
             val origin = intent.getStringExtra(MenuConstants.MY_PATIENTS_MENU_ID)
@@ -92,9 +76,15 @@ class FollowUpMyPatientActivity : BaseActivity(), View.OnClickListener {
             }
             with(llExactSearch) {
                 etSearchTerm.addTextChangedListener(searchListener)
-                viewModel.getFollowUpPatientList(DefinedParams.HH_VISIT)
+               // viewModel.getFollowUpPatientList(DefinedParams.HH_VISIT)
                 btnSearch.safeClickListener(this@FollowUpMyPatientActivity)
             }
+        }
+    }
+
+    private fun initObserver() {
+        viewModel.followUpPatientListLiveData.observe(this) {
+            binding.tvHPatientCount.text = getString(R.string.patient_count, it.size)
         }
     }
 
@@ -120,9 +110,9 @@ class FollowUpMyPatientActivity : BaseActivity(), View.OnClickListener {
         when (view?.id) {
 
             R.id.btnSearch -> {
-                viewModel.getFollowUpPatientList(
+               /* viewModel.getFollowUpPatientList(
                     searchKey = binding.llExactSearch.etSearchTerm.text.toString().trim()
-                )
+                )*/
             }
         }
     }

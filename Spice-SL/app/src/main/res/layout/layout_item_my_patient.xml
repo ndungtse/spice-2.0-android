@@ -28,7 +28,7 @@
             android:padding="@dimen/_20sdp">
 
             <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/tvCardHouseholdName"
+                android:id="@+id/tvPatientName"
                 style="@style/TextStyle_Bold_16_NoBG"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -71,7 +71,7 @@
                 android:textColor="@color/charcoal_grey"
                 app:layout_constraintEnd_toStartOf="@id/startGuideline"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tvCardHouseholdName" />
+                app:layout_constraintTop_toBottomOf="@+id/tvPatientName" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvLblHouseholdNoSeperator"
@@ -86,7 +86,7 @@
                 app:layout_constraintTop_toTopOf="@+id/tvLabelHouseholdNo" />
 
             <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/tvHouseholdNo"
+                android:id="@+id/tvReason"
                 style="@style/TextStyle_Regular_16_Blue"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -137,7 +137,7 @@
                 app:layout_constraintTop_toTopOf="@+id/tvLabelMembersRegistered" />
 
             <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/ivMemberRegCount"
+                android:id="@+id/tvPatientStatus"
                 style="@style/TextStyle_Regular_16_Blue"
                 android:layout_width="@dimen/_0dp"
                 android:layout_height="wrap_content"

@@ -1,4 +1,4 @@
-package com.medtroniclabs.spice.ui.mypatient
+package com.medtroniclabs.spice.ui.followup
 
 interface FollowUpCommunicator {
     fun showAssessmentCallDialog()

@@ -4,22 +4,29 @@ import androidx.lifecycle.LiveData
 import androidx.sqlite.db.SimpleSQLiteQuery
 import com.medtroniclabs.spice.data.DiseaseCategoryItems
 import com.medtroniclabs.spice.data.ExaminationListItems
-import com.medtroniclabs.spice.data.MedicalReviewMetaItems
+import com.medtroniclabs.spice.data.FollowUpPatientModel
 import com.medtroniclabs.spice.data.LabourDeliveryMetaEntity
+import com.medtroniclabs.spice.data.MedicalReviewMetaItems
 import com.medtroniclabs.spice.data.VillageInfo
+import com.medtroniclabs.spice.data.offlinesync.model.HouseHold
+import com.medtroniclabs.spice.data.offlinesync.model.HouseHoldMember
+import com.medtroniclabs.spice.data.offlinesync.utils.OfflineSyncStatus
 import com.medtroniclabs.spice.db.dao.AboveFiveYearsDAO
 import com.medtroniclabs.spice.db.dao.AssessmentDAO
 import com.medtroniclabs.spice.db.dao.DiagnosisDAO
+import com.medtroniclabs.spice.db.dao.ExaminationsComplaintsDAO
 import com.medtroniclabs.spice.db.dao.ExaminationsDAO
+import com.medtroniclabs.spice.db.dao.FollowUpDao
 import com.medtroniclabs.spice.db.dao.HouseholdDAO
+import com.medtroniclabs.spice.db.dao.LabourDeliveryDAO
 import com.medtroniclabs.spice.db.dao.MemberClinicalDAO
 import com.medtroniclabs.spice.db.dao.MemberDAO
 import com.medtroniclabs.spice.db.dao.MetaDataDAO
-import com.medtroniclabs.spice.db.dao.ExaminationsComplaintsDAO
 import com.medtroniclabs.spice.db.entity.AssessmentEntity
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowConditionEntity
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowEntity
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowEntityWithSubmodule
+import com.medtroniclabs.spice.db.entity.FollowUp
 import com.medtroniclabs.spice.db.entity.FormEntity
 import com.medtroniclabs.spice.db.entity.HealthFacilityEntity
 import com.medtroniclabs.spice.db.entity.HouseholdEntity
@@ -34,10 +41,7 @@ import com.medtroniclabs.spice.db.response.HouseholdMemberCount
 import com.medtroniclabs.spice.db.response.VillageBasicDetails
 import com.medtroniclabs.spice.model.MemberDobGenderModel
 import com.medtroniclabs.spice.model.assessment.AssessmentMemberDetails
-import com.medtroniclabs.spice.data.offlinesync.model.HouseHold
-import com.medtroniclabs.spice.data.offlinesync.model.HouseHoldMember
-import com.medtroniclabs.spice.data.offlinesync.utils.OfflineSyncStatus
-import com.medtroniclabs.spice.db.dao.LabourDeliveryDAO
+import com.medtroniclabs.spice.model.followup.FollowUpFilter
 import javax.inject.Inject
 
 class RoomHelperImpl @Inject constructor(
@@ -50,7 +54,8 @@ class RoomHelperImpl @Inject constructor(
     private val memberClinicalDAO: MemberClinicalDAO,
     private val aboveFiveYearsDAO: AboveFiveYearsDAO,
     private val examinationsDAO: ExaminationsDAO,
-    private val labourDeliveryDAO: LabourDeliveryDAO
+    private val labourDeliveryDAO: LabourDeliveryDAO,
+    private val followUpDao: FollowUpDao
 ) : RoomHelper {
     override suspend fun saveHouseHoldEntry(householdEntity: HouseholdEntity): Long {
         return householdDAO.insertHouseHold(householdEntity)
@@ -104,8 +109,8 @@ class RoomHelperImpl @Inject constructor(
         return memberDAO.getAllUnSyncedHouseHoldMembers(houseHoldId)
     }
 
-    override suspend fun getOtherHouseholdMembers(ids: List<Long>): List<HouseHoldMember> {
-        return memberDAO.getOtherHouseholdMembers(ids)
+    override suspend fun getOtherHouseholdMembers(): List<HouseHoldMember> {
+        return memberDAO.getOtherHouseholdMembers()
     }
 
     override suspend fun saveAssessment(assessmentEntity: AssessmentEntity): Long {
@@ -346,8 +351,8 @@ class RoomHelperImpl @Inject constructor(
         return memberDAO.getAssessmentMemberDetails(id)
     }
 
-    override suspend fun getOtherUnSyncedAssessments(patientIds: List<String>): List<AssessmentEntity> {
-        return assessmentDAO.getOtherUnSyncedAssessments(patientIds)
+    override suspend fun getOtherUnSyncedAssessments(): List<AssessmentEntity> {
+        return assessmentDAO.getOtherUnSyncedAssessments()
     }
 
     override suspend fun getUnSyncedAssessmentByPatientId(patientId: String): List<AssessmentEntity> {
@@ -401,5 +406,17 @@ class RoomHelperImpl @Inject constructor(
 
     override suspend fun getDiagnosisList(): List<DiseaseCategoryItems> {
         return diagnosisDAO.getDiagnosisList()
+    }
+
+    override suspend fun insertFollowUps(list: List<FollowUp>) {
+        followUpDao.insertFollowUps(list)
+    }
+
+    override suspend fun deleteAllFollowUps() {
+        followUpDao.deleteAllFollowUps()
+    }
+
+    override fun getFollowUpPatientListLiveData(filter: FollowUpFilter): LiveData<List<FollowUpPatientModel>> {
+        return followUpDao.getFollowUpPatientListLiveData(filter.type)
     }
 }

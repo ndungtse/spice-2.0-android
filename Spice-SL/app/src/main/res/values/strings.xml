@@ -384,7 +384,6 @@
     <string name="reason">Reason</string>
     <string name="start_date">Start Date</string>
     <string name="hh_name">HH Name</string>
-    <string name="member_id">Member ID</string>
     <string name="calls_made">Calls Made</string>
     <string name="indicator_header">Indicator</string>
     <string name="one_minute_header">1 MINUTE</string>

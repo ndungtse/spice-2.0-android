@@ -13,7 +13,7 @@ data class Assessment(
     val startTime: String? = null,
     val endTime: String? = null,
     val referred: Boolean,
-    val referredDate: String? = null,
+    val assessmentDate: String? = null,
     val patientStatus: String,
     val referredReasons: String? = null,
     val provenance: ProvanceDto,

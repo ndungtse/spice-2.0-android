@@ -73,7 +73,7 @@
             android:layout_marginTop="@dimen/_10sdp"
             android:text="@string/reason"
             app:layout_constraintEnd_toStartOf="@id/tvReasonSeparator"
-            app:layout_constraintHorizontal_weight="0.3"
+            app:layout_constraintHorizontal_weight="0.4"
             app:layout_constraintStart_toEndOf="@id/startGuideline"
             app:layout_constraintTop_toBottomOf="@id/tvTitle" />
 
@@ -107,7 +107,7 @@
             android:layout_marginTop="@dimen/_16sdp"
             android:text="@string/start_date"
             app:layout_constraintEnd_toStartOf="@id/tvStartDateSeparator"
-            app:layout_constraintHorizontal_weight="0.3"
+            app:layout_constraintHorizontal_weight="0.4"
             app:layout_constraintStart_toEndOf="@id/startGuideline"
             app:layout_constraintTop_toBottomOf="@id/tvReasonText" />
 
@@ -142,7 +142,7 @@
             android:layout_marginTop="@dimen/_16sdp"
             android:text="@string/patient_status"
             app:layout_constraintEnd_toStartOf="@id/tvPatientStatusSeparator"
-            app:layout_constraintHorizontal_weight="0.3"
+            app:layout_constraintHorizontal_weight="0.4"
             app:layout_constraintStart_toEndOf="@id/startGuideline"
             app:layout_constraintTop_toBottomOf="@id/tvStartDateText" />
 
@@ -177,7 +177,7 @@
             android:layout_marginTop="@dimen/_16sdp"
             android:text="@string/village"
             app:layout_constraintEnd_toStartOf="@id/tvVillageSeparator"
-            app:layout_constraintHorizontal_weight="0.3"
+            app:layout_constraintHorizontal_weight="0.4"
             app:layout_constraintStart_toEndOf="@id/startGuideline"
             app:layout_constraintTop_toBottomOf="@id/tvPatientStatusLabel" />
 
@@ -212,7 +212,7 @@
             android:layout_marginTop="@dimen/_16sdp"
             android:text="@string/landmark"
             app:layout_constraintEnd_toStartOf="@id/tvLandmarkSeparator"
-            app:layout_constraintHorizontal_weight="0.3"
+            app:layout_constraintHorizontal_weight="0.4"
             app:layout_constraintStart_toEndOf="@id/startGuideline"
             app:layout_constraintTop_toBottomOf="@id/tvVillageText" />
 
@@ -247,7 +247,7 @@
             android:layout_marginTop="@dimen/_16sdp"
             android:text="@string/hh_name"
             app:layout_constraintEnd_toStartOf="@id/tvHHNameSeparator"
-            app:layout_constraintHorizontal_weight="0.3"
+            app:layout_constraintHorizontal_weight="0.4"
             app:layout_constraintStart_toEndOf="@id/startGuideline"
             app:layout_constraintTop_toBottomOf="@id/tvLandmarkText" />
 
@@ -280,9 +280,9 @@
             style="@style/TextStyle_Regular_16"
             android:layout_width="@dimen/_0dp"
             android:layout_marginTop="@dimen/_16sdp"
-            android:text="@string/member_id"
+            android:text="@string/patient_id"
             app:layout_constraintEnd_toStartOf="@id/tvMemberIDSeparator"
-            app:layout_constraintHorizontal_weight="0.3"
+            app:layout_constraintHorizontal_weight="0.4"
             app:layout_constraintStart_toEndOf="@id/startGuideline"
             app:layout_constraintTop_toBottomOf="@id/tvHHNameText" />
 
@@ -317,7 +317,7 @@
             android:layout_marginTop="@dimen/_16sdp"
             android:text="@string/calls_made"
             app:layout_constraintEnd_toStartOf="@id/tvCallsMadeSeparator"
-            app:layout_constraintHorizontal_weight="0.3"
+            app:layout_constraintHorizontal_weight="0.4"
             app:layout_constraintStart_toEndOf="@id/startGuideline"
             app:layout_constraintTop_toBottomOf="@id/tvMemberIDText" />
 

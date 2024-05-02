@@ -1,4 +1,4 @@
-package com.medtroniclabs.spice.ui.mypatient.fragment
+package com.medtroniclabs.spice.ui.followup.fragment
 
 import android.app.Dialog
 import android.os.Bundle
@@ -18,7 +18,7 @@ import com.medtroniclabs.spice.databinding.FragmentBottomCallResultDialogBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.ui.SingleSelectionCustomView
-import com.medtroniclabs.spice.ui.mypatient.viewmodel.FollowUpViewModel
+import com.medtroniclabs.spice.ui.followup.viewmodel.FollowUpViewModel
 
 class CallResultDialogFragment : BottomSheetDialogFragment(), View.OnClickListener {
 
