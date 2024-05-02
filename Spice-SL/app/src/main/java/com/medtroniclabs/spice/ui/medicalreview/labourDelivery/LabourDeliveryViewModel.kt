@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.data.LabourDeliveryMetaEntity
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.model.assessment.AgparScore
@@ -192,13 +193,15 @@ class LabourDeliveryViewModel @Inject constructor(
 
     fun getStaticMetaData() {
         viewModelScope.launch(dispatcherIO) {
-            repository.getStaticMetaData(labourDeliveryMetaLiveData)
+            labourDeliveryMetaLiveData.postLoading()
+            labourDeliveryMetaLiveData.postValue(repository.getStaticMetaData())
         }
     }
 
     fun getLabourDeliveryMetaList() {
         viewModelScope.launch(dispatcherIO) {
-            repository.getLabourDeliveryList(labourDeliveryMetaList)
+            labourDeliveryMetaList.postLoading()
+            labourDeliveryMetaList.postValue(repository.getLabourDeliveryList())
         }
     }
 }
