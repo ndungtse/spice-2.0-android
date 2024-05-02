@@ -4,6 +4,7 @@ import android.location.Location
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.db.entity.AssessmentEntity
 import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
@@ -14,6 +15,7 @@ import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.repo.AssessmentRepository
 import com.medtroniclabs.spice.repo.HouseholdMemberRepository
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
+import com.medtroniclabs.spice.ui.assessment.referrallogic.ReferralResultGenerator
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
@@ -39,6 +41,8 @@ class AssessmentRMNCHNeonateViewModel @Inject constructor(
 
     val childMemberDetailsLiveData = MutableLiveData<Resource<List<HouseholdMemberEntity>>>()
 
+    var referralStatus: String? = null
+
     fun getFormData(formType: String, liveData: MutableLiveData<Resource<FormResponse>>) {
         viewModelScope.launch(dispatcherIO) {
             assessmentRepository.getFormData(formType, liveData)
@@ -50,8 +54,7 @@ class AssessmentRMNCHNeonateViewModel @Inject constructor(
         childDetailMap: HashMap<String, Any>,
         householdId: Long,
         motherDetailMap: HashMap<String, Any>,
-        memberDetail: AssessmentMemberDetails
-    ) {
+        memberDetail: AssessmentMemberDetails) {
         viewModelScope.launch(dispatcherIO) {
             if (memberMap != null) {
                 householdMemberRepository.registerMember(
@@ -70,21 +73,22 @@ class AssessmentRMNCHNeonateViewModel @Inject constructor(
     private suspend fun savePNCDetails(
         motherDetailMap: HashMap<String, Any>,
         childDetailMap: HashMap<String, Any>,
-        memberDetail: AssessmentMemberDetails
-    ) {
+        memberDetail: AssessmentMemberDetails) {
         val groupMap = HashMap<String, Any>()
         groupMap[RMNCH.PNC] = motherDetailMap[RMNCH.PNC] as Any
         groupMap[RMNCH.PNCNeonatal] = childDetailMap
-
+        val resultGenerator = ReferralResultGenerator()
+        val referralResult = resultGenerator.calculateRMNCHReferralResult(groupMap)
         val assessmentDetail =
             getAssessmentDetails(groupMap as HashMap<Any, Any>)
+        referralStatus = referralResult.first
         assessmentStringSaveLiveData.postValue(assessmentDetail.first)
         assessmentRepository.saveAssessment(
             assessmentDetail.second,
             memberDetail,
             assessmentSaveLiveData,
             RMNCH.PNC_MENU,
-            null,
+            referralResult,
             null,
         )
     }
@@ -102,7 +106,7 @@ class AssessmentRMNCHNeonateViewModel @Inject constructor(
                 val list = pnc[RMNCH.pncMotherSigns] as List<*>
                 list.forEach { it ->
                     if (it is HashMap<*, *>) {
-                        signsList.add(it["name"] as String)
+                        signsList.add(it[DefinedParams.NAME] as String)
                     }
                 }
                 pnc[RMNCH.pncMotherSigns] = signsList
@@ -123,7 +127,7 @@ class AssessmentRMNCHNeonateViewModel @Inject constructor(
                 val list = pncNeonate[RMNCH.pncNeonateSigns] as List<*>
                 list.forEach { it ->
                     if (it is HashMap<*, *>) {
-                        signsList.add(it["name"] as String)
+                        signsList.add(it[DefinedParams.NAME] as String)
                     }
                 }
 
@@ -142,7 +146,7 @@ class AssessmentRMNCHNeonateViewModel @Inject constructor(
         return Pair(assessmentDetail, assessmentDetailBE)
     }
 
-    fun getMemberDetailsByParentId(memberId: Long) {
+    fun getMemberDetailsByParentId(memberId: String) {
         viewModelScope.launch(dispatcherIO) {
             householdMemberRepository.getMemberDetailsByParentId(
                 memberId,
@@ -158,10 +162,9 @@ class AssessmentRMNCHNeonateViewModel @Inject constructor(
     ) {
         viewModelScope.launch(dispatcherIO) {
             if (otherAssessmentDetails.containsKey(AssessmentDefinedParams.IsClinicTaken)) {
-                val isTakenToClinical =
-                    otherAssessmentDetails[AssessmentDefinedParams.IsClinicTaken] as String
+                val isTakenToClinical = otherAssessmentDetails[AssessmentDefinedParams.IsClinicTaken] as String
                 otherAssessmentDetails[AssessmentDefinedParams.IsClinicTaken] =
-                    (isTakenToClinical == "Yes")
+                    (isTakenToClinical.equals(DefinedParams.Yes,true))
             }
 
             assessmentRepository.updateOtherAssessmentDetails(

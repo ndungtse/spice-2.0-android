@@ -28,8 +28,6 @@ import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.Amoxicillin
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.AssessmentNotes
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.Dispensed
-import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.OtherSymptoms
-import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.Summary
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.hasFever
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.otherConcerningSymptoms
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.otherSymptoms
@@ -302,7 +300,7 @@ class AssessmentOtherSymptomSummaryFragment : Fragment(), View.OnClickListener {
         var yearMonthDate: Triple<Int?, Int?, Int?>? = null
         if (!binding.etNextFollowUpDate.text.isNullOrBlank())
             yearMonthDate =
-                DateUtils.convertddMMMToddMM(binding.etNextFollowUpDate.text.toString())
+                DateUtils.convertedMMMToddMM(binding.etNextFollowUpDate.text.toString())
         if (datePickerDialog == null) {
             datePickerDialog = ViewUtils.showDatePicker(
                 context = requireContext(),

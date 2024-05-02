@@ -7,5 +7,9 @@ enum class ReferralReasons {
     Malaria,
     Symptoms,
     Diarrhoea,
-    MUAC
+    MUAC,
+    ANCSigns,
+    PNCMotherSigns,
+    childhoodVisitSigns,
+    PNCNeonateSigns
 }

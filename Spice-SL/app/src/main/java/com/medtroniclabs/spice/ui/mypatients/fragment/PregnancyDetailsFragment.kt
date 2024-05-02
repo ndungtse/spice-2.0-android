@@ -414,7 +414,7 @@ class PregnancyDetailsFragment : BaseFragment(), View.OnClickListener {
         var yearMonthDate: Triple<Int?, Int?, Int?>? = null
         if (!textView.text.isNullOrBlank())
             yearMonthDate =
-                DateUtils.convertddMMMToddMM(textView.text.toString())
+                DateUtils.convertedMMMToddMM(textView.text.toString())
         if (datePickerDialog == null) {
             datePickerDialog = ViewUtils.showDatePicker(
                 context = requireContext(),

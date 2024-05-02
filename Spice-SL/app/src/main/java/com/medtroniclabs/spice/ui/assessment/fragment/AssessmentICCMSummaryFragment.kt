@@ -423,7 +423,7 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
         var yearMonthDate: Triple<Int?, Int?, Int?>? = null
         if (!binding.etNextFollowUpDate.text.isNullOrBlank())
             yearMonthDate =
-                DateUtils.convertddMMMToddMM(binding.etNextFollowUpDate.text.toString())
+                DateUtils.convertedMMMToddMM(binding.etNextFollowUpDate.text.toString())
         if (datePickerDialog == null) {
             datePickerDialog = ViewUtils.showDatePicker(
                 context = requireContext(),

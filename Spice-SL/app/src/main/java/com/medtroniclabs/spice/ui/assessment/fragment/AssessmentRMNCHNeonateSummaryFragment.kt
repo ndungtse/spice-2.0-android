@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
@@ -20,6 +21,7 @@ import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.assessment.AssessmentCommonUtils
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
+import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.getValueFromMap
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentRMNCHNeonateViewModel
@@ -60,6 +62,7 @@ class AssessmentRMNCHNeonateSummaryFragment : BaseFragment(), View.OnClickListen
                     binding.motherParentLayout,
                     viewModel.formLayoutsLiveData.value
                 )
+                showNextFollowUpDate(map)
             }
             if (map.containsKey(RMNCH.PNCNeonatal)) {
                 showSummaryDetail(
@@ -69,8 +72,33 @@ class AssessmentRMNCHNeonateSummaryFragment : BaseFragment(), View.OnClickListen
                     assessmentRMNCHNeonateViewModel.formLayoutsLiveData.value
                 )
             }
+            updateStatusBar()
         }
     }
+
+
+    private fun updateStatusBar() {
+        when (assessmentRMNCHNeonateViewModel.referralStatus) {
+            ReferralStatus.Referred.name -> {
+                binding.riskResultLayout.backgroundTintList =
+                    ContextCompat.getColorStateList(requireContext(), R.color.attention_color)
+                binding.riskResultLayout.text = getString(R.string.referred_for_further_assessment)
+            }
+
+            ReferralStatus.OnTreatment.name -> {
+                binding.riskResultLayout.backgroundTintList =
+                    ContextCompat.getColorStateList(requireContext(), R.color.red_risk_moderate)
+                binding.riskResultLayout.text = getString(R.string.patient_on_treatment)
+            }
+
+            else -> {
+                binding.riskResultLayout.backgroundTintList =
+                    ContextCompat.getColorStateList(requireContext(), R.color.green_attention_color)
+                binding.riskResultLayout.text = getString(R.string.no_refferral_treatment_required)
+            }
+        }
+    }
+
 
     private fun setListener() {
         binding.btnDone.safeClickListener(this)
@@ -168,7 +196,7 @@ class AssessmentRMNCHNeonateSummaryFragment : BaseFragment(), View.OnClickListen
         var yearMonthDate: Triple<Int?, Int?, Int?>? = null
         if (!binding.etNextFollowUpDate.text.isNullOrBlank())
             yearMonthDate =
-                DateUtils.convertddMMMToddMM(binding.etNextFollowUpDate.text.toString())
+                DateUtils.convertedMMMToddMM(binding.etNextFollowUpDate.text.toString())
         if (datePickerDialog == null) {
             datePickerDialog = ViewUtils.showDatePicker(
                 context = requireContext(),
@@ -197,6 +225,27 @@ class AssessmentRMNCHNeonateSummaryFragment : BaseFragment(), View.OnClickListen
                     DateUtils.DATE_ddMMyyyy,
                     DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
                 )
+        }
+    }
+
+    private fun showNextFollowUpDate(map: Map<*, *>?) {
+        map?.let {
+            if (it.containsKey(RMNCH.PNC)) {
+                val map  = it[RMNCH.PNC] as Map<*, *>? ?: return
+                if (map.containsKey(RMNCH.DateOfDelivery)) {
+                    val dateOfDelivery = map[RMNCH.DateOfDelivery] as String
+                    DateUtils.convertStringToDate(
+                        dateOfDelivery,
+                        DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
+                    )?.let { deliveryDate ->
+                        RMNCH.calculateNextPNCVisitDate(deliveryDate)?.let { visitDate ->
+                            binding.etNextFollowUpDate.text = DateUtils.getDateStringFromDate(
+                                visitDate, DateUtils.DATE_ddMMyyyy
+                            )
+                        }
+                    }
+                }
+            }
         }
     }
 }

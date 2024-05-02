@@ -1,6 +1,7 @@
 package com.medtroniclabs.spice.ui.assessment.referrallogic
 
 import com.medtroniclabs.spice.common.DateUtils
+import com.medtroniclabs.spice.formgeneration.config.DefinedParams
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.NoSymptoms
 import com.medtroniclabs.spice.model.assessment.AssessmentMemberDetails
 import com.medtroniclabs.spice.ui.assessment.AssessmentCommonUtils.getListActual
@@ -19,7 +20,6 @@ import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefined
 import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefinedParams.DiarrhoeaSigns
 import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefinedParams.HasFever
 import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefinedParams.IsBloodyDiarrhoea
-import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefinedParams.hasDiarrhoea
 import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefinedParams.MaxDaysCough
 import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefinedParams.MaxDaysOfDiarrhoea
 import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefinedParams.MaxDaysOfFever
@@ -38,6 +38,7 @@ import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefined
 import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefinedParams.Yes
 import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefinedParams.ZincDispensedStatus
 import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefinedParams.hasCough
+import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefinedParams.hasDiarrhoea
 import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefinedParams.hasOedemaOfBothFeet
 import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefinedParams.isBreastfeed
 import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefinedParams.isConvulsionPastFewDays
@@ -46,13 +47,16 @@ import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefined
 import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefinedParams.muacCode
 import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralReasons
 import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
+import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
 
 class ReferralResultGenerator {
 
     private var patientStatus = HashMap<String, Any>()
     private val referralReason = arrayListOf<String>()
 
-    fun calculateIccmReferralResult(map: HashMap<String, Any>, memberDetails: AssessmentMemberDetails?) : Pair<String?, ArrayList<String>>{
+    fun calculateIccmReferralResult(
+        map: HashMap<String, Any>, memberDetails: AssessmentMemberDetails?
+    ): Pair<String?, ArrayList<String>> {
         calculateDangerSignsResult(map)
         calculateNutritionalStatusResult(map)
         calculateCoughStatus(map, memberDetails)
@@ -61,12 +65,43 @@ class ReferralResultGenerator {
         return Pair(checkStatus(), referralReason)
     }
 
+    fun calculateRMNCHReferralResult(map: HashMap<String, Any>): Pair<String?, ArrayList<String>> {
+        if (map.containsKey(RMNCH.ANC)) {
+            findSignListByWorkflow(RMNCH.ANC, map, RMNCH.ancSigns, ReferralReasons.ANCSigns.name)
+        }else if (map.containsKey(RMNCH.ChildHoodVisit)) {
+            findSignListByWorkflow(RMNCH.ChildHoodVisit,map,RMNCH.childhoodVisitSigns,ReferralReasons.childhoodVisitSigns.name)
+        }else {
+            findSignListByWorkflow(RMNCH.PNC,map,RMNCH.pncMotherSigns,ReferralReasons.PNCMotherSigns.name)
+            findSignListByWorkflow(RMNCH.PNCNeonatal,map,RMNCH.pncNeonateSigns,ReferralReasons.PNCNeonateSigns.name)
+        }
+        return Pair(checkStatus(), referralReason)
+    }
+
+    private fun findSignListByWorkflow(
+        workflow: String,
+        map: HashMap<String, Any>,
+        signType: String,
+        referralReasonName: String
+    ) {
+        val workflowMap = map[workflow]
+        if (workflowMap is Map<*, *> && workflowMap.containsKey(signType)) {
+            val ancList = workflowMap[signType]
+            if (ancList is ArrayList<*> && ancList.size > 0) {
+                if (!(ancList.any { (it as Map<*, *>)[DefinedParams.NAME] == NoSymptoms })) {
+                    addResultMap(referralReasonName, ReferralStatus.Referred.name)
+                    addReferralReason(referralReason, referralReasonName)
+                }
+            }
+        }
+
+    }
+
     private fun formatDiarrhoeaSigns(map: HashMap<String, Any>) {
         if (map.containsKey(DiarrhoeaSigns) && map[DiarrhoeaSigns] is List<*>) {
             val signsList = mutableListOf<String>()
             val list = map[DiarrhoeaSigns] as List<*>
             list.forEach { it ->
-                if (it is HashMap<*,*>) {
+                if (it is HashMap<*, *>) {
                     signsList.add(it["name"] as String)
                 }
             }
@@ -74,7 +109,7 @@ class ReferralResultGenerator {
         }
     }
 
-    fun calculateOtherSymptomsReferralResult(map: HashMap<String, Any>) : Pair<String?, ArrayList<String>>{
+    fun calculateOtherSymptomsReferralResult(map: HashMap<String, Any>): Pair<String?, ArrayList<String>> {
         calculateSymptomsStatus(map, otherSymptoms)
         calculateFeverStatus(map, ReferralReasons.Fever.name)
         return Pair(checkStatus(), referralReason)
@@ -85,7 +120,7 @@ class ReferralResultGenerator {
             val signsList = mutableListOf<String>()
             val list = map[otherSymptoms] as List<*>
             list.forEach { it ->
-                if (it is HashMap<*,*>) {
+                if (it is HashMap<*, *>) {
                     signsList.add(it["name"] as String)
                 }
             }
@@ -104,10 +139,14 @@ class ReferralResultGenerator {
      * If any of the signs is true, then the patient status is referred
      */
     private fun calculateDangerSignsResult(map: HashMap<String, Any>) {
-        val generalDangerSignsList = listOf(isUnusualSleepy, isConvulsionPastFewDays, isVomiting, isBreastfeed)
-        for(key in generalDangerSignsList) {
+        val generalDangerSignsList =
+            listOf(isUnusualSleepy, isConvulsionPastFewDays, isVomiting, isBreastfeed)
+        for (key in generalDangerSignsList) {
             if (map.containsKey(key) && ((map[key] is Boolean && map[key] == true) || map[key] is String && map[key] == Yes)) {
-                addResultMap(ReferralReasons.GeneralDangerSigns.name.lowercase(), ReferralStatus.Referred.name)
+                addResultMap(
+                    ReferralReasons.GeneralDangerSigns.name.lowercase(),
+                    ReferralStatus.Referred.name
+                )
                 addReferralReason(referralReason, ReferralReasons.GeneralDangerSigns.name)
                 break
             }
@@ -126,10 +165,7 @@ class ReferralResultGenerator {
                 addResultMap(ReferralReasons.MUAC.name.lowercase(), ReferralStatus.Referred.name)
                 addReferralReason(referralReason, ReferralReasons.MUAC.name)
             }
-            if (map.containsKey(hasOedemaOfBothFeet) &&
-                ((map[hasOedemaOfBothFeet] is String && map[hasOedemaOfBothFeet] == Yes) ||
-                        (map[hasOedemaOfBothFeet] is Boolean && map[hasOedemaOfBothFeet] == true))
-            ) {
+            if (map.containsKey(hasOedemaOfBothFeet) && ((map[hasOedemaOfBothFeet] is String && map[hasOedemaOfBothFeet] == Yes) || (map[hasOedemaOfBothFeet] is Boolean && map[hasOedemaOfBothFeet] == true))) {
                 addResultMap(ReferralReasons.MUAC.name.lowercase(), ReferralStatus.Referred.name)
                 addReferralReason(referralReason, ReferralReasons.MUAC.name)
             }
@@ -145,36 +181,46 @@ class ReferralResultGenerator {
      *  3. If patient has Fast breathing & Amoxicillin is Dispensed, then patientStatus is on-treatment
      */
     private fun calculateCoughStatus(
-        map: HashMap<String, Any>,
-        memberDetails: AssessmentMemberDetails?
+        map: HashMap<String, Any>, memberDetails: AssessmentMemberDetails?
     ) {
         if (map.containsKey(hasCough)) {
-            if ((map[hasCough] is String && map[hasCough] == Yes) ||
-                (map[hasCough] is Boolean && map[hasCough] == true)
-            ) {
-                if (map.containsKey(NoOfDaysOfCough) && map[NoOfDaysOfCough] is Int){
+            if ((map[hasCough] is String && map[hasCough] == Yes) || (map[hasCough] is Boolean && map[hasCough] == true)) {
+                if (map.containsKey(NoOfDaysOfCough) && map[NoOfDaysOfCough] is Int) {
                     val noOfDays = map[NoOfDaysOfCough] as Int
-                    if (noOfDays >= MaxDaysCough){
-                        addResultMap(ReferralReasons.Pneumonia.name.lowercase(), ReferralStatus.Referred.name)
+                    if (noOfDays >= MaxDaysCough) {
+                        addResultMap(
+                            ReferralReasons.Pneumonia.name.lowercase(), ReferralStatus.Referred.name
+                        )
                         addReferralReason(referralReason, ReferralReasons.Pneumonia.name)
-                    }else{
-                        if (map.containsKey(ChestInDrawing) && ((map[ChestInDrawing] is String && map[ChestInDrawing] == Yes) ||
-                                    (map[ChestInDrawing] is Boolean && map[ChestInDrawing] == true))
-                        ) {
-                            addResultMap(ReferralReasons.Pneumonia.name.lowercase(), ReferralStatus.Referred.name)
+                    } else {
+                        if (map.containsKey(ChestInDrawing) && ((map[ChestInDrawing] is String && map[ChestInDrawing] == Yes) || (map[ChestInDrawing] is Boolean && map[ChestInDrawing] == true))) {
+                            addResultMap(
+                                ReferralReasons.Pneumonia.name.lowercase(),
+                                ReferralStatus.Referred.name
+                            )
                             addReferralReason(referralReason, ReferralReasons.Pneumonia.name)
                         }
-                        if (map.containsKey(BreathPerMinute) && map[BreathPerMinute] is Int){
+                        if (map.containsKey(BreathPerMinute) && map[BreathPerMinute] is Int) {
                             val bpmValue = map[BreathPerMinute] as Int
                             memberDetails?.let { details ->
                                 DateUtils.dateToMonths(details.dateOfBirth).let { month ->
                                     month?.let {
                                         if ((month in 3..11) && bpmValue >= 50) {
-                                            addResultMap(ReferralReasons.Pneumonia.name.lowercase(), getMedicationStatus(map, Amoxicillin))
-                                            addReferralReason(referralReason, ReferralReasons.Pneumonia.name)
+                                            addResultMap(
+                                                ReferralReasons.Pneumonia.name.lowercase(),
+                                                getMedicationStatus(map, Amoxicillin)
+                                            )
+                                            addReferralReason(
+                                                referralReason, ReferralReasons.Pneumonia.name
+                                            )
                                         } else if (month in 12..60 && bpmValue >= 45) {
-                                            addResultMap(ReferralReasons.Pneumonia.name.lowercase(), getMedicationStatus(map, Amoxicillin))
-                                            addReferralReason(referralReason, ReferralReasons.Pneumonia.name)
+                                            addResultMap(
+                                                ReferralReasons.Pneumonia.name.lowercase(),
+                                                getMedicationStatus(map, Amoxicillin)
+                                            )
+                                            addReferralReason(
+                                                referralReason, ReferralReasons.Pneumonia.name
+                                            )
                                         }
                                     }
                                 }
@@ -197,9 +243,7 @@ class ReferralResultGenerator {
      */
     private fun calculateFeverStatus(map: HashMap<String, Any>, referralKey: String) {
         if (map.containsKey(HasFever)) {
-            if ((map[HasFever] is String && map[HasFever] == Yes) ||
-                (map[HasFever] is Boolean && map[HasFever] == true)
-            ) {
+            if ((map[HasFever] is String && map[HasFever] == Yes) || (map[HasFever] is Boolean && map[HasFever] == true)) {
                 if (map.containsKey(Temperature) && map[Temperature] is Double && (map[Temperature] as Double) >= MaxTemperature) {
                     addResultMap(referralKey.lowercase(), ReferralStatus.Referred.name)
                     addReferralReason(referralReason, referralKey)
@@ -213,7 +257,7 @@ class ReferralResultGenerator {
                         if (map.containsKey(RdtTest) && map[RdtTest] == RdtPositive) {
                             addResultMap(referralKey.lowercase(), getMedicationStatus(map, ACT))
                             addReferralReason(referralReason, referralKey)
-                        } else if (map.containsKey(RdtTest) && (map[RdtTest] == RdtNegative ||  map[RdtTest] == NA)) {
+                        } else if (map.containsKey(RdtTest) && (map[RdtTest] == RdtNegative || map[RdtTest] == NA)) {
                             addResultMap(referralKey.lowercase(), ReferralStatus.Referred.name)
                             addReferralReason(referralReason, referralKey)
                         }
@@ -234,32 +278,47 @@ class ReferralResultGenerator {
      */
     private fun calculateDiarrhoeaStatus(map: HashMap<String, Any>) {
         if (map.containsKey(hasDiarrhoea)) {
-            if ((map[hasDiarrhoea] is String && map[hasDiarrhoea] == Yes) ||
-                (map[hasDiarrhoea] is Boolean && map[hasDiarrhoea] == true)
-            ) {
-                if (map.containsKey(IsBloodyDiarrhoea) && ((map[IsBloodyDiarrhoea] is String && map[IsBloodyDiarrhoea] == Yes) ||
-                            (map[IsBloodyDiarrhoea] is Boolean && map[IsBloodyDiarrhoea] == true))
-                ) {
-                    addResultMap(ReferralReasons.Diarrhoea.name.lowercase(), ReferralStatus.Referred.name)
+            if ((map[hasDiarrhoea] is String && map[hasDiarrhoea] == Yes) || (map[hasDiarrhoea] is Boolean && map[hasDiarrhoea] == true)) {
+                if (map.containsKey(IsBloodyDiarrhoea) && ((map[IsBloodyDiarrhoea] is String && map[IsBloodyDiarrhoea] == Yes) || (map[IsBloodyDiarrhoea] is Boolean && map[IsBloodyDiarrhoea] == true))) {
+                    addResultMap(
+                        ReferralReasons.Diarrhoea.name.lowercase(), ReferralStatus.Referred.name
+                    )
                     addReferralReason(referralReason, ReferralReasons.Diarrhoea.name)
                 }
                 if (map.containsKey(NoOfDaysOfDiarrhoea) && map[NoOfDaysOfDiarrhoea] is Int) {
                     val noOfDays = map[NoOfDaysOfDiarrhoea] as Int
                     if (noOfDays >= MaxDaysOfDiarrhoea) {
-                        addResultMap(ReferralReasons.Diarrhoea.name.lowercase(), ReferralStatus.Referred.name)
+                        addResultMap(
+                            ReferralReasons.Diarrhoea.name.lowercase(), ReferralStatus.Referred.name
+                        )
                         addReferralReason(referralReason, ReferralReasons.Diarrhoea.name)
                     } else {
                         if ((map.containsKey(DiarrhoeaSigns) && map[DiarrhoeaSigns] is ArrayList<*>)) {
-                            addResultMap(ReferralReasons.Diarrhoea.name.lowercase(), getDiarrhoeaSignsStatus(map[DiarrhoeaSigns]))
-                            if (patientStatus.containsKey(Diarrhoea) && patientStatus[Diarrhoea] == ReferralStatus.Referred.name)
-                                addReferralReason(referralReason, ReferralReasons.Diarrhoea.name)
+                            addResultMap(
+                                ReferralReasons.Diarrhoea.name.lowercase(),
+                                getDiarrhoeaSignsStatus(map[DiarrhoeaSigns])
+                            )
+                            if (patientStatus.containsKey(Diarrhoea) && patientStatus[Diarrhoea] == ReferralStatus.Referred.name) addReferralReason(
+                                referralReason,
+                                ReferralReasons.Diarrhoea.name
+                            )
                         } else if ((map.containsKey(OrsDispensedStatus) && map[OrsDispensedStatus] == NA) || (map.containsKey(
-                                ZincDispensedStatus) && map[ZincDispensedStatus] == NA)) {
-                            addResultMap(ReferralReasons.Diarrhoea.name.lowercase(), ReferralStatus.Referred.name)
+                                ZincDispensedStatus
+                            ) && map[ZincDispensedStatus] == NA)
+                        ) {
+                            addResultMap(
+                                ReferralReasons.Diarrhoea.name.lowercase(),
+                                ReferralStatus.Referred.name
+                            )
                             addReferralReason(referralReason, ReferralReasons.Diarrhoea.name)
                         } else if ((map.containsKey(OrsDispensedStatus) && map[OrsDispensedStatus] == Dispensed) && (map.containsKey(
-                                ZincDispensedStatus) && map[ZincDispensedStatus] == Dispensed)) {
-                            addResultMap(ReferralReasons.Diarrhoea.name.lowercase(), ReferralStatus.OnTreatment.name)
+                                ZincDispensedStatus
+                            ) && map[ZincDispensedStatus] == Dispensed)
+                        ) {
+                            addResultMap(
+                                ReferralReasons.Diarrhoea.name.lowercase(),
+                                ReferralStatus.OnTreatment.name
+                            )
                             addReferralReason(referralReason, ReferralReasons.Diarrhoea.name)
                         }
                     }
@@ -269,8 +328,14 @@ class ReferralResultGenerator {
     }
 
     private fun getDiarrhoeaSignsStatus(value: Any?): String? {
-        var status:String? = null
-        val signsList = listOf(SunkenEyes.lowercase(), NoTearsWhenCrying.lowercase(), LittleOrNoUrine.lowercase(), SkinPinch.lowercase(), VeryThirsty.lowercase())
+        var status: String? = null
+        val signsList = listOf(
+            SunkenEyes.lowercase(),
+            NoTearsWhenCrying.lowercase(),
+            LittleOrNoUrine.lowercase(),
+            SkinPinch.lowercase(),
+            VeryThirsty.lowercase()
+        )
         val selectedSignsList = ArrayList<String>()
         if (value is ArrayList<*>) {
             value.forEach { map ->
@@ -289,8 +354,7 @@ class ReferralResultGenerator {
     }
 
     private fun addReferralReason(referralReason: ArrayList<String>, key: String) {
-        if (!referralReason.contains(key))
-            referralReason.add(key)
+        if (!referralReason.contains(key)) referralReason.add(key)
     }
 
     /**
@@ -300,17 +364,17 @@ class ReferralResultGenerator {
      * 3. Else it will be null
      */
     private fun getMedicationStatus(map: HashMap<String, Any>, key: String): String? {
-       val status = if (map.containsKey(key) && map[key] is String){
-           if ( map[key] == NA){
-               ReferralStatus.Referred.name
-           }else if (map[key] == Dispensed){
-               ReferralStatus.OnTreatment.name
-           } else {
-               null
-           }
-       } else {
-           null
-       }
+        val status = if (map.containsKey(key) && map[key] is String) {
+            if (map[key] == NA) {
+                ReferralStatus.Referred.name
+            } else if (map[key] == Dispensed) {
+                ReferralStatus.OnTreatment.name
+            } else {
+                null
+            }
+        } else {
+            null
+        }
         return status
     }
 

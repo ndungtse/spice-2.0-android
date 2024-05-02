@@ -144,14 +144,7 @@ object CommonUtils {
 
     fun getAgeFromDob(dateOfBirth: String?, month: String): String {
         if (dateOfBirth != null) {
-            val ageTriplet = DateUtils.getYearMonthAndDate(
-                dateOfBirth, SimpleDateFormat(
-                    DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-                    Locale.ENGLISH
-                )
-            )
-            val year = ageTriplet.first
-            val age = year?.let { DateUtils.calculateAge(it) }
+            val age  = calculateAge(dateOfBirth)
             return if (age != null && age > 5) {
                 "$age"
             } else {
@@ -170,6 +163,17 @@ object CommonUtils {
         } else {
             return ""
         }
+    }
+
+    private fun calculateAge(dateOfBirth: String): Int? {
+        val ageTriplet = DateUtils.getYearMonthAndDate(
+            dateOfBirth, SimpleDateFormat(
+                DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+                Locale.ENGLISH
+            )
+        )
+        val year = ageTriplet.first
+        return year?.let { DateUtils.calculateAge(it) }
     }
 
     fun getGenderText(gender: String, context: Context): String {

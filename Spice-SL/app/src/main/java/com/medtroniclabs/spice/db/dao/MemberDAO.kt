@@ -4,7 +4,6 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.medtroniclabs.spice.data.LastCreatedAtAndPatientId
 import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
 import com.medtroniclabs.spice.model.MemberDobGenderModel
 import com.medtroniclabs.spice.model.assessment.AssessmentMemberDetails
@@ -23,7 +22,7 @@ interface MemberDAO {
     suspend fun getMemberDetailsById(memberId: Long): HouseholdMemberEntity
 
     @Query("SELECT * FROM HouseHoldMember WHERE parentId = :memberId")
-    suspend fun getMemberDetailsByParentId(memberId: Long): List<HouseholdMemberEntity>
+    suspend fun getMemberDetailsByParentId(memberId: String): List<HouseholdMemberEntity>
 
     @Query("SELECT COUNT(household_id) FROM HouseHoldMember WHERE household_id = :householdId")
     suspend fun getMemberCountPerHouseHold(householdId: Long): Int

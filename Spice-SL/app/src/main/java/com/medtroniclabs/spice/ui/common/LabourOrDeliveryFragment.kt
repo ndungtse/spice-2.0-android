@@ -120,7 +120,7 @@ class LabourOrDeliveryFragment : BaseFragment() {
         var yearMonthDate: Triple<Int?, Int?, Int?>? = null
         if (textView.text.toString().isNotEmpty())
             yearMonthDate =
-                DateUtils.convertddMMMToddMM(textView.text.toString())
+                DateUtils.convertedMMMToddMM(textView.text.toString())
         if (datePickerDialog == null) {
             datePickerDialog = ViewUtils.showDatePicker(
                 requireContext(),

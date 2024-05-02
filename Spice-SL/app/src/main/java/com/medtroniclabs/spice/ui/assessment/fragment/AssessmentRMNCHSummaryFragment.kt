@@ -5,10 +5,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.DateUtils
+import com.medtroniclabs.spice.common.DateUtils.calculateAgeInMonths
+import com.medtroniclabs.spice.common.DateUtils.convertStringToDate
+import com.medtroniclabs.spice.common.DateUtils.getDateStringFromDate
 import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.common.ViewUtils
 import com.medtroniclabs.spice.databinding.FragmentRmnchSummaryBinding
@@ -17,7 +21,9 @@ import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.assessment.AssessmentCommonUtils
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
+import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
+import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.childHoodVisitMaxMonth
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.getValueFromMap
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
 
@@ -40,16 +46,37 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initSummaryViewByWorkFlowName()
         setListener()
+        initSummaryViewByWorkFlowName()
     }
 
     private fun setListener() {
         binding.btnDone.safeClickListener(this)
         binding.etNextFollowUpDate.safeClickListener(this)
-
         binding.etNextFollowUpDate.addTextChangedListener {
             binding.btnDone.isEnabled = !it.isNullOrEmpty()
+        }
+    }
+
+    private fun updateStatusBar() {
+        when (viewModel.referralStatus) {
+            ReferralStatus.Referred.name -> {
+                binding.riskResultLayout.backgroundTintList =
+                    ContextCompat.getColorStateList(requireContext(), R.color.attention_color)
+                binding.riskResultLayout.text = getString(R.string.referred_for_further_assessment)
+            }
+
+            ReferralStatus.OnTreatment.name -> {
+                binding.riskResultLayout.backgroundTintList =
+                    ContextCompat.getColorStateList(requireContext(), R.color.red_risk_moderate)
+                binding.riskResultLayout.text = getString(R.string.patient_on_treatment)
+            }
+
+            else -> {
+                binding.riskResultLayout.backgroundTintList =
+                    ContextCompat.getColorStateList(requireContext(), R.color.green_attention_color)
+                binding.riskResultLayout.text = getString(R.string.no_refferral_treatment_required)
+            }
         }
     }
 
@@ -61,6 +88,7 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
             viewModel.formLayoutsLiveData.value?.data?.formLayout?.filter { it.isSummary == true }
                 ?.forEach { data ->
                     with(data) {
+                        updateStatusBar()
                         binding.parentLayout.addView(
                             AssessmentCommonUtils.addViewSummaryLayout(
                                 titleSummary ?: (titleCulture ?: title),
@@ -70,7 +98,11 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
                                     viewType,
                                     viewModel.workflowName,
                                     isBooleanAnswer,
-                                    Triple(getString(R.string.yes),getString(R.string.no),getString(R.string.hyphen_symbol))
+                                    Triple(
+                                        getString(R.string.yes),
+                                        getString(R.string.no),
+                                        getString(R.string.hyphen_symbol)
+                                    )
                                 ),
                                 null,
                                 requireContext()
@@ -100,12 +132,50 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
                         ViewType.VIEW_TYPE_FORM_EDITTEXT,
                         viewModel.workflowName,
                         false,
-                        Triple(getString(R.string.yes),getString(R.string.no),getString(R.string.hyphen_symbol))
+                        Triple(
+                            getString(R.string.yes),
+                            getString(R.string.no),
+                            getString(R.string.hyphen_symbol)
+                        )
                     ),
                     null,
                     requireContext()
                 )
             )
+            if (map.containsKey(viewModel.workflowName)) {
+                val ancMap = map[viewModel.workflowName] as Map<*, *>
+                if (ancMap.containsKey(RMNCH.lastMenstrualPeriod)) {
+                    val lmp = ancMap[RMNCH.lastMenstrualPeriod] as String
+                    convertStringToDate(
+                        lmp,
+                        DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
+                    )?.let { lmpDate ->
+                        RMNCH.calculateNextANCVisitDate(
+                            lmpDate
+                        )?.let {visitDate ->
+                            binding.etNextFollowUpDate.text = getDateStringFromDate(
+                                visitDate, DateUtils.DATE_ddMMyyyy
+                            )
+                        }
+
+                    }
+                }
+            }
+        } else if (viewModel.workflowName == RMNCH.ChildHoodVisit) {
+            viewModel.memberDetailsLiveData.value?.data?.dateOfBirth?.let {
+                calculateAgeInMonths(it)?.let { pair ->
+                    if (pair.first <= childHoodVisitMaxMonth) {
+                        RMNCH.calculateNextChildHoodVisitDate(
+                            age = pair.first,
+                            birthDate = pair.second
+                        )?.let {visitDate ->
+                            binding.etNextFollowUpDate.text = getDateStringFromDate(
+                                visitDate, DateUtils.DATE_ddMMyyyy
+                            )
+                        }
+                    }
+                }
+            }
         }
 
         binding.parentLayout.addView(
@@ -117,7 +187,11 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
                     ViewType.VIEW_TYPE_FORM_EDITTEXT,
                     viewModel.workflowName,
                     false,
-                    Triple(getString(R.string.yes),getString(R.string.no),getString(R.string.hyphen_symbol))
+                    Triple(
+                        getString(R.string.yes),
+                        getString(R.string.no),
+                        getString(R.string.hyphen_symbol)
+                    )
                 ),
                 null,
                 requireContext()
@@ -135,7 +209,7 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
         when (v.id) {
             R.id.btnDone -> {
                 if (binding.etNextFollowUpDate.text.isNotEmpty()) {
-                   // viewModel.addOtherDetailsToType(AssessmentDefinedParams.RMNCH.lowercase())
+                    updateFollowUpDate(binding.etNextFollowUpDate.text.trim().toString())
                     viewModel.updateOtherAssessmentDetails()
                 }
             }
@@ -150,7 +224,7 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
         var yearMonthDate: Triple<Int?, Int?, Int?>? = null
         if (!binding.etNextFollowUpDate.text.isNullOrBlank())
             yearMonthDate =
-                DateUtils.convertddMMMToddMM(binding.etNextFollowUpDate.text.toString())
+                DateUtils.convertedMMMToddMM(binding.etNextFollowUpDate.text.toString())
         if (datePickerDialog == null) {
             datePickerDialog = ViewUtils.showDatePicker(
                 context = requireContext(),

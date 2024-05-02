@@ -294,7 +294,7 @@ class AboveFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
         var yearMonthDate: Triple<Int?, Int?, Int?>? = null
         if (!binding.tvNextMedicalReviewLabelText.text.isNullOrBlank())
             yearMonthDate =
-                DateUtils.convertddMMMToddMM(binding.tvNextMedicalReviewLabelText.text.toString())
+                DateUtils.convertedMMMToddMM(binding.tvNextMedicalReviewLabelText.text.toString())
 
         if (datePickerDialog == null) {
             datePickerDialog = showDatePicker(

@@ -24,6 +24,7 @@ import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.MenuConstants
 import com.medtroniclabs.spice.ui.assessment.AssessmentActivity
+import com.medtroniclabs.spice.ui.assessment.referrallogic.ReferralResultGenerator
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.Miscarriage
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.PlaceOfDelivery
@@ -246,7 +247,9 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
                     }
                     calculateGestationalAge(second, name)
                     checkForOtherMetrics(second, name)
-                    viewModel.saveAssessment(second, null, getMenuName(viewModel.workflowName))
+                    val resultGenerator = ReferralResultGenerator()
+                    val referralResult = resultGenerator.calculateRMNCHReferralResult(second)
+                    viewModel.saveAssessment(second, referralResult, getMenuName(viewModel.workflowName))
                 }
             }
         }

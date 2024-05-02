@@ -13,6 +13,7 @@ import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
 import java.util.concurrent.TimeUnit
+import kotlin.math.abs
 
 object DateUtils {
 
@@ -22,7 +23,10 @@ object DateUtils {
     const val DATE_FORMAT_yyyyMMddHHmmssZZZZZ = "yyyy-MM-dd'T'HH:mm:ssZZZZZ"
     const val DATE_FORMAT_ddMMMyyyy = "dd MMM, yyyy"
 
-    fun getYearMonthAndWeek(inputDate: String, inputFormat: String = DATE_FORMAT_ddMMyyyy ): Triple<Int?, Int?, Int?> {
+    fun getYearMonthAndWeek(
+        inputDate: String,
+        inputFormat: String = DATE_FORMAT_ddMMyyyy
+    ): Triple<Int?, Int?, Int?> {
         try {
             val dateFormat = SimpleDateFormat(inputFormat, Locale.getDefault())
             val birthDate = dateFormat.parse(inputDate)
@@ -106,6 +110,19 @@ object DateUtils {
         return currentYear - birthYear
     }
 
+    fun calculateAgeInMonths(birthDateString: String): Pair<Int, Date>? {
+        val startDate = formatStringToDate(
+            birthDateString, SimpleDateFormat(
+                DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+                Locale.ENGLISH
+            )
+        )
+        startDate?.let {
+           return Pair(calculateAgeInMonths(it),it)
+        }
+        return null
+    }
+
     fun calculateAgeInMonths(startDate: Date): Int {
         val endDate = Calendar.getInstance().time
         val period = Period(startDate.time, endDate.time, PeriodType.months())
@@ -154,13 +171,13 @@ object DateUtils {
                         userTimeZone = getUTCFormat()
                     }
                     val sdfInput = SimpleDateFormat(inputFormat, Locale.ENGLISH)
-                    userTimeZone?.let {timeZone ->
+                    userTimeZone?.let { timeZone ->
                         sdfInput.timeZone = timeZone
                     }
                     val date = sdfInput.parse(it)
                     date?.let {
                         val sdfOutput = SimpleDateFormat(outputFormat, Locale.ENGLISH)
-                        userTimeZone?.let {timeZone ->
+                        userTimeZone?.let { timeZone ->
                             sdfOutput.timeZone = timeZone
                         }
                         return sdfOutput.format(date)
@@ -189,7 +206,7 @@ object DateUtils {
         return TimeZone.getTimeZone("GMT+00:00")
     }
 
-    fun convertddMMMToddMM(inputDate: String): Triple<Int?, Int?, Int?> {
+    fun convertedMMMToddMM(inputDate: String): Triple<Int?, Int?, Int?> {
         return try {
             val inputFormat = SimpleDateFormat(DATE_ddMMyyyy, Locale.ENGLISH)
             val outputFormat = SimpleDateFormat(DATE_ddMMyyyy, Locale.ENGLISH)
@@ -199,6 +216,7 @@ object DateUtils {
             Triple(null, null, null)
         }
     }
+
     fun convertDateFormat(
         inputDateString: String,
         inputDateFormat: String,
@@ -231,9 +249,12 @@ object DateUtils {
         }
     }
 
-    fun calculateAge(birthDateString: String, givenFormat: String = DATE_FORMAT_yyyyMMddHHmmssZZZZZ): Int {
-       return try {
-           val yearConvert = 1000L * 60 * 60 * 24 * 365.25
+    fun calculateAge(
+        birthDateString: String,
+        givenFormat: String = DATE_FORMAT_yyyyMMddHHmmssZZZZZ
+    ): Int {
+        return try {
+            val yearConvert = 1000L * 60 * 60 * 24 * 365.25
             val dateFormat = SimpleDateFormat(givenFormat, Locale.getDefault())
             val birthDate = dateFormat.parse(birthDateString)
             val today = Calendar.getInstance().time
@@ -268,10 +289,39 @@ object DateUtils {
         return estimatedDeliveryDate
     }
 
-    fun getCurrentDateAndTime(format: String):String {
+    fun getCurrentDateAndTime(format: String): String {
         val currentDateTime = ZonedDateTime.now(ZoneId.systemDefault())
         val formatter = DateTimeFormatter.ofPattern(format)
         return currentDateTime.format(formatter)
+    }
+
+    fun addDaysToDate(date: Date, days: Int): Date {
+        val calendar = Calendar.getInstance()
+        calendar.time = date
+        calendar.add(Calendar.DAY_OF_MONTH, days)
+        return calendar.time
+    }
+
+    fun addMonthsToDate(date: Date, months: Int): Date {
+        val calendar = Calendar.getInstance()
+        calendar.time = date
+        calendar.add(Calendar.MONTH, months)
+        return calendar.time
+    }
+
+    fun convertStringToDate(dateString: String, format: String): Date? {
+        val dateFormat = SimpleDateFormat(format, Locale.getDefault())
+        return dateFormat.parse(dateString)
+    }
+
+    fun getDateStringFromDate(date: Date, format: String): String {
+        val dateFormat = SimpleDateFormat(format, Locale.getDefault())
+        return dateFormat.format(date)
+    }
+
+    fun daysBetweenDates(startDate: Date, endDate: Date): Long {
+        val diffInMillis = abs(endDate.time - startDate.time)
+        return TimeUnit.DAYS.convert(diffInMillis, TimeUnit.MILLISECONDS)
     }
 
     fun getTodayDateDDMMYYYY(): String {

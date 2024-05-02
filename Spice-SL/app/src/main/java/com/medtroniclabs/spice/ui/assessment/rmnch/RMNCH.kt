@@ -1,10 +1,12 @@
 package com.medtroniclabs.spice.ui.assessment.rmnch
 
-import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.formgeneration.config.ViewType
 import java.text.DecimalFormat
+import java.util.Date
+import java.util.concurrent.TimeUnit
+import kotlin.math.abs
 
 object RMNCH {
     const val RMNCHChildHoodVisit = "RMNCHChildHoodVisit"
@@ -35,7 +37,6 @@ object RMNCH {
     const val otherPncMotherSigns = "otherPncMotherSigns"
 
 
-
     fun getValueFromMap(
         resultMap: HashMap<String, Any>,
         id: String,
@@ -55,7 +56,7 @@ object RMNCH {
                         DateUtils.DATE_ddMMyyyy
                     )
                 } else if (viewType == ViewType.VIEW_TYPE_DIALOG_CHECKBOX) {
-                    return getDangerSignValue(value,triple.third)
+                    return getDangerSignValue(value, triple.third)
                 } else {
                     when (value) {
                         is String -> {
@@ -97,4 +98,82 @@ object RMNCH {
         }
         return hyphenSymbol
     }
+
+    private fun calculatePregnancyMonth(lmp: Date): Long {
+        val today = Date()
+        val diffInMillis = abs(today.time - lmp.time)
+        val diff = TimeUnit.DAYS.convert(diffInMillis, TimeUnit.MILLISECONDS)
+        val weeks = diff / 7
+        return weeks / 4
+    }
+
+    fun calculateNextANCVisitDate(lmp: Date): Date? {
+        return when (calculatePregnancyMonth(lmp)) {
+            in 0..4 -> {
+                DateUtils.addDaysToDate(lmp, (28 * 5))
+            }
+            in 4..5 -> {
+                DateUtils.addDaysToDate(lmp, (28 * 6))
+            }
+            in 5..6 -> {
+                DateUtils.addDaysToDate(lmp, (28 * 7))
+            }
+            in 6..7 -> {
+                DateUtils.addDaysToDate(lmp, (28 * 8))
+            }
+            in 7..8 -> {
+                DateUtils.addDaysToDate(lmp, (28 * 9))
+            }
+            else -> {
+                return null
+            }
+        }
+    }
+
+    fun calculateNextChildHoodVisitDate(age: Int, birthDate: Date): Date? {
+        return when (age) {
+            in 0..4 -> {
+                DateUtils.addMonthsToDate(birthDate, 5)
+            }
+
+            in 4..5 -> {
+                DateUtils.addMonthsToDate(birthDate, 9)
+            }
+
+            in 6..9 -> {
+                DateUtils.addMonthsToDate(birthDate, 12)
+            }
+
+            in 10..12 -> {
+                DateUtils.addMonthsToDate(birthDate, 15)
+            }
+
+            else -> {
+                return null
+            }
+        }
+    }
+
+
+    fun calculateNextPNCVisitDate(deliveryDate: Date): Date? {
+        when (DateUtils.daysBetweenDates(deliveryDate, Date())) {
+            in 0..1 -> {
+                return DateUtils.addDaysToDate(deliveryDate, 3)
+            }
+            in 2..3 -> {
+                return DateUtils.addDaysToDate(deliveryDate, 7)
+            }
+            in 4..6 -> {
+                return DateUtils.addDaysToDate(deliveryDate, 15)
+            }
+            else -> {
+                return null
+            }
+        }
+    }
+
+    const val childHoodVisitMaxMonth = 15
+
+
+
 }

@@ -36,7 +36,7 @@ class MotherSummaryFragment : BaseFragment() {
     private fun initializeNextVisitDate() {
         var yearMonthDate: Triple<Int?, Int?, Int?>? = null
         if (binding.tvNextVisitDate.text.toString().isNotEmpty())
-            yearMonthDate = DateUtils.convertddMMMToddMM(binding.tvNextVisitDate.text.toString())
+            yearMonthDate = DateUtils.convertedMMMToddMM(binding.tvNextVisitDate.text.toString())
         if (datePickerDialog == null) {
             datePickerDialog = ViewUtils.showDatePicker(
                 requireContext(),

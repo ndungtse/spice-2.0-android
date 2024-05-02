@@ -85,7 +85,7 @@ class RoomHelperImpl @Inject constructor(
         return memberDAO.getMemberDetailsById(memberId)
     }
 
-    override suspend fun getMemberDetailsByParentId(memberId: Long): List<HouseholdMemberEntity> {
+    override suspend fun getMemberDetailsByParentId(memberId: String): List<HouseholdMemberEntity> {
         return memberDAO.getMemberDetailsByParentId(memberId)
     }
 

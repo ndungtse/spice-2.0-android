@@ -20,7 +20,6 @@ import com.medtroniclabs.spice.ui.home.ToolsActivity
 import com.medtroniclabs.spice.ui.household.HouseholdActivity
 import com.medtroniclabs.spice.ui.household.HouseholdDefinedParams.ID
 import com.medtroniclabs.spice.ui.household.HouseholdDefinedParams.isFromHouseHoldRegistration
-import com.medtroniclabs.spice.ui.household.HouseholdSearchActivity
 import com.medtroniclabs.spice.ui.household.MemberSelectionListener
 import com.medtroniclabs.spice.ui.household.viewmodel.HouseHoldSummaryViewModel
 import com.medtroniclabs.spice.ui.landing.OnDialogDismissListener
@@ -182,19 +181,6 @@ class HouseholdSummaryActivity : BaseActivity(), MemberSelectionListener, View.O
         /*onBackPressedDispatcher.addCallback(this) {
             onHouseHoldSummaryActivity()
         }*/
-    }
-
-    private fun onHouseHoldSummaryActivity() {
-        if (householdSummaryViewModel.isFromHouseHoldRegistration) {
-            startAsNewActivity(
-                Intent(
-                    this@HouseholdSummaryActivity,
-                    HouseholdSearchActivity::class.java
-                )
-            )
-        } else {
-            onBackPressedDispatcher.onBackPressed()
-        }
     }
 
     override fun onClick(v: View?) {

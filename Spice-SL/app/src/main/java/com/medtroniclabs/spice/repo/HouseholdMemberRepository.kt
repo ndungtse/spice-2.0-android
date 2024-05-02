@@ -134,7 +134,7 @@ class HouseholdMemberRepository @Inject constructor(
     }
 
     suspend fun getMemberDetailsByParentId(
-        memberId: Long,
+        memberId: String,
         memberDetailsLiveData: MutableLiveData<Resource<List<HouseholdMemberEntity>>>
     ) {
         try {
