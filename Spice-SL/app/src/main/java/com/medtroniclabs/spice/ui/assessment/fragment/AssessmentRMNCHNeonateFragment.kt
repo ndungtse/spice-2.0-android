@@ -89,8 +89,7 @@ class AssessmentRMNCHNeonateFragment : BaseFragment(), View.OnClickListener,
             binding.llChildForm.visible()
             binding.bioDataFragmentContainer.gone()
             assessmentRMNCHNeonateViewModel.getFormData(
-                DefinedParams.HOUSEHOLD_MEMBER_REGISTRATION,
-                assessmentRMNCHNeonateViewModel.memberFormLayoutsLiveData
+                DefinedParams.HOUSEHOLD_MEMBER_REGISTRATION
             )
         }
 

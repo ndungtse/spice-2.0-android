@@ -41,12 +41,11 @@ class AssessmentRMNCHNeonateViewModel @Inject constructor(
     val assessmentSaveLiveData = MutableLiveData<Resource<AssessmentEntity>>()
 
     val childMemberDetailsLiveData = MutableLiveData<Resource<List<HouseholdMemberEntity>>>()
-
     var referralStatus: String? = null
-
-    fun getFormData(formType: String, liveData: MutableLiveData<Resource<FormResponse>>) {
+    fun getFormData(formType: String) {
         viewModelScope.launch(dispatcherIO) {
-            assessmentRepository.getFormData(formType, liveData)
+            formLayoutsLiveData.postLoading()
+            formLayoutsLiveData.postValue(assessmentRepository.getFormData(formType))
         }
     }
 
@@ -84,14 +83,13 @@ class AssessmentRMNCHNeonateViewModel @Inject constructor(
             getAssessmentDetails(groupMap as HashMap<Any, Any>)
         referralStatus = referralResult.first
         assessmentStringSaveLiveData.postValue(assessmentDetail.first)
-        assessmentRepository.saveAssessment(
+        assessmentSaveLiveData.postValue(assessmentRepository.saveAssessment(
             assessmentDetail.second,
             memberDetail,
-            assessmentSaveLiveData,
             RMNCH.PNC_MENU,
             referralResult,
             null,
-        )
+        ))
     }
 
     private fun getAssessmentDetails(
@@ -166,12 +164,11 @@ class AssessmentRMNCHNeonateViewModel @Inject constructor(
                     (isTakenToClinical.equals(DefinedParams.Yes,true))
             }
 
-            assessmentRepository.updateOtherAssessmentDetails(
+            assessmentUpdateLiveData.postValue(assessmentRepository.updateOtherAssessmentDetails(
                 assessmentSaveLiveData.value?.data,
                 otherAssessmentDetails,
-                assessmentUpdateLiveData,
                 lastLocation
-            )
+            ))
         }
     }
 }

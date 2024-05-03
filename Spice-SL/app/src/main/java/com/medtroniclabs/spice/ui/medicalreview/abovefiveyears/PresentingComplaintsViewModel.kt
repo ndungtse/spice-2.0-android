@@ -3,6 +3,7 @@ package com.medtroniclabs.spice.ui.medicalreview.abovefiveyears
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.data.MedicalReviewMetaItems
 import com.medtroniclabs.spice.data.model.ChipViewItemModel
 import com.medtroniclabs.spice.di.IoDispatcher
@@ -26,7 +27,8 @@ class PresentingComplaintsViewModel @Inject constructor(
 
     fun getPresentingComplaintsList(type: String) {
         viewModelScope.launch(dispatcherIO) {
-            repository.getComplaintsListByType(type, presentingComplaintsList)
+            presentingComplaintsList.postLoading()
+            presentingComplaintsList.postValue(repository.getComplaintsListByType(type))
         }
     }
 }

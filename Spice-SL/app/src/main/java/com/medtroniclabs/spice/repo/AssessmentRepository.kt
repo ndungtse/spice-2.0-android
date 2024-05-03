@@ -1,12 +1,8 @@
 package com.medtroniclabs.spice.repo
 
 import android.location.Location
-import androidx.lifecycle.MutableLiveData
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.medtroniclabs.spice.appextensions.postError
-import com.medtroniclabs.spice.appextensions.postLoading
-import com.medtroniclabs.spice.appextensions.postSuccess
 import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.data.LocalSpinnerResponse
 import com.medtroniclabs.spice.db.entity.AssessmentEntity
@@ -18,6 +14,8 @@ import com.medtroniclabs.spice.model.assessment.AssessmentMemberDetails
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.util.Locale
 import javax.inject.Inject
 
@@ -28,12 +26,11 @@ class AssessmentRepository @Inject constructor(
     suspend fun saveAssessment(
         resultData: String,
         memberDetails: AssessmentMemberDetails,
-        assessmentSaveLiveData: MutableLiveData<Resource<AssessmentEntity>>,
         menuId: String?,
         referralResult: Pair<String?, ArrayList<String>>?,
         lastLocation: Location?
-    ) {
-        try {
+    ): Resource<AssessmentEntity> {
+        return try {
             val assessmentEntity = menuId?.let { menu ->
                 AssessmentEntity(
                     memberId = memberDetails.memberId,
@@ -53,9 +50,9 @@ class AssessmentRepository @Inject constructor(
                 val id = roomHelper.saveAssessment(assessmentEntity)
                 assessmentEntity.id = id
             }
-            assessmentSaveLiveData.postSuccess(assessmentEntity)
+            Resource(state = ResourceState.SUCCESS, data = assessmentEntity)
         } catch (e: Exception) {
-            assessmentSaveLiveData.postError()
+            Resource(state = ResourceState.ERROR)
         }
     }
 
@@ -82,71 +79,62 @@ class AssessmentRepository @Inject constructor(
     suspend fun updateOtherAssessmentDetails(
         assessmentEntity: AssessmentEntity?,
         otherAssessmentDetails: HashMap<String, Any>,
-        assessmentUpdateLiveData: MutableLiveData<Resource<String>>,
         lastLocation: Location?
-    ) {
-        try {
-            if (assessmentEntity != null) {
-                assessmentEntity.otherDetails =
-                    StringConverter.convertGivenMapToString(otherAssessmentDetails)
-                lastLocation?.let {
-                    assessmentEntity.latitude = it.latitude
-                    assessmentEntity.longitude = it.longitude
+    ): Resource<String> {
+        return withContext(Dispatchers.IO) {
+            try {
+                if (assessmentEntity != null) {
+                    assessmentEntity.otherDetails =
+                        StringConverter.convertGivenMapToString(otherAssessmentDetails)
+                    lastLocation?.let {
+                        assessmentEntity.latitude = it.latitude
+                        assessmentEntity.longitude = it.longitude
+                    }
+                    roomHelper.updateOtherAssessmentDetails(assessmentEntity)
                 }
-                roomHelper.updateOtherAssessmentDetails(assessmentEntity)
+                Resource(state = ResourceState.SUCCESS)
+            } catch (e: Exception) {
+                Resource(state = ResourceState.ERROR)
             }
-            assessmentUpdateLiveData.postSuccess()
-        } catch (e: Exception) {
-            assessmentUpdateLiveData.postError()
         }
     }
 
     suspend fun getSymptomListByType(
         type: String,
-        symptomTypeListResponse: MutableLiveData<List<SignsAndSymptomsEntity>>
-    ) {
-        try {
-            symptomTypeListResponse.postValue(roomHelper.getSymptomListByType(type))
+    ): List<SignsAndSymptomsEntity> {
+        return try {
+            roomHelper.getSymptomListByType(type)
         } catch (_: Exception) {
-            //Exception - Catch block
+            listOf()
         }
     }
 
     suspend fun getFormData(
-        formType: String,
-        formLayoutsLiveData: MutableLiveData<Resource<FormResponse>>
-    ) {
-        try {
-            formLayoutsLiveData.postLoading()
+        formType: String
+    ): Resource<FormResponse> {
+        return try {
             val response = roomHelper.getFormData(formType)
             val formFieldsType = object : TypeToken<FormResponse>() {}.type
             val formFields: FormResponse = Gson().fromJson(response, formFieldsType)
-            formLayoutsLiveData.postSuccess(formFields)
+            Resource(state = ResourceState.SUCCESS, data = formFields)
         } catch (e: Exception) {
-            formLayoutsLiveData.postError()
+            Resource(state = ResourceState.ERROR)
         }
     }
 
-    suspend fun getNearestHealthFacility(nearestFacilityLiveData: MutableLiveData<Resource<List<HealthFacilityEntity>>>) {
+    suspend fun getNearestHealthFacility(): Resource<List<HealthFacilityEntity>> {
         val response = roomHelper.getNearestHealthFacility()
-        nearestFacilityLiveData.postSuccess(response)
+        return Resource(state = ResourceState.SUCCESS, data = response)
     }
 
     suspend fun getNearestHealthFacility(
-        facilitySpinnerLiveData: MutableLiveData<Resource<LocalSpinnerResponse>>,
         tag: String
-    ) {
-        try {
-            facilitySpinnerLiveData.postLoading()
+    ): Resource<LocalSpinnerResponse> {
+        return try {
             val response = roomHelper.getNearestHealthFacility()
-            facilitySpinnerLiveData.postValue(
-                Resource(
-                    ResourceState.SUCCESS,
-                    LocalSpinnerResponse(tag, response)
-                )
-            )
+            Resource(state = ResourceState.SUCCESS, LocalSpinnerResponse(tag, response))
         } catch (_: Exception) {
-            facilitySpinnerLiveData.postError()
+            Resource(state = ResourceState.ERROR)
         }
     }
 

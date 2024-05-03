@@ -89,13 +89,14 @@ class AssessmentViewModel @Inject constructor(
                 val assessmentDetail =
                     getAssessmentDetails(assessmentMap as HashMap<Any, Any>)
                 assessmentStringLiveData.postValue(assessmentDetail.first)
-                assessmentRepository.saveAssessment(
-                    assessmentDetail.second,
-                    details,
-                    assessmentSaveLiveData,
-                    menuId,
-                    referralResult,
-                    lastLocation
+                assessmentSaveLiveData.postValue(
+                    assessmentRepository.saveAssessment(
+                        assessmentDetail.second,
+                        details,
+                        menuId,
+                        referralResult,
+                        lastLocation
+                    )
                 )
             }
         }
@@ -201,11 +202,12 @@ class AssessmentViewModel @Inject constructor(
                 otherAssessmentDetails[IsClinicTaken] = (isTakenToClinical == "Yes")
             }
 
-            assessmentRepository.updateOtherAssessmentDetails(
-                assessmentSaveLiveData.value?.data,
-                otherAssessmentDetails,
-                assessmentUpdateLiveData,
-                lastLocation
+            assessmentUpdateLiveData.postValue(
+                assessmentRepository.updateOtherAssessmentDetails(
+                    assessmentSaveLiveData.value?.data,
+                    otherAssessmentDetails,
+                    lastLocation
+                )
             )
         }
     }
@@ -218,19 +220,20 @@ class AssessmentViewModel @Inject constructor(
 
     fun getSymptomListByType(type: String) {
         viewModelScope.launch(dispatcherIO) {
-            assessmentRepository.getSymptomListByType(type, symptomTypeListResponse)
+            symptomTypeListResponse.postValue(assessmentRepository.getSymptomListByType(type))
         }
     }
 
     fun getFormData(formType: String) {
         viewModelScope.launch(dispatcherIO) {
-            assessmentRepository.getFormData(formType, formLayoutsLiveData)
+            formLayoutsLiveData.postLoading()
+            formLayoutsLiveData.postValue(assessmentRepository.getFormData(formType))
         }
     }
 
     fun getNearestHealthFacility() {
         viewModelScope.launch(dispatcherIO) {
-            assessmentRepository.getNearestHealthFacility(nearestFacilityLiveData)
+            nearestFacilityLiveData.postValue(assessmentRepository.getNearestHealthFacility())
         }
     }
 
@@ -246,7 +249,8 @@ class AssessmentViewModel @Inject constructor(
         viewModelScope.launch(dispatcherIO) {
             when (type) {
                 RMNCH.PlaceOfDelivery -> {
-                    assessmentRepository.getNearestHealthFacility(facilitySpinnerLiveData, tag)
+                    facilitySpinnerLiveData.postLoading()
+                    facilitySpinnerLiveData.postValue(assessmentRepository.getNearestHealthFacility(tag))
                 }
             }
         }
@@ -287,7 +291,12 @@ class AssessmentViewModel @Inject constructor(
                         }
                     }
                     map[RMNCH.NoOfNeonate] = memberClinicalEntity.numberOfNeonate ?: 0L
-                    savePatientClinicalInformation(patientId, workflowName, map, memberClinicalEntity.id)
+                    savePatientClinicalInformation(
+                        patientId,
+                        workflowName,
+                        map,
+                        memberClinicalEntity.id
+                    )
                 } ?: kotlin.run {
                     map[RMNCH.visitNo] = 1L
                     savePatientClinicalInformation(patientId, workflowName, map)
