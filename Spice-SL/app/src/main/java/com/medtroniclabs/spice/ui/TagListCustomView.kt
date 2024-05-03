@@ -24,7 +24,7 @@ class TagListCustomView(
     val otherSingleSelect: Boolean? = null,
     val isSelectionRequired: Boolean? = null,
     val otherCallBack: ((name: String, isChecked: Boolean) -> Unit)? = null,
-    val callBack: ((isEmpty: Boolean, isChecked: Boolean) -> Unit)? = null
+    val callBack: ((name: String?, isEmpty: Boolean, isChecked: Boolean) -> Unit)? = null
 ) {
     fun addChipItemList(
         chipItemList: List<ChipViewItemModel>,
@@ -89,7 +89,7 @@ class TagListCustomView(
             if (otherCallBack != null)
                 otherCallBack.invoke(chipData.second, isChecked)
             else
-                callBack?.invoke(chipGroup.checkedChipIds.isEmpty(), isChecked)
+                callBack?.invoke(chipData.second, chipGroup.checkedChipIds.isEmpty(), isChecked)
 
             if (chipData.second.equals(context.getString(R.string.none), ignoreCase = true)) {
                 if (isChecked)
@@ -283,7 +283,7 @@ class TagListCustomView(
         if (otherCallBack != null)
             otherCallBack.invoke(Other, tagView.tag != null)
         else
-            callBack?.invoke(chipGroup.checkedChipIds.isEmpty(), tagView.tag != null)
+            callBack?.invoke(null ,chipGroup.checkedChipIds.isEmpty(), tagView.tag != null)
     }
 
     private fun getColorStateList(

@@ -40,7 +40,9 @@ class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
     private lateinit var binding: ActivityAboveFiveYearsBaseBinding
     private val viewModel: AboveFiveYearsViewModel by viewModels()
     private val patientViewModel: ReferralTicketViewModel by viewModels()
-    private val chipItemViewModel: ExaminationsComplaintsViewModel by viewModels()
+    private val chipItemViewModel: ClinicalNotesViewModel by viewModels()
+    private val presentingComplaintsViewModel: PresentingComplaintsViewModel by viewModels()
+    private val systemicExaminationViewModel: SystemicExaminationViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -316,15 +318,15 @@ class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
                     longitude = 10.75,
                     householdId = 23,
                     assessmentType = MedicalReviewTypeEnums.AboveFiveYears.name,
-                    presentingComplaints = chipItemViewModel.selectedPresentingComplaints.map { it.value },
-                    presentingComplaintsNotes = chipItemViewModel.enteredComplaintNotes,
-                    systemicExaminationsNotes = chipItemViewModel.enteredExaminationNotes,
+                    presentingComplaints = presentingComplaintsViewModel.selectedPresentingComplaints.map { it.value },
+                    presentingComplaintsNotes = presentingComplaintsViewModel.enteredComplaintNotes,
+                    systemicExaminationsNotes = systemicExaminationViewModel.enteredExaminationNotes,
                     provenance = ProvanceDto(
                         createdDateTime = getCurrentDateAndTime(
                             DATE_FORMAT_yyyyMMddHHmmssZZZZZ
                         )
                     ),
-                    systemicExaminations = chipItemViewModel.selectedSystemicExaminations.map { it.value },
+                    systemicExaminations = systemicExaminationViewModel.selectedSystemicExaminations.map { it.value },
                     clinicalNotes = chipItemViewModel.enteredClinicalNotes,
                     startTime = getCurrentDateAndTime(
                         DATE_FORMAT_yyyyMMddHHmmssZZZZZ
@@ -340,7 +342,7 @@ class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
 
     private fun enableSubmitBtn() {
         binding.btnSubmit.isEnabled =
-            chipItemViewModel.selectedPresentingComplaints.isNotEmpty() || chipItemViewModel.selectedSystemicExaminations.isNotEmpty() || chipItemViewModel.enteredClinicalNotes.isNotBlank() || chipItemViewModel.enteredComplaintNotes.isNotBlank() || chipItemViewModel.enteredExaminationNotes.isNotBlank()
+            presentingComplaintsViewModel.selectedPresentingComplaints.isNotEmpty() || systemicExaminationViewModel.selectedSystemicExaminations.isNotEmpty() || chipItemViewModel.enteredClinicalNotes.isNotBlank() || presentingComplaintsViewModel.enteredComplaintNotes.isNotBlank() || systemicExaminationViewModel.enteredExaminationNotes.isNotBlank()
     }
 
     private fun enableReferralDoneBtn() {

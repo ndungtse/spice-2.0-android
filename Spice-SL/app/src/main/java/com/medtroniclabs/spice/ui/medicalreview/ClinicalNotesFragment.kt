@@ -10,8 +10,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResult
 import com.medtroniclabs.spice.databinding.FragmentClinicalNotesBinding
 import com.medtroniclabs.spice.ui.BaseFragment
-import com.medtroniclabs.spice.ui.medicalreview.abovefiveyears.AboveFiveYearsViewModel
-import com.medtroniclabs.spice.ui.medicalreview.abovefiveyears.ExaminationsComplaintsViewModel
+import com.medtroniclabs.spice.ui.medicalreview.abovefiveyears.ClinicalNotesViewModel
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -19,7 +18,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class ClinicalNotesFragment : BaseFragment() {
 
     private lateinit var binding: FragmentClinicalNotesBinding
-    private val viewModel : ExaminationsComplaintsViewModel by activityViewModels()
+    private val viewModel : ClinicalNotesViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,

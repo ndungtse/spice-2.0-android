@@ -384,8 +384,6 @@
     <string name="hh_name">HH Name</string>
     <string name="member_id">Member ID</string>
     <string name="calls_made">Calls Made</string>
-
-
     <string name="indicator_header">Indicator</string>
     <string name="one_minute_header">1 MINUTE</string>
     <string name="five_minute_header">5 MINUTE</string>
@@ -396,4 +394,8 @@
     <string name="appearance_label">A-Appearance</string>
     <string name="respiration_label">R-Respiration</string>
     <string name="total_label">Total</string>
+    <string name="save" translatable="false">save</string>
+    <string name="select_disease_category">Select Disease Category</string>
+    <string name="select_disease_condition">Select Disease Condition</string>
+    <string name="add_diagnosis">Add Diagnoses</string>
 </resources>

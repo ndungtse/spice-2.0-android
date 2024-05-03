@@ -3,9 +3,8 @@ package com.medtroniclabs.spice.db.local
 import androidx.lifecycle.LiveData
 import com.medtroniclabs.spice.data.DiseaseCategoryItems
 import com.medtroniclabs.spice.data.ExaminationListItems
-import com.medtroniclabs.spice.data.ExaminationsComplaintItems
+import com.medtroniclabs.spice.data.MedicalReviewMetaItems
 import com.medtroniclabs.spice.data.LabourDeliveryMetaEntity
-import com.medtroniclabs.spice.data.LastCreatedAtAndPatientId
 import com.medtroniclabs.spice.data.VillageInfo
 import com.medtroniclabs.spice.data.offlinesync.model.HouseHold
 import com.medtroniclabs.spice.data.offlinesync.model.HouseHoldMember
@@ -102,12 +101,12 @@ interface RoomHelper {
     suspend fun getPatientVisitCountByType(type: String, patientId: String): MemberClinicalEntity?
     suspend fun savePatientVisitCountByType(memberClinicalEntity: MemberClinicalEntity)
     suspend fun deleteExaminationsComplaints(menuType: String)
-    suspend fun insertExaminationsComplaint(symptomEntity: List<ExaminationsComplaintItems>)
+    suspend fun insertExaminationsComplaint(symptomEntity: List<MedicalReviewMetaItems>)
     suspend fun deleteDiagnosisList()
     suspend fun saveDiagnosisList(diagnosisList: ArrayList<DiseaseCategoryItems>)
     suspend fun getHouseholdIdByFhirId(fhirId: String?): Long?
     suspend fun getHouseholdMemberIdByFhirId(fhirId: String?): Long?
-    suspend fun getExaminationsComplaintByType(type: String): List<ExaminationsComplaintItems>
+    suspend fun getExaminationsComplaintByType(type: String): List<MedicalReviewMetaItems>
     suspend fun getAssessmentMemberDetails(id: Long): AssessmentMemberDetails
     suspend fun getUnSyncedAssessmentByPatientId(patientId: String): List<AssessmentEntity>
     suspend fun getOtherUnSyncedAssessments(patientIds: List<String>): List<AssessmentEntity>
@@ -119,16 +118,17 @@ interface RoomHelper {
         visitCount: Long,
         clinicalDate: String?
     )
-    suspend fun getSummaryDetailMetaItems(type: String): List <ExaminationsComplaintItems>
+    suspend fun getSummaryDetailMetaItems(type: String): List <MedicalReviewMetaItems>
     suspend fun deleteExaminationsComplaintsForAnc(type: String)
 
     fun getExaminationsComplaintsForAnc(
         category: String
-    ): LiveData<List<ExaminationsComplaintItems>>
+    ): LiveData<List<MedicalReviewMetaItems>>
     suspend fun deleteExaminationsList()
     suspend fun saveExaminationsList(diagnosisList: ArrayList<ExaminationListItems>)
 
     suspend fun insertLabourDelivery(symptomEntity: List<LabourDeliveryMetaEntity>)
     suspend fun deleteLabourDelivery()
     suspend fun getLabourDelivery(): List<LabourDeliveryMetaEntity>
+    suspend fun getDiagnosisList(): List <DiseaseCategoryItems>
 }

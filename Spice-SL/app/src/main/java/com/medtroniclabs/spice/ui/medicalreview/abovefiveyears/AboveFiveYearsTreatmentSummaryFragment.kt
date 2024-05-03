@@ -17,7 +17,7 @@ import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.ViewUtils.showDatePicker
 import com.medtroniclabs.spice.data.AboveFiveYearsSummaryDetails
-import com.medtroniclabs.spice.data.ExaminationsComplaintItems
+import com.medtroniclabs.spice.data.MedicalReviewMetaItems
 import com.medtroniclabs.spice.databinding.FragmentMedicalReviewTreatmentPlanSummaryBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
@@ -36,7 +36,8 @@ class AboveFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
 
     private lateinit var binding: FragmentMedicalReviewTreatmentPlanSummaryBinding
     private val viewModel: AboveFiveYearsViewModel by activityViewModels()
-    private val chipItemViewModel: ExaminationsComplaintsViewModel by activityViewModels()
+    private val chipItemViewModel: ClinicalNotesViewModel by activityViewModels()
+    private val presentingComplaintsViewModel: PresentingComplaintsViewModel by activityViewModels()
     private var datePickerDialog: DatePickerDialog? = null
 
     override fun onCreateView(
@@ -110,7 +111,7 @@ class AboveFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
     }
 
     private fun renderSummaryDetails(details: AboveFiveYearsSummaryDetails) {
-        binding.tvPresentingComplaintsText.text = chipItemViewModel.selectedPresentingComplaints.map { it.name }.let {
+        binding.tvPresentingComplaintsText.text = presentingComplaintsViewModel.selectedPresentingComplaints.map { it.name }.let {
             formatListToStringWithOther(
                 it, details.presentingComplaintsNotes
             )
@@ -132,7 +133,7 @@ class AboveFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
         viewModel.getSummaryListMetaItems(MedicalReviewTypeEnums.AboveFiveYears.name)
     }
 
-    private fun initializePatientStatus(patientStatusList: List<ExaminationsComplaintItems>) {
+    private fun initializePatientStatus(patientStatusList: List<MedicalReviewMetaItems>) {
         val dropDownList = ArrayList<Map<String, Any>>()
         dropDownList.add(
             hashMapOf<String, Any>(
@@ -182,7 +183,7 @@ class AboveFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
             }
     }
 
-    private fun initializeCostItem(costList: List<ExaminationsComplaintItems>) {
+    private fun initializeCostItem(costList: List<MedicalReviewMetaItems>) {
         val dropDownList = ArrayList<Map<String, Any>>()
         dropDownList.add(
             hashMapOf<String, Any>(
@@ -232,7 +233,7 @@ class AboveFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
             }
     }
 
-    private fun initializeMedicalSupplies(supplyList: List<ExaminationsComplaintItems>) {
+    private fun initializeMedicalSupplies(supplyList: List<MedicalReviewMetaItems>) {
         val dropDownList = ArrayList<Map<String, Any>>()
         dropDownList.add(
             hashMapOf<String, Any>(

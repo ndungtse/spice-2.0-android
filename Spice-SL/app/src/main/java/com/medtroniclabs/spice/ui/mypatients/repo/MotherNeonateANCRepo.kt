@@ -6,7 +6,7 @@ import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.appextensions.postSuccess
 import com.medtroniclabs.spice.common.SecuredPreference
-import com.medtroniclabs.spice.data.ExaminationsComplaintItems
+import com.medtroniclabs.spice.data.MedicalReviewMetaItems
 import com.medtroniclabs.spice.db.local.RoomHelper
 import com.medtroniclabs.spice.network.ApiHelper
 import com.medtroniclabs.spice.network.resource.Resource
@@ -53,12 +53,12 @@ class MotherNeonateANCRepo @Inject constructor(
     }
 
     private fun generateChipItemByType(
-        presentingComplaints: List<ExaminationsComplaintItems>,
-        obstetricExaminations: List<ExaminationsComplaintItems>,
-        pregnancyHistories: List<ExaminationsComplaintItems>,
-        bloodGroup: List<ExaminationsComplaintItems>
-    ): List<ExaminationsComplaintItems> {
-        val chipItemList = mutableListOf<ExaminationsComplaintItems>()
+        presentingComplaints: List<MedicalReviewMetaItems>,
+        obstetricExaminations: List<MedicalReviewMetaItems>,
+        pregnancyHistories: List<MedicalReviewMetaItems>,
+        bloodGroup: List<MedicalReviewMetaItems>
+    ): List<MedicalReviewMetaItems> {
+        val chipItemList = mutableListOf<MedicalReviewMetaItems>()
         chipItemList.addAll(presentingComplaints.map {
             it.apply {
                 category = MedicalReviewTypeEnums.PresentingComplaints.name
@@ -85,7 +85,7 @@ class MotherNeonateANCRepo @Inject constructor(
 
     fun getExaminationsComplaintsForAnc(
         category: String
-    ): LiveData<List<ExaminationsComplaintItems>> {
+    ): LiveData<List<MedicalReviewMetaItems>> {
         return roomHelper.getExaminationsComplaintsForAnc(category)
     }
 }

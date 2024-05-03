@@ -80,7 +80,7 @@ class PregnancyPastObstetricHistoryFragment : BaseFragment() {
     ) {
         complaintsTagView =
             TagListCustomView(binding.root.context, binding.tagViewPresentingComplaints,
-                callBack = { _, _ ->
+                callBack = { _, _, _ ->
                     // Callback invoked whenever chip state changes
                     updateNextButtonStateCallback?.invoke() // Call the provided callback
                 })

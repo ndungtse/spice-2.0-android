@@ -13,8 +13,7 @@ import com.medtroniclabs.spice.databinding.FragmentPresentingComplaintsBinding
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.TagListCustomView
-import com.medtroniclabs.spice.ui.medicalreview.abovefiveyears.AboveFiveYearsViewModel
-import com.medtroniclabs.spice.ui.medicalreview.abovefiveyears.ExaminationsComplaintsViewModel
+import com.medtroniclabs.spice.ui.medicalreview.abovefiveyears.PresentingComplaintsViewModel
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.CHIP_ITEMS
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.PC_ITEM
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
@@ -25,7 +24,7 @@ class PresentingComplaintsFragment : BaseFragment() {
 
     private lateinit var binding: FragmentPresentingComplaintsBinding
     private lateinit var complaintsTagView: TagListCustomView
-    private val viewModel : ExaminationsComplaintsViewModel by activityViewModels()
+    private val viewModel : PresentingComplaintsViewModel by activityViewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,7 +59,7 @@ class PresentingComplaintsFragment : BaseFragment() {
     }
 
     private fun attachObserver() {
-        viewModel.examinationsComplaintsList.observe(viewLifecycleOwner) { resource ->
+        viewModel.presentingComplaintsList.observe(viewLifecycleOwner) { resource ->
             when (resource.state) {
                 ResourceState.LOADING -> {
                     showProgress()
@@ -91,11 +90,11 @@ class PresentingComplaintsFragment : BaseFragment() {
     }
 
     private fun initializeViews() {
-        complaintsTagView =  TagListCustomView(binding.root.context, binding.tagViewPresentingComplaints){_,_ ->
+        complaintsTagView =  TagListCustomView(binding.root.context, binding.tagViewPresentingComplaints){_,_,_ ->
             viewModel.selectedPresentingComplaints = ArrayList(complaintsTagView.getSelectedTags())
             setFragmentResult(PC_ITEM, bundleOf(CHIP_ITEMS to true))
         }
-        viewModel.getComplaintsList(viewModel.presentingComplaintsType)
+        viewModel.getPresentingComplaintsList(viewModel.presentingComplaintsType)
     }
 
 }

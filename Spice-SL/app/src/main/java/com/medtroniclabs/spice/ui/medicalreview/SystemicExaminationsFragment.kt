@@ -13,8 +13,7 @@ import com.medtroniclabs.spice.databinding.FragmentSystemicExaminationsBinding
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.TagListCustomView
-import com.medtroniclabs.spice.ui.medicalreview.abovefiveyears.AboveFiveYearsViewModel
-import com.medtroniclabs.spice.ui.medicalreview.abovefiveyears.ExaminationsComplaintsViewModel
+import com.medtroniclabs.spice.ui.medicalreview.abovefiveyears.SystemicExaminationViewModel
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import dagger.hilt.android.AndroidEntryPoint
@@ -24,7 +23,7 @@ class SystemicExaminationsFragment : BaseFragment() {
 
     private lateinit var binding: FragmentSystemicExaminationsBinding
     private lateinit var examinationsTagView: TagListCustomView
-    private val viewModel : ExaminationsComplaintsViewModel by activityViewModels()
+    private val viewModel : SystemicExaminationViewModel by activityViewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,7 +62,7 @@ class SystemicExaminationsFragment : BaseFragment() {
     }
 
     private fun attachObserver() {
-        viewModel.examinationsComplaintsList.observe(viewLifecycleOwner) { resource ->
+        viewModel.systemicExaminationList.observe(viewLifecycleOwner) { resource ->
             when (resource.state) {
                 ResourceState.LOADING -> {
                     showProgress()
@@ -95,14 +94,14 @@ class SystemicExaminationsFragment : BaseFragment() {
 
     private fun initializeViews() {
         examinationsTagView =
-            TagListCustomView(binding.root.context, binding.tagPhysicalExamination) { _, _ ->
+            TagListCustomView(binding.root.context, binding.tagPhysicalExamination) {_, _, _ ->
                 viewModel.selectedSystemicExaminations = ArrayList(examinationsTagView.getSelectedTags())
                 setFragmentResult(
                     MedicalReviewDefinedParams.SE_ITEM, bundleOf(
                         MedicalReviewDefinedParams.CHIP_ITEMS to true)
                 )
             }
-        viewModel.getComplaintsList(viewModel.systemicExaminationsType)
+        viewModel.getSystemicExaminationList(viewModel.systemicExaminationsType)
     }
 
 }

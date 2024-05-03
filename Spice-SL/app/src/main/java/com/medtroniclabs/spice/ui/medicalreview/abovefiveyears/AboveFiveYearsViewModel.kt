@@ -6,14 +6,12 @@ import androidx.lifecycle.viewModelScope
 import com.medtroniclabs.spice.data.AboveFiveYearsSummaryDetails
 import com.medtroniclabs.spice.data.AboveFiveYearsSummaryRequest
 import com.medtroniclabs.spice.data.AboveFiveYearsSummarySubmitRequest
-import com.medtroniclabs.spice.data.ExaminationsComplaintItems
+import com.medtroniclabs.spice.data.MedicalReviewMetaItems
 import com.medtroniclabs.spice.data.model.AboveFiveYearsSubmitRequest
-import com.medtroniclabs.spice.data.model.ChipViewItemModel
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.network.utils.ConnectivityManager
 import com.medtroniclabs.spice.repo.AboveFiveYearsRepository
-import com.medtroniclabs.spice.repo.ExaminationComplaintsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
@@ -29,7 +27,7 @@ class AboveFiveYearsViewModel @Inject constructor(
     lateinit var connectivityManager: ConnectivityManager
     val aboveFiveYearsMetaLiveData = MutableLiveData<Resource<Boolean>>()
     val summaryDetailsLiveData = MutableLiveData<Resource<AboveFiveYearsSummaryDetails>>()
-    val summaryMetaListItems = MutableLiveData<Resource<List<ExaminationsComplaintItems>>>()
+    val summaryMetaListItems = MutableLiveData<Resource<List<MedicalReviewMetaItems>>>()
     val aboveFiveYearsCreateResponse = MutableLiveData<Resource<AboveFiveYearsSummaryDetails>>()
     val summaryCreateResponse = MutableLiveData<Resource<HashMap<String,Any>>>()
     var selectedPatientStatus: String? = null

@@ -5,10 +5,11 @@ import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.appextensions.postSuccess
 import com.medtroniclabs.spice.common.SecuredPreference
+import com.medtroniclabs.spice.data.DiseaseCategoryItems
 import com.medtroniclabs.spice.data.AboveFiveYearsSummaryDetails
 import com.medtroniclabs.spice.data.AboveFiveYearsSummaryRequest
 import com.medtroniclabs.spice.data.AboveFiveYearsSummarySubmitRequest
-import com.medtroniclabs.spice.data.ExaminationsComplaintItems
+import com.medtroniclabs.spice.data.MedicalReviewMetaItems
 import com.medtroniclabs.spice.data.model.AboveFiveYearsSubmitRequest
 import com.medtroniclabs.spice.db.local.RoomHelper
 import com.medtroniclabs.spice.network.ApiHelper
@@ -56,13 +57,13 @@ class AboveFiveYearsRepository @Inject constructor(
     }
 
     private fun generateChipItemByType(
-        presentingComplaints: List<ExaminationsComplaintItems>,
-        systemicExaminations: List<ExaminationsComplaintItems>,
-        medicalSupplies: List<ExaminationsComplaintItems>,
-        cost: List<ExaminationsComplaintItems>,
-        patientStatus: List<ExaminationsComplaintItems>
-    ): List<ExaminationsComplaintItems> {
-        val chipItemList = ArrayList<ExaminationsComplaintItems>()
+        presentingComplaints: List<MedicalReviewMetaItems>,
+        systemicExaminations: List<MedicalReviewMetaItems>,
+        medicalSupplies: List<MedicalReviewMetaItems>,
+        cost: List<MedicalReviewMetaItems>,
+        patientStatus: List<MedicalReviewMetaItems>
+    ): List<MedicalReviewMetaItems> {
+        val chipItemList = ArrayList<MedicalReviewMetaItems>()
         presentingComplaints.forEach { it.category = MedicalReviewTypeEnums.PresentingComplaints.name }
         systemicExaminations.forEach { it.category = MedicalReviewTypeEnums.SystemicExaminations.name }
         patientStatus.forEach { it.type = MedicalReviewTypeEnums.AboveFiveYears.name }
@@ -96,7 +97,7 @@ class AboveFiveYearsRepository @Inject constructor(
 
     suspend fun getSummaryDetailMetaItems(
         type: String,
-        summaryMetaListItems: MutableLiveData<Resource<List<ExaminationsComplaintItems>>>
+        summaryMetaListItems: MutableLiveData<Resource<List<MedicalReviewMetaItems>>>
     ) {
         try {
             summaryMetaListItems.postLoading()
@@ -143,6 +144,18 @@ class AboveFiveYearsRepository @Inject constructor(
                 summaryCreateResponse.postError()
         } catch (e: Exception) {
             summaryCreateResponse.postError()
+        }
+    }
+
+    suspend fun getDiagnosisList(
+        diagnosisList: MutableLiveData<Resource<List<DiseaseCategoryItems>>>
+    ){
+        try {
+            diagnosisList.postLoading()
+            val response = roomHelper.getDiagnosisList()
+            diagnosisList.postSuccess(response)
+        } catch (e: Exception) {
+            diagnosisList.postError()
         }
     }
 }

@@ -10,6 +10,7 @@ import com.medtroniclabs.spice.databinding.FragmentMedicalReviewPatientDiagnosis
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.ANC
+import com.medtroniclabs.spice.ui.medicalreview.diagnosis.DiagnosisDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
 
 
@@ -42,6 +43,7 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         handleFlow()
+        initializeListeners()
     }
 
     private fun handleFlow() {
@@ -68,7 +70,18 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
             binding.tvAddBp.id -> {
                 AddBpDialog.newInstance().show(childFragmentManager, AddBpDialog.TAG)
             }
+
+            binding.tvDiagnosisConfirm.id -> {
+                DiagnosisDialogFragment().show(
+                    childFragmentManager,
+                    DiagnosisDialogFragment.TAG
+                )
+            }
         }
+    }
+
+    private fun initializeListeners() {
+        binding.tvDiagnosisConfirm.safeClickListener(this)
     }
 
 }

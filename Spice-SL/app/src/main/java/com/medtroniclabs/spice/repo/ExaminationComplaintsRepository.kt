@@ -4,7 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.appextensions.postSuccess
-import com.medtroniclabs.spice.data.ExaminationsComplaintItems
+import com.medtroniclabs.spice.data.MedicalReviewMetaItems
 import com.medtroniclabs.spice.db.local.RoomHelper
 import com.medtroniclabs.spice.network.resource.Resource
 import javax.inject.Inject
@@ -14,7 +14,7 @@ class ExaminationComplaintsRepository @Inject constructor(
 ) {
     suspend fun getComplaintsListByType(
         type: String,
-        presentingComplaintList: MutableLiveData<Resource<List<ExaminationsComplaintItems>>>
+        presentingComplaintList: MutableLiveData<Resource<List<MedicalReviewMetaItems>>>
     ) {
         try {
             presentingComplaintList.postLoading()

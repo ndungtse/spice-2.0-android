@@ -143,18 +143,18 @@ class FilterBottomSheetDialogFragment : BottomSheetDialogFragment(), View.OnClic
     private fun initView() {
         binding.registrationStatusGroup.visibility = View.GONE
         villageListTagView =
-            TagListCustomView(binding.root.context, binding.villageChipGroup) { _, _ ->
+            TagListCustomView(binding.root.context, binding.villageChipGroup) { _, _, _ ->
                 enableConfirm()
             }
         statusListTagView =
             TagListCustomView(
                 binding.root.context,
                 binding.registrationStatusChipGroup
-            ) { _, _ ->
+            ) { _, _, _ ->
                 enableConfirm()
             }
         dataRangesListTagView =
-            TagListCustomView(binding.root.context, binding.dataRangesChipGroup) { _, _ ->
+            TagListCustomView(binding.root.context, binding.dataRangesChipGroup) { _, _, _ ->
                 if (dataRangesListTagView.getSelectedTags().isEmpty()) {
                     goneDatePicker()
                 } else {

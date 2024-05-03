@@ -1,10 +1,10 @@
 package com.medtroniclabs.spice.data
 
 data class AboveFiveYearsMetaResponse(
-    val systemicExaminations : List<ExaminationsComplaintItems>,
-    val presentingComplaints : List<ExaminationsComplaintItems >,
+    val systemicExaminations : List<MedicalReviewMetaItems>,
+    val presentingComplaints : List<MedicalReviewMetaItems >,
     val diseaseCategories : ArrayList<DiseaseCategoryItems>,
-    val medicalSupplies: List<ExaminationsComplaintItems>,
-    val cost: List<ExaminationsComplaintItems>,
-    val patientStatus: List<ExaminationsComplaintItems>
+    val medicalSupplies: List<MedicalReviewMetaItems>,
+    val cost: List<MedicalReviewMetaItems>,
+    val patientStatus: List<MedicalReviewMetaItems>
 )

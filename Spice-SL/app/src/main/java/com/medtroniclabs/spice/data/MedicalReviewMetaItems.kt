@@ -3,8 +3,8 @@ package com.medtroniclabs.spice.data
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "ExaminationComplaintsEntity")
-data class ExaminationsComplaintItems(
+@Entity(tableName = "MetaItemByTypeAndCategoryEntity")
+data class MedicalReviewMetaItems(
     @PrimaryKey(autoGenerate = true)
     val itemId: Long,
     val id: Long,

@@ -5,7 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
-import com.medtroniclabs.spice.data.ExaminationsComplaintItems
+import com.medtroniclabs.spice.data.MedicalReviewMetaItems
 import com.medtroniclabs.spice.data.PregnancyDetailsModel
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.network.resource.Resource
@@ -25,10 +25,10 @@ class MotherNeonateANCViewModel @Inject constructor(
     var selectedBloodGroup: String? = null
     val getAncMetaForPregnancyHistory = MutableLiveData<String>()
     val getAncMetaForBloodGroup = MutableLiveData<String>()
-    val ancMetaLiveDataForPregnancyHistory: LiveData<List<ExaminationsComplaintItems>> = getAncMetaForPregnancyHistory.switchMap {
+    val ancMetaLiveDataForPregnancyHistory: LiveData<List<MedicalReviewMetaItems>> = getAncMetaForPregnancyHistory.switchMap {
         motherNeonateANCRepo.getExaminationsComplaintsForAnc(it)
     }
-    val ancMetaLiveDataForBloodGroup: LiveData<List<ExaminationsComplaintItems>> =
+    val ancMetaLiveDataForBloodGroup: LiveData<List<MedicalReviewMetaItems>> =
         getAncMetaForBloodGroup.switchMap {
             motherNeonateANCRepo.getExaminationsComplaintsForAnc(it)
         }

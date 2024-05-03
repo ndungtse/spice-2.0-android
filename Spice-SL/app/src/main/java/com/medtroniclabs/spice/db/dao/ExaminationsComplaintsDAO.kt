@@ -5,25 +5,25 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.medtroniclabs.spice.data.ExaminationsComplaintItems
+import com.medtroniclabs.spice.data.MedicalReviewMetaItems
 
 @Dao
 interface ExaminationsComplaintsDAO {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertExaminationsComplaints(entityList: List<ExaminationsComplaintItems>)
+    suspend fun insertExaminationsComplaints(entityList: List<MedicalReviewMetaItems>)
 
-    @Query("DELETE FROM ExaminationComplaintsEntity WHERE type = :menuType")
+    @Query("DELETE FROM MetaItemByTypeAndCategoryEntity WHERE type = :menuType")
     suspend fun deleteExaminationsComplaints(menuType: String)
 
-    @Query("SELECT * FROM ExaminationComplaintsEntity WHERE type = :workflow ORDER BY displayOrder ASC")
-    suspend fun getExaminationsComplaintByType(workflow: String) : List<ExaminationsComplaintItems>
+    @Query("SELECT * FROM MetaItemByTypeAndCategoryEntity WHERE type = :workflow ORDER BY displayOrder ASC")
+    suspend fun getExaminationsComplaintByType(workflow: String) : List<MedicalReviewMetaItems>
 
-    @Query("DELETE FROM ExaminationComplaintsEntity WHERE type = :type")
+    @Query("DELETE FROM MetaItemByTypeAndCategoryEntity WHERE type = :type")
     suspend fun deleteExaminationsComplaintsForAnc(type: String)
 
-    @Query("SELECT * FROM examinationcomplaintsentity where category = :category")
+    @Query("SELECT * FROM MetaItemByTypeAndCategoryEntity where category = :category")
     fun getExaminationsComplaintsForAnc(
         category: String
-    ): LiveData<List<ExaminationsComplaintItems>>
+    ): LiveData<List<MedicalReviewMetaItems>>
 
 }
