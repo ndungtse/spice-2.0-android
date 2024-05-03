@@ -1,22 +1,17 @@
 package com.medtroniclabs.spice.repo
 
-import androidx.lifecycle.MutableLiveData
-import com.medtroniclabs.spice.appextensions.postError
-import com.medtroniclabs.spice.appextensions.postLoading
-import com.medtroniclabs.spice.appextensions.postSuccess
 import com.medtroniclabs.spice.common.SecuredPreference
-import com.medtroniclabs.spice.data.DiseaseCategoryItems
 import com.medtroniclabs.spice.data.AboveFiveYearsSummaryDetails
 import com.medtroniclabs.spice.data.AboveFiveYearsSummaryRequest
 import com.medtroniclabs.spice.data.AboveFiveYearsSummarySubmitRequest
+import com.medtroniclabs.spice.data.DiseaseCategoryItems
 import com.medtroniclabs.spice.data.MedicalReviewMetaItems
 import com.medtroniclabs.spice.data.model.AboveFiveYearsSubmitRequest
 import com.medtroniclabs.spice.db.local.RoomHelper
 import com.medtroniclabs.spice.network.ApiHelper
 import com.medtroniclabs.spice.network.resource.Resource
+import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class AboveFiveYearsRepository @Inject constructor(
@@ -24,34 +19,41 @@ class AboveFiveYearsRepository @Inject constructor(
     private var apiHelper: ApiHelper
 ) {
     suspend fun getStaticMetaData(
-        aboveFiveYearsMetaLiveData: MutableLiveData<Resource<Boolean>>,
         menuType: String
-    ){
-        try {
-            aboveFiveYearsMetaLiveData.postLoading()
-            withContext(Dispatchers.IO){
-                val response = apiHelper.getAboveFiveYearsMetaData()
-                if (response.isSuccessful){
-                    response.body()?.entity?.apply {
-                        roomHelper.deleteExaminationsComplaints(menuType)
-                        roomHelper.insertExaminationsComplaint(generateChipItemByType(presentingComplaints ,systemicExaminations, medicalSupplies, cost, patientStatus))
-                        roomHelper.deleteDiagnosisList()
-                        roomHelper.saveDiagnosisList(diseaseCategories)
-                    }
-                    SecuredPreference.putBoolean(
-                        SecuredPreference.EnvironmentKey.IS_ABOVE_FIVE_YEARS_LOADED.name,
-                        true
+    ): Resource<Boolean> {
+        return try {
+            val response = apiHelper.getAboveFiveYearsMetaData()
+            if (response.isSuccessful) {
+                response.body()?.entity?.apply {
+                    roomHelper.deleteExaminationsComplaints(menuType)
+                    roomHelper.insertExaminationsComplaint(
+                        generateChipItemByType(
+                            presentingComplaints,
+                            systemicExaminations,
+                            medicalSupplies,
+                            cost,
+                            patientStatus
+                        )
                     )
-                    aboveFiveYearsMetaLiveData.postSuccess()
+                    roomHelper.deleteDiagnosisList()
+                    roomHelper.saveDiagnosisList(diseaseCategories)
                 }
+                SecuredPreference.putBoolean(
+                    SecuredPreference.EnvironmentKey.IS_ABOVE_FIVE_YEARS_LOADED.name,
+                    true
+                )
+                Resource(state = ResourceState.SUCCESS, true)
+            } else {
+                Resource(state = ResourceState.ERROR)
             }
-        } catch (e:Exception){
+
+        } catch (e: Exception) {
             e.printStackTrace()
-            aboveFiveYearsMetaLiveData.postError()
             SecuredPreference.putBoolean(
                 SecuredPreference.EnvironmentKey.IS_ABOVE_FIVE_YEARS_LOADED.name,
                 false
             )
+            Resource(state = ResourceState.ERROR)
         }
 
     }
@@ -76,86 +78,78 @@ class AboveFiveYearsRepository @Inject constructor(
     }
 
     suspend fun createAboveFiveYears(
-        request: AboveFiveYearsSubmitRequest,
-        aboveFiveYearsCreateResponse: MutableLiveData<Resource<AboveFiveYearsSummaryDetails>>
-    ) {
-        try {
-            aboveFiveYearsCreateResponse.postLoading()
+        request: AboveFiveYearsSubmitRequest
+    ): Resource<AboveFiveYearsSummaryDetails> {
+        return try {
             val response = apiHelper.createAboveFiveYearsResult(request)
             if (response.isSuccessful) {
                 val res = response.body()
-                if (res?.status == true)
-                    aboveFiveYearsCreateResponse.postSuccess(res.entity)
-                else
-                    aboveFiveYearsCreateResponse.postError()
-            } else
-                aboveFiveYearsCreateResponse.postError()
+                if (res?.status == true) {
+                    Resource(state = ResourceState.SUCCESS, data = res.entity)
+                } else {
+                    Resource(state = ResourceState.ERROR)
+                }
+            } else{
+                Resource(state = ResourceState.ERROR)
+            }
         } catch (e: Exception) {
-            aboveFiveYearsCreateResponse.postError()
+            Resource(state = ResourceState.ERROR)
         }
     }
 
     suspend fun getSummaryDetailMetaItems(
-        type: String,
-        summaryMetaListItems: MutableLiveData<Resource<List<MedicalReviewMetaItems>>>
-    ) {
-        try {
-            summaryMetaListItems.postLoading()
+        type: String
+    ): Resource<List<MedicalReviewMetaItems>> {
+        return try {
             val response = roomHelper.getSummaryDetailMetaItems(type)
-            summaryMetaListItems.postSuccess(response)
+            Resource(state = ResourceState.SUCCESS, data = response)
         } catch (e: Exception) {
-            summaryMetaListItems.postError()
+            Resource(state = ResourceState.ERROR)
         }
     }
 
     suspend fun getAboveFiveYearsSummaryDetails(
-        request: AboveFiveYearsSummaryRequest,
-        summaryDetailsLiveData: MutableLiveData<Resource<AboveFiveYearsSummaryDetails>>
-    ) {
-        try {
-            summaryDetailsLiveData.postLoading()
+        request: AboveFiveYearsSummaryRequest
+    ): Resource<AboveFiveYearsSummaryDetails> {
+        return try {
             val response = apiHelper.getAboveFiveYearsSummaryDetails(request)
             if (response.isSuccessful) {
-                response.body()?.entity?.let {
-                    summaryDetailsLiveData.postSuccess(it)
-                }
+                Resource(state = ResourceState.SUCCESS, data = response.body()?.entity)
             } else {
-                summaryDetailsLiveData.postError()
+                Resource(state = ResourceState.ERROR)
             }
         } catch (e: Exception) {
-            summaryDetailsLiveData.postError()
+            Resource(state = ResourceState.ERROR)
         }
     }
 
     suspend fun aboveFiveYearsSummaryCreate(
         request: AboveFiveYearsSummarySubmitRequest,
-        summaryCreateResponse: MutableLiveData<Resource<HashMap<String,Any>>>
-    ) {
-        try {
-            summaryCreateResponse.postLoading()
+    ): Resource<HashMap<String, Any>> {
+        return try {
             val response = apiHelper.aboveFiveYearsSummaryCreate(request)
             if (response.isSuccessful) {
                 val res = response.body()
-                if (res?.status == true)
-                    summaryCreateResponse.postSuccess()
-                else
-                    summaryCreateResponse.postError()
-            } else
-                summaryCreateResponse.postError()
+                if (res?.status == true) {
+                    Resource(state = ResourceState.SUCCESS)
+                } else {
+                    Resource(state = ResourceState.ERROR)
+                }
+            } else{
+                Resource(state = ResourceState.ERROR)
+            }
+
         } catch (e: Exception) {
-            summaryCreateResponse.postError()
+            Resource(state = ResourceState.ERROR)
         }
     }
 
-    suspend fun getDiagnosisList(
-        diagnosisList: MutableLiveData<Resource<List<DiseaseCategoryItems>>>
-    ){
-        try {
-            diagnosisList.postLoading()
+    suspend fun getDiagnosisList() : Resource<List<DiseaseCategoryItems>> {
+      return  try {
             val response = roomHelper.getDiagnosisList()
-            diagnosisList.postSuccess(response)
+            Resource(state = ResourceState.SUCCESS, response)
         } catch (e: Exception) {
-            diagnosisList.postError()
+            Resource(state = ResourceState.ERROR)
         }
     }
 }

@@ -3,6 +3,7 @@ package com.medtroniclabs.spice.ui.medicalreview.abovefiveyears
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.data.AboveFiveYearsSummaryDetails
 import com.medtroniclabs.spice.data.AboveFiveYearsSummaryRequest
 import com.medtroniclabs.spice.data.AboveFiveYearsSummarySubmitRequest
@@ -37,28 +38,32 @@ class AboveFiveYearsViewModel @Inject constructor(
 
     fun getStaticMetaData(menuType: String) {
         viewModelScope.launch(dispatcherIO){
-            repository.getStaticMetaData(aboveFiveYearsMetaLiveData, menuType)
+            aboveFiveYearsMetaLiveData.postLoading()
+            aboveFiveYearsMetaLiveData.postValue(repository.getStaticMetaData(menuType))
         }
     }
 
     fun createAboveFiveYearsResult(request: AboveFiveYearsSubmitRequest){
         if (connectivityManager.isNetworkAvailable()){
             viewModelScope.launch(dispatcherIO) {
-                repository.createAboveFiveYears(request, aboveFiveYearsCreateResponse)
+                aboveFiveYearsCreateResponse.postLoading()
+                aboveFiveYearsCreateResponse.postValue(repository.createAboveFiveYears(request))
             }
         }
     }
 
     fun getSummaryListMetaItems(type: String) {
         viewModelScope.launch(dispatcherIO) {
-            repository.getSummaryDetailMetaItems(type, summaryMetaListItems)
+            summaryMetaListItems.postLoading()
+            summaryMetaListItems.postValue(repository.getSummaryDetailMetaItems(type))
         }
     }
 
     fun getAboveFiveYearsSummaryDetails(request: AboveFiveYearsSummaryRequest){
         if (connectivityManager.isNetworkAvailable()){
             viewModelScope.launch(dispatcherIO) {
-                repository.getAboveFiveYearsSummaryDetails(request, summaryDetailsLiveData)
+                summaryDetailsLiveData.postLoading()
+                summaryDetailsLiveData.postValue(repository.getAboveFiveYearsSummaryDetails(request))
             }
         }
     }
@@ -66,7 +71,8 @@ class AboveFiveYearsViewModel @Inject constructor(
     fun aboveFiveYearsSummaryCreate(request: AboveFiveYearsSummarySubmitRequest){
         if (connectivityManager.isNetworkAvailable()){
             viewModelScope.launch(dispatcherIO) {
-                repository.aboveFiveYearsSummaryCreate(request, summaryCreateResponse)
+                summaryCreateResponse.postLoading()
+                summaryCreateResponse.postValue(repository.aboveFiveYearsSummaryCreate(request))
             }
         }
     }
