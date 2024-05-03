@@ -258,7 +258,7 @@ class FilterBottomSheetDialogFragment : BottomSheetDialogFragment(), View.OnClic
     private fun showDatePickerDialog(isFromDate: Boolean, text: String?) {
         var date: Triple<Int?, Int?, Int?>? = null
         if (!text.isNullOrBlank())
-            date = DateUtils.convertddMMMToddMM(text)
+            date = DateUtils.convertedMMMToddMM(text)
         val minMaxDate = getMinDate(isFromDate)
         if (datePickerDialog == null) {
             datePickerDialog = ViewUtils.showDatePicker(

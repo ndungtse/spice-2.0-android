@@ -328,4 +328,5 @@ object DateUtils {
         val calendar = Calendar.getInstance()
         return getDateString(calendar.time.time, DATE_FORMAT_yyyyMMddHHmmssZZZZZ)
     }
+
 }

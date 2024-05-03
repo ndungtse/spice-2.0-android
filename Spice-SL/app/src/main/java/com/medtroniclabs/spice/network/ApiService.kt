@@ -10,6 +10,8 @@ import com.medtroniclabs.spice.data.FormRequest
 import com.medtroniclabs.spice.data.FormResponse
 import com.medtroniclabs.spice.data.LabourDeliveryMetaResponse
 import com.medtroniclabs.spice.data.LoginResponse
+import com.medtroniclabs.spice.data.MedicationResponse
+import com.medtroniclabs.spice.data.MedicationSearchRequest
 import com.medtroniclabs.spice.data.MetaDataResponse
 import com.medtroniclabs.spice.data.MotherNeonateAncMetaResponse
 import com.medtroniclabs.spice.data.UnderTwoMonthsMetaResponse
@@ -87,4 +89,7 @@ interface ApiService {
 
     @POST("/spice-service/static-data/meta-data/mother-delivery")
     suspend fun getLabourDeliveryMetaData() : Response<APIResponse<LabourDeliveryMetaResponse>>
+
+    @POST("/admin-service/medication/searchByName")
+    suspend fun searchMedicationByName(@Body request: MedicationSearchRequest):Response<APIResponse<ArrayList<MedicationResponse>>>
 }

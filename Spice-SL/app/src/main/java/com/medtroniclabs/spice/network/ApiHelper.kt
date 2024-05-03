@@ -10,6 +10,8 @@ import com.medtroniclabs.spice.data.FormRequest
 import com.medtroniclabs.spice.data.FormResponse
 import com.medtroniclabs.spice.data.LabourDeliveryMetaResponse
 import com.medtroniclabs.spice.data.LoginResponse
+import com.medtroniclabs.spice.data.MedicationResponse
+import com.medtroniclabs.spice.data.MedicationSearchRequest
 import com.medtroniclabs.spice.data.MetaDataResponse
 import com.medtroniclabs.spice.data.MotherNeonateAncMetaResponse
 import com.medtroniclabs.spice.data.UnderTwoMonthsMetaResponse
@@ -32,7 +34,7 @@ interface ApiHelper {
     suspend fun getMetaDataInformation(): Response<APIResponse<MetaDataResponse>>
     suspend fun getForms(formRequest: FormRequest): Response<APIResponse<FormResponse>>
     suspend fun getFormMetadata(request: FormMetaRequest): Response<APIResponse<UserSymptomsEntity>>
-    suspend fun postOfflineSync(request: Map<String,Any>): Response<SyncResponse>
+    suspend fun postOfflineSync(request: Map<String, Any>): Response<SyncResponse>
     suspend fun getOfflineSyncStatus(request: RequestGetSyncStatus): Response<SyncResponse>
     suspend fun getHouseholdAndMembers(request: RequestAllEntities): Response<APIResponse<List<HouseHold>>>
 
@@ -49,4 +51,6 @@ interface ApiHelper {
     suspend fun getUnderTwoMonthsMetaData(): Response<APIResponse<UnderTwoMonthsMetaResponse>>
     suspend fun aboveFiveYearsSummaryCreate(request: AboveFiveYearsSummarySubmitRequest): Response<APIResponse<HashMap<String,Any>>>
     suspend fun getLabourDeliveryMetaData(): Response<APIResponse<LabourDeliveryMetaResponse>>
+    suspend fun searchMedicationByName(request: MedicationSearchRequest): Response<APIResponse<ArrayList<MedicationResponse>>>
+
 }

@@ -10,6 +10,8 @@ import com.medtroniclabs.spice.data.FormRequest
 import com.medtroniclabs.spice.data.FormResponse
 import com.medtroniclabs.spice.data.LabourDeliveryMetaResponse
 import com.medtroniclabs.spice.data.LoginResponse
+import com.medtroniclabs.spice.data.MedicationResponse
+import com.medtroniclabs.spice.data.MedicationSearchRequest
 import com.medtroniclabs.spice.data.MetaDataResponse
 import com.medtroniclabs.spice.data.MotherNeonateAncMetaResponse
 import com.medtroniclabs.spice.data.UnderTwoMonthsMetaResponse
@@ -102,5 +104,9 @@ class ApiHelperImpl @Inject constructor(private val apiService: ApiService) : Ap
 
     override suspend fun getLabourDeliveryMetaData(): Response<APIResponse<LabourDeliveryMetaResponse>> {
         return apiService.getLabourDeliveryMetaData()
+    }
+
+    override suspend fun searchMedicationByName(request: MedicationSearchRequest): Response<APIResponse<ArrayList<MedicationResponse>>> {
+        return apiService.searchMedicationByName(request)
     }
 }
