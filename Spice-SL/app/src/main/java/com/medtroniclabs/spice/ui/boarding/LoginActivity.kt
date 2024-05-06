@@ -9,6 +9,7 @@ import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.hideKeyboard
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DefinedParams
+import com.medtroniclabs.spice.common.EncryptionUtil
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.Validator
 import com.medtroniclabs.spice.databinding.ActivityLoginBinding
@@ -18,7 +19,6 @@ import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.boarding.viewmodel.LoginViewModel
 import com.medtroniclabs.spice.ui.landing.LandingActivity
-import com.medtroniclabs.spice.ui.mypatients.PatientSearchActivity
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -58,19 +58,6 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
             }
         }
 
-        viewModel.noInternetResponse.observe(this) { isOffline ->
-            if (isOffline && CommonUtils.isChw()) {
-                showErrorDialogue(
-                    getString(R.string.alert),
-                    message = getString(R.string.offline_login_message),
-                    isNegativeButtonNeed = true
-                ) { buttonState ->
-                    if (buttonState) {
-                        handleOfflineLoginSuccess()
-                    }
-                }
-            }
-        }
     }
 
     private fun triggerResourceLoading() {
@@ -119,12 +106,12 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
     }
 
     private fun validateLoginInputs() {
-        val userName = binding.userName.text
-        val password = binding.password.text
+        val userName = binding.userName.text.toString().trim()
+        val password = binding.password.text.toString().trim()
 
         var isValid: Boolean
 
-        if (userName.isNullOrBlank()) {
+        if (userName.isBlank()) {
             isValid = false
             binding.tvUserEmailError.visibility = View.VISIBLE
             binding.tvUserEmailError.text = getString(R.string.email_cannot_be_empty)
@@ -132,15 +119,16 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
             isValid = validateEmailPhoneInput(userName)
         }
 
-        if (isValid && password.isNullOrBlank()) {
+        if (isValid && password.isBlank()) {
             isValid = false
             binding.tvUserEmailError.visibility = View.GONE
             binding.tvUserPasswordError.visibility = View.VISIBLE
             binding.tvUserPasswordError.text = getString(R.string.password_cannot_be_empty)
         }
 
-        val oldUserName = SecuredPreference.getString(SecuredPreference.EnvironmentKey.USERNAME.name)
-        if (oldUserName != null && oldUserName != userName.toString().trim()) {
+        val oldUserName =
+            SecuredPreference.getString(SecuredPreference.EnvironmentKey.USERNAME.name)
+        if (oldUserName != null && oldUserName != userName) {
             isValid = false
             showErrorDialogue(
                 getString(R.string.warning_different_login_title),
@@ -153,20 +141,44 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
         if (isValid) {
             binding.tvUserEmailError.visibility = View.GONE
             binding.tvUserPasswordError.visibility = View.GONE
-            viewModel.doLogin(userName.toString().trim(), password.toString().trim(), this)
+            if (!connectivityManager.isNetworkAvailable()) {
+                showErrorSnackBar(getString(R.string.no_internet_error))
+                val isToShowAlert = (userName == SecuredPreference.getString(
+                    SecuredPreference.EnvironmentKey.USERNAME.name
+                ) && EncryptionUtil.getSecurePassword(
+                    password
+                ) == SecuredPreference.getString(
+                    SecuredPreference.EnvironmentKey.PASSWORD.name
+                ))
+                if (isToShowAlert && CommonUtils.isChw()) {
+                    showErrorDialogue(
+                        getString(R.string.alert),
+                        message = getString(R.string.offline_login_message),
+                        isNegativeButtonNeed = true
+                    ) { buttonState ->
+                        if (buttonState) {
+                            handleOfflineLoginSuccess()
+                        }
+                    }
+                }
+
+            } else {
+                viewModel.doLogin(userName, password)
+            }
+
         }
     }
 
-    private fun validateEmailPhoneInput(userName: Editable): Boolean {
+    private fun validateEmailPhoneInput(userName: String): Boolean {
         var isValid = true
         if (userName.contains(DefinedParams.AT_CHAR)) {
-            if (!Validator.isEmailValid(userName.toString())) {
+            if (!Validator.isEmailValid(userName)) {
                 isValid = false
                 binding.tvUserEmailError.visibility = View.VISIBLE
                 binding.tvUserEmailError.text = getString(R.string.email_phone_invalid)
             }
         } else {
-            if (!(Validator.isValidMobileNumber(userName.toString()))) {
+            if (!(Validator.isValidMobileNumber(userName))) {
                 isValid = false
                 binding.tvUserEmailError.visibility = View.VISIBLE
                 binding.tvUserEmailError.text = getString(R.string.email_phone_invalid)

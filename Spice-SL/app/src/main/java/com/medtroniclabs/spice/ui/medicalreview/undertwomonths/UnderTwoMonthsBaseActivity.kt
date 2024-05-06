@@ -14,7 +14,8 @@ import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.medicalreview.ClinicalNotesFragment
 import com.medtroniclabs.spice.ui.medicalreview.ExaminationCardFragment
 import com.medtroniclabs.spice.ui.medicalreview.PresentingComplaintsFragment
-import com.medtroniclabs.spice.ui.medicalreview.abovefiveyears.ExaminationsComplaintsViewModel
+import com.medtroniclabs.spice.ui.medicalreview.abovefiveyears.ClinicalNotesViewModel
+import com.medtroniclabs.spice.ui.medicalreview.abovefiveyears.PresentingComplaintsViewModel
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import com.medtroniclabs.spice.ui.mypatients.fragment.MedicalReviewPatientDiagnosisFragment
@@ -27,7 +28,8 @@ class UnderTwoMonthsBaseActivity : BaseActivity(), View.OnClickListener {
 
     private lateinit var binding: ActivityUnderTwoMonthsBaseBinding
     private val viewModel: UnderTwoMonthViewModel by viewModels()
-    private val clinicalNotesViewModel : ExaminationsComplaintsViewModel by viewModels()
+    private val clinicalNotesViewModel : ClinicalNotesViewModel by viewModels()
+    private val presentingComplaintsViewModel : PresentingComplaintsViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityUnderTwoMonthsBaseBinding.inflate(layoutInflater)
@@ -157,7 +159,7 @@ class UnderTwoMonthsBaseActivity : BaseActivity(), View.OnClickListener {
         val clinicalSummaryFragment =
             supportFragmentManager.findFragmentById(R.id.clinicalSummaryContainer) as? ClinicalSummaryFragment
         val clinicalSummaryFilled = clinicalSummaryFragment?.isAnyEditTextFilled() ?: false
-        return clinicalSummaryFilled && clinicalNotesViewModel.enteredClinicalNotes.isNotBlank() && clinicalNotesViewModel.enteredComplaintNotes.isNotBlank()
+        return clinicalSummaryFilled && clinicalNotesViewModel.enteredClinicalNotes.isNotBlank() && presentingComplaintsViewModel.enteredComplaintNotes.isNotBlank()
     }
 
     private fun validateInputs(): Boolean? {

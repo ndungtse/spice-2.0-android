@@ -1,10 +1,6 @@
 package com.medtroniclabs.spice.ui.boarding.repo
 
-import androidx.lifecycle.MutableLiveData
 import com.google.gson.Gson
-import com.medtroniclabs.spice.appextensions.postError
-import com.medtroniclabs.spice.appextensions.postLoading
-import com.medtroniclabs.spice.appextensions.postSuccess
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
@@ -30,6 +26,7 @@ import com.medtroniclabs.spice.db.entity.VillageEntity
 import com.medtroniclabs.spice.db.local.RoomHelper
 import com.medtroniclabs.spice.network.ApiHelper
 import com.medtroniclabs.spice.network.resource.Resource
+import com.medtroniclabs.spice.network.resource.ResourceState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
@@ -42,13 +39,8 @@ class LoginRepository @Inject constructor(
     private var roomHelper: RoomHelper
 ) {
 
-    suspend fun doLogin(
-        username: String,
-        password: String,
-        loginResponseLiveDta: MutableLiveData<Resource<LoginResponse>>
-    ): String {
-        try {
-            loginResponseLiveDta.postLoading()
+    suspend fun doLogin(username: String, password: String): Resource<LoginResponse> {
+        return try {
             val securePassword = EncryptionUtil.getSecurePassword(password)
             val builder = MultipartBody.Builder()
             builder.setType(MultipartBody.FORM)
@@ -63,14 +55,16 @@ class LoginRepository @Inject constructor(
                     SecuredPreference.putUserDetails(it)
                     saveUserNameAndPassword(username, securePassword)
                 }
-                loginResponseLiveDta.postSuccess(response.body())
+                Resource(state = ResourceState.SUCCESS, data = response.body())
             } else {
-                loginResponseLiveDta.postError(getErrorMessage(response.errorBody()))
+                Resource(
+                    state = ResourceState.ERROR,
+                    message = getErrorMessage(response.errorBody())
+                )
             }
         } catch (e: Exception) {
-            loginResponseLiveDta.postError()
+            Resource(state = ResourceState.ERROR)
         }
-        return ""
     }
 
     private fun getErrorMessage(errorBody: ResponseBody?): String? {
@@ -114,12 +108,10 @@ class LoginRepository @Inject constructor(
     }
 
     suspend fun getMetaDataInformation(
-        metaDataCompleteLiveData: MutableLiveData<Resource<Boolean>>,
         workflowNames: MutableList<String>,
         meta: MutableList<String>
-    ) {
-        try {
-            metaDataCompleteLiveData.postLoading()
+    ): Resource<Boolean> {
+        return try {
             withContext(Dispatchers.IO) {
                 val response = async { apiHelper.getMetaDataInformation() }.await()
 
@@ -144,16 +136,14 @@ class LoginRepository @Inject constructor(
                                 async { apiHelper.getForms(FormRequest(workflowNames)) }.await()
                             if (formsResponse.isSuccessful && formsResponse.body()?.status == true) {
                                 if (formsResponse.body()?.entity == null) {
-                                    metaDataCompleteLiveData.postError()
-                                    return@withContext
+                                    return@with Resource(state = ResourceState.ERROR)
                                 }
                                 formsResponse.body()?.entity?.apply {
                                     saveFormsInDb(formData)
                                     saveClinicalWorkflowsInDb(clinicalTools)
                                 }
                             } else {
-                                metaDataCompleteLiveData.postError()
-                                return@withContext
+                                return@with Resource(state = ResourceState.ERROR)
                             }
                         }
                         if (meta.isNotEmpty()) {
@@ -161,28 +151,26 @@ class LoginRepository @Inject constructor(
                                 async { apiHelper.getFormMetadata(FormMetaRequest(meta)) }.await()
                             if (metadataResponse.isSuccessful && metadataResponse.body()?.status == true) {
                                 if (metadataResponse.body()?.entity == null) {
-                                    metaDataCompleteLiveData.postError()
-                                    return@withContext
+                                    return@with Resource(state = ResourceState.ERROR)
                                 }
                                 metadataResponse.body()?.entity?.symptoms?.let {
                                     roomHelper.deleteAllSymptoms()
                                     roomHelper.insertSymptoms(it)
                                 }
                             } else {
-                                metaDataCompleteLiveData.postError()
-                                return@withContext
+                                return@with Resource(state = ResourceState.ERROR)
                             }
                         }
                         saveUserIsLogin()
-                        metaDataCompleteLiveData.postSuccess()
+                        Resource(state = ResourceState.SUCCESS)
                     }
                 } else {
-                    metaDataCompleteLiveData.postError()
+                    Resource(state = ResourceState.ERROR)
                 }
             }
         } catch (e: Exception) {
             e.printStackTrace()
-            metaDataCompleteLiveData.postError()
+            Resource(state = ResourceState.ERROR)
         }
     }
 
@@ -192,7 +180,10 @@ class LoginRepository @Inject constructor(
         }
 
         organizationId?.let {
-            SecuredPreference.putString(SecuredPreference.EnvironmentKey.ORGANIZATION_FHIR_ID.name, it)
+            SecuredPreference.putString(
+                SecuredPreference.EnvironmentKey.ORGANIZATION_FHIR_ID.name,
+                it
+            )
         }
     }
 
@@ -255,10 +246,6 @@ class LoginRepository @Inject constructor(
         )
     }
 
-    private suspend fun saveVillage() {
-
-    }
-
     private suspend fun saveMenusInDb(menus: ArrayList<MenuDetail>, roleName: String) {
         roomHelper.deleteAllMenus()
         menus.forEach { menu ->
@@ -296,38 +283,24 @@ class LoginRepository @Inject constructor(
         )
     }
 
-    suspend fun getMenu(
-        menuListLiveData: MutableLiveData<Resource<List<MenuEntity>>>,
-    ) {
-        try {
-            menuListLiveData.postLoading()
-            val data = roomHelper.getMenus()
-            menuListLiveData.postSuccess(data)
-        } catch (e: Exception) {
-            menuListLiveData.postError()
-        }
-    }
 
-    suspend fun getMenuForClinicalWorkflows(
-        menuListLiveData: MutableLiveData<Resource<List<MenuEntity>>>,
-        selectedHouseholdMemberID: Long,
-    ) {
-        try {
-            menuListLiveData.postLoading()
+    suspend fun getMenuForClinicalWorkflows(selectedHouseholdMemberID: Long): Resource<List<MenuEntity>> {
+        return try {
             if (selectedHouseholdMemberID != -1L) {
                 val memberData = roomHelper.getDobAndGenderById(selectedHouseholdMemberID)
                 val list = roomHelper.getClinicalWorkflowId(
                     memberData.gender,
                     DateUtils.dateToMonths(memberData.dateOfBirth) ?: 0
                 )
-                menuListLiveData.postSuccess(
-                    convertorClinicalWorkflowsToMenuEntity(list)
+                Resource(
+                    state = ResourceState.SUCCESS,
+                    data = convertorClinicalWorkflowsToMenuEntity(list)
                 )
             } else {
-                menuListLiveData.postError()
+                Resource(state = ResourceState.ERROR)
             }
         } catch (e: Exception) {
-            menuListLiveData.postError()
+            Resource(state = ResourceState.ERROR)
         }
     }
 
@@ -343,38 +316,41 @@ class LoginRepository @Inject constructor(
         }
     }
 
-    suspend fun getUserProfile(userProfileLiveData: MutableLiveData<Resource<UserProfile>>) {
-        try {
-            userProfileLiveData.postLoading()
+    suspend fun getUserProfile(): Resource<UserProfile> {
+        return try {
             val data = roomHelper.getUserProfile()
             val userProfile: UserProfile =
                 Gson().fromJson(data.profileData, UserProfile::class.java)
-            userProfileLiveData.postSuccess(userProfile)
+            Resource(state = ResourceState.SUCCESS, data = userProfile)
         } catch (e: Exception) {
-            userProfileLiveData.postError()
+            Resource(state = ResourceState.ERROR)
         }
     }
 
-
-    suspend fun getAllVillagesName(villageListResponse: MutableLiveData<Resource<List<VillageEntity>>>) {
-        try {
-            villageListResponse.postLoading()
+    suspend fun getAllVillagesName(): Resource<List<VillageEntity>> {
+        return try {
             val response = roomHelper.getAllVillageEntity()
-            villageListResponse.postSuccess(response)
+            Resource(state = ResourceState.SUCCESS, data = response)
         } catch (e: Exception) {
-            // occurred error response
-            villageListResponse.postError()
+            Resource(state = ResourceState.ERROR)
         }
     }
 
-    suspend fun getDefaultHealthFacility(defaultHealthFacilityLiveData: MutableLiveData<Resource<HealthFacilityEntity?>>) {
-        try {
-            defaultHealthFacilityLiveData.postLoading()
+    suspend fun getDefaultHealthFacility(): Resource<HealthFacilityEntity> {
+        return try {
             val response = roomHelper.getDefaultHealthFacility()
-            defaultHealthFacilityLiveData.postSuccess(response)
+            Resource(state = ResourceState.SUCCESS, data = response)
         } catch (e: Exception) {
-            // occurred error response
-            defaultHealthFacilityLiveData.postError()
+            Resource(state = ResourceState.ERROR)
+        }
+    }
+
+    suspend fun getMenu(): Resource<List<MenuEntity>> {
+        return try {
+            val data = roomHelper.getMenus()
+            Resource(state = ResourceState.SUCCESS, data = data)
+        } catch (e: Exception) {
+            Resource(state = ResourceState.ERROR)
         }
     }
 }

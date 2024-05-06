@@ -3,6 +3,7 @@ package com.medtroniclabs.spice.ui.mypatients.viewmodel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.model.PatientDetailRequest
 import com.medtroniclabs.spice.model.PatientListRespModel
@@ -31,16 +32,15 @@ class ReferralTicketViewModel @Inject constructor(
 
     fun getPatients(id: String) {
         viewModelScope.launch(dispatcherIO) {
-            patientRepository.getPatients(patientDetailsLiveData, PatientDetailRequest(patientId = id))
+            patientDetailsLiveData.postLoading()
+            patientDetailsLiveData.postValue(patientRepository.getPatients(PatientDetailRequest(patientId = id)))
         }
     }
 
     fun getReferralTicket(patientId: String? = null, ticketId: String? = null) {
         viewModelScope.launch(dispatcherIO) {
-            patientRepository.getReferralTicket(
-                referralTicketLiveData,
-                PatientDetailRequest(patientId = patientId, ticketId = ticketId)
-            )
+            referralTicketLiveData.postLoading()
+            referralTicketLiveData.postValue(patientRepository.getReferralTicket(PatientDetailRequest(patientId = patientId, ticketId = ticketId)))
         }
     }
 }

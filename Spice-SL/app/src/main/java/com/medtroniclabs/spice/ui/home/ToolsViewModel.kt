@@ -3,6 +3,7 @@ package com.medtroniclabs.spice.ui.home
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.db.entity.MenuEntity
 import com.medtroniclabs.spice.di.IoDispatcher
@@ -27,7 +28,8 @@ class ToolsViewModel @Inject constructor(
 
     fun getMenuForClinicalWorkflows() {
         viewModelScope.launch(dispatcherIO) {
-            loginRepository.getMenuForClinicalWorkflows(menuListLiveData, selectedHouseholdMemberID)
+            menuListLiveData.postLoading()
+            menuListLiveData.postValue(loginRepository.getMenuForClinicalWorkflows(selectedHouseholdMemberID))
         }
     }
 

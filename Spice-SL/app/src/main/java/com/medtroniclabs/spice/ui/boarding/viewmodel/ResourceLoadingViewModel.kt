@@ -41,7 +41,7 @@ class ResourceLoadingViewModel @Inject constructor(
                 metaDataCompleteLiveData.postError()
                 return@launch
             }
-            loginRepository.getMetaDataInformation(metaDataCompleteLiveData,workflowNames,meta)
+            metaDataCompleteLiveData.postValue(loginRepository.getMetaDataInformation(workflowNames,meta))
         }
     }
 

@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.postError
+import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.common.EncryptionUtil
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.LoginResponse
@@ -33,21 +34,11 @@ class LoginViewModel @Inject constructor(
 
     fun doLogin(
         username: String,
-        password: String,
-        context: Context
+        password: String
     ) {
         viewModelScope.launch(dispatcherIO) {
-            if (!connectivityManager.isNetworkAvailable()) {
-                loginResponseLiveData.postError(context.getString(R.string.no_internet_error))
-                val isToShowAlert =
-                    (username == SecuredPreference.getString(SecuredPreference.EnvironmentKey.USERNAME.name)
-                            && EncryptionUtil.getSecurePassword(password) == SecuredPreference.getString(
-                        SecuredPreference.EnvironmentKey.PASSWORD.name
-                    ))
-                noInternetResponse.postValue(isToShowAlert)
-                return@launch
-            }
-            loginRepository.doLogin(username, password, loginResponseLiveData)
+            loginResponseLiveData.postLoading()
+            loginResponseLiveData.postValue(loginRepository.doLogin(username,password))
         }
     }
 

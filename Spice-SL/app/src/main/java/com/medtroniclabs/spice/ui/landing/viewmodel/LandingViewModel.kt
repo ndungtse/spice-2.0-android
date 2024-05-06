@@ -3,6 +3,7 @@ package com.medtroniclabs.spice.ui.landing.viewmodel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.data.UserProfile
 import com.medtroniclabs.spice.db.entity.HealthFacilityEntity
 import com.medtroniclabs.spice.db.entity.MenuEntity
@@ -28,25 +29,29 @@ class LandingViewModel @Inject constructor(
 
     fun getMenus() {
         viewModelScope.launch(dispatcherIO) {
-            loginRepository.getMenu(menuListLiveData)
+            menuListLiveData.postLoading()
+            menuListLiveData.postValue(loginRepository.getMenu())
         }
     }
 
     fun getUserProfile() {
         viewModelScope.launch(dispatcherIO) {
-            loginRepository.getUserProfile(userProfileLiveData)
+            userProfileLiveData.postLoading()
+            userProfileLiveData.postValue(loginRepository.getUserProfile())
         }
     }
 
     fun getAllVillagesName() {
         viewModelScope.launch(dispatcherIO) {
-            loginRepository.getAllVillagesName(villageListResponse)
+            villageListResponse.postLoading()
+            villageListResponse.postValue(loginRepository.getAllVillagesName())
         }
     }
 
     fun getDefaultHealthFacility() {
         viewModelScope.launch(dispatcherIO) {
-            loginRepository.getDefaultHealthFacility(defaultHealthFacilityLiveData)
+            defaultHealthFacilityLiveData.postLoading()
+            defaultHealthFacilityLiveData.postValue(loginRepository.getDefaultHealthFacility())
         }
     }
 }
