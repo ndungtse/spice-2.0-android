@@ -1,14 +1,13 @@
 package com.medtroniclabs.spice.ui.medicalreview.undertwomonths
 
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.EditText
 import android.widget.TextView
+import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
@@ -31,7 +30,7 @@ import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
 
 class ClinicalSummaryFragment : BaseFragment(), View.OnClickListener {
     private lateinit var binding: FragmentClinicalSummaryBinding
-    val viewModel: UnderTwoMonthViewModel by activityViewModels()
+    val viewModel: ClinicalSummaryViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -44,21 +43,40 @@ class ClinicalSummaryFragment : BaseFragment(), View.OnClickListener {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        (super.onViewCreated(view, savedInstanceState))
+        super.onViewCreated(view, savedInstanceState)
         initView()
+        initListeners()
         initializeDeliveryTypeItem()
         clickListener()
     }
 
-    private fun initializeEditText() {
-        with(binding) {
-            etHeight.addTextChangedListener(textWatcher)
-            etWeight.addTextChangedListener(textWatcher)
-            etTemperature.addTextChangedListener(textWatcher)
-            etRespirationRate.addTextChangedListener(textWatcher)
-            etRepeat.addTextChangedListener(textWatcher)
-            etWAZ.addTextChangedListener(textWatcher)
-            etWHZ.addTextChangedListener(textWatcher)
+    private fun initListeners() {
+        binding.etWeight.doAfterTextChanged {
+            viewModel.updateWeight(it.toString())
+        }
+        binding.etHeight.doAfterTextChanged {
+            viewModel.updateHeight(it.toString())
+        }
+        binding.etTemperature.doAfterTextChanged {
+            viewModel.updateTemperature(it.toString())
+        }
+        binding.etRespirationRate.doAfterTextChanged {
+            viewModel.updateRespiratoryRate(
+                it?.trim().toString(),
+                binding.etRepeat.text?.trim().toString()
+            )
+        }
+        binding.etRepeat.doAfterTextChanged {
+            viewModel.updateRespiratoryRate(
+                binding.etRespirationRate.text?.trim().toString(),
+                it?.trim().toString()
+            )
+        }
+        binding.etWAZ.doAfterTextChanged {
+            viewModel.updateWaz(it?.trim().toString())
+        }
+        binding.etWHZ.doAfterTextChanged {
+            viewModel.updateWhz(it?.trim().toString())
         }
     }
 
@@ -69,7 +87,6 @@ class ClinicalSummaryFragment : BaseFragment(), View.OnClickListener {
     }
 
     fun initView() {
-        initializeEditText()
         getBreastFeedingFlowData().let {
             val view = SingleSelectionCustomView(binding.root.context)
             view.tag = BREAST_FEEDING_TAG
@@ -117,20 +134,20 @@ class ClinicalSummaryFragment : BaseFragment(), View.OnClickListener {
     private var breastFeedingSelectionCallback: ((selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit)? =
         { selectedID, _, _, _ ->
             viewModel.resultBreastFeedingHashMap[BREAST_FEEDING_TAG] = selectedID as String
-            (requireActivity() as? UnderTwoMonthsBaseActivity)?.updateNextButtonState()
             enableExclusiveBreastFeeding(selectedID)
+            viewModel.updateBreastFeeding()
         }
 
     private var vitaminAMotherSelectionCallBack: ((selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit)? =
         { selectedID, _, _, _ ->
             viewModel.resultMotherVitaminHashMap[MOTHER_VITAMIN_TAG] = selectedID as String
-            (requireActivity() as? UnderTwoMonthsBaseActivity)?.updateNextButtonState()
+            viewModel.updateVitaminAForMother()
         }
 
     private var exclusiveBreastFeedingSelectionCallBack: ((selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit)? =
         { selectedID, _, _, _ ->
             viewModel.exclusiveBreastFeedHashMap[EXCLUSIVE_BREAST_FEED_TAG] = selectedID as String
-            (requireActivity() as? UnderTwoMonthsBaseActivity)?.updateNextButtonState()
+            viewModel.updateExclusiveBreastFeeding()
         }
 
     private fun enableExclusiveBreastFeeding(selectedID: Any?) {
@@ -138,6 +155,7 @@ class ClinicalSummaryFragment : BaseFragment(), View.OnClickListener {
             binding.exclusiveBreastFeedingGroup.visible()
         } else {
             binding.exclusiveBreastFeedingGroup.gone()
+            viewModel.exclusiveBreastFeedHashMap.clear()
         }
     }
 
@@ -172,14 +190,21 @@ class ClinicalSummaryFragment : BaseFragment(), View.OnClickListener {
         )
         list.add(
             hashMapOf<String, Any>(
-                NAME to "Status 1",
+                NAME to getString(R.string.immunisation_status_up_to_date),
                 ID to "1L"
             )
         )
         list.add(
             hashMapOf<String, Any>(
-                NAME to "Status 2",
+                NAME to getString(R.string.immunisation_status_not_up_to_date),
                 ID to "2L"
+            )
+        )
+
+        list.add(
+            hashMapOf<String, Any>(
+                NAME to getString(R.string.immunisation_status_upcoming),
+                ID to "3L"
             )
         )
         setListenerToDeliveryStatus(list)
@@ -190,30 +215,33 @@ class ClinicalSummaryFragment : BaseFragment(), View.OnClickListener {
         adapter.setData(list)
         binding.etImmunisationStatus.adapter = adapter
         binding.etImmunisationStatus.setSelection(0, false)
-        binding.etImmunisationStatus.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(
-                parent: AdapterView<*>?,
-                view: View?,
-                position: Int,
-                id: Long
-            ) {
-                val selectedItem = adapter.getData(position = position)
-                selectedItem?.let {
-                    val selectedId = it[ID] as String?
-                    val selectedImmunisationStatus = it[NAME] as String?
-                    if (selectedId != DefaultID) {
-                            viewModel.selectedImmunisationStatus = selectedImmunisationStatus
-                        (requireActivity() as? UnderTwoMonthsBaseActivity)?.updateNextButtonState()
+        binding.etImmunisationStatus.onItemSelectedListener =
+            object : AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(
+                    parent: AdapterView<*>?,
+                    view: View?,
+                    position: Int,
+                    id: Long
+                ) {
+                    val selectedItem = adapter.getData(position = position)
+                    selectedItem?.let {
+                        val selectedId = it[ID] as String?
+                        val selectedImmunisationStatus = it[NAME] as String?
+                        if (selectedId != DefaultID) {
+                            selectedImmunisationStatus?.let {
+                                viewModel.selectedImmunisationStatus = it
+                                viewModel.updateImmunisationStatus()
+                            }
+                        }
                     }
                 }
-            }
 
-            override fun onNothingSelected(parent: AdapterView<*>?) {
-                /**
-                 * this method is not used
-                 */
+                override fun onNothingSelected(parent: AdapterView<*>?) {
+                    /**
+                     * this method is not used
+                     */
+                }
             }
-        }
     }
 
     override fun onClick(v: View?) {
@@ -253,9 +281,9 @@ class ClinicalSummaryFragment : BaseFragment(), View.OnClickListener {
 
     private fun respirationRateValidate(): Boolean {
         return isValidInput(
-            binding.etHeight.text.toString(),
-            binding.etHeight,
-            binding.tvHeightError,
+            binding.etRespirationRate.text.toString(),
+            binding.etRespirationRate,
+            binding.tvRespirationRateError,
             0.0..60.0,
             R.string.height_error
         )
@@ -263,9 +291,9 @@ class ClinicalSummaryFragment : BaseFragment(), View.OnClickListener {
 
     private fun repeatValidate(): Boolean {
         return isValidInput(
-            binding.etHeight.text.toString(),
-            binding.etHeight,
-            binding.tvHeightError,
+            binding.etRepeat.text.toString(),
+            binding.etRepeat,
+            binding.tvRepeatError,
             0.0..60.0,
             R.string.height_error
         )
@@ -273,9 +301,9 @@ class ClinicalSummaryFragment : BaseFragment(), View.OnClickListener {
 
     private fun temperatureValidate(): Boolean {
         return isValidInput(
-            binding.etHeight.text.toString(),
-            binding.etHeight,
-            binding.tvHeightError,
+            binding.etTemperature.text.toString(),
+            binding.etTemperature,
+            binding.tvTemperatureLabelError,
             10.0..300.0,
             R.string.height_error
         )
@@ -310,25 +338,6 @@ class ClinicalSummaryFragment : BaseFragment(), View.OnClickListener {
             10.0..400.0,
             R.string.weight_error
         )
-    }
-
-    private val textWatcher = object  : TextWatcher {
-        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-            /**
-             * this method is not used
-             */
-        }
-
-        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-            /**
-             * this method is not used
-             */
-        }
-
-        override fun afterTextChanged(s: Editable?) {
-            (requireActivity() as? UnderTwoMonthsBaseActivity)?.updateNextButtonState()
-        }
-
     }
 
 }

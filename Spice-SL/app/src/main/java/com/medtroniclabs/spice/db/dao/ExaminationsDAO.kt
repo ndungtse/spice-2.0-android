@@ -14,6 +14,6 @@ interface ExaminationsDAO {
     @Query("DELETE FROM ExaminationsEntity")
     suspend fun deleteExaminationsList()
 
-    @Query("SELECT * FROM ExaminationsEntity WHERE type = :workflow ORDER BY displayOrder ASC")
-    suspend fun getExaminationsByType(workflow: String) : List<ExaminationListItems>
+    @Query("SELECT * FROM ExaminationsEntity WHERE type = :workflow LIMIT 1")
+    suspend fun getExaminationsByType(workflow: String) : ExaminationListItems
 }

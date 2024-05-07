@@ -1,5 +1,6 @@
 package com.medtroniclabs.spice.network
 
+import CreateUnderTwoMonthsRequest
 import com.medtroniclabs.spice.data.APIResponse
 import com.medtroniclabs.spice.data.AboveFiveYearsMetaResponse
 import com.medtroniclabs.spice.data.AboveFiveYearsSummaryDetails
@@ -26,6 +27,7 @@ import com.medtroniclabs.spice.model.PatientDetailRequest
 import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.model.PatientsDataModel
 import com.medtroniclabs.spice.model.ReferralData
+import com.medtroniclabs.spice.model.medicalreview.CreateUnderTwoMonthsResponse
 import okhttp3.MultipartBody
 import retrofit2.Response
 import javax.inject.Inject
@@ -108,5 +110,9 @@ class ApiHelperImpl @Inject constructor(private val apiService: ApiService) : Ap
 
     override suspend fun searchMedicationByName(request: MedicationSearchRequest): Response<APIResponse<ArrayList<MedicationResponse>>> {
         return apiService.searchMedicationByName(request)
+    }
+
+    override suspend fun createMedicalReviewForUnderTwoMonths(request: CreateUnderTwoMonthsRequest): Response<APIResponse<CreateUnderTwoMonthsResponse>> {
+        return apiService.createMedicalReviewForUnderTwoMonths(request)
     }
 }

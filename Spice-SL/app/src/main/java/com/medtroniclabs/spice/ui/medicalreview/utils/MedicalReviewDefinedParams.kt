@@ -11,4 +11,7 @@ object MedicalReviewDefinedParams {
     const val BREAST_FEEDING_TAG = "breastFeedingTag"
     const val EXCLUSIVE_BREAST_FEED_TAG = "exclusiveBreastFeedTag"
     const val SUMMARY_ITEM = "SummaryItem"
+    const val EXAMINATIONS_UNDER_TWO_MONTHS = "UnderTwoMonths"
+    const val EXAMINATIONS_JAUNDICE = ""
+
 }

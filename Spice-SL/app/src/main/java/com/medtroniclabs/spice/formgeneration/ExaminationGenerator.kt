@@ -242,6 +242,8 @@ class ExaminationGenerator(
                                 editable.trim().toString()
                     }
                 }
+
+                listener.setResultHashMap(resultHashMap)
             }
         }
     }
@@ -311,6 +313,8 @@ class ExaminationGenerator(
                     resultHashMap[second] = map
                 }
             }
+
+            listener.setResultHashMap(resultHashMap)
         }
     }
 

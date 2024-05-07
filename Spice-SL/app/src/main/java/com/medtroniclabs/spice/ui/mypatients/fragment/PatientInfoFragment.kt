@@ -17,6 +17,7 @@ import com.medtroniclabs.spice.databinding.FragmentPatientInfoBinding
 import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
+import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.ReferralTicketViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -24,7 +25,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class PatientInfoFragment : BaseFragment() {
 
     private lateinit var binding: FragmentPatientInfoBinding
-    val viewModel: ReferralTicketViewModel by activityViewModels()
+    val viewModel: PatientDetailViewModel by activityViewModels()
 
     companion object {
         const val TAG = "PatientInfoFragment"

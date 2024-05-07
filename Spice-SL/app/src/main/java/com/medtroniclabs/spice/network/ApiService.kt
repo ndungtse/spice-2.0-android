@@ -1,5 +1,6 @@
 package com.medtroniclabs.spice.network
 
+import CreateUnderTwoMonthsRequest
 import com.medtroniclabs.spice.data.APIResponse
 import com.medtroniclabs.spice.data.AboveFiveYearsMetaResponse
 import com.medtroniclabs.spice.data.AboveFiveYearsSummaryDetails
@@ -26,6 +27,7 @@ import com.medtroniclabs.spice.model.PatientDetailRequest
 import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.model.PatientsDataModel
 import com.medtroniclabs.spice.model.ReferralData
+import com.medtroniclabs.spice.model.medicalreview.CreateUnderTwoMonthsResponse
 import okhttp3.RequestBody
 import retrofit2.Response
 import retrofit2.http.Body
@@ -85,11 +87,16 @@ interface ApiService {
     suspend fun getUnderTwoMonthsMetaData(): Response<APIResponse<UnderTwoMonthsMetaResponse>>
 
     @POST("/spice-service/medical-review/summary-create")
-    suspend fun aboveFiveYearsSummaryCreate(@Body request: AboveFiveYearsSummarySubmitRequest): Response<APIResponse<HashMap<String,Any>>>
+    suspend fun aboveFiveYearsSummaryCreate(@Body request: AboveFiveYearsSummarySubmitRequest): Response<APIResponse<HashMap<String, Any>>>
 
     @POST("/spice-service/static-data/meta-data/mother-delivery")
-    suspend fun getLabourDeliveryMetaData() : Response<APIResponse<LabourDeliveryMetaResponse>>
+    suspend fun getLabourDeliveryMetaData(): Response<APIResponse<LabourDeliveryMetaResponse>>
 
     @POST("/admin-service/medication/searchByName")
-    suspend fun searchMedicationByName(@Body request: MedicationSearchRequest):Response<APIResponse<ArrayList<MedicationResponse>>>
+    suspend fun searchMedicationByName(@Body request: MedicationSearchRequest): Response<APIResponse<ArrayList<MedicationResponse>>>
+
+    @POST("/spice-service/medical-review/iccm-under-2months/create")
+    suspend fun createMedicalReviewForUnderTwoMonths(@Body request: CreateUnderTwoMonthsRequest): Response<APIResponse<CreateUnderTwoMonthsResponse>>
+
+
 }

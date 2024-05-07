@@ -424,4 +424,7 @@
     <string name="no_recommended_dosages">No Dosage Recommended for this age group</string>
     <string name="logout_alert" >Are you sure want to logout ?</string>
     <string name="only_alphabets_validation">Entered value should contain only alphabets</string>
+    <string name="immunisation_status_up_to_date">Up to Date</string>
+    <string name="immunisation_status_not_up_to_date">Not Up to Date</string>
+    <string name="immunisation_status_upcoming">Upcoming</string>
 </resources>

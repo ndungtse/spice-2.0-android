@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.activity.viewModels
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.databinding.ActivityUnderTwoMonthsBaseBinding
@@ -11,15 +12,17 @@ import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.medicalreview.ClinicalNotesFragment
-import com.medtroniclabs.spice.ui.medicalreview.ExaminationCardFragment
 import com.medtroniclabs.spice.ui.medicalreview.PresentingComplaintsFragment
 import com.medtroniclabs.spice.ui.medicalreview.abovefiveyears.ClinicalNotesViewModel
 import com.medtroniclabs.spice.ui.medicalreview.abovefiveyears.PresentingComplaintsViewModel
+import com.medtroniclabs.spice.ui.medicalreview.examinations.ExaminationCardFragment
+import com.medtroniclabs.spice.ui.medicalreview.examinations.ExaminationCardViewModel
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import com.medtroniclabs.spice.ui.mypatients.fragment.MedicalReviewPatientDiagnosisFragment
 import com.medtroniclabs.spice.ui.mypatients.fragment.PatientInfoFragment
 import com.medtroniclabs.spice.ui.mypatients.fragment.UnderTwoMonthsTreatmentSummaryFragment
+import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -27,8 +30,12 @@ class UnderTwoMonthsBaseActivity : BaseActivity(), View.OnClickListener {
 
     private lateinit var binding: ActivityUnderTwoMonthsBaseBinding
     private val viewModel: UnderTwoMonthViewModel by viewModels()
-    private val clinicalNotesViewModel : ClinicalNotesViewModel by viewModels()
-    private val presentingComplaintsViewModel : PresentingComplaintsViewModel by viewModels()
+    private val clinicalNotesViewModel: ClinicalNotesViewModel by viewModels()
+    private val presentingComplaintsViewModel: PresentingComplaintsViewModel by viewModels()
+    private val clinicalSummaryViewModel: ClinicalSummaryViewModel by viewModels()
+    private val examinationCardViewModel: ExaminationCardViewModel by viewModels()
+    private val patientDetailViewModel: PatientDetailViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityUnderTwoMonthsBaseBinding.inflate(layoutInflater)
@@ -40,11 +47,36 @@ class UnderTwoMonthsBaseActivity : BaseActivity(), View.OnClickListener {
         initializeViews()
         attachObserver()
         initializeListeners()
+        viewModel.patientId = intent.getStringExtra(DefinedParams.PatientId)
     }
 
     private fun attachObserver() {
-        viewModel.underTwoMonthsMetaLiveData.observe(this){resourceState ->
-            when(resourceState.state){
+
+        clinicalNotesViewModel.submitButtonStateLiveData.observe(this) {
+            val clinicalNotes = clinicalNotesViewModel.enteredClinicalNotes
+            binding.btnSubmit.isEnabled = clinicalNotes.isNotEmpty() && clinicalNotes.isNotBlank()
+        }
+
+        viewModel.createUnderTwoMonthsMedicalReview.observe(this) { resourceState ->
+            when (resourceState.state) {
+                ResourceState.LOADING -> {
+                    showLoading()
+                }
+
+                ResourceState.ERROR -> {
+                    hideLoading()
+                }
+
+                ResourceState.SUCCESS -> {
+                    hideLoading()
+                    showUnderTwoMonthsReviewSummary()
+
+                }
+            }
+        }
+
+        viewModel.underTwoMonthsMetaLiveData.observe(this) { resourceState ->
+            when (resourceState.state) {
                 ResourceState.LOADING -> {
                     showLoading()
                 }
@@ -61,20 +93,25 @@ class UnderTwoMonthsBaseActivity : BaseActivity(), View.OnClickListener {
         }
     }
 
+    private fun showUnderTwoMonthsReviewSummary() {
+        binding.bottomNavigationView.gone()
+        removeFragment(R.id.clinicalSummaryContainer)
+        removeFragment(R.id.examinationsContainer)
+        removeFragment(R.id.presentingComplaintsContainer)
+        removeFragment(R.id.clinicalNotesContainer)
+        removeFragment(R.id.patientDiagnosisContainer)
+        replaceFragmentInId<UnderTwoMonthsTreatmentSummaryFragment>(
+            binding.birthHistoryContainer.id,
+            tag = UnderTwoMonthsTreatmentSummaryFragment::class.simpleName
+        )
+    }
+
     private fun initializeViews() {
-        if (!(SecuredPreference.getBoolean(SecuredPreference.EnvironmentKey.IS_UNDER_TWO_MONTHS_LOADED.name))){
+        if (!(SecuredPreference.getBoolean(SecuredPreference.EnvironmentKey.IS_UNDER_TWO_MONTHS_LOADED.name))) {
             viewModel.getStaticMetaData()
         } else {
             initializeFragments()
         }
-        supportFragmentManager
-            .setFragmentResultListener(MedicalReviewDefinedParams.PC_ITEM, this) { _, _ ->
-                updateNextButtonState()
-            }
-        supportFragmentManager
-            .setFragmentResultListener(MedicalReviewDefinedParams.CLINICAL_NOTES, this) { _, _ ->
-                updateNextButtonState()
-            }
     }
 
     private fun initializeFragments() {
@@ -121,6 +158,7 @@ class UnderTwoMonthsBaseActivity : BaseActivity(), View.OnClickListener {
             tag = ClinicalNotesFragment::class.simpleName
         )
     }
+
     private fun initializeListeners() {
         binding.btnSubmit.safeClickListener(this)
     }
@@ -128,17 +166,20 @@ class UnderTwoMonthsBaseActivity : BaseActivity(), View.OnClickListener {
     override fun onClick(v: View?) {
         when (v?.id) {
             R.id.btnSubmit -> {
-//                if (validateInputs() == true) {
-                    replaceFragmentInId<UnderTwoMonthsTreatmentSummaryFragment>(
-                        binding.birthHistoryContainer.id,
-                        tag = UnderTwoMonthsTreatmentSummaryFragment::class.simpleName
-                    )
-                removeFragment(R.id.clinicalSummaryContainer)
-                removeFragment(R.id.examinationsContainer)
-                removeFragment(R.id.presentingComplaintsContainer)
-                removeFragment(R.id.clinicalNotesContainer)
-                removeFragment(R.id.patientDiagnosisContainer)
-//                }
+                if (validateInputs()) {
+                    if (connectivityManager.isNetworkAvailable()) {
+                        viewModel.createMedicalReviewForUnderTwoMonths(
+                            clinicalSummaryAndSigns = clinicalSummaryViewModel.clinicalSummaryAndSigns,
+                            examinationResultHashMap = examinationCardViewModel.examinationResultHashMap,
+                            clinicalNotes = clinicalNotesViewModel.enteredClinicalNotes,
+                            presentingComplaints = presentingComplaintsViewModel.enteredComplaintNotes,
+                            patientReferenceId = patientDetailViewModel.getPatientReferenceId()
+                        )
+                    } else {
+                        showErrorSnackBar(text = getString(R.string.no_internet_error))
+                    }
+
+                }
             }
         }
     }
@@ -150,20 +191,16 @@ class UnderTwoMonthsBaseActivity : BaseActivity(), View.OnClickListener {
         }
     }
 
-    fun updateNextButtonState() {
-        binding.btnSubmit.isEnabled = isAnyEditTextFilled()
-    }
 
-    private fun isAnyEditTextFilled(): Boolean {
+    private fun validateInputs(): Boolean {
         val clinicalSummaryFragment =
             supportFragmentManager.findFragmentById(R.id.clinicalSummaryContainer) as? ClinicalSummaryFragment
-        val clinicalSummaryFilled = clinicalSummaryFragment?.isAnyEditTextFilled() ?: false
-        return clinicalSummaryFilled && clinicalNotesViewModel.enteredClinicalNotes.isNotBlank() && presentingComplaintsViewModel.enteredComplaintNotes.isNotBlank()
-    }
+        val presentingComplaintsFragment =
+            supportFragmentManager.findFragmentById(R.id.presentingComplaintsContainer) as? PresentingComplaintsFragment
 
-    private fun validateInputs(): Boolean? {
-        val clinicalSummaryFragment =
-            supportFragmentManager.findFragmentById(R.id.clinicalSummaryContainer) as? ClinicalSummaryFragment
-        return clinicalSummaryFragment?.validateEditFields()
+        val isPresentingComplaintsValid = presentingComplaintsFragment?.validate()
+        val isClinicalSummaryValid = clinicalSummaryFragment?.validateEditFields()
+
+        return (isClinicalSummaryValid == true && isPresentingComplaintsValid == true)
     }
 }

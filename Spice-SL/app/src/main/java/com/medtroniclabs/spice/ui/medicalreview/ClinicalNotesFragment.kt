@@ -9,6 +9,7 @@ import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResult
 import com.medtroniclabs.spice.databinding.FragmentClinicalNotesBinding
+import com.medtroniclabs.spice.formgeneration.extension.markMandatory
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.medicalreview.abovefiveyears.ClinicalNotesViewModel
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
@@ -35,9 +36,11 @@ class ClinicalNotesFragment : BaseFragment() {
     }
 
     private fun initializeViews() {
+        binding.tvClinicalNotesTitle.markMandatory()
         binding.etClinicalNotes.addTextChangedListener {
             it?.let {
                 viewModel.enteredClinicalNotes = it.toString()
+                viewModel.handleSubmitButtonState()
                 setFragmentResult(
                     MedicalReviewDefinedParams.CLINICAL_NOTES, bundleOf(
                         MedicalReviewDefinedParams.Notes to true)

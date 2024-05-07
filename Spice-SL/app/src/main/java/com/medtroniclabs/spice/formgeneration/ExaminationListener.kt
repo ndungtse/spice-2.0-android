@@ -9,4 +9,6 @@ interface ExaminationListener {
         resultMap: Any?,
         diseaseName: String
     )
+
+    fun setResultHashMap(resultMap: HashMap<String, Any>)
 }

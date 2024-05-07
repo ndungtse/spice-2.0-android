@@ -8,6 +8,9 @@ import androidx.core.os.bundleOf
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResult
+import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.appextensions.gone
+import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.data.model.ChipViewItemModel
 import com.medtroniclabs.spice.databinding.FragmentPresentingComplaintsBinding
 import com.medtroniclabs.spice.network.resource.ResourceState
@@ -24,12 +27,13 @@ class PresentingComplaintsFragment : BaseFragment() {
 
     private lateinit var binding: FragmentPresentingComplaintsBinding
     private lateinit var complaintsTagView: TagListCustomView
-    private val viewModel : PresentingComplaintsViewModel by activityViewModels()
+    private val viewModel: PresentingComplaintsViewModel by activityViewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            viewModel.presentingComplaintsType = it.getString(MedicalReviewTypeEnums.PresentingComplaints.name)?:""
+            viewModel.presentingComplaintsType =
+                it.getString(MedicalReviewTypeEnums.PresentingComplaints.name) ?: ""
         }
     }
 
@@ -67,16 +71,15 @@ class PresentingComplaintsFragment : BaseFragment() {
 
                 ResourceState.SUCCESS -> {
                     resource.data?.let { listItems ->
-                        val chipItemList = ArrayList<ChipViewItemModel>()
-                        listItems.filter { it.category == MedicalReviewTypeEnums.PresentingComplaints.name }.forEach {
-                            chipItemList.add(
-                                ChipViewItemModel(
-                                    id = it.id,
-                                    name = it.name,
-                                    value = it.value
-                                )
-                            )
-                        }
+                        val chipItemList =
+                            listItems.filter { it.category == MedicalReviewTypeEnums.PresentingComplaints.name }
+                                .map {
+                                    ChipViewItemModel(
+                                        id = it.id,
+                                        name = it.name,
+                                        value = it.value
+                                    )
+                                }
                         complaintsTagView.addChipItemList(chipItemList, null)
                     }
                     hideProgress()
@@ -89,8 +92,26 @@ class PresentingComplaintsFragment : BaseFragment() {
         }
     }
 
+    fun validate(): Boolean {
+        if (binding.etPresentingComplaintsComments.text?.isNotEmpty() == true) {
+            val complaint = binding.etPresentingComplaintsComments.text?.trim().toString()
+            if (complaint.isBlank()) {
+                binding.tvErrorMessage.text = getString(R.string.default_user_input_error)
+                binding.tvErrorMessage.visible()
+                return false
+            } else {
+                binding.tvErrorMessage.gone()
+            }
+            return true
+        }
+        return true
+    }
+
     private fun initializeViews() {
-        complaintsTagView =  TagListCustomView(binding.root.context, binding.tagViewPresentingComplaints){_,_,_ ->
+        complaintsTagView = TagListCustomView(
+            binding.root.context,
+            binding.tagViewPresentingComplaints
+        ) { _, _, _ ->
             viewModel.selectedPresentingComplaints = ArrayList(complaintsTagView.getSelectedTags())
             setFragmentResult(PC_ITEM, bundleOf(CHIP_ITEMS to true))
         }
