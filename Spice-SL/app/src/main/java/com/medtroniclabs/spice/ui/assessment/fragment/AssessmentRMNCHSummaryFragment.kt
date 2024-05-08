@@ -20,7 +20,6 @@ import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.common.ViewUtils
 import com.medtroniclabs.spice.databinding.FragmentRmnchSummaryBinding
-import com.medtroniclabs.spice.db.entity.HealthFacilityEntity
 import com.medtroniclabs.spice.formgeneration.config.ViewType
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
@@ -98,6 +97,7 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
         viewModel.assessmentStringLiveData.value?.let { mapString ->
             val map = StringConverter.stringToMap(mapString)
             binding.parentLayout.removeAllViews()
+            conditionBasedRendering(map)
             addDefaultSummaryView(map)
             viewModel.formLayoutsLiveData.value?.data?.formLayout?.filter { it.isSummary == true }
                 ?.forEach { data ->
@@ -146,35 +146,29 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
         }
     }
 
+    private fun conditionBasedRendering(map: HashMap<String, Any>) {
+        if (map.containsKey(viewModel.workflowName)) {
+            val workflowMap = map[viewModel.workflowName]
+            if (workflowMap is Map<*, *>) {
+                if (workflowMap.containsKey(RMNCH.Miscarriage)) {
+                    val miscarriageValue = workflowMap[RMNCH.Miscarriage]
+                    if (miscarriageValue is Boolean && miscarriageValue) {
+                        binding.etNextFollowUpDate.gone()
+                        binding.tvNextFollowupDateTitle.gone()
+                    } else {
+                        binding.etNextFollowUpDate.visible()
+                        binding.tvNextFollowupDateTitle.visible()
+                    }
+                }
+            }
+        }
+    }
 
-    private fun loadPhuSitesList(healthFacilityList: List<HealthFacilityEntity>) {
-        val dropDownList = ArrayList<Map<String, Any>>()
-        dropDownList.add(
-            hashMapOf<String, Any>(
-                DefinedParams.NAME to DefinedParams.DefaultIDLabel,
-                DefinedParams.id to DefinedParams.DefaultID
-            )
-        )
-        var defaultPosition = 0
-        for ((index, healthFacilityEntity) in healthFacilityList.withIndex()) {
-            dropDownList.add(
-                hashMapOf<String, Any>(
-                    DefinedParams.NAME to healthFacilityEntity.name,
-                    DefinedParams.id to healthFacilityEntity.fhirId.toString()
-                )
-            )
-            if (healthFacilityEntity.isDefault) {
-                defaultPosition = index
-            }
-        }
+
+    private fun loadPhuSitesList(siteList: ArrayList<Map<String, Any>>) {
         val adapter = CustomSpinnerAdapter(requireContext())
-        adapter.setData(dropDownList)
+        adapter.setData(siteList)
         binding.etPhuChange.adapter = adapter
-        binding.etPhuChange.post {
-            if (dropDownList.size > 0 ){
-                binding.etPhuChange.setSelection(defaultPosition , false)
-            }
-        }
         binding.etPhuChange.onItemSelectedListener =
             object : AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(
@@ -186,16 +180,8 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
                     val selectedItem = adapter.getData(position = pos)
                     selectedItem?.let {
                         val selectedId = it[DefinedParams.id] as String?
-                        val selectedSiteName = it[DefinedParams.NAME] as String?
-                        if (selectedId != DefinedParams.DefaultID) {
-                            viewModel.otherAssessmentDetails[AssessmentDefinedParams.ReferredPHUSite] = selectedSiteName ?: ""
-                            viewModel.otherAssessmentDetails[AssessmentDefinedParams.ReferredPHUSiteID] = selectedId?.toLong() ?: -1L
-                        } else {
-                            if (viewModel.otherAssessmentDetails.containsKey(AssessmentDefinedParams.ReferredPHUSite))
-                                viewModel.otherAssessmentDetails.remove(AssessmentDefinedParams.ReferredPHUSite)
-                            if (viewModel.otherAssessmentDetails.containsKey(AssessmentDefinedParams.ReferredPHUSiteID))
-                                viewModel.otherAssessmentDetails.remove(AssessmentDefinedParams.ReferredPHUSiteID)
-                        }
+                        viewModel.otherAssessmentDetails[AssessmentDefinedParams.ReferredPHUSiteID] =
+                            selectedId?.toLong() ?: -1L
                     }
                 }
 
@@ -246,7 +232,7 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
                     )?.let { lmpDate ->
                         RMNCH.calculateNextANCVisitDate(
                             lmpDate
-                        )?.let {visitDate ->
+                        )?.let { visitDate ->
                             binding.etNextFollowUpDate.text = getDateStringFromDate(
                                 visitDate, DateUtils.DATE_ddMMyyyy
                             )
@@ -262,7 +248,7 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
                         RMNCH.calculateNextChildHoodVisitDate(
                             age = pair.first,
                             birthDate = pair.second
-                        )?.let {visitDate ->
+                        )?.let { visitDate ->
                             binding.etNextFollowUpDate.text = getDateStringFromDate(
                                 visitDate, DateUtils.DATE_ddMMyyyy
                             )
@@ -302,9 +288,12 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
     override fun onClick(v: View) {
         when (v.id) {
             R.id.btnDone -> {
-                if (binding.etNextFollowUpDate.text.isNotEmpty()) {
+                if (binding.etNextFollowUpDate.visibility == View.VISIBLE && binding.etNextFollowUpDate.text.isNotEmpty()) {
                     updateFollowUpDate(binding.etNextFollowUpDate.text.trim().toString())
-                    viewModel.isDismiss = true
+                }
+                if (viewModel.otherAssessmentDetails.isEmpty()){
+                    requireActivity().finish()
+                }else{
                     viewModel.updateOtherAssessmentDetails()
                 }
             }

@@ -23,7 +23,6 @@ import com.medtroniclabs.spice.formgeneration.ui.FormResultComposer
 import com.medtroniclabs.spice.formgeneration.utility.CheckBoxDialog
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
-import com.medtroniclabs.spice.ui.MenuConstants
 import com.medtroniclabs.spice.ui.assessment.AssessmentActivity
 import com.medtroniclabs.spice.ui.assessment.referrallogic.ReferralResultGenerator
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
@@ -135,41 +134,24 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
     }
 
     private fun showRespectiveWorkflow() {
-        var resultJsonFileName: String? = null
         when (viewModel.workflowName) {
             RMNCH.ANC -> {
-                resultJsonFileName = "rmnch_anc_visit.json"
                 binding.btnSubmit.text = getString(R.string.submit)
             }
 
             RMNCH.ChildHoodVisit -> {
-                resultJsonFileName = "rmnch_childhood_visit.json"
                 binding.btnSubmit.text = getString(R.string.submit)
             }
 
             RMNCH.PNC -> {
-                resultJsonFileName = "rmnch_pnc_phu_delivery_mother.json"
                 binding.btnSubmit.text = getString(R.string.next)
 
             }
         }
-        resultJsonFileName?.let { name ->
-            loadJson(name)
+        viewModel.workflowName?.let { name ->
+            viewModel.getFormData(name)
         }
     }
-
-    private fun loadJson(resultJsonFileName: String) {
-        val objectList = Gson().fromJson(
-            CommonUtils.getStringFromAssets(
-                resultJsonFileName,
-                requireActivity().assets
-            ),
-            Array<FormLayout>::class.java
-        ).asList()
-
-        viewModel.formLayoutsLiveData.setSuccess(FormResponse(objectList, time = 123231231))
-    }
-
 
     override fun onClick(v: View) {
         when (v.id) {

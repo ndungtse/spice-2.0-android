@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-
-
     <!--Form Related Styles-->
 
     <style name="Form_MH_Style_with_padding" parent="TextStyle">
@@ -435,5 +433,17 @@
     <style name="TextStyle_Regular_16_Size" parent="TextStyle_Regular_12">
         <item name="android:textSize">@dimen/_16ssp</item>
     </style>
+
+    <declare-styleable name="SignatureView">
+        <attr name="penMinWidth" format="dimension" />
+        <attr name="penMaxWidth" format="dimension" />
+        <attr name="penColor" format="color" />
+        <attr name="velocityFilterWeight" format="float" />
+        <attr name="clearOnDoubleClick" format="boolean" />
+    </declare-styleable>
+
+    <declare-styleable name="DialogTitleFrameLayout">
+        <attr name="dialogTitle" format="string"/>
+    </declare-styleable>
 
 </resources>

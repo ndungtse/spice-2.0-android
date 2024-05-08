@@ -106,9 +106,9 @@ fun Context.isNotTabletAndPortrait(): Boolean {
 }
 
 fun DialogFragment.setDialogWidthAndHeightAsWrapPercent(widthPercent: Int) {
-    val widthPercent = widthPercent.toFloat() / 100
+    val widthPercentage = widthPercent.toFloat() / 100
     val dm = Resources.getSystem().displayMetrics
     val rect = dm.run { Rect(0, 0, widthPixels, heightPixels) }
-    val percentWidth = rect.width() * widthPercent
+    val percentWidth = rect.width() * widthPercentage
     dialog?.window?.setLayout(percentWidth.toInt(), WindowManager.LayoutParams.WRAP_CONTENT)
 }

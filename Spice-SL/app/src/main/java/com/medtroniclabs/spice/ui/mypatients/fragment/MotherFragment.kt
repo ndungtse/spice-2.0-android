@@ -191,7 +191,7 @@ class MotherFragment : BaseFragment() {
         } else if (selectedID.toString() == getString(R.string.episotomy)) {
             binding.groupTear.isVisible = false
         } else {
-            viewModel.perineumStateMap[Tear] = selectedID as String
+            viewModel.perineumStateMap[Tear] = selectedID
         }
     }
 

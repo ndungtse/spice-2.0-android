@@ -1,13 +1,16 @@
 package com.medtroniclabs.spice.common
 
 import android.content.Context
+import android.content.ContextWrapper
 import android.content.res.AssetManager
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.DateUtils.calculateAge
+import com.medtroniclabs.spice.data.MedicationRequestObject
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.MONTHS
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.WEEKS
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.YEARS
 import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration
+import java.io.File
 import java.math.RoundingMode
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
@@ -317,6 +320,12 @@ object CommonUtils {
 
     fun Double?.toDoubleOrEmptyString(): String {
         return this?.toDouble().toString()
+    }
+
+    fun getFilePath(id: String, context: Context, list: ArrayList<MedicationRequestObject>): File {
+        val cw = ContextWrapper(context)
+        val directory = cw.getDir(id, Context.MODE_PRIVATE)
+        return File(directory, DefinedParams.SIGN_DIR)
     }
 
 }

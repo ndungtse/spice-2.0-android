@@ -76,4 +76,11 @@ object DefinedParams {
     const val TenantId = "tenantId"
     const val FhirId = "fhirId"
     const val RMNCH = "RMNCH"
+    const val Frequency = "frequency"
+    const val Description = "description"
+    const val DisplayOrder = "displayOrder"
+
+    const val SIGN_DIR = "sign"
+    const val SIGN_SUFFIX = "_signature"
+
 }

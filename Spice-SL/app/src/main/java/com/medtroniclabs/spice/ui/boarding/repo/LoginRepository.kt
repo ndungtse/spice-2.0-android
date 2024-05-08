@@ -118,6 +118,10 @@ class LoginRepository @Inject constructor(
                                 nearestHealthFacilities,
                                 defaultHealthFacility.id
                             )
+                            SecuredPreference.putString(
+                                SecuredPreference.EnvironmentKey.DEFAULT_SITE_ID.name,
+                                defaultHealthFacility.fhirId
+                            )
                             deleteAllVillages()
                             saveVillage(villages)
                             saveFhirId(userProfile.fhirId, defaultHealthFacility.fhirId)

@@ -107,7 +107,7 @@ interface ApiService {
     @POST("/spice-service/static-data/meta-data/mother-delivery")
     suspend fun getLabourDeliveryMetaData(): Response<APIResponse<LabourDeliveryMetaResponse>>
 
-    @POST("/admin-service/medication/searchByName")
+    @POST("/admin-service/medication/search")
     suspend fun searchMedicationByName(@Body request: MedicationSearchRequest): Response<APIResponse<ArrayList<MedicationResponse>>>
 
     @POST("/spice-service/medical-review/iccm-under-2months/create")
@@ -148,4 +148,8 @@ interface ApiService {
 
     @POST("/spice-service/patient/referral-tickets/create")
     suspend fun createReferPatientResult(@Body request: ReferPatientResult): Response<APIResponse<HashMap<String,Any>>>
+
+    @POST("spice-service/prescription-request/create")
+    suspend fun createPrescriptionRequest(@Body request: RequestBody):Response<APIResponse<Map<String,Any>>>
+
 }

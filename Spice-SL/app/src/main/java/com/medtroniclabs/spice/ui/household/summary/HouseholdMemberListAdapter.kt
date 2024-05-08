@@ -9,17 +9,10 @@ import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.CommonUtils.getAgeFromDOB
 import com.medtroniclabs.spice.common.CommonUtils.getAgeFromDob
 import com.medtroniclabs.spice.common.CommonUtils.getGenderText
-import com.medtroniclabs.spice.common.DateUtils
-import com.medtroniclabs.spice.common.DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
-import com.medtroniclabs.spice.common.DateUtils.calculateAge
-import com.medtroniclabs.spice.common.DateUtils.calculateAgeInMonths
-import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.databinding.MembersSummaryListItemBinding
 import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.ui.household.MemberSelectionListener
-import java.text.SimpleDateFormat
-import java.util.Locale
 
 class HouseholdMemberListAdapter(
     private val houseHoldMembersList: List<HouseholdMemberEntity>,

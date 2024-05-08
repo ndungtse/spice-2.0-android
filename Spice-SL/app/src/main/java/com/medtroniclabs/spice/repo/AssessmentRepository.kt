@@ -3,10 +3,10 @@ package com.medtroniclabs.spice.repo
 import android.location.Location
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.data.LocalSpinnerResponse
 import com.medtroniclabs.spice.db.entity.AssessmentEntity
-import com.medtroniclabs.spice.db.entity.HealthFacilityEntity
 import com.medtroniclabs.spice.db.entity.SignsAndSymptomsEntity
 import com.medtroniclabs.spice.db.local.RoomHelper
 import com.medtroniclabs.spice.formgeneration.model.FormResponse
@@ -28,7 +28,8 @@ class AssessmentRepository @Inject constructor(
         memberDetails: AssessmentMemberDetails,
         menuId: String?,
         referralResult: Pair<String?, ArrayList<String>>?,
-        lastLocation: Location?
+        lastLocation: Location?,
+        otherDetails: HashMap<String, Any>? = null
     ): Resource<AssessmentEntity> {
         return try {
             val assessmentEntity = menuId?.let { menu ->
@@ -39,6 +40,9 @@ class AssessmentRepository @Inject constructor(
                     villageId = memberDetails.villageId,
                     assessmentType = menu.uppercase(Locale.getDefault()),
                     assessmentDetails = resultData,
+                    otherDetails = if (otherDetails != null) StringConverter.convertGivenMapToString(
+                        otherDetails
+                    ) else null,
                     isReferred = getReferralStatus(referralResult?.first),
                     referralStatus = getReferralResult(referralResult?.first),
                     referredReason = referralResult?.second,
@@ -122,9 +126,18 @@ class AssessmentRepository @Inject constructor(
         }
     }
 
-    suspend fun getNearestHealthFacility(): Resource<List<HealthFacilityEntity>> {
-        val response = roomHelper.getNearestHealthFacility()
-        return Resource(state = ResourceState.SUCCESS, data = response)
+    suspend fun getNearestHealthFacility(): Resource<ArrayList<Map<String, Any>>> {
+        val healthFacilityList = roomHelper.getNearestHealthFacility()
+        val dropDownList = ArrayList<Map<String, Any>>()
+        for ((_, healthFacilityEntity) in healthFacilityList.withIndex()) {
+            dropDownList.add(
+                hashMapOf<String, Any>(
+                    DefinedParams.NAME to healthFacilityEntity.name,
+                    DefinedParams.id to healthFacilityEntity.fhirId.toString()
+                )
+            )
+        }
+        return Resource(state = ResourceState.SUCCESS, data = dropDownList)
     }
 
     suspend fun getNearestHealthFacility(

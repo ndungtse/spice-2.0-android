@@ -44,6 +44,7 @@ import com.medtroniclabs.spice.model.ReferralData
 import com.medtroniclabs.spice.model.SearchAndListResponse
 import com.medtroniclabs.spice.model.medicalreview.CreateUnderTwoMonthsResponse
 import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import retrofit2.Response
 import javax.inject.Inject
 
@@ -176,5 +177,9 @@ class ApiHelperImpl @Inject constructor(private val apiService: ApiService) : Ap
     }
     override suspend fun createReferPatientResult(request: ReferPatientResult): Response<APIResponse<HashMap<String,Any>>> {
         return apiService.createReferPatientResult(request)
+    }
+
+    override suspend fun createPrescriptionRequest(request: RequestBody): Response<APIResponse<Map<String, Any>>> {
+        return apiService.createPrescriptionRequest(request)
     }
 }

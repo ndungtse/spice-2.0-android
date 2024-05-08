@@ -31,7 +31,8 @@ object SecuredPreference {
         IS_LABOUR_DELIVERY_LOADED,
         OFFLINE_SYNC_REQUEST_ID,
         LAST_SYNCED_AT,
-        FOLLOW_UP_CRITERIA
+        FOLLOW_UP_CRITERIA,
+        DEFAULT_SITE_ID
     }
 
 

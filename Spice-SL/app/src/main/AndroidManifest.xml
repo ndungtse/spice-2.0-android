@@ -10,7 +10,6 @@
     <application
         android:name=".SpiceBaseApplication"
         android:allowBackup="true"
-        android:fullBackupContent="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
@@ -100,7 +99,8 @@
             android:exported="false" />
         <activity
             android:name=".ui.boarding.LoginActivity"
-            android:exported="false" />
+            android:exported="false"
+          />
 
         <provider
             android:name="androidx.startup.InitializationProvider"

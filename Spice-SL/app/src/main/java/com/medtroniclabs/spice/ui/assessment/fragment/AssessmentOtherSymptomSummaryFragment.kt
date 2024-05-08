@@ -12,7 +12,6 @@ import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
-import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.isGone
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils.getDaysValue
@@ -21,7 +20,6 @@ import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.common.ViewUtils
 import com.medtroniclabs.spice.databinding.FragmentAssessmentOtherSymptomSummaryBinding
-import com.medtroniclabs.spice.db.entity.HealthFacilityEntity
 import com.medtroniclabs.spice.formgeneration.extension.markMandatory
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
@@ -132,34 +130,10 @@ class AssessmentOtherSymptomSummaryFragment : Fragment(), View.OnClickListener {
         }
     }
 
-    private fun loadPhuSitesList(healthFacilityList: List<HealthFacilityEntity>) {
-        val dropDownList = ArrayList<Map<String, Any>>()
-        /*dropDownList.add(
-            hashMapOf<String, Any>(
-                DefinedParams.NAME to DefinedParams.DefaultIDLabel,
-                DefinedParams.id to DefinedParams.DefaultID
-            )
-        )*/
-        var defaultPosition = 0
-        for ((index, healthFacilityEntity) in healthFacilityList.withIndex()) {
-            dropDownList.add(
-                hashMapOf<String, Any>(
-                    DefinedParams.NAME to healthFacilityEntity.name,
-                    DefinedParams.id to healthFacilityEntity.fhirId.toString()
-                )
-            )
-            if (healthFacilityEntity.isDefault) {
-                defaultPosition = index
-            }
-        }
+    private fun loadPhuSitesList(healthFacilityList: ArrayList<Map<String, Any>>) {
         val adapter = CustomSpinnerAdapter(requireContext())
-        adapter.setData(dropDownList)
+        adapter.setData(healthFacilityList)
         binding.etPhuChange.adapter = adapter
-        binding.etPhuChange.post {
-            if (dropDownList.size > 0) {
-                binding.etPhuChange.setSelection(defaultPosition, false)
-            }
-        }
         binding.etPhuChange.onItemSelectedListener =
             object : AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(
@@ -172,28 +146,8 @@ class AssessmentOtherSymptomSummaryFragment : Fragment(), View.OnClickListener {
                     selectedItem?.let {
                         val selectedId = it[DefinedParams.id] as String?
                         val selectedSiteName = it[DefinedParams.NAME] as String?
-                        if (selectedId != DefinedParams.DefaultID) {
-                            isValid = true
-                            binding.tvSiteErrorMessage.gone()
-                            if ((viewModel.otherAssessmentDetails[ReferredPHUSite] != selectedSiteName && viewModel.otherAssessmentDetails[ReferredPHUSite] != null) ||
-                                (viewModel.otherAssessmentDetails[ReferredPHUSiteID] != (healthFacilityList.find { it.fhirId == selectedId }?.fhirId?.toLong()
-                                    ?: selectedId?.toLong()!!) && viewModel.otherAssessmentDetails[ReferredPHUSiteID] != null)
-                            ) {
-                                viewModel.isInputUpdated = true
-                            }
-                            viewModel.otherAssessmentDetails[ReferredPHUSite] =
-                                selectedSiteName ?: ""
-                            viewModel.otherAssessmentDetails[ReferredPHUSiteID] =
-                                healthFacilityList.find { it.fhirId == selectedId }?.fhirId?.toLong()
-                                    ?: selectedId?.toLong()!!
-                        } else {
-                            isValid = true
-                            binding.tvSiteErrorMessage.gone()
-                            if (viewModel.otherAssessmentDetails.containsKey(ReferredPHUSite))
-                                viewModel.otherAssessmentDetails.remove(ReferredPHUSite)
-                            if (viewModel.otherAssessmentDetails.containsKey(ReferredPHUSiteID))
-                                viewModel.otherAssessmentDetails.remove(ReferredPHUSiteID)
-                        }
+                        viewModel.otherAssessmentDetails[AssessmentDefinedParams.ReferredPHUSite] = selectedSiteName ?: ""
+                        viewModel.otherAssessmentDetails[AssessmentDefinedParams.ReferredPHUSiteID] = selectedId?.toLong() ?: -1L
                     }
                 }
 
@@ -352,7 +306,6 @@ class AssessmentOtherSymptomSummaryFragment : Fragment(), View.OnClickListener {
                         ReferredPHUSiteID
                     )
                 ) {
-                    viewModel.isDismiss = true
                     viewModel.updateOtherAssessmentDetails()
                 } else {
                     if (binding.tvSiteErrorMessage.isGone()) {

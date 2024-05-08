@@ -17,7 +17,6 @@ import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.StringConverter.stringToMap
 import com.medtroniclabs.spice.common.ViewUtils
 import com.medtroniclabs.spice.databinding.FragmentAssessmentRmnchNeonateSummaryBinding
-import com.medtroniclabs.spice.db.entity.HealthFacilityEntity
 import com.medtroniclabs.spice.formgeneration.config.ViewType
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.model.FormResponse
@@ -101,30 +100,10 @@ class AssessmentRMNCHNeonateSummaryFragment : BaseFragment(), View.OnClickListen
         }
     }
 
-    private fun loadPhuSitesList(healthFacilityList: List<HealthFacilityEntity>) {
-        val dropDownList = ArrayList<Map<String, Any>>()
-
-        var defaultPosition = 0
-        for ((index, healthFacilityEntity) in healthFacilityList.withIndex()) {
-            dropDownList.add(
-                hashMapOf<String, Any>(
-                    DefinedParams.NAME to healthFacilityEntity.name,
-                    DefinedParams.id to healthFacilityEntity.fhirId.toString()
-                )
-            )
-            if (healthFacilityEntity.isDefault) {
-                defaultPosition = index
-            }
-        }
+    private fun loadPhuSitesList(siteList: ArrayList<Map<String, Any>>) {
         val adapter = CustomSpinnerAdapter(requireContext())
-        adapter.setData(dropDownList)
+        adapter.setData(siteList)
         binding.etPhuChange.adapter = adapter
-        binding.etPhuChange.setSelection(0, false)
-        binding.etPhuChange.post {
-            if (dropDownList.size > 0 ){
-                binding.etPhuChange.setSelection(defaultPosition , false)
-            }
-        }
         binding.etPhuChange.onItemSelectedListener =
             object : AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(
@@ -137,15 +116,10 @@ class AssessmentRMNCHNeonateSummaryFragment : BaseFragment(), View.OnClickListen
                     selectedItem?.let {
                         val selectedId = it[DefinedParams.id] as String?
                         val selectedSiteName = it[DefinedParams.NAME] as String?
-                        if (selectedId != DefinedParams.DefaultID) {
-                            viewModel.otherAssessmentDetails[AssessmentDefinedParams.ReferredPHUSite] = selectedSiteName ?: ""
-                            viewModel.otherAssessmentDetails[AssessmentDefinedParams.ReferredPHUSiteID] = selectedId?.toLong() ?: -1L
-                        } else {
-                            if (viewModel.otherAssessmentDetails.containsKey(AssessmentDefinedParams.ReferredPHUSite))
-                                viewModel.otherAssessmentDetails.remove(AssessmentDefinedParams.ReferredPHUSite)
-                            if (viewModel.otherAssessmentDetails.containsKey(AssessmentDefinedParams.ReferredPHUSiteID))
-                                viewModel.otherAssessmentDetails.remove(AssessmentDefinedParams.ReferredPHUSiteID)
-                        }
+                        viewModel.otherAssessmentDetails[AssessmentDefinedParams.ReferredPHUSite] =
+                            selectedSiteName ?: ""
+                        viewModel.otherAssessmentDetails[AssessmentDefinedParams.ReferredPHUSiteID] =
+                            selectedId?.toLong() ?: -1L
                     }
                 }
 
@@ -264,13 +238,13 @@ class AssessmentRMNCHNeonateSummaryFragment : BaseFragment(), View.OnClickListen
         when (v.id) {
             R.id.btnDone -> {
                 if (binding.etNextFollowUpDate.text.isNotEmpty()) {
-                   // viewModel.addOtherDetailsToType(AssessmentDefinedParams.RMNCH.lowercase())
-                    viewModel.isDismiss = true
                     assessmentRMNCHNeonateViewModel.updateOtherAssessmentDetails(
                         viewModel.otherAssessmentDetails,
                         viewModel.getCurrentLocation(),
                         viewModel.assessmentUpdateLiveData
                     )
+                } else {
+                    requireActivity().finish()
                 }
             }
 
@@ -319,7 +293,7 @@ class AssessmentRMNCHNeonateSummaryFragment : BaseFragment(), View.OnClickListen
     private fun showNextFollowUpDate(map: Map<*, *>?) {
         map?.let {
             if (it.containsKey(RMNCH.PNC)) {
-                val map  = it[RMNCH.PNC] as Map<*, *>? ?: return
+                val map = it[RMNCH.PNC] as Map<*, *>? ?: return
                 if (map.containsKey(RMNCH.DateOfDelivery)) {
                     val dateOfDelivery = map[RMNCH.DateOfDelivery] as String
                     DateUtils.convertStringToDate(

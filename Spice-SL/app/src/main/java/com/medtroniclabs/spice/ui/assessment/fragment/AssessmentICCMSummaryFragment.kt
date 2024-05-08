@@ -11,7 +11,6 @@ import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
-import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.isGone
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
@@ -20,15 +19,12 @@ import com.medtroniclabs.spice.common.CommonUtils.getOptionMap
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DateUtils.getDateAfterDays
 import com.medtroniclabs.spice.common.DefinedParams
-import com.medtroniclabs.spice.common.DefinedParams.DefaultID
-import com.medtroniclabs.spice.common.DefinedParams.DefaultIDLabel
 import com.medtroniclabs.spice.common.DefinedParams.ICCM
 import com.medtroniclabs.spice.common.DefinedParams.True
 import com.medtroniclabs.spice.common.DefinedParams.Yes
 import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.common.ViewUtils
 import com.medtroniclabs.spice.databinding.FragmentAssessmentIccmSummaryBinding
-import com.medtroniclabs.spice.db.entity.HealthFacilityEntity
 import com.medtroniclabs.spice.formgeneration.extension.markMandatory
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
@@ -110,7 +106,7 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
                 it,
                 false,
                 viewModel.otherAssessmentDetails,
-                Pair(IsClinicTaken,null),
+                Pair(IsClinicTaken, null),
                 FormLayout(viewType = "", id = "", title = "", visibility = "", optionsList = null),
                 singleSelectionCallback
             )
@@ -118,7 +114,7 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
         }
     }
 
-    private var singleSelectionCallback: ((selectedID: Any?, elementId: Pair<String,String?>, serverViewModel: FormLayout, name: String?) -> Unit)? =
+    private var singleSelectionCallback: ((selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit)? =
         { selectedID, _, _, _ ->
             viewModel.otherAssessmentDetails[IsClinicTaken] = selectedID as String
             viewModel.isInputUpdated = true
@@ -132,76 +128,36 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
         return flowList
     }
 
-    private fun loadPhuSitesList(healthFacilityList: List<HealthFacilityEntity>) {
-            val dropDownList = ArrayList<Map<String, Any>>()
-            /*dropDownList.add(
-                hashMapOf<String, Any>(
-                    DefinedParams.NAME to DefaultIDLabel,
-                    DefinedParams.id to DefaultID
-            )*/
-            var defaultPosition = 0
-            for ((index, healthFacilityEntity) in healthFacilityList.withIndex()) {
-                dropDownList.add(
-                    hashMapOf<String, Any>(
-                        DefinedParams.NAME to healthFacilityEntity.name,
-                        DefinedParams.id to healthFacilityEntity.fhirId.toString()
-                    )
-                )
-                if (healthFacilityEntity.isDefault) {
-                    defaultPosition = index
-                }
-            }
-            val adapter = CustomSpinnerAdapter(requireContext())
-            adapter.setData(dropDownList)
-            binding.etPhuChange.adapter = adapter
-            binding.etPhuChange.post {
-                if (dropDownList.size > 0 ){
-                    binding.etPhuChange.setSelection(defaultPosition , false)
-                }
-            }
-            binding.etPhuChange.onItemSelectedListener =
-                object : AdapterView.OnItemSelectedListener {
-                    override fun onItemSelected(
-                        adapterView: AdapterView<*>?,
-                        view: View?,
-                        pos: Int,
-                        itemId: Long
-                    ) {
-                        val selectedItem = adapter.getData(position = pos)
-                        selectedItem?.let {
-                            val selectedId = it[DefinedParams.id] as String?
-                            val selectedSiteName = it[DefinedParams.NAME] as String?
-                            if (selectedId != DefaultID) {
-                                isValid = true
-                                binding.tvSiteErrorMessage.gone()
-                                if ((viewModel.otherAssessmentDetails[ReferredPHUSite] != selectedSiteName && viewModel.otherAssessmentDetails[ReferredPHUSite] != null) ||
-                                    (viewModel.otherAssessmentDetails[ReferredPHUSiteID] != (healthFacilityList.find { it.fhirId == selectedId }?.fhirId?.toLong()
-                                        ?: selectedId?.toLong()!!) && viewModel.otherAssessmentDetails[ReferredPHUSiteID] != null)
-                                ) {
-                                    viewModel.isInputUpdated = true
-                                }
-                                viewModel.otherAssessmentDetails[ReferredPHUSite] = selectedSiteName ?: ""
-                                viewModel.otherAssessmentDetails[ReferredPHUSiteID] =
-                                    healthFacilityList.find { it.fhirId == selectedId }?.fhirId?.toLong()
-                                        ?: selectedId?.toLong()!!
-                            } else {
-                                isValid = false
-                                binding.tvSiteErrorMessage.visible()
-                                if (viewModel.otherAssessmentDetails.containsKey(ReferredPHUSite))
-                                    viewModel.otherAssessmentDetails.remove(ReferredPHUSite)
-                                if (viewModel.otherAssessmentDetails.containsKey(ReferredPHUSiteID))
-                                    viewModel.otherAssessmentDetails.remove(ReferredPHUSiteID)
-                            }
-                        }
-                    }
+    private fun loadPhuSitesList(healthFacilityList: ArrayList<Map<String, Any>>) {
 
-                    override fun onNothingSelected(p0: AdapterView<*>?) {
-                        /**
-                         * this method is not used
-                         */
+        val adapter = CustomSpinnerAdapter(requireContext())
+        adapter.setData(healthFacilityList)
+        binding.etPhuChange.adapter = adapter
+        binding.etPhuChange.onItemSelectedListener =
+            object : AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(
+                    adapterView: AdapterView<*>?,
+                    view: View?,
+                    pos: Int,
+                    itemId: Long
+                ) {
+                    val selectedItem = adapter.getData(position = pos)
+                    selectedItem?.let {
+                        val selectedId = it[DefinedParams.id] as String?
+                        val selectedSiteName = it[DefinedParams.NAME] as String?
+                        viewModel.otherAssessmentDetails[ReferredPHUSite] = selectedSiteName ?: ""
+                        viewModel.otherAssessmentDetails[ReferredPHUSiteID] =
+                            selectedId?.toLong() ?: -1L
                     }
                 }
-        }
+
+                override fun onNothingSelected(p0: AdapterView<*>?) {
+                    /**
+                     * this method is not used
+                     */
+                }
+            }
+    }
 
     private fun setListeners() {
         binding.btnDone.safeClickListener(this)
@@ -219,7 +175,7 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
     }
 
     private fun attachObservers() {
-        viewModel.assessmentStringLiveData.value?.let {result ->
+        viewModel.assessmentStringLiveData.value?.let { result ->
             updateStatusBar()
             createSummaryView(createListSummaryData(result))
         }
@@ -245,21 +201,28 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
     }
 
     private fun updateStatusBar() {
-        when(viewModel.referralStatus){
+        when (viewModel.referralStatus) {
             ReferralStatus.Referred.name -> {
                 binding.phuReferredGroup.visibility = View.VISIBLE
                 binding.diarrhoeaGroup.visibility = View.VISIBLE
-                binding.riskResultLayout.backgroundTintList = ContextCompat.getColorStateList(requireContext(), R.color.attention_color)
+                binding.riskResultLayout.backgroundTintList =
+                    ContextCompat.getColorStateList(requireContext(), R.color.attention_color)
                 binding.riskResultLayout.text = getString(R.string.referred_for_further_assessment)
             }
+
             ReferralStatus.OnTreatment.name -> {
                 binding.coughMalariaGroup.visibility = View.VISIBLE
-                binding.etNextFollowUpDate.text = getDateAfterDays(viewModel.referralReason?.mapNotNull { viewModel.treatmentDays[it] }?.minOrNull() ?: 3)
-                binding.riskResultLayout.backgroundTintList = ContextCompat.getColorStateList(requireContext(), R.color.red_risk_moderate)
+                binding.etNextFollowUpDate.text =
+                    getDateAfterDays(viewModel.referralReason?.mapNotNull { viewModel.treatmentDays[it] }
+                        ?.minOrNull() ?: 3)
+                binding.riskResultLayout.backgroundTintList =
+                    ContextCompat.getColorStateList(requireContext(), R.color.red_risk_moderate)
                 binding.riskResultLayout.text = getString(R.string.patient_on_treatment)
             }
+
             else -> {
-                binding.riskResultLayout.backgroundTintList = ContextCompat.getColorStateList(requireContext(), R.color.green_attention_color)
+                binding.riskResultLayout.backgroundTintList =
+                    ContextCompat.getColorStateList(requireContext(), R.color.green_attention_color)
                 binding.riskResultLayout.text = getString(R.string.no_refferral_treatment_required)
             }
         }
@@ -273,7 +236,7 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
     private fun createSummaryView(
         listSummaryData: MutableList<AssessmentSummaryModel>?
     ) {
-        listSummaryData?.let {summaryData ->
+        listSummaryData?.let { summaryData ->
             binding.emptyErrorMessage.visibility = View.GONE
             binding.parentLayout.visibility = View.VISIBLE
             binding.parentLayout.removeAllViews()
@@ -291,15 +254,20 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
     }
 
     private fun createListSummaryData(data: String): MutableList<AssessmentSummaryModel>? {
-        return viewModel.formLayoutsLiveData.value?.data?.formLayout?.filter { it.isSummary == true }?.map { formLayout ->
-            AssessmentSummaryModel(
-                title = formLayout.titleSummary ?: formLayout.title,
-                id = formLayout.id,
-                cultureValue = formLayout.titleCulture,
-                value = getValueOfKeyFromMap(StringConverter.stringToMap(data), formLayout.id, ICCM),
-                noOfDays = formLayout.noOfDays
-            )
-        }?.toMutableList()
+        return viewModel.formLayoutsLiveData.value?.data?.formLayout?.filter { it.isSummary == true }
+            ?.map { formLayout ->
+                AssessmentSummaryModel(
+                    title = formLayout.titleSummary ?: formLayout.title,
+                    id = formLayout.id,
+                    cultureValue = formLayout.titleCulture,
+                    value = getValueOfKeyFromMap(
+                        StringConverter.stringToMap(data),
+                        formLayout.id,
+                        ICCM
+                    ),
+                    noOfDays = formLayout.noOfDays
+                )
+            }?.toMutableList()
     }
 
     private fun composeIccmSummaryView(listSummaryData: MutableList<AssessmentSummaryModel>) {
@@ -308,136 +276,145 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
             getStatus(viewModel.referralStatus) ?: getString(R.string.seperator_hyphen)
         )
         val isSignContain = composeGeneralDangerSignsResult(listSummaryData)
-        listSummaryData.filter { it.title?.lowercase() != General_Danger_Signs.lowercase() }.forEach { item ->
-            when (item.id) {
-                muacCode -> {
-                    bindICCMSummaryView(
-                        item.title,
-                        requireContext().getString(
-                            R.string.nutrition_summary,
-                            item.value,
-                            getNutritionStatus(item.value, requireContext())
-                        )
-                    )
-                }
-
-                hasDiarrhoea -> {
-                    if (item.value == Yes) {
-                        val dehydrationStatus = getDehydrationStatus(isSignContain)
-                        bindICCMSummaryView(
-                            item.title,
-                            dehydrationStatus?.let {result ->
-                                requireContext().getString(
-                                    R.string.nutrition_summary,
-                                    item.value,
-                                    result
-                                )
-                            } ?: kotlin.run {
-                                requireContext().getString(
-                                    R.string.nutrition_summary_without_signs,
-                                    item.value
-                                )
-                            }
-                        )
-                    } else {
-                        bindICCMSummaryView(item.title, item.value)
-                    }
-                }
-
-                hasCough -> {
-                    if (item.value == Yes) {
-                        val status = getPneumoniaStatus()
-                        if (status){
-                            bindICCMSummaryView(
-                                item.title,
-                                requireContext().getString(
-                                    R.string.nutrition_summary,
-                                    item.value,
-                                    getString(R.string.pneumonia)
-                                )
-                            )
-                        } else {
-                            bindICCMSummaryView(item.title, item.value)
-                        }
-                    } else {
-                        bindICCMSummaryView(item.title, item.value)
-                    }
-                }
-
-                BreathPerMinute -> {
-                    item.value?.let {result ->
-                        bindICCMSummaryView(
-                            item.title,
-                            requireContext().getString(
-                                R.string.firstname_lastname,
-                                convertStringToIntString(result),
-                                getString(R.string.bpm)
-                            )
-                        )
-                    }
-                }
-
-                DiarrhoeaSigns -> {
-                    item.value?.let {result ->
-                        bindICCMSummaryView(
-                            item.title,
-                            getSelectedSigns(result)
-                        )
-                    }
-                }
-
-                hasFever -> {
-                    val rdtResult = viewModel.assessmentStringLiveData.value?.let {
-                        val jsonObject = JSONObject(it)
-                        val feverObject = jsonObject.optJSONObject(MenuConstants.ICCM_MENU_ID)?.optJSONObject(
-                            AssessmentDefinedParams.Fever
-                        )
-                        feverObject?.optString(ReferralDefinedParams.RdtTest)
-                    }
-                    if (item.value == Yes && rdtResult == RdtPositive) {
+        listSummaryData.filter { it.title?.lowercase() != General_Danger_Signs.lowercase() }
+            .forEach { item ->
+                when (item.id) {
+                    muacCode -> {
                         bindICCMSummaryView(
                             item.title,
                             requireContext().getString(
                                 R.string.nutrition_summary,
                                 item.value,
-                                getString(R.string.malaria)
+                                getNutritionStatus(item.value, requireContext())
                             )
                         )
-                    } else {
-                        bindICCMSummaryView(item.title, item.value)
                     }
-                }
 
-                NoOfDaysOfCough, NoOfDaysDiarrhoea, NoOfDaysOfFever -> {
-                    item.noOfDays?.let { maxDays ->
-                        item.value?.let { enteredDays ->
+                    hasDiarrhoea -> {
+                        if (item.value == Yes) {
+                            val dehydrationStatus = getDehydrationStatus(isSignContain)
                             bindICCMSummaryView(
                                 item.title,
-                                CommonUtils.getDaysValue(enteredDays, maxDays, requireContext())
+                                dehydrationStatus?.let { result ->
+                                    requireContext().getString(
+                                        R.string.nutrition_summary,
+                                        item.value,
+                                        result
+                                    )
+                                } ?: kotlin.run {
+                                    requireContext().getString(
+                                        R.string.nutrition_summary_without_signs,
+                                        item.value
+                                    )
+                                }
+                            )
+                        } else {
+                            bindICCMSummaryView(item.title, item.value)
+                        }
+                    }
+
+                    hasCough -> {
+                        if (item.value == Yes) {
+                            val status = getPneumoniaStatus()
+                            if (status) {
+                                bindICCMSummaryView(
+                                    item.title,
+                                    requireContext().getString(
+                                        R.string.nutrition_summary,
+                                        item.value,
+                                        getString(R.string.pneumonia)
+                                    )
+                                )
+                            } else {
+                                bindICCMSummaryView(item.title, item.value)
+                            }
+                        } else {
+                            bindICCMSummaryView(item.title, item.value)
+                        }
+                    }
+
+                    BreathPerMinute -> {
+                        item.value?.let { result ->
+                            bindICCMSummaryView(
+                                item.title,
+                                requireContext().getString(
+                                    R.string.firstname_lastname,
+                                    convertStringToIntString(result),
+                                    getString(R.string.bpm)
+                                )
                             )
                         }
-                    } ?: kotlin.run {
-                        bindICCMSummaryView(item.title, item.value)
                     }
-                }
 
-                Amoxicillin.lowercase(), ACT.lowercase() -> {
-                    if (item.value == Dispensed){
-                        bindICCMSummaryView(Dispensed, item.title)
+                    DiarrhoeaSigns -> {
+                        item.value?.let { result ->
+                            bindICCMSummaryView(
+                                item.title,
+                                getSelectedSigns(result)
+                            )
+                        }
                     }
-                }
 
-                else -> {
-                    if((item.id != OrsDispensedStatus) && (item.id != ZincDispensedStatus) && (item.id != otherSigns)){
-                        bindICCMSummaryView(item.title, item.value)
+                    hasFever -> {
+                        val rdtResult = viewModel.assessmentStringLiveData.value?.let {
+                            val jsonObject = JSONObject(it)
+                            val feverObject =
+                                jsonObject.optJSONObject(MenuConstants.ICCM_MENU_ID)?.optJSONObject(
+                                    AssessmentDefinedParams.Fever
+                                )
+                            feverObject?.optString(ReferralDefinedParams.RdtTest)
+                        }
+                        if (item.value == Yes && rdtResult == RdtPositive) {
+                            bindICCMSummaryView(
+                                item.title,
+                                requireContext().getString(
+                                    R.string.nutrition_summary,
+                                    item.value,
+                                    getString(R.string.malaria)
+                                )
+                            )
+                        } else {
+                            bindICCMSummaryView(item.title, item.value)
+                        }
+                    }
+
+                    NoOfDaysOfCough, NoOfDaysDiarrhoea, NoOfDaysOfFever -> {
+                        item.noOfDays?.let { maxDays ->
+                            item.value?.let { enteredDays ->
+                                bindICCMSummaryView(
+                                    item.title,
+                                    CommonUtils.getDaysValue(enteredDays, maxDays, requireContext())
+                                )
+                            }
+                        } ?: kotlin.run {
+                            bindICCMSummaryView(item.title, item.value)
+                        }
+                    }
+
+                    Amoxicillin.lowercase(), ACT.lowercase() -> {
+                        if (item.value == Dispensed) {
+                            bindICCMSummaryView(Dispensed, item.title)
+                        }
+                    }
+
+                    else -> {
+                        if ((item.id != OrsDispensedStatus) && (item.id != ZincDispensedStatus) && (item.id != otherSigns)) {
+                            bindICCMSummaryView(item.title, item.value)
+                        }
                     }
                 }
             }
-        }
-        val zincDispensedStatus = listSummaryData.filter { it.id == ZincDispensedStatus  }[0].value
-        val orsDispensedStatus = listSummaryData.filter { it.id == OrsDispensedStatus  }[0].value
-        if (zincDispensedStatus!=null || orsDispensedStatus!=null){
-            bindICCMSummaryView(Dispensed, requireContext().getString(R.string.zinc_ors_status, zincDispensedStatus ?: NA, orsDispensedStatus ?: NA))
+        val zincDispensedStatus = listSummaryData.filter { it.id == ZincDispensedStatus }[0].value
+        val orsDispensedStatus = listSummaryData.filter { it.id == OrsDispensedStatus }[0].value
+        if (zincDispensedStatus != null || orsDispensedStatus != null) {
+            bindICCMSummaryView(
+                Dispensed,
+                requireContext().getString(
+                    R.string.zinc_ors_status,
+                    zincDispensedStatus ?: NA,
+                    orsDispensedStatus ?: NA
+                )
+            )
         }
     }
 
@@ -481,28 +458,28 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
     }
 
     private fun getDehydrationStatus(signContain: Boolean): String? {
-            var result: String? = null
-            viewModel.assessmentStringLiveData.value?.let {
-                val jsonObject = JSONObject(it)
-                val feverObject =
-                    jsonObject.optJSONObject(MenuConstants.ICCM_MENU_ID)?.optJSONObject(
-                        Diarrhoea
-                    )
-                val diarrhoeaDays =
-                    feverObject?.optString(ReferralDefinedParams.NoOfDaysOfDiarrhoea)
-                val bloodyDiarrhoea =
-                    feverObject?.optString(ReferralDefinedParams.IsBloodyDiarrhoea)
-                diarrhoeaDays?.let {
-                    bloodyDiarrhoea?.let {
-                        result = if (diarrhoeaDays.toInt() >= 14 || bloodyDiarrhoea == True ) {
-                            requireContext().getString(R.string.severe_dehydration)
-                        } else {
-                            requireContext().getString(R.string.moderate_dehydration)
-                        }
+        var result: String? = null
+        viewModel.assessmentStringLiveData.value?.let {
+            val jsonObject = JSONObject(it)
+            val feverObject =
+                jsonObject.optJSONObject(MenuConstants.ICCM_MENU_ID)?.optJSONObject(
+                    Diarrhoea
+                )
+            val diarrhoeaDays =
+                feverObject?.optString(ReferralDefinedParams.NoOfDaysOfDiarrhoea)
+            val bloodyDiarrhoea =
+                feverObject?.optString(ReferralDefinedParams.IsBloodyDiarrhoea)
+            diarrhoeaDays?.let {
+                bloodyDiarrhoea?.let {
+                    result = if (diarrhoeaDays.toInt() >= 14 || bloodyDiarrhoea == True) {
+                        requireContext().getString(R.string.severe_dehydration)
+                    } else {
+                        requireContext().getString(R.string.moderate_dehydration)
                     }
                 }
             }
-            return result
+        }
+        return result
     }
 
 
@@ -530,9 +507,13 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
                 result = Yes
 
             }
-            if (assessment.title.equals(AssessmentDefinedParams.Signs, true) && signsList.any { sign ->
+            if (assessment.title.equals(
+                    AssessmentDefinedParams.Signs,
+                    true
+                ) && signsList.any { sign ->
                     assessment.value?.lowercase()?.contains(sign) == true
-                }) {
+                }
+            ) {
                 isSignContain = true
             }
         }
@@ -544,7 +525,7 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
     }
 
     private fun bindICCMSummaryView(title: String?, value: String?, valueTextColor: Int? = null) {
-        value?.let {result ->
+        value?.let { result ->
             binding.parentLayout.addView(
                 addViewSummaryLayout(
                     title,
@@ -563,12 +544,13 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
                     updateFollowUpDate(it.trim().toString())
                 }
                 //addOtherDetailsToIccmType(Summary.lowercase())
-                if (viewModel.otherAssessmentDetails.containsKey(ReferredPHUSite) && viewModel.otherAssessmentDetails.containsKey(ReferredPHUSiteID)) {
-                    viewModel.isDismiss = true
+                if (viewModel.otherAssessmentDetails.containsKey(ReferredPHUSite) && viewModel.otherAssessmentDetails.containsKey(
+                        ReferredPHUSiteID
+                    )
+                ) {
                     viewModel.updateOtherAssessmentDetails()
                 } else {
-                    if(binding.tvSiteErrorMessage.isGone())
-                    {
+                    if (binding.tvSiteErrorMessage.isGone()) {
                         binding.tvSiteErrorMessage.visible()
                     }
                     binding.scrollView.fullScroll(ScrollView.FOCUS_DOWN)

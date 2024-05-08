@@ -182,7 +182,7 @@ class AssessmentActivity : BaseActivity() {
                 ResourceState.SUCCESS -> {
                     hideLoading()
                     resource.data?.let { _ ->
-                        insertOtherAssessmentDetails()
+                       // insertOtherAssessmentDetails()
                         loadSummaryFragment()
                     }
                 }
@@ -197,9 +197,7 @@ class AssessmentActivity : BaseActivity() {
             when (resource.state) {
                 ResourceState.SUCCESS -> {
                     hideLoading()
-                    if (viewModel.isDismiss) {
-                        finish()
-                    }
+                    finish()
                 }
 
                 else -> {}
@@ -207,32 +205,6 @@ class AssessmentActivity : BaseActivity() {
         }
     }
 
-    private fun insertOtherAssessmentDetails() {
-        when (viewModel.referralStatus) {
-            ReferralStatus.Referred.name -> {
-                viewModel.nearestFacilityLiveData.value?.data?.let { siteList ->
-                    val item = siteList.filter { it.isDefault }
-                    if (item.isNotEmpty()) {
-                        viewModel.otherAssessmentDetails[AssessmentDefinedParams.ReferredPHUSite] = item[0].name
-                        viewModel.otherAssessmentDetails[AssessmentDefinedParams.ReferredPHUSiteID] =
-                            item[0].fhirId?.toLong() ?: item[0].id
-                    }
-                }
-                viewModel.updateOtherAssessmentDetails()
-            }
-
-            ReferralStatus.OnTreatment.name -> {
-                val treatmentDate = DateUtils.getDateAfterDays(viewModel.referralReason?.mapNotNull { viewModel.treatmentDays[it] }?.minOrNull() ?: 3)
-                viewModel.otherAssessmentDetails[AssessmentDefinedParams.NextFollowupDate] =
-                    DateUtils.convertDateTimeToDate(
-                        treatmentDate,
-                        DateUtils.DATE_ddMMyyyy,
-                        DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
-                    )
-                viewModel.updateOtherAssessmentDetails()
-            }
-        }
-    }
 
     private fun getIntentValue() {
         viewModel.selectedHouseholdMemberId = intent.getLongExtra(DefinedParams.MemberID, -1L)

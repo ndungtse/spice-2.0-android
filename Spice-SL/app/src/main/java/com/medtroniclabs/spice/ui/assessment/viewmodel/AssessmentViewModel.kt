@@ -11,7 +11,6 @@ import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.data.LocalSpinnerResponse
 import com.medtroniclabs.spice.data.model.RecommendedDosageListModel
 import com.medtroniclabs.spice.db.entity.AssessmentEntity
-import com.medtroniclabs.spice.db.entity.HealthFacilityEntity
 import com.medtroniclabs.spice.db.entity.MemberClinicalEntity
 import com.medtroniclabs.spice.db.entity.SignsAndSymptomsEntity
 import com.medtroniclabs.spice.di.IoDispatcher
@@ -23,6 +22,7 @@ import com.medtroniclabs.spice.repo.AssessmentRepository
 import com.medtroniclabs.spice.repo.HouseholdMemberRepository
 import com.medtroniclabs.spice.ui.MenuConstants.ICCM_MENU_ID
 import com.medtroniclabs.spice.ui.MenuConstants.OTHER_SYMPTOMS
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.IsClinicTaken
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.otherSymptoms
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.signsAndSymptoms
@@ -30,7 +30,9 @@ import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.symptoms
 import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefinedParams.Diarrhoea
 import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefinedParams.DiarrhoeaSigns
 import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralReasons
+import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
+import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.ANC
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.ANC_MENU
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.ChildHoodVisit
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.ancSigns
@@ -45,6 +47,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
@@ -65,7 +68,7 @@ class AssessmentViewModel @Inject constructor(
     var symptomTypeListResponse = MutableLiveData<List<SignsAndSymptomsEntity>>()
     var otherAssessmentDetails = HashMap<String, Any>()
     val formLayoutsLiveData = MutableLiveData<Resource<FormResponse>>()
-    val nearestFacilityLiveData = MutableLiveData<Resource<List<HealthFacilityEntity>>>()
+    val nearestFacilityLiveData = MutableLiveData<Resource<ArrayList<Map<String, Any>>>>()
     var referralStatus: String? = null
     private var lastLocation: Location? = null
     val facilitySpinnerLiveData = MutableLiveData<Resource<LocalSpinnerResponse>>()
@@ -75,8 +78,8 @@ class AssessmentViewModel @Inject constructor(
     var instructionId: String? = null
     var isDismiss = false
     var isInputUpdated: Boolean = false
-    val treatmentDays = HashMap<String,Int>()
-    var referralReason : ArrayList<String>? = null
+    val treatmentDays = HashMap<String, Int>()
+    var referralReason: ArrayList<String>? = null
 
     init {
         val followUpCriteria = SecuredPreference.getFollowUpCriteria()
@@ -92,9 +95,11 @@ class AssessmentViewModel @Inject constructor(
         }
         viewModelScope.launch(dispatcherIO) {
             memberDetailsLiveData.postLoading()
-            memberDetailsLiveData.postValue(memberRegistrationRepository.getAssessmentMemberDetails(
-                selectedHouseholdMemberId
-            ))
+            memberDetailsLiveData.postValue(
+                memberRegistrationRepository.getAssessmentMemberDetails(
+                    selectedHouseholdMemberId
+                )
+            )
         }
     }
 
@@ -110,17 +115,87 @@ class AssessmentViewModel @Inject constructor(
                     getAssessmentDetails(assessmentMap as HashMap<Any, Any>)
                 assessmentStringLiveData.postValue(assessmentDetail.first)
                 referralReason = referralResult?.second
+                val otherDetails = calculateOtherDetails(assessmentMap, referralStatus, menuId)
                 assessmentSaveLiveData.postValue(
                     assessmentRepository.saveAssessment(
                         assessmentDetail.second,
                         details,
                         menuId,
                         referralResult,
-                        lastLocation
+                        lastLocation,
+                        otherDetails
                     )
                 )
             }
         }
+    }
+
+    private fun calculateOtherDetails(
+        assessmentMap: HashMap<Any, Any>,
+        referralStatus: String?,
+        menuId: String?
+    ): HashMap<String, Any>? {
+        val otherDetails = HashMap<String, Any>()
+
+        if (referralStatus != null && referralStatus == ReferralStatus.Referred.name) {
+            otherDetails[AssessmentDefinedParams.ReferredPHUSiteID] =
+                SecuredPreference.getString(SecuredPreference.EnvironmentKey.DEFAULT_SITE_ID.name)
+                    ?: "-1"
+        }
+
+        if (menuId == ANC_MENU.uppercase(Locale.getDefault())) {
+            if (assessmentMap.containsKey(ANC)) {
+                val ancMap = assessmentMap[ANC] as Map<*, *>
+                var miscarriageValue = false
+                if (ancMap.containsKey(RMNCH.Miscarriage)) {
+                    val miscarriage = ancMap[RMNCH.Miscarriage]
+                    if (miscarriage is Boolean && miscarriage) {
+                        miscarriageValue = miscarriage
+                    }
+                }
+                if (!miscarriageValue && ancMap.containsKey(lastMenstrualPeriod)) {
+                    val lmp = ancMap[lastMenstrualPeriod] as String
+                    DateUtils.convertStringToDate(
+                        lmp,
+                        DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
+                    )?.let { lmpDate ->
+                        RMNCH.calculateNextANCVisitDate(
+                            lmpDate
+                        )?.let { visitDate ->
+                            otherDetails[AssessmentDefinedParams.NextFollowupDate] =
+                                DateUtils.convertDateTimeToDate(
+                                    DateUtils.getDateStringFromDate(
+                                        visitDate, DateUtils.DATE_ddMMyyyy
+                                    ),
+                                    DateUtils.DATE_ddMMyyyy,
+                                    DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
+                                )
+                        }
+                    }
+                }
+            }
+        } else if (menuId == RMNCH.CHILD_MENU.uppercase(Locale.getDefault())) {
+            memberDetailsLiveData.value?.data?.dateOfBirth?.let {
+                DateUtils.calculateAgeInMonths(it)?.let { pair ->
+                    if (pair.first <= RMNCH.childHoodVisitMaxMonth) {
+                        RMNCH.calculateNextChildHoodVisitDate(
+                            age = pair.first,
+                            birthDate = pair.second
+                        )?.let { visitDate ->
+                            otherDetails[AssessmentDefinedParams.NextFollowupDate] =
+                                DateUtils.convertDateTimeToDate(
+                                    DateUtils.getDateStringFromDate(
+                                        visitDate, DateUtils.DATE_ddMMyyyy
+                                    ),
+                                    DateUtils.DATE_ddMMyyyy,
+                                    DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
+                                )
+                        }
+                    }
+                }
+            }
+        }
+        return if (otherDetails.isEmpty()) null else otherDetails
     }
 
     private fun getAssessmentDetails(
@@ -227,7 +302,6 @@ class AssessmentViewModel @Inject constructor(
                 val isTakenToClinical = otherAssessmentDetails[IsClinicTaken] as String
                 otherAssessmentDetails[IsClinicTaken] = (isTakenToClinical == "Yes")
             }
-
             assessmentUpdateLiveData.postValue(
                 assessmentRepository.updateOtherAssessmentDetails(
                     assessmentSaveLiveData.value?.data,
@@ -276,7 +350,11 @@ class AssessmentViewModel @Inject constructor(
             when (type) {
                 RMNCH.PlaceOfDelivery -> {
                     facilitySpinnerLiveData.postLoading()
-                    facilitySpinnerLiveData.postValue(assessmentRepository.getNearestHealthFacility(tag))
+                    facilitySpinnerLiveData.postValue(
+                        assessmentRepository.getNearestHealthFacility(
+                            tag
+                        )
+                    )
                 }
             }
         }
@@ -333,8 +411,8 @@ class AssessmentViewModel @Inject constructor(
 
     private fun getClinicalDateKey(): String? {
         when (workflowName) {
-            RMNCH.ANC -> {
-                return RMNCH.lastMenstrualPeriod
+            ANC -> {
+                return lastMenstrualPeriod
             }
 
             RMNCH.PNC -> {
@@ -370,10 +448,10 @@ class AssessmentViewModel @Inject constructor(
         workflowName: String
     ): Triple<Long, String?, Long?> {
         return when (workflowName) {
-            RMNCH.ANC -> {
+            ANC -> {
                 Triple(
                     details[RMNCH.visitNo] as Long,
-                    details[RMNCH.lastMenstrualPeriod] as String,
+                    details[lastMenstrualPeriod] as String,
                     null
                 )
             }
@@ -405,7 +483,12 @@ class AssessmentViewModel @Inject constructor(
         clinicalDate: String?
     ) {
         viewModelScope.launch(dispatcherIO) {
-            assessmentRepository.updateMemberClinicalData(patientId, RMNCH.getMenuName(type), visitCount, clinicalDate)
+            assessmentRepository.updateMemberClinicalData(
+                patientId,
+                RMNCH.getMenuName(type),
+                visitCount,
+                clinicalDate
+            )
         }
     }
 

@@ -5,7 +5,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.medtroniclabs.spice.appextensions.postLoading
+import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
+import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.db.entity.AssessmentEntity
 import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
@@ -17,6 +19,7 @@ import com.medtroniclabs.spice.repo.AssessmentRepository
 import com.medtroniclabs.spice.repo.HouseholdMemberRepository
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
 import com.medtroniclabs.spice.ui.assessment.referrallogic.ReferralResultGenerator
+import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
@@ -54,7 +57,8 @@ class AssessmentRMNCHNeonateViewModel @Inject constructor(
         childDetailMap: HashMap<String, Any>,
         householdId: Long,
         motherDetailMap: HashMap<String, Any>,
-        memberDetail: AssessmentMemberDetails) {
+        memberDetail: AssessmentMemberDetails
+    ) {
         viewModelScope.launch(dispatcherIO) {
             if (memberMap != null) {
                 householdMemberRepository.registerMember(
@@ -73,7 +77,8 @@ class AssessmentRMNCHNeonateViewModel @Inject constructor(
     private suspend fun savePNCDetails(
         motherDetailMap: HashMap<String, Any>,
         childDetailMap: HashMap<String, Any>,
-        memberDetail: AssessmentMemberDetails) {
+        memberDetail: AssessmentMemberDetails
+    ) {
         val groupMap = HashMap<String, Any>()
         groupMap[RMNCH.PNC] = motherDetailMap[RMNCH.PNC] as Any
         groupMap[RMNCH.PNCNeonatal] = childDetailMap
@@ -83,13 +88,52 @@ class AssessmentRMNCHNeonateViewModel @Inject constructor(
             getAssessmentDetails(groupMap as HashMap<Any, Any>)
         referralStatus = referralResult.first
         assessmentStringSaveLiveData.postValue(assessmentDetail.first)
-        assessmentSaveLiveData.postValue(assessmentRepository.saveAssessment(
-            assessmentDetail.second,
-            memberDetail,
-            RMNCH.PNC_MENU,
-            referralResult,
-            null,
-        ))
+        val otherDetails = calculateOtherDetails(groupMap, referralStatus)
+        assessmentSaveLiveData.postValue(
+            assessmentRepository.saveAssessment(
+                assessmentDetail.second,
+                memberDetail,
+                RMNCH.PNC_MENU,
+                referralResult,
+                null,
+                otherDetails
+            )
+        )
+    }
+
+    private fun calculateOtherDetails(
+        assessmentMap: HashMap<Any, Any>,
+        referralStatus: String?
+    ): HashMap<String, Any>? {
+        val otherDetails = HashMap<String, Any>()
+        if (referralStatus != null && referralStatus == ReferralStatus.Referred.name) {
+            otherDetails[AssessmentDefinedParams.ReferredPHUSiteID] =
+                SecuredPreference.getString(SecuredPreference.EnvironmentKey.DEFAULT_SITE_ID.name)
+                    ?: "-1"
+        }
+        if (assessmentMap.containsKey(RMNCH.PNC)) {
+            val map = assessmentMap[RMNCH.PNC] as Map<*, *>
+            if (map.containsKey(RMNCH.DateOfDelivery)) {
+                val dateOfDelivery = map[RMNCH.DateOfDelivery] as String
+                DateUtils.convertStringToDate(
+                    dateOfDelivery,
+                    DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
+                )?.let { deliveryDate ->
+                    RMNCH.calculateNextPNCVisitDate(deliveryDate)?.let { visitDate ->
+                        otherDetails[AssessmentDefinedParams.NextFollowupDate] =
+                            DateUtils.convertDateTimeToDate(
+                                DateUtils.getDateStringFromDate(
+                                    visitDate, DateUtils.DATE_ddMMyyyy
+                                ),
+                                DateUtils.DATE_ddMMyyyy,
+                                DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
+                            )
+                    }
+                }
+            }
+        }
+
+        return if (otherDetails.isEmpty()) null else otherDetails
     }
 
     private fun getAssessmentDetails(
@@ -148,27 +192,34 @@ class AssessmentRMNCHNeonateViewModel @Inject constructor(
     fun getMemberDetailsByParentId(memberId: String) {
         viewModelScope.launch(dispatcherIO) {
             childMemberDetailsLiveData.postLoading()
-            childMemberDetailsLiveData.postValue(householdMemberRepository.getMemberDetailsByParentId(memberId))
+            childMemberDetailsLiveData.postValue(
+                householdMemberRepository.getMemberDetailsByParentId(
+                    memberId
+                )
+            )
         }
     }
 
     fun updateOtherAssessmentDetails(
         otherAssessmentDetails: HashMap<String, Any>,
         lastLocation: Location?,
-        assessmentUpdateLiveData:MutableLiveData<Resource<String>>
+        assessmentUpdateLiveData: MutableLiveData<Resource<String>>
     ) {
         viewModelScope.launch(dispatcherIO) {
             if (otherAssessmentDetails.containsKey(AssessmentDefinedParams.IsClinicTaken)) {
-                val isTakenToClinical = otherAssessmentDetails[AssessmentDefinedParams.IsClinicTaken] as String
+                val isTakenToClinical =
+                    otherAssessmentDetails[AssessmentDefinedParams.IsClinicTaken] as String
                 otherAssessmentDetails[AssessmentDefinedParams.IsClinicTaken] =
-                    (isTakenToClinical.equals(DefinedParams.Yes,true))
+                    (isTakenToClinical.equals(DefinedParams.Yes, true))
             }
 
-            assessmentUpdateLiveData.postValue(assessmentRepository.updateOtherAssessmentDetails(
-                assessmentSaveLiveData.value?.data,
-                otherAssessmentDetails,
-                lastLocation
-            ))
+            assessmentUpdateLiveData.postValue(
+                assessmentRepository.updateOtherAssessmentDetails(
+                    assessmentSaveLiveData.value?.data,
+                    otherAssessmentDetails,
+                    lastLocation
+                )
+            )
         }
     }
 }

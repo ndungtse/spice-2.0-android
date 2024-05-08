@@ -55,8 +55,8 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:weightSum="1.2"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:weightSum="1.2">
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:layout_width="@dimen/_0dp"
@@ -72,11 +72,11 @@
                 <androidx.appcompat.widget.AppCompatTextView
                     android:layout_width="@dimen/_0dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/_24sdp"
                     android:layout_weight="0.3"
                     android:fontFamily="@font/inter_regular"
                     android:gravity="start"
                     android:padding="@dimen/_12sdp"
-                    android:layout_marginHorizontal="@dimen/_24sdp"
                     android:text="@string/frequency"
                     android:textColor="@color/table_title"
                     android:textSize="@dimen/_16ssp" />
@@ -84,11 +84,11 @@
                 <androidx.appcompat.widget.AppCompatTextView
                     android:layout_width="@dimen/_0dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/_24sdp"
                     android:layout_weight="0.2"
                     android:fontFamily="@font/inter_regular"
                     android:gravity="start"
                     android:padding="@dimen/_12sdp"
-                    android:layout_marginHorizontal="@dimen/_24sdp"
                     android:text="@string/prescribed_days"
                     android:textColor="@color/table_title"
                     android:textSize="@dimen/_16ssp" />
@@ -96,10 +96,10 @@
                 <androidx.appcompat.widget.AppCompatTextView
                     android:layout_width="@dimen/_0dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/_24sdp"
                     android:layout_weight="0.2"
                     android:fontFamily="@font/inter_regular"
                     android:gravity="start"
-                    android:layout_marginHorizontal="@dimen/_24sdp"
                     android:padding="@dimen/_12sdp"
                     android:text="@string/quantity"
                     android:textColor="@color/table_title"
@@ -110,14 +110,54 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/_2sdp"
-                android:background="@color/fragment_bg" />
+                android:background="@color/edittext_stroke_50t" />
 
-            <include layout="@layout/row_prescription"/>
 
+            <LinearLayout
+                android:id="@+id/llPrescriptionHolder"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
 
         </LinearLayout>
 
     </androidx.cardview.widget.CardView>
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/clFooter"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="@dimen/_15sdp"
+        android:paddingVertical="@dimen/_10sdp"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnPrescribe"
+            style="@style/Button_Style"
+            android:background="@drawable/button_selector_cobalt"
+            android:enabled="false"
+            android:minWidth="@dimen/_200sdp"
+            android:paddingHorizontal="@dimen/_30sdp"
+            android:text="@string/dispense"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnRenewAll"
+            style="@style/Button_Style_Border"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/_10sdp"
+            android:text="@string/renew_all"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/btnPrescribe"
+            app:layout_constraintTop_toTopOf="parent" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
