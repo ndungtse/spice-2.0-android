@@ -1,0 +1,15 @@
+package com.medtroniclabs.spice.data.offlinesync.model
+
+import com.medtroniclabs.spice.appextensions.convertToUtcDateTime
+
+data class AssessmentEncounter(
+    val householdId: String?,
+    val memberId: String?,
+    val referred: Boolean,
+    val provenance: ProvanceDto,
+    val latitude: Double,
+    val longitude: Double,
+    val visitNumber: Long? = null,
+    val startTime: String = System.currentTimeMillis().convertToUtcDateTime(),
+    val endTime: String = System.currentTimeMillis().convertToUtcDateTime()
+)

@@ -60,17 +60,11 @@
                 android:id="@+id/villageChipGroup"
                 android:layout_width="@dimen/_0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/_16sdp"
                 android:paddingVertical="@dimen/_10sdp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="@id/tvVillageTitle"
                 app:layout_constraintTop_toBottomOf="@id/tvVillageTitle" />
-
-            <androidx.constraintlayout.widget.Group
-                android:id="@+id/registrationStatusGroup"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:visibility="gone"
-                app:constraint_referenced_ids="tvRegistrationStatus,registrationStatusChipGroup" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvRegistrationStatus"
@@ -81,127 +75,106 @@
                 android:layout_marginStart="@dimen/_16sdp"
                 android:text="@string/registration_status"
                 android:textColor="@color/grey_black"
-                android:visibility="gone"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/villageChipGroup" />
+
 
             <com.google.android.material.chip.ChipGroup
                 android:id="@+id/registrationStatusChipGroup"
                 android:layout_width="@dimen/_0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginVertical="@dimen/_10sdp"
+                android:layout_marginEnd="@dimen/_16sdp"
                 android:layout_marginBottom="@dimen/_20sdp"
                 android:paddingVertical="@dimen/_10sdp"
-                android:visibility="gone"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="@id/tvRegistrationStatus"
                 app:layout_constraintTop_toBottomOf="@id/tvRegistrationStatus"
                 app:singleSelection="true" />
 
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/tvDataRanges"
-                style="@style/TextStyle_Medium_16_NoBG"
-                android:layout_width="wrap_content"
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/clDateRange"
+                android:layout_width="@dimen/_0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/_16sdp"
                 android:layout_marginVertical="@dimen/_10sdp"
-                android:layout_marginStart="@dimen/_16sdp"
-                android:text="@string/data_range"
-                android:textColor="@color/grey_black"
-                android:visibility="visible"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/villageChipGroup" />
-
-            <com.google.android.material.chip.ChipGroup
-                android:id="@+id/dataRangesChipGroup"
-                android:layout_width="@dimen/_0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/_20sdp"
-                android:paddingVertical="@dimen/_10sdp"
-                android:visibility="visible"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="@id/tvDataRanges"
-                app:layout_constraintTop_toBottomOf="@id/tvDataRanges"
-                app:singleSelection="true" />
-
-            <androidx.constraintlayout.widget.Group
-                android:id="@+id/datePickerGroup"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
                 android:visibility="gone"
-                app:constraint_referenced_ids="tvFrom,tvTo,etFromDate,etToDate" />
-
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/tvFrom"
-                android:layout_width="@dimen/_0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/_16sdp"
-                android:text="@string/from"
-                android:textColor="@color/table_title"
-                android:textSize="@dimen/_14ssp"
-                app:layout_constraintEnd_toStartOf="@+id/tvTo"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/dataRangesChipGroup" />
-
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/tvTo"
-                android:layout_width="@dimen/_0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/_30sdp"
-                android:layout_marginEnd="@dimen/_16sdp"
-                android:text="@string/to"
-                android:textColor="@color/table_title"
-                android:textSize="@dimen/_14ssp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/tvFrom"
-                app:layout_constraintTop_toBottomOf="@id/dataRangesChipGroup" />
-
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/etFromDate"
-                style="@style/Form_Input_Style"
-                android:layout_width="@dimen/_0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginVertical="@dimen/_8sdp"
-                android:layout_marginStart="@dimen/_16sdp"
-                android:background="@drawable/edittext_background"
-                android:hint="@string/dd_mm_yyyy"
-                android:inputType="date"
-                android:paddingHorizontal="@dimen/_12sdp"
-                android:paddingVertical="@dimen/_10sdp"
-                android:textColor="@color/grey_black"
-                android:textColorHint="@color/grey_black"
-                app:layout_constraintEnd_toEndOf="@+id/tvFrom"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tvFrom" />
+                app:layout_constraintTop_toBottomOf="@+id/registrationStatusChipGroup">
 
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/etFromDateError"
-                style="@style/TextStyle_Error_14"
-                android:layout_width="@dimen/_0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginVertical="@dimen/_8sdp"
-                android:layout_marginStart="@dimen/_16sdp"
-                android:visibility="gone"
-                app:layout_constraintEnd_toEndOf="@+id/tvFrom"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/etFromDate" />
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvFrom"
+                    android:layout_width="@dimen/_0dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/from"
+                    android:textColor="@color/table_title"
+                    android:textSize="@dimen/_14ssp"
+                    app:layout_constraintEnd_toStartOf="@+id/tvTo"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/etToDate"
-                style="@style/Form_Input_Style"
-                android:layout_width="@dimen/_0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginVertical="@dimen/_8sdp"
-                android:layout_marginEnd="@dimen/_16sdp"
-                android:background="@drawable/edittext_background"
-                android:hint="@string/dd_mm_yyyy"
-                android:inputType="date"
-                android:paddingHorizontal="@dimen/_12sdp"
-                android:paddingVertical="@dimen/_10sdp"
-                android:textColor="@color/grey_black"
-                android:textColorHint="@color/grey_black"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="@+id/tvTo"
-                app:layout_constraintTop_toBottomOf="@+id/tvTo" />
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvTo"
+                    android:layout_width="@dimen/_0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_30sdp"
+                    android:text="@string/to"
+                    android:textColor="@color/table_title"
+                    android:textSize="@dimen/_14ssp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/tvFrom"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/etFromDate"
+                    style="@style/Form_Input_Style"
+                    android:layout_width="@dimen/_0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginVertical="@dimen/_8sdp"
+                    android:background="@drawable/edittext_background"
+                    android:hint="@string/dd_mm_yyyy"
+                    android:inputType="date"
+                    android:paddingHorizontal="@dimen/_12sdp"
+                    android:paddingVertical="@dimen/_10sdp"
+                    android:textColor="@color/grey_black"
+                    android:textColorHint="@color/grey_black"
+                    app:layout_constraintEnd_toEndOf="@+id/tvFrom"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tvFrom" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/etFromDateError"
+                    style="@style/TextStyle_Error_14"
+                    android:layout_width="@dimen/_0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginVertical="@dimen/_8sdp"
+                    android:visibility="visible"
+                    app:layout_constraintEnd_toEndOf="@+id/tvFrom"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/etFromDate" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/etToDate"
+                    style="@style/Form_Input_Style"
+                    android:layout_width="@dimen/_0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginVertical="@dimen/_8sdp"
+                    android:background="@drawable/edittext_background"
+                    android:hint="@string/dd_mm_yyyy"
+                    android:inputType="date"
+                    android:paddingHorizontal="@dimen/_12sdp"
+                    android:paddingVertical="@dimen/_10sdp"
+                    android:textColor="@color/grey_black"
+                    android:textColorHint="@color/grey_black"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="@+id/tvTo"
+                    app:layout_constraintTop_toBottomOf="@+id/tvTo" />
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.core.widget.NestedScrollView>
@@ -240,8 +213,9 @@
             android:enabled="false"
             android:text="@string/apply"
             android:textAllCaps="true"
-            app:layout_constraintTop_toTopOf="parent"/>
+            app:layout_constraintTop_toTopOf="parent" />
     </LinearLayout>
+
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/tvApplyError"
         style="@style/TextStyle_Error_14"
@@ -250,8 +224,8 @@
         android:layout_marginVertical="@dimen/_8sdp"
         android:layout_marginStart="@dimen/_16sdp"
         android:visibility="gone"
-        app:layout_constraintTop_toBottomOf="@+id/bottomView"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/bottomView" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/loadingProgress"

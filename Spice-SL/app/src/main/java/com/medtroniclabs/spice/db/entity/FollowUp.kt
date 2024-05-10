@@ -18,6 +18,6 @@ data class FollowUp(
     val encounterType: String,
     val encounterDate: String? = null,
     val nextVisitDate: String? = null,
-    val referredSiteId: String,
+    val referredSiteId: String? = null,
     val villageId: String
 )

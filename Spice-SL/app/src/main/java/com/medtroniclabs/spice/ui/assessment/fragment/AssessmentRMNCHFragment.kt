@@ -251,7 +251,7 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
                     checkForOtherMetrics(second, name)
                     val resultGenerator = ReferralResultGenerator()
                     val referralResult = resultGenerator.calculateRMNCHReferralResult(second)
-                    viewModel.saveAssessment(second, referralResult, getMenuName(viewModel.workflowName))
+                    viewModel.saveAssessment(second, referralResult, RMNCH.getMenuName(viewModel.workflowName))
                 }
             }
         }
@@ -264,21 +264,14 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
                 val miscarriage = second[Miscarriage]
                 if (miscarriage is Boolean && miscarriage) {
                     viewModel.memberDetailsLiveData.value?.data?.let {
-                        viewModel.updateMemberClinicalData(it.patientId,RMNCH.ANC,0L,null)
+                        viewModel.updateMemberClinicalData(it.patientId, RMNCH.ANC,0L,null)
                     }
                 }
             }
         }
     }
 
-    private fun getMenuName(workflowName: String?): String {
-        when (workflowName) {
-            RMNCH.ANC -> return RMNCH.ANC_MENU
-            RMNCH.ChildHoodVisit -> return RMNCH.CHILD_MENU
-            RMNCH.PNC -> return RMNCH.PNC_MENU
-        }
-        return MenuConstants.RMNCH_MENU_ID
-    }
+
 
     private fun calculateGestationalAge(details: HashMap<String, Any>, name: String) {
         if (details.containsKey(name) && details[name] is Map<*, *>) {

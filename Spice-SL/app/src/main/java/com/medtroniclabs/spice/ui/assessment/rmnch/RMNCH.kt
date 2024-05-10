@@ -3,8 +3,10 @@ package com.medtroniclabs.spice.ui.assessment.rmnch
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.formgeneration.config.ViewType
+import com.medtroniclabs.spice.ui.MenuConstants
 import java.text.DecimalFormat
 import java.util.Date
+import java.util.Locale
 import java.util.concurrent.TimeUnit
 import kotlin.math.abs
 
@@ -16,6 +18,7 @@ object RMNCH {
     const val PNCNeonatal = "pncNeonatal"
     const val ChildHoodVisit = "pncChild"
     const val lastMenstrualPeriod = "lastMenstrualPeriod"
+    const val estimatedDeliveryDate = "estimatedDeliveryDate"
     const val visitNo = "visitNo"
     const val PNC_MENU = "pnc"
     const val ANC_MENU = "anc"
@@ -176,6 +179,14 @@ object RMNCH {
 
     const val childHoodVisitMaxMonth = 15
 
+    fun getMenuName(workflowName: String?): String {
+        when (workflowName) {
+            ANC -> return ANC_MENU.uppercase(Locale.getDefault())
+            ChildHoodVisit -> return CHILD_MENU.uppercase(Locale.getDefault())
+            PNC -> return PNC_MENU.uppercase(Locale.getDefault())
+        }
+        return MenuConstants.RMNCH_MENU_ID.uppercase(Locale.getDefault())
+    }
 
 
 }

@@ -2,6 +2,7 @@ package com.medtroniclabs.spice.repo
 
 import androidx.lifecycle.MutableLiveData
 import com.google.gson.Gson
+import com.google.gson.JsonElement
 import com.google.gson.JsonParser
 import com.medtroniclabs.spice.appextensions.convertToString
 import com.medtroniclabs.spice.appextensions.convertToUtcDateTime
@@ -11,6 +12,7 @@ import com.medtroniclabs.spice.appextensions.postSuccess
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.APIResponse
 import com.medtroniclabs.spice.data.offlinesync.model.Assessment
+import com.medtroniclabs.spice.data.offlinesync.model.AssessmentEncounter
 import com.medtroniclabs.spice.data.offlinesync.model.HouseHold
 import com.medtroniclabs.spice.data.offlinesync.model.HouseHoldMember
 import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
@@ -24,6 +26,7 @@ import com.medtroniclabs.spice.db.entity.AssessmentEntity
 import com.medtroniclabs.spice.db.entity.EntitiesName
 import com.medtroniclabs.spice.db.entity.FollowUp
 import com.medtroniclabs.spice.db.local.RoomHelper
+import com.medtroniclabs.spice.model.assessment.AssessmentDetails
 import com.medtroniclabs.spice.network.ApiHelper
 import com.medtroniclabs.spice.network.resource.Resource
 import retrofit2.Response
@@ -58,30 +61,29 @@ class OfflineSyncRepository @Inject constructor(
         return convertEntityToRequest(roomHelper.getOtherUnSyncedAssessments())
     }
 
-    private fun convertEntityToRequest(list: List<AssessmentEntity>): List<Assessment> {
+    private fun convertEntityToRequest(list: List<AssessmentDetails>): List<Assessment> {
         return list.map { entity ->
             Assessment(
                 referenceId = entity.id,
-                householdId = entity.householdId,
-                memberId = entity.memberId,
                 villageId = entity.villageId,
                 assessmentType = entity.assessmentType,
                 assessmentDetails = JsonParser.parseString(entity.assessmentDetails),
                 patientId = entity.patientId,
-                startTime = null,
-                endTime = null,
-                referred = entity.isReferred,
-                assessmentDate = entity.createdAt.convertToString(),
-                patientStatus = entity.referralStatus.name,
+                patientStatus = entity.referralStatus,
                 referredReasons = entity.referredReason?.joinToString(", "),
-                provenance = ProvanceDto(createdDateTime = entity.createdAt.convertToUtcDateTime()),
-                latitude = entity.latitude,
-                longitude = entity.longitude,
-                summary = JsonParser.parseString(entity.otherDetails)
+                summary = JsonParser.parseString(entity.otherDetails),
+                encounter = AssessmentEncounter(
+                    householdId = entity.householdId,
+                    memberId = entity.memberId,
+                    referred = entity.isReferred,
+                    provenance = ProvanceDto(createdDateTime = entity.createdAt.convertToUtcDateTime()),
+                    latitude = entity.latitude,
+                    longitude = entity.longitude,
+                    visitNumber = entity.visitCount
+                )
             )
         }
     }
-
     suspend fun getSyncStatus(request: RequestGetSyncStatus): Response<SyncResponse> {
         return apiHelper.getOfflineSyncStatus(request)
     }

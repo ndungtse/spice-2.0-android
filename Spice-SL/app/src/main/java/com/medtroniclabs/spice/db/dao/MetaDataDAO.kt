@@ -110,4 +110,6 @@ interface MetaDataDAO {
 
     @Query("SELECT id,name,districtId FROM VillageEntity")
     suspend fun getVillageIdName(): List<VillageBasicDetails>
+    @Query("SELECT id FROM VillageEntity")
+    suspend fun getVillageIds(): List<Long>
 }

@@ -40,6 +40,7 @@ import com.medtroniclabs.spice.db.response.HouseHoldEntityWithMemberCount
 import com.medtroniclabs.spice.db.response.HouseholdMemberCount
 import com.medtroniclabs.spice.db.response.VillageBasicDetails
 import com.medtroniclabs.spice.model.MemberDobGenderModel
+import com.medtroniclabs.spice.model.assessment.AssessmentDetails
 import com.medtroniclabs.spice.model.assessment.AssessmentMemberDetails
 import com.medtroniclabs.spice.model.followup.FollowUpFilter
 import javax.inject.Inject
@@ -328,7 +329,7 @@ class RoomHelperImpl @Inject constructor(
 
 
     override suspend fun getHouseholdIdByFhirId(fhirId: String?): Long? {
-        return if (fhirId!= null) {
+        return if (fhirId != null) {
             householdDAO.getHouseholdIdByFhirId(fhirId)
         } else {
             null
@@ -343,7 +344,7 @@ class RoomHelperImpl @Inject constructor(
         }
     }
 
-    override suspend fun getExaminationsComplaintByType(type:String): List<MedicalReviewMetaItems> {
+    override suspend fun getExaminationsComplaintByType(type: String): List<MedicalReviewMetaItems> {
         return examinationsComplaintsDAO.getExaminationsComplaintByType(type)
     }
 
@@ -351,11 +352,11 @@ class RoomHelperImpl @Inject constructor(
         return memberDAO.getAssessmentMemberDetails(id)
     }
 
-    override suspend fun getOtherUnSyncedAssessments(): List<AssessmentEntity> {
+    override suspend fun getOtherUnSyncedAssessments(): List<AssessmentDetails> {
         return assessmentDAO.getOtherUnSyncedAssessments()
     }
 
-    override suspend fun getUnSyncedAssessmentByPatientId(patientId: String): List<AssessmentEntity> {
+    override suspend fun getUnSyncedAssessmentByPatientId(patientId: String): List<AssessmentDetails> {
         return assessmentDAO.getUnSyncedAssessmentByPatientId(patientId)
     }
 
@@ -369,9 +370,10 @@ class RoomHelperImpl @Inject constructor(
         visitCount: Long,
         clinicalDate: String?
     ) {
-        memberClinicalDAO.updateMemberClinicalData(visitCount, clinicalDate,patientId,type)
+        memberClinicalDAO.updateMemberClinicalData(visitCount, clinicalDate, patientId, type)
     }
-    override suspend fun getSummaryDetailMetaItems(type:String): List<MedicalReviewMetaItems> {
+
+    override suspend fun getSummaryDetailMetaItems(type: String): List<MedicalReviewMetaItems> {
         return aboveFiveYearsDAO.getSummaryDetailMetaItems(type)
     }
 
@@ -388,6 +390,7 @@ class RoomHelperImpl @Inject constructor(
     override suspend fun deleteExaminationsList() {
         examinationsDAO.deleteExaminationsList()
     }
+
     override suspend fun saveExaminationsList(examinationList: ArrayList<ExaminationListItems>) {
         examinationsDAO.saveExaminationsList(examinationList)
     }
@@ -416,7 +419,24 @@ class RoomHelperImpl @Inject constructor(
         followUpDao.deleteAllFollowUps()
     }
 
-    override fun getFollowUpPatientListLiveData(filter: FollowUpFilter): LiveData<List<FollowUpPatientModel>> {
-        return followUpDao.getFollowUpPatientListLiveData(filter.type)
+    override fun getFollowUpPatientListLiveData(
+        type: String,
+        search: String?,
+        villageIds: List<Long>,
+        fromDate: String,
+        toDate: String
+    ): LiveData<List<FollowUpPatientModel>> {
+
+        return followUpDao.getFollowUpPatientListLiveData(
+            type = type,
+            search = search,
+            villageIds = villageIds,
+            fromDate = fromDate,
+            toDate = toDate
+        )
+    }
+
+    override suspend fun getAllVillageIds(): List<Long> {
+        return metaDataDAO.getVillageIds()
     }
 }

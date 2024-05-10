@@ -1,23 +1,20 @@
 package com.medtroniclabs.spice.ui.followup
 
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
-import android.view.View
 import androidx.activity.viewModels
+import androidx.core.widget.addTextChangedListener
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.medtroniclabs.spice.R
-import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.databinding.ActivityFollowUpMyPatientBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.MenuConstants
-import com.medtroniclabs.spice.ui.household.FilterBottomSheetDialogFragment
 import com.medtroniclabs.spice.ui.followup.adapter.FollowUpPatientListAdapter
 import com.medtroniclabs.spice.ui.followup.viewmodel.FollowUpViewModel
+import com.medtroniclabs.spice.ui.household.FilterBottomSheetDialogFragment
 
-class FollowUpMyPatientActivity : BaseActivity(), View.OnClickListener {
+class FollowUpMyPatientActivity : BaseActivity() {
     private lateinit var binding: ActivityFollowUpMyPatientBinding
     private val viewModel: FollowUpViewModel by viewModels()
 
@@ -51,7 +48,7 @@ class FollowUpMyPatientActivity : BaseActivity(), View.OnClickListener {
             TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab?) {
                 tab?.let {
-                    viewModel.updateFollowUpFilter(type = it.position)
+                    viewModel.updateFollowUpFilter(pageType = it.position)
                     binding.viewPager.currentItem = it.position
                 }
             }
@@ -71,13 +68,22 @@ class FollowUpMyPatientActivity : BaseActivity(), View.OnClickListener {
         with(binding) {
             val origin = intent.getStringExtra(MenuConstants.MY_PATIENTS_MENU_ID)
             llFilter.btnFilter.safeClickListener {
-                FilterBottomSheetDialogFragment.newInstance(origin)
-                    .show(supportFragmentManager, FilterBottomSheetDialogFragment.TAG)
+                FollowUpFilterBottomSheetDialogFragment.newInstance()
+                    .show(supportFragmentManager, FollowUpFilterBottomSheetDialogFragment.TAG)
             }
-            with(llExactSearch) {
-                etSearchTerm.addTextChangedListener(searchListener)
-               // viewModel.getFollowUpPatientList(DefinedParams.HH_VISIT)
-                btnSearch.safeClickListener(this@FollowUpMyPatientActivity)
+
+            llExactSearch.etSearchTerm.addTextChangedListener {
+                val search = it?.trim().toString()
+                llExactSearch.btnSearch.isEnabled = !search.isNullOrEmpty()
+                if (search.isNullOrEmpty()) {
+                    viewModel.updateFollowUpFilter(search = "")
+                }
+            }
+
+            llExactSearch.btnSearch.setOnClickListener {
+                viewModel.updateFollowUpFilter(
+                    search = llExactSearch.etSearchTerm.text?.trim().toString()
+                )
             }
         }
     }
@@ -85,35 +91,6 @@ class FollowUpMyPatientActivity : BaseActivity(), View.OnClickListener {
     private fun initObserver() {
         viewModel.followUpPatientListLiveData.observe(this) {
             binding.tvHPatientCount.text = getString(R.string.patient_count, it.size)
-        }
-    }
-
-    private val searchListener = object : TextWatcher {
-        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-            /**
-             * this method is not used
-             */
-        }
-
-        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-            /**
-             * this method is not used
-             */
-        }
-
-        override fun afterTextChanged(s: Editable?) {
-            binding.llExactSearch.btnSearch.isEnabled = (s?.trim()?.count() ?: 0) > 0
-        }
-    }
-
-    override fun onClick(view: View?) {
-        when (view?.id) {
-
-            R.id.btnSearch -> {
-               /* viewModel.getFollowUpPatientList(
-                    searchKey = binding.llExactSearch.etSearchTerm.text.toString().trim()
-                )*/
-            }
         }
     }
 

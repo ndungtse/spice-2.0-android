@@ -8,6 +8,7 @@ import androidx.room.Update
 import com.medtroniclabs.spice.db.entity.AssessmentEntity
 import com.medtroniclabs.spice.db.entity.SignsAndSymptomsEntity
 import com.medtroniclabs.spice.data.offlinesync.utils.OfflineSyncStatus
+import com.medtroniclabs.spice.model.assessment.AssessmentDetails
 
 @Dao
 interface AssessmentDAO {
@@ -26,16 +27,20 @@ interface AssessmentDAO {
     @Query("SELECT * FROM SymptomEntity WHERE LOWER(type) = LOWER(:type) ORDER BY display_order")
     suspend fun getSymptomListByType(type: String): List<SignsAndSymptomsEntity>
 
-    @Query("SELECT * FROM Assessment WHERE sync_status=:status AND patientId =:patientId AND memberId IS NULL")
+    @Query("SELECT a.id, a.villageId, a.assessmentType, a.assessmentDetails, a.patientId, a.referralStatus, a.referredReason, a.otherDetails, a.memberId, a.householdId, a.isReferred, a.created_at AS createdAt, a.latitude, a.longitude, mc.visitCount, mc.clinicalDate, mc.numberOfNeonate " +
+            "FROM Assessment AS a LEFT JOIN MemberClinical mc ON a.patientId = mc.patient_id AND a.assessmentType = mc.type " +
+            "WHERE a.sync_status=:status AND a.patientId =:patientId AND a.memberId IS NULL")
     suspend fun getUnSyncedAssessmentByPatientId(
         patientId: String,
         status: String = OfflineSyncStatus.NotSynced.name
-    ): List<AssessmentEntity>
+    ): List<AssessmentDetails>
 
-    @Query("SELECT * FROM Assessment WHERE memberId IS NOT NULL AND householdId IS NOT NULL AND sync_status=:status")
+    @Query("SELECT a.id, a.villageId, a.assessmentType, a.assessmentDetails, a.patientId, a.referralStatus, a.referredReason, a.otherDetails, a.memberId, a.householdId, a.isReferred, a.created_at AS createdAt, a.latitude, a.longitude, mc.visitCount, mc.clinicalDate, mc.numberOfNeonate " +
+            "FROM Assessment AS a LEFT JOIN MemberClinical mc ON a.patientId = mc.patient_id AND a.assessmentType = mc.type " +
+            "WHERE a.memberId IS NOT NULL AND a.householdId IS NOT NULL AND a.sync_status=:status")
     suspend fun getOtherUnSyncedAssessments(
         status: String = OfflineSyncStatus.NotSynced.name
-    ): List<AssessmentEntity>
+    ): List<AssessmentDetails>
 
     @Query("SELECT COUNT(id) FROM Assessment where sync_status =:syncStatus OR fhir_id is null")
     suspend fun getUnSyncedCount(syncStatus: String = OfflineSyncStatus.NotSynced.name): Int

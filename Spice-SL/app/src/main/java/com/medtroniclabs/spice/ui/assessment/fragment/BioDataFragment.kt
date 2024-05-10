@@ -148,39 +148,20 @@ class BioDataFragment : BaseFragment() {
                         context = binding.llPatientInfo.context
                     )
                 )
-                val lastMenstrualDate = getLastMenstrualDate(clinicalDate)
+                val lastMenstrualDate = DateUtils.getLastMenstrualDate(clinicalDate)
                 createSummary(
                     getString(R.string.gestational_age),
                     "${calculateGestationalAge(lastMenstrualDate).first} ${getString(R.string.weeks)}"
                 )
                 val estimatedDeliveryDate = calculateEstimatedDeliveryDate(lastMenstrualDate)
                 val formattedEstimatedDeliveryDate =
-                    getDateFormat().format(estimatedDeliveryDate.time)
+                    DateUtils.getDateFormat().format(estimatedDeliveryDate.time)
                 createSummary(
                     getString(R.string.estimated_delivery_date),
                     formattedEstimatedDeliveryDate
                 )
 
             }
-        }
-    }
-
-    private fun getDateFormat(): SimpleDateFormat {
-        return SimpleDateFormat(
-            DATE_ddMMyyyy,
-            Locale.getDefault()
-        )
-    }
-
-    private fun getLastMenstrualDate(clinicalDate: String): Calendar {
-        // Define the format of the input date string
-        val lastMenstrualDateString = DateUtils.convertDateFormat(
-            clinicalDate,
-            DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-            DATE_ddMMyyyy
-        )
-        return Calendar.getInstance().apply {
-            time = getDateFormat().parse(lastMenstrualDateString)
         }
     }
 

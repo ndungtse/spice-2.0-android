@@ -1,9 +1,11 @@
 package com.medtroniclabs.spice.offlinesync
 
 import android.content.Context
+import android.util.Log
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
+import com.google.gson.Gson
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.offlinesync.utils.OfflineConstant
 import com.medtroniclabs.spice.data.offlinesync.utils.OfflineUtils
@@ -66,6 +68,8 @@ class PostSyncWorker @AssistedInject constructor(
         request[OfflineConstant.HOUSE_HOLDS] = houseHoldList
         request[OfflineConstant.HOUSE_HOLD_MEMBERS] = otherHouseholdMembers
         request[OfflineConstant.ASSESSMENTS] = otherAssessments
+
+        Log.i("Payload", "Request : "+Gson().toJson(request))
 
         try {
             val apiResponse = offlineSyncRepo.postOfflineHouseHolds(request)

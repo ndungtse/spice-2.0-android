@@ -27,6 +27,7 @@ import com.medtroniclabs.spice.db.response.HouseHoldEntityWithMemberCount
 import com.medtroniclabs.spice.db.response.HouseholdMemberCount
 import com.medtroniclabs.spice.db.response.VillageBasicDetails
 import com.medtroniclabs.spice.model.MemberDobGenderModel
+import com.medtroniclabs.spice.model.assessment.AssessmentDetails
 import com.medtroniclabs.spice.model.assessment.AssessmentMemberDetails
 import com.medtroniclabs.spice.model.followup.FollowUpFilter
 
@@ -111,8 +112,8 @@ interface RoomHelper {
     suspend fun getHouseholdMemberIdByFhirId(fhirId: String?): Long?
     suspend fun getExaminationsComplaintByType(type: String): List<MedicalReviewMetaItems>
     suspend fun getAssessmentMemberDetails(id: Long): AssessmentMemberDetails
-    suspend fun getUnSyncedAssessmentByPatientId(patientId: String): List<AssessmentEntity>
-    suspend fun getOtherUnSyncedAssessments(): List<AssessmentEntity>
+    suspend fun getUnSyncedAssessmentByPatientId(patientId: String): List<AssessmentDetails>
+    suspend fun getOtherUnSyncedAssessments(): List<AssessmentDetails>
     suspend fun getUnSyncedAssessmentCount(): Int
 
     suspend fun updateMemberClinicalData(
@@ -121,23 +122,33 @@ interface RoomHelper {
         visitCount: Long,
         clinicalDate: String?
     )
-    suspend fun getSummaryDetailMetaItems(type: String): List <MedicalReviewMetaItems>
+
+    suspend fun getSummaryDetailMetaItems(type: String): List<MedicalReviewMetaItems>
     suspend fun deleteExaminationsComplaintsForAnc(type: String)
 
     fun getExaminationsComplaintsForAnc(
         category: String
     ): LiveData<List<MedicalReviewMetaItems>>
+
     suspend fun deleteExaminationsList()
     suspend fun saveExaminationsList(diagnosisList: ArrayList<ExaminationListItems>)
 
     suspend fun insertLabourDelivery(symptomEntity: List<LabourDeliveryMetaEntity>)
     suspend fun deleteLabourDelivery()
     suspend fun getLabourDelivery(): List<LabourDeliveryMetaEntity>
-    suspend fun getDiagnosisList(): List <DiseaseCategoryItems>
+    suspend fun getDiagnosisList(): List<DiseaseCategoryItems>
 
     suspend fun insertFollowUps(list: List<FollowUp>)
 
     suspend fun deleteAllFollowUps()
 
-    fun getFollowUpPatientListLiveData(filter: FollowUpFilter): LiveData<List<FollowUpPatientModel>>
+    fun getFollowUpPatientListLiveData(
+        type: String,
+        search: String? = null,
+        villageIds: List<Long> = listOf(),
+        fromDate: String = "",
+        toDate: String = ""
+    ): LiveData<List<FollowUpPatientModel>>
+
+    suspend fun getAllVillageIds(): List<Long>
 }

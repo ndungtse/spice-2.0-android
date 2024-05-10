@@ -7,6 +7,6 @@ import com.medtroniclabs.spice.common.SecuredPreference
 data class ProvanceDto(
     val userId: String = SecuredPreference.getUserFhirId(),
     val organizationId: String = SecuredPreference.getOrganizationFhirId(),
-    @SerializedName("createdDataTime") //TODO remove this when BE renamed properly
+    @SerializedName("createdAt") //TODO remove this when BE renamed properly
     var createdDateTime: String = ""
 )

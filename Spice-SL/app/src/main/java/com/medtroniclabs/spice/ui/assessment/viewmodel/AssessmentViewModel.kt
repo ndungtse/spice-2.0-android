@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.medtroniclabs.spice.appextensions.postLoading
+import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.data.LocalSpinnerResponse
 import com.medtroniclabs.spice.data.model.RecommendedDosageListModel
@@ -32,6 +33,8 @@ import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.ANC_MENU
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.ChildHoodVisit
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.ancSigns
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.childhoodVisitSigns
+import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.estimatedDeliveryDate
+import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.lastMenstrualPeriod
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.otherAncSigns
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.otherChildhoodVisitSigns
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.otherSigns
@@ -40,6 +43,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
@@ -192,6 +196,11 @@ class AssessmentViewModel @Inject constructor(
                 anc.remove(otherAncSigns)
                 anc[otherSigns] = os
             }
+
+            if (anc.containsKey(lastMenstrualPeriod)) {
+                anc[estimatedDeliveryDate] =
+                    DateUtils.getEstDeliveryDateFromLmp(anc[lastMenstrualPeriod] as String)
+            }
         }
 
         val assessmentDetailBE = StringConverter.convertGivenMapToString(map) ?: ""
@@ -263,7 +272,7 @@ class AssessmentViewModel @Inject constructor(
         viewModelScope.launch(dispatcherIO) {
             memberClinicalLiveData.postValue(
                 memberRegistrationRepository.getPatientVisitCountByType(
-                    type,
+                    RMNCH.getMenuName(type),
                     patientId
                 )
             )
@@ -332,7 +341,7 @@ class AssessmentViewModel @Inject constructor(
                 val clinicalEntity = MemberClinicalEntity(
                     id = rowId,
                     patientId = id,
-                    type = workflowName,
+                    type = RMNCH.getMenuName(workflowName),
                     visitCount = it.first,
                     clinicalDate = it.second,
                     numberOfNeonate = it.third
@@ -382,7 +391,7 @@ class AssessmentViewModel @Inject constructor(
         clinicalDate: String?
     ) {
         viewModelScope.launch(dispatcherIO) {
-            assessmentRepository.updateMemberClinicalData(patientId, type, visitCount, clinicalDate)
+            assessmentRepository.updateMemberClinicalData(patientId, RMNCH.getMenuName(type), visitCount, clinicalDate)
         }
     }
 

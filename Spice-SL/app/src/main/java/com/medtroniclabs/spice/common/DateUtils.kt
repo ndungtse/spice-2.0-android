@@ -283,6 +283,29 @@ object DateUtils {
         return Pair(weeks, days)
     }
 
+    fun getDateFormat(): SimpleDateFormat {
+        return SimpleDateFormat(DATE_ddMMyyyy, Locale.getDefault())
+    }
+
+    fun getLastMenstrualDate(clinicalDate: String): Calendar {
+        // Define the format of the input date string
+        val lastMenstrualDateString = convertDateFormat(
+            clinicalDate, DATE_FORMAT_yyyyMMddHHmmssZZZZZ, DATE_ddMMyyyy
+        )
+        return Calendar.getInstance().apply {
+            time = getDateFormat().parse(lastMenstrualDateString)
+        }
+    }
+
+    fun getEstDeliveryDateFromLmp(lmp: String): String {
+        val serverDf = SimpleDateFormat(DATE_FORMAT_yyyyMMddHHmmssZZZZZ)
+        val lmpCalendar = Calendar.getInstance()
+        lmpCalendar.time = serverDf.parse(lmp)
+
+        val estDeliveryDate = calculateEstimatedDeliveryDate(lmpCalendar)
+        return serverDf.format(estDeliveryDate.time)
+    }
+
     fun calculateEstimatedDeliveryDate(lastMenstrualDate: Calendar): Calendar {
         val estimatedDeliveryDate = lastMenstrualDate.clone() as Calendar
         estimatedDeliveryDate.add(Calendar.DAY_OF_YEAR, 280)
@@ -329,4 +352,18 @@ object DateUtils {
         return getDateString(calendar.time.time, DATE_FORMAT_yyyyMMddHHmmssZZZZZ)
     }
 
+
+    fun getTodayStringDate(displayFormat: String = DATE_FORMAT_yyyyMMdd): String {
+        val dateFormat = SimpleDateFormat(displayFormat)
+        val currentDate = Date()
+        return dateFormat.format(currentDate)
+    }
+
+    fun getTomorrowStringDate(displayFormat: String = DATE_FORMAT_yyyyMMdd): String {
+        val dateFormat = SimpleDateFormat(displayFormat)
+        val calendar = Calendar.getInstance()
+        calendar.add(Calendar.DAY_OF_YEAR, 1) // Adding one day
+        val tomorrowDate = calendar.time
+        return dateFormat.format(tomorrowDate)
+    }
 }
