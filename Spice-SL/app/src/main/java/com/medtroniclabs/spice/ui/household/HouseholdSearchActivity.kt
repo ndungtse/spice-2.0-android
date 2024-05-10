@@ -130,9 +130,6 @@ class HouseholdSearchActivity : BaseActivity(), View.OnClickListener {
             binding.rvHouseholdList.visible()
             householdListAdapter.setHouseHoldList(householdList)
         } else {
-//            if (!isFromFilter)
-//                binding.llFilter.btnFilter.visibility = View.GONE
-
             binding.tvNoHouseHoldFound.visible()
             binding.rvHouseholdList.gone()
         }

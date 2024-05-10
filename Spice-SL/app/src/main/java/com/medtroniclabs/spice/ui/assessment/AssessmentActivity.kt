@@ -1,6 +1,7 @@
 package com.medtroniclabs.spice.ui.assessment
 
 import android.os.Bundle
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.DefinedParams
@@ -32,6 +33,7 @@ class AssessmentActivity : BaseActivity() {
     private val viewModel: AssessmentViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
         binding = ActivityAssessmentBinding.inflate(layoutInflater)
         setMainContentView(
             binding.root,
@@ -70,6 +72,7 @@ class AssessmentActivity : BaseActivity() {
         when (viewModel.menuId) {
             MenuConstants.ICCM_MENU_ID -> {
                 setTitle(Summary.capitalizeFirstChar())
+                hideBackButton()
                 replaceFragmentInId<AssessmentICCMSummaryFragment>(
                     binding.formsFragmentContainer.id,
                     tag = AssessmentICCMSummaryFragment.TAG
@@ -78,6 +81,7 @@ class AssessmentActivity : BaseActivity() {
 
             MenuConstants.TB_MENU_ID -> {
                 setTitle(Summary.capitalizeFirstChar())
+                hideBackButton()
                 replaceFragmentInId<AssessmentTBSummaryFragment>(
                     binding.formsFragmentContainer.id,
                     tag = AssessmentTBSummaryFragment.TAG
@@ -86,6 +90,7 @@ class AssessmentActivity : BaseActivity() {
 
             MenuConstants.OTHER_SYMPTOMS -> {
                 setTitle(Summary.capitalizeFirstChar())
+                hideBackButton()
                 replaceFragmentInId<AssessmentOtherSymptomSummaryFragment>(
                     binding.formsFragmentContainer.id,
                     tag = AssessmentOtherSymptomSummaryFragment::class.simpleName
@@ -94,6 +99,7 @@ class AssessmentActivity : BaseActivity() {
 
             MenuConstants.RMNCH_MENU_ID -> {
                 setTitle(Summary.capitalizeFirstChar())
+                hideBackButton()
                 replaceFragmentInId<AssessmentRMNCHSummaryFragment>(
                     binding.formsFragmentContainer.id,
                     tag = AssessmentRMNCHSummaryFragment.TAG
@@ -184,10 +190,17 @@ class AssessmentActivity : BaseActivity() {
     }
 
     fun replaceAssessmentRMNCHNeonateSummaryFragment() {
+        hideBackButton()
         replaceFragmentInId<AssessmentRMNCHNeonateSummaryFragment>(
             binding.formsFragmentContainer.id,
             tag = AssessmentRMNCHNeonateSummaryFragment::class.simpleName
         )
     }
 
+    private val onBackPressedCallback: OnBackPressedCallback =
+        object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                backNavigation()
+            }
+        }
 }

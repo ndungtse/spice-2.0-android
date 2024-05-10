@@ -18,7 +18,8 @@ data class LoginResponse(
     val organizations: ArrayList<OrganizationModel>? = null,
     val isSuperUser: Boolean,
     val suiteAccess: List<String>,
-    val client: String
+    val client: String,
+    val phoneNumber: String? = null
 )
 
 data class TimeZoneModel(

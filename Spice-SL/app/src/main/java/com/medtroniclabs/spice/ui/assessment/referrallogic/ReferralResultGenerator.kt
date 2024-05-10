@@ -6,6 +6,10 @@ import com.medtroniclabs.spice.formgeneration.config.DefinedParams.NoSymptoms
 import com.medtroniclabs.spice.model.assessment.AssessmentMemberDetails
 import com.medtroniclabs.spice.ui.assessment.AssessmentCommonUtils.getListActual
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.Dispensed
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.FB_MAX_BREATHING
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.FB_MAX_MONTH
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.FB_MIN_BREATHING
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.FB_MIN_MONTH
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.LittleOrNoUrine
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.NoTearsWhenCrying
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.SkinPinch
@@ -205,7 +209,7 @@ class ReferralResultGenerator {
                             memberDetails?.let { details ->
                                 DateUtils.dateToMonths(details.dateOfBirth).let { month ->
                                     month?.let {
-                                        if ((month in 3..11) && bpmValue >= 50) {
+                                        if ((month in FB_MIN_MONTH..11) && bpmValue >= FB_MAX_BREATHING) {
                                             addResultMap(
                                                 ReferralReasons.Pneumonia.name.lowercase(),
                                                 getMedicationStatus(map, Amoxicillin)
@@ -213,7 +217,7 @@ class ReferralResultGenerator {
                                             addReferralReason(
                                                 referralReason, ReferralReasons.Pneumonia.name
                                             )
-                                        } else if (month in 12..60 && bpmValue >= 45) {
+                                        } else if (month in FB_MAX_MONTH..60 && bpmValue >= FB_MIN_BREATHING) {
                                             addResultMap(
                                                 ReferralReasons.Pneumonia.name.lowercase(),
                                                 getMedicationStatus(map, Amoxicillin)
@@ -293,7 +297,7 @@ class ReferralResultGenerator {
                         )
                         addReferralReason(referralReason, ReferralReasons.Diarrhoea.name)
                     } else {
-                        if ((map.containsKey(DiarrhoeaSigns) && map[DiarrhoeaSigns] is ArrayList<*>)) {
+                        if ((map.containsKey(DiarrhoeaSigns) && map[DiarrhoeaSigns] is ArrayList<*>) && (getDiarrhoeaSignsStatus(map[DiarrhoeaSigns]) != null)) {
                             addResultMap(
                                 ReferralReasons.Diarrhoea.name.lowercase(),
                                 getDiarrhoeaSignsStatus(map[DiarrhoeaSigns])

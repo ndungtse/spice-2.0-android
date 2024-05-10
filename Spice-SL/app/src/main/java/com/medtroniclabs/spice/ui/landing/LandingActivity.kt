@@ -90,9 +90,17 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.logout -> {
-                if (SecuredPreference.logout()) {
-                    startActivity(Intent(this, LoginActivity::class.java))
-                    finish()
+                showErrorDialogue(
+                    getString(R.string.alert),
+                    getString(R.string.logout_alert),
+                    positiveButtonName = getString(R.string.yes),
+                    cancelBtnName = getString(R.string.no),
+                    isNegativeButtonNeed = true
+                ) { isPositive ->
+                    if (isPositive && SecuredPreference.logout()) {
+                        startActivity(Intent(this, LoginActivity::class.java))
+                        finish()
+                    }
                 }
             }
 

@@ -24,6 +24,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.google.android.material.snackbar.Snackbar
 import com.medtroniclabs.spice.BuildConfig
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.GeneralErrorDialog
 import com.medtroniclabs.spice.common.SecuredPreference
@@ -220,6 +221,7 @@ open class BaseActivity : AppCompatActivity() {
         isNegativeButtonNeed: Boolean? = null,
         positiveButtonName: String? = null,
         okayBtnEnable: Boolean? = null,
+        cancelBtnName: String?=null,
         callback: ((isPositiveResult: Boolean) -> Unit)
     ) {
         val generalErrorDialog =
@@ -229,6 +231,7 @@ open class BaseActivity : AppCompatActivity() {
                 this,
                 isNegativeButtonNeed ?: false,
                 okayButton = positiveButtonName ?: getString(R.string.ok),
+                cancelButton = cancelBtnName ?: getString(R.string.cancel),
                 messageBtnData = Pair(message, okayBtnEnable ?: true)
             )
         val errorFragment = supportFragmentManager.findFragmentByTag(GeneralErrorDialog.TAG)

@@ -62,4 +62,5 @@ object AssessmentDefinedParams {
     const val chestInDrawing = "chestInDrawing"
     const val signsAndSymptoms = "signsAndSymptoms"
     const val infoSuffixText = "informationSuffixText"
+    const val Fever = "fever"
 }

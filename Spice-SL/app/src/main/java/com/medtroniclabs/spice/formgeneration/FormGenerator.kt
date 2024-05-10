@@ -42,6 +42,7 @@ import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.isGone
 import com.medtroniclabs.spice.appextensions.isVisible
 import com.medtroniclabs.spice.appextensions.visible
+import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.CommonUtils.displayAge
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams.female
@@ -105,6 +106,8 @@ import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.headPhoneNumber
 import com.medtroniclabs.spice.mappingkey.MemberRegistration
 import com.medtroniclabs.spice.mappingkey.MemberRegistration.gender
 import com.medtroniclabs.spice.mappingkey.MemberRegistration.phoneNumber
+import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.PREGNANCY_MAX_AGE
+import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.PREGNANCY_MIN_AGE
 import java.util.Calendar
 
 
@@ -1740,18 +1743,30 @@ class FormGenerator(
         serverData?.forEach { data ->
             data.apply {
 
-                if ((id == headPhoneNumber || id == phoneNumber) && isMandatory && resultHashMap.containsKey(id)) {
+                if ((id == headPhoneNumber || id == phoneNumber) && isMandatory && resultHashMap.containsKey(
+                        id
+                    )
+                ) {
                     val actualValue = resultHashMap[id] as? String
                     actualValue?.let {
-                        if (!startsWith.isNullOrEmpty() && !checkPhoneNumberValidOrNot(it, startsWith)) {
+                        if (!startsWith.isNullOrEmpty() && !checkPhoneNumberValidOrNot(
+                                it,
+                                startsWith
+                            )
+                        ) {
                             isValid = false
                             requestFocusView(
                                 data, getString(
                                     R.string.start_with_validation,
-                                    startsWith?.joinToString(separator = " ${getString(R.string.or)} ") ?: ""
+                                    startsWith?.joinToString(separator = " ${getString(R.string.or)} ")
+                                        ?: ""
                                 )
                             )
-                        } else if (!phoneNumberConatinMaxLength(maxLength, it) || !FormFieldValidator.isValidMobileNumber(it)) {
+                        } else if (!phoneNumberConatinMaxLength(
+                                maxLength,
+                                it
+                            ) || !FormFieldValidator.isValidMobileNumber(it)
+                        ) {
                             isValid = false
                             requestFocusView(data)
                         } else {
@@ -1761,11 +1776,19 @@ class FormGenerator(
                         isValid = false
                         requestFocusView(data)
                     }
-                } else if (isMandatory && ((!resultHashMap.containsKey(id) && isViewVisible(id) && isViewEnabled(id))
-                            || (resultHashMap[id] is String && (resultHashMap[id] as String).isEmpty())))
-                {
+                } else if (isMandatory && ((!resultHashMap.containsKey(id) && isViewVisible(id) && isViewEnabled(
+                        id
+                    ))
+                            || (resultHashMap[id] is String && (resultHashMap[id] as String).isEmpty()))
+                ) {
                     isValid = false
                     requestFocusView(data)
+                } else if (viewType == VIEW_TYPE_FORM_EDITTEXT && isValid && data.onlyAlphabets == true) {
+                    isValid = checkOnlyAlphabets(
+                        resultHashMap[id],
+                        isValid,
+                        data
+                    )
                 } else {
                     hideValidationField(data)
                 }
@@ -2014,7 +2037,7 @@ class FormGenerator(
             getViewByTag(MemberRegistration.dateOfBirth) as? AppCompatTextView ?: return
         val dateOfBirth = dateOfBirthView.text?.toString()?.trim() ?: return
 
-        if (DateUtils.calculateAge(dateOfBirth, DateUtils.DATE_ddMMyyyy) !in 18..48) {
+        if (DateUtils.calculateAge(dateOfBirth, DateUtils.DATE_ddMMyyyy) !in PREGNANCY_MIN_AGE..PREGNANCY_MAX_AGE) {
             handleAgeBelowThreshold()
         } else {
             handleAgeAboveThreshold()
@@ -2048,4 +2071,32 @@ class FormGenerator(
             }
         }
     }
+
+    private fun checkOnlyAlphabets(
+        actualValue: Any?,
+        valid: Boolean,
+        serverViewModel: FormLayout
+    ): Boolean {
+        var isValid = valid
+        serverViewModel.apply {
+            if (viewType == VIEW_TYPE_FORM_EDITTEXT && actualValue is String && actualValue.isNotBlank() && !CommonUtils.isAlphabetsWithSpace(
+                    actualValue
+                )
+            ) {
+                isValid = false
+                requestFocusView(serverViewModel, getString(R.string.only_alphabets_validation))
+            }
+            else {
+                hideValidationField(serverViewModel)
+            }
+        }
+        return isValid
+    }
+
+    private fun onlyAlphabet(itemId: String, input: String): Boolean {
+        val serverItem = serverData?.firstOrNull { it.id == itemId }
+        return serverItem?.let { it.onlyAlphabets == true && CommonUtils.isAlphabetsWithSpace(input) }
+            ?: true
+    }
+
 }

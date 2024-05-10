@@ -35,6 +35,8 @@ object RMNCH {
     const val otherPncNeonateSigns = "otherPncNeonateSigns"
     const val pncMotherSigns = "pncMotherSigns"
     const val otherPncMotherSigns = "otherPncMotherSigns"
+    const val PREGNANCY_MIN_AGE = 18
+    const val PREGNANCY_MAX_AGE = 18
 
 
     fun getValueFromMap(

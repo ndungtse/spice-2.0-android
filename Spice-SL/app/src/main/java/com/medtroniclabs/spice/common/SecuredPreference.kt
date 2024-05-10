@@ -15,6 +15,7 @@ object SecuredPreference {
     enum class EnvironmentKey {
         TOKEN,
         USERNAME,
+        PHONE_NUMBER,
         PASSWORD,
         ISLOGGEDIN,
         ISOFFLINELOGIN,
@@ -366,6 +367,7 @@ object SecuredPreference {
 
     fun clear(context: Context) {
         val username = getString(EnvironmentKey.USERNAME.name)
+        val phoneNumber = getString(EnvironmentKey.PHONE_NUMBER.name)
         val password = getString(EnvironmentKey.PASSWORD.name)
         try {
             preferences.edit().clear().apply()
@@ -375,6 +377,7 @@ object SecuredPreference {
             sharedPreferences.edit().clear().apply()
         } finally {
             putString(EnvironmentKey.USERNAME.name, username)
+            putString(EnvironmentKey.PHONE_NUMBER.name, phoneNumber)
             putString(EnvironmentKey.PASSWORD.name, password)
         }
     }

@@ -283,6 +283,11 @@ class MemberRegistrationFragment : Fragment(), FormEventListener, View.OnClickLi
                     (view.adapter as CustomSpinnerAdapter).getIndexOfItemById(HouseholdHead)
                 view.setSelection(index, true)
                 view.isEnabled = false
+                householdRegistrationViewModel.householdEntityDetail?.let {details ->
+                    formGenerator.getViewByTag(phoneNumber)?.let { view ->
+                        formGenerator.setValueForView(details.headPhoneNumber, view)
+                    }
+                }
             }
         } ?: kotlin.run {
             if (householdRegistrationViewModel.memberID == -1L) {

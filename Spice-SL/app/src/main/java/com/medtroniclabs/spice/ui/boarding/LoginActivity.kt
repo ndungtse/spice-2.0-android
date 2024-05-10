@@ -10,6 +10,7 @@ import com.medtroniclabs.spice.appextensions.hideKeyboard
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.EncryptionUtil
+import com.medtroniclabs.spice.common.RegexConstants.Contains_Number
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.Validator
 import com.medtroniclabs.spice.databinding.ActivityLoginBinding
@@ -45,6 +46,14 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
                 ResourceState.SUCCESS -> {
                     hideLoading()
                     resourceState?.data?.let {
+                        SecuredPreference.putString(
+                            SecuredPreference.EnvironmentKey.USERNAME.name,
+                            it.username
+                        )
+                        SecuredPreference.putString(
+                            SecuredPreference.EnvironmentKey.PHONE_NUMBER.name,
+                            it.phoneNumber
+                        )
                         triggerResourceLoading()
                     }
                 }
@@ -128,7 +137,9 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
 
         val oldUserName =
             SecuredPreference.getString(SecuredPreference.EnvironmentKey.USERNAME.name)
-        if (oldUserName != null && oldUserName != userName) {
+        val oldPhoneNumber = SecuredPreference.getString(SecuredPreference.EnvironmentKey.PHONE_NUMBER.name)
+        val isNumber = userName.matches(Regex(Contains_Number))
+        if (oldUserName != null && userName.isNotBlank() && validateNameOrNumber(isNumber, oldPhoneNumber, oldUserName, userName)) {
             isValid = false
             showErrorDialogue(
                 getString(R.string.warning_different_login_title),
@@ -166,6 +177,19 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
                 viewModel.doLogin(userName, password)
             }
 
+        }
+    }
+
+    private fun validateNameOrNumber(
+        isNumber: Boolean,
+        oldPhoneNumber: String?,
+        oldUserName: String,
+        userName: String
+    ): Boolean {
+       return if (isNumber){
+            oldPhoneNumber != userName
+        } else {
+            oldUserName != userName
         }
     }
 

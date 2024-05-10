@@ -2,6 +2,7 @@ package com.medtroniclabs.spice.ui.household
 
 import android.content.Intent
 import android.os.Bundle
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
@@ -29,6 +30,7 @@ class HouseholdActivity : BaseActivity(), OnDialogDismissListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
         binding = ActivityHouseholdRegistrationBinding.inflate(layoutInflater)
         setMainContentView(
             binding.root,
@@ -162,5 +164,12 @@ class HouseholdActivity : BaseActivity(), OnDialogDismissListener {
     override fun onDialogDismissListener(isFinish: Boolean) {
         finish()
     }
+
+    private val onBackPressedCallback: OnBackPressedCallback =
+        object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                backNavigation()
+            }
+        }
 
 }

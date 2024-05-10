@@ -186,9 +186,11 @@ class HouseholdSummaryActivity : BaseActivity(), MemberSelectionListener, View.O
     override fun onClick(v: View?) {
         when (v?.id) {
             R.id.btnFinishRegistration -> {
-                SuccessDialogFragment.newInstance(householdNo = householdSummaryViewModel.houseHoldId,
-                    DefinedParams.DefaultID
-                ).show(supportFragmentManager, SuccessDialogFragment.TAG)
+                householdSummaryViewModel.houseHoldDetailLiveData.value?.data?.let {
+                    SuccessDialogFragment.newInstance(householdNo = it.householdNo,
+                        DefinedParams.DefaultID
+                    ).show(supportFragmentManager, SuccessDialogFragment.TAG)
+                }
             }
 
             R.id.btnAddNewMember -> {

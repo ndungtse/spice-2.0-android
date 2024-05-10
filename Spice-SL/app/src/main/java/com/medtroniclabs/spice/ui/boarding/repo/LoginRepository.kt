@@ -80,10 +80,6 @@ class LoginRepository @Inject constructor(
 
     private fun saveUserNameAndPassword(userName: String, password: String) {
         SecuredPreference.putString(
-            SecuredPreference.EnvironmentKey.USERNAME.name,
-            userName
-        )
-        SecuredPreference.putString(
             SecuredPreference.EnvironmentKey.PASSWORD.name,
             password
         )

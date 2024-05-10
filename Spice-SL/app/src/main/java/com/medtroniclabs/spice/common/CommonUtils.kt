@@ -219,4 +219,8 @@ object CommonUtils {
             DateUtils.calculateAgeInMonths(date)
         }
     }
+
+    fun isAlphabetsWithSpace(input: String): Boolean {
+        return input.matches(Regex(RegexConstants.Contains_Alphabets_Space))
+    }
 }

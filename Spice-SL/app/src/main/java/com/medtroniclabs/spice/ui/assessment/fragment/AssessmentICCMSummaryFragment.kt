@@ -29,9 +29,11 @@ import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
 import com.medtroniclabs.spice.model.AssessmentSummaryModel
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
+import com.medtroniclabs.spice.ui.MenuConstants
 import com.medtroniclabs.spice.ui.assessment.AssessmentCommonUtils.addViewSummaryLayout
 import com.medtroniclabs.spice.ui.assessment.AssessmentCommonUtils.getNutritionStatus
 import com.medtroniclabs.spice.ui.assessment.AssessmentCommonUtils.getValueOfKeyFromMap
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.ACT
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.Amoxicillin
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.AssessmentNotes
@@ -55,8 +57,11 @@ import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.hasDiarrhoe
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.isUnusualSleepy
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.isVomiting
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.muacCode
+import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefinedParams
+import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefinedParams.RdtPositive
 import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
+import org.json.JSONObject
 
 class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
     private val viewModel: AssessmentViewModel by activityViewModels()
@@ -328,7 +333,14 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
                 }
 
                 hasFever -> {
-                    if (item.value == Yes) {
+                    val rdtResult = viewModel.assessmentStringLiveData.value?.let {
+                        val jsonObject = JSONObject(it)
+                        val feverObject = jsonObject.optJSONObject(MenuConstants.OTHER_SYMPTOMS)?.optJSONObject(
+                            AssessmentDefinedParams.Fever
+                        )
+                        feverObject?.optString(ReferralDefinedParams.RdtTest)
+                    }
+                    if (item.value == Yes && rdtResult == RdtPositive) {
                         bindICCMSummaryView(
                             item.title,
                             requireContext().getString(

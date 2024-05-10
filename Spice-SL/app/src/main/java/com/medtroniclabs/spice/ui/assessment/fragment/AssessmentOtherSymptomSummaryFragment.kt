@@ -13,7 +13,6 @@ import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
-import com.medtroniclabs.spice.common.DefinedParams.Other
 import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.common.ViewUtils
 import com.medtroniclabs.spice.databinding.FragmentAssessmentOtherSymptomSummaryBinding
@@ -28,12 +27,17 @@ import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.Amoxicillin
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.AssessmentNotes
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.Dispensed
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.Fever
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.NoOfDaysOfFever
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.hasFever
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.otherConcerningSymptoms
-import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.otherSymptoms
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.signsAndSymptoms
+import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefinedParams.RdtPositive
+import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefinedParams.RdtTest
 import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import org.json.JSONObject
 
 @AndroidEntryPoint
 class AssessmentOtherSymptomSummaryFragment : Fragment(), View.OnClickListener {
@@ -196,13 +200,20 @@ class AssessmentOtherSymptomSummaryFragment : Fragment(), View.OnClickListener {
     private fun renderSummaryView(summaryData: MutableList<AssessmentSummaryModel>) {
         bindSummaryView(
             getString(R.string.patient_status),
-            viewModel.referralStatus ?: getString(R.string.seperator_hyphen)
+            getStatus(viewModel.referralStatus )?: getString(R.string.seperator_hyphen)
         )
         renderDangerSigns(summaryData)
         summaryData.filter { it.title?.lowercase() != AssessmentDefinedParams.General_Danger_Signs.lowercase() }.forEach { item ->
             when (item.id) {
                 hasFever -> {
-                    if (item.value == DefinedParams.Yes) {
+                    val rdtResult = viewModel.assessmentStringLiveData.value?.let {
+                        val jsonObject = JSONObject(it)
+                        val feverObject = jsonObject.optJSONObject(OTHER_SYMPTOMS)?.optJSONObject(
+                            Fever
+                        )
+                        feverObject?.optString(RdtTest)
+                    }
+                    if (item.value == DefinedParams.Yes && rdtResult == RdtPositive ) {
                         bindSummaryView(
                             item.title,
                             requireContext().getString(
@@ -222,6 +233,23 @@ class AssessmentOtherSymptomSummaryFragment : Fragment(), View.OnClickListener {
                     }
                 }
 
+                NoOfDaysOfFever -> {
+                    item.noOfDays?.let { maxDays ->
+                        item.value?.let { enteredDays ->
+                            bindSummaryView(
+                                item.title,
+                                requireContext().getString(
+                                    R.string.days_summary,
+                                    enteredDays.toDouble().toInt(),
+                                    maxDays
+                                )
+                            )
+                        }
+                    } ?: kotlin.run {
+                        bindSummaryView(item.title, item.value)
+                    }
+                }
+
                 else -> {
                         bindSummaryView(item.title, item.value)
                 }
@@ -229,14 +257,33 @@ class AssessmentOtherSymptomSummaryFragment : Fragment(), View.OnClickListener {
         }
     }
 
+    private fun getStatus(referralStatus: String?): String? {
+        return when (referralStatus) {
+            ReferralStatus.Referred.name -> getString(R.string.referred)
+            ReferralStatus.OnTreatment.name -> getString(R.string.on_treatment)
+            ReferralStatus.Recovered.name -> getString(R.string.recovered)
+            else -> {
+                null
+            }
+        }
+    }
+
     private fun renderDangerSigns(summaryData: MutableList<AssessmentSummaryModel>) {
+        val otherSymptoms = viewModel.assessmentStringLiveData.value?.let {
+            val jsonObject = JSONObject(it)
+            val feverObject = jsonObject.optJSONObject(OTHER_SYMPTOMS)?.optJSONObject(
+                signsAndSymptoms
+            )
+            feverObject?.optString(otherConcerningSymptoms)
+        }
         summaryData.find { it.id == otherSymptoms }?.let { item ->
-            val result = if (item.value == Other ) {
-                summaryData.find { it.id == otherConcerningSymptoms }?.let {otherItem ->
-                    requireContext().getString(R.string.other_value, item.value, otherItem.value)
-                }
+            val result = if (!otherSymptoms.isNullOrBlank()) {
+                requireContext().getString(R.string.other_value, item.value, otherSymptoms)
             } else item.value
-            bindSummaryView(getString(R.string.general_danger_signs), result ?: getString(R.string.seperator_hyphen))
+            bindSummaryView(
+                getString(R.string.general_danger_signs),
+                result ?: getString(R.string.seperator_hyphen)
+            )
         }
     }
 

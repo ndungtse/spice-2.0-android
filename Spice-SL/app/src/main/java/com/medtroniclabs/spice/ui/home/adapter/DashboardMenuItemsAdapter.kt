@@ -84,7 +84,7 @@ class DashboardMenuItemsAdapter(
 
             MenuConstants.ICCM_MENU_ID -> {
                 if (name == MenuConstants.OTHER_SYMPTOMS) {
-                    return ContextCompat.getDrawable(context, R.drawable.ic_iccm_tool)
+                    return ContextCompat.getDrawable(context, R.drawable.ic_general)
                 } else {
                     return ContextCompat.getDrawable(context, R.drawable.ic_iccm_tool)
                 }
@@ -112,7 +112,7 @@ class DashboardMenuItemsAdapter(
 
             MenuConstants.OTHER_SYMPTOMS -> return ContextCompat.getDrawable(
                 context,
-                R.drawable.ic_iccm_tool
+                R.drawable.ic_general
             )
 
             MenuConstants.GENERAL_ID -> return ContextCompat.getDrawable(
