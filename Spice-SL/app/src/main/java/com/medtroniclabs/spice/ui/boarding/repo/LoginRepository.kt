@@ -104,7 +104,7 @@ class LoginRepository @Inject constructor(
     }
 
     suspend fun getMetaDataInformation(
-        workflowNames: MutableList<String>,
+        workflowNames: MutableList<Long>,
         meta: MutableList<String>
     ): Resource<Boolean> {
         return try {
@@ -124,7 +124,7 @@ class LoginRepository @Inject constructor(
                             saveUserProfileDetailsInDb(userProfile)
                             saveMenusInDb(menu.menus, menu.roleName)
                             menu.meta?.let { meta.addAll(it) }
-                            workflowNames.addAll(clinicalNames)
+                            workflowNames.addAll(clinicalIds)
                         }
 
                         if (CommonUtils.isChw()) {
@@ -204,7 +204,8 @@ class LoginRepository @Inject constructor(
                     maxAge = condition.maxAge,
                     minAge = condition.minAge,
                     clinicalWorkflowId = clinicalWorkflow.id,
-                    subModule = condition.subModule
+                    subModule = condition.subModule,
+                    moduleType = condition.moduleType
                 )
 
             }?.toList() ?: listOf())
@@ -263,7 +264,9 @@ class LoginRepository @Inject constructor(
             FormEntity(
                 id = formData.id,
                 formInput = formData.formInput,
-                formType = formData.formType
+                formType = formData.formType,
+                workflowName = formData.workflowName,
+                clinicalWorkflowId = formData.clinicalWorkflowId
             )
         })
     }

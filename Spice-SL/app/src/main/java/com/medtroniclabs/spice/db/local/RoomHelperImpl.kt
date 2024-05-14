@@ -43,6 +43,7 @@ import com.medtroniclabs.spice.model.MemberDobGenderModel
 import com.medtroniclabs.spice.model.assessment.AssessmentDetails
 import com.medtroniclabs.spice.model.assessment.AssessmentMemberDetails
 import com.medtroniclabs.spice.model.followup.FollowUpFilter
+import com.medtroniclabs.spice.ui.boarding.MenuTypeEnums
 import javax.inject.Inject
 
 class RoomHelperImpl @Inject constructor(
@@ -162,7 +163,7 @@ class RoomHelperImpl @Inject constructor(
         gender: String,
         age: Int
     ): List<ClinicalWorkflowEntityWithSubmodule> {
-        return metaDataDAO.getClinicalWorkflowId(gender, age)
+        return metaDataDAO.getClinicalWorkflowId(gender, age, MenuTypeEnums.assessment.name)
     }
 
     override suspend fun deleteAllVillages() {

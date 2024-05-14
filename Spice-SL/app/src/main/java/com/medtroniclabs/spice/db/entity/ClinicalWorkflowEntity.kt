@@ -9,7 +9,7 @@ data class ClinicalWorkflowEntity(
     val id: Long,
     val name: String,
     val moduleType: String?=null,
-    val workflowName: String,
+    val workflowName: String?=null,
     val countryId: Long,
     val displayOrder:Int? = null,
 )

@@ -10,7 +10,7 @@ data class MetaDataResponse(
     val defaultHealthFacility: HealthFacility,
     val menu: Menu,
     val userProfile: UserProfile,
-    val clinicalNames: ArrayList<String>
+    val clinicalIds: ArrayList<Long>
 )
 
 data class HealthFacility(
@@ -42,10 +42,11 @@ data class ClinicalWorkflow(
 )
 
 data class ClinicalWorkflowCondition(
-    val gender:String? = null,
-    val maxAge:Int? = null,
-    val minAge:Int? = null,
-    val subModule:String? = null
+    val gender: String? = null,
+    val maxAge: Int? = null,
+    val minAge: Int? = null,
+    val subModule: String? = null,
+    val moduleType: String
 )
 
 data class Village(
@@ -114,23 +115,30 @@ data class Organization(
 )
 
 data class FormRequest(
-    val workflowNames: List<String>
+    val workflowIds: List<Long>
 )
+
 data class FormResponse(
-    val formData:List<FormData>,
+    val formData: List<FormData>,
     val clinicalTools: List<ClinicalWorkflow>
 )
+
 data class FormData(
     val id: Long,
     val formInput: String,
     val formType: String,
+    val workflowName: String? = null,
+    val clinicalWorkflowId: Long? = null
 )
+
 data class FormMetaRequest(
     val metaNames: List<String>
 )
+
 data class UserSymptomsEntity(
     val symptoms: ArrayList<SignsAndSymptomsEntity>
 )
+
 data class VillageInfo(
     val chiefdomId: Long,
     val code: String

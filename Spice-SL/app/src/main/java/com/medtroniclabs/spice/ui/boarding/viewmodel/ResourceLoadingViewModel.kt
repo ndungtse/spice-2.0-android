@@ -28,7 +28,7 @@ class ResourceLoadingViewModel @Inject constructor(
     val metaDataCompleteLiveData = MutableLiveData<Resource<Boolean>>()
     val householdsLiveData = MutableLiveData<Resource<Boolean>>()
 
-    private val workflowNames = mutableListOf<String>()
+    private val workflowNames = mutableListOf<Long>()
     private val meta = mutableListOf<String>()
 
     init {
