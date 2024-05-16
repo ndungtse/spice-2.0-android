@@ -91,7 +91,7 @@ interface RoomHelper {
     suspend fun getAllUnSyncedHouseHoldMembers(houseHoldId: Long): List<HouseHoldMember>
 
     suspend fun getOtherHouseholdMembers(): List<HouseHoldMember>
-    suspend fun updateFhirId(tableName: String, id: String, fhirId: String)
+    suspend fun updateFhirId(tableName: String, id: String, fhirId: String?, status: String)
     fun getFilteredHouseholdsLiveData(
         searchInput: String,
         filterByVillage: List<Long>,
@@ -153,4 +153,9 @@ interface RoomHelper {
     ): LiveData<List<FollowUpPatientModel>>
 
     suspend fun getAllVillageIds(): List<Long>
+
+    suspend fun deleteAllMemberClinical()
+    suspend fun getPatientIdByFhirId(fhirId: String): String?
+
+    suspend fun insertClinicalInfos(list: List<MemberClinicalEntity>)
 }

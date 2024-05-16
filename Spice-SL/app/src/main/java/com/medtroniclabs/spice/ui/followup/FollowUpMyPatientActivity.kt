@@ -48,7 +48,8 @@ class FollowUpMyPatientActivity : BaseActivity() {
             TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab?) {
                 tab?.let {
-                    viewModel.updateFollowUpFilter(pageType = it.position)
+                    viewModel.createNewFollowUpFilter(it.position)
+                    binding.llExactSearch.etSearchTerm.setText("")
                     binding.viewPager.currentItem = it.position
                 }
             }
@@ -91,6 +92,20 @@ class FollowUpMyPatientActivity : BaseActivity() {
     private fun initObserver() {
         viewModel.followUpPatientListLiveData.observe(this) {
             binding.tvHPatientCount.text = getString(R.string.patient_count, it.size)
+        }
+
+        viewModel.getFilterDataLiveData().observe(this) {
+            var count = 0
+            if (!it.selectedVillages.isNullOrEmpty())
+                count++
+            if (!it.selectedDateRange.isNullOrEmpty())
+                count++
+
+            if (count > 0) {
+                binding.llFilter.btnFilter.text = this.getString(R.string.filter_count, count)
+            } else {
+                binding.llFilter.btnFilter.text = getString(R.string.filters)
+            }
         }
     }
 

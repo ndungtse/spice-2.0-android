@@ -1,5 +1,6 @@
 package com.medtroniclabs.spice.repo
 
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.google.gson.Gson
 import com.google.gson.JsonElement
@@ -15,21 +16,27 @@ import com.medtroniclabs.spice.data.offlinesync.model.Assessment
 import com.medtroniclabs.spice.data.offlinesync.model.AssessmentEncounter
 import com.medtroniclabs.spice.data.offlinesync.model.HouseHold
 import com.medtroniclabs.spice.data.offlinesync.model.HouseHoldMember
+import com.medtroniclabs.spice.data.offlinesync.model.PregnancyDetails
 import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.data.offlinesync.model.RequestGetSyncStatus
 import com.medtroniclabs.spice.data.offlinesync.model.ResponseInitialDownload
 import com.medtroniclabs.spice.data.offlinesync.model.SyncEntityList
 import com.medtroniclabs.spice.data.offlinesync.model.SyncResponse
+import com.medtroniclabs.spice.data.offlinesync.utils.OfflineConstant
 import com.medtroniclabs.spice.data.offlinesync.utils.OfflineSyncStatus
+import com.medtroniclabs.spice.data.offlinesync.utils.OfflineUtils
 import com.medtroniclabs.spice.data.resource.RequestAllEntities
 import com.medtroniclabs.spice.db.entity.AssessmentEntity
 import com.medtroniclabs.spice.db.entity.EntitiesName
 import com.medtroniclabs.spice.db.entity.FollowUp
+import com.medtroniclabs.spice.db.entity.MemberClinicalEntity
 import com.medtroniclabs.spice.db.local.RoomHelper
 import com.medtroniclabs.spice.model.assessment.AssessmentDetails
 import com.medtroniclabs.spice.network.ApiHelper
 import com.medtroniclabs.spice.network.resource.Resource
+import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
 import retrofit2.Response
+import java.util.Locale
 import javax.inject.Inject
 
 class OfflineSyncRepository @Inject constructor(
@@ -88,8 +95,8 @@ class OfflineSyncRepository @Inject constructor(
         return apiHelper.getOfflineSyncStatus(request)
     }
 
-    suspend fun updateFhirId(tableName: String, id: String, fhirId: String) {
-        roomHelper.updateFhirId(tableName, id, fhirId)
+    suspend fun updateFhirId(tableName: String, id: String, fhirId: String?, status: String) {
+        roomHelper.updateFhirId(tableName, id, fhirId, status)
     }
 
     suspend fun getHouseholdAndMembers(liveData: MutableLiveData<Resource<Boolean>>) {
@@ -97,6 +104,7 @@ class OfflineSyncRepository @Inject constructor(
         try {
             roomHelper.deleteAllHouseholds()
             roomHelper.deleteAllHouseholdMembers()
+            roomHelper.deleteAllMemberClinical()
 
             // Fetch Synced Data
             if (!fetchSyncedData()) {
@@ -135,6 +143,13 @@ class OfflineSyncRepository @Inject constructor(
             response?.followUpList?.let {
                 roomHelper.insertFollowUps(it)
             }
+
+            // Insert Pregnancy Information
+            val pregnancyDetails = mutableListOf<MemberClinicalEntity>()
+            response?.pregnancyInfos?.forEach {
+                pregnancyDetails.addAll(getMemberClinicalInfos(it))
+            }
+            roomHelper.insertClinicalInfos(pregnancyDetails)
 
             SecuredPreference.putString(
                 SecuredPreference.EnvironmentKey.LAST_SYNCED_AT.name,
@@ -257,5 +272,94 @@ class OfflineSyncRepository @Inject constructor(
         )
 
         return apiHelper.getOfflineSyncStatus(req)
+    }
+
+    private suspend fun getMemberClinicalInfos(info: PregnancyDetails): List<MemberClinicalEntity> {
+        val clinicalInfos = mutableListOf<MemberClinicalEntity>()
+        roomHelper.getPatientIdByFhirId(info.householdMemberId)?.let { patientId ->
+            // Add Anc info
+            if (info.ancVisitNo != null && info.lastMenstrualPeriod != null) {
+                clinicalInfos.add(
+                    MemberClinicalEntity(
+                        patientId = patientId,
+                        visitCount = info.ancVisitNo.toLong(),
+                        clinicalDate = info.lastMenstrualPeriod!!,
+                        type = RMNCH.ANC_MENU.uppercase(Locale.getDefault())
+                    )
+                )
+            }
+
+            // Add pnc info
+            if (info.pncVisitNo != null && info.dateOfDelivery != null && info.noOfNeonates != null) {
+                clinicalInfos.add(
+                    MemberClinicalEntity(
+                        patientId = patientId,
+                        visitCount = info.pncVisitNo.toLong(),
+                        clinicalDate = info.dateOfDelivery!!,
+                        type = RMNCH.PNC_MENU.uppercase(Locale.getDefault()),
+                        numberOfNeonate = info.noOfNeonates.toLong()
+                    )
+                )
+            }
+
+            // Add childhood visit
+            if (info.childVisitNo != null) {
+                clinicalInfos.add(
+                    MemberClinicalEntity(
+                        patientId = patientId,
+                        visitCount = info.childVisitNo.toLong(),
+                        type = RMNCH.CHILD_MENU.uppercase(Locale.getDefault()),
+                        clinicalDate = null
+                    )
+                )
+            }
+        }
+
+        return clinicalInfos
+    }
+
+    suspend fun startSyncOfflineData(): List<String>? {
+        val houseHoldList = getAllUnSyncedHouseHolds()
+        houseHoldList.forEach { householdEntity ->
+            val memberList = getAllUnSyncedMembers(householdEntity.referenceId!!.toLong())
+
+            //Assessment
+            memberList.forEach { hhm ->
+                hhm.motherPatientId?.let { hhm.isChild = true }
+                hhm.assessments = getUnSyncedAssessmentByPatientId(hhm.patientId)
+            }
+
+            householdEntity.householdMembers.addAll(memberList)
+        }
+
+        val otherHouseholdMembers = getOtherHouseholdMembers()
+        //Assessment
+        otherHouseholdMembers.forEach { hhm ->
+            hhm.motherPatientId?.let { hhm.isChild = true }
+            hhm.assessments = getUnSyncedAssessmentByPatientId(hhm.patientId)
+        }
+
+        val otherAssessments = getOtherUnSyncedAssessments()
+
+        val request = OfflineUtils.getRequestObject()
+        request[OfflineConstant.HOUSE_HOLDS] = houseHoldList
+        request[OfflineConstant.HOUSE_HOLD_MEMBERS] = otherHouseholdMembers
+        request[OfflineConstant.ASSESSMENTS] = otherAssessments
+
+        // Nothing to Post anything
+        if (houseHoldList.isEmpty() && otherHouseholdMembers.isEmpty() && otherAssessments.isEmpty()) {
+            return listOf()
+        }
+
+        try {
+            val apiResponse = postOfflineHouseHolds(request)
+            if (apiResponse.isSuccessful) {
+                return listOf(request[OfflineConstant.REQUEST_ID] as String)
+            }
+        } catch (e: Exception) {
+            return null
+        }
+
+        return null
     }
 }

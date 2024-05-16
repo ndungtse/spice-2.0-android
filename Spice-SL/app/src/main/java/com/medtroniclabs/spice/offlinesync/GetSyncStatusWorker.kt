@@ -57,14 +57,33 @@ class GetSyncStatusWorker @AssistedInject constructor(
             if (response.isSuccessful) {
                 var isAllEntitiesSynced = true
                 response.body()?.entityList?.forEach { entity ->
-                    if (entity.status == OfflineSyncStatus.Success.name && entity.type != null && entity.referenceId != null && entity.fhirId != null)
-                        offlineSyncRepository.updateFhirId(
-                            entity.type,
-                            entity.referenceId,
-                            entity.fhirId
-                        )
-                    else
-                        isAllEntitiesSynced = false
+                   when(entity.status) {
+                       OfflineSyncStatus.Success.name -> {
+                           if (entity.type != null && entity.referenceId != null && entity.fhirId != null) {
+                               offlineSyncRepository.updateFhirId(
+                                   entity.type,
+                                   entity.referenceId,
+                                   entity.fhirId,
+                                   OfflineSyncStatus.Success.name
+                               )
+                           }
+                       }
+
+                       OfflineSyncStatus.Failed.name -> {
+                           if (entity.type != null && entity.referenceId != null) {
+                               offlineSyncRepository.updateFhirId(
+                                   entity.type,
+                                   entity.referenceId,
+                                   null,
+                                   OfflineSyncStatus.Failed.name
+                               )
+                           }
+                       }
+
+                       OfflineSyncStatus.InProgress.name -> {
+                           isAllEntitiesSynced = false
+                       }
+                   }
                 }
 
                 return isAllEntitiesSynced

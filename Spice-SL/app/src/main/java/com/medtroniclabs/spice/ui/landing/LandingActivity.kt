@@ -40,6 +40,12 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
             return
         }
 
+        // Check is any offline sync is pending
+        val isAnySyncInProgress = SecuredPreference.getStringArray(SecuredPreference.EnvironmentKey.OFFLINE_SYNC_REQUEST_ID.name)
+        if (isAnySyncInProgress != null) {
+            startActivity(Intent(this, OfflineSyncActivity::class.java))
+        }
+
         binding = ActivityLandingBinding.inflate(layoutInflater)
         setContentView(binding.root)
         initializeDrawerView()

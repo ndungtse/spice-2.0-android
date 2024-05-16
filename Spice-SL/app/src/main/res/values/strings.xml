@@ -427,4 +427,14 @@
     <string name="immunisation_status_up_to_date">Up to Date</string>
     <string name="immunisation_status_not_up_to_date">Not Up to Date</string>
     <string name="immunisation_status_upcoming">Upcoming</string>
+    <string name="start">start</string>
+    <string name="Offline_data">Offline data</string>
+    <string name="offline_data_completion">Your offline data sync has successfully completed!</string>
+    <string name="offline_data_failed">Failed to sync offline data now. Please try again later!</string>
+    <string name="offline_sync_started">Offline data has started to sync</string>
+    <string name="offline_sync_start">Start offline sync now?</string>
+    <string name="offline_sync_small">Offline Sync</string>
+
+    <string name="title_no_network">Network Not Available</string>
+    <string name="message_no_network">Please check your internet connection and try again.</string>
 </resources>

@@ -44,8 +44,8 @@ class AssessmentRMNCHNeonateViewModel @Inject constructor(
     var referralStatus: String? = null
     fun getFormData(formType: String) {
         viewModelScope.launch(dispatcherIO) {
-            formLayoutsLiveData.postLoading()
-            formLayoutsLiveData.postValue(assessmentRepository.getFormData(formType))
+            memberFormLayoutsLiveData.postLoading()
+            memberFormLayoutsLiveData.postValue(assessmentRepository.getFormData(formType))
         }
     }
 

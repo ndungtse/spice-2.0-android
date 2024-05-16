@@ -1,8 +1,9 @@
 package com.medtroniclabs.spice.ui.landing
 
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.viewModels
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.work.Constraints
 import androidx.work.Data
 import androidx.work.NetworkType
@@ -10,94 +11,87 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import com.medtroniclabs.spice.R
-import com.medtroniclabs.spice.common.SecuredPreference
+import com.medtroniclabs.spice.appextensions.gone
+import com.medtroniclabs.spice.appextensions.invisible
+import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.data.offlinesync.utils.OfflineConstant.KEY_REQUESTS_ID
 import com.medtroniclabs.spice.databinding.FragmentOfflineSyncBinding
-import com.medtroniclabs.spice.model.landing.LoadingDialogFragment
 import com.medtroniclabs.spice.offlinesync.GetSyncStatusWorker
-import com.medtroniclabs.spice.offlinesync.PostSyncWorker
-import com.medtroniclabs.spice.ui.BaseActivity
-import com.medtroniclabs.spice.ui.landing.adapter.OfflineSyncEntitiesAdapter
 import com.medtroniclabs.spice.ui.landing.viewmodel.OfflineSyncViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.concurrent.TimeUnit
 
 
 @AndroidEntryPoint
-class OfflineSyncActivity : BaseActivity() {
+class OfflineSyncActivity : AppCompatActivity() {
 
     private val viewModel: OfflineSyncViewModel by viewModels()
     private lateinit var binding: FragmentOfflineSyncBinding
-    private lateinit var adapter: OfflineSyncEntitiesAdapter
-    private val getStatusStartTimer = 1L // Mintues
+    private val getStatusStartTimer = 2L // Mintues
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = FragmentOfflineSyncBinding.inflate(layoutInflater)
-        setMainContentView(
-            binding.root,
-            isToolbarVisible = true,
-            title = getString(R.string.offline_sync)
-        )
+        setContentView(binding.root)
 
-        initView()
+        setListener()
         initObserver()
     }
 
-    private fun initView() {
-        //binding.btnSync.isEnabled = false
+    private fun showNetworkNotAvailableError() {
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle(R.string.title_no_network)
+            .setMessage(R.string.message_no_network)
+            .setPositiveButton(R.string.ok, null)
 
-        adapter = OfflineSyncEntitiesAdapter()
-        binding.rvEntityList.adapter = adapter
-
-        binding.btnSync.setOnClickListener {
-            showLoadingDialog()
-            startPostWorkManager()
-        }
+        val dialog = builder.create()
+        dialog.show()
     }
 
-    private fun showLoadingDialog() {
-        LoadingDialogFragment.newInstance().show(supportFragmentManager, LoadingDialogFragment.TAG)
-    }
-
-    private fun dismissLoadingDialog() {
-        (supportFragmentManager.findFragmentByTag(LoadingDialogFragment.TAG) as? LoadingDialogFragment)?.dismiss()
-    }
-    private fun initObserver() {
-        viewModel.unSyncedCountLiveData.observe(this) { list ->
-            val totalUnSyncedCount = list.sumOf { it.unSyncedCount }
-            binding.btnSync.isEnabled = totalUnSyncedCount > 0
-            adapter.updateList(list)
-        }
-    }
-
-    private fun startPostWorkManager() {
-        val workManager = WorkManager.getInstance(this)
-
-        val constrain = Constraints.Builder()
-            .setRequiredNetworkType(NetworkType.CONNECTED)
-            .build()
-
-        val postSyncWorker = OneTimeWorkRequestBuilder<PostSyncWorker>()
-            .setConstraints(constrain)
-            .build()
-
-        workManager.enqueue(postSyncWorker)
-
-        workManager.getWorkInfoByIdLiveData(postSyncWorker.id).observe(this) { workerInfo ->
-            if (workerInfo.state == WorkInfo.State.SUCCEEDED) {
-                val requestIds =
-                    SecuredPreference.getStringArray(SecuredPreference.EnvironmentKey.OFFLINE_SYNC_REQUEST_ID.name)
-                if (!requestIds.isNullOrEmpty()) {
-                    startGetSyncStatusWorkManager(requestIds, getStatusStartTimer)
-                } else {
-                    dismissLoadingDialog()
-                    showErrorDialogue(
-                        getString(R.string.title_sync_status),
-                        getString(R.string.message_sync_error)
-                    ) {}
-                }
+    private fun setListener() {
+        binding.btnStart.setOnClickListener {
+            if (viewModel.connectivityManager.isNetworkAvailable()) {
+                hideStartCancelButton()
+                showProgressView()
+                viewModel.startUploadingData(getStatusStartTimer)
+            } else {
+                showNetworkNotAvailableError()
             }
+        }
+        binding.btnCancel.setOnClickListener {
+            finish()
+        }
+        binding.btnOkay.setOnClickListener {
+            finish()
+        }
+    }
+
+    private fun initObserver() {
+        viewModel.oldRequestIdsLiveData.observe(this) {
+            if (!it.isNullOrEmpty()) {
+                hideStartCancelButton()
+                showProgressView()
+                viewModel.startProgress(getStatusStartTimer)
+                startGetSyncStatusWorkManager(it.toTypedArray(), 0)
+            }
+        }
+
+        viewModel.postRequestIdsLiveData.observe(this) { requestIds ->
+            if (requestIds.isNotEmpty()) {
+                startGetSyncStatusWorkManager(requestIds.toTypedArray(), getStatusStartTimer)
+            } else {
+                startGetSyncStatusWorkManager(arrayOf(), 0)
+            }
+        }
+
+        viewModel.progressLiveData.observe(this) {
+            binding.progressBar.progress = it
+            binding.tvOfflineSyncProgress.text = "$it%"
+        }
+
+        viewModel.statusLiveData.observe(this) {
+            hideProgressView()
+            showCompletionView(it)
         }
     }
 
@@ -122,14 +116,43 @@ class OfflineSyncActivity : BaseActivity() {
 
         workManager.getWorkInfoByIdLiveData(getSyncStatusWorker.id).observe(this) { workerInfo ->
             if (workerInfo.state == WorkInfo.State.SUCCEEDED) {
-                viewModel.getUnSyncedCount()
-                dismissLoadingDialog()
-                Toast.makeText(this, "Sync Success!", Toast.LENGTH_LONG).show()
+                viewModel.syncCompleted(true)
             } else if (workerInfo.state == WorkInfo.State.FAILED) {
-                dismissLoadingDialog()
-                Toast.makeText(this, "Sync Failed! Please try again later", Toast.LENGTH_LONG)
-                    .show()
+                //dismissLoadingDialog()
+                viewModel.syncCompleted()
             }
         }
+    }
+
+    private fun hideStartCancelButton() {
+        binding.tvOfflineSync.gone()
+        binding.btnCancel.gone()
+        binding.btnStart.gone()
+    }
+
+    private fun showProgressView() {
+        binding.tvOfflineSyncStarted.visible()
+        binding.tvOffline.visible()
+        binding.tvOfflineSyncProgress.visible()
+        binding.progressBar.visible()
+    }
+
+    fun hideProgressView() {
+        binding.progressBar.gone()
+        binding.tvOfflineSyncStarted.gone()
+        binding.tvOffline.gone()
+        binding.tvOfflineSyncProgress.gone()
+    }
+
+    private fun showCompletionView(isSuccess: Boolean = false) {
+        if (isSuccess) {
+            binding.statusImage.visible()
+            binding.tvOfflineSyncCompleted.text = getString(R.string.offline_data_completion)
+        } else {
+            binding.statusImage.invisible()
+            binding.tvOfflineSyncCompleted.text = getString(R.string.offline_data_failed)
+        }
+        binding.tvOfflineSyncCompleted.visible()
+        binding.btnOkay.visible()
     }
 }

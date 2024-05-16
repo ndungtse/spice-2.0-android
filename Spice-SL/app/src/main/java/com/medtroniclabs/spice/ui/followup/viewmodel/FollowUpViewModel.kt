@@ -38,12 +38,14 @@ class FollowUpViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             villages.addAll(followUpRepository.getVillageIds())
-            filterLiveData.postValue(
-                FollowUpFilter(
-                    type = DefinedParams.FU_TYPE_HH_VISIT,
-                    villages = villages.map { it.id })
-            )
+            createNewFollowUpFilter(0)
         }
+    }
+
+    fun createNewFollowUpFilter(pageType: Int) {
+        val filter =
+            FollowUpFilter(type = getFollowUpType(pageType), villages = villages.map { it.id })
+        filterLiveData.postValue(filter)
     }
 
     fun updateFollowUpFilter(
@@ -105,6 +107,10 @@ class FollowUpViewModel @Inject constructor(
 
     fun getFilterData(): FollowUpFilter? {
         return filterLiveData.value
+    }
+
+    fun getFilterDataLiveData(): LiveData<FollowUpFilter> {
+        return filterLiveData
     }
 
     fun getDateRange(): List<String> {

@@ -20,8 +20,8 @@
   },
   {
     "family": "pncMother",
-    "fieldName": "noOfNeonate",
-    "id": "noOfNeonate",
+    "fieldName": "noOfNeonates",
+    "id": "noOfNeonates",
     "viewType": "EditText",
     "orderId": 6,
     "hint": "Enter number",

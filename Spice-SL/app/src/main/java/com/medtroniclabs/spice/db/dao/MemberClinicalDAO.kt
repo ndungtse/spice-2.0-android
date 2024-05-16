@@ -23,4 +23,10 @@ interface MemberClinicalDAO {
         type: String
     )
 
+    @Query("DELETE from MemberClinical")
+    suspend fun deleteAllMemberClinical()
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertClinicalInfos(list: List<MemberClinicalEntity>)
+
 }

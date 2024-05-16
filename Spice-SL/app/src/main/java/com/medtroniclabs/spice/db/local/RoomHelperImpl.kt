@@ -259,8 +259,7 @@ class RoomHelperImpl @Inject constructor(
         return memberDAO.getDobAndGenderById(memberId)
     }
 
-    override suspend fun updateFhirId(tableName: String, id: String, fhirId: String) {
-        val status = OfflineSyncStatus.Success.name
+    override suspend fun updateFhirId(tableName: String, id: String, fhirId: String?, status: String) {
         val updatedAt = System.currentTimeMillis()
         val query =
             "UPDATE $tableName SET sync_status = ?, fhir_id = ?, updated_at = ? WHERE id = ?"
@@ -442,5 +441,17 @@ class RoomHelperImpl @Inject constructor(
 
     override suspend fun getExaminationQuestionsByWorkFlow(workFlowType: String): ExaminationListItems {
         return examinationsDAO.getExaminationsByType(workFlowType)
+    }
+
+    override suspend fun getPatientIdByFhirId(fhirId: String): String? {
+        return memberDAO.getPatientIdByFhirId(fhirId)
+    }
+
+    override suspend fun deleteAllMemberClinical() {
+        memberClinicalDAO.deleteAllMemberClinical()
+    }
+
+    override suspend fun insertClinicalInfos(list: List<MemberClinicalEntity>) {
+        memberClinicalDAO.insertClinicalInfos(list)
     }
 }

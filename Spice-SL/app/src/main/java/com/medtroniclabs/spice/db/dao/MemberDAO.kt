@@ -56,4 +56,7 @@ interface MemberDAO {
     @Query("DELETE FROM HouseholdMember")
     suspend fun deleteAllHouseholdMembers()
 
+    @Query("SELECT patient_id FROM HouseholdMember WHERE fhir_id =:fhirId")
+    suspend fun getPatientIdByFhirId(fhirId: String): String?
+
 }
