@@ -9,5 +9,7 @@ data class DiseaseCategoryItems(
     val id: Long,
     val name: String,
     val displayOrder: Int,
+    val value: String,
+    var type: String,
     val diseaseCondition: ArrayList<DiseaseConditionItems>,
 )

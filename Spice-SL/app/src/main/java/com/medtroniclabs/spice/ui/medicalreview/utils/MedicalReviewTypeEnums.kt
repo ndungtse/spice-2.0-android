@@ -22,5 +22,6 @@ enum class MedicalReviewTypeEnums{
     ConditionOfMother,
     MotherDeliveryStatus,
     ANC,
-    medicalReview
+    medicalReview,
+    DiagnosisType
 }

@@ -11,6 +11,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResult
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.common.CommonUtils.convertListToString
 import com.medtroniclabs.spice.common.CommonUtils.formatListToStringWithOther
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
@@ -26,6 +27,7 @@ import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
 import com.medtroniclabs.spice.formgeneration.utility.MultiSelectSpinnerAdapter
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
+import com.medtroniclabs.spice.ui.medicalreview.diagnosis.viewmodel.DiagnosisViewModel
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 
@@ -41,6 +43,7 @@ class AboveFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
     private val viewModel: AboveFiveYearsViewModel by activityViewModels()
     private val chipItemViewModel: ClinicalNotesViewModel by activityViewModels()
     private val presentingComplaintsViewModel: PresentingComplaintsViewModel by activityViewModels()
+    private val diagnosisViewModel : DiagnosisViewModel by activityViewModels()
     private var datePickerDialog: DatePickerDialog? = null
 
     override fun onCreateView(
@@ -119,6 +122,12 @@ class AboveFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
                 it, details.presentingComplaintsNotes
             )
         }
+        binding.tvDiagnosisText.text =
+            diagnosisViewModel.diagnosisSaveUpdateResponse.value?.data?.let {list ->
+                convertListToString(
+                    ArrayList(list.map { it.diseaseCategory })
+                )
+            } ?: requireContext().getString(R.string.hyphen_symbol)
         binding.tvClinicalNotesText.text = chipItemViewModel.enteredClinicalNotes
         binding.tvClinicalName.text = requireContext().getString(
             R.string.firstname_lastname,

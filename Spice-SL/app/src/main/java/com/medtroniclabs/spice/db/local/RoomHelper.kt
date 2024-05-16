@@ -138,7 +138,7 @@ interface RoomHelper {
     suspend fun insertLabourDelivery(symptomEntity: List<LabourDeliveryMetaEntity>)
     suspend fun deleteLabourDelivery()
     suspend fun getLabourDelivery(): List<LabourDeliveryMetaEntity>
-    suspend fun getDiagnosisList(): List<DiseaseCategoryItems>
+    suspend fun getDiagnosisList(diagnosisType: String): List<DiseaseCategoryItems>
 
     suspend fun getExaminationQuestionsByWorkFlow(workFlowType: String): ExaminationListItems
 

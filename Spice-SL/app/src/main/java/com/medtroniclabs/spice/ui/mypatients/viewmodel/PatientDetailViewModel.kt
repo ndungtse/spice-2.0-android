@@ -21,6 +21,8 @@ class PatientDetailViewModel @Inject constructor(
 ): ViewModel() {
 
     val patientDetailsLiveData = MutableLiveData<Resource<PatientListRespModel>>()
+    //the below id is one which get from patient details response
+    var patientDetailsId : String? = null
 
     fun getPatients(id: String) {
         viewModelScope.launch(dispatcherIO) {

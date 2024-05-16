@@ -416,8 +416,8 @@ class RoomHelperImpl @Inject constructor(
         return labourDeliveryDAO.getLabourDelivery()
     }
 
-    override suspend fun getDiagnosisList(): List<DiseaseCategoryItems> {
-        return diagnosisDAO.getDiagnosisList()
+    override suspend fun getDiagnosisList(diagnosisType: String): List<DiseaseCategoryItems> {
+        return diagnosisDAO.getDiagnosisList(diagnosisType)
     }
 
     override suspend fun insertFollowUps(list: List<FollowUp>) {

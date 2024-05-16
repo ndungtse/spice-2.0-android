@@ -6,6 +6,8 @@ import com.medtroniclabs.spice.data.AboveFiveYearsMetaResponse
 import com.medtroniclabs.spice.data.AboveFiveYearsSummaryDetails
 import com.medtroniclabs.spice.data.AboveFiveYearsSummaryRequest
 import com.medtroniclabs.spice.data.AboveFiveYearsSummarySubmitRequest
+import com.medtroniclabs.spice.data.DiagnosisDiseaseModel
+import com.medtroniclabs.spice.data.DiagnosisSaveUpdateRequest
 import com.medtroniclabs.spice.data.FormMetaRequest
 import com.medtroniclabs.spice.data.FormRequest
 import com.medtroniclabs.spice.data.FormResponse
@@ -151,4 +153,11 @@ class ApiHelperImpl @Inject constructor(private val apiService: ApiService) : Ap
         return apiService.createBloodPressure(bpAndWeightRequestModel)
     }
 
+    override suspend fun saveUpdateDiagnosis(request: DiagnosisSaveUpdateRequest): Response<APIResponse<ArrayList<DiagnosisDiseaseModel>>> {
+        return apiService.saveUpdateDiagnosis(request)
+    }
+
+    override suspend fun getDiagnosisDetails(request: CreateUnderTwoMonthsResponse): Response<APIResponse<ArrayList<DiagnosisDiseaseModel>>> {
+        return apiService.getDiagnosisDetails(request)
+    }
 }

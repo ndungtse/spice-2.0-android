@@ -23,7 +23,7 @@ import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.SE_ITEM
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.SUMMARY_ITEM
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
-import com.medtroniclabs.spice.ui.motherneonateanc.fragment.MedicalReviewPatientDiagnosisFragment
+import com.medtroniclabs.spice.ui.mypatients.fragment.MedicalReviewPatientDiagnosisFragment
 import com.medtroniclabs.spice.ui.mypatients.fragment.PatientInfoFragment
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -126,7 +126,7 @@ class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
         supportFragmentManager.beginTransaction()
             .add(
                 R.id.patientDetailFragment,
-                PatientInfoFragment.newInstance(intent.getStringExtra(DefinedParams.PatientId), intent.getStringExtra(DefinedParams.ID))
+                PatientInfoFragment.newInstance(intent.getStringExtra(DefinedParams.PatientId))
             ).commit()
     }
 
@@ -237,9 +237,18 @@ class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
                 MedicalReviewTypeEnums.SystemicExaminations.name,
                 MedicalReviewTypeEnums.AboveFiveYears.name
             )
+            putString(
+                MedicalReviewTypeEnums.DiagnosisType.name,
+                MedicalReviewTypeEnums.AboveFiveYears.name
+            )
+            putString(
+                DefinedParams.ID,
+                intent.getStringExtra(DefinedParams.ID)
+            )
         }
         replaceFragmentInId<MedicalReviewPatientDiagnosisFragment>(
             binding.patientDiagnosisContainer.id,
+            bundle = bundle,
             tag = MedicalReviewPatientDiagnosisFragment::class.simpleName
         )
         replaceFragmentInId<PresentingComplaintsFragment>(

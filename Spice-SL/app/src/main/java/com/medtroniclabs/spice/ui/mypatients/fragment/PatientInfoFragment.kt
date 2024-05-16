@@ -43,12 +43,11 @@ class PatientInfoFragment : BaseFragment() {
             return PatientInfoFragment()
         }
 
-        fun newInstance(patientId: String?, id: String? = null,isAnc:Boolean = false): PatientInfoFragment {
+        fun newInstance(patientId: String?,isAnc:Boolean = false): PatientInfoFragment {
             val fragment = PatientInfoFragment()
             val bundle = Bundle()
             bundle.putString(DefinedParams.PatientId, patientId)
             bundle.putBoolean(ANC, isAnc)
-            bundle.putString(ID, id)
             fragment.arguments = bundle
             return fragment
         }
@@ -65,7 +64,6 @@ class PatientInfoFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val patientId = arguments?.getString(DefinedParams.PatientId, "")
-        patientStatusViewModel.patientId = arguments?.getString(ID, null)
         if (patientId?.isNotBlank() == true) {
             viewModel.getPatients(patientId)
         }
@@ -95,6 +93,7 @@ class PatientInfoFragment : BaseFragment() {
 
     private fun setDataInInfo(patientListRespModel: PatientListRespModel) {
         showProgress()
+        viewModel.patientDetailsId = patientListRespModel.id
         val isAnc = arguments?.getBoolean(ANC, false)
         val name =
             patientListRespModel.name ?: requireContext().getString(R.string.separator_hyphen)

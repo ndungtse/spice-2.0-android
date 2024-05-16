@@ -6,6 +6,8 @@ import com.medtroniclabs.spice.data.AboveFiveYearsMetaResponse
 import com.medtroniclabs.spice.data.AboveFiveYearsSummaryDetails
 import com.medtroniclabs.spice.data.AboveFiveYearsSummaryRequest
 import com.medtroniclabs.spice.data.AboveFiveYearsSummarySubmitRequest
+import com.medtroniclabs.spice.data.DiagnosisDiseaseModel
+import com.medtroniclabs.spice.data.DiagnosisSaveUpdateRequest
 import com.medtroniclabs.spice.data.FormMetaRequest
 import com.medtroniclabs.spice.data.FormRequest
 import com.medtroniclabs.spice.data.FormResponse
@@ -125,4 +127,10 @@ interface ApiService {
 
     @POST("/spice-service/medical-review/bp/create")
     suspend fun createBloodPressure(@Body bpAndWeightRequestModel :BpAndWeightRequestModel) : Response<APIResponse<HashMap<String,Any>>>
+
+    @POST("/spice-service/patient/confirm-diagnosis")
+    suspend fun saveUpdateDiagnosis(@Body request: DiagnosisSaveUpdateRequest):Response<APIResponse<ArrayList<DiagnosisDiseaseModel>>>
+
+    @POST("/spice-service/patient/diagnosis-details")
+    suspend fun getDiagnosisDetails(@Body request: CreateUnderTwoMonthsResponse):Response<APIResponse<ArrayList<DiagnosisDiseaseModel>>>
 }

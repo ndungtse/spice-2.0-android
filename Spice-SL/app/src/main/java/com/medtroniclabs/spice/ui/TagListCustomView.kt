@@ -20,7 +20,7 @@ import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 
 class TagListCustomView(
     val context: Context,
-    private val chipGroup: ChipGroup,
+    val chipGroup: ChipGroup,
     val otherSingleSelect: Boolean? = null,
     val isSelectionRequired: Boolean? = null,
     val otherCallBack: ((name: String, isChecked: Boolean) -> Unit)? = null,
@@ -311,6 +311,16 @@ class TagListCustomView(
             chipGroup.getChildAt(chipId)?.let {
                 if (it is Chip && it.isChecked) {
                     val tagModel = it.tag as? ChipViewItemModel
+                    tagModel?.let {
+                        tags.add(tagModel)
+                    }
+                }
+            }
+        }
+        chipGroup.findViewWithTag<LinearLayout>(Other)?.let { layout ->
+            layout.getChildAt(1)?.tag?.let {
+                layout.getChildAt(0)?.tag?.let { tag ->
+                    val tagModel = tag as? ChipViewItemModel
                     tagModel?.let {
                         tags.add(tagModel)
                     }

@@ -15,7 +15,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class MedicalReviewPatientDiagnosisViewModel @Inject constructor(
+class MotherNeonateBpWeightViewModel @Inject constructor(
     private val motherNeonateANCRepo: MotherNeonateANCRepo,
     @IoDispatcher private val dispatcherIO: CoroutineDispatcher
 ) : ViewModel() {

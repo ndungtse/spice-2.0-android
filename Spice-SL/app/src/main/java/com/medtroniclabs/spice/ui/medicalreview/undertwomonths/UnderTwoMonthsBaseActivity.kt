@@ -19,7 +19,7 @@ import com.medtroniclabs.spice.ui.medicalreview.examinations.ExaminationCardFrag
 import com.medtroniclabs.spice.ui.medicalreview.examinations.ExaminationCardViewModel
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
-import com.medtroniclabs.spice.ui.motherneonateanc.fragment.MedicalReviewPatientDiagnosisFragment
+import com.medtroniclabs.spice.ui.mypatients.fragment.MedicalReviewPatientDiagnosisFragment
 import com.medtroniclabs.spice.ui.mypatients.fragment.PatientInfoFragment
 import com.medtroniclabs.spice.ui.mypatients.fragment.UnderTwoMonthsTreatmentSummaryFragment
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel

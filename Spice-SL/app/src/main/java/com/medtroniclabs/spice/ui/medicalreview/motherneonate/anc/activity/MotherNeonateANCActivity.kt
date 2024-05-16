@@ -39,7 +39,7 @@ import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.fragment.Pregn
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.fragment.PregnancySummaryFragment
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.viewmodel.MotherNeonateANCViewModel
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.viewmodel.MotherNeonateSummaryViewModel
-import com.medtroniclabs.spice.ui.motherneonateanc.fragment.MedicalReviewPatientDiagnosisFragment
+import com.medtroniclabs.spice.ui.mypatients.fragment.MedicalReviewPatientDiagnosisFragment
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PregnancyDetailsViewModel
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PregnancyPastObstetricHistoryViewModel

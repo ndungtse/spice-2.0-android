@@ -21,7 +21,7 @@ class PatientStatusViewModel @Inject constructor(
     @Inject
     lateinit var connectivityManager: ConnectivityManager
     val patientStatusLiveData = MutableLiveData<Resource<ArrayList<PatientStatusResponse>>>()
-    //The below id represent backend generated ID from response, its not a member generated ID
+    //The below id represent backend generated ID from patient details response, its not a member generated ID
     var patientId:String? = null
 
     fun getPatientStatus(id: String){

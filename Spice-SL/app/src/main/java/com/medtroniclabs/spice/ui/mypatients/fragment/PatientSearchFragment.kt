@@ -148,7 +148,6 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
             val intent = Intent(requireActivity(), ReferralTicketActivity::class.java)
             intent.putExtra(DefinedParams.PatientId, item.patientId)
             intent.putExtra(DefinedParams.Gender, item.gender)
-            intent.putExtra(DefinedParams.ID, item.id)
             startActivity(intent)
         } else {
             showErrorDialog(getString(R.string.error),getString(R.string.no_internet_error))

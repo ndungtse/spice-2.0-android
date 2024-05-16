@@ -14,7 +14,7 @@ interface DiagnosisDAO {
     @Query("DELETE FROM DiagnosisEntity")
     suspend fun deleteDiagnosisList()
 
-    @Query("SELECT * FROM DiagnosisEntity ORDER BY displayOrder ASC")
-    suspend fun getDiagnosisList(): List<DiseaseCategoryItems>
+    @Query("SELECT * FROM DiagnosisEntity Where type=:diagnosisType ORDER BY displayOrder ASC")
+    suspend fun getDiagnosisList(diagnosisType: String): List<DiseaseCategoryItems>
 
 }

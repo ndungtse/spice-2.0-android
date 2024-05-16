@@ -32,4 +32,6 @@ object DefinedParams {
     const val Information= "information"
     const val HouseholdHeadRelationship = "household_head_relationship"
     const val Title = "Title"
+    const val AccordionGroup = "accordionGroup"
+    const val ChipGroup = "chipGroup"
 }

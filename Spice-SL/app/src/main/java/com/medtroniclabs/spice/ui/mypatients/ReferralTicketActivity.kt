@@ -17,6 +17,7 @@ import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.home.ToolsActivity
 import com.medtroniclabs.spice.ui.mypatients.fragment.PatientInfoFragment
 import com.medtroniclabs.spice.ui.mypatients.fragment.ReferralTicketFragment
+import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.ReferralTicketViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -24,6 +25,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class ReferralTicketActivity : BaseActivity() {
     private lateinit var binding: ActivityReferralTicketBinding
     val viewModel: ReferralTicketViewModel by viewModels()
+    val patientDetailViewModel: PatientDetailViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,10 +44,7 @@ class ReferralTicketActivity : BaseActivity() {
         supportFragmentManager.beginTransaction()
             .add(
                 R.id.patientDetailsContainer,
-                PatientInfoFragment.newInstance(
-                    intent.getStringExtra(DefinedParams.PatientId),
-                    intent.getStringExtra(ID)
-                )
+                PatientInfoFragment.newInstance(intent.getStringExtra(DefinedParams.PatientId))
             ).commit()
         hideLoading()
 //        supportFragmentManager.beginTransaction()
@@ -116,7 +115,7 @@ class ReferralTicketActivity : BaseActivity() {
         )
         intent.putExtra(
             ID,
-            this.intent.getStringExtra(ID)
+            patientDetailViewModel.patientDetailsId
         )
         intent.putExtra(
             DefinedParams.Gender,

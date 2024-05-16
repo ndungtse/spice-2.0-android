@@ -1,14 +1,11 @@
 package com.medtroniclabs.spice.repo
 
 import android.location.Location
-import androidx.lifecycle.MutableLiveData
-import com.medtroniclabs.spice.appextensions.nullIfEmpty
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.AboveFiveYearsSummaryDetails
 import com.medtroniclabs.spice.data.AboveFiveYearsSummaryRequest
 import com.medtroniclabs.spice.data.AboveFiveYearsSummarySubmitRequest
-import com.medtroniclabs.spice.data.DiseaseCategoryItems
 import com.medtroniclabs.spice.data.MedicalReviewMetaItems
 import com.medtroniclabs.spice.data.model.AboveFiveYearsSubmitRequest
 import com.medtroniclabs.spice.data.model.MultiSelectDropDownModel
@@ -43,6 +40,8 @@ class AboveFiveYearsRepository @Inject constructor(
                         )
                     )
                     roomHelper.deleteDiagnosisList()
+                    //TODO: Type should be given from backend until we added type
+                    diseaseCategories.onEach { it.type = MedicalReviewTypeEnums.AboveFiveYears.name }
                     roomHelper.saveDiagnosisList(diseaseCategories)
                 }
                 SecuredPreference.putBoolean(
@@ -252,15 +251,6 @@ class AboveFiveYearsRepository @Inject constructor(
                     )
                 )
             }
-        }
-    }
-
-    suspend fun getDiagnosisList(): Resource<List<DiseaseCategoryItems>> {
-        return try {
-            val response = roomHelper.getDiagnosisList()
-            Resource(state = ResourceState.SUCCESS, response)
-        } catch (e: Exception) {
-            Resource(state = ResourceState.ERROR)
         }
     }
 }

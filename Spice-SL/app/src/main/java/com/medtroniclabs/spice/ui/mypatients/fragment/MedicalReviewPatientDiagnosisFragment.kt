@@ -1,4 +1,4 @@
-package com.medtroniclabs.spice.ui.motherneonateanc.fragment
+package com.medtroniclabs.spice.ui.mypatients.fragment
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -12,19 +12,25 @@ import com.google.android.material.button.MaterialButton
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.visible
+import com.medtroniclabs.spice.common.CommonUtils.convertListToString
+import com.medtroniclabs.spice.common.CommonUtils.formatListToStringWithOther
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.data.model.MotherNeonateAncRequest
 import com.medtroniclabs.spice.databinding.FragmentMedicalReviewPatientDiagnosisBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
+import com.medtroniclabs.spice.model.medicalreview.CreateUnderTwoMonthsResponse
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.medicalreview.diagnosis.DiagnosisDialogFragment
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.DialogDismissListener
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil.calculateBp
+import com.medtroniclabs.spice.ui.medicalreview.diagnosis.viewmodel.DiagnosisViewModel
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.fragment.AddBpDialog
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.fragment.AddWeightDialog
-import com.medtroniclabs.spice.ui.mypatients.viewmodel.MedicalReviewPatientDiagnosisViewModel
+import com.medtroniclabs.spice.ui.mypatients.viewmodel.MotherNeonateBpWeightViewModel
+import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
+import com.medtroniclabs.spice.ui.medicalreview.viewmodel.PatientStatusViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 
@@ -33,7 +39,9 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
     DialogDismissListener {
 
     private lateinit var binding: FragmentMedicalReviewPatientDiagnosisBinding
-    private val viewModel: MedicalReviewPatientDiagnosisViewModel by activityViewModels()
+    private val viewModel: MotherNeonateBpWeightViewModel by activityViewModels()
+    private val statusViewModel: PatientStatusViewModel by activityViewModels()
+    private val diagnosisViewModel: DiagnosisViewModel by activityViewModels()
 
     companion object {
         fun newInstance(): MedicalReviewPatientDiagnosisFragment {
@@ -55,11 +63,18 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         binding = FragmentMedicalReviewPatientDiagnosisBinding.inflate(inflater, container, false)
+        arguments?.let {
+            diagnosisViewModel.diagnosisType =
+                it.getString(MedicalReviewTypeEnums.DiagnosisType.name) ?: ""
+            statusViewModel.patientId = it.getString(DefinedParams.ID)
+        }
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        initializeViews()
+        attachObserver()
         handleFlow()
         initializeListeners()
         attachListeners()
@@ -246,9 +261,100 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
         return arguments?.getString(DefinedParams.PatientId, "") ?: ""
     }
 
+    private fun attachObserver() {
+        statusViewModel.patientStatusLiveData.observe(viewLifecycleOwner) { resourceState ->
+            when (resourceState.state) {
+                ResourceState.LOADING -> {
+                    showProgress()
+                }
+
+                ResourceState.SUCCESS -> {
+                    hideProgress()
+                    resourceState.data?.let { list ->
+                        binding.tvPatientStatusValue.text =
+                            formatListToStringWithOther(list.map { it.status })
+                    }
+                }
+
+                ResourceState.ERROR -> {
+                    hideProgress()
+                }
+            }
+        }
+
+        diagnosisViewModel.diagnosisDetailsList.observe(viewLifecycleOwner) { resource ->
+            when (resource.state) {
+                ResourceState.LOADING -> {
+                    showProgress()
+                }
+
+                ResourceState.SUCCESS -> {
+                    hideProgress()
+                    resource.data?.let { list ->
+                        if (list.isNotEmpty()) {
+                            val diagnosisItems = list.map { it.diseaseCategory }.distinct()
+                            binding.tvDiagnosis.text =
+                                convertListToString(ArrayList(diagnosisItems))
+                            binding.tvDiagnosisConfirm.text = getString(R.string.edit_diagnoses)
+                        } else {
+                            binding.tvDiagnosis.text =
+                                requireContext().getString(R.string.hyphen_symbol)
+                            binding.tvDiagnosisConfirm.text = getString(R.string.add_diagnosis)
+                        }
+                    }
+                }
+
+                ResourceState.ERROR -> {
+                    hideProgress()
+                }
+            }
+        }
+
+        diagnosisViewModel.diagnosisSaveUpdateResponse.observe(viewLifecycleOwner) { resource ->
+            when (resource.state) {
+                ResourceState.LOADING -> {
+                    showProgress()
+                }
+
+                ResourceState.SUCCESS -> {
+                    hideProgress()
+                    resource.data?.let { list ->
+                        if (list.isNotEmpty()) {
+                            val diagnosisItems = list.map { it.diseaseCategory }.distinct()
+                            binding.tvDiagnosis.text =
+                                convertListToString(ArrayList(diagnosisItems))
+                            binding.tvDiagnosisConfirm.text = getString(R.string.edit_diagnoses)
+                        } else {
+                            binding.tvDiagnosis.text =
+                                requireContext().getString(R.string.hyphen_symbol)
+                            binding.tvDiagnosisConfirm.text = getString(R.string.add_diagnosis)
+                        }
+                    }
+                }
+
+                ResourceState.ERROR -> {
+                    hideProgress()
+                }
+            }
+        }
+    }
+
+    private fun initializeViews() {
+        statusViewModel.patientId?.let {
+            statusViewModel.getPatientStatus(it)
+            diagnosisViewModel.getDiagnosisMetaList(diagnosisViewModel.diagnosisType)
+            diagnosisViewModel.getDiagnosisDetails(
+                CreateUnderTwoMonthsResponse(
+                    patientReference = it
+                )
+            )
+        }
+    }
+
     private fun getMemberId(): String {
         return arguments?.getString(DefinedParams.MemberID, "") ?: ""
     }
+
     override fun onDialogDismissed(isBp: Boolean) {
         if (connectivityManager.isNetworkAvailable()) {
             if (isBp) {
@@ -263,4 +369,5 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
         dialog.listener = null
         dialog.dismiss()
     }
+
 }
