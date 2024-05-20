@@ -93,7 +93,7 @@ class HouseholdDetailsFragment : Fragment() {
         householdSummaryViewModel.houseHoldDetailLiveData.value?.data?.let { houseHoldDetail ->
             val houseHoldNumberViewBinding =
                 SummaryListItemBinding.inflate(LayoutInflater.from(context))
-            houseHoldNumberViewBinding.tvLabel.text = getString(R.string.house_no)
+            houseHoldNumberViewBinding.tvLabel.text = getString(R.string.household_no)
             houseHoldNumberViewBinding.tvValue.text = houseHoldDetail.householdNo.toString()
             binding.llDetails.addView(houseHoldNumberViewBinding.root)
             val villageViewBinding =

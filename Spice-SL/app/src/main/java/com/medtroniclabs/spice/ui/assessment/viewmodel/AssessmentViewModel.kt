@@ -72,6 +72,8 @@ class AssessmentViewModel @Inject constructor(
     var pncMotherDetailMap: HashMap<String, Any>? = null
     var dosageListModel: ArrayList<RecommendedDosageListModel>? = null
     var instructionId: String? = null
+    var isDismiss = false
+    var isInputUpdated: Boolean = false
 
     fun getMemberDetailsById() {
         if (selectedHouseholdMemberId == -1L) {

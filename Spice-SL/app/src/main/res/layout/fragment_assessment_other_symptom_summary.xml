@@ -160,6 +160,18 @@
                 app:layout_constraintEnd_toEndOf="@id/labelPhuReferred"/>
 
             <TextView
+                android:id="@+id/tvSiteErrorMessage"
+                style="@style/TextStyle_Error_12"
+                android:layout_width="0dp"
+                android:padding="@dimen/_16sdp"
+                android:text="@string/please_select_a_site"
+                android:textSize="@dimen/_16ssp"
+                android:visibility="gone"
+                app:layout_constraintTop_toBottomOf="@id/etPhuChange"
+                app:layout_constraintStart_toStartOf="@id/etPhuChange"
+                app:layout_constraintEnd_toEndOf="@id/etPhuChange"/>
+
+            <TextView
                 android:id="@+id/tvNextFollowupDateTitle"
                 style="@style/Form_Label_Style"
                 android:layout_width="0dp"
@@ -168,7 +180,7 @@
                 android:paddingHorizontal="@dimen/_16sdp"
                 android:layout_marginTop="@dimen/_16sdp"
                 android:text="@string/next_follow_up_date"
-                app:layout_constraintTop_toBottomOf="@id/etPhuChange"
+                app:layout_constraintTop_toBottomOf="@id/tvSiteErrorMessage"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 tools:ignore="RtlSymmetry" />

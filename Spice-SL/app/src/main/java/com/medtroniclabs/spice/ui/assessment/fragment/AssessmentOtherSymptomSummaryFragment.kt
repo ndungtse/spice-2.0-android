@@ -6,11 +6,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
+import android.widget.ScrollView
 import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.appextensions.gone
+import com.medtroniclabs.spice.appextensions.isGone
+import com.medtroniclabs.spice.appextensions.visible
+import com.medtroniclabs.spice.common.CommonUtils.getDaysValue
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.StringConverter
@@ -31,6 +36,7 @@ import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.Fever
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.NoOfDaysOfFever
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.hasFever
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.otherConcerningSymptoms
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.otherSymptoms
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.signsAndSymptoms
 import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefinedParams.RdtPositive
 import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefinedParams.RdtTest
@@ -45,7 +51,7 @@ class AssessmentOtherSymptomSummaryFragment : Fragment(), View.OnClickListener {
     lateinit var binding: FragmentAssessmentOtherSymptomSummaryBinding
     private val viewModel: AssessmentViewModel by activityViewModels()
     private var datePickerDialog: DatePickerDialog? = null
-
+    private var isValid: Boolean = true
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -57,21 +63,8 @@ class AssessmentOtherSymptomSummaryFragment : Fragment(), View.OnClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initViews()
         setListeners()
         attachObservers()
-    }
-
-    private fun initViews() {
-        binding.btnDone.safeClickListener(this)
-        binding.etNotes.addTextChangedListener { input ->
-            input?.let {
-                val resultValue = input.trim().toString()
-                if (resultValue.isNotBlank()) {
-                    viewModel.otherAssessmentDetails[AssessmentNotes] = resultValue
-                }
-            }
-        }
     }
 
     private fun setListeners() {
@@ -81,6 +74,7 @@ class AssessmentOtherSymptomSummaryFragment : Fragment(), View.OnClickListener {
                 val resultValue = input.trim().toString()
                 if (resultValue.isNotBlank()) {
                     viewModel.otherAssessmentDetails[AssessmentNotes] = resultValue
+                    viewModel.isInputUpdated = true
                 }
             }
         }
@@ -167,11 +161,18 @@ class AssessmentOtherSymptomSummaryFragment : Fragment(), View.OnClickListener {
                         val selectedId = it[DefinedParams.id] as String?
                         val selectedSiteName = it[DefinedParams.NAME] as String?
                         if (selectedId != DefinedParams.DefaultID) {
+                            isValid = true
+                            binding.tvSiteErrorMessage.gone()
+                            viewModel.isInputUpdated = true
                             viewModel.otherAssessmentDetails[AssessmentDefinedParams.ReferredPHUSite] = selectedSiteName ?: ""
                             viewModel.otherAssessmentDetails[AssessmentDefinedParams.ReferredPHUSiteID] = selectedId?.toLong() ?: -1L
                         } else {
+                            isValid = true
+                            binding.tvSiteErrorMessage.gone()
                             if (viewModel.otherAssessmentDetails.containsKey(AssessmentDefinedParams.ReferredPHUSite))
                                 viewModel.otherAssessmentDetails.remove(AssessmentDefinedParams.ReferredPHUSite)
+                            if (viewModel.otherAssessmentDetails.containsKey(AssessmentDefinedParams.ReferredPHUSiteID))
+                                viewModel.otherAssessmentDetails.remove(AssessmentDefinedParams.ReferredPHUSiteID)
                         }
                     }
                 }
@@ -238,11 +239,7 @@ class AssessmentOtherSymptomSummaryFragment : Fragment(), View.OnClickListener {
                         item.value?.let { enteredDays ->
                             bindSummaryView(
                                 item.title,
-                                requireContext().getString(
-                                    R.string.days_summary,
-                                    enteredDays.toDouble().toInt(),
-                                    maxDays
-                                )
+                                getDaysValue(enteredDays, maxDays, requireContext())
                             )
                         }
                     } ?: kotlin.run {
@@ -269,7 +266,7 @@ class AssessmentOtherSymptomSummaryFragment : Fragment(), View.OnClickListener {
     }
 
     private fun renderDangerSigns(summaryData: MutableList<AssessmentSummaryModel>) {
-        val otherSymptoms = viewModel.assessmentStringLiveData.value?.let {
+        val otherConcernSymptoms = viewModel.assessmentStringLiveData.value?.let {
             val jsonObject = JSONObject(it)
             val feverObject = jsonObject.optJSONObject(OTHER_SYMPTOMS)?.optJSONObject(
                 signsAndSymptoms
@@ -277,8 +274,8 @@ class AssessmentOtherSymptomSummaryFragment : Fragment(), View.OnClickListener {
             feverObject?.optString(otherConcerningSymptoms)
         }
         summaryData.find { it.id == otherSymptoms }?.let { item ->
-            val result = if (!otherSymptoms.isNullOrBlank()) {
-                requireContext().getString(R.string.other_value, item.value, otherSymptoms)
+            val result = if (!otherConcernSymptoms.isNullOrBlank()) {
+                requireContext().getString(R.string.other_value, item.value, otherConcernSymptoms)
             } else item.value
             bindSummaryView(
                 getString(R.string.general_danger_signs),
@@ -328,7 +325,18 @@ class AssessmentOtherSymptomSummaryFragment : Fragment(), View.OnClickListener {
                     updateFollowUpDate(it.trim().toString())
                 }
                 //addOtherDetailsToType(Summary.lowercase())
-                viewModel.updateOtherAssessmentDetails()
+                if (viewModel.otherAssessmentDetails.containsKey(AssessmentDefinedParams.ReferredPHUSite) && viewModel.otherAssessmentDetails.containsKey(
+                        AssessmentDefinedParams.ReferredPHUSiteID
+                    )
+                ) {
+                    viewModel.isDismiss = true
+                    viewModel.updateOtherAssessmentDetails()
+                } else {
+                    if (binding.tvSiteErrorMessage.isGone()) {
+                        binding.tvSiteErrorMessage.visible()
+                    }
+                    binding.scrollView.fullScroll(ScrollView.FOCUS_DOWN)
+                }
             }
 
             binding.etNextFollowUpDate.id -> {
@@ -376,6 +384,7 @@ class AssessmentOtherSymptomSummaryFragment : Fragment(), View.OnClickListener {
                     DateUtils.DATE_ddMMyyyy,
                     DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
                 )
+            viewModel.isInputUpdated = true
         }
     }
 

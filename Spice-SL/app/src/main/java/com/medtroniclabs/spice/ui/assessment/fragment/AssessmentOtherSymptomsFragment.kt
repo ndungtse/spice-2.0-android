@@ -85,6 +85,29 @@ class AssessmentOtherSymptomsFragment : BaseFragment(), FormEventListener, View.
                 }
             }
         }
+
+        viewModel.nearestFacilityLiveData.observe(viewLifecycleOwner) { resourceState ->
+            when (resourceState.state) {
+                ResourceState.LOADING -> {
+                    showProgress()
+                }
+
+                ResourceState.SUCCESS -> {
+                    hideProgress()
+                    resourceState.data?.let { siteList ->
+                        val item = siteList.filter { it.isDefault }
+                        if (item.isNotEmpty()){
+                            viewModel.otherAssessmentDetails[AssessmentDefinedParams.ReferredPHUSite] = item[0].name
+                            viewModel.otherAssessmentDetails[AssessmentDefinedParams.ReferredPHUSiteID] = item[0].id
+                        }
+                    }
+                }
+
+                ResourceState.ERROR -> {
+                    hideProgress()
+                }
+            }
+        }
     }
 
     private fun setListeners() {

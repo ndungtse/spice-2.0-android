@@ -23,6 +23,7 @@ import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentRMNCHNeonateSumm
 import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentRMNCHSummaryFragment
 import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentTBFragment
 import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentTBSummaryFragment
+import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -57,13 +58,15 @@ class AssessmentActivity : BaseActivity() {
     }
 
     private fun backNavigation() {
-        showErrorDialogue(
-            getString(R.string.alert),
-            getString(R.string.exit_reason),
-            isNegativeButtonNeed = true
-        ) { isPositive ->
-            if (isPositive) {
-                this@AssessmentActivity.finish()
+        if (viewModel.isInputUpdated){
+            showErrorDialogue(
+                getString(R.string.alert),
+                getString(R.string.exit_reason),
+                isNegativeButtonNeed = true
+            ) { isPositive ->
+                if (isPositive) {
+                    this@AssessmentActivity.finish()
+                }
             }
         }
     }
@@ -154,6 +157,9 @@ class AssessmentActivity : BaseActivity() {
                 ResourceState.SUCCESS -> {
                     hideLoading()
                     resource.data?.let { _ ->
+                        if (viewModel.referralStatus == ReferralStatus.Referred.name){
+                            viewModel.updateOtherAssessmentDetails()
+                        }
                         loadSummaryFragment()
                     }
                 }
@@ -168,7 +174,9 @@ class AssessmentActivity : BaseActivity() {
             when (resource.state) {
                 ResourceState.SUCCESS -> {
                     hideLoading()
-                    finish()
+                    if (viewModel.isDismiss){
+                        finish()
+                    }
                 }
 
                 else -> {}

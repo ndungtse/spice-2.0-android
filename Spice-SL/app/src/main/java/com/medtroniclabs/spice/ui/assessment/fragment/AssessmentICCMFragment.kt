@@ -44,6 +44,8 @@ import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.FB_MIN_YEAR
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.MUAC
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.ORSStatus
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.OrsDispensedStatus
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.ReferredPHUSite
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.ReferredPHUSiteID
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.ZincDispensedStatus
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.ZincStatus
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.chestInDrawing
@@ -101,6 +103,29 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
                     hideProgress()
                     resourceState.data?.let { data ->
                         formGenerator.populateViews(data.formLayout)
+                    }
+                }
+
+                ResourceState.ERROR -> {
+                    hideProgress()
+                }
+            }
+        }
+
+        viewModel.nearestFacilityLiveData.observe(viewLifecycleOwner) { resourceState ->
+            when (resourceState.state) {
+                ResourceState.LOADING -> {
+                    showProgress()
+                }
+
+                ResourceState.SUCCESS -> {
+                    hideProgress()
+                    resourceState.data?.let { siteList ->
+                        val item = siteList.filter { it.isDefault }
+                        if (item.isNotEmpty()){
+                            viewModel.otherAssessmentDetails[ReferredPHUSite] = item[0].name
+                            viewModel.otherAssessmentDetails[ReferredPHUSiteID] = item[0].id
+                        }
                     }
                 }
 

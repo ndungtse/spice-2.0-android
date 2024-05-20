@@ -123,7 +123,7 @@ class HouseholdSearchActivity : BaseActivity(), View.OnClickListener {
     private fun setHouseholdListAdapter(
         householdList: List<HouseHoldEntityWithMemberCount>
     ) {
-        binding.tvHouseHoldCount.text = "${householdList.size} ${getString(R.string.households)}"
+        binding.tvHouseHoldCount.text = setLabelValue(householdList.size)
         if (householdList.isNotEmpty()) {
             binding.llFilter.btnFilter.visible()
             binding.tvNoHouseHoldFound.gone()
@@ -133,6 +133,13 @@ class HouseholdSearchActivity : BaseActivity(), View.OnClickListener {
             binding.tvNoHouseHoldFound.visible()
             binding.rvHouseholdList.gone()
         }
+    }
+
+    private fun setLabelValue(size: Int): CharSequence {
+        return if (size > 1)
+            "$size ${getString(R.string.households)}"
+        else
+            "$size ${getString(R.string.household)}"
     }
 
     override fun onClick(view: View) {

@@ -1833,12 +1833,19 @@ class FormGenerator(
                 ) {
                     isValid = false
                     requestFocusView(data)
-                } else if (viewType == VIEW_TYPE_FORM_EDITTEXT && isValid && data.onlyAlphabets == true) {
-                    isValid = checkOnlyAlphabets(
+                } else if (viewType == VIEW_TYPE_FORM_EDITTEXT && isValid) {
+                    isValid = validateMinMaxLength(
                         resultHashMap[id],
                         isValid,
                         data
                     )
+                    if(isValid && data.onlyAlphabets == true){
+                        isValid = checkOnlyAlphabets(
+                            resultHashMap[id],
+                            isValid,
+                            data
+                        )
+                    }
                 } else {
                     hideValidationField(data)
                 }
@@ -1880,6 +1887,173 @@ class FormGenerator(
         } else {
             showValidationMessage(serverViewModel, message)
         }
+    }
+
+    private fun validateMinMaxLength(
+        actualValue: Any?,
+        valid: Boolean,
+        serverViewModel: FormLayout
+    ): Boolean {
+        var isValid = valid
+        serverViewModel.apply {
+            if (minLength != null && viewType == VIEW_TYPE_FORM_EDITTEXT
+                && actualValue != null && actualValue is String
+                && actualValue.length < minLength!!
+            ) {
+                isValid = false
+                requestFocusView(
+                    serverViewModel,
+                    getString(
+                        R.string.min_char_length_validation,
+                        minLength!!.toString()
+                    )
+                )
+            } else if (maxValue != null || minValue != null) {
+                if (maxValue != null && minValue != null) {
+                    if (actualValue is String) {
+                        actualValue.toDoubleOrNull()?.let { value ->
+                            if (value < minValue!! || value > maxValue!!) {
+                                isValid = false
+                                requestFocusView(
+                                    serverViewModel,
+                                    getString(
+                                        R.string.general_min_max_validation,
+                                        CommonUtils.getDecimalFormatted(
+                                            minValue!!
+                                        ),
+                                        CommonUtils.getDecimalFormatted(
+                                            maxValue!!
+                                        )
+                                    )
+                                )
+                            } else {
+                                hideValidationField(serverViewModel)
+                            }
+                        }
+                    } else if (actualValue is Number) {
+                        actualValue.toDouble().let { value ->
+                            if (value < minValue!! || value > maxValue!!) {
+                                isValid = false
+                                requestFocusView(
+                                    serverViewModel,
+                                    getString(
+                                        R.string.general_min_max_validation,
+                                        CommonUtils.getDecimalFormatted(
+                                            minValue!!
+                                        ),
+                                        CommonUtils.getDecimalFormatted(
+                                            maxValue!!
+                                        )
+                                    )
+                                )
+                            } else {
+                                hideValidationField(serverViewModel)
+                            }
+                        }
+                    } else {
+                        hideValidationField(serverViewModel)
+                    }
+                } else if (minValue != null) {
+                    if (actualValue is String) {
+                        actualValue.toDoubleOrNull()?.let { value ->
+                            if (value < minValue!!) {
+                                isValid = false
+                                requestFocusView(
+                                    serverViewModel,
+                                    getString(
+                                        R.string.general_min_validation,
+                                        CommonUtils.getDecimalFormatted(
+                                            minValue!!
+                                        )
+                                    )
+                                )
+                            } else {
+                                hideValidationField(serverViewModel)
+                            }
+                        }
+                    } else if (actualValue is Number) {
+                        actualValue.toDouble().let { value ->
+                            if (value < minValue!!) {
+                                isValid = false
+                                requestFocusView(
+                                    serverViewModel,
+                                    getString(
+                                        R.string.general_min_validation,
+                                        CommonUtils.getDecimalFormatted(
+                                            minValue!!
+                                        )
+                                    )
+                                )
+                            } else {
+                                hideValidationField(serverViewModel)
+                            }
+                        }
+                    } else {
+                        hideValidationField(serverViewModel)
+                    }
+                } else if (maxValue != null) {
+                    if (actualValue is String) {
+                        actualValue.toDoubleOrNull()?.let { value ->
+                            if (value > maxValue!!.toDouble()) {
+                                isValid = false
+                                requestFocusView(
+                                    serverViewModel,
+                                    getString(
+                                        R.string.general_max_validation,
+                                        CommonUtils.getDecimalFormatted(
+                                            maxValue!!
+                                        )
+                                    )
+                                )
+                            } else {
+                                hideValidationField(serverViewModel)
+                            }
+                        }
+                    } else if (actualValue is Number) {
+                        actualValue.toDouble().let { value ->
+                            if (value > maxValue!!.toDouble()) {
+                                isValid = false
+                                requestFocusView(
+                                    serverViewModel,
+                                    getString(
+                                        R.string.general_max_validation,
+                                        CommonUtils.getDecimalFormatted(
+                                            maxValue!!
+                                        )
+                                    )
+                                )
+                            } else {
+                                hideValidationField(serverViewModel)
+                            }
+                        }
+                    } else {
+                        hideValidationField(serverViewModel)
+                    }
+                }
+            } else if (contentLength != null) {
+                if (actualValue is Number) {
+                    val actualValueString =
+                        CommonUtils.getDecimalFormatted(actualValue)
+                    if (contentLength == actualValueString.length) {
+                        hideValidationField(serverViewModel)
+                    } else {
+                        isValid = false
+                        requestFocusView(serverViewModel)
+                    }
+                } else {
+                    val actualValueString = actualValue.toString()
+                    if (contentLength == actualValueString.length) {
+                        hideValidationField(serverViewModel)
+                    } else {
+                        isValid = false
+                        requestFocusView(serverViewModel)
+                    }
+                }
+            } else {
+                hideValidationField(serverViewModel)
+            }
+        }
+        return isValid
     }
 
     private fun showValidationMessage(serverViewModel: FormLayout, message: String? = null): View? {

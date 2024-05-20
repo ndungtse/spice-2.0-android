@@ -106,6 +106,9 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
                     if (isPositive && SecuredPreference.logout()) {
                         startActivity(Intent(this, LoginActivity::class.java))
                         finish()
+                    } else {
+                        val homeMenuItem = binding.navView.menu.findItem(R.id.home)
+                        selectNavigationMenu(homeMenuItem)
                     }
                 }
             }

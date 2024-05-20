@@ -135,17 +135,19 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
             binding.tvUserPasswordError.text = getString(R.string.password_cannot_be_empty)
         }
 
-        val oldUserName =
-            SecuredPreference.getString(SecuredPreference.EnvironmentKey.USERNAME.name)
-        val oldPhoneNumber = SecuredPreference.getString(SecuredPreference.EnvironmentKey.PHONE_NUMBER.name)
-        val isNumber = userName.matches(Regex(Contains_Number))
-        if (oldUserName != null && userName.isNotBlank() && validateNameOrNumber(isNumber, oldPhoneNumber, oldUserName, userName)) {
-            isValid = false
-            showErrorDialogue(
-                getString(R.string.warning_different_login_title),
-                getString(R.string.warning_different_login_message, oldUserName)
-            ) {
+        if (isValid){
+            val oldUserName =
+                SecuredPreference.getString(SecuredPreference.EnvironmentKey.USERNAME.name)
+            val oldPhoneNumber = SecuredPreference.getString(SecuredPreference.EnvironmentKey.PHONE_NUMBER.name)
+            val isNumber = userName.matches(Regex(Contains_Number))
+            if (oldUserName != null && userName.isNotBlank() && validateNameOrNumber(isNumber, oldPhoneNumber, oldUserName, userName)) {
+                isValid = false
+                showErrorDialogue(
+                    getString(R.string.warning_different_login_title),
+                    getString(R.string.warning_different_login_message, oldUserName)
+                ) {
 
+                }
             }
         }
 

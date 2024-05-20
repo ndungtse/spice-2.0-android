@@ -11,6 +11,9 @@ import com.medtroniclabs.spice.formgeneration.config.DefinedParams.Week
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.YEARS
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.Year
 import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration
+import java.math.RoundingMode
+import java.text.DecimalFormat
+import java.text.DecimalFormatSymbols
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -244,4 +247,45 @@ object CommonUtils {
     fun isAlphabetsWithSpace(input: String): Boolean {
         return input.matches(Regex(RegexConstants.Contains_Alphabets_Space))
     }
+
+    fun getDaysValue(enteredDays: String, maxDays: Int, context: Context): String {
+        return try {
+            val days = enteredDays.toDouble().toInt()
+            if (days > maxDays) {
+                context.getString(R.string.days_summary, days, maxDays)
+            } else {
+                days.toString()
+            }
+        } catch (e: NumberFormatException) {
+            enteredDays
+        }
+    }
+
+    fun convertStringToIntString(value: String): String {
+        return try {
+            return value.toDouble().toInt().toString()
+        } catch (e: NumberFormatException) {
+            value
+        }
+    }
+
+    fun getDecimalFormatted(value: Any?, pattern: String = "###.##"): String {
+        var formattedValue = ""
+        try {
+            value?.let {
+                val actualValue = if (it is String) it.toDoubleOrNull() ?: "" else it
+                val df = DecimalFormat(pattern, DecimalFormatSymbols(Locale.ENGLISH))
+                df.roundingMode = RoundingMode.FLOOR
+                if (actualValue is String) {
+                    if (actualValue.isNotBlank())
+                        formattedValue = df.format(actualValue)
+                } else
+                    formattedValue = df.format(actualValue)
+            }
+        } catch (_: Exception) {
+            //Exception - Catch block
+        }
+        return formattedValue
+    }
+
 }

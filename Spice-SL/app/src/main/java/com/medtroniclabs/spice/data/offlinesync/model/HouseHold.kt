@@ -54,13 +54,13 @@ data class HouseHold(
     val longitude: Double = 99.2,
 
     @ColumnInfo(name = "created_at")
-    val createAt: Long,
+    val createdAt: Long,
 
     @ColumnInfo(name = "updated_at")
     val updatedAt: Long,
 ) {
     @Ignore
-    var provenance: ProvanceDto = ProvanceDto(createdDateTime = createAt.convertToUtcDateTime())
+    var provenance: ProvanceDto = ProvanceDto(createdDateTime = createdAt.convertToUtcDateTime())
 
     @Ignore
     var householdMembers: MutableList<HouseHoldMember> = mutableListOf()

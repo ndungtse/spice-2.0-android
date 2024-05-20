@@ -6,10 +6,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
+import android.widget.ScrollView
 import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.appextensions.gone
+import com.medtroniclabs.spice.appextensions.isGone
+import com.medtroniclabs.spice.appextensions.visible
+import com.medtroniclabs.spice.common.CommonUtils
+import com.medtroniclabs.spice.common.CommonUtils.convertStringToIntString
 import com.medtroniclabs.spice.common.CommonUtils.getOptionMap
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DateUtils.getDateAfterDays
@@ -67,6 +73,7 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
     private val viewModel: AssessmentViewModel by activityViewModels()
     lateinit var binding: FragmentAssessmentIccmSummaryBinding
     private var datePickerDialog: DatePickerDialog? = null
+    private var isValid: Boolean = true
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -103,6 +110,7 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
     private var singleSelectionCallback: ((selectedID: Any?, elementId: Pair<String,String?>, serverViewModel: FormLayout, name: String?) -> Unit)? =
         { selectedID, _, _, _ ->
             viewModel.otherAssessmentDetails[IsClinicTaken] = selectedID as String
+            viewModel.isInputUpdated = true
         }
 
 
@@ -153,9 +161,14 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
                             val selectedId = it[DefinedParams.id] as String?
                             val selectedSiteName = it[DefinedParams.NAME] as String?
                             if (selectedId != DefaultID) {
+                                isValid = true
+                                binding.tvSiteErrorMessage.gone()
+                                viewModel.isInputUpdated = true
                                 viewModel.otherAssessmentDetails[ReferredPHUSite] = selectedSiteName ?: ""
                                 viewModel.otherAssessmentDetails[ReferredPHUSiteID] = selectedId?.toLong() ?: -1L
                             } else {
+                                isValid = false
+                                binding.tvSiteErrorMessage.visible()
                                 if (viewModel.otherAssessmentDetails.containsKey(ReferredPHUSite))
                                     viewModel.otherAssessmentDetails.remove(ReferredPHUSite)
                                 if (viewModel.otherAssessmentDetails.containsKey(ReferredPHUSiteID))
@@ -179,6 +192,7 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
                 val resultValue = input.trim().toString()
                 if (resultValue.isNotBlank()) {
                     viewModel.otherAssessmentDetails[AssessmentNotes] = resultValue
+                    viewModel.isInputUpdated = true
                 }
             }
         }
@@ -325,7 +339,7 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
                             item.title,
                             requireContext().getString(
                                 R.string.firstname_lastname,
-                                result,
+                                convertStringToIntString(result),
                                 getString(R.string.bpm)
                             )
                         )
@@ -359,11 +373,7 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
                         item.value?.let { enteredDays ->
                             bindICCMSummaryView(
                                 item.title,
-                                requireContext().getString(
-                                    R.string.days_summary,
-                                    enteredDays.toDouble().toInt(),
-                                    maxDays
-                                )
+                                CommonUtils.getDaysValue(enteredDays, maxDays, requireContext())
                             )
                         }
                     } ?: kotlin.run {
@@ -421,7 +431,16 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
                     updateFollowUpDate(it.trim().toString())
                 }
                 //addOtherDetailsToIccmType(Summary.lowercase())
-                viewModel.updateOtherAssessmentDetails()
+                if (viewModel.otherAssessmentDetails.containsKey(ReferredPHUSite) && viewModel.otherAssessmentDetails.containsKey(ReferredPHUSiteID)) {
+                    viewModel.isDismiss = true
+                    viewModel.updateOtherAssessmentDetails()
+                } else {
+                    if(binding.tvSiteErrorMessage.isGone())
+                    {
+                        binding.tvSiteErrorMessage.visible()
+                    }
+                    binding.scrollView.fullScroll(ScrollView.FOCUS_DOWN)
+                }
             }
 
             binding.etNextFollowUpDate.id -> {
@@ -464,6 +483,7 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
                     DateUtils.DATE_ddMMyyyy,
                     DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
                 )
+            viewModel.isInputUpdated = true
         }
     }
 }
