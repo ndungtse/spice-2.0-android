@@ -77,7 +77,8 @@ data class HouseHoldMember(
             gender = this.gender,
             householdHeadRelationship = this.householdHeadRelationship ?: "",
             householdId = hhId,
-            patientId = this.patientId
+            patientId = this.patientId,
+            parentId = this.motherPatientId
         ).apply {
             fhirId = this@HouseHoldMember.id.toString()
             sync_status = status
