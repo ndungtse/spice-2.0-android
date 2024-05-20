@@ -50,7 +50,7 @@ class OfflineSyncViewModel @Inject constructor(
                         SecuredPreference.EnvironmentKey.OFFLINE_SYNC_REQUEST_ID.name,
                         requestIds.toTypedArray()
                     )
-                    postRequestIdsLiveData.postValue(requestIds)
+                    postRequestIdsLiveData.postValue(requestIds!!)
                 } else { // no changes in local. Need to download data from server.
                     postRequestIdsLiveData.postValue(listOf())
                 }
