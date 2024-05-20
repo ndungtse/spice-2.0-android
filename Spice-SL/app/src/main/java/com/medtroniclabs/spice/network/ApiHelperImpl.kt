@@ -28,6 +28,7 @@ import com.medtroniclabs.spice.model.PatientDetailRequest
 import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.model.PatientsDataModel
 import com.medtroniclabs.spice.model.ReferralData
+import com.medtroniclabs.spice.model.SearchAndListResponse
 import com.medtroniclabs.spice.model.medicalreview.CreateUnderTwoMonthsResponse
 import okhttp3.MultipartBody
 import retrofit2.Response
@@ -50,7 +51,7 @@ class ApiHelperImpl @Inject constructor(private val apiService: ApiService) : Ap
         return apiService.getFormMetadata(request)
     }
 
-    override suspend fun getPatients(request: PatientsDataModel): APIResponse<List<PatientListRespModel>> {
+    override suspend fun getPatients(request: PatientsDataModel): APIResponse<SearchAndListResponse> {
         return apiService.getPatients(request)
     }
     override suspend fun postOfflineSync(request: Map<String, Any>): Response<SyncResponse> {
@@ -69,7 +70,7 @@ class ApiHelperImpl @Inject constructor(private val apiService: ApiService) : Ap
         return apiService.getHouseholdDetails(request)
     }
 
-    override suspend fun patientSearch(request: PatientsDataModel): APIResponse<List<PatientListRespModel>> {
+    override suspend fun patientSearch(request: PatientsDataModel): APIResponse<SearchAndListResponse> {
         return apiService.patientSearch(request)
     }
 

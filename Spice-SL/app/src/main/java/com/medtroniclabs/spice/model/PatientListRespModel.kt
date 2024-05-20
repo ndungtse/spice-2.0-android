@@ -19,3 +19,8 @@ data class PatientListRespModel(
     val houseHoldId: Long? = null,
     val dateOfOnset:String? = null
 )
+
+data class SearchAndListResponse(
+    val patientList: List<PatientListRespModel> = emptyList(),
+    val referencePatientId: String? = null
+)

@@ -7,6 +7,7 @@ import com.medtroniclabs.spice.common.DefinedParams.PAGE_INDEX
 import com.medtroniclabs.spice.data.APIResponse
 import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.model.PatientsDataModel
+import com.medtroniclabs.spice.model.SearchAndListResponse
 import com.medtroniclabs.spice.network.ApiHelper
 import com.medtroniclabs.spice.ui.mypatients.repo.PatientRepository
 
@@ -22,6 +23,7 @@ class PatientsDataSource(
     private var totalCount = 0
     private var villages: List<Long> = mutableListOf()
     private var districtId: Long? = null
+    private var referencePatientId: String? = null
     override fun getRefreshKey(state: PagingState<Int, PatientListRespModel>): Int? {
         return state.anchorPosition?.let { anchorPosition ->
             state.closestPageToPosition(anchorPosition)?.prevKey?.plus(1)
@@ -37,12 +39,13 @@ class PatientsDataSource(
                 villages = villageIdNameList.map { it.id }
                 districtId = districtId ?: villageIdNameList.firstOrNull()?.districtId
             }
-            val response: APIResponse<List<PatientListRespModel>> = if (searchText.isEmpty()) {
+            val response: APIResponse<SearchAndListResponse> = if (searchText.isEmpty()) {
                 apiHelper.getPatients(
                     PatientsDataModel(
                         skip = loadedCount,
                         limit = LIST_LIMIT,
-                        villageIds = villages
+                        villageIds = villages,
+                        referencePatientId = referencePatientId?.ifBlank { null }
                     )
                 )
             } else {
@@ -51,17 +54,17 @@ class PatientsDataSource(
                         skip = loadedCount,
                         limit = LIST_LIMIT,
                         searchText = searchText.ifEmpty { null },
-                        districtId = districtId
+                        districtId = districtId,
+                        referencePatientId = referencePatientId?.ifBlank { null }
                     )
                 )
             }
             /* Request construction - Ends */
 
-            val patientList: List<PatientListRespModel> = if (searchText.isEmpty()) {
-                response.entityList ?: emptyList()
-            } else {
-                response.entity ?: emptyList()
-            }
+
+            val patientList: List<PatientListRespModel> = response.entity?.patientList ?: emptyList()
+            referencePatientId = response.entity?.referencePatientId
+
             response.totalCount?.let { count ->
                 totalCount = count
             } ?: kotlin.run {

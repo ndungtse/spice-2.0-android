@@ -28,6 +28,7 @@ import com.medtroniclabs.spice.model.PatientDetailRequest
 import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.model.PatientsDataModel
 import com.medtroniclabs.spice.model.ReferralData
+import com.medtroniclabs.spice.model.SearchAndListResponse
 import com.medtroniclabs.spice.model.medicalreview.CreateUnderTwoMonthsResponse
 import okhttp3.MultipartBody
 import retrofit2.Response
@@ -43,8 +44,8 @@ interface ApiHelper {
 
     suspend fun fetchSyncedData(request: RequestAllEntities): Response<APIResponse<ResponseInitialDownload>>
 
-    suspend fun getPatients(request: PatientsDataModel): APIResponse<List<PatientListRespModel>>
-    suspend fun patientSearch(request: PatientsDataModel): APIResponse<List<PatientListRespModel>>
+    suspend fun getPatients(request: PatientsDataModel): APIResponse<SearchAndListResponse>
+    suspend fun patientSearch(request: PatientsDataModel): APIResponse<SearchAndListResponse>
     suspend fun getPatient(request: PatientDetailRequest): Response<APIResponse<PatientListRespModel>>
     suspend fun getAboveFiveYearsMetaData(): Response<APIResponse<AboveFiveYearsMetaResponse>>
     suspend fun getReferralsDetails(request: PatientDetailRequest): Response<APIResponse<ReferralData>>

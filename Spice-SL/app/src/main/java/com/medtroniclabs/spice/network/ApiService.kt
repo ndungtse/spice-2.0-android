@@ -28,6 +28,7 @@ import com.medtroniclabs.spice.model.PatientDetailRequest
 import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.model.PatientsDataModel
 import com.medtroniclabs.spice.model.ReferralData
+import com.medtroniclabs.spice.model.SearchAndListResponse
 import com.medtroniclabs.spice.model.medicalreview.CreateUnderTwoMonthsResponse
 import okhttp3.RequestBody
 import retrofit2.Response
@@ -61,10 +62,10 @@ interface ApiService {
     suspend fun fetchSyncedData(@Body request: RequestAllEntities): Response<APIResponse<ResponseInitialDownload>>
 
     @POST("spice-service/patient/list")
-    suspend fun getPatients(@Body request: PatientsDataModel): APIResponse<List<PatientListRespModel>>
+    suspend fun getPatients(@Body request: PatientsDataModel): APIResponse<SearchAndListResponse>
 
     @POST("spice-service/patient/search")
-    suspend fun patientSearch(@Body request: PatientsDataModel): APIResponse<List<PatientListRespModel>>
+    suspend fun patientSearch(@Body request: PatientsDataModel): APIResponse<SearchAndListResponse>
 
     @POST("spice-service/patient/patientDetails")
     suspend fun getPatient(@Body request: PatientDetailRequest): Response<APIResponse<PatientListRespModel>>
