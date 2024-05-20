@@ -45,9 +45,9 @@ object CommonUtils {
             is String -> {
                 val answerNumber = answer.toLongOrNull()
                 return if (answerNumber is Long) {
-                     answerNumber
+                    answerNumber
                 } else {
-                     null
+                    null
                 }
             }
 
@@ -72,7 +72,8 @@ object CommonUtils {
     }
 
     fun displayAge(resultHashMap: HashMap<String, Any>, context: Context): String {
-        val years = resultHashMap[Year] as? Int ?: 0
+
+        var years = resultHashMap[Year] as? Int ?: 0
         var months = resultHashMap[Month] as? Int ?: 0
         var weeks = resultHashMap[Week] as? Int ?: 0
 
@@ -81,9 +82,18 @@ object CommonUtils {
         }
         val strBuilder = StringBuilder()
 
-        if (years >= 5)
+        if (weeks > 3) {
+            months += weeks / 4
+            weeks %= 4
+        }
+        if (months > 11) {
+            years += (months / 12)
+            months %= 12
+        }
+
+        if (years >= 5) {
             strBuilder.append("$years $YEARS ")
-        else {
+        } else {
             if (years > 0) {
                 months += (years * 12) + (weeks / 4)
                 weeks = 0
@@ -103,7 +113,11 @@ object CommonUtils {
         val parts = input.split('/')
 
         return when {
-            parts[0] == DefinedParams.ZERO && parts[1] == DefinedParams.ZERO -> context.getString(R.string.no_of_weeks, parts[2])
+            parts[0] == DefinedParams.ZERO && parts[1] == DefinedParams.ZERO -> context.getString(
+                R.string.no_of_weeks,
+                parts[2]
+            )
+
             parts[0] == DefinedParams.ZERO -> context.getString(R.string.no_of_months, parts[1])
             else -> context.getString(R.string.no_of_years, parts[0])
         }
@@ -113,7 +127,7 @@ object CommonUtils {
         return dispensedList.joinToString(separator = ", ")
     }
 
-    fun getYearMonthAndWeeks (dateString: String): Triple<String, String, String> {
+    fun getYearMonthAndWeeks(dateString: String): Triple<String, String, String> {
         val parts = dateString.split("/")
         return Triple(parts[0], parts[1], parts[2])
     }
@@ -122,7 +136,11 @@ object CommonUtils {
         val parts = input.split('/')
 
         return when {
-            parts[0] == DefinedParams.ZERO && parts[1] == DefinedParams.ZERO -> context.getString(R.string.weeks_w, parts[2])
+            parts[0] == DefinedParams.ZERO && parts[1] == DefinedParams.ZERO -> context.getString(
+                R.string.weeks_w,
+                parts[2]
+            )
+
             parts[0] == DefinedParams.ZERO -> context.getString(R.string.months_m, parts[1])
             else -> context.getString(R.string.years_y, parts[0])
         }
@@ -145,7 +163,7 @@ object CommonUtils {
 
     fun getAgeFromDob(dateOfBirth: String?, month: String): String {
         if (dateOfBirth != null) {
-            val age  = calculateAge(dateOfBirth)
+            val age = calculateAge(dateOfBirth)
             return if (age != null && age > 5) {
                 "$age"
             } else {
@@ -192,14 +210,17 @@ object CommonUtils {
 
     fun formatListToStringWithOther(list: List<String?>, otherText: String? = null): String {
         return when {
-            list.filterNotNull().isNotEmpty() && otherText != null -> "${list.filterNotNull().joinToString(separator = ", ")} - $otherText"
+            list.filterNotNull().isNotEmpty() && otherText != null -> "${
+                list.filterNotNull().joinToString(separator = ", ")
+            } - $otherText"
+
             list.filterNotNull().isNotEmpty() -> list.filterNotNull().joinToString(separator = ", ")
             otherText != null -> otherText
             else -> "-"
         }
     }
 
-    fun getBMI(heightInCM: Double, weight: Double,context: Context): String {
+    fun getBMI(heightInCM: Double, weight: Double, context: Context): String {
         val heightInMeter = heightInCM / 100
         val bmi = weight / (heightInMeter * heightInMeter)
         if (bmi.isInfinite() || bmi.isNaN()) {
@@ -208,7 +229,7 @@ object CommonUtils {
         return String.format("%.2f", bmi)
     }
 
-    fun convertStringDobToMonths(dateOfBirth:String): Int? {
+    fun convertStringDobToMonths(dateOfBirth: String): Int? {
         val startDate = DateUtils.formatStringToDate(
             dateOfBirth, SimpleDateFormat(
                 DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,

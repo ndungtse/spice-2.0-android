@@ -233,20 +233,10 @@ class MemberRegistrationFragment : Fragment(), FormEventListener, View.OnClickLi
                 }
                 formGenerator.setValueForView(dateOfBirth, view)
             }
-
-            val yearMonthWeeks = getYearMonthAndWeek(dateOfBirth, DATE_ddMMyyyy)
-            formGenerator.getViewByTag(MemberRegistration.dateOfBirth + Year)?.let { view ->
-                formGenerator.disableView(view, requireContext())
-                formGenerator.setValueForView(yearMonthWeeks.first, view)
-            }
-            formGenerator.getViewByTag(MemberRegistration.dateOfBirth + Month)?.let { view ->
-                formGenerator.disableView(view, requireContext())
-                formGenerator.setValueForView(yearMonthWeeks.second, view)
-            }
-            formGenerator.getViewByTag(MemberRegistration.dateOfBirth + Week)?.let { view ->
-                formGenerator.disableView(view, requireContext())
-                formGenerator.setValueForView(yearMonthWeeks.third, view)
-            }
+            formGenerator.methodToAutoPopulateDateOfBirth(
+                dateOfBirth, DATE_ddMMyyyy
+                ,false
+            )
         }
 
     }

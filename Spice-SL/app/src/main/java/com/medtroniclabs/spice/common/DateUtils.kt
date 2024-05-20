@@ -26,7 +26,7 @@ object DateUtils {
     fun getYearMonthAndWeek(
         inputDate: String,
         inputFormat: String = DATE_FORMAT_ddMMyyyy
-    ): Triple<Int?, Int?, Int?> {
+    ): Pair<Int?, Triple<Int?, Int?, Int?>> {
         try {
             val dateFormat = SimpleDateFormat(inputFormat, Locale.getDefault())
             val birthDate = dateFormat.parse(inputDate)
@@ -41,10 +41,11 @@ object DateUtils {
             val years = age.get(Calendar.YEAR) - 1970
             val months = age.get(Calendar.MONTH)
             val weeks = (age.get(Calendar.DAY_OF_MONTH) - 1) / 7
+            val days = age.get(Calendar.DAY_OF_MONTH)
 
-            return Triple(years, months, weeks)
+            return Pair(days, Triple(years, months, weeks))
         } catch (exception: Exception) {
-            return Triple(null, null, null)
+            return Pair(null, Triple(null, null, null))
         }
     }
 
@@ -79,7 +80,11 @@ object DateUtils {
         return SimpleDateFormat(DATE_ddMMyyyy, Locale.ENGLISH)
     }
 
-    fun getDateString(time: Long, inputFormat: String?=null, outputFormat: String?=null): String {
+    fun getDateString(
+        time: Long,
+        inputFormat: String? = null,
+        outputFormat: String? = null
+    ): String {
         val date = Date(time)
         val format = SimpleDateFormat(
             inputFormat,
@@ -118,7 +123,7 @@ object DateUtils {
             )
         )
         startDate?.let {
-           return Pair(calculateAgeInMonths(it),it)
+            return Pair(calculateAgeInMonths(it), it)
         }
         return null
     }
@@ -138,15 +143,15 @@ object DateUtils {
     }
 
     fun convertDateToLong(date: String?, format: String? = DATE_FORMAT_yyyyMMddHHmmssZZZZZ): Long? {
-        try{
-            val testedDate = date?.let{dateStr ->
+        try {
+            val testedDate = date?.let { dateStr ->
                 SimpleDateFormat(
                     format,
                     Locale.ENGLISH
                 ).parse(dateStr)?.time
             }
             return testedDate ?: 0L
-        }catch (e: Exception){
+        } catch (e: Exception) {
             return null
         }
     }

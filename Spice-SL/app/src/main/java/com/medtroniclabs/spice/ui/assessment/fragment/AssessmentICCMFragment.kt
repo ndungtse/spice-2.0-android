@@ -407,8 +407,8 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
                 enteredDays?.let {
                     viewModel.memberDetailsLiveData.value?.data?.let { data ->
                         getYearMonthAndWeek(data.dateOfBirth, DATE_FORMAT_yyyyMMddHHmmssZZZZZ).let { result ->
-                            val year = result.first ?: 0
-                            val month = result.second ?: 0
+                            val year = result.second.first ?: 0
+                            val month = result.second.second ?: 0
                             if ((year == 0 && month > FB_MIN_MONTH && month < FB_MAX_MONTH) && enteredDays >= FB_MAX_BREATHING) {
                                 displayDaysInformation(id, View.VISIBLE)
                                 getAmoxicillinStatus()

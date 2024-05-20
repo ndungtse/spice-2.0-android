@@ -45,6 +45,9 @@ import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.CommonUtils.displayAge
 import com.medtroniclabs.spice.common.DateUtils
+import com.medtroniclabs.spice.common.DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
+import com.medtroniclabs.spice.common.DateUtils.DATE_ddMMyyyy
+import com.medtroniclabs.spice.common.DateUtils.convertDateFormat
 import com.medtroniclabs.spice.common.DefinedParams.female
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.LocalSpinnerResponse
@@ -196,7 +199,11 @@ class FormGenerator(
             }
 
             binding.ivInfo.setOnClickListener {
-                listener.onInstructionClicked(id, title, dosageListModel = serverViewModel.dosageListItems)
+                listener.onInstructionClicked(
+                    id,
+                    title,
+                    dosageListModel = serverViewModel.dosageListItems
+                )
             }
 
             informationVisibility?.let { value ->
@@ -217,11 +224,11 @@ class FormGenerator(
             binding.etUserInput.filters = inputFilter.toTypedArray()
             binding.etUserInput.addTextChangedListener { input ->
                 input?.let {
-                    val enteredValue= input.trim().toString().toIntOrNull()
-                    noOfDays?.let {days ->
+                    val enteredValue = input.trim().toString().toIntOrNull()
+                    noOfDays?.let { days ->
                         listener.onInformationHandling(id, days, enteredValue, resultHashMap)
                     }
-                    if (enteredValue!=null) {
+                    if (enteredValue != null) {
                         resultHashMap[id] = enteredValue
                     } else {
                         if (resultHashMap.containsKey(id))
@@ -238,7 +245,7 @@ class FormGenerator(
     }
 
     private fun getVisibility(visibility: String): Int {
-        return when(visibility){
+        return when (visibility) {
             VISIBLE -> View.VISIBLE
             INVISIBLE -> View.INVISIBLE
             else -> View.GONE
@@ -260,7 +267,10 @@ class FormGenerator(
             checkGenerateAction(this, binding)
             binding.tvTitle.text = updateTitle(title, translate, titleCulture, unitMeasurement)
 
-            if (serverViewModel.id.contains(phoneNumber) || serverViewModel.id.contains(headPhoneNumber)) {
+            if (serverViewModel.id.contains(phoneNumber) || serverViewModel.id.contains(
+                    headPhoneNumber
+                )
+            ) {
                 SecuredPreference.getPhoneNumberCode()?.let { phoneNumberCode ->
                     binding.llCountryCode.visibility = View.VISIBLE
                     binding.tvCountryCode.text = phoneNumberCode
@@ -531,7 +541,7 @@ class FormGenerator(
                     it,
                     translate,
                     resultHashMap,
-                    Pair(id,null),
+                    Pair(id, null),
                     serverViewModel,
                     singleSelectionCallback
                 )
@@ -545,7 +555,11 @@ class FormGenerator(
             }
 
             binding.ivInfo.setOnClickListener {
-                listener.onInstructionClicked(id, title, dosageListModel = serverViewModel.dosageListItems)
+                listener.onInstructionClicked(
+                    id,
+                    title,
+                    dosageListModel = serverViewModel.dosageListItems
+                )
             }
 
             getFamilyView(family)?.addView(binding.root) ?: kotlin.run {
@@ -556,7 +570,7 @@ class FormGenerator(
         }
     }
 
-    private var singleSelectionCallback: ((selectedID: Any?, elementId: Pair<String,String?>, serverViewModel: FormLayout, name: String?) -> Unit)? =
+    private var singleSelectionCallback: ((selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit)? =
         { selectedId, elementID, serverViewModel, name ->
             saveSelectedOptionValue(elementID, selectedId, serverViewModel, name)
             if (selectedId == female) {
@@ -568,8 +582,9 @@ class FormGenerator(
     fun isResultAvaliable(key: String, value: String): Boolean {
         return resultHashMap.contains(gender) && resultHashMap[gender] == female
     }
+
     private fun saveSelectedOptionValue(
-        id: Pair<String,String?>,
+        id: Pair<String, String?>,
         idValue: Any?,
         serverViewModel: FormLayout,
         name: String?
@@ -611,7 +626,11 @@ class FormGenerator(
             }
 
             binding.ivInfo.setOnClickListener {
-                listener.onInstructionClicked(id, title, dosageListModel = serverViewModel.dosageListItems)
+                listener.onInstructionClicked(
+                    id,
+                    title,
+                    dosageListModel = serverViewModel.dosageListItems
+                )
             }
             val adapter = CustomSpinnerAdapter(context, translate)
             optionsList?.let { list ->
@@ -827,9 +846,18 @@ class FormGenerator(
             binding.tvTitle.text = translateTitle(titleCulture, title, false)
             binding.clInstructionRoot.safeClickListener {
                 instructionsList?.let {
-                    listener.onInstructionClicked(id, title, it, dosageListModel = serverViewModel.dosageListItems)
+                    listener.onInstructionClicked(
+                        id,
+                        title,
+                        it,
+                        dosageListModel = serverViewModel.dosageListItems
+                    )
                 } ?: kotlin.run {
-                    listener.onInstructionClicked(id, title, dosageListModel = serverViewModel.dosageListItems)
+                    listener.onInstructionClicked(
+                        id,
+                        title,
+                        dosageListModel = serverViewModel.dosageListItems
+                    )
                 }
             }
             getFamilyView(family)?.addView(binding.root) ?: kotlin.run {
@@ -913,7 +941,7 @@ class FormGenerator(
                         resultHashMap[id] = DateUtils.getDateString(
                             parsedDate.time,
                             inputFormat = DateUtils.DATE_FORMAT_yyyyMMdd,
-                            outputFormat = DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
+                            outputFormat = DATE_FORMAT_yyyyMMddHHmmssZZZZZ
                         )
                     }
                 }
@@ -935,7 +963,7 @@ class FormGenerator(
     private fun createAgeView(serverViewModel: FormLayout) {
         val binding = AgeDobLayoutBinding.inflate(LayoutInflater.from(context))
         serverViewModel.apply {
-            binding.root.tag =id+rootSuffix
+            binding.root.tag = id + rootSuffix
             binding.etDateOfBirth.tag = id
             binding.etYears.inputType = InputType.TYPE_CLASS_NUMBER
             binding.etMonths.inputType = InputType.TYPE_CLASS_NUMBER
@@ -961,9 +989,9 @@ class FormGenerator(
                     before: Int,
                     count: Int
                 ) {
-                    val year =  binding.etYears.text.toString().toIntOrNull() ?: 0
-                    val month =  binding.etMonths.text.toString().toIntOrNull() ?: 0
-                    val weeks =  binding.etWeeks.text.toString().toIntOrNull() ?: 0
+                    val year = binding.etYears.text.toString().toIntOrNull() ?: 0
+                    val month = binding.etMonths.text.toString().toIntOrNull() ?: 0
+                    val weeks = binding.etWeeks.text.toString().toIntOrNull() ?: 0
                     if (!isDOBUpdated) {
                         if (!(year == 0 && month == 0 && weeks == 0)) {
                             updateDateOfBirthFromFields(
@@ -979,9 +1007,14 @@ class FormGenerator(
                             resultHashMap[Week] = weeks
                             updateAgeView(id)
                             removeIfContains(id)
-                            removeWatcher(binding.etYears,binding.etMonths,binding.etWeeks)
-                            removeDOB(binding.etDateOfBirth,binding.etYears,binding.etMonths,binding.etWeeks)
-                            addWatcher(binding.etYears,binding.etMonths,binding.etWeeks)
+                            removeWatcher(binding.etYears, binding.etMonths, binding.etWeeks)
+                            removeDOB(
+                                binding.etDateOfBirth,
+                                binding.etYears,
+                                binding.etMonths,
+                                binding.etWeeks
+                            )
+                            addWatcher(binding.etYears, binding.etMonths, binding.etWeeks)
                         }
                     }
                     listener.onAgeCheckForPregnancy()
@@ -991,54 +1024,30 @@ class FormGenerator(
                 }
             }
 
-            addWatcher(binding.etYears,binding.etMonths,binding.etWeeks)
+            addWatcher(binding.etYears, binding.etMonths, binding.etWeeks)
             binding.etDateOfBirth.safeClickListener {
-                val yearMonthWeek = if (binding.etDateOfBirth.text.isNotEmpty()){
+                val yearMonthWeek = if (binding.etDateOfBirth.text.isNotEmpty()) {
                     DateUtils.getYearMonthAndDate(binding.etDateOfBirth.text.toString())
                 } else null
-                removeWatcher(binding.etYears,binding.etMonths,binding.etWeeks)
                 serverViewModel.run {
                     showDatePicker(
                         context = context,
                         disableFutureDate = disableFutureDate ?: false,
                         minDate = minDate,
                         maxDate = maxDate,
-                        date = yearMonthWeek,
-                        cancelCallBack = {
-                            isDOBUpdated = false
-                            addWatcher(binding.etYears,binding.etMonths,binding.etWeeks)
-                        }
+                        date = yearMonthWeek
                     ) { _, year, month, dayOfMonth ->
                         val stringDate = "$dayOfMonth-$month-$year"
                         val parsedDate = DateUtils.getDatePatternDDMMYYYY().parse(stringDate)
                         parsedDate?.let {
                             binding.etDateOfBirth.text = DateUtils.getDateDDMMYYYY().format(it)
-                            isDOBUpdated = true
-                            val yearMonthWeeks = DateUtils.getYearMonthAndWeek(stringDate)
-                            addOrUpdateDOB(
-                                DateUtils.getDateString(
-                                    parsedDate.time,
-                                    inputFormat = DateUtils.DATE_FORMAT_yyyyMMdd,
-                                    outputFormat = DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
-                                ),
-                                id
-                            )
-                            yearMonthWeeks.first?.let { year ->
-                                binding.etYears.setText(year.toString())
-                                resultHashMap[Year] = year
-                            }
-                            yearMonthWeeks.second?.let { month ->
-                                binding.etMonths.setText(month.toString())
-                                resultHashMap[Month] = month
-                            }
-                            yearMonthWeeks.third?.let { week ->
-                                binding.etWeeks.setText(week.toString())
-                                resultHashMap[Week] = week
-                            }
+
                         }
-                        listener.onAgeCheckForPregnancy()
-                        updateAgeView(id)
-                        addWatcher(binding.etYears,binding.etMonths,binding.etWeeks)
+                        methodToAutoPopulateDateOfBirth(
+                            stringDate,
+                            DateUtils.DATE_FORMAT_ddMMyyyy,
+                            true
+                        )
                     }
                 }
             }
@@ -1057,7 +1066,44 @@ class FormGenerator(
         }
     }
 
-    private fun removeWatcher(
+
+    fun methodToAutoPopulateDateOfBirth(date: String, dateFormat: String, disable: Boolean) {
+        val yearView = getViewByTag(MemberRegistration.dateOfBirth + Year)
+        val monthView = getViewByTag(MemberRegistration.dateOfBirth + Month)
+        val weekView = getViewByTag(MemberRegistration.dateOfBirth + Week)
+        if (yearView is AppCompatEditText && monthView is AppCompatEditText && weekView is AppCompatEditText)
+            removeWatcher(yearView, monthView, weekView)
+        isDOBUpdated = true
+        val yearMonthWeeks = DateUtils.getYearMonthAndWeek(date, dateFormat)
+        convertDateFormat(date, dateFormat, DATE_FORMAT_yyyyMMddHHmmssZZZZZ).let {
+            addOrUpdateDOB(
+                it,
+                MemberRegistration.dateOfBirth
+            )
+        }
+        if (yearView is AppCompatEditText && monthView is AppCompatEditText && weekView is AppCompatEditText) {
+            yearMonthWeeks.second.first?.let { year ->
+                yearView.setText(year.toString())
+                yearView.isEnabled = disable
+                resultHashMap[Year] = year
+            }
+            yearMonthWeeks.second.second?.let { month ->
+                monthView.setText(month.toString())
+                monthView.isEnabled = disable
+                resultHashMap[Month] = month
+            }
+            yearMonthWeeks.second.third?.let { week ->
+                weekView.setText(week.toString())
+                weekView.isEnabled = disable
+                resultHashMap[Week] = week
+            }
+            listener.onAgeCheckForPregnancy()
+            updateAgeView(MemberRegistration.dateOfBirth)
+            addWatcher(yearView, monthView, weekView)
+        }
+    }
+
+    fun removeWatcher(
         etYears: AppCompatEditText,
         etMonths: AppCompatEditText,
         etWeeks: AppCompatEditText
@@ -1066,17 +1112,18 @@ class FormGenerator(
         etMonths.removeTextChangedListener(textWatcher)
         etWeeks.removeTextChangedListener(textWatcher)
     }
+
     private fun addWatcher(
         etYears: AppCompatEditText,
         etMonths: AppCompatEditText,
         etWeeks: AppCompatEditText
-    )
-    {
+    ) {
         etYears.addTextChangedListener(textWatcher)
         etMonths.addTextChangedListener(textWatcher)
         etWeeks.addTextChangedListener(textWatcher)
         isDOBUpdated = false
     }
+
     private fun updateDateOfBirthFromFields(
         etYears: AppCompatEditText,
         etMonths: AppCompatEditText,
@@ -1091,21 +1138,21 @@ class FormGenerator(
         resultHashMap[Month] = month
         resultHashMap[Week] = weeks
         val calculatedBirthDate = DateUtils.calculateBirthDate(year, month, weeks)
-        removeWatcher(etYears,etMonths,etWeeks)
-        etDateOfBirth.text = DateUtils.convertDateFormat(
+        removeWatcher(etYears, etMonths, etWeeks)
+        etDateOfBirth.text = convertDateFormat(
             calculatedBirthDate,
-            DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-            DateUtils.DATE_ddMMyyyy
+            DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+            DATE_ddMMyyyy
         )
-        addWatcher(etYears,etMonths,etWeeks)
+        addWatcher(etYears, etMonths, etWeeks)
         addOrUpdateDOB(calculatedBirthDate, id)
         updateAgeView(id)
     }
 
     private fun updateAgeView(id: String) {
-        val ageView = getViewByTag(id+ value)
+        val ageView = getViewByTag(id + value)
         val age = displayAge(resultHashMap, context)
-        ageView?.let {view ->
+        ageView?.let { view ->
             (view as? AppCompatTextView)?.text = age
         }
     }
@@ -1151,7 +1198,7 @@ class FormGenerator(
         disableFutureDate: Boolean = false,
         minDate: Long? = null,
         maxDate: Long? = null,
-        date : Triple<Int?,Int?,Int?>?=null,
+        date: Triple<Int?, Int?, Int?>? = null,
         cancelCallBack: (() -> Unit)? = null,
         callBack: (dialog: DatePicker, year: Int, month: Int, dayOfMonth: Int) -> Unit,
     ): DatePickerDialog {
@@ -1547,7 +1594,10 @@ class FormGenerator(
             when (model?.viewType) {
                 VIEW_TYPE_FORM_DATEPICKER,
                 VIEW_TYPE_FORM_SPINNER,
-                VIEW_TYPE_FORM_EDITTEXT, VIEW_TYPE_NO_OF_DAYS -> resetEditTextDatePicker(this, model)
+                VIEW_TYPE_FORM_EDITTEXT, VIEW_TYPE_NO_OF_DAYS -> resetEditTextDatePicker(
+                    this,
+                    model
+                )
 
                 VIEW_TYPE_TIME -> resetTimeView(this, model)
                 VIEW_TYPE_FORM_AGE -> resetAgeView(this, model)
@@ -1556,7 +1606,7 @@ class FormGenerator(
         }
     }
 
-    fun disableSingleSelection(id:String) {
+    fun disableSingleSelection(id: String) {
         getViewByTag(id)?.let {
             if (it is ViewGroup) {
                 it.forEach { view ->
@@ -1622,7 +1672,7 @@ class FormGenerator(
         }
     }
 
-   fun getViewByTag(tag: Any): View? {
+    fun getViewByTag(tag: Any): View? {
         return parentLayout.findViewWithTag(tag)
     }
 
@@ -1810,6 +1860,7 @@ class FormGenerator(
     private fun phoneNumberConatinMaxLength(maxLength: Int?, actualValue: String): Boolean {
         return (maxLength != null && actualValue.length == maxLength)
     }
+
     private fun checkPhoneNumberValidOrNot(
         actualValue: String,
         startsWithArray: ArrayList<String>?
@@ -1897,6 +1948,7 @@ class FormGenerator(
             )
         }
     }
+
     private fun setCheckBoxDialogText(
         resultHashMap: HashMap<String, Any>,
         id: String
@@ -1922,6 +1974,7 @@ class FormGenerator(
         }
         return text
     }
+
     private fun setDialogText(mapList: java.util.ArrayList<*>): String {
         return if (isContainsOther(mapList)) {
             "${DefinedParams.Other} ${
@@ -1933,6 +1986,7 @@ class FormGenerator(
             "${mapList.size} ${getString(R.string.symptoms_selected)}"
         }
     }
+
     private fun isNoSymptomContain(mapList: java.util.ArrayList<*>): Boolean {
         var status = false
         mapList.forEach { map ->
@@ -1946,6 +2000,7 @@ class FormGenerator(
         }
         return status
     }
+
     private fun isContainsOther(mapList: ArrayList<*>): Boolean {
         var status = false
         mapList.forEach { map ->
@@ -1964,10 +2019,9 @@ class FormGenerator(
         if (view is AppCompatEditText) {
             if (value is String) {
                 view.setText(value)
-            } else if (value is Int){
+            } else if (value is Int) {
                 view.setText(value.toString())
-            }
-            else {
+            } else {
                 view.setText("")
             }
         }
@@ -2037,7 +2091,11 @@ class FormGenerator(
             getViewByTag(MemberRegistration.dateOfBirth) as? AppCompatTextView ?: return
         val dateOfBirth = dateOfBirthView.text?.toString()?.trim() ?: return
 
-        if (DateUtils.calculateAge(dateOfBirth, DateUtils.DATE_ddMMyyyy) !in PREGNANCY_MIN_AGE..PREGNANCY_MAX_AGE) {
+        if (DateUtils.calculateAge(
+                dateOfBirth,
+                DATE_ddMMyyyy
+            ) !in PREGNANCY_MIN_AGE..PREGNANCY_MAX_AGE
+        ) {
             handleAgeBelowThreshold()
         } else {
             handleAgeAboveThreshold()
@@ -2085,8 +2143,7 @@ class FormGenerator(
             ) {
                 isValid = false
                 requestFocusView(serverViewModel, getString(R.string.only_alphabets_validation))
-            }
-            else {
+            } else {
                 hideValidationField(serverViewModel)
             }
         }

@@ -19,6 +19,7 @@ object DefinedParams {
     const val Year = "year"
     const val Month = "month"
     const val Week = "week"
+    const val Days = "days"
     const val DOBString = "T00:00:00+00:00"
 
     const val SSP16 = 16

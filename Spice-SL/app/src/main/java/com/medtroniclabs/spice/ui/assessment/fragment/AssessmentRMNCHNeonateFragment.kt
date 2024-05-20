@@ -141,7 +141,7 @@ class AssessmentRMNCHNeonateFragment : BaseFragment(), View.OnClickListener,
                     hideProgress()
                     resources.data?.let { data ->
                         childFormGenerator.populateViews(data.formLayout)
-                        //disableDateOfBirth()
+                        disableDateOfBirth()
                     }
                 }
 
@@ -189,19 +189,14 @@ class AssessmentRMNCHNeonateFragment : BaseFragment(), View.OnClickListener,
                         }
                         childFormGenerator.setValueForView(dateOfBirth, view)
                     }
-
-                    childFormGenerator.getViewByTag(MemberRegistration.dateOfBirth + com.medtroniclabs.spice.formgeneration.config.DefinedParams.Year)
-                        ?.let { view ->
-                            childFormGenerator.disableView(view, requireContext())
-                        }
-                    childFormGenerator.getViewByTag(MemberRegistration.dateOfBirth + com.medtroniclabs.spice.formgeneration.config.DefinedParams.Month)
-                        ?.let { view ->
-                            childFormGenerator.disableView(view, requireContext())
-                        }
-                    childFormGenerator.getViewByTag(MemberRegistration.dateOfBirth + com.medtroniclabs.spice.formgeneration.config.DefinedParams.Week)
-                        ?.let { view ->
-                            childFormGenerator.disableView(view, requireContext())
-                        }
+                    childFormGenerator.methodToAutoPopulateDateOfBirth(
+                        DateUtils.convertDateFormat(
+                            dateOfDelivery,
+                            DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+                            DateUtils.DATE_ddMMyyyy
+                        ), DateUtils.DATE_ddMMyyyy
+                        ,false
+                    )
                 }
             }
         }
