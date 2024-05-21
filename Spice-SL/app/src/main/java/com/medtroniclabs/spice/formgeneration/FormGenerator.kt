@@ -1074,7 +1074,7 @@ class FormGenerator(
         if (yearView is AppCompatEditText && monthView is AppCompatEditText && weekView is AppCompatEditText)
             removeWatcher(yearView, monthView, weekView)
         isDOBUpdated = true
-        val yearMonthWeeks = DateUtils.getYearMonthAndWeek(date, dateFormat)
+        val yearMonthWeeks = DateUtils.getYearMonthAndWeek(date)
         convertDateFormat(date, dateFormat, DATE_FORMAT_yyyyMMddHHmmssZZZZZ).let {
             addOrUpdateDOB(
                 it,

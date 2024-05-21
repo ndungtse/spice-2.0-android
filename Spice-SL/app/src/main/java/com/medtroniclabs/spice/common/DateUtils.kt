@@ -1,6 +1,7 @@
 package com.medtroniclabs.spice.common
 
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams
+import com.medtroniclabs.spice.model.PatientsDataModel
 import org.joda.time.Period
 import org.joda.time.PeriodType
 import java.text.SimpleDateFormat
@@ -372,6 +373,7 @@ object DateUtils {
         calendar.add(Calendar.DAY_OF_YEAR, 1) // Adding one day
         val tomorrowDate = calendar.time
         return dateFormat.format(tomorrowDate)
+        
     }
 
     fun calculateGestationalAge(lmpDate: LocalDate): Long {

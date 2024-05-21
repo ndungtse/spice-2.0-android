@@ -5,19 +5,26 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
 import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.appextensions.gone
+import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DateUtils.calculateAgeInMonths
 import com.medtroniclabs.spice.common.DateUtils.convertStringToDate
 import com.medtroniclabs.spice.common.DateUtils.getDateStringFromDate
+import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.common.ViewUtils
 import com.medtroniclabs.spice.databinding.FragmentRmnchSummaryBinding
+import com.medtroniclabs.spice.db.entity.HealthFacilityEntity
 import com.medtroniclabs.spice.formgeneration.config.ViewType
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
+import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
+import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.assessment.AssessmentCommonUtils
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
@@ -64,18 +71,25 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
                 binding.riskResultLayout.backgroundTintList =
                     ContextCompat.getColorStateList(requireContext(), R.color.attention_color)
                 binding.riskResultLayout.text = getString(R.string.referred_for_further_assessment)
+                viewModel.getNearestHealthFacility()
+                binding.etPhuChange.visible()
+                binding.labelPhuReferred.visible()
             }
 
             ReferralStatus.OnTreatment.name -> {
                 binding.riskResultLayout.backgroundTintList =
                     ContextCompat.getColorStateList(requireContext(), R.color.red_risk_moderate)
                 binding.riskResultLayout.text = getString(R.string.patient_on_treatment)
+                binding.etPhuChange.gone()
+                binding.labelPhuReferred.gone()
             }
 
             else -> {
                 binding.riskResultLayout.backgroundTintList =
                     ContextCompat.getColorStateList(requireContext(), R.color.green_attention_color)
                 binding.riskResultLayout.text = getString(R.string.no_refferral_treatment_required)
+                binding.etPhuChange.gone()
+                binding.labelPhuReferred.gone()
             }
         }
     }
@@ -111,6 +125,85 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
                     }
                 }
         }
+
+        viewModel.nearestFacilityLiveData.observe(viewLifecycleOwner) { resourceState ->
+            when (resourceState.state) {
+                ResourceState.LOADING -> {
+                    showProgress()
+                }
+
+                ResourceState.SUCCESS -> {
+                    hideProgress()
+                    resourceState.data?.let { siteList ->
+                        loadPhuSitesList(siteList)
+                    }
+                }
+
+                ResourceState.ERROR -> {
+                    hideProgress()
+                }
+            }
+        }
+    }
+
+
+    private fun loadPhuSitesList(healthFacilityList: List<HealthFacilityEntity>) {
+        val dropDownList = ArrayList<Map<String, Any>>()
+        dropDownList.add(
+            hashMapOf<String, Any>(
+                DefinedParams.NAME to DefinedParams.DefaultIDLabel,
+                DefinedParams.id to DefinedParams.DefaultID
+            )
+        )
+        var defaultPosition = 0
+        for ((index, healthFacilityEntity) in healthFacilityList.withIndex()) {
+            dropDownList.add(
+                hashMapOf<String, Any>(
+                    DefinedParams.NAME to healthFacilityEntity.name,
+                    DefinedParams.id to healthFacilityEntity.fhirId.toString()
+                )
+            )
+            if (healthFacilityEntity.isDefault) {
+                defaultPosition = index
+            }
+        }
+        val adapter = CustomSpinnerAdapter(requireContext())
+        adapter.setData(dropDownList)
+        binding.etPhuChange.adapter = adapter
+        binding.etPhuChange.setSelection(0, false)
+        binding.etPhuChange.post {
+            binding.etPhuChange.setSelection(defaultPosition + 1, false)
+        }
+        binding.etPhuChange.onItemSelectedListener =
+            object : AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(
+                    adapterView: AdapterView<*>?,
+                    view: View?,
+                    pos: Int,
+                    itemId: Long
+                ) {
+                    val selectedItem = adapter.getData(position = pos)
+                    selectedItem?.let {
+                        val selectedId = it[DefinedParams.id] as String?
+                        val selectedSiteName = it[DefinedParams.NAME] as String?
+                        if (selectedId != DefinedParams.DefaultID) {
+                            viewModel.otherAssessmentDetails[AssessmentDefinedParams.ReferredPHUSite] = selectedSiteName ?: ""
+                            viewModel.otherAssessmentDetails[AssessmentDefinedParams.ReferredPHUSiteID] = selectedId?.toLong() ?: -1L
+                        } else {
+                            if (viewModel.otherAssessmentDetails.containsKey(AssessmentDefinedParams.ReferredPHUSite))
+                                viewModel.otherAssessmentDetails.remove(AssessmentDefinedParams.ReferredPHUSite)
+                            if (viewModel.otherAssessmentDetails.containsKey(AssessmentDefinedParams.ReferredPHUSiteID))
+                                viewModel.otherAssessmentDetails.remove(AssessmentDefinedParams.ReferredPHUSiteID)
+                        }
+                    }
+                }
+
+                override fun onNothingSelected(p0: AdapterView<*>?) {
+                    /**
+                     * this method is not used
+                     */
+                }
+            }
     }
 
     private fun addDefaultSummaryView(map: HashMap<String, Any>) {

@@ -60,6 +60,8 @@ class ReferralResultGenerator {
     private var patientStatus = HashMap<String, Any>()
     private val referralReason = arrayListOf<String>()
 
+    val MUAC = "muac"
+
     fun calculateIccmReferralResult(
         map: HashMap<String, Any>, memberDetails: AssessmentMemberDetails?
     ): Pair<String?, ArrayList<String>> {
@@ -74,13 +76,45 @@ class ReferralResultGenerator {
     fun calculateRMNCHReferralResult(map: HashMap<String, Any>): Pair<String?, ArrayList<String>> {
         if (map.containsKey(RMNCH.ANC)) {
             findSignListByWorkflow(RMNCH.ANC, map, RMNCH.ancSigns, ReferralReasons.ANCSigns.name)
-        }else if (map.containsKey(RMNCH.ChildHoodVisit)) {
-            findSignListByWorkflow(RMNCH.ChildHoodVisit,map,RMNCH.childhoodVisitSigns,ReferralReasons.childhoodVisitSigns.name)
-        }else {
-            findSignListByWorkflow(RMNCH.PNC,map,RMNCH.pncMotherSigns,ReferralReasons.PNCMotherSigns.name)
-            findSignListByWorkflow(RMNCH.PNCNeonatal,map,RMNCH.pncNeonateSigns,ReferralReasons.PNCNeonateSigns.name)
+        } else if (map.containsKey(RMNCH.ChildHoodVisit)) {
+            if (checkMUACReferralStatus(map, RMNCH.ChildHoodVisit, MUAC)){
+                addResultMap(ReferralReasons.MUAC.name, ReferralStatus.Referred.name)
+                addReferralReason(referralReason, ReferralReasons.MUAC.name)
+            }
+            findSignListByWorkflow(
+                RMNCH.ChildHoodVisit,
+                map,
+                RMNCH.childhoodVisitSigns,
+                ReferralReasons.childhoodVisitSigns.name
+            )
+        } else {
+            findSignListByWorkflow(
+                RMNCH.PNC,
+                map,
+                RMNCH.pncMotherSigns,
+                ReferralReasons.PNCMotherSigns.name
+            )
+            findSignListByWorkflow(
+                RMNCH.PNCNeonatal,
+                map,
+                RMNCH.pncNeonateSigns,
+                ReferralReasons.PNCNeonateSigns.name
+            )
         }
         return Pair(checkStatus(), referralReason)
+    }
+
+    private fun checkMUACReferralStatus(map: HashMap<String, Any>, workflow: String, key: String): Boolean {
+        val workflowMap = map[workflow]
+        if (workflowMap is Map<*, *> && workflowMap.containsKey(key)) {
+            val value = workflowMap[key]
+            if (value is String) {
+                if (value.equals(Red, true) || value.equals(Yellow, true)) {
+                    return true
+                }
+            }
+        }
+        return false
     }
 
     private fun findSignListByWorkflow(
@@ -299,7 +333,10 @@ class ReferralResultGenerator {
                         )
                         addReferralReason(referralReason, ReferralReasons.Diarrhoea.name)
                     } else {
-                        if ((map.containsKey(DiarrhoeaSigns) && map[DiarrhoeaSigns] is ArrayList<*>) && (getDiarrhoeaSignsStatus(map[DiarrhoeaSigns]) != null)) {
+                        if ((map.containsKey(DiarrhoeaSigns) && map[DiarrhoeaSigns] is ArrayList<*>) && (getDiarrhoeaSignsStatus(
+                                map[DiarrhoeaSigns]
+                            ) != null)
+                        ) {
                             addResultMap(
                                 ReferralReasons.Diarrhoea.name.lowercase(),
                                 getDiarrhoeaSignsStatus(map[DiarrhoeaSigns])

@@ -143,6 +143,28 @@
 
             </com.google.android.material.card.MaterialCardView>
 
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/labelPhuReferred"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_16sdp"
+                android:fontFamily="@font/inter_regular"
+                android:paddingHorizontal="@dimen/_16sdp"
+                android:text="@string/phu_referred_to"
+                android:textColor="@color/charcoal_grey"
+                android:textSize="@dimen/_14ssp" />
+
+            <androidx.appcompat.widget.AppCompatSpinner
+                android:id="@+id/etPhuChange"
+                style="@style/Form_Spinner_Style"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="@dimen/_8sdp"
+                android:layout_marginTop="@dimen/_8sdp"
+                android:minHeight="@dimen/_40sdp"
+                android:paddingHorizontal="@dimen/_16sdp" />
+
+
             <TextView
                 android:id="@+id/tvNextFollowupDateTitle"
                 style="@style/Form_Label_Style"

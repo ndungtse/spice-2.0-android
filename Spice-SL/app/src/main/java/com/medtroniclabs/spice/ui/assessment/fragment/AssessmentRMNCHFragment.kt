@@ -59,7 +59,6 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initView()
-        getFormDataForWorkflow()
         attachObservers()
         setListener()
     }
@@ -122,9 +121,6 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
         }
     }
 
-    private fun getFormDataForWorkflow() {
-        viewModel.getFormData(RMNCH.RMNCHChildHoodVisit)
-    }
 
     private fun initView() {
         replaceFragmentInId<BioDataFragment>(
