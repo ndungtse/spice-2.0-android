@@ -17,7 +17,9 @@ data class PatientListRespModel(
     val performer: String? = null,
     val chw: String? = null,
     val houseHoldId: Long? = null,
-    val dateOfOnset:String? = null
+    val dateOfOnset:String? = null,
+    val lastMenstrualPeriod:String? = null,
+    val ancVisit:String? = null
 )
 
 data class SearchAndListResponse(

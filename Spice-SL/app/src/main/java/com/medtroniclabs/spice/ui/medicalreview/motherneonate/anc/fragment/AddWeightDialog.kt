@@ -1,4 +1,4 @@
-package com.medtroniclabs.spice.ui.mypatients.fragment
+package com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.fragment
 
 import android.content.res.Configuration
 import android.os.Bundle

@@ -444,4 +444,10 @@
     <string name="please_select_a_site">Please select a valid site</string>
     <string name="nutrition_summary_without_signs">%1$s</string>
     <string name="tomorrow">Tomorrow</string>
+    <string name="title_pregnancy_summary">Pregnancy Summary</string>
+    <string name="fundal_height">Fundal Height (in cms)</string>
+    <string name="fetal_heart_rate_bpm">Fetal Heart Rate(BPM)</string>
+    <string name="obstetric_examination">Obstetric Examination</string>
+    <string name="contact_number">Contact Number</string>
+    <string name="mother_neonate_anc_saved_successfully">Mother Neonate Anc Saved Successfully</string>
 </resources>

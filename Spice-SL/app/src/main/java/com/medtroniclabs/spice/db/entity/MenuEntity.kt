@@ -1,6 +1,7 @@
 package com.medtroniclabs.spice.db.entity
 
 import androidx.room.Entity
+import androidx.room.Ignore
 import androidx.room.PrimaryKey
 
 @Entity(tableName = "MenuEntity")
@@ -12,4 +13,7 @@ data class MenuEntity(
     val name: String,
     val displayOrder: Int,
     val subModule: String? = null
-)
+){
+    @Ignore
+    var isDisabled: Boolean = false
+}

@@ -112,6 +112,10 @@ class ReferralTicketActivity : BaseActivity() {
             ID,
             this.intent.getStringExtra(ID)
         )
+        intent.putExtra(
+            DefinedParams.Gender,
+            this.intent.getStringExtra(DefinedParams.Gender)
+        )
         startActivity(intent)
     }
 

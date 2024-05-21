@@ -1,4 +1,4 @@
-package com.medtroniclabs.spice.ui.mypatients.repo
+package com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.repo
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -7,9 +7,11 @@ import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.appextensions.postSuccess
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.MedicalReviewMetaItems
+import com.medtroniclabs.spice.data.model.MotherNeonateAncRequest
 import com.medtroniclabs.spice.db.local.RoomHelper
 import com.medtroniclabs.spice.network.ApiHelper
 import com.medtroniclabs.spice.network.resource.Resource
+import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.ANC
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import javax.inject.Inject
@@ -87,5 +89,21 @@ class MotherNeonateANCRepo @Inject constructor(
         category: String
     ): LiveData<List<MedicalReviewMetaItems>> {
         return roomHelper.getExaminationsComplaintsForAnc(category)
+    }
+
+    suspend fun saveMotherNeonateAnc(
+        motherNeonateAncRequest: MotherNeonateAncRequest,
+    ):Resource<MotherNeonateAncRequest> {
+        return try {
+            val response = apiHelper.saveMotherNeonateAnc(motherNeonateAncRequest)
+            if (response.isSuccessful) {
+                Resource(state = ResourceState.SUCCESS, data = response.body()?.entity)
+            } else {
+                Resource(state = ResourceState.ERROR)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Resource(state = ResourceState.ERROR)
+        }
     }
 }

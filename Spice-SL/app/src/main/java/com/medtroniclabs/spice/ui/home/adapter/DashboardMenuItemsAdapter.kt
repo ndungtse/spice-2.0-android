@@ -44,6 +44,11 @@ class DashboardMenuItemsAdapter(
             holder.context,
             model.name,
         )
+        val backgroundColorResId = if (model.isDisabled) R.color.border_gray else R.color.white
+        holder.binding.root.apply {
+            isEnabled = !model.isDisabled
+            setCardBackgroundColor(ContextCompat.getColor(holder.context, backgroundColorResId))
+        }
         if (imageModel == null) {
             holder.binding.ivActivity.visibility = View.INVISIBLE
         } else {

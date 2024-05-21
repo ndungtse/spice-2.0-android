@@ -8,12 +8,14 @@ import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils.formatListToStringWithOther
+import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.databinding.FragmentMedicalReviewPatientDiagnosisBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
-import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.ANC
 import com.medtroniclabs.spice.ui.medicalreview.diagnosis.DiagnosisDialogFragment
+import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.fragment.AddBpDialog
+import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.fragment.AddWeightDialog
 import com.medtroniclabs.spice.ui.medicalreview.viewmodel.PatientStatusViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -29,11 +31,12 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
             return MedicalReviewPatientDiagnosisFragment()
         }
 
-        fun newInstance(isAnc: Boolean): MedicalReviewPatientDiagnosisFragment {
+        fun newInstance(isAnc: Boolean, patientId: String?): MedicalReviewPatientDiagnosisFragment {
             val fragment = MedicalReviewPatientDiagnosisFragment()
-            val bundle = Bundle()
-            bundle.putBoolean(ANC, isAnc)
-            fragment.arguments = bundle
+            fragment.arguments = Bundle().apply {
+                putBoolean(DefinedParams.PregnancyANC, isAnc)
+                putString(DefinedParams.PatientId, patientId)
+            }
             return fragment
         }
     }
@@ -54,17 +57,20 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
     }
 
     private fun handleFlow() {
-        val isAnc = arguments?.getBoolean(ANC)
-        if (isAnc == true) {
-            with(binding) {
-                cardAncVisit.visible()
+        val id = arguments?.getString(DefinedParams.PatientId, "")
+        with(binding) {
+            val isAnc = arguments?.getBoolean(DefinedParams.PregnancyANC, false)
+            if (isAnc == true) {
                 cardAddWeight.visible()
                 cardBloodPressure.visible()
-                tvAddWeight.safeClickListener(this@MedicalReviewPatientDiagnosisFragment)
-                tvAddBp.safeClickListener(this@MedicalReviewPatientDiagnosisFragment)
-                cardDiagnosis.gone()
-                cardPatientStatus.gone()
+            } else {
+                cardAddWeight.gone()
+                cardBloodPressure.gone()
             }
+            tvAddWeight.safeClickListener(this@MedicalReviewPatientDiagnosisFragment)
+            tvAddBp.safeClickListener(this@MedicalReviewPatientDiagnosisFragment)
+            cardDiagnosis.visible()
+            cardPatientStatus.visible()
         }
     }
 

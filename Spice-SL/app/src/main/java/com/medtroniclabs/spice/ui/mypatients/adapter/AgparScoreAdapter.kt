@@ -2,7 +2,6 @@ package com.medtroniclabs.spice.ui.mypatients.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.appcompat.widget.AppCompatTextView
 import androidx.recyclerview.widget.RecyclerView
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.databinding.RowAgparFooterBinding

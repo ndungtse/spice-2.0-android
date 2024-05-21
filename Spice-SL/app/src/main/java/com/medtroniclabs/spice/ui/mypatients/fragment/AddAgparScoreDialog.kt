@@ -9,9 +9,7 @@ import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
-import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.setWidth
-import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.databinding.FragmentAddAgparScoreBinding
 import com.medtroniclabs.spice.ui.medicalreview.labourDelivery.LabourDeliveryViewModel

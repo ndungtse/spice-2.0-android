@@ -4,10 +4,12 @@ import com.medtroniclabs.spice.formgeneration.config.DefinedParams
 import org.joda.time.Period
 import org.joda.time.PeriodType
 import java.text.SimpleDateFormat
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
@@ -370,5 +372,18 @@ object DateUtils {
         calendar.add(Calendar.DAY_OF_YEAR, 1) // Adding one day
         val tomorrowDate = calendar.time
         return dateFormat.format(tomorrowDate)
+    }
+
+    fun calculateGestationalAge(lmpDate: LocalDate): Long {
+        val currentDate = LocalDate.now()
+        return ChronoUnit.WEEKS.between(lmpDate, currentDate)
+    }
+
+    fun formatGestationalAge(gestationalAgeInWeeks: Long): String {
+        return when {
+            gestationalAgeInWeeks == 0L -> "0 week"
+            gestationalAgeInWeeks == 1L -> "1 week"
+            else -> "$gestationalAgeInWeeks weeks"
+        }
     }
 }

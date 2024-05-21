@@ -1,15 +1,17 @@
 package com.medtroniclabs.spice.ui.mypatients.viewmodel
 
-import androidx.lifecycle.LiveData
+import android.location.Location
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
-import com.medtroniclabs.spice.data.MedicalReviewMetaItems
-import com.medtroniclabs.spice.data.PregnancyDetailsModel
+import com.medtroniclabs.spice.appextensions.postLoading
+import com.medtroniclabs.spice.common.DateUtils
+import com.medtroniclabs.spice.data.model.MedicalReviewEncounter
+import com.medtroniclabs.spice.data.model.MotherNeonateAncRequest
+import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.network.resource.Resource
-import com.medtroniclabs.spice.ui.mypatients.repo.MotherNeonateANCRepo
+import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.repo.MotherNeonateANCRepo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
@@ -20,30 +22,53 @@ class MotherNeonateANCViewModel @Inject constructor(
     private val motherNeonateANCRepo: MotherNeonateANCRepo,
     @IoDispatcher private val dispatcherIO: CoroutineDispatcher
 ) : ViewModel() {
-    val resultFlowHashMap = HashMap<String, Any>()
     val motherNeonateMetaResponse = MutableLiveData<Resource<Boolean>>()
-    var selectedBloodGroup: String? = null
-    val getAncMetaForPregnancyHistory = MutableLiveData<String>()
-    val getAncMetaForBloodGroup = MutableLiveData<String>()
-    val ancMetaLiveDataForPregnancyHistory: LiveData<List<MedicalReviewMetaItems>> = getAncMetaForPregnancyHistory.switchMap {
-        motherNeonateANCRepo.getExaminationsComplaintsForAnc(it)
-    }
-    val ancMetaLiveDataForBloodGroup: LiveData<List<MedicalReviewMetaItems>> =
-        getAncMetaForBloodGroup.switchMap {
-            motherNeonateANCRepo.getExaminationsComplaintsForAnc(it)
-        }
-    var pregnancyDetailsModel = PregnancyDetailsModel()
+    val motherNeonateCreateResponse = MutableLiveData<Resource<MotherNeonateAncRequest>>()
+    var motherNeonateAncRequest: MotherNeonateAncRequest = MotherNeonateAncRequest()
+    var ancVisit = -1
+    var id: String? = null
+    var lastLocation: Location? = null
+
+
     fun getMotherNeoNateAncStaticData() {
         viewModelScope.launch(dispatcherIO) {
             motherNeonateANCRepo.getMotherNeoNateAncStaticData(motherNeonateMetaResponse)
         }
     }
 
-    fun setAncReqToGetMetaForPregnancyHistory(category: String) {
-        getAncMetaForPregnancyHistory.value = category
-    }
-
-    fun setAncReqToGetMetaForBloodGroup(category: String){
-        getAncMetaForBloodGroup.value = category
+    fun createMotherNeonate() {
+        viewModelScope.launch(dispatcherIO) {
+            try {
+                motherNeonateAncRequest.apply {
+                    //TODO change After backend finish
+                    visitNumber = ancVisit
+                    encounter = MedicalReviewEncounter(
+                        patientId = id,
+                        provenance = ProvanceDto(
+                            createdDateTime = DateUtils.getCurrentDateAndTime(
+                                DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
+                            )
+                        ),
+                        latitude = lastLocation?.latitude ?: 0.0,
+                        longitude = lastLocation?.longitude ?: 0.0,
+                        startTime = DateUtils.getCurrentDateAndTime(
+                            DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
+                        ),
+                        endTime = DateUtils.getCurrentDateAndTime(
+                            DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
+                        ),
+                        referred = true
+                    )
+                }
+                motherNeonateCreateResponse.postLoading()
+                motherNeonateCreateResponse.postValue(
+                    motherNeonateANCRepo.saveMotherNeonateAnc(
+                        motherNeonateAncRequest
+                    )
+                )
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
     }
 }

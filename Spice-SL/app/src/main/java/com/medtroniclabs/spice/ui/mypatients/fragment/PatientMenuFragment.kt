@@ -12,8 +12,10 @@ import com.google.android.flexbox.FlexboxLayoutManager
 import com.google.android.flexbox.JustifyContent
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.CommonUtils
+import com.medtroniclabs.spice.common.DefinedParams.Gender
 import com.medtroniclabs.spice.common.DefinedParams.ID
 import com.medtroniclabs.spice.common.DefinedParams.PatientId
+import com.medtroniclabs.spice.common.DefinedParams.male
 import com.medtroniclabs.spice.databinding.FragmentPatientMenuBinding
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.MenuConstants
@@ -21,6 +23,7 @@ import com.medtroniclabs.spice.ui.home.MenuSelectionListener
 import com.medtroniclabs.spice.ui.home.ToolsViewModel
 import com.medtroniclabs.spice.ui.home.adapter.DashboardMenuItemsAdapter
 import com.medtroniclabs.spice.ui.medicalreview.abovefiveyears.AboveFiveYearsBaseActivity
+import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.fragment.SelectFlowDialog
 import com.medtroniclabs.spice.ui.medicalreview.undertwomonths.UnderTwoMonthsBaseActivity
 import com.medtroniclabs.spice.ui.mypatients.MedicalReviewBaseActivity
 import dagger.hilt.android.AndroidEntryPoint
@@ -54,19 +57,30 @@ class PatientMenuFragment : BaseFragment(), MenuSelectionListener {
             val layoutManager = GridLayoutManager(context, 2)
             binding.rvActivitiesList.layoutManager = layoutManager
         }
+        val gender = arguments?.getString(Gender, "")
+        // Get the menu items list
+        val menuItemsList = viewModel.getMyPatientsMenuItemsList()
+
+        // Check and set isDisable property based on gender
+        menuItemsList.forEach {
+            if (it.name == MenuConstants.MOTHER_AND_NEONATE_ID && gender.equals(male,true)) {
+                it.isDisabled = true
+            }
+        }
         binding.rvActivitiesList.adapter =
-            DashboardMenuItemsAdapter(viewModel.getMyPatientsMenuItemsList(), this)
+            DashboardMenuItemsAdapter(menuItemsList, this)
     }
 
     companion object {
         fun newInstance() =
             PatientMenuFragment()
 
-        fun newInstance(patientId: String?, id: String?): PatientMenuFragment {
+        fun newInstance(patientId: String?, id: String?,gender: String?): PatientMenuFragment {
             val fragment = PatientMenuFragment()
             val bundle = Bundle()
             bundle.putString(PatientId, patientId)
             bundle.putString(ID, id)
+            bundle.putString(Gender, gender)
             fragment.arguments = bundle
             return fragment
         }

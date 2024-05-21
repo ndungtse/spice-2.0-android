@@ -1,4 +1,4 @@
-package com.medtroniclabs.spice.ui.mypatients.fragment
+package com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.fragment
 
 import android.content.Intent
 import android.content.res.Configuration
@@ -17,7 +17,7 @@ import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.ui.SingleSelectionCustomView
 import com.medtroniclabs.spice.ui.home.ToolsViewModel
 import com.medtroniclabs.spice.ui.medicalreview.LabourDeliveryBaseActivity
-import com.medtroniclabs.spice.ui.mypatients.activity.MotherNeonateANCActivity
+import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.activity.MotherNeonateANCActivity
 
 class SelectFlowDialog : DialogFragment(), View.OnClickListener {
 
@@ -134,13 +134,13 @@ class SelectFlowDialog : DialogFragment(), View.OnClickListener {
     private fun getRMNCHFlowData(): ArrayList<Map<String, Any>> {
         val flowList = ArrayList<Map<String, Any>>()
         flowList.add(CommonUtils.getOptionMap(getString(R.string.anc), getString(R.string.anc)))
-        flowList.add(CommonUtils.getOptionMap(getString(R.string.pnc), getString(R.string.pnc)))
         flowList.add(
             CommonUtils.getOptionMap(
-                getString(R.string.child_hood_visit),
-                getString(R.string.child_hood_visit)
+                getString(R.string.labour_delivery),
+                getString(R.string.labour_delivery)
             )
         )
+        flowList.add(CommonUtils.getOptionMap(getString(R.string.pnc), getString(R.string.pnc)))
         return flowList
     }
 

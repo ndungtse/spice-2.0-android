@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/fragment_bg"
-    tools:context=".ui.mypatients.fragment.PregnancyPastObstetricHistoryFragment">
+    tools:context=".ui.medicalreview.motherneonate.anc.fragment.PregnancyPastObstetricHistoryFragment">
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardChiefComplaints"
@@ -51,7 +51,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/tvPresentingComplaintsTitle" />
 
             <androidx.appcompat.widget.AppCompatEditText
-                android:id="@+id/etClinicalNotes"
+                android:id="@+id/etPregnancyHistory"
                 style="@style/Form_Input_Style_BG"
                 android:layout_height="@dimen/_112sdp"
                 android:layout_margin="@dimen/_16sdp"

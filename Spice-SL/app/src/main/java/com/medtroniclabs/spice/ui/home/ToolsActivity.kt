@@ -31,7 +31,7 @@ class ToolsActivity : BaseActivity() {
         toolsViewModel.selectedHouseholdMemberID = intent.getLongExtra(DefinedParams.MemberID, -1)
         val fragment = if (toolsViewModel.selectedHouseholdMemberID == -1L) {
             setTitle(intent.getStringExtra(DefinedParams.MenuTitle) ?: getString(R.string.search_patient))
-            PatientMenuFragment.newInstance(intent.getStringExtra(DefinedParams.PatientId), intent.getStringExtra(DefinedParams.ID))
+            PatientMenuFragment.newInstance(intent.getStringExtra(DefinedParams.PatientId),intent.getStringExtra(DefinedParams.ID),intent.getStringExtra(DefinedParams.Gender))
         } else {
             ToolsMenuFragment.newInstance()
         }

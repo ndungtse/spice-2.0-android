@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.databinding.FragmentNeonateSummaryBinding
 import com.medtroniclabs.spice.ui.BaseFragment
 

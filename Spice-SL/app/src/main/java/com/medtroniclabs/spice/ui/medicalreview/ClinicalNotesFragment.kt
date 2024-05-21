@@ -8,6 +8,8 @@ import androidx.core.os.bundleOf
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResult
+import com.medtroniclabs.spice.appextensions.gone
+import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.databinding.FragmentClinicalNotesBinding
 import com.medtroniclabs.spice.formgeneration.extension.markMandatory
 import com.medtroniclabs.spice.ui.BaseFragment
@@ -49,4 +51,13 @@ class ClinicalNotesFragment : BaseFragment() {
         }
     }
 
+    fun validateInput():Boolean {
+        if (binding.etClinicalNotes.text?.trim().toString().isBlank()) {
+            binding.tvClinicalNoteErrorMessage.visible()
+            binding.etClinicalNotes.requestFocus()
+            return false
+        }
+        binding.tvClinicalNoteErrorMessage.gone()
+        return true
+    }
 }

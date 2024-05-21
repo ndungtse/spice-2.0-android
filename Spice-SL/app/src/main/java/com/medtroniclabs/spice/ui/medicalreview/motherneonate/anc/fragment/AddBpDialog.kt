@@ -1,4 +1,4 @@
-package com.medtroniclabs.spice.ui.mypatients.fragment
+package com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.fragment
 
 import android.content.res.Configuration
 import android.os.Bundle
@@ -106,7 +106,7 @@ class AddBpDialog : DialogFragment(), View.OnClickListener {
             300,
             binding.etDiastolic,
             minErrorMessage = getString(R.string.systolic_error_min),
-            maxErrorMessage = getString(R.string.systolic_error_max)
+            maxErrorMessage = getString(R.string.systolic_error_max),
         )
         val isDiastolicValid = isValidMeasurement(
             binding.etDiastolic.text.toString(),

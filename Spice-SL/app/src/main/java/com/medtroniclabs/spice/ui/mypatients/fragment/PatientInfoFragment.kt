@@ -20,7 +20,8 @@ import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.medicalreview.viewmodel.PatientStatusViewModel
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
-import com.medtroniclabs.spice.ui.mypatients.viewmodel.ReferralTicketViewModel
+import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.ANC
+import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.AncVisitCallBack
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -29,6 +30,11 @@ class PatientInfoFragment : BaseFragment() {
     private lateinit var binding: FragmentPatientInfoBinding
     val viewModel: PatientDetailViewModel by activityViewModels()
     private val patientStatusViewModel: PatientStatusViewModel by activityViewModels()
+    private var dataCallback: AncVisitCallBack? = null
+    fun setDataCallback(callback: AncVisitCallBack) {
+        dataCallback = callback
+    }
+
 
     companion object {
         const val TAG = "PatientInfoFragment"
@@ -37,10 +43,11 @@ class PatientInfoFragment : BaseFragment() {
             return PatientInfoFragment()
         }
 
-        fun newInstance(patientId: String?, id: String? = null): PatientInfoFragment {
+        fun newInstance(patientId: String?, id: String? = null,isAnc:Boolean = false): PatientInfoFragment {
             val fragment = PatientInfoFragment()
             val bundle = Bundle()
             bundle.putString(DefinedParams.PatientId, patientId)
+            bundle.putBoolean(ANC, isAnc)
             bundle.putString(ID, id)
             fragment.arguments = bundle
             return fragment
@@ -75,6 +82,7 @@ class PatientInfoFragment : BaseFragment() {
                 ResourceState.SUCCESS -> {
                     resource.data?.let {
                         setDataInInfo(it)
+                        dataCallback?.onDataLoaded(1)
                     }
                     hideProgress()
                 }
@@ -87,6 +95,7 @@ class PatientInfoFragment : BaseFragment() {
     }
 
     private fun setDataInInfo(patientListRespModel: PatientListRespModel) {
+        val isAnc = arguments?.getBoolean(ANC, false)
         val name =
             patientListRespModel.name ?: requireContext().getString(R.string.separator_hyphen)
         val gender =
@@ -100,36 +109,68 @@ class PatientInfoFragment : BaseFragment() {
             val date = patientListRespModel.dateOfOnset.takeIf { it?.isNotBlank() == true }?.let {
                 DateUtils.convertDateFormat(it, DATE_FORMAT_yyyyMMddHHmmssZZZZZ, DATE_ddMMyyyy)
             } ?: requireContext().getString(R.string.hyphen_symbol)
-            val dataList = listOf(
+
+            //TODO Any ANC and Last menstrual date after backend work completed
+            val lastMenstrualDate =
+                patientListRespModel.lastMenstrualPeriod.takeIf { it?.isNotBlank() == true }?.let {
+                    DateUtils.convertDateFormat(it, DATE_FORMAT_yyyyMMddHHmmssZZZZZ, DATE_ddMMyyyy)
+                } ?: requireContext().getString(R.string.hyphen_symbol)
+
+            val dataList = mutableListOf(
                 mapOf(
                     DefinedParams.label to requireContext().getString(R.string.patient_id),
-                    DefinedParams.value to (patientListRespModel.patientId ?: 0).toString()
+                    DefinedParams.value to (patientListRespModel.patientId
+                        ?: requireContext().getString(R.string.hyphen_symbol)).toString()
                 ),
                 mapOf(
-                    DefinedParams.label to requireContext().getString(R.string.hh_id),
-                    DefinedParams.value to (patientListRespModel.houseHoldId ?: 0).toString()
-                ),
-                mapOf(
-                    DefinedParams.label to requireContext().getString(R.string.village),
-                    DefinedParams.value to (patientListRespModel.village.takeIf { it?.isNotBlank() == true }
-                        ?: requireContext().getString(R.string.hyphen_symbol))),
-                mapOf(
-                    DefinedParams.label to requireContext().getString(R.string.phone_no),
+                    DefinedParams.label to requireContext().getString(R.string.contact_number),
                     DefinedParams.value to (patientListRespModel.phoneNumber.takeIf { it?.isNotBlank() == true }
                         ?: requireContext().getString(R.string.hyphen_symbol))),
                 mapOf(
-                    DefinedParams.label to requireContext().getString(R.string.landmark),
-                    DefinedParams.value to (patientListRespModel.location.takeIf { it?.isNotBlank() == true }
-                        ?: requireContext().getString(R.string.hyphen_symbol))),
+                    DefinedParams.label to requireContext().getString(R.string.hh_id),
+                    DefinedParams.value to (patientListRespModel.houseHoldId
+                        ?: requireContext().getString(R.string.hyphen_symbol)).toString()
+                ),
                 mapOf(
                     DefinedParams.label to requireContext().getString(R.string.chw),
                     DefinedParams.value to (patientListRespModel.chw.takeIf { it?.isNotBlank() == true }
                         ?: requireContext().getString(R.string.hyphen_symbol))),
                 mapOf(
-                    DefinedParams.label to requireContext().getString(R.string.date_of_onset),
-                    DefinedParams.value to date
-                ),
+                    DefinedParams.label to requireContext().getString(R.string.village),
+                    DefinedParams.value to (patientListRespModel.village.takeIf { it?.isNotBlank() == true }
+                        ?: requireContext().getString(R.string.hyphen_symbol)))
             )
+            if (isAnc == true) {
+                dataList.add(
+                    mapOf(
+                        DefinedParams.label to requireContext().getString(R.string.last_menstrual_period),
+                        DefinedParams.value to lastMenstrualDate
+                    )
+                )
+            }
+
+            dataList.add(
+                mapOf(
+                    DefinedParams.label to requireContext().getString(R.string.landmark),
+                    DefinedParams.value to (patientListRespModel.location.takeIf { it?.isNotBlank() == true }
+                        ?: requireContext().getString(R.string.hyphen_symbol)))
+            )
+            if (isAnc == true) {
+                dataList.add(
+                    mapOf(
+                        DefinedParams.label to requireContext().getString(R.string.anc_visit),
+                        DefinedParams.value to (patientListRespModel.ancVisit.takeIf { it?.isNotBlank() == true }
+                            ?: requireContext().getString(R.string.hyphen_symbol)))
+                )
+            }
+            if (!(isAnc == true)) {
+                dataList.add(
+                    mapOf(
+                        DefinedParams.label to requireContext().getString(R.string.date_of_onset),
+                        DefinedParams.value to date
+                    )
+                )
+            }
             val adapter = PatientInfoAdapter(dataList,R.color.fragment_bg)
             val isLandscape =
                 resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE

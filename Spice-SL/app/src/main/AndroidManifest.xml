@@ -24,7 +24,7 @@
             android:exported="false" />
 
         <activity
-            android:name=".ui.mypatients.activity.MotherNeonateANCActivity"
+            android:name=".ui.medicalreview.motherneonate.anc.activity.MotherNeonateANCActivity"
             android:exported="false"
             android:screenOrientation="sensorLandscape"
             android:windowSoftInputMode="adjustPan" />

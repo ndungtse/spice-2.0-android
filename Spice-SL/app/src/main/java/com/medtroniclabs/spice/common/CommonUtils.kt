@@ -288,4 +288,13 @@ object CommonUtils {
         return formattedValue
     }
 
+
+    fun Double?.toIntOrEmptyString(): String {
+        return this?.toInt().toString()
+    }
+
+    fun Double?.toDoubleOrEmptyString(): String {
+        return this?.toDouble().toString()
+    }
+
 }
