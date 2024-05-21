@@ -1,9 +1,8 @@
 package com.medtroniclabs.spice.ui.landing
 
 import android.os.Bundle
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
-import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
 import androidx.work.Constraints
 import androidx.work.Data
 import androidx.work.NetworkType
@@ -17,13 +16,14 @@ import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.data.offlinesync.utils.OfflineConstant.KEY_REQUESTS_ID
 import com.medtroniclabs.spice.databinding.FragmentOfflineSyncBinding
 import com.medtroniclabs.spice.offlinesync.GetSyncStatusWorker
+import com.medtroniclabs.spice.ui.SpiceRootActivity
 import com.medtroniclabs.spice.ui.landing.viewmodel.OfflineSyncViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.concurrent.TimeUnit
 
 
 @AndroidEntryPoint
-class OfflineSyncActivity : AppCompatActivity() {
+class OfflineSyncActivity : SpiceRootActivity() {
 
     private val viewModel: OfflineSyncViewModel by viewModels()
     private lateinit var binding: FragmentOfflineSyncBinding
@@ -34,18 +34,10 @@ class OfflineSyncActivity : AppCompatActivity() {
         binding = FragmentOfflineSyncBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        overrideBackPress()
+
         setListener()
         initObserver()
-    }
-
-    private fun showNetworkNotAvailableError() {
-        val builder = AlertDialog.Builder(this)
-        builder.setTitle(R.string.title_no_network)
-            .setMessage(R.string.message_no_network)
-            .setPositiveButton(R.string.ok, null)
-
-        val dialog = builder.create()
-        dialog.show()
     }
 
     private fun setListener() {
@@ -55,7 +47,11 @@ class OfflineSyncActivity : AppCompatActivity() {
                 showProgressView()
                 viewModel.startUploadingData(getStatusStartTimer)
             } else {
-                showNetworkNotAvailableError()
+                showErrorDialogue(
+                    getString(R.string.title_no_network),
+                    getString(R.string.message_no_network),
+                    isNegativeButtonNeed = false
+                ) { _ -> }
             }
         }
         binding.btnCancel.setOnClickListener {
@@ -154,5 +150,16 @@ class OfflineSyncActivity : AppCompatActivity() {
         }
         binding.tvOfflineSyncCompleted.visible()
         binding.btnOkay.visible()
+    }
+
+    private fun overrideBackPress() {
+        val callback = object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                // Handle the back button event
+                // For example, finish the activity
+               // finish()
+            }
+        }
+        onBackPressedDispatcher.addCallback(this, callback)
     }
 }

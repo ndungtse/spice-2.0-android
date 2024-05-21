@@ -6,7 +6,6 @@ data class Assessment(
     val referenceId: Long,
     val assessmentType: String,
     val assessmentDetails: JsonElement,
-    val patientId: String,
     val villageId: String,
     val assessmentDate: String? = null,
     val patientStatus: String,
