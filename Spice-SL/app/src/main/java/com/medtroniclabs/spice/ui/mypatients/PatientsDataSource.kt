@@ -5,6 +5,7 @@ import androidx.paging.PagingState
 import com.medtroniclabs.spice.common.DefinedParams.LIST_LIMIT
 import com.medtroniclabs.spice.common.DefinedParams.PAGE_INDEX
 import com.medtroniclabs.spice.data.APIResponse
+import com.medtroniclabs.spice.model.MedicalReviewFilterModel
 import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.model.PatientsDataModel
 import com.medtroniclabs.spice.model.SearchAndListResponse
@@ -16,6 +17,7 @@ class PatientsDataSource(
     private val apiHelper: ApiHelper,
     private val patientRepository: PatientRepository,
     private val searchText: String,
+    private val filter:MedicalReviewFilterModel?,
     private val getPatientsCount: (String) -> Unit
 ) : PagingSource<Int, PatientListRespModel>() {
 
@@ -45,7 +47,8 @@ class PatientsDataSource(
                         skip = loadedCount,
                         limit = LIST_LIMIT,
                         villageIds = villages,
-                        referencePatientId = referencePatientId?.ifBlank { null }
+                        referencePatientId = referencePatientId?.ifBlank { null },
+                        filter = filter
                     )
                 )
             } else {
@@ -55,7 +58,8 @@ class PatientsDataSource(
                         limit = LIST_LIMIT,
                         searchText = searchText.ifEmpty { null },
                         districtId = districtId,
-                        referencePatientId = referencePatientId?.ifBlank { null }
+                        referencePatientId = referencePatientId?.ifBlank { null },
+                        filter = filter
                     )
                 )
             }

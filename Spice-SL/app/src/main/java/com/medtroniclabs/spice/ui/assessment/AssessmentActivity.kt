@@ -58,7 +58,7 @@ class AssessmentActivity : BaseActivity() {
     }
 
     private fun backNavigation() {
-        if (viewModel.isInputUpdated){
+       // if (viewModel.isInputUpdated){
             showErrorDialogue(
                 getString(R.string.alert),
                 getString(R.string.exit_reason),
@@ -68,7 +68,7 @@ class AssessmentActivity : BaseActivity() {
                     this@AssessmentActivity.finish()
                 }
             }
-        }
+        //}
     }
 
     private fun loadSummaryFragment() {

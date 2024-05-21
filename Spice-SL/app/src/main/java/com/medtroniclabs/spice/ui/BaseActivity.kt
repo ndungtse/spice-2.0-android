@@ -41,6 +41,7 @@ open class BaseActivity : SpiceRootActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityBaseBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        setListener()
     }
 
 
@@ -279,5 +280,12 @@ open class BaseActivity : SpiceRootActivity() {
     override fun onDestroy() {
         super.onDestroy()
         connectivityManager.unregisterConnectionObserver(this)
+    }
+
+
+    private fun setListener() {
+        binding.loadingProgress.safeClickListener {
+
+        }
     }
 }

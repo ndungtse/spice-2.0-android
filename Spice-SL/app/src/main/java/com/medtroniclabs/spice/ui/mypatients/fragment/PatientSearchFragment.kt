@@ -13,12 +13,13 @@ import androidx.lifecycle.lifecycleScope
 import androidx.paging.LoadState
 import androidx.recyclerview.widget.GridLayoutManager
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.hideKeyboard
+import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.databinding.FragmentPatientSearchBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.model.PatientListRespModel
-import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.mypatients.PatientSelectionListener
 import com.medtroniclabs.spice.ui.mypatients.PatientsListAdapter
@@ -61,8 +62,22 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
             if (!count.isNullOrBlank()) {
                 binding.tvPatientCount.text =
                     getString(R.string.patients_found, count.toLong())
-                binding.llFilter.btnFilter.visibility = if (count.toLong() != 0L) View.VISIBLE else View.INVISIBLE
-                binding.tvNoPatientsFound.visibility = if (count.toLong() != 0L) View.GONE else View.VISIBLE
+//                binding.llFilter.btnFilter.visibility = if (count.toLong() != 0L) View.VISIBLE else View.INVISIBLE
+                if (patientListViewModel.filterCount() > 0) {
+                    binding.llFilter.btnFilter.text =
+                        getString(R.string.filter_count, patientListViewModel.filterCount())
+                } else {
+                    binding.llFilter.btnFilter.text = getString(R.string.filters)
+                }
+                binding.tvNoPatientsFound.visibility =
+                    if (count.toLong() != 0L) View.GONE else View.VISIBLE
+            }
+        }
+        patientListViewModel.filterLiveData.observe(viewLifecycleOwner) {
+            if (it) {
+                getPatientList()
+                scrollTop()
+                patientListViewModel.setFilter(false)
             }
         }
     }
@@ -73,7 +88,7 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
         val tabletSize =
             resources.getBoolean(R.bool.isLargeTablet) || resources.getBoolean(R.bool.isTablet)
         if (tabletSize) {
-            requireActivity().requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+            requireActivity().requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
             patientListViewModel.spanCount = DefinedParams.span_count_3
         } else {
             requireActivity().requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
@@ -81,6 +96,10 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
         }
         binding.llExactSearch.etPatientSearch.addTextChangedListener(searchListener)
         binding.llExactSearch.btnSearch.safeClickListener(this)
+        binding.llFilter.btnFilter.safeClickListener(this)
+        binding.loadingProgress.safeClickListener{
+
+        }
     }
 
     private val searchListener = object : TextWatcher {
@@ -115,9 +134,11 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
         }
         patientsListAdapter.addLoadStateListener {
             if (it.append is LoadState.Loading) {
-                binding.pageProgress.visibility = View.VISIBLE
+                binding.loadingProgress.visible()
+                binding.pageProgress.visible()
             } else {
-                binding.pageProgress.visibility = View.GONE
+                binding.loadingProgress.gone()
+                binding.pageProgress.gone()
             }
         }
     }
@@ -147,6 +168,11 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
                 requireContext().hideKeyboard(v)
                 networkAvailability()
             }
+
+            binding.llFilter.btnFilter.id -> {
+                requireContext().hideKeyboard(v)
+                handleFilterClick()
+            }
         }
     }
 
@@ -155,8 +181,24 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
             patientListViewModel.searchText =
                 binding.llExactSearch.etPatientSearch.text?.trim().toString()
             getPatientList()
+            scrollTop()
         } else {
             showErrorDialog(getString(R.string.error),getString(R.string.no_internet_error))
+        }
+    }
+
+    private fun scrollTop() {
+        binding.rvPatientsList.scrollToPosition(0)
+    }
+
+    private fun handleFilterClick() {
+        val existingFragment =
+            childFragmentManager.findFragmentByTag(PatientSearchFilterDialog.TAG) as? PatientSearchFilterDialog
+        if (existingFragment == null) {
+            PatientSearchFilterDialog.newInstance()
+                .show(childFragmentManager, PatientSearchFilterDialog.TAG)
+        } else {
+            existingFragment.show(childFragmentManager, PatientSearchFilterDialog.TAG)
         }
     }
 }
