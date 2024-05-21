@@ -29,7 +29,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:ellipsize="end"
-                android:fontFamily="@font/inter_bold"
+                android:fontFamily="@font/inter_regular"
                 android:maxLines="1"
                 android:paddingHorizontal="@dimen/_8sdp"
                 android:text="@string/community_health_worker"

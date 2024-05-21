@@ -18,6 +18,7 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="logout">LOGOUT</string>
     <string name="home">HOME</string>
+    <string name="home_title">Home</string>
     <string name="app_version">Application Version</string>
     <string name="profile">PROFILE</string>
     <string name="privacy_policy">PRIVACY POLICY</string>
@@ -451,4 +452,5 @@
     <string name="contact_number">Contact Number</string>
     <string name="mother_neonate_anc_saved_successfully">Mother Neonate Anc Saved Successfully</string>
     <string name="moderate_dehydration">Moderate Dehydration</string>
+    <string name="my_patients">My Patients</string>
 </resources>

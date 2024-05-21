@@ -38,8 +38,10 @@ class GetSyncStatusWorker @AssistedInject constructor(
 
             if (isAllEntitiesSynced) {
                 SecuredPreference.remove(SecuredPreference.EnvironmentKey.OFFLINE_SYNC_REQUEST_ID.name)
-                offlineSyncRepository.fetchSyncedData()
-                return Result.success()
+                return if (offlineSyncRepository.fetchSyncedData())
+                    Result.success()
+                else
+                    Result.failure()
             } else
                 delay(timeDelayForPolling)
         }

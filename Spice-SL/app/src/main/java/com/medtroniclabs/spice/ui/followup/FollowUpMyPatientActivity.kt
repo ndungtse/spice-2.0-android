@@ -22,7 +22,7 @@ class FollowUpMyPatientActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityFollowUpMyPatientBinding.inflate(layoutInflater)
         setMainContentView(
-            binding.root, isToolbarVisible = true, title = getString(R.string.households)
+            binding.root, isToolbarVisible = true, title = getString(R.string.my_patients)
         )
         initView()
         initObserver()

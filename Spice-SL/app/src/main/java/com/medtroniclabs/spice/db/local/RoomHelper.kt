@@ -9,11 +9,13 @@ import com.medtroniclabs.spice.data.MedicalReviewMetaItems
 import com.medtroniclabs.spice.data.VillageInfo
 import com.medtroniclabs.spice.data.offlinesync.model.HouseHold
 import com.medtroniclabs.spice.data.offlinesync.model.HouseHoldMember
+import com.medtroniclabs.spice.data.offlinesync.model.RequestFollowUp
 import com.medtroniclabs.spice.db.entity.AssessmentEntity
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowConditionEntity
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowEntity
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowEntityWithSubmodule
 import com.medtroniclabs.spice.db.entity.FollowUp
+import com.medtroniclabs.spice.db.entity.FollowUpCall
 import com.medtroniclabs.spice.db.entity.FormEntity
 import com.medtroniclabs.spice.db.entity.HealthFacilityEntity
 import com.medtroniclabs.spice.db.entity.HouseholdEntity
@@ -140,6 +142,7 @@ interface RoomHelper {
 
     suspend fun getExaminationQuestionsByWorkFlow(workFlowType: String): ExaminationListItems
 
+    suspend fun insertFollowUp(followUp: FollowUp): Long
     suspend fun insertFollowUps(list: List<FollowUp>)
 
     suspend fun deleteAllFollowUps()
@@ -158,4 +161,14 @@ interface RoomHelper {
     suspend fun getPatientIdByFhirId(fhirId: String): String?
 
     suspend fun insertClinicalInfos(list: List<MemberClinicalEntity>)
+
+    suspend fun addCallHistory(oldFollowUp: FollowUp, history: FollowUpCall, newFollowUp: FollowUp? = null)
+
+    suspend fun deleteAllFollowUpCalls()
+
+    suspend fun getFollowUpById(id: Long) : FollowUp
+
+    suspend fun getAllFollowUpRequests(): List<FollowUp>
+
+    suspend fun getAllFollowUpCalls(id: Long): List<FollowUpCall>
 }

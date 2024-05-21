@@ -2,21 +2,25 @@ package com.medtroniclabs.spice.ui.followup.adapter
 
 import android.content.Context
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.invisible
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
-import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.data.FollowUpPatientModel
 import com.medtroniclabs.spice.databinding.LayoutItemMyPatientBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
-import com.medtroniclabs.spice.ui.followup.FollowUpCommunicator
+import com.medtroniclabs.spice.ui.followup.FollowUpDefinedParams.FU_TYPE_HH_VISIT
 
-class PatientListAdapter(private val callback: (FollowUpPatientModel) -> Unit) :
+class PatientListAdapter(private val callback: (Int, FollowUpPatientModel) -> Unit) :
     RecyclerView.Adapter<PatientListAdapter.PatientViewHolder>() {
+
+    object ConstantPatientListAdapter {
+        const val PATIENT_DETAIL = 0
+        const val CALL = 1
+        const val ASSESSMENT = 2
+    }
 
     private val listOfPatient = mutableListOf<FollowUpPatientModel>()
 
@@ -35,7 +39,7 @@ class PatientListAdapter(private val callback: (FollowUpPatientModel) -> Unit) :
                 tvPatientName.text =
                     getPatientName(context, data.name, data.dateOfBirth, data.gender)
 
-                if (data.type == DefinedParams.FU_TYPE_HH_VISIT) {
+                if (data.type == FU_TYPE_HH_VISIT) {
                     assessmentButton.visible()
                 } else {
                     assessmentButton.invisible()
@@ -44,11 +48,15 @@ class PatientListAdapter(private val callback: (FollowUpPatientModel) -> Unit) :
                 tvReason.text = data.reason
                 tvPatientStatus.text = data.patientStatus
 
+                root.safeClickListener {
+                    callback(ConstantPatientListAdapter.PATIENT_DETAIL, data)
+                }
+
                 callButton.safeClickListener {
-                    callback(data)
+                    callback(ConstantPatientListAdapter.CALL, data)
                 }
                 assessmentButton.safeClickListener {
-                    callback(data)
+                    callback(ConstantPatientListAdapter.ASSESSMENT, data)
                 }
             }
         }

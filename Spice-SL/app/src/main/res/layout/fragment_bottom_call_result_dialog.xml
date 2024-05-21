@@ -54,30 +54,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvPatientStatus" />
 
-    <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/tvReason"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingHorizontal="@dimen/_16sdp"
-        android:layout_marginTop="@dimen/_16sdp"
-        android:text="@string/reason"
-        android:textColor="@color/secondary_black"
-        android:textSize="@dimen/_14ssp"
-        android:visibility="gone"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/selectionPatientStatus" />
-
-    <LinearLayout
-        android:id="@+id/selectionReason"
-        android:layout_width="@dimen/_0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginVertical="@dimen/_8sdp"
-        android:orientation="horizontal"
-        android:visibility="gone"
-        android:paddingHorizontal="@dimen/_16sdp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvReason" />
 
     <androidx.cardview.widget.CardView
         android:id="@+id/bottomDivider"
@@ -90,7 +66,7 @@
         app:layout_constraintBottom_toTopOf="@id/btnDone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/selectionReason" />
+        app:layout_constraintTop_toBottomOf="@id/selectionPatientStatus" />
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btnDone"

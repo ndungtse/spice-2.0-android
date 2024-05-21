@@ -55,7 +55,10 @@ data class HouseHoldMember(
     val villageId: Long,
 
     @ColumnInfo(name = "parentId")
-    val motherPatientId: String? = null
+    val motherPatientId: String? = null,
+
+    @ColumnInfo(name = "isPregnant")
+    val isPregnant: Boolean
 ) {
 
     @Ignore
@@ -78,7 +81,8 @@ data class HouseHoldMember(
             householdHeadRelationship = this.householdHeadRelationship ?: "",
             householdId = hhId,
             patientId = this.patientId,
-            parentId = this.motherPatientId
+            parentId = this.motherPatientId,
+            isPregnant = this.isPregnant
         ).apply {
             fhirId = this@HouseHoldMember.id.toString()
             sync_status = status

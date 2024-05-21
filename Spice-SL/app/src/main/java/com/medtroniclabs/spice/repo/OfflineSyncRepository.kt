@@ -1,11 +1,8 @@
 package com.medtroniclabs.spice.repo
 
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.google.gson.Gson
-import com.google.gson.JsonElement
 import com.google.gson.JsonParser
-import com.medtroniclabs.spice.appextensions.convertToString
 import com.medtroniclabs.spice.appextensions.convertToUtcDateTime
 import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.appextensions.postLoading
@@ -26,9 +23,7 @@ import com.medtroniclabs.spice.data.offlinesync.utils.OfflineConstant
 import com.medtroniclabs.spice.data.offlinesync.utils.OfflineSyncStatus
 import com.medtroniclabs.spice.data.offlinesync.utils.OfflineUtils
 import com.medtroniclabs.spice.data.resource.RequestAllEntities
-import com.medtroniclabs.spice.db.entity.AssessmentEntity
 import com.medtroniclabs.spice.db.entity.EntitiesName
-import com.medtroniclabs.spice.db.entity.FollowUp
 import com.medtroniclabs.spice.db.entity.MemberClinicalEntity
 import com.medtroniclabs.spice.db.local.RoomHelper
 import com.medtroniclabs.spice.model.assessment.AssessmentDetails
@@ -44,27 +39,11 @@ class OfflineSyncRepository @Inject constructor(
     private var roomHelper: RoomHelper
 ) {
 
-    suspend fun getAllUnSyncedHouseHolds(): List<HouseHold> {
-        return roomHelper.getAllUnSyncedHouseHolds()
-    }
-
-    suspend fun getAllUnSyncedMembers(householdId: Long): List<HouseHoldMember> {
-        return roomHelper.getAllUnSyncedHouseHoldMembers(householdId)
-    }
-
-    suspend fun getOtherHouseholdMembers(): List<HouseHoldMember> {
-        return roomHelper.getOtherHouseholdMembers()
-    }
-
-    suspend fun postOfflineHouseHolds(map: Map<String,Any>): Response<SyncResponse> {
-        return apiHelper.postOfflineSync(map)
-    }
-
-    suspend fun getUnSyncedAssessmentByPatientId(patientId: String): List<Assessment> {
+    private suspend fun getUnSyncedAssessmentByPatientId(patientId: String): List<Assessment> {
         return convertEntityToRequest(roomHelper.getUnSyncedAssessmentByPatientId(patientId))
     }
 
-    suspend fun getOtherUnSyncedAssessments(): List<Assessment> {
+    private suspend fun getOtherUnSyncedAssessments(): List<Assessment> {
         return convertEntityToRequest(roomHelper.getOtherUnSyncedAssessments())
     }
 
@@ -91,6 +70,7 @@ class OfflineSyncRepository @Inject constructor(
             )
         }
     }
+
     suspend fun getSyncStatus(request: RequestGetSyncStatus): Response<SyncResponse> {
         return apiHelper.getOfflineSyncStatus(request)
     }
@@ -107,16 +87,18 @@ class OfflineSyncRepository @Inject constructor(
             roomHelper.deleteAllMemberClinical()
 
             // Fetch Synced Data
-            if (!fetchSyncedData()) {
-                liveData.postError("Something went wrong")
-            }
+            val isInitialDataSuccess = fetchSyncedData()
+
 
             // Need to check this to be added for downloading error and inprogress data
-           /* if (!fetchUnSyncedData()) {
-                liveData.postError("Something went wrong")
-            }*/
+            /* if (!fetchUnSyncedData()) {
+                 liveData.postError("Something went wrong")
+             }*/
 
-            liveData.postSuccess(true)
+            if (isInitialDataSuccess)
+                liveData.postSuccess(true)
+            else
+                liveData.postError("Something went wrong")
         } catch (e: Exception) {
             e.printStackTrace()
             liveData.postError(e.message)
@@ -129,7 +111,8 @@ class OfflineSyncRepository @Inject constructor(
             villageNameId[it.name] = it.id
         }
 
-        val lastSyncedAt = SecuredPreference.getString(SecuredPreference.EnvironmentKey.LAST_SYNCED_AT.name)
+        val lastSyncedAt =
+            SecuredPreference.getString(SecuredPreference.EnvironmentKey.LAST_SYNCED_AT.name)
         val syncedResponse = getSyncedEntities(villageNameId.values.toList(), lastSyncedAt)
         if (syncedResponse.isSuccessful) {
             val response = syncedResponse.body()?.entity
@@ -140,8 +123,10 @@ class OfflineSyncRepository @Inject constructor(
 
             // Insert follow up
             roomHelper.deleteAllFollowUps()
-            response?.followUpList?.let {
-                roomHelper.insertFollowUps(it)
+            roomHelper.deleteAllFollowUpCalls()
+            response?.followUps?.forEach {
+                it.syncStatus = OfflineSyncStatus.Success
+                roomHelper.insertFollowUp(it)
             }
 
             // Insert Pregnancy Information
@@ -151,12 +136,14 @@ class OfflineSyncRepository @Inject constructor(
             }
             roomHelper.insertClinicalInfos(pregnancyDetails)
 
+            response?.followUpCriteria?.let {
+                SecuredPreference.putFollowUpCriteria(it)
+            }
+
             SecuredPreference.putString(
                 SecuredPreference.EnvironmentKey.LAST_SYNCED_AT.name,
                 System.currentTimeMillis().convertToUtcDateTime()
             )
-            SecuredPreference.putInt(SecuredPreference.EnvironmentKey.FOLLOW_UP_CALL_ATTEMPTS.name,response?.followUpCallAttempts ?: 0)
-            SecuredPreference.putInt(SecuredPreference.EnvironmentKey.REFERRED_FOLLOW_UP_DAYS.name,response?.followUpCallAttempts ?: 0)
 
             return true
         } else {
@@ -204,15 +191,26 @@ class OfflineSyncRepository @Inject constructor(
         return hhMap
     }
 
-    private suspend fun insertHouseholdMembers(householdMembers: List<HouseHoldMember>?, hhIdMap: Map<String, Long>) {
+    private suspend fun insertHouseholdMembers(
+        householdMembers: List<HouseHoldMember>?,
+        hhIdMap: Map<String, Long>
+    ) {
         householdMembers?.forEach { member ->
             hhIdMap[member.householdId]?.let {
-                roomHelper.registerMember(member.toHouseholdMemberEntity(it, OfflineSyncStatus.Success))
+                roomHelper.registerMember(
+                    member.toHouseholdMemberEntity(
+                        it,
+                        OfflineSyncStatus.Success
+                    )
+                )
             }
         }
     }
 
-    private suspend fun insertFailedHouseholds(households: List<SyncEntityList>?, villageNameId : Map<String,Long>): Map<String, HouseHold> {
+    private suspend fun insertFailedHouseholds(
+        households: List<SyncEntityList>?,
+        villageNameId: Map<String, Long>
+    ): Map<String, HouseHold> {
         // Response apiReferenceId, Household
         val hhMap = mutableMapOf<String, HouseHold>()
         households?.forEach { entity ->
@@ -222,12 +220,28 @@ class OfflineSyncRepository @Inject constructor(
                 if (houseHold.id != null) { // Fhir id is not null - Success
                     dbHHId = roomHelper.getHouseholdIdByFhirId(houseHold.id)
                     if (dbHHId != null) { // Update Flow
-                        roomHelper.updateHousehold(houseHold.toHouseholdEntity(villageNameId, OfflineSyncStatus.Success, dbHHId))
+                        roomHelper.updateHousehold(
+                            houseHold.toHouseholdEntity(
+                                villageNameId,
+                                OfflineSyncStatus.Success,
+                                dbHHId
+                            )
+                        )
                     } else { // Insert Flow
-                        dbHHId = roomHelper.saveHouseHoldEntry(houseHold.toHouseholdEntity(villageNameId, OfflineSyncStatus.Success))
+                        dbHHId = roomHelper.saveHouseHoldEntry(
+                            houseHold.toHouseholdEntity(
+                                villageNameId,
+                                OfflineSyncStatus.Success
+                            )
+                        )
                     }
                 } else { // Fhir id is null - Failed
-                    dbHHId = roomHelper.saveHouseHoldEntry(houseHold.toHouseholdEntity(villageNameId, OfflineSyncStatus.Failed))
+                    dbHHId = roomHelper.saveHouseHoldEntry(
+                        houseHold.toHouseholdEntity(
+                            villageNameId,
+                            OfflineSyncStatus.Failed
+                        )
+                    )
                 }
 
                 houseHold.referenceId = dbHHId.toString()
@@ -237,27 +251,50 @@ class OfflineSyncRepository @Inject constructor(
         return hhMap
     }
 
-    private suspend fun insertFailedHouseholdMembers(householdMemberList: List<SyncEntityList>?, hhMap: Map<String, HouseHold>) {
+    private suspend fun insertFailedHouseholdMembers(
+        householdMemberList: List<SyncEntityList>?,
+        hhMap: Map<String, HouseHold>
+    ) {
         householdMemberList?.forEach { entity ->
             Gson().fromJson(entity.data, HouseHoldMember::class.java)?.let { member ->
-                val dbHHId = roomHelper.getHouseholdIdByFhirId(member.householdId) ?: hhMap[member.householdReferenceId]?.referenceId?.toLong()
+                val dbHHId = roomHelper.getHouseholdIdByFhirId(member.householdId)
+                    ?: hhMap[member.householdReferenceId]?.referenceId?.toLong()
                 if (dbHHId != null) { // HouseholdId found in local
                     if (member.id != null) { //  Fhir id is not null - Success
                         val dbHHMId = roomHelper.getHouseholdMemberIdByFhirId(member.id)
                         if (dbHHMId != null) { // Update Flow
-                            roomHelper.registerMember(member.toHouseholdMemberEntity(dbHHId, OfflineSyncStatus.Success, dbHHMId))
+                            roomHelper.registerMember(
+                                member.toHouseholdMemberEntity(
+                                    dbHHId,
+                                    OfflineSyncStatus.Success,
+                                    dbHHMId
+                                )
+                            )
                         } else { // Insert Flow
-                            roomHelper.registerMember(member.toHouseholdMemberEntity(dbHHId, OfflineSyncStatus.Success))
+                            roomHelper.registerMember(
+                                member.toHouseholdMemberEntity(
+                                    dbHHId,
+                                    OfflineSyncStatus.Success
+                                )
+                            )
                         }
                     } else { // Fhir id is null - Failed
-                        roomHelper.registerMember(member.toHouseholdMemberEntity(dbHHId, OfflineSyncStatus.Failed))
+                        roomHelper.registerMember(
+                            member.toHouseholdMemberEntity(
+                                dbHHId,
+                                OfflineSyncStatus.Failed
+                            )
+                        )
                     }
                 }
             }
         }
     }
 
-    private suspend fun getSyncedEntities(villageList: List<Long>, lastSyncedAt: String? = null): Response<APIResponse<ResponseInitialDownload>> {
+    private suspend fun getSyncedEntities(
+        villageList: List<Long>,
+        lastSyncedAt: String? = null
+    ): Response<APIResponse<ResponseInitialDownload>> {
         // Getting village name only. For mapping I have used following code
         val request = RequestAllEntities(villageList, lastSyncedAt)
         return apiHelper.fetchSyncedData(request)
@@ -319,9 +356,10 @@ class OfflineSyncRepository @Inject constructor(
     }
 
     suspend fun startSyncOfflineData(): List<String>? {
-        val houseHoldList = getAllUnSyncedHouseHolds()
+        val houseHoldList = roomHelper.getAllUnSyncedHouseHolds()
         houseHoldList.forEach { householdEntity ->
-            val memberList = getAllUnSyncedMembers(householdEntity.referenceId!!.toLong())
+            val memberList =
+                roomHelper.getAllUnSyncedHouseHoldMembers((householdEntity.referenceId!!.toLong()))
 
             //Assessment
             memberList.forEach { hhm ->
@@ -332,7 +370,7 @@ class OfflineSyncRepository @Inject constructor(
             householdEntity.householdMembers.addAll(memberList)
         }
 
-        val otherHouseholdMembers = getOtherHouseholdMembers()
+        val otherHouseholdMembers = roomHelper.getOtherHouseholdMembers()
         //Assessment
         otherHouseholdMembers.forEach { hhm ->
             hhm.motherPatientId?.let { hhm.isChild = true }
@@ -341,18 +379,31 @@ class OfflineSyncRepository @Inject constructor(
 
         val otherAssessments = getOtherUnSyncedAssessments()
 
+        //Followup
+        val allFollowUps = roomHelper.getAllFollowUpRequests()
+        allFollowUps.forEach { followUp ->
+            followUp.id?.let {
+                followUp.followUpDetails = roomHelper.getAllFollowUpCalls(it)
+            }
+        }
+
         val request = OfflineUtils.getRequestObject()
         request[OfflineConstant.HOUSE_HOLDS] = houseHoldList
         request[OfflineConstant.HOUSE_HOLD_MEMBERS] = otherHouseholdMembers
         request[OfflineConstant.ASSESSMENTS] = otherAssessments
+        request[OfflineConstant.FOLLOWUPS] = allFollowUps
 
         // Nothing to Post anything
-        if (houseHoldList.isEmpty() && otherHouseholdMembers.isEmpty() && otherAssessments.isEmpty()) {
+        if (houseHoldList.isEmpty()
+            && otherHouseholdMembers.isEmpty()
+            && otherAssessments.isEmpty()
+            && allFollowUps.isEmpty()
+        ) {
             return listOf()
         }
 
         try {
-            val apiResponse = postOfflineHouseHolds(request)
+            val apiResponse = apiHelper.postOfflineSync(request)
             if (apiResponse.isSuccessful) {
                 return listOf(request[OfflineConstant.REQUEST_ID] as String)
             }

@@ -5,6 +5,7 @@ data class FollowUpPatientModel(
     val localPatientId: Long,
     val name: String?,
     val patientId: String?,
+    val phoneNumber: String?,
     val dateOfBirth: String?,
     val gender: String?,
     val reason: String?,

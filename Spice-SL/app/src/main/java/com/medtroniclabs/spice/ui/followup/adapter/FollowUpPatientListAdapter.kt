@@ -4,9 +4,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
 import androidx.viewpager2.adapter.FragmentStateAdapter
-import com.medtroniclabs.spice.ui.followup.fragment.FollowUpHhVisitFragment
-import com.medtroniclabs.spice.ui.followup.fragment.FollowUpMedicalReviewFragment
-import com.medtroniclabs.spice.ui.followup.fragment.FollowUpReferredFragment
+import com.medtroniclabs.spice.ui.followup.fragment.FollowUpPatientListFragment
 
 class FollowUpPatientListAdapter(fragmentManager: FragmentManager, lifecycle: Lifecycle) :
     FragmentStateAdapter(fragmentManager, lifecycle) {
@@ -15,19 +13,7 @@ class FollowUpPatientListAdapter(fragmentManager: FragmentManager, lifecycle: Li
     }
 
     override fun createFragment(p0: Int): Fragment {
-        return when (p0) {
-            1 -> {
-                FollowUpReferredFragment()
-            }
-
-            2 -> {
-                FollowUpMedicalReviewFragment()
-            }
-
-            else -> {
-                FollowUpHhVisitFragment()
-            }
-        }
+        return FollowUpPatientListFragment()
     }
 
 }

@@ -70,8 +70,8 @@
             android:exported="false" />
         <activity
             android:name=".ui.landing.OfflineSyncActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize"
             android:theme="@style/Theme.Transparent"
+            android:configChanges="keyboardHidden|orientation|screenSize"
             android:exported="false" />
         <activity
             android:name=".ui.home.ToolsActivity"

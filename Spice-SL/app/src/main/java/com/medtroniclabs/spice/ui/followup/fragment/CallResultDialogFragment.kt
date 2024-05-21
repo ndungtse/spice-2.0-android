@@ -19,7 +19,9 @@ import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.ui.SingleSelectionCustomView
 import com.medtroniclabs.spice.ui.followup.viewmodel.FollowUpViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class CallResultDialogFragment : BottomSheetDialogFragment(), View.OnClickListener {
 
     private lateinit var binding: FragmentBottomCallResultDialogBinding
@@ -38,7 +40,11 @@ class CallResultDialogFragment : BottomSheetDialogFragment(), View.OnClickListen
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        isCancelable = true
+        isCancelable = false
+
+        viewModel.callResultHashMap.clear()
+        viewModel.patientStatusHashMap.clear()
+        viewModel.unSuccessfulHashMap.clear()
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog =
@@ -74,86 +80,54 @@ class CallResultDialogFragment : BottomSheetDialogFragment(), View.OnClickListen
             binding.selectionCallResult.addView(view)
         }
 
-        getPatientStatusData().let {
-            val view = SingleSelectionCustomView(binding.root.context)
-            view.tag = TAG
-            view.addViewElements(
-                it,
-                false,
-                viewModel.patientStatusHashMap,
-                Pair(PatientStatus,null),
-                FormLayout(viewType = "", id = "", title = "", visibility = "", optionsList = null),
-                patientStatusSelectionCallback
-            )
-            binding.selectionPatientStatus.addView(view)
-        }
-        binding.btnDone.safeClickListener(this)
+        showPatientStatus()
 
-        getUnsuccessfulData().let {
-            val view = SingleSelectionCustomView(binding.root.context)
-            view.tag = TAG
-            view.addViewElements(
-                it,
-                false,
-                viewModel.unSuccessfulHashMap,
-                Pair(UnSuccessful,null),
-                FormLayout(
-                    viewType = "",
-                    id = "",
-                    title = "",
-                    visibility = "",
-                    optionsList = null
-                ),
-                unsuccessfulSelectionCallback
-            )
-            binding.selectionReason.addView(view)
-        }
+        binding.btnDone.safeClickListener(this)
     }
 
     private var callResultSelectionCallback: ((selectedID: Any?, elementId: Pair<String,String?>, serverViewModel: FormLayout, name: String?) -> Unit)? =
         { selectedID, _, _, _ ->
-            viewModel.callResultHashMap[CallResult] = selectedID as String
-            if (selectedID == "Unsuccessful") {
-                viewPatientStatusGone()
-            } else {
-                viewPatientStatus()
+            val newSelection = selectedID as String
+            val lastSelection = viewModel.callResultHashMap[CallResult]
+
+            if (lastSelection != null) {
+                viewModel.patientStatusHashMap.clear()
+                viewModel.unSuccessfulHashMap.clear()
             }
-            enableConfirmed()
+
+            if (lastSelection != newSelection) {
+                viewModel.callResultHashMap[CallResult] = newSelection
+                if (selectedID == "Unsuccessful") {
+                    showUnsuccessfulReason()
+                    enableForUnSuccessful()
+                } else {
+                    showPatientStatus()
+                    enableForSuccessFul()
+                }
+            }
         }
 
     private var unsuccessfulSelectionCallback: ((selectedID: Any?, elementId: Pair<String,String?>, serverViewModel: FormLayout, name: String?) -> Unit)? =
         { selectedID, _, _, _ ->
             viewModel.unSuccessfulHashMap[UnSuccessful] = selectedID as String
-            enableConfirmed()
+            enableForUnSuccessful()
         }
-
-    private fun viewPatientStatusGone() {
-        binding.tvPatientStatus.visibility = View.GONE
-        binding.selectionPatientStatus.visibility = View.GONE
-        binding.tvReason.visibility = View.VISIBLE
-        binding.selectionReason.visibility = View.VISIBLE
-    }
-
-    private fun viewPatientStatus() {
-        binding.tvReason.visibility = View.GONE
-        binding.selectionReason.visibility = View.GONE
-        binding.tvPatientStatus.visibility = View.VISIBLE
-        binding.selectionPatientStatus.visibility = View.VISIBLE
-    }
-
 
     private var patientStatusSelectionCallback: ((selectedID: Any?, elementId: Pair<String,String?>, serverViewModel: FormLayout, name: String?) -> Unit)? =
         { selectedID, _, _, _ ->
             viewModel.patientStatusHashMap[PatientStatus] = selectedID as String
-            enableConfirmed()
         }
 
 
-    private fun enableConfirmed() {
-        binding.btnDone.isEnabled =
-            viewModel.callResultHashMap.containsKey(CallResult) || viewModel.patientStatusHashMap.containsKey(
-                PatientStatus
-            )
+    private fun enableForUnSuccessful() {
+        val isCallResultEnabled = viewModel.callResultHashMap.isNotEmpty()
+        val isReasonEnabled = viewModel.unSuccessfulHashMap.isNotEmpty()
+
+        binding.btnDone.isEnabled = isCallResultEnabled && isReasonEnabled
+    }
+
+    private fun enableForSuccessFul() {
+        binding.btnDone.isEnabled = true
     }
 
     private fun getCallResultData(): ArrayList<Map<String, Any>> {
@@ -188,8 +162,51 @@ class CallResultDialogFragment : BottomSheetDialogFragment(), View.OnClickListen
     override fun onClick(v: View?) {
         when (v?.id) {
             binding.btnDone.id -> {
+                viewModel.addCallHistory()
                 dismiss()
             }
+        }
+    }
+
+    private fun showPatientStatus() {
+        binding.selectionPatientStatus.removeAllViews()
+        binding.tvPatientStatus.text = getString(R.string.patient_status)
+        getPatientStatusData().let {
+            val view = SingleSelectionCustomView(binding.root.context)
+            view.tag = TAG
+            view.addViewElements(
+                it,
+                false,
+                viewModel.patientStatusHashMap,
+                Pair(PatientStatus,null),
+                FormLayout(viewType = "", id = "", title = "", visibility = "", optionsList = null),
+                patientStatusSelectionCallback
+            )
+            binding.selectionPatientStatus.addView(view)
+        }
+    }
+
+    private fun showUnsuccessfulReason() {
+        binding.selectionPatientStatus.removeAllViews()
+        binding.tvPatientStatus.text = getString(R.string.reason)
+        getUnsuccessfulData().let {
+            val view = SingleSelectionCustomView(binding.root.context)
+            view.tag = TAG
+            view.addViewElements(
+                it,
+                false,
+                viewModel.unSuccessfulHashMap,
+                Pair(UnSuccessful,null),
+                FormLayout(
+                    viewType = "",
+                    id = "",
+                    title = "",
+                    visibility = "",
+                    optionsList = null
+                ),
+                unsuccessfulSelectionCallback
+            )
+            binding.selectionPatientStatus.addView(view)
         }
     }
 }

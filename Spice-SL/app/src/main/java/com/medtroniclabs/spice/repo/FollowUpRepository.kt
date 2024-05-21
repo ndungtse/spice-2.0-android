@@ -1,12 +1,20 @@
 package com.medtroniclabs.spice.repo
 
 import androidx.lifecycle.LiveData
+import com.medtroniclabs.spice.appextensions.convertToUtcDateTime
 import com.medtroniclabs.spice.common.DateUtils
+import com.medtroniclabs.spice.common.DefinedParams.OnTreatment
+import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.FollowUpPatientModel
+import com.medtroniclabs.spice.data.offlinesync.model.FollowUpCallStatus
+import com.medtroniclabs.spice.data.offlinesync.utils.OfflineSyncStatus
+import com.medtroniclabs.spice.db.entity.FollowUp
+import com.medtroniclabs.spice.db.entity.FollowUpCall
 import com.medtroniclabs.spice.db.entity.VillageEntity
 import com.medtroniclabs.spice.db.local.RoomHelper
 import com.medtroniclabs.spice.model.followup.FollowUpFilter
 import com.medtroniclabs.spice.network.ApiHelper
+import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
 import com.medtroniclabs.spice.ui.followup.FollowUpDefinedParams
 import javax.inject.Inject
 
@@ -68,4 +76,103 @@ class FollowUpRepository @Inject constructor(
     suspend fun getVillageIds(): List<VillageEntity> {
         return roomHelper.getAllVillageEntity()
     }
+
+    suspend fun addCallHistory(
+        maxSuccessfulCallLimit: Int,
+        maxUnSuccessfulCallLimit: Int,
+        followUpId: Long,
+        callStatus: FollowUpCallStatus,
+        patientStatus: String? = null,
+        reason: String? = null
+    ) {
+        val followUp = roomHelper.getFollowUpById(followUpId)
+        followUp.syncStatus = OfflineSyncStatus.NotSynced
+        followUp.attempts = followUp.attempts + 1
+
+        val callDetail = FollowUpCall(
+            followUpId = followUpId,
+            callDate = System.currentTimeMillis().convertToUtcDateTime(),
+            duration = 0,
+            attempts =  followUp.attempts,
+            status = callStatus,
+            patientStatus = patientStatus,
+            reason = reason
+        )
+
+        var newFollowUp: FollowUp? = null
+        if (callDetail.status == FollowUpCallStatus.SUCCESSFUL) {
+            newFollowUp = handleSuccessCall(followUp, callDetail, maxSuccessfulCallLimit)
+        } else {
+            handleUnSuccessfulCall(followUp, callDetail, maxUnSuccessfulCallLimit)
+        }
+
+        roomHelper.addCallHistory(followUp, callDetail, newFollowUp)
+    }
+
+    private fun handleSuccessCall(followUp: FollowUp, call: FollowUpCall, maxSuccessfulCallLimit: Int): FollowUp? {
+        call.patientStatus?.let {
+            followUp.currentPatientStatus = it
+            if (it.equals(ReferralStatus.Recovered.name, true)) {
+                followUp.isCompleted = true
+            }
+        }
+
+        followUp.successfulAttempts = followUp.successfulAttempts + 1
+        if (followUp.successfulAttempts >= maxSuccessfulCallLimit) {
+            followUp.isCompleted = true
+        }
+
+        if ((followUp.type == FollowUpDefinedParams.FU_TYPE_HH_VISIT || followUp.type == FollowUpDefinedParams.FU_TYPE_MEDICAL_REVIEW)
+            && call.patientStatus?.equals(ReferralStatus.Referred.name, true) == true
+        ) {
+            return getNewFollowUp(
+                followUp,
+                FollowUpDefinedParams.FU_TYPE_REFERRED,
+                ReferralStatus.Referred.name,
+                SecuredPreference.getOrganizationFhirId()
+            )
+        }
+
+        if (followUp.type == FollowUpDefinedParams.FU_TYPE_REFERRED
+            && call.patientStatus?.equals(ReferralStatus.OnTreatment.name, true) == true
+        ) {
+            return getNewFollowUp(
+                followUp,
+                FollowUpDefinedParams.FU_TYPE_MEDICAL_REVIEW,
+                ReferralStatus.OnTreatment.name
+            )
+        }
+
+        return null
+    }
+
+    private fun handleUnSuccessfulCall(followUp: FollowUp, call: FollowUpCall, maxUnSuccessfulCallLimit: Int) {
+        followUp.unsuccessfulAttempts = followUp.unsuccessfulAttempts + 1
+        if (followUp.unsuccessfulAttempts >= maxUnSuccessfulCallLimit) {
+            followUp.isCompleted = true
+        }
+
+        if (call.reason?.equals(FollowUpDefinedParams.WRONG_NUMBER, true) == true) {
+            followUp.isCompleted = true
+        }
+    }
+
+    private fun getNewFollowUp(followUp: FollowUp, type: String, status: String, referredSiteId: String? = null): FollowUp {
+        followUp.isCompleted = true
+        return followUp.copy(
+            referenceId = 0,
+            id = null,
+            type = type,
+            patientStatus = status,
+            currentPatientStatus = null,
+            isCompleted = false,
+            attempts = 0,
+            successfulAttempts = 0,
+            unsuccessfulAttempts = 0,
+            encounterDate = System.currentTimeMillis().convertToUtcDateTime(),
+            nextVisitDate = null,
+            referredSiteId = referredSiteId
+        )
+    }
+
 }

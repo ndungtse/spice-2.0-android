@@ -1,23 +1,39 @@
 package com.medtroniclabs.spice.db.entity
 
 import androidx.room.Entity
+import androidx.room.Ignore
 import androidx.room.PrimaryKey
+import com.medtroniclabs.spice.appextensions.convertToUtcDateTime
+import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
+import com.medtroniclabs.spice.data.offlinesync.utils.OfflineSyncStatus
 
 @Entity(tableName = "FollowUp")
 data class FollowUp(
-    @PrimaryKey(autoGenerate = false)
-    val id: Long,
+    @PrimaryKey(autoGenerate = true)
+    val referenceId: Long = 0,
+    val id: Long?,
     val householdId: String,
     val memberId: String,
     val patientId: String,
     val encounterId: String,
     val patientStatus: String,
-    val reason: String,
-    val attempts: Int,
+    var currentPatientStatus: String? = null,
+    val reason: String ? =null,
+    var attempts: Int = 0,
+    var successfulAttempts: Int = 0,
+    var unsuccessfulAttempts: Int = 0,
     val type: String,
-    val encounterType: String,
+    val encounterType: String? = null, // It should not null
     val encounterDate: String? = null,
     val nextVisitDate: String? = null,
     val referredSiteId: String? = null,
-    val villageId: String
-)
+    val villageId: String,
+    var isCompleted: Boolean = false,
+    var syncStatus: OfflineSyncStatus = OfflineSyncStatus.Success
+) {
+    @Ignore
+    var followUpDetails : List<FollowUpCall> = listOf()
+
+    @Ignore
+    var provenance: ProvanceDto = ProvanceDto(createdDateTime = System.currentTimeMillis().convertToUtcDateTime())
+}

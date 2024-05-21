@@ -7,6 +7,7 @@ import androidx.security.crypto.MasterKey
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.medtroniclabs.spice.data.LoginResponse
+import com.medtroniclabs.spice.data.offlinesync.model.FollowUpCriteria
 import java.lang.reflect.Type
 
 
@@ -30,8 +31,7 @@ object SecuredPreference {
         IS_LABOUR_DELIVERY_LOADED,
         OFFLINE_SYNC_REQUEST_ID,
         LAST_SYNCED_AT,
-        FOLLOW_UP_CALL_ATTEMPTS,
-        REFERRED_FOLLOW_UP_DAYS
+        FOLLOW_UP_CRITERIA
     }
 
 
@@ -398,6 +398,17 @@ object SecuredPreference {
         val userResponseString = getString(EnvironmentKey.USER_RESPONSE.name)
         val type: Type = object : TypeToken<LoginResponse>() {}.type
         return Gson().fromJson(userResponseString, type)
+    }
+
+    fun putFollowUpCriteria(followUpCriteria: FollowUpCriteria) {
+        val followUpCriteriaString = Gson().toJson(followUpCriteria)
+        putString(EnvironmentKey.FOLLOW_UP_CRITERIA.name, followUpCriteriaString)
+    }
+
+    fun getFollowUpCriteria(): FollowUpCriteria {
+        val followUpCriteriaString = getString(EnvironmentKey.FOLLOW_UP_CRITERIA.name)
+        val type: Type = object : TypeToken<FollowUpCriteria>() {}.type
+        return Gson().fromJson(followUpCriteriaString, type)
     }
 
     fun getUserId(): Long {

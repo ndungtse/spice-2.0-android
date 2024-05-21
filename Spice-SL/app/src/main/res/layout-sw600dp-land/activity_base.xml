@@ -34,9 +34,9 @@
             android:id="@+id/titleToolbar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/inter_medium"
-            android:paddingHorizontal="@dimen/_60sdp"
+            android:fontFamily="@font/inter_regular"
             android:gravity="center"
+            android:paddingHorizontal="@dimen/_60sdp"
             android:textColor="@color/white"
             android:textSize="@dimen/_16ssp"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -44,48 +44,48 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-<!--        <LinearLayout
-            android:id="@+id/clTitle"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            app:layout_constraintBottom_toBottomOf="@id/toolbar"
-            app:layout_constraintEnd_toStartOf="@+id/ivHomeHolder"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@id/toolbar">
+        <!--        <LinearLayout
+                    android:id="@+id/clTitle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    app:layout_constraintBottom_toBottomOf="@id/toolbar"
+                    app:layout_constraintEnd_toStartOf="@+id/ivHomeHolder"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/toolbar">
 
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/titleToolbar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/inter_medium"
-                android:gravity="center"
-                android:paddingVertical="@dimen/_11sdp"
-                android:textColor="@color/white"
-                android:textSize="@dimen/_16ssp" />
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/titleToolbar"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/inter_medium"
+                        android:gravity="center"
+                        android:paddingVertical="@dimen/_11sdp"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/_16ssp" />
 
-            <ImageView
-                android:id="@+id/ivRedAlert"
-                android:layout_width="@dimen/_24sdp"
-                android:layout_height="@dimen/_24sdp"
-                android:layout_marginStart="@dimen/_10sdp"
-                android:src="@drawable/ic_red_alert"
-                android:visibility="gone" />
+                    <ImageView
+                        android:id="@+id/ivRedAlert"
+                        android:layout_width="@dimen/_24sdp"
+                        android:layout_height="@dimen/_24sdp"
+                        android:layout_marginStart="@dimen/_10sdp"
+                        android:src="@drawable/ic_red_alert"
+                        android:visibility="gone" />
 
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/tvRedAlert"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/_5sdp"
-                android:fontFamily="@font/inter_regular"
-                android:gravity="center"
-                android:paddingVertical="@dimen/_11sdp"
-                android:text="@string/red_alert"
-                android:textColor="@color/white"
-                android:textSize="@dimen/_16ssp"
-                android:visibility="gone" />
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/tvRedAlert"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/_5sdp"
+                        android:fontFamily="@font/inter_regular"
+                        android:gravity="center"
+                        android:paddingVertical="@dimen/_11sdp"
+                        android:text="@string/red_alert"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/_16ssp"
+                        android:visibility="gone" />
 
-        </LinearLayout>-->
+                </LinearLayout>-->
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:id="@+id/ivHomeHolder"

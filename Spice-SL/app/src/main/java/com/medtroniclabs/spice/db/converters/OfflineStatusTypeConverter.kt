@@ -4,6 +4,7 @@ import androidx.room.TypeConverter
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.medtroniclabs.spice.data.DiseaseConditionItems
+import com.medtroniclabs.spice.data.offlinesync.model.FollowUpCallStatus
 import com.medtroniclabs.spice.data.offlinesync.utils.OfflineSyncStatus
 import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
 import java.lang.reflect.Type
@@ -52,5 +53,15 @@ class OfflineStatusTypeConverter {
     fun fromDiseaseConditionArrayList(list: ArrayList<DiseaseConditionItems?>?): String? {
         val gson = Gson()
         return gson.toJson(list)
+    }
+
+    @TypeConverter
+    fun fromFollowUpCallStatus(callStatus: FollowUpCallStatus): String {
+        return callStatus.name
+    }
+
+    @TypeConverter
+    fun toFollowUpCallStatus(status: String): FollowUpCallStatus {
+        return FollowUpCallStatus.valueOf(status)
     }
 }

@@ -27,7 +27,7 @@ class OfflineSyncActivity : SpiceRootActivity() {
 
     private val viewModel: OfflineSyncViewModel by viewModels()
     private lateinit var binding: FragmentOfflineSyncBinding
-    private val getStatusStartTimer = 2L // Mintues
+    private val getStatusStartTimer = 1L // Mintues
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -114,7 +114,6 @@ class OfflineSyncActivity : SpiceRootActivity() {
             if (workerInfo.state == WorkInfo.State.SUCCEEDED) {
                 viewModel.syncCompleted(true)
             } else if (workerInfo.state == WorkInfo.State.FAILED) {
-                //dismissLoadingDialog()
                 viewModel.syncCompleted()
             }
         }

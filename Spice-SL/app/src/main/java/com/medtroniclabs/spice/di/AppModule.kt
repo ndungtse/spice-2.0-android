@@ -18,6 +18,7 @@ import com.medtroniclabs.spice.db.dao.MemberDAO
 import com.medtroniclabs.spice.db.dao.MetaDataDAO
 import com.medtroniclabs.spice.db.dao.ExaminationsComplaintsDAO
 import com.medtroniclabs.spice.db.dao.ExaminationsDAO
+import com.medtroniclabs.spice.db.dao.FollowUpCallsDao
 import com.medtroniclabs.spice.db.dao.FollowUpDao
 import com.medtroniclabs.spice.db.dao.LabourDeliveryDAO
 import com.medtroniclabs.spice.db.local.RoomHelper
@@ -50,6 +51,8 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object AppModule {
 
+    private const val TIMEOUT_SECONDS = 180L // 3 Minutes
+
     @Singleton
     @Provides
     fun provideOkHttpClient(@ApplicationContext context: Context) = if (BuildConfig.DEBUG) {
@@ -58,16 +61,16 @@ object AppModule {
         OkHttpClient.Builder()
             .addInterceptor(loggingInterceptor)
             .addInterceptor(AppInterceptor(context))
-            .connectTimeout(60, TimeUnit.SECONDS)
-            .writeTimeout(120, TimeUnit.SECONDS)
-            .readTimeout(60, TimeUnit.SECONDS)
+            .connectTimeout(TIMEOUT_SECONDS, TimeUnit.SECONDS)
+            .writeTimeout(TIMEOUT_SECONDS, TimeUnit.SECONDS)
+            .readTimeout(TIMEOUT_SECONDS, TimeUnit.SECONDS)
             .build()
     } else {
         OkHttpClient.Builder()
             .addInterceptor(AppInterceptor(context))
-            .connectTimeout(60, TimeUnit.SECONDS)
-            .writeTimeout(120, TimeUnit.SECONDS)
-            .readTimeout(60, TimeUnit.SECONDS)
+            .connectTimeout(TIMEOUT_SECONDS, TimeUnit.SECONDS)
+            .writeTimeout(TIMEOUT_SECONDS, TimeUnit.SECONDS)
+            .readTimeout(TIMEOUT_SECONDS, TimeUnit.SECONDS)
             .build()
     }
 
@@ -148,6 +151,12 @@ object AppModule {
     @Provides
     fun provideMemberDAO(db: SpiceDataBase): MemberDAO {
         return db.memberDAO()
+    }
+
+    @Singleton
+    @Provides
+    fun followUpCallDao(db: SpiceDataBase): FollowUpCallsDao {
+        return db.followUpCallsDao()
     }
 
     @Singleton

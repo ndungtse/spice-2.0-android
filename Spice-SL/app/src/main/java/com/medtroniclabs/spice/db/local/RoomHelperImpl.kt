@@ -2,12 +2,14 @@ package com.medtroniclabs.spice.db.local
 
 import androidx.lifecycle.LiveData
 import androidx.sqlite.db.SimpleSQLiteQuery
+import com.medtroniclabs.spice.appextensions.convertToUtcDateTime
 import com.medtroniclabs.spice.data.DiseaseCategoryItems
 import com.medtroniclabs.spice.data.ExaminationListItems
 import com.medtroniclabs.spice.data.FollowUpPatientModel
 import com.medtroniclabs.spice.data.LabourDeliveryMetaEntity
 import com.medtroniclabs.spice.data.MedicalReviewMetaItems
 import com.medtroniclabs.spice.data.VillageInfo
+import com.medtroniclabs.spice.data.offlinesync.model.FollowUpCallStatus
 import com.medtroniclabs.spice.data.offlinesync.model.HouseHold
 import com.medtroniclabs.spice.data.offlinesync.model.HouseHoldMember
 import com.medtroniclabs.spice.data.offlinesync.utils.OfflineSyncStatus
@@ -16,6 +18,7 @@ import com.medtroniclabs.spice.db.dao.AssessmentDAO
 import com.medtroniclabs.spice.db.dao.DiagnosisDAO
 import com.medtroniclabs.spice.db.dao.ExaminationsComplaintsDAO
 import com.medtroniclabs.spice.db.dao.ExaminationsDAO
+import com.medtroniclabs.spice.db.dao.FollowUpCallsDao
 import com.medtroniclabs.spice.db.dao.FollowUpDao
 import com.medtroniclabs.spice.db.dao.HouseholdDAO
 import com.medtroniclabs.spice.db.dao.LabourDeliveryDAO
@@ -27,6 +30,7 @@ import com.medtroniclabs.spice.db.entity.ClinicalWorkflowConditionEntity
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowEntity
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowEntityWithSubmodule
 import com.medtroniclabs.spice.db.entity.FollowUp
+import com.medtroniclabs.spice.db.entity.FollowUpCall
 import com.medtroniclabs.spice.db.entity.FormEntity
 import com.medtroniclabs.spice.db.entity.HealthFacilityEntity
 import com.medtroniclabs.spice.db.entity.HouseholdEntity
@@ -42,6 +46,10 @@ import com.medtroniclabs.spice.db.response.VillageBasicDetails
 import com.medtroniclabs.spice.model.MemberDobGenderModel
 import com.medtroniclabs.spice.model.assessment.AssessmentDetails
 import com.medtroniclabs.spice.model.assessment.AssessmentMemberDetails
+import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
+import com.medtroniclabs.spice.ui.followup.FollowUpDefinedParams.FU_TYPE_HH_VISIT
+import com.medtroniclabs.spice.ui.followup.FollowUpDefinedParams.FU_TYPE_REFERRED
+import com.medtroniclabs.spice.ui.followup.FollowUpDefinedParams.WrongNumber
 import com.medtroniclabs.spice.model.followup.FollowUpFilter
 import com.medtroniclabs.spice.ui.boarding.MenuTypeEnums
 import javax.inject.Inject
@@ -57,7 +65,8 @@ class RoomHelperImpl @Inject constructor(
     private val aboveFiveYearsDAO: AboveFiveYearsDAO,
     private val examinationsDAO: ExaminationsDAO,
     private val labourDeliveryDAO: LabourDeliveryDAO,
-    private val followUpDao: FollowUpDao
+    private val followUpDao: FollowUpDao,
+    private val followUpCallsDao: FollowUpCallsDao
 ) : RoomHelper {
     override suspend fun saveHouseHoldEntry(householdEntity: HouseholdEntity): Long {
         return householdDAO.insertHouseHold(householdEntity)
@@ -415,6 +424,10 @@ class RoomHelperImpl @Inject constructor(
         followUpDao.insertFollowUps(list)
     }
 
+    override suspend fun insertFollowUp(followUp: FollowUp): Long {
+        return followUpDao.insertFollowUp(followUp)
+    }
+
     override suspend fun deleteAllFollowUps() {
         followUpDao.deleteAllFollowUps()
     }
@@ -454,5 +467,31 @@ class RoomHelperImpl @Inject constructor(
 
     override suspend fun insertClinicalInfos(list: List<MemberClinicalEntity>) {
         memberClinicalDAO.insertClinicalInfos(list)
+    }
+
+    override suspend fun addCallHistory(oldFollowUp: FollowUp, history: FollowUpCall, newFollowUp: FollowUp?) {
+        followUpCallsDao.insertFollowUpCall(history)
+        followUpDao.updateFollowUps(oldFollowUp)
+        newFollowUp?.let {
+            followUpDao.insertFollowUp(it)
+        }
+    }
+
+
+
+    override suspend fun getAllFollowUpRequests(): List<FollowUp> {
+        return followUpDao.getAllFollowUps()
+    }
+
+    override suspend fun getAllFollowUpCalls(id: Long): List<FollowUpCall> {
+        return followUpCallsDao.getAllFollowUpCalls(id)
+    }
+
+    override suspend fun getFollowUpById(id: Long): FollowUp {
+        return followUpDao.getFollowUpDetailsById(id)
+    }
+
+    override suspend fun deleteAllFollowUpCalls() {
+        return followUpCallsDao.deleteAllFollowUpCalls()
     }
 }

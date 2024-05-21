@@ -155,7 +155,7 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
                         tag = PatientSearchFragment.TAG
                     )
                 } else {
-                    binding.appBarMain.tvTitle.text = getString(R.string.home)
+                    binding.appBarMain.tvTitle.text = getString(R.string.home_title)
                     replaceFragmentInId<HomeScreenFragment>(
                         R.id.fragmentContainerView,
                         tag = HomeScreenFragment.TAG

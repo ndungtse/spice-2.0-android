@@ -61,9 +61,6 @@ object DefinedParams {
     const val SUCCESSFUL = "successful"
     const val UNSUCCESSFUL = "unSuccessful"
 
-    const val FU_TYPE_HH_VISIT = "HH_VISIT"
-    const val FU_TYPE_REFERRED = "REFERRED"
-    const val FU_TYPE_MEDICAL_REVIEW = "MEDICAL_REVIEW"
     const val OnTreatment = "On Treatment"
     const val OnHold = "on-hold"
     const val Active = "active"

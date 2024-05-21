@@ -14,26 +14,28 @@ import com.medtroniclabs.spice.appextensions.setDialogWidthAndHeightAsWrapPercen
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DefinedParams
-import com.medtroniclabs.spice.common.DefinedParams.FU_TYPE_HH_VISIT
-import com.medtroniclabs.spice.data.FollowUpPatientModel
 import com.medtroniclabs.spice.databinding.FragmentFollowUpDialogBinding
-import com.medtroniclabs.spice.ui.MenuConstants
 import com.medtroniclabs.spice.ui.assessment.AssessmentActivity
+import com.medtroniclabs.spice.ui.followup.FollowUpDefinedParams.FU_TYPE_HH_VISIT
 import com.medtroniclabs.spice.ui.followup.viewmodel.FollowUpViewModel
-import com.medtroniclabs.spice.ui.home.ToolsActivity
 
 class FollowUpDialogFragment : DialogFragment() {
 
+    interface FollowUpClickListener {
+        fun onCallClicked()
+        fun onLaunchAssessment()
+    }
+
     private lateinit var binding: FragmentFollowUpDialogBinding
     private val viewModel: FollowUpViewModel by activityViewModels()
-    private var followUpDetail: FollowUpPatientModel? = null
+    private var listener: FollowUpClickListener? = null
 
     companion object {
         const val TAG = "FollowUpDialogFragment"
-        fun newInstance(followUpDetail: FollowUpPatientModel): FollowUpDialogFragment {
-            val fragment = FollowUpDialogFragment()
-            fragment.followUpDetail = followUpDetail
-            return fragment
+        fun newInstance(listener: FollowUpClickListener): FollowUpDialogFragment {
+            val frag = FollowUpDialogFragment()
+            frag.listener = listener
+            return frag
         }
     }
 
@@ -59,24 +61,19 @@ class FollowUpDialogFragment : DialogFragment() {
 
     private fun initViews() {
         binding.btnCall.setOnClickListener {
-            CallResultDialogFragment.newInstance()
-                .show(childFragmentManager, CallResultDialogFragment.TAG)
+            dismiss()
+            listener?.onCallClicked()
         }
         binding.ivClose.setOnClickListener {
             dismiss()
         }
 
         binding.btnAssessment.setOnClickListener {
-            followUpDetail?.let {
-                dismiss()
-                val intent = Intent(requireContext(), AssessmentActivity::class.java)
-                intent.putExtra(DefinedParams.MemberID, it.localPatientId)
-                intent.putExtra(DefinedParams.MenuId, it.encounterType?.lowercase())
-                startActivity(intent)
-            }
+            dismiss()
+            listener?.onLaunchAssessment()
         }
 
-        followUpDetail?.let { details ->
+        viewModel.selectedFollowUpDetail?.let { details ->
             with(binding) {
                 tvTitle.text = getPatientName(details.name, details.dateOfBirth, details.gender)
                 tvReasonText.text = details.reason ?: getString(R.string.hyphen_symbol)
@@ -132,9 +129,5 @@ class FollowUpDialogFragment : DialogFragment() {
                 setDialogWidthAndHeightAsWrapPercent(portrait)
             }
         }
-    }
-
-    private fun startAssessmentActivity(menuId: String, memberId: Long) {
-
     }
 }
