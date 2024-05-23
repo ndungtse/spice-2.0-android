@@ -289,7 +289,7 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
             getString(R.string.patient_status),
             viewModel.referralStatus ?: getString(R.string.seperator_hyphen)
         )
-        composeGeneralDangerSignsResult(listSummaryData)
+        val isSignContain = composeGeneralDangerSignsResult(listSummaryData)
         listSummaryData.filter { it.title?.lowercase() != General_Danger_Signs.lowercase() }.forEach { item ->
             when (item.id) {
                 muacCode -> {
@@ -307,11 +307,18 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
                     if (item.value == Yes) {
                         bindICCMSummaryView(
                             item.title,
-                            requireContext().getString(
-                                R.string.nutrition_summary,
-                                item.value,
-                                getString(R.string.severe_dehydration)
-                            )
+                            if (isSignContain) {
+                                requireContext().getString(
+                                    R.string.nutrition_summary,
+                                    item.value,
+                                    getString(R.string.severe_dehydration)
+                                )
+                            } else {
+                                requireContext().getString(
+                                    R.string.nutrition_summary_without_signs,
+                                    item.value
+                                )
+                            }
                         )
                     } else {
                         bindICCMSummaryView(item.title, item.value)
@@ -395,20 +402,39 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
     }
 
 
-    private fun composeGeneralDangerSignsResult(listSummaryData: MutableList<AssessmentSummaryModel>) {
+    private fun composeGeneralDangerSignsResult(listSummaryData: MutableList<AssessmentSummaryModel>): Boolean {
+        var isSignContain = false
         val targetIds = setOf(
             isUnusualSleepy,
             isConvulsionPastFewDays,
             isVomiting,
             isBreastfeed
         )
+        val signsList = listOf(
+            AssessmentDefinedParams.SunkenEyes.lowercase(),
+            AssessmentDefinedParams.NoTearsWhenCrying.lowercase(),
+            AssessmentDefinedParams.LittleOrNoUrine.lowercase(),
+            AssessmentDefinedParams.SkinPinch.lowercase(),
+            AssessmentDefinedParams.VeryThirsty.lowercase()
+        )
+
         var result = DefinedParams.No
         for (assessment in listSummaryData) {
             if (assessment.id in targetIds && assessment.value == Yes) {
                 result = Yes
+
+            }
+            if (assessment.title.equals(AssessmentDefinedParams.Signs, true) && signsList.any { sign ->
+                    assessment.value?.lowercase()?.contains(sign) == true
+                }) {
+                isSignContain = true
             }
         }
-        bindICCMSummaryView(listSummaryData[0].title ?: getString(R.string.general_danger_signs), result)
+        bindICCMSummaryView(
+            listSummaryData[0].title ?: getString(R.string.general_danger_signs),
+            result
+        )
+        return isSignContain
     }
 
     private fun bindICCMSummaryView(title: String?, value: String?, valueTextColor: Int? = null) {

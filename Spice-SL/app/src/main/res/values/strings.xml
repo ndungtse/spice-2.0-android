@@ -442,4 +442,5 @@
     <string name="general_max_validation">Entered value should be lesser than %1$s</string>
     <string name="household">Household</string>
     <string name="please_select_a_site">Please select a valid site</string>
+    <string name="nutrition_summary_without_signs">%1$s</string>
 </resources>
