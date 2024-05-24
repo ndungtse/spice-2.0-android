@@ -66,6 +66,7 @@
             android:screenOrientation="sensorLandscape" />
         <activity
             android:name=".ui.household.summary.HouseholdSummaryActivity"
+            android:launchMode="singleTask"
             android:exported="false" />
         <activity
             android:name=".ui.landing.OfflineSyncActivity"
