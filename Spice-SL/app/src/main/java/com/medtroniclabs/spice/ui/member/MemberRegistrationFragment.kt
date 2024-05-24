@@ -16,7 +16,6 @@ import com.medtroniclabs.spice.common.CommonUtils.getBooleanAsString
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
 import com.medtroniclabs.spice.common.DateUtils.DATE_ddMMyyyy
-import com.medtroniclabs.spice.common.DateUtils.getYearMonthAndWeek
 import com.medtroniclabs.spice.common.DefinedParams.HOUSEHOLD_MEMBER_REGISTRATION
 import com.medtroniclabs.spice.common.DefinedParams.HouseholdHead
 import com.medtroniclabs.spice.common.DefinedParams.MemberID
@@ -29,9 +28,6 @@ import com.medtroniclabs.spice.databinding.FragmentMemberRegistrationBinding
 import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
 import com.medtroniclabs.spice.formgeneration.FormGenerator
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams
-import com.medtroniclabs.spice.formgeneration.config.DefinedParams.Month
-import com.medtroniclabs.spice.formgeneration.config.DefinedParams.Week
-import com.medtroniclabs.spice.formgeneration.config.DefinedParams.Year
 import com.medtroniclabs.spice.formgeneration.listener.FormEventListener
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.model.FormResponse
@@ -178,6 +174,7 @@ class MemberRegistrationFragment : Fragment(), FormEventListener, View.OnClickLi
                 if (details.householdHeadRelationship.contains(getString(R.string.separator_hyphen))) {
                     details.householdHeadRelationship.substringAfter(getString(R.string.separator_hyphen))
                 } else details.householdHeadRelationship
+            formGenerator.disableView(view, requireContext())
             formGenerator.setValueForView(relationship, view)
         }
         formGenerator.getViewByTag(phoneNumber)?.let { view ->

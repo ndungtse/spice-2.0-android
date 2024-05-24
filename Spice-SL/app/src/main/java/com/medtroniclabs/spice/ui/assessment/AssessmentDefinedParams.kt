@@ -64,4 +64,5 @@ object AssessmentDefinedParams {
     const val infoSuffixText = "informationSuffixText"
     const val Fever = "fever"
     const val Signs = "Signs"
+    const val Cough = "Cough"
 }

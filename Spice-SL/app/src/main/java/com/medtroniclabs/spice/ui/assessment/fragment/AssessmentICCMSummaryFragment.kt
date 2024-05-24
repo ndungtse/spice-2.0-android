@@ -45,6 +45,10 @@ import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.Amoxicillin
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.AssessmentNotes
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.BreathPerMinute
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.Dispensed
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.FB_MAX_BREATHING
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.FB_MAX_MONTH
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.FB_MIN_BREATHING
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.FB_MIN_MONTH
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.General_Danger_Signs
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.IsClinicTaken
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.NextFollowupDate
@@ -64,6 +68,7 @@ import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.isUnusualSl
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.isVomiting
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.muacCode
 import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefinedParams
+import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefinedParams.Diarrhoea
 import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefinedParams.RdtPositive
 import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
@@ -305,15 +310,16 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
 
                 hasDiarrhoea -> {
                     if (item.value == Yes) {
+                        val dehydrationStatus = getDehydrationStatus(isSignContain)
                         bindICCMSummaryView(
                             item.title,
-                            if (isSignContain) {
+                            dehydrationStatus?.let {result ->
                                 requireContext().getString(
                                     R.string.nutrition_summary,
                                     item.value,
-                                    getString(R.string.severe_dehydration)
+                                    result
                                 )
-                            } else {
+                            } ?: kotlin.run {
                                 requireContext().getString(
                                     R.string.nutrition_summary_without_signs,
                                     item.value
@@ -327,14 +333,19 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
 
                 hasCough -> {
                     if (item.value == Yes) {
-                        bindICCMSummaryView(
-                            item.title,
-                            requireContext().getString(
-                                R.string.nutrition_summary,
-                                item.value,
-                                getString(R.string.pneumonia)
+                        val status = getPneumoniaStatus()
+                        if (status){
+                            bindICCMSummaryView(
+                                item.title,
+                                requireContext().getString(
+                                    R.string.nutrition_summary,
+                                    item.value,
+                                    getString(R.string.pneumonia)
+                                )
                             )
-                        )
+                        } else {
+                            bindICCMSummaryView(item.title, item.value)
+                        }
                     } else {
                         bindICCMSummaryView(item.title, item.value)
                     }
@@ -356,7 +367,7 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
                 hasFever -> {
                     val rdtResult = viewModel.assessmentStringLiveData.value?.let {
                         val jsonObject = JSONObject(it)
-                        val feverObject = jsonObject.optJSONObject(MenuConstants.OTHER_SYMPTOMS)?.optJSONObject(
+                        val feverObject = jsonObject.optJSONObject(MenuConstants.ICCM_MENU_ID)?.optJSONObject(
                             AssessmentDefinedParams.Fever
                         )
                         feverObject?.optString(ReferralDefinedParams.RdtTest)
@@ -398,6 +409,59 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
                     bindICCMSummaryView(item.title, item.value)
                 }
             }
+        }
+    }
+
+    private fun getPneumoniaStatus(): Boolean {
+        var status = false
+        viewModel.assessmentStringLiveData.value?.let {
+            val jsonObject = JSONObject(it)
+            val coughObject = jsonObject.optJSONObject(MenuConstants.ICCM_MENU_ID)?.optJSONObject(
+                AssessmentDefinedParams.Cough.lowercase()
+            )
+            coughObject?.optString(ReferralDefinedParams.BreathPerMinute)?.let { bpmValue ->
+                viewModel.memberDetailsLiveData.value?.data?.let { details ->
+                    DateUtils.dateToMonths(details.dateOfBirth).let { month ->
+                        month?.let {
+                            if ((month in FB_MIN_MONTH..11) && bpmValue.toInt() >= FB_MAX_BREATHING) {
+                                status = true
+                            } else if (month in FB_MAX_MONTH..60 && bpmValue.toInt() >= FB_MIN_BREATHING) {
+                                status = true
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return status
+    }
+
+    private fun getDehydrationStatus(signContain: Boolean): String? {
+        if (signContain) {
+            return requireContext().getString(R.string.severe_dehydration)
+        } else {
+            var result: String? = null
+            viewModel.assessmentStringLiveData.value?.let {
+                val jsonObject = JSONObject(it)
+                val feverObject =
+                    jsonObject.optJSONObject(MenuConstants.ICCM_MENU_ID)?.optJSONObject(
+                        Diarrhoea
+                    )
+                val diarrhoeaDays =
+                    feverObject?.optString(ReferralDefinedParams.NoOfDaysOfDiarrhoea)
+                val bloodyDiarrhoea =
+                    feverObject?.optString(ReferralDefinedParams.IsBloodyDiarrhoea)
+                diarrhoeaDays?.let {
+                    bloodyDiarrhoea?.let {
+                        result = if (diarrhoeaDays.toInt() >= 14 || bloodyDiarrhoea == "true") {
+                            requireContext().getString(R.string.severe_dehydration)
+                        } else {
+                            requireContext().getString(R.string.moderate_dehydration)
+                        }
+                    }
+                }
+            }
+            return result
         }
     }
 

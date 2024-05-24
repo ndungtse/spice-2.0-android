@@ -213,7 +213,7 @@
     <string name="normal">Normal</string>
     <string name="moderate_malnutrition">Moderate Malnutrition</string>
     <string name="severe_nutrition">Severe Malnutrition</string>
-    <string name="nutrition_summary">%1$s ( %2$s )</string>
+    <string name="nutrition_summary">%1$s (%2$s)</string>
     <string name="severe_dehydration">Severe Dehydration</string>
     <string name="pneumonia">Pneumonia</string>
     <string name="bpm">BPM</string>
@@ -450,4 +450,5 @@
     <string name="obstetric_examination">Obstetric Examination</string>
     <string name="contact_number">Contact Number</string>
     <string name="mother_neonate_anc_saved_successfully">Mother Neonate Anc Saved Successfully</string>
+    <string name="moderate_dehydration">Moderate Dehydration</string>
 </resources>

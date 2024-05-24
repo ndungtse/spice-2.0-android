@@ -288,7 +288,6 @@ object CommonUtils {
         return formattedValue
     }
 
-
     fun Double?.toIntOrEmptyString(): String {
         return this?.toInt().toString()
     }
