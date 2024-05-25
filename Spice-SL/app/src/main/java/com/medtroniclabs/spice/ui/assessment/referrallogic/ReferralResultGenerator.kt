@@ -6,6 +6,7 @@ import com.medtroniclabs.spice.formgeneration.config.DefinedParams.NoSymptoms
 import com.medtroniclabs.spice.model.assessment.AssessmentMemberDetails
 import com.medtroniclabs.spice.ui.assessment.AssessmentCommonUtils.getListActual
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.Dispensed
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.DryMouthOrTongue
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.FB_MAX_BREATHING
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.FB_MAX_MONTH
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.FB_MIN_BREATHING
@@ -14,6 +15,7 @@ import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.LittleOrNoU
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.NoTearsWhenCrying
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.SkinPinch
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.SunkenEyes
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.SunkenFontanella
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.VeryThirsty
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.otherSymptoms
 import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefinedParams.ACT
@@ -338,7 +340,9 @@ class ReferralResultGenerator {
             NoTearsWhenCrying.lowercase(),
             LittleOrNoUrine.lowercase(),
             SkinPinch.lowercase(),
-            VeryThirsty.lowercase()
+            VeryThirsty.lowercase(),
+            DryMouthOrTongue.lowercase(),
+            SunkenFontanella.lowercase()
         )
         val selectedSignsList = ArrayList<String>()
         if (value is ArrayList<*>) {

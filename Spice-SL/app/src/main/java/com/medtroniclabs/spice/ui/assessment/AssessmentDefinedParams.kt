@@ -55,6 +55,8 @@ object AssessmentDefinedParams {
     const val NoTearsWhenCrying = "No tears when crying"
     const val LittleOrNoUrine = "Little or no urine"
     const val SkinPinch= "Skin pinch going back very slowly"
+    const val SunkenFontanella= "Sunken fontanelle"
+    const val DryMouthOrTongue= "Dry mouth / tongue"
     const val VeryThirsty = "Very thirsty"
     const val otherSymptoms = "otherSymptoms"
     const val symptoms = "symptoms"

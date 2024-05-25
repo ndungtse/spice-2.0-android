@@ -479,7 +479,9 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
             AssessmentDefinedParams.NoTearsWhenCrying.lowercase(),
             AssessmentDefinedParams.LittleOrNoUrine.lowercase(),
             AssessmentDefinedParams.SkinPinch.lowercase(),
-            AssessmentDefinedParams.VeryThirsty.lowercase()
+            AssessmentDefinedParams.VeryThirsty.lowercase(),
+            AssessmentDefinedParams.DryMouthOrTongue.lowercase(),
+            AssessmentDefinedParams.SunkenFontanella.lowercase()
         )
 
         var result = DefinedParams.No
