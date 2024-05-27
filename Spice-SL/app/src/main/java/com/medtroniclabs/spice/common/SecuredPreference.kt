@@ -32,7 +32,8 @@ object SecuredPreference {
         OFFLINE_SYNC_REQUEST_ID,
         LAST_SYNCED_AT,
         FOLLOW_UP_CRITERIA,
-        DEFAULT_SITE_ID
+        DEFAULT_SITE_ID,
+        IS_UNDER_FIVE_YEARS_LOADED
     }
 
 
@@ -433,6 +434,7 @@ object SecuredPreference {
         remove(EnvironmentKey.IS_MOTHER_NEONATE_LOADEDANC.name)
         remove(EnvironmentKey.IS_UNDER_TWO_MONTHS_LOADED.name)
         remove(EnvironmentKey.IS_LABOUR_DELIVERY_LOADED.name)
+        remove(EnvironmentKey.IS_UNDER_FIVE_YEARS_LOADED.name)
         return true
     }
 

@@ -134,7 +134,7 @@ interface RoomHelper {
         category: String
     ): LiveData<List<MedicalReviewMetaItems>>
 
-    suspend fun deleteExaminationsList()
+    suspend fun deleteExaminationsList(menuType: String)
     suspend fun saveExaminationsList(diagnosisList: ArrayList<ExaminationListItems>)
 
     suspend fun insertLabourDelivery(symptomEntity: List<LabourDeliveryMetaEntity>)

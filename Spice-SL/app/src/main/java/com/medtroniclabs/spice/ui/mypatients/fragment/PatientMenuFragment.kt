@@ -29,6 +29,7 @@ import com.medtroniclabs.spice.ui.home.ToolsViewModel
 import com.medtroniclabs.spice.ui.home.adapter.DashboardMenuItemsAdapter
 import com.medtroniclabs.spice.ui.medicalreview.abovefiveyears.AboveFiveYearsBaseActivity
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.fragment.SelectFlowDialog
+import com.medtroniclabs.spice.ui.medicalreview.underfiveyears.UnderFiveYearsBaseActivity
 import com.medtroniclabs.spice.ui.medicalreview.undertwomonths.UnderTwoMonthsBaseActivity
 import com.medtroniclabs.spice.ui.mypatients.MedicalReviewBaseActivity
 import dagger.hilt.android.AndroidEntryPoint
@@ -129,6 +130,9 @@ class PatientMenuFragment : BaseFragment(), MenuSelectionListener {
             }
 
             MenuConstants.UNDER_AGE_ABOVE_FIVE_YEAR_ID -> {
+                val intent = Intent(requireContext(), UnderFiveYearsBaseActivity::class.java)
+                intent.putExtra(PatientId, arguments?.getString(PatientId))
+                startActivity(intent)
             }
 
             MenuConstants.EPI_ID -> {

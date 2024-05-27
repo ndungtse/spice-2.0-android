@@ -25,6 +25,7 @@ import com.medtroniclabs.spice.data.ReferPatientHealthFacilityItem
 import com.medtroniclabs.spice.data.ReferPatientNameNumber
 import com.medtroniclabs.spice.data.ReferPatientRequest
 import com.medtroniclabs.spice.data.ReferPatientResult
+import com.medtroniclabs.spice.data.UnderFiveYearsMetaResponse
 import com.medtroniclabs.spice.data.UnderTwoMonthsMetaResponse
 import com.medtroniclabs.spice.data.UnderTwoMonthsSummarySubmitRequest
 import com.medtroniclabs.spice.data.UserSymptomsEntity
@@ -192,5 +193,9 @@ class ApiHelperImpl @Inject constructor(private val apiService: ApiService) : Ap
 
     override suspend fun createPrescriptionRequest(request: RequestBody): Response<APIResponse<Map<String, Any>>> {
         return apiService.createPrescriptionRequest(request)
+    }
+
+    override suspend fun getUnderFiveYearsMetaData(): Response<APIResponse<UnderFiveYearsMetaResponse>> {
+        return apiService.getUnderFiveYearsMetaData()
     }
 }

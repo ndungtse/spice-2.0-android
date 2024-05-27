@@ -25,6 +25,7 @@ import com.medtroniclabs.spice.data.ReferPatientHealthFacilityItem
 import com.medtroniclabs.spice.data.ReferPatientNameNumber
 import com.medtroniclabs.spice.data.ReferPatientRequest
 import com.medtroniclabs.spice.data.ReferPatientResult
+import com.medtroniclabs.spice.data.UnderFiveYearsMetaResponse
 import com.medtroniclabs.spice.data.UnderTwoMonthsMetaResponse
 import com.medtroniclabs.spice.data.UnderTwoMonthsSummarySubmitRequest
 import com.medtroniclabs.spice.data.UserSymptomsEntity
@@ -89,4 +90,5 @@ interface ApiHelper {
     suspend fun getReferPatientMobileUserList(tenantId: ReferPatientRequest): Response<APIResponse<List<ReferPatientNameNumber>>>
     suspend fun createReferPatientResult(request: ReferPatientResult): Response<APIResponse<HashMap<String,Any>>>
     suspend fun createPrescriptionRequest(@Body request: RequestBody):Response<APIResponse<Map<String,Any>>>
+    suspend fun getUnderFiveYearsMetaData(): Response<APIResponse<UnderFiveYearsMetaResponse>>
 }

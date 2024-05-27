@@ -38,7 +38,7 @@ class ExaminationCardFragment : BaseFragment(), ExaminationListener {
         super.onViewCreated(view, savedInstanceState)
         initView()
         attachObservers()
-        viewModel.getExaminationQuestionsByWorkFlow(MedicalReviewDefinedParams.EXAMINATIONS_UNDER_TWO_MONTHS)
+        viewModel.getExaminationQuestionsByWorkFlow(viewModel.workFlowType)
     }
 
     private fun attachObservers() {

@@ -389,8 +389,8 @@ class RoomHelperImpl @Inject constructor(
         return examinationsComplaintsDAO.getExaminationsComplaintsForAnc(category)
     }
 
-    override suspend fun deleteExaminationsList() {
-        examinationsDAO.deleteExaminationsList()
+    override suspend fun deleteExaminationsList(menuType: String) {
+        examinationsDAO.deleteExaminationsList(menuType)
     }
 
     override suspend fun saveExaminationsList(examinationList: ArrayList<ExaminationListItems>) {

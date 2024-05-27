@@ -154,6 +154,7 @@ class UnderTwoMonthsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
     }
 
     private fun initializeViews() {
+        examinationCardViewModel.workFlowType = MedicalReviewTypeEnums.UnderTwoMonths.name
         if (!(SecuredPreference.getBoolean(SecuredPreference.EnvironmentKey.IS_UNDER_TWO_MONTHS_LOADED.name))) {
             viewModel.getStaticMetaData()
         } else {

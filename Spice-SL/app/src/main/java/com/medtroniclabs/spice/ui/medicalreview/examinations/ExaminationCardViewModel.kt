@@ -26,12 +26,13 @@ class ExaminationCardViewModel @Inject constructor(
         get() = _examinationQuestionsLiveData
 
     var examinationResultHashMap = HashMap<String, Any>()
+    var workFlowType: String =""
 
     fun getExaminationQuestionsByWorkFlow(workFlowType: String) {
         viewModelScope.launch(dispatcherIO) {
             val examinationListItem =
                 examinationsRepository.getExaminationQuestionsByWorkFlow(workFlowType)
-            examinationListItem.formInput?.let {
+            examinationListItem?.formInput?.let {
                 val examinationModelList = Gson().fromJson(
                     it,
                     Array<ExaminationModel>::class.java

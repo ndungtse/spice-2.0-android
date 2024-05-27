@@ -125,7 +125,7 @@ class SystemicExaminationsFragment : BaseFragment() {
     private fun initializeViews() {
         val (titleResId, showObstetricGroup) = when (viewModel.systemicExaminationsType) {
             MedicalReviewTypeEnums.ANC.name -> Pair(R.string.obstetric_examination, true)
-            MedicalReviewTypeEnums.AboveFiveYears.name -> Pair(
+            MedicalReviewTypeEnums.AboveFiveYears.name,MedicalReviewTypeEnums.UnderFiveYears.name  -> Pair(
                 R.string.systemic_examinations,
                 false
             )

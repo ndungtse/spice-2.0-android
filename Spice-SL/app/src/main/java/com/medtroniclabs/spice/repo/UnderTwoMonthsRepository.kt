@@ -12,6 +12,7 @@ import com.medtroniclabs.spice.model.medicalreview.CreateUnderTwoMonthsResponse
 import com.medtroniclabs.spice.network.ApiHelper
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.network.resource.ResourceState
+import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import javax.inject.Inject
 
 class UnderTwoMonthsRepository @Inject constructor(
@@ -26,7 +27,7 @@ class UnderTwoMonthsRepository @Inject constructor(
                 response.body()?.entity?.apply {
                     roomHelper.deleteDiagnosisList()
                     roomHelper.saveDiagnosisList(diseaseCategories)
-                    roomHelper.deleteExaminationsList()
+                        roomHelper.deleteExaminationsList(MedicalReviewTypeEnums.UnderTwoMonths.name)
                     roomHelper.saveExaminationsList(examinations)
                 }
                 SecuredPreference.putBoolean(

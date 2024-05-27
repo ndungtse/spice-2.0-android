@@ -19,14 +19,15 @@ import com.medtroniclabs.spice.data.MetaDataResponse
 import com.medtroniclabs.spice.data.MotherNeonateAncMetaResponse
 import com.medtroniclabs.spice.data.MotherNeonateAncSummaryModel
 import com.medtroniclabs.spice.data.PatientStatusRequest
+import com.medtroniclabs.spice.data.PatientStatusResponse
+import com.medtroniclabs.spice.data.PrescriptionListRequest
 import com.medtroniclabs.spice.data.ReferPatientAPIRequest
 import com.medtroniclabs.spice.data.ReferPatientHealthFacilityItem
 import com.medtroniclabs.spice.data.ReferPatientNameNumber
-import com.medtroniclabs.spice.data.ReferPatientResult
 import com.medtroniclabs.spice.data.ReferPatientRequest
+import com.medtroniclabs.spice.data.ReferPatientResult
+import com.medtroniclabs.spice.data.UnderFiveYearsMetaResponse
 import com.medtroniclabs.spice.data.UnderTwoMonthsMetaResponse
-import com.medtroniclabs.spice.data.PatientStatusResponse
-import com.medtroniclabs.spice.data.PrescriptionListRequest
 import com.medtroniclabs.spice.data.UnderTwoMonthsSummarySubmitRequest
 import com.medtroniclabs.spice.data.UserSymptomsEntity
 import com.medtroniclabs.spice.data.model.AboveFiveYearsSubmitRequest
@@ -36,7 +37,6 @@ import com.medtroniclabs.spice.data.model.MotherNeonateAncRequest
 import com.medtroniclabs.spice.data.model.PatientEncounterResponse
 import com.medtroniclabs.spice.data.offlinesync.model.HouseHold
 import com.medtroniclabs.spice.data.offlinesync.model.RequestGetSyncStatus
-import com.medtroniclabs.spice.data.offlinesync.model.ResponseInitialDownload
 import com.medtroniclabs.spice.data.offlinesync.model.SyncResponse
 import com.medtroniclabs.spice.data.resource.RequestAllEntities
 import com.medtroniclabs.spice.model.PatientDetailRequest
@@ -89,6 +89,9 @@ interface ApiService {
 
     @POST("/spice-service/static-data/meta-data/iccm-abovefive")
     suspend fun getAboveFiveYearsMetaData(): Response<APIResponse<AboveFiveYearsMetaResponse>>
+
+    @POST("/spice-service/static-data/meta-data/iccm-under-five-years")
+    suspend fun getUnderFiveYearsMetaData(): Response<APIResponse<UnderFiveYearsMetaResponse>>
 
     @POST("/spice-service/assessment/referral-tickets")
     suspend fun getReferralsDetails(@Body request: PatientDetailRequest): Response<APIResponse<ReferralData>>
