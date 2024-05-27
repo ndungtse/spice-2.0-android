@@ -20,7 +20,7 @@ import com.medtroniclabs.spice.ui.medicalreview.abovefiveyears.PresentingComplai
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.CHIP_ITEMS
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.PC_ITEM
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
-import com.medtroniclabs.spice.ui.mypatients.viewmodel.MotherNeonateANCViewModel
+import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.viewmodel.MotherNeonateANCViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

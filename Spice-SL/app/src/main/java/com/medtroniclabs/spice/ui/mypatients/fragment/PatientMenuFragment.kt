@@ -72,6 +72,7 @@ class PatientMenuFragment : BaseFragment(), MenuSelectionListener {
     }
 
     companion object {
+        const val TAG = "PatientMenuFragment"
         fun newInstance() =
             PatientMenuFragment()
 

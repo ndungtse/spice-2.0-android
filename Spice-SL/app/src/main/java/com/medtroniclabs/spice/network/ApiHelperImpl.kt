@@ -15,11 +15,13 @@ import com.medtroniclabs.spice.data.MedicationResponse
 import com.medtroniclabs.spice.data.MedicationSearchRequest
 import com.medtroniclabs.spice.data.MetaDataResponse
 import com.medtroniclabs.spice.data.MotherNeonateAncMetaResponse
+import com.medtroniclabs.spice.data.MotherNeonateAncSummaryModel
 import com.medtroniclabs.spice.data.UnderTwoMonthsMetaResponse
 import com.medtroniclabs.spice.data.PatientStatusResponse
 import com.medtroniclabs.spice.data.UserSymptomsEntity
 import com.medtroniclabs.spice.data.model.AboveFiveYearsSubmitRequest
 import com.medtroniclabs.spice.data.model.MotherNeonateAncRequest
+import com.medtroniclabs.spice.data.model.PatientEncounterResponse
 import com.medtroniclabs.spice.data.offlinesync.model.HouseHold
 import com.medtroniclabs.spice.data.offlinesync.model.RequestGetSyncStatus
 import com.medtroniclabs.spice.data.offlinesync.model.ResponseInitialDownload
@@ -123,7 +125,11 @@ class ApiHelperImpl @Inject constructor(private val apiService: ApiService) : Ap
         return apiService.createMedicalReviewForUnderTwoMonths(request)
     }
 
-    override suspend fun saveMotherNeonateAnc(motherNeonateAncRequest: MotherNeonateAncRequest): Response<APIResponse<MotherNeonateAncRequest>> {
+    override suspend fun saveMotherNeonateAnc(motherNeonateAncRequest: MotherNeonateAncRequest): Response<APIResponse<PatientEncounterResponse>> {
         return apiService.saveMotherNeonateAnc(motherNeonateAncRequest)
+    }
+
+    override suspend fun fetchSummary(motherNeonateAncRequest: MotherNeonateAncRequest): Response<APIResponse<MotherNeonateAncSummaryModel>> {
+        return apiService.fetchSummary(motherNeonateAncRequest)
     }
 }

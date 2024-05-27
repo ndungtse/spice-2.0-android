@@ -29,14 +29,29 @@ class ToolsActivity : BaseActivity() {
 
     private fun initializeView() {
         toolsViewModel.selectedHouseholdMemberID = intent.getLongExtra(DefinedParams.MemberID, -1)
-        val fragment = if (toolsViewModel.selectedHouseholdMemberID == -1L) {
-            setTitle(intent.getStringExtra(DefinedParams.MenuTitle) ?: getString(R.string.search_patient))
-            PatientMenuFragment.newInstance(intent.getStringExtra(DefinedParams.PatientId),intent.getStringExtra(DefinedParams.ID),intent.getStringExtra(DefinedParams.Gender))
+        val fragmentTag = if (toolsViewModel.selectedHouseholdMemberID == -1L) {
+            PatientMenuFragment.TAG
         } else {
-            ToolsMenuFragment.newInstance()
+            ToolsMenuFragment.TAG
+        }
+        var fragment = supportFragmentManager.findFragmentByTag(fragmentTag)
+        if (fragment == null) {
+            fragment = if (toolsViewModel.selectedHouseholdMemberID == -1L) {
+                setTitle(
+                    intent.getStringExtra(DefinedParams.MenuTitle)
+                        ?: getString(R.string.search_patient)
+                )
+                PatientMenuFragment.newInstance(
+                    intent.getStringExtra(DefinedParams.PatientId),
+                    intent.getStringExtra(DefinedParams.ID),
+                    intent.getStringExtra(DefinedParams.Gender)
+                )
+            } else {
+                ToolsMenuFragment.newInstance()
+            }
         }
         supportFragmentManager.beginTransaction()
-            .add(R.id.menuItemsFragment, fragment)
+            .add(R.id.menuItemsFragment, fragment, fragmentTag)
             .commit()
     }
 }

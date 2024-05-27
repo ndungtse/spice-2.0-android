@@ -19,13 +19,13 @@ class MedicalReviewSuccessDialogFragment : DialogFragment(), View.OnClickListene
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        onDismissListener = context as OnDialogDismissListener
+        onDismissListener = context as? OnDialogDismissListener
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentMedicalReviewSucessDialogBinding.inflate(inflater, container, false)
         dialog?.window?.setBackgroundDrawableResource(android.R.color.transparent)
         isCancelable = false

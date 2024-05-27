@@ -8,13 +8,20 @@ import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.isNotTabletAndPortrait
 import com.medtroniclabs.spice.appextensions.setPercentWidth
 import com.medtroniclabs.spice.appextensions.visible
+import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
+import com.medtroniclabs.spice.common.DefinedParams.PregnancyANC
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.SpiceLocationManager
+import com.medtroniclabs.spice.data.AboveFiveYearsSummarySubmitRequest
+import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.databinding.ActivityMedicalReviewAncactivityBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
+import com.medtroniclabs.spice.ui.dialog.MedicalReviewSuccessDialogFragment
+import com.medtroniclabs.spice.ui.landing.OnDialogDismissListener
 import com.medtroniclabs.spice.ui.medicalreview.ClinicalNotesFragment
 import com.medtroniclabs.spice.ui.medicalreview.PresentingComplaintsFragment
 import com.medtroniclabs.spice.ui.medicalreview.SystemicExaminationsFragment
@@ -24,28 +31,32 @@ import com.medtroniclabs.spice.ui.medicalreview.abovefiveyears.SystemicExaminati
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.AncVisitCallBack
+import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.fragment.MotherNeonateAncSummary
 import com.medtroniclabs.spice.ui.mypatients.fragment.MedicalReviewPatientDiagnosisFragment
 import com.medtroniclabs.spice.ui.mypatients.fragment.PatientInfoFragment
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.fragment.PregnancyDetailsFragment
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.fragment.PregnancyPastObstetricHistoryFragment
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.fragment.PregnancySummaryFragment
-import com.medtroniclabs.spice.ui.mypatients.viewmodel.MotherNeonateANCViewModel
+import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.viewmodel.MotherNeonateANCViewModel
+import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.viewmodel.MotherNeonateSummaryViewModel
+import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PregnancyDetailsViewModel
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PregnancyPastObstetricHistoryViewModel
-import com.medtroniclabs.spice.ui.mypatients.viewmodel.ReferralTicketViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitCallBack {
+class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitCallBack,
+    OnDialogDismissListener {
 
     private lateinit var binding: ActivityMedicalReviewAncactivityBinding
     private val viewModel: MotherNeonateANCViewModel by viewModels()
     private val presentingComplaintsViewModel: PresentingComplaintsViewModel by viewModels()
     private val systemicExaminationViewModel: SystemicExaminationViewModel by viewModels()
-    private val patientViewModel: ReferralTicketViewModel by viewModels()
+    private val patientViewModel: PatientDetailViewModel by viewModels()
     private val clinicalNotesViewModel: ClinicalNotesViewModel by viewModels()
     private val pregnancyPastObstetricHistoryViewModel: PregnancyPastObstetricHistoryViewModel by viewModels()
     private val pregnancyDetailsViewModel: PregnancyDetailsViewModel by viewModels()
+    private val motherNeonateSummaryViewModel: MotherNeonateSummaryViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -82,6 +93,26 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
     }
 
     private fun attachObservers() {
+        viewModel.summaryCreateResponse.observe(this) { resourceState ->
+            when (resourceState.state) {
+                ResourceState.LOADING -> {
+                    showLoading()
+                }
+
+                ResourceState.ERROR -> {
+                    hideLoading()
+                }
+
+                ResourceState.SUCCESS -> {
+                    hideLoading()
+                    MedicalReviewSuccessDialogFragment.newInstance().show(
+                        supportFragmentManager,
+                        MedicalReviewSuccessDialogFragment.TAG
+                    )
+                }
+            }
+        }
+
         patientViewModel.patientDetailsLiveData.observe(this) { resource ->
             when (resource.state) {
                 ResourceState.LOADING -> {
@@ -127,7 +158,9 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
 
                 ResourceState.SUCCESS -> {
                     hideLoading()
-                    handleSummary()
+                    resource.data?.let {
+                        handleSummary(it.encounterId)
+                    }
                 }
 
                 ResourceState.ERROR -> {
@@ -141,8 +174,14 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
         pregnancyDetailsViewModel.checkSubmitBtn.observe(this) {
             isPregnancyDetailsAndHistoryValidation()
         }
+        motherNeonateSummaryViewModel.checkSubmitBtn.observe(this) {
+            isMotherNeonateSummaryValidation()
+        }
     }
-
+    private fun isMotherNeonateSummaryValidation() {
+        binding.btnDone.isEnabled =
+            motherNeonateSummaryViewModel.nextFollowupDate?.isNotBlank() == true || motherNeonateSummaryViewModel.patientStatus?.isNotBlank() == true
+    }
     private fun isPregnancyDetailsAndHistoryValidation() {
         val model = pregnancyDetailsViewModel.pregnancyDetailsModel
         binding.btnLayout.btnNext.isEnabled =
@@ -185,7 +224,10 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
         viewModel.id = intent.getStringExtra(DefinedParams.PatientId)
         if (existingFragment == null) {
             val fragment =
-                PatientInfoFragment.newInstance(intent.getStringExtra(DefinedParams.PatientId),isAnc = true)
+                PatientInfoFragment.newInstance(
+                    intent.getStringExtra(DefinedParams.PatientId),
+                    isAnc = true
+                )
             fragment.setDataCallback(this)
             fragmentManager.beginTransaction()
                 .add(R.id.patientDetailFragment, fragment)
@@ -281,12 +323,44 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
     }
 
     private fun submitSummary() {
-    // handle Summary submit
+        val motherNeonateSummary =
+            supportFragmentManager.findFragmentById(R.id.pregnancyDetailsConatiner) as? MotherNeonateAncSummary
+        val isValidSummary = motherNeonateSummary?.validateInput() ?: false
+
+        if (isValidSummary) {
+            val submitCreateId = viewModel.getSubmitCreateId()
+            val nextVisitDate = DateUtils.convertDateTimeToDate(
+                motherNeonateSummaryViewModel.nextFollowupDate,
+                DateUtils.DATE_ddMMyyyy,
+                DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
+            )
+            val request = AboveFiveYearsSummarySubmitRequest(
+                referralTicketType = AssessmentDefinedParams.RMNCH,
+                memberId = patientViewModel.getPatientMemberId(),
+                id = submitCreateId,
+                provenance = ProvanceDto(
+                    createdDateTime = DateUtils.getCurrentDateAndTime(
+                        DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
+                    )
+                ),
+                patientReference = viewModel.getPatientReference(),
+                nextVisitDate = nextVisitDate
+            )
+            if (connectivityManager.isNetworkAvailable()) {
+                viewModel.motherNeonateSummaryCreate(request)
+            } else {
+                showErrorDialogue(
+                    getString(R.string.error), getString(R.string.no_internet_error),
+                    isNegativeButtonNeed = false,
+                ) {}
+            }
+        }
     }
+
 
     private fun submitRequest() {
         viewModel.motherNeonateAncRequest.apply {
-            assessmentType = DefinedParams.PregnancyANC
+            assessmentType = PregnancyANC
             presentingComplaints =
                 presentingComplaintsViewModel.selectedPresentingComplaints.map { it.name }
             presentingComplaintsNotes = presentingComplaintsViewModel.enteredComplaintNotes
@@ -330,6 +404,8 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
             showErrorDialog()
         } else if (viewModel.ancVisit == 1 && pregnancyDetailsFragment is MedicalReviewPatientDiagnosisFragment) {
             initView()
+        } else if (pregnancyDetailsFragment is MotherNeonateAncSummary) {
+            showErrorDialog()
         }
     }
 
@@ -465,6 +541,10 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
 
                 }
 
+                patientDetails as? MotherNeonateAncSummary -> {
+
+                }
+
                 else -> {
                     initView()
                 }
@@ -473,20 +553,20 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
         }
     }
 
-    private fun handleSummary() {
+    private fun handleSummary(encounterId: String?) {
         with(binding) {
             bottomNavigationView.gone()
             referalBottomView.visible()
             btnLayout.btnNext.gone()
         }
-        replaceMotherNeonateSummary()
+        replaceMotherNeonateSummary(encounterId)
         scrollToTop()
     }
 
-    private fun replaceMotherNeonateSummary() {
-//        supportFragmentManager.beginTransaction()
-//            .replace(R.id.pregnancyDetailsConatiner, MotherNeonateSummary.newInstance())
-//            .commit()
+    private fun replaceMotherNeonateSummary(encounterId: String?) {
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.pregnancyDetailsConatiner, MotherNeonateAncSummary.newInstance(encounterId))
+            .commit()
         with(supportFragmentManager) {
             findFragmentById(R.id.pregnancyHistoryConatiner)?.let {
                 beginTransaction().remove(it).commit()
@@ -502,4 +582,9 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
             }
         }
     }
+
+    override fun onDialogDismissListener(isFinish: Boolean) {
+        finish()
+    }
+
 }

@@ -32,4 +32,12 @@ class PatientDetailViewModel @Inject constructor(
     fun getPatientReferenceId(): String? {
         return patientDetailsLiveData.value?.data?.id
     }
+
+    fun getPatientMemberId(): String? {
+        return patientDetailsLiveData.value?.data?.memberId
+    }
+
+    fun getPatientId(): String? {
+        return patientDetailsLiveData.value?.data?.patientId
+    }
 }

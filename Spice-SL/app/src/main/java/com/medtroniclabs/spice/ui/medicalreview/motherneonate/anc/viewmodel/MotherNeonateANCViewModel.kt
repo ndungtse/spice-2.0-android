@@ -1,4 +1,4 @@
-package com.medtroniclabs.spice.ui.mypatients.viewmodel
+package com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.viewmodel
 
 import android.location.Location
 import androidx.lifecycle.MutableLiveData
@@ -6,8 +6,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.common.DateUtils
+import com.medtroniclabs.spice.data.AboveFiveYearsSummarySubmitRequest
 import com.medtroniclabs.spice.data.model.MedicalReviewEncounter
 import com.medtroniclabs.spice.data.model.MotherNeonateAncRequest
+import com.medtroniclabs.spice.data.model.PatientEncounterResponse
 import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.network.resource.Resource
@@ -23,8 +25,9 @@ class MotherNeonateANCViewModel @Inject constructor(
     @IoDispatcher private val dispatcherIO: CoroutineDispatcher
 ) : ViewModel() {
     val motherNeonateMetaResponse = MutableLiveData<Resource<Boolean>>()
-    val motherNeonateCreateResponse = MutableLiveData<Resource<MotherNeonateAncRequest>>()
+    val motherNeonateCreateResponse = MutableLiveData<Resource<PatientEncounterResponse>>()
     var motherNeonateAncRequest: MotherNeonateAncRequest = MotherNeonateAncRequest()
+    val summaryCreateResponse = MutableLiveData<Resource<HashMap<String,Any>>>()
     var ancVisit = -1
     var id: String? = null
     var lastLocation: Location? = null
@@ -70,5 +73,20 @@ class MotherNeonateANCViewModel @Inject constructor(
                 e.printStackTrace()
             }
         }
+    }
+
+    fun motherNeonateSummaryCreate(request: AboveFiveYearsSummarySubmitRequest){
+        viewModelScope.launch(dispatcherIO) {
+            summaryCreateResponse.postLoading()
+            summaryCreateResponse.postValue(motherNeonateANCRepo.motherNeonateSummaryCreate(request))
+        }
+    }
+
+    fun getSubmitCreateId(): String? {
+        return motherNeonateCreateResponse.value?.data?.encounterId
+    }
+
+    fun getPatientReference(): String? {
+        return motherNeonateCreateResponse.value?.data?.patientReference
     }
 }
