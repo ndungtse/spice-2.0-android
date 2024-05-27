@@ -7,6 +7,7 @@ import android.view.MenuItem
 import android.view.View
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.GravityCompat
 import androidx.core.view.forEach
 import androidx.drawerlayout.widget.DrawerLayout
@@ -28,25 +29,36 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
     lateinit var binding: ActivityLandingBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        val splashScreen = installSplashScreen()
+        splashScreen.setKeepOnScreenCondition { true }
         super.onCreate(savedInstanceState)
+
         onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
 
-        val isLoggedIn = SecuredPreference.getBoolean(SecuredPreference.EnvironmentKey.ISLOGGEDIN.name) || SecuredPreference.getBoolean(SecuredPreference.EnvironmentKey.ISOFFLINELOGIN.name)
-        val isMetaLoaded = SecuredPreference.getBoolean(SecuredPreference.EnvironmentKey.ISMETALOADED.name)
+        val isLoggedIn =
+            SecuredPreference.getBoolean(SecuredPreference.EnvironmentKey.ISLOGGEDIN.name) || SecuredPreference.getBoolean(
+                SecuredPreference.EnvironmentKey.ISOFFLINELOGIN.name
+            )
+        val isMetaLoaded =
+            SecuredPreference.getBoolean(SecuredPreference.EnvironmentKey.ISMETALOADED.name)
 
         if (!(isLoggedIn && isMetaLoaded)) {
             startActivity(Intent(this, LoginActivity::class.java))
+            splashScreen.setKeepOnScreenCondition { false }
             finish()
             return
         }
 
         // Check is any offline sync is pending
-        val isAnySyncInProgress = SecuredPreference.getStringArray(SecuredPreference.EnvironmentKey.OFFLINE_SYNC_REQUEST_ID.name)
+        val isAnySyncInProgress =
+            SecuredPreference.getStringArray(SecuredPreference.EnvironmentKey.OFFLINE_SYNC_REQUEST_ID.name)
         if (isAnySyncInProgress != null) {
             startActivity(Intent(this, OfflineSyncActivity::class.java))
+            splashScreen.setKeepOnScreenCondition { false }
         }
 
         binding = ActivityLandingBinding.inflate(layoutInflater)
+        splashScreen.setKeepOnScreenCondition { false }
         setContentView(binding.root)
         initializeDrawerView()
         updateSideBarFooter()

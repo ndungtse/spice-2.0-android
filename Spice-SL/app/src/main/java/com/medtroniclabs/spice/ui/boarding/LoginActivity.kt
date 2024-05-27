@@ -2,7 +2,6 @@ package com.medtroniclabs.spice.ui.boarding
 
 import android.content.Intent
 import android.os.Bundle
-import android.text.Editable
 import android.view.View
 import androidx.activity.viewModels
 import com.medtroniclabs.spice.R
@@ -135,12 +134,19 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
             binding.tvUserPasswordError.text = getString(R.string.password_cannot_be_empty)
         }
 
-        if (isValid){
+        if (isValid) {
             val oldUserName =
                 SecuredPreference.getString(SecuredPreference.EnvironmentKey.USERNAME.name)
-            val oldPhoneNumber = SecuredPreference.getString(SecuredPreference.EnvironmentKey.PHONE_NUMBER.name)
+            val oldPhoneNumber =
+                SecuredPreference.getString(SecuredPreference.EnvironmentKey.PHONE_NUMBER.name)
             val isNumber = userName.matches(Regex(Contains_Number))
-            if (oldUserName != null && userName.isNotBlank() && validateNameOrNumber(isNumber, oldPhoneNumber, oldUserName, userName)) {
+            if (oldUserName != null && userName.isNotBlank() && validateNameOrNumber(
+                    isNumber,
+                    oldPhoneNumber,
+                    oldUserName,
+                    userName
+                )
+            ) {
                 isValid = false
                 showErrorDialogue(
                     getString(R.string.warning_different_login_title),
@@ -188,7 +194,7 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
         oldUserName: String,
         userName: String
     ): Boolean {
-       return if (isNumber){
+        return if (isNumber) {
             oldPhoneNumber != userName
         } else {
             oldUserName != userName
