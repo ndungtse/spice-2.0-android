@@ -102,7 +102,7 @@ interface MetaDataDAO {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertClinicalWorkflowConditions(clinicalWorkflowConditions: List<ClinicalWorkflowConditionEntity>)
 
-    @Query("SELECT DISTINCT wf.*, wfc.subModule FROM ClinicalWorkflowEntity AS wf LEFT JOIN ClinicalWorkflowConditionEntity AS wfc ON wf.id = wfc.clinicalWorkflowId WHERE (LOWER(wfc.gender) = 'both' OR LOWER(wfc.gender) = LOWER(:gender)) AND (wfc.maxAge IS NULL OR wfc.maxAge >= :age) AND (wfc.minAge IS NULL OR wfc.minAge <= :age) AND (wfc.viewType = :moduleType ) ORDER BY wf.displayOrder")
+    @Query("SELECT DISTINCT wf.*, wfc.subModule FROM ClinicalWorkflowEntity AS wf LEFT JOIN ClinicalWorkflowConditionEntity AS wfc ON wf.id = wfc.clinicalWorkflowId WHERE (LOWER(wfc.gender) = 'both' OR LOWER(wfc.gender) = LOWER(:gender)) AND (wfc.maxAge IS NULL OR wfc.maxAge >= :age) AND (wfc.minAge IS NULL OR wfc.minAge <= :age) AND (wfc.moduleType = :moduleType ) ORDER BY wf.displayOrder")
     suspend fun getClinicalWorkflowId(gender: String, age: Int, moduleType: String): List<ClinicalWorkflowEntityWithSubmodule>
 
     @Query("SELECT * FROM HealthFacilityEntity")

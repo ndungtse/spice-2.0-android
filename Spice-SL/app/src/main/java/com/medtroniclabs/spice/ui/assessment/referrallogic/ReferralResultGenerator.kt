@@ -240,7 +240,7 @@ class ReferralResultGenerator {
                             )
                             addReferralReason(referralReason, ReferralReasons.Pneumonia.name)
                         }
-                        if (map.containsKey(BreathPerMinute) && map[BreathPerMinute] is Int) {
+                       else if (map.containsKey(BreathPerMinute) && map[BreathPerMinute] is Int) {
                             val bpmValue = map[BreathPerMinute] as Int
                             memberDetails?.let { details ->
                                 DateUtils.dateToMonths(details.dateOfBirth).let { month ->
@@ -274,20 +274,16 @@ class ReferralResultGenerator {
 
     /**
      * Referral Logic for ICCM Fever
-     * If temperature is >=37.5, then patientStatus is referred
      * If fever is yes no of days is >= 7, then patientStatus is referred
      * If no of days is < 7,
      *  1. If RDT test is -Ve or NA, then patientStatus is referred
      *  2. If RDT test is positive & ACT is NA, then patientStatus is referred
      *  3. If RDT test is positive & ACT is Dispensed, then patientStatus is on-treatment
+     * else If temperature is >=37.5, then patientStatus is referred
      */
     private fun calculateFeverStatus(map: HashMap<String, Any>, referralKey: String) {
         if (map.containsKey(HasFever)) {
             if ((map[HasFever] is String && map[HasFever] == Yes) || (map[HasFever] is Boolean && map[HasFever] == true)) {
-                if (map.containsKey(Temperature) && map[Temperature] is Double && (map[Temperature] as Double) >= MaxTemperature) {
-                    addResultMap(referralKey.lowercase(), ReferralStatus.Referred.name)
-                    addReferralReason(referralReason, referralKey)
-                }
                 if (map.containsKey(NoOfDaysOfFever) && map[NoOfDaysOfFever] is Int) {
                     val noOfDays = map[NoOfDaysOfFever] as Int
                     if (noOfDays >= MaxDaysOfFever) {
@@ -303,6 +299,9 @@ class ReferralResultGenerator {
                         }
                     }
                 }
+            } else if (map.containsKey(Temperature) && map[Temperature] is Double && (map[Temperature] as Double) >= MaxTemperature) {
+                addResultMap(referralKey.lowercase(), ReferralStatus.Referred.name)
+                addReferralReason(referralReason, referralKey)
             }
         }
     }
