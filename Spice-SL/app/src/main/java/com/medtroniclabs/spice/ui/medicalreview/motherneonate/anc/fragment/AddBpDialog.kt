@@ -10,22 +10,44 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
+import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.appextensions.setWidth
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
+import com.medtroniclabs.spice.common.DateUtils
+import com.medtroniclabs.spice.common.DefinedParams
+import com.medtroniclabs.spice.common.SpiceLocationManager
+import com.medtroniclabs.spice.data.model.BpAndWeightRequestModel
+import com.medtroniclabs.spice.data.model.MedicalReviewEncounter
+import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.databinding.FragmentAddBpDialogBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
+import com.medtroniclabs.spice.network.resource.ResourceState
+import com.medtroniclabs.spice.network.utils.ConnectivityManager
+import com.medtroniclabs.spice.ui.BaseActivity
+import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.DialogDismissListener
+import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.viewmodel.AddBpViewModel
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
+
+@AndroidEntryPoint
 class AddBpDialog : DialogFragment(), View.OnClickListener {
 
+    var listener: DialogDismissListener? = null
     private lateinit var binding: FragmentAddBpDialogBinding
+    private val viewModel: AddBpViewModel by activityViewModels()
+
+    @Inject
+    lateinit var connectivityManager: ConnectivityManager
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentAddBpDialogBinding.inflate(inflater, container, false)
         dialog?.window?.setBackgroundDrawableResource(android.R.color.transparent)
         isCancelable = false
@@ -36,6 +58,14 @@ class AddBpDialog : DialogFragment(), View.OnClickListener {
         const val TAG = "AddBpDialog"
         fun newInstance(): AddBpDialog {
             return AddBpDialog()
+        }
+
+        fun newInstance(patientId: String?): AddBpDialog {
+            val fragment = AddBpDialog()
+            fragment.arguments = Bundle().apply {
+                putString(DefinedParams.PatientId, patientId)
+            }
+            return fragment
         }
     }
 
@@ -52,7 +82,38 @@ class AddBpDialog : DialogFragment(), View.OnClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initView()
+        attachObservers()
+        getCurrentLocation()
     }
+
+    private fun getCurrentLocation() {
+        val locationManager = SpiceLocationManager(requireContext())
+        locationManager.getCurrentLocation {
+            viewModel.lastLocation = it
+        }
+    }
+    private fun attachObservers() {
+        viewModel.saveBloodPressure.observe(viewLifecycleOwner) { resourcesState ->
+            when (resourcesState.state) {
+                ResourceState.LOADING -> {
+                    (requireActivity() as? BaseActivity)?.showLoading()
+                }
+
+                ResourceState.SUCCESS -> {
+                    (requireActivity() as? BaseActivity)?.hideLoading()
+                    dismiss()
+                    listener?.onDialogDismissed(true)
+                    viewModel.saveBloodPressure.postError()
+                }
+
+                ResourceState.ERROR -> {
+                    (requireActivity() as? BaseActivity)?.hideLoading()
+
+                }
+            }
+        }
+    }
+
 
     private fun initView() {
         with(binding) {
@@ -174,19 +235,36 @@ class AddBpDialog : DialogFragment(), View.OnClickListener {
 
     override fun onClick(v: View?) {
         when (v?.id) {
-            binding.btnOkay.id -> {
-                if (inputValidate()) {
-//                    dismiss()
-                }
-            }
-
-            binding.btnCancel.id -> {
-                dismiss()
-            }
-
-            binding.ivClose.id -> {
-                dismiss()
-            }
+            binding.btnOkay.id -> handleOkayClick()
+            binding.btnCancel.id, binding.ivClose.id -> dismiss()
         }
+    }
+
+    private fun handleOkayClick() {
+        if (inputValidate() && connectivityManager.isNetworkAvailable()) {
+            viewModel.saveBloodPressure(createBpAndWeightRequestModel())
+        }
+    }
+
+    private fun createBpAndWeightRequestModel(): BpAndWeightRequestModel {
+        return BpAndWeightRequestModel(
+            systolic = binding.etSystolic.text?.trim().toString().toDoubleOrNull(),
+            diastolic = binding.etDiastolic.text?.trim().toString().toDoubleOrNull(),
+            pulse = binding.etPulse.text?.trim().toString().toDoubleOrNull(),
+            encounter = createMedicalReviewEncounter()
+        )
+    }
+
+    private fun createMedicalReviewEncounter(): MedicalReviewEncounter {
+        return MedicalReviewEncounter(
+            provenance = ProvanceDto(
+                createdDateTime = DateUtils.getCurrentDateAndTime(DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ)
+            ),
+            latitude = viewModel.lastLocation?.latitude,
+            longitude = viewModel.lastLocation?.longitude,
+            patientId = arguments?.getString(DefinedParams.PatientId, ""),
+            startTime = DateUtils.getCurrentDateAndTime(DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ),
+            endTime = DateUtils.getCurrentDateAndTime(DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ)
+        )
     }
 }

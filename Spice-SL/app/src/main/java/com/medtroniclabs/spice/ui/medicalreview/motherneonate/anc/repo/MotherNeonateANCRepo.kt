@@ -9,6 +9,8 @@ import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.AboveFiveYearsSummarySubmitRequest
 import com.medtroniclabs.spice.data.MedicalReviewMetaItems
 import com.medtroniclabs.spice.data.MotherNeonateAncSummaryModel
+import com.medtroniclabs.spice.data.model.BpAndWeightRequestModel
+import com.medtroniclabs.spice.data.model.BpAndWeightResponse
 import com.medtroniclabs.spice.data.model.MotherNeonateAncRequest
 import com.medtroniclabs.spice.data.model.PatientEncounterResponse
 import com.medtroniclabs.spice.db.local.RoomHelper
@@ -137,7 +139,7 @@ class MotherNeonateANCRepo @Inject constructor(
             if (response.isSuccessful) {
                 val res = response.body()
                 if (res?.status == true) {
-                    Resource(state = ResourceState.SUCCESS)
+                    Resource(state = ResourceState.SUCCESS,response.body()?.entity)
                 } else {
                     Resource(state = ResourceState.ERROR)
                 }
@@ -145,6 +147,80 @@ class MotherNeonateANCRepo @Inject constructor(
                 Resource(state = ResourceState.ERROR)
             }
 
+        } catch (e: Exception) {
+            Resource(state = ResourceState.ERROR)
+        }
+    }
+
+    suspend fun fetchWeight(motherNeonateAncRequest: MotherNeonateAncRequest):
+            Resource<BpAndWeightResponse> {
+        return try {
+            val response = apiHelper.fetchWeight(motherNeonateAncRequest)
+            if (response.isSuccessful) {
+                val res = response.body()
+                if (res?.status == true) {
+                    Resource(state = ResourceState.SUCCESS, data = res.entity)
+                } else {
+                    Resource(state = ResourceState.ERROR)
+                }
+            } else {
+                Resource(state = ResourceState.ERROR)
+            }
+        } catch (e: Exception) {
+            Resource(state = ResourceState.ERROR)
+        }
+    }
+
+    suspend fun fetchBloodPressure(motherNeonateAncRequest: MotherNeonateAncRequest):
+            Resource<BpAndWeightResponse> {
+        return try {
+            val response = apiHelper.fetchBloodPressure(motherNeonateAncRequest)
+            if (response.isSuccessful) {
+                val res = response.body()
+                if (res?.status == true) {
+                    Resource(state = ResourceState.SUCCESS, data = res.entity)
+                } else {
+                    Resource(state = ResourceState.ERROR)
+                }
+            } else {
+                Resource(state = ResourceState.ERROR)
+            }
+        } catch (e: Exception) {
+            Resource(state = ResourceState.ERROR)
+        }
+    }
+
+    suspend fun createWeight(bpAndWeightRequestModel: BpAndWeightRequestModel): Resource<HashMap<String, Any>> {
+        return try {
+            val response = apiHelper.createWeight(bpAndWeightRequestModel)
+            if (response.isSuccessful) {
+                val res = response.body()
+                if (res?.status == true) {
+                    Resource(state = ResourceState.SUCCESS, data = res.entity)
+                } else {
+                    Resource(state = ResourceState.ERROR)
+                }
+            } else {
+                Resource(state = ResourceState.ERROR)
+            }
+        } catch (e: Exception) {
+            Resource(state = ResourceState.ERROR)
+        }
+    }
+
+    suspend fun createBloodPressure(bpAndWeightRequestModel: BpAndWeightRequestModel): Resource<HashMap<String, Any>> {
+        return try {
+            val response = apiHelper.createBloodPressure(bpAndWeightRequestModel)
+            if (response.isSuccessful) {
+                val res = response.body()
+                if (res?.status == true) {
+                    Resource(state = ResourceState.SUCCESS, data = res.entity)
+                } else {
+                    Resource(state = ResourceState.ERROR)
+                }
+            } else {
+                Resource(state = ResourceState.ERROR)
+            }
         } catch (e: Exception) {
             Resource(state = ResourceState.ERROR)
         }

@@ -7,30 +7,86 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
-import android.widget.TextView
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
-import com.medtroniclabs.spice.appextensions.gone
+import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.appextensions.setWidth
-import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
+import com.medtroniclabs.spice.common.DateUtils
+import com.medtroniclabs.spice.common.DefinedParams
+import com.medtroniclabs.spice.common.SpiceLocationManager
+import com.medtroniclabs.spice.data.model.BpAndWeightRequestModel
+import com.medtroniclabs.spice.data.model.MedicalReviewEncounter
+import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.databinding.FragmentAddWeightDialogBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
+import com.medtroniclabs.spice.network.resource.ResourceState
+import com.medtroniclabs.spice.network.utils.ConnectivityManager
+import com.medtroniclabs.spice.ui.BaseActivity
+import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.DialogDismissListener
+import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil.isValidInput
+import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.viewmodel.AddWeightViewModel
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class AddWeightDialog : DialogFragment(), View.OnClickListener {
+    var listener: DialogDismissListener? = null
     private lateinit var binding: FragmentAddWeightDialogBinding
+    private val viewModel: AddWeightViewModel by activityViewModels()
+
+    @Inject
+    lateinit var connectivityManager: ConnectivityManager
 
     companion object {
         const val TAG = "AddWeightDialog"
         fun newInstance(): AddWeightDialog {
             return AddWeightDialog()
         }
+
+        fun newInstance(patientId: String?): AddWeightDialog {
+            val fragment = AddWeightDialog()
+            fragment.arguments = Bundle().apply {
+                putString(DefinedParams.PatientId, patientId)
+            }
+            return fragment
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initView()
+        attachObservers()
+        getCurrentLocation()
+    }
+
+    private fun getCurrentLocation() {
+        val locationManager = SpiceLocationManager(requireContext())
+        locationManager.getCurrentLocation {
+            viewModel.lastLocation = it
+        }
+    }
+    private fun attachObservers() {
+        viewModel.saveWeight.observe(viewLifecycleOwner) { resourcesState ->
+            when (resourcesState.state) {
+                ResourceState.LOADING -> {
+                    (requireActivity() as? BaseActivity)?.showLoading()
+                }
+
+                ResourceState.SUCCESS -> {
+                    (requireActivity() as? BaseActivity)?.hideLoading()
+                    dismiss()
+                    listener?.onDialogDismissed(false)
+                    viewModel.saveWeight.postError()
+                }
+
+                ResourceState.ERROR -> {
+                    (requireActivity() as? BaseActivity)?.hideLoading()
+
+                }
+            }
+        }
     }
 
 
@@ -79,47 +135,39 @@ class AddWeightDialog : DialogFragment(), View.OnClickListener {
             binding.etWeight,
             binding.tvWeightErrorLabel,
             10.0..400.0,
-            R.string.weight_error
+            R.string.weight_error,
+            requireContext()
         )
     }
-
-    private fun isValidInput(
-        inputText: String,
-        editText: EditText,
-        errorTextView: TextView,
-        validRange: ClosedRange<Double>,
-        errorMessageResId: Int
-    ): Boolean {
-        val input = inputText.toDoubleOrNull()
-        if (editText.text.isNullOrBlank()) {
-            errorTextView.gone()
-            return true
-        }
-        if (!(input != null && input in validRange)) {
-            errorTextView.visible()
-            errorTextView.text = editText.context.getString(errorMessageResId)
-            return false
-        }
-        errorTextView.gone()
-        return true
-    }
-
     override fun onClick(v: View?) {
         when (v?.id) {
-            binding.btnOkay.id -> {
-                if (isWeightValid()) {
-
-                }
-            }
-
-            binding.btnCancel.id -> {
-                dismiss()
-            }
-
-            binding.ivClose.id -> {
-                dismiss()
-            }
+            binding.btnOkay.id -> handleOkayClick()
+            binding.btnCancel.id, binding.ivClose.id -> dismiss()
         }
+    }
+
+    private fun handleOkayClick() {
+        if (isWeightValid() && connectivityManager.isNetworkAvailable()) {
+            viewModel.saveWeight(createBpAndWeightRequestModel())
+        }
+    }
+
+    private fun createBpAndWeightRequestModel(): BpAndWeightRequestModel {
+        return BpAndWeightRequestModel(
+            weight = binding.etWeight.text?.trim().toString().toDoubleOrNull(),
+            encounter = MedicalReviewEncounter(
+                provenance = ProvanceDto(
+                    createdDateTime = DateUtils.getCurrentDateAndTime(
+                        DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
+                    )
+                ),
+                latitude = viewModel.lastLocation?.latitude,
+                longitude = viewModel.lastLocation?.longitude,
+                patientId = arguments?.getString(DefinedParams.PatientId, ""),
+                startTime = DateUtils.getCurrentDateAndTime(DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ),
+                endTime = DateUtils.getCurrentDateAndTime(DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ)
+            )
+        )
     }
 
     private val textWatcher = object : TextWatcher {

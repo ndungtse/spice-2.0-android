@@ -15,14 +15,22 @@ import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.databinding.FragmentSelectFlowDialogBinding
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.ui.SingleSelectionCustomView
+import com.medtroniclabs.spice.network.utils.ConnectivityManager
+import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.home.ToolsViewModel
 import com.medtroniclabs.spice.ui.medicalreview.LabourDeliveryBaseActivity
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.activity.MotherNeonateANCActivity
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class SelectFlowDialog : DialogFragment(), View.OnClickListener {
 
     private lateinit var binding: FragmentSelectFlowDialogBinding
     private val viewModel: ToolsViewModel by activityViewModels()
+    @Inject
+    lateinit var connectivityManager: ConnectivityManager
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -78,7 +86,9 @@ class SelectFlowDialog : DialogFragment(), View.OnClickListener {
     private var singleSelectionCallback: ((selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit)? =
         { selectedID, _, _, _ ->
             viewModel.resultANCFlowHashMap[TAG] = selectedID as String
-            launchActivity()
+            if (connectivityManager.isNetworkAvailable()) {
+                launchActivity()
+            }
             dismiss()
         }
 

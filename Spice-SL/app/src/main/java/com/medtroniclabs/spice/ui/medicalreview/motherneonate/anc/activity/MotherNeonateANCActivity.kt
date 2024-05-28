@@ -17,6 +17,7 @@ import com.medtroniclabs.spice.data.AboveFiveYearsSummarySubmitRequest
 import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.databinding.ActivityMedicalReviewAncactivityBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
+import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
@@ -32,13 +33,13 @@ import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.AncVisitCallBack
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.fragment.MotherNeonateAncSummary
-import com.medtroniclabs.spice.ui.mypatients.fragment.MedicalReviewPatientDiagnosisFragment
 import com.medtroniclabs.spice.ui.mypatients.fragment.PatientInfoFragment
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.fragment.PregnancyDetailsFragment
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.fragment.PregnancyPastObstetricHistoryFragment
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.fragment.PregnancySummaryFragment
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.viewmodel.MotherNeonateANCViewModel
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.viewmodel.MotherNeonateSummaryViewModel
+import com.medtroniclabs.spice.ui.motherneonateanc.fragment.MedicalReviewPatientDiagnosisFragment
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PregnancyDetailsViewModel
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PregnancyPastObstetricHistoryViewModel
@@ -139,12 +140,12 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
                 }
 
                 ResourceState.SUCCESS -> {
-                    hideLoading()
+//                    hideLoading()
                     initView()
                 }
 
                 ResourceState.ERROR -> {
-                    hideLoading()
+//                    hideLoading()
                 }
             }
         }
@@ -207,9 +208,17 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
                     }
                 }
             }
+        val patientDetails =
+            supportFragmentManager.findFragmentById(R.id.pregnancyDetailsConatiner)
+        when (patientDetails) {
+            patientDetails as? MedicalReviewPatientDiagnosisFragment -> {
+                replaceWithDiagnosisFragment()
+            }
+        }
     }
 
     private fun initView() {
+        showLoading()
         initializePatientDetailFragment()
         initializePregnancyDetailsFragment()
         initializePregnancyHistoryFragment()
@@ -399,11 +408,13 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
         val fragmentManager = supportFragmentManager
         val pregnancyDetailsFragment =
             fragmentManager.findFragmentById(R.id.pregnancyDetailsConatiner)
-        if (viewModel.ancVisit == 1 && pregnancyDetailsFragment is PregnancyDetailsFragment) {
+        if (viewModel.ancVisit == 1L && pregnancyDetailsFragment is PregnancyDetailsFragment) {
             // Show the dialog here
             showErrorDialog()
-        } else if (viewModel.ancVisit == 1 && pregnancyDetailsFragment is MedicalReviewPatientDiagnosisFragment) {
+        } else if (viewModel.ancVisit == 1L && pregnancyDetailsFragment is MedicalReviewPatientDiagnosisFragment) {
+            showLoading()
             initView()
+            hideLoading()
         } else if (pregnancyDetailsFragment is MotherNeonateAncSummary) {
             showErrorDialog()
         }
@@ -496,7 +507,8 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
                 R.id.pregnancyDetailsConatiner,
                 MedicalReviewPatientDiagnosisFragment.newInstance(
                     true,
-                    intent.getStringExtra(DefinedParams.PatientId)
+                    intent.getStringExtra(DefinedParams.PatientId),
+                    viewModel.memberId
                 )
             )
             .commit()
@@ -526,9 +538,10 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
         binding.bottomNavigationView.visible()
     }
 
-    override fun onDataLoaded(data: Int) {
-        viewModel.ancVisit = data
-        if (data == 1) {
+    override fun onDataLoaded(data: PatientListRespModel) {
+        viewModel.ancVisit = data?.pregnancyDetails?.ancVisitAssessment?.takeIf { true } ?: 1
+        viewModel.memberId = data.memberId
+        if (viewModel.ancVisit == 1L) {
             val patientDetails =
                 supportFragmentManager.findFragmentById(R.id.pregnancyDetailsConatiner)
 
@@ -549,6 +562,7 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
                     initView()
                 }
             }
+        } else {
 
         }
     }

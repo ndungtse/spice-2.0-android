@@ -136,16 +136,25 @@
         android:layout_marginEnd="@dimen/_5sdp"
         android:layout_marginBottom="@dimen/_8sdp"
         android:layout_weight="1"
-        android:visibility="gone"
+        android:visibility="visible"
         app:cardCornerRadius="@dimen/_5sdp"
         app:cardElevation="@dimen/_4sdp">
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/clWeight"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:background="@color/white"
-            android:padding="@dimen/_10sdp">
+            android:layout_height="match_parent"
+            android:background="@color/white">
+
+            <ProgressBar
+                android:id="@+id/pageProgress"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvWeightLbl"
@@ -153,6 +162,7 @@
                 android:ellipsize="end"
                 android:gravity="center"
                 android:maxLines="1"
+                android:layout_marginTop="@dimen/_10sdp"
                 android:text="@string/weight"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -160,7 +170,7 @@
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvWeightValue"
-                style="@style/TextStyle_Bold_18"
+                style="@style/TextStyle_Bold_16_Size"
                 android:layout_marginTop="@dimen/_5sdp"
                 android:ellipsize="end"
                 android:gravity="center"
@@ -168,20 +178,34 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tvWeightLbl"
-                tools:text="89 kg"/>
+                tools:text="89 Kg"/>
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvAddWeight"
-                style="@style/TextStyle_Regular_18"
-                android:layout_marginTop="@dimen/_5sdp"
+                style="@style/TextStyle_Regular_16_Size"
                 android:ellipsize="end"
                 android:gravity="center"
                 android:maxLines="1"
+                android:visibility="visible"
                 android:text="@string/add_weight"
                 android:textColor="@color/medium_blue"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tvWeightValue" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/retry_button_weight"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/inter_regular"
+                android:text="@string/retry"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                app:cornerRadius="18dp"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvAddWeight" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.material.card.MaterialCardView>
@@ -195,20 +219,30 @@
         android:layout_marginEnd="@dimen/_5sdp"
         android:layout_marginBottom="@dimen/_8sdp"
         android:layout_weight="1"
-        android:visibility="gone"
+        android:visibility="visible"
         app:cardCornerRadius="@dimen/_5sdp"
         app:cardElevation="@dimen/_4sdp">
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/clBp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:background="@color/white"
-            android:padding="@dimen/_10sdp">
+            android:layout_height="match_parent"
+            android:background="@color/white">
+
+            <ProgressBar
+                android:id="@+id/pageProgressBp"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvBloodPressureLabel"
                 style="@style/TextStyle_Regular_16"
+                android:layout_marginTop="@dimen/_10sdp"
                 android:ellipsize="end"
                 android:gravity="center"
                 android:maxLines="1"
@@ -219,7 +253,7 @@
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvBpValue"
-                style="@style/TextStyle_Bold_18"
+                style="@style/TextStyle_Bold_16_Size"
                 android:layout_marginTop="@dimen/_5sdp"
                 android:ellipsize="end"
                 android:gravity="center"
@@ -227,20 +261,34 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tvBloodPressureLabel"
-                tools:text="120/80 mmHg"/>
+                tools:text="120/80 mmHg" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvAddBp"
-                style="@style/TextStyle_Regular_18"
-                android:layout_marginTop="@dimen/_5sdp"
+                style="@style/TextStyle_Regular_16_Size"
                 android:ellipsize="end"
                 android:gravity="center"
                 android:maxLines="1"
                 android:text="@string/add_blood_pressure"
                 android:textColor="@color/medium_blue"
+                android:visibility="visible"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tvBpValue" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/retry_button_bp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/inter_regular"
+                android:text="@string/retry"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                app:cornerRadius="18dp"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvAddBp" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.material.card.MaterialCardView>

@@ -23,7 +23,7 @@ import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.SE_ITEM
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.SUMMARY_ITEM
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
-import com.medtroniclabs.spice.ui.mypatients.fragment.MedicalReviewPatientDiagnosisFragment
+import com.medtroniclabs.spice.ui.motherneonateanc.fragment.MedicalReviewPatientDiagnosisFragment
 import com.medtroniclabs.spice.ui.mypatients.fragment.PatientInfoFragment
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 import dagger.hilt.android.AndroidEntryPoint

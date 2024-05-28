@@ -9,9 +9,9 @@ import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.databinding.ActivityMedicalReviewBaseBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.ui.BaseActivity
-import com.medtroniclabs.spice.ui.mypatients.fragment.MedicalReviewPatientDiagnosisFragment
 import com.medtroniclabs.spice.ui.mypatients.fragment.MedicalReviewPatientExaminationFragment
 import com.medtroniclabs.spice.ui.medicalreview.abovefiveyears.AboveFiveYearsTreatmentSummaryFragment
+import com.medtroniclabs.spice.ui.motherneonateanc.fragment.MedicalReviewPatientDiagnosisFragment
 import com.medtroniclabs.spice.ui.mypatients.fragment.PatientInfoFragment
 import dagger.hilt.android.AndroidEntryPoint
 

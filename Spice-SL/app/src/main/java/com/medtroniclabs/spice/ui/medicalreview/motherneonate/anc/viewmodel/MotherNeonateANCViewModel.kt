@@ -28,8 +28,9 @@ class MotherNeonateANCViewModel @Inject constructor(
     val motherNeonateCreateResponse = MutableLiveData<Resource<PatientEncounterResponse>>()
     var motherNeonateAncRequest: MotherNeonateAncRequest = MotherNeonateAncRequest()
     val summaryCreateResponse = MutableLiveData<Resource<HashMap<String,Any>>>()
-    var ancVisit = -1
+    var ancVisit: Long = -1
     var id: String? = null
+    var memberId: String? = null
     var lastLocation: Location? = null
 
 

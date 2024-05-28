@@ -59,8 +59,8 @@ class PregnancyPastObstetricHistoryFragment : BaseFragment() {
                 )
             } as ArrayList<ChipViewItemModel>
             initView(complaintList) {
-                viewModel.checkSubmitBtn()
                 initViewEditText()
+                viewModel.checkSubmitBtn()
             }
             initViewEditText()
         }
@@ -136,6 +136,7 @@ class PregnancyPastObstetricHistoryFragment : BaseFragment() {
             )
             binding.btnLayout.addView(view)
         }
+        viewModel.checkSubmitBtn()
     }
 
     private var singleSelectionCallback: ((selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit)? =

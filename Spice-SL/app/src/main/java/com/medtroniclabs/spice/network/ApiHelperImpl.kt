@@ -20,6 +20,8 @@ import com.medtroniclabs.spice.data.UnderTwoMonthsMetaResponse
 import com.medtroniclabs.spice.data.PatientStatusResponse
 import com.medtroniclabs.spice.data.UserSymptomsEntity
 import com.medtroniclabs.spice.data.model.AboveFiveYearsSubmitRequest
+import com.medtroniclabs.spice.data.model.BpAndWeightRequestModel
+import com.medtroniclabs.spice.data.model.BpAndWeightResponse
 import com.medtroniclabs.spice.data.model.MotherNeonateAncRequest
 import com.medtroniclabs.spice.data.model.PatientEncounterResponse
 import com.medtroniclabs.spice.data.offlinesync.model.HouseHold
@@ -132,4 +134,21 @@ class ApiHelperImpl @Inject constructor(private val apiService: ApiService) : Ap
     override suspend fun fetchSummary(motherNeonateAncRequest: MotherNeonateAncRequest): Response<APIResponse<MotherNeonateAncSummaryModel>> {
         return apiService.fetchSummary(motherNeonateAncRequest)
     }
+
+    override suspend fun fetchWeight(motherNeonateAncRequest: MotherNeonateAncRequest): Response<APIResponse<BpAndWeightResponse>> {
+        return apiService.fetchWeight(motherNeonateAncRequest)
+    }
+
+    override suspend fun fetchBloodPressure(motherNeonateAncRequest: MotherNeonateAncRequest): Response<APIResponse<BpAndWeightResponse>> {
+        return apiService.fetchBloodPressure(motherNeonateAncRequest)
+    }
+
+    override suspend fun createWeight(bpAndWeightRequestModel: BpAndWeightRequestModel): Response<APIResponse<HashMap<String,Any>>> {
+        return apiService.createWeight(bpAndWeightRequestModel)
+    }
+
+    override suspend fun createBloodPressure(bpAndWeightRequestModel: BpAndWeightRequestModel): Response<APIResponse<HashMap<String,Any>>> {
+        return apiService.createBloodPressure(bpAndWeightRequestModel)
+    }
+
 }

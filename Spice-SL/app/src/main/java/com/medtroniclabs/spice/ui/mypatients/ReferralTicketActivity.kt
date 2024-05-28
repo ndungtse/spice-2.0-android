@@ -38,22 +38,28 @@ class ReferralTicketActivity : BaseActivity() {
 
 
     private fun initView() {
+        showLoading()
         supportFragmentManager.beginTransaction()
             .add(
                 R.id.patientDetailsContainer,
-                PatientInfoFragment.newInstance(intent.getStringExtra(DefinedParams.PatientId), intent.getStringExtra(ID))
+                PatientInfoFragment.newInstance(
+                    intent.getStringExtra(DefinedParams.PatientId),
+                    intent.getStringExtra(ID)
+                )
             ).commit()
-
-        supportFragmentManager.beginTransaction()
-            .add(
-                R.id.cardReferralTicket,
-                ReferralTicketFragment.newInstance(intent.getStringExtra(DefinedParams.PatientId))
-            ).commit()
+        hideLoading()
+//        supportFragmentManager.beginTransaction()
+//            .add(
+//                R.id.cardReferralTicket,
+//                ReferralTicketFragment.newInstance(intent.getStringExtra(DefinedParams.PatientId))
+//            ).commit()
 
         binding.btnMedicalReview.safeClickListener {
             if (ableToGetLocation())
                 launchToolsActivity()
         }
+//        val fragment = supportFragmentManager.findFragmentById(R.id.patientDetailsContainer) as? PatientInfoFragment
+//        fragment?.hideProgress()
     }
 
     private fun ableToGetLocation(): Boolean {

@@ -82,19 +82,19 @@ class PatientInfoFragment : BaseFragment() {
                 ResourceState.SUCCESS -> {
                     resource.data?.let {
                         setDataInInfo(it)
-                        dataCallback?.onDataLoaded(1)
+                        dataCallback?.onDataLoaded(it)
                     }
-                    hideProgress()
                 }
 
                 ResourceState.ERROR -> {
-                    hideProgress()
+//                    hideProgress()
                 }
             }
         }
     }
 
     private fun setDataInInfo(patientListRespModel: PatientListRespModel) {
+        showProgress()
         val isAnc = arguments?.getBoolean(ANC, false)
         val name =
             patientListRespModel.name ?: requireContext().getString(R.string.separator_hyphen)
@@ -110,9 +110,8 @@ class PatientInfoFragment : BaseFragment() {
                 DateUtils.convertDateFormat(it, DATE_FORMAT_yyyyMMddHHmmssZZZZZ, DATE_ddMMyyyy)
             } ?: requireContext().getString(R.string.hyphen_symbol)
 
-            //TODO Any ANC and Last menstrual date after backend work completed
             val lastMenstrualDate =
-                patientListRespModel.lastMenstrualPeriod.takeIf { it?.isNotBlank() == true }?.let {
+                patientListRespModel.pregnancyDetails?.lastMenstrualPeriod.takeIf { it?.isNotBlank() == true }?.let {
                     DateUtils.convertDateFormat(it, DATE_FORMAT_yyyyMMddHHmmssZZZZZ, DATE_ddMMyyyy)
                 } ?: requireContext().getString(R.string.hyphen_symbol)
 
@@ -133,7 +132,7 @@ class PatientInfoFragment : BaseFragment() {
                 ),
                 mapOf(
                     DefinedParams.label to requireContext().getString(R.string.chw),
-                    DefinedParams.value to (patientListRespModel.chw.takeIf { it?.isNotBlank() == true }
+                    DefinedParams.value to (patientListRespModel.chwName.takeIf { it?.isNotBlank() == true }
                         ?: requireContext().getString(R.string.hyphen_symbol))),
                 mapOf(
                     DefinedParams.label to requireContext().getString(R.string.village),
@@ -152,15 +151,17 @@ class PatientInfoFragment : BaseFragment() {
             dataList.add(
                 mapOf(
                     DefinedParams.label to requireContext().getString(R.string.landmark),
-                    DefinedParams.value to (patientListRespModel.location.takeIf { it?.isNotBlank() == true }
+                    DefinedParams.value to (patientListRespModel.landmark.takeIf { it?.isNotBlank() == true }
                         ?: requireContext().getString(R.string.hyphen_symbol)))
             )
             if (isAnc == true) {
                 dataList.add(
                     mapOf(
                         DefinedParams.label to requireContext().getString(R.string.anc_visit),
-                        DefinedParams.value to (patientListRespModel.ancVisit.takeIf { it?.isNotBlank() == true }
-                            ?: requireContext().getString(R.string.hyphen_symbol)))
+                        DefinedParams.value to (patientListRespModel.pregnancyDetails?.ancVisitMedicalReview?.takeIf { true }
+                            ?.toString()
+                            ?: requireContext().getString(R.string.hyphen_symbol))
+                    )
                 )
             }
             if (!(isAnc == true)) {
@@ -182,6 +183,7 @@ class PatientInfoFragment : BaseFragment() {
                 rvPatientInfo.layoutManager = GridLayoutManager(requireContext(), 1)
             }
             rvPatientInfo.adapter = adapter
+            hideProgress()
         }
     }
 }

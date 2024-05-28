@@ -8,6 +8,7 @@ import androidx.core.widget.doAfterTextChanged
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.visible
+import com.medtroniclabs.spice.common.CommonUtils.toIntOrEmptyString
 
 object MotherNeonateUtil {
     fun convertNullableIntToString(value: Int?, context: Context): String {
@@ -146,4 +147,21 @@ object MotherNeonateUtil {
         view.gone()
         return true
     }
+
+    fun calculateBp(valueOne: Double?, valueTwo: Double?, context: Context): String {
+        return if (valueOne != null && valueTwo != null) {
+            "${valueOne.toInt()}/${valueTwo.toInt()} mmHg"
+        } else {
+            "${context.getString(R.string.hyphen_symbol)}/${context.getString(R.string.hyphen_symbol)}"
+        }
+    }
+
+    fun convertWeight(value: Double?, context: Context): String {
+        return if (value != null) {
+            "${value.toInt()} kg"
+        } else {
+            context.getString(R.string.hyphen_symbol)
+        }
+    }
+
 }

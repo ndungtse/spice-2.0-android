@@ -362,6 +362,8 @@
             android:layout_marginEnd="@dimen/_10sdp"
             android:fontFamily="@font/inter_regular"
             android:textColor="@color/grey_black"
+            android:ellipsize="end"
+            android:maxLines="2"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_weight="0.25"
             app:layout_constraintStart_toEndOf="@id/tvPregnancyHistorySeparator"

@@ -20,6 +20,8 @@ import com.medtroniclabs.spice.data.UnderTwoMonthsMetaResponse
 import com.medtroniclabs.spice.data.PatientStatusResponse
 import com.medtroniclabs.spice.data.UserSymptomsEntity
 import com.medtroniclabs.spice.data.model.AboveFiveYearsSubmitRequest
+import com.medtroniclabs.spice.data.model.BpAndWeightRequestModel
+import com.medtroniclabs.spice.data.model.BpAndWeightResponse
 import com.medtroniclabs.spice.data.model.MotherNeonateAncRequest
 import com.medtroniclabs.spice.data.model.PatientEncounterResponse
 import com.medtroniclabs.spice.data.offlinesync.model.HouseHold
@@ -111,4 +113,16 @@ interface ApiService {
 
     @POST("/spice-service/medical-review/anc-pregnancy/details")
     suspend fun fetchSummary(@Body motherNeonateAncRequest : MotherNeonateAncRequest) : Response<APIResponse<MotherNeonateAncSummaryModel>>
+
+    @POST("/spice-service/medical-review/weight")
+    suspend fun fetchWeight(@Body motherNeonateAncRequest :MotherNeonateAncRequest):Response<APIResponse<BpAndWeightResponse>>
+
+    @POST("/spice-service/medical-review/bp")
+    suspend fun fetchBloodPressure(@Body motherNeonateAncRequest :MotherNeonateAncRequest):Response<APIResponse<BpAndWeightResponse>>
+
+    @POST("/spice-service/medical-review/weight/create")
+    suspend fun createWeight(@Body bpAndWeightRequestModel : BpAndWeightRequestModel) : Response<APIResponse<HashMap<String,Any>>>
+
+    @POST("/spice-service/medical-review/bp/create")
+    suspend fun createBloodPressure(@Body bpAndWeightRequestModel :BpAndWeightRequestModel) : Response<APIResponse<HashMap<String,Any>>>
 }

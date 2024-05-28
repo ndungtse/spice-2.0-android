@@ -453,4 +453,5 @@
     <string name="mother_neonate_anc_saved_successfully">Mother Neonate Anc Saved Successfully</string>
     <string name="moderate_dehydration">Moderate Dehydration</string>
     <string name="my_patients">My Patients</string>
+    <string name="something_went_wrong">Something went wrong</string>
 </resources>
