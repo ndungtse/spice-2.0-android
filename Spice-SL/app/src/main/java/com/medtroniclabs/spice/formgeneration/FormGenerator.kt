@@ -92,6 +92,7 @@ import com.medtroniclabs.spice.formgeneration.config.ViewType.VIEW_TYPE_METAL_HE
 import com.medtroniclabs.spice.formgeneration.config.ViewType.VIEW_TYPE_NO_OF_DAYS
 import com.medtroniclabs.spice.formgeneration.config.ViewType.VIEW_TYPE_SINGLE_SELECTION
 import com.medtroniclabs.spice.formgeneration.config.ViewType.VIEW_TYPE_TIME
+import com.medtroniclabs.spice.formgeneration.extension.DecimalDigitsInputFilter
 import com.medtroniclabs.spice.formgeneration.extension.dp
 import com.medtroniclabs.spice.formgeneration.extension.hideKeyboard
 import com.medtroniclabs.spice.formgeneration.extension.markMandatory
@@ -288,7 +289,9 @@ class FormGenerator(
                 binding.etUserInput.setText(it)
                 resultHashMap[id] = it
             }
-
+            maxDecimalPlaces?.let {
+                binding.etUserInput.filters = arrayOf<InputFilter>(DecimalDigitsInputFilter(it))
+            }
             hint?.let {
                 if (translate) {
                     binding.etUserInput.hint = hintCulture ?: it
@@ -1074,7 +1077,7 @@ class FormGenerator(
         if (yearView is AppCompatEditText && monthView is AppCompatEditText && weekView is AppCompatEditText)
             removeWatcher(yearView, monthView, weekView)
         isDOBUpdated = true
-        val yearMonthWeeks = DateUtils.getYearMonthAndWeek(date)
+        val yearMonthWeeks = DateUtils.getYearMonthAndWeek(date,dateFormat)
         convertDateFormat(date, dateFormat, DATE_FORMAT_yyyyMMddHHmmssZZZZZ).let {
             addOrUpdateDOB(
                 it,
@@ -1815,10 +1818,17 @@ class FormGenerator(
                         } else if (!phoneNumberConatinMaxLength(
                                 maxLength,
                                 it
-                            ) || !FormFieldValidator.isValidMobileNumber(it)
+                            )
                         ) {
                             isValid = false
                             requestFocusView(data)
+                        } else if (!FormFieldValidator.isValidMobileNumber(it)) {
+                            isValid = false
+                            requestFocusView(
+                                data, getString(
+                                    R.string.phone_number_invalid
+                                )
+                            )
                         } else {
                             hideValidationField(data)
                         }

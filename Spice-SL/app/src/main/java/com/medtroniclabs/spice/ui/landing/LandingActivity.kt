@@ -137,6 +137,12 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
                 binding.drawerLayout.closeDrawer(GravityCompat.START)
                 return true
             }
+            R.id.privacy_policy ->{
+                binding.drawerLayout.closeDrawer(GravityCompat.START)
+                val homeMenuItem = binding.navView.menu.findItem(R.id.home)
+                selectNavigationMenu(homeMenuItem)
+                return true
+            }
         }
         selectNavigationMenu(item)
         displayScreen(item.itemId)

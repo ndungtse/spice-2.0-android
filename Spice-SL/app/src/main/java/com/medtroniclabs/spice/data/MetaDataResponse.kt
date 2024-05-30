@@ -80,6 +80,7 @@ data class UserProfile(
     val lastName: String?,
     val gender: String?,
     val phoneNumber: String?,
+    val displayName:String?,
     val username: String,
     val countryCode: String?,
     val country: Country?,

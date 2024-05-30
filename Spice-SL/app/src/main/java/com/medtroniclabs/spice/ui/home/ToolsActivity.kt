@@ -22,7 +22,8 @@ class ToolsActivity : BaseActivity() {
         setMainContentView(
             binding.root,
             isToolbarVisible = true,
-            title = getString(R.string.assessment)
+            title = getString(R.string.assessment),
+            homeAndBackVisibility = Pair(true,true)
         )
         initializeView()
     }
@@ -49,9 +50,9 @@ class ToolsActivity : BaseActivity() {
             } else {
                 ToolsMenuFragment.newInstance()
             }
+            supportFragmentManager.beginTransaction()
+                .add(R.id.menuItemsFragment, fragment, fragmentTag)
+                .commit()
         }
-        supportFragmentManager.beginTransaction()
-            .add(R.id.menuItemsFragment, fragment, fragmentTag)
-            .commit()
     }
 }

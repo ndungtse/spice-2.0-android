@@ -91,7 +91,7 @@ class DashboardMenuItemsAdapter(
                 if (name == MenuConstants.OTHER_SYMPTOMS) {
                     return ContextCompat.getDrawable(context, R.drawable.ic_general)
                 } else {
-                    return ContextCompat.getDrawable(context, R.drawable.ic_iccm_tool)
+                    return ContextCompat.getDrawable(context, R.drawable.ic_general)
                 }
             }
 

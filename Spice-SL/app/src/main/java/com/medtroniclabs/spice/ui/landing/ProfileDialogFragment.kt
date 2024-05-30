@@ -148,14 +148,14 @@ class ProfileDialogFragment : DialogFragment(), View.OnClickListener {
                     user.firstName,
                     user.lastName
                 )
-            } ?: getString(R.string.separator_hyphen)
-            tvGenderText.text = user.gender ?: getString(R.string.separator_hyphen)
+            } ?: getString(R.string.separator_double_hyphen)
+            tvGenderText.text = user.gender ?: getString(R.string.separator_double_hyphen)
             tvEmailText.text = user.username
-            tvPhoneNumberText.text = user.phoneNumber ?: getString(R.string.separator_hyphen)
+            tvPhoneNumberText.text = user.phoneNumber ?: getString(R.string.separator_double_hyphen)
             tvSuiteAccessText.text = user.suiteAccess?.let {
                 user.suiteAccess[0]
-            } ?: getString(R.string.separator_hyphen)
-            tvRoleText.text = user.roles.joinToString { it.name }
+            } ?: getString(R.string.separator_double_hyphen)
+            tvRoleText.text = user.displayName ?: getString(R.string.separator_double_hyphen)
         }
     }
 

@@ -14,22 +14,12 @@
         android:layout_marginStart="@dimen/_16sdp"
         android:gravity="start"
         android:paddingTop="@dimen/_16sdp"
-        android:paddingBottom="@dimen/_32sdp"
+        android:paddingBottom="@dimen/_16sdp"
         android:text="@string/filters"
         android:textSize="@dimen/_18ssp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <View
-        android:layout_width="@dimen/_0dp"
-        android:layout_height="@dimen/_1sdp"
-        android:layout_marginStart="@dimen/_16sdp"
-        android:layout_marginEnd="@dimen/_16sdp"
-        android:background="@color/btn_disable_grey"
-        app:layout_constraintBottom_toTopOf="@+id/scrollContainer"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvTitle" />
 
 
     <androidx.core.widget.NestedScrollView

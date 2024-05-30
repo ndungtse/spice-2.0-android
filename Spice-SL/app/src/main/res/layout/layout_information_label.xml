@@ -36,7 +36,7 @@
             android:textColor="@color/charcoal_grey"
             android:textSize="@dimen/_14ssp"
             app:layout_constraintEnd_toStartOf="@+id/tvValue"
-            app:layout_constraintHorizontal_weight="0.3"
+            app:layout_constraintHorizontal_weight="0.1"
             app:layout_constraintStart_toEndOf="@id/tvKey"
             app:layout_constraintTop_toTopOf="@id/tvKey" />
 

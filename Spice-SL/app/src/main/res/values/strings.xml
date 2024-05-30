@@ -31,7 +31,7 @@
     <string name="household_no">Household No</string>
     <string name="no_of_people">No of people</string>
     <string name="members_registered">Members Registered</string>
-    <string name="filters">Filter</string>
+    <string name="filters">Filters</string>
     <string name="people_registered">%1$d/%2$d</string>
     <string name="investigation">Investigation</string>
     <string name="investigation_caps">INVESTIGATION</string>
@@ -469,4 +469,6 @@
     <string name="fb_info_5">When ready to count, press the centre of your timer (Note that the timer beeps every second for 60 seconds; will alarm in 30 seconds and then in 60 seconds before stopping beeping)</string>
     <string name="fb_info_6">Keep counting until the timer stops beeping</string>
     <string name="fast_breathing">Fast Breathing</string>
+    <string name="ddmmyyyy">dd/mm/yyyy</string>
+    <string name="phone_number_invalid">Please enter a valid mobile number</string>
 </resources>

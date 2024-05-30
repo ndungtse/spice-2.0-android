@@ -22,7 +22,7 @@
         style="@style/Form_Input_Style_BG"
         android:layout_width="0dp"
         android:layout_marginVertical="@dimen/_8sdp"
-        android:hint="@string/dd_mm_yyyy"
+        android:hint="@string/ddmmyyyy"
         android:paddingHorizontal="@dimen/_12sdp"
         android:paddingVertical="@dimen/_10sdp"
         app:layout_constraintEnd_toEndOf="@id/tvDateOfBirth"

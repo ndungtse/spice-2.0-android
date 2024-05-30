@@ -65,7 +65,8 @@ data class FormLayout(
     var informationVisibility: String? = null,
     var isBooleanAnswer: Boolean = false,
     var isInfo: String? = null,
-    var dosageListItems: ArrayList<RecommendedDosageListModel>? = null
+    var dosageListItems: ArrayList<RecommendedDosageListModel>? = null,
+    var maxDecimalPlaces:Int? = null
 ) : BaseViewParams
 
 data class FormResponse(

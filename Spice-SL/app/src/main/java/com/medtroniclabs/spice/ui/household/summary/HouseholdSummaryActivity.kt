@@ -50,10 +50,14 @@ class HouseholdSummaryActivity : BaseActivity(), MemberSelectionListener, View.O
                         initializeAdapter(data)
                         if (householdSummaryViewModel.previousCount != 0 && (householdSummaryViewModel.previousCount < data.size)) {
                             data.last().patientId?.let {
-                                SuccessDialogFragment.newInstance(
-                                    householdNo = -1L,
-                                    patientId = it
-                                ).show(supportFragmentManager, SuccessDialogFragment.TAG)
+                                val existingFragment =
+                                    supportFragmentManager.findFragmentByTag(SuccessDialogFragment.TAG)
+                                if (existingFragment == null) {
+                                    SuccessDialogFragment.newInstance(
+                                        householdNo = -1L,
+                                        patientId = it
+                                    ).show(supportFragmentManager, SuccessDialogFragment.TAG)
+                                }
                             }
                         }
                         householdSummaryViewModel.previousCount = data.size
@@ -85,7 +89,7 @@ class HouseholdSummaryActivity : BaseActivity(), MemberSelectionListener, View.O
                 ResourceState.SUCCESS -> {
                     hideLoading()
                     resourceState.data?.name?.let { name ->
-                        setTitle(name)
+                        setTitle(name +" "+ getString(R.string.household))
                     }
                 }
             }
@@ -187,9 +191,14 @@ class HouseholdSummaryActivity : BaseActivity(), MemberSelectionListener, View.O
         when (v?.id) {
             R.id.btnFinishRegistration -> {
                 householdSummaryViewModel.houseHoldDetailLiveData.value?.data?.let {
-                    SuccessDialogFragment.newInstance(householdNo = it.householdNo,
-                        DefinedParams.DefaultID
-                    ).show(supportFragmentManager, SuccessDialogFragment.TAG)
+                    val existingFragment =
+                        supportFragmentManager.findFragmentByTag(SuccessDialogFragment.TAG)
+                    if (existingFragment == null) {
+                        SuccessDialogFragment.newInstance(
+                            householdNo = it.householdNo,
+                            DefinedParams.DefaultID
+                        ).show(supportFragmentManager, SuccessDialogFragment.TAG)
+                    }
                 }
             }
 
