@@ -2,12 +2,14 @@ package com.medtroniclabs.spice.repo
 
 import android.location.Location
 import com.medtroniclabs.spice.common.DateUtils
+import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.AboveFiveYearsSummaryDetails
 import com.medtroniclabs.spice.data.AboveFiveYearsSummaryRequest
 import com.medtroniclabs.spice.data.AboveFiveYearsSummarySubmitRequest
 import com.medtroniclabs.spice.data.MedicalReviewMetaItems
 import com.medtroniclabs.spice.data.model.AboveFiveYearsSubmitRequest
+import com.medtroniclabs.spice.data.model.MedicalReviewEncounter
 import com.medtroniclabs.spice.data.model.MultiSelectDropDownModel
 import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.db.local.RoomHelper
@@ -127,27 +129,30 @@ class AboveFiveYearsRepository @Inject constructor(
                 details.houseHoldId?.let { hhId ->
                     details.memberId?.let { memberId ->
                         AboveFiveYearsSubmitRequest(
-                            patientId = id,
-                            latitude = location.latitude,
-                            longitude = lastLocation.longitude,
-                            householdId = hhId,
-                            memberId = memberId,
                             assessmentType = MedicalReviewTypeEnums.AboveFiveYears.name,
                             presentingComplaints = selectedComplaintsExaminationsPair.first.filterNotNull(),
                             presentingComplaintsNotes = enteredComplaintsExaminationsClinicalNotes.first,
-                            systemicExaminationsNotes = enteredComplaintsExaminationsClinicalNotes.second,
-                            provenance = ProvanceDto(
-                                createdDateTime = DateUtils.getCurrentDateAndTime(
-                                    DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
-                                )
-                            ),
                             systemicExaminations = selectedComplaintsExaminationsPair.second.filterNotNull(),
+                            systemicExaminationsNotes = enteredComplaintsExaminationsClinicalNotes.second,
                             clinicalNotes = enteredComplaintsExaminationsClinicalNotes.third,
-                            startTime = DateUtils.getCurrentDateAndTime(
-                                DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
-                            ),
-                            endTime = DateUtils.getCurrentDateAndTime(
-                                DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
+                            encounter = MedicalReviewEncounter(
+                                patientId = id,
+                                provenance = ProvanceDto(
+                                    createdDateTime = DateUtils.getCurrentDateAndTime(
+                                        DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
+                                    )
+                                ),
+                                latitude = location.latitude,
+                                longitude = lastLocation.longitude,
+                                householdId = hhId,
+                                memberId = memberId,
+                                startTime = DateUtils.getCurrentDateAndTime(
+                                    DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
+                                ),
+                                endTime = DateUtils.getCurrentDateAndTime(
+                                    DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
+                                ),
+                                referred = true
                             )
                         )
                     }
@@ -230,26 +235,34 @@ class AboveFiveYearsRepository @Inject constructor(
         selectedMedicalSupply?.map { medicalSupplyList.add(it.name) }
         return details.patientId?.let { patientId ->
             details.memberId?.let { memberId ->
-                AboveFiveYearsSummarySubmitRequest(
-                    assessmentType = assessmentTypeList,
-                    patientId = patientId,
-                    memberId = memberId,
-                    id = submitCreateId,
-                    provenance = ProvanceDto(
-                        createdDateTime = DateUtils.getCurrentDateAndTime(
-                            DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
+                details.houseHoldId?.let { houseHoldId ->
+                    details.villageId?.let { villageId ->
+                        AboveFiveYearsSummarySubmitRequest(
+                            assessmentType = assessmentTypeList,
+                            patientId = patientId,
+                            memberId = memberId,
+                            id = submitCreateId,
+                            provenance = ProvanceDto(
+                                createdDateTime = DateUtils.getCurrentDateAndTime(
+                                    DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
+                                )
+                            ),
+                            patientReference = details.id,
+                            medicalSupplies = medicalSupplyList.ifEmpty { null },
+                            cost = selectedCostItem,
+                            patientStatus = selectedPatientStatus,
+                            nextVisitDate = DateUtils.convertDateTimeToDate(
+                                nextFollowupDate,
+                                DateUtils.DATE_ddMMyyyy,
+                                DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
+                            ),
+                            householdId = houseHoldId.toString(),//Todo: Should be long, need to recheck
+                            villageId = villageId,
+                            assessmentName = MedicalReviewTypeEnums.AboveFiveYears.name,
+                            referralTicketType = DefinedParams.RMNCH
                         )
-                    ),
-                    patientReference = details.id,
-                    medicalSupplies = medicalSupplyList,
-                    cost = selectedCostItem,
-                    patientStatus = selectedPatientStatus,
-                    nextVisitDate = DateUtils.convertDateTimeToDate(
-                        nextFollowupDate,
-                        DateUtils.DATE_ddMMyyyy,
-                        DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
-                    )
-                )
+                    }
+                }
             }
         }
     }

@@ -19,7 +19,8 @@ data class PatientListRespModel(
     val houseHoldId: Long? = null,
     val houseHoldNumber: Long? = null,
     val dateOfOnset:String? = null,
-    val pregnancyDetails: PregnancyDetails? = null
+    val pregnancyDetails: PregnancyDetails? = null,
+    val villageId:String? = null,
 )
 
 data class PregnancyDetails(
@@ -40,7 +41,9 @@ data class PregnancyDetails(
     val parity: Int? = null,
     val patientBloodGroup: String? = null,
     val bmi: Double? = null,
-    val pregnant: Boolean? = null
+    val pregnant: Boolean? = null,
+    val ancVisit:String? = null,
+    val villageId: String? = null
 )
 data class SearchAndListResponse(
     val patientList: List<PatientListRespModel> = emptyList(),

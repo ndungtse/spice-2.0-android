@@ -67,4 +67,7 @@ object DefinedParams {
     const val PregnancyANC = "PregnancyANC"
     const val EncounterId = "EncounterId"
     const val True = "true"
+    const val TenantId = "tenantId"
+    const val FhirId = "fhirId"
+    const val RMNCH = "RMNCH"
 }

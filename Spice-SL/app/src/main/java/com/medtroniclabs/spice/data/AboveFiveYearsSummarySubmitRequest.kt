@@ -13,5 +13,9 @@ data class AboveFiveYearsSummarySubmitRequest(
     val medicalSupplies: List<String>? = null,
     val patientStatus: String? = null,
     val nextVisitDate: String? = null,
-    val referralTicketType:String? = null
+    val referralTicketType:String? = null,
+    val assessmentName: String? = null,
+    val householdId: String? = null,
+    val villageId: String? = null,
+    val referralTicketId:String? = null
 )

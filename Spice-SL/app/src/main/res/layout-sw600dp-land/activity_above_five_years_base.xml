@@ -192,7 +192,6 @@
                 android:text="@string/refer_patient"
                 android:textAllCaps="true"
                 android:textStyle="bold"
-                android:enabled="false"
                 android:paddingVertical="@dimen/_12sdp"
                 android:paddingHorizontal="@dimen/_40sdp"
                 app:layout_constraintBottom_toBottomOf="@+id/btnDone"

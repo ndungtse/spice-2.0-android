@@ -191,7 +191,6 @@
                 android:text="@string/refer_patient"
                 android:textAllCaps="true"
                 android:textStyle="bold"
-                android:enabled="false"
                 app:layout_constraintBottom_toBottomOf="@+id/btnDone"
                 app:layout_constraintEnd_toStartOf="@+id/btnDone"
                 app:layout_constraintTop_toTopOf="@+id/btnDone" />

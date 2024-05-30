@@ -18,6 +18,7 @@ import com.medtroniclabs.spice.ui.landing.OnDialogDismissListener
 import com.medtroniclabs.spice.ui.medicalreview.ClinicalNotesFragment
 import com.medtroniclabs.spice.ui.medicalreview.PresentingComplaintsFragment
 import com.medtroniclabs.spice.ui.medicalreview.SystemicExaminationsFragment
+import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.fragment.MotherNeonateAncSummary
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.CLINICAL_NOTES
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.PC_ITEM
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.SE_ITEM
@@ -25,6 +26,8 @@ import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import com.medtroniclabs.spice.ui.mypatients.fragment.MedicalReviewPatientDiagnosisFragment
 import com.medtroniclabs.spice.ui.mypatients.fragment.PatientInfoFragment
+import com.medtroniclabs.spice.ui.mypatients.fragment.ReferPatientFragment
+import com.medtroniclabs.spice.ui.mypatients.viewmodel.ReferPatientViewModel
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -37,6 +40,7 @@ class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
     private val chipItemViewModel: ClinicalNotesViewModel by viewModels()
     private val presentingComplaintsViewModel: PresentingComplaintsViewModel by viewModels()
     private val systemicExaminationViewModel: SystemicExaminationViewModel by viewModels()
+    private val referPatientViewModel: ReferPatientViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -78,6 +82,7 @@ class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
             swipeRefresh()
         }
         binding.btnDone.safeClickListener(this)
+        binding.btnRefer.safeClickListener(this)
     }
 
     private fun swipeRefresh() {
@@ -85,7 +90,7 @@ class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
             .let { currentFragment ->
                 if (currentFragment is AboveFiveYearsTreatmentSummaryFragment) {
                     viewModel.aboveFiveYearsCreateResponse.value?.data?.let {
-                        viewModel.getAboveFiveYearsSummaryDetails(AboveFiveYearsSummaryRequest(id = it.id))
+                        viewModel.getAboveFiveYearsSummaryDetails(AboveFiveYearsSummaryRequest(id = it.encounterId))
                     }
                 } else {
                     patientViewModel.patientDetailsLiveData.value?.data?.let { details ->
@@ -131,6 +136,26 @@ class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
     }
 
     private fun attachObserver() {
+        referPatientViewModel.referPatientResultLiveData.observe(this) { resource ->
+            when (resource.state) {
+                ResourceState.LOADING -> {
+                    showLoading()
+                }
+
+                ResourceState.SUCCESS -> {
+                    hideLoading()
+                    val fragment =
+                        supportFragmentManager.findFragmentByTag(ReferPatientFragment.TAG) as? ReferPatientFragment
+                    fragment?.dismiss()
+                    MedicalReviewSuccessDialogFragment.newInstance().show(supportFragmentManager,
+                        MedicalReviewSuccessDialogFragment.TAG )
+                }
+
+                ResourceState.ERROR -> {
+                    hideLoading()
+                }
+            }
+        }
         viewModel.aboveFiveYearsMetaLiveData.observe(this) { resourceState ->
             when (resourceState.state) {
                 ResourceState.LOADING -> {
@@ -160,7 +185,7 @@ class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
                 ResourceState.SUCCESS -> {
                     binding.nestedScrollViewID.fullScroll(ScrollView.FOCUS_UP)
                     resourceState.data?.let {
-                        viewModel.getAboveFiveYearsSummaryDetails(AboveFiveYearsSummaryRequest(id = it.id))
+                        viewModel.getAboveFiveYearsSummaryDetails(AboveFiveYearsSummaryRequest(id = it.encounterId))
                     }
                     initializeSummaryFragments()
                 }
@@ -274,16 +299,19 @@ class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
                 postResultInput()
             }
 
+            binding.btnRefer.id ->
+                patientViewModel.patientDetailsLiveData.value?.data?.let { details ->
+                    ReferPatientFragment.newInstance(MedicalReviewTypeEnums.AboveFiveYears.name).show(
+                        supportFragmentManager,
+                        ReferPatientFragment.TAG
+                    )
+                }
             binding.btnDone.id -> {
                 patientViewModel.patientDetailsLiveData.value?.data?.let { details ->
-                    details.patientId?.let { patientId ->
-                        details.memberId?.let { memberId ->
-                            viewModel.aboveFiveYearsCreateResponse.value?.data?.id
-                                ?.let { submitCreateId ->
-                                    viewModel.aboveFiveYearsSummaryCreate(details, submitCreateId)
-                                }
+                    viewModel.aboveFiveYearsCreateResponse.value?.data?.encounterId
+                        ?.let { submitCreateId ->
+                            viewModel.aboveFiveYearsSummaryCreate(details, submitCreateId)
                         }
-                    }
                 }
             }
         }
@@ -312,7 +340,6 @@ class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
 
     private fun enableReferralDoneBtn() {
         binding.btnDone.isEnabled = getSummaryStatus()
-        binding.btnRefer.isEnabled = getSummaryStatus()
     }
 
     private fun getSummaryStatus(): Boolean {

@@ -18,6 +18,11 @@ import com.medtroniclabs.spice.data.MedicationSearchRequest
 import com.medtroniclabs.spice.data.MetaDataResponse
 import com.medtroniclabs.spice.data.MotherNeonateAncMetaResponse
 import com.medtroniclabs.spice.data.MotherNeonateAncSummaryModel
+import com.medtroniclabs.spice.data.ReferPatientAPIRequest
+import com.medtroniclabs.spice.data.ReferPatientHealthFacilityItem
+import com.medtroniclabs.spice.data.ReferPatientNameNumber
+import com.medtroniclabs.spice.data.ReferPatientResult
+import com.medtroniclabs.spice.data.ReferPatientRequest
 import com.medtroniclabs.spice.data.UnderTwoMonthsMetaResponse
 import com.medtroniclabs.spice.data.PatientStatusResponse
 import com.medtroniclabs.spice.data.UserSymptomsEntity
@@ -159,5 +164,16 @@ class ApiHelperImpl @Inject constructor(private val apiService: ApiService) : Ap
 
     override suspend fun getDiagnosisDetails(request: CreateUnderTwoMonthsResponse): Response<APIResponse<ArrayList<DiagnosisDiseaseModel>>> {
         return apiService.getDiagnosisDetails(request)
+    }
+
+    override suspend fun getHealthFacilityMetaData(request: ReferPatientAPIRequest) : Response<APIResponse<List<ReferPatientHealthFacilityItem>>> {
+        return apiService.getHealthFacilityMetaData(request)
+    }
+
+    override suspend fun getReferPatientMobileUserList(tenantId: ReferPatientRequest): Response<APIResponse<List<ReferPatientNameNumber>>> {
+        return apiService.getReferPatientMobileUserList(tenantId)
+    }
+    override suspend fun createReferPatientResult(request: ReferPatientResult): Response<APIResponse<HashMap<String,Any>>> {
+        return apiService.createReferPatientResult(request)
     }
 }

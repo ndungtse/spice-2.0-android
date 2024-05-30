@@ -474,4 +474,10 @@
     <string name="phone_number_invalid">Please enter a valid mobile number</string>
     <string name="zinc_ors_status">(Zinc - %1$s), (ORS - %2$s)</string>
     <string name="filter">Filter</string>
+    <string name="refer_to">Refer To</string>
+    <string name="referred_reason">Referred Reason</string>
+    <string name="type_comments">Type your comments</string>
+    <string name="name_number">Name/Number</string>
+    <string name="refer">Refer</string>
+    <string name="refer_patient_name_num_display">%1$s (%2$s) / %3$s %4$s</string>
 </resources>

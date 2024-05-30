@@ -18,6 +18,11 @@ import com.medtroniclabs.spice.data.MedicationSearchRequest
 import com.medtroniclabs.spice.data.MetaDataResponse
 import com.medtroniclabs.spice.data.MotherNeonateAncMetaResponse
 import com.medtroniclabs.spice.data.MotherNeonateAncSummaryModel
+import com.medtroniclabs.spice.data.ReferPatientAPIRequest
+import com.medtroniclabs.spice.data.ReferPatientHealthFacilityItem
+import com.medtroniclabs.spice.data.ReferPatientNameNumber
+import com.medtroniclabs.spice.data.ReferPatientResult
+import com.medtroniclabs.spice.data.ReferPatientRequest
 import com.medtroniclabs.spice.data.UnderTwoMonthsMetaResponse
 import com.medtroniclabs.spice.data.PatientStatusResponse
 import com.medtroniclabs.spice.data.UserSymptomsEntity
@@ -133,4 +138,13 @@ interface ApiService {
 
     @POST("/spice-service/patient/diagnosis-details")
     suspend fun getDiagnosisDetails(@Body request: CreateUnderTwoMonthsResponse):Response<APIResponse<ArrayList<DiagnosisDiseaseModel>>>
+
+    @POST("/admin-service/healthfacilities-by-district-id")
+    suspend fun getHealthFacilityMetaData(@Body request: ReferPatientAPIRequest): Response<APIResponse<List<ReferPatientHealthFacilityItem>>>
+
+    @POST("/user-service/user/users-by-tenant-id")
+    suspend fun getReferPatientMobileUserList(@Body tenantId: ReferPatientRequest): Response<APIResponse<List<ReferPatientNameNumber>>>
+
+    @POST("/spice-service/patient/referral-tickets/create")
+    suspend fun createReferPatientResult(@Body request: ReferPatientResult): Response<APIResponse<HashMap<String,Any>>>
 }

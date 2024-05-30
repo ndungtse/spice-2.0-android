@@ -30,7 +30,9 @@ data class MedicalReviewEncounter(
     val referred: Boolean? = null,
     val provenance: ProvanceDto? = null,
     val startTime: String? = null,
-    val endTime: String? = null
+    val endTime: String? = null,
+    val householdId: Long? =null,
+    val memberId: String? = null
 )
 
 data class PatientEncounterResponse(
