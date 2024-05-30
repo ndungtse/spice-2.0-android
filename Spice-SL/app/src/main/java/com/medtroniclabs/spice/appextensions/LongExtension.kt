@@ -1,4 +1,5 @@
 package com.medtroniclabs.spice.appextensions
+import com.medtroniclabs.spice.common.DateUtils.DATE_TIME_DISPLAY_FORMAT
 import java.text.SimpleDateFormat
 import java.time.Instant
 import java.time.ZoneOffset
@@ -12,8 +13,8 @@ fun Long.convertToUtcDateTime(): String {
     return formatter.format(instant)
 }
 
-fun Long.convertToString(): String {
+fun Long.convertToLocalDateTime(format: String = DATE_TIME_DISPLAY_FORMAT): String {
     val date = Date(this)
-    val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'00:00:00ZZZZZ", Locale.getDefault())
+    val dateFormat = SimpleDateFormat(format, Locale.getDefault())
     return dateFormat.format(date)
 }

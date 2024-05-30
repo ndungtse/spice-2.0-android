@@ -45,4 +45,7 @@ interface FollowUpDao {
     @Query("SELECT * FROM FollowUp WHERE syncStatus =:syncStatus")
     suspend fun getAllFollowUps(syncStatus: String = OfflineSyncStatus.NotSynced.name): List<FollowUp>
 
+    @Query("SELECT COUNT(referenceId) FROM FollowUp where syncStatus =:syncStatus")
+    suspend fun getUnSyncedCount(syncStatus: String = OfflineSyncStatus.NotSynced.name): Int
+
 }

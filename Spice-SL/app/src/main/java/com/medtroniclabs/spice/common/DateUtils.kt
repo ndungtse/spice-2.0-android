@@ -25,6 +25,7 @@ object DateUtils {
     const val DATE_FORMAT_yyyyMMdd = "yyyy-MM-dd"
     const val DATE_FORMAT_yyyyMMddHHmmssZZZZZ = "yyyy-MM-dd'T'HH:mm:ssZZZZZ"
     const val DATE_FORMAT_ddMMMyyyy = "dd MMM, yyyy"
+    const val DATE_TIME_DISPLAY_FORMAT = "dd MMM, yyyy - hh:mm a"
 
     fun getYearMonthAndWeek(
         inputDate: String,

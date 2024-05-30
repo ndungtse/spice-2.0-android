@@ -16,6 +16,8 @@ import com.medtroniclabs.spice.model.followup.FollowUpFilter
 import com.medtroniclabs.spice.network.ApiHelper
 import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
 import com.medtroniclabs.spice.ui.followup.FollowUpDefinedParams
+import java.util.Calendar
+import java.util.Date
 import javax.inject.Inject
 
 class FollowUpRepository @Inject constructor(
@@ -77,6 +79,10 @@ class FollowUpRepository @Inject constructor(
         return roomHelper.getAllVillageEntity()
     }
 
+    suspend fun getUnSyncedFollowUpCount(): Int {
+        return roomHelper.getUnSyncedFollowUpCount()
+    }
+
     suspend fun addCallHistory(
         maxSuccessfulCallLimit: Int,
         maxUnSuccessfulCallLimit: Int,
@@ -129,17 +135,21 @@ class FollowUpRepository @Inject constructor(
                 followUp,
                 FollowUpDefinedParams.FU_TYPE_REFERRED,
                 ReferralStatus.Referred.name,
-                SecuredPreference.getOrganizationFhirId()
+                referredSiteId = SecuredPreference.getOrganizationFhirId()
             )
         }
 
         if (followUp.type == FollowUpDefinedParams.FU_TYPE_REFERRED
             && call.patientStatus?.equals(ReferralStatus.OnTreatment.name, true) == true
         ) {
+            val today = Calendar.getInstance()
+            today.add(Calendar.DATE, 2)
+
             return getNewFollowUp(
                 followUp,
                 FollowUpDefinedParams.FU_TYPE_MEDICAL_REVIEW,
-                ReferralStatus.OnTreatment.name
+                ReferralStatus.OnTreatment.name,
+                nextVisitDate = today.time.time.convertToUtcDateTime()
             )
         }
 
@@ -157,7 +167,7 @@ class FollowUpRepository @Inject constructor(
         }
     }
 
-    private fun getNewFollowUp(followUp: FollowUp, type: String, status: String, referredSiteId: String? = null): FollowUp {
+    private fun getNewFollowUp(followUp: FollowUp, type: String, status: String, referredSiteId: String? = null, nextVisitDate: String? = null): FollowUp {
         followUp.isCompleted = true
         return followUp.copy(
             referenceId = 0,
@@ -170,7 +180,7 @@ class FollowUpRepository @Inject constructor(
             successfulAttempts = 0,
             unsuccessfulAttempts = 0,
             encounterDate = System.currentTimeMillis().convertToUtcDateTime(),
-            nextVisitDate = null,
+            nextVisitDate = nextVisitDate,
             referredSiteId = referredSiteId
         )
     }

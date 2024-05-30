@@ -25,6 +25,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class LoginActivity : BaseActivity(), View.OnClickListener {
     private lateinit var binding: ActivityLoginBinding
     private val viewModel: LoginViewModel by viewModels()
+    private var unSyncedDataCount = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,6 +37,9 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
     }
 
     private fun attachObservers() {
+        viewModel.unSyncedDataCountLiveData.observe(this) {
+            unSyncedDataCount = it
+        }
         viewModel.loginResponseLiveData.observe(this) { resourceState ->
             when (resourceState.state) {
                 ResourceState.LOADING -> {
@@ -46,12 +50,10 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
                     hideLoading()
                     resourceState?.data?.let {
                         SecuredPreference.putString(
-                            SecuredPreference.EnvironmentKey.USERNAME.name,
-                            it.username
+                            SecuredPreference.EnvironmentKey.USERNAME.name, it.username
                         )
                         SecuredPreference.putString(
-                            SecuredPreference.EnvironmentKey.PHONE_NUMBER.name,
-                            it.phoneNumber
+                            SecuredPreference.EnvironmentKey.PHONE_NUMBER.name, it.phoneNumber
                         )
                         triggerResourceLoading()
                     }
@@ -71,21 +73,18 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
     private fun triggerResourceLoading() {
         startAsNewActivity(
             Intent(
-                this@LoginActivity,
-                ResourceLoadingScreen::class.java
+                this@LoginActivity, ResourceLoadingScreen::class.java
             )
         )
     }
 
     private fun handleOfflineLoginSuccess() {
         SecuredPreference.putBoolean(
-            SecuredPreference.EnvironmentKey.ISOFFLINELOGIN.name,
-            true
+            SecuredPreference.EnvironmentKey.ISOFFLINELOGIN.name, true
         )
         startAsNewActivity(
             Intent(
-                this@LoginActivity,
-                LandingActivity::class.java
+                this@LoginActivity, LandingActivity::class.java
             )
         )
     }
@@ -117,105 +116,101 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
         val userName = binding.userName.text.toString().trim()
         val password = binding.password.text.toString().trim()
 
-        var isValid: Boolean
-
+        //Username blank check
         if (userName.isBlank()) {
-            isValid = false
             binding.tvUserEmailError.visibility = View.VISIBLE
             binding.tvUserEmailError.text = getString(R.string.email_cannot_be_empty)
-        } else {
-            isValid = validateEmailPhoneInput(userName)
+            return
         }
 
-        if (isValid && password.isBlank()) {
-            isValid = false
+        //Password blank check
+        if (password.isBlank()) {
             binding.tvUserEmailError.visibility = View.GONE
             binding.tvUserPasswordError.visibility = View.VISIBLE
             binding.tvUserPasswordError.text = getString(R.string.password_cannot_be_empty)
+            return
         }
 
-        if (isValid) {
-            val oldUserName =
-                SecuredPreference.getString(SecuredPreference.EnvironmentKey.USERNAME.name)
-            val oldPhoneNumber =
-                SecuredPreference.getString(SecuredPreference.EnvironmentKey.PHONE_NUMBER.name)
-            val isNumber = userName.matches(Regex(Contains_Number))
-            if (oldUserName != null && userName.isNotBlank() && validateNameOrNumber(
-                    isNumber,
-                    oldPhoneNumber,
-                    oldUserName,
-                    userName
-                )
-            ) {
-                isValid = false
-                showErrorDialogue(
-                    getString(R.string.warning_different_login_title),
-                    getString(R.string.warning_different_login_message, oldUserName)
-                ) {
-
-                }
+        //Validate the username is phone number or email
+        if (userName.contains(DefinedParams.AT_CHAR)) {
+            if (!Validator.isEmailValid(userName)) {
+                binding.tvUserEmailError.visibility = View.VISIBLE
+                binding.tvUserEmailError.text = getString(R.string.email_phone_invalid)
+                return
+            }
+        } else {
+            if (!(Validator.isValidMobileNumber(userName))) {
+                binding.tvUserEmailError.visibility = View.VISIBLE
+                binding.tvUserEmailError.text = getString(R.string.email_phone_invalid)
+                return
             }
         }
 
-        if (isValid) {
-            binding.tvUserEmailError.visibility = View.GONE
-            binding.tvUserPasswordError.visibility = View.GONE
-            if (!connectivityManager.isNetworkAvailable()) {
-                showErrorSnackBar(getString(R.string.no_internet_error))
-                val isToShowAlert = (userName == SecuredPreference.getString(
-                    SecuredPreference.EnvironmentKey.USERNAME.name
-                ) && EncryptionUtil.getSecurePassword(
-                    password
-                ) == SecuredPreference.getString(
-                    SecuredPreference.EnvironmentKey.PASSWORD.name
-                ))
-                if (isToShowAlert && CommonUtils.isChw()) {
-                    showErrorDialogue(
-                        getString(R.string.alert),
-                        message = getString(R.string.offline_login_message),
-                        isNegativeButtonNeed = true
-                    ) { buttonState ->
-                        if (buttonState) {
-                            handleOfflineLoginSuccess()
-                        }
+        // Check network connection and offline login
+        binding.tvUserEmailError.visibility = View.GONE
+        binding.tvUserPasswordError.visibility = View.GONE
+        if (!connectivityManager.isNetworkAvailable()) {
+            showErrorSnackBar(getString(R.string.no_internet_error))
+            val isToShowAlert = ((userName == SecuredPreference.getString(
+                SecuredPreference.EnvironmentKey.USERNAME.name
+            ) || userName == SecuredPreference.getString(
+                SecuredPreference.EnvironmentKey.PHONE_NUMBER.name
+            )) && EncryptionUtil.getSecurePassword(
+                password
+            ) == SecuredPreference.getString(
+                SecuredPreference.EnvironmentKey.PASSWORD.name
+            ))
+            if (isToShowAlert && CommonUtils.isChw()) {
+                showErrorDialogue(
+                    getString(R.string.alert),
+                    message = getString(R.string.offline_login_message),
+                    isNegativeButtonNeed = true
+                ) { buttonState ->
+                    if (buttonState) {
+                        handleOfflineLoginSuccess()
                     }
                 }
-
-            } else {
-                viewModel.doLogin(userName, password)
             }
 
+            return
+        }
+
+
+        // Check different account login
+        val oldUserName =
+            SecuredPreference.getString(SecuredPreference.EnvironmentKey.USERNAME.name)
+        val oldPhoneNumber =
+            SecuredPreference.getString(SecuredPreference.EnvironmentKey.PHONE_NUMBER.name)
+        val isNumber = userName.matches(Regex(Contains_Number))
+        if (oldUserName != null && validateNameOrNumber(
+                isNumber, oldPhoneNumber, oldUserName, userName
+            )
+        ) {
+            if (unSyncedDataCount > 0) {
+                showErrorDialogue(
+                    title = getString(R.string.warning_different_login_title),
+                    message = getString(R.string.warning_different_login_message, oldUserName),
+                    positiveButtonName = getString(R.string.okay),
+                    okayBtnEnable = true,
+                ) {
+                }
+            } else {
+                SecuredPreference.remove(SecuredPreference.EnvironmentKey.LAST_SYNCED_AT.name)
+                SecuredPreference.remove(SecuredPreference.EnvironmentKey.IS_INITIAL_DATA_LOADED.name)
+                viewModel.doLogin(userName, password)
+            }
+        } else {
+            viewModel.doLogin(userName, password)
         }
     }
 
     private fun validateNameOrNumber(
-        isNumber: Boolean,
-        oldPhoneNumber: String?,
-        oldUserName: String,
-        userName: String
+        isNumber: Boolean, oldPhoneNumber: String?, oldUserName: String, userName: String
     ): Boolean {
         return if (isNumber) {
             oldPhoneNumber != userName
         } else {
             oldUserName != userName
         }
-    }
-
-    private fun validateEmailPhoneInput(userName: String): Boolean {
-        var isValid = true
-        if (userName.contains(DefinedParams.AT_CHAR)) {
-            if (!Validator.isEmailValid(userName)) {
-                isValid = false
-                binding.tvUserEmailError.visibility = View.VISIBLE
-                binding.tvUserEmailError.text = getString(R.string.email_phone_invalid)
-            }
-        } else {
-            if (!(Validator.isValidMobileNumber(userName))) {
-                isValid = false
-                binding.tvUserEmailError.visibility = View.VISIBLE
-                binding.tvUserEmailError.text = getString(R.string.email_phone_invalid)
-            }
-        }
-        return isValid
     }
 }

@@ -494,4 +494,8 @@ class RoomHelperImpl @Inject constructor(
     override suspend fun deleteAllFollowUpCalls() {
         return followUpCallsDao.deleteAllFollowUpCalls()
     }
+
+    override suspend fun getUnSyncedFollowUpCount(): Int {
+        return followUpDao.getUnSyncedCount()
+    }
 }

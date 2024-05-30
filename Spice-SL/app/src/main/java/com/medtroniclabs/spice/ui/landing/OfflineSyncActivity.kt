@@ -3,6 +3,7 @@ package com.medtroniclabs.spice.ui.landing
 import android.os.Bundle
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.work.Constraints
 import androidx.work.Data
 import androidx.work.NetworkType
@@ -11,12 +12,13 @@ import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
-import com.medtroniclabs.spice.appextensions.invisible
 import com.medtroniclabs.spice.appextensions.visible
+import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.offlinesync.utils.OfflineConstant.KEY_REQUESTS_ID
 import com.medtroniclabs.spice.databinding.FragmentOfflineSyncBinding
 import com.medtroniclabs.spice.offlinesync.GetSyncStatusWorker
 import com.medtroniclabs.spice.ui.SpiceRootActivity
+import com.medtroniclabs.spice.ui.landing.adapter.OfflineSyncEntitiesAdapter
 import com.medtroniclabs.spice.ui.landing.viewmodel.OfflineSyncViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.concurrent.TimeUnit
@@ -27,7 +29,8 @@ class OfflineSyncActivity : SpiceRootActivity() {
 
     private val viewModel: OfflineSyncViewModel by viewModels()
     private lateinit var binding: FragmentOfflineSyncBinding
-    private val getStatusStartTimer = 1L // Mintues
+    private lateinit var unSyncedCountAdapter: OfflineSyncEntitiesAdapter
+    private val getStatusStartTimer = 30L // Mintues
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,34 +44,56 @@ class OfflineSyncActivity : SpiceRootActivity() {
     }
 
     private fun setListener() {
+        binding.rvUnSyncedDetail.layoutManager =
+            LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        unSyncedCountAdapter = OfflineSyncEntitiesAdapter()
+        binding.rvUnSyncedDetail.adapter = unSyncedCountAdapter
+
         binding.btnStart.setOnClickListener {
-            if (viewModel.connectivityManager.isNetworkAvailable()) {
-                hideStartCancelButton()
-                showProgressView()
-                viewModel.startUploadingData(getStatusStartTimer)
-            } else {
-                showErrorDialogue(
-                    getString(R.string.title_no_network),
-                    getString(R.string.message_no_network),
-                    isNegativeButtonNeed = false
-                ) { _ -> }
-            }
+            initiateUpload()
         }
+
         binding.btnCancel.setOnClickListener {
             finish()
         }
+
         binding.btnOkay.setOnClickListener {
-            finish()
+            if (binding.btnOkay.text.toString() == getString(R.string.retry)) {
+                val requestIds =
+                    SecuredPreference.getStringArray(SecuredPreference.EnvironmentKey.OFFLINE_SYNC_REQUEST_ID.name)
+                requestIds?.let {
+                    initiateGetStatus(it)
+                }
+            } else
+                finish()
+        }
+    }
+
+    private fun initiateUpload() {
+        if (viewModel.connectivityManager.isNetworkAvailable()) {
+            showProgressView()
+            viewModel.startUploadingData()
+        } else {
+            showErrorDialogue(
+                getString(R.string.title_no_network),
+                getString(R.string.message_no_network),
+                isNegativeButtonNeed = false
+            ) { _ -> }
         }
     }
 
     private fun initObserver() {
+        viewModel.unSyncedCountLiveData.observe(this) {
+            unSyncedCountAdapter.updateList(it)
+        }
+
+        viewModel.lastSyncedAtLiveData.observe(this) {
+            binding.tvLastSyncedAt.text = it
+        }
+
         viewModel.oldRequestIdsLiveData.observe(this) {
-            if (!it.isNullOrEmpty()) {
-                hideStartCancelButton()
-                showProgressView()
-                viewModel.startProgress(getStatusStartTimer)
-                startGetSyncStatusWorkManager(it.toTypedArray(), 0)
+            it?.let {
+                initiateGetStatus(it)
             }
         }
 
@@ -86,9 +111,14 @@ class OfflineSyncActivity : SpiceRootActivity() {
         }
 
         viewModel.statusLiveData.observe(this) {
-            hideProgressView()
-            showCompletionView(it)
+            showCompletionView(it.first, it.second)
         }
+    }
+
+    private fun initiateGetStatus(arr: Array<String>) {
+        showProgressView()
+        viewModel.startProgress(getStatusStartTimer)
+        startGetSyncStatusWorkManager(arr, 0)
     }
 
     private fun startGetSyncStatusWorkManager(requestIds: Array<String>, duration: Long) {
@@ -99,11 +129,11 @@ class OfflineSyncActivity : SpiceRootActivity() {
             .build()
 
         val constrain = Constraints.Builder()
-            .setRequiredNetworkType(NetworkType.CONNECTED)
+            //.setRequiredNetworkType(NetworkType.CONNECTED)
             .build()
 
         val getSyncStatusWorker = OneTimeWorkRequestBuilder<GetSyncStatusWorker>()
-            .setInitialDelay(duration, TimeUnit.MINUTES)
+            .setInitialDelay(duration, TimeUnit.SECONDS)
             .setInputData(data)
             .setConstraints(constrain)
             .build()
@@ -112,43 +142,38 @@ class OfflineSyncActivity : SpiceRootActivity() {
 
         workManager.getWorkInfoByIdLiveData(getSyncStatusWorker.id).observe(this) { workerInfo ->
             if (workerInfo.state == WorkInfo.State.SUCCEEDED) {
+                binding.btnOkay.text = getString(R.string.okay)
                 viewModel.syncCompleted(true)
             } else if (workerInfo.state == WorkInfo.State.FAILED) {
-                viewModel.syncCompleted()
+                val errorData = workerInfo.outputData
+                val errorMessage = errorData.getString("failureReason")
+                if (errorMessage != null) {
+                    binding.btnOkay.text = getString(R.string.retry)
+                    viewModel.syncCompleted(message = getString(R.string.message_no_network))
+                } else {
+                    viewModel.syncCompleted()
+                }
             }
         }
     }
 
-    private fun hideStartCancelButton() {
-        binding.tvOfflineSync.gone()
-        binding.btnCancel.gone()
-        binding.btnStart.gone()
-    }
-
     private fun showProgressView() {
-        binding.tvOfflineSyncStarted.visible()
-        binding.tvOffline.visible()
-        binding.tvOfflineSyncProgress.visible()
-        binding.progressBar.visible()
+        binding.clBeforeSync.gone()
+        binding.clAfterSync.gone()
+        binding.clSyncInProgress.visible()
     }
 
-    fun hideProgressView() {
-        binding.progressBar.gone()
-        binding.tvOfflineSyncStarted.gone()
-        binding.tvOffline.gone()
-        binding.tvOfflineSyncProgress.gone()
-    }
-
-    private fun showCompletionView(isSuccess: Boolean = false) {
+    private fun showCompletionView(isSuccess: Boolean = false, message: String? = null) {
+        binding.clAfterSync.gone()
+        binding.clSyncInProgress.gone()
+        binding.clAfterSync.visible()
         if (isSuccess) {
-            binding.statusImage.visible()
+            binding.statusImage.setImageDrawable(getDrawable(R.drawable.success_icon))
             binding.tvOfflineSyncCompleted.text = getString(R.string.offline_data_completion)
         } else {
-            binding.statusImage.invisible()
-            binding.tvOfflineSyncCompleted.text = getString(R.string.offline_data_failed)
+            binding.statusImage.setImageDrawable(getDrawable(R.drawable.ic_failed))
+            binding.tvOfflineSyncCompleted.text = message ?: getString(R.string.offline_data_failed)
         }
-        binding.tvOfflineSyncCompleted.visible()
-        binding.btnOkay.visible()
     }
 
     private fun overrideBackPress() {
@@ -156,7 +181,7 @@ class OfflineSyncActivity : SpiceRootActivity() {
             override fun handleOnBackPressed() {
                 // Handle the back button event
                 // For example, finish the activity
-               // finish()
+                // finish()
             }
         }
         onBackPressedDispatcher.addCallback(this, callback)

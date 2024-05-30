@@ -41,8 +41,7 @@ class OfflineSyncEntitiesAdapter :
 
     override fun onBindViewHolder(holder: OfflineSyncEntitiesViewHolder, position: Int) {
         val item = items[position]
-        val context = holder.binding.root.context
-        holder.binding.tvLabel.text = item.tableName.uppercase(Locale.getDefault())
-        holder.binding.tvValue.text = context.getString(R.string.display_un_synced_count, item.unSyncedCount)
+        holder.binding.tvLabel.text = item.tableName.uppercase()
+        holder.binding.tvValue.text = ": ${item.unSyncedCount}"
     }
 }

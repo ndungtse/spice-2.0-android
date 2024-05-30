@@ -171,4 +171,6 @@ interface RoomHelper {
     suspend fun getAllFollowUpRequests(): List<FollowUp>
 
     suspend fun getAllFollowUpCalls(id: Long): List<FollowUpCall>
+
+    suspend fun getUnSyncedFollowUpCount(): Int
 }

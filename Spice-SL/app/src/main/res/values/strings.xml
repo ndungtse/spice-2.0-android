@@ -224,7 +224,7 @@
     <string name="date_of_onset">Date of Onset</string>
     <string name="date_of_review">Date of Review</string>
     <string name="warning_different_login_title" translatable="false">Different Login!</string>
-    <string name="warning_different_login_message" translatable="false">Last logged in user was %1$s. From this version it is prohibited</string>
+    <string name="warning_different_login_message" translatable="false">There is some unsynced data associated with the last user, %1$s. Kindly sync data.</string>
     <string name="title_sync_status" translatable="false">Sync Status</string>
     <string name="message_sync_error" translatable="false">Something went wrong during upload. Please try again later</string>
     <string name="display_un_synced_count" translatable="false">%1$d record yet to sync</string>
@@ -454,4 +454,5 @@
     <string name="moderate_dehydration">Moderate Dehydration</string>
     <string name="my_patients">My Patients</string>
     <string name="something_went_wrong">Something went wrong</string>
+    <string name="last_synced_at">Last Synced At: </string>
 </resources>

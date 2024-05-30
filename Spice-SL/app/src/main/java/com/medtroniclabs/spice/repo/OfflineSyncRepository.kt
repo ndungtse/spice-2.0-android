@@ -111,8 +111,9 @@ class OfflineSyncRepository @Inject constructor(
             villageNameId[it.name] = it.id
         }
 
-        val lastSyncedAt =
-            SecuredPreference.getString(SecuredPreference.EnvironmentKey.LAST_SYNCED_AT.name)
+        val longSyncedAt =
+            SecuredPreference.getLong(SecuredPreference.EnvironmentKey.LAST_SYNCED_AT.name)
+        val lastSyncedAt = if (longSyncedAt != 0L) longSyncedAt.convertToUtcDateTime() else null
         val syncedResponse = getSyncedEntities(villageNameId.values.toList(), lastSyncedAt)
         if (syncedResponse.isSuccessful) {
             val response = syncedResponse.body()?.entity
@@ -140,9 +141,9 @@ class OfflineSyncRepository @Inject constructor(
                 SecuredPreference.putFollowUpCriteria(it)
             }
 
-            SecuredPreference.putString(
+            SecuredPreference.putLong(
                 SecuredPreference.EnvironmentKey.LAST_SYNCED_AT.name,
-                System.currentTimeMillis().convertToUtcDateTime()
+                System.currentTimeMillis()
             )
 
             return true

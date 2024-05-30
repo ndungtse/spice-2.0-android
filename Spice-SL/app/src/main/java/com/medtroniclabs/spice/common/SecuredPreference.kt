@@ -370,7 +370,7 @@ object SecuredPreference {
         val phoneNumber = getString(EnvironmentKey.PHONE_NUMBER.name)
         val password = getString(EnvironmentKey.PASSWORD.name)
         val initialDataStatus = getBoolean(EnvironmentKey.IS_INITIAL_DATA_LOADED.name)
-        val lastSyncedAt = getString(EnvironmentKey.LAST_SYNCED_AT.name)
+        val lastSyncedAt = getLong(EnvironmentKey.LAST_SYNCED_AT.name)
         val requestIds =
             getStringArray(EnvironmentKey.OFFLINE_SYNC_REQUEST_ID.name)
         try {
@@ -383,7 +383,7 @@ object SecuredPreference {
             putString(EnvironmentKey.USERNAME.name, username)
             putString(EnvironmentKey.PHONE_NUMBER.name, phoneNumber)
             putString(EnvironmentKey.PASSWORD.name, password)
-            putString(EnvironmentKey.LAST_SYNCED_AT.name, lastSyncedAt)
+            putLong(EnvironmentKey.LAST_SYNCED_AT.name, lastSyncedAt)
             putBoolean(EnvironmentKey.IS_INITIAL_DATA_LOADED.name, initialDataStatus)
             requestIds?.let { saveStringArray(EnvironmentKey.OFFLINE_SYNC_REQUEST_ID.name, it) }
         }

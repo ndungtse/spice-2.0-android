@@ -3,9 +3,18 @@ package com.medtroniclabs.spice.ui.landing.viewmodel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.medtroniclabs.spice.appextensions.convertToLocalDateTime
 import com.medtroniclabs.spice.common.SecuredPreference
+import com.medtroniclabs.spice.data.offlinesync.utils.OfflineConstant.ASSESSMENTS
+import com.medtroniclabs.spice.data.offlinesync.utils.OfflineConstant.FOLLOWUPS
+import com.medtroniclabs.spice.data.offlinesync.utils.OfflineConstant.HOUSE_HOLDS
+import com.medtroniclabs.spice.data.offlinesync.utils.OfflineConstant.HOUSE_HOLD_MEMBERS
 import com.medtroniclabs.spice.di.IoDispatcher
+import com.medtroniclabs.spice.model.landing.OfflineSyncEntityDetail
 import com.medtroniclabs.spice.network.utils.ConnectivityManager
+import com.medtroniclabs.spice.repo.AssessmentRepository
+import com.medtroniclabs.spice.repo.FollowUpRepository
+import com.medtroniclabs.spice.repo.HouseHoldRepository
 import com.medtroniclabs.spice.repo.OfflineSyncRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
@@ -16,31 +25,69 @@ import javax.inject.Inject
 
 @HiltViewModel
 class OfflineSyncViewModel @Inject constructor(
+    private val houseHoldRepository: HouseHoldRepository,
+    private val assessmentRepository: AssessmentRepository,
+    private val followUpRepository: FollowUpRepository,
     private val offlineSyncRepository: OfflineSyncRepository,
     @IoDispatcher private val dispatcherIO: CoroutineDispatcher
 ) : ViewModel() {
 
+    private val entityList = mutableListOf(
+        OfflineSyncEntityDetail(HOUSE_HOLDS, 0),
+        OfflineSyncEntityDetail(HOUSE_HOLD_MEMBERS, 0),
+        OfflineSyncEntityDetail(ASSESSMENTS, 0),
+        OfflineSyncEntityDetail(FOLLOWUPS, 0)
+    )
+
     @Inject
     lateinit var connectivityManager: ConnectivityManager
 
-    val oldRequestIdsLiveData = MutableLiveData<List<String>?>()
+    val lastSyncedAtLiveData = MutableLiveData<String>()
+    val unSyncedCountLiveData = MutableLiveData<List<OfflineSyncEntityDetail>>()
+    val oldRequestIdsLiveData = MutableLiveData<Array<String>?>()
     val progressLiveData = MutableLiveData<Int>()
     val postRequestIdsLiveData = MutableLiveData<List<String>>()
-    val statusLiveData = MutableLiveData<Boolean>()
+    val statusLiveData = MutableLiveData<Pair<Boolean, String?>>()
 
     private var progressJob: Job? = null
 
     init {
+        getLastSyncedAt()
+
+        unSyncedCountLiveData.value = entityList
+        getUnSyncedCount()
+
         viewModelScope.launch {
             val requestIds =
                 SecuredPreference.getStringArray(SecuredPreference.EnvironmentKey.OFFLINE_SYNC_REQUEST_ID.name)
             requestIds?.let {
-                oldRequestIdsLiveData.postValue(it.toList())
+                oldRequestIdsLiveData.postValue(it)
             }
         }
     }
 
-    fun startUploadingData(minutes: Long) {
+    private fun getLastSyncedAt() {
+        val longSyncedAt =
+            SecuredPreference.getLong(SecuredPreference.EnvironmentKey.LAST_SYNCED_AT.name)
+        lastSyncedAtLiveData.value =
+            if (longSyncedAt != 0L) longSyncedAt.convertToLocalDateTime() else "--"
+    }
+
+    private fun updateSyncedCount(index: Int, unSyncedCount: Int) {
+        entityList[index].unSyncedCount = unSyncedCount
+        unSyncedCountLiveData.postValue(entityList)
+    }
+
+    private fun getUnSyncedCount() {
+        viewModelScope.launch(dispatcherIO) {
+            updateSyncedCount(0, houseHoldRepository.getUnSyncedHouseholdCount())
+            updateSyncedCount(1, houseHoldRepository.getUnSyncedHouseholdMemberCount())
+            updateSyncedCount(2, assessmentRepository.getUnSyncedAssessmentCount())
+            updateSyncedCount(3, followUpRepository.getUnSyncedFollowUpCount())
+        }
+    }
+
+    fun startUploadingData(minutes: Long = 3) {
         viewModelScope.launch(dispatcherIO) {
             val requestIds = offlineSyncRepository.startSyncOfflineData()
             if (requestIds != null) {
@@ -70,16 +117,17 @@ class OfflineSyncViewModel @Inject constructor(
             }
 
             repeat(10) {
-                progressLiveData.postValue(90+it)
+                progressLiveData.postValue(90 + it)
                 delay(retryCounterGap)
             }
         }
     }
 
-    fun syncCompleted(isSuccess: Boolean = false) {
+    fun syncCompleted(isSuccess: Boolean = false, message: String? = null) {
+        getLastSyncedAt()
         progressLiveData.postValue(100)
         progressJob?.cancel()
-        statusLiveData.postValue(isSuccess)
+        statusLiveData.postValue(Pair(isSuccess, message))
     }
 
 }

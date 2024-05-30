@@ -4,16 +4,19 @@ import android.content.Context
 import android.util.Log
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
+import androidx.work.Data
 import androidx.work.WorkerParameters
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.offlinesync.model.RequestGetSyncStatus
 import com.medtroniclabs.spice.data.offlinesync.utils.OfflineConstant.KEY_REQUESTS_ID
 import com.medtroniclabs.spice.data.offlinesync.utils.OfflineSyncStatus
 import com.medtroniclabs.spice.db.local.RoomHelper
+import com.medtroniclabs.spice.network.utils.ConnectivityManager
 import com.medtroniclabs.spice.repo.OfflineSyncRepository
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.delay
+import javax.inject.Inject
 
 @HiltWorker
 class GetSyncStatusWorker @AssistedInject constructor(
@@ -23,14 +26,24 @@ class GetSyncStatusWorker @AssistedInject constructor(
     val offlineSyncRepository: OfflineSyncRepository
 ) : CoroutineWorker(context, userParameter) {
 
-    private val retryCount = 4 // 1 initial Call + 3 retry
-    private val timeDelayForPolling = (1 * 30 * 1000L) // 3 mintues
+    @Inject
+    lateinit var connectivityManager: ConnectivityManager
+
+    private val retryCount = 15 // 1 (1*4 - try) initial Call + 3 (3*4 - try) retry
+    private val timeDelayForPolling = (45 * 1000L) // 45 seconds once
 
     override suspend fun doWork(): Result {
+
         val requestIds = inputData.getStringArray(KEY_REQUESTS_ID)
 
         repeat(retryCount) {
-            Log.e("TEST","Retry Count : $it")
+            if (!connectivityManager.isNetworkAvailable()) {
+                val errorData = Data.Builder()
+                    .putString("failureReason", "Network Not available")
+                    .build()
+               return Result.failure(errorData)
+            }
+
             var isAllEntitiesSynced = true
             if (!requestIds.isNullOrEmpty()) {
                 isAllEntitiesSynced = getSyncStatusForHouseHolds(requestIds[0])
