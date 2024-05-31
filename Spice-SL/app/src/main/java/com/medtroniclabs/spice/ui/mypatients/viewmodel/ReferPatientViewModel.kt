@@ -52,7 +52,7 @@ class ReferPatientViewModel @Inject constructor(
         details: AboveFiveYearsSummaryDetails,
         assessmentName: Pair<String?, String>,
         patientId: String?,
-        houseHoldId: Long?,
+        houseHoldId: String?,
         villageId: String?,
         memberId: String?
     ) {

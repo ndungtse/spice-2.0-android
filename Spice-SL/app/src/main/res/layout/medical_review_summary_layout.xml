@@ -25,31 +25,32 @@
             app:layout_constraintGuide_percent="0.55" />
 
         <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/btnCancel"
+            android:id="@+id/btnRefer"
             style="@style/Button_Style_Border"
             android:layout_width="0dp"
             android:layout_margin="@dimen/_8sdp"
             android:text="@string/refer_patient"
             android:textAllCaps="true"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/btnNext"
+            app:layout_constraintEnd_toStartOf="@id/btnDone"
             app:layout_constraintHorizontal_weight="0.5"
             app:layout_constraintStart_toStartOf="@id/thirdGuideline"
             app:layout_constraintTop_toTopOf="parent" />
 
 
         <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/btnNext"
+            android:id="@+id/btnDone"
             style="@style/Button_Style"
             android:layout_width="0dp"
             android:layout_marginEnd="@dimen/_16sdp"
             android:fontFamily="@font/inter_bold"
             android:text="@string/done"
             android:textAllCaps="true"
+            android:background="@drawable/button_selector_cobalt"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_weight="0.5"
-            app:layout_constraintStart_toEndOf="@id/btnCancel"
+            app:layout_constraintStart_toEndOf="@id/btnRefer"
             app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

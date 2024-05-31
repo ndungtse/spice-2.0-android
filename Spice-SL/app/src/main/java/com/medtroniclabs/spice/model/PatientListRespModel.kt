@@ -16,7 +16,7 @@ data class PatientListRespModel(
     val fhirUrl: String? = null,
     val performer: String? = null,
     val chwName: String? = null,
-    val houseHoldId: Long? = null,
+    val houseHoldId: String? = null, // To Do Long to String
     val houseHoldNumber: Long? = null,
     val dateOfOnset:String? = null,
     val pregnancyDetails: PregnancyDetails? = null,

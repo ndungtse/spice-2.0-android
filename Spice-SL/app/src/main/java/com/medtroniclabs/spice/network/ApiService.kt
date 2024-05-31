@@ -27,6 +27,7 @@ import com.medtroniclabs.spice.data.ReferPatientRequest
 import com.medtroniclabs.spice.data.UnderTwoMonthsMetaResponse
 import com.medtroniclabs.spice.data.PatientStatusResponse
 import com.medtroniclabs.spice.data.PrescriptionListRequest
+import com.medtroniclabs.spice.data.UnderTwoMonthsSummarySubmitRequest
 import com.medtroniclabs.spice.data.UserSymptomsEntity
 import com.medtroniclabs.spice.data.model.AboveFiveYearsSubmitRequest
 import com.medtroniclabs.spice.data.model.BpAndWeightRequestModel
@@ -44,6 +45,7 @@ import com.medtroniclabs.spice.model.PatientsDataModel
 import com.medtroniclabs.spice.model.ReferralData
 import com.medtroniclabs.spice.model.SearchAndListResponse
 import com.medtroniclabs.spice.model.medicalreview.CreateUnderTwoMonthsResponse
+import com.medtroniclabs.spice.model.medicalreview.UnderTwoMonthsSummaryDetails
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
 import retrofit2.Response
@@ -117,6 +119,12 @@ interface ApiService {
 
     @POST("/spice-service/patient/patient-status")
     suspend fun getPatientStatus(@Body request: PatientStatusRequest): Response<APIResponse<PatientStatusResponse>>
+
+    @POST("/spice-service/medical-review/iccm-under-2months/details")
+    suspend fun getUnderTwoMonthsSummaryDetails(@Body request : CreateUnderTwoMonthsResponse ): Response<APIResponse<UnderTwoMonthsSummaryDetails>>
+
+    @POST("/spice-service/medical-review/summary-create")
+    suspend fun underTwoMonthsSummaryCreate(@Body request: UnderTwoMonthsSummarySubmitRequest): Response<APIResponse<HashMap<String, Any>>>
 
     @POST("/spice-service/medical-review/anc-pregnancy/create")
     suspend fun saveMotherNeonateAnc(@Body motherNeonateAncRequest: MotherNeonateAncRequest):Response<APIResponse<PatientEncounterResponse>>

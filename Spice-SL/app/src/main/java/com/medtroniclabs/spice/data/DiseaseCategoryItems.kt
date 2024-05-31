@@ -10,6 +10,6 @@ data class DiseaseCategoryItems(
     val name: String,
     val displayOrder: Int,
     val value: String,
-    var type: String,
+    var type: String? = null,
     val diseaseCondition: ArrayList<DiseaseConditionItems>,
 )

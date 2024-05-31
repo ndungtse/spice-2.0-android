@@ -26,6 +26,7 @@ import com.medtroniclabs.spice.data.ReferPatientNameNumber
 import com.medtroniclabs.spice.data.ReferPatientRequest
 import com.medtroniclabs.spice.data.ReferPatientResult
 import com.medtroniclabs.spice.data.UnderTwoMonthsMetaResponse
+import com.medtroniclabs.spice.data.UnderTwoMonthsSummarySubmitRequest
 import com.medtroniclabs.spice.data.UserSymptomsEntity
 import com.medtroniclabs.spice.data.model.AboveFiveYearsSubmitRequest
 import com.medtroniclabs.spice.data.model.BpAndWeightRequestModel
@@ -42,6 +43,7 @@ import com.medtroniclabs.spice.model.PatientsDataModel
 import com.medtroniclabs.spice.model.ReferralData
 import com.medtroniclabs.spice.model.SearchAndListResponse
 import com.medtroniclabs.spice.model.medicalreview.CreateUnderTwoMonthsResponse
+import com.medtroniclabs.spice.model.medicalreview.UnderTwoMonthsSummaryDetails
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
@@ -135,6 +137,15 @@ class ApiHelperImpl @Inject constructor(private val apiService: ApiService) : Ap
     override suspend fun createMedicalReviewForUnderTwoMonths(request: CreateUnderTwoMonthsRequest): Response<APIResponse<CreateUnderTwoMonthsResponse>> {
         return apiService.createMedicalReviewForUnderTwoMonths(request)
     }
+
+    override suspend fun getMedicalReviewForUnderTwoMonths(request: CreateUnderTwoMonthsResponse): Response<APIResponse<UnderTwoMonthsSummaryDetails>> {
+        return apiService.getUnderTwoMonthsSummaryDetails(request)
+    }
+
+    override suspend fun underTwoMonthsSummaryCreate(request: UnderTwoMonthsSummarySubmitRequest): Response<APIResponse<HashMap<String, Any>>> {
+        return apiService.underTwoMonthsSummaryCreate(request)
+    }
+
 
     override suspend fun saveMotherNeonateAnc(motherNeonateAncRequest: MotherNeonateAncRequest): Response<APIResponse<PatientEncounterResponse>> {
         return apiService.saveMotherNeonateAnc(motherNeonateAncRequest)

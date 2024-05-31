@@ -4,19 +4,21 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="true"
     android:background="@color/white"
+    android:fillViewport="true"
     tools:context=".ui.medicalreview.undertwomonths.UnderTwoMonthsBaseActivity">
 
     <LinearLayout
         android:id="@+id/bottomNavigationView"
-        android:layout_width="match_parent"
+        android:layout_width="@dimen/_0dp"
         android:layout_height="wrap_content"
+        android:background="@color/white"
         android:gravity="bottom"
         android:orientation="horizontal"
         android:padding="@dimen/_12sdp"
-        android:background="@color/white"
-        app:layout_constraintBottom_toBottomOf="parent">
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/ivInvestigation"
@@ -142,9 +144,9 @@
                 android:layout_marginTop="@dimen/_8sdp"
                 android:layout_marginEnd="@dimen/_8sdp"
                 android:layout_marginBottom="@dimen/_8sdp"
-                android:text="@string/submit_caps"
-                android:enabled="false"
                 android:background="@drawable/button_selector_cobalt"
+                android:enabled="false"
+                android:text="@string/submit_caps"
                 app:layout_constraintTop_toTopOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
@@ -218,11 +220,29 @@
                     android:layout_height="wrap_content"
                     app:layout_constraintTop_toBottomOf="@+id/examinationsContainer" />
 
+                <com.medtroniclabs.spice.ui.common.FloatingDetectorFrameLayout
+                    android:id="@+id/underTwoSummaryContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toBottomOf="@+id/clinicalNotesContainer" />
+
+
             </androidx.constraintlayout.widget.ConstraintLayout>
 
         </androidx.core.widget.NestedScrollView>
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+    <include
+        android:id="@+id/underTwoSummaryBottomView"
+        layout="@layout/medical_review_summary_layout"
+        android:layout_width="@dimen/_0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_16sdp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 

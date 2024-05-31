@@ -4,10 +4,21 @@ data class CreateUnderTwoMonthsRequest(
     val clinicalNotes: String?,
     val clinicalSummaryAndSigns: ClinicalSummaryAndSigns?,
     val examination: Examination?,
-    val patientId: String?,
-    val patientReference: String?,
     val presentingcomplaints: String?,
-    val provenance: ProvanceDto = ProvanceDto()
+    val encounter: UnderTwoMonthsEncounterDTO? = null
+)
+
+data class UnderTwoMonthsEncounterDTO(
+    val householdId: String,
+    val memberId: String,
+    val referred: Boolean,
+    val patientId: String,
+    val provenance: ProvanceDto,
+    val latitude: Double?,
+    val longitude: Double?,
+    val visitNumber: Long? = null,
+    val startTime: String?,
+    val endTime: String?
 )
 
 data class ClinicalSummaryAndSigns(

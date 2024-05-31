@@ -8,17 +8,23 @@ import Examination
 import Hiv
 import Jaundice
 import NonBreastfeedingProblem
+import UnderTwoMonthsEncounterDTO
 import VerySevereDisease
+import android.location.Location
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.medtroniclabs.spice.appextensions.postLoading
+import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
+import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.mappingkey.UnderTwoExaminationKeyMapping
+import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.model.medicalreview.CreateUnderTwoMonthsResponse
 import com.medtroniclabs.spice.network.resource.Resource
+import com.medtroniclabs.spice.network.utils.ConnectivityManager
 import com.medtroniclabs.spice.repo.UnderTwoMonthsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
@@ -31,14 +37,16 @@ class UnderTwoMonthViewModel @Inject constructor(
     private var repository: UnderTwoMonthsRepository
 ) : ViewModel() {
 
+    @Inject
+    lateinit var connectivityManager: ConnectivityManager
     private val _createUnderTwoMonthsMedicalReview =
         MutableLiveData<Resource<CreateUnderTwoMonthsResponse>>()
     val createUnderTwoMonthsMedicalReview: LiveData<Resource<CreateUnderTwoMonthsResponse>>
         get() = _createUnderTwoMonthsMedicalReview
-
     val underTwoMonthsMetaLiveData = MutableLiveData<Resource<Boolean>>()
-    var nextVisitDateHashMap = HashMap<String, Any>()
     var patientId: String? = null
+    private var lastLocation: Location? = null
+    val summaryCreateResponse = MutableLiveData<Resource<HashMap<String, Any>>>()
 
     fun getStaticMetaData() {
         viewModelScope.launch(dispatcherIO) {
@@ -48,29 +56,56 @@ class UnderTwoMonthViewModel @Inject constructor(
     }
 
     fun createMedicalReviewForUnderTwoMonths(
+        details: PatientListRespModel,
         clinicalSummaryAndSigns: ClinicalSummaryAndSigns,
         examinationResultHashMap: HashMap<String, Any>,
         clinicalNotes: String,
         presentingComplaints: String,
-        patientReferenceId: String?
     ) {
-        viewModelScope.launch(dispatcherIO) {
-            val examination = getUnderTwoExamination(examinationResultHashMap)
-            val underTwoMedicalReviewRequest = CreateUnderTwoMonthsRequest(
-                clinicalNotes = clinicalNotes,
-                clinicalSummaryAndSigns = if (clinicalSummaryAndSigns.isNotEmpty()) clinicalSummaryAndSigns else null,
-                examination = examination,
-                presentingcomplaints = presentingComplaints.takeIf { it.isNotEmpty() },
-                patientId = patientId,
-                patientReference = patientReferenceId,
-            )
+        details.patientId?.let { id ->
+            lastLocation.let { location ->
+                details.houseHoldId?.let { hhId ->
+                    details.memberId?.let { memberId ->
+                        patientId?.let { selectedPatientId ->
+                            viewModelScope.launch(dispatcherIO) {
+                                val examination = getUnderTwoExamination(examinationResultHashMap)
+                                val underTwoMedicalReviewRequest = CreateUnderTwoMonthsRequest(
+                                    clinicalNotes = clinicalNotes,
+                                    clinicalSummaryAndSigns = if (clinicalSummaryAndSigns.isNotEmpty()) clinicalSummaryAndSigns else null,
+                                    examination = examination,
+                                    presentingcomplaints = presentingComplaints.takeIf { it.isNotEmpty() },
+                                    encounter =
+                                    UnderTwoMonthsEncounterDTO(
+                                        startTime = DateUtils.getCurrentDateAndTime(
+                                            DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
+                                        ),
+                                        endTime = DateUtils.getCurrentDateAndTime(
+                                            DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
+                                        ),
+                                        latitude = location?.latitude,
+                                        longitude = location?.longitude,
+                                        householdId = hhId,
+                                        patientId = selectedPatientId,
+                                        memberId = memberId,
+                                        referred = true,
+                                        provenance = ProvanceDto(
+                                            createdDateTime = DateUtils.getCurrentDateAndTime(DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ)
+                                        )
+                                    )
+                                )
 
-            _createUnderTwoMonthsMedicalReview.postLoading()
-            _createUnderTwoMonthsMedicalReview.postValue(
-                repository.createMedicalReviewForUnderTwoMonths(
-                    underTwoMedicalReviewRequest
-                )
-            )
+                                _createUnderTwoMonthsMedicalReview.postLoading()
+                                _createUnderTwoMonthsMedicalReview.postValue(
+                                    repository.createMedicalReviewForUnderTwoMonths(
+                                        underTwoMedicalReviewRequest
+                                    )
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+
         }
     }
 
@@ -360,7 +395,11 @@ class UnderTwoMonthViewModel @Inject constructor(
                 }
                 if (diarrhoeaHashMap.containsKey(UnderTwoExaminationKeyMapping.Diarrhoea.restlessOrIrritable)) {
                     diarrhoea =
-                        diarrhoea.copy(restlessOrIrritable = mapStringToBoolean(diarrhoeaHashMap[UnderTwoExaminationKeyMapping.Diarrhoea.noMovementOnStimulation] as String))
+                        diarrhoea.copy(restlessOrIrritable = (diarrhoeaHashMap[UnderTwoExaminationKeyMapping.Diarrhoea.noMovementOnStimulation] as? String)?.let {
+                            mapStringToBoolean(
+                                it
+                            )
+                        })
                 }
                 if (diarrhoeaHashMap.containsKey(UnderTwoExaminationKeyMapping.Diarrhoea.sunkenEyes)) {
                     diarrhoea =
@@ -378,6 +417,22 @@ class UnderTwoMonthViewModel @Inject constructor(
 
     private fun mapStringToBoolean(value: String): Boolean {
         return value == DefinedParams.Yes
+    }
+
+    fun underTwoMonthsSummaryCreate(
+        details: PatientListRespModel,
+        submitCreateId: String,
+        nextVisitDate: String?
+    ) {
+        viewModelScope.launch(dispatcherIO) {
+            summaryCreateResponse.postLoading()
+            summaryCreateResponse.postValue(
+                repository.underTwoMonthsSummaryCreate(
+                    details, submitCreateId,
+                    nextVisitDate
+                )
+            )
+        }
     }
 
 }

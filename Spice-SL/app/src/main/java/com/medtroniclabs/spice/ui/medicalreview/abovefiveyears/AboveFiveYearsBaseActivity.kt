@@ -104,6 +104,7 @@ class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
                                 isNegativeButtonNeed = false,
                             ) {}
                         }
+                        viewModel.getAboveFiveYearsSummaryDetails(AboveFiveYearsSummaryRequest(id = it.id))
                     }
                 } else {
                     patientViewModel.patientDetailsLiveData.value?.data?.let { details ->
@@ -219,6 +220,7 @@ class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
                                 isNegativeButtonNeed = false,
                             ) {}
                         }
+                        viewModel.getAboveFiveYearsSummaryDetails(AboveFiveYearsSummaryRequest(id = it.id))
                     }
                     initializeSummaryFragments()
                 }
@@ -400,6 +402,7 @@ class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
 
     private fun enableReferralDoneBtn() {
         binding.btnDone.isEnabled = getSummaryStatus()
+        binding.btnRefer.isEnabled = getSummaryStatus()
     }
 
     private fun getSummaryStatus(): Boolean {

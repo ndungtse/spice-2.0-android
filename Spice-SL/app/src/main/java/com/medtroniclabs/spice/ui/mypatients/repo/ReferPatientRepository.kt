@@ -58,7 +58,7 @@ class ReferPatientRepository @Inject constructor(
         selectedItems: Triple<String?, String?, String?>,
         assessmentName: Pair<String?, String>,
         patientId: String?,
-        houseHoldId: Long?,
+        houseHoldId: String?,
         villageId: String?,
         memberId: String?
     ): Resource<HashMap<String,Any>> {
@@ -88,7 +88,7 @@ class ReferPatientRepository @Inject constructor(
         selectedItems: Triple<String?, String?, String?>,
         assessmentName: Pair<String?, String>,
         patientId: String?,
-        houseHoldId: Long?,
+        houseHoldId: String?,
         villageId: String?,
         memberId: String?
     ): ReferPatientResult? {
@@ -111,7 +111,7 @@ class ReferPatientRepository @Inject constructor(
                         currentPatientStatus = DefinedParams.REFERRED,
                         assessmentName = assessmentName.first,
                         patientId = patientId,
-                        householdId = houseHoldId.toString(), //Todo : this should be long
+                        householdId = houseHoldId,
                         villageId = villageId,
                         memberId = memberId,
                         referralTicketType = assessmentName.second
