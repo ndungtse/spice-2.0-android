@@ -4,9 +4,7 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:minWidth="@dimen/_480sdp"
-    android:paddingHorizontal="@dimen/_16sdp"
-    android:paddingVertical="@dimen/_12sdp">
-
+    android:paddingHorizontal="@dimen/_16sdp">
 
     <TextView
         android:id="@+id/tvTitle"
@@ -22,12 +20,10 @@
         android:drawableEnd="@drawable/ic_spinner_arrow_down"
         android:padding="@dimen/_8sdp"/>
 
-
     <TextView
         android:id="@+id/tvErrorMessage"
         style="@style/TextStyle_Error_14"
         android:paddingVertical="@dimen/_8sdp"
         android:visibility="gone" />
-
 
 </LinearLayout>

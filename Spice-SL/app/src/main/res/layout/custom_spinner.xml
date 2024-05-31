@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:paddingHorizontal="@dimen/_16sdp"
-    android:paddingVertical="@dimen/_12sdp">
+    android:paddingVertical="@dimen/_10sdp">
 
     <TextView
         android:id="@+id/tvTitle"
