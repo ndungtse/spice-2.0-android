@@ -25,6 +25,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textColor="@color/grey_black"
+            android:lineSpacingExtra="@dimen/_5sdp"
             android:paddingHorizontal="@dimen/_4sdp"
             android:textSize="@dimen/_16ssp" />
 

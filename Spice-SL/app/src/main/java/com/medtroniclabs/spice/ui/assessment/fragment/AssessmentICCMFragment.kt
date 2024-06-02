@@ -23,6 +23,7 @@ import com.medtroniclabs.spice.formgeneration.listener.FormEventListener
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.ui.FormResultComposer
 import com.medtroniclabs.spice.formgeneration.utility.CheckBoxDialog
+import com.medtroniclabs.spice.formgeneration.utility.FastBreathingLayoutFragment
 import com.medtroniclabs.spice.formgeneration.utility.InformationLayoutFragment
 import com.medtroniclabs.spice.formgeneration.utility.RecommendedDosageFragment
 import com.medtroniclabs.spice.network.resource.ResourceState
@@ -190,6 +191,10 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
             Amoxicillin.lowercase(), ZincDispensedStatus, ACT.lowercase(), OrsDispensedStatus -> {
                 RecommendedDosageFragment.newInstance(id, titleById)
                     .show(childFragmentManager, RecommendedDosageFragment.TAG)
+            }
+
+            BreathPerMinute -> {
+                FastBreathingLayoutFragment.newInstance().show(childFragmentManager, FastBreathingLayoutFragment.TAG)
             }
         }
     }
@@ -504,6 +509,7 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
         super.onConfigurationChanged(newConfig)
         val dosageDialog = childFragmentManager.findFragmentByTag("RecommendedDosageFragment") as? DialogFragment
         val instructionDialog = childFragmentManager.findFragmentByTag("InformationLayoutFragment") as? DialogFragment
+        val fastBreathingDialog = childFragmentManager.findFragmentByTag("FastBreathingLayoutFragment") as? DialogFragment
         if (dosageDialog != null && dosageDialog.showsDialog) {
             dosageDialog.dismiss()
             showDialogBasedOnId()
@@ -511,6 +517,11 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
 
         if (instructionDialog != null && instructionDialog.showsDialog) {
             instructionDialog.dismiss()
+            showDialogBasedOnId()
+        }
+
+        if (fastBreathingDialog != null && fastBreathingDialog.showsDialog) {
+            fastBreathingDialog.dismiss()
             showDialogBasedOnId()
         }
     }

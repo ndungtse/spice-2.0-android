@@ -101,4 +101,30 @@ class InformationUtils {
         return informationList
     }
 
+    fun getFastBreathingInstructions(context: Context): ArrayList<String> {
+        val informationList = ArrayList<String>()
+
+        informationList.add(
+            context.getString(R.string.fb_info_1)
+        )
+        informationList.add(
+            context.getString(R.string.fb_info_2)
+        )
+        informationList.add(
+            context.getString(R.string.fb_info_3)
+        )
+        informationList.add(
+            context.getString(R.string.fb_info_4)
+        )
+        informationList.add(
+            context.getString(R.string.fb_info_5)
+        )
+        informationList.add(
+            context.getString(R.string.fb_info_6)
+        )
+
+        return informationList
+
+    }
+
 }

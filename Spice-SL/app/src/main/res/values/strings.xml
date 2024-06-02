@@ -455,4 +455,18 @@
     <string name="my_patients">My Patients</string>
     <string name="something_went_wrong">Something went wrong</string>
     <string name="last_synced_at">Last Synced At: </string>
+    <string name="cut_offs_for_fast_breathing">Cut-offs for fast breathing</string>
+    <string name="instructions_to_calculate_n_breathing_rate">Instructions to calculate breathing rate</string>
+    <string name="_2_to_11_months">2 to 11 Months</string>
+    <string name="_1_to_5_years">1 to 5 Years</string>
+    <string name="_50_or_more">50 or more</string>
+    <string name="breaths_per_minute">Breaths per minute</string>
+    <string name="_40_or_more">40 or more</string>
+    <string name="fb_info_1">Make sure that your respiratory timer is ready.</string>
+    <string name="fb_info_2">Make sure the child is calm. If the child is sleeping, do not wake her/him - Ask caregiver to gently remove clothing from the chest and tummy.</string>
+    <string name="fb_info_3">Make sure you are able to see the child’s chest; observe the child’s breathing; and see when the chest moves in and out</string>
+    <string name="fb_info_4">One breath in and out makes one breath count.</string>
+    <string name="fb_info_5">When ready to count, press the centre of your timer (Note that the timer beeps every second for 60 seconds; will alarm in 30 seconds and then in 60 seconds before stopping beeping)</string>
+    <string name="fb_info_6">Keep counting until the timer stops beeping</string>
+    <string name="fast_breathing">Fast Breathing</string>
 </resources>
