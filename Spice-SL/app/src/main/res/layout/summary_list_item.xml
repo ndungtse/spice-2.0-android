@@ -20,6 +20,13 @@
         android:orientation="vertical"
         app:layout_constraintGuide_percent="0.50" />
 
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/barrierTop"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:barrierDirection="top"
+        app:constraint_referenced_ids="tvValue, tvLabel, tvLblHouseholdNoSeperator"/>
+
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/tvLabel"
         style="@style/TextStyle_Regular_16_Blue"
@@ -27,10 +34,8 @@
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/_5sdp"
         android:textColor="@color/charcoal_grey"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/startGuideline"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/tvLblHouseholdNoSeperator"
@@ -42,7 +47,7 @@
         android:textColor="@color/charcoal_grey"
         app:layout_constraintEnd_toStartOf="@id/endGuideline"
         app:layout_constraintStart_toEndOf="@id/startGuideline"
-        app:layout_constraintTop_toTopOf="@+id/tvLabel" />
+        />
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/tvValue"
@@ -54,7 +59,12 @@
         android:textColor="@color/secondary_black"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_weight="5"
-        app:layout_constraintStart_toEndOf="@id/endGuideline"
-        app:layout_constraintTop_toTopOf="@+id/tvLabel" />
+        app:layout_constraintStart_toEndOf="@id/endGuideline" />
 
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/barrierBottom"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:barrierDirection="bottom"
+        app:constraint_referenced_ids="tvValue, tvLabel, tvLblHouseholdNoSeperator"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

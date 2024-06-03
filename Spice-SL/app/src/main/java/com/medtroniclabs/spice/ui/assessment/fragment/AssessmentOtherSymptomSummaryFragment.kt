@@ -34,6 +34,8 @@ import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.AssessmentN
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.Dispensed
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.Fever
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.NoOfDaysOfFever
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.ReferredPHUSite
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.ReferredPHUSiteID
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.hasFever
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.otherConcerningSymptoms
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.otherSymptoms
@@ -163,18 +165,21 @@ class AssessmentOtherSymptomSummaryFragment : Fragment(), View.OnClickListener {
                         if (selectedId != DefinedParams.DefaultID) {
                             isValid = true
                             binding.tvSiteErrorMessage.gone()
-                            viewModel.isInputUpdated = true
-                            viewModel.otherAssessmentDetails[AssessmentDefinedParams.ReferredPHUSite] = selectedSiteName ?: ""
-                            viewModel.otherAssessmentDetails[AssessmentDefinedParams.ReferredPHUSiteID] =
+                            if (viewModel.otherAssessmentDetails[ReferredPHUSite] != selectedSiteName ||
+                                viewModel.otherAssessmentDetails[ReferredPHUSiteID] != selectedId?.toLong()) {
+                                viewModel.isInputUpdated = true
+                            }
+                            viewModel.otherAssessmentDetails[ReferredPHUSite] = selectedSiteName ?: ""
+                            viewModel.otherAssessmentDetails[ReferredPHUSiteID] =
                                 healthFacilityList.find { it.fhirId == selectedId }?.fhirId?.toLong()
                                     ?: selectedId?.toLong()!!
                         } else {
                             isValid = true
                             binding.tvSiteErrorMessage.gone()
-                            if (viewModel.otherAssessmentDetails.containsKey(AssessmentDefinedParams.ReferredPHUSite))
-                                viewModel.otherAssessmentDetails.remove(AssessmentDefinedParams.ReferredPHUSite)
-                            if (viewModel.otherAssessmentDetails.containsKey(AssessmentDefinedParams.ReferredPHUSiteID))
-                                viewModel.otherAssessmentDetails.remove(AssessmentDefinedParams.ReferredPHUSiteID)
+                            if (viewModel.otherAssessmentDetails.containsKey(ReferredPHUSite))
+                                viewModel.otherAssessmentDetails.remove(ReferredPHUSite)
+                            if (viewModel.otherAssessmentDetails.containsKey(ReferredPHUSiteID))
+                                viewModel.otherAssessmentDetails.remove(ReferredPHUSiteID)
                         }
                     }
                 }
@@ -327,8 +332,8 @@ class AssessmentOtherSymptomSummaryFragment : Fragment(), View.OnClickListener {
                     updateFollowUpDate(it.trim().toString())
                 }
                 //addOtherDetailsToType(Summary.lowercase())
-                if (viewModel.otherAssessmentDetails.containsKey(AssessmentDefinedParams.ReferredPHUSite) && viewModel.otherAssessmentDetails.containsKey(
-                        AssessmentDefinedParams.ReferredPHUSiteID
+                if (viewModel.otherAssessmentDetails.containsKey(ReferredPHUSite) && viewModel.otherAssessmentDetails.containsKey(
+                        ReferredPHUSiteID
                     )
                 ) {
                     viewModel.isDismiss = true

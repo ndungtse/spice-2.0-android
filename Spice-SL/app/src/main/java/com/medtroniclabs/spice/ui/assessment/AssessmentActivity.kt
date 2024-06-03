@@ -58,7 +58,7 @@ class AssessmentActivity : BaseActivity() {
     }
 
     private fun backNavigation() {
-       // if (viewModel.isInputUpdated){
+        if (viewModel.isInputUpdated){
             showErrorDialogue(
                 getString(R.string.alert),
                 getString(R.string.exit_reason),
@@ -68,7 +68,9 @@ class AssessmentActivity : BaseActivity() {
                     this@AssessmentActivity.finish()
                 }
             }
-        //}
+        } else {
+            this@AssessmentActivity.finish()
+        }
     }
 
     private fun loadSummaryFragment() {
@@ -76,6 +78,7 @@ class AssessmentActivity : BaseActivity() {
             MenuConstants.ICCM_MENU_ID -> {
                 setTitle(Summary.capitalizeFirstChar())
                 hideBackButton()
+                viewModel.isInputUpdated = false
                 replaceFragmentInId<AssessmentICCMSummaryFragment>(
                     binding.formsFragmentContainer.id,
                     tag = AssessmentICCMSummaryFragment.TAG
@@ -94,6 +97,7 @@ class AssessmentActivity : BaseActivity() {
             MenuConstants.OTHER_SYMPTOMS -> {
                 setTitle(Summary.capitalizeFirstChar())
                 hideBackButton()
+                viewModel.isInputUpdated = false
                 replaceFragmentInId<AssessmentOtherSymptomSummaryFragment>(
                     binding.formsFragmentContainer.id,
                     tag = AssessmentOtherSymptomSummaryFragment::class.simpleName
@@ -119,6 +123,7 @@ class AssessmentActivity : BaseActivity() {
                     binding.formsFragmentContainer.id,
                     tag = AssessmentICCMFragment.TAG
                 )
+                viewModel.isInputUpdated = true
             }
 
             MenuConstants.TB_MENU_ID -> {
@@ -143,6 +148,7 @@ class AssessmentActivity : BaseActivity() {
                     binding.formsFragmentContainer.id,
                     tag = AssessmentOtherSymptomsFragment::class.simpleName
                 )
+                viewModel.isInputUpdated = true
             }
         }
     }
