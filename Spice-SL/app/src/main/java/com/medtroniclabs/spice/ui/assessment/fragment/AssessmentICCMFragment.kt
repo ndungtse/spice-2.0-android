@@ -35,7 +35,6 @@ import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.ACTStatus
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.Amoxicillin
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.AmoxicillinStatus
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.BreathPerMinute
-import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.Dispensed
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.FB_MAX_BREATHING
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.FB_MAX_MONTH
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.FB_MAX_YEAR
@@ -50,6 +49,9 @@ import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.ReferredPHU
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.ZincDispensedStatus
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.ZincStatus
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.chestInDrawing
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.hasCough
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.hasDiarrhoea
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.hasFever
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.hasOedemaOfBothFeet
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.infoSuffixText
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.muacCode
@@ -112,27 +114,98 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
                 }
             }
         }
+    }
 
-        viewModel.nearestFacilityLiveData.observe(viewLifecycleOwner) { resourceState ->
-            when (resourceState.state) {
-                ResourceState.LOADING -> {
-                    showProgress()
+    private fun renderDosageDetails(dateOfBirth: String) {
+        val age = CommonUtils.convertStringDobToMonths(
+            dateOfBirth
+        )
+
+        age?.let {
+            /**
+             * ACT Status Condition Rendering
+             */
+            if (age > 6) {
+                formGenerator.getViewByTag(ACTStatus)?.let {
+                    if (it is TextView) {
+                        it.text = requireContext().getString(R.string.act_6)
+                    }
                 }
+                formGenerator.getViewByTag(ACTStatus + infoSuffixText)?.let {
+                    if (it is TextView) {
+                        it.text =
+                            getACTSuffixText(viewModel.memberDetailsLiveData.value?.data?.dateOfBirth?.let { dob ->
+                                CommonUtils.convertStringDobToMonths(
+                                    dob
+                                )
+                            })
+                        it.visibility = View.VISIBLE
+                    }
+                }
+            } else {
+                formGenerator.getViewByTag(ACTStatus + rootSuffix)?.apply {
+                    visibility = View.GONE
+                }
+            }
 
-                ResourceState.SUCCESS -> {
-                    hideProgress()
-                    resourceState.data?.let { siteList ->
-                        val item = siteList.filter { it.isDefault }
-                        if (item.isNotEmpty()) {
-                            viewModel.otherAssessmentDetails[ReferredPHUSite] = item[0].name
-                            viewModel.otherAssessmentDetails[ReferredPHUSiteID] =
-                                item[0].fhirId?.toLong() ?: item[0].id
-                        }
+            /**
+             * Amoxicillin & Zinc Condition Status rendering
+             */
+            if (age > 2) {
+                formGenerator.getViewByTag(AmoxicillinStatus)?.let {
+                    if (it is TextView) {
+                        it.text = requireContext().getString(R.string.amoxicillin_250_mg)
                     }
                 }
 
-                ResourceState.ERROR -> {
-                    hideProgress()
+                formGenerator.getViewByTag(ZincStatus)?.let {
+                    if (it is TextView) {
+                        it.text = requireContext().getString(R.string.zinc_tablet)
+                    }
+                }
+
+                formGenerator.getViewByTag(AmoxicillinStatus + infoSuffixText)?.let {
+                    if (it is TextView) {
+                        it.text =
+                            getSuffixText(viewModel.memberDetailsLiveData.value?.data?.dateOfBirth?.let { dob ->
+                                CommonUtils.convertStringDobToMonths(
+                                    dob
+                                )
+                            })
+                        it.visibility = View.VISIBLE
+                    }
+                }
+
+                formGenerator.getViewByTag(ZincStatus + infoSuffixText)?.let {
+                    if (it is TextView) {
+                        it.text =
+                            getZincSuffixText(viewModel.memberDetailsLiveData.value?.data?.dateOfBirth?.let { dob ->
+                                CommonUtils.convertStringDobToMonths(
+                                    dob
+                                )
+                            })
+                        it.visibility = View.VISIBLE
+                    }
+                }
+            }  else {
+                formGenerator.getViewByTag(AmoxicillinStatus + rootSuffix)?.apply {
+                    visibility = View.GONE
+                }
+
+                formGenerator.getViewByTag(ZincStatus + rootSuffix)?.apply {
+                    visibility = View.GONE
+                }
+            }
+
+            formGenerator.getViewByTag(ORSStatus)?.let {
+                if (it is TextView) {
+                    it.text = requireContext().getString(R.string.ors_packet)
+                }
+            }
+            formGenerator.getViewByTag(ORSStatus + infoSuffixText)?.let {
+                if (it is TextView) {
+                    it.text = requireContext().getString(R.string.with_one_litre_of_water)
+                    it.visibility = View.VISIBLE
                 }
             }
         }
@@ -233,11 +306,6 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
     }
 
     override fun onUpdateInstruction(id: String, selectedId: Any?) {
-        val age = viewModel.memberDetailsLiveData.value?.data?.dateOfBirth?.let { dob ->
-            CommonUtils.convertStringDobToMonths(
-                dob
-            )
-        }
         when (id) {
             muacCode -> {
                 if (selectedId is String && selectedId != DefaultID) {
@@ -265,115 +333,9 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
                 }
             }
 
-            Amoxicillin.lowercase() -> {
-                age?.let {
-                    if (age > 2 && selectedId is String && selectedId == Dispensed) {
-                        formGenerator.getViewByTag(AmoxicillinStatus + rootSuffix)?.apply {
-                            visibility = View.VISIBLE
-                        }
-                        formGenerator.getViewByTag(AmoxicillinStatus)?.let {
-                            if (it is TextView) {
-                                it.text = requireContext().getString(R.string.amoxicillin_250_mg)
-                            }
-                        }
-                        formGenerator.getViewByTag(AmoxicillinStatus + infoSuffixText)?.let {
-                            if (it is TextView) {
-                                it.text =
-                                    getSuffixText(viewModel.memberDetailsLiveData.value?.data?.dateOfBirth?.let { dob ->
-                                        CommonUtils.convertStringDobToMonths(
-                                            dob
-                                        )
-                                    })
-                                it.visibility = View.VISIBLE
-                            }
-                        }
-                    } else {
-                        formGenerator.getViewByTag(AmoxicillinStatus + rootSuffix)?.apply {
-                            visibility = View.GONE
-                        }
-                    }
-                }
-            }
-
-            ZincDispensedStatus -> {
-                age?.let {
-                    if (age > 2 && selectedId is String && selectedId == Dispensed) {
-                        formGenerator.getViewByTag(ZincStatus + rootSuffix)?.apply {
-                            visibility = View.VISIBLE
-                        }
-                        formGenerator.getViewByTag(ZincStatus)?.let {
-                            if (it is TextView) {
-                                it.text = requireContext().getString(R.string.zinc_tablet)
-                            }
-                        }
-                        formGenerator.getViewByTag(ZincStatus + infoSuffixText)?.let {
-                            if (it is TextView) {
-                                it.text = getZincSuffixText(viewModel.memberDetailsLiveData.value?.data?.dateOfBirth?.let { dob ->
-                                    CommonUtils.convertStringDobToMonths(
-                                        dob
-                                    )
-                                })
-                                it.visibility = View.VISIBLE
-                            }
-                        }
-                    } else {
-                        formGenerator.getViewByTag(ZincStatus + rootSuffix)?.apply {
-                            visibility = View.GONE
-                        }
-                    }
-                }
-            }
-
-            OrsDispensedStatus -> {
-                if (selectedId is String && selectedId == Dispensed) {
-                    formGenerator.getViewByTag(ORSStatus + rootSuffix)?.apply {
-                        visibility = View.VISIBLE
-                    }
-                    formGenerator.getViewByTag(ORSStatus)?.let {
-                        if (it is TextView) {
-                            it.text = requireContext().getString(R.string.ors_packet)
-                        }
-                    }
-                    formGenerator.getViewByTag(ORSStatus + infoSuffixText)?.let {
-                        if (it is TextView) {
-                            it.text = requireContext().getString(R.string.with_one_litre_of_water)
-                            it.visibility = View.VISIBLE
-                        }
-                    }
-                } else {
-                    formGenerator.getViewByTag(ORSStatus + rootSuffix)?.apply {
-                        visibility = View.GONE
-                    }
-                }
-            }
-
-            ACT.lowercase() -> {
-                age?.let {
-                    if (age > 6 && selectedId is String && selectedId == Dispensed) {
-                        formGenerator.getViewByTag(ACTStatus + rootSuffix)?.apply {
-                            visibility = View.VISIBLE
-                        }
-                        formGenerator.getViewByTag(ACTStatus)?.let {
-                            if (it is TextView) {
-                                it.text = requireContext().getString(R.string.act_6)
-                            }
-                        }
-                        formGenerator.getViewByTag(ACTStatus + infoSuffixText)?.let {
-                            if (it is TextView) {
-                                it.text =
-                                    getACTSuffixText(viewModel.memberDetailsLiveData.value?.data?.dateOfBirth?.let { dob ->
-                                        CommonUtils.convertStringDobToMonths(
-                                            dob
-                                        )
-                                    })
-                                it.visibility = View.VISIBLE
-                            }
-                        }
-                    } else {
-                        formGenerator.getViewByTag(ACTStatus + rootSuffix)?.apply {
-                            visibility = View.GONE
-                        }
-                    }
+            hasDiarrhoea, hasFever, hasCough -> {
+                viewModel.memberDetailsLiveData.value?.data?.let {
+                    renderDosageDetails(it.dateOfBirth)
                 }
             }
         }
@@ -382,7 +344,7 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
     private fun getZincSuffixText(age: Int?): CharSequence? {
         return when(age){
             in 2..6 -> {
-                requireContext().getString(R.string.no_of_tablets_no_of_days, 1/2, 10)
+                requireContext().getString(R.string.no_of_tablets_no_of_days_string, "1/2", 10)
             }
             in 7..60 -> {
                 requireContext().getString(R.string.no_of_tablets_no_of_days, 1, 10)
@@ -478,10 +440,16 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
                 }
             }
         }
+        formGenerator.getViewByTag(AmoxicillinStatus + rootSuffix)?.apply {
+            visibility = View.GONE
+        }
     }
 
     private fun getAmoxicillinStatus() {
         formGenerator.getViewByTag((Amoxicillin.lowercase()) + rootSuffix )?.apply {
+            visibility = View.VISIBLE
+        }
+        formGenerator.getViewByTag(AmoxicillinStatus + rootSuffix)?.apply {
             visibility = View.VISIBLE
         }
     }

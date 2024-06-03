@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.common.DateUtils
+import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.data.LocalSpinnerResponse
 import com.medtroniclabs.spice.data.model.RecommendedDosageListModel
@@ -28,6 +29,7 @@ import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.signsAndSym
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.symptoms
 import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefinedParams.Diarrhoea
 import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefinedParams.DiarrhoeaSigns
+import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralReasons
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.ANC_MENU
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.ChildHoodVisit
@@ -43,7 +45,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
@@ -74,6 +75,16 @@ class AssessmentViewModel @Inject constructor(
     var instructionId: String? = null
     var isDismiss = false
     var isInputUpdated: Boolean = false
+    val treatmentDays = HashMap<String,Int>()
+    var referralReason : ArrayList<String>? = null
+
+    init {
+        val followUpCriteria = SecuredPreference.getFollowUpCriteria()
+        treatmentDays[ReferralReasons.Pneumonia.name] = followUpCriteria.pneumonia
+        treatmentDays[ReferralReasons.Diarrhoea.name] = followUpCriteria.diarrhea
+        treatmentDays[ReferralReasons.MUAC.name] = followUpCriteria.muac
+        treatmentDays[ReferralReasons.Malaria.name] = followUpCriteria.malaria
+    }
 
     fun getMemberDetailsById() {
         if (selectedHouseholdMemberId == -1L) {
@@ -98,6 +109,7 @@ class AssessmentViewModel @Inject constructor(
                 val assessmentDetail =
                     getAssessmentDetails(assessmentMap as HashMap<Any, Any>)
                 assessmentStringLiveData.postValue(assessmentDetail.first)
+                referralReason = referralResult?.second
                 assessmentSaveLiveData.postValue(
                     assessmentRepository.saveAssessment(
                         assessmentDetail.second,

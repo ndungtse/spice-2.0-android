@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.SpiceLocationManager
 import com.medtroniclabs.spice.databinding.ActivityAssessmentBinding
@@ -163,9 +164,7 @@ class AssessmentActivity : BaseActivity() {
                 ResourceState.SUCCESS -> {
                     hideLoading()
                     resource.data?.let { _ ->
-                        if (viewModel.referralStatus == ReferralStatus.Referred.name){
-                            viewModel.updateOtherAssessmentDetails()
-                        }
+                        insertOtherAssessmentDetails()
                         loadSummaryFragment()
                     }
                 }
@@ -180,12 +179,39 @@ class AssessmentActivity : BaseActivity() {
             when (resource.state) {
                 ResourceState.SUCCESS -> {
                     hideLoading()
-                    if (viewModel.isDismiss){
+                    if (viewModel.isDismiss) {
                         finish()
                     }
                 }
 
                 else -> {}
+            }
+        }
+    }
+
+    private fun insertOtherAssessmentDetails() {
+        when (viewModel.referralStatus) {
+            ReferralStatus.Referred.name -> {
+                viewModel.nearestFacilityLiveData.value?.data?.let { siteList ->
+                    val item = siteList.filter { it.isDefault }
+                    if (item.isNotEmpty()) {
+                        viewModel.otherAssessmentDetails[AssessmentDefinedParams.ReferredPHUSite] = item[0].name
+                        viewModel.otherAssessmentDetails[AssessmentDefinedParams.ReferredPHUSiteID] =
+                            item[0].fhirId?.toLong() ?: item[0].id
+                    }
+                }
+                viewModel.updateOtherAssessmentDetails()
+            }
+
+            ReferralStatus.OnTreatment.name -> {
+                val treatmentDate = DateUtils.getDateAfterDays(viewModel.referralReason?.mapNotNull { viewModel.treatmentDays[it] }?.minOrNull() ?: 3)
+                viewModel.otherAssessmentDetails[AssessmentDefinedParams.NextFollowupDate] =
+                    DateUtils.convertDateTimeToDate(
+                        treatmentDate,
+                        DateUtils.DATE_ddMMyyyy,
+                        DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
+                    )
+                viewModel.updateOtherAssessmentDetails()
             }
         }
     }

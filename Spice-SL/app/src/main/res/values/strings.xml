@@ -414,6 +414,7 @@
     <string name="morning">Morning</string>
     <string name="night">Night</string>
     <string name="no_of_tablets_no_of_days">(%1$d tablets per day- %2$d days)</string>
+    <string name="no_of_tablets_no_of_days_string">(%1$s tablets per day- %2$d days)</string>
     <string name="amoxicillin_250_mg">Amoxicillin 250mg</string>
     <string name="zinc_tablet">Zinc Tablet</string>
     <string name="with_one_litre_of_water">(with 1 litre of water)</string>

@@ -85,30 +85,6 @@ class AssessmentOtherSymptomsFragment : BaseFragment(), FormEventListener, View.
                 }
             }
         }
-
-        viewModel.nearestFacilityLiveData.observe(viewLifecycleOwner) { resourceState ->
-            when (resourceState.state) {
-                ResourceState.LOADING -> {
-                    showProgress()
-                }
-
-                ResourceState.SUCCESS -> {
-                    hideProgress()
-                    resourceState.data?.let { siteList ->
-                        val item = siteList.filter { it.isDefault }
-                        if (item.isNotEmpty()){
-                            viewModel.otherAssessmentDetails[AssessmentDefinedParams.ReferredPHUSite] = item[0].name
-                            viewModel.otherAssessmentDetails[AssessmentDefinedParams.ReferredPHUSiteID] =
-                                item[0].fhirId?.toLong() ?: item[0].id
-                        }
-                    }
-                }
-
-                ResourceState.ERROR -> {
-                    hideProgress()
-                }
-            }
-        }
     }
 
     private fun setListeners() {
@@ -186,34 +162,33 @@ class AssessmentOtherSymptomsFragment : BaseFragment(), FormEventListener, View.
 
     override fun onUpdateInstruction(id: String, selectedId: Any?) {
         when (id) {
-            AssessmentDefinedParams.ACT.lowercase() -> {
-                if (selectedId is String && selectedId == AssessmentDefinedParams.Dispensed) {
-                    formGenerator.getViewByTag(AssessmentDefinedParams.ACTStatus + AssessmentDefinedParams.rootSuffix)?.apply {
-                        visibility = View.VISIBLE
-                    }
-                    formGenerator.getViewByTag(AssessmentDefinedParams.ACTStatus)?.let {
-                        if (it is TextView) {
-                            it.text = requireContext().getString(R.string.act_6)
-                        }
-                    }
-                    formGenerator.getViewByTag(AssessmentDefinedParams.ACTStatus + AssessmentDefinedParams.infoSuffixText)?.let {
-                        if (it is TextView) {
-                            it.text =
-                                getACTSuffixText(viewModel.memberDetailsLiveData.value?.data?.dateOfBirth?.let { dob ->
-                                    CommonUtils.convertStringDobToMonths(
-                                        dob
-                                    )
-                                })
-                            it.visibility = View.VISIBLE
-                        }
-                    }
-                } else {
-                    formGenerator.getViewByTag(AssessmentDefinedParams.ACTStatus + AssessmentDefinedParams.rootSuffix)?.apply {
-                        visibility = View.GONE
-                    }
-                }
+            AssessmentDefinedParams.hasFever -> {
+                    renderDosageDetails()
             }
         }
+    }
+
+    private fun renderDosageDetails() {
+        /**
+         * ACT Status Condition Rendering
+         */
+        formGenerator.getViewByTag(AssessmentDefinedParams.ACTStatus)?.let {
+            if (it is TextView) {
+                it.text = requireContext().getString(R.string.act_6)
+            }
+        }
+        formGenerator.getViewByTag(AssessmentDefinedParams.ACTStatus + AssessmentDefinedParams.infoSuffixText)
+            ?.let {
+                if (it is TextView) {
+                    it.text =
+                        getACTSuffixText(viewModel.memberDetailsLiveData.value?.data?.dateOfBirth?.let { dob ->
+                            CommonUtils.convertStringDobToMonths(
+                                dob
+                            )
+                        })
+                    it.visibility = View.VISIBLE
+                }
+            }
     }
 
     private fun getTitleById(id: String): String {
