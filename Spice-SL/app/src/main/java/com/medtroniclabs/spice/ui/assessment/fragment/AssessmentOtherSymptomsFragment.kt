@@ -98,7 +98,8 @@ class AssessmentOtherSymptomsFragment : BaseFragment(), FormEventListener, View.
                         val item = siteList.filter { it.isDefault }
                         if (item.isNotEmpty()){
                             viewModel.otherAssessmentDetails[AssessmentDefinedParams.ReferredPHUSite] = item[0].name
-                            viewModel.otherAssessmentDetails[AssessmentDefinedParams.ReferredPHUSiteID] = item[0].id
+                            viewModel.otherAssessmentDetails[AssessmentDefinedParams.ReferredPHUSiteID] =
+                                item[0].fhirId?.toLong() ?: item[0].id
                         }
                     }
                 }

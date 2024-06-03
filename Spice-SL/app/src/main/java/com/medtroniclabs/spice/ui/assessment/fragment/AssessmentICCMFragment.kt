@@ -123,9 +123,10 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
                     hideProgress()
                     resourceState.data?.let { siteList ->
                         val item = siteList.filter { it.isDefault }
-                        if (item.isNotEmpty()){
+                        if (item.isNotEmpty()) {
                             viewModel.otherAssessmentDetails[ReferredPHUSite] = item[0].name
-                            viewModel.otherAssessmentDetails[ReferredPHUSiteID] = item[0].id
+                            viewModel.otherAssessmentDetails[ReferredPHUSiteID] =
+                                item[0].fhirId?.toLong() ?: item[0].id
                         }
                     }
                 }

@@ -170,7 +170,9 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
                                 binding.tvSiteErrorMessage.gone()
                                 viewModel.isInputUpdated = true
                                 viewModel.otherAssessmentDetails[ReferredPHUSite] = selectedSiteName ?: ""
-                                viewModel.otherAssessmentDetails[ReferredPHUSiteID] = selectedId?.toLong() ?: -1L
+                                viewModel.otherAssessmentDetails[ReferredPHUSiteID] =
+                                    healthFacilityList.find { it.fhirId == selectedId }?.fhirId?.toLong()
+                                        ?: selectedId?.toLong()!!
                             } else {
                                 isValid = false
                                 binding.tvSiteErrorMessage.visible()

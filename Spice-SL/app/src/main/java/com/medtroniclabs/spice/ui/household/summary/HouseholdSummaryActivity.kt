@@ -120,6 +120,7 @@ class HouseholdSummaryActivity : BaseActivity(), MemberSelectionListener, View.O
     override fun onResume() {
         super.onResume()
         householdSummaryViewModel.getAllHouseHoldMemberList()
+        householdSummaryViewModel.getHouseHoldDetailsById()
     }
 
 
