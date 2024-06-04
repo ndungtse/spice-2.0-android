@@ -28,6 +28,7 @@ import com.medtroniclabs.spice.network.ApiHelperImpl
 import com.medtroniclabs.spice.network.ApiService
 import com.medtroniclabs.spice.network.NetworkConstants
 import com.medtroniclabs.spice.network.NetworkConstants.BASE_URL
+import com.medtroniclabs.spice.network.interceptors.GZipRequestInterceptor
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -61,6 +62,7 @@ object AppModule {
         OkHttpClient.Builder()
             .addInterceptor(loggingInterceptor)
             .addInterceptor(AppInterceptor(context))
+            .addInterceptor(GZipRequestInterceptor())
             .connectTimeout(TIMEOUT_SECONDS, TimeUnit.SECONDS)
             .writeTimeout(TIMEOUT_SECONDS, TimeUnit.SECONDS)
             .readTimeout(TIMEOUT_SECONDS, TimeUnit.SECONDS)
@@ -68,6 +70,7 @@ object AppModule {
     } else {
         OkHttpClient.Builder()
             .addInterceptor(AppInterceptor(context))
+            .addInterceptor(GZipRequestInterceptor())
             .connectTimeout(TIMEOUT_SECONDS, TimeUnit.SECONDS)
             .writeTimeout(TIMEOUT_SECONDS, TimeUnit.SECONDS)
             .readTimeout(TIMEOUT_SECONDS, TimeUnit.SECONDS)
@@ -85,6 +88,7 @@ object AppModule {
                         ?: ""
                 )
                 .header("client", AppConstants.CLIENT_CONSTANT)
+
 
             request = requestBuilder.build()
             val response = chain.proceed(request)

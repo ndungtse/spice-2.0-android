@@ -3,12 +3,12 @@ package com.medtroniclabs.spice.repo
 import androidx.lifecycle.MutableLiveData
 import com.google.gson.Gson
 import com.google.gson.JsonParser
+import com.google.gson.reflect.TypeToken
 import com.medtroniclabs.spice.appextensions.convertToUtcDateTime
 import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.appextensions.postSuccess
 import com.medtroniclabs.spice.common.SecuredPreference
-import com.medtroniclabs.spice.data.APIResponse
 import com.medtroniclabs.spice.data.offlinesync.model.Assessment
 import com.medtroniclabs.spice.data.offlinesync.model.AssessmentEncounter
 import com.medtroniclabs.spice.data.offlinesync.model.FollowUpCriteria
@@ -31,7 +31,10 @@ import com.medtroniclabs.spice.model.assessment.AssessmentDetails
 import com.medtroniclabs.spice.network.ApiHelper
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
+import okhttp3.ResponseBody
 import retrofit2.Response
+import timber.log.Timber
+import java.lang.reflect.Type
 import java.util.Locale
 import javax.inject.Inject
 
@@ -118,43 +121,63 @@ class OfflineSyncRepository @Inject constructor(
         val lastSyncedAt = if (longSyncedAt != 0L) longSyncedAt.convertToUtcDateTime() else null
         val syncedResponse = getSyncedEntities(villageNameId.values.toList(), lastSyncedAt)
         if (syncedResponse.isSuccessful) {
-            val response = syncedResponse.body()?.entity
-            // Insert household and member
-            val hhMapping = insertHouseholds(response?.households, villageNameId)
-            insertHouseholdMembers(response?.members, hhMapping)
+            val response = syncedResponse.body()?.string()
+            response?.let {
+                try {
+                    val gson = Gson()
+                    val type: Type = object : TypeToken<ResponseInitialDownload>() {}.type
+                    val responseInitialDownload: ResponseInitialDownload? = gson.fromJson(it, type)
+                    if (responseInitialDownload == null) {
+                        return false
+                    } else {
+                        saveRequestInitialDownload(responseInitialDownload, villageNameId)
+                        return true
+                    }
 
-
-            // Insert follow up
-            roomHelper.deleteAllFollowUps()
-            roomHelper.deleteAllFollowUpCalls()
-            response?.followUps?.forEach {
-                it.syncStatus = OfflineSyncStatus.Success
-                roomHelper.insertFollowUp(it)
+                } catch (e: Exception) {
+                    Timber.d("Exception ${e.localizedMessage}")
+                    return false
+                }
             }
-
-            // Insert Pregnancy Information
-            val pregnancyDetails = mutableListOf<MemberClinicalEntity>()
-            response?.pregnancyInfos?.forEach {
-                pregnancyDetails.addAll(getMemberClinicalInfos(it))
-            }
-            roomHelper.insertClinicalInfos(pregnancyDetails)
-
-            response?.followUpCriteria?.let {
-                SecuredPreference.putFollowUpCriteria(it)
-            } ?: kotlin.run {
-                val followUpCriteria = FollowUpCriteria(3, 5, 3, 7, 7, 2, 2, 2, 2, 5, 5)
-                SecuredPreference.putFollowUpCriteria(followUpCriteria)
-            }
-
-            SecuredPreference.putLong(
-                SecuredPreference.EnvironmentKey.LAST_SYNCED_AT.name,
-                System.currentTimeMillis()
-            )
-
-            return true
         } else {
             return false
         }
+        return false
+    }
+
+    private suspend fun saveRequestInitialDownload(
+        requestInitialDownload: ResponseInitialDownload,
+        villageNameId: Map<String, Long>
+    ) {
+        val hhMapping = insertHouseholds(requestInitialDownload.households, villageNameId)
+        insertHouseholdMembers(requestInitialDownload.members, hhMapping)
+
+        // Insert follow up
+        roomHelper.deleteAllFollowUps()
+        roomHelper.deleteAllFollowUpCalls()
+        requestInitialDownload.followUps?.forEach {
+            it.syncStatus = OfflineSyncStatus.Success
+            roomHelper.insertFollowUp(it)
+        }
+
+        // Insert Pregnancy Information
+        val pregnancyDetails = mutableListOf<MemberClinicalEntity>()
+        requestInitialDownload.pregnancyInfos?.forEach {
+            pregnancyDetails.addAll(getMemberClinicalInfos(it))
+        }
+        roomHelper.insertClinicalInfos(pregnancyDetails)
+
+        requestInitialDownload.followUpCriteria?.let {
+            SecuredPreference.putFollowUpCriteria(it)
+        } ?: kotlin.run {
+            val followUpCriteria = FollowUpCriteria(3, 5, 3, 7, 7, 2, 2, 2, 2, 5, 5)
+            SecuredPreference.putFollowUpCriteria(followUpCriteria)
+        }
+
+        SecuredPreference.putLong(
+            SecuredPreference.EnvironmentKey.LAST_SYNCED_AT.name,
+            System.currentTimeMillis()
+        )
     }
 
     private suspend fun fetchUnSyncedData(): Boolean {
@@ -300,7 +323,7 @@ class OfflineSyncRepository @Inject constructor(
     private suspend fun getSyncedEntities(
         villageList: List<Long>,
         lastSyncedAt: String? = null
-    ): Response<APIResponse<ResponseInitialDownload>> {
+    ): Response<ResponseBody> {
         // Getting village name only. For mapping I have used following code
         val request = RequestAllEntities(villageList, lastSyncedAt)
         return apiHelper.fetchSyncedData(request)

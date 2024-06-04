@@ -45,6 +45,7 @@ import com.medtroniclabs.spice.model.ReferralData
 import com.medtroniclabs.spice.model.SearchAndListResponse
 import com.medtroniclabs.spice.model.medicalreview.CreateUnderTwoMonthsResponse
 import okhttp3.RequestBody
+import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.POST
@@ -73,7 +74,7 @@ interface ApiService {
     suspend fun getHouseholdDetails(@Body request: RequestAllEntities): Response<APIResponse<List<HouseHold>>>
 
     @POST("/offline-service/offline-sync/fetch-synced-data")
-    suspend fun fetchSyncedData(@Body request: RequestAllEntities): Response<APIResponse<ResponseInitialDownload>>
+    suspend fun fetchSyncedData(@Body request: RequestAllEntities): Response<ResponseBody>
 
     @POST("spice-service/patient/list")
     suspend fun getPatients(@Body request: PatientsDataModel): APIResponse<SearchAndListResponse>

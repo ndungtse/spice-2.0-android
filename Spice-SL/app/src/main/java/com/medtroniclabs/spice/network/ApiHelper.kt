@@ -23,8 +23,8 @@ import com.medtroniclabs.spice.data.PatientStatusResponse
 import com.medtroniclabs.spice.data.ReferPatientAPIRequest
 import com.medtroniclabs.spice.data.ReferPatientHealthFacilityItem
 import com.medtroniclabs.spice.data.ReferPatientNameNumber
-import com.medtroniclabs.spice.data.ReferPatientResult
 import com.medtroniclabs.spice.data.ReferPatientRequest
+import com.medtroniclabs.spice.data.ReferPatientResult
 import com.medtroniclabs.spice.data.UnderTwoMonthsMetaResponse
 import com.medtroniclabs.spice.data.UserSymptomsEntity
 import com.medtroniclabs.spice.data.model.AboveFiveYearsSubmitRequest
@@ -34,7 +34,6 @@ import com.medtroniclabs.spice.data.model.MotherNeonateAncRequest
 import com.medtroniclabs.spice.data.model.PatientEncounterResponse
 import com.medtroniclabs.spice.data.offlinesync.model.HouseHold
 import com.medtroniclabs.spice.data.offlinesync.model.RequestGetSyncStatus
-import com.medtroniclabs.spice.data.offlinesync.model.ResponseInitialDownload
 import com.medtroniclabs.spice.data.offlinesync.model.SyncResponse
 import com.medtroniclabs.spice.data.resource.RequestAllEntities
 import com.medtroniclabs.spice.model.PatientDetailRequest
@@ -45,6 +44,7 @@ import com.medtroniclabs.spice.model.SearchAndListResponse
 import com.medtroniclabs.spice.model.medicalreview.CreateUnderTwoMonthsResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
+import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.Body
 
@@ -57,7 +57,7 @@ interface ApiHelper {
     suspend fun getOfflineSyncStatus(request: RequestGetSyncStatus): Response<SyncResponse>
     suspend fun getHouseholdAndMembers(request: RequestAllEntities): Response<APIResponse<List<HouseHold>>>
 
-    suspend fun fetchSyncedData(request: RequestAllEntities): Response<APIResponse<ResponseInitialDownload>>
+    suspend fun fetchSyncedData(request: RequestAllEntities): Response<ResponseBody>
 
     suspend fun getPatients(request: PatientsDataModel): APIResponse<SearchAndListResponse>
     suspend fun patientSearch(request: PatientsDataModel): APIResponse<SearchAndListResponse>

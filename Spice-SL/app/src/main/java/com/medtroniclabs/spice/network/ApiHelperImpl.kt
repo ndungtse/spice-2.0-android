@@ -19,13 +19,13 @@ import com.medtroniclabs.spice.data.MetaDataResponse
 import com.medtroniclabs.spice.data.MotherNeonateAncMetaResponse
 import com.medtroniclabs.spice.data.MotherNeonateAncSummaryModel
 import com.medtroniclabs.spice.data.PatientStatusRequest
+import com.medtroniclabs.spice.data.PatientStatusResponse
 import com.medtroniclabs.spice.data.ReferPatientAPIRequest
 import com.medtroniclabs.spice.data.ReferPatientHealthFacilityItem
 import com.medtroniclabs.spice.data.ReferPatientNameNumber
-import com.medtroniclabs.spice.data.ReferPatientResult
 import com.medtroniclabs.spice.data.ReferPatientRequest
+import com.medtroniclabs.spice.data.ReferPatientResult
 import com.medtroniclabs.spice.data.UnderTwoMonthsMetaResponse
-import com.medtroniclabs.spice.data.PatientStatusResponse
 import com.medtroniclabs.spice.data.UserSymptomsEntity
 import com.medtroniclabs.spice.data.model.AboveFiveYearsSubmitRequest
 import com.medtroniclabs.spice.data.model.BpAndWeightRequestModel
@@ -34,7 +34,6 @@ import com.medtroniclabs.spice.data.model.MotherNeonateAncRequest
 import com.medtroniclabs.spice.data.model.PatientEncounterResponse
 import com.medtroniclabs.spice.data.offlinesync.model.HouseHold
 import com.medtroniclabs.spice.data.offlinesync.model.RequestGetSyncStatus
-import com.medtroniclabs.spice.data.offlinesync.model.ResponseInitialDownload
 import com.medtroniclabs.spice.data.offlinesync.model.SyncResponse
 import com.medtroniclabs.spice.data.resource.RequestAllEntities
 import com.medtroniclabs.spice.model.PatientDetailRequest
@@ -45,6 +44,7 @@ import com.medtroniclabs.spice.model.SearchAndListResponse
 import com.medtroniclabs.spice.model.medicalreview.CreateUnderTwoMonthsResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
+import okhttp3.ResponseBody
 import retrofit2.Response
 import javax.inject.Inject
 
@@ -76,7 +76,7 @@ class ApiHelperImpl @Inject constructor(private val apiService: ApiService) : Ap
         return apiService.getOfflineSyncStatus(request)
     }
 
-    override suspend fun fetchSyncedData(request: RequestAllEntities): Response<APIResponse<ResponseInitialDownload>> {
+    override suspend fun fetchSyncedData(request: RequestAllEntities): Response<ResponseBody> {
         return apiService.fetchSyncedData(request)
     }
 
