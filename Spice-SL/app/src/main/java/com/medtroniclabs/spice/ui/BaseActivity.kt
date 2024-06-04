@@ -109,7 +109,7 @@ open class BaseActivity : SpiceRootActivity() {
         return if (isVisible) View.VISIBLE else View.INVISIBLE
     }
 
-    fun redirectToHome() {
+    private fun redirectToHome() {
         startAsNewActivity(Intent(this, LandingActivity::class.java))
     }
 

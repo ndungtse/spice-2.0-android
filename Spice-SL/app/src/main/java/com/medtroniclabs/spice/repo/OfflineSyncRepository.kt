@@ -85,6 +85,7 @@ class OfflineSyncRepository @Inject constructor(
             roomHelper.deleteAllHouseholds()
             roomHelper.deleteAllHouseholdMembers()
             roomHelper.deleteAllMemberClinical()
+            roomHelper.deleteAllAssessments()
 
             // Fetch Synced Data
             val isInitialDataSuccess = fetchSyncedData()

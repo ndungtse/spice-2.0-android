@@ -118,6 +118,7 @@ interface RoomHelper {
     suspend fun getOtherUnSyncedAssessments(): List<AssessmentDetails>
     suspend fun getUnSyncedAssessmentCount(): Int
 
+    suspend fun deleteAllAssessments()
     suspend fun updateMemberClinicalData(
         patientId: String,
         type: String,

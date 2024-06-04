@@ -31,6 +31,7 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
     override fun onCreate(savedInstanceState: Bundle?) {
         val splashScreen = installSplashScreen()
         splashScreen.setKeepOnScreenCondition { true }
+
         super.onCreate(savedInstanceState)
 
         onBackPressedDispatcher.addCallback(this, onBackPressedCallback)

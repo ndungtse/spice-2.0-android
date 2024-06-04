@@ -69,8 +69,8 @@ class OfflineSyncViewModel @Inject constructor(
     private fun getLastSyncedAt() {
         val longSyncedAt =
             SecuredPreference.getLong(SecuredPreference.EnvironmentKey.LAST_SYNCED_AT.name)
-        lastSyncedAtLiveData.value =
-            if (longSyncedAt != 0L) longSyncedAt.convertToLocalDateTime() else "--"
+        val displayLastSyncedAt = if (longSyncedAt != 0L) longSyncedAt.convertToLocalDateTime() else "--"
+        lastSyncedAtLiveData.postValue(displayLastSyncedAt)
     }
 
     private fun updateSyncedCount(index: Int, unSyncedCount: Int) {
