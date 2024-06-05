@@ -111,6 +111,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/_14sdp"
             android:text="@string/cancel"
+            android:textAllCaps="true"
             app:layout_constraintRight_toLeftOf="@id/btnOkay"
             app:layout_constraintTop_toTopOf="@id/btnOkay" />
 

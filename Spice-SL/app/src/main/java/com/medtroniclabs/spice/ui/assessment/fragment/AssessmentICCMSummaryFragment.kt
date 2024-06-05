@@ -23,6 +23,7 @@ import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.DefaultID
 import com.medtroniclabs.spice.common.DefinedParams.DefaultIDLabel
 import com.medtroniclabs.spice.common.DefinedParams.ICCM
+import com.medtroniclabs.spice.common.DefinedParams.True
 import com.medtroniclabs.spice.common.DefinedParams.Yes
 import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.common.ViewUtils
@@ -60,15 +61,16 @@ import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.ReferredPHU
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.ReferredPHUSiteID
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.ZincDispensedStatus
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.hasCough
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.hasDiarrhoea
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.hasFever
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.isBreastfeed
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.isConvulsionPastFewDays
-import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.hasDiarrhoea
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.isUnusualSleepy
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.isVomiting
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.muacCode
 import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefinedParams
 import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefinedParams.Diarrhoea
+import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefinedParams.NA
 import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefinedParams.RdtPositive
 import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
@@ -404,16 +406,23 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
                     }
                 }
 
-                Amoxicillin.lowercase(), ACT.lowercase(), OrsDispensedStatus, ZincDispensedStatus -> {
+                Amoxicillin.lowercase(), ACT.lowercase() -> {
                     if (item.value == Dispensed){
                         bindICCMSummaryView(Dispensed, item.title)
                     }
                 }
 
                 else -> {
-                    bindICCMSummaryView(item.title, item.value)
+                    if((item.id != OrsDispensedStatus) && (item.id != ZincDispensedStatus)){
+                        bindICCMSummaryView(item.title, item.value)
+                    }
                 }
             }
+        }
+        val zincDispensedStatus = listSummaryData.filter { it.id == ZincDispensedStatus  }[0].value
+        val orsDispensedStatus = listSummaryData.filter { it.id == OrsDispensedStatus  }[0].value
+        if (zincDispensedStatus!=null || orsDispensedStatus!=null){
+            bindICCMSummaryView(Dispensed, requireContext().getString(R.string.zinc_ors_status, zincDispensedStatus ?: NA, orsDispensedStatus ?: NA))
         }
     }
 
@@ -442,9 +451,6 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
     }
 
     private fun getDehydrationStatus(signContain: Boolean): String? {
-        if (signContain) {
-            return requireContext().getString(R.string.severe_dehydration)
-        } else {
             var result: String? = null
             viewModel.assessmentStringLiveData.value?.let {
                 val jsonObject = JSONObject(it)
@@ -458,7 +464,7 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
                     feverObject?.optString(ReferralDefinedParams.IsBloodyDiarrhoea)
                 diarrhoeaDays?.let {
                     bloodyDiarrhoea?.let {
-                        result = if (diarrhoeaDays.toInt() >= 14 || bloodyDiarrhoea == "true") {
+                        result = if (diarrhoeaDays.toInt() >= 14 || bloodyDiarrhoea == True ) {
                             requireContext().getString(R.string.severe_dehydration)
                         } else {
                             requireContext().getString(R.string.moderate_dehydration)
@@ -467,7 +473,6 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
                 }
             }
             return result
-        }
     }
 
 

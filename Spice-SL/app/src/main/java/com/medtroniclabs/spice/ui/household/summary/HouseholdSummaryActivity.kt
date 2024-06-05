@@ -12,6 +12,7 @@ import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.isMemberRegistration
 import com.medtroniclabs.spice.databinding.ActivityHouseholdSummaryBinding
 import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
+import com.medtroniclabs.spice.formgeneration.extension.capitalizeFirstChar
 import com.medtroniclabs.spice.formgeneration.extension.safePopupMenuClickListener
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
@@ -89,7 +90,7 @@ class HouseholdSummaryActivity : BaseActivity(), MemberSelectionListener, View.O
                 ResourceState.SUCCESS -> {
                     hideLoading()
                     resourceState.data?.name?.let { name ->
-                        setTitle(name +" "+ getString(R.string.household))
+                        setTitle(name.capitalizeFirstChar() +" "+ getString(R.string.household))
                     }
                 }
             }

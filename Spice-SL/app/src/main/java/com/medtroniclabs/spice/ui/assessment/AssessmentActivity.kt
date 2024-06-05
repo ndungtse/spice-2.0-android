@@ -1,5 +1,6 @@
 package com.medtroniclabs.spice.ui.assessment
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
@@ -26,6 +27,7 @@ import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentTBFragment
 import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentTBSummaryFragment
 import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
+import com.medtroniclabs.spice.ui.landing.LandingActivity
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -41,9 +43,14 @@ class AssessmentActivity : BaseActivity() {
             binding.root,
             isToolbarVisible = true,
             title = getString(R.string.assessment),
+            homeAndBackVisibility = Pair(true,true),
             callback = {
-                backNavigation()
+                backNavigation(false)
+            },
+            callbackHome = {
+                backNavigation(true)
             }
+
         )
         getIntentValue()
         loadFragment()
@@ -58,17 +65,28 @@ class AssessmentActivity : BaseActivity() {
         }
     }
 
-    private fun backNavigation() {
-        if (viewModel.isInputUpdated){
+    private fun backNavigation(isHome: Boolean) {
+        if (viewModel.isInputUpdated) {
             showErrorDialogue(
                 getString(R.string.alert),
                 getString(R.string.exit_reason),
                 isNegativeButtonNeed = true
             ) { isPositive ->
                 if (isPositive) {
-                    this@AssessmentActivity.finish()
+                    navigationHandling(isHome)
                 }
             }
+        } else {
+            navigationHandling(isHome)
+        }
+    }
+
+    private fun navigationHandling(isHome: Boolean) {
+        if (isHome) {
+            val intent = Intent(this, LandingActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+            startActivity(intent)
+            finish()
         } else {
             this@AssessmentActivity.finish()
         }
@@ -240,7 +258,7 @@ class AssessmentActivity : BaseActivity() {
     private val onBackPressedCallback: OnBackPressedCallback =
         object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                backNavigation()
+                backNavigation(false)
             }
         }
 }

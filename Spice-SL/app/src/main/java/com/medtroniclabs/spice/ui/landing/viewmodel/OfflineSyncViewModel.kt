@@ -33,10 +33,10 @@ class OfflineSyncViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val entityList = mutableListOf(
-        OfflineSyncEntityDetail(HOUSE_HOLDS, 0),
-        OfflineSyncEntityDetail(HOUSE_HOLD_MEMBERS, 0),
-        OfflineSyncEntityDetail(ASSESSMENTS, 0),
-        OfflineSyncEntityDetail(FOLLOWUPS, 0)
+        OfflineSyncEntityDetail("Households", 0),
+        OfflineSyncEntityDetail("Household Member", 0),
+        OfflineSyncEntityDetail("Assessments", 0),
+        OfflineSyncEntityDetail("Follow-Up", 0)
     )
 
     @Inject

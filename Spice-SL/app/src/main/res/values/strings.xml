@@ -233,7 +233,7 @@
     <string name="checking_for_oedema">Checking for Oedema</string>
     <string name="chest_in_drawing">Chest in-drawing</string>
     <string name="patient_on_treatment">Patient On Treatment</string>
-    <string name="no_refferral_treatment_required">No Referral / Treatment Required</string>
+    <string name="no_refferral_treatment_required">No Referral / No Treatment Required</string>
     <string name="select" translatable="false">Select</string>
     <string name="muac_info_1"> Ask the mother to remove any clothing that covers the child’s left arm.</string>
     <string name="muac_info_2"> Identify the midpoint of the child’s left upper arm. This can be done by taking a piece of string (or the tape itself), place one end on the tip of the child’s shoulder and the other on the elbow</string>
@@ -472,4 +472,5 @@
     <string name="fast_breathing">Fast Breathing</string>
     <string name="ddmmyyyy">dd/mm/yyyy</string>
     <string name="phone_number_invalid">Please enter a valid mobile number</string>
+    <string name="zinc_ors_status">(Zinc - %1$s), (ORS - %2$s)</string>
 </resources>

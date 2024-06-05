@@ -6,6 +6,7 @@ import android.view.View
 import androidx.activity.viewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.hideKeyboard
+import com.medtroniclabs.spice.appextensions.invisible
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.EncryptionUtil
@@ -97,6 +98,7 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
     private fun initView() {
         binding.tvUserNameLabel.markMandatory()
         binding.tvPasswordLabel.markMandatory()
+        binding.tvForgotPassword.invisible()
     }
 
     override fun onClick(view: View) {
