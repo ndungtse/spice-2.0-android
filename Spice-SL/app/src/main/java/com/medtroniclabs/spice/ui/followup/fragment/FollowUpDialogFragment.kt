@@ -77,12 +77,14 @@ class FollowUpDialogFragment : DialogFragment() {
             with(binding) {
                 tvTitle.text = getPatientName(details.name, details.dateOfBirth, details.gender)
                 tvReasonText.text = details.reason ?: getString(R.string.hyphen_symbol)
-                tvPatientStatusText.text = details.patientStatus ?: getString(R.string.hyphen_symbol)
+                tvPatientStatusText.text =
+                    details.patientStatus ?: getString(R.string.hyphen_symbol)
                 tvVillageText.text = details.village ?: getString(R.string.hyphen_symbol)
                 tvLandmarkText.text = details.landmark ?: getString(R.string.hyphen_symbol)
                 tvHHNameText.text = details.householdName ?: getString(R.string.hyphen_symbol)
                 tvMemberIDText.text = details.patientId ?: getString(R.string.hyphen_symbol)
-                tvCallsMadeText.text = details.remainingRetryAttempt.toString()
+                tvCallsMadeText.text =
+                    "${details.successfulAttempts}/${viewModel.maxSuccessfulCallLimit}"
 
                 if (details.type == FU_TYPE_HH_VISIT)
                     btnAssessment.visible()

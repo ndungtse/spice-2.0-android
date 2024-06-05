@@ -48,6 +48,7 @@ import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
 import com.medtroniclabs.spice.common.DateUtils.DATE_ddMMyyyy
 import com.medtroniclabs.spice.common.DateUtils.convertDateFormat
+import com.medtroniclabs.spice.common.DateUtils.convertDateToStringWithUTC
 import com.medtroniclabs.spice.common.DateUtils.getDateStringFromDate
 import com.medtroniclabs.spice.common.DefinedParams.female
 import com.medtroniclabs.spice.common.SecuredPreference
@@ -1065,7 +1066,7 @@ class FormGenerator(
 
         isDOBUpdated = true
 
-        val dobString = getDateStringFromDate(date, DATE_FORMAT_yyyyMMddHHmmssZZZZZ)
+        val dobString = convertDateToStringWithUTC(date, DATE_FORMAT_yyyyMMddHHmmssZZZZZ)
 
         addOrUpdateDOB(dobString, MemberRegistration.dateOfBirth)
 

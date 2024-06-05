@@ -182,4 +182,8 @@ interface RoomHelper {
     fun getHouseholdCardDetailLiveData(id: Long): LiveData<HouseholdCardDetail>
 
     fun getAllHouseHoldMembersLiveData(hhId: Long) : LiveData<List<HouseholdMemberEntity>>
+
+    suspend fun updateOtherDuplicateTickets(id: Long, followUp: FollowUp)
+
+    suspend fun updateOnTreatmentStatus(id: Long, followUp: FollowUp, updatedAt: Long)
 }

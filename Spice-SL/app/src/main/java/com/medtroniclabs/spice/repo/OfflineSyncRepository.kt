@@ -154,8 +154,11 @@ class OfflineSyncRepository @Inject constructor(
         // Insert follow up
         roomHelper.deleteAllFollowUps()
         roomHelper.deleteAllFollowUpCalls()
+        val initialSyncStatus = OfflineSyncStatus.Success
+        val initialSyncTime = System.currentTimeMillis()
         requestInitialDownload.followUps?.forEach {
-            it.syncStatus = OfflineSyncStatus.Success
+            it.syncStatus = initialSyncStatus
+            it.updatedAt = initialSyncTime
             roomHelper.insertFollowUp(it)
         }
 
@@ -166,6 +169,7 @@ class OfflineSyncRepository @Inject constructor(
         }
         roomHelper.insertClinicalInfos(pregnancyDetails)
 
+        // Set FollowUpCriteria in Preference
         requestInitialDownload.followUpCriteria?.let {
             SecuredPreference.putFollowUpCriteria(it)
         } ?: kotlin.run {

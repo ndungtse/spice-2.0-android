@@ -92,11 +92,13 @@ class FollowUpPatientListFragment: BaseFragment(), FollowUpDialogFragment.Follow
 
     override fun onCallClicked() {
         viewModel.selectedFollowUpDetail?.let { data ->
-            data.phoneNumber?.let {phoneNumber ->
+            CallResultDialogFragment.newInstance()
+                .show(childFragmentManager, CallResultDialogFragment.TAG)
+            /*data.phoneNumber?.let { phoneNumber ->
                 val dialIntent = Intent(Intent.ACTION_DIAL)
                 dialIntent.data = Uri.parse("tel:$phoneNumber")
                 dialerLauncher.launch(dialIntent)
-            }
+            }*/
         }
     }
 

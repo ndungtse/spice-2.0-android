@@ -14,10 +14,13 @@ import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.CallResult
 import com.medtroniclabs.spice.common.DefinedParams.PatientStatus
 import com.medtroniclabs.spice.common.DefinedParams.UnSuccessful
+import com.medtroniclabs.spice.data.offlinesync.model.FollowUpCallReason
+import com.medtroniclabs.spice.data.offlinesync.model.FollowUpCallStatus
 import com.medtroniclabs.spice.databinding.FragmentBottomCallResultDialogBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.ui.SingleSelectionCustomView
+import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
 import com.medtroniclabs.spice.ui.followup.viewmodel.FollowUpViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -66,6 +69,7 @@ class CallResultDialogFragment : BottomSheetDialogFragment(), View.OnClickListen
     }
 
     private fun initView() {
+        viewModel.callResultHashMap[CallResult] = FollowUpCallStatus.SUCCESSFUL.name
         getCallResultData().let {
             val view = SingleSelectionCustomView(binding.root.context)
             view.tag = TAG
@@ -81,6 +85,7 @@ class CallResultDialogFragment : BottomSheetDialogFragment(), View.OnClickListen
         }
 
         showPatientStatus()
+        enableForSuccessFul()
 
         binding.btnDone.safeClickListener(this)
     }
@@ -97,7 +102,7 @@ class CallResultDialogFragment : BottomSheetDialogFragment(), View.OnClickListen
 
             if (lastSelection != newSelection) {
                 viewModel.callResultHashMap[CallResult] = newSelection
-                if (selectedID == "Unsuccessful") {
+                if (newSelection == FollowUpCallStatus.UNSUCCESSFUL.name) {
                     showUnsuccessfulReason()
                     enableForUnSuccessful()
                 } else {
@@ -132,29 +137,61 @@ class CallResultDialogFragment : BottomSheetDialogFragment(), View.OnClickListen
 
     private fun getCallResultData(): ArrayList<Map<String, Any>> {
         val flowList = ArrayList<Map<String, Any>>()
-        flowList.add(getOptionMap(getString(R.string.successful)))
-        flowList.add(getOptionMap(getString(R.string.un_successful)))
+        flowList.add(
+            getOptionMap(
+                FollowUpCallStatus.SUCCESSFUL.name,
+                getString(R.string.successful)
+            )
+        )
+        flowList.add(
+            getOptionMap(
+                FollowUpCallStatus.UNSUCCESSFUL.name,
+                getString(R.string.un_successful)
+            )
+        )
         return flowList
     }
 
     private fun getPatientStatusData(): ArrayList<Map<String, Any>> {
         val flowList = ArrayList<Map<String, Any>>()
-        flowList.add(getOptionMap(getString(R.string.recovered)))
-        flowList.add(getOptionMap(getString(R.string.on_treatment)))
-        flowList.add(getOptionMap(getString(R.string.referred)))
+        flowList.add(getOptionMap(ReferralStatus.Recovered.name, getString(R.string.recovered)))
+        if (viewModel.selectedFollowUpDetail?.type?.equals(
+                ReferralStatus.Referred.name,
+                true
+            ) != true
+        ) {
+            flowList.add(
+                getOptionMap(
+                    ReferralStatus.OnTreatment.name,
+                    getString(R.string.on_treatment)
+                )
+            )
+        }
+
+        flowList.add(getOptionMap(ReferralStatus.Referred.name, getString(R.string.referred)))
         return flowList
     }
 
     private fun getUnsuccessfulData(): ArrayList<Map<String, Any>> {
         val flowList = ArrayList<Map<String, Any>>()
-        flowList.add(getOptionMap(getString(R.string.un_reachable)))
-        flowList.add(getOptionMap(getString(R.string.wrong_number)))
+        flowList.add(
+            getOptionMap(
+                FollowUpCallReason.UNREACHABLE.name,
+                getString(R.string.un_reachable)
+            )
+        )
+        flowList.add(
+            getOptionMap(
+                FollowUpCallReason.WRONG_NUMBER.name,
+                getString(R.string.wrong_number)
+            )
+        )
         return flowList
     }
 
-    private fun getOptionMap(value: String): Map<String, Any> {
+    private fun getOptionMap(id: String, value: String): Map<String, Any> {
         val map = HashMap<String, Any>()
-        map[DefinedParams.ID] = value
+        map[DefinedParams.ID] = id
         map[DefinedParams.NAME] = value
         return map
     }
@@ -169,6 +206,12 @@ class CallResultDialogFragment : BottomSheetDialogFragment(), View.OnClickListen
     }
 
     private fun showPatientStatus() {
+        if (viewModel.selectedFollowUpDetail?.type?.equals(ReferralStatus.Referred.name, true) == true) {
+            viewModel.patientStatusHashMap[PatientStatus] = ReferralStatus.Referred.name
+        } else {
+            viewModel.patientStatusHashMap[PatientStatus] = ReferralStatus.OnTreatment.name
+        }
+
         binding.selectionPatientStatus.removeAllViews()
         binding.tvPatientStatus.text = getString(R.string.patient_status)
         getPatientStatusData().let {

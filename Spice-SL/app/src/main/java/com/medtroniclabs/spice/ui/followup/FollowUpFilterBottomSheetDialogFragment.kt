@@ -215,7 +215,7 @@ class FollowUpFilterBottomSheetDialogFragment : BottomSheetDialogFragment(), Vie
         if (datePickerDialog == null) {
             datePickerDialog = ViewUtils.showDatePicker(
                 context = requireContext(),
-                disableFutureDate = true,
+                disableFutureDate = false,
                 date = date,
                 minDate = minMaxDate.first,
                 cancelCallBack = { datePickerDialog = null }) { _, year, month, dayOfMonth ->

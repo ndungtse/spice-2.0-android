@@ -1,6 +1,8 @@
 package com.medtroniclabs.spice.repo
 
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.map
+import androidx.lifecycle.switchMap
 import com.medtroniclabs.spice.appextensions.convertToUtcDateTime
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams.OnTreatment
@@ -40,7 +42,7 @@ class FollowUpRepository @Inject constructor(
             villageIds,
             fromAndToDate.first,
             fromAndToDate.second
-        )
+        ).map { list -> list.sortedBy { it.updatedAt } }
     }
 
     private fun getFromDateAndToDate(filter: FollowUpFilter): Pair<String, String> {
@@ -107,7 +109,7 @@ class FollowUpRepository @Inject constructor(
 
         var newFollowUp: FollowUp? = null
         if (callDetail.status == FollowUpCallStatus.SUCCESSFUL) {
-            newFollowUp = handleSuccessCall(followUp, callDetail, maxSuccessfulCallLimit)
+            newFollowUp = handleSuccessCall(followUpId, followUp, callDetail, maxSuccessfulCallLimit)
         } else {
             handleUnSuccessfulCall(followUp, callDetail, maxUnSuccessfulCallLimit)
         }
@@ -115,12 +117,10 @@ class FollowUpRepository @Inject constructor(
         roomHelper.addCallHistory(followUp, callDetail, newFollowUp)
     }
 
-    private fun handleSuccessCall(followUp: FollowUp, call: FollowUpCall, maxSuccessfulCallLimit: Int): FollowUp? {
+    private suspend fun handleSuccessCall(id: Long,followUp: FollowUp, call: FollowUpCall, maxSuccessfulCallLimit: Int): FollowUp? {
+        // Get All other followup with same reason
         call.patientStatus?.let {
-            followUp.currentPatientStatus = it
-            if (it.equals(ReferralStatus.Recovered.name, true)) {
-                followUp.isCompleted = true
-            }
+            updatePatientStatus(it, id, followUp)
         }
 
         followUp.successfulAttempts = followUp.successfulAttempts + 1
@@ -139,21 +139,32 @@ class FollowUpRepository @Inject constructor(
             )
         }
 
-        if (followUp.type == FollowUpDefinedParams.FU_TYPE_REFERRED
-            && call.patientStatus?.equals(ReferralStatus.OnTreatment.name, true) == true
-        ) {
-            val today = Calendar.getInstance()
-            today.add(Calendar.DATE, 2)
-
-            return getNewFollowUp(
-                followUp,
-                FollowUpDefinedParams.FU_TYPE_MEDICAL_REVIEW,
-                ReferralStatus.OnTreatment.name,
-                nextVisitDate = today.time.time.convertToUtcDateTime()
-            )
-        }
-
         return null
+    }
+
+    private suspend fun updatePatientStatus(status: String, id: Long, followUp: FollowUp) {
+        followUp.currentPatientStatus = status
+        val currentTime = System.currentTimeMillis()
+        followUp.updatedAt = currentTime
+        followUp.calledAt = currentTime
+        when (status.lowercase()) {
+            ReferralStatus.Recovered.name.lowercase() -> {
+                followUp.isCompleted = true
+                roomHelper.updateOtherDuplicateTickets(id, followUp)
+            }
+
+            ReferralStatus.Referred.name.lowercase() -> {
+                if (followUp.type == FollowUpDefinedParams.FU_TYPE_REFERRED) {
+                    roomHelper.updateOnTreatmentStatus(id, followUp, currentTime)
+                } else {
+                    roomHelper.updateOtherDuplicateTickets(id, followUp)
+                }
+            }
+
+            else -> {
+                roomHelper.updateOnTreatmentStatus(id, followUp, currentTime)
+            }
+        }
     }
 
     private fun handleUnSuccessfulCall(followUp: FollowUp, call: FollowUpCall, maxUnSuccessfulCallLimit: Int) {

@@ -1,15 +1,17 @@
 package com.medtroniclabs.spice.common
 
-import com.medtroniclabs.spice.data.model.CalendarPeriod
 import android.content.Context
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.data.model.CalendarPeriod
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams
 import org.joda.time.PeriodType
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.OffsetDateTime
 import java.time.Period
 import java.time.ZoneId
+import java.time.ZoneOffset
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
@@ -26,8 +28,10 @@ object DateUtils {
     const val DATE_FORMAT_ddMMyyyy = "dd-MM-yyyy"
     const val DATE_FORMAT_yyyyMMdd = "yyyy-MM-dd"
     const val DATE_FORMAT_yyyyMMddHHmmssZZZZZ = "yyyy-MM-dd'T'HH:mm:ssZZZZZ"
+    const val DATE_FORMAT_yyyyMMddHHmmss = "yyyy-MM-dd'T'HH:mm:ss"
     const val DATE_FORMAT_ddMMMyyyy = "dd MMM, yyyy"
     const val DATE_TIME_DISPLAY_FORMAT = "dd MMM, yyyy - hh:mm a"
+    const val DATE_TIME_CALL_DISPLAY_FORMAT = "dd MMM, hh:mm a"
 
     fun getYearMonthAndWeek(
         inputDate: String,
@@ -122,15 +126,19 @@ object DateUtils {
     }
 
     fun calculateBirthDate(years: Int, months: Int, weeks: Int): String {
+        var localDate = OffsetDateTime.now()
+
         val days = weeks * 7
+        localDate = localDate.minusYears(years.toLong())
+            .minusMonths(months.toLong())
+            .minusDays(days.toLong())
+            .withHour(0)
+            .withMinute(0)
+            .withSecond(0)
+            .withNano(0)
 
-        val calendar = Calendar.getInstance()
-        calendar.add(Calendar.YEAR, -years)
-        calendar.add(Calendar.MONTH, -months)
-        calendar.add(Calendar.DAY_OF_MONTH, -days)
-
-        val dateFormat = SimpleDateFormat(DATE_FORMAT_yyyyMMddHHmmssZZZZZ, Locale.ENGLISH)
-        return dateFormat.format(calendar.time)
+        val resul = localDate.format(DateTimeFormatter.ofPattern(DATE_FORMAT_yyyyMMddHHmmss))
+        return "$resul+00:00"
     }
 
     fun calculateAge(birthYear: Int): Int {
@@ -368,6 +376,19 @@ object DateUtils {
     fun getDateStringFromDate(date: Date, format: String): String {
         val dateFormat = SimpleDateFormat(format, Locale.getDefault())
         return dateFormat.format(date)
+    }
+
+    fun convertDateToStringWithUTC(date: Date, format: String): String {
+        val instant = date.toInstant()
+        var offsetDateTime = OffsetDateTime.ofInstant(instant, ZoneOffset.systemDefault())
+
+        offsetDateTime = offsetDateTime.withHour(0)
+            .withMinute(0)
+            .withSecond(0)
+            .withNano(0)
+
+        val result = offsetDateTime.format(DateTimeFormatter.ofPattern(DATE_FORMAT_yyyyMMddHHmmss))
+        return "$result+00:00"
     }
 
     fun daysBetweenDates(startDate: Date, endDate: Date): Long {

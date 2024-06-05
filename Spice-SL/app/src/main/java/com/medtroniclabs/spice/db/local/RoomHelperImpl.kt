@@ -45,6 +45,7 @@ import com.medtroniclabs.spice.model.MemberDobGenderModel
 import com.medtroniclabs.spice.model.assessment.AssessmentDetails
 import com.medtroniclabs.spice.model.assessment.AssessmentMemberDetails
 import com.medtroniclabs.spice.ui.boarding.MenuTypeEnums
+import com.medtroniclabs.spice.ui.followup.FollowUpDefinedParams
 import javax.inject.Inject
 
 class RoomHelperImpl @Inject constructor(
@@ -433,14 +434,23 @@ class RoomHelperImpl @Inject constructor(
         fromDate: String,
         toDate: String
     ): LiveData<List<FollowUpPatientModel>> {
-
-        return followUpDao.getFollowUpPatientListLiveData(
-            type = type,
-            search = search,
-            villageIds = villageIds,
-            fromDate = fromDate,
-            toDate = toDate
-        )
+        if (type == FollowUpDefinedParams.FU_TYPE_REFERRED) {
+            return followUpDao.getReferredFollowUpPatientListLiveData(
+                type = type,
+                search = search,
+                villageIds = villageIds,
+                fromDate = fromDate,
+                toDate = toDate
+            )
+        } else {
+            return followUpDao.getOtherFollowUpPatientListLiveData(
+                type = type,
+                search = search,
+                villageIds = villageIds,
+                fromDate = fromDate,
+                toDate = toDate
+            )
+        }
     }
 
     override suspend fun getAllVillageIds(): List<Long> {
@@ -507,5 +517,19 @@ class RoomHelperImpl @Inject constructor(
 
     override fun getAllHouseHoldMembersLiveData(hhId: Long): LiveData<List<HouseholdMemberEntity>> {
         return memberDAO.getAllHouseHoldMembersLiveData(hhId)
+    }
+
+    override suspend fun updateOtherDuplicateTickets(
+        id: Long,
+       followUp: FollowUp
+    ) {
+        followUpDao.updateOtherDuplicateTickets(id, followUp.memberId, followUp.type, followUp.encounterType, followUp.reason)
+    }
+    override suspend fun updateOnTreatmentStatus(
+        id: Long,
+        followUp: FollowUp,
+        updateAt: Long
+    ) {
+        followUpDao.updateOnTreatmentStatus(id, followUp.memberId, followUp.type, updateAt, followUp.encounterType, followUp.reason)
     }
 }

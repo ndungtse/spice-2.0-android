@@ -527,4 +527,9 @@
     <string name="no_prescription_history">No Prescription History</string>
     <string name="no_medical_review_history">No Medical review History</string>
     <string name="chief_complaints">Chief Complaints</string>
+
+    <string name="successful_calls">Successful Calls</string>
+    <string name="unsuccessful_calls">Unsuccessful Calls</string>
+    <string name="called_at">Called At</string>
+    <string name="referred_at">Referred At</string>
 </resources>

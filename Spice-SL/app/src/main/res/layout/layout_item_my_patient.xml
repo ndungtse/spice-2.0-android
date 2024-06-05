@@ -93,6 +93,8 @@
                 android:paddingStart="@dimen/_0dp"
                 android:paddingEnd="@dimen/_8sdp"
                 android:text="ANC Visit 3"
+                android:maxLines="1"
+                android:ellipsize="end"
                 android:textColor="@color/secondary_black"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_weight="5"
@@ -124,17 +126,6 @@
                 app:layout_constraintStart_toEndOf="@id/startGuideline"
                 app:layout_constraintTop_toTopOf="@+id/tvLabelMembersRegistered" />
 
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/tvMembersRegistered"
-                style="@style/TextStyle_Regular_16_Blue"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingStart="@dimen/_0dp"
-                android:paddingEnd="@dimen/_0dp"
-                android:textColor="@color/secondary_black"
-                app:layout_constraintHorizontal_weight="5"
-                app:layout_constraintStart_toEndOf="@id/endGuideline"
-                app:layout_constraintTop_toTopOf="@+id/tvLabelMembersRegistered" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvPatientStatus"
@@ -142,11 +133,51 @@
                 android:layout_width="@dimen/_0dp"
                 android:layout_height="wrap_content"
                 android:text="On Treatment"
+                android:maxLines="1"
+                android:ellipsize="end"
                 android:visibility="visible"
-                app:layout_constraintBottom_toBottomOf="@id/tvMembersRegistered"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/tvMembersRegistered"
-                app:layout_constraintTop_toTopOf="@id/tvMembersRegistered" />
+                app:layout_constraintStart_toEndOf="@id/endGuideline"
+                app:layout_constraintTop_toTopOf="@+id/tvLabelMembersRegistered" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvLastCallAtLabel"
+                style="@style/TextStyle_Regular_16_Blue"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:text="@string/called_at"
+                android:textColor="@color/charcoal_grey"
+                app:layout_constraintEnd_toStartOf="@id/startGuideline"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvLabelMembersRegistered" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvLastCallAtLabelSeperator"
+                style="@style/TextStyle_Regular_16_Blue"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/separator_colon"
+                android:textColor="@color/charcoal_grey"
+                app:layout_constraintEnd_toStartOf="@id/endGuideline"
+                app:layout_constraintStart_toEndOf="@id/startGuideline"
+                app:layout_constraintTop_toTopOf="@+id/tvLastCallAtLabel" />
+
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvLastCallAtValue"
+                style="@style/TextStyle_Regular_16_Blue"
+                android:layout_width="@dimen/_0dp"
+                android:layout_height="wrap_content"
+                android:text="3:44 pm"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:visibility="visible"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/endGuideline"
+                app:layout_constraintTop_toTopOf="@+id/tvLastCallAtLabel" />
+
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/callButton"
@@ -155,16 +186,15 @@
                 android:layout_marginTop="@dimen/_16sdp"
                 android:layout_marginEnd="@dimen/_10sdp"
                 android:background="@drawable/call_button_selector"
-                android:paddingVertical="@dimen/_10sdp"
-                android:src="@drawable/ic_call"
                 android:clickable="true"
                 android:focusable="true"
                 android:paddingHorizontal="@dimen/_24sdp"
+                android:paddingVertical="@dimen/_10sdp"
+                android:src="@drawable/ic_call"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/assessmentButton"
-                app:layout_constraintTop_toBottomOf="@id/tvMembersRegistered"
-                 />
+                app:layout_constraintTop_toBottomOf="@id/tvLastCallAtLabel" />
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/assessmentButton"
@@ -173,18 +203,19 @@
                 android:layout_marginTop="@dimen/_16sdp"
                 android:layout_marginEnd="@dimen/_18sdp"
                 android:background="@drawable/purple_bg"
-                android:paddingHorizontal="@dimen/_24sdp"
-                android:paddingVertical="@dimen/_8sdp"
                 android:clickable="true"
                 android:focusable="true"
+                android:paddingHorizontal="@dimen/_24sdp"
+                android:paddingVertical="@dimen/_8sdp"
                 android:src="@drawable/ic_follow_up_assessment"
                 app:layout_constraintBottom_toBottomOf="@id/callButton"
                 app:layout_constraintEnd_toStartOf="@id/callButton"
                 app:layout_constraintStart_toStartOf="@id/centreGuideline"
-                app:layout_constraintTop_toBottomOf="@id/tvMembersRegistered" />
+                app:layout_constraintTop_toBottomOf="@id/tvLastCallAtLabel" />
 
 
             <TextView
+                android:id="@+id/tvDueInformation"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:text="2 days, Overdue"
@@ -193,7 +224,7 @@
                 app:layout_constraintBottom_toBottomOf="@id/callButton"
                 app:layout_constraintEnd_toEndOf="@id/centreGuideline"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tvLabelMembersRegistered"
+                app:layout_constraintTop_toBottomOf="@id/tvLastCallAtLabel"
                 app:layout_constraintTop_toTopOf="@id/callButton" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 

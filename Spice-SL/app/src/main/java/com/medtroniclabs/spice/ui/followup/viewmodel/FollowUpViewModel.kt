@@ -42,8 +42,8 @@ class FollowUpViewModel @Inject constructor(
             followUpRepository.getFollowUpListLiveData(it)
         }
 
-    private val maxSuccessfulCallLimit: Int
-    private val maxUnSuccessfulCallLimit: Int
+    val maxSuccessfulCallLimit: Int
+    val maxUnSuccessfulCallLimit: Int
 
     init {
         val followUpCriteria = SecuredPreference.getFollowUpCriteria()
@@ -153,18 +153,14 @@ class FollowUpViewModel @Inject constructor(
     }
 
     private fun getCallStatus(status: String) : FollowUpCallStatus {
-        if (status == "Successful")
+        if (status == FollowUpCallStatus.SUCCESSFUL.name)
             return FollowUpCallStatus.SUCCESSFUL
         return FollowUpCallStatus.UNSUCCESSFUL
     }
 
     private fun getPatientStatus(status: FollowUpCallStatus): String? {
         if (status == FollowUpCallStatus.SUCCESSFUL && patientStatusHashMap.isNotEmpty()) {
-            return when(patientStatusHashMap[DefinedParams.PatientStatus] as String) {
-                DefinedParams.OnTreatment -> ReferralStatus.OnTreatment.name
-                DefinedParams.REFERRED -> ReferralStatus.Referred.name
-                else -> ReferralStatus.Recovered.name
-            }
+            return (patientStatusHashMap[DefinedParams.PatientStatus] as String)
         }
 
         return null
@@ -172,12 +168,7 @@ class FollowUpViewModel @Inject constructor(
 
     private fun getUnSuccessfulReason(status: FollowUpCallStatus): String? {
         if (status == FollowUpCallStatus.UNSUCCESSFUL) {
-            val reason = unSuccessfulHashMap[DefinedParams.UnSuccessful] as String
-            return if (reason.equals(FollowUpDefinedParams.WrongNumber, true)) {
-                FollowUpDefinedParams.WRONG_NUMBER
-            } else {
-                FollowUpDefinedParams.UNREACHABLE
-            }
+            return (unSuccessfulHashMap[DefinedParams.UnSuccessful] as String)
         }
         return null
     }

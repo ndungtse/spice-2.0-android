@@ -1,17 +1,26 @@
 package com.medtroniclabs.spice.ui.followup.adapter
 
 import android.content.Context
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.appextensions.convertToLocalDateTime
 import com.medtroniclabs.spice.appextensions.invisible
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
+import com.medtroniclabs.spice.common.DateUtils.DATE_TIME_CALL_DISPLAY_FORMAT
 import com.medtroniclabs.spice.data.FollowUpPatientModel
 import com.medtroniclabs.spice.databinding.LayoutItemMyPatientBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.ui.followup.FollowUpDefinedParams.FU_TYPE_HH_VISIT
+import com.medtroniclabs.spice.ui.followup.FollowUpDefinedParams.FU_TYPE_REFERRED
+import java.time.LocalDate
+import java.time.OffsetDateTime
+import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
 
 class PatientListAdapter(private val callback: (Int, FollowUpPatientModel) -> Unit) :
     RecyclerView.Adapter<PatientListAdapter.PatientViewHolder>() {
@@ -45,8 +54,16 @@ class PatientListAdapter(private val callback: (Int, FollowUpPatientModel) -> Un
                     assessmentButton.invisible()
                 }
 
+                if (data.type == FU_TYPE_REFERRED) {
+                    setOverDueInfo(data.encounterDate, tvDueInformation)
+                } else {
+                    setOverDueInfo(data.nextVisitDate, tvDueInformation)
+                }
+
                 tvReason.text = data.reason
                 tvPatientStatus.text = data.patientStatus
+                tvLastCallAtLabel.text = calledAtLabel(context, data.type)
+                tvLastCallAtValue.text = data.calledAt?.convertToLocalDateTime(format = DATE_TIME_CALL_DISPLAY_FORMAT) ?: "--"
 
                 root.safeClickListener {
                     callback(ConstantPatientListAdapter.PATIENT_DETAIL, data)
@@ -59,6 +76,13 @@ class PatientListAdapter(private val callback: (Int, FollowUpPatientModel) -> Un
                     callback(ConstantPatientListAdapter.ASSESSMENT, data)
                 }
             }
+        }
+    }
+
+    private fun calledAtLabel(context: Context, type: String?): String {
+        when(type) {
+            FU_TYPE_REFERRED -> return context.getString(R.string.referred_at)
+            else -> return context.getString(R.string.called_at)
         }
     }
 
@@ -95,5 +119,40 @@ class PatientListAdapter(private val callback: (Int, FollowUpPatientModel) -> Un
 
     override fun onBindViewHolder(holder: PatientViewHolder, position: Int) {
         holder.bind(listOfPatient[position])
+    }
+
+    private fun setOverDueInfo(dateString: String?, tv: TextView) {
+        if (dateString != null) {
+            val currentDate = LocalDate.now()
+            val dateTime = OffsetDateTime.parse(dateString,  DateTimeFormatter.ISO_OFFSET_DATE_TIME)
+            val date = dateTime.toLocalDate()
+            val daysBetween = ChronoUnit.DAYS.between(currentDate, date)
+
+            when {
+                daysBetween < 0L -> {
+                    tv.text = "${-daysBetween} days, Overdue"
+                    tv.setTextColor(Color.parseColor("#994242"))
+                }
+                daysBetween == 0L -> {
+                    tv.text = "Today"
+                    tv.setTextColor(Color.parseColor("#EB956A"))
+                }
+                daysBetween == 1L -> {
+                    tv.text = "Tomorrow"
+                    tv.setTextColor(Color.parseColor("#54CC90"))
+                }
+                daysBetween > 1L -> {
+                    tv.text = "Upcoming in $daysBetween days"
+                    tv.setTextColor(Color.parseColor("#54CC90"))
+                }
+                else -> {
+                    tv.text = "--"
+                    tv.setTextColor(Color.parseColor("#54CC90"))
+                }
+            }
+        } else {
+            tv.text = "--"
+            tv.setTextColor(Color.parseColor("#54CC90"))
+        }
     }
 }
