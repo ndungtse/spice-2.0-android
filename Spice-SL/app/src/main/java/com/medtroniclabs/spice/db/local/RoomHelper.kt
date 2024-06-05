@@ -80,7 +80,7 @@ interface RoomHelper {
     suspend fun getUserVillages(): List<VillageEntity>
     suspend fun getVillageByID(villageId: Long): VillageEntity
     suspend fun getChiefDomAndVillageCodeByVillageId(id: Long): VillageInfo
-    suspend fun getLastPatientId(villageId: Long): String?
+    suspend fun getLastPatientId(patientIdStarts: String): String?
     fun getMemberCountInHouseholdLiveData(houseHoldId: Long): LiveData<HouseholdMemberCount>
     suspend fun getClinicalWorkflowId(
         gender: String,

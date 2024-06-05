@@ -27,8 +27,8 @@ interface MemberDAO {
     @Query("SELECT COUNT(household_id) FROM HouseHoldMember WHERE household_id = :householdId")
     suspend fun getMemberCountPerHouseHold(householdId: Long): Int
 
-    @Query("SELECT hhm.patient_id FROM HouseholdMember AS hhm INNER JOIN household AS hh ON hhm.household_id = hh.id INNER JOIN villageentity AS vil ON hh.village_id = vil.id WHERE vil.id =:villageId ORDER BY hhm.patient_id DESC LIMIT 1")
-    suspend fun getLastPatientId(villageId: Long): String?
+    @Query("SELECT patient_id FROM HouseholdMember WHERE patient_id LIKE :patientIdStarts ORDER BY patient_id DESC LIMIT 1")
+    suspend fun getLastPatientId(patientIdStarts: String): String?
 
     @Query("SELECT date_of_birth,gender FROM HouseHoldMember WHERE id = :memberId")
     suspend fun getDobAndGenderById(memberId: Long): MemberDobGenderModel

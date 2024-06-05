@@ -118,7 +118,7 @@ class HouseholdMemberRepository @Inject constructor(
         val startIndex = chiefDomCode.length + villageCode.length + chwUserId.length
 
         val lastPatientId =
-            roomHelper.getLastPatientId(villageId)?.let { it.substring(startIndex, it.length) }
+            roomHelper.getLastPatientId("$chiefDomCode$villageCode$chwUserId%")?.let { it.substring(startIndex, it.length) }
                 ?.toInt() ?: 0
         val nextPatientId = (lastPatientId + 1).toString().padStart(PATIENT_NUMBER_LENGTH, '0')
         return "$chiefDomCode$villageCode$chwUserId$nextPatientId"
