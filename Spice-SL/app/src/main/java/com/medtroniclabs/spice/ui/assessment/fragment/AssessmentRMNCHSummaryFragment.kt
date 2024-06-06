@@ -170,9 +170,10 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
         val adapter = CustomSpinnerAdapter(requireContext())
         adapter.setData(dropDownList)
         binding.etPhuChange.adapter = adapter
-        binding.etPhuChange.setSelection(0, false)
         binding.etPhuChange.post {
-            binding.etPhuChange.setSelection(defaultPosition + 1, false)
+            if (dropDownList.size > 0 ){
+                binding.etPhuChange.setSelection(defaultPosition , false)
+            }
         }
         binding.etPhuChange.onItemSelectedListener =
             object : AdapterView.OnItemSelectedListener {
@@ -303,6 +304,7 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
             R.id.btnDone -> {
                 if (binding.etNextFollowUpDate.text.isNotEmpty()) {
                     updateFollowUpDate(binding.etNextFollowUpDate.text.trim().toString())
+                    viewModel.isDismiss = true
                     viewModel.updateOtherAssessmentDetails()
                 }
             }

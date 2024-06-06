@@ -57,7 +57,7 @@ class OfflineSyncRepository @Inject constructor(
                 assessmentDetails = JsonParser.parseString(entity.assessmentDetails),
                 patientStatus = entity.referralStatus,
                 referredReasons = entity.referredReason?.joinToString(", "),
-                summary = JsonParser.parseString(entity.otherDetails),
+                summary = entity.otherDetails?.let { JsonParser.parseString(it) },
                 encounter = AssessmentEncounter(
                     householdId = entity.householdId,
                     memberId = entity.memberId,

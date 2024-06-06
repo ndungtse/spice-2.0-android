@@ -106,21 +106,27 @@ class AssessmentOtherSymptomSummaryFragment : Fragment(), View.OnClickListener {
     }
 
     private fun updateStatusBar() {
-        when(viewModel.referralStatus){
+        when (viewModel.referralStatus) {
             ReferralStatus.Referred.name -> {
                 binding.phuReferredGroup.visibility = View.VISIBLE
-                binding.riskResultLayout.backgroundTintList = ContextCompat.getColorStateList(requireContext(), R.color.attention_color)
+                binding.riskResultLayout.backgroundTintList =
+                    ContextCompat.getColorStateList(requireContext(), R.color.attention_color)
                 binding.riskResultLayout.text = getString(R.string.referred_for_further_assessment)
             }
+
             ReferralStatus.OnTreatment.name -> {
                 binding.coughMalariaGroup.visibility = View.VISIBLE
-                binding.etNextFollowUpDate.text = DateUtils.getDateAfterDays(viewModel.referralReason?.mapNotNull { viewModel.treatmentDays[it] }
+                binding.etNextFollowUpDate.text =
+                    DateUtils.getDateAfterDays(viewModel.referralReason?.mapNotNull { viewModel.treatmentDays[it] }
                         ?.minOrNull() ?: 3)
-                binding.riskResultLayout.backgroundTintList = ContextCompat.getColorStateList(requireContext(), R.color.red_risk_moderate)
+                binding.riskResultLayout.backgroundTintList =
+                    ContextCompat.getColorStateList(requireContext(), R.color.red_risk_moderate)
                 binding.riskResultLayout.text = getString(R.string.patient_on_treatment)
             }
+
             else -> {
-                binding.riskResultLayout.backgroundTintList = ContextCompat.getColorStateList(requireContext(), R.color.green_attention_color)
+                binding.riskResultLayout.backgroundTintList =
+                    ContextCompat.getColorStateList(requireContext(), R.color.green_attention_color)
                 binding.riskResultLayout.text = getString(R.string.no_refferral_treatment_required)
             }
         }
@@ -149,9 +155,10 @@ class AssessmentOtherSymptomSummaryFragment : Fragment(), View.OnClickListener {
         val adapter = CustomSpinnerAdapter(requireContext())
         adapter.setData(dropDownList)
         binding.etPhuChange.adapter = adapter
-        binding.etPhuChange.setSelection(0, false)
         binding.etPhuChange.post {
-            binding.etPhuChange.setSelection(defaultPosition + 1, false)
+            if (dropDownList.size > 0) {
+                binding.etPhuChange.setSelection(defaultPosition, false)
+            }
         }
         binding.etPhuChange.onItemSelectedListener =
             object : AdapterView.OnItemSelectedListener {
@@ -169,10 +176,12 @@ class AssessmentOtherSymptomSummaryFragment : Fragment(), View.OnClickListener {
                             isValid = true
                             binding.tvSiteErrorMessage.gone()
                             if (viewModel.otherAssessmentDetails[ReferredPHUSite] != selectedSiteName ||
-                                viewModel.otherAssessmentDetails[ReferredPHUSiteID] != selectedId?.toLong()) {
+                                viewModel.otherAssessmentDetails[ReferredPHUSiteID] != selectedId?.toLong()
+                            ) {
                                 viewModel.isInputUpdated = true
                             }
-                            viewModel.otherAssessmentDetails[ReferredPHUSite] = selectedSiteName ?: ""
+                            viewModel.otherAssessmentDetails[ReferredPHUSite] =
+                                selectedSiteName ?: ""
                             viewModel.otherAssessmentDetails[ReferredPHUSiteID] =
                                 healthFacilityList.find { it.fhirId == selectedId }?.fhirId?.toLong()
                                     ?: selectedId?.toLong()!!
@@ -214,54 +223,56 @@ class AssessmentOtherSymptomSummaryFragment : Fragment(), View.OnClickListener {
             getStatus(viewModel.referralStatus) ?: getString(R.string.seperator_hyphen)
         )
         renderDangerSigns(summaryData)
-        summaryData.filter { it.title?.lowercase() != AssessmentDefinedParams.General_Danger_Signs.lowercase() }.forEach { item ->
-            when (item.id) {
-                hasFever -> {
-                    val rdtResult = viewModel.assessmentStringLiveData.value?.let {
-                        val jsonObject = JSONObject(it)
-                        val feverObject = jsonObject.optJSONObject(OTHER_SYMPTOMS)?.optJSONObject(
-                            Fever
-                        )
-                        feverObject?.optString(RdtTest)
-                    }
-                    if (item.value == DefinedParams.Yes && rdtResult == RdtPositive ) {
-                        bindSummaryView(
-                            item.title,
-                            requireContext().getString(
-                                R.string.nutrition_summary,
-                                item.value,
-                                getString(R.string.malaria)
-                            )
-                        )
-                    } else {
-                        bindSummaryView(item.title, item.value)
-                    }
-                }
-
-                Amoxicillin.lowercase() -> {
-                    if (item.value == Dispensed){
-                        bindSummaryView(Dispensed, item.title)
-                    }
-                }
-
-                NoOfDaysOfFever -> {
-                    item.noOfDays?.let { maxDays ->
-                        item.value?.let { enteredDays ->
+        summaryData.filter { it.title?.lowercase() != AssessmentDefinedParams.General_Danger_Signs.lowercase() }
+            .forEach { item ->
+                when (item.id) {
+                    hasFever -> {
+                        val rdtResult = viewModel.assessmentStringLiveData.value?.let {
+                            val jsonObject = JSONObject(it)
+                            val feverObject =
+                                jsonObject.optJSONObject(OTHER_SYMPTOMS)?.optJSONObject(
+                                    Fever
+                                )
+                            feverObject?.optString(RdtTest)
+                        }
+                        if (item.value == DefinedParams.Yes && rdtResult == RdtPositive) {
                             bindSummaryView(
                                 item.title,
-                                getDaysValue(enteredDays, maxDays, requireContext())
+                                requireContext().getString(
+                                    R.string.nutrition_summary,
+                                    item.value,
+                                    getString(R.string.malaria)
+                                )
                             )
+                        } else {
+                            bindSummaryView(item.title, item.value)
                         }
-                    } ?: kotlin.run {
+                    }
+
+                    Amoxicillin.lowercase() -> {
+                        if (item.value == Dispensed) {
+                            bindSummaryView(Dispensed, item.title)
+                        }
+                    }
+
+                    NoOfDaysOfFever -> {
+                        item.noOfDays?.let { maxDays ->
+                            item.value?.let { enteredDays ->
+                                bindSummaryView(
+                                    item.title,
+                                    getDaysValue(enteredDays, maxDays, requireContext())
+                                )
+                            }
+                        } ?: kotlin.run {
+                            bindSummaryView(item.title, item.value)
+                        }
+                    }
+
+                    else -> {
                         bindSummaryView(item.title, item.value)
                     }
                 }
-
-                else -> {
-                        bindSummaryView(item.title, item.value)
-                }
             }
-        }
     }
 
     private fun getStatus(referralStatus: String?): String? {
@@ -308,19 +319,20 @@ class AssessmentOtherSymptomSummaryFragment : Fragment(), View.OnClickListener {
     }
 
     private fun createListSummaryData(data: String): MutableList<AssessmentSummaryModel>? {
-        return viewModel.formLayoutsLiveData.value?.data?.formLayout?.filter { it.isSummary == true }?.map { formLayout ->
-            AssessmentSummaryModel(
-                title = formLayout.titleSummary ?: formLayout.title,
-                id = formLayout.id,
-                cultureValue = formLayout.titleCulture,
-                value = AssessmentCommonUtils.getValueOfKeyFromMap(
-                    StringConverter.stringToMap(data),
-                    formLayout.id,
-                    OTHER_SYMPTOMS
-                ),
-                noOfDays = formLayout.noOfDays
-            )
-        }?.toMutableList()
+        return viewModel.formLayoutsLiveData.value?.data?.formLayout?.filter { it.isSummary == true }
+            ?.map { formLayout ->
+                AssessmentSummaryModel(
+                    title = formLayout.titleSummary ?: formLayout.title,
+                    id = formLayout.id,
+                    cultureValue = formLayout.titleCulture,
+                    value = AssessmentCommonUtils.getValueOfKeyFromMap(
+                        StringConverter.stringToMap(data),
+                        formLayout.id,
+                        OTHER_SYMPTOMS
+                    ),
+                    noOfDays = formLayout.noOfDays
+                )
+            }?.toMutableList()
     }
 
     private fun showErrorInSummary() {
@@ -356,7 +368,7 @@ class AssessmentOtherSymptomSummaryFragment : Fragment(), View.OnClickListener {
     }
 
     private fun addOtherDetailsToType(key: String) {
-        val otherDetailsMap = HashMap<String,Any>()
+        val otherDetailsMap = HashMap<String, Any>()
         otherDetailsMap[key] = viewModel.otherAssessmentDetails
         viewModel.otherAssessmentDetails = otherDetailsMap
     }

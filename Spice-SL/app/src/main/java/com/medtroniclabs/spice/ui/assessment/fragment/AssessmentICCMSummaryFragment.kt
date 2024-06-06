@@ -155,7 +155,9 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
             adapter.setData(dropDownList)
             binding.etPhuChange.adapter = adapter
             binding.etPhuChange.post {
-                binding.etPhuChange.setSelection(defaultPosition + 1, false)
+                if (dropDownList.size > 0 ){
+                    binding.etPhuChange.setSelection(defaultPosition , false)
+                }
             }
             binding.etPhuChange.onItemSelectedListener =
                 object : AdapterView.OnItemSelectedListener {

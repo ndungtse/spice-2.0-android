@@ -12,7 +12,6 @@ import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
-import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.StringConverter.stringToMap
@@ -104,12 +103,7 @@ class AssessmentRMNCHNeonateSummaryFragment : BaseFragment(), View.OnClickListen
 
     private fun loadPhuSitesList(healthFacilityList: List<HealthFacilityEntity>) {
         val dropDownList = ArrayList<Map<String, Any>>()
-        dropDownList.add(
-            hashMapOf<String, Any>(
-                DefinedParams.NAME to DefinedParams.DefaultIDLabel,
-                DefinedParams.id to DefinedParams.DefaultID
-            )
-        )
+
         var defaultPosition = 0
         for ((index, healthFacilityEntity) in healthFacilityList.withIndex()) {
             dropDownList.add(
@@ -127,7 +121,9 @@ class AssessmentRMNCHNeonateSummaryFragment : BaseFragment(), View.OnClickListen
         binding.etPhuChange.adapter = adapter
         binding.etPhuChange.setSelection(0, false)
         binding.etPhuChange.post {
-            binding.etPhuChange.setSelection(defaultPosition + 1, false)
+            if (dropDownList.size > 0 ){
+                binding.etPhuChange.setSelection(defaultPosition , false)
+            }
         }
         binding.etPhuChange.onItemSelectedListener =
             object : AdapterView.OnItemSelectedListener {
@@ -268,7 +264,8 @@ class AssessmentRMNCHNeonateSummaryFragment : BaseFragment(), View.OnClickListen
         when (v.id) {
             R.id.btnDone -> {
                 if (binding.etNextFollowUpDate.text.isNotEmpty()) {
-                    //viewModel.addOtherDetailsToType(AssessmentDefinedParams.RMNCH.lowercase())
+                   // viewModel.addOtherDetailsToType(AssessmentDefinedParams.RMNCH.lowercase())
+                    viewModel.isDismiss = true
                     assessmentRMNCHNeonateViewModel.updateOtherAssessmentDetails(
                         viewModel.otherAssessmentDetails,
                         viewModel.getCurrentLocation(),
