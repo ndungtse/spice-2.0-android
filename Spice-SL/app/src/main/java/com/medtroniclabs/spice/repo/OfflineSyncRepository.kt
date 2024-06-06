@@ -11,6 +11,7 @@ import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.APIResponse
 import com.medtroniclabs.spice.data.offlinesync.model.Assessment
 import com.medtroniclabs.spice.data.offlinesync.model.AssessmentEncounter
+import com.medtroniclabs.spice.data.offlinesync.model.FollowUpCriteria
 import com.medtroniclabs.spice.data.offlinesync.model.HouseHold
 import com.medtroniclabs.spice.data.offlinesync.model.HouseHoldMember
 import com.medtroniclabs.spice.data.offlinesync.model.PregnancyDetails
@@ -140,6 +141,9 @@ class OfflineSyncRepository @Inject constructor(
 
             response?.followUpCriteria?.let {
                 SecuredPreference.putFollowUpCriteria(it)
+            } ?: kotlin.run {
+                val followUpCriteria = FollowUpCriteria(3, 5, 3, 7, 7, 2, 2, 2, 2, 5, 5)
+                SecuredPreference.putFollowUpCriteria(followUpCriteria)
             }
 
             SecuredPreference.putLong(
@@ -322,7 +326,7 @@ class OfflineSyncRepository @Inject constructor(
                     MemberClinicalEntity(
                         patientId = patientId,
                         visitCount = info.ancVisitNo.toLong(),
-                        clinicalDate = info.lastMenstrualPeriod!!,
+                        clinicalDate = info.lastMenstrualPeriod,
                         type = RMNCH.ANC_MENU.uppercase(Locale.getDefault())
                     )
                 )
@@ -334,7 +338,7 @@ class OfflineSyncRepository @Inject constructor(
                     MemberClinicalEntity(
                         patientId = patientId,
                         visitCount = info.pncVisitNo.toLong(),
-                        clinicalDate = info.dateOfDelivery!!,
+                        clinicalDate = info.dateOfDelivery,
                         type = RMNCH.PNC_MENU.uppercase(Locale.getDefault()),
                         numberOfNeonate = info.noOfNeonates.toLong()
                     )

@@ -134,12 +134,11 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
 
     private fun loadPhuSitesList(healthFacilityList: List<HealthFacilityEntity>) {
             val dropDownList = ArrayList<Map<String, Any>>()
-            dropDownList.add(
+            /*dropDownList.add(
                 hashMapOf<String, Any>(
                     DefinedParams.NAME to DefaultIDLabel,
                     DefinedParams.id to DefaultID
-                )
-            )
+            )*/
             var defaultPosition = 0
             for ((index, healthFacilityEntity) in healthFacilityList.withIndex()) {
                 dropDownList.add(
@@ -155,7 +154,6 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
             val adapter = CustomSpinnerAdapter(requireContext())
             adapter.setData(dropDownList)
             binding.etPhuChange.adapter = adapter
-            binding.etPhuChange.setSelection(0, false)
             binding.etPhuChange.post {
                 binding.etPhuChange.setSelection(defaultPosition + 1, false)
             }

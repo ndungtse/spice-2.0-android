@@ -128,12 +128,12 @@ class AssessmentOtherSymptomSummaryFragment : Fragment(), View.OnClickListener {
 
     private fun loadPhuSitesList(healthFacilityList: List<HealthFacilityEntity>) {
         val dropDownList = ArrayList<Map<String, Any>>()
-        dropDownList.add(
+        /*dropDownList.add(
             hashMapOf<String, Any>(
                 DefinedParams.NAME to DefinedParams.DefaultIDLabel,
                 DefinedParams.id to DefinedParams.DefaultID
             )
-        )
+        )*/
         var defaultPosition = 0
         for ((index, healthFacilityEntity) in healthFacilityList.withIndex()) {
             dropDownList.add(
