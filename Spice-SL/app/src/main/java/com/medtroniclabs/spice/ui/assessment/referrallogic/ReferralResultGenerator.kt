@@ -324,7 +324,7 @@ class ReferralResultGenerator {
                     )
                     addReferralReason(referralReason, ReferralReasons.Diarrhoea.name)
                 }
-                if (map.containsKey(NoOfDaysOfDiarrhoea) && map[NoOfDaysOfDiarrhoea] is Int) {
+                else if (map.containsKey(NoOfDaysOfDiarrhoea) && map[NoOfDaysOfDiarrhoea] is Int) {
                     val noOfDays = map[NoOfDaysOfDiarrhoea] as Int
                     if (noOfDays >= MaxDaysOfDiarrhoea) {
                         addResultMap(

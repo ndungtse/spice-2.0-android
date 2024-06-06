@@ -125,7 +125,7 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
             /**
              * ACT Status Condition Rendering
              */
-            if (age > 6) {
+            if (age >= 6) {
                 formGenerator.getViewByTag(ACTStatus)?.let {
                     if (it is TextView) {
                         it.text = requireContext().getString(R.string.act_6)
@@ -151,7 +151,7 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
             /**
              * Amoxicillin & Zinc Condition Status rendering
              */
-            if (age > 2) {
+            if (age >= 2) {
                 formGenerator.getViewByTag(AmoxicillinStatus)?.let {
                     if (it is TextView) {
                         it.text = requireContext().getString(R.string.amoxicillin_250_mg)
@@ -500,5 +500,4 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
             showInstructionDialog(it)
         }
     }
-
 }

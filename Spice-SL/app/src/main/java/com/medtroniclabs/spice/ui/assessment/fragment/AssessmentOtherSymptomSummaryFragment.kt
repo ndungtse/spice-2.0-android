@@ -22,6 +22,7 @@ import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.common.ViewUtils
 import com.medtroniclabs.spice.databinding.FragmentAssessmentOtherSymptomSummaryBinding
 import com.medtroniclabs.spice.db.entity.HealthFacilityEntity
+import com.medtroniclabs.spice.formgeneration.extension.markMandatory
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
 import com.medtroniclabs.spice.model.AssessmentSummaryModel
@@ -70,6 +71,7 @@ class AssessmentOtherSymptomSummaryFragment : Fragment(), View.OnClickListener {
     }
 
     private fun setListeners() {
+        binding.labelPhuReferred.markMandatory()
         binding.btnDone.safeClickListener(this)
         binding.etNotes.addTextChangedListener { input ->
             input?.let {
@@ -209,7 +211,7 @@ class AssessmentOtherSymptomSummaryFragment : Fragment(), View.OnClickListener {
     private fun renderSummaryView(summaryData: MutableList<AssessmentSummaryModel>) {
         bindSummaryView(
             getString(R.string.patient_status),
-            getStatus(viewModel.referralStatus )?: getString(R.string.seperator_hyphen)
+            getStatus(viewModel.referralStatus) ?: getString(R.string.seperator_hyphen)
         )
         renderDangerSigns(summaryData)
         summaryData.filter { it.title?.lowercase() != AssessmentDefinedParams.General_Danger_Signs.lowercase() }.forEach { item ->

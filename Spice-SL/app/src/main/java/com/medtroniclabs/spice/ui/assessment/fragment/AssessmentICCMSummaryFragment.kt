@@ -29,6 +29,7 @@ import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.common.ViewUtils
 import com.medtroniclabs.spice.databinding.FragmentAssessmentIccmSummaryBinding
 import com.medtroniclabs.spice.db.entity.HealthFacilityEntity
+import com.medtroniclabs.spice.formgeneration.extension.markMandatory
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.ui.SingleSelectionCustomView
@@ -70,9 +71,11 @@ import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.isVomiting
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.muacCode
 import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefinedParams
 import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefinedParams.Diarrhoea
+import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefinedParams.DiarrhoeaSigns
 import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefinedParams.NA
 import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefinedParams.RdtPositive
 import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
+import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.otherSigns
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
 import org.json.JSONObject
 
@@ -99,6 +102,7 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
     }
 
     private fun initViews() {
+        binding.labelPhuReferred.markMandatory()
         getClinicTakenData().let {
             val view = SingleSelectionCustomView(binding.root.context)
             view.tag = IsClinicTaken
@@ -299,7 +303,7 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
     private fun composeIccmSummaryView(listSummaryData: MutableList<AssessmentSummaryModel>) {
         bindICCMSummaryView(
             getString(R.string.patient_status),
-            viewModel.referralStatus ?: getString(R.string.seperator_hyphen)
+            getStatus(viewModel.referralStatus) ?: getString(R.string.seperator_hyphen)
         )
         val isSignContain = composeGeneralDangerSignsResult(listSummaryData)
         listSummaryData.filter { it.title?.lowercase() != General_Danger_Signs.lowercase() }.forEach { item ->
@@ -371,6 +375,15 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
                     }
                 }
 
+                DiarrhoeaSigns -> {
+                    item.value?.let {result ->
+                        bindICCMSummaryView(
+                            item.title,
+                            getSelectedSigns(result)
+                        )
+                    }
+                }
+
                 hasFever -> {
                     val rdtResult = viewModel.assessmentStringLiveData.value?.let {
                         val jsonObject = JSONObject(it)
@@ -413,7 +426,7 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
                 }
 
                 else -> {
-                    if((item.id != OrsDispensedStatus) && (item.id != ZincDispensedStatus)){
+                    if((item.id != OrsDispensedStatus) && (item.id != ZincDispensedStatus) && (item.id != otherSigns)){
                         bindICCMSummaryView(item.title, item.value)
                     }
                 }
@@ -424,6 +437,21 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
         if (zincDispensedStatus!=null || orsDispensedStatus!=null){
             bindICCMSummaryView(Dispensed, requireContext().getString(R.string.zinc_ors_status, zincDispensedStatus ?: NA, orsDispensedStatus ?: NA))
         }
+    }
+
+    private fun getSelectedSigns(listItems: String): String {
+        val otherDiarrhoeaSigns = viewModel.assessmentStringLiveData.value?.let {
+            val jsonObject = JSONObject(it)
+            val otherObject = jsonObject.optJSONObject(MenuConstants.ICCM_MENU_ID)?.optJSONObject(
+                Diarrhoea
+            )
+            otherObject?.optString(otherSigns)
+        }
+        val result = if (!otherDiarrhoeaSigns.isNullOrBlank()) {
+            requireContext().getString(R.string.other_value, listItems, otherDiarrhoeaSigns)
+        } else listItems
+
+        return result
     }
 
     private fun getPneumoniaStatus(): Boolean {
@@ -586,6 +614,17 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
                     DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
                 )
             viewModel.isInputUpdated = true
+        }
+    }
+
+    fun getStatus(referralStatus: String?): String? {
+        return when (referralStatus) {
+            ReferralStatus.Referred.name -> getString(R.string.referred)
+            ReferralStatus.OnTreatment.name -> getString(R.string.on_treatment)
+            ReferralStatus.Recovered.name -> getString(R.string.recovered)
+            else -> {
+                null
+            }
         }
     }
 }

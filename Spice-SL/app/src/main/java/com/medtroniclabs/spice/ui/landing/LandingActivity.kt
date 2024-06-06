@@ -102,8 +102,20 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
     }
 
     private fun updateSideBarFooter() {
-        binding.appBarBottom.tvAppVersion.text =
-            "${getString(R.string.app_version)} ${BuildConfig.VERSION_NAME}"
+        binding.appBarBottom.tvAppVersion.text = this.getString(
+            R.string.firstname_lastname,
+            getString(R.string.app_version),
+            getBuildVersion()
+        )
+    }
+
+    private fun getBuildVersion(): String {
+        val index = BuildConfig.VERSION_NAME.indexOf('-')
+        return if (index != -1) {
+            BuildConfig.VERSION_NAME.substring(0, index)
+        } else {
+            BuildConfig.VERSION_NAME
+        }
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
