@@ -252,7 +252,7 @@ object CommonUtils {
         return try {
             val days = enteredDays.toDouble().toInt()
             if (days > maxDays) {
-                context.getString(R.string.days_summary, days, maxDays)
+                context.getString(R.string.days_summary, days, maxDays+1)
             } else {
                 days.toString()
             }

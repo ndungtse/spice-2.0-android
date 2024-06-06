@@ -219,7 +219,7 @@
     <string name="pneumonia">Pneumonia</string>
     <string name="bpm">BPM</string>
     <string name="malaria">Malaria</string>
-    <string name="days_summary">%1$d (> %2$d days)</string>
+    <string name="days_summary">%1$d (≥ %2$d days)</string>
     <string name="hh_id">HH ID</string>
     <string name="date_of_onset">Date of Onset</string>
     <string name="date_of_review">Date of Review</string>

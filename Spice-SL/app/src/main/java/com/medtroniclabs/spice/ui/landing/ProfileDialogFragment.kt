@@ -142,20 +142,30 @@ class ProfileDialogFragment : DialogFragment(), View.OnClickListener {
 
     private fun setUserProfileData(user: UserProfile) {
         with(binding) {
-            tvName.text = user.firstName?.let {
+            tvName.text = if (!user.firstName.isNullOrBlank() && !user.lastName.isNullOrBlank()) {
                 requireContext().getString(
                     R.string.firstname_lastname,
                     user.firstName,
                     user.lastName
                 )
-            } ?: getString(R.string.separator_double_hyphen)
-            tvGenderText.text = user.gender ?: getString(R.string.separator_double_hyphen)
-            tvEmailText.text = user.username
-            tvPhoneNumberText.text = user.phoneNumber ?: getString(R.string.separator_double_hyphen)
+            } else {
+                getString(R.string.separator_double_hyphen)
+            }
+            tvGenderText.text = user.gender.takeIf { it?.isNotBlank() == true } ?: getString(R.string.separator_double_hyphen)
+            tvEmailText.text = user.username.takeIf { it.isNotBlank() } ?: getString(R.string.separator_double_hyphen)
+            tvPhoneNumberText.text = user.phoneNumber.takeIf { it?.isNotBlank() == true } ?: getString(R.string.separator_double_hyphen)
             tvSuiteAccessText.text = user.suiteAccess?.let {
                 user.suiteAccess[0]
             } ?: getString(R.string.separator_double_hyphen)
-            tvRoleText.text = user.displayName ?: getString(R.string.separator_double_hyphen)
+            val displayNames = user.roles
+                .mapNotNull { it.displayName }
+                .filter { it.isNotBlank() }
+
+            tvRoleText.text = if (displayNames.isEmpty()) {
+                getString(R.string.separator_double_hyphen)
+            } else {
+                displayNames.joinToString()
+            }
         }
     }
 

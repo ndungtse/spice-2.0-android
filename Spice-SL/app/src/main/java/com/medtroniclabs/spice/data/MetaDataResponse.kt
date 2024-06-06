@@ -80,7 +80,6 @@ data class UserProfile(
     val lastName: String?,
     val gender: String?,
     val phoneNumber: String?,
-    val displayName:String?,
     val username: String,
     val countryCode: String?,
     val country: Country?,
@@ -94,6 +93,7 @@ data class UserProfile(
 data class Role(
     val id: Long,
     val name: String,
+    val displayName:String?,
     val level: Int,
     val authority: String
 )

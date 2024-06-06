@@ -66,6 +66,9 @@ class AssessmentActivity : BaseActivity() {
     }
 
     private fun backNavigation(isHome: Boolean) {
+        if (viewModel.referralStatus == ReferralStatus.Recovered.name || viewModel.referralStatus == null) {
+            viewModel.isInputUpdated = false
+        }
         if (viewModel.isInputUpdated) {
             showErrorDialogue(
                 getString(R.string.alert),
