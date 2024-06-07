@@ -50,7 +50,7 @@ class HouseholdSearchActivity : BaseActivity(), View.OnClickListener {
 
 
     private fun initViews() {
-        binding.llFilter.btnFilter.text = getString(R.string.filters)
+        binding.llFilter.btnFilter.text = getString(R.string.filter)
         binding.llExactSearch.etSearchTerm.hint = getString(R.string.household_name_or_no)
         val tabletSize =
             resources.getBoolean(R.bool.isLargeTablet) || resources.getBoolean(R.bool.isTablet)
@@ -106,7 +106,7 @@ class HouseholdSearchActivity : BaseActivity(), View.OnClickListener {
             if (count > 0) {
                 binding.llFilter.btnFilter.text = this.getString(R.string.filter_count, count)
             } else {
-                binding.llFilter.btnFilter.text = getString(R.string.filters)
+                binding.llFilter.btnFilter.text = getString(R.string.filter)
             }
         }
 

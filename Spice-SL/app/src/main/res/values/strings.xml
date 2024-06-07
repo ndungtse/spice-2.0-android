@@ -159,7 +159,7 @@
     <string name="alert">Alert</string>
     <string name="retry">Retry</string>
     <string name="session_expired">Session Expired! Please login again.</string>
-    <string name="offline_login_message">You does not have internet to connect our system. Though you can login offline for offline features.Do you wish to continue?</string>
+    <string name="offline_login_message">You does not have internet to connect our system. Do you wish to continue?</string>
     <string name="role">Role</string>
     <string name="email_cap">Email</string>
     <string name="phone_no">Phone No</string>
@@ -224,7 +224,7 @@
     <string name="date_of_onset">Date of Onset</string>
     <string name="date_of_review">Date of Review</string>
     <string name="warning_different_login_title" translatable="false">Different Login!</string>
-    <string name="warning_different_login_message" translatable="false">There is some unsynced data associated with the last user, %1$s. Kindly sync data.</string>
+    <string name="warning_different_login_message" translatable="false">There is some unsynchronized data associated with the last user (%1$s). Kindly sync data.</string>
     <string name="title_sync_status" translatable="false">Sync Status</string>
     <string name="message_sync_error" translatable="false">Something went wrong during upload. Please try again later</string>
     <string name="display_un_synced_count" translatable="false">%1$d record yet to sync</string>
@@ -473,4 +473,5 @@
     <string name="ddmmyyyy">dd/mm/yyyy</string>
     <string name="phone_number_invalid">Please enter a valid mobile number</string>
     <string name="zinc_ors_status">(Zinc - %1$s), (ORS - %2$s)</string>
+    <string name="filter">Filter</string>
 </resources>

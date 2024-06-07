@@ -1,14 +1,7 @@
 CHW Workflow:
-    Household:
-        1.Implemented functionality for creating and editing households, with offline synchronization support.
-        2.Implemented functionality for creating and editing household members, with offline synchronization support.
-    Assessment - ICCM and Other Symptoms:
-        1.Added capability to create assessments for ICCM and other symptoms(including referral logics), with offline synchronization support.
 
-Provider Workflow:
-    Patient List:
-        1.Synced referred members will now be displayed in the patient list.
-    Patient Search:
-        2.All synced household members will now be displayed in the patient search results.
-
-Along with Bug fixes.
+1.Household
+2.Household Member
+3.Assessment (ICCM and Other Symptoms)
+4.Offline Sync for Household, Household Member, and Assessment
+5.Fixed QA reported issues.

@@ -15,7 +15,6 @@
         android:paddingVertical="6dp"
         android:paddingStart="@dimen/_16sdp"
         android:paddingEnd="@dimen/_2sdp"
-        android:text="@string/filters"
         android:textColor="@color/cobalt_blue"
         android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="parent"

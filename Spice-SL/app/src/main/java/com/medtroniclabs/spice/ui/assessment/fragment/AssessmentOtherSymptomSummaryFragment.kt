@@ -175,8 +175,9 @@ class AssessmentOtherSymptomSummaryFragment : Fragment(), View.OnClickListener {
                         if (selectedId != DefinedParams.DefaultID) {
                             isValid = true
                             binding.tvSiteErrorMessage.gone()
-                            if (viewModel.otherAssessmentDetails[ReferredPHUSite] != selectedSiteName ||
-                                viewModel.otherAssessmentDetails[ReferredPHUSiteID] != selectedId?.toLong()
+                            if ((viewModel.otherAssessmentDetails[ReferredPHUSite] != selectedSiteName && viewModel.otherAssessmentDetails[ReferredPHUSite] != null) ||
+                                (viewModel.otherAssessmentDetails[ReferredPHUSiteID] != (healthFacilityList.find { it.fhirId == selectedId }?.fhirId?.toLong()
+                                    ?: selectedId?.toLong()!!) && viewModel.otherAssessmentDetails[ReferredPHUSiteID] != null)
                             ) {
                                 viewModel.isInputUpdated = true
                             }

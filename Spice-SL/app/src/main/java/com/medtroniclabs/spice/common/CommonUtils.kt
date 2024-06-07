@@ -94,7 +94,9 @@ object CommonUtils {
             months %= 12
         }
 
-        if (years >= 5) {
+        if (years > 5) {
+            strBuilder.append("$years $YEARS ")
+        } else if (years == 5 && (months in 1..11) || (weeks in 1..3)) {
             strBuilder.append("$years $YEARS ")
         } else {
             if (years > 0) {

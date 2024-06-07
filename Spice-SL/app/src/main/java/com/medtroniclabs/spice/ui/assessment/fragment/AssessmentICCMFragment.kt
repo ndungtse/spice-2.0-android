@@ -332,10 +332,33 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
                     }
                 }
             }
-
-            hasDiarrhoea, hasFever, hasCough -> {
+            hasCough ->{
                 viewModel.memberDetailsLiveData.value?.data?.let {
                     renderDosageDetails(it.dateOfBirth)
+                }
+                handleRecommendedDoseage(hasCough)
+            }
+            hasDiarrhoea, hasFever -> {
+                viewModel.memberDetailsLiveData.value?.data?.let {
+                    renderDosageDetails(it.dateOfBirth)
+                }
+            }
+        }
+    }
+
+    private fun handleRecommendedDoseage(id: String) {
+        viewModel.memberDetailsLiveData.value?.data?.let { data ->
+            getYearMonthAndWeek(data.dateOfBirth, DATE_FORMAT_yyyyMMddHHmmssZZZZZ).let { result ->
+                val year = result.second.first ?: 0
+                val month = result.second.second ?: 0
+                if ((year == 0 && month in 0..2)) {
+                    displayDaysInformation(id, View.INVISIBLE)
+                    formGenerator.getViewByTag((Amoxicillin.lowercase()) + rootSuffix)?.apply {
+                        visibility = View.GONE
+                    }
+                    formGenerator.getViewByTag(AmoxicillinStatus + rootSuffix)?.apply {
+                        visibility = View.GONE
+                    }
                 }
             }
         }
@@ -431,27 +454,27 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
     }
 
     private fun dismissAmoxicillinStatus(resultMap: HashMap<String, Any>?) {
-        formGenerator.getViewByTag((Amoxicillin.lowercase()) + rootSuffix )?.apply {
-            visibility = View.GONE
-            resultMap?.let {map ->
-                if (map.containsKey(Amoxicillin.lowercase())){
-                    map.remove(Amoxicillin.lowercase())
-                    formGenerator.resetSingleSelection(Amoxicillin.lowercase())
-                }
-            }
-        }
-        formGenerator.getViewByTag(AmoxicillinStatus + rootSuffix)?.apply {
-            visibility = View.GONE
-        }
+//        formGenerator.getViewByTag((Amoxicillin.lowercase()) + rootSuffix )?.apply {
+//            visibility = View.GONE
+//            resultMap?.let {map ->
+//                if (map.containsKey(Amoxicillin.lowercase())){
+//                    map.remove(Amoxicillin.lowercase())
+//                    formGenerator.resetSingleSelection(Amoxicillin.lowercase())
+//                }
+//            }
+//        }
+//        formGenerator.getViewByTag(AmoxicillinStatus + rootSuffix)?.apply {
+//            visibility = View.GONE
+//        }
     }
 
     private fun getAmoxicillinStatus() {
-        formGenerator.getViewByTag((Amoxicillin.lowercase()) + rootSuffix )?.apply {
-            visibility = View.VISIBLE
-        }
-        formGenerator.getViewByTag(AmoxicillinStatus + rootSuffix)?.apply {
-            visibility = View.VISIBLE
-        }
+//        formGenerator.getViewByTag((Amoxicillin.lowercase()) + rootSuffix )?.apply {
+//            visibility = View.VISIBLE
+//        }
+//        formGenerator.getViewByTag(AmoxicillinStatus + rootSuffix)?.apply {
+//            visibility = View.VISIBLE
+//        }
     }
 
     private fun updateColorCode(id: String, colorCode: Int) {
