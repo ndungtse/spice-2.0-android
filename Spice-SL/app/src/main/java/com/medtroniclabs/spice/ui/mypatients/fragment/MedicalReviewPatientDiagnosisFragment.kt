@@ -31,6 +31,7 @@ import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.fragment.AddWe
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.MotherNeonateBpWeightViewModel
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import com.medtroniclabs.spice.ui.medicalreview.viewmodel.PatientStatusViewModel
+import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 
@@ -42,6 +43,7 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
     private val viewModel: MotherNeonateBpWeightViewModel by activityViewModels()
     private val statusViewModel: PatientStatusViewModel by activityViewModels()
     private val diagnosisViewModel: DiagnosisViewModel by activityViewModels()
+    private val patientViewModel: PatientDetailViewModel by activityViewModels()
 
     companion object {
         fun newInstance(): MedicalReviewPatientDiagnosisFragment {
@@ -111,6 +113,21 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
                         binding.retryButtonWeight,
                         binding.tvWeightValue
                     )
+                }
+            }
+        }
+
+        patientViewModel.patientDetailsLiveData.observe(viewLifecycleOwner) { resource ->
+            when (resource.state) {
+                ResourceState.SUCCESS -> {
+                    resource.data?.let {
+                        statusViewModel.getPatientStatusDetails(
+                            it
+                        )
+                    }
+                }
+                else -> {
+
                 }
             }
         }
@@ -270,9 +287,12 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
 
                 ResourceState.SUCCESS -> {
                     hideProgress()
-                    resourceState.data?.let { list ->
-                        binding.tvPatientStatusValue.text =
-                            formatListToStringWithOther(list.map { it.status })
+                    resourceState.data?.let { patientStatus ->
+                        if (patientStatus.status.isNullOrEmpty()) {
+                            binding.tvPatientStatusValue.text = getString(R.string.seperator_hyphen)
+                        } else {
+                            binding.tvPatientStatusValue.text = patientStatus.status
+                        }
                     }
                 }
 
@@ -341,7 +361,7 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
 
     private fun initializeViews() {
         statusViewModel.patientId?.let {
-            statusViewModel.getPatientStatus(it)
+            binding.tvPatientStatusValue.text = requireContext().getString(R.string.hyphen_symbol)
             diagnosisViewModel.getDiagnosisMetaList(diagnosisViewModel.diagnosisType)
             diagnosisViewModel.getDiagnosisDetails(
                 CreateUnderTwoMonthsResponse(

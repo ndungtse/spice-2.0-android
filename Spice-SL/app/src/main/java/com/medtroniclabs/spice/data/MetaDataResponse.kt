@@ -17,7 +17,7 @@ data class HealthFacility(
     val id: Long,
     val name: String,
     val type: String?,
-    val districtId: Long,
+    val district: District?,
     val chiefdomId: Long,
     val latitude: String?,
     val longitude: String?,
@@ -29,6 +29,11 @@ data class HealthFacility(
     val linkedVillages: ArrayList<Village>
 )
 
+data class District(
+    val id: Long,
+    val name: String?,
+    val code: String?
+)
 data class ClinicalWorkflow(
     val id: Long,
     val name: String,

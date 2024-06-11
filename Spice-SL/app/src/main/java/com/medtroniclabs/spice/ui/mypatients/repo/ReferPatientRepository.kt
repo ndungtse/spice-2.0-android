@@ -6,9 +6,11 @@ import com.medtroniclabs.spice.data.AboveFiveYearsSummaryDetails
 import com.medtroniclabs.spice.data.ReferPatientAPIRequest
 import com.medtroniclabs.spice.data.ReferPatientHealthFacilityItem
 import com.medtroniclabs.spice.data.ReferPatientNameNumber
-import com.medtroniclabs.spice.data.ReferPatientResult
 import com.medtroniclabs.spice.data.ReferPatientRequest
+import com.medtroniclabs.spice.data.ReferPatientResult
 import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
+import com.medtroniclabs.spice.db.entity.HealthFacilityEntity
+import com.medtroniclabs.spice.db.local.RoomHelper
 import com.medtroniclabs.spice.network.ApiHelper
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.network.resource.ResourceState
@@ -16,14 +18,15 @@ import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import javax.inject.Inject
 
 class ReferPatientRepository @Inject constructor(
-    private val apiHelper: ApiHelper
+    private val apiHelper: ApiHelper,
+    private val roomHelper: RoomHelper
 ) {
 
     suspend fun getHealthFacilityMetaData(
-        request: ReferPatientAPIRequest
+        districtId: String?
     ): Resource<List<ReferPatientHealthFacilityItem>> {
         try {
-            val response = apiHelper.getHealthFacilityMetaData(request)
+            val response = apiHelper.getHealthFacilityMetaData(ReferPatientAPIRequest(districtId))
             if (response.isSuccessful) {
                 response.body()?.entityList?.let {
                     return Resource(state = ResourceState.SUCCESS, it)
@@ -37,9 +40,9 @@ class ReferPatientRepository @Inject constructor(
         return Resource(state = ResourceState.ERROR)
     }
 
-    suspend fun getReferPatientMobileUserList(tenantId: ReferPatientRequest): Resource<List<ReferPatientNameNumber>> {
+    suspend fun getReferPatientMobileUserList(tenantId: String): Resource<List<ReferPatientNameNumber>> {
         try {
-            val response = apiHelper.getReferPatientMobileUserList(tenantId)
+            val response = apiHelper.getReferPatientMobileUserList(ReferPatientRequest(tenantId))
             if (response.isSuccessful) {
                 response.body()?.entityList?.let {
                     return Resource(state = ResourceState.SUCCESS, it)
@@ -114,6 +117,14 @@ class ReferPatientRepository @Inject constructor(
                         referralTicketType = assessmentName.second
                     )
                 }
+        }
+    }
+    suspend fun getDefaultHealthFacilityDistrictId(): Resource<HealthFacilityEntity?>? {
+        return try {
+            val response = roomHelper.getDefaultHealthFacility()
+            Resource(state = ResourceState.SUCCESS, data = response)
+        } catch (e: Exception) {
+            Resource(state = ResourceState.ERROR)
         }
     }
 }

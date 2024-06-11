@@ -50,18 +50,16 @@ class AboveFiveYearsViewModel @Inject constructor(
         selectedComplaintsExaminationsPair: Pair<List<String?>, List<String?>>,
         enteredComplaintsExaminationsClinicalNotes: Triple<String, String, String>
     ) {
-        if (connectivityManager.isNetworkAvailable()) {
-            viewModelScope.launch(dispatcherIO) {
-                aboveFiveYearsCreateResponse.postLoading()
-                aboveFiveYearsCreateResponse.postValue(
-                    repository.createAboveFiveYears(
-                        details,
-                        selectedComplaintsExaminationsPair,
-                        enteredComplaintsExaminationsClinicalNotes,
-                        lastLocation
-                    )
+        viewModelScope.launch(dispatcherIO) {
+            aboveFiveYearsCreateResponse.postLoading()
+            aboveFiveYearsCreateResponse.postValue(
+                repository.createAboveFiveYears(
+                    details,
+                    selectedComplaintsExaminationsPair,
+                    enteredComplaintsExaminationsClinicalNotes,
+                    lastLocation
                 )
-            }
+            )
         }
     }
 
@@ -73,29 +71,25 @@ class AboveFiveYearsViewModel @Inject constructor(
     }
 
     fun getAboveFiveYearsSummaryDetails(request: AboveFiveYearsSummaryRequest) {
-        if (connectivityManager.isNetworkAvailable()) {
-            viewModelScope.launch(dispatcherIO) {
-                summaryDetailsLiveData.postLoading()
-                summaryDetailsLiveData.postValue(repository.getAboveFiveYearsSummaryDetails(request))
-            }
+        viewModelScope.launch(dispatcherIO) {
+            summaryDetailsLiveData.postLoading()
+            summaryDetailsLiveData.postValue(repository.getAboveFiveYearsSummaryDetails(request))
         }
     }
 
     fun aboveFiveYearsSummaryCreate(details: PatientListRespModel, submitCreateId: String) {
-        if (connectivityManager.isNetworkAvailable()) {
-            viewModelScope.launch(dispatcherIO) {
-                summaryCreateResponse.postLoading()
-                summaryCreateResponse.postValue(
-                    repository.aboveFiveYearsSummaryCreate(
-                        details,
-                        submitCreateId,
-                        selectedMedicalSupplyListItem,
-                        selectedCostItem,
-                        selectedPatientStatus,
-                        nextFollowupDate
-                    )
+        viewModelScope.launch(dispatcherIO) {
+            summaryCreateResponse.postLoading()
+            summaryCreateResponse.postValue(
+                repository.aboveFiveYearsSummaryCreate(
+                    details,
+                    submitCreateId,
+                    selectedMedicalSupplyListItem,
+                    selectedCostItem,
+                    selectedPatientStatus,
+                    nextFollowupDate
                 )
-            }
+            )
         }
     }
 }

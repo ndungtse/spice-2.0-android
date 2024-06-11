@@ -1,35 +1,47 @@
 package com.medtroniclabs.spice.repo
 
-import androidx.lifecycle.MutableLiveData
-import com.medtroniclabs.spice.appextensions.postError
-import com.medtroniclabs.spice.appextensions.postLoading
-import com.medtroniclabs.spice.appextensions.postSuccess
-import com.medtroniclabs.spice.data.AboveFiveYearsSummaryRequest
+import com.medtroniclabs.spice.common.DateUtils
+import com.medtroniclabs.spice.data.PatientStatusRequest
 import com.medtroniclabs.spice.data.PatientStatusResponse
+import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
+import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.network.ApiHelper
 import com.medtroniclabs.spice.network.resource.Resource
+import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import javax.inject.Inject
 
 class PatientStatusRepository @Inject constructor(
     private var apiHelper: ApiHelper
 ) {
-    suspend fun getPatientStatus(
-        patientId: String,
-        patientStatusLiveData: MutableLiveData<Resource<ArrayList<PatientStatusResponse>>>
-    ) {
+    suspend fun getPatientStatusDetails(patientDetails: PatientListRespModel): Resource<PatientStatusResponse> {
         try {
-            patientStatusLiveData.postLoading()
-            val response = apiHelper.getPatientStatus(AboveFiveYearsSummaryRequest(id = patientId, type = MedicalReviewTypeEnums.medicalReview.name))
-            if (response.isSuccessful) {
+            val request = createPatientStatusRequest(patientDetails)
+            val response = request?.let { apiHelper.getPatientStatus(it) }
+            if (response?.isSuccessful == true) {
                 response.body()?.entity?.let {
-                    patientStatusLiveData.postSuccess(it)
+                    return Resource(state = ResourceState.SUCCESS, it)
                 }
             } else {
-                patientStatusLiveData.postError()
+                return Resource(state = ResourceState.ERROR)
             }
         } catch (e: Exception) {
-            patientStatusLiveData.postError()
+            return Resource(state = ResourceState.ERROR)
         }
+        return Resource(state = ResourceState.ERROR)
+    }
+
+    private fun createPatientStatusRequest(patientDetails: PatientListRespModel): PatientStatusRequest? {
+        return PatientStatusRequest(
+            patientId = patientDetails.id,
+            type = MedicalReviewTypeEnums.medicalReview.name,
+            gender = patientDetails.gender,
+            isPregnant = patientDetails.pregnancyDetails?.pregnant != null,
+            provenance = ProvanceDto(
+                createdDateTime = DateUtils.getCurrentDateAndTime(
+                    DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
+                )
+            )
+        )
     }
 }

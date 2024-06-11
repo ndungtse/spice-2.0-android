@@ -3,8 +3,10 @@ package com.medtroniclabs.spice.ui.medicalreview.viewmodel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.data.PatientStatusResponse
 import com.medtroniclabs.spice.di.IoDispatcher
+import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.network.utils.ConnectivityManager
 import com.medtroniclabs.spice.repo.PatientStatusRepository
@@ -19,16 +21,15 @@ class PatientStatusViewModel @Inject constructor(
     private val patientStatusRepository: PatientStatusRepository
 ): ViewModel(){
     @Inject
-    lateinit var connectivityManager: ConnectivityManager
-    val patientStatusLiveData = MutableLiveData<Resource<ArrayList<PatientStatusResponse>>>()
+    lateinit var connectivityManager: ConnectivityManager // Response<APIResponse<ArrayList<PatientStatusResponse>>>
+    val patientStatusLiveData = MutableLiveData<Resource<PatientStatusResponse>>()
     //The below id represent backend generated ID from patient details response, its not a member generated ID
     var patientId:String? = null
 
-    fun getPatientStatus(id: String){
-        if (connectivityManager.isNetworkAvailable()){
-            viewModelScope.launch(dispatcherIO) {
-                patientStatusRepository.getPatientStatus(id, patientStatusLiveData)
-            }
+    fun getPatientStatusDetails(patientDetails: PatientListRespModel) {
+        viewModelScope.launch(dispatcherIO) {
+            patientStatusLiveData.postLoading()
+            patientStatusLiveData.postValue(patientStatusRepository.getPatientStatusDetails(patientDetails))
         }
     }
 }

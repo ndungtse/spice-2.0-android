@@ -18,6 +18,7 @@ import com.medtroniclabs.spice.data.MedicationSearchRequest
 import com.medtroniclabs.spice.data.MetaDataResponse
 import com.medtroniclabs.spice.data.MotherNeonateAncMetaResponse
 import com.medtroniclabs.spice.data.MotherNeonateAncSummaryModel
+import com.medtroniclabs.spice.data.PatientStatusRequest
 import com.medtroniclabs.spice.data.ReferPatientAPIRequest
 import com.medtroniclabs.spice.data.ReferPatientHealthFacilityItem
 import com.medtroniclabs.spice.data.ReferPatientNameNumber
@@ -112,8 +113,8 @@ interface ApiService {
     @POST("/spice-service/medical-review/iccm-under-2months/create")
     suspend fun createMedicalReviewForUnderTwoMonths(@Body request: CreateUnderTwoMonthsRequest): Response<APIResponse<CreateUnderTwoMonthsResponse>>
 
-    @POST("/spice-service/patient/patient-status-list")
-    suspend fun getPatientStatus(@Body request: AboveFiveYearsSummaryRequest): Response<APIResponse<ArrayList<PatientStatusResponse>>>
+    @POST("/spice-service/patient/patient-status")
+    suspend fun getPatientStatus(@Body request: PatientStatusRequest): Response<APIResponse<PatientStatusResponse>>
 
     @POST("/spice-service/medical-review/anc-pregnancy/create")
     suspend fun saveMotherNeonateAnc(@Body motherNeonateAncRequest: MotherNeonateAncRequest):Response<APIResponse<PatientEncounterResponse>>

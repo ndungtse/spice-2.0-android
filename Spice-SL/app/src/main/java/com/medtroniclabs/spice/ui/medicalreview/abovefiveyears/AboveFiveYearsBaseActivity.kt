@@ -90,7 +90,14 @@ class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
             .let { currentFragment ->
                 if (currentFragment is AboveFiveYearsTreatmentSummaryFragment) {
                     viewModel.aboveFiveYearsCreateResponse.value?.data?.let {
-                        viewModel.getAboveFiveYearsSummaryDetails(AboveFiveYearsSummaryRequest(id = it.encounterId))
+                        if (connectivityManager.isNetworkAvailable()) {
+                            viewModel.getAboveFiveYearsSummaryDetails(AboveFiveYearsSummaryRequest(id = it.encounterId))
+                        } else {
+                            showErrorDialogue(
+                                getString(R.string.error), getString(R.string.no_internet_error),
+                                isNegativeButtonNeed = false,
+                            ) {}
+                        }
                     }
                 } else {
                     patientViewModel.patientDetailsLiveData.value?.data?.let { details ->
@@ -104,8 +111,15 @@ class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
 
     private fun initializeViews() {
         if (!(SecuredPreference.getBoolean(SecuredPreference.EnvironmentKey.IS_ABOVE_FIVE_YEARS_LOADED.name))) {
-            viewModel.getStaticMetaData(MedicalReviewTypeEnums.AboveFiveYears.name)
-            addPatientDetails()
+            if (connectivityManager.isNetworkAvailable()) {
+                viewModel.getStaticMetaData(MedicalReviewTypeEnums.AboveFiveYears.name)
+                addPatientDetails()
+            } else {
+                showErrorDialogue(
+                    getString(R.string.error), getString(R.string.no_internet_error),
+                    isNegativeButtonNeed = false,
+                ) {}
+            }
         } else {
             addPatientDetails()
         }
@@ -185,7 +199,14 @@ class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
                 ResourceState.SUCCESS -> {
                     binding.nestedScrollViewID.fullScroll(ScrollView.FOCUS_UP)
                     resourceState.data?.let {
-                        viewModel.getAboveFiveYearsSummaryDetails(AboveFiveYearsSummaryRequest(id = it.encounterId))
+                        if (connectivityManager.isNetworkAvailable()) {
+                            viewModel.getAboveFiveYearsSummaryDetails(AboveFiveYearsSummaryRequest(id = it.encounterId))
+                        } else {
+                            showErrorDialogue(
+                                getString(R.string.error), getString(R.string.no_internet_error),
+                                isNegativeButtonNeed = false,
+                            ) {}
+                        }
                     }
                     initializeSummaryFragments()
                 }
@@ -310,7 +331,14 @@ class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
                 patientViewModel.patientDetailsLiveData.value?.data?.let { details ->
                     viewModel.aboveFiveYearsCreateResponse.value?.data?.encounterId
                         ?.let { submitCreateId ->
-                            viewModel.aboveFiveYearsSummaryCreate(details, submitCreateId)
+                            if (connectivityManager.isNetworkAvailable()) {
+                                viewModel.aboveFiveYearsSummaryCreate(details, submitCreateId)
+                            } else {
+                                showErrorDialogue(
+                                    getString(R.string.error), getString(R.string.no_internet_error),
+                                    isNegativeButtonNeed = false,
+                                ) {}
+                            }
                         }
                 }
             }
@@ -320,16 +348,23 @@ class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
     private fun postResultInput() {
         patientViewModel.patientDetailsLiveData.value?.data?.let { details ->
             details.patientId?.let { id ->
-                viewModel.createAboveFiveYearsResult(
-                    details,
-                    Pair(presentingComplaintsViewModel.selectedPresentingComplaints.map { it.value },
-                        systemicExaminationViewModel.selectedSystemicExaminations.map { it.value }),
-                    Triple(
-                        presentingComplaintsViewModel.enteredComplaintNotes,
-                        systemicExaminationViewModel.enteredExaminationNotes,
-                        chipItemViewModel.enteredClinicalNotes
+                if (connectivityManager.isNetworkAvailable()) {
+                    viewModel.createAboveFiveYearsResult(
+                        details,
+                        Pair(presentingComplaintsViewModel.selectedPresentingComplaints.map { it.value },
+                            systemicExaminationViewModel.selectedSystemicExaminations.map { it.value }),
+                        Triple(
+                            presentingComplaintsViewModel.enteredComplaintNotes,
+                            systemicExaminationViewModel.enteredExaminationNotes,
+                            chipItemViewModel.enteredClinicalNotes
+                        )
                     )
-                )
+                } else {
+                    showErrorDialogue(
+                        getString(R.string.error), getString(R.string.no_internet_error),
+                        isNegativeButtonNeed = false,
+                    ) {}
+                }
             }
         }
     }

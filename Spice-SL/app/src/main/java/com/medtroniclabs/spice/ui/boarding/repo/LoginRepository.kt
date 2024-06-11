@@ -219,17 +219,21 @@ class LoginRepository @Inject constructor(
     private suspend fun saveHealthFacilityInDb(list: List<HealthFacility>, defaultId: Long) {
         roomHelper.deleteAllHealthFacility()
         list.forEach { healthFacility ->
-            roomHelper.saveHealthFacility(
+            healthFacility.district?.let {
                 HealthFacilityEntity(
                     id = healthFacility.id,
                     name = healthFacility.name,
-                    districtId = healthFacility.districtId,
+                    districtId = it.id,
                     chiefdomId = healthFacility.chiefdomId,
                     tenantId = healthFacility.tenantId,
                     fhirId = healthFacility.fhirId,
                     isDefault = healthFacility.id == defaultId,
                 )
-            )
+            }?.let {
+                roomHelper.saveHealthFacility(
+                    it
+                )
+            }
         }
     }
 

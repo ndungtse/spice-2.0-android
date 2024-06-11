@@ -19,6 +19,7 @@ import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.ReferPatientHealthFacilityItem
 import com.medtroniclabs.spice.data.ReferPatientNameNumber
 import com.medtroniclabs.spice.databinding.FragmentReferPatientBinding
+import com.medtroniclabs.spice.db.entity.HealthFacilityEntity
 import com.medtroniclabs.spice.formgeneration.extension.markMandatory
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
@@ -57,7 +58,6 @@ class ReferPatientFragment : DialogFragment(), View.OnClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.getHealthFacilityMetaData()
         initViews()
         setListener()
         attachObserver()
@@ -68,9 +68,29 @@ class ReferPatientFragment : DialogFragment(), View.OnClickListener {
         binding.tvReferToLabel.markMandatory()
         binding.tvReferredReasonLabel.markMandatory()
         initializeNameNumberAdapter(null)
+        viewModel.getDefaultHealthFacilityDistrictId()
+        viewModel.getHealthFacilityMetaData(null)
     }
 
     private fun attachObserver() {
+        viewModel.defaultHealthFacilityLiveData.observe(viewLifecycleOwner) { resource ->
+            when (resource.state) {
+                ResourceState.LOADING -> {
+                    showLoadingProgress()
+                }
+
+                ResourceState.SUCCESS -> {
+                    hideLoadingProgress()
+                    resource.data?.let {
+                        setHealthFacilityDistrictId(it)
+                    }
+                }
+
+                ResourceState.ERROR -> {
+                    hideLoadingProgress()
+                }
+            }
+        }
         viewModel.healthFacilityLiveData.observe(viewLifecycleOwner) { resource ->
             when (resource.state) {
                 ResourceState.LOADING -> {
@@ -108,6 +128,10 @@ class ReferPatientFragment : DialogFragment(), View.OnClickListener {
                 }
             }
         }
+    }
+
+    private fun setHealthFacilityDistrictId(healthFacility: HealthFacilityEntity) {
+        viewModel.getHealthFacilityMetaData(healthFacility.districtId.toString())
     }
 
     private fun initializeNameNumberAdapter(listItems: List<ReferPatientNameNumber>?) {

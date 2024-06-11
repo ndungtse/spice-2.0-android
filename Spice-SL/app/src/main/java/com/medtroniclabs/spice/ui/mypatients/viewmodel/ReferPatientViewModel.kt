@@ -5,10 +5,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.data.AboveFiveYearsSummaryDetails
-import com.medtroniclabs.spice.data.ReferPatientAPIRequest
 import com.medtroniclabs.spice.data.ReferPatientHealthFacilityItem
 import com.medtroniclabs.spice.data.ReferPatientNameNumber
-import com.medtroniclabs.spice.data.ReferPatientRequest
+import com.medtroniclabs.spice.db.entity.HealthFacilityEntity
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.ui.mypatients.repo.ReferPatientRepository
@@ -33,18 +32,20 @@ class ReferPatientViewModel @Inject constructor(
     val healthFacilityLiveData = MutableLiveData<Resource<List<ReferPatientHealthFacilityItem>>>()
     val nameNumberListLiveData = MutableLiveData<Resource<List<ReferPatientNameNumber>>>()
     val referPatientResultLiveData = MutableLiveData<Resource<HashMap<String,Any>>>()
+    val defaultHealthFacilityLiveData = MutableLiveData<Resource<HealthFacilityEntity?>>()
 
-    fun getHealthFacilityMetaData() {
-        viewModelScope.launch(dispatcherIO) {
-            healthFacilityLiveData.postLoading()
-            //Todo : Need to add district id once backend given that
-            healthFacilityLiveData.postValue(repository.getHealthFacilityMetaData(ReferPatientAPIRequest("1")))
+    fun getHealthFacilityMetaData(districtId: String?) {
+        districtId?.let {
+            viewModelScope.launch(dispatcherIO) {
+                healthFacilityLiveData.postLoading()
+                healthFacilityLiveData.postValue(repository.getHealthFacilityMetaData(districtId))
+            }
         }
     }
     fun getNameNumberFieldList(tenantId: String) {
         viewModelScope.launch(dispatcherIO){
             healthFacilityLiveData.postLoading()
-            nameNumberListLiveData.postValue(repository.getReferPatientMobileUserList(ReferPatientRequest(tenantId)))
+            nameNumberListLiveData.postValue(repository.getReferPatientMobileUserList(tenantId))
         }
     }
     fun createReferPatientResult(
@@ -68,6 +69,13 @@ class ReferPatientViewModel @Inject constructor(
                     memberId
                 )
             )
+        }
+    }
+
+    fun getDefaultHealthFacilityDistrictId() {
+        viewModelScope.launch(dispatcherIO){
+            defaultHealthFacilityLiveData.postLoading()
+            defaultHealthFacilityLiveData.postValue(repository.getDefaultHealthFacilityDistrictId())
         }
     }
 }
