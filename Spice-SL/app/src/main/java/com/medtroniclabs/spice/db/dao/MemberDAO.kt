@@ -1,5 +1,6 @@
 package com.medtroniclabs.spice.db.dao
 
+import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -17,6 +18,9 @@ interface MemberDAO {
 
     @Query("SELECT * FROM HouseHoldMember WHERE household_id = :houseHoldId")
     suspend fun getAllHouseHoldMemberList(houseHoldId: Long): List<HouseholdMemberEntity>
+
+    @Query("SELECT * FROM HouseHoldMember WHERE household_id = :houseHoldId")
+    fun getAllHouseHoldMembersLiveData(houseHoldId: Long): LiveData<List<HouseholdMemberEntity>>
 
     @Query("SELECT * FROM HouseHoldMember WHERE id = :memberId")
     suspend fun getMemberDetailsById(memberId: Long): HouseholdMemberEntity

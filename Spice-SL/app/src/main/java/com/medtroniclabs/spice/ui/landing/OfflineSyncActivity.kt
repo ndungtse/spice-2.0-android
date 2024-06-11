@@ -30,7 +30,7 @@ class OfflineSyncActivity : SpiceRootActivity() {
     private val viewModel: OfflineSyncViewModel by viewModels()
     private lateinit var binding: FragmentOfflineSyncBinding
     private lateinit var unSyncedCountAdapter: OfflineSyncEntitiesAdapter
-    private val getStatusStartTimer = 30L // Mintues
+    private val getStatusStartTimer = 30L // Seconds
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,8 +44,7 @@ class OfflineSyncActivity : SpiceRootActivity() {
     }
 
     private fun setListener() {
-        binding.rvUnSyncedDetail.layoutManager =
-            LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        binding.rvUnSyncedDetail.layoutManager = LinearLayoutManager(this)
         unSyncedCountAdapter = OfflineSyncEntitiesAdapter()
         binding.rvUnSyncedDetail.adapter = unSyncedCountAdapter
 

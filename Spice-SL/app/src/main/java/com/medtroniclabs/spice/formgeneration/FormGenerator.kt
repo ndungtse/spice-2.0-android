@@ -48,6 +48,7 @@ import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
 import com.medtroniclabs.spice.common.DateUtils.DATE_ddMMyyyy
 import com.medtroniclabs.spice.common.DateUtils.convertDateFormat
+import com.medtroniclabs.spice.common.DateUtils.getDateStringFromDate
 import com.medtroniclabs.spice.common.DefinedParams.female
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.LocalSpinnerResponse
@@ -113,6 +114,7 @@ import com.medtroniclabs.spice.mappingkey.MemberRegistration.phoneNumber
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.PREGNANCY_MAX_AGE
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.PREGNANCY_MIN_AGE
 import java.util.Calendar
+import java.util.Date
 
 
 class FormGenerator(
@@ -992,34 +994,12 @@ class FormGenerator(
                     before: Int,
                     count: Int
                 ) {
-                    val year = binding.etYears.text.toString().toIntOrNull() ?: 0
-                    val month = binding.etMonths.text.toString().toIntOrNull() ?: 0
+                    val years = binding.etYears.text.toString().toIntOrNull() ?: 0
+                    val months = binding.etMonths.text.toString().toIntOrNull() ?: 0
                     val weeks = binding.etWeeks.text.toString().toIntOrNull() ?: 0
-                    if (!isDOBUpdated) {
-                        if (!(year == 0 && month == 0 && weeks == 0)) {
-                            updateDateOfBirthFromFields(
-                                binding.etYears,
-                                binding.etMonths,
-                                binding.etWeeks,
-                                id,
-                                binding.etDateOfBirth
-                            )
-                        } else {
-                            resultHashMap[Year] = year
-                            resultHashMap[Month] = month
-                            resultHashMap[Week] = weeks
-                            updateAgeView(id)
-                            removeIfContains(id)
-                            removeWatcher(binding.etYears, binding.etMonths, binding.etWeeks)
-                            removeDOB(
-                                binding.etDateOfBirth,
-                                binding.etYears,
-                                binding.etMonths,
-                                binding.etWeeks
-                            )
-                            addWatcher(binding.etYears, binding.etMonths, binding.etWeeks)
-                        }
-                    }
+
+                    fillDetailsOnEditText(years, months, weeks, id, binding.etDateOfBirth)
+
                     listener.onAgeCheckForPregnancy()
                 }
 
@@ -1045,12 +1025,8 @@ class FormGenerator(
                         parsedDate?.let {
                             binding.etDateOfBirth.text = DateUtils.getDateDDMMYYYY().format(it)
 
+                            fillDetailsOnDatePickerSet(it, true)
                         }
-                        methodToAutoPopulateDateOfBirth(
-                            stringDate,
-                            DateUtils.DATE_FORMAT_ddMMyyyy,
-                            true
-                        )
                     }
                 }
             }
@@ -1069,33 +1045,33 @@ class FormGenerator(
         }
     }
 
-
-    fun methodToAutoPopulateDateOfBirth(date: String, dateFormat: String, disable: Boolean) {
+    fun fillDetailsOnDatePickerSet(date: Date, disable: Boolean) {
         val yearView = getViewByTag(MemberRegistration.dateOfBirth + Year)
         val monthView = getViewByTag(MemberRegistration.dateOfBirth + Month)
         val weekView = getViewByTag(MemberRegistration.dateOfBirth + Week)
         if (yearView is AppCompatEditText && monthView is AppCompatEditText && weekView is AppCompatEditText)
             removeWatcher(yearView, monthView, weekView)
+
         isDOBUpdated = true
-        val yearMonthWeeks = DateUtils.getYearMonthAndWeek(date,dateFormat)
-        convertDateFormat(date, dateFormat, DATE_FORMAT_yyyyMMddHHmmssZZZZZ).let {
-            addOrUpdateDOB(
-                it,
-                MemberRegistration.dateOfBirth
-            )
-        }
+
+        val dobString = getDateStringFromDate(date, DATE_FORMAT_yyyyMMddHHmmssZZZZZ)
+
+        addOrUpdateDOB(dobString, MemberRegistration.dateOfBirth)
+
+        val yearMonthWeeks = DateUtils.getV2YearMonthAndWeek(dobString)
+
         if (yearView is AppCompatEditText && monthView is AppCompatEditText && weekView is AppCompatEditText) {
-            yearMonthWeeks.second.first?.let { year ->
+            yearMonthWeeks.years.let { year ->
                 yearView.setText(year.toString())
                 yearView.isEnabled = disable
                 resultHashMap[Year] = year
             }
-            yearMonthWeeks.second.second?.let { month ->
+            yearMonthWeeks.months.let { month ->
                 monthView.setText(month.toString())
                 monthView.isEnabled = disable
                 resultHashMap[Month] = month
             }
-            yearMonthWeeks.second.third?.let { week ->
+            yearMonthWeeks.weeks.let { week ->
                 weekView.setText(week.toString())
                 weekView.isEnabled = disable
                 resultHashMap[Week] = week
@@ -1127,36 +1103,52 @@ class FormGenerator(
         isDOBUpdated = false
     }
 
-    private fun updateDateOfBirthFromFields(
-        etYears: AppCompatEditText,
-        etMonths: AppCompatEditText,
-        etWeeks: AppCompatEditText,
+    private fun fillDetailsOnEditText(
+        years: Int,
+        months: Int,
+        weeks: Int,
         id: String,
         etDateOfBirth: AppCompatTextView
     ) {
-        val year = etYears.text.toString().toIntOrNull() ?: 0
-        val month = etMonths.text.toString().toIntOrNull() ?: 0
-        val weeks = etWeeks.text.toString().toIntOrNull() ?: 0
-        resultHashMap[Year] = year
-        resultHashMap[Month] = month
-        resultHashMap[Week] = weeks
-        val calculatedBirthDate = DateUtils.calculateBirthDate(year, month, weeks)
-        removeWatcher(etYears, etMonths, etWeeks)
-        etDateOfBirth.text = convertDateFormat(
-            calculatedBirthDate,
-            DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-            DATE_ddMMyyyy
-        )
-        addWatcher(etYears, etMonths, etWeeks)
-        addOrUpdateDOB(calculatedBirthDate, id)
+        // removeWatcher(etYears, etMonths, etWeeks)
+        if (years == 0 && months == 0 && weeks == 0) {
+            etDateOfBirth.text = ""
+            removeIfContains(id)
+            removeIfContains(Year)
+            removeIfContains(Month)
+            removeIfContains(Week)
+        } else {
+            resultHashMap[Year] = years
+            resultHashMap[Month] = months
+            resultHashMap[Week] = weeks
+
+            val calculatedBirthDate = DateUtils.calculateBirthDate(years, months, weeks)
+
+            etDateOfBirth.text = convertDateFormat(
+                calculatedBirthDate,
+                DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+                DATE_ddMMyyyy
+            )
+            addOrUpdateDOB(calculatedBirthDate, id)
+        }
+
+        //addWatcher(etYears, etMonths, etWeeks)
+
         updateAgeView(id)
     }
 
     private fun updateAgeView(id: String) {
+        val dobString = resultHashMap[id] as? String
         val ageView = getViewByTag(id + value)
-        val age = displayAge(resultHashMap, context)
-        ageView?.let { view ->
-            (view as? AppCompatTextView)?.text = age
+        dobString?.let { dob ->
+            val age = displayAge(dob, context)
+            ageView?.let { view ->
+                (view as? AppCompatTextView)?.text = age
+            }
+        } ?: run {
+            ageView?.let { view ->
+                (view as? AppCompatTextView)?.text = "-"
+            }
         }
     }
 
@@ -1849,7 +1841,7 @@ class FormGenerator(
                         isValid,
                         data
                     )
-                    if(isValid && data.onlyAlphabets == true){
+                    if (isValid && data.onlyAlphabets == true) {
                         isValid = checkOnlyAlphabets(
                             resultHashMap[id],
                             isValid,

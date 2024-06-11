@@ -7,6 +7,7 @@ import com.medtroniclabs.spice.data.FollowUpPatientModel
 import com.medtroniclabs.spice.data.LabourDeliveryMetaEntity
 import com.medtroniclabs.spice.data.MedicalReviewMetaItems
 import com.medtroniclabs.spice.data.VillageInfo
+import com.medtroniclabs.spice.data.model.HouseholdCardDetail
 import com.medtroniclabs.spice.data.offlinesync.model.HouseHold
 import com.medtroniclabs.spice.data.offlinesync.model.HouseHoldMember
 import com.medtroniclabs.spice.data.offlinesync.model.RequestFollowUp
@@ -176,4 +177,8 @@ interface RoomHelper {
     suspend fun getUnSyncedFollowUpCount(): Int
 
     fun getExaminationsComplaintByTypeLiveData(category: String): LiveData<List<MedicalReviewMetaItems>>
+
+    fun getHouseholdCardDetailLiveData(id: Long): LiveData<HouseholdCardDetail>
+
+    fun getAllHouseHoldMembersLiveData(hhId: Long) : LiveData<List<HouseholdMemberEntity>>
 }

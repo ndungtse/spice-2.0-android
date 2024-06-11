@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.common.CommonUtils.getAgeFromDOB
 import com.medtroniclabs.spice.common.CommonUtils.getAgeFromDob
 import com.medtroniclabs.spice.common.CommonUtils.getGenderText
 import com.medtroniclabs.spice.common.DateUtils
@@ -21,7 +22,7 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 
 class HouseholdMemberListAdapter(
-    private val houseHoldMembersList: ArrayList<HouseholdMemberEntity>,
+    private val houseHoldMembersList: List<HouseholdMemberEntity>,
     private val listener: MemberSelectionListener
 ) : RecyclerView.Adapter<HouseholdMemberListAdapter.HouseholdListViewHolder>() {
 
@@ -47,7 +48,7 @@ class HouseholdMemberListAdapter(
             context.getString(
                 R.string.household_summary_member_info,
                 item.name,
-                getAgeFromDob(item.dateOfBirth, context.getString(R.string.months)),
+                getAgeFromDOB(item.dateOfBirth, context),
                 getGenderText(item.gender, context)
             )
         )

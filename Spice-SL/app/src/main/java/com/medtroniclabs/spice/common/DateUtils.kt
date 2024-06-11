@@ -1,12 +1,12 @@
 package com.medtroniclabs.spice.common
 
+import com.medtroniclabs.spice.data.model.CalendarPeriod
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams
-import com.medtroniclabs.spice.model.PatientsDataModel
-import org.joda.time.Period
 import org.joda.time.PeriodType
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.Period
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
@@ -51,6 +51,23 @@ object DateUtils {
         } catch (exception: Exception) {
             return Pair(null, Triple(null, null, null))
         }
+    }
+
+    fun getV2YearMonthAndWeek(dob: String, format: String = DATE_FORMAT_yyyyMMddHHmmssZZZZZ): CalendarPeriod{
+        val dobDate = LocalDate.parse(dob, DateTimeFormatter.ofPattern(format))
+        val today = LocalDate.now()
+
+        val period = Period.between(dobDate, today)
+
+        val years = period.years
+        val months = period.months
+
+        // Calculate the weeks by finding the number of days and then converting to weeks
+        val daysBetween = ChronoUnit.DAYS.between(dobDate.plusYears(years.toLong()).plusMonths(months.toLong()), today)
+        val weeks = (daysBetween / 7).toInt()
+        val days = (daysBetween % 7).toInt()
+
+        return CalendarPeriod(years,months,weeks,days)
     }
 
     fun getYearMonthAndDate(
@@ -134,7 +151,7 @@ object DateUtils {
 
     fun calculateAgeInMonths(startDate: Date): Int {
         val endDate = Calendar.getInstance().time
-        val period = Period(startDate.time, endDate.time, PeriodType.months())
+        val period = org.joda.time.Period(startDate.time, endDate.time, PeriodType.months())
         return period.months
     }
 

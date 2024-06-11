@@ -9,7 +9,7 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="@dimen/_340sdp"
+        android:layout_height="@dimen/_440sdp"
         android:background="@drawable/bg_white_corner_radius"
         android:paddingBottom="@dimen/_16sdp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -96,7 +96,7 @@
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvUnSyncedDetail"
                 android:layout_width="@dimen/_0dp"
-                android:layout_height="@dimen/_60sdp"
+                android:layout_height="wrap_content"
                 app:layout_constraintBottom_toTopOf="@+id/btnStart"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -216,9 +216,10 @@
                 android:layout_gravity="center"
                 android:contentDescription="@string/logo_description"
                 android:src="@drawable/success_icon"
+                android:layout_marginBottom="@dimen/_16sdp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintBottom_toTopOf="@+id/tvOfflineSyncCompleted" />
 
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -229,10 +230,10 @@
                 android:textAlignment="center"
                 android:textColor="@color/house_hold_title"
                 android:textSize="@dimen/_16ssp"
-                app:layout_constraintBottom_toTopOf="@+id/btnOkay"
+                app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/statusImage" />
+                app:layout_constraintBottom_toBottomOf="parent" />
 
 
             <androidx.appcompat.widget.AppCompatButton

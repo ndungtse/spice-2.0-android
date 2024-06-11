@@ -5,11 +5,8 @@ import android.content.res.AssetManager
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.DateUtils.calculateAge
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.MONTHS
-import com.medtroniclabs.spice.formgeneration.config.DefinedParams.Month
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.WEEKS
-import com.medtroniclabs.spice.formgeneration.config.DefinedParams.Week
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.YEARS
-import com.medtroniclabs.spice.formgeneration.config.DefinedParams.Year
 import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration
 import java.math.RoundingMode
 import java.text.DecimalFormat
@@ -74,11 +71,11 @@ object CommonUtils {
         return (answer is String) && answer.equals(HouseHoldRegistration.yes, true)
     }
 
-    fun displayAge(resultHashMap: HashMap<String, Any>, context: Context): String {
-
-        var years = resultHashMap[Year] as? Int ?: 0
-        var months = resultHashMap[Month] as? Int ?: 0
-        var weeks = resultHashMap[Week] as? Int ?: 0
+    fun displayAge(dobString: String, context: Context): String {
+        val yearMonthWeek = DateUtils.getV2YearMonthAndWeek(dobString)
+        var years = yearMonthWeek.years
+        var months = yearMonthWeek.months
+        var weeks = yearMonthWeek.weeks
 
         if (months == 0 && years == 0 && weeks == 0) {
             return context.getString(R.string.separator_hyphen)
@@ -164,6 +161,30 @@ object CommonUtils {
         map[DefinedParams.ID] = value
         map[DefinedParams.NAME] = name
         return map
+    }
+
+    fun getAgeFromDOB(dateOfBirth: String?, context: Context): String {
+        if (dateOfBirth != null) {
+            val yearMonthWeek = DateUtils.getV2YearMonthAndWeek(dateOfBirth)
+
+            if (yearMonthWeek.years >= 5) {
+                return "${yearMonthWeek.years}"
+            }
+
+            val months = (yearMonthWeek.years * 12) + yearMonthWeek.months
+            if (months > 0) {
+                return "$months ${context.getString(R.string.months)}"
+            }
+
+            if (yearMonthWeek.weeks > 0) {
+                return "${yearMonthWeek.weeks} ${context.getString(R.string.weeks)}"
+            }
+
+            if (yearMonthWeek.days > 0) {
+                return "${yearMonthWeek.days} ${context.getString(R.string.days)}"
+            }
+        }
+        return ""
     }
 
     fun getAgeFromDob(dateOfBirth: String?, month: String): String {

@@ -8,6 +8,7 @@ import com.medtroniclabs.spice.data.FollowUpPatientModel
 import com.medtroniclabs.spice.data.LabourDeliveryMetaEntity
 import com.medtroniclabs.spice.data.MedicalReviewMetaItems
 import com.medtroniclabs.spice.data.VillageInfo
+import com.medtroniclabs.spice.data.model.HouseholdCardDetail
 import com.medtroniclabs.spice.data.offlinesync.model.HouseHold
 import com.medtroniclabs.spice.data.offlinesync.model.HouseHoldMember
 import com.medtroniclabs.spice.db.dao.AboveFiveYearsDAO
@@ -497,5 +498,13 @@ class RoomHelperImpl @Inject constructor(
 
     override fun getExaminationsComplaintByTypeLiveData(category: String): LiveData<List<MedicalReviewMetaItems>> {
         return examinationsComplaintsDAO.getExaminationsComplaintByTypeLiveData(category)
+    }
+
+    override fun getHouseholdCardDetailLiveData(id: Long): LiveData<HouseholdCardDetail> {
+        return householdDAO.getHouseholdCardDetailLiveData(id)
+    }
+
+    override fun getAllHouseHoldMembersLiveData(hhId: Long): LiveData<List<HouseholdMemberEntity>> {
+        return memberDAO.getAllHouseHoldMembersLiveData(hhId)
     }
 }

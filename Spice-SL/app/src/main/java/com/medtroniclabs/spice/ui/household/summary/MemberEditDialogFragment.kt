@@ -60,7 +60,7 @@ class MemberEditDialogFragment() : DialogFragment(), View.OnClickListener {
                 name = DefinedParams.DefaultIDLabel
             )
         )
-        householdSummaryViewModel.memberListLiveData.value?.data?.let { data ->
+        householdSummaryViewModel.householdMembersLiveData.value?.let { data ->
             data.forEach {item ->
                 dropDownList.add(
                     MemberDetailsSpinnerModel(

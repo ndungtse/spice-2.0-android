@@ -224,18 +224,19 @@ class MemberRegistrationFragment : Fragment(), FormEventListener, View.OnClickLi
         }
         details.dateOfBirth.let {
             val dateOfBirth = DateUtils.convertDateFormat(it, DATE_FORMAT_yyyyMMddHHmmssZZZZZ, DATE_ddMMyyyy)
+            val dateDob = DateUtils.convertStringToDate(it, DATE_FORMAT_yyyyMMddHHmmssZZZZZ)
             formGenerator.getViewByTag(MemberRegistration.dateOfBirth)?.let { view ->
                 if (dateOfBirth.isNotBlank()) {
                     formGenerator.disableView(view, requireContext())
                 }
                 formGenerator.setValueForView(dateOfBirth, view)
             }
-            formGenerator.methodToAutoPopulateDateOfBirth(
-                dateOfBirth, DATE_ddMMyyyy
-                ,false
-            )
-        }
 
+            dateDob?.let {dob ->
+                formGenerator.fillDetailsOnDatePickerSet(dob,false)
+            }
+
+        }
     }
 
 

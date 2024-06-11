@@ -189,14 +189,11 @@ class AssessmentRMNCHNeonateFragment : BaseFragment(), View.OnClickListener,
                         }
                         childFormGenerator.setValueForView(dateOfBirth, view)
                     }
-                    childFormGenerator.methodToAutoPopulateDateOfBirth(
-                        DateUtils.convertDateFormat(
-                            dateOfDelivery,
-                            DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-                            DateUtils.DATE_ddMMyyyy
-                        ), DateUtils.DATE_ddMMyyyy
-                        ,false
-                    )
+
+                    val dateDob = DateUtils.convertStringToDate(dateOfDelivery, DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ)
+                    dateDob?.let { dob ->
+                        childFormGenerator.fillDetailsOnDatePickerSet(dob, false)
+                    }
                 }
             }
         }

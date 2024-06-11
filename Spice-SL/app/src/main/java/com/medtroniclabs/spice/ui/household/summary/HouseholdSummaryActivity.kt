@@ -14,7 +14,6 @@ import com.medtroniclabs.spice.databinding.ActivityHouseholdSummaryBinding
 import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
 import com.medtroniclabs.spice.formgeneration.extension.capitalizeFirstChar
 import com.medtroniclabs.spice.formgeneration.extension.safePopupMenuClickListener
-import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.dialog.SuccessDialogFragment
 import com.medtroniclabs.spice.ui.home.ToolsActivity
@@ -43,61 +42,29 @@ class HouseholdSummaryActivity : BaseActivity(), MemberSelectionListener, View.O
     }
 
     private fun attachObserver() {
-        householdSummaryViewModel.memberListLiveData.observe(this) { resourceState ->
-            when (resourceState.state) {
-                ResourceState.SUCCESS -> {
-                    hideLoading()
-                    resourceState.data?.let { data ->
-                        initializeAdapter(data)
-                        if (householdSummaryViewModel.previousCount != 0 && (householdSummaryViewModel.previousCount < data.size)) {
-                            data.last().patientId?.let {
-                                val existingFragment =
-                                    supportFragmentManager.findFragmentByTag(SuccessDialogFragment.TAG)
-                                if (existingFragment == null) {
-                                    SuccessDialogFragment.newInstance(
-                                        householdNo = -1L,
-                                        patientId = it
-                                    ).show(supportFragmentManager, SuccessDialogFragment.TAG)
-                                }
-                            }
-                        }
-                        householdSummaryViewModel.previousCount = data.size
-                    } ?: kotlin.run {
-                        hideLoading()
-                    }
-                }
-
-                ResourceState.ERROR -> {
-                    hideLoading()
-                }
-
-                ResourceState.LOADING -> {
-                    showLoading()
-                }
-            }
+        householdSummaryViewModel.householdCardDetailLiveData.observe(this) {
+            setTitle(it.name.capitalizeFirstChar() +" "+ getString(R.string.household))
         }
 
-        householdSummaryViewModel.houseHoldDetailLiveData.observe(this) { resourceState ->
-            when (resourceState.state) {
-                ResourceState.LOADING -> {
-                    showLoading()
-                }
-
-                ResourceState.ERROR -> {
-                    hideLoading()
-                }
-
-                ResourceState.SUCCESS -> {
-                    hideLoading()
-                    resourceState.data?.name?.let { name ->
-                        setTitle(name.capitalizeFirstChar() +" "+ getString(R.string.household))
+        householdSummaryViewModel.householdMembersLiveData.observe(this) { data ->
+            initializeAdapter(data)
+            if (householdSummaryViewModel.previousCount != 0 && (householdSummaryViewModel.previousCount < data.size)) {
+                data.last().patientId?.let {
+                    val existingFragment =
+                        supportFragmentManager.findFragmentByTag(SuccessDialogFragment.TAG)
+                    if (existingFragment == null) {
+                        SuccessDialogFragment.newInstance(
+                            householdNo = -1L,
+                            patientId = it
+                        ).show(supportFragmentManager, SuccessDialogFragment.TAG)
                     }
                 }
             }
+            householdSummaryViewModel.previousCount = data.size
         }
     }
 
-    private fun initializeAdapter(data: ArrayList<HouseholdMemberEntity>) {
+    private fun initializeAdapter(data: List<HouseholdMemberEntity>) {
         val householdListAdapter = HouseholdMemberListAdapter(data, this)
         binding.rvHouseholdList.apply {
             layoutManager =
@@ -114,16 +81,8 @@ class HouseholdSummaryActivity : BaseActivity(), MemberSelectionListener, View.O
         )
         supportFragmentManager.beginTransaction()
             .add(binding.fragmentContainer.id, HouseholdDetailsFragment()).commit()
-        householdSummaryViewModel.getHouseHoldDetailsById()
         handleBottomNavigation()
     }
-
-    override fun onResume() {
-        super.onResume()
-        householdSummaryViewModel.getAllHouseHoldMemberList()
-        householdSummaryViewModel.getHouseHoldDetailsById()
-    }
-
 
     private fun handleBottomNavigation() {
         if (householdSummaryViewModel.isFromHouseHoldRegistration) {
@@ -192,7 +151,7 @@ class HouseholdSummaryActivity : BaseActivity(), MemberSelectionListener, View.O
     override fun onClick(v: View?) {
         when (v?.id) {
             R.id.btnFinishRegistration -> {
-                householdSummaryViewModel.houseHoldDetailLiveData.value?.data?.let {
+                householdSummaryViewModel.householdCardDetailLiveData.value?.let {
                     val existingFragment =
                         supportFragmentManager.findFragmentByTag(SuccessDialogFragment.TAG)
                     if (existingFragment == null) {

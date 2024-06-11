@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.LocalSpinnerResponse
+import com.medtroniclabs.spice.data.model.HouseholdCardDetail
 import com.medtroniclabs.spice.data.offlinesync.model.HouseHoldMember
 import com.medtroniclabs.spice.data.offlinesync.model.RequestGetSyncStatus
 import com.medtroniclabs.spice.data.offlinesync.model.SyncResponse
@@ -179,5 +180,13 @@ class HouseHoldRepository @Inject constructor(
 
     suspend fun getUnSyncedHouseholdMemberCount(): Int {
         return roomHelper.getUnSyncedHouseholdMemberCount()
+    }
+
+    fun getHouseholdCardDetailLiveData(id: Long): LiveData<HouseholdCardDetail> {
+        return roomHelper.getHouseholdCardDetailLiveData(id)
+    }
+
+    fun getAllHouseHoldMembersLiveData(hhId: Long) : LiveData<List<HouseholdMemberEntity>> {
+        return roomHelper.getAllHouseHoldMembersLiveData(hhId)
     }
 }

@@ -7,17 +7,14 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.data.model.HouseholdCardDetail
 import com.medtroniclabs.spice.databinding.FragmentHouseholdDetailsBinding
 import com.medtroniclabs.spice.databinding.SummaryListItemBinding
-import com.medtroniclabs.spice.db.entity.HouseholdEntity
-import com.medtroniclabs.spice.network.resource.ResourceState
-import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.household.viewmodel.HouseHoldSummaryViewModel
 
 class HouseholdDetailsFragment : Fragment() {
 
     private lateinit var binding: FragmentHouseholdDetailsBinding
-
     private val householdSummaryViewModel: HouseHoldSummaryViewModel by activityViewModels()
 
     override fun onCreateView(
@@ -38,80 +35,59 @@ class HouseholdDetailsFragment : Fragment() {
     }
 
     private fun attachObserver() {
-        householdSummaryViewModel.householdMemberCountLiveData.observe(viewLifecycleOwner) {
-            binding.tvLabel.text = getString(R.string.members_registered)
-            binding.tvValue.text =
-                requireContext().getString(
-                    R.string.people_registered,
-                    it.memberCount,
-                    it.noOfPeople
-                )
-            binding.ivMemberRegCount.visibility =
-                if (it.noOfPeople == it.memberCount) View.INVISIBLE else View.VISIBLE
-        }
-        householdSummaryViewModel.houseHoldDetailLiveData.observe(viewLifecycleOwner) { resourceState ->
-            when (resourceState.state) {
-                ResourceState.LOADING -> {
-                    (activity as BaseActivity?)?.showLoading()
-                }
-
-                ResourceState.SUCCESS -> {
-                    (activity as BaseActivity?)?.hideLoading()
-                    resourceState.data?.let { houseHoldDetail ->
-                        householdSummaryViewModel.getVillageByID (houseHoldDetail.villageId)
-                    }
-                }
-
-                ResourceState.ERROR -> {
-                    (activity as BaseActivity?)?.hideLoading()
-                }
-            }
-        }
-
-        householdSummaryViewModel.villageDetailLiveData.observe(viewLifecycleOwner) { resourceState ->
-            when (resourceState.state) {
-                ResourceState.LOADING -> {
-                    (activity as BaseActivity?)?.showLoading()
-                }
-
-                ResourceState.SUCCESS -> {
-                    (activity as BaseActivity?)?.hideLoading()
-                    resourceState.data?.let { villageDetail ->
-                        renderHouseholdDetailsSummary(villageDetail.name)
-                    }
-                }
-
-                ResourceState.ERROR -> {
-                    (activity as BaseActivity?)?.hideLoading()
-                }
-            }
+        householdSummaryViewModel.householdCardDetailLiveData.observe(viewLifecycleOwner) { houseHoldDetail ->
+            renderHouseholdDetailsSummary(houseHoldDetail)
         }
     }
 
-    private fun renderHouseholdDetailsSummary(villageName: String) {
+    private fun renderHouseholdDetailsSummary(houseHoldDetail: HouseholdCardDetail) {
         binding.llDetails.removeAllViews()
-        householdSummaryViewModel.houseHoldDetailLiveData.value?.data?.let { houseHoldDetail ->
-            val houseHoldNumberViewBinding =
-                SummaryListItemBinding.inflate(LayoutInflater.from(context))
-            houseHoldNumberViewBinding.tvLabel.text = getString(R.string.household_no)
-            houseHoldNumberViewBinding.tvValue.text = houseHoldDetail.householdNo.toString()
-            binding.llDetails.addView(houseHoldNumberViewBinding.root)
-            val villageViewBinding =
-                SummaryListItemBinding.inflate(LayoutInflater.from(context))
-            villageViewBinding.tvLabel.text = getString(R.string.village)
-            villageViewBinding.tvValue.text = villageName
-            binding.llDetails.addView(villageViewBinding.root)
-            val landmarkViewBinding = SummaryListItemBinding.inflate(LayoutInflater.from(context))
-            landmarkViewBinding.tvLabel.text = getString(R.string.landmark)
-            landmarkViewBinding.tvValue.text =
-                if (!houseHoldDetail.landmark.isNullOrEmpty()) houseHoldDetail.landmark else
-                    getString(R.string.hyphen_symbol)
-            binding.llDetails.addView(landmarkViewBinding.root)
-            val houseHoldHeadMobileNumber = SummaryListItemBinding.inflate(LayoutInflater.from(context))
-            houseHoldHeadMobileNumber.tvLabel.text = getString(R.string.hh_mobile_number)
-            houseHoldHeadMobileNumber.tvValue.text =
-                houseHoldDetail.headPhoneNumber ?: getString(R.string.hyphen_symbol)
-            binding.llDetails.addView(houseHoldHeadMobileNumber.root)
-        }
+
+        addHouseholdNoView(houseHoldDetail.householdNo)
+        addVillageNameView(houseHoldDetail.villageName)
+        addLandmarkView(houseHoldDetail.landmark)
+        addHouseholdHeadNumberView(houseHoldDetail.householdHeadPhoneNumber)
+        addMemberRegisteredView(houseHoldDetail.memberRegistered, houseHoldDetail.memberAdded)
     }
+
+    private fun addHouseholdNoView(householdNo: Long) {
+        val view = SummaryListItemBinding.inflate(LayoutInflater.from(context))
+        view.tvLabel.text = getString(R.string.household_no)
+        view.tvValue.text = householdNo.toString()
+        binding.llDetails.addView(view.root)
+    }
+
+    private fun addVillageNameView(villageName: String) {
+        val view = SummaryListItemBinding.inflate(LayoutInflater.from(context))
+        view.tvLabel.text = getString(R.string.village)
+        view.tvValue.text = villageName
+        binding.llDetails.addView(view.root)
+    }
+
+    private fun addLandmarkView(landmark: String?) {
+        val view = SummaryListItemBinding.inflate(LayoutInflater.from(context))
+        view.tvLabel.text = getString(R.string.landmark)
+        view.tvValue.text = landmark ?: getString(R.string.hyphen_symbol)
+        binding.llDetails.addView(view.root)
+    }
+
+    private fun addHouseholdHeadNumberView(householdHeadPhoneNo: String?) {
+        val view = SummaryListItemBinding.inflate(LayoutInflater.from(context))
+        view.tvLabel.text = getString(R.string.hh_mobile_number)
+        view.tvValue.text = householdHeadPhoneNo ?: getString(R.string.hyphen_symbol)
+        binding.llDetails.addView(view.root)
+    }
+
+    private fun addMemberRegisteredView(memberRegistered: Int, memberAdded: Int) {
+        binding.tvLabel.text = getString(R.string.members_registered)
+        binding.tvValue.text =
+            requireContext().getString(
+                R.string.people_registered,
+                memberAdded,
+                memberRegistered
+            )
+        binding.ivMemberRegCount.visibility =
+            if (memberRegistered == memberAdded) View.INVISIBLE else View.VISIBLE
+    }
+
 }

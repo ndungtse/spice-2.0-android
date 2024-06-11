@@ -8,6 +8,7 @@ import androidx.room.Query
 import androidx.room.RawQuery
 import androidx.room.Update
 import androidx.sqlite.db.SimpleSQLiteQuery
+import com.medtroniclabs.spice.data.model.HouseholdCardDetail
 import com.medtroniclabs.spice.db.entity.HouseholdEntity
 import com.medtroniclabs.spice.db.response.HouseHoldEntityWithMemberCount
 import com.medtroniclabs.spice.db.response.HouseholdMemberCount
@@ -61,4 +62,8 @@ interface HouseholdDAO {
 
     @Query("DELETE FROM Household")
     suspend fun deleteAllHouseholds()
+
+    @Query("SELECT hh.id, hh.name, hh.household_no AS householdNo, hh.landmark, ve.name AS villageName, hh.head_phone_number AS householdHeadPhoneNumber, hh.no_of_people AS memberRegistered, COUNT(hhm.id) AS memberAdded " +
+            "FROM Household as hh INNER JOIN VillageEntity as ve ON hh.village_id = ve.id LEFT JOIN HouseholdMember as hhm ON hhm.household_id = hh.id  WHERE hh.id =:id")
+    fun getHouseholdCardDetailLiveData(id: Long): LiveData<HouseholdCardDetail>
 }

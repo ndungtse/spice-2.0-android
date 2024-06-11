@@ -108,6 +108,7 @@
     <string name="years">Years</string>
     <string name="months">Months</string>
     <string name="weeks">Weeks</string>
+    <string name="days">Days</string>
     <string name="age">Age</string>
     <string name="seperator_hyphen">-</string>
     <string name="household_empty_text">No Household found.</string>

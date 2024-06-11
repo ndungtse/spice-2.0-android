@@ -197,9 +197,9 @@ class BioDataFragment : BaseFragment() {
             binding.gender.tvValue.text = gender.capitalizeFirstChar()
             binding.dobAge.tvKey.text = getString(R.string.age)
             binding.dobAge.tvValue.text = getAgeValue(
-                CommonUtils.getAgeFromDob(
+                CommonUtils.getAgeFromDOB(
                     dateOfBirth,
-                    requireContext().getString(R.string.months)
+                    requireContext()
                 )
             )
             viewModel.workflowName?.let { workFlowName ->

@@ -100,9 +100,9 @@ class FollowUpDialogFragment : DialogFragment() {
         return getString(
             R.string.household_summary_member_info,
             name,
-            CommonUtils.getAgeFromDob(
+            CommonUtils.getAgeFromDOB(
                 dob,
-                getString(R.string.months)
+                requireContext()
             ),
             CommonUtils.getGenderText(gender, requireContext())
         )

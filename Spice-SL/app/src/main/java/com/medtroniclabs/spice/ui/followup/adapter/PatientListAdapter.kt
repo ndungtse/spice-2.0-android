@@ -71,9 +71,9 @@ class PatientListAdapter(private val callback: (Int, FollowUpPatientModel) -> Un
         return context.getString(
             R.string.household_summary_member_info,
             name,
-            CommonUtils.getAgeFromDob(
+            CommonUtils.getAgeFromDOB(
                 dob,
-                context.getString(R.string.months)
+                context
             ),
             CommonUtils.getGenderText(gender, context)
         )

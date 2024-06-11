@@ -4,20 +4,12 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.switchMap
-import androidx.lifecycle.viewModelScope
-import com.medtroniclabs.spice.appextensions.postError
-import com.medtroniclabs.spice.appextensions.postLoading
-import com.medtroniclabs.spice.appextensions.postSuccess
-import com.medtroniclabs.spice.db.entity.HouseholdEntity
+import com.medtroniclabs.spice.data.model.HouseholdCardDetail
 import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
-import com.medtroniclabs.spice.db.entity.VillageEntity
-import com.medtroniclabs.spice.db.response.HouseholdMemberCount
 import com.medtroniclabs.spice.di.IoDispatcher
-import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.repo.HouseHoldRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -26,55 +18,23 @@ class HouseHoldSummaryViewModel @Inject constructor(
     private val houseHoldRepository: HouseHoldRepository
 ) : ViewModel() {
 
-    private val houseHoldNoLiveData = MutableLiveData<Long>()
-    val householdMemberCountLiveData: LiveData<HouseholdMemberCount> = houseHoldNoLiveData.switchMap { input ->
-        houseHoldRepository.getMemberCountInHouseholdLiveData(input)
-    }
     var houseHoldId: Long = -1L
     var isFromHouseHoldRegistration: Boolean = false
-    val houseHoldDetailLiveData = MutableLiveData<Resource<HouseholdEntity>>()
-    val villageDetailLiveData = MutableLiveData<Resource<VillageEntity>>()
     var selectedMemberId = -1L
-    var memberListLiveData = MutableLiveData<Resource<ArrayList<HouseholdMemberEntity>>>()
     var villageId: Long = -1L
     var previousCount: Int = 0
 
-    fun getHouseHoldDetailsById() {
-        if (houseHoldId == -1L)
-            return
-        try {
-            viewModelScope.launch(dispatcherIO) {
-                houseHoldDetailLiveData.postLoading()
-                val householdEntity = houseHoldRepository.getHouseHoldDetailsById(houseHoldId)
-                houseHoldDetailLiveData.postSuccess(householdEntity)
-            }
-        } catch (e: Exception) {
-            houseHoldDetailLiveData.postError()
-        }
+    private val houseHoldNoLiveData = MutableLiveData<Long>()
+    val householdCardDetailLiveData: LiveData<HouseholdCardDetail> = houseHoldNoLiveData.switchMap { id ->
+        houseHoldRepository.getHouseholdCardDetailLiveData(id)
     }
 
-    fun getAllHouseHoldMemberList() {
-        viewModelScope.launch(dispatcherIO) {
-            try {
-                memberListLiveData.postLoading()
-                val memberList = houseHoldRepository.getAllHouseHoldMemberList(houseHoldId)
-                memberListLiveData.postSuccess(memberList)
-            } catch (e: Exception) {
-                memberListLiveData.postError()
-            }
-        }
-    }
-
-
-    fun getVillageByID(villageId: Long) {
-        viewModelScope.launch(dispatcherIO) {
-            villageDetailLiveData.postValue(houseHoldRepository.getVillageByID(villageId))
-        }
+    val householdMembersLiveData: LiveData<List<HouseholdMemberEntity>> = houseHoldNoLiveData.switchMap { id ->
+        houseHoldRepository.getAllHouseHoldMembersLiveData(id)
     }
 
     fun setHouseholdId(hhId: Long) {
         this.houseHoldId = hhId
         houseHoldNoLiveData.value = hhId
     }
-
 }

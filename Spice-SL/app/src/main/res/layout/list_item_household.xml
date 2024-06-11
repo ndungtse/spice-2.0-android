@@ -33,6 +33,8 @@
                 android:layout_height="wrap_content"
                 android:gravity="start"
                 android:text="Moho Household"
+                android:maxLines="2"
+                android:ellipsize="end"
                 android:drawableEnd="@drawable/ic_arrow_forward"
                 android:textColor="@color/secondary_black"
                 app:layout_constraintEnd_toEndOf="parent"
