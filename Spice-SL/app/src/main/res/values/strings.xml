@@ -473,6 +473,13 @@
     <string name="ddmmyyyy">dd/mm/yyyy</string>
     <string name="phone_number_invalid">Please enter a valid mobile number</string>
     <string name="zinc_ors_status">(Zinc - %1$s), (ORS - %2$s)</string>
+    <string name="physical_examinations">Physical Examinations</string>
+    <string name="congenital_detect">Congenital Detect</string>
+    <string name="cord_examination">Cord Examination</string>
+    <string name="healing_satisfactorily">Healing satisfactorily</string>
+    <string name="poor_healing">Poor healing</string>
+    <string name="infected">Infected</string>
+
     <string name="filter">Filter</string>
     <string name="refer_to">Refer To</string>
     <string name="referred_reason">Referred Reason</string>

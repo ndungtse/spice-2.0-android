@@ -16,7 +16,7 @@ interface ExaminationsComplaintsDAO {
     suspend fun deleteExaminationsComplaints(menuType: String)
 
     @Query("SELECT * FROM MetaItemByTypeAndCategoryEntity WHERE type = :workflow ORDER BY displayOrder ASC")
-    suspend fun getExaminationsComplaintByType(workflow: String) : List<MedicalReviewMetaItems>
+    suspend fun getExaminationsComplaintByType(workflow: String): List<MedicalReviewMetaItems>
 
     @Query("DELETE FROM MetaItemByTypeAndCategoryEntity WHERE type = :type")
     suspend fun deleteExaminationsComplaintsForAnc(type: String)
@@ -26,4 +26,6 @@ interface ExaminationsComplaintsDAO {
         category: String
     ): LiveData<List<MedicalReviewMetaItems>>
 
+    @Query("SELECT * FROM MetaItemByTypeAndCategoryEntity WHERE category = :workflow ORDER BY displayOrder ASC")
+    fun getExaminationsComplaintByTypeLiveData(workflow: String): LiveData<List<MedicalReviewMetaItems>>
 }

@@ -2,17 +2,14 @@ package com.medtroniclabs.spice.db.local
 
 import androidx.lifecycle.LiveData
 import androidx.sqlite.db.SimpleSQLiteQuery
-import com.medtroniclabs.spice.appextensions.convertToUtcDateTime
 import com.medtroniclabs.spice.data.DiseaseCategoryItems
 import com.medtroniclabs.spice.data.ExaminationListItems
 import com.medtroniclabs.spice.data.FollowUpPatientModel
 import com.medtroniclabs.spice.data.LabourDeliveryMetaEntity
 import com.medtroniclabs.spice.data.MedicalReviewMetaItems
 import com.medtroniclabs.spice.data.VillageInfo
-import com.medtroniclabs.spice.data.offlinesync.model.FollowUpCallStatus
 import com.medtroniclabs.spice.data.offlinesync.model.HouseHold
 import com.medtroniclabs.spice.data.offlinesync.model.HouseHoldMember
-import com.medtroniclabs.spice.data.offlinesync.utils.OfflineSyncStatus
 import com.medtroniclabs.spice.db.dao.AboveFiveYearsDAO
 import com.medtroniclabs.spice.db.dao.AssessmentDAO
 import com.medtroniclabs.spice.db.dao.DiagnosisDAO
@@ -46,11 +43,6 @@ import com.medtroniclabs.spice.db.response.VillageBasicDetails
 import com.medtroniclabs.spice.model.MemberDobGenderModel
 import com.medtroniclabs.spice.model.assessment.AssessmentDetails
 import com.medtroniclabs.spice.model.assessment.AssessmentMemberDetails
-import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
-import com.medtroniclabs.spice.ui.followup.FollowUpDefinedParams.FU_TYPE_HH_VISIT
-import com.medtroniclabs.spice.ui.followup.FollowUpDefinedParams.FU_TYPE_REFERRED
-import com.medtroniclabs.spice.ui.followup.FollowUpDefinedParams.WrongNumber
-import com.medtroniclabs.spice.model.followup.FollowUpFilter
 import com.medtroniclabs.spice.ui.boarding.MenuTypeEnums
 import javax.inject.Inject
 
@@ -501,5 +493,9 @@ class RoomHelperImpl @Inject constructor(
 
     override suspend fun deleteAllAssessments() {
         return assessmentDAO.deleteAllAssessments()
+    }
+
+    override fun getExaminationsComplaintByTypeLiveData(category: String): LiveData<List<MedicalReviewMetaItems>> {
+        return examinationsComplaintsDAO.getExaminationsComplaintByTypeLiveData(category)
     }
 }

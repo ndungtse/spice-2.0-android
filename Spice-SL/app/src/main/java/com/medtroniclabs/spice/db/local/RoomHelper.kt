@@ -167,11 +167,13 @@ interface RoomHelper {
 
     suspend fun deleteAllFollowUpCalls()
 
-    suspend fun getFollowUpById(id: Long) : FollowUp
+    suspend fun getFollowUpById(id: Long): FollowUp
 
     suspend fun getAllFollowUpRequests(): List<FollowUp>
 
     suspend fun getAllFollowUpCalls(id: Long): List<FollowUpCall>
 
     suspend fun getUnSyncedFollowUpCount(): Int
+
+    fun getExaminationsComplaintByTypeLiveData(category: String): LiveData<List<MedicalReviewMetaItems>>
 }
