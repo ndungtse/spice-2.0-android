@@ -13,7 +13,6 @@ import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils.convertListToString
-import com.medtroniclabs.spice.common.CommonUtils.formatListToStringWithOther
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.data.model.MotherNeonateAncRequest
 import com.medtroniclabs.spice.databinding.FragmentMedicalReviewPatientDiagnosisBinding
@@ -122,7 +121,8 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
                 ResourceState.SUCCESS -> {
                     resource.data?.let {
                         statusViewModel.getPatientStatusDetails(
-                            it
+                            it,
+                            diagnosisViewModel.diagnosisType
                         )
                     }
                 }
@@ -314,7 +314,10 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
                         if (list.isNotEmpty()) {
                             val diagnosisItems = list.map { it.diseaseCategory }.distinct()
                             binding.tvDiagnosis.text =
-                                convertListToString(ArrayList(diagnosisItems))
+                                diagnosisViewModel.diagnosisMetaList.value?.data?.let { diagnosisList ->
+                                    convertListToString(ArrayList(diagnosisList.filter { it.value in diagnosisItems }
+                                        .map { it.name }))
+                                } ?: getString(R.string.seperator_hyphen)
                             binding.tvDiagnosisConfirm.text = getString(R.string.edit_diagnoses)
                         } else {
                             binding.tvDiagnosis.text =

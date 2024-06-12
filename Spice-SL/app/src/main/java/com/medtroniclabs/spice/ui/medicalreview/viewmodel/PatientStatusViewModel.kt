@@ -21,15 +21,15 @@ class PatientStatusViewModel @Inject constructor(
     private val patientStatusRepository: PatientStatusRepository
 ): ViewModel(){
     @Inject
-    lateinit var connectivityManager: ConnectivityManager // Response<APIResponse<ArrayList<PatientStatusResponse>>>
+    lateinit var connectivityManager: ConnectivityManager
     val patientStatusLiveData = MutableLiveData<Resource<PatientStatusResponse>>()
     //The below id represent backend generated ID from patient details response, its not a member generated ID
     var patientId:String? = null
 
-    fun getPatientStatusDetails(patientDetails: PatientListRespModel) {
+    fun getPatientStatusDetails(patientDetails: PatientListRespModel, diagnosisType: String) {
         viewModelScope.launch(dispatcherIO) {
             patientStatusLiveData.postLoading()
-            patientStatusLiveData.postValue(patientStatusRepository.getPatientStatusDetails(patientDetails))
+            patientStatusLiveData.postValue(patientStatusRepository.getPatientStatusDetails(patientDetails, diagnosisType))
         }
     }
 }

@@ -240,10 +240,21 @@ class TagListCustomView(
             otherOnClick(binding.tvOther, binding.tagView)
         }
         chipGroup.addView(binding.root)
-        selectedChipItemList?.let { selectedChipItemList ->
-            val isAlreadySelected = selectedChipItemList.any { it.name == Other}
+        /*selectedChipItemList?.let { selectedChipItemList ->
+            val isAlreadySelected = selectedChipItemList.any { it.name.startsWith(Other)}
             if (isAlreadySelected) {
                 binding.tvOther.performClick()
+            }
+        }*/
+        selectedChipItemList?.let { chipItemList ->
+            val dataValue = getChipText(data)
+            dataValue?.second?.let { chipItem ->
+                if (chipItem.startsWith(Other)){
+                    val isAlreadySelected = chipItemList.any { it.name == chipItem }
+                    if (isAlreadySelected) {
+                        binding.tvOther.performClick()
+                    }
+                }
             }
         }
     }

@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.ContextWrapper
 import android.content.res.AssetManager
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.appextensions.nullIfEmpty
 import com.medtroniclabs.spice.common.DateUtils.calculateAge
 import com.medtroniclabs.spice.data.MedicationRequestObject
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.MONTHS
@@ -129,7 +130,7 @@ object CommonUtils {
     }
 
     fun convertListToString(dispensedList: ArrayList<String>): String {
-        return dispensedList.joinToString(separator = ", ")
+        return dispensedList.nullIfEmpty()?.joinToString(separator = ", ") ?: "-"
     }
 
     fun getYearMonthAndWeeks(dateString: String): Triple<String, String, String> {

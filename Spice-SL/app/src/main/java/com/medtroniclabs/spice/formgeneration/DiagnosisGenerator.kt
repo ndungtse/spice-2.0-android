@@ -122,7 +122,8 @@ class DiagnosisGenerator(
                 chipItemList.add(
                     ChipViewItemModel(
                         id = it.id,
-                        name = it.name
+                        name = it.name,
+                        value = it.value
                     )
                 )
             }

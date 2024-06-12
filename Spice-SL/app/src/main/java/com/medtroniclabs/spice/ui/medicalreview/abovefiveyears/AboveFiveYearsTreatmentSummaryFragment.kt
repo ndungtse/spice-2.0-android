@@ -6,11 +6,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
+import android.widget.ScrollView
+import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResult
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils.convertListToString
 import com.medtroniclabs.spice.common.CommonUtils.formatListToStringWithOther
 import com.medtroniclabs.spice.common.DateUtils
@@ -185,12 +188,13 @@ class AboveFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
                     selectedItem?.let {
                         val selectedName = it[DefinedParams.NAME] as String?
                         if (selectedName != DefinedParams.DefaultIDLabel) {
-                            selectedName?.let { id ->
-                                viewModel.selectedPatientStatus = id
+                            selectedName?.let { name ->
+                                viewModel.selectedPatientStatus = name
                             }
                         } else {
                             viewModel.selectedPatientStatus = null
                         }
+                        updateNextFollowUpDate()
                     }
                     summaryListener()
                 }
@@ -201,6 +205,20 @@ class AboveFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
                      */
                 }
             }
+    }
+
+    private fun updateNextFollowUpDate() {
+        if (viewModel.selectedPatientStatus == ReferralStatus.Recovered.name) {
+            if (viewModel.nextFollowupDate != null) {
+                viewModel.nextFollowupDate = null
+                binding.tvNextMedicalReviewLabelText.text = ""
+            }
+            binding.tvNextMedicalReviewLabelText.isEnabled = false
+        } else {
+            if(!binding.tvNextMedicalReviewLabelText.isEnabled){
+                binding.tvNextMedicalReviewLabelText.isEnabled = true
+            }
+        }
     }
 
     private fun initializeCostItem(costList: List<MedicalReviewMetaItems>) {

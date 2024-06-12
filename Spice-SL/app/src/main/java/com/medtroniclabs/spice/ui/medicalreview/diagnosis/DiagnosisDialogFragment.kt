@@ -67,6 +67,7 @@ class DiagnosisDialogFragment : DialogFragment(), View.OnClickListener, Diagnosi
         binding.btnCancel.safeClickListener(this)
         binding.ivClose.safeClickListener(this)
         binding.btnOkay.safeClickListener(this)
+        binding.loadingProgress.safeClickListener(this)
     }
 
     private fun attachObserver() {
@@ -103,40 +104,56 @@ class DiagnosisDialogFragment : DialogFragment(), View.OnClickListener, Diagnosi
                         if (diagnosisViewModel.viewDiagnosis) {
                             binding.llFamilyRoot.removeAllViews()
                             diagnosisViewModel.diagnosisMetaList.value?.data?.let { diagnosisList ->
-                                // diagnosisMetaList is to show selected accordions
-                                val diagnosisMetaList = ArrayList<DiseaseCategoryItems>()
+                                /**
+                                 * From backend diagnosis items respective ID and its FHIR value only be given,
+                                 * We need to compare it with our meta items and filter respective items to render
+                                 * and auto-populate the respective chip Items
+                                 *
+                                 * diagnosisAccordionList - Collecting list of accordions which has been already selected
+                                 *                          by comparing diseaseCategory and it value
+                                 * diagnosisMetaChipItemList - It is to render the Parent Chip item Disease Category
+                                 * selectedDiagnosisMetaChipItemList - It is to collect overall selected chip item list
+                                 * selectedDiseaseConditionItemList - It is to select chips of disease conditions which is inside accordion of respective group
+                                 */
+
+                                val diagnosisAccordionList = ArrayList<DiseaseCategoryItems>()
                                 for (diagnosis in diagnosisList) {
-                                    if (listItems.any { it.diseaseCategory == diagnosis.name }) {
-                                        diagnosisMetaList.add(diagnosis)
+                                    if (listItems.any { it.diseaseCategory == diagnosis.value }) {
+                                        diagnosisAccordionList.add(diagnosis)
                                     }
                                 }
-                                //diagnosisMetaChipItemList is to render chips in disease category
+
                                 val diagnosisMetaChipItemList = ArrayList<ChipViewItemModel>()
                                 diagnosisList.forEach {
                                     diagnosisMetaChipItemList.add(
                                         ChipViewItemModel(
-                                            id = it.id, name = it.name
+                                            id = it.id, name = it.name, value = it.value
                                         )
                                     )
                                 }
-                                //selectedDiagnosisMetaChipItemList is to select chips in disease category
+
                                 val selectedDiagnosisMetaChipItemList =
                                     ArrayList<ChipViewItemModel>()
-                                diagnosisMetaList.forEach {
+                                diagnosisAccordionList.forEach {
                                     selectedDiagnosisMetaChipItemList.add(
                                         ChipViewItemModel(
-                                            id = it.id, name = it.name
+                                            id = it.id, name = it.name, value = it.value
                                         )
                                     )
                                 }
-                                //chipItemList is to select chips inside accordion of respective group
-                                val chipItemList = ArrayList<ChipViewItemModel>()
+
+                                val selectedDiseaseConditionItemList = ArrayList<ChipViewItemModel>()
                                 listItems.forEach {
-                                    chipItemList.add(
-                                        ChipViewItemModel(
-                                            id = it.diseaseConditionId, name = it.diseaseCondition
+                                    val nameItemValue =
+                                        diagnosisList.flatMap { item -> item.diseaseCondition }
+                                            .find { conditionItem -> conditionItem.value == it.diseaseCondition }?.name
+                                    nameItemValue?.let { value ->
+                                        selectedDiseaseConditionItemList.add(
+                                            ChipViewItemModel(
+                                                id = it.diseaseConditionId, name = value
+                                            )
                                         )
-                                    )
+                                    }
                                 }
 
                                 diseaseCategoryTagView.addChipItemList(
@@ -144,8 +161,8 @@ class DiagnosisDialogFragment : DialogFragment(), View.OnClickListener, Diagnosi
                                     selectedDiagnosisMetaChipItemList
                                 )
                                 diagnosisGenerator.populateDiagnosisView(
-                                    diagnosisMetaList,
-                                    chipItemList
+                                    diagnosisAccordionList,
+                                    selectedDiseaseConditionItemList
                                 )
                             }
                         }
@@ -155,7 +172,7 @@ class DiagnosisDialogFragment : DialogFragment(), View.OnClickListener, Diagnosi
                             listItems.forEach {
                                 chipItemList.add(
                                     ChipViewItemModel(
-                                        id = it.id, name = it.name
+                                        id = it.id, name = it.name, value = it.value
                                     )
                                 )
                             }
@@ -247,21 +264,31 @@ class DiagnosisDialogFragment : DialogFragment(), View.OnClickListener, Diagnosi
                     }
                 }
             }
+
+            binding.loadingProgress.id -> {}
         }
     }
 
     private fun getDiagnosisDiseaseList(): ArrayList<DiagnosisDiseaseModel> {
+        /**
+         * This method is to compose request for save and update diagnosis
+         */
         val diagnosisList = ArrayList<DiagnosisDiseaseModel>()
-        diagnosisGenerator.getSelectedTagsForAccordions().let {
-            for ((diseaseCategoryId, chipViewItemList) in it) {
+        diagnosisGenerator.getSelectedTagsForAccordions().let { selectedAccordionMap ->
+            for ((diseaseCategoryValue, chipViewItemList) in selectedAccordionMap) {
                 for (chipViewItem in chipViewItemList) {
-                    val diagnosisDiseaseModel = DiagnosisDiseaseModel(
-                        diseaseCategoryId = getDiseaseCategoryId(diseaseCategoryId),
-                        diseaseConditionId = chipViewItem.id ?: -1,
-                        diseaseCategory = diseaseCategoryId,
-                        diseaseCondition = chipViewItem.name
-                    )
-                    diagnosisList.add(diagnosisDiseaseModel)
+                    chipViewItem.value?.let { value ->
+                        diagnosisViewModel.diagnosisMetaList.value?.data?.filter { item -> item.name == diseaseCategoryValue }
+                            ?.let { categoryItem ->
+                                val diagnosisDiseaseModel = DiagnosisDiseaseModel(
+                                    diseaseCategoryId = getDiseaseCategoryId(diseaseCategoryValue),
+                                    diseaseConditionId = chipViewItem.id ?: -1,
+                                    diseaseCategory = categoryItem[0].value,
+                                    diseaseCondition = value
+                                )
+                                diagnosisList.add(diagnosisDiseaseModel)
+                            }
+                    }
                 }
             }
         }

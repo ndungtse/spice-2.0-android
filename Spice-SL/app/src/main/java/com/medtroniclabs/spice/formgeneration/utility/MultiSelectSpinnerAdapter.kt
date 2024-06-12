@@ -11,7 +11,6 @@ import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.DefinedParams.DefaultIDLabel
 import com.medtroniclabs.spice.data.model.MultiSelectDropDownModel
 
-
 class MultiSelectSpinnerAdapter(
     context: Context,
     private val items: List<MultiSelectDropDownModel>,
@@ -20,20 +19,24 @@ class MultiSelectSpinnerAdapter(
 
     private val checkedItems = BooleanArray(items.size)
     private var onItemSelectedListener: OnItemSelectedListener? = null
+
     interface OnItemSelectedListener {
         fun onItemSelected(
             selectedItems: List<MultiSelectDropDownModel>,
             pos: Int
         )
     }
+
     init {
         for (i in items.indices) {
             checkedItems[i] = selectedItems.contains(items[i])
         }
     }
+
     fun setOnItemSelectedListener(listener: OnItemSelectedListener?) {
         this.onItemSelectedListener = listener
     }
+
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         return createView(position, convertView, parent, false)
     }
@@ -49,6 +52,7 @@ class MultiSelectSpinnerAdapter(
                 parent,
                 false
             )
+
         val textView = view.findViewById<TextView>(R.id.spin_txt)
 
         if (isDropDown) {
@@ -56,34 +60,39 @@ class MultiSelectSpinnerAdapter(
             val itemName = view.findViewById<TextView>(R.id.itemName)
 
             itemName.text = items[position].name
+            checkBox.setOnCheckedChangeListener(null)
+            checkBox.isChecked = checkedItems[position]
+
             checkBox.setOnCheckedChangeListener { _, isChecked ->
                 checkedItems[position] = isChecked
                 if (isChecked) {
                     if (!selectedItems.contains(items[position])) {
                         selectedItems.add(items[position])
                     }
-
                 } else {
                     selectedItems.remove(items[position])
-
                 }
                 notifyDataSetChanged()
-                onItemSelectedListener?.onItemSelected(selectedItems,position)
+                onItemSelectedListener?.onItemSelected(selectedItems, position)
+            }
 
+            itemName.setOnClickListener {
+                val newCheckedState = !checkBox.isChecked
+                checkBox.isChecked = newCheckedState
             }
+
         } else {
-            if (selectedItems.isEmpty()){
+            if (selectedItems.isEmpty()) {
                 textView.text = DefaultIDLabel
-            }
-            else{
-                var names : ArrayList<String>  = ArrayList()
-                for (i in getSelectedItems().indices){
+            } else {
+                val names = ArrayList<String>()
+                for (i in getSelectedItems().indices) {
                     names.add(getSelectedItems()[i].name)
                 }
-                textView.text = if (names.size > 1){
-                    "${names[0]} and ${names.size-1} more"
+                textView.text = if (names.size > 1) {
+                    "${names[0]} and ${names.size - 1} more"
                 } else {
-                    "${names[0]}"
+                    names[0]
                 }
             }
         }
@@ -91,7 +100,7 @@ class MultiSelectSpinnerAdapter(
         return view
     }
 
-    private fun getSelectedItems(): List<MultiSelectDropDownModel>  {
+    private fun getSelectedItems(): List<MultiSelectDropDownModel> {
         return selectedItems
     }
 }

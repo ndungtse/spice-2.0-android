@@ -451,7 +451,7 @@
                 android:id="@+id/tvNextMedicalReviewLabelText"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:background="@drawable/edittext_background"
+                android:background="@drawable/edittext_background_selector"
                 android:drawableEnd="@drawable/ic_date_picker_calendar"
                 android:gravity="start|center"
                 android:paddingStart="@dimen/_10sdp"

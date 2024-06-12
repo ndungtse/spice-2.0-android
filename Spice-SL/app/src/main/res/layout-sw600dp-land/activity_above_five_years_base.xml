@@ -145,6 +145,7 @@
                     android:layout_marginBottom="@dimen/_8sdp"
                     android:background="@drawable/button_selector_cobalt"
                     android:enabled="false"
+                    android:textStyle="bold"
                     android:text="@string/submit_caps"
                     app:layout_constraintTop_toTopOf="parent" />
 

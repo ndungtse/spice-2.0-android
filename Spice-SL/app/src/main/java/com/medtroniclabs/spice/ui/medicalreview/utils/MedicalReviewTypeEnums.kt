@@ -25,5 +25,8 @@ enum class MedicalReviewTypeEnums{
     medicalReview,
     DiagnosisType,
     UnderFiveYears,
-    UnderTwoMonths
+    UnderTwoMonths,
+    PNC,
+    ICCM,
+    RMNCH
 }

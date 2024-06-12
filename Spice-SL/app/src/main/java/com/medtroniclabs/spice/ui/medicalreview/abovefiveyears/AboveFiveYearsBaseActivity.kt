@@ -14,6 +14,7 @@ import com.medtroniclabs.spice.databinding.ActivityAboveFiveYearsBaseBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
+import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
 import com.medtroniclabs.spice.ui.dialog.MedicalReviewSuccessDialogFragment
 import com.medtroniclabs.spice.ui.landing.OnDialogDismissListener
 import com.medtroniclabs.spice.ui.medicalreview.ClinicalNotesFragment
@@ -410,7 +411,8 @@ class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
     }
 
     private fun getSummaryStatus(): Boolean {
-        return viewModel.nextFollowupDate != null
+        return ((viewModel.selectedPatientStatus == ReferralStatus.Recovered.name && viewModel.nextFollowupDate == null)
+                || (viewModel.selectedPatientStatus != ReferralStatus.Recovered.name && viewModel.nextFollowupDate != null))
     }
 
     override fun onDialogDismissListener(isFinish: Boolean) {

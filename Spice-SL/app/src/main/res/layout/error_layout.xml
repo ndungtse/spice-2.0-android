@@ -10,6 +10,8 @@
         android:layout_marginHorizontal="@dimen/_26sdp"
         android:layout_marginBottom="@dimen/_26sdp"
         android:visibility="visible"
+        android:layout_marginTop="@dimen/_32sdp"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent">
         <androidx.constraintlayout.widget.ConstraintLayout

@@ -14,9 +14,9 @@ import javax.inject.Inject
 class PatientStatusRepository @Inject constructor(
     private var apiHelper: ApiHelper
 ) {
-    suspend fun getPatientStatusDetails(patientDetails: PatientListRespModel): Resource<PatientStatusResponse> {
+    suspend fun getPatientStatusDetails(patientDetails: PatientListRespModel, menuType: String): Resource<PatientStatusResponse> {
         try {
-            val request = createPatientStatusRequest(patientDetails)
+            val request = createPatientStatusRequest(patientDetails, menuType)
             val response = request?.let { apiHelper.getPatientStatus(it) }
             if (response?.isSuccessful == true) {
                 response.body()?.entity?.let {
@@ -31,17 +31,36 @@ class PatientStatusRepository @Inject constructor(
         return Resource(state = ResourceState.ERROR)
     }
 
-    private fun createPatientStatusRequest(patientDetails: PatientListRespModel): PatientStatusRequest? {
-        return PatientStatusRequest(
-            patientId = patientDetails.id,
-            type = MedicalReviewTypeEnums.medicalReview.name,
-            gender = patientDetails.gender,
-            isPregnant = patientDetails.pregnancyDetails?.pregnant != null,
-            provenance = ProvanceDto(
-                createdDateTime = DateUtils.getCurrentDateAndTime(
-                    DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
+    private fun createPatientStatusRequest(patientDetails: PatientListRespModel, menuType: String): PatientStatusRequest? {
+        return patientDetails.memberId?.let { patientMemberId ->
+            getTicketType(menuType)?.let {workflowType ->
+                PatientStatusRequest(
+                    memberId = patientMemberId,
+                    type = MedicalReviewTypeEnums.medicalReview.name,
+                    gender = patientDetails.gender,
+                    ticketType = workflowType,
+                    isPregnant = patientDetails.pregnancyDetails?.pregnant != null,
+                    provenance = ProvanceDto(
+                        createdDateTime = DateUtils.getCurrentDateAndTime(
+                            DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
+                        )
+                    )
                 )
-            )
-        )
+            }
+        }
+    }
+
+    private fun getTicketType(menuType: String): String? {
+        return when(menuType) {
+            MedicalReviewTypeEnums.AboveFiveYears.name, MedicalReviewTypeEnums.UnderTwoMonths.name, MedicalReviewTypeEnums.UnderFiveYears.name -> {
+                MedicalReviewTypeEnums.ICCM.name
+            }
+
+            MedicalReviewTypeEnums.ANC.name, MedicalReviewTypeEnums.PNC.name, MedicalReviewTypeEnums.LabourDelivery.name -> {
+                MedicalReviewTypeEnums.RMNCH.name
+            }
+
+            else -> {null}
+        }
     }
 }
