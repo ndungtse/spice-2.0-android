@@ -54,7 +54,6 @@ import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.NoOfDaysDia
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.NoOfDaysOfCough
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.NoOfDaysOfFever
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.OrsDispensedStatus
-import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.ReferredPHUSite
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.ReferredPHUSiteID
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.ZincDispensedStatus
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.hasCough
@@ -68,7 +67,6 @@ import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.muacCode
 import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefinedParams
 import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefinedParams.Diarrhoea
 import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefinedParams.DiarrhoeaSigns
-import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefinedParams.NA
 import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefinedParams.RdtPositive
 import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.otherSigns
@@ -98,7 +96,6 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
     }
 
     private fun initViews() {
-        binding.labelPhuReferred.markMandatory()
         getClinicTakenData().let {
             val view = SingleSelectionCustomView(binding.root.context)
             view.tag = IsClinicTaken
@@ -144,8 +141,6 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
                     val selectedItem = adapter.getData(position = pos)
                     selectedItem?.let {
                         val selectedId = it[DefinedParams.id] as String?
-                        val selectedSiteName = it[DefinedParams.NAME] as String?
-                        viewModel.otherAssessmentDetails[ReferredPHUSite] = selectedSiteName ?: ""
                         viewModel.otherAssessmentDetails[ReferredPHUSiteID] =
                             selectedId?.toLong() ?: -1L
                     }
@@ -188,9 +183,6 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
 
                 ResourceState.SUCCESS -> {
                     hideProgress()
-                    resourceState.data?.let { siteList ->
-                        loadPhuSitesList(siteList)
-                    }
                 }
 
                 ResourceState.ERROR -> {
@@ -203,6 +195,9 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
     private fun updateStatusBar() {
         when (viewModel.referralStatus) {
             ReferralStatus.Referred.name -> {
+                viewModel.nearestFacilityLiveData.value?.data?.let { siteList ->
+                    loadPhuSitesList(siteList)
+                }
                 binding.phuReferredGroup.visibility = View.VISIBLE
                 binding.diarrhoeaGroup.visibility = View.VISIBLE
                 binding.riskResultLayout.backgroundTintList =
@@ -406,15 +401,40 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
             }
         val zincDispensedStatus = listSummaryData.filter { it.id == ZincDispensedStatus }[0].value
         val orsDispensedStatus = listSummaryData.filter { it.id == OrsDispensedStatus }[0].value
-        if (zincDispensedStatus != null || orsDispensedStatus != null) {
-            bindICCMSummaryView(
-                Dispensed,
-                requireContext().getString(
-                    R.string.zinc_ors_status,
-                    zincDispensedStatus ?: NA,
-                    orsDispensedStatus ?: NA
+
+        when {
+            zincDispensedStatus != null && orsDispensedStatus == null -> {
+                bindICCMSummaryView(
+                    Dispensed,
+                    requireContext().getString(
+                        R.string.zinc_or_ors_status,
+                        requireContext().getString(R.string.zinc),
+                        zincDispensedStatus
+                    )
                 )
-            )
+            }
+
+            orsDispensedStatus != null && zincDispensedStatus == null -> {
+                bindICCMSummaryView(
+                    Dispensed,
+                    requireContext().getString(
+                        R.string.zinc_or_ors_status,
+                        requireContext().getString(R.string.ors),
+                        orsDispensedStatus
+                    )
+                )
+            }
+
+            zincDispensedStatus != null && orsDispensedStatus != null -> {
+                bindICCMSummaryView(
+                    Dispensed,
+                    requireContext().getString(
+                        R.string.zinc_ors_status,
+                        zincDispensedStatus,
+                        orsDispensedStatus
+                    )
+                )
+            }
         }
     }
 
@@ -543,18 +563,7 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
                 binding.etNextFollowUpDate.text?.let {
                     updateFollowUpDate(it.trim().toString())
                 }
-                //addOtherDetailsToIccmType(Summary.lowercase())
-                if (viewModel.otherAssessmentDetails.containsKey(ReferredPHUSite) && viewModel.otherAssessmentDetails.containsKey(
-                        ReferredPHUSiteID
-                    )
-                ) {
-                    viewModel.updateOtherAssessmentDetails()
-                } else {
-                    if (binding.tvSiteErrorMessage.isGone()) {
-                        binding.tvSiteErrorMessage.visible()
-                    }
-                    binding.scrollView.fullScroll(ScrollView.FOCUS_DOWN)
-                }
+                viewModel.updateOtherAssessmentDetails()
             }
 
             binding.etNextFollowUpDate.id -> {

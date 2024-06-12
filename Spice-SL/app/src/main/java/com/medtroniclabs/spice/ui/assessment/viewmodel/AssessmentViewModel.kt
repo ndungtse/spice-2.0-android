@@ -141,6 +141,10 @@ class AssessmentViewModel @Inject constructor(
             otherDetails[AssessmentDefinedParams.ReferredPHUSiteID] =
                 SecuredPreference.getString(SecuredPreference.EnvironmentKey.DEFAULT_SITE_ID.name)
                     ?: "-1"
+        } else if (referralStatus != null && referralStatus == ReferralStatus.OnTreatment.name){
+            otherDetails[AssessmentDefinedParams.NextFollowupDate] =
+                DateUtils.getDateAfterDays(referralReason?.mapNotNull { treatmentDays[it] }
+                    ?.minOrNull() ?: 3)
         }
 
         if (menuId == ANC_MENU.uppercase(Locale.getDefault())) {

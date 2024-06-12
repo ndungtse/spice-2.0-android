@@ -497,4 +497,7 @@
     <string name="month">Month</string>
     <string name="kg">kg</string>
     <string name="mmHg">mmHg</string>
+    <string name="zinc">Zinc</string>
+    <string name="ors">ORS</string>
+    <string name="zinc_or_ors_status">(%1$s - %2$s)</string>
 </resources>

@@ -25,6 +25,7 @@ import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
 import com.medtroniclabs.spice.model.AssessmentSummaryModel
 import com.medtroniclabs.spice.network.resource.ResourceState
+import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.MenuConstants.OTHER_SYMPTOMS
 import com.medtroniclabs.spice.ui.assessment.AssessmentCommonUtils
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
@@ -33,7 +34,6 @@ import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.AssessmentN
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.Dispensed
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.Fever
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.NoOfDaysOfFever
-import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.ReferredPHUSite
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.ReferredPHUSiteID
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.hasFever
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.otherConcerningSymptoms
@@ -47,7 +47,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import org.json.JSONObject
 
 @AndroidEntryPoint
-class AssessmentOtherSymptomSummaryFragment : Fragment(), View.OnClickListener {
+class AssessmentOtherSymptomSummaryFragment : BaseFragment(), View.OnClickListener {
 
     lateinit var binding: FragmentAssessmentOtherSymptomSummaryBinding
     private val viewModel: AssessmentViewModel by activityViewModels()
@@ -69,7 +69,6 @@ class AssessmentOtherSymptomSummaryFragment : Fragment(), View.OnClickListener {
     }
 
     private fun setListeners() {
-        binding.labelPhuReferred.markMandatory()
         binding.btnDone.safeClickListener(this)
         binding.etNotes.addTextChangedListener { input ->
             input?.let {
@@ -92,13 +91,17 @@ class AssessmentOtherSymptomSummaryFragment : Fragment(), View.OnClickListener {
 
         viewModel.nearestFacilityLiveData.observe(viewLifecycleOwner) { resourceState ->
             when (resourceState.state) {
-                ResourceState.SUCCESS -> {
-                    resourceState.data?.let { siteList ->
-                        loadPhuSitesList(siteList)
-                    }
+                ResourceState.LOADING -> {
+                    showProgress()
                 }
 
-                else -> {}
+                ResourceState.SUCCESS -> {
+                    hideProgress()
+                }
+
+                ResourceState.ERROR -> {
+                    hideProgress()
+                }
             }
         }
     }
@@ -106,6 +109,9 @@ class AssessmentOtherSymptomSummaryFragment : Fragment(), View.OnClickListener {
     private fun updateStatusBar() {
         when (viewModel.referralStatus) {
             ReferralStatus.Referred.name -> {
+                viewModel.nearestFacilityLiveData.value?.data?.let { siteList ->
+                    loadPhuSitesList(siteList)
+                }
                 binding.phuReferredGroup.visibility = View.VISIBLE
                 binding.riskResultLayout.backgroundTintList =
                     ContextCompat.getColorStateList(requireContext(), R.color.attention_color)
@@ -145,9 +151,7 @@ class AssessmentOtherSymptomSummaryFragment : Fragment(), View.OnClickListener {
                     val selectedItem = adapter.getData(position = pos)
                     selectedItem?.let {
                         val selectedId = it[DefinedParams.id] as String?
-                        val selectedSiteName = it[DefinedParams.NAME] as String?
-                        viewModel.otherAssessmentDetails[AssessmentDefinedParams.ReferredPHUSite] = selectedSiteName ?: ""
-                        viewModel.otherAssessmentDetails[AssessmentDefinedParams.ReferredPHUSiteID] = selectedId?.toLong() ?: -1L
+                        viewModel.otherAssessmentDetails[ReferredPHUSiteID] = selectedId?.toLong() ?: -1L
                     }
                 }
 
@@ -301,18 +305,7 @@ class AssessmentOtherSymptomSummaryFragment : Fragment(), View.OnClickListener {
                 binding.etNextFollowUpDate.text?.let {
                     updateFollowUpDate(it.trim().toString())
                 }
-                //addOtherDetailsToType(Summary.lowercase())
-                if (viewModel.otherAssessmentDetails.containsKey(ReferredPHUSite) && viewModel.otherAssessmentDetails.containsKey(
-                        ReferredPHUSiteID
-                    )
-                ) {
-                    viewModel.updateOtherAssessmentDetails()
-                } else {
-                    if (binding.tvSiteErrorMessage.isGone()) {
-                        binding.tvSiteErrorMessage.visible()
-                    }
-                    binding.scrollView.fullScroll(ScrollView.FOCUS_DOWN)
-                }
+                viewModel.updateOtherAssessmentDetails()
             }
 
             binding.etNextFollowUpDate.id -> {
