@@ -1,26 +1,24 @@
 package com.medtroniclabs.spice.data
 
+import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
+
 data class PrescriptionRequest(
     val encounter: EncounterDetails,
     val prescriptions: List<Prescription>
 )
 
 data class EncounterDetails(
-    val id: String,
-    val patientReference: String,
+    val id: String? = null,
+    val patientReference: String?,
     val patientId: String,
-    val memberId: String
-)
+    val memberId: String,
+    val provenance: ProvanceDto,
+    )
 
 data class Prescription(
-    val type: String = "",
     val prescribedDays: Long,
     val medicationName: String,
     val medicationId: String,
-    val dosage: String = "",
-    val unit: String = "",
-    val form: String,
     val frequency: Int,
-    val instructionToTake: String,
     val prescribedSince: String
 )

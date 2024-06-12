@@ -110,6 +110,8 @@ class AddBpDialog : DialogFragment(), View.OnClickListener {
                     (requireActivity() as? BaseActivity)?.hideLoading()
 
                 }
+
+                else -> {}
             }
         }
     }

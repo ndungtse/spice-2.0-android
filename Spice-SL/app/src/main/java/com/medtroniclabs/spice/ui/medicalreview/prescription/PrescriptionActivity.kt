@@ -21,6 +21,7 @@ import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.medicalreview.SignatureDialogFragment
 import com.medtroniclabs.spice.ui.medicalreview.SignatureListener
+import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -29,6 +30,7 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
 
     lateinit var binding: ActivityPrescriptionBinding
     private val prescriptionViewModel: PrescriptionViewModel by viewModels()
+    private val patientViewModel: PatientDetailViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -65,6 +67,23 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
             list?.let {
                 binding.btnPrescribe.isEnabled = list.size > 0
                 showMedicationList(list)
+            }
+        }
+
+        patientViewModel.patientDetailsLiveData.observe(this) { resource ->
+            when (resource.state) {
+                ResourceState.LOADING -> {
+                    showLoading()
+                }
+
+                ResourceState.ERROR -> {
+                    hideLoading()
+                }
+
+                ResourceState.SUCCESS -> {
+                    hideLoading()
+
+                }
             }
         }
     }
@@ -154,6 +173,9 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
 
     private fun initView() {
         prescriptionViewModel.patientId = intent.getStringExtra(DefinedParams.PatientId)
+        prescriptionViewModel.patientId?.let {
+            patientViewModel.getPatients(it)
+        }
         binding.searchView.addTextChangedListener {
             if (it.isNullOrEmpty()) {
                 // default showing all medicines
@@ -199,19 +221,22 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
     }
 
     private fun updatePrescriptions(signatureBitmap: Bitmap) {
-
-        prescriptionViewModel.patientId?.let { patientId ->
-            prescriptionViewModel.selectedMedicationLiveDate.value?.let { list ->
-                prescriptionViewModel.createPrescription(
-                    signatureBitmap,
-                    CommonUtils.getFilePath(
-                        patientId,
-                        context = this,
-                        list
-                    ),
-                    list
-                )
+        patientViewModel.patientDetailsLiveData.value?.data?.let { data ->
+            prescriptionViewModel.patientId?.let { patientId ->
+                prescriptionViewModel.selectedMedicationLiveDate.value?.let { list ->
+                    prescriptionViewModel.createPrescription(
+                        signatureBitmap,
+                        CommonUtils.getFilePath(
+                            patientId,
+                            context = this,
+                            list
+                        ),
+                        list,
+                        data
+                    )
+                }
             }
         }
+
     }
 }

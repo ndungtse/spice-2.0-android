@@ -5,18 +5,23 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
+import com.medtroniclabs.spice.appextensions.convertToUtcDateTime
 import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.appextensions.postSuccess
+import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.data.APIResponse
+import com.medtroniclabs.spice.data.EncounterDetails
 import com.medtroniclabs.spice.data.MedicationRequestObject
 import com.medtroniclabs.spice.data.MedicationResponse
 import com.medtroniclabs.spice.data.MedicationSearchRequest
 import com.medtroniclabs.spice.data.Prescription
 import com.medtroniclabs.spice.data.PrescriptionRequest
+import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.db.entity.MedicationFrequencyEntity
 import com.medtroniclabs.spice.di.IoDispatcher
+import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.repo.MedicationRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -89,7 +94,8 @@ class PrescriptionViewModel @Inject constructor(
     fun createPrescription(
         signature: Bitmap,
         filePath: File,
-        list: ArrayList<MedicationRequestObject>
+        list: ArrayList<MedicationRequestObject>,
+        data: PatientListRespModel
     ) {
         viewModelScope.launch(dispatcherIO) {
             try {
@@ -103,28 +109,48 @@ class PrescriptionViewModel @Inject constructor(
                 val builder = MultipartBody.Builder()
                 builder.setType(MultipartBody.FORM)
                 builder.addFormDataPart(
-                    "signatureFile",
+                    "signature",
                     file.name,
                     file.asRequestBody("multipart/form-data".toMediaTypeOrNull())
                 )
+                val prescriptionList = ArrayList<Prescription>()
                 list.forEach {
-                    /*if (it.medicationResponse.prescribedDays != null){
-                        val presciption = Prescription(
-                            prescribedDays = it.medicationResponse.prescribedDays!!,
-                            medicationName = it.medicationResponse.name,
-                            medicationId = it.medicationResponse.id,
-                            form = it.medicationResponse.dosageFormName,
-                            frequency = )
-                    }*/
+                    if (it.medicationResponse.prescribedDays != null) {
+                        prescriptionList.add(
+                            Prescription(
+                                prescribedDays = it.medicationResponse.prescribedDays!!,
+                                medicationName = it.medicationResponse.name,
+                                medicationId = it.medicationResponse.id,
+                                frequency = getMedicationFrequency(it),
+                                prescribedSince = System.currentTimeMillis().convertToUtcDateTime()
+                            )
+                        )
+                    }
                 }
-                val dataRequest = Gson().toJson(list)
+                val prescriptionRequest = PrescriptionRequest(
+                    encounter = EncounterDetails(
+                        patientReference = data.id,
+                        patientId = data.patientId ?: "",
+                        memberId = data.memberId ?: "", provenance =  ProvanceDto(
+                            createdDateTime = DateUtils.getCurrentDateAndTime(
+                                DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
+                            )
+                        )
+                    ),
+                    prescriptions = prescriptionList
+                )
+                val dataRequest = Gson().toJson(prescriptionRequest)
                 builder.addFormDataPart("prescriptionRequest", dataRequest)
                 val requestBody = builder.build()
                 medicationRepository.createPrescriptionRequest(requestBody)
-            }catch (e:Exception){
-
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
         }
+    }
+
+    private fun getMedicationFrequency(data: MedicationRequestObject): Int {
+        return data.medicationResponse.selectedMap?.get(DefinedParams.Frequency) as? Int? ?: 0
     }
 
 }

@@ -14,6 +14,7 @@
     "title": "Date of Delivery",
     "viewType": "DatePicker",
     "isMandatory": true,
+    "disableFutureDate": true,
     "hint": "Select Date",
     "errorMessage": "Please select a valid option",
     "visibility": "visible"
@@ -24,6 +25,7 @@
     "id": "noOfNeonates",
     "viewType": "EditText",
     "orderId": 6,
+    "inputType": 3,
     "hint": "Enter number",
     "titleSummary": "No of Neonate",
     "isEnabled": true,

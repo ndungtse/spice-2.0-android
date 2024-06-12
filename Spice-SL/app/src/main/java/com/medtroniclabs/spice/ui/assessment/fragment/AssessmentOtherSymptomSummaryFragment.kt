@@ -75,7 +75,6 @@ class AssessmentOtherSymptomSummaryFragment : BaseFragment(), View.OnClickListen
                 val resultValue = input.trim().toString()
                 if (resultValue.isNotBlank()) {
                     viewModel.otherAssessmentDetails[AssessmentNotes] = resultValue
-                    viewModel.isInputUpdated = true
                 }
             }
         }
@@ -314,12 +313,6 @@ class AssessmentOtherSymptomSummaryFragment : BaseFragment(), View.OnClickListen
         }
     }
 
-    private fun addOtherDetailsToType(key: String) {
-        val otherDetailsMap = HashMap<String, Any>()
-        otherDetailsMap[key] = viewModel.otherAssessmentDetails
-        viewModel.otherAssessmentDetails = otherDetailsMap
-    }
-
     private fun showDatePickerDialog() {
         var yearMonthDate: Triple<Int?, Int?, Int?>? = null
         if (!binding.etNextFollowUpDate.text.isNullOrBlank())
@@ -353,8 +346,11 @@ class AssessmentOtherSymptomSummaryFragment : BaseFragment(), View.OnClickListen
                     DateUtils.DATE_ddMMyyyy,
                     DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
                 )
-            viewModel.isInputUpdated = true
         }
+    }
+
+    fun getCurrentAnsweredStatus():Boolean {
+        return viewModel.otherAssessmentDetails.isNotEmpty()
     }
 
 }

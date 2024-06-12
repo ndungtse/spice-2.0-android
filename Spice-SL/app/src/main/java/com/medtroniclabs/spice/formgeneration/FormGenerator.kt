@@ -584,8 +584,12 @@ class FormGenerator(
             listener.onUpdateInstruction(elementID.first, selectedId)
         }
 
-    fun isResultAvaliable(key: String, value: String): Boolean {
+    private fun isResultAvailable(key: String, value: String): Boolean {
         return resultHashMap.contains(gender) && resultHashMap[gender] == female
+    }
+
+    fun getResultMap(): HashMap<String, Any> {
+        return resultHashMap
     }
 
     private fun saveSelectedOptionValue(
@@ -2279,7 +2283,7 @@ class FormGenerator(
     }
 
     private fun handleAgeBelowThreshold() {
-        if (isResultAvaliable(gender, female)) {
+        if (isResultAvailable(gender, female)) {
             val isPregnantRootView =
                 getViewByTag(MemberRegistration.isPregnant + rootSuffix) as? ViewGroup
                     ?: return
@@ -2296,7 +2300,7 @@ class FormGenerator(
     }
 
     private fun handleAgeAboveThreshold() {
-        if (isResultAvaliable(gender, female)) {
+        if (isResultAvailable(gender, female)) {
             val isPregnantRootView =
                 getViewByTag(MemberRegistration.isPregnant + rootSuffix) as? ViewGroup
                     ?: return

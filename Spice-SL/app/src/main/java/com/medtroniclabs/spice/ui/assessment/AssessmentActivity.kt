@@ -5,7 +5,6 @@ import android.os.Bundle
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
 import com.medtroniclabs.spice.R
-import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.SpiceLocationManager
 import com.medtroniclabs.spice.databinding.ActivityAssessmentBinding
@@ -25,7 +24,6 @@ import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentRMNCHNeonateSumm
 import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentRMNCHSummaryFragment
 import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentTBFragment
 import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentTBSummaryFragment
-import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
 import com.medtroniclabs.spice.ui.landing.LandingActivity
 import dagger.hilt.android.AndroidEntryPoint
@@ -43,7 +41,7 @@ class AssessmentActivity : BaseActivity() {
             binding.root,
             isToolbarVisible = true,
             title = getString(R.string.assessment),
-            homeAndBackVisibility = Pair(true,true),
+            homeAndBackVisibility = Pair(true, true),
             callback = {
                 backNavigation(false)
             },
@@ -66,7 +64,7 @@ class AssessmentActivity : BaseActivity() {
     }
 
     private fun backNavigation(isHome: Boolean) {
-        if (viewModel.isInputUpdated) {
+        if (getBackButtonStatus()) {
             showErrorDialogue(
                 getString(R.string.alert),
                 getString(R.string.exit_reason),
@@ -79,6 +77,28 @@ class AssessmentActivity : BaseActivity() {
         } else {
             navigationHandling(isHome)
         }
+    }
+
+    private fun getBackButtonStatus(): Boolean {
+        val fragment = supportFragmentManager.findFragmentById(R.id.formsFragmentContainer)
+        if (fragment is AssessmentRMNCHFragment) {
+            return fragment.getCurrentAnsweredStatus()
+        } else if (fragment is AssessmentICCMFragment) {
+            return fragment.getCurrentAnsweredStatus()
+        }else if (fragment is AssessmentOtherSymptomsFragment) {
+            return fragment.getCurrentAnsweredStatus()
+        }else if (fragment is AssessmentRMNCHNeonateFragment) {
+            return fragment.getCurrentAnsweredStatus()
+        }else if (fragment is AssessmentICCMSummaryFragment){
+            return fragment.getCurrentAnsweredStatus()
+        }else if (fragment is AssessmentOtherSymptomSummaryFragment) {
+            return fragment.getCurrentAnsweredStatus()
+        }else if (fragment is AssessmentRMNCHSummaryFragment) {
+            return fragment.getCurrentAnsweredStatus()
+        }else if (fragment is AssessmentRMNCHNeonateSummaryFragment) {
+            return fragment.getCurrentAnsweredStatus()
+        }
+        return false
     }
 
     private fun navigationHandling(isHome: Boolean) {
@@ -97,7 +117,6 @@ class AssessmentActivity : BaseActivity() {
             MenuConstants.ICCM_MENU_ID -> {
                 setTitle(Summary.capitalizeFirstChar())
                 hideBackButton()
-                viewModel.isInputUpdated = false
                 replaceFragmentInId<AssessmentICCMSummaryFragment>(
                     binding.formsFragmentContainer.id,
                     tag = AssessmentICCMSummaryFragment.TAG
@@ -116,7 +135,6 @@ class AssessmentActivity : BaseActivity() {
             MenuConstants.OTHER_SYMPTOMS -> {
                 setTitle(Summary.capitalizeFirstChar())
                 hideBackButton()
-                viewModel.isInputUpdated = false
                 replaceFragmentInId<AssessmentOtherSymptomSummaryFragment>(
                     binding.formsFragmentContainer.id,
                     tag = AssessmentOtherSymptomSummaryFragment::class.simpleName
@@ -142,7 +160,6 @@ class AssessmentActivity : BaseActivity() {
                     binding.formsFragmentContainer.id,
                     tag = AssessmentICCMFragment.TAG
                 )
-                viewModel.isInputUpdated = true
             }
 
             MenuConstants.TB_MENU_ID -> {
@@ -167,7 +184,6 @@ class AssessmentActivity : BaseActivity() {
                     binding.formsFragmentContainer.id,
                     tag = AssessmentOtherSymptomsFragment::class.simpleName
                 )
-                viewModel.isInputUpdated = true
             }
         }
     }
@@ -182,7 +198,7 @@ class AssessmentActivity : BaseActivity() {
                 ResourceState.SUCCESS -> {
                     hideLoading()
                     resource.data?.let { _ ->
-                       // insertOtherAssessmentDetails()
+                        // insertOtherAssessmentDetails()
                         loadSummaryFragment()
                     }
                 }
@@ -233,4 +249,6 @@ class AssessmentActivity : BaseActivity() {
                 backNavigation(false)
             }
         }
+
+
 }

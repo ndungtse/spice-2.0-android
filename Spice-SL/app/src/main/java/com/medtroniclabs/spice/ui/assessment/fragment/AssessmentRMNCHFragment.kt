@@ -8,11 +8,8 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
-import com.google.gson.Gson
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
-import com.medtroniclabs.spice.appextensions.setSuccess
-import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.EntityMapper
@@ -22,7 +19,6 @@ import com.medtroniclabs.spice.formgeneration.FormGenerator
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.listener.FormEventListener
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
-import com.medtroniclabs.spice.formgeneration.model.FormResponse
 import com.medtroniclabs.spice.formgeneration.ui.FormResultComposer
 import com.medtroniclabs.spice.formgeneration.utility.CheckBoxDialog
 import com.medtroniclabs.spice.formgeneration.utility.InformationLayoutFragment
@@ -378,6 +374,10 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
 
 
     override fun onAgeCheckForPregnancy() {
+    }
+
+    fun getCurrentAnsweredStatus(): Boolean {
+      return formGenerator.getResultMap().isNotEmpty()
     }
 
 }

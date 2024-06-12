@@ -310,4 +310,8 @@ class AssessmentRMNCHNeonateSummaryFragment : BaseFragment(), View.OnClickListen
             }
         }
     }
+
+    fun getCurrentAnsweredStatus():Boolean {
+        return viewModel.otherAssessmentDetails.isNotEmpty()
+    }
 }

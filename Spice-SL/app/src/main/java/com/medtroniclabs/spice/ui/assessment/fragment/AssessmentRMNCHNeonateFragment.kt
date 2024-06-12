@@ -286,5 +286,9 @@ class AssessmentRMNCHNeonateFragment : BaseFragment(), View.OnClickListener,
         childFormGenerator.handlePregnancyCardBasedOnAge()
     }
 
+    fun getCurrentAnsweredStatus(): Boolean {
+        return formGenerator.getResultMap().isNotEmpty() || childFormGenerator.getResultMap().isNotEmpty()
+    }
+
 
 }

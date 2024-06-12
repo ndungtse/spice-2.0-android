@@ -44,8 +44,6 @@ import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.FB_MIN_YEAR
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.MUAC
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.ORSStatus
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.OrsDispensedStatus
-import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.ReferredPHUSite
-import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.ReferredPHUSiteID
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.ZincDispensedStatus
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.ZincStatus
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.chestInDrawing
@@ -522,5 +520,9 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
         viewModel.instructionId?.let {
             showInstructionDialog(it)
         }
+    }
+
+    fun getCurrentAnsweredStatus(): Boolean {
+        return formGenerator.getResultMap().isNotEmpty()
     }
 }

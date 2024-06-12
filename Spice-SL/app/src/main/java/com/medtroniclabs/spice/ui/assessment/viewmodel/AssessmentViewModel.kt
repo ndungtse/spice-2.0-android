@@ -76,8 +76,6 @@ class AssessmentViewModel @Inject constructor(
     var pncMotherDetailMap: HashMap<String, Any>? = null
     var dosageListModel: ArrayList<RecommendedDosageListModel>? = null
     var instructionId: String? = null
-    var isDismiss = false
-    var isInputUpdated: Boolean = false
     val treatmentDays = HashMap<String, Int>()
     var referralReason: ArrayList<String>? = null
 
@@ -316,11 +314,6 @@ class AssessmentViewModel @Inject constructor(
         }
     }
 
-    fun addOtherDetailsToType(key: String) {
-        val otherDetailsMap = HashMap<String, Any>()
-        otherDetailsMap[key] = otherAssessmentDetails
-        otherAssessmentDetails = otherDetailsMap
-    }
 
     fun getSymptomListByType(type: String) {
         viewModelScope.launch(dispatcherIO) {

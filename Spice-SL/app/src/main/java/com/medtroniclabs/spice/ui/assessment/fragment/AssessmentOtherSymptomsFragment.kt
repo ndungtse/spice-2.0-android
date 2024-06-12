@@ -265,4 +265,8 @@ class AssessmentOtherSymptomsFragment : BaseFragment(), FormEventListener, View.
             showInstructionDialog(it)
         }
     }
+
+    fun getCurrentAnsweredStatus(): Boolean {
+        return formGenerator.getResultMap().isNotEmpty()
+    }
 }

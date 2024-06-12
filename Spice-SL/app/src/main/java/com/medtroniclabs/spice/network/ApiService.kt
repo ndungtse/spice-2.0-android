@@ -26,6 +26,7 @@ import com.medtroniclabs.spice.data.ReferPatientResult
 import com.medtroniclabs.spice.data.ReferPatientRequest
 import com.medtroniclabs.spice.data.UnderTwoMonthsMetaResponse
 import com.medtroniclabs.spice.data.PatientStatusResponse
+import com.medtroniclabs.spice.data.PrescriptionListRequest
 import com.medtroniclabs.spice.data.UserSymptomsEntity
 import com.medtroniclabs.spice.data.model.AboveFiveYearsSubmitRequest
 import com.medtroniclabs.spice.data.model.BpAndWeightRequestModel
@@ -151,5 +152,8 @@ interface ApiService {
 
     @POST("spice-service/prescription-request/create")
     suspend fun createPrescriptionRequest(@Body request: RequestBody):Response<APIResponse<Map<String,Any>>>
+
+    @POST("spice-service/prescription-request/list")
+    suspend fun getPrescriptionList(@Body request: PrescriptionListRequest)
 
 }

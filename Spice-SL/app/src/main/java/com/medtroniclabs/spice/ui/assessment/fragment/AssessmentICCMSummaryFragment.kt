@@ -6,13 +6,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
-import android.widget.ScrollView
 import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
-import com.medtroniclabs.spice.appextensions.isGone
-import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.CommonUtils.convertStringToIntString
 import com.medtroniclabs.spice.common.CommonUtils.getOptionMap
@@ -114,7 +111,6 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
     private var singleSelectionCallback: ((selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit)? =
         { selectedID, _, _, _ ->
             viewModel.otherAssessmentDetails[IsClinicTaken] = selectedID as String
-            viewModel.isInputUpdated = true
         }
 
 
@@ -161,7 +157,6 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
                 val resultValue = input.trim().toString()
                 if (resultValue.isNotBlank()) {
                     viewModel.otherAssessmentDetails[AssessmentNotes] = resultValue
-                    viewModel.isInputUpdated = true
                 }
             }
         }
@@ -560,10 +555,14 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
     override fun onClick(v: View?) {
         when (v?.id) {
             binding.btnDone.id -> {
-                binding.etNextFollowUpDate.text?.let {
-                    updateFollowUpDate(it.trim().toString())
+                if (binding.etNextFollowUpDate.text.isNotEmpty()) {
+                    updateFollowUpDate(binding.etNextFollowUpDate.text.trim().toString())
                 }
-                viewModel.updateOtherAssessmentDetails()
+                if (viewModel.otherAssessmentDetails.isEmpty()) {
+                    requireActivity().finish()
+                } else {
+                    viewModel.updateOtherAssessmentDetails()
+                }
             }
 
             binding.etNextFollowUpDate.id -> {
@@ -606,7 +605,6 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
                     DateUtils.DATE_ddMMyyyy,
                     DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
                 )
-            viewModel.isInputUpdated = true
         }
     }
 
@@ -620,4 +618,9 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
             }
         }
     }
+
+    fun getCurrentAnsweredStatus(): Boolean {
+        return viewModel.otherAssessmentDetails.isNotEmpty()
+    }
+
 }
