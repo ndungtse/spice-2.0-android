@@ -12,13 +12,18 @@ import com.google.android.flexbox.FlexboxLayoutManager
 import com.google.android.flexbox.JustifyContent
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.CommonUtils
+import com.medtroniclabs.spice.common.DateUtils
+import com.medtroniclabs.spice.common.DefinedParams.DOB
 import com.medtroniclabs.spice.common.DefinedParams.Gender
 import com.medtroniclabs.spice.common.DefinedParams.ID
 import com.medtroniclabs.spice.common.DefinedParams.PatientId
+import com.medtroniclabs.spice.common.DefinedParams.female
 import com.medtroniclabs.spice.common.DefinedParams.male
 import com.medtroniclabs.spice.databinding.FragmentPatientMenuBinding
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.MenuConstants
+import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.PREGNANCY_MAX_AGE
+import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.PREGNANCY_MIN_AGE
 import com.medtroniclabs.spice.ui.home.MenuSelectionListener
 import com.medtroniclabs.spice.ui.home.ToolsViewModel
 import com.medtroniclabs.spice.ui.home.adapter.DashboardMenuItemsAdapter
@@ -58,13 +63,19 @@ class PatientMenuFragment : BaseFragment(), MenuSelectionListener {
             binding.rvActivitiesList.layoutManager = layoutManager
         }
         val gender = arguments?.getString(Gender, "")
+        val dob = arguments?.getString(DOB, "")
         // Get the menu items list
         val menuItemsList = viewModel.getMyPatientsMenuItemsList()
 
         // Check and set isDisable property based on gender
-        menuItemsList.forEach {
-            if (it.name == MenuConstants.MOTHER_AND_NEONATE_ID && gender.equals(male,true)) {
-                it.isDisabled = true
+        menuItemsList.forEach { menuItem ->
+            when {
+                menuItem.name == MenuConstants.MOTHER_AND_NEONATE_ID && gender.equals(male, true) -> {
+                    menuItem.isDisabled = true
+                }
+                menuItem.name == MenuConstants.MOTHER_AND_NEONATE_ID && gender.equals(female, true) && !dob.isNullOrBlank() && DateUtils.calculateAge(dob) !in (PREGNANCY_MIN_AGE..PREGNANCY_MAX_AGE) -> {
+                    menuItem.isDisabled = true
+                }
             }
         }
         binding.rvActivitiesList.adapter =
@@ -76,12 +87,13 @@ class PatientMenuFragment : BaseFragment(), MenuSelectionListener {
         fun newInstance() =
             PatientMenuFragment()
 
-        fun newInstance(patientId: String?, id: String?,gender: String?): PatientMenuFragment {
+        fun newInstance(patientId: String?, id: String?,gender: String?,dob: String?): PatientMenuFragment {
             val fragment = PatientMenuFragment()
             val bundle = Bundle()
             bundle.putString(PatientId, patientId)
             bundle.putString(ID, id)
             bundle.putString(Gender, gender)
+            bundle.putString(DOB, dob)
             fragment.arguments = bundle
             return fragment
         }

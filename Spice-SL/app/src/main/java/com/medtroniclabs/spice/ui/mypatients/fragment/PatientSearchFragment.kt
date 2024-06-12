@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.hideKeyboard
+import com.medtroniclabs.spice.appextensions.invisible
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.databinding.FragmentPatientSearchBinding
@@ -84,6 +85,7 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
 
 
     private fun initViews() {
+        binding.btnAddNewMember.invisible()
         binding.llFilter.btnFilter.text = getString(R.string.filters)
         val tabletSize =
             resources.getBoolean(R.bool.isLargeTablet) || resources.getBoolean(R.bool.isTablet)
@@ -133,11 +135,12 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
             adapter = patientsListAdapter
         }
         patientsListAdapter.addLoadStateListener {
+            val isLoading = it.refresh is LoadState.Loading
+            if (isLoading) binding.loadingProgress.visible()
+            else binding.loadingProgress.gone()
             if (it.append is LoadState.Loading) {
-                binding.loadingProgress.visible()
                 binding.pageProgress.visible()
             } else {
-                binding.loadingProgress.gone()
                 binding.pageProgress.gone()
             }
         }
@@ -148,6 +151,7 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
             val intent = Intent(requireActivity(), ReferralTicketActivity::class.java)
             intent.putExtra(DefinedParams.PatientId, item.patientId)
             intent.putExtra(DefinedParams.Gender, item.gender)
+            intent.putExtra(DefinedParams.DOB, item.birthDate)
             startActivity(intent)
         } else {
             showErrorDialog(getString(R.string.error),getString(R.string.no_internet_error))

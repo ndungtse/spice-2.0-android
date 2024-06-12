@@ -150,7 +150,7 @@ object MotherNeonateUtil {
 
     fun calculateBp(valueOne: Double?, valueTwo: Double?, context: Context): String {
         return if (valueOne != null && valueTwo != null) {
-            "${valueOne.toInt()}/${valueTwo.toInt()} mmHg"
+            "${valueOne.toInt()}/${valueTwo.toInt()} ${context.getString(R.string.mmHg)}"
         } else {
             "${context.getString(R.string.hyphen_symbol)}/${context.getString(R.string.hyphen_symbol)}"
         }
@@ -158,7 +158,7 @@ object MotherNeonateUtil {
 
     fun convertWeight(value: Double?, context: Context): String {
         return if (value != null) {
-            "${value.toInt()} kg"
+            "${value.toInt()} ${context.getString(R.string.kg)}"
         } else {
             context.getString(R.string.hyphen_symbol)
         }

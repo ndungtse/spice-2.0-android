@@ -1,6 +1,8 @@
 package com.medtroniclabs.spice.common
 
 import com.medtroniclabs.spice.data.model.CalendarPeriod
+import android.content.Context
+import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams
 import org.joda.time.PeriodType
 import java.text.SimpleDateFormat
@@ -399,11 +401,74 @@ object DateUtils {
         return ChronoUnit.WEEKS.between(lmpDate, currentDate)
     }
 
-    fun formatGestationalAge(gestationalAgeInWeeks: Long): String {
+    fun formatGestationalAge(gestationalAgeInWeeks: Long, context: Context): String {
+        return when (gestationalAgeInWeeks) {
+            0L -> "0 ${context.getString(R.string.week)}"
+            1L -> "1 ${context.getString(R.string.week)}"
+            else -> "$gestationalAgeInWeeks ${context.getString(R.string.weeks).lowercase()}"
+        }
+    }
+
+    fun parseDate(
+        dateStr: String?,
+        givenFormat: String = DATE_FORMAT_yyyyMMddHHmmssZZZZZ
+    ): LocalDate? {
+        return try {
+            dateStr?.let {
+                LocalDate.parse(it, DateTimeFormatter.ofPattern(givenFormat))
+            }
+        } catch (e: Exception) {
+            null
+        }
+    }
+
+    fun calculateAge(birthDateStr: String?): Int {
+        val birthDate = parseDate(birthDateStr)
+        return birthDate?.let {
+            ChronoUnit.YEARS.between(it, LocalDate.now()).toInt()
+        } ?: 0
+    }
+
+    private fun dateToWeeks(birthDateStr: String?): Int {
+        val birthDate = parseDate(birthDateStr)
+        return birthDate?.let {
+            ChronoUnit.WEEKS.between(it, LocalDate.now()).toInt()
+        } ?: 0
+    }
+
+    private fun dateToDays(birthDateStr: String?): Int {
+        val birthDate = parseDate(birthDateStr)
+        return birthDate?.let {
+            ChronoUnit.DAYS.between(it, LocalDate.now()).toInt()
+        } ?: 0
+    }
+
+    fun getAgeDescription(birthDate: String,context: Context): String {
+        val ageInYears = calculateAge(birthDateStr = birthDate)
         return when {
-            gestationalAgeInWeeks == 0L -> "0 week"
-            gestationalAgeInWeeks == 1L -> "1 week"
-            else -> "$gestationalAgeInWeeks weeks"
+            ageInYears > 5 -> {
+                "$ageInYears ${context.getString(R.string.years).lowercase()}"
+            }
+
+            ageInYears in 1..5 -> {
+                val ageInMonths = dateToMonths(birthDate) ?: 0
+                if (ageInMonths == 1) "$ageInMonths ${context.getString(R.string.month)}" else "$ageInMonths ${context.getString(R.string.months).lowercase()}"
+            }
+
+            else -> {
+                val ageInMonths = dateToMonths(birthDate) ?: 0
+                if (ageInMonths < 1) {
+                    val ageInWeeks = dateToWeeks(birthDate)
+                    if (ageInWeeks < 1) {
+                        val ageInDays = dateToDays(birthDate)
+                        if (ageInDays == 1) "$ageInDays ${context.getString(R.string.day)}" else "$ageInDays ${context.getString(R.string.days).lowercase()}"
+                    } else {
+                        if (ageInWeeks == 1) "$ageInWeeks ${context.getString(R.string.week)}" else "$ageInWeeks ${context.getString(R.string.weeks).lowercase()}"
+                    }
+                } else {
+                    if (ageInMonths == 1) "$ageInMonths ${context.getString(R.string.month).lowercase()}" else "$ageInMonths ${context.getString(R.string.months).lowercase()}"
+                }
+            }
         }
     }
 }

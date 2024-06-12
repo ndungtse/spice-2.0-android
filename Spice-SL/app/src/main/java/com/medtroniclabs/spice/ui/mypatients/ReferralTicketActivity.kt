@@ -16,6 +16,7 @@ import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.home.ToolsActivity
 import com.medtroniclabs.spice.ui.mypatients.fragment.PatientInfoFragment
+import com.medtroniclabs.spice.ui.mypatients.fragment.ReferralTicketFragment
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.ReferralTicketViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -119,6 +120,10 @@ class ReferralTicketActivity : BaseActivity() {
         intent.putExtra(
             DefinedParams.Gender,
             this.intent.getStringExtra(DefinedParams.Gender)
+        )
+        intent.putExtra(
+            DefinedParams.DOB,
+            this.intent.getStringExtra(DefinedParams.DOB)
         )
         startActivity(intent)
     }

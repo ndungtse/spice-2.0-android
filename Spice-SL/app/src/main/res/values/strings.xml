@@ -493,4 +493,8 @@
     <string name="clear_signature">Clear Signature</string>
     <string name="signature_required">Signature is required</string>
     <string name="sign_and_confirm_prescription">Sign and Confirm Prescription</string>
+    <string name="week">week</string>
+    <string name="month">Month</string>
+    <string name="kg">kg</string>
+    <string name="mmHg">mmHg</string>
 </resources>

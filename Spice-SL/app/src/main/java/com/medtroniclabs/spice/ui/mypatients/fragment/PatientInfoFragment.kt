@@ -13,7 +13,6 @@ import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
 import com.medtroniclabs.spice.common.DateUtils.DATE_ddMMyyyy
 import com.medtroniclabs.spice.common.DefinedParams
-import com.medtroniclabs.spice.common.DefinedParams.ID
 import com.medtroniclabs.spice.databinding.FragmentPatientInfoBinding
 import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.network.resource.ResourceState
@@ -29,7 +28,6 @@ class PatientInfoFragment : BaseFragment() {
 
     private lateinit var binding: FragmentPatientInfoBinding
     val viewModel: PatientDetailViewModel by activityViewModels()
-    private val patientStatusViewModel: PatientStatusViewModel by activityViewModels()
     private var dataCallback: AncVisitCallBack? = null
     fun setDataCallback(callback: AncVisitCallBack) {
         dataCallback = callback
@@ -100,15 +98,10 @@ class PatientInfoFragment : BaseFragment() {
         val gender =
             patientListRespModel.gender ?: requireContext().getString(R.string.separator_hyphen)
         val age = patientListRespModel.birthDate?.let {
-            DateUtils.calculateAge(patientListRespModel.birthDate)
+            DateUtils.getAgeDescription(patientListRespModel.birthDate, requireContext())
         } ?: (patientListRespModel.age ?: requireContext().getString(R.string.separator_hyphen))
         setTitle(requireContext().getString(R.string.household_summary_member_info, name, age, gender))
         with(binding) {
-            // TODO: Need to give date format by backend
-            val date = patientListRespModel.dateOfOnset.takeIf { it?.isNotBlank() == true }?.let {
-                DateUtils.convertDateFormat(it, DATE_FORMAT_yyyyMMddHHmmssZZZZZ, DATE_ddMMyyyy)
-            } ?: requireContext().getString(R.string.hyphen_symbol)
-
             val lastMenstrualDate =
                 patientListRespModel.pregnancyDetails?.lastMenstrualPeriod.takeIf { it?.isNotBlank() == true }?.let {
                     DateUtils.convertDateFormat(it, DATE_FORMAT_yyyyMMddHHmmssZZZZZ, DATE_ddMMyyyy)
@@ -160,14 +153,6 @@ class PatientInfoFragment : BaseFragment() {
                         DefinedParams.value to (patientListRespModel.pregnancyDetails?.ancVisitMedicalReview?.takeIf { true }
                             ?.toString()
                             ?: requireContext().getString(R.string.hyphen_symbol))
-                    )
-                )
-            }
-            if (!(isAnc == true)) {
-                dataList.add(
-                    mapOf(
-                        DefinedParams.label to requireContext().getString(R.string.date_of_onset),
-                        DefinedParams.value to date
                     )
                 )
             }

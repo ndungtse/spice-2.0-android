@@ -53,7 +53,8 @@ class ToolsActivity : BaseActivity() {
                 PatientMenuFragment.newInstance(
                     intent.getStringExtra(DefinedParams.PatientId),
                     intent.getStringExtra(DefinedParams.ID),
-                    intent.getStringExtra(DefinedParams.Gender)
+                    intent.getStringExtra(DefinedParams.Gender),
+                    intent.getStringExtra(DefinedParams.DOB)
                 )
             } else {
                 ToolsMenuFragment.newInstance()

@@ -288,7 +288,7 @@ class PregnancyDetailsFragment : BaseFragment(), View.OnClickListener {
                     DateUtils.convertDateFormat(it, DATE_FORMAT_yyyyMMdd, DATE_ddMMyyyy)
                 }
                 etGestationalAge.text = model.gestationalAge?.let {
-                    formatGestationalAge(it)
+                    formatGestationalAge(it, requireContext())
                 } ?: ""
                 etNoOfFetus.setText(model.noOfFetus?.toString())
                 etGravida.setText(model.gravida?.toString())
@@ -417,7 +417,8 @@ class PregnancyDetailsFragment : BaseFragment(), View.OnClickListener {
             val gestationalAgeInWeeks = calculateGestationalAge(lmpDate)
             pregnancyDetailsViewModel.pregnancyDetailsModel.gestationalAge =
                 gestationalAgeInWeeks
-            binding.etGestationalAge.text = formatGestationalAge(gestationalAgeInWeeks)
+            binding.etGestationalAge.text =
+                formatGestationalAge(gestationalAgeInWeeks, requireContext())
         }
     }
 }

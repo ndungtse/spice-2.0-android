@@ -83,4 +83,5 @@ object DefinedParams {
     const val SIGN_DIR = "sign"
     const val SIGN_SUFFIX = "_signature"
 
+    const val DOB = "DOB"
 }

@@ -8,7 +8,6 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.DateUtils
-import com.medtroniclabs.spice.common.DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
 import com.medtroniclabs.spice.databinding.ListItemPatientsBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.model.PatientListRespModel
@@ -27,16 +26,15 @@ class PatientsListAdapter(
             val context = binding.root.context
             val name = item.name ?: context.getString(R.string.separator_hyphen)
             val gender = item.gender ?: context.getString(R.string.separator_hyphen)
-            var month = context.getString(R.string.months)
-            val age: Int = item.birthDate?.let { birthDate ->
-                DateUtils.calculateAge(birthDate).takeIf { it > 5 } ?: DateUtils.dateToMonths(
-                    birthDate,
-                    DATE_FORMAT_yyyyMMddHHmmssZZZZZ
-                )
-            } ?: 0
 
-            val formattedAge = if (age <= 5) "$age $month" else age.toString()
-            val patientInfo = context.getString(R.string.household_summary_member_info, name, formattedAge, gender)
+            val formattedAge = item.birthDate?.let { DateUtils.getAgeDescription(it,context) }
+                ?: context.getString(R.string.separator_hyphen)
+            val patientInfo = context.getString(
+                R.string.household_summary_member_info,
+                name,
+                formattedAge,
+                gender
+            )
 
             with(binding) {
                 tvCardPatientName.text = patientInfo

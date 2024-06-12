@@ -82,7 +82,7 @@ class PatientsDataSource(
                 data = patientList,
                 prevKey = (pageIndex - 1).takeIf { pageIndex > PAGE_INDEX },
                 nextKey = if (searchText.isEmpty()) {
-                    (pageIndex + 1).takeIf { loadedCount < totalCount }
+                    (pageIndex + 1).takeIf { patientList.isNotEmpty()}
                 } else (pageIndex + 1).takeIf { patientList.isNotEmpty() }
             )
         } catch (e: Exception) {
