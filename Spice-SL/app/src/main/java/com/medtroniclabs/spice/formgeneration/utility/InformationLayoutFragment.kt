@@ -14,6 +14,7 @@ import com.medtroniclabs.spice.databinding.FragmentInformationLayoutBinding
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.model.InformationModel
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.MUAC
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.chestInDrawing
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.hasOedemaOfBothFeet
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.muacCode
@@ -54,7 +55,7 @@ class InformationLayoutFragment : DialogFragment(), View.OnClickListener {
     private fun initializeViews() {
         binding.tvTitle.text = arguments?.getString(DefinedParams.Title) ?: getString(R.string.instructions)
         val informationListByType: ArrayList<InformationModel>? = when(arguments?.getString(ID)){
-            muacCode -> InformationUtils().getMuacInformationListItem(requireContext())
+            muacCode, MUAC-> InformationUtils().getMuacInformationListItem(requireContext())
             hasOedemaOfBothFeet -> InformationUtils().getOedemaInformationList(requireContext())
             chestInDrawing -> InformationUtils().getChestIndrawingInformation(requireContext())
             else -> null

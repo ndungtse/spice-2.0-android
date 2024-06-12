@@ -1,9 +1,12 @@
 package com.medtroniclabs.spice.ui.assessment.fragment
 
+import android.content.res.Configuration
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
+import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import com.google.gson.Gson
 import com.medtroniclabs.spice.R
@@ -11,6 +14,7 @@ import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.setSuccess
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DateUtils
+import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.EntityMapper
 import com.medtroniclabs.spice.data.model.RecommendedDosageListModel
 import com.medtroniclabs.spice.databinding.FragmentAssessmentRmnchBinding
@@ -21,9 +25,16 @@ import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.model.FormResponse
 import com.medtroniclabs.spice.formgeneration.ui.FormResultComposer
 import com.medtroniclabs.spice.formgeneration.utility.CheckBoxDialog
+import com.medtroniclabs.spice.formgeneration.utility.InformationLayoutFragment
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.assessment.AssessmentActivity
+import com.medtroniclabs.spice.ui.assessment.AssessmentCommonUtils.getNutritionStatus
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.MUAC
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.muacStatus
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.rootSuffix
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.summaryKey
 import com.medtroniclabs.spice.ui.assessment.referrallogic.ReferralResultGenerator
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.Miscarriage
@@ -191,6 +202,8 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
         description: String?,
         dosageListModel: ArrayList<RecommendedDosageListModel>?
     ) {
+        viewModel.instructionId = id
+        showInstructionDialog(id)
     }
 
     override fun onFormSubmit(resultMap: HashMap<String, Any>?, serverData: List<FormLayout?>?) {
@@ -287,6 +300,41 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
         )
     }
 
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        val instructionDialog =
+            childFragmentManager.findFragmentByTag(AssessmentDefinedParams.InformationLayoutFragment) as? DialogFragment
+        if (instructionDialog != null && instructionDialog.showsDialog) {
+            instructionDialog.dismiss()
+            showDialogBasedOnId()
+        }
+    }
+
+    private fun showDialogBasedOnId() {
+        viewModel.instructionId?.let {
+            showInstructionDialog(it)
+        }
+    }
+
+    private fun showInstructionDialog(id: String) {
+        val titleById = getTitleById(id)
+        when (id) {
+            MUAC -> {
+                InformationLayoutFragment.newInstance(id, titleById)
+                    .show(childFragmentManager, InformationLayoutFragment.TAG)
+            }
+        }
+    }
+
+    private fun getTitleById(id: String): String {
+        return when (id) {
+            MUAC -> getString(R.string.measuring_muac)
+            else -> {
+                id
+            }
+        }
+    }
+
 
     override fun onRenderingComplete() {
         viewModel.memberClinicalLiveData.value?.clinicalDate?.let {
@@ -295,6 +343,29 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
     }
 
     override fun onUpdateInstruction(id: String, selectedId: Any?) {
+        when (id) {
+            MUAC -> {
+                val rootSuffixTag = muacStatus + rootSuffix
+                val summaryKeyTag = muacStatus + summaryKey
+                val muacStatusTag = muacStatus
+
+                if (selectedId is String && selectedId != DefinedParams.DefaultID) {
+                    formGenerator.getViewByTag(rootSuffixTag)?.visibility = View.VISIBLE
+
+                    (formGenerator.getViewByTag(summaryKeyTag) as? TextView)?.text =
+                        requireContext().getString(
+                            R.string.firstname_lastname,
+                            MUAC.uppercase(),
+                            selectedId
+                        )
+
+                    (formGenerator.getViewByTag(muacStatusTag) as? TextView)?.text =
+                        getNutritionStatus(selectedId, requireContext())
+                } else {
+                    formGenerator.getViewByTag(rootSuffixTag)?.visibility = View.GONE
+                }
+            }
+        }
     }
 
     override fun onInformationHandling(

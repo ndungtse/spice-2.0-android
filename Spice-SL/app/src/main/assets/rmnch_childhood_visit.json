@@ -137,6 +137,7 @@
     "isEnabled": true,
     "isMandatory": true,
     "title": "MUAC",
+    "isInfo": "visible",
     "optionsList": [
       {
         "id": "Green",
@@ -152,6 +153,14 @@
       }
     ],
     "errorMessage": "Please select a valid option"
+  },
+  {
+    "family": "pncChild",
+    "id": "muacStatus",
+    "title": "MUAC",
+    "backgroundColor": "#FDF4F0",
+    "visibility": "visible",
+    "viewType": "InformationLabel"
   },
   {
     "family": "pncChild",

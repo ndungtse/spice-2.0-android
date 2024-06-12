@@ -67,4 +67,5 @@ object AssessmentDefinedParams {
     const val Fever = "fever"
     const val Signs = "Signs"
     const val Cough = "Cough"
+    const val InformationLayoutFragment="InformationLayoutFragment"
 }
