@@ -19,6 +19,7 @@ import com.medtroniclabs.spice.network.utils.ConnectivityManager
 import com.medtroniclabs.spice.ui.home.ToolsViewModel
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.labourdelivery.activity.LabourDeliveryBaseActivity
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.activity.MotherNeonateANCActivity
+import com.medtroniclabs.spice.ui.medicalreview.motherneonate.pnc.activity.MotherNeonatePncActivity
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -108,7 +109,7 @@ class SelectFlowDialog : DialogFragment(), View.OnClickListener {
             getString(R.string.pnc) -> {
                 val patientId = arguments?.getString(DefinedParams.PatientId, "")
                 val id = arguments?.getString(DefinedParams.ID, "")
-                val intent = Intent(requireContext(), LabourDeliveryBaseActivity::class.java)
+                val intent = Intent(requireContext(), MotherNeonatePncActivity::class.java)
                 if (patientId?.isNotBlank() == true && id?.isNotBlank() == true) {
                     intent.putExtra(DefinedParams.PatientId, patientId)
                     intent.putExtra(DefinedParams.ID, id)

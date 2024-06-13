@@ -495,6 +495,7 @@
     <string name="type_comments">Type your comments</string>
     <string name="name_number">Name/Number</string>
     <string name="refer">Refer</string>
+    <string name="is_the_mother_alive">Is the mother alive?</string>
     <string name="refer_patient_name_num_display">%1$s (%2$s) / +%3$s %4$s</string>
     <string name="dispense">Dispense</string>
     <string name="renew_all">Renew All</string>

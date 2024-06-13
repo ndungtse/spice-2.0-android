@@ -33,21 +33,26 @@
         <activity
             android:name=".ui.BaseActivity"
             android:exported="false" />
+
         <activity
             android:name=".ui.boarding.LoginActivity"
-            android:exported="false" /> <!-- CHW Activities -->
+            android:exported="false" />
+
+        <!--CHW Activities-->
         <activity
             android:name=".ui.household.summary.HouseholdSummaryActivity"
             android:exported="false"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity" />
+
         <activity
             android:name=".ui.household.HouseholdActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:exported="false"
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity" />
+
         <activity
             android:name=".ui.landing.OfflineSyncActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
@@ -55,32 +60,39 @@
             android:screenOrientation="portrait"
             android:theme="@style/Theme.Transparent"
             tools:ignore="LockedOrientationActivity" />
+
         <activity
             android:name=".ui.household.HouseholdSearchActivity"
             android:exported="false"
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity" />
+
         <activity
             android:name=".ui.assessment.AssessmentActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:exported="false"
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity" />
+
         <activity
             android:name=".ui.home.AssessmentToolsActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:exported="false"
-            android:screenOrientation="portrait" /> <!-- Medical Review Activities -->
+            android:screenOrientation="portrait" />
+
+        <!--Medical Review Activities-->
         <activity
             android:name=".ui.home.MedicalReviewToolsActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:exported="false"
             android:screenOrientation="landscape" />
+
         <activity
             android:name=".ui.medicalreview.prescription.PrescriptionActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
-            android:exported="false"
-            android:screenOrientation="landscape" />
+            android:screenOrientation="landscape"
+            android:exported="false" />
+
         <activity
             android:name=".ui.medicalreview.motherneonate.anc.activity.MotherNeonateANCActivity"
             android:exported="false"
@@ -98,8 +110,8 @@
             android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".ui.referralhistory.activity.ReferralHistoryActivity"
-            android:exported="false"
-            android:screenOrientation="landscape" />
+            android:screenOrientation="landscape"
+            android:exported="false" />
         <activity
             android:name=".ui.medicalreview.abovefiveyears.AboveFiveYearsBaseActivity"
             android:exported="false"
@@ -123,10 +135,16 @@
             android:name=".ui.followup.FollowUpMyPatientActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
+
         <activity
             android:name=".ui.mypatients.MedicalReviewBaseActivity"
             android:exported="false"
             android:screenOrientation="landscape" />
+
+        <activity
+            android:name=".ui.medicalreview.motherneonate.pnc.activity.MotherNeonatePncActivity"
+            android:exported="false"
+            android:screenOrientation="landscape"/>
 
         <provider
             android:name="androidx.startup.InitializationProvider"

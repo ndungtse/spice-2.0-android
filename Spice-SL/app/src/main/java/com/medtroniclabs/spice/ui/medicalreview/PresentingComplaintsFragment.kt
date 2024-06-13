@@ -8,6 +8,7 @@ import androidx.core.os.bundleOf
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResult
+import com.google.android.material.chip.Chip
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.visible
@@ -22,9 +23,10 @@ import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.viewmodel.MotherNeonateANCViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import timber.log.Timber
 
 @AndroidEntryPoint
-class PresentingComplaintsFragment : BaseFragment() {
+open class PresentingComplaintsFragment : BaseFragment() {
 
     private lateinit var binding: FragmentPresentingComplaintsBinding
     private lateinit var complaintsTagView: TagListCustomView
@@ -124,5 +126,12 @@ class PresentingComplaintsFragment : BaseFragment() {
             binding.etPresentingComplaintsComments.setText(viewModel.enteredComplaintNotes)
         }
     }
+
+
+    fun refreshFragment() {
+        Timber.tag("calledor not implemented")
+        complaintsTagView.clearSelection()
+    }
+
 
 }
