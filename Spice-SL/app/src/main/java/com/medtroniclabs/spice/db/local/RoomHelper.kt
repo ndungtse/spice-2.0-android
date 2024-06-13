@@ -131,7 +131,8 @@ interface RoomHelper {
     suspend fun deleteExaminationsComplaintsForAnc(type: String)
 
     fun getExaminationsComplaintsForAnc(
-        category: String
+        category: String,
+        type: String
     ): LiveData<List<MedicalReviewMetaItems>>
 
     suspend fun deleteExaminationsList(menuType: String)

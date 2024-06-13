@@ -8,6 +8,7 @@ import com.medtroniclabs.spice.data.MedicalReviewMetaItems
 import com.medtroniclabs.spice.data.model.ChipViewItemModel
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.repo.MotherNeonateANCRepo
+import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import javax.inject.Inject
@@ -25,7 +26,7 @@ class PregnancyPastObstetricHistoryViewModel@Inject constructor(
     var pregnancyHistoryChip:ArrayList<ChipViewItemModel> = ArrayList()
     private val getAncMetaForPregnancyHistory = MutableLiveData<String>()
     val ancMetaLiveDataForPregnancyHistory: LiveData<List<MedicalReviewMetaItems>> = getAncMetaForPregnancyHistory.switchMap {
-        motherNeonateANCRepo.getExaminationsComplaintsForAnc(it)
+        motherNeonateANCRepo.getExaminationsComplaintsForAnc(it, MedicalReviewTypeEnums.ANC.name)
     }
 
     fun setAncReqToGetMetaForPregnancyHistory(category: String) {

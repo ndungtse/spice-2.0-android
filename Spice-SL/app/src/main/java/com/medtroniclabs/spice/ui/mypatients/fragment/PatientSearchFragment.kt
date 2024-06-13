@@ -85,7 +85,8 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
 
 
     private fun initViews() {
-        binding.btnAddNewMember.invisible()
+        binding.btnAddNewMember.gone()
+        binding.bottomCardView.gone()
         binding.llFilter.btnFilter.text = getString(R.string.filters)
         val tabletSize =
             resources.getBoolean(R.bool.isLargeTablet) || resources.getBoolean(R.bool.isTablet)

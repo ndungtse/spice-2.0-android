@@ -24,10 +24,10 @@ class PatientDetailViewModel @Inject constructor(
     //the below id is one which get from patient details response
     var patientDetailsId : String? = null
 
-    fun getPatients(id: String) {
+    fun getPatients(id: String, assessmentType: String? = null) {
         viewModelScope.launch(dispatcherIO) {
             patientDetailsLiveData.postLoading()
-            patientDetailsLiveData.postValue(patientRepository.getPatients(PatientDetailRequest(patientId = id)))
+            patientDetailsLiveData.postValue(patientRepository.getPatients(PatientDetailRequest(patientId = id, assessmentType = assessmentType)))
         }
     }
 
@@ -41,5 +41,8 @@ class PatientDetailViewModel @Inject constructor(
 
     fun getPatientId(): String? {
         return patientDetailsLiveData.value?.data?.patientId
+    }
+    fun getPatientHouseholdId(): String? {
+        return patientDetailsLiveData.value?.data?.houseHoldId
     }
 }

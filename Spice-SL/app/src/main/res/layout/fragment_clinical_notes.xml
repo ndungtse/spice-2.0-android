@@ -5,6 +5,7 @@
     style="@style/CardView_Style"
     android:layout_width="match_parent"
     app:cardUseCompatPadding="true"
+    android:layout_marginHorizontal="@dimen/_12sdp"
     android:layout_height="wrap_content">
 
     <androidx.constraintlayout.widget.ConstraintLayout

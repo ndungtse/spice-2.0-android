@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_marginHorizontal="@dimen/_12sdp"
     tools:context=".ui.medicalreview.SystemicExaminationsFragment">
 
     <com.google.android.material.card.MaterialCardView
@@ -73,6 +74,7 @@
                 android:layout_marginHorizontal="@dimen/_16sdp"
                 android:layout_marginVertical="@dimen/_10sdp"
                 android:text="@string/fundal_height"
+                android:fontFamily="@font/inter_regular"
                 android:textSize="@dimen/_16ssp"
                 app:layout_constraintEnd_toStartOf="@id/centerGuideline"
                 app:layout_constraintStart_toStartOf="parent"
@@ -86,7 +88,7 @@
                 android:layout_marginHorizontal="@dimen/_16sdp"
                 android:layout_marginTop="@dimen/_10sdp"
                 android:inputType="number"
-                android:maxLength="3"
+                android:maxLength="2"
                 android:textAlignment="textStart"
                 app:layout_constraintEnd_toEndOf="@id/centerGuideline"
                 app:layout_constraintStart_toStartOf="parent"
@@ -114,6 +116,7 @@
                 android:layout_marginVertical="@dimen/_10sdp"
                 android:text="@string/fetal_heart_rate_bpm"
                 android:textAlignment="textStart"
+                android:fontFamily="@font/inter_regular"
                 android:textSize="@dimen/_16ssp"
                 app:layout_constraintStart_toStartOf="@id/centerGuideline"
                 app:layout_constraintTop_toBottomOf="@id/tagPhysicalExamination" />

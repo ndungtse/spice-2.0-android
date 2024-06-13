@@ -55,7 +55,8 @@ class PregnancyPastObstetricHistoryFragment : BaseFragment() {
                 ChipViewItemModel(
                     id = item.id,
                     name = item.name,
-                    type = item.type
+                    type = item.type,
+                    value = item.value
                 )
             } as ArrayList<ChipViewItemModel>
             initView(complaintList) {

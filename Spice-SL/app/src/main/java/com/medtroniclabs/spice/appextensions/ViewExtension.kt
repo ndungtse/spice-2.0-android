@@ -6,16 +6,26 @@ import android.content.res.Configuration
 import android.content.res.Resources
 import android.graphics.Rect
 import android.text.Editable
+import android.text.SpannableString
+import android.text.Spanned
 import android.text.TextWatcher
+import android.text.method.LinkMovementMethod
+import android.text.style.ClickableSpan
+import android.text.style.ForegroundColorSpan
 import android.view.View
 import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
+import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.CommonUtils
+import com.medtroniclabs.spice.common.GeneralErrorDialog
+import com.medtroniclabs.spice.ui.BaseActivity
 
 fun Context.hideKeyboard(view: View) {
     val inputMethodManager = getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
@@ -110,4 +120,57 @@ fun DialogFragment.setDialogWidthAndHeightAsWrapPercent(widthPercent: Int) {
     val rect = dm.run { Rect(0, 0, widthPixels, heightPixels) }
     val percentWidth = rect.width() * widthPercentage
     dialog?.window?.setLayout(percentWidth.toInt(), WindowManager.LayoutParams.WRAP_CONTENT)
+}
+
+fun TextView.setExpandableText(
+    fullText: String,
+    maxLength: Int = 100,
+    moreText: String = "…more",
+    moreColorResId: Int = R.color.purple_700,
+    title: String
+) {
+    if (fullText.length <= maxLength) {
+        this.text = fullText
+        return
+    }
+
+    val truncatedText = fullText.substring(0, maxLength).trim() + " "
+    val spannableString = SpannableString(truncatedText + moreText)
+
+    val moreColor = ContextCompat.getColor(context, moreColorResId)
+
+    val clickableSpan = object : ClickableSpan() {
+        override fun onClick(widget: View) {
+            (context as? BaseActivity)?.showErrorDialogue(
+                title = title,
+                message = fullText,
+                isNegativeButtonNeed = false,
+                positiveButtonName = context.getString(R.string.ok)
+            ) {
+                // Callback action if needed
+            }
+        }
+
+        override fun updateDrawState(ds: android.text.TextPaint) {
+            super.updateDrawState(ds)
+            ds.isUnderlineText = false // Remove underline
+            ds.color = moreColor // Set the text color to the specified color
+        }
+    }
+
+    spannableString.setSpan(
+        clickableSpan,
+        truncatedText.length,
+        spannableString.length,
+        Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+    )
+    spannableString.setSpan(
+        ForegroundColorSpan(moreColor),
+        truncatedText.length,
+        spannableString.length,
+        Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+    )
+
+    this.text = spannableString
+    this.movementMethod = LinkMovementMethod.getInstance()
 }

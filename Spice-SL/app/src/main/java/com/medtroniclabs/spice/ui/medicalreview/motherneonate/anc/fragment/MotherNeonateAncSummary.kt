@@ -9,6 +9,7 @@ import android.widget.AdapterView
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.invisible
+import com.medtroniclabs.spice.appextensions.setExpandableText
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DateUtils
@@ -23,7 +24,9 @@ import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
+import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil.convertNullableDoubleToString
+import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil.convertWeight
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.viewmodel.MotherNeonateSummaryViewModel
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 
@@ -95,36 +98,57 @@ class MotherNeonateAncSummary : BaseFragment(),View.OnClickListener {
 
     private fun populate(motherNeonateSummaryModel: MotherNeonateAncSummaryModel) {
         with(binding) {
-            tvWeightText.text = requireContext().getString(R.string.hyphen_symbol)
+            tvAncVisitText.text = motherNeonateSummaryModel.visitNumber
+                ?: requireContext().getString(R.string.hyphen_symbol)
+            tvWeightText.text = convertWeight(motherNeonateSummaryModel.weight,requireContext())
+            tvBPText.text = if (motherNeonateSummaryModel.systolic == null && motherNeonateSummaryModel.diastolic == null) {
+                getString(R.string.hyphen_symbol)
+            } else {
+                MotherNeonateUtil.calculateBp(motherNeonateSummaryModel.systolic, motherNeonateSummaryModel.diastolic, requireContext())
+            }
             val obstetricsExaminationText = combineText(
                 motherNeonateSummaryModel.obstetricExaminations,
                 motherNeonateSummaryModel.obstetricExaminationNotes
             )
-            tvObstetricsExaminationText.text = obstetricsExaminationText
+            tvObstetricsExaminationText.setExpandableText(
+                fullText = obstetricsExaminationText,
+                moreColorResId = R.color.purple_700,
+                title = tvObstetricsExaminationLabel.text.toString()
+            )
 
             val presentingComplaintsText = combineText(
                 motherNeonateSummaryModel.presentingComplaints,
                 motherNeonateSummaryModel.presentingComplaintsNotes
             )
-            tvPresentingComplaintsText.text = presentingComplaintsText
+            tvPresentingComplaintsText.setExpandableText(
+                fullText = presentingComplaintsText,
+                moreColorResId = R.color.purple_700,
+                title = tvPresentingComplaintsLabel.text.toString()
+            )
             tvBMIText.text =
                 convertNullableDoubleToString(motherNeonateSummaryModel.bmi, requireContext())
-            tvClinicalNotesText.text = motherNeonateSummaryModel.clinicalNotes
-                ?: requireContext().getString(R.string.hyphen_symbol)
-            tvFundalHeightText.text = convertNullableDoubleToString(
-                motherNeonateSummaryModel.fundalHeight,
-                requireContext()
-            )
-            tvFetalHeartRateText.text = convertNullableDoubleToString(
-                motherNeonateSummaryModel.fetalHeartRate,
-                requireContext()
-            )
+            val clinicalNotes = motherNeonateSummaryModel.clinicalNotes
+
+            if (clinicalNotes.isNullOrEmpty()) {
+                tvClinicalNotesText.text = requireContext().getString(R.string.hyphen_symbol)
+            } else {
+                tvClinicalNotesText.setExpandableText(
+                    fullText = clinicalNotes,
+                    moreColorResId = R.color.purple_700,
+                    title = tvClinicalNotesLabel.text.toString()
+                )
+            }
+
+            tvFundalHeightText.text =
+                MotherNeonateUtil.convertCMS(motherNeonateSummaryModel.fundalHeight, requireContext())
+            tvFetalHeartRateText.text =
+                MotherNeonateUtil.convertBeatsPerMinute(motherNeonateSummaryModel.fetalHeartRate, requireContext())
         }
     }
 
-    private fun combineText(items: List<String>?, notes: String?): String {
+    private fun combineText(items: List<String?>?, notes: String?): String {
         val combinedText = StringBuilder()
-        items?.takeIf { it.isNotEmpty() }?.joinToString(separator = ",")?.let {
+        items?.filterNotNull()?.takeIf { it.isNotEmpty() }?.joinToString(separator = ",")?.let {
             combinedText.append(it)
         }
         if (!notes.isNullOrEmpty()) {
@@ -176,12 +200,13 @@ class MotherNeonateAncSummary : BaseFragment(),View.OnClickListener {
                 cancelCallBack = { datePickerDialog = null }
             ) { _, year, month, dayOfMonth ->
                 val stringDate = "$dayOfMonth-$month-$year"
-                binding.tvNextMedicalReviewLabelText.text =
+                binding.tvNextMedicalReviewLabelText.setText(
                     DateUtils.convertDateTimeToDate(
                         stringDate,
                         DateUtils.DATE_FORMAT_ddMMyyyy,
                         DateUtils.DATE_ddMMyyyy
                     )
+                )
                 viewModel.nextFollowupDate = binding.tvNextMedicalReviewLabelText.text.toString()
                 viewModel.checkSubmitBtn()
                 datePickerDialog = null
@@ -199,6 +224,17 @@ class MotherNeonateAncSummary : BaseFragment(),View.OnClickListener {
         )
         dropDownList.addAll(complaintList)
         adapter?.setData(dropDownList)
+        var defaultPosition = 0
+        for ((index, patientStatus) in dropDownList.withIndex()) {
+            if (patientStatus[DefinedParams.NAME] as? String == ReferralStatus.OnTreatment.name) {
+                defaultPosition = index
+            }
+        }
+        binding.tvPatientStatusSpinner.post {
+            if (defaultPosition != 0) {
+                binding.tvPatientStatusSpinner.setSelection(defaultPosition, false)
+            }
+        }
         binding.tvPatientStatusSpinner.adapter = adapter
         binding.tvPatientStatusSpinner.setSelection(0, false)
         binding.tvPatientStatusSpinner.onItemSelectedListener =
@@ -215,6 +251,7 @@ class MotherNeonateAncSummary : BaseFragment(),View.OnClickListener {
                         val selectedBloodGroup = it[DefinedParams.NAME] as String?
                         if (selectedId != DefinedParams.DefaultID) {
                             viewModel.patientStatus = selectedBloodGroup
+                            handleRecoveredState()
                         } else {
                             viewModel.patientStatus = null
                         }
@@ -228,6 +265,16 @@ class MotherNeonateAncSummary : BaseFragment(),View.OnClickListener {
                      */
                 }
             }
+    }
+
+    fun handleRecoveredState() {
+        if (viewModel.patientStatus?.contains(ReferralStatus.Recovered.name) == true) {
+            binding.tvNextMedicalReviewLabelText.setText("")
+            binding.tvNextMedicalReviewLabelText.isEnabled = false
+            binding.tvNextMedicalReviewError.invisible()
+        } else {
+            binding.tvNextMedicalReviewLabelText.isEnabled = true
+        }
     }
 
     fun validateInput(): Boolean {

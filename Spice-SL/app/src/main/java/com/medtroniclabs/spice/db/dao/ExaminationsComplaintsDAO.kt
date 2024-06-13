@@ -21,9 +21,10 @@ interface ExaminationsComplaintsDAO {
     @Query("DELETE FROM MetaItemByTypeAndCategoryEntity WHERE type = :type")
     suspend fun deleteExaminationsComplaintsForAnc(type: String)
 
-    @Query("SELECT * FROM MetaItemByTypeAndCategoryEntity where category = :category")
+    @Query("SELECT * FROM MetaItemByTypeAndCategoryEntity WHERE LOWER(category) = LOWER(:category) AND LOWER(type) = LOWER(:type) ORDER BY displayOrder ASC")
     fun getExaminationsComplaintsForAnc(
-        category: String
+        category: String,
+        type: String
     ): LiveData<List<MedicalReviewMetaItems>>
 
     @Query("SELECT * FROM MetaItemByTypeAndCategoryEntity WHERE category = :workflow ORDER BY displayOrder ASC")

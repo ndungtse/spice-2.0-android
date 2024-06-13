@@ -384,9 +384,10 @@ class RoomHelperImpl @Inject constructor(
     }
 
     override fun getExaminationsComplaintsForAnc(
-        category: String
+        category: String,
+        type: String
     ): LiveData<List<MedicalReviewMetaItems>> {
-        return examinationsComplaintsDAO.getExaminationsComplaintsForAnc(category)
+        return examinationsComplaintsDAO.getExaminationsComplaintsForAnc(category,type)
     }
 
     override suspend fun deleteExaminationsList(menuType: String) {

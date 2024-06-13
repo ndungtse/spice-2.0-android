@@ -2,12 +2,18 @@ package com.medtroniclabs.spice.data
 
 data class MotherNeonateAncSummaryModel(
     val id: String? = null,
-    val presentingComplaints: List<String>? = null,
+    val presentingComplaints: List<String?>? = null,
     val presentingComplaintsNotes: String? = null,
-    val obstetricExaminations: List<String>? = null,
+    val obstetricExaminations: List<String?>? = null,
     val obstetricExaminationNotes: String? = null,
     val clinicalNotes: String? = null,
     val bmi: Double? = null,
     val fundalHeight: Double? = null,
-    val fetalHeartRate: Double? = null
+    val fetalHeartRate: Double? = null,
+    val systolic: Double? = null,
+    val diastolic: Double? = null,
+    val pulse: Double? = null,
+    val weight: Double? = null,
+    val dateOfReview: String? = null,
+    val visitNumber:String? = null
 )

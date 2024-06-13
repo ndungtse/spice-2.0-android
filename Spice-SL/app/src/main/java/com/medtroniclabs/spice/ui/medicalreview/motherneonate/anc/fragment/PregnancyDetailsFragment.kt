@@ -24,6 +24,7 @@ import com.medtroniclabs.spice.databinding.FragmentPregnancyDetailsBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
 import com.medtroniclabs.spice.ui.BaseFragment
+import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil.EstimatedDeliveryDate
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil.initTextWatcherForDouble
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil.initTextWatcherForInt
@@ -409,7 +410,7 @@ class PregnancyDetailsFragment : BaseFragment(), View.OnClickListener {
 
         if (lmpText.isNotEmpty()) {
             val lmpDate = LocalDate.parse(lmpText, DateTimeFormatter.ofPattern(DATE_ddMMyyyy))
-            val estimatedDeliveryDate = lmpDate.plusWeeks(52)
+            val estimatedDeliveryDate = lmpDate.plusDays(EstimatedDeliveryDate)
             val formattedEstimatedDeliveryDate =
                 estimatedDeliveryDate.format(DateTimeFormatter.ofPattern(DATE_ddMMyyyy))
             binding.tvEstimatedDeliveryDate.text = formattedEstimatedDeliveryDate

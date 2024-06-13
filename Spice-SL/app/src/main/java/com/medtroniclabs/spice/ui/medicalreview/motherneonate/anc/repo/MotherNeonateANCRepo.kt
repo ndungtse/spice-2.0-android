@@ -38,7 +38,8 @@ class MotherNeonateANCRepo @Inject constructor(
                                 data.presentingComplaints,
                                 data.obstetricExaminations,
                                 data.pregnancyHistories,
-                                data.bloodGroup
+                                data.bloodGroup,
+                                data.patientStatus
                             )
                         )
                         SecuredPreference.putBoolean(
@@ -63,7 +64,8 @@ class MotherNeonateANCRepo @Inject constructor(
         presentingComplaints: List<MedicalReviewMetaItems>,
         obstetricExaminations: List<MedicalReviewMetaItems>,
         pregnancyHistories: List<MedicalReviewMetaItems>,
-        bloodGroup: List<MedicalReviewMetaItems>
+        bloodGroup: List<MedicalReviewMetaItems>,
+        patientStatus: List<MedicalReviewMetaItems>
     ): List<MedicalReviewMetaItems> {
         val chipItemList = mutableListOf<MedicalReviewMetaItems>()
         chipItemList.addAll(presentingComplaints.map {
@@ -87,13 +89,20 @@ class MotherNeonateANCRepo @Inject constructor(
                 category = MedicalReviewTypeEnums.BloodGroup.name
             }
         })
+        chipItemList.addAll(patientStatus.map {
+            it.apply {
+                type = ANC.uppercase()
+                category = MedicalReviewTypeEnums.patient_status.name
+            }
+        })
         return chipItemList
     }
 
     fun getExaminationsComplaintsForAnc(
-        category: String
+        category: String,
+        type: String
     ): LiveData<List<MedicalReviewMetaItems>> {
-        return roomHelper.getExaminationsComplaintsForAnc(category)
+        return roomHelper.getExaminationsComplaintsForAnc(category, type)
     }
 
     suspend fun saveMotherNeonateAnc(
@@ -222,6 +231,20 @@ class MotherNeonateANCRepo @Inject constructor(
                 Resource(state = ResourceState.ERROR)
             }
         } catch (e: Exception) {
+            Resource(state = ResourceState.ERROR)
+        }
+    }
+
+    suspend fun fetchSummaryDetails(motherNeonateAncRequest: MotherNeonateAncRequest): Resource<MotherNeonateAncSummaryModel> {
+        return try {
+            val response = apiHelper.fetchSummary(motherNeonateAncRequest)
+            if (response.isSuccessful) {
+                Resource(state = ResourceState.SUCCESS, data = response.body()?.entity)
+            } else {
+                Resource(state = ResourceState.ERROR)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
             Resource(state = ResourceState.ERROR)
         }
     }

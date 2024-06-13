@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.appextensions.setExpandableText
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.data.PregnancyDetailsModel
 import com.medtroniclabs.spice.data.model.ChipViewItemModel
@@ -99,8 +100,13 @@ class PregnancySummaryFragment() : BaseFragment() {
                     }
                     combinedHistory.append(pregnancyHistoryNotes)
                 }
-                tvPregnancyHistoryValue.text =
+                val pregnancyHistoryValue =
                     if (combinedHistory.isNotEmpty()) combinedHistory.toString() else "-"
+                tvPregnancyHistoryValue.setExpandableText(
+                    pregnancyHistoryValue,
+                    title = tvPregnancyHistoryLabel.text.toString(),
+                    maxLength = 60
+                )
                 tvBloodGroupValue.text =
                     convertNullableStringToString(
                         pregnancyDetailsModel.patientBloodGroup,

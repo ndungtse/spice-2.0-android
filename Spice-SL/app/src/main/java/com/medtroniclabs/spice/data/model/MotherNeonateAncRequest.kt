@@ -6,6 +6,7 @@ import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 data class MotherNeonateAncRequest(
     var id: String? = null,
     var memberId: String? = null,
+    var previousHistory:Boolean = false,
     var assessmentType: String? = null,
     var patientId: String? = null,
     var presentingComplaints: List<String?>? = null,
@@ -13,7 +14,7 @@ data class MotherNeonateAncRequest(
     var patientReference: String? = null,
     var obstetricExaminations: List<String?>? = null,
     var obstetricExaminationNotes: String? = null,
-    var pregnancyHistory: List<String>? = null,
+    var pregnancyHistory: List<String?>? = null,
     var pregnancyHistoryNotes: String? = null,
     var fundalHeight: Double? = null,
     var visitNumber: Long? = null,
@@ -32,7 +33,8 @@ data class MedicalReviewEncounter(
     val startTime: String? = null,
     val endTime: String? = null,
     val householdId: String? =null,
-    val memberId: String? = null
+    val memberId: String? = null,
+    var visitNumber: Long? = null
 )
 
 data class PatientEncounterResponse(

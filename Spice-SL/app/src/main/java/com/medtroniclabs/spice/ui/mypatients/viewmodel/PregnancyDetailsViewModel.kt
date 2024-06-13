@@ -8,6 +8,7 @@ import com.medtroniclabs.spice.data.MedicalReviewMetaItems
 import com.medtroniclabs.spice.data.PregnancyDetailsModel
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.repo.MotherNeonateANCRepo
+import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import javax.inject.Inject
@@ -23,7 +24,7 @@ class PregnancyDetailsViewModel @Inject constructor(
     private val getAncMetaForBloodGroup = MutableLiveData<String>()
     val ancMetaLiveDataForBloodGroup: LiveData<List<MedicalReviewMetaItems>> =
         getAncMetaForBloodGroup.switchMap {
-            motherNeonateANCRepo.getExaminationsComplaintsForAnc(it)
+            motherNeonateANCRepo.getExaminationsComplaintsForAnc(it, MedicalReviewTypeEnums.ANC.name)
         }
     fun checkSubmitBtn() {
         checkSubmitBtn.value = true

@@ -29,7 +29,7 @@ class MotherNeonateANCViewModel @Inject constructor(
     var motherNeonateAncRequest: MotherNeonateAncRequest = MotherNeonateAncRequest()
     val summaryCreateResponse = MutableLiveData<Resource<HashMap<String,Any>>>()
     var ancVisit: Long = -1
-    var id: String? = null
+    var patientId: String? = null
     var memberId: String? = null
     var lastLocation: Location? = null
 
@@ -44,10 +44,8 @@ class MotherNeonateANCViewModel @Inject constructor(
         viewModelScope.launch(dispatcherIO) {
             try {
                 motherNeonateAncRequest.apply {
-                    //TODO change After backend finish
-                    visitNumber = ancVisit
                     encounter = MedicalReviewEncounter(
-                        patientId = id,
+                        patientId = this@MotherNeonateANCViewModel.patientId,
                         provenance = ProvanceDto(
                             createdDateTime = DateUtils.getCurrentDateAndTime(
                                 DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
@@ -61,7 +59,8 @@ class MotherNeonateANCViewModel @Inject constructor(
                         endTime = DateUtils.getCurrentDateAndTime(
                             DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
                         ),
-                        referred = true
+                        referred = true,
+                        visitNumber = ancVisit
                     )
                 }
                 motherNeonateCreateResponse.postLoading()

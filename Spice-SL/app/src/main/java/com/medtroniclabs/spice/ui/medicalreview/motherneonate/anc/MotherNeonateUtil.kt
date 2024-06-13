@@ -8,9 +8,9 @@ import androidx.core.widget.doAfterTextChanged
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.visible
-import com.medtroniclabs.spice.common.CommonUtils.toIntOrEmptyString
 
 object MotherNeonateUtil {
+    const val EstimatedDeliveryDate: Long = 280
     fun convertNullableIntToString(value: Int?, context: Context): String {
         return value?.toString() ?: context.getString(R.string.hyphen_symbol)
     }
@@ -135,13 +135,19 @@ object MotherNeonateUtil {
         return true
     }
 
-    fun isDataValid(value: Double?, view: TextView): Boolean {
+    fun isDataValid(
+        value: Double?,
+        view: TextView,
+        maxValue: Int,
+        editText: AppCompatEditText
+    ): Boolean {
         if (value == null) {
             view.gone()
             return true
         }
-        if (value <= 0) {
+        if (!(value >= 1 && value <= maxValue) ) {
             view.visible()
+            editText.requestFocus()
             return false
         }
         view.gone()
@@ -163,5 +169,19 @@ object MotherNeonateUtil {
             context.getString(R.string.hyphen_symbol)
         }
     }
+    fun convertCMS(value: Double?, context: Context): String {
+        return if (value != null) {
+            "${value.toInt()} ${context.getString(R.string.cms)}"
+        } else {
+            context.getString(R.string.hyphen_symbol)
+        }
+    }
 
+    fun convertBeatsPerMinute(value: Double?, context: Context): String {
+        return if (value != null) {
+            "${value.toInt()} ${context.getString(R.string.beats_per_minute)}"
+        } else {
+            context.getString(R.string.hyphen_symbol)
+        }
+    }
 }

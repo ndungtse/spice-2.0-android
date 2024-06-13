@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:paddingHorizontal="@dimen/_5sdp"
     android:background="@color/fragment_bg"
     tools:context=".ui.medicalreview.motherneonate.anc.fragment.PregnancyPastObstetricHistoryFragment">
 
@@ -11,6 +12,8 @@
         android:id="@+id/cardChiefComplaints"
         style="@style/CardView_Style"
         android:layout_width="match_parent"
+        app:strokeWidth="@dimen/_0dp"
+        app:cardCornerRadius="@dimen/_10sdp"
         app:cardUseCompatPadding="true"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -35,7 +38,7 @@
                 android:gravity="center"
                 android:paddingHorizontal="@dimen/_10sdp"
                 android:paddingVertical="@dimen/_10sdp"
-                android:text="Pregnancy History (Past obstetric history)"
+                android:text="@string/pregnancy_history_past_obstetric_history"
                 android:textSize="@dimen/_16ssp"
                 app:layout_constraintEnd_toEndOf="@id/viewPresentingComplaintsCardBG"
                 app:layout_constraintStart_toStartOf="@id/viewPresentingComplaintsCardBG"
@@ -70,13 +73,15 @@
 
     </com.google.android.material.card.MaterialCardView>
 
-    <TextView
+    <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/tvDeliveryKit"
         android:layout_width="@dimen/_0dp"
         android:layout_height="wrap_content"
         android:layout_marginVertical="@dimen/_10sdp"
+        android:fontFamily="@font/inter_regular"
         android:layout_marginStart="@dimen/_8sdp"
-        android:text="Does mother have a delivery kit?"
+        android:textColor="@color/table_title"
+        android:text="@string/does_mother_have_a_delivery_kit"
         android:textSize="@dimen/_16ssp"
         app:layout_constraintEnd_toEndOf="@id/cardChiefComplaints"
         app:layout_constraintStart_toStartOf="@id/cardChiefComplaints"
@@ -88,6 +93,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:paddingVertical="@dimen/_10sdp"
+        android:layout_marginEnd="@dimen/_6sdp"
         app:layout_constraintEnd_toEndOf="@id/tvDeliveryKit"
         app:layout_constraintStart_toStartOf="@id/tvDeliveryKit"
         app:layout_constraintTop_toBottomOf="@id/tvDeliveryKit" />

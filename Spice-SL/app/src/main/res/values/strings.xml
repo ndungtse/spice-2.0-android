@@ -500,4 +500,9 @@
     <string name="zinc">Zinc</string>
     <string name="ors">ORS</string>
     <string name="zinc_or_ors_status">(%1$s - %2$s)</string>
+    <string name="medical_review_history">Medical Review History</string>
+    <string name="cms">cms</string>
+    <string name="beats_per_minute">beats per minute</string>
+    <string name="does_mother_have_a_delivery_kit">Does mother have a delivery kit?</string>
+    <string name="pregnancy_history_past_obstetric_history">Pregnancy History (Past obstetric history)</string>
 </resources>

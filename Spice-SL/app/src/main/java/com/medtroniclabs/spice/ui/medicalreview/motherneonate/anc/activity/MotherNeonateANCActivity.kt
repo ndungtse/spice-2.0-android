@@ -32,6 +32,7 @@ import com.medtroniclabs.spice.ui.medicalreview.abovefiveyears.SystemicExaminati
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.AncVisitCallBack
+import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.fragment.MotherNeonateAncHistoryFragment
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.fragment.MotherNeonateAncSummary
 import com.medtroniclabs.spice.ui.mypatients.fragment.PatientInfoFragment
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.fragment.PregnancyDetailsFragment
@@ -70,12 +71,14 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
                 backNavigation()
             }
         )
-        initStaticDataCall()
         attachObservers()
         getCurrentLocation()
         binding.refreshLayout.setOnRefreshListener {
             swipeRefresh()
         }
+        viewModel.patientId = intent.getStringExtra(DefinedParams.PatientId)
+        initStaticDataCall()
+        setButtonClickListener()
     }
 
     private fun getCurrentLocation() {
@@ -160,6 +163,7 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
                 ResourceState.SUCCESS -> {
                     hideLoading()
                     resource.data?.let {
+                        binding.loadingProgress.visible()
                         handleSummary(it.encounterId)
                     }
                 }
@@ -218,19 +222,12 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
     }
 
     private fun initView() {
-        showLoading()
         initializePatientDetailFragment()
-        initializePregnancyDetailsFragment()
-        initializePregnancyHistoryFragment()
-        hideContainers()
-        setButtonClickListener()
-        setButtonWidth()
     }
 
     private fun initializePatientDetailFragment() {
         val fragmentManager = supportFragmentManager
         val existingFragment = fragmentManager.findFragmentById(R.id.patientDetailFragment)
-        viewModel.id = intent.getStringExtra(DefinedParams.PatientId)
         if (existingFragment == null) {
             val fragment =
                 PatientInfoFragment.newInstance(
@@ -243,7 +240,10 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
                 .commit()
         } else if (existingFragment !is PatientInfoFragment) {
             val fragment =
-                PatientInfoFragment.newInstance(intent.getStringExtra(DefinedParams.PatientId))
+                PatientInfoFragment.newInstance(
+                    intent.getStringExtra(DefinedParams.PatientId),
+                    isAnc = true
+                )
             fragment.setDataCallback(this)
             fragmentManager.beginTransaction()
                 .replace(R.id.patientDetailFragment, fragment)
@@ -320,8 +320,13 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
                     supportFragmentManager.findFragmentById(R.id.systemicExaminationsContainer) as? SystemicExaminationsFragment
                 val clFragment =
                     supportFragmentManager.findFragmentById(R.id.clinicalNotesContainer) as? ClinicalNotesFragment
-                if (fragment != null && fragment.validateInput() && clFragment != null && clFragment.validateInput()) {
-                    submitRequest()
+                if (fragment != null && clFragment != null) {
+                    val isFragmentValid = fragment.validateInput()
+                    val isClFragmentValid = clFragment.validateInput()
+
+                    if (isFragmentValid && isClFragmentValid) {
+                        submitRequest()
+                    }
                 }
             }
 
@@ -352,8 +357,10 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
                         DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
                     )
                 ),
+                householdId = patientViewModel.getPatientHouseholdId(),
                 patientReference = viewModel.getPatientReference(),
-                nextVisitDate = nextVisitDate
+                nextVisitDate = nextVisitDate,
+                patientStatus = motherNeonateSummaryViewModel.patientStatus
             )
             if (connectivityManager.isNetworkAvailable()) {
                 viewModel.motherNeonateSummaryCreate(request)
@@ -371,10 +378,10 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
         viewModel.motherNeonateAncRequest.apply {
             assessmentType = PregnancyANC
             presentingComplaints =
-                presentingComplaintsViewModel.selectedPresentingComplaints.map { it.name }
+                presentingComplaintsViewModel.selectedPresentingComplaints.map { it.value }
             presentingComplaintsNotes = presentingComplaintsViewModel.enteredComplaintNotes
             obstetricExaminations =
-                systemicExaminationViewModel.selectedSystemicExaminations.map { it.name }
+                systemicExaminationViewModel.selectedSystemicExaminations.map { it.value }
             obstetricExaminationNotes = systemicExaminationViewModel.enteredExaminationNotes
             fundalHeight = systemicExaminationViewModel.fundalHeight
             fetalHeartRate = systemicExaminationViewModel.fetalHeartRate
@@ -383,7 +390,7 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
             deliveryKit = pregnancyPastObstetricHistoryViewModel.deliveryKit
             pregnancyHistory = pregnancyPastObstetricHistoryViewModel.pregnancyHistoryChip
                 .filter { it.name != DefinedParams.Other }
-                .map { it.name }
+                .map { it.value}
             pregnancyHistoryNotes = pregnancyPastObstetricHistoryViewModel.pregnancyHistoryNotes
         }
         if (connectivityManager.isNetworkAvailable()) {
@@ -400,6 +407,7 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
         val pregnancyDetailsFragment =
             supportFragmentManager.findFragmentById(R.id.pregnancyDetailsConatiner) as? PregnancyDetailsFragment
         if (pregnancyDetailsFragment?.validateInput() == true) {
+            binding.loadingProgress.visible()
             handleSubmit()
         }
     }
@@ -412,10 +420,15 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
             // Show the dialog here
             showErrorDialog()
         } else if (viewModel.ancVisit == 1L && pregnancyDetailsFragment is MedicalReviewPatientDiagnosisFragment) {
-            showLoading()
-            initView()
-            hideLoading()
+            binding.loadingProgress.visible()
+            initializePregnancyDetailsFragment()
+            initializePregnancyHistoryFragment()
+            hideContainers()
+            setButtonWidth()
+            binding.loadingProgress.gone()
         } else if (pregnancyDetailsFragment is MotherNeonateAncSummary) {
+            showErrorDialog()
+        } else if (viewModel.ancVisit > 1L && pregnancyDetailsFragment is MedicalReviewPatientDiagnosisFragment) {
             showErrorDialog()
         }
     }
@@ -471,14 +484,19 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
     }
 
 
-    private fun handleSubmit() {
+    private fun handleSubmit(isAncVisitOne: Boolean = true) {
         replaceWithDiagnosisFragment()
-        replaceWithPregnancySummaryFragment()
+        if (isAncVisitOne) {
+            replaceWithPregnancySummaryFragment()
+        } else {
+            replaceWithMotherNeonateAncHistoryFragment()
+        }
         scrollToTop()
         hideNextButton()
         showBottomNavigation()
         initializeFragments()
         attachObserversListenerForChip()
+        binding.loadingProgress.gone()
     }
 
     private fun attachObserversListenerForChip() {
@@ -539,31 +557,27 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
     }
 
     override fun onDataLoaded(data: PatientListRespModel) {
-        viewModel.ancVisit = data?.pregnancyDetails?.ancVisitAssessment?.takeIf { true } ?: 1
+        binding.loadingProgress.visible()
+        viewModel.ancVisit =
+            data.pregnancyDetails?.ancVisitMedicalReview?.takeIf { true }?.plus(1) ?: 1
         viewModel.memberId = data.memberId
-        if (viewModel.ancVisit == 1L) {
-            val patientDetails =
-                supportFragmentManager.findFragmentById(R.id.pregnancyDetailsConatiner)
 
+        val patientDetails = supportFragmentManager.findFragmentById(R.id.pregnancyDetailsConatiner)
+
+        if (patientDetails is MotherNeonateAncSummary || viewModel.ancVisit == 1L) {
             when (patientDetails) {
-                patientDetails as? PregnancyDetailsFragment -> {
-
-                }
-
-                patientDetails as? MedicalReviewPatientDiagnosisFragment -> {
-
-                }
-
-                patientDetails as? MotherNeonateAncSummary -> {
-
-                }
-
+                is PregnancyDetailsFragment, is MotherNeonateAncSummary -> binding.loadingProgress.gone()
+                is MedicalReviewPatientDiagnosisFragment -> handleSubmit()
                 else -> {
-                    initView()
+                    initializePregnancyDetailsFragment()
+                    initializePregnancyHistoryFragment()
+                    hideContainers()
+                    setButtonWidth()
+                    binding.loadingProgress.gone()
                 }
             }
-        } else {
-
+        } else if (viewModel.ancVisit > 1L) {
+            handleSubmit(false)
         }
     }
 
@@ -575,9 +589,11 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
         }
         replaceMotherNeonateSummary(encounterId)
         scrollToTop()
+        binding.loadingProgress.gone()
     }
 
     private fun replaceMotherNeonateSummary(encounterId: String?) {
+        swipeRefresh()
         supportFragmentManager.beginTransaction()
             .replace(R.id.pregnancyDetailsConatiner, MotherNeonateAncSummary.newInstance(encounterId))
             .commit()
@@ -600,5 +616,15 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
     override fun onDialogDismissListener(isFinish: Boolean) {
         finish()
     }
+    private fun replaceWithMotherNeonateAncHistoryFragment() {
+        patientViewModel.patientDetailsLiveData.value?.data?.let { details ->
+            details.patientId?.let { id ->
+                val fragment = MotherNeonateAncHistoryFragment.newInstance(id)
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.pregnancyHistoryConatiner, fragment)
+                    .commit()
+            }
+        }
 
+    }
 }

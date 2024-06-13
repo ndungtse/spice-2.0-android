@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.appextensions.postSuccess
+import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.data.MedicalReviewMetaItems
 import com.medtroniclabs.spice.data.MotherNeonateAncSummaryModel
 import com.medtroniclabs.spice.data.model.MotherNeonateAncRequest
@@ -15,6 +16,7 @@ import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.network.ApiHelper
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.repo.MotherNeonateANCRepo
+import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
@@ -34,7 +36,7 @@ class MotherNeonateSummaryViewModel @Inject constructor(
 
     val ancMetaLiveDataForBloodGroup: LiveData<List<MedicalReviewMetaItems>> =
         getAncMetaForBloodGroup.switchMap {
-            motherNeonateANCRepo.getExaminationsComplaintsForAnc(it)
+            motherNeonateANCRepo.getExaminationsComplaintsForAnc(it, MedicalReviewTypeEnums.ANC.name)
         }
 
     fun setAncReqToGetMetaForBloodGroup(category: String) {

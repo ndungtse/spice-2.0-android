@@ -70,12 +70,12 @@ class PatientMenuFragment : BaseFragment(), MenuSelectionListener {
 
         // Check and set isDisable property based on gender
         menuItemsList.forEach { menuItem ->
-            when {
-                menuItem.name == MenuConstants.MOTHER_AND_NEONATE_ID && gender.equals(male, true) -> {
-                    menuItem.isDisabled = true
-                }
-                menuItem.name == MenuConstants.MOTHER_AND_NEONATE_ID && gender.equals(female, true) && !dob.isNullOrBlank() && DateUtils.calculateAge(dob) !in (PREGNANCY_MIN_AGE..PREGNANCY_MAX_AGE) -> {
-                    menuItem.isDisabled = true
+            if (menuItem.name == MenuConstants.MOTHER_AND_NEONATE_ID) {
+                menuItem.isDisabled = when {
+                    gender.equals(male, true) -> true
+                    gender.equals(female, true) && !dob.isNullOrBlank() && DateUtils.calculateAge(dob) !in (PREGNANCY_MIN_AGE..PREGNANCY_MAX_AGE) -> true
+                    (gender.equals(female, true) || gender.equals(male, true)) && dob.isNullOrBlank() -> true
+                    else -> false
                 }
             }
         }

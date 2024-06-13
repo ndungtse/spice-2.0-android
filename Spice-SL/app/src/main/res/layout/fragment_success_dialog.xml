@@ -71,7 +71,7 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="@dimen/_16sdp"
             android:layout_marginVertical="@dimen/_10sdp"
-            android:text="Okay"
+            android:text="@string/okay"
             android:textAllCaps="true"
             android:textSize="@dimen/_16ssp"
             android:textStyle="bold"

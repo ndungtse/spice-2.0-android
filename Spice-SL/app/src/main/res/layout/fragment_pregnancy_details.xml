@@ -3,21 +3,21 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     style="@style/CardView_Style"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/_8sdp">
 
     <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginHorizontal="@dimen/_10sdp"
         android:layout_marginTop="@dimen/_10sdp"
-        android:layout_marginBottom="@dimen/_16sdp"
         app:cardCornerRadius="@dimen/_10sdp"
+        app:cardUseCompatPadding="true"
         app:strokeWidth="@dimen/_0dp">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginBottom="@dimen/_10sdp">
+            android:layout_height="match_parent">
 
             <TextView
                 android:id="@+id/tvTitle"
@@ -632,7 +632,7 @@
                 android:id="@+id/etPatientBloodGroup"
                 style="@style/Form_Spinner_Style"
                 android:layout_width="@dimen/_0dp"
-                android:paddingVertical="@dimen/_10sdp"
+                android:paddingBottom="@dimen/_4sdp"
                 app:layout_constraintEnd_toStartOf="@id/centerLeftGuideline"
                 app:layout_constraintStart_toEndOf="@id/startGuideline"
                 app:layout_constraintTop_toBottomOf="@id/tvPatientBloodGroupLabel" />
@@ -646,7 +646,7 @@
                 android:text="@string/error_label"
                 android:textColor="@color/a_red_error"
                 android:textSize="@dimen/_12ssp"
-                android:visibility="gone"
+                android:visibility="invisible"
                 app:layout_constraintEnd_toEndOf="@id/etPatientBloodGroup"
                 app:layout_constraintStart_toStartOf="@id/etPatientBloodGroup"
                 app:layout_constraintTop_toBottomOf="@id/etPatientBloodGroup" />

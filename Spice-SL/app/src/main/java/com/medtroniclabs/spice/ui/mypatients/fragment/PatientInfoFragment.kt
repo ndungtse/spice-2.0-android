@@ -63,7 +63,7 @@ class PatientInfoFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
         val patientId = arguments?.getString(DefinedParams.PatientId, "")
         if (patientId?.isNotBlank() == true) {
-            viewModel.getPatients(patientId)
+            viewModel.getPatients(patientId, if (isAnc() == true) "ANC" else null)
         }
         attachObservers()
     }
@@ -89,10 +89,13 @@ class PatientInfoFragment : BaseFragment() {
         }
     }
 
+    private fun isAnc(): Boolean? {
+        return arguments?.getBoolean(ANC, false)
+    }
     private fun setDataInInfo(patientListRespModel: PatientListRespModel) {
         showProgress()
         viewModel.patientDetailsId = patientListRespModel.id
-        val isAnc = arguments?.getBoolean(ANC, false)
+        val isAnc = isAnc()
         val name =
             patientListRespModel.name ?: requireContext().getString(R.string.separator_hyphen)
         val gender =
@@ -151,8 +154,9 @@ class PatientInfoFragment : BaseFragment() {
                     mapOf(
                         DefinedParams.label to requireContext().getString(R.string.anc_visit),
                         DefinedParams.value to (patientListRespModel.pregnancyDetails?.ancVisitMedicalReview?.takeIf { true }
+                            ?.plus(1)
                             ?.toString()
-                            ?: requireContext().getString(R.string.hyphen_symbol))
+                            ?: "1")
                     )
                 )
             }
