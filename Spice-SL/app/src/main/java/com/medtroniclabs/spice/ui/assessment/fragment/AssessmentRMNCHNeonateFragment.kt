@@ -56,6 +56,7 @@ class AssessmentRMNCHNeonateFragment : BaseFragment(), View.OnClickListener,
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initView()
+        viewModel.getNearestHealthFacility()
         loadJson()
         attachObservers()
         setListener()

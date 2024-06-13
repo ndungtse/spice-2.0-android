@@ -67,10 +67,12 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
     private fun updateStatusBar() {
         when (viewModel.referralStatus) {
             ReferralStatus.Referred.name -> {
+                viewModel.nearestFacilityLiveData.value?.data?.let { siteList ->
+                    loadPhuSitesList(siteList)
+                }
                 binding.riskResultLayout.backgroundTintList =
                     ContextCompat.getColorStateList(requireContext(), R.color.attention_color)
                 binding.riskResultLayout.text = getString(R.string.referred_for_further_assessment)
-                viewModel.getNearestHealthFacility()
                 binding.etPhuChange.visible()
                 binding.labelPhuReferred.visible()
             }
@@ -134,9 +136,6 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
 
                 ResourceState.SUCCESS -> {
                     hideProgress()
-                    resourceState.data?.let { siteList ->
-                        loadPhuSitesList(siteList)
-                    }
                 }
 
                 ResourceState.ERROR -> {

@@ -88,9 +88,6 @@ class AssessmentRMNCHNeonateSummaryFragment : BaseFragment(), View.OnClickListen
 
                 ResourceState.SUCCESS -> {
                     hideProgress()
-                    resourceState.data?.let { siteList ->
-                        loadPhuSitesList(siteList)
-                    }
                 }
 
                 ResourceState.ERROR -> {
@@ -135,6 +132,9 @@ class AssessmentRMNCHNeonateSummaryFragment : BaseFragment(), View.OnClickListen
     private fun updateStatusBar() {
         when (assessmentRMNCHNeonateViewModel.referralStatus) {
             ReferralStatus.Referred.name -> {
+                viewModel.nearestFacilityLiveData.value?.data?.let { siteList ->
+                    loadPhuSitesList(siteList)
+                }
                 binding.riskResultLayout.backgroundTintList =
                     ContextCompat.getColorStateList(requireContext(), R.color.attention_color)
                 binding.riskResultLayout.text = getString(R.string.referred_for_further_assessment)
