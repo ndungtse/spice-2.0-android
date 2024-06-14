@@ -87,4 +87,5 @@ object DefinedParams {
     const val Recovered = "Recovered"
     const val Select = "Select"
     const val PatientReference = "patientReference"
+    const val valueColor = "color"
 }

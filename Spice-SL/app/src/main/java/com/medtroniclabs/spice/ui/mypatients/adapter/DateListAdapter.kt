@@ -28,7 +28,7 @@ class DateListAdapter(
                         DATE_ddMMyyyy
                     )
                 }
-                ivSelected.visibility = if (id == item.id) View.VISIBLE else View.GONE
+                ivSelected.visibility = if (id == item.id) View.VISIBLE else View.INVISIBLE
                 root.safeClickListener {
                     onClick(item)
                 }
@@ -56,7 +56,9 @@ class DateListAdapter(
         this.id = id
         notifyDataSetChanged()
     }
-    fun submitData(id: String?) {
+    fun submitData(id: String?,referredDates: List<ReferredDate>,) {
+        this.list.clear()
+        this.list.addAll(referredDates)
         this.id = id
         notifyDataSetChanged()
     }

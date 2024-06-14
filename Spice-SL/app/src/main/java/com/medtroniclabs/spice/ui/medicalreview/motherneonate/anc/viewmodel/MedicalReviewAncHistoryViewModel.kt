@@ -21,12 +21,12 @@ class MedicalReviewAncHistoryViewModel @Inject constructor(
 ) : ViewModel() {
     val motherNeonateAncSummary = MutableLiveData<Resource<MotherNeonateAncSummaryModel>>()
 
-    fun getMedicalReviewAncHistory(id: String?) {
+    fun getMedicalReviewAncHistory(id: String?,fhirId: String?) {
         viewModelScope.launch(dispatcherIO) {
             motherNeonateAncSummary.postLoading()
             motherNeonateAncSummary.postValue(
                 motherNeonateANCRepo.fetchSummaryDetails(
-                    MotherNeonateAncRequest(id, previousHistory = true)
+                    MotherNeonateAncRequest(id, previousHistory = true, patientReference = fhirId)
                 )
             )
         }

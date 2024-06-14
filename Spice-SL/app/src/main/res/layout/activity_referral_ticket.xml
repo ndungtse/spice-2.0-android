@@ -5,11 +5,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/fragment_bg"
-    tools:context=".ui.mypatients.ReferralTicketActivity">
+    tools:context=".ui.referralhistory.activity.ReferralHistoryActivity">
 
     <androidx.core.widget.NestedScrollView
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -17,13 +17,15 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:layout_marginStart="@dimen/_35sdp"
+            android:layout_marginEnd="@dimen/_16sdp">
+
 
             <androidx.fragment.app.FragmentContainerView
                 android:id="@+id/patientDetailsContainer"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/_35sdp"
                 app:layout_constraintBottom_toTopOf="@id/cardReferralTicket"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -34,13 +36,46 @@
                 android:id="@+id/cardReferralTicket"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_16sdp"
-                android:layout_marginStart="@dimen/_32sdp"
-                android:layout_marginEnd="@dimen/_16sdp"
+                android:layout_marginTop="@dimen/_8sdp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/patientDetailsContainer" />
 
+            <androidx.fragment.app.FragmentContainerView
+                android:id="@+id/cardMedicalReviewContainer"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_8sdp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/cardReferralTicket" />
+
+            <androidx.fragment.app.FragmentContainerView
+                android:id="@+id/cardMotherNeonateContainer"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_8sdp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/cardMedicalReviewContainer" />
+
+            <androidx.fragment.app.FragmentContainerView
+                android:id="@+id/cardInvestigationContainer"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_8sdp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/cardMotherNeonateContainer" />
+
+            <androidx.fragment.app.FragmentContainerView
+                android:id="@+id/cardPrescriptionContainer"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_8sdp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/cardInvestigationContainer" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
 
@@ -48,9 +83,9 @@
         android:id="@+id/btnMedicalReview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/_8sdp"
         android:contentDescription="@string/patient_medical_review"
         android:elevation="@dimen/_4sdp"
-        android:layout_marginEnd="@dimen/_8sdp"
         android:src="@drawable/ic_btn_start_treatment"
         android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"

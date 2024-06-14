@@ -1,4 +1,4 @@
-package com.medtroniclabs.spice.ui.mypatients.fragment
+package com.medtroniclabs.spice.ui.referralhistory.fragment
 
 import android.content.Context
 import android.content.res.Configuration
@@ -25,7 +25,8 @@ import com.medtroniclabs.spice.model.ReferredDate
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.mypatients.adapter.DateListAdapter
-import com.medtroniclabs.spice.ui.mypatients.viewmodel.ReferralTicketViewModel
+import com.medtroniclabs.spice.ui.referralhistory.adapter.ReferralHistoryAdapter
+import com.medtroniclabs.spice.ui.referralhistory.viewmodel.ReferralHistoryViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -34,8 +35,8 @@ class ReferralTicketFragment : BaseFragment(), View.OnClickListener {
     lateinit var binding: FragmentReferralTicketBinding
     private var listPopupWindow: PopupWindow? = null
     private lateinit var dateListAdapter: DateListAdapter
-    val viewModel: ReferralTicketViewModel by activityViewModels()
-    var patientId: String? = null
+    private lateinit var adapters: ReferralHistoryAdapter
+    val viewModel: ReferralHistoryViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -54,7 +55,7 @@ class ReferralTicketFragment : BaseFragment(), View.OnClickListener {
         fun newInstance(patientId: String?): ReferralTicketFragment {
             val fragment = ReferralTicketFragment()
             val bundle = Bundle()
-            bundle.putString(DefinedParams.PatientId, patientId)
+            bundle.putString(DefinedParams.FhirId, patientId)
             fragment.arguments = bundle
             return fragment
         }
@@ -66,12 +67,31 @@ class ReferralTicketFragment : BaseFragment(), View.OnClickListener {
         attachObservers()
     }
 
+    private fun getPatientId(): String? {
+        return arguments?.getString(DefinedParams.FhirId, "")
+    }
+
+    private fun getInitialReferralTickets() {
+        getPatientId()?.takeIf { it.isNotBlank() }
+            ?.let { viewModel.getReferralTicket(patientId = it) }
+    }
     private fun initView() {
-        binding.root.gone()
-        patientId = arguments?.getString(DefinedParams.PatientId, "")
-        if (patientId?.isNotBlank() == true) {
-            viewModel.getReferralTicket(patientId = patientId)
+        if (getPatientId().isNullOrBlank()) {
+            binding.tvNoHistory.visible()
+            binding.llHistoryAction.ivNext.gone()
+            binding.llHistoryAction.ivPrevious.gone()
+            binding.llHistoryAction.ivReload.gone()
+        } else {
+            binding.tvNoHistory.gone()
+            adapters = ReferralHistoryAdapter()
+            getInitialReferralTickets()
+            setupClickListeners()
+            binding.retryButtonBp.safeClickListener(this)
+            setupPopupWindow()
         }
+    }
+
+    private fun setupPopupWindow() {
         val inflater =
             requireActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
         val view = inflater.inflate(R.layout.layout_popup_window, null)
@@ -86,7 +106,7 @@ class ReferralTicketFragment : BaseFragment(), View.OnClickListener {
         dateListAdapter =
             DateListAdapter { referred ->
                 viewModel.getReferralTicket(
-                    patientId = patientId,
+                    patientId = getPatientId(),
                     ticketId = referred.id
                 )
                 viewModel.ticketId = referred.id
@@ -97,57 +117,93 @@ class ReferralTicketFragment : BaseFragment(), View.OnClickListener {
             LinearLayout.LayoutParams.WRAP_CONTENT,
             LinearLayout.LayoutParams.WRAP_CONTENT
         )
-        binding.llPresActions.ivReload.safeClickListener(this)
-        binding.llPresActions.ivNext.safeClickListener(this@ReferralTicketFragment)
-        binding.llPresActions.ivPrevious.safeClickListener(this@ReferralTicketFragment)
+    }
+
+    private fun setupClickListeners() {
+        with(binding.llHistoryAction) {
+            ivReload.safeClickListener(this@ReferralTicketFragment)
+            ivNext.safeClickListener(this@ReferralTicketFragment)
+            ivPrevious.safeClickListener(this@ReferralTicketFragment)
+        }
     }
 
     private fun attachObservers() {
         viewModel.referralTicketLiveData.observe(viewLifecycleOwner) { resource ->
             when (resource.state) {
                 ResourceState.LOADING -> {
-                    showProgress()
+                    showLoading()
                 }
 
                 ResourceState.SUCCESS -> {
-                    hideProgress()
                     resource.data?.let {
-                        binding.root.visible()
+                        handleSuccess()
                         setReferralTicket(it)
                     } ?: kotlin.run {
-                        binding.root.gone()
+                        binding.groupHistoryList.gone()
+                        binding.clLoaderProgress.gone()
+                        binding.tvNoHistory.visible()
                     }
                 }
 
                 ResourceState.ERROR -> {
-                    hideProgress()
+                    handleError()
                 }
             }
         }
     }
 
+    private fun showLoading() {
+        binding.clLoaderProgress.visible()
+        binding.loaderProgress.visible()
+        binding.retryButtonBp.gone()
+        binding.tvErrorLabel.gone()
+        binding.tvNoHistory.gone()
+        binding.groupHistoryList.gone()
+    }
+
+    private fun handleSuccess() {
+        binding.groupHistoryList.visible()
+        binding.clLoaderProgress.gone()
+        binding.llHistoryAction.ivNext.visible()
+        binding.llHistoryAction.ivPrevious.visible()
+        binding.llHistoryAction.ivReload.visible()
+    }
+
+    private fun handleError() {
+        binding.clLoaderProgress.visible()
+        binding.retryButtonBp.visible()
+        binding.tvErrorLabel.visible()
+        binding.groupHistoryList.gone()
+    }
+
     private fun setReferralTicket(referralData: ReferralData) {
-        val adapters = PatientInfoAdapter(
-            listOf(
+        binding.tvNoHistory.gone()
+        with(DefinedParams) {
+            var referredBy = referralData.referredBy
+            referralData.phoneNumber.takeIf { it?.isNotBlank() == true }?.trim()?.let {
+                referredBy = requireContext().getString(R.string.referral_by_phone_number, referredBy, it)
+            }
+            adapters.updateList(listOf(
                 mapOf(
-                    DefinedParams.label to requireContext().getString(R.string.patient_status),
-                    DefinedParams.value to referralData.patientStatus
+                    label to requireContext().getString(R.string.patient_status),
+                    value to referralData.patientStatus
                 ),
                 mapOf(
-                    DefinedParams.label to requireContext().getString(R.string.referral_by),
-                    DefinedParams.value to referralData.referredBy
+                    label to requireContext().getString(R.string.referral_by),
+                    value to referredBy
                 ),
                 mapOf(
-                    DefinedParams.label to requireContext().getString(R.string.referral_to),
-                    DefinedParams.value to referralData.referredTo
+                    label to requireContext().getString(R.string.referral_to),
+                    value to referralData.referredTo
                 ),
                 mapOf(
-                    DefinedParams.label to requireContext().getString(R.string.referral_reason),
-                    DefinedParams.value to referralData.referredReason
+                    label to requireContext().getString(R.string.referral_reason),
+                    value to referralData.referredReason,
+                    valueColor to R.color.red_risk_moderate
                 ),
                 mapOf(
-                    DefinedParams.label to requireContext().getString(R.string.date_of_onset),
-                    DefinedParams.value to referralData.dateOfOnset?.let {
+                    label to requireContext().getString(R.string.date_of_onset),
+                    value to referralData.dateOfOnset?.let {
                         DateUtils.convertDateFormat(
                             it,
                             DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
@@ -156,8 +212,8 @@ class ReferralTicketFragment : BaseFragment(), View.OnClickListener {
                     }
                 ),
                 mapOf(
-                    DefinedParams.label to requireContext().getString(R.string.referral_date),
-                    DefinedParams.value to referralData.referreddate?.let {
+                    label to requireContext().getString(R.string.referral_date),
+                    value to referralData.referreddate?.let {
                         DateUtils.convertDateFormat(
                             it,
                             DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
@@ -165,25 +221,24 @@ class ReferralTicketFragment : BaseFragment(), View.OnClickListener {
                         )
                     }
                 )
-            ),
-            R.color.white
-        )
-        val params = binding.centerGuideline.layoutParams as ConstraintLayout.LayoutParams
-        val orientation = resources.configuration.orientation
-        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
-            params.guidePercent = 0.5f
-        } else {
-            params.guidePercent = 0.8f
+            ))
         }
-        binding.centerGuideline.layoutParams = params
-        binding.rvPrescription.layoutManager = LinearLayoutManager(requireContext())
-        binding.rvPrescription.adapter = adapters
+        adjustGuideline()
+        binding.rvHistory.layoutManager = LinearLayoutManager(requireContext())
+        binding.rvHistory.adapter = adapters
         setReferralDates(referralData.referredDates, referralData.id)
     }
 
+    private fun adjustGuideline() {
+        val params = binding.centerGuideline.layoutParams as ConstraintLayout.LayoutParams
+        params.guidePercent =
+            if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) 0.5f else 0.8f
+        binding.centerGuideline.layoutParams = params
+    }
+
     private fun checkNextPreviousVisibility() {
-        binding.llPresActions.ivPrevious.isEnabled = checkForPreviousItem() != -1
-        binding.llPresActions.ivNext.isEnabled = checkNextItem() != -1
+        binding.llHistoryAction.ivPrevious.isEnabled = checkForPreviousItem() != -1
+        binding.llHistoryAction.ivNext.isEnabled = checkNextItem() != -1
     }
 
     private fun setReferralDates(referredDates: List<ReferredDate>?, id: String?) {
@@ -192,26 +247,47 @@ class ReferralTicketFragment : BaseFragment(), View.OnClickListener {
             viewModel.ticketId = id
             viewModel.referralDates = referredDates
         } else {
-            dateListAdapter.submitData(id)
+            dateListAdapter.submitData(id, viewModel.referralDates)
         }
         checkNextPreviousVisibility()
     }
 
     override fun onClick(v: View?) {
         when (v?.id) {
-            binding.llPresActions.ivReload.id -> {
+            binding.llHistoryAction.ivReload.id -> {
                 listPopupWindow?.isOutsideTouchable = true
                 listPopupWindow?.isFocusable = true
-                listPopupWindow?.showAsDropDown(binding.llPresActions.ivReload)
+                listPopupWindow?.showAsDropDown(binding.llHistoryAction.ivReload)
             }
 
-            binding.llPresActions.ivPrevious.id -> {
+            binding.llHistoryAction.ivPrevious.id -> {
                 getPreviousItemToCurrent()
             }
 
-            binding.llPresActions.ivNext.id -> {
+            binding.llHistoryAction.ivNext.id -> {
                 getNextItemToCurrent()
             }
+            binding.retryButtonBp.id -> {
+              handleRetry()
+            }
+        }
+    }
+
+    private fun handleRetry() {
+        if (connectivityManager.isNetworkAvailable()) {
+            if (!viewModel.ticketId.isNullOrBlank()) {
+                getPatientId()?.takeIf { it.isNotBlank() }
+                    ?.let {
+                        viewModel.getReferralTicket(
+                            patientId = it,
+                            ticketId = viewModel.ticketId
+                        )
+                    }
+            } else {
+                getInitialReferralTickets()
+            }
+        } else {
+            showErrorDialog(getString(R.string.error), getString(R.string.no_internet_error))
         }
     }
 
@@ -241,32 +317,22 @@ class ReferralTicketFragment : BaseFragment(), View.OnClickListener {
 
     private fun getPreviousItemToCurrent() {
         val selectedIndex = checkForPreviousItem()
-        viewModel.referralDates.let { referredDates ->
-            if (selectedIndex != -1) {
-                viewModel.getReferralTicket(
-                    patientId = patientId,
-                    ticketId =
-                    referredDates[selectedIndex].id?.let {
-                        viewModel.ticketId = it
-                        it
-                    }
-                )
+        if (selectedIndex != -1) {
+            viewModel.referralDates[selectedIndex].id?.let {
+                viewModel.getReferralTicket(patientId = getPatientId(), ticketId = it)
+                viewModel.ticketId = it
             }
         }
     }
 
     private fun getNextItemToCurrent() {
         val selectedIndex = checkNextItem()
-        viewModel.referralDates.let { referredDates ->
-            if (selectedIndex != -1) {
-                viewModel.getReferralTicket(
-                    patientId = patientId,
-                    ticketId = referredDates[selectedIndex].id?.let {
-                        viewModel.ticketId = it
-                        it
-                    }
-                )
+        if (selectedIndex != -1) {
+            viewModel.referralDates[selectedIndex].id?.let {
+                viewModel.getReferralTicket(patientId = getPatientId(), ticketId = it)
+                viewModel.ticketId = it
             }
         }
     }
+
 }

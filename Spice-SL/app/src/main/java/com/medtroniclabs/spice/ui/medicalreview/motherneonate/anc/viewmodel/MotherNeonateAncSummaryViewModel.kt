@@ -47,12 +47,12 @@ class MotherNeonateSummaryViewModel @Inject constructor(
         checkSubmitBtn.value = true
     }
 
-    fun fetchMotherNeonateSummary(encounterId: String?) {
+    fun fetchMotherNeonateSummary(encounterId: String?,fhirId: String?) {
         viewModelScope.launch(dispatcherIO) {
             motherNeonateAncSummary.postLoading()
             motherNeonateAncSummary.postValue(
                 motherNeonateANCRepo.fetchSummary(
-                    MotherNeonateAncRequest(id = encounterId)
+                    MotherNeonateAncRequest(id = encounterId, patientReference = fhirId)
                 )
             )
         }

@@ -1,4 +1,4 @@
-package com.medtroniclabs.spice.ui.mypatients
+package com.medtroniclabs.spice.ui.referralhistory.activity
 
 import android.Manifest
 import android.content.Intent
@@ -9,23 +9,26 @@ import androidx.core.app.ActivityCompat
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.isFineAndCoarseLocationPermissionGranted
 import com.medtroniclabs.spice.appextensions.isGpsEnabled
+import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.ID
 import com.medtroniclabs.spice.databinding.ActivityReferralTicketBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
+import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.ui.BaseActivity
-import com.medtroniclabs.spice.ui.home.ToolsActivity
+import com.medtroniclabs.spice.ui.home.MedicalReviewToolsActivity
+import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.AncVisitCallBack
 import com.medtroniclabs.spice.ui.mypatients.fragment.PatientInfoFragment
-import com.medtroniclabs.spice.ui.mypatients.fragment.ReferralTicketFragment
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
-import com.medtroniclabs.spice.ui.mypatients.viewmodel.ReferralTicketViewModel
+import com.medtroniclabs.spice.ui.referralhistory.fragment.ReferralTicketFragment
+import com.medtroniclabs.spice.ui.referralhistory.viewmodel.ReferralHistoryViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class ReferralTicketActivity : BaseActivity() {
+class ReferralHistoryActivity : BaseActivity(), AncVisitCallBack {
     private lateinit var binding: ActivityReferralTicketBinding
-    val viewModel: ReferralTicketViewModel by viewModels()
-    val patientDetailViewModel: PatientDetailViewModel by viewModels()
+    val viewModel: ReferralHistoryViewModel by viewModels()
+    private val patientDetailViewModel: PatientDetailViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,25 +43,14 @@ class ReferralTicketActivity : BaseActivity() {
 
 
     private fun initView() {
-        showLoading()
+        val patientFragment =
+            PatientInfoFragment.newInstance(intent.getStringExtra(DefinedParams.PatientId))
+        patientFragment.setDataCallback(this)
         supportFragmentManager.beginTransaction()
             .add(
                 R.id.patientDetailsContainer,
-                PatientInfoFragment.newInstance(intent.getStringExtra(DefinedParams.PatientId))
+                patientFragment
             ).commit()
-        hideLoading()
-//        supportFragmentManager.beginTransaction()
-//            .add(
-//                R.id.cardReferralTicket,
-//                ReferralTicketFragment.newInstance(intent.getStringExtra(DefinedParams.PatientId))
-//            ).commit()
-
-        binding.btnMedicalReview.safeClickListener {
-            if (ableToGetLocation())
-                launchToolsActivity()
-        }
-//        val fragment = supportFragmentManager.findFragmentById(R.id.patientDetailsContainer) as? PatientInfoFragment
-//        fragment?.hideProgress()
     }
 
     private fun ableToGetLocation(): Boolean {
@@ -105,7 +97,7 @@ class ReferralTicketActivity : BaseActivity() {
         }
 
     private fun launchToolsActivity() {
-        val intent = Intent(this, ToolsActivity::class.java)
+        val intent = Intent(this, MedicalReviewToolsActivity::class.java)
         if (getString().isNotBlank()) {
             intent.putExtra(DefinedParams.MenuTitle, getString())
         }
@@ -128,4 +120,24 @@ class ReferralTicketActivity : BaseActivity() {
         startActivity(intent)
     }
 
+    override fun onDataLoaded(data: PatientListRespModel) {
+        if (connectivityManager.isNetworkAvailable()) {
+            val dob = intent.getStringExtra(DefinedParams.DOB)
+            dob?.let { DateUtils.calculateAge(dob) } ?: 0
+            showLoading()
+            val referralTicketFragment =
+                ReferralTicketFragment.newInstance(intent.getStringExtra(DefinedParams.FhirId))
+            supportFragmentManager.beginTransaction()
+                .add(
+                    R.id.cardReferralTicket,
+                    referralTicketFragment
+                ).commit()
+
+            binding.btnMedicalReview.safeClickListener {
+                if (ableToGetLocation())
+                    launchToolsActivity()
+            }
+            hideLoading()
+        }
+    }
 }

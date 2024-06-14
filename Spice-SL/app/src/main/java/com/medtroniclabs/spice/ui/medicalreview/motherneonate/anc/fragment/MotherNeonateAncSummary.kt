@@ -51,10 +51,11 @@ class MotherNeonateAncSummary : BaseFragment(),View.OnClickListener {
             return MotherNeonateAncSummary()
         }
 
-        fun newInstance(encounterId: String?): MotherNeonateAncSummary {
+        fun newInstance(encounterId: String?,fhirId: String?): MotherNeonateAncSummary {
             val fragment = MotherNeonateAncSummary()
             val bundle = Bundle()
             bundle.putString(DefinedParams.EncounterId, encounterId)
+            bundle.putString(DefinedParams.FhirId, fhirId)
             fragment.arguments = bundle
             return fragment
         }
@@ -162,7 +163,7 @@ class MotherNeonateAncSummary : BaseFragment(),View.OnClickListener {
 
     private fun initView() {
         binding.tvNextMedicalReviewLabel.markMandatory()
-        viewModel.fetchMotherNeonateSummary(arguments?.getString(DefinedParams.EncounterId))
+        viewModel.fetchMotherNeonateSummary(arguments?.getString(DefinedParams.EncounterId),arguments?.getString(DefinedParams.FhirId))
         binding.tvClinicalName.text = requireContext().getString(
             R.string.firstname_lastname,
             SecuredPreference.getUserDetails().firstName,
@@ -200,12 +201,10 @@ class MotherNeonateAncSummary : BaseFragment(),View.OnClickListener {
                 cancelCallBack = { datePickerDialog = null }
             ) { _, year, month, dayOfMonth ->
                 val stringDate = "$dayOfMonth-$month-$year"
-                binding.tvNextMedicalReviewLabelText.setText(
-                    DateUtils.convertDateTimeToDate(
-                        stringDate,
-                        DateUtils.DATE_FORMAT_ddMMyyyy,
-                        DateUtils.DATE_ddMMyyyy
-                    )
+                binding.tvNextMedicalReviewLabelText.text = DateUtils.convertDateTimeToDate(
+                    stringDate,
+                    DateUtils.DATE_FORMAT_ddMMyyyy,
+                    DateUtils.DATE_ddMMyyyy
                 )
                 viewModel.nextFollowupDate = binding.tvNextMedicalReviewLabelText.text.toString()
                 viewModel.checkSubmitBtn()
@@ -269,7 +268,7 @@ class MotherNeonateAncSummary : BaseFragment(),View.OnClickListener {
 
     fun handleRecoveredState() {
         if (viewModel.patientStatus?.contains(ReferralStatus.Recovered.name) == true) {
-            binding.tvNextMedicalReviewLabelText.setText("")
+            binding.tvNextMedicalReviewLabelText.text = ""
             binding.tvNextMedicalReviewLabelText.isEnabled = false
             binding.tvNextMedicalReviewError.invisible()
         } else {

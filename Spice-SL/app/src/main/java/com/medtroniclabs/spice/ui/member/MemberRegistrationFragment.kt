@@ -44,7 +44,7 @@ import com.medtroniclabs.spice.mappingkey.MemberRegistration.phoneNumber
 import com.medtroniclabs.spice.mappingkey.MemberRegistration.phoneNumberCategory
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
-import com.medtroniclabs.spice.ui.home.ToolsActivity
+import com.medtroniclabs.spice.ui.home.AssessmentToolsActivity
 import com.medtroniclabs.spice.ui.household.HouseholdActivity
 import com.medtroniclabs.spice.ui.household.HouseholdDefinedParams
 import com.medtroniclabs.spice.ui.household.summary.HouseholdSummaryActivity
@@ -89,7 +89,7 @@ class MemberRegistrationFragment : Fragment(), FormEventListener, View.OnClickLi
                 ResourceState.SUCCESS -> {
                     (activity as BaseActivity?)?.hideLoading()
                     if (memberRegistrationViewModel.startAssessment != null && memberRegistrationViewModel.startAssessment!!) {
-                        val intent = Intent(requireActivity(), ToolsActivity::class.java)
+                        val intent = Intent(requireActivity(), AssessmentToolsActivity::class.java)
                         resourceState.data.let {
                             intent.putExtra(MemberID, it ?: -1)
                         }

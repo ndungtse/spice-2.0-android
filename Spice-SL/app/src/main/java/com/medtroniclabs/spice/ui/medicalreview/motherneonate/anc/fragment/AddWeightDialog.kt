@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.appextensions.convertToUtcDateTime
 import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.appextensions.setWidth
 import com.medtroniclabs.spice.common.CommonUtils
@@ -157,9 +158,7 @@ class AddWeightDialog : DialogFragment(), View.OnClickListener {
             weight = binding.etWeight.text?.trim().toString().toDoubleOrNull(),
             encounter = MedicalReviewEncounter(
                 provenance = ProvanceDto(
-                    createdDateTime = DateUtils.getCurrentDateAndTime(
-                        DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
-                    )
+                    createdDateTime = System.currentTimeMillis().convertToUtcDateTime()
                 ),
                 latitude = viewModel.lastLocation?.latitude,
                 longitude = viewModel.lastLocation?.longitude,

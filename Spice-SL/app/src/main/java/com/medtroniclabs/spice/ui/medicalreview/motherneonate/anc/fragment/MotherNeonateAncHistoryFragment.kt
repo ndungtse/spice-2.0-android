@@ -8,6 +8,7 @@ import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.setExpandableText
 import com.medtroniclabs.spice.common.DateUtils
+import com.medtroniclabs.spice.common.DefinedParams.FhirId
 import com.medtroniclabs.spice.common.DefinedParams.PatientId
 import com.medtroniclabs.spice.data.MotherNeonateAncSummaryModel
 import com.medtroniclabs.spice.databinding.FragmentMotherNeonateAncHistoryBinding
@@ -138,7 +139,7 @@ class MotherNeonateAncHistoryFragment : BaseFragment() {
     }
 
     private fun initView() {
-        viewModel.getMedicalReviewAncHistory(arguments?.getString(PatientId))
+        viewModel.getMedicalReviewAncHistory(arguments?.getString(PatientId),arguments?.getString(FhirId))
     }
 
     companion object {
@@ -147,10 +148,11 @@ class MotherNeonateAncHistoryFragment : BaseFragment() {
             return MotherNeonateAncHistoryFragment()
         }
 
-        fun newInstance(patientId: String?): MotherNeonateAncHistoryFragment {
+        fun newInstance(patientId: String?,fhirId: String?): MotherNeonateAncHistoryFragment {
             val fragment = MotherNeonateAncHistoryFragment()
             fragment.arguments = Bundle().apply {
                 putString(PatientId, patientId)
+                putString(FhirId, fhirId)
             }
             return fragment
         }

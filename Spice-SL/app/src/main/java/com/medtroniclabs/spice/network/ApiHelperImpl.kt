@@ -42,6 +42,7 @@ import com.medtroniclabs.spice.model.PatientDetailRequest
 import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.model.PatientsDataModel
 import com.medtroniclabs.spice.model.ReferralData
+import com.medtroniclabs.spice.model.ReferralDetailRequest
 import com.medtroniclabs.spice.model.SearchAndListResponse
 import com.medtroniclabs.spice.model.medicalreview.CreateUnderTwoMonthsResponse
 import com.medtroniclabs.spice.model.medicalreview.UnderTwoMonthsSummaryDetails
@@ -99,7 +100,7 @@ class ApiHelperImpl @Inject constructor(private val apiService: ApiService) : Ap
         return apiService.getAboveFiveYearsMetaData()
     }
 
-    override suspend fun getReferralsDetails(request: PatientDetailRequest): Response<APIResponse<ReferralData>> {
+    override suspend fun getReferralsDetails(request: ReferralDetailRequest): Response<APIResponse<ReferralData>> {
         return apiService.getReferralsDetails(request)
     }
 

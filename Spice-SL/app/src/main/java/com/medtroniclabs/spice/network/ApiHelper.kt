@@ -42,6 +42,7 @@ import com.medtroniclabs.spice.model.PatientDetailRequest
 import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.model.PatientsDataModel
 import com.medtroniclabs.spice.model.ReferralData
+import com.medtroniclabs.spice.model.ReferralDetailRequest
 import com.medtroniclabs.spice.model.SearchAndListResponse
 import com.medtroniclabs.spice.model.medicalreview.CreateUnderTwoMonthsResponse
 import com.medtroniclabs.spice.model.medicalreview.UnderTwoMonthsSummaryDetails
@@ -66,7 +67,7 @@ interface ApiHelper {
     suspend fun patientSearch(request: PatientsDataModel): APIResponse<SearchAndListResponse>
     suspend fun getPatient(request: PatientDetailRequest): Response<APIResponse<PatientListRespModel>>
     suspend fun getAboveFiveYearsMetaData(): Response<APIResponse<AboveFiveYearsMetaResponse>>
-    suspend fun getReferralsDetails(request: PatientDetailRequest): Response<APIResponse<ReferralData>>
+    suspend fun getReferralsDetails(request: ReferralDetailRequest): Response<APIResponse<ReferralData>>
     suspend fun createAboveFiveYearsResult(request: AboveFiveYearsSubmitRequest): Response<APIResponse<AboveFiveYearsSummaryDetails>>
     suspend fun getAboveFiveYearsSummaryDetails(patientId: AboveFiveYearsSummaryRequest): Response<APIResponse<AboveFiveYearsSummaryDetails>>
     suspend fun getMotherNeoNateAncStaticData(): Response<APIResponse<MotherNeonateAncMetaResponse>>

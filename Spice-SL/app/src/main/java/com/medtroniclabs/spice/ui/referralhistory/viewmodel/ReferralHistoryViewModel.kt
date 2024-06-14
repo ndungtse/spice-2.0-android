@@ -1,46 +1,45 @@
-package com.medtroniclabs.spice.ui.mypatients.viewmodel
+package com.medtroniclabs.spice.ui.referralhistory.viewmodel
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.di.IoDispatcher
-import com.medtroniclabs.spice.model.PatientDetailRequest
-import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.model.ReferralData
+import com.medtroniclabs.spice.model.ReferralDetailRequest
 import com.medtroniclabs.spice.model.ReferredDate
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.network.utils.ConnectivityManager
-import com.medtroniclabs.spice.ui.mypatients.repo.PatientRepository
+import com.medtroniclabs.spice.ui.referralhistory.repo.ReferralHistoryRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class ReferralTicketViewModel @Inject constructor(
-    private val patientRepository: PatientRepository,
+class ReferralHistoryViewModel @Inject constructor(
+    private val referralHistoryRepository: ReferralHistoryRepository,
     @IoDispatcher private val dispatcherIO: CoroutineDispatcher
 ) : ViewModel() {
 
     @Inject
     lateinit var connectivityManager: ConnectivityManager
-    val patientDetailsLiveData = MutableLiveData<Resource<PatientListRespModel>>()
     val referralTicketLiveData = MutableLiveData<Resource<ReferralData>>()
     var referralDates = listOf<ReferredDate>()
     var ticketId: String? = null
 
-    fun getPatients(id: String) {
-        viewModelScope.launch(dispatcherIO) {
-            patientDetailsLiveData.postLoading()
-            patientDetailsLiveData.postValue(patientRepository.getPatients(PatientDetailRequest(patientId = id)))
-        }
-    }
-
     fun getReferralTicket(patientId: String? = null, ticketId: String? = null) {
         viewModelScope.launch(dispatcherIO) {
             referralTicketLiveData.postLoading()
-            referralTicketLiveData.postValue(patientRepository.getReferralTicket(PatientDetailRequest(patientId = patientId, ticketId = ticketId)))
+            referralTicketLiveData.postValue(
+                referralHistoryRepository.getReferralTicket(
+                    ReferralDetailRequest(
+                        patientId = patientId?.toLong(),
+                        ticketId = ticketId,
+                        type = "medicalReview"
+                    )
+                )
+            )
         }
     }
 }

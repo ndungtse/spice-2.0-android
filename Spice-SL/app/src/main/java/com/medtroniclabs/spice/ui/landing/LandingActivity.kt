@@ -1,6 +1,7 @@
 package com.medtroniclabs.spice.ui.landing
 
 import android.content.Intent
+import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -169,12 +170,15 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
             R.id.home -> {
                 if (CommonUtils.isProvider()) {
                     binding.appBarMain.tvTitle.text = getString(R.string.search_patient)
-                    replaceFragmentInId<PatientSearchFragment>(
+                    requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+                    replaceFragmentIfExists<PatientSearchFragment>(
                         R.id.fragmentContainerView,
+                        bundle = null,
                         tag = PatientSearchFragment.TAG
                     )
                 } else {
                     binding.appBarMain.tvTitle.text = getString(R.string.home_title)
+                    requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
                     replaceFragmentInId<HomeScreenFragment>(
                         R.id.fragmentContainerView,
                         tag = HomeScreenFragment.TAG

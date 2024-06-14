@@ -230,21 +230,12 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
     }
 
     private fun swipeRefresh() {
-        supportFragmentManager.findFragmentById(R.id.presentingComplaintsContainer)
+        supportFragmentManager.findFragmentById(R.id.patientDetailFragment)
             .let {
-                patientViewModel.patientDetailsLiveData.value?.data?.let { details ->
-                    details.patientId?.let { id ->
-                        patientViewModel.getPatients(id)
-                    }
+                patientViewModel.getPatientId()?.let { id ->
+                    patientViewModel.getPatients(id)
                 }
             }
-        val patientDetails =
-            supportFragmentManager.findFragmentById(R.id.pregnancyDetailsConatiner)
-        when (patientDetails) {
-            patientDetails as? MedicalReviewPatientDiagnosisFragment -> {
-                replaceWithDiagnosisFragment()
-            }
-        }
     }
 
     private fun initView() {
@@ -401,7 +392,7 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
                 householdId = patientViewModel.getPatientHouseholdId(),
                 patientReference = viewModel.getPatientReference(),
                 nextVisitDate = nextVisitDate,
-                patientStatus = motherNeonateSummaryViewModel.patientStatus
+                patientStatus = motherNeonateSummaryViewModel.patientStatus,
             )
             if (connectivityManager.isNetworkAvailable()) {
                 viewModel.motherNeonateSummaryCreate(request)
@@ -433,6 +424,7 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
                 .filter { it.name != DefinedParams.Other }
                 .map { it.value}
             pregnancyHistoryNotes = pregnancyPastObstetricHistoryViewModel.pregnancyHistoryNotes
+            patientReference = patientViewModel.getPatientFHIRId()
         }
         if (connectivityManager.isNetworkAvailable()) {
             viewModel.createMotherNeonate()
@@ -457,10 +449,10 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
         val fragmentManager = supportFragmentManager
         val pregnancyDetailsFragment =
             fragmentManager.findFragmentById(R.id.pregnancyDetailsConatiner)
-        if (viewModel.ancVisit == 1L && pregnancyDetailsFragment is PregnancyDetailsFragment) {
+        if (viewModel.ancVisit == 1 && pregnancyDetailsFragment is PregnancyDetailsFragment) {
             // Show the dialog here
             showErrorDialog()
-        } else if (viewModel.ancVisit == 1L && pregnancyDetailsFragment is MedicalReviewPatientDiagnosisFragment) {
+        } else if (viewModel.ancVisit == 1 && pregnancyDetailsFragment is MedicalReviewPatientDiagnosisFragment) {
             binding.loadingProgress.visible()
             initializePregnancyDetailsFragment()
             initializePregnancyHistoryFragment()
@@ -469,7 +461,7 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
             binding.loadingProgress.gone()
         } else if (pregnancyDetailsFragment is MotherNeonateAncSummary) {
             showErrorDialog()
-        } else if (viewModel.ancVisit > 1L && pregnancyDetailsFragment is MedicalReviewPatientDiagnosisFragment) {
+        } else if (viewModel.ancVisit > 1 && pregnancyDetailsFragment is MedicalReviewPatientDiagnosisFragment) {
             showErrorDialog()
         }
     }
@@ -600,12 +592,12 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
     override fun onDataLoaded(data: PatientListRespModel) {
         binding.loadingProgress.visible()
         viewModel.ancVisit =
-            data.pregnancyDetails?.ancVisitMedicalReview?.takeIf { true }?.plus(1) ?: 1
+            data.pregnancyDetails?.ancVisitMedicalReview?.takeIf { true }?.plus(1)?.toInt() ?: 1
         viewModel.memberId = data.memberId
 
         val patientDetails = supportFragmentManager.findFragmentById(R.id.pregnancyDetailsConatiner)
 
-        if (patientDetails is MotherNeonateAncSummary || viewModel.ancVisit == 1L) {
+        if (patientDetails is MotherNeonateAncSummary || viewModel.ancVisit == 1) {
             when (patientDetails) {
                 is PregnancyDetailsFragment, is MotherNeonateAncSummary -> binding.loadingProgress.gone()
                 is MedicalReviewPatientDiagnosisFragment -> handleSubmit()
@@ -617,7 +609,7 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
                     binding.loadingProgress.gone()
                 }
             }
-        } else if (viewModel.ancVisit > 1L) {
+        } else if (viewModel.ancVisit > 1) {
             handleSubmit(false)
         }
     }
@@ -636,7 +628,7 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
     private fun replaceMotherNeonateSummary(encounterId: String?) {
         swipeRefresh()
         supportFragmentManager.beginTransaction()
-            .replace(R.id.pregnancyDetailsConatiner, MotherNeonateAncSummary.newInstance(encounterId))
+            .replace(R.id.pregnancyDetailsConatiner, MotherNeonateAncSummary.newInstance(encounterId,patientViewModel.getPatientFHIRId()))
             .commit()
         with(supportFragmentManager) {
             findFragmentById(R.id.pregnancyHistoryConatiner)?.let {
@@ -657,15 +649,13 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
     override fun onDialogDismissListener(isFinish: Boolean) {
         finish()
     }
-    private fun replaceWithMotherNeonateAncHistoryFragment() {
-        patientViewModel.patientDetailsLiveData.value?.data?.let { details ->
-            details.patientId?.let { id ->
-                val fragment = MotherNeonateAncHistoryFragment.newInstance(id)
-                supportFragmentManager.beginTransaction()
-                    .replace(R.id.pregnancyHistoryConatiner, fragment)
-                    .commit()
-            }
-        }
 
+    private fun replaceWithMotherNeonateAncHistoryFragment() {
+        patientViewModel.getPatientId()?.let {
+            val fragment = MotherNeonateAncHistoryFragment.newInstance(it,patientViewModel.getPatientFHIRId())
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.pregnancyHistoryConatiner, fragment)
+                .commit()
+        }
     }
 }

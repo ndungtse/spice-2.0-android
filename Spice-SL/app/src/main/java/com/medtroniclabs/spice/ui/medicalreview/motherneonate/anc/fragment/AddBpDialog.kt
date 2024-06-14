@@ -12,6 +12,7 @@ import androidx.appcompat.widget.AppCompatEditText
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.appextensions.convertToUtcDateTime
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.appextensions.setWidth
@@ -260,7 +261,7 @@ class AddBpDialog : DialogFragment(), View.OnClickListener {
     private fun createMedicalReviewEncounter(): MedicalReviewEncounter {
         return MedicalReviewEncounter(
             provenance = ProvanceDto(
-                createdDateTime = DateUtils.getCurrentDateAndTime(DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ)
+                createdDateTime = System.currentTimeMillis().convertToUtcDateTime()
             ),
             latitude = viewModel.lastLocation?.latitude,
             longitude = viewModel.lastLocation?.longitude,

@@ -1,6 +1,7 @@
 package com.medtroniclabs.spice.repo
 
 import android.location.Location
+import com.medtroniclabs.spice.appextensions.convertToUtcDateTime
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.SecuredPreference
@@ -138,9 +139,7 @@ class AboveFiveYearsRepository @Inject constructor(
                             encounter = MedicalReviewEncounter(
                                 patientId = id,
                                 provenance = ProvanceDto(
-                                    createdDateTime = DateUtils.getCurrentDateAndTime(
-                                        DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
-                                    )
+                                    createdDateTime = System.currentTimeMillis().convertToUtcDateTime()
                                 ),
                                 latitude = location.latitude,
                                 longitude = lastLocation.longitude,

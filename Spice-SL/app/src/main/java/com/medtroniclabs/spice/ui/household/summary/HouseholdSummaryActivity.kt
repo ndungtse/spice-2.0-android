@@ -16,7 +16,7 @@ import com.medtroniclabs.spice.formgeneration.extension.capitalizeFirstChar
 import com.medtroniclabs.spice.formgeneration.extension.safePopupMenuClickListener
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.dialog.SuccessDialogFragment
-import com.medtroniclabs.spice.ui.home.ToolsActivity
+import com.medtroniclabs.spice.ui.home.AssessmentToolsActivity
 import com.medtroniclabs.spice.ui.household.HouseholdActivity
 import com.medtroniclabs.spice.ui.household.HouseholdDefinedParams.ID
 import com.medtroniclabs.spice.ui.household.HouseholdDefinedParams.isFromHouseHoldRegistration
@@ -134,7 +134,7 @@ class HouseholdSummaryActivity : BaseActivity(), MemberSelectionListener, View.O
             intent.putExtra(DefinedParams.MemberID, item)
             startActivity(intent)
         } else {
-            val intent = Intent(this, ToolsActivity::class.java)
+            val intent = Intent(this, AssessmentToolsActivity::class.java)
             intent.putExtra(DefinedParams.MemberID, item)
             startActivity(intent)
         }

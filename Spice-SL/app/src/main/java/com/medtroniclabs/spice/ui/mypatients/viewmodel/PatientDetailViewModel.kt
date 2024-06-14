@@ -31,7 +31,7 @@ class PatientDetailViewModel @Inject constructor(
         }
     }
 
-    fun getPatientReferenceId(): String? {
+    fun getPatientFHIRId(): String? {
         return patientDetailsLiveData.value?.data?.id
     }
 

@@ -4,6 +4,7 @@ import android.location.Location
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.medtroniclabs.spice.appextensions.convertToUtcDateTime
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.data.AboveFiveYearsSummarySubmitRequest
@@ -28,7 +29,7 @@ class MotherNeonateANCViewModel @Inject constructor(
     val motherNeonateCreateResponse = MutableLiveData<Resource<PatientEncounterResponse>>()
     var motherNeonateAncRequest: MotherNeonateAncRequest = MotherNeonateAncRequest()
     val summaryCreateResponse = MutableLiveData<Resource<HashMap<String,Any>>>()
-    var ancVisit: Long = -1
+    var ancVisit: Int = -1
     var patientId: String? = null
     var memberId: String? = null
     var lastLocation: Location? = null
@@ -47,9 +48,7 @@ class MotherNeonateANCViewModel @Inject constructor(
                     encounter = MedicalReviewEncounter(
                         patientId = this@MotherNeonateANCViewModel.patientId,
                         provenance = ProvanceDto(
-                            createdDateTime = DateUtils.getCurrentDateAndTime(
-                                DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
-                            )
+                            createdDateTime = System.currentTimeMillis().convertToUtcDateTime()
                         ),
                         latitude = lastLocation?.latitude ?: 0.0,
                         longitude = lastLocation?.longitude ?: 0.0,

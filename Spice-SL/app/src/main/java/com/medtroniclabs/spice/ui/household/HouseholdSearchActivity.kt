@@ -55,10 +55,10 @@ class HouseholdSearchActivity : BaseActivity(), View.OnClickListener {
         val tabletSize =
             resources.getBoolean(R.bool.isLargeTablet) || resources.getBoolean(R.bool.isTablet)
         val spanCount = if (tabletSize) {
-            requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+//            requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
             DefinedParams.span_count_3
         } else {
-            requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+//            requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
             DefinedParams.span_count_1
         }
 
@@ -74,7 +74,7 @@ class HouseholdSearchActivity : BaseActivity(), View.OnClickListener {
             layoutManager =
                 GridLayoutManager(
                     this@HouseholdSearchActivity,
-                    spanCount
+                    DefinedParams.span_count_1
                 )
             adapter = householdListAdapter
         }

@@ -43,6 +43,7 @@ import com.medtroniclabs.spice.model.PatientDetailRequest
 import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.model.PatientsDataModel
 import com.medtroniclabs.spice.model.ReferralData
+import com.medtroniclabs.spice.model.ReferralDetailRequest
 import com.medtroniclabs.spice.model.SearchAndListResponse
 import com.medtroniclabs.spice.model.medicalreview.CreateUnderTwoMonthsResponse
 import com.medtroniclabs.spice.model.medicalreview.UnderTwoMonthsSummaryDetails
@@ -93,8 +94,8 @@ interface ApiService {
     @POST("/spice-service/static-data/meta-data/iccm-under-five-years")
     suspend fun getUnderFiveYearsMetaData(): Response<APIResponse<UnderFiveYearsMetaResponse>>
 
-    @POST("/spice-service/assessment/referral-tickets")
-    suspend fun getReferralsDetails(@Body request: PatientDetailRequest): Response<APIResponse<ReferralData>>
+    @POST("/spice-service/patient/referral-tickets")
+    suspend fun getReferralsDetails(@Body request: ReferralDetailRequest): Response<APIResponse<ReferralData>>
 
     @POST("/spice-service/medical-review/iccm-general/create")
     suspend fun createAboveFiveYearsResult(@Body request: AboveFiveYearsSubmitRequest): Response<APIResponse<AboveFiveYearsSummaryDetails>>

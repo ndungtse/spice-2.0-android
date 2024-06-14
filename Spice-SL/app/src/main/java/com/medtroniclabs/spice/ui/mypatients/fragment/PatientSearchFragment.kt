@@ -24,8 +24,8 @@ import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.mypatients.PatientSelectionListener
 import com.medtroniclabs.spice.ui.mypatients.PatientsListAdapter
-import com.medtroniclabs.spice.ui.mypatients.ReferralTicketActivity
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientListViewModel
+import com.medtroniclabs.spice.ui.referralhistory.activity.ReferralHistoryActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -100,9 +100,7 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
         binding.llExactSearch.etPatientSearch.addTextChangedListener(searchListener)
         binding.llExactSearch.btnSearch.safeClickListener(this)
         binding.llFilter.btnFilter.safeClickListener(this)
-        binding.loadingProgress.safeClickListener{
-
-        }
+        binding.loadingProgress.safeClickListener(this)
     }
 
     private val searchListener = object : TextWatcher {
@@ -122,9 +120,17 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
             val hasString = (s?.trim()?.count() ?: 0) > 0
             binding.llExactSearch.btnSearch.isEnabled = hasString
             if (!hasString) {
-                patientListViewModel.searchText = ""
-                getPatientList()
+                handleSearchBarAfterTextRemove()
             }
+        }
+    }
+
+    private fun handleSearchBarAfterTextRemove() {
+        if (connectivityManager.isNetworkAvailable()) {
+            patientListViewModel.searchText = ""
+            getPatientList()
+        } else {
+            showErrorDialog(getString(R.string.error), getString(R.string.no_internet_error))
         }
     }
 
@@ -149,10 +155,11 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
 
     override fun onSelectedPatient(item: PatientListRespModel) {
         if (connectivityManager.isNetworkAvailable()) {
-            val intent = Intent(requireActivity(), ReferralTicketActivity::class.java)
+            val intent = Intent(requireActivity(), ReferralHistoryActivity::class.java)
             intent.putExtra(DefinedParams.PatientId, item.patientId)
             intent.putExtra(DefinedParams.Gender, item.gender)
             intent.putExtra(DefinedParams.DOB, item.birthDate)
+            intent.putExtra(DefinedParams.FhirId, item.id)
             startActivity(intent)
         } else {
             showErrorDialog(getString(R.string.error),getString(R.string.no_internet_error))
@@ -178,6 +185,7 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
                 requireContext().hideKeyboard(v)
                 handleFilterClick()
             }
+            binding.loadingProgress.id -> {}
         }
     }
 

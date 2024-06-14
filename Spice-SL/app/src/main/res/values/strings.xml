@@ -505,4 +505,6 @@
     <string name="beats_per_minute">beats per minute</string>
     <string name="does_mother_have_a_delivery_kit">Does mother have a delivery kit?</string>
     <string name="pregnancy_history_past_obstetric_history">Pregnancy History (Past obstetric history)</string>
+    <string name="no_referral_history">No Referral History found</string>
+    <string name="referral_by_phone_number">%1$s(%2$s)</string>
 </resources>

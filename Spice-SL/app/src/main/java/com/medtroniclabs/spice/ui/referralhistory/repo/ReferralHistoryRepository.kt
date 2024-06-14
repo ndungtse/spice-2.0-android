@@ -1,28 +1,22 @@
-package com.medtroniclabs.spice.ui.mypatients.repo
+package com.medtroniclabs.spice.ui.referralhistory.repo
 
 import com.medtroniclabs.spice.db.local.RoomHelper
-import com.medtroniclabs.spice.db.response.VillageBasicDetails
-import com.medtroniclabs.spice.model.PatientDetailRequest
-import com.medtroniclabs.spice.model.PatientListRespModel
+import com.medtroniclabs.spice.model.ReferralData
+import com.medtroniclabs.spice.model.ReferralDetailRequest
 import com.medtroniclabs.spice.network.ApiHelper
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.network.resource.ResourceState
 import javax.inject.Inject
 
-class PatientRepository @Inject constructor(
+class ReferralHistoryRepository @Inject constructor(
     private var apiHelper: ApiHelper,
     private var roomHelper: RoomHelper
 ) {
-
-    suspend fun getVillageIdName(): List<VillageBasicDetails> {
-        return roomHelper.getVillageIdName()
-    }
-
-    suspend fun getPatients(
-        request: PatientDetailRequest
-    ): Resource<PatientListRespModel> {
+    suspend fun getReferralTicket(
+        request: ReferralDetailRequest
+    ): Resource<ReferralData> {
         return try {
-            val response = apiHelper.getPatient(request)
+            val response = apiHelper.getReferralsDetails(request)
             if (response.isSuccessful) {
                 Resource(state = ResourceState.SUCCESS, data = response.body()?.entity)
             } else {
