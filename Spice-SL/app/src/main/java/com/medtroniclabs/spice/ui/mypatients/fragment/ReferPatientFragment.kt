@@ -33,7 +33,6 @@ class ReferPatientFragment : DialogFragment(), View.OnClickListener {
 
     private lateinit var binding: FragmentReferPatientBinding
     private val viewModel: ReferPatientViewModel by activityViewModels()
-    private val summaryDetailsViewModel: AboveFiveYearsViewModel by activityViewModels()
     private val patientViewModel: PatientDetailViewModel by activityViewModels()
 
     override fun onCreateView(
@@ -47,10 +46,12 @@ class ReferPatientFragment : DialogFragment(), View.OnClickListener {
 
     companion object {
         const val TAG = "ReferPatientFragment"
-        fun newInstance(name: String): ReferPatientFragment {
+        fun newInstance(name: String, patientReference: String?, encounterId: String?): ReferPatientFragment {
             val fragment = ReferPatientFragment()
             val bundle = Bundle()
             bundle.putString(DefinedParams.NAME, name)
+            bundle.putString(DefinedParams.PatientReference, patientReference)
+            bundle.putString(DefinedParams.EncounterId, encounterId)
             fragment.arguments = bundle
             return fragment
         }
@@ -270,22 +271,23 @@ class ReferPatientFragment : DialogFragment(), View.OnClickListener {
     }
     private fun postResultInput() {
         val assesmentName: String? = arguments?.getString(DefinedParams.NAME, "")
+        val patientReference: String? = arguments?.getString(DefinedParams.PatientReference, "")
+        val encounterId: String? = arguments?.getString(DefinedParams.EncounterId, "")
         val referralTicketType: String = if (assesmentName == MedicalReviewTypeEnums.AboveFiveYears.name) {
             DefinedParams.ICCM
         } else {
             DefinedParams.RMNCH
         }
-        summaryDetailsViewModel.aboveFiveYearsCreateResponse.value?.data?.let { details ->
-            patientViewModel.patientDetailsLiveData.value?.data?.let { patientDetails ->
-                viewModel.createReferPatientResult(
-                    details,
-                    Pair(assesmentName, referralTicketType),
-                    patientDetails.patientId,
-                    patientDetails.houseHoldId,
-                    patientDetails.villageId,
-                    patientDetails.memberId
-                )
-            }
+        patientViewModel.patientDetailsLiveData.value?.data?.let { patientDetails ->
+            viewModel.createReferPatientResult(
+                patientReference,
+                encounterId,
+                Pair(assesmentName, referralTicketType),
+                patientDetails.patientId,
+                patientDetails.houseHoldId,
+                patientDetails.villageId,
+                patientDetails.memberId
+            )
         }
     }
     private fun isEnableRefer() {

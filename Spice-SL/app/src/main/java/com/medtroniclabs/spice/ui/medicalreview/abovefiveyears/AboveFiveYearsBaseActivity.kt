@@ -345,8 +345,12 @@ class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
             }
 
             binding.btnRefer.id ->
-                patientViewModel.patientDetailsLiveData.value?.data?.let { details ->
-                    ReferPatientFragment.newInstance(MedicalReviewTypeEnums.AboveFiveYears.name)
+                viewModel.aboveFiveYearsCreateResponse.value?.data?.let {
+                    ReferPatientFragment.newInstance(
+                        MedicalReviewTypeEnums.AboveFiveYears.name,
+                        it.patientReference,
+                        it.encounterId
+                    )
                         .show(
                             supportFragmentManager,
                             ReferPatientFragment.TAG

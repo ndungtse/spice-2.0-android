@@ -4,7 +4,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.medtroniclabs.spice.appextensions.postLoading
-import com.medtroniclabs.spice.data.AboveFiveYearsSummaryDetails
 import com.medtroniclabs.spice.data.ReferPatientHealthFacilityItem
 import com.medtroniclabs.spice.data.ReferPatientNameNumber
 import com.medtroniclabs.spice.db.entity.HealthFacilityEntity
@@ -49,7 +48,8 @@ class ReferPatientViewModel @Inject constructor(
         }
     }
     fun createReferPatientResult(
-        details: AboveFiveYearsSummaryDetails,
+        patientReference: String?,
+        encounterId: String?,
         assessmentName: Pair<String?, String>,
         patientId: String?,
         houseHoldId: String?,
@@ -60,7 +60,8 @@ class ReferPatientViewModel @Inject constructor(
             referPatientResultLiveData.postLoading()
             referPatientResultLiveData.postValue(
                 repository.createReferPatientResult(
-                    details,
+                    patientReference,
+                    encounterId,
                     Triple(referToSelectedId, clinicalSelectedId, enteredReferredReason),
                     assessmentName,
                     patientId,

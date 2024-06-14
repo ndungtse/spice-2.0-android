@@ -1,8 +1,7 @@
 package com.medtroniclabs.spice.ui.mypatients.repo
 
-import com.medtroniclabs.spice.common.DateUtils
+import com.medtroniclabs.spice.appextensions.convertToUtcDateTime
 import com.medtroniclabs.spice.common.DefinedParams
-import com.medtroniclabs.spice.data.AboveFiveYearsSummaryDetails
 import com.medtroniclabs.spice.data.ReferPatientAPIRequest
 import com.medtroniclabs.spice.data.ReferPatientHealthFacilityItem
 import com.medtroniclabs.spice.data.ReferPatientNameNumber
@@ -54,7 +53,8 @@ class ReferPatientRepository @Inject constructor(
         return Resource(state = ResourceState.ERROR)
     }
     suspend fun createReferPatientResult(
-        details: AboveFiveYearsSummaryDetails,
+        patientReference: String?,
+        encounterId: String?,
         selectedItems: Triple<String?, String?, String?>,
         assessmentName: Pair<String?, String>,
         patientId: String?,
@@ -64,7 +64,8 @@ class ReferPatientRepository @Inject constructor(
     ): Resource<HashMap<String,Any>> {
         try {
             val request = createReferPatientRequest(
-                details,
+                patientReference,
+                encounterId,
                 selectedItems,
                 assessmentName,
                 patientId,
@@ -84,40 +85,35 @@ class ReferPatientRepository @Inject constructor(
         return Resource(state = ResourceState.ERROR)
     }
     private fun createReferPatientRequest(
-        details: AboveFiveYearsSummaryDetails,
+        patientReference: String?,
+        encounterId: String?,
         selectedItems: Triple<String?, String?, String?>,
         assessmentName: Pair<String?, String>,
         patientId: String?,
         houseHoldId: String?,
         villageId: String?,
         memberId: String?
-    ): ReferPatientResult? {
-        return details.patientReference?.let { patientReference ->
-            details.encounterId?.let { encounterId ->
-                    ReferPatientResult(
-                        encounterId = encounterId,
-                        type = MedicalReviewTypeEnums.medicalReview.name,
-                        referredReason = selectedItems.third,
-                        referredSiteId = selectedItems.first,
-                        referredClinicianId = selectedItems.second,
-                        patientReference = patientReference,
-                        referred = true,
-                        provenance = ProvanceDto(
-                            createdDateTime = DateUtils.getCurrentDateAndTime(
-                                DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
-                            )
-                        ),
-                        patientStatus = DefinedParams.REFERRED,
-                        currentPatientStatus = DefinedParams.REFERRED,
-                        assessmentName = assessmentName.first,
-                        patientId = patientId,
-                        householdId = houseHoldId,
-                        villageId = villageId,
-                        memberId = memberId,
-                        referralTicketType = assessmentName.second
-                    )
-                }
-        }
+    ): ReferPatientResult {
+        return ReferPatientResult(
+            encounterId = encounterId,
+            type = MedicalReviewTypeEnums.medicalReview.name,
+            referredReason = selectedItems.third,
+            referredSiteId = selectedItems.first,
+            referredClinicianId = selectedItems.second,
+            patientReference = patientReference,
+            referred = true,
+            provenance = ProvanceDto(
+                createdDateTime = System.currentTimeMillis().convertToUtcDateTime()
+            ),
+            patientStatus = DefinedParams.REFERRED,
+            currentPatientStatus = DefinedParams.REFERRED,
+            assessmentName = assessmentName.first,
+            patientId = patientId,
+            householdId = houseHoldId,
+            villageId = villageId,
+            memberId = memberId,
+            referralTicketType = assessmentName.second
+        )
     }
     suspend fun getDefaultHealthFacilityDistrictId(): Resource<HealthFacilityEntity?>? {
         return try {

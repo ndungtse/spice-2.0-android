@@ -27,6 +27,7 @@ import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
 import com.medtroniclabs.spice.formgeneration.utility.MultiSelectSpinnerAdapter
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
+import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
 import com.medtroniclabs.spice.ui.medicalreview.diagnosis.viewmodel.DiagnosisViewModel
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
@@ -165,7 +166,13 @@ class AboveFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
         val adapter = CustomSpinnerAdapter(requireContext())
         adapter.setData(dropDownList)
         binding.tvPatientStatusSpinner.adapter = adapter
-        binding.tvPatientStatusSpinner.setSelection(0, false)
+        var defaultPosition = 0
+        for ((index, patientStatus) in dropDownList.withIndex()) {
+            if (patientStatus[DefinedParams.NAME] as? String == ReferralStatus.OnTreatment.name) {
+                defaultPosition = index
+            }
+        }
+        binding.tvPatientStatusSpinner.setSelection(defaultPosition, false)
         binding.tvPatientStatusSpinner.onItemSelectedListener =
             object : AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(

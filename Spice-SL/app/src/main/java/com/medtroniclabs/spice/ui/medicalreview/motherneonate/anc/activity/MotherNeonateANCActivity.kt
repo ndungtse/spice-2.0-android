@@ -41,9 +41,11 @@ import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.fragment.Pregn
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.viewmodel.MotherNeonateANCViewModel
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.viewmodel.MotherNeonateSummaryViewModel
 import com.medtroniclabs.spice.ui.mypatients.fragment.MedicalReviewPatientDiagnosisFragment
+import com.medtroniclabs.spice.ui.mypatients.fragment.ReferPatientFragment
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PregnancyDetailsViewModel
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PregnancyPastObstetricHistoryViewModel
+import com.medtroniclabs.spice.ui.mypatients.viewmodel.ReferPatientViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -59,6 +61,7 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
     private val pregnancyPastObstetricHistoryViewModel: PregnancyPastObstetricHistoryViewModel by viewModels()
     private val pregnancyDetailsViewModel: PregnancyDetailsViewModel by viewModels()
     private val motherNeonateSummaryViewModel: MotherNeonateSummaryViewModel by viewModels()
+    private val referPatientViewModel: ReferPatientViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -166,6 +169,29 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
                         binding.loadingProgress.visible()
                         handleSummary(it.encounterId)
                     }
+                }
+
+                ResourceState.ERROR -> {
+                    hideLoading()
+                }
+            }
+        }
+
+        referPatientViewModel.referPatientResultLiveData.observe(this) { resource ->
+            when (resource.state) {
+                ResourceState.LOADING -> {
+                    showLoading()
+                }
+
+                ResourceState.SUCCESS -> {
+                    hideLoading()
+                    val fragment =
+                        supportFragmentManager.findFragmentByTag(ReferPatientFragment.TAG) as? ReferPatientFragment
+                    fragment?.dismiss()
+                    MedicalReviewSuccessDialogFragment.newInstance().show(
+                        supportFragmentManager,
+                        MedicalReviewSuccessDialogFragment.TAG
+                    )
                 }
 
                 ResourceState.ERROR -> {
@@ -302,6 +328,7 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
         binding.btnLayout.btnNext.safeClickListener(this)
         binding.btnSubmit.safeClickListener(this)
         binding.btnDone.safeClickListener(this)
+        binding.btnRefer.safeClickListener(this)
     }
 
     private fun setButtonWidth() {
@@ -332,6 +359,20 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
 
             binding.btnDone.id -> {
                 submitSummary()
+            }
+
+            binding.btnRefer.id -> {
+                viewModel.motherNeonateCreateResponse.value?.data?.let {
+                    ReferPatientFragment.newInstance(
+                        MedicalReviewTypeEnums.ANC.name,
+                        it.patientReference,
+                        it.encounterId
+                    )
+                        .show(
+                            supportFragmentManager,
+                            ReferPatientFragment.TAG
+                        )
+                }
             }
         }
     }
