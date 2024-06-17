@@ -1,5 +1,6 @@
 package com.medtroniclabs.spice.repo
 
+import com.medtroniclabs.spice.common.CommonUtils.getTicketType
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.data.PatientStatusRequest
 import com.medtroniclabs.spice.data.PatientStatusResponse
@@ -47,20 +48,6 @@ class PatientStatusRepository @Inject constructor(
                     )
                 )
             }
-        }
-    }
-
-    private fun getTicketType(menuType: String): String? {
-        return when(menuType) {
-            MedicalReviewTypeEnums.AboveFiveYears.name, MedicalReviewTypeEnums.UnderTwoMonths.name, MedicalReviewTypeEnums.UnderFiveYears.name -> {
-                MedicalReviewTypeEnums.ICCM.name
-            }
-
-            MedicalReviewTypeEnums.ANC.name, MedicalReviewTypeEnums.PNC.name, MedicalReviewTypeEnums.LabourDelivery.name -> {
-                MedicalReviewTypeEnums.RMNCH.name
-            }
-
-            else -> {null}
         }
     }
 }

@@ -2,6 +2,7 @@ package com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.activity
 
 import android.os.Bundle
 import android.view.View
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
@@ -29,18 +30,18 @@ import com.medtroniclabs.spice.ui.medicalreview.SystemicExaminationsFragment
 import com.medtroniclabs.spice.ui.medicalreview.abovefiveyears.ClinicalNotesViewModel
 import com.medtroniclabs.spice.ui.medicalreview.abovefiveyears.PresentingComplaintsViewModel
 import com.medtroniclabs.spice.ui.medicalreview.abovefiveyears.SystemicExaminationViewModel
-import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
-import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.AncVisitCallBack
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.fragment.MotherNeonateAncHistoryFragment
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.fragment.MotherNeonateAncSummary
-import com.medtroniclabs.spice.ui.mypatients.fragment.PatientInfoFragment
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.fragment.PregnancyDetailsFragment
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.fragment.PregnancyPastObstetricHistoryFragment
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.fragment.PregnancySummaryFragment
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.viewmodel.MotherNeonateANCViewModel
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.viewmodel.MotherNeonateSummaryViewModel
+import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
+import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import com.medtroniclabs.spice.ui.mypatients.fragment.MedicalReviewPatientDiagnosisFragment
+import com.medtroniclabs.spice.ui.mypatients.fragment.PatientInfoFragment
 import com.medtroniclabs.spice.ui.mypatients.fragment.ReferPatientFragment
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PregnancyDetailsViewModel
@@ -65,6 +66,7 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
         binding = ActivityMedicalReviewAncactivityBinding.inflate(layoutInflater)
         setMainContentView(
             binding.root,
@@ -135,6 +137,15 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
 
                 ResourceState.ERROR -> {
                     hideLoading()
+                    showErrorDialogue(
+                        title = getString(R.string.alert),
+                        message = getString(R.string.something_went_wrong_try_later),
+                        positiveButtonName = getString(R.string.ok),
+                    ) {
+                        if (it) {
+                            onBackPressPopStack()
+                        }
+                    }
                 }
             }
         }
@@ -559,7 +570,8 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
                 MedicalReviewPatientDiagnosisFragment.newInstance(
                     true,
                     intent.getStringExtra(DefinedParams.PatientId),
-                    viewModel.memberId
+                    viewModel.memberId,
+                    intent.getStringExtra(DefinedParams.ID)
                 )
             )
             .commit()
@@ -658,4 +670,11 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
                 .commit()
         }
     }
+
+    private val onBackPressedCallback: OnBackPressedCallback =
+        object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                backNavigation()
+            }
+        }
 }

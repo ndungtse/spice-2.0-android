@@ -49,12 +49,13 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
             return MedicalReviewPatientDiagnosisFragment()
         }
 
-        fun newInstance(isAnc: Boolean, patientId: String?,memberID: String?): MedicalReviewPatientDiagnosisFragment {
+        fun newInstance(isAnc: Boolean, patientId: String?,memberID: String?, id: String?): MedicalReviewPatientDiagnosisFragment {
             val fragment = MedicalReviewPatientDiagnosisFragment()
             fragment.arguments = Bundle().apply {
                 putBoolean(DefinedParams.PregnancyANC, isAnc)
                 putString(DefinedParams.PatientId, patientId)
                 putString(DefinedParams.MemberID, memberID)
+                putString(DefinedParams.ID, id)
             }
             return fragment
         }
@@ -65,11 +66,20 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
     ): View {
         binding = FragmentMedicalReviewPatientDiagnosisBinding.inflate(inflater, container, false)
         arguments?.let {
-            diagnosisViewModel.diagnosisType =
-                it.getString(MedicalReviewTypeEnums.DiagnosisType.name) ?: ""
+            diagnosisViewModel.diagnosisType = getDiagnosisType()
             statusViewModel.patientId = it.getString(DefinedParams.ID)
         }
         return binding.root
+    }
+
+    private fun getDiagnosisType(): String {
+        return arguments?.let {
+            if (it.getBoolean(DefinedParams.PregnancyANC)){
+                MedicalReviewTypeEnums.ANC.name
+            } else {
+                it.getString(MedicalReviewTypeEnums.DiagnosisType.name)
+            }
+        } ?: ""
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -368,7 +378,8 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
             diagnosisViewModel.getDiagnosisMetaList(diagnosisViewModel.diagnosisType)
             diagnosisViewModel.getDiagnosisDetails(
                 CreateUnderTwoMonthsResponse(
-                    patientReference = it
+                    patientReference = it,
+                    type = diagnosisViewModel.diagnosisType
                 )
             )
         }

@@ -155,14 +155,16 @@ class AboveFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
         dropDownList.add(
             hashMapOf<String, Any>(
                 DefinedParams.NAME to DefinedParams.DefaultIDLabel,
-                DefinedParams.id to DefinedParams.DefaultID
+                DefinedParams.id to DefinedParams.DefaultID,
+                DefinedParams.value to DefinedParams.DefaultIDLabel
             )
         )
         for (item in patientStatusList) {
             dropDownList.add(
                 hashMapOf<String, Any>(
                     DefinedParams.NAME to item.name,
-                    DefinedParams.id to item.id.toString()
+                    DefinedParams.id to item.id.toString(),
+                    DefinedParams.value to (item.value ?: item.name)
                 )
             )
         }
@@ -188,9 +190,7 @@ class AboveFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
                     selectedItem?.let {
                         val selectedName = it[DefinedParams.NAME] as String?
                         if (selectedName != DefinedParams.DefaultIDLabel) {
-                            selectedName?.let { name ->
-                                viewModel.selectedPatientStatus = name
-                            }
+                            viewModel.selectedPatientStatus = it[DefinedParams.value] as String
                         } else {
                             viewModel.selectedPatientStatus = null
                         }
@@ -226,14 +226,16 @@ class AboveFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
         dropDownList.add(
             hashMapOf<String, Any>(
                 DefinedParams.NAME to DefinedParams.DefaultIDLabel,
-                DefinedParams.id to DefinedParams.DefaultID
+                DefinedParams.id to DefinedParams.DefaultID,
+                DefinedParams.value to DefinedParams.DefaultIDLabel
             )
         )
         for (item in costList) {
             dropDownList.add(
                 hashMapOf<String, Any>(
                     DefinedParams.NAME to item.name,
-                    DefinedParams.id to item.id.toString()
+                    DefinedParams.id to item.id.toString(),
+                    DefinedParams.value to (item.value ?: item.name)
                 )
             )
         }
@@ -253,9 +255,7 @@ class AboveFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
                     selectedItem?.let {
                         val selectedName = it[DefinedParams.NAME] as String?
                         if (selectedName != DefinedParams.DefaultIDLabel) {
-                            selectedName?.let { name ->
-                                viewModel.selectedCostItem = name
-                            }
+                                viewModel.selectedCostItem = it[DefinedParams.value] as String
                         } else {
                             viewModel.selectedCostItem = null
                         }
@@ -277,7 +277,8 @@ class AboveFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
             dropDownList.add(
                 MultiSelectDropDownModel(
                     id = item.id,
-                    name = item.name
+                    name = item.name,
+                    value = item.value
                 )
             )
         }

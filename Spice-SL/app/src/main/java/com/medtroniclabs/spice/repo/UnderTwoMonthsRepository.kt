@@ -25,7 +25,7 @@ class UnderTwoMonthsRepository @Inject constructor(
             val response = apiHelper.getUnderTwoMonthsMetaData()
             if (response.isSuccessful) {
                 response.body()?.entity?.apply {
-                    roomHelper.deleteDiagnosisList()
+                    roomHelper.deleteDiagnosisList(MedicalReviewTypeEnums.UnderTwoMonths.name)
                     roomHelper.saveDiagnosisList(diseaseCategories)
                         roomHelper.deleteExaminationsList(MedicalReviewTypeEnums.UnderTwoMonths.name)
                     roomHelper.saveExaminationsList(examinations)

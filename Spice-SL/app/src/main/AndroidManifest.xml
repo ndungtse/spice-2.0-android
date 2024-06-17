@@ -91,6 +91,8 @@
 
         <activity
             android:name=".ui.medicalreview.prescription.PrescriptionActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:screenOrientation="sensorLandscape"
             android:exported="false" />
 
         <activity
@@ -110,6 +112,7 @@
             android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".ui.referralhistory.activity.ReferralHistoryActivity"
+            android:screenOrientation="sensorLandscape"
             android:exported="false" />
         <activity
             android:name=".ui.medicalreview.abovefiveyears.AboveFiveYearsBaseActivity"

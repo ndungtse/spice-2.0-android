@@ -321,8 +321,8 @@ class RoomHelperImpl @Inject constructor(
         examinationsComplaintsDAO.insertExaminationsComplaints(symptomEntity)
     }
 
-    override suspend fun deleteDiagnosisList() {
-        diagnosisDAO.deleteDiagnosisList()
+    override suspend fun deleteDiagnosisList(diagnosisType: String) {
+        diagnosisDAO.deleteDiagnosisList(diagnosisType)
     }
 
     override suspend fun saveDiagnosisList(diagnosisList: ArrayList<DiseaseCategoryItems>) {

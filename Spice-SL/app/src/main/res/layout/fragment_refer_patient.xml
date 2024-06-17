@@ -11,6 +11,7 @@
     tools:context=".ui.mypatients.fragment.ReferPatientFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/clTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -122,53 +123,75 @@
             app:layout_constraintStart_toStartOf="@+id/tvNameNumberLabel"
             app:layout_constraintTop_toBottomOf="@+id/tvNameNumberLabel" />
 
-        <androidx.cardview.widget.CardView
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/bottomDivider"
-            android:layout_width="0dp"
-            android:layout_height="@dimen/_1sdp"
-            android:layout_marginTop="@dimen/_60sdp"
-            android:layout_marginBottom="@dimen/_5sdp"
-            android:background="@color/edittext_stroke"
-            app:cardElevation="@dimen/_4sdp"
-            app:layout_constraintBottom_toTopOf="@id/btnRefer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@+id/etNameNumber">
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="0dp"
+                android:layout_height="@dimen/_2sdp"
+                android:layout_marginTop="@dimen/_55sdp"
+                android:layout_marginBottom="@dimen/_5sdp"
+                android:background="@color/edittext_stroke"
+                app:cardElevation="@dimen/_9sdp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/bottomDivider" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/clBottom"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="@dimen/_16sdp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/etNameNumber" />
+            app:layout_constraintTop_toBottomOf="@id/bottomDivider">
 
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/btnRefer"
-            style="@style/Button_Style"
-            android:layout_marginTop="@dimen/_10sdp"
-            android:layout_marginEnd="@dimen/_20sdp"
-            android:layout_marginBottom="@dimen/_10sdp"
-            android:background="@drawable/button_selector_cobalt"
-            android:enabled="false"
-            android:paddingHorizontal="@dimen/_30sdp"
-            android:text="@string/refer"
-            android:textAllCaps="true"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/bottomDivider" />
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/btnCancel"
+                style="@style/Button_Style_cancel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_16sdp"
+                android:layout_marginEnd="@dimen/_16sdp"
+                android:layout_marginBottom="@dimen/_16sdp"
+                android:paddingVertical="@dimen/_16sdp"
+                android:text="@string/cancel"
+                android:textAllCaps="true"
+                android:textSize="@dimen/_16ssp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/btnRefer"
+                app:layout_constraintTop_toTopOf="parent" />
 
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/btnCancel"
-            style="@style/Button_Style_cancel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/_16sdp"
-            android:paddingHorizontal="@dimen/_30sdp"
-            android:text="@string/cancel"
-            android:textAllCaps="true"
-            app:layout_constraintBottom_toBottomOf="@+id/btnRefer"
-            app:layout_constraintEnd_toStartOf="@+id/btnRefer"
-            app:layout_constraintTop_toTopOf="@+id/btnRefer" />
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/btnRefer"
+                style="@style/Button_Style_confirm"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_8sdp"
+                android:layout_marginEnd="@dimen/_8sdp"
+                android:background="@drawable/btn_bg_selector"
+                android:paddingHorizontal="@dimen/_16sdp"
+                android:paddingVertical="@dimen/_16sdp"
+                android:text="@string/refer"
+                android:textAllCaps="true"
+                android:textSize="@dimen/_16ssp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="@+id/btnCancel"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/btnCancel" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/loadingProgress"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toBottomOf="@id/clTitle"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@id/tvTitle">
@@ -191,8 +214,6 @@
                 app:lottie_autoPlay="true"
                 app:lottie_loop="true"
                 app:lottie_rawRes="@raw/loader_spice" />
-
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
-
 </com.google.android.material.card.MaterialCardView>

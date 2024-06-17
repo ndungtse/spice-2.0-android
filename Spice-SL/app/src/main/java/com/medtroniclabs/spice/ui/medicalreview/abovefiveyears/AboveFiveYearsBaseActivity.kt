@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.ScrollView
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.DefinedParams
@@ -12,6 +13,7 @@ import com.medtroniclabs.spice.common.SpiceLocationManager
 import com.medtroniclabs.spice.data.AboveFiveYearsSummaryRequest
 import com.medtroniclabs.spice.databinding.ActivityAboveFiveYearsBaseBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
+import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
@@ -20,6 +22,7 @@ import com.medtroniclabs.spice.ui.landing.OnDialogDismissListener
 import com.medtroniclabs.spice.ui.medicalreview.ClinicalNotesFragment
 import com.medtroniclabs.spice.ui.medicalreview.PresentingComplaintsFragment
 import com.medtroniclabs.spice.ui.medicalreview.SystemicExaminationsFragment
+import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.AncVisitCallBack
 import com.medtroniclabs.spice.ui.medicalreview.prescription.PrescriptionActivity
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.CLINICAL_NOTES
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.PC_ITEM
@@ -34,7 +37,7 @@ import com.medtroniclabs.spice.ui.mypatients.viewmodel.ReferPatientViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialogDismissListener {
+class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialogDismissListener, AncVisitCallBack {
 
     private lateinit var binding: ActivityAboveFiveYearsBaseBinding
     private val viewModel: AboveFiveYearsViewModel by viewModels()
@@ -46,6 +49,7 @@ class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
         binding = ActivityAboveFiveYearsBaseBinding.inflate(layoutInflater)
         setMainContentView(
             binding.root,
@@ -56,7 +60,6 @@ class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
             }
         )
         initializeViews()
-        initializeFragments()
         initializeListeners()
         attachObserver()
         getCurrentLocation()
@@ -96,7 +99,9 @@ class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
                         if (connectivityManager.isNetworkAvailable()) {
                             viewModel.getAboveFiveYearsSummaryDetails(
                                 AboveFiveYearsSummaryRequest(
-                                    id = it.encounterId
+                                    id = it.encounterId,
+                                    patientReference = it.patientReference,
+                                    type = MedicalReviewTypeEnums.AboveFiveYears.name
                                 )
                             )
                         } else {
@@ -105,7 +110,7 @@ class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
                                 isNegativeButtonNeed = false,
                             ) {}
                         }
-                        viewModel.getAboveFiveYearsSummaryDetails(AboveFiveYearsSummaryRequest(id = it.id))
+                        viewModel.getAboveFiveYearsSummaryDetails(AboveFiveYearsSummaryRequest(id = it.id, type = MedicalReviewTypeEnums.AboveFiveYears.name))
                     }
                 } else {
                     patientViewModel.patientDetailsLiveData.value?.data?.let { details ->
@@ -150,11 +155,13 @@ class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
     }
 
     private fun addPatientDetails() {
+        val patientInfoFragment = PatientInfoFragment.newInstance(intent.getStringExtra(DefinedParams.PatientId))
         supportFragmentManager.beginTransaction()
             .add(
                 R.id.patientDetailFragment,
-                PatientInfoFragment.newInstance(intent.getStringExtra(DefinedParams.PatientId))
+                patientInfoFragment
             ).commit()
+        patientInfoFragment.setDataCallback(this)
     }
 
     private fun attachObserver() {
@@ -191,7 +198,6 @@ class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
                 }
 
                 ResourceState.SUCCESS -> {
-                    initializeFragments()
                     hideLoading()
                 }
             }
@@ -212,7 +218,9 @@ class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
                         if (connectivityManager.isNetworkAvailable()) {
                             viewModel.getAboveFiveYearsSummaryDetails(
                                 AboveFiveYearsSummaryRequest(
-                                    id = it.encounterId
+                                    id = it.encounterId,
+                                    patientReference = it.patientReference,
+                                    type = MedicalReviewTypeEnums.AboveFiveYears.name
                                 )
                             )
                         } else {
@@ -221,7 +229,6 @@ class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
                                 isNegativeButtonNeed = false,
                             ) {}
                         }
-                        viewModel.getAboveFiveYearsSummaryDetails(AboveFiveYearsSummaryRequest(id = it.id))
                     }
                     initializeSummaryFragments()
                 }
@@ -242,6 +249,15 @@ class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
 
                 ResourceState.ERROR -> {
                     hideLoading()
+                    showErrorDialogue(
+                        title = getString(R.string.alert),
+                        message = getString(R.string.something_went_wrong_try_later),
+                        positiveButtonName = getString(R.string.ok),
+                    ) {
+                        if (it) {
+                            onBackPressPopStack()
+                        }
+                    }
                 }
             }
         }
@@ -425,4 +441,15 @@ class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
             viewModel.lastLocation = it
         }
     }
+
+    override fun onDataLoaded(data: PatientListRespModel) {
+        initializeFragments()
+    }
+
+    private val onBackPressedCallback: OnBackPressedCallback =
+        object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                backNavigation()
+            }
+        }
 }

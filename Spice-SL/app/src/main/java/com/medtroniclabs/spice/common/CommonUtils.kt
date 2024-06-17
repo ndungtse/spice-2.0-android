@@ -11,6 +11,7 @@ import com.medtroniclabs.spice.formgeneration.config.DefinedParams.MONTHS
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.WEEKS
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.YEARS
 import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration
+import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import java.io.File
 import java.math.RoundingMode
 import java.text.DecimalFormat
@@ -329,4 +330,17 @@ object CommonUtils {
         return File(directory, DefinedParams.SIGN_DIR)
     }
 
+    fun getTicketType(menuType: String): String? {
+        return when(menuType) {
+            MedicalReviewTypeEnums.AboveFiveYears.name, MedicalReviewTypeEnums.UnderTwoMonths.name, MedicalReviewTypeEnums.UnderFiveYears.name -> {
+                MedicalReviewTypeEnums.ICCM.name
+            }
+
+            MedicalReviewTypeEnums.ANC.name, MedicalReviewTypeEnums.PNC.name, MedicalReviewTypeEnums.LabourDelivery.name -> {
+                MedicalReviewTypeEnums.RMNCH.name
+            }
+
+            else -> {null}
+        }
+    }
 }

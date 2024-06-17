@@ -11,8 +11,8 @@ interface DiagnosisDAO {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun saveDiagnosisList(diseaseEntityList: ArrayList<DiseaseCategoryItems>)
 
-    @Query("DELETE FROM DiagnosisEntity")
-    suspend fun deleteDiagnosisList()
+    @Query("DELETE FROM DiagnosisEntity where type = :diagnosisType")
+    suspend fun deleteDiagnosisList(diagnosisType: String)
 
     @Query("SELECT * FROM DiagnosisEntity Where type=:diagnosisType ORDER BY displayOrder ASC")
     suspend fun getDiagnosisList(diagnosisType: String): List<DiseaseCategoryItems>

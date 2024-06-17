@@ -42,6 +42,8 @@ class MotherNeonateANCRepo @Inject constructor(
                                 data.patientStatus
                             )
                         )
+                        roomHelper.deleteDiagnosisList(MedicalReviewTypeEnums.ANC.name)
+                        roomHelper.saveDiagnosisList(data.diseaseCategories)
                         SecuredPreference.putBoolean(
                             SecuredPreference.EnvironmentKey.IS_MOTHER_NEONATE_LOADEDANC.name,
                             true

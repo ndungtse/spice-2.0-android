@@ -8,6 +8,8 @@ import android.view.ViewGroup
 import android.view.Window
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
+import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.setError
 import com.medtroniclabs.spice.appextensions.setWidth
 import com.medtroniclabs.spice.common.CommonUtils
@@ -26,6 +28,7 @@ import com.medtroniclabs.spice.model.medicalreview.CreateUnderTwoMonthsResponse
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.TagListCustomView
 import com.medtroniclabs.spice.ui.medicalreview.diagnosis.viewmodel.DiagnosisViewModel
+import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -79,7 +82,8 @@ class DiagnosisDialogFragment : DialogFragment(), View.OnClickListener, Diagnosi
                             details.id?.let { id ->
                                 diagnosisViewModel.getDiagnosisDetails(
                                     CreateUnderTwoMonthsResponse(
-                                        patientReference = id
+                                        patientReference = id,
+                                        type = diagnosisViewModel.diagnosisType
                                     )
                                 )
                             }
@@ -112,7 +116,7 @@ class DiagnosisDialogFragment : DialogFragment(), View.OnClickListener, Diagnosi
                                  * diagnosisAccordionList - Collecting list of accordions which has been already selected
                                  *                          by comparing diseaseCategory and it value
                                  * diagnosisMetaChipItemList - It is to render the Parent Chip item Disease Category
-                                 * selectedDiagnosisMetaChipItemList - It is to collect overall selected chip item list
+                                 * selectedDiagnosisMetaChipItemList - It is to collect overall selected parent chip item list
                                  * selectedDiseaseConditionItemList - It is to select chips of disease conditions which is inside accordion of respective group
                                  */
 
@@ -200,7 +204,8 @@ class DiagnosisDialogFragment : DialogFragment(), View.OnClickListener, Diagnosi
                     patientViewModel.patientDetailsLiveData.value?.data?.let {
                         diagnosisViewModel.getDiagnosisDetails(
                             CreateUnderTwoMonthsResponse(
-                                patientReference = it.id
+                                patientReference = it.id,
+                                type = diagnosisViewModel.diagnosisType
                             )
                         )
                     }
@@ -218,11 +223,12 @@ class DiagnosisDialogFragment : DialogFragment(), View.OnClickListener, Diagnosi
     }
 
     private fun initView() {
+        handleVisibility()
         diagnosisGenerator = DiagnosisGenerator(binding.root.context, binding.llFamilyRoot, this)
         diseaseCategoryTagView = TagListCustomView(
             binding.root.context, binding.diseaseConditionChipGroup
         ) { name, _, isChecked ->
-            if (!diagnosisViewModel.viewDiagnosis) {
+            if (!diagnosisViewModel.viewDiagnosis && isShowAccordion()) {
                 diagnosisViewModel.diagnosisMetaList.value?.data?.let { listItems ->
                     if (isChecked) {
                         val filteredList =
@@ -238,6 +244,7 @@ class DiagnosisDialogFragment : DialogFragment(), View.OnClickListener, Diagnosi
         }
     }
 
+
     override fun onClick(view: View) {
         when (view.id) {
             binding.btnCancel.id, binding.ivClose.id -> {
@@ -251,13 +258,14 @@ class DiagnosisDialogFragment : DialogFragment(), View.OnClickListener, Diagnosi
                         details.id?.let {
                             val request = DiagnosisSaveUpdateRequest(
                                 patientId = patientId,
-                                patientReferance = it,
+                                patientReference = it,
                                 diseases = getDiagnosisDiseaseList(),
                                 provenance = ProvanceDto(
                                     createdDateTime = DateUtils.getCurrentDateAndTime(
                                         DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
                                     )
-                                )
+                                ),
+                                type = diagnosisViewModel.diagnosisType
                             )
                             diagnosisViewModel.diagnosisCreate(request)
                         }
@@ -274,20 +282,41 @@ class DiagnosisDialogFragment : DialogFragment(), View.OnClickListener, Diagnosi
          * This method is to compose request for save and update diagnosis
          */
         val diagnosisList = ArrayList<DiagnosisDiseaseModel>()
-        diagnosisGenerator.getSelectedTagsForAccordions().let { selectedAccordionMap ->
-            for ((diseaseCategoryValue, chipViewItemList) in selectedAccordionMap) {
-                for (chipViewItem in chipViewItemList) {
-                    chipViewItem.value?.let { value ->
-                        diagnosisViewModel.diagnosisMetaList.value?.data?.filter { item -> item.name == diseaseCategoryValue }
-                            ?.let { categoryItem ->
-                                val diagnosisDiseaseModel = DiagnosisDiseaseModel(
-                                    diseaseCategoryId = getDiseaseCategoryId(diseaseCategoryValue),
-                                    diseaseConditionId = chipViewItem.id ?: -1,
-                                    diseaseCategory = categoryItem[0].value,
-                                    diseaseCondition = value
+        if (isShowAccordion()) {
+            diagnosisGenerator.getSelectedTagsForAccordions().let { selectedAccordionMap ->
+                for ((diseaseCategoryValue, chipViewItemList) in selectedAccordionMap) {
+                    for (chipViewItem in chipViewItemList) {
+                        chipViewItem.value?.let { value ->
+                            diagnosisViewModel.diagnosisMetaList.value?.data?.filter { item -> item.name == diseaseCategoryValue }
+                                ?.let { categoryItem ->
+                                    val diagnosisDiseaseModel = DiagnosisDiseaseModel(
+                                        diseaseCategoryId = getDiseaseCategoryId(
+                                            diseaseCategoryValue
+                                        ),
+                                        diseaseConditionId = chipViewItem.id ?: -1,
+                                        diseaseCategory = categoryItem[0].value,
+                                        diseaseCondition = value
+                                    )
+                                    diagnosisList.add(diagnosisDiseaseModel)
+                                }
+                        }
+                    }
+                }
+            }
+        } else {
+            diseaseCategoryTagView.getSelectedTags().let { list ->
+                list.forEach { item ->
+                    item.id?.let {
+                        item.value?.let {
+                            diagnosisList.add(
+                                DiagnosisDiseaseModel(
+                                    diseaseCategoryId = item.id,
+                                    diseaseConditionId = null,
+                                    diseaseCategory = item.value,
+                                    diseaseCondition = null
                                 )
-                                diagnosisList.add(diagnosisDiseaseModel)
-                            }
+                            )
+                        }
                     }
                 }
             }
@@ -333,5 +362,25 @@ class DiagnosisDialogFragment : DialogFragment(), View.OnClickListener, Diagnosi
         binding.loadingProgress.visibility = View.GONE
     }
 
+    private fun isShowAccordion(): Boolean {
+        return when (diagnosisViewModel.diagnosisType) {
+            MedicalReviewTypeEnums.ANC.name, MedicalReviewTypeEnums.PNC.name -> {
+                false
+            }
 
+            else -> {
+                true
+            }
+        }
+    }
+
+    private fun handleVisibility() {
+        when(diagnosisViewModel.diagnosisType) {
+            MedicalReviewTypeEnums.ANC.name -> {
+                binding.tvSelectedDiseaseConditionLbl.text = requireContext().getString(R.string.select_diagnosis_found_on_the_patient)
+                binding.tvSelectedDiseaseConditionLbl.gone()
+                binding.llFamilyRoot.gone()
+            }
+        }
+    }
 }

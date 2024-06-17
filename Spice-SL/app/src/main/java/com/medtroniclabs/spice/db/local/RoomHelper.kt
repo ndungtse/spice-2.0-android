@@ -109,7 +109,7 @@ interface RoomHelper {
     suspend fun savePatientVisitCountByType(memberClinicalEntity: MemberClinicalEntity)
     suspend fun deleteExaminationsComplaints(menuType: String)
     suspend fun insertExaminationsComplaint(symptomEntity: List<MedicalReviewMetaItems>)
-    suspend fun deleteDiagnosisList()
+    suspend fun deleteDiagnosisList(diagnosisType: String)
     suspend fun saveDiagnosisList(diagnosisList: ArrayList<DiseaseCategoryItems>)
     suspend fun getHouseholdIdByFhirId(fhirId: String?): Long?
     suspend fun getHouseholdMemberIdByFhirId(fhirId: String?): Long?

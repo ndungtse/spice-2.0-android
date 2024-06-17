@@ -42,7 +42,7 @@ class AboveFiveYearsRepository @Inject constructor(
                             patientStatus
                         )
                     )
-                    roomHelper.deleteDiagnosisList()
+                    roomHelper.deleteDiagnosisList(MedicalReviewTypeEnums.AboveFiveYears.name)
                     //TODO: Type should be given from backend until we added type
                     diseaseCategories.onEach { it.type = MedicalReviewTypeEnums.AboveFiveYears.name }
                     roomHelper.saveDiagnosisList(diseaseCategories)
@@ -231,7 +231,7 @@ class AboveFiveYearsRepository @Inject constructor(
         val assessmentTypeList = ArrayList<String>()
         val medicalSupplyList = ArrayList<String>()
         assessmentTypeList.add(MedicalReviewTypeEnums.AboveFiveYears.name)
-        selectedMedicalSupply?.map { medicalSupplyList.add(it.name) }
+        selectedMedicalSupply?.map { item -> item.value?.let { value -> medicalSupplyList.add(value) } }
         return details.patientId?.let { patientId ->
             details.memberId?.let { memberId ->
                 details.houseHoldId?.let { houseHoldId ->
@@ -258,7 +258,7 @@ class AboveFiveYearsRepository @Inject constructor(
                             householdId = houseHoldId,
                             villageId = villageId,
                             assessmentName = MedicalReviewTypeEnums.AboveFiveYears.name,
-                            referralTicketType = DefinedParams.RMNCH
+                            referralTicketType = MedicalReviewTypeEnums.ICCM.name
                         )
                     }
                 }

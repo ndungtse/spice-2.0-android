@@ -47,10 +47,11 @@ class SelectFlowDialog : DialogFragment(), View.OnClickListener {
             return SelectFlowDialog()
         }
 
-        fun newInstance(patientId: String?): SelectFlowDialog {
+        fun newInstance(patientId: String?, id: String): SelectFlowDialog {
             val fragment = SelectFlowDialog()
             val bundle = Bundle()
             bundle.putString(DefinedParams.PatientId, patientId)
+            bundle.putString(DefinedParams.ID, id)
             fragment.arguments = bundle
             return fragment
         }
@@ -96,18 +97,22 @@ class SelectFlowDialog : DialogFragment(), View.OnClickListener {
         when (viewModel.resultANCFlowHashMap[TAG]) {
             getString(R.string.anc) -> {
                 val patientId = arguments?.getString(DefinedParams.PatientId, "")
+                val id = arguments?.getString(DefinedParams.ID, "")
                 val intent = Intent(requireContext(), MotherNeonateANCActivity::class.java)
-                if (patientId?.isNotBlank() == true) {
+                if (patientId?.isNotBlank() == true && id?.isNotBlank() == true) {
                     intent.putExtra(DefinedParams.PatientId, patientId)
+                    intent.putExtra(DefinedParams.ID, id)
                 }
                 startActivity(intent)
             }
 
             getString(R.string.pnc) -> {
                 val patientId = arguments?.getString(DefinedParams.PatientId, "")
+                val id = arguments?.getString(DefinedParams.ID, "")
                 val intent = Intent(requireContext(), LabourDeliveryBaseActivity::class.java)
-                if (patientId?.isNotBlank() == true) {
+                if (patientId?.isNotBlank() == true && id?.isNotBlank() == true) {
                     intent.putExtra(DefinedParams.PatientId, patientId)
+                    intent.putExtra(DefinedParams.ID, id)
                 }
                 startActivity(intent)
             }

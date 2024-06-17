@@ -120,13 +120,13 @@ class ReferralHistoryActivity : BaseActivity(), AncVisitCallBack {
         startActivity(intent)
     }
 
-    override fun onDataLoaded(data: PatientListRespModel) {
+    override fun onDataLoaded(details: PatientListRespModel) {
         if (connectivityManager.isNetworkAvailable()) {
             val dob = intent.getStringExtra(DefinedParams.DOB)
             dob?.let { DateUtils.calculateAge(dob) } ?: 0
             showLoading()
             val referralTicketFragment =
-                ReferralTicketFragment.newInstance(intent.getStringExtra(DefinedParams.FhirId))
+                ReferralTicketFragment.newInstance(details.id)
             supportFragmentManager.beginTransaction()
                 .add(
                     R.id.cardReferralTicket,

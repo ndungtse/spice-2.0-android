@@ -60,6 +60,7 @@
                     android:layout_width="@dimen/_0dp"
                     android:visibility="gone"
                     android:layout_height="wrap_content"
+                    android:paddingHorizontal="@dimen/_16sdp"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/pregnancyHistoryConatiner" />
@@ -69,6 +70,7 @@
                     android:layout_width="@dimen/_0dp"
                     android:visibility="gone"
                     android:layout_height="wrap_content"
+                    android:paddingHorizontal="@dimen/_16sdp"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/presentingComplaintsContainer" />
@@ -79,6 +81,7 @@
                     android:layout_height="wrap_content"
                     android:paddingBottom="@dimen/_16sdp"
                     android:visibility="gone"
+                    android:paddingHorizontal="@dimen/_16sdp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"

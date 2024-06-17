@@ -118,8 +118,9 @@ class PatientMenuFragment : BaseFragment(), MenuSelectionListener {
 
             MenuConstants.MOTHER_AND_NEONATE_ID -> {
                 val patientId = arguments?.getString(PatientId, "")
-                if (patientId?.isNotBlank() == true) {
-                    SelectFlowDialog.newInstance(patientId).show(childFragmentManager, SelectFlowDialog.TAG)
+                val id = arguments?.getString(ID, "")
+                if (patientId?.isNotBlank() == true && id?.isNotBlank() == true) {
+                    SelectFlowDialog.newInstance(patientId, id).show(childFragmentManager, SelectFlowDialog.TAG)
                 }
             }
 
