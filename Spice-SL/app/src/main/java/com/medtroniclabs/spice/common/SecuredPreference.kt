@@ -22,7 +22,6 @@ object SecuredPreference {
         ISOFFLINELOGIN,
         ISMETALOADED,
         USER_RESPONSE,
-        IS_INITIAL_DATA_LOADED,
         IS_ABOVE_FIVE_YEARS_LOADED,
         USER_FHIR_ID,
         ORGANIZATION_FHIR_ID,
@@ -367,14 +366,30 @@ object SecuredPreference {
         return set?.toTypedArray()
     }
 
+    fun saveLongList(key: String, list: List<Long>) {
+        val editor = preferences.edit()
+        val jsonString = Gson().toJson(list)
+        editor.putString(key, jsonString)
+        editor.apply()
+    }
+
+    fun getLongList(key: String): List<Long> {
+        val jsonString = preferences.getString(key, null)
+        return if (jsonString != null) {
+            val type = object : TypeToken<List<Long>>() {}.type
+            Gson().fromJson(jsonString, type)
+        } else {
+            emptyList()
+        }
+    }
+
     fun clear(context: Context) {
         val username = getString(EnvironmentKey.USERNAME.name)
         val phoneNumber = getString(EnvironmentKey.PHONE_NUMBER.name)
         val password = getString(EnvironmentKey.PASSWORD.name)
-        val initialDataStatus = getBoolean(EnvironmentKey.IS_INITIAL_DATA_LOADED.name)
-        val lastSyncedAt = getLong(EnvironmentKey.LAST_SYNCED_AT.name)
         val requestIds =
             getStringArray(EnvironmentKey.OFFLINE_SYNC_REQUEST_ID.name)
+        val followUpCriteria = getString(EnvironmentKey.FOLLOW_UP_CRITERIA.name)
         try {
             preferences.edit().clear().apply()
         } catch (e: Exception) {
@@ -385,8 +400,7 @@ object SecuredPreference {
             putString(EnvironmentKey.USERNAME.name, username)
             putString(EnvironmentKey.PHONE_NUMBER.name, phoneNumber)
             putString(EnvironmentKey.PASSWORD.name, password)
-            putLong(EnvironmentKey.LAST_SYNCED_AT.name, lastSyncedAt)
-            putBoolean(EnvironmentKey.IS_INITIAL_DATA_LOADED.name, initialDataStatus)
+            putString(EnvironmentKey.FOLLOW_UP_CRITERIA.name, followUpCriteria)
             requestIds?.let { saveStringArray(EnvironmentKey.OFFLINE_SYNC_REQUEST_ID.name, it) }
         }
     }

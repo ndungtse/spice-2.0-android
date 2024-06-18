@@ -89,7 +89,7 @@ class OfflineSyncViewModel @Inject constructor(
 
     fun startUploadingData(minutes: Long = 3) {
         viewModelScope.launch(dispatcherIO) {
-            val requestIds = offlineSyncRepository.startSyncOfflineData()
+            val requestIds = offlineSyncRepository.postOfflineUnSyncedChanges()
             if (requestIds != null) {
                 startProgress(minutes)
                 if (requestIds.isNotEmpty()) { // Has some changes in local

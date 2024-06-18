@@ -34,8 +34,7 @@ class ResourceLoadingScreen : BaseActivity() {
 
                 ResourceState.SUCCESS -> {
                     val userRole = SecuredPreference.getUserDetails().roles.joinToString { it.name }
-                    val isHouseholdLoaded = SecuredPreference.getBoolean(SecuredPreference.EnvironmentKey.IS_INITIAL_DATA_LOADED.name)
-                    if (userRole == ROLE_CHW && !isHouseholdLoaded) {
+                    if (userRole == ROLE_CHW) {
                         viewModel.downloadInitialDetails()
                     } else {
                         startActivity(Intent(this, LandingActivity::class.java))
@@ -54,7 +53,6 @@ class ResourceLoadingScreen : BaseActivity() {
                 }
 
                 ResourceState.SUCCESS -> {
-                    SecuredPreference.putBoolean(SecuredPreference.EnvironmentKey.IS_INITIAL_DATA_LOADED.name, true)
                     startActivity(Intent(this, LandingActivity::class.java))
                     finish()
                 }

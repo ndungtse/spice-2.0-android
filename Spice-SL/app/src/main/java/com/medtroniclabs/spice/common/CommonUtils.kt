@@ -78,33 +78,19 @@ object CommonUtils {
 
     fun displayAge(dobString: String, context: Context): String {
         val yearMonthWeek = DateUtils.getV2YearMonthAndWeek(dobString)
-        var years = yearMonthWeek.years
+        val years = yearMonthWeek.years
         var months = yearMonthWeek.months
-        var weeks = yearMonthWeek.weeks
+        val weeks = yearMonthWeek.weeks
 
         if (months == 0 && years == 0 && weeks == 0) {
             return context.getString(R.string.separator_hyphen)
         }
+        
         val strBuilder = StringBuilder()
-
-        if (weeks > 3) {
-            months += weeks / 4
-            weeks %= 4
-        }
-        if (months > 11) {
-            years += (months / 12)
-            months %= 12
-        }
-
-        if (years > 5) {
-            strBuilder.append("$years $YEARS ")
-        } else if (years == 5 && (months in 1..11) || (weeks in 1..3)) {
-            strBuilder.append("$years $YEARS ")
+        if (years < 5) {
+            months += (years * 12)
         } else {
-            if (years > 0) {
-                months += (years * 12) + (weeks / 4)
-                weeks = 0
-            }
+            strBuilder.append("$years $YEARS ")
         }
 
         if (months > 0)

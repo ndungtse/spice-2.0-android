@@ -47,7 +47,12 @@ class ResourceLoadingViewModel @Inject constructor(
 
     fun downloadInitialDetails() {
         viewModelScope.launch(dispatcherIO) {
-            offlineSyncRepository.getHouseholdAndMembers(householdsLiveData)
+            val requestIds = offlineSyncRepository.postOfflineUnSyncedChanges()
+            if (requestIds == null) {
+                householdsLiveData.postError()
+            } else {
+                offlineSyncRepository.getHouseholdAndMembers(householdsLiveData)
+            }
         }
     }
 

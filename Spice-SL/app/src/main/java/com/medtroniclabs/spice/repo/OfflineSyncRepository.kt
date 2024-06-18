@@ -94,7 +94,6 @@ class OfflineSyncRepository @Inject constructor(
             // Fetch Synced Data
             val isInitialDataSuccess = fetchSyncedData()
 
-
             // Need to check this to be added for downloading error and inprogress data
             /* if (!fetchUnSyncedData()) {
                  liveData.postError("Something went wrong")
@@ -384,7 +383,13 @@ class OfflineSyncRepository @Inject constructor(
         return clinicalInfos
     }
 
-    suspend fun startSyncOfflineData(): List<String>? {
+    /*
+    * It will post all un-synced changes from local database and returns List<String>?
+    * 1. list size > 0 -> Posted un-synced local changes and API is success
+    * 2. List size == 0 -> There are no local changes to post
+    * 3. List is null -> Post un-synced local changes and API is failed
+    * */
+    suspend fun postOfflineUnSyncedChanges(): List<String>? {
         val houseHoldList = roomHelper.getAllUnSyncedHouseHolds()
         houseHoldList.forEach { householdEntity ->
             val memberList =
