@@ -392,7 +392,7 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
                 DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
             )
             val request = AboveFiveYearsSummarySubmitRequest(
-                referralTicketType = AssessmentDefinedParams.RMNCH,
+                referralTicketType = MedicalReviewTypeEnums.RMNCH.name,
                 memberId = patientViewModel.getPatientMemberId(),
                 id = submitCreateId,
                 provenance = ProvanceDto(
@@ -528,18 +528,20 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
     }
 
 
-    private fun handleSubmit(isAncVisitOne: Boolean = true) {
+    private fun handleSubmit(isAncVisitOne: Boolean = true, isRefresh: Boolean =false) {
         replaceWithDiagnosisFragment()
-        if (isAncVisitOne) {
-            replaceWithPregnancySummaryFragment()
-        } else {
-            replaceWithMotherNeonateAncHistoryFragment()
+        if (!isRefresh){
+            if (isAncVisitOne) {
+                replaceWithPregnancySummaryFragment()
+            } else {
+                replaceWithMotherNeonateAncHistoryFragment()
+            }
+            scrollToTop()
+            hideNextButton()
+            showBottomNavigation()
+            initializeFragments()
+            attachObserversListenerForChip()
         }
-        scrollToTop()
-        hideNextButton()
-        showBottomNavigation()
-        initializeFragments()
-        attachObserversListenerForChip()
         binding.loadingProgress.gone()
     }
 
@@ -612,7 +614,7 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
         if (patientDetails is MotherNeonateAncSummary || viewModel.ancVisit == 1) {
             when (patientDetails) {
                 is PregnancyDetailsFragment, is MotherNeonateAncSummary -> binding.loadingProgress.gone()
-                is MedicalReviewPatientDiagnosisFragment -> handleSubmit()
+                is MedicalReviewPatientDiagnosisFragment -> handleSubmit(isRefresh = true)
                 else -> {
                     initializePregnancyDetailsFragment()
                     initializePregnancyHistoryFragment()
@@ -622,7 +624,7 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
                 }
             }
         } else if (viewModel.ancVisit > 1) {
-            handleSubmit(false)
+            handleSubmit(false, true)
         }
     }
 

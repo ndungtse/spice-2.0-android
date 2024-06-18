@@ -10,6 +10,7 @@ import com.medtroniclabs.spice.model.ReferralDetailRequest
 import com.medtroniclabs.spice.model.ReferredDate
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.network.utils.ConnectivityManager
+import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import com.medtroniclabs.spice.ui.referralhistory.repo.ReferralHistoryRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
@@ -36,7 +37,7 @@ class ReferralHistoryViewModel @Inject constructor(
                     ReferralDetailRequest(
                         patientId = patientId?.toLong(),
                         ticketId = ticketId,
-                        type = "medicalReview"
+                        type = MedicalReviewTypeEnums.medicalReview.name
                     )
                 )
             )

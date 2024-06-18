@@ -228,16 +228,13 @@ class AboveFiveYearsRepository @Inject constructor(
         selectedPatientStatus: String?,
         nextFollowupDate: String?
     ): AboveFiveYearsSummarySubmitRequest? {
-        val assessmentTypeList = ArrayList<String>()
         val medicalSupplyList = ArrayList<String>()
-        assessmentTypeList.add(MedicalReviewTypeEnums.AboveFiveYears.name)
         selectedMedicalSupply?.map { item -> item.value?.let { value -> medicalSupplyList.add(value) } }
         return details.patientId?.let { patientId ->
             details.memberId?.let { memberId ->
                 details.houseHoldId?.let { houseHoldId ->
                     details.villageId?.let { villageId ->
                         AboveFiveYearsSummarySubmitRequest(
-                            assessmentType = assessmentTypeList,
                             patientId = patientId,
                             memberId = memberId,
                             id = submitCreateId,

@@ -242,9 +242,6 @@ class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
 
                 ResourceState.SUCCESS -> {
                     hideLoading()
-                    if (binding.refreshLayout.isRefreshing) {
-                        binding.refreshLayout.isRefreshing = false
-                    }
                 }
 
                 ResourceState.ERROR -> {
@@ -259,6 +256,9 @@ class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
                         }
                     }
                 }
+            }
+            if (binding.refreshLayout.isRefreshing) {
+                binding.refreshLayout.isRefreshing = false
             }
         }
 

@@ -110,12 +110,12 @@ class AboveFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
                     resourceState.data?.let {
                         renderSummaryDetails(it)
                     }
-                    val swipeRefresh =
-                        (activity as AboveFiveYearsBaseActivity).findViewById<SwipeRefreshLayout>(R.id.refreshLayout)
-                    if (swipeRefresh.isRefreshing) {
-                        swipeRefresh.isRefreshing = false
-                    }
                 }
+            }
+            val swipeRefresh =
+                (activity as AboveFiveYearsBaseActivity).findViewById<SwipeRefreshLayout>(R.id.refreshLayout)
+            if (swipeRefresh.isRefreshing) {
+                swipeRefresh.isRefreshing = false
             }
         }
     }
@@ -126,10 +126,16 @@ class AboveFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
                 it, details.presentingComplaintsNotes
             )
         }
-        binding.tvDiagnosisText.text =
-            diagnosisViewModel.diagnosisSaveUpdateResponse.value?.data?.let {list ->
+        binding.tvDiseaseCategoryText.text =
+            details.diagnosis?.let {list ->
                 convertListToString(
-                    ArrayList(list.map { it.diseaseCategory })
+                    ArrayList(list.map { it.diseaseCategory }.distinct())
+                )
+            } ?: requireContext().getString(R.string.hyphen_symbol)
+        binding.tvDiseaseConditionText.text =
+            details.diagnosis?.let {list ->
+                convertListToString(
+                    ArrayList(list.mapNotNull { it.diseaseCondition })
                 )
             } ?: requireContext().getString(R.string.hyphen_symbol)
         binding.tvClinicalNotesText.text = chipItemViewModel.enteredClinicalNotes
@@ -170,14 +176,19 @@ class AboveFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
         }
         val adapter = CustomSpinnerAdapter(requireContext())
         adapter.setData(dropDownList)
-        binding.tvPatientStatusSpinner.adapter = adapter
         var defaultPosition = 0
         for ((index, patientStatus) in dropDownList.withIndex()) {
             if (patientStatus[DefinedParams.NAME] as? String == ReferralStatus.OnTreatment.name) {
                 defaultPosition = index
             }
         }
-        binding.tvPatientStatusSpinner.setSelection(defaultPosition, false)
+        binding.tvPatientStatusSpinner.post {
+            if (defaultPosition != 0) {
+                binding.tvPatientStatusSpinner.setSelection(defaultPosition, false)
+            }
+        }
+        binding.tvPatientStatusSpinner.adapter = adapter
+        binding.tvPatientStatusSpinner.setSelection(0, false)
         binding.tvPatientStatusSpinner.onItemSelectedListener =
             object : AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(

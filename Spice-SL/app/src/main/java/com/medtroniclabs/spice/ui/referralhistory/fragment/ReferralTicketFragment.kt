@@ -247,7 +247,7 @@ class ReferralTicketFragment : BaseFragment(), View.OnClickListener {
             viewModel.ticketId = id
             viewModel.referralDates = referredDates
         } else {
-            dateListAdapter.submitData(id, viewModel.referralDates)
+            dateListAdapter.updateSelectedId(id)
         }
         checkNextPreviousVisibility()
     }
@@ -294,8 +294,8 @@ class ReferralTicketFragment : BaseFragment(), View.OnClickListener {
     private fun checkForPreviousItem(): Int {
         var selectedIndex = -1
         viewModel.referralDates.let {
-            it.forEachIndexed { index, labTestDateModel ->
-                if (labTestDateModel.id == viewModel.ticketId) {
+            it.forEachIndexed { index, referralModel ->
+                if (referralModel.id == viewModel.ticketId) {
                     selectedIndex = index - 1
                 }
             }
@@ -306,8 +306,8 @@ class ReferralTicketFragment : BaseFragment(), View.OnClickListener {
     private fun checkNextItem(): Int {
         var selectedIndex = -1
         viewModel.referralDates.let {
-            it.forEachIndexed { index, labTestDateModel ->
-                if ((labTestDateModel.id == viewModel.ticketId) && ((index + 1) < it.size)) {
+            it.forEachIndexed { index, referralModel ->
+                if ((referralModel.id == viewModel.ticketId) && ((index + 1) < it.size)) {
                     selectedIndex = index + 1
                 }
             }

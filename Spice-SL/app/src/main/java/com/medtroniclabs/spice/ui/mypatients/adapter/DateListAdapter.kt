@@ -56,9 +56,7 @@ class DateListAdapter(
         this.id = id
         notifyDataSetChanged()
     }
-    fun submitData(id: String?,referredDates: List<ReferredDate>,) {
-        this.list.clear()
-        this.list.addAll(referredDates)
+    fun updateSelectedId(id: String?) {
         this.id = id
         notifyDataSetChanged()
     }
