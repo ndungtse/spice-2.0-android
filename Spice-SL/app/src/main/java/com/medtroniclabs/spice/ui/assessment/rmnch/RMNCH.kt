@@ -104,29 +104,29 @@ object RMNCH {
         return hyphenSymbol
     }
 
-    private fun calculatePregnancyMonth(lmp: Date): Long {
+    private fun calculatePregnancyMonth(lmp: Date): Double {
         val today = Date()
         val diffInMillis = abs(today.time - lmp.time)
         val diff = TimeUnit.DAYS.convert(diffInMillis, TimeUnit.MILLISECONDS)
         val weeks = diff / 7
-        return weeks / 4
+        return (weeks.toDouble() / 4)
     }
 
     fun calculateNextANCVisitDate(lmp: Date): Date? {
         return when (calculatePregnancyMonth(lmp)) {
-            in 0..4 -> {
+            in 0.0..4.0 -> {
                 DateUtils.addDaysToDate(lmp, (28 * 5))
             }
-            in 4..5 -> {
+            in 4.1..5.0 -> {
                 DateUtils.addDaysToDate(lmp, (28 * 6))
             }
-            in 5..6 -> {
+            in 5.1..6.0 -> {
                 DateUtils.addDaysToDate(lmp, (28 * 7))
             }
-            in 6..7 -> {
+            in 6.1..7.0 -> {
                 DateUtils.addDaysToDate(lmp, (28 * 8))
             }
-            in 7..8 -> {
+            in 7.1..8.9 -> {
                 DateUtils.addDaysToDate(lmp, (28 * 9))
             }
             else -> {

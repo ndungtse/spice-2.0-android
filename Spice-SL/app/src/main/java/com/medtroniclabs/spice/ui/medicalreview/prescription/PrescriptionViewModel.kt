@@ -11,13 +11,14 @@ import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.appextensions.postSuccess
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
-import com.medtroniclabs.spice.data.APIResponse
 import com.medtroniclabs.spice.data.EncounterDetails
 import com.medtroniclabs.spice.data.MedicationRequestObject
 import com.medtroniclabs.spice.data.MedicationResponse
 import com.medtroniclabs.spice.data.MedicationSearchRequest
 import com.medtroniclabs.spice.data.Prescription
+import com.medtroniclabs.spice.data.PrescriptionListRequest
 import com.medtroniclabs.spice.data.PrescriptionRequest
+import com.medtroniclabs.spice.data.RemovePrescriptionRequest
 import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.db.entity.MedicationFrequencyEntity
 import com.medtroniclabs.spice.di.IoDispatcher
@@ -41,9 +42,20 @@ class PrescriptionViewModel @Inject constructor(
 ) : ViewModel() {
 
     val medicationListLiveData =
-        MutableLiveData<Resource<APIResponse<ArrayList<MedicationResponse>>>>()
+        MutableLiveData<Resource<java.util.ArrayList<MedicationResponse>>>()
 
-    val selectedMedicationLiveDate = MutableLiveData<ArrayList<MedicationRequestObject>>()
+    val selectedMedicationLiveData = MutableLiveData<ArrayList<MedicationRequestObject>>()
+
+    val createPrescriptionLiveData = MutableLiveData<Resource<Map<String, Any>>>()
+
+    val prescriptionListLiveData =
+        MutableLiveData<Resource<ArrayList<Prescription>>>()
+
+    val discontinuedPrescriptionListLiveData =
+        MutableLiveData<Resource<ArrayList<Prescription>>>()
+
+
+    val removePrescriptionLiveData = MutableLiveData<Resource<Map<String, Any>>>()
 
     var patientId: String? = null
 
@@ -53,7 +65,11 @@ class PrescriptionViewModel @Inject constructor(
                 medicationListLiveData.postLoading()
                 val request = MedicationSearchRequest(name)
                 val response = medicationRepository.searchMedicationByName(request)
-                medicationListLiveData.postSuccess(response.body())
+                response.data?.let {
+                    medicationListLiveData.postSuccess(it)
+                } ?: kotlin.run {
+                    medicationListLiveData.postError()
+                }
             } catch (e: Exception) {
                 medicationListLiveData.postError()
             }
@@ -61,14 +77,19 @@ class PrescriptionViewModel @Inject constructor(
     }
 
     fun updateMedicationList(
-        medicationResponse: MedicationResponse
+        medicationResponse: ArrayList<MedicationRequestObject>,
+        reset: Boolean,
     ) {
-        val medicationList = selectedMedicationLiveDate.value ?: ArrayList()
-        medicationList.add(MedicationRequestObject(medicationResponse))
-        selectedMedicationLiveDate.value = medicationList
+        if (reset) {
+            selectedMedicationLiveData.value?.clear()
+        }
+        val medicationList: ArrayList<MedicationRequestObject> =
+            selectedMedicationLiveData.value ?: ArrayList()
+        medicationList.addAll(medicationResponse)
+        selectedMedicationLiveData.value = medicationList
     }
 
-    private fun getFrequencyList(): ArrayList<MedicationFrequencyEntity> {
+    fun getFrequencyList(): ArrayList<MedicationFrequencyEntity> {
         val list = ArrayList<MedicationFrequencyEntity>()
         list.add(MedicationFrequencyEntity(10, "Daily", 100, "OD", 1))
         list.add(MedicationFrequencyEntity(4, "Twice a day", 101, "BD", 2))
@@ -99,6 +120,7 @@ class PrescriptionViewModel @Inject constructor(
     ) {
         viewModelScope.launch(dispatcherIO) {
             try {
+                createPrescriptionLiveData.postLoading()
                 filePath.mkdirs()
                 val file = File(filePath, "${DefinedParams.SIGN_SUFFIX}.jpeg")
                 if (file.exists()) file.delete()
@@ -122,7 +144,8 @@ class PrescriptionViewModel @Inject constructor(
                                 medicationName = it.medicationResponse.name,
                                 medicationId = it.medicationResponse.id,
                                 frequency = getMedicationFrequency(it),
-                                prescribedSince = System.currentTimeMillis().convertToUtcDateTime()
+                                prescribedSince = System.currentTimeMillis().convertToUtcDateTime(),
+                                prescriptionId = it.medicationResponse.prescriptionId
                             )
                         )
                     }
@@ -131,7 +154,7 @@ class PrescriptionViewModel @Inject constructor(
                     encounter = EncounterDetails(
                         patientReference = data.id,
                         patientId = data.patientId ?: "",
-                        memberId = data.memberId ?: "", provenance =  ProvanceDto(
+                        memberId = data.memberId ?: "", provenance = ProvanceDto(
                             createdDateTime = DateUtils.getCurrentDateAndTime(
                                 DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
                             )
@@ -142,15 +165,104 @@ class PrescriptionViewModel @Inject constructor(
                 val dataRequest = Gson().toJson(prescriptionRequest)
                 builder.addFormDataPart("prescriptionRequest", dataRequest)
                 val requestBody = builder.build()
-                medicationRepository.createPrescriptionRequest(requestBody)
+                val response = medicationRepository.createPrescriptionRequest(requestBody)
+                response.data?.let {
+                    createPrescriptionLiveData.postSuccess(it)
+                } ?: kotlin.run {
+                    createPrescriptionLiveData.postError()
+                }
             } catch (e: Exception) {
-                e.printStackTrace()
+                createPrescriptionLiveData.postError()
             }
         }
+    }
+
+    fun constructMedicationRequestObjectList(
+        list: java.util.ArrayList<Prescription>
+    ): ArrayList<MedicationRequestObject> {
+        val medicationRequestObjectList = ArrayList<MedicationRequestObject>()
+        list.forEach { prescription ->
+           val medicationRequestObject = MedicationRequestObject(constructMedicationRequestObject(prescription))
+            medicationRequestObjectList.add(medicationRequestObject)
+        }
+        return medicationRequestObjectList
+    }
+
+    fun constructMedicationRequestObject(prescription: Prescription): MedicationResponse {
+        val selectedFrequencyMap = getSelectedFrequencyMap(prescription.frequency)
+
+        return MedicationResponse(
+            id = prescription.medicationId,
+            name = prescription.medicationName,
+            "",
+            "",
+            "",
+            selectedFrequencyMap,
+            quantity = 0,
+            prescribedDays = prescription.prescribedDays,
+            prescriptionId = prescription.prescriptionId,
+            prescribedSince = prescription.prescribedSince
+        )
+    }
+
+    private fun getSelectedFrequencyMap(frequency: Int): HashMap<String, Any>? {
+        val list = getFrequencyMap().filter { it[DefinedParams.Frequency] == frequency }
+        return if (list.isNotEmpty())
+            HashMap(list[0])
+        else
+            null
     }
 
     private fun getMedicationFrequency(data: MedicationRequestObject): Int {
         return data.medicationResponse.selectedMap?.get(DefinedParams.Frequency) as? Int? ?: 0
     }
+
+    private fun getPrescriptionList(request: PrescriptionListRequest) {
+        viewModelScope.launch(dispatcherIO) {
+            if (request.isActive) {
+                prescriptionListLiveData.postLoading()
+            } else {
+                discontinuedPrescriptionListLiveData.postLoading()
+            }
+            val response = medicationRepository.getPrescriptionList(request)
+            response.data?.let {
+                if (request.isActive) {
+                    prescriptionListLiveData.postSuccess(it)
+                } else {
+                    discontinuedPrescriptionListLiveData.postSuccess(it)
+                }
+            } ?: kotlin.run {
+                if (request.isActive) {
+                    prescriptionListLiveData.postError()
+                } else {
+                    discontinuedPrescriptionListLiveData.postError()
+                }
+            }
+        }
+    }
+
+    fun removePrescription(prescriptionId: String, reason: String?) {
+        viewModelScope.launch(dispatcherIO) {
+            removePrescriptionLiveData.postLoading()
+            val response = medicationRepository.removePrescription(
+                RemovePrescriptionRequest(
+                    prescriptionId, ProvanceDto(
+                        createdDateTime = DateUtils.getCurrentDateAndTime(
+                            DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
+                        )
+                    ),
+                    reason
+                )
+            )
+            removePrescriptionLiveData.postSuccess(response.data)
+        }
+    }
+
+    fun getPrescriptionList(data: PatientListRespModel,isDeleted:Boolean = true) {
+        data.id?.let { id ->
+            getPrescriptionList(PrescriptionListRequest(id,isDeleted))
+        }
+    }
+
 
 }

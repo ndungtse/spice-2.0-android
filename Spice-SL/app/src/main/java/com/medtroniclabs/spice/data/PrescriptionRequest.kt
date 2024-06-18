@@ -13,12 +13,13 @@ data class EncounterDetails(
     val patientId: String,
     val memberId: String,
     val provenance: ProvanceDto,
-    )
+)
 
 data class Prescription(
     val prescribedDays: Long,
     val medicationName: String,
     val medicationId: String,
     val frequency: Int,
-    val prescribedSince: String
+    val prescribedSince: String,
+    val prescriptionId: String ?= null
 )

@@ -164,7 +164,6 @@ class AssessmentRMNCHNeonateSummaryFragment : BaseFragment(), View.OnClickListen
     private fun setListener() {
         binding.btnDone.safeClickListener(this)
         binding.etNextFollowUpDate.safeClickListener(this)
-
         binding.etNextFollowUpDate.addTextChangedListener {
             binding.btnDone.isEnabled = !it.isNullOrEmpty()
         }
@@ -236,7 +235,7 @@ class AssessmentRMNCHNeonateSummaryFragment : BaseFragment(), View.OnClickListen
 
     override fun onClick(v: View) {
         when (v.id) {
-            R.id.btnDone -> {
+            binding.btnDone.id -> {
                 if (binding.etNextFollowUpDate.text.isNotEmpty()) {
                     assessmentRMNCHNeonateViewModel.updateOtherAssessmentDetails(
                         viewModel.otherAssessmentDetails,
@@ -304,6 +303,10 @@ class AssessmentRMNCHNeonateSummaryFragment : BaseFragment(), View.OnClickListen
                             binding.etNextFollowUpDate.text = DateUtils.getDateStringFromDate(
                                 visitDate, DateUtils.DATE_ddMMyyyy
                             )
+                           if (binding.etNextFollowUpDate.text.isNotEmpty()) {
+                               binding.btnDone.isEnabled = true
+                           }
+
                         }
                     }
                 }

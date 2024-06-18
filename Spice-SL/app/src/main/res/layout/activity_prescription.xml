@@ -19,115 +19,263 @@
         android:hint="@string/search_and_add"
         android:padding="@dimen/_16sdp"
         android:textColorHint="@color/btn_disable_grey"
-        app:layout_constraintBottom_toTopOf="@id/backgroundView"
+        app:layout_constraintBottom_toTopOf="@id/nestedScrollView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <View
-        android:id="@+id/backgroundView"
-        android:layout_width="@dimen/_0dp"
-        android:layout_height="@dimen/_0dp"
-        android:layout_marginTop="@dimen/_64sdp"
-        android:background="@color/white"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/searchView" />
 
-    <androidx.cardview.widget.CardView
-        android:layout_width="@dimen/_0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="@dimen/_32sdp"
-        android:layout_marginTop="@dimen/_32sdp"
-        android:minHeight="@dimen/_240sdp"
-        app:cardCornerRadius="@dimen/_8sdp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/nestedScrollView"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_0dp"
+        android:fillViewport="true"
+        app:layout_constraintBottom_toTopOf="@+id/clFooter"
         app:layout_constraintTop_toBottomOf="@+id/searchView">
 
-
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:weightSum="1.2">
-
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:layout_width="@dimen/_0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="0.3"
-                    android:fontFamily="@font/inter_regular"
-                    android:gravity="start"
-                    android:padding="@dimen/_12sdp"
-                    android:text="@string/medication_name"
-                    android:textColor="@color/table_title"
-                    android:textSize="@dimen/_16ssp" />
-
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:layout_width="@dimen/_0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="@dimen/_24sdp"
-                    android:layout_weight="0.3"
-                    android:fontFamily="@font/inter_regular"
-                    android:gravity="start"
-                    android:padding="@dimen/_12sdp"
-                    android:text="@string/frequency"
-                    android:textColor="@color/table_title"
-                    android:textSize="@dimen/_16ssp" />
-
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:layout_width="@dimen/_0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="@dimen/_24sdp"
-                    android:layout_weight="0.2"
-                    android:fontFamily="@font/inter_regular"
-                    android:gravity="start"
-                    android:padding="@dimen/_12sdp"
-                    android:text="@string/prescribed_days"
-                    android:textColor="@color/table_title"
-                    android:textSize="@dimen/_16ssp" />
-
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:layout_width="@dimen/_0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="@dimen/_24sdp"
-                    android:layout_weight="0.2"
-                    android:fontFamily="@font/inter_regular"
-                    android:gravity="start"
-                    android:padding="@dimen/_12sdp"
-                    android:text="@string/quantity"
-                    android:textColor="@color/table_title"
-                    android:textSize="@dimen/_16ssp" />
-
-            </LinearLayout>
+            android:layout_height="match_parent">
 
             <View
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/_2sdp"
-                android:background="@color/edittext_stroke_50t" />
+                android:id="@+id/backgroundView"
+                android:layout_width="@dimen/_0dp"
+                android:layout_height="@dimen/_0dp"
+                android:layout_marginTop="@dimen/_64sdp"
+                android:background="@color/white"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-
-            <LinearLayout
-                android:id="@+id/llPrescriptionHolder"
-                android:layout_width="match_parent"
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardPrescriptionContainer"
+                android:layout_width="@dimen/_0dp"
                 android:layout_height="wrap_content"
-                android:orientation="vertical" />
+                android:layout_marginHorizontal="@dimen/_32sdp"
+                android:layout_marginTop="@dimen/_16sdp"
+                android:minHeight="@dimen/_240sdp"
+                app:cardCornerRadius="@dimen/_8sdp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
 
-        </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
 
-    </androidx.cardview.widget.CardView>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:weightSum="1.2">
 
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:layout_width="@dimen/_0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="0.2"
+                            android:fontFamily="@font/inter_regular"
+                            android:gravity="start"
+                            android:padding="@dimen/_12sdp"
+                            android:text="@string/medication_name"
+                            android:textColor="@color/table_title"
+                            android:textSize="@dimen/_16ssp" />
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:layout_width="@dimen/_0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginHorizontal="@dimen/_24sdp"
+                            android:layout_weight="0.2"
+                            android:fontFamily="@font/inter_regular"
+                            android:gravity="start"
+                            android:padding="@dimen/_12sdp"
+                            android:text="@string/frequency"
+                            android:textColor="@color/table_title"
+                            android:textSize="@dimen/_16ssp" />
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:layout_width="@dimen/_0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginHorizontal="@dimen/_24sdp"
+                            android:layout_weight="0.2"
+                            android:fontFamily="@font/inter_regular"
+                            android:gravity="start"
+                            android:padding="@dimen/_12sdp"
+                            android:text="@string/prescribed_days"
+                            android:textColor="@color/table_title"
+                            android:textSize="@dimen/_16ssp" />
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:layout_width="@dimen/_0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginHorizontal="@dimen/_24sdp"
+                            android:layout_weight="0.2"
+                            android:fontFamily="@font/inter_regular"
+                            android:gravity="start"
+                            android:padding="@dimen/_12sdp"
+                            android:text="@string/quantity"
+                            android:textColor="@color/table_title"
+                            android:textSize="@dimen/_16ssp" />
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:layout_width="@dimen/_0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginHorizontal="@dimen/_24sdp"
+                            android:layout_weight="0.2"
+                            android:fontFamily="@font/inter_regular"
+                            android:gravity="start"
+                            android:padding="@dimen/_12sdp"
+                            android:text="@string/prescribed_since"
+                            android:textColor="@color/table_title"
+                            android:textSize="@dimen/_16ssp" />
+
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/_2sdp"
+                        android:background="@color/edittext_stroke_50t" />
+
+
+                    <LinearLayout
+                        android:id="@+id/llPrescriptionHolder"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical" />
+
+
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
+
+            <TextView
+                android:id="@+id/tvDiscontinuedMedication"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:paddingVertical="@dimen/_15sdp"
+                android:text="@string/view_discontinued_medication"
+                android:textColor="@color/cobalt_blue"
+                android:textSize="@dimen/_14ssp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/cardPrescriptionContainer" />
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardDiscontinuedPrescriptionContainer"
+                android:layout_width="@dimen/_0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/_32sdp"
+                android:layout_marginVertical="@dimen/_16sdp"
+                android:layout_marginBottom="@dimen/_32sdp"
+                android:minHeight="@dimen/_240sdp"
+                android:visibility="gone"
+                app:cardCornerRadius="@dimen/_8sdp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvDiscontinuedMedication">
+
+                <LinearLayout
+                    android:id="@+id/llDiscontinuedMedication"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:weightSum="1">
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:layout_width="@dimen/_0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="0.3"
+                            android:fontFamily="@font/inter_regular"
+                            android:gravity="start"
+                            android:padding="@dimen/_12sdp"
+                            android:text="@string/medication_name"
+                            android:textColor="@color/table_title"
+                            android:textSize="@dimen/_16ssp" />
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:layout_width="@dimen/_0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginHorizontal="@dimen/_24sdp"
+                            android:layout_weight="0.3"
+                            android:fontFamily="@font/inter_regular"
+                            android:gravity="start"
+                            android:padding="@dimen/_12sdp"
+                            android:text="@string/frequency"
+                            android:textColor="@color/table_title"
+                            android:textSize="@dimen/_16ssp" />
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:layout_width="@dimen/_0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginHorizontal="@dimen/_24sdp"
+                            android:layout_weight="0.2"
+                            android:fontFamily="@font/inter_regular"
+                            android:gravity="center"
+                            android:padding="@dimen/_12sdp"
+                            android:text="@string/prescribed_days"
+                            android:textColor="@color/table_title"
+                            android:textSize="@dimen/_16ssp" />
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:layout_width="@dimen/_0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginHorizontal="@dimen/_24sdp"
+                            android:layout_weight="0.2"
+                            android:fontFamily="@font/inter_regular"
+                            android:gravity="center"
+                            android:padding="@dimen/_12sdp"
+                            android:text="@string/quantity"
+                            android:textColor="@color/table_title"
+                            android:textSize="@dimen/_16ssp" />
+
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/_2sdp"
+                        android:background="@color/edittext_stroke_50t" />
+
+                    <LinearLayout
+                        android:orientation="vertical"
+                        android:id="@+id/discontinuedMedicationHolder"
+                        android:layout_width="match_parent"
+                        android:layout_marginBottom="@dimen/_16sdp"
+                        android:layout_height="wrap_content" />
+
+                    <TextView
+                        android:id="@+id/tvNoDataFound"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginVertical="@dimen/_32sdp"
+                        android:fontFamily="@font/inter_regular"
+                        android:gravity="center"
+                        android:text="@string/no_data_found"
+                        android:textSize="@dimen/_16ssp"
+                        android:visibility="gone" />
+
+                </LinearLayout>
+
+
+            </androidx.cardview.widget.CardView>
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.core.widget.NestedScrollView>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/clFooter"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@color/white"
         android:paddingHorizontal="@dimen/_15sdp"
         android:paddingVertical="@dimen/_10sdp"
         app:layout_constraintBottom_toBottomOf="parent">

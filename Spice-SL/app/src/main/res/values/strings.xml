@@ -500,6 +500,7 @@
     <string name="zinc">Zinc</string>
     <string name="ors">ORS</string>
     <string name="zinc_or_ors_status">(%1$s - %2$s)</string>
+    <string name="remove_medication">Remove Medication</string>
     <string name="medical_review_history">Medical Review History</string>
     <string name="cms">cms</string>
     <string name="beats_per_minute">beats per minute</string>
@@ -509,4 +510,12 @@
     <string name="referral_by_phone_number">%1$s(%2$s)</string>
     <string name="select_diagnosis_found_on_the_patient">Select diagnosis found on the patient</string>
     <string name="something_went_wrong_try_later">Something went wrong. Please try again later</string>
+    <string name="view_discontinued_medication">View Discontinued Medication</string>
+    <string name="hide_discontinued_medication">Hide Discontinued Medication</string>
+    <string name="no_data_found">No data found.</string>
+    <string name="edit">Edit</string>
+    <string name="confirmation">Confirmation</string>
+    <string name="delete_confirmation">Are you sure you want to delete it?</string>
+    <string name="prescribed_since">Prescribed Since</string>
+
 </resources>

@@ -2,23 +2,30 @@ package com.medtroniclabs.spice.ui.medicalreview.prescription
 
 import android.graphics.Bitmap
 import android.os.Bundle
+import android.text.SpannableString
+import android.text.style.UnderlineSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.AdapterView
 import androidx.activity.viewModels
-import androidx.appcompat.widget.AppCompatEditText
 import androidx.core.widget.addTextChangedListener
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.appextensions.gone
+import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
+import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.data.MedicationRequestObject
 import com.medtroniclabs.spice.data.MedicationResponse
+import com.medtroniclabs.spice.data.Prescription
 import com.medtroniclabs.spice.databinding.ActivityPrescriptionBinding
+import com.medtroniclabs.spice.databinding.RowDiscontinedMedicationBinding
 import com.medtroniclabs.spice.databinding.RowPrescriptionBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
+import com.medtroniclabs.spice.ui.PrescriptionReasonDialog
 import com.medtroniclabs.spice.ui.medicalreview.SignatureDialogFragment
 import com.medtroniclabs.spice.ui.medicalreview.SignatureListener
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
@@ -43,16 +50,49 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
 
     private fun initListener() {
         binding.btnPrescribe.safeClickListener(this)
+        binding.tvDiscontinuedMedication.safeClickListener(this)
+        binding.btnRenewAll.safeClickListener(this)
     }
 
     private fun attachObserver() {
+
+        prescriptionViewModel.prescriptionListLiveData.observe(this) { resourceState ->
+            when (resourceState.state) {
+
+                ResourceState.LOADING -> {
+
+
+                }
+
+                ResourceState.SUCCESS -> {
+                    hideLoading()
+                    resourceState?.data?.let { data ->
+                        if (data.size > 0) {
+                            binding.btnRenewAll.visible()
+                        } else {
+                            binding.btnRenewAll.gone()
+                        }
+                        prescriptionViewModel.updateMedicationList(
+                            prescriptionViewModel.constructMedicationRequestObjectList(data),
+                            true
+                        )
+                    }
+                }
+
+                ResourceState.ERROR -> {
+                    hideLoading()
+
+                }
+            }
+        }
+
         prescriptionViewModel.medicationListLiveData.observe(this) { resourceState ->
             when (resourceState.state) {
                 ResourceState.LOADING -> {
                 }
 
                 ResourceState.SUCCESS -> {
-                    resourceState.data?.entityList?.let {
+                    resourceState.data?.let {
                         loadAdapter(it)
                     }
                 }
@@ -63,7 +103,7 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
             }
         }
 
-        prescriptionViewModel.selectedMedicationLiveDate.observe(this) { list ->
+        prescriptionViewModel.selectedMedicationLiveData.observe(this) { list ->
             list?.let {
                 binding.btnPrescribe.isEnabled = list.size > 0
                 showMedicationList(list)
@@ -81,12 +121,104 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
                 }
 
                 ResourceState.SUCCESS -> {
-                    hideLoading()
-
+                    resource.data?.let { data ->
+                        prescriptionViewModel.getPrescriptionList(data)
+                    } ?: kotlin.run {
+                        hideLoading()
+                    }
                 }
             }
         }
+
+        prescriptionViewModel.createPrescriptionLiveData.observe(this) { resource ->
+            when (resource.state) {
+
+                ResourceState.LOADING -> {
+                    showLoading()
+                }
+
+                ResourceState.ERROR -> {
+                    hideLoading()
+                }
+
+                ResourceState.SUCCESS -> {
+                    hideLoading()
+                    finish()
+                }
+            }
+        }
+
+        prescriptionViewModel.removePrescriptionLiveData.observe(this) { resource ->
+            when (resource.state) {
+                ResourceState.LOADING -> {
+                    showLoading()
+                }
+
+                ResourceState.SUCCESS -> {
+                    patientViewModel.patientDetailsLiveData.value?.data?.let {
+                        prescriptionViewModel.getPrescriptionList(it)
+                    }
+                }
+
+                ResourceState.ERROR -> {
+                    hideLoading()
+                }
+            }
+        }
+
+        prescriptionViewModel.discontinuedPrescriptionListLiveData.observe(this) { resource ->
+            when (resource.state) {
+                ResourceState.LOADING -> {
+                    showLoading()
+                }
+
+                ResourceState.SUCCESS -> {
+                    hideLoading()
+                    resource.data?.let {
+                        processDiscontinuedMedication(it)
+                    }
+
+                }
+
+                ResourceState.ERROR -> {
+                    hideLoading()
+                }
+            }
+        }
+
     }
+
+    private fun processDiscontinuedMedication(prescriptions: ArrayList<Prescription>) {
+        binding.tvDiscontinuedMedication.text = getString(R.string.hide_discontinued_medication)
+        binding.cardDiscontinuedPrescriptionContainer.visible()
+        if (prescriptions.isNotEmpty()) {
+            binding.discontinuedMedicationHolder.visible()
+            binding.tvNoDataFound.gone()
+            showDiscontinuedMedication(prescriptions)
+        } else {
+            binding.discontinuedMedicationHolder.gone()
+            binding.tvNoDataFound.visible()
+        }
+    }
+
+    private fun showDiscontinuedMedication(prescriptions: ArrayList<Prescription>) {
+        binding.discontinuedMedicationHolder.removeAllViews()
+        prescriptions.forEach { data ->
+            val discontinuedMedicationBinding =
+                RowDiscontinedMedicationBinding.inflate(LayoutInflater.from(this))
+            discontinuedMedicationBinding.tvMedicationName.text = data.medicationName
+            discontinuedMedicationBinding.tvFrequency.text = getFrequencyName(
+                data.frequency, getString(
+                    R.string.hyphen_symbol
+                )
+            )
+            discontinuedMedicationBinding.tvQuantity.text =
+                (data.prescribedDays * data.frequency).toString()
+            discontinuedMedicationBinding.tvPrescribedDays.text = data.prescribedDays.toString()
+            binding.discontinuedMedicationHolder.addView(discontinuedMedicationBinding.root)
+        }
+    }
+
 
     private fun showMedicationList(list: ArrayList<MedicationRequestObject>) {
         binding.llPrescriptionHolder.removeAllViews()
@@ -95,11 +227,26 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
             prescriptionBinding.medicationName.text = data.medicationResponse.name
             prescriptionBinding.etPrescribedDays.addTextChangedListener { prescribedDays ->
                 data.medicationResponse.prescribedDays = prescribedDays.toString().toLongOrNull()
-                calculateQuantity(data, prescriptionBinding.etQuantity)
+                prescriptionBinding.etQuantity.setText(calculateQuantity(data))
             }
             if (data.medicationResponse.prescribedDays != null) {
                 prescriptionBinding.etPrescribedDays.setText(data.medicationResponse.prescribedDays.toString())
             }
+
+            if (data.medicationResponse.prescribedSince != null && !data.medicationResponse.isEditable){
+                val spannableString = SpannableString(
+                    DateUtils.convertDateFormat(
+                        data.medicationResponse.prescribedSince!!,
+                        DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+                        DateUtils.DATE_ddMMyyyy
+                    )
+                )
+                spannableString.setSpan(UnderlineSpan(), 0, spannableString.length, 0)
+                prescriptionBinding.tvPrescribedSince.text = spannableString
+            }else {
+                prescriptionBinding.tvPrescribedSince.text = getString(R.string.hyphen_symbol)
+            }
+
             val adapter = CustomSpinnerAdapter(prescriptionBinding.root.context, false)
             adapter.setData(prescriptionViewModel.getFrequencyMap())
             prescriptionBinding.frequency.adapter = adapter
@@ -128,20 +275,81 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
                             }
                             data.medicationResponse.selectedMap?.putAll(map)
                         }
-                        calculateQuantity(data, prescriptionBinding.etQuantity)
+                        prescriptionBinding.etQuantity.setText(calculateQuantity(data))
                     }
 
                     override fun onNothingSelected(parent: AdapterView<*>?) {
                     }
 
                 }
+
+            if (data.medicationResponse.prescriptionId != null && !data.medicationResponse.isEditable) {
+                prescriptionBinding.etPrescribedDays.isEnabled = false
+                prescriptionBinding.frequency.isEnabled = false
+                prescriptionBinding.ivEditMedication.visible()
+                prescriptionBinding.ivRemoveMedication.setImageResource(R.drawable.icon_delete_red)
+            } else {
+                prescriptionBinding.etPrescribedDays.isEnabled = true
+                prescriptionBinding.frequency.isEnabled = true
+                prescriptionBinding.ivEditMedication.gone()
+                if (data.medicationResponse.isEditable) {
+                    prescriptionBinding.ivRemoveMedication.setImageResource(R.drawable.icon_reset_grey)
+                } else {
+                    prescriptionBinding.ivRemoveMedication.setImageResource(R.drawable.icon_remove_blue)
+                }
+            }
+            prescriptionBinding.ivRemoveMedication.setOnClickListener {
+                data.medicationResponse.prescriptionId?.let { prescriptionId ->
+                    if (data.medicationResponse.isEditable) {
+                        resetDataInitialData(data)
+                    } else {
+                        val dialog = PrescriptionReasonDialog.newInstance(
+                            this,
+                            getString(R.string.confirmation),
+                            true,
+                            Pair(getString(R.string.ok), getString(R.string.cancel)),
+                            callback = { isPositiveResult, reason ->
+                                if (isPositiveResult) {
+                                    prescriptionViewModel.removePrescription(prescriptionId, reason)
+                                }
+                            },
+                            message = Pair(getString(R.string.delete_confirmation), null)
+                        )
+                        dialog.show(supportFragmentManager, PrescriptionReasonDialog.TAG)
+                    }
+                } ?: kotlin.run {
+                    val tempList =
+                        prescriptionViewModel.selectedMedicationLiveData.value ?: ArrayList()
+                    tempList.remove(data)
+                    prescriptionViewModel.selectedMedicationLiveData.value = tempList
+                }
+            }
+
+            prescriptionBinding.ivEditMedication.setOnClickListener {
+                data.medicationResponse.isEditable = true
+                val tempList = prescriptionViewModel.selectedMedicationLiveData.value ?: ArrayList()
+                prescriptionViewModel.selectedMedicationLiveData.value = tempList
+            }
+
             binding.llPrescriptionHolder.addView(prescriptionBinding.root)
         }
     }
 
+    private fun resetDataInitialData(data: MedicationRequestObject) {
+        val actualPrescription =
+            prescriptionViewModel.prescriptionListLiveData.value?.data?.filter { it.prescriptionId == data.medicationResponse.prescriptionId }
+        if (!actualPrescription.isNullOrEmpty()) {
+            data.medicationResponse =
+                prescriptionViewModel.constructMedicationRequestObject(actualPrescription[0])
+            data.medicationResponse.isEditable = false
+        }
+        val tempList = prescriptionViewModel.selectedMedicationLiveData.value ?: ArrayList()
+        prescriptionViewModel.selectedMedicationLiveData.value = tempList
+    }
+
     private fun getFrequencyPosition(
         frequencyMap: ArrayList<Map<String, Any>>,
-        selectedMap: HashMap<String, Any>
+        selectedMap: Map<String, Any>
     ): Int {
         frequencyMap.forEachIndexed { index, map ->
             if (map[DefinedParams.ID] == selectedMap[DefinedParams.ID]) {
@@ -152,16 +360,15 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
     }
 
     private fun calculateQuantity(
-        data: MedicationRequestObject,
-        quantityEditText: AppCompatEditText
-    ) {
+        data: MedicationRequestObject
+    ): String {
         val frequency = data.medicationResponse.selectedMap?.get(DefinedParams.Frequency) as? Int?
         if (data.medicationResponse.prescribedDays != null && frequency != null) {
             data.medicationResponse.quantity = data.medicationResponse.prescribedDays!! * frequency
         } else {
             data.medicationResponse.quantity = 0
         }
-        quantityEditText.setText(data.medicationResponse.quantity.toString())
+        return data.medicationResponse.quantity.toString()
     }
 
     private fun loadAdapter(data: ArrayList<MedicationResponse>) {
@@ -187,9 +394,14 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
     }
 
     override fun onItemClick(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-        prescriptionViewModel.medicationListLiveData.value?.data?.entityList?.let { medicationList ->
+        prescriptionViewModel.medicationListLiveData.value?.data?.let { medicationList ->
             val medicationResponse = medicationList[position]
-            prescriptionViewModel.updateMedicationList(medicationResponse = medicationResponse)
+            val list = ArrayList<MedicationRequestObject>()
+            list.add(MedicationRequestObject(medicationResponse))
+            prescriptionViewModel.updateMedicationList(
+                medicationResponse = list,
+                false
+            )
             binding.searchView.setText("")
         }
     }
@@ -203,13 +415,33 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
                         .show(supportFragmentManager, SignatureDialogFragment.TAG)
                 }
             }
+
+            binding.tvDiscontinuedMedication.id -> {
+                if (binding.tvDiscontinuedMedication.text.toString() == getString(R.string.hide_discontinued_medication)) {
+                    binding.tvDiscontinuedMedication.text =
+                        getText(R.string.view_discontinued_medication)
+                    binding.cardDiscontinuedPrescriptionContainer.gone()
+                } else {
+                    patientViewModel.patientDetailsLiveData.value?.data?.let {
+                        prescriptionViewModel.getPrescriptionList(it, false)
+                    }
+                }
+            }
+
+            binding.btnRenewAll.id -> {
+                prescriptionViewModel.selectedMedicationLiveData.value?.filter { it.medicationResponse.prescriptionId != null }
+                    ?.map { it.medicationResponse.isEditable = true }
+                prescriptionViewModel.selectedMedicationLiveData.value =
+                    prescriptionViewModel.selectedMedicationLiveData.value
+            }
         }
 
     }
 
+
     private fun checkValidation(): Pair<Boolean, List<MedicationRequestObject>?> {
         val invalidList =
-            prescriptionViewModel.selectedMedicationLiveDate.value?.filter { it.medicationResponse.prescribedDays == null || it.medicationResponse.prescribedDays == 0L }
+            prescriptionViewModel.selectedMedicationLiveData.value?.filter { it.medicationResponse.prescribedDays == null || it.medicationResponse.prescribedDays == 0L }
         if (!invalidList.isNullOrEmpty()) {
             return Pair(false, invalidList)
         }
@@ -223,20 +455,29 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
     private fun updatePrescriptions(signatureBitmap: Bitmap) {
         patientViewModel.patientDetailsLiveData.value?.data?.let { data ->
             prescriptionViewModel.patientId?.let { patientId ->
-                prescriptionViewModel.selectedMedicationLiveDate.value?.let { list ->
-                    prescriptionViewModel.createPrescription(
-                        signatureBitmap,
-                        CommonUtils.getFilePath(
-                            patientId,
-                            context = this,
-                            list
-                        ),
-                        list,
-                        data
-                    )
-                }
+                prescriptionViewModel.selectedMedicationLiveData.value?.filter { ((it.medicationResponse.prescriptionId != null && it.medicationResponse.isEditable && it.medicationResponse.prescribedDays != null && it.medicationResponse.prescribedDays != 0L) || (it.medicationResponse.prescriptionId == null && it.medicationResponse.prescribedDays != null && it.medicationResponse.prescribedDays != 0L)) }
+                    .let { list ->
+                        prescriptionViewModel.createPrescription(
+                            signatureBitmap,
+                            CommonUtils.getFilePath(
+                                patientId,
+                                context = this
+                            ),
+                            ArrayList(list),
+                            data
+                        )
+                    }
             }
         }
+    }
 
+    private fun getFrequencyName(frequency: Int, hypen: String): String {
+        val selectedFrequency =
+            prescriptionViewModel.getFrequencyList().filter { it.frequency == frequency }
+        return if (selectedFrequency.isNotEmpty()) {
+            selectedFrequency[0].name
+        } else {
+            hypen
+        }
     }
 }

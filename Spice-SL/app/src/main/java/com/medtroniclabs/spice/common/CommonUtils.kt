@@ -324,7 +324,7 @@ object CommonUtils {
         return this?.toDouble().toString()
     }
 
-    fun getFilePath(id: String, context: Context, list: ArrayList<MedicationRequestObject>): File {
+    fun getFilePath(id: String, context: Context): File {
         val cw = ContextWrapper(context)
         val directory = cw.getDir(id, Context.MODE_PRIVATE)
         return File(directory, DefinedParams.SIGN_DIR)

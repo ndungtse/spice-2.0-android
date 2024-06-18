@@ -154,6 +154,7 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
                     if (miscarriageValue is Boolean && miscarriageValue) {
                         binding.etNextFollowUpDate.gone()
                         binding.tvNextFollowupDateTitle.gone()
+                        binding.btnDone.isEnabled = true
                     } else {
                         binding.etNextFollowUpDate.visible()
                         binding.tvNextFollowupDateTitle.visible()
