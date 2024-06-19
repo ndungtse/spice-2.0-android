@@ -148,7 +148,7 @@
                 android:drawableEnd="@drawable/ic_followup_date"
                 android:hint="@string/dd_mm_yyyy"
                 android:inputType="date"
-                android:paddingHorizontal="@dimen/_16sdp"
+                android:paddingHorizontal="@dimen/_8sdp"
                 android:paddingVertical="@dimen/_10sdp" />
 
         </LinearLayout>

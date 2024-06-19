@@ -192,7 +192,7 @@
                         <androidx.appcompat.widget.AppCompatTextView
                             android:layout_width="@dimen/_0dp"
                             android:layout_height="wrap_content"
-                            android:layout_weight="0.3"
+                            android:layout_weight="0.2"
                             android:fontFamily="@font/inter_regular"
                             android:gravity="start"
                             android:padding="@dimen/_12sdp"
@@ -203,10 +203,9 @@
                         <androidx.appcompat.widget.AppCompatTextView
                             android:layout_width="@dimen/_0dp"
                             android:layout_height="wrap_content"
-                            android:layout_marginHorizontal="@dimen/_24sdp"
-                            android:layout_weight="0.3"
+                            android:layout_weight="0.2"
                             android:fontFamily="@font/inter_regular"
-                            android:gravity="start"
+                            android:gravity="center"
                             android:padding="@dimen/_12sdp"
                             android:text="@string/frequency"
                             android:textColor="@color/table_title"
@@ -215,7 +214,6 @@
                         <androidx.appcompat.widget.AppCompatTextView
                             android:layout_width="@dimen/_0dp"
                             android:layout_height="wrap_content"
-                            android:layout_marginHorizontal="@dimen/_24sdp"
                             android:layout_weight="0.2"
                             android:fontFamily="@font/inter_regular"
                             android:gravity="center"
@@ -227,12 +225,22 @@
                         <androidx.appcompat.widget.AppCompatTextView
                             android:layout_width="@dimen/_0dp"
                             android:layout_height="wrap_content"
-                            android:layout_marginHorizontal="@dimen/_24sdp"
                             android:layout_weight="0.2"
                             android:fontFamily="@font/inter_regular"
                             android:gravity="center"
                             android:padding="@dimen/_12sdp"
                             android:text="@string/quantity"
+                            android:textColor="@color/table_title"
+                            android:textSize="@dimen/_16ssp" />
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:layout_width="@dimen/_0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="0.2"
+                            android:fontFamily="@font/inter_regular"
+                            android:gravity="center"
+                            android:padding="@dimen/_12sdp"
+                            android:text="@string/discontinued_on"
                             android:textColor="@color/table_title"
                             android:textSize="@dimen/_16ssp" />
 

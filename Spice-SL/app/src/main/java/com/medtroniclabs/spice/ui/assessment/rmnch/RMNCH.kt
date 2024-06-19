@@ -61,7 +61,7 @@ object RMNCH {
                         DateUtils.DATE_ddMMyyyy
                     )
                 } else if (viewType == ViewType.VIEW_TYPE_DIALOG_CHECKBOX) {
-                    return getDangerSignValue(value, triple.third)
+                    return getDangerSignValue(value, triple.third, actualMap)
                 } else {
                     when (value) {
                         is String -> {
@@ -88,14 +88,36 @@ object RMNCH {
         return triple.third
     }
 
-    private fun getDangerSignValue(value: Any?, hyphenSymbol: String): String {
+    private fun getDangerSignValue(
+        value: Any?,
+        hyphenSymbol: String,
+        actualMap: Map<*, *>
+    ): String {
         val result = ArrayList<String>()
         if (value is List<*>) {
             value.forEach {
                 if (it is Map<*, *>) {
                     val key = it[DefinedParams.NAME]
                     if (key is String) {
-                        result.add(key)
+                        if (key.equals(DefinedParams.Other, true)) {
+                            if (actualMap.containsKey(otherAncSigns)) {
+                                val otherSignValue = actualMap[otherAncSigns]
+                                result.add("$key - $otherSignValue")
+                            } else if (actualMap.containsKey(otherChildhoodVisitSigns)) {
+                                val otherSignValue = actualMap[otherChildhoodVisitSigns]
+                                result.add("$key - $otherSignValue")
+                            } else if (actualMap.containsKey(otherPncMotherSigns)) {
+                                val otherSignValue = actualMap[otherPncMotherSigns]
+                                result.add("$key - $otherSignValue")
+                            } else if (actualMap.containsKey(otherPncNeonateSigns)) {
+                                val otherSignValue = actualMap[otherPncNeonateSigns]
+                                result.add("$key - $otherSignValue")
+                            } else {
+                                result.add(key)
+                            }
+                        } else {
+                            result.add(key)
+                        }
                     }
                 }
             }
@@ -117,18 +139,23 @@ object RMNCH {
             in 0.0..4.0 -> {
                 DateUtils.addDaysToDate(lmp, (28 * 5))
             }
+
             in 4.1..5.0 -> {
                 DateUtils.addDaysToDate(lmp, (28 * 6))
             }
+
             in 5.1..6.0 -> {
                 DateUtils.addDaysToDate(lmp, (28 * 7))
             }
+
             in 6.1..7.0 -> {
                 DateUtils.addDaysToDate(lmp, (28 * 8))
             }
+
             in 7.1..8.9 -> {
                 DateUtils.addDaysToDate(lmp, (28 * 9))
             }
+
             else -> {
                 return null
             }
@@ -165,12 +192,15 @@ object RMNCH {
             in 0..1 -> {
                 return DateUtils.addDaysToDate(deliveryDate, 3)
             }
+
             in 2..3 -> {
                 return DateUtils.addDaysToDate(deliveryDate, 7)
             }
+
             in 4..6 -> {
                 return DateUtils.addDaysToDate(deliveryDate, 15)
             }
+
             else -> {
                 return null
             }
@@ -187,8 +217,6 @@ object RMNCH {
         }
         return MenuConstants.RMNCH_MENU_ID.uppercase(Locale.getDefault())
     }
-
-
 
 
 }

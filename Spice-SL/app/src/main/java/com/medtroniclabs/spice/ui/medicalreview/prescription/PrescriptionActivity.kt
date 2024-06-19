@@ -215,6 +215,13 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
             discontinuedMedicationBinding.tvQuantity.text =
                 (data.prescribedDays * data.frequency).toString()
             discontinuedMedicationBinding.tvPrescribedDays.text = data.prescribedDays.toString()
+            data.endDate?.let {endDate ->
+                discontinuedMedicationBinding.tvDiscontinuedOn.text = DateUtils.convertDateFormat(
+                    endDate,
+                    DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+                    DateUtils.DATE_ddMMyyyy
+                )
+            }
             binding.discontinuedMedicationHolder.addView(discontinuedMedicationBinding.root)
         }
     }
@@ -234,15 +241,11 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
             }
 
             if (data.medicationResponse.prescribedSince != null && !data.medicationResponse.isEditable){
-                val spannableString = SpannableString(
-                    DateUtils.convertDateFormat(
-                        data.medicationResponse.prescribedSince!!,
-                        DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-                        DateUtils.DATE_ddMMyyyy
-                    )
+                prescriptionBinding.tvPrescribedSince.text = DateUtils.convertDateFormat(
+                    data.medicationResponse.prescribedSince!!,
+                    DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+                    DateUtils.DATE_ddMMyyyy
                 )
-                spannableString.setSpan(UnderlineSpan(), 0, spannableString.length, 0)
-                prescriptionBinding.tvPrescribedSince.text = spannableString
             }else {
                 prescriptionBinding.tvPrescribedSince.text = getString(R.string.hyphen_symbol)
             }

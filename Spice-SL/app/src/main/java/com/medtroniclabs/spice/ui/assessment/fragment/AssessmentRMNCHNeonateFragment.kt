@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.widget.AppCompatSpinner
 import androidx.fragment.app.activityViewModels
 import com.google.gson.Gson
 import com.medtroniclabs.spice.appextensions.gone
@@ -19,6 +20,7 @@ import com.medtroniclabs.spice.formgeneration.listener.FormEventListener
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.model.FormResponse
 import com.medtroniclabs.spice.formgeneration.utility.CheckBoxDialog
+import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
 import com.medtroniclabs.spice.mappingkey.MemberRegistration
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
@@ -143,6 +145,7 @@ class AssessmentRMNCHNeonateFragment : BaseFragment(), View.OnClickListener,
                     resources.data?.let { data ->
                         childFormGenerator.populateViews(data.formLayout)
                         disableDateOfBirth()
+                        removeHouseHoldHeadMemberRelationShip()
                     }
                 }
 
@@ -171,6 +174,17 @@ class AssessmentRMNCHNeonateFragment : BaseFragment(), View.OnClickListener,
             }
         }
 
+    }
+
+    private fun removeHouseHoldHeadMemberRelationShip() {
+         childFormGenerator.getViewByTag(MemberRegistration.householdHeadRelationship)?.let {view ->
+             if (view is AppCompatSpinner){
+                 val adapter = view.adapter
+                 if (adapter is CustomSpinnerAdapter){
+                     adapter.removeItemById(DefinedParams.HouseholdHead)
+                 }
+             }
+         }
     }
 
     private fun disableDateOfBirth() {

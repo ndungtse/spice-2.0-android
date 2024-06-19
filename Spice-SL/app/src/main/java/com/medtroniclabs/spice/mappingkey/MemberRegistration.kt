@@ -10,4 +10,5 @@ object MemberRegistration {
     const val otherFamilyMember = "otherFamilyMember"
     const val householdId = "household_id"
     const val isPregnant= "isPregnant"
+    const val SonDaughter = "Son / Daughter"
 }

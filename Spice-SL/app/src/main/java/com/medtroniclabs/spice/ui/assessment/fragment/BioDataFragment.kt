@@ -77,12 +77,12 @@ class BioDataFragment : BaseFragment() {
         val title: String
         when (viewModel.workflowName) {
             RMNCH.ANC -> {
-                title = getString(R.string.anc)
+                title = getString(R.string.anc_visit)
                 showAncRelatedInformation(entity)
             }
 
             RMNCH.PNC -> {
-                title = getString(R.string.pnc)
+                title = getString(R.string.pnc_visit)
                 showPncRelatedInformation(entity)
             }
 

@@ -518,4 +518,6 @@
     <string name="delete_confirmation">Are you sure you want to delete it?</string>
     <string name="prescribed_since">Prescribed Since</string>
     <string name="value_range_error">"Please enter value between 1 to %1$d"</string>
+    <string name="discontinued_on">Discontinued On</string>
+
 </resources>
