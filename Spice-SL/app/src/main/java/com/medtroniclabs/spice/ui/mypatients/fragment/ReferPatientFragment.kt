@@ -24,7 +24,6 @@ import com.medtroniclabs.spice.formgeneration.extension.markMandatory
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
 import com.medtroniclabs.spice.network.resource.ResourceState
-import com.medtroniclabs.spice.ui.medicalreview.abovefiveyears.AboveFiveYearsViewModel
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.ReferPatientViewModel
@@ -122,6 +121,22 @@ class ReferPatientFragment : DialogFragment(), View.OnClickListener {
                         initializeNameNumberAdapter(listItems)
                     } ?: kotlin.run {
                     }
+                }
+
+                ResourceState.ERROR -> {
+                    hideLoadingProgress()
+                }
+            }
+        }
+
+        viewModel.referPatientResultLiveData.observe(this) { resource ->
+            when (resource.state) {
+                ResourceState.LOADING -> {
+                    showLoadingProgress()
+                }
+
+                ResourceState.SUCCESS -> {
+                    hideLoadingProgress()
                 }
 
                 ResourceState.ERROR -> {
@@ -299,6 +314,6 @@ class ReferPatientFragment : DialogFragment(), View.OnClickListener {
     }
 
     private fun hideLoadingProgress() {
-        binding.loadingProgress.gone()
+       binding.loadingProgress.gone()
     }
 }

@@ -1,5 +1,6 @@
 package com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.activity
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.activity.OnBackPressedCallback
@@ -38,6 +39,7 @@ import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.fragment.Pregn
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.fragment.PregnancySummaryFragment
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.viewmodel.MotherNeonateANCViewModel
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.viewmodel.MotherNeonateSummaryViewModel
+import com.medtroniclabs.spice.ui.medicalreview.prescription.PrescriptionActivity
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import com.medtroniclabs.spice.ui.mypatients.fragment.MedicalReviewPatientDiagnosisFragment
@@ -163,6 +165,15 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
 
                 ResourceState.ERROR -> {
 //                    hideLoading()
+                    showErrorDialogue(
+                        title = getString(R.string.alert),
+                        message = getString(R.string.something_went_wrong_try_later),
+                        positiveButtonName = getString(R.string.ok),
+                    ) {
+                        if (it) {
+                            onBackPressPopStack()
+                        }
+                    }
                 }
             }
         }
@@ -331,6 +342,7 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
         binding.btnSubmit.safeClickListener(this)
         binding.btnDone.safeClickListener(this)
         binding.btnRefer.safeClickListener(this)
+        binding.ivPrescription.safeClickListener(this)
     }
 
     private fun setButtonWidth() {
@@ -342,6 +354,14 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
         when (v?.id) {
             binding.btnLayout.btnNext.id -> {
                 validatePregnantDetails()
+            }
+
+            binding.ivPrescription.id -> {
+                patientViewModel.patientDetailsLiveData.value?.data?.let {data ->
+                    val intent  = Intent(this, PrescriptionActivity::class.java)
+                    intent.putExtra(DefinedParams.PatientId,data.patientId)
+                    startActivity(intent)
+                }
             }
 
             binding.btnSubmit.id -> {

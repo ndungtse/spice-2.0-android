@@ -158,13 +158,6 @@ class AboveFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
 
     private fun initializePatientStatus(patientStatusList: List<MedicalReviewMetaItems>) {
         val dropDownList = ArrayList<Map<String, Any>>()
-        dropDownList.add(
-            hashMapOf<String, Any>(
-                DefinedParams.NAME to DefinedParams.DefaultIDLabel,
-                DefinedParams.id to DefinedParams.DefaultID,
-                DefinedParams.value to DefinedParams.DefaultIDLabel
-            )
-        )
         for (item in patientStatusList) {
             dropDownList.add(
                 hashMapOf<String, Any>(

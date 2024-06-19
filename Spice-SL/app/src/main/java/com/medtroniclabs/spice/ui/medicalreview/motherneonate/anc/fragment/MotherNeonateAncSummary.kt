@@ -217,18 +217,9 @@ class MotherNeonateAncSummary : BaseFragment(),View.OnClickListener {
     }
 
     private fun setSpinner(statusList: ArrayList<Map<String, Any>>) {
-        val dropDownList = ArrayList<Map<String, Any>>()
-        dropDownList.add(
-            hashMapOf<String, Any>(
-                DefinedParams.NAME to DefinedParams.DefaultIDLabel,
-                DefinedParams.id to DefinedParams.DefaultID,
-                DefinedParams.value to DefinedParams.DefaultIDLabel
-            )
-        )
-        dropDownList.addAll(statusList)
-        adapter?.setData(dropDownList)
+        adapter?.setData(statusList)
         var defaultPosition = 0
-        for ((index, patientStatus) in dropDownList.withIndex()) {
+        for ((index, patientStatus) in statusList.withIndex()) {
             if ((patientStatus[DefinedParams.value] as? String).equals(
                     ReferralStatus.OnTreatment.name,
                     true

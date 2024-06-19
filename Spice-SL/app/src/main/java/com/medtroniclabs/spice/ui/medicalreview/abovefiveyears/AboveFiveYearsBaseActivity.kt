@@ -187,6 +187,7 @@ class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
                 }
             }
         }
+
         viewModel.aboveFiveYearsMetaLiveData.observe(this) { resourceState ->
             when (resourceState.state) {
                 ResourceState.LOADING -> {
@@ -195,10 +196,18 @@ class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
 
                 ResourceState.ERROR -> {
                     hideLoading()
+                    showErrorDialogue(
+                        title = getString(R.string.alert),
+                        message = getString(R.string.something_went_wrong_try_later),
+                        positiveButtonName = getString(R.string.ok),
+                    ) {
+                        if (it) {
+                            onBackPressPopStack()
+                        }
+                    }
                 }
 
                 ResourceState.SUCCESS -> {
-                    hideLoading()
                 }
             }
         }
