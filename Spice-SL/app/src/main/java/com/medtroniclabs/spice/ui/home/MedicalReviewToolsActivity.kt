@@ -2,6 +2,7 @@ package com.medtroniclabs.spice.ui.home
 
 import android.content.Intent
 import android.os.Bundle
+import androidx.activity.viewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.databinding.ActivityMedicalReviewToolsBinding
@@ -14,6 +15,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class MedicalReviewToolsActivity : BaseActivity() {
 
     private lateinit var binding: ActivityMedicalReviewToolsBinding
+    private val toolsViewModel: ToolsViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

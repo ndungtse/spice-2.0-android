@@ -97,22 +97,20 @@ class AddBpDialog : DialogFragment(), View.OnClickListener {
         viewModel.saveBloodPressure.observe(viewLifecycleOwner) { resourcesState ->
             when (resourcesState.state) {
                 ResourceState.LOADING -> {
-                    (requireActivity() as? BaseActivity)?.showLoading()
+                    binding.loader.visible()
                 }
 
                 ResourceState.SUCCESS -> {
-                    (requireActivity() as? BaseActivity)?.hideLoading()
+                    binding.loader.gone()
                     dismiss()
                     listener?.onDialogDismissed(true)
                     viewModel.saveBloodPressure.postError()
                 }
 
                 ResourceState.ERROR -> {
-                    (requireActivity() as? BaseActivity)?.hideLoading()
+                    binding.loader.gone()
 
                 }
-
-                else -> {}
             }
         }
     }

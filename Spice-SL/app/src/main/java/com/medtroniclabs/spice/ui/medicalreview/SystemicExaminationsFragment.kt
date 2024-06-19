@@ -158,9 +158,21 @@ class SystemicExaminationsFragment : BaseFragment() {
 
     fun validateInput(): Boolean {
         val isFundalHeightValid =
-            isDataValid(viewModel.fundalHeight, binding.tvFundalHeightError, 50,binding.etFundalHeight)
+            isDataValid(
+                viewModel.fundalHeight,
+                binding.tvFundalHeightError,
+                50,
+                binding.etFundalHeight,
+                requireContext()
+            )
         val isFetalHeartRateValid =
-            isDataValid(viewModel.fetalHeartRate, binding.tvFetalHeartRateError, 200,binding.etFetalHeartRate)
+            isDataValid(
+                viewModel.fetalHeartRate,
+                binding.tvFetalHeartRateError,
+                200,
+                binding.etFetalHeartRate,
+                requireContext()
+            )
         return isFundalHeightValid && isFetalHeartRateValid
     }
 

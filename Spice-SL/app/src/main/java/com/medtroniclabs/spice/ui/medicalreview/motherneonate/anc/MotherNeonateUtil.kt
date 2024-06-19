@@ -139,7 +139,8 @@ object MotherNeonateUtil {
         value: Double?,
         view: TextView,
         maxValue: Int,
-        editText: AppCompatEditText
+        editText: AppCompatEditText,
+        context: Context
     ): Boolean {
         if (value == null) {
             view.gone()
@@ -147,6 +148,7 @@ object MotherNeonateUtil {
         }
         if (!(value >= 1 && value <= maxValue) ) {
             view.visible()
+            view.text = context.getString(R.string.value_range_error, maxValue)
             editText.requestFocus()
             return false
         }

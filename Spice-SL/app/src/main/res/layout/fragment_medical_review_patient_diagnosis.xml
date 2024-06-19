@@ -38,7 +38,7 @@
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvDiagnosis"
-                style="@style/TextStyle_Bold_18"
+                style="@style/TextStyle_Bold_16_Size"
                 android:layout_marginTop="@dimen/_5sdp"
                 android:ellipsize="end"
                 android:gravity="center"
@@ -50,7 +50,7 @@
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvDiagnosisConfirm"
-                style="@style/TextStyle_Regular_18"
+                style="@style/TextStyle_Regular_16_Size"
                 android:layout_marginTop="@dimen/_5sdp"
                 android:ellipsize="end"
                 android:gravity="center"
@@ -98,7 +98,7 @@
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvPatientStatusValue"
-                style="@style/TextStyle_Bold_18"
+                style="@style/TextStyle_Bold_16_Size"
                 android:layout_marginTop="@dimen/_5sdp"
                 android:ellipsize="end"
                 android:gravity="center"

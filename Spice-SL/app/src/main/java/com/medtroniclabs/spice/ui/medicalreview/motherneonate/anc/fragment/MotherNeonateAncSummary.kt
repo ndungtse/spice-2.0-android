@@ -11,7 +11,6 @@ import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.invisible
 import com.medtroniclabs.spice.appextensions.setExpandableText
 import com.medtroniclabs.spice.appextensions.visible
-import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.SecuredPreference
@@ -69,13 +68,17 @@ class MotherNeonateAncSummary : BaseFragment(),View.OnClickListener {
 
     private fun attachObservers() {
         viewModel.ancMetaLiveDataForBloodGroup.observe(viewLifecycleOwner) {
-            val complaintList = ArrayList<Map<String, Any>>()
-            for (i in it) {
-                complaintList.add(
-                    CommonUtils.getOptionMap(i.name, i.name)
+            val statusList = ArrayList<Map<String, Any>>()
+            for (item in it) {
+                statusList.add(
+                    hashMapOf<String, Any>(
+                        DefinedParams.NAME to item.name,
+                        DefinedParams.id to item.id.toString(),
+                        DefinedParams.value to (item.value ?: item.name)
+                    )
                 )
             }
-            setSpinner(complaintList)
+            setSpinner(statusList)
         }
         viewModel.motherNeonateAncSummary.observe(viewLifecycleOwner) { resourceState ->
             when (resourceState.state) {
@@ -213,19 +216,24 @@ class MotherNeonateAncSummary : BaseFragment(),View.OnClickListener {
         }
     }
 
-    private fun setSpinner(complaintList: ArrayList<Map<String, Any>>) {
+    private fun setSpinner(statusList: ArrayList<Map<String, Any>>) {
         val dropDownList = ArrayList<Map<String, Any>>()
         dropDownList.add(
             hashMapOf<String, Any>(
                 DefinedParams.NAME to DefinedParams.DefaultIDLabel,
-                DefinedParams.id to DefinedParams.DefaultID
+                DefinedParams.id to DefinedParams.DefaultID,
+                DefinedParams.value to DefinedParams.DefaultIDLabel
             )
         )
-        dropDownList.addAll(complaintList)
+        dropDownList.addAll(statusList)
         adapter?.setData(dropDownList)
         var defaultPosition = 0
         for ((index, patientStatus) in dropDownList.withIndex()) {
-            if (patientStatus[DefinedParams.NAME] as? String == ReferralStatus.OnTreatment.name) {
+            if ((patientStatus[DefinedParams.value] as? String).equals(
+                    ReferralStatus.OnTreatment.name,
+                    true
+                )
+            ) {
                 defaultPosition = index
             }
         }
@@ -247,9 +255,9 @@ class MotherNeonateAncSummary : BaseFragment(),View.OnClickListener {
                     val selectedItem = adapter?.getData(position = pos)
                     selectedItem?.let {
                         val selectedId = it[DefinedParams.id] as String?
-                        val selectedBloodGroup = it[DefinedParams.NAME] as String?
+                        val selectedPatientStatus = it[DefinedParams.value] as String?
                         if (selectedId != DefinedParams.DefaultID) {
-                            viewModel.patientStatus = selectedBloodGroup
+                            viewModel.patientStatus = selectedPatientStatus
                             handleRecoveredState()
                         } else {
                             viewModel.patientStatus = null

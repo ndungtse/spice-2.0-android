@@ -105,11 +105,19 @@ class ReferralTicketFragment : BaseFragment(), View.OnClickListener {
         )
         dateListAdapter =
             DateListAdapter { referred ->
-                viewModel.getReferralTicket(
-                    patientId = getPatientId(),
-                    ticketId = referred.id
-                )
-                viewModel.ticketId = referred.id
+                if (connectivityManager.isNetworkAvailable()) {
+                    viewModel.getReferralTicket(
+                        patientId = getPatientId(),
+                        ticketId = referred.id
+                    )
+                    viewModel.ticketId = referred.id
+                } else {
+                    showErrorDialog(
+                        getString(R.string.error),
+                        getString(R.string.no_internet_error)
+                    )
+                }
+                listPopupWindow?.dismiss()
             }
         recyclerView.adapter = dateListAdapter
         listPopupWindow = PopupWindow(
@@ -261,11 +269,25 @@ class ReferralTicketFragment : BaseFragment(), View.OnClickListener {
             }
 
             binding.llHistoryAction.ivPrevious.id -> {
-                getPreviousItemToCurrent()
+                if (connectivityManager.isNetworkAvailable()) {
+                    getPreviousItemToCurrent()
+                } else {
+                    showErrorDialog(
+                        getString(R.string.error),
+                        getString(R.string.no_internet_error)
+                    )
+                }
             }
 
             binding.llHistoryAction.ivNext.id -> {
-                getNextItemToCurrent()
+                if (connectivityManager.isNetworkAvailable()) {
+                    getNextItemToCurrent()
+                } else {
+                    showErrorDialog(
+                        getString(R.string.error),
+                        getString(R.string.no_internet_error)
+                    )
+                }
             }
             binding.retryButtonBp.id -> {
               handleRetry()

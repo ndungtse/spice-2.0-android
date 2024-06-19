@@ -179,20 +179,26 @@ open class BaseActivity : SpiceRootActivity() {
         id: Int,
         bundle: Bundle? = null,
         tag: String? = null,
-        isAdd: Boolean= false
+        isAdd: Boolean = false
     ) {
-        supportFragmentManager.commit {
-            setReorderingAllowed(true)
-            if (isAdd)
-                add<fragment>(id , args = bundle, tag = tag)
-            else
-                replace<fragment>(
-                id,
-                args = bundle,
-                tag = tag
-            )
+        val fragmentManager = supportFragmentManager
+        val existingFragment = fragmentManager.findFragmentByTag(tag)
+
+        if (existingFragment == null) {
+            supportFragmentManager.commit {
+                setReorderingAllowed(true)
+                if (isAdd)
+                    add<fragment>(id, args = bundle, tag = tag)
+                else
+                    replace<fragment>(
+                        id,
+                        args = bundle,
+                        tag = tag
+                    )
+            }
         }
     }
+
     override fun dispatchTouchEvent(event: MotionEvent): Boolean {
         if (event.action == MotionEvent.ACTION_DOWN) {
             downX = event.rawX.toInt()

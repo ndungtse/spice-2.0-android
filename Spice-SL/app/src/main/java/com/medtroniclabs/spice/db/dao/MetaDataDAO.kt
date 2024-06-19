@@ -41,7 +41,7 @@ interface MetaDataDAO {
     suspend fun insertMenus(menuEntity: MenuEntity)
 
 
-    @Query("SELECT * FROM MenuEntity")
+    @Query("SELECT * FROM MenuEntity  ORDER BY displayOrder ASC")
     suspend fun getMenus(): List<MenuEntity>
 
     @Query("DELETE FROM MenuEntity")

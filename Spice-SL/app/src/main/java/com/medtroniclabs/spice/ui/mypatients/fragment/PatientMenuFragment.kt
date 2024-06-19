@@ -5,7 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import com.google.android.flexbox.FlexDirection
 import com.google.android.flexbox.FlexboxLayoutManager
@@ -20,6 +20,9 @@ import com.medtroniclabs.spice.common.DefinedParams.PatientId
 import com.medtroniclabs.spice.common.DefinedParams.female
 import com.medtroniclabs.spice.common.DefinedParams.male
 import com.medtroniclabs.spice.databinding.FragmentPatientMenuBinding
+import com.medtroniclabs.spice.db.entity.MenuEntity
+import com.medtroniclabs.spice.network.resource.ResourceState
+import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.MenuConstants
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.PREGNANCY_MAX_AGE
@@ -38,7 +41,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class PatientMenuFragment : BaseFragment(), MenuSelectionListener {
 
     lateinit var binding: FragmentPatientMenuBinding
-    private val viewModel: ToolsViewModel by viewModels()
+    private val viewModel: ToolsViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -50,10 +53,32 @@ class PatientMenuFragment : BaseFragment(), MenuSelectionListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setAdapterViews()
+        viewModel.getMyPatientsMenuItemsList()
+        attachObservers()
     }
 
-    private fun setAdapterViews() {
+    private fun attachObservers() {
+        viewModel.menuListLiveData.observe(viewLifecycleOwner) { resourceState ->
+            when (resourceState.state) {
+                ResourceState.LOADING -> {
+                    (activity as BaseActivity).showLoading()
+                }
+
+                ResourceState.SUCCESS -> {
+                    (activity as BaseActivity).hideLoading()
+                    resourceState.data?.let {
+                        setAdapterViews(it)
+                    }
+                }
+
+                ResourceState.ERROR -> {
+                    (activity as BaseActivity).hideLoading()
+                }
+            }
+        }
+    }
+
+    private fun setAdapterViews(menuItemsList: List<MenuEntity>) {
         if (CommonUtils.checkIsTablet(requireContext())) {
             val layoutManager = FlexboxLayoutManager(context)
             layoutManager.flexDirection = FlexDirection.ROW
@@ -66,15 +91,21 @@ class PatientMenuFragment : BaseFragment(), MenuSelectionListener {
         val gender = arguments?.getString(Gender, "")
         val dob = arguments?.getString(DOB, "")
         // Get the menu items list
-        val menuItemsList = viewModel.getMyPatientsMenuItemsList()
 
         // Check and set isDisable property based on gender
         menuItemsList.forEach { menuItem ->
             if (menuItem.name == MenuConstants.MOTHER_AND_NEONATE_ID) {
                 menuItem.isDisabled = when {
                     gender.equals(male, true) -> true
-                    gender.equals(female, true) && !dob.isNullOrBlank() && DateUtils.calculateAge(dob) !in (PREGNANCY_MIN_AGE..PREGNANCY_MAX_AGE) -> true
-                    (gender.equals(female, true) || gender.equals(male, true)) && dob.isNullOrBlank() -> true
+                    gender.equals(female, true) && !dob.isNullOrBlank() && DateUtils.calculateAge(
+                        dob
+                    ) !in (PREGNANCY_MIN_AGE..PREGNANCY_MAX_AGE) -> true
+
+                    (gender.equals(female, true) || gender.equals(
+                        male,
+                        true
+                    )) && dob.isNullOrBlank() -> true
+
                     else -> false
                 }
             }
@@ -88,7 +119,12 @@ class PatientMenuFragment : BaseFragment(), MenuSelectionListener {
         fun newInstance() =
             PatientMenuFragment()
 
-        fun newInstance(patientId: String?, id: String?,gender: String?,dob: String?): PatientMenuFragment {
+        fun newInstance(
+            patientId: String?,
+            id: String?,
+            gender: String?,
+            dob: String?
+        ): PatientMenuFragment {
             val fragment = PatientMenuFragment()
             val bundle = Bundle()
             bundle.putString(PatientId, patientId)
@@ -120,7 +156,8 @@ class PatientMenuFragment : BaseFragment(), MenuSelectionListener {
                 val patientId = arguments?.getString(PatientId, "")
                 val id = arguments?.getString(ID, "")
                 if (patientId?.isNotBlank() == true && id?.isNotBlank() == true) {
-                    SelectFlowDialog.newInstance(patientId, id).show(childFragmentManager, SelectFlowDialog.TAG)
+                    SelectFlowDialog.newInstance(patientId, id)
+                        .show(childFragmentManager, SelectFlowDialog.TAG)
                 }
             }
 

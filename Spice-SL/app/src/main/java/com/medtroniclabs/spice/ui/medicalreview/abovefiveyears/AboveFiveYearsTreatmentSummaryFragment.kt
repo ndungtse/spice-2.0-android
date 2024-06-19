@@ -178,7 +178,11 @@ class AboveFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
         adapter.setData(dropDownList)
         var defaultPosition = 0
         for ((index, patientStatus) in dropDownList.withIndex()) {
-            if (patientStatus[DefinedParams.NAME] as? String == ReferralStatus.OnTreatment.name) {
+            if ((patientStatus[DefinedParams.value] as? String).equals(
+                    ReferralStatus.OnTreatment.name,
+                    true
+                )
+            ) {
                 defaultPosition = index
             }
         }

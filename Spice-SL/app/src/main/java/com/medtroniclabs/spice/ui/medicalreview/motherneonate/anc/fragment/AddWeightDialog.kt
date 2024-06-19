@@ -11,8 +11,10 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.convertToUtcDateTime
+import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.appextensions.setWidth
+import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
@@ -72,18 +74,18 @@ class AddWeightDialog : DialogFragment(), View.OnClickListener {
         viewModel.saveWeight.observe(viewLifecycleOwner) { resourcesState ->
             when (resourcesState.state) {
                 ResourceState.LOADING -> {
-                    (requireActivity() as? BaseActivity)?.showLoading()
+                    binding.loader.visible()
                 }
 
                 ResourceState.SUCCESS -> {
-                    (requireActivity() as? BaseActivity)?.hideLoading()
+                    binding.loader.gone()
                     dismiss()
                     listener?.onDialogDismissed(false)
                     viewModel.saveWeight.postError()
                 }
 
                 ResourceState.ERROR -> {
-                    (requireActivity() as? BaseActivity)?.hideLoading()
+                    binding.loader.gone()
 
                 }
             }
