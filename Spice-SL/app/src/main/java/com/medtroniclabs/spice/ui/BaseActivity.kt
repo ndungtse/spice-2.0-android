@@ -181,21 +181,16 @@ open class BaseActivity : SpiceRootActivity() {
         tag: String? = null,
         isAdd: Boolean = false
     ) {
-        val fragmentManager = supportFragmentManager
-        val existingFragment = fragmentManager.findFragmentByTag(tag)
-
-        if (existingFragment == null) {
-            supportFragmentManager.commit {
-                setReorderingAllowed(true)
-                if (isAdd)
-                    add<fragment>(id, args = bundle, tag = tag)
-                else
-                    replace<fragment>(
-                        id,
-                        args = bundle,
-                        tag = tag
-                    )
-            }
+        supportFragmentManager.commit {
+            setReorderingAllowed(true)
+            if (isAdd)
+                add<fragment>(id, args = bundle, tag = tag)
+            else
+                replace<fragment>(
+                    id,
+                    args = bundle,
+                    tag = tag
+                )
         }
     }
 
@@ -318,4 +313,27 @@ open class BaseActivity : SpiceRootActivity() {
         }
     }
 
+    inline fun <reified fragment : Fragment> replaceFragmentOrCreateNewFragment(
+        id: Int,
+        bundle: Bundle? = null,
+        tag: String? = null,
+        isAdd: Boolean = false
+    ) {
+        val fragmentManager = supportFragmentManager
+        val existingFragment = fragmentManager.findFragmentByTag(tag)
+
+        if (existingFragment == null) {
+            supportFragmentManager.commit {
+                setReorderingAllowed(true)
+                if (isAdd)
+                    add<fragment>(id, args = bundle, tag = tag)
+                else
+                    replace<fragment>(
+                        id,
+                        args = bundle,
+                        tag = tag
+                    )
+            }
+        }
+    }
 }

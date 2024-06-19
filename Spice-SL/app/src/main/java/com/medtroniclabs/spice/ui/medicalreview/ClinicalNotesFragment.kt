@@ -23,6 +23,9 @@ class ClinicalNotesFragment : BaseFragment() {
     private lateinit var binding: FragmentClinicalNotesBinding
     private val viewModel : ClinicalNotesViewModel by activityViewModels()
 
+    companion object{
+        const val TAG = "ClinicalNotesFragment"
+    }
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,

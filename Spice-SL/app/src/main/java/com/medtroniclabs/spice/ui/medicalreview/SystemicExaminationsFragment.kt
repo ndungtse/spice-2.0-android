@@ -29,6 +29,9 @@ class SystemicExaminationsFragment : BaseFragment() {
     private lateinit var examinationsTagView: TagListCustomView
     private val viewModel: SystemicExaminationViewModel by activityViewModels()
 
+    companion object{
+        const val TAG = "SystemicExaminationsFragment"
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {

@@ -1,4 +1,4 @@
-package com.medtroniclabs.spice.model.landing
+package com.medtroniclabs.spice.ui.landing
 
 import android.content.res.Configuration
 import android.os.Bundle

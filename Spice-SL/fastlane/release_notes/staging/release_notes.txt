@@ -1,7 +1,11 @@
-CHW Workflow:
+In Medical Review:
+    1. Patient List
+    2. Filter
+    3. Referral Ticket History
+    4. Medical Review ANC.
+    5. Referral.
+    6. AboveFiveYears.
+    7. Prescription without Prescription history.
 
-1.Household
-2.Household Member
-3.Assessment (ICCM and Other Symptoms)
-4.Offline Sync for Household, Household Member, and Assessment
-5.Fixed QA reported issues.
+In CHW:
+    1. RMNCH along with bug fixes.

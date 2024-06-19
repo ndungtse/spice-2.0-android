@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     app:cardCornerRadius="@dimen/_10sdp"
-    tools:context=".model.landing.LoadingDialogFragment">
+    tools:context=".ui.landing.LoadingDialogFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"

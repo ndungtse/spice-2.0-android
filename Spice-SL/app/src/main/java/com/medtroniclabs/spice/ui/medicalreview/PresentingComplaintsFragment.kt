@@ -30,6 +30,9 @@ class PresentingComplaintsFragment : BaseFragment() {
     private lateinit var complaintsTagView: TagListCustomView
     private val viewModel : PresentingComplaintsViewModel by activityViewModels()
 
+    companion object{
+        const val TAG = "PresentingComplaintsFragment"
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {

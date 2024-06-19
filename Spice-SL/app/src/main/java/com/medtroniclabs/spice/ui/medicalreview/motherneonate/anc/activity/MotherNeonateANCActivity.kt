@@ -530,20 +530,20 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
                 MedicalReviewTypeEnums.ANC.name
             )
         }
-        replaceFragmentInId<PresentingComplaintsFragment>(
+        replaceFragmentOrCreateNewFragment<PresentingComplaintsFragment>(
             binding.presentingComplaintsContainer.id,
             bundle = bundle,
-            tag = PresentingComplaintsFragment::class.simpleName
+            tag = PresentingComplaintsFragment.TAG
         )
-        replaceFragmentInId<SystemicExaminationsFragment>(
+        replaceFragmentOrCreateNewFragment<SystemicExaminationsFragment>(
             binding.systemicExaminationsContainer.id,
             bundle = bundle,
-            tag = SystemicExaminationsFragment::class.simpleName
+            tag = SystemicExaminationsFragment.TAG
         )
-        replaceFragmentInId<ClinicalNotesFragment>(
+        replaceFragmentOrCreateNewFragment<ClinicalNotesFragment>(
             binding.clinicalNotesContainer.id,
             bundle = bundle,
-            tag = ClinicalNotesFragment::class.simpleName
+            tag = ClinicalNotesFragment.TAG
         )
     }
 
