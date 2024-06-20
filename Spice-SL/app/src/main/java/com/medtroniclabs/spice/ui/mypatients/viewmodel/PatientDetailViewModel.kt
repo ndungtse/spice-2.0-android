@@ -24,6 +24,8 @@ class PatientDetailViewModel @Inject constructor(
     //the below id is one which get from patient details response
     var patientDetailsId : String? = null
 
+    var encounterId: String ?= null
+
     fun getPatients(id: String, assessmentType: String? = null) {
         viewModelScope.launch(dispatcherIO) {
             patientDetailsLiveData.postLoading()

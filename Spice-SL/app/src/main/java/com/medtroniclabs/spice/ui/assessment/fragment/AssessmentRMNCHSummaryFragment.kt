@@ -222,10 +222,22 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
                     requireContext()
                 )
             )
+
             if (map.containsKey(viewModel.workflowName)) {
                 val ancMap = map[viewModel.workflowName] as Map<*, *>
                 if (ancMap.containsKey(RMNCH.lastMenstrualPeriod)) {
                     val lmp = ancMap[RMNCH.lastMenstrualPeriod] as String
+                    val estimatedDeliveryDate = DateUtils.calculateEstimatedDeliveryDate(DateUtils.getLastMenstrualDate(lmp))
+                    val formattedEstimatedDeliveryDate =
+                        DateUtils.getDateFormat().format(estimatedDeliveryDate.time)
+                    binding.parentLayout.addView(
+                        AssessmentCommonUtils.addViewSummaryLayout(
+                            getString(R.string.estimated_delivery_date),
+                            formattedEstimatedDeliveryDate,
+                            null,
+                            requireContext()
+                        )
+                    )
                     convertStringToDate(
                         lmp,
                         DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
@@ -291,9 +303,9 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
                 if (binding.etNextFollowUpDate.visibility == View.VISIBLE && binding.etNextFollowUpDate.text.isNotEmpty()) {
                     updateFollowUpDate(binding.etNextFollowUpDate.text.trim().toString())
                 }
-                if (viewModel.otherAssessmentDetails.isEmpty()){
+                if (viewModel.otherAssessmentDetails.isEmpty()) {
                     requireActivity().finish()
-                }else{
+                } else {
                     viewModel.updateOtherAssessmentDetails()
                 }
             }
@@ -340,7 +352,7 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
         }
     }
 
-    fun getCurrentAnsweredStatus():Boolean {
+    fun getCurrentAnsweredStatus(): Boolean {
         return viewModel.otherAssessmentDetails.isNotEmpty()
     }
 

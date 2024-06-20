@@ -1,10 +1,12 @@
 package com.medtroniclabs.spice.ui.medicalreview.abovefiveyears
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.ScrollView
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.DefinedParams
@@ -37,7 +39,8 @@ import com.medtroniclabs.spice.ui.mypatients.viewmodel.ReferPatientViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialogDismissListener, AncVisitCallBack {
+class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialogDismissListener,
+    AncVisitCallBack {
 
     private lateinit var binding: ActivityAboveFiveYearsBaseBinding
     private val viewModel: AboveFiveYearsViewModel by viewModels()
@@ -110,7 +113,12 @@ class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
                                 isNegativeButtonNeed = false,
                             ) {}
                         }
-                        viewModel.getAboveFiveYearsSummaryDetails(AboveFiveYearsSummaryRequest(id = it.id, type = MedicalReviewTypeEnums.AboveFiveYears.name))
+                        viewModel.getAboveFiveYearsSummaryDetails(
+                            AboveFiveYearsSummaryRequest(
+                                id = it.id,
+                                type = MedicalReviewTypeEnums.AboveFiveYears.name
+                            )
+                        )
                     }
                 } else {
                     patientViewModel.patientDetailsLiveData.value?.data?.let { details ->
@@ -155,7 +163,8 @@ class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
     }
 
     private fun addPatientDetails() {
-        val patientInfoFragment = PatientInfoFragment.newInstance(intent.getStringExtra(DefinedParams.PatientId))
+        val patientInfoFragment =
+            PatientInfoFragment.newInstance(intent.getStringExtra(DefinedParams.PatientId))
         supportFragmentManager.beginTransaction()
             .add(
                 R.id.patientDetailFragment,
@@ -363,10 +372,12 @@ class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
             }
 
             binding.ivPrescription.id -> {
-                patientViewModel.patientDetailsLiveData.value?.data?.let {data ->
-                    val intent  = Intent(this, PrescriptionActivity::class.java)
-                    intent.putExtra(DefinedParams.PatientId,data.patientId)
-                    startActivity(intent)
+                patientViewModel.patientDetailsLiveData.value?.data?.let { data ->
+                    val intent = Intent(this, PrescriptionActivity::class.java)
+                    intent.putExtra(DefinedParams.PatientId, data.patientId)
+                    intent.putExtra(DefinedParams.EncounterId,patientViewModel.encounterId)
+                    //startActivity(intent)
+                    getResult.launch(intent)
                 }
             }
 
@@ -459,6 +470,18 @@ class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
         object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 backNavigation()
+            }
+        }
+
+    private val getResult =
+        registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()
+        ) {
+            if (it.resultCode == Activity.RESULT_OK) {
+                val value = it.data?.getStringExtra(DefinedParams.EncounterId)
+                value?.let { valueString ->
+                    patientViewModel.encounterId = valueString
+                }
             }
         }
 }

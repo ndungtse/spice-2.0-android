@@ -1,9 +1,11 @@
 package com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.activity
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
@@ -360,7 +362,8 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
                 patientViewModel.patientDetailsLiveData.value?.data?.let {data ->
                     val intent  = Intent(this, PrescriptionActivity::class.java)
                     intent.putExtra(DefinedParams.PatientId,data.patientId)
-                    startActivity(intent)
+                    intent.putExtra(DefinedParams.EncounterId,patientViewModel.encounterId)
+                    getResult.launch(intent)
                 }
             }
 
@@ -695,6 +698,18 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
         object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 backNavigation()
+            }
+        }
+
+    private val getResult =
+        registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()
+        ) {
+            if (it.resultCode == Activity.RESULT_OK) {
+                val value = it.data?.getStringExtra(DefinedParams.EncounterId)
+                value?.let { valueString ->
+                    patientViewModel.encounterId = valueString
+                }
             }
         }
 }

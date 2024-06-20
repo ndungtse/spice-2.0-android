@@ -1,5 +1,6 @@
 package com.medtroniclabs.spice.ui.medicalreview.prescription
 
+import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.text.SpannableString
@@ -61,7 +62,6 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
 
                 ResourceState.LOADING -> {
 
-
                 }
 
                 ResourceState.SUCCESS -> {
@@ -106,6 +106,11 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
         prescriptionViewModel.selectedMedicationLiveData.observe(this) { list ->
             list?.let {
                 binding.btnPrescribe.isEnabled = list.size > 0
+                if (list.size > 0) {
+                    binding.tvNoMedicationDataFound.gone()
+                } else {
+                    binding.tvNoMedicationDataFound.visible()
+                }
                 showMedicationList(list)
             }
         }
@@ -143,7 +148,17 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
 
                 ResourceState.SUCCESS -> {
                     hideLoading()
-                    finish()
+                    resource.data?.let { map ->
+                        val intent = Intent()
+                        if (map.containsKey(DefinedParams.EncounterId)) {
+                            val value = map[DefinedParams.EncounterId]
+                            if (value is String) {
+                                intent.putExtra(DefinedParams.EncounterId, value)
+                            }
+                        }
+                        setResult(RESULT_OK, intent)
+                        finish()
+                    }
                 }
             }
         }
@@ -248,6 +263,11 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
                 )
             }else {
                 prescriptionBinding.tvPrescribedSince.text = getString(R.string.hyphen_symbol)
+            }
+            if (data.medicationResponse.showErrorMessage) {
+                prescriptionBinding.tvMedicineErrorMessage.visible()
+            } else {
+                prescriptionBinding.tvMedicineErrorMessage.gone()
             }
 
             val adapter = CustomSpinnerAdapter(prescriptionBinding.root.context, false)
@@ -382,6 +402,7 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
     }
 
     private fun initView() {
+        patientViewModel.encounterId = intent.getStringExtra(DefinedParams.EncounterId)
         prescriptionViewModel.patientId = intent.getStringExtra(DefinedParams.PatientId)
         prescriptionViewModel.patientId?.let {
             patientViewModel.getPatients(it)
@@ -443,9 +464,22 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
 
 
     private fun checkValidation(): Pair<Boolean, List<MedicationRequestObject>?> {
-        val invalidList =
-            prescriptionViewModel.selectedMedicationLiveData.value?.filter { it.medicationResponse.prescribedDays == null || it.medicationResponse.prescribedDays == 0L }
-        if (!invalidList.isNullOrEmpty()) {
+
+        val invalidList = ArrayList<MedicationRequestObject>()
+
+        prescriptionViewModel.selectedMedicationLiveData.value?.forEach { data ->
+            if (data.medicationResponse.prescribedDays == null || data.medicationResponse.prescribedDays == 0L) {
+                data.medicationResponse.showErrorMessage = true
+                invalidList.add(data)
+            } else {
+                data.medicationResponse.showErrorMessage = false
+            }
+
+        }
+
+        prescriptionViewModel.selectedMedicationLiveData.value =
+            prescriptionViewModel.selectedMedicationLiveData.value
+        if (invalidList.isNotEmpty()) {
             return Pair(false, invalidList)
         }
         return Pair(true, null)
@@ -467,7 +501,8 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
                                 context = this
                             ),
                             ArrayList(list),
-                            data
+                            data,
+                            patientViewModel.encounterId
                         )
                     }
             }

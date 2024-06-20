@@ -116,7 +116,8 @@ class PrescriptionViewModel @Inject constructor(
         signature: Bitmap,
         filePath: File,
         list: ArrayList<MedicationRequestObject>,
-        data: PatientListRespModel
+        data: PatientListRespModel,
+        encounterId: String?
     ) {
         viewModelScope.launch(dispatcherIO) {
             try {
@@ -152,6 +153,7 @@ class PrescriptionViewModel @Inject constructor(
                 }
                 val prescriptionRequest = PrescriptionRequest(
                     encounter = EncounterDetails(
+                        id = encounterId,
                         patientReference = data.id,
                         patientId = data.patientId ?: "",
                         memberId = data.memberId ?: "", provenance = ProvanceDto(

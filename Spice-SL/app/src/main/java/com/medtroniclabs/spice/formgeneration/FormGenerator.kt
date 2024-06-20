@@ -933,7 +933,7 @@ class FormGenerator(
             }
             binding.tvTitle.tag = id + titleSuffix
 
-            binding.etUserInput.safeClickListener {
+            binding.etUserInputHolder.safeClickListener {
                 val dateInput = if (binding.etUserInput.text.toString().isNotEmpty())
                     DateUtils.getYearMonthAndDate(binding.etUserInput.text.toString()) else null
                 showDatePicker(

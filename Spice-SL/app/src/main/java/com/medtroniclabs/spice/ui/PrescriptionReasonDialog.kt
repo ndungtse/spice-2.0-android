@@ -6,6 +6,8 @@ import android.os.Bundle
 import android.view.*
 import androidx.fragment.app.DialogFragment
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.appextensions.gone
+import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.databinding.PrescriptionReasonDialogueBinding
 import com.medtroniclabs.spice.formgeneration.extension.fetchString
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
@@ -64,10 +66,6 @@ class PrescriptionReasonDialog() : DialogFragment(), View.OnClickListener {
 
     override fun onStart() {
         super.onStart()
-        dialog?.window?.setLayout(
-            WindowManager.LayoutParams.MATCH_PARENT,
-            WindowManager.LayoutParams.WRAP_CONTENT
-        )
     }
 
     override fun onCreateView(
@@ -117,7 +115,7 @@ class PrescriptionReasonDialog() : DialogFragment(), View.OnClickListener {
         binding.tvSubTitle.text = requireArguments().getString(KEY_MESSAGE)
         binding.btnOkay.text = requireArguments().getString(KEY_OKAY_BUTTON)
         binding.btnCancel.text = requireArguments().getString(KEY_CANCEL_BUTTON)
-        binding.tvErrorMessage.text = requireArguments().getString(ERROR_MESSAGE)
+      //  binding.tvErrorMessage.text = requireArguments().getString(ERROR_MESSAGE)
         arguments?.getBoolean(KEY_SHOW_COMMENT)?.let {
             binding.commentsGroup.visibility = if (it) View.VISIBLE else View.GONE
         }
@@ -140,17 +138,15 @@ class PrescriptionReasonDialog() : DialogFragment(), View.OnClickListener {
                 dismiss()
             }
             binding.btnOkay.id -> {
-                if(binding.commentsGroup.visibility == View.VISIBLE)
-                {
-                    if (!binding.etComments.text?.toString().isNullOrBlank()) {
-                        binding.tvErrorMessage.visibility = View.GONE
+                if(binding.commentsGroup.visibility == View.VISIBLE) {
+                    if (binding.etComments.text.isNullOrEmpty()){
+                        binding.tvErrorMessage.visible()
+                    }else{
+                        binding.tvErrorMessage.gone()
                         callback?.invoke(true, binding.etComments.fetchString())
                         dismiss()
-                    } else
-                        binding.tvErrorMessage.visibility = View.VISIBLE
-                }
-                else
-                {
+                    }
+                } else {
                     callback?.invoke(true, binding.etComments.fetchString())
                     dismiss()
                 }

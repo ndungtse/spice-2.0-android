@@ -101,6 +101,18 @@
 
     </LinearLayout>
 
+    <TextView
+        android:id="@+id/tvMedicineErrorMessage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="@dimen/_6sdp"
+        android:fontFamily="@font/inter_regular"
+        android:paddingHorizontal="@dimen/_12sdp"
+        android:text="@string/default_user_input_error"
+        android:textColor="@color/a_red_error"
+        android:textSize="@dimen/_12ssp"
+        android:visibility="gone" />
+
     <View
         android:layout_width="match_parent"
         android:layout_height="@dimen/_1sdp"

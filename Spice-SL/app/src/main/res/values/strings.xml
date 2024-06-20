@@ -199,7 +199,7 @@
     <string name="last_name">Last Name</string>
     <string name="mobile_number">Mobile Number</string>
     <string name="patients_found">%1d Patients</string>
-    <string name="no_patients_found">No patients found to upload.</string>
+    <string name="no_patients_found">No patients found.</string>
     <string name="search_by_national_id">Search by National ID</string>
     <string name="referral_ticket">Referral Ticket</string>
     <string name="cost">Cost</string>
@@ -518,6 +518,8 @@
     <string name="delete_confirmation">Are you sure you want to delete it?</string>
     <string name="prescribed_since">Prescribed Since</string>
     <string name="value_range_error">"Please enter value between 1 to %1$d"</string>
+    <string name="no_discontinued_medication">No Discontinued Medication</string>
+    <string name="no_medication_prescribed">No Medication Prescribed</string>
     <string name="discontinued_on">Discontinued On</string>
 
 </resources>

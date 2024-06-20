@@ -17,6 +17,7 @@
         android:drawableStart="@drawable/ic_search_blue"
         android:drawablePadding="@dimen/_16sdp"
         android:hint="@string/search_and_add"
+        android:maxLines="1"
         android:padding="@dimen/_16sdp"
         android:textColorHint="@color/btn_disable_grey"
         app:layout_constraintBottom_toTopOf="@id/nestedScrollView"
@@ -35,7 +36,8 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:background="@color/white">
 
             <View
                 android:id="@+id/backgroundView"
@@ -143,6 +145,17 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical" />
+
+                    <TextView
+                        android:id="@+id/tvNoMedicationDataFound"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginVertical="@dimen/_32sdp"
+                        android:fontFamily="@font/inter_regular"
+                        android:gravity="center"
+                        android:text="@string/no_medication_prescribed"
+                        android:textSize="@dimen/_16ssp"
+                        android:visibility="gone" />
 
 
                 </LinearLayout>
@@ -252,11 +265,11 @@
                         android:background="@color/edittext_stroke_50t" />
 
                     <LinearLayout
-                        android:orientation="vertical"
                         android:id="@+id/discontinuedMedicationHolder"
                         android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
                         android:layout_marginBottom="@dimen/_16sdp"
-                        android:layout_height="wrap_content" />
+                        android:orientation="vertical" />
 
                     <TextView
                         android:id="@+id/tvNoDataFound"
@@ -265,7 +278,7 @@
                         android:layout_marginVertical="@dimen/_32sdp"
                         android:fontFamily="@font/inter_regular"
                         android:gravity="center"
-                        android:text="@string/no_data_found"
+                        android:text="@string/no_discontinued_medication"
                         android:textSize="@dimen/_16ssp"
                         android:visibility="gone" />
 
