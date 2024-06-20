@@ -40,6 +40,7 @@ class ReferPatientFragment : DialogFragment(), View.OnClickListener {
     ): View {
         binding = FragmentReferPatientBinding.inflate(inflater, container, false)
         dialog?.window?.setBackgroundDrawableResource(android.R.color.transparent)
+        isCancelable = false
         return binding.root
     }
 

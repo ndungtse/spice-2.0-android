@@ -52,6 +52,9 @@ class ClinicalNotesFragment : BaseFragment() {
                 )
             }
         }
+        if (viewModel.enteredClinicalNotes.isNotBlank()) {
+            binding.etClinicalNotes.setText(viewModel.enteredClinicalNotes)
+        }
     }
 
     fun validateInput():Boolean {

@@ -40,7 +40,7 @@ class PatientStatusRepository @Inject constructor(
                     type = MedicalReviewTypeEnums.medicalReview.name,
                     gender = patientDetails.gender,
                     ticketType = workflowType,
-                    isPregnant = patientDetails.pregnancyDetails?.pregnant != null,
+                    isPregnant = patientDetails.isPregnant ?: false,
                     provenance = ProvanceDto(
                         createdDateTime = DateUtils.getCurrentDateAndTime(
                             DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ

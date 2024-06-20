@@ -47,7 +47,7 @@ class SelectFlowDialog : DialogFragment(), View.OnClickListener {
             return SelectFlowDialog()
         }
 
-        fun newInstance(patientId: String?, id: String): SelectFlowDialog {
+        fun newInstance(patientId: String?, id: String?): SelectFlowDialog {
             val fragment = SelectFlowDialog()
             val bundle = Bundle()
             bundle.putString(DefinedParams.PatientId, patientId)
@@ -99,7 +99,7 @@ class SelectFlowDialog : DialogFragment(), View.OnClickListener {
                 val patientId = arguments?.getString(DefinedParams.PatientId, "")
                 val id = arguments?.getString(DefinedParams.ID, "")
                 val intent = Intent(requireContext(), MotherNeonateANCActivity::class.java)
-                if (patientId?.isNotBlank() == true && id?.isNotBlank() == true) {
+                if (patientId?.isNotBlank() == true) {
                     intent.putExtra(DefinedParams.PatientId, patientId)
                     intent.putExtra(DefinedParams.ID, id)
                 }

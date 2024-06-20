@@ -5,15 +5,11 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
-import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.appextensions.postLoading
-import com.medtroniclabs.spice.appextensions.postSuccess
-import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.data.MedicalReviewMetaItems
 import com.medtroniclabs.spice.data.MotherNeonateAncSummaryModel
 import com.medtroniclabs.spice.data.model.MotherNeonateAncRequest
 import com.medtroniclabs.spice.di.IoDispatcher
-import com.medtroniclabs.spice.network.ApiHelper
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.repo.MotherNeonateANCRepo
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
@@ -30,17 +26,17 @@ class MotherNeonateSummaryViewModel @Inject constructor(
 ) : ViewModel() {
     var nextFollowupDate: String? = null
     var patientStatus: String? = null
-    private val getAncMetaForBloodGroup = MutableLiveData<String>()
+    private val getAncMetaForPatientStatus = MutableLiveData<String>()
     val motherNeonateAncSummary = MutableLiveData<Resource<MotherNeonateAncSummaryModel>>()
     val checkSubmitBtn = MutableLiveData<Boolean>()
 
-    val ancMetaLiveDataForBloodGroup: LiveData<List<MedicalReviewMetaItems>> =
-        getAncMetaForBloodGroup.switchMap {
+    val ancMetaLiveDataForPatientStatus: LiveData<List<MedicalReviewMetaItems>> =
+        getAncMetaForPatientStatus.switchMap {
             motherNeonateANCRepo.getExaminationsComplaintsForAnc(it, MedicalReviewTypeEnums.ANC.name)
         }
 
-    fun setAncReqToGetMetaForBloodGroup(category: String) {
-        getAncMetaForBloodGroup.value = category
+    fun setAncReqToGetMetaForPatientStatus(category: String) {
+        getAncMetaForPatientStatus.value = category
     }
 
     fun checkSubmitBtn() {

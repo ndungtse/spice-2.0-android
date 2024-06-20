@@ -114,6 +114,13 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
 
                 ResourceState.ERROR -> {
                     hideLoading()
+                    showErrorDialogue(
+                        title = getString(R.string.alert),
+                        message = getString(R.string.something_went_wrong_try_later),
+                        positiveButtonName = getString(R.string.ok),
+                    ) {
+
+                    }
                 }
 
                 ResourceState.SUCCESS -> {

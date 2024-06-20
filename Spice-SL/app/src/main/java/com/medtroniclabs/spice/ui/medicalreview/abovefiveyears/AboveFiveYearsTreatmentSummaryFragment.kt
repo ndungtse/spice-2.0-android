@@ -153,6 +153,7 @@ class AboveFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
 
     private fun initView() {
         binding.tvNextMedicalReviewLabel.markMandatory()
+        binding.tvPatientStatus.markMandatory()
         viewModel.getSummaryListMetaItems(MedicalReviewTypeEnums.AboveFiveYears.name)
     }
 
@@ -180,12 +181,9 @@ class AboveFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
             }
         }
         binding.tvPatientStatusSpinner.post {
-            if (defaultPosition != 0) {
                 binding.tvPatientStatusSpinner.setSelection(defaultPosition, false)
-            }
         }
         binding.tvPatientStatusSpinner.adapter = adapter
-        binding.tvPatientStatusSpinner.setSelection(0, false)
         binding.tvPatientStatusSpinner.onItemSelectedListener =
             object : AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(
@@ -197,10 +195,8 @@ class AboveFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
                     val selectedItem = adapter.getData(position = pos)
                     selectedItem?.let {
                         val selectedName = it[DefinedParams.NAME] as String?
-                        if (selectedName != DefinedParams.DefaultIDLabel) {
-                            viewModel.selectedPatientStatus = it[DefinedParams.value] as String
-                        } else {
-                            viewModel.selectedPatientStatus = null
+                        selectedName?.let { name ->
+                            viewModel.selectedPatientStatus = name
                         }
                         updateNextFollowUpDate()
                     }

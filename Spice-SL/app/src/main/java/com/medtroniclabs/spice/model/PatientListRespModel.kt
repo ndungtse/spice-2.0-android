@@ -19,6 +19,7 @@ data class PatientListRespModel(
     val houseHoldId: String? = null,
     val houseHoldNumber: Long? = null,
     val dateOfOnset:String? = null,
+    val isPregnant: Boolean? = null,
     val pregnancyDetails: PregnancyDetails? = null,
     val villageId:String? = null,
 )

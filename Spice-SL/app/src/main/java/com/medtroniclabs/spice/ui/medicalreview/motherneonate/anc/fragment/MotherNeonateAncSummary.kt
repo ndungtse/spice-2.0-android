@@ -67,7 +67,7 @@ class MotherNeonateAncSummary : BaseFragment(),View.OnClickListener {
     }
 
     private fun attachObservers() {
-        viewModel.ancMetaLiveDataForBloodGroup.observe(viewLifecycleOwner) {
+        viewModel.ancMetaLiveDataForPatientStatus.observe(viewLifecycleOwner) {
             val statusList = ArrayList<Map<String, Any>>()
             for (item in it) {
                 statusList.add(
@@ -166,6 +166,7 @@ class MotherNeonateAncSummary : BaseFragment(),View.OnClickListener {
 
     private fun initView() {
         binding.tvNextMedicalReviewLabel.markMandatory()
+        binding.tvPatientStatus.markMandatory()
         viewModel.fetchMotherNeonateSummary(arguments?.getString(DefinedParams.EncounterId),arguments?.getString(DefinedParams.FhirId))
         binding.tvClinicalName.text = requireContext().getString(
             R.string.firstname_lastname,
@@ -177,7 +178,7 @@ class MotherNeonateAncSummary : BaseFragment(),View.OnClickListener {
             DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
             DateUtils.DATE_ddMMyyyy
         )
-        viewModel.setAncReqToGetMetaForBloodGroup(MedicalReviewTypeEnums.patient_status.name)
+        viewModel.setAncReqToGetMetaForPatientStatus(MedicalReviewTypeEnums.patient_status.name)
         adapter = CustomSpinnerAdapter(requireContext())
         binding.tvNextMedicalReviewLabelText.safeClickListener(this)
     }
@@ -229,12 +230,9 @@ class MotherNeonateAncSummary : BaseFragment(),View.OnClickListener {
             }
         }
         binding.tvPatientStatusSpinner.post {
-            if (defaultPosition != 0) {
-                binding.tvPatientStatusSpinner.setSelection(defaultPosition, false)
-            }
+            binding.tvPatientStatusSpinner.setSelection(defaultPosition, false)
         }
         binding.tvPatientStatusSpinner.adapter = adapter
-        binding.tvPatientStatusSpinner.setSelection(0, false)
         binding.tvPatientStatusSpinner.onItemSelectedListener =
             object : AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(

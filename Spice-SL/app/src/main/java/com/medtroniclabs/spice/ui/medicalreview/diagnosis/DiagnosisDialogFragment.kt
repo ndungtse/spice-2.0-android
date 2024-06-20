@@ -14,6 +14,7 @@ import com.medtroniclabs.spice.appextensions.setError
 import com.medtroniclabs.spice.appextensions.setWidth
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DateUtils
+import com.medtroniclabs.spice.common.DefinedParams.Other
 import com.medtroniclabs.spice.data.DiagnosisDiseaseModel
 import com.medtroniclabs.spice.data.DiagnosisSaveUpdateRequest
 import com.medtroniclabs.spice.data.DiseaseCategoryItems
@@ -86,6 +87,20 @@ class DiagnosisDialogFragment : DialogFragment(), View.OnClickListener, Diagnosi
                                         type = diagnosisViewModel.diagnosisType
                                     )
                                 )
+                            } ?: kotlin.run {
+                                val diagnosisMetaChipItemList = ArrayList<ChipViewItemModel>()
+                                listItems.forEach {
+                                    diagnosisMetaChipItemList.add(
+                                        ChipViewItemModel(
+                                            id = it.id, name = it.name, value = it.value
+                                        )
+                                    )
+                                }
+                                diseaseCategoryTagView.addChipItemList(
+                                    diagnosisMetaChipItemList,
+                                    null
+                                )
+                                diagnosisViewModel.viewDiagnosis = false
                             }
                         }
                     }
@@ -201,15 +216,13 @@ class DiagnosisDialogFragment : DialogFragment(), View.OnClickListener, Diagnosi
 
                 ResourceState.SUCCESS -> {
                     diagnosisViewModel.viewDiagnosis = true
-                    patientViewModel.patientDetailsLiveData.value?.data?.let {
-                        diagnosisViewModel.getDiagnosisDetails(
-                            CreateUnderTwoMonthsResponse(
-                                patientReference = it.id,
-                                type = diagnosisViewModel.diagnosisType
-                            )
-                        )
+                    patientViewModel.patientDetailsLiveData.value?.data?.let {details ->
+                        details.id?.let {id ->
+                            getDiagnosisDetails(id)
+                        } ?: kotlin.run {
+                            details.patientId?.let { patientViewModel.getPatients(it) }
+                        }
                     }
-                    diagnosisViewModel.diagnosisDetailsList.setError()
                     diagnosisViewModel.diagnosisSaveUpdateResponse.setError()
                     hideLoading()
                     dismiss()
@@ -222,13 +235,22 @@ class DiagnosisDialogFragment : DialogFragment(), View.OnClickListener, Diagnosi
         }
     }
 
+    private fun getDiagnosisDetails(id: String) {
+        diagnosisViewModel.getDiagnosisDetails(
+            CreateUnderTwoMonthsResponse(
+                patientReference = id,
+                type = diagnosisViewModel.diagnosisType
+            )
+        )
+    }
+
     private fun initView() {
         handleVisibility()
         diagnosisGenerator = DiagnosisGenerator(binding.root.context, binding.llFamilyRoot, this)
         diseaseCategoryTagView = TagListCustomView(
             binding.root.context, binding.diseaseConditionChipGroup
         ) { name, _, isChecked ->
-            if (!diagnosisViewModel.viewDiagnosis && isShowAccordion()) {
+            if (!diagnosisViewModel.viewDiagnosis && isShowAccordion() ) {
                 diagnosisViewModel.diagnosisMetaList.value?.data?.let { listItems ->
                     if (isChecked) {
                         val filteredList =
@@ -255,20 +277,18 @@ class DiagnosisDialogFragment : DialogFragment(), View.OnClickListener, Diagnosi
             binding.btnOkay.id -> {
                 patientViewModel.patientDetailsLiveData.value?.data?.let { details ->
                     details.patientId?.let { patientId ->
-                        details.id?.let {
-                            val request = DiagnosisSaveUpdateRequest(
-                                patientId = patientId,
-                                patientReference = it,
-                                diseases = getDiagnosisDiseaseList(),
-                                provenance = ProvanceDto(
-                                    createdDateTime = DateUtils.getCurrentDateAndTime(
-                                        DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
-                                    )
-                                ),
-                                type = diagnosisViewModel.diagnosisType
-                            )
-                            diagnosisViewModel.diagnosisCreate(request)
-                        }
+                        val request = DiagnosisSaveUpdateRequest(
+                            patientId = patientId,
+                            patientReference = details.id,
+                            diseases = getDiagnosisDiseaseList(),
+                            provenance = ProvanceDto(
+                                createdDateTime = DateUtils.getCurrentDateAndTime(
+                                    DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
+                                )
+                            ),
+                            type = diagnosisViewModel.diagnosisType
+                        )
+                        diagnosisViewModel.diagnosisCreate(request)
                     }
                 }
             }

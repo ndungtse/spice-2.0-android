@@ -84,7 +84,7 @@ class PresentingComplaintsFragment : BaseFragment() {
                                         value = it.value
                                     )
                                 }
-                        complaintsTagView.addChipItemList(chipItemList, null)
+                        complaintsTagView.addChipItemList(chipItemList, viewModel.selectedPresentingComplaints)
                     }
                     hideProgress()
                 }
@@ -120,6 +120,9 @@ class PresentingComplaintsFragment : BaseFragment() {
             setFragmentResult(PC_ITEM, bundleOf(CHIP_ITEMS to true))
         }
         viewModel.getPresentingComplaintsList(viewModel.presentingComplaintsType)
+        if (viewModel.enteredComplaintNotes.isNotBlank()) {
+            binding.etPresentingComplaintsComments.setText(viewModel.enteredComplaintNotes)
+        }
     }
 
 }

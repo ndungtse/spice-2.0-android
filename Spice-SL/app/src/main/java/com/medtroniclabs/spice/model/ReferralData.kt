@@ -8,7 +8,7 @@ data class ReferralData(
     val patientStatus: String? = null,
     val referredReason: String? = null,
     val dateOfOnset: String? = null,
-    val referreddate: String? = null,
+    val referredDate: String? = null,
     val referredDates: List<ReferredDate>? = null
 )
 

@@ -215,4 +215,9 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
             existingFragment.show(childFragmentManager, PatientSearchFilterDialog.TAG)
         }
     }
+
+    override fun onResume() {
+        super.onResume()
+        getPatientList()
+    }
 }

@@ -296,12 +296,21 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
                 }
 
                 ResourceState.SUCCESS -> {
-                    hideProgress()
                     resourceState.data?.let { patientStatus ->
                         if (patientStatus.status.isNullOrEmpty()) {
                             binding.tvPatientStatusValue.text = getString(R.string.seperator_hyphen)
                         } else {
                             binding.tvPatientStatusValue.text = patientStatus.status
+                        }
+                        patientViewModel.patientDetailsLiveData.value?.data?.let { details ->
+                            details.id?.let { id ->
+                                diagnosisViewModel.getDiagnosisDetails(
+                                    CreateUnderTwoMonthsResponse(
+                                        patientReference = id,
+                                        type = diagnosisViewModel.diagnosisType
+                                    )
+                                )
+                            }
                         }
                     }
                 }
@@ -373,9 +382,9 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
     }
 
     private fun initializeViews() {
+        diagnosisViewModel.getDiagnosisMetaList(diagnosisViewModel.diagnosisType)
         statusViewModel.patientId?.let {
             binding.tvPatientStatusValue.text = requireContext().getString(R.string.hyphen_symbol)
-            diagnosisViewModel.getDiagnosisMetaList(diagnosisViewModel.diagnosisType)
             diagnosisViewModel.getDiagnosisDetails(
                 CreateUnderTwoMonthsResponse(
                     patientReference = it,

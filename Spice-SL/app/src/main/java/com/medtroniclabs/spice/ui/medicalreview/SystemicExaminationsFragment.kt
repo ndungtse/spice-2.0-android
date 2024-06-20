@@ -113,7 +113,7 @@ class SystemicExaminationsFragment : BaseFragment() {
                                 )
                             )
                         }
-                        examinationsTagView.addChipItemList(chipItemList, null)
+                        examinationsTagView.addChipItemList(chipItemList, viewModel.selectedSystemicExaminations)
                     }
                     hideProgress()
                 }
@@ -143,6 +143,9 @@ class SystemicExaminationsFragment : BaseFragment() {
             tvFetalHeartRateError.gone()
         }
         initTag()
+        if (viewModel.enteredExaminationNotes.isNotBlank()) {
+            binding.etPhysicalExaminationComments.setText(viewModel.enteredExaminationNotes)
+        }
     }
 
     private fun initTag() {

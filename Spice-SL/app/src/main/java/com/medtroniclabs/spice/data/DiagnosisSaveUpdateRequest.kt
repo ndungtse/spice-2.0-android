@@ -4,7 +4,7 @@ import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 
 data class DiagnosisSaveUpdateRequest(
     val patientId: String,
-    val patientReference: String,
+    val patientReference: String?,
     val diseases: ArrayList<DiagnosisDiseaseModel>,
     val provenance: ProvanceDto,
     val type: String
