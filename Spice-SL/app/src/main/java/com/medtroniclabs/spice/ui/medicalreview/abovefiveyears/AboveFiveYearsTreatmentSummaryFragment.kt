@@ -6,15 +6,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
-import android.widget.ScrollView
-import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResult
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.medtroniclabs.spice.R
-import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils.convertListToString
+import com.medtroniclabs.spice.common.CommonUtils.createPrescription
 import com.medtroniclabs.spice.common.CommonUtils.formatListToStringWithOther
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
@@ -31,7 +29,6 @@ import com.medtroniclabs.spice.formgeneration.utility.MultiSelectSpinnerAdapter
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
-import com.medtroniclabs.spice.ui.medicalreview.diagnosis.viewmodel.DiagnosisViewModel
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 
@@ -47,7 +44,6 @@ class AboveFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
     private val viewModel: AboveFiveYearsViewModel by activityViewModels()
     private val chipItemViewModel: ClinicalNotesViewModel by activityViewModels()
     private val presentingComplaintsViewModel: PresentingComplaintsViewModel by activityViewModels()
-    private val diagnosisViewModel : DiagnosisViewModel by activityViewModels()
     private var datePickerDialog: DatePickerDialog? = null
 
     override fun onCreateView(
@@ -149,6 +145,8 @@ class AboveFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
             DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
             DateUtils.DATE_ddMMyyyy
         )
+        binding.tvPrescriptionsText.text = details.prescriptions?.let { createPrescription(it) }?.takeIf { it.isNotEmpty() }
+            ?: requireContext().getString(R.string.hyphen_symbol)
     }
 
     private fun initView() {
@@ -345,5 +343,4 @@ class AboveFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
             )
         )
     }
-
 }

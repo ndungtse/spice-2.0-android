@@ -499,6 +499,7 @@
                 android:text="@string/seperator_hyphen"
                 app:layout_constraintEnd_toEndOf="@id/endGuideline"
                 app:layout_constraintHorizontal_weight="0.6"
+                android:lineSpacingExtra="@dimen/_12sdp"
                 app:layout_constraintStart_toEndOf="@id/tvPrescrptionSeparator"
                 app:layout_constraintTop_toTopOf="@id/tvPrescrptionlabel" />
 

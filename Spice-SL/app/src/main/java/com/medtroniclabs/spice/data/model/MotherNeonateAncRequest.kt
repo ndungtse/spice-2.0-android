@@ -25,6 +25,7 @@ data class MotherNeonateAncRequest(
     var deliveryKit: Boolean? = null
 )
 data class MedicalReviewEncounter(
+    var id: String? = null,
     var patientId: String? = null,
     val latitude: Double? = null,
     val longitude: Double? = null,

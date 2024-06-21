@@ -327,6 +327,7 @@
                 android:layout_width="@dimen/_0dp"
                 app:layout_constraintEnd_toEndOf="@id/endGuideline"
                 app:layout_constraintHorizontal_weight="0.6"
+                android:lineSpacingExtra="@dimen/_12sdp"
                 app:layout_constraintStart_toEndOf="@id/tvPrescriptionsSeparator"
                 app:layout_constraintTop_toTopOf="@id/tvPrescriptionsLabel"
                 android:text="@string/seperator_hyphen"/>

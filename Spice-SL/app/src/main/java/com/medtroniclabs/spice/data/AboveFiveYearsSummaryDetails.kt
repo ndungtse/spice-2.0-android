@@ -9,5 +9,6 @@ data class AboveFiveYearsSummaryDetails(
     val systemicExaminations: ArrayList<String>? = null,
     val systemicExaminationsNotes: String? = null,
     val clinicalNotes: String? = null,
-    val patientReference: String? = null
+    val patientReference: String? = null,
+    val prescriptions: List<Prescription>? = null
 )

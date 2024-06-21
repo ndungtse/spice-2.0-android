@@ -6,6 +6,7 @@ import android.content.res.AssetManager
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.nullIfEmpty
 import com.medtroniclabs.spice.common.DateUtils.calculateAge
+import com.medtroniclabs.spice.data.Prescription
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.MONTHS
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.WEEKS
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.YEARS
@@ -335,5 +336,11 @@ object CommonUtils {
 
             else -> {null}
         }
+    }
+
+    fun createPrescription(prescriptions: List<Prescription>?): String? {
+        return prescriptions?.takeIf { it.isNotEmpty() }?.mapIndexed { index, prescription ->
+            "${index + 1}. ${prescription.medicationName}/${prescription.frequency} /${prescription.prescribedDays} days"
+        }?.joinToString("\n")
     }
 }

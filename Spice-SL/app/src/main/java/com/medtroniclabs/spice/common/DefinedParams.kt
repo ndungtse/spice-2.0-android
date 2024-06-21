@@ -58,7 +58,7 @@ object DefinedParams {
     const val OnHold = "on-hold"
     const val Active = "active"
     const val PregnancyANC = "PregnancyANC"
-    const val EncounterId = "EncounterId"
+    const val EncounterId = "encounterId"
     const val True = "true"
 
     const val ExclusiveBreastCondition = "ExclusiveBreastCondition"

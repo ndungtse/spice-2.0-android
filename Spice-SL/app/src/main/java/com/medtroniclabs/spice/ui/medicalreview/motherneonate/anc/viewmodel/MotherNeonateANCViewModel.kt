@@ -41,11 +41,12 @@ class MotherNeonateANCViewModel @Inject constructor(
         }
     }
 
-    fun createMotherNeonate() {
+    fun createMotherNeonate(prescriptionEncounterId: String?) {
         viewModelScope.launch(dispatcherIO) {
             try {
                 motherNeonateAncRequest.apply {
                     encounter = MedicalReviewEncounter(
+                        id = prescriptionEncounterId,
                         patientId = this@MotherNeonateANCViewModel.patientId,
                         provenance = ProvanceDto(
                             createdDateTime = System.currentTimeMillis().convertToUtcDateTime()

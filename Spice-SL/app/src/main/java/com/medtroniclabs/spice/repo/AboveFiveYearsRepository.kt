@@ -3,7 +3,6 @@ package com.medtroniclabs.spice.repo
 import android.location.Location
 import com.medtroniclabs.spice.appextensions.convertToUtcDateTime
 import com.medtroniclabs.spice.common.DateUtils
-import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.AboveFiveYearsSummaryDetails
 import com.medtroniclabs.spice.data.AboveFiveYearsSummaryRequest
@@ -94,14 +93,16 @@ class AboveFiveYearsRepository @Inject constructor(
         details: PatientListRespModel,
         selectedComplaintsExaminationsPair: Pair<List<String?>, List<String?>>,
         enteredComplaintsExaminationsClinicalNotes: Triple<String, String, String>,
-        lastLocation: Location?
+        lastLocation: Location?,
+        prescriptionEncounterId: String?
     ): Resource<AboveFiveYearsSummaryDetails> {
         return try {
             val request = createSubmitRequest(
                 details,
                 selectedComplaintsExaminationsPair,
                 enteredComplaintsExaminationsClinicalNotes,
-                lastLocation
+                lastLocation,
+                prescriptionEncounterId
             )
             val response = request?.let { apiHelper.createAboveFiveYearsResult(it) }
             if (response != null && response.isSuccessful) {
@@ -123,13 +124,15 @@ class AboveFiveYearsRepository @Inject constructor(
         details: PatientListRespModel,
         selectedComplaintsExaminationsPair: Pair<List<String?>, List<String?>>,
         enteredComplaintsExaminationsClinicalNotes: Triple<String, String, String>,
-        lastLocation: Location?
+        lastLocation: Location?,
+        prescriptionEncounterId: String?
     ): AboveFiveYearsSubmitRequest? {
-        return details.patientId?.let { id ->
+        return details.patientId?.let { patientId ->
             lastLocation?.let { location ->
                 details.houseHoldId?.let { hhId ->
                     details.memberId?.let { memberId ->
                         AboveFiveYearsSubmitRequest(
+                            id = prescriptionEncounterId,
                             assessmentType = MedicalReviewTypeEnums.AboveFiveYears.name,
                             presentingComplaints = selectedComplaintsExaminationsPair.first.filterNotNull(),
                             presentingComplaintsNotes = enteredComplaintsExaminationsClinicalNotes.first,
@@ -137,7 +140,8 @@ class AboveFiveYearsRepository @Inject constructor(
                             systemicExaminationsNotes = enteredComplaintsExaminationsClinicalNotes.second,
                             clinicalNotes = enteredComplaintsExaminationsClinicalNotes.third,
                             encounter = MedicalReviewEncounter(
-                                patientId = id,
+                                id = prescriptionEncounterId,
+                                patientId = patientId,
                                 provenance = ProvanceDto(
                                     createdDateTime = System.currentTimeMillis().convertToUtcDateTime()
                                 ),

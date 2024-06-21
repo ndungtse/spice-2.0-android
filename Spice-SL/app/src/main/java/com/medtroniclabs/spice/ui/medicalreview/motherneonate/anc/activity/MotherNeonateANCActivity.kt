@@ -383,7 +383,7 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
                     val isClFragmentValid = clFragment.validateInput()
 
                     if (isFragmentValid && isClFragmentValid) {
-                        submitRequest()
+                        submitRequest(patientViewModel.encounterId)
                     }
                 }
             }
@@ -446,8 +446,9 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
     }
 
 
-    private fun submitRequest() {
+    private fun submitRequest(prescriptionEncounterId: String?) {
         viewModel.motherNeonateAncRequest.apply {
+            id = prescriptionEncounterId
             assessmentType = PregnancyANC
             presentingComplaints =
                 presentingComplaintsViewModel.selectedPresentingComplaints.map { it.value }
@@ -467,7 +468,7 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
             patientReference = patientViewModel.getPatientFHIRId()
         }
         if (connectivityManager.isNetworkAvailable()) {
-            viewModel.createMotherNeonate()
+            viewModel.createMotherNeonate(patientViewModel.encounterId)
         } else {
             showErrorDialogue(
                 getString(R.string.error), getString(R.string.no_internet_error),

@@ -11,6 +11,7 @@ import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.invisible
 import com.medtroniclabs.spice.appextensions.setExpandableText
 import com.medtroniclabs.spice.appextensions.visible
+import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.SecuredPreference
@@ -147,6 +148,9 @@ class MotherNeonateAncSummary : BaseFragment(),View.OnClickListener {
                 MotherNeonateUtil.convertCMS(motherNeonateSummaryModel.fundalHeight, requireContext())
             tvFetalHeartRateText.text =
                 MotherNeonateUtil.convertBeatsPerMinute(motherNeonateSummaryModel.fetalHeartRate, requireContext())
+
+            tvPrescrptionText.text = motherNeonateSummaryModel.prescriptions?.let { CommonUtils.createPrescription(it) }?.takeIf { it.isNotEmpty() }
+                ?: requireContext().getString(R.string.hyphen_symbol)
         }
     }
 

@@ -432,7 +432,8 @@ class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
                             presentingComplaintsViewModel.enteredComplaintNotes,
                             systemicExaminationViewModel.enteredExaminationNotes,
                             chipItemViewModel.enteredClinicalNotes
-                        )
+                        ),
+                        patientViewModel.encounterId
                     )
                 } else {
                     showErrorDialogue(

@@ -48,7 +48,8 @@ class AboveFiveYearsViewModel @Inject constructor(
     fun createAboveFiveYearsResult(
         details: PatientListRespModel,
         selectedComplaintsExaminationsPair: Pair<List<String?>, List<String?>>,
-        enteredComplaintsExaminationsClinicalNotes: Triple<String, String, String>
+        enteredComplaintsExaminationsClinicalNotes: Triple<String, String, String>,
+        prescriptionEncounterId: String?
     ) {
         viewModelScope.launch(dispatcherIO) {
             aboveFiveYearsCreateResponse.postLoading()
@@ -57,7 +58,8 @@ class AboveFiveYearsViewModel @Inject constructor(
                     details,
                     selectedComplaintsExaminationsPair,
                     enteredComplaintsExaminationsClinicalNotes,
-                    lastLocation
+                    lastLocation,
+                    prescriptionEncounterId
                 )
             )
         }
