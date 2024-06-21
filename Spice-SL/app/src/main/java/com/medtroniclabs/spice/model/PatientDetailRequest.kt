@@ -9,7 +9,9 @@ data class PatientDetailRequest(
 
 data class ReferralDetailRequest(
     val id: String? = null,
-    val patientId: Long? = null,
+    val patientId: String? = null,
+    val patientReference: String? = null,
     val ticketId:String? = null,
+    val encounterId:String? = null,
     val type:String? = null
 )

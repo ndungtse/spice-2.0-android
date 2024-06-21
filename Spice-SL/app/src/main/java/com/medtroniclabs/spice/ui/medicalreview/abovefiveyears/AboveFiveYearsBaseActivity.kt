@@ -469,7 +469,7 @@ class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
         }
     }
 
-    override fun onDataLoaded(data: PatientListRespModel) {
+    override fun onDataLoaded(details: PatientListRespModel) {
         initializeFragments()
     }
 

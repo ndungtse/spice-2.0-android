@@ -4,6 +4,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.medtroniclabs.spice.appextensions.postLoading
+import com.medtroniclabs.spice.data.history.MedicalReviewHistory
+import com.medtroniclabs.spice.data.history.PrescriptionHistoryEntity
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.model.ReferralData
 import com.medtroniclabs.spice.model.ReferralDetailRequest
@@ -26,8 +28,14 @@ class ReferralHistoryViewModel @Inject constructor(
     @Inject
     lateinit var connectivityManager: ConnectivityManager
     val referralTicketLiveData = MutableLiveData<Resource<ReferralData>>()
+    val prescriptionTicketLiveData = MutableLiveData<Resource<PrescriptionHistoryEntity>>()
+    val medicalReviewTicketLiveData = MutableLiveData<Resource<MedicalReviewHistory>>()
     var referralDates = listOf<ReferredDate>()
+    var prescriptionReferralDates = listOf<ReferredDate>()
+    var medicalReferralDates = listOf<ReferredDate>()
     var ticketId: String? = null
+    var prescriptionTicketId: String? = null
+    var medicalTicketId: String? = null
 
     fun getReferralTicket(patientId: String? = null, ticketId: String? = null) {
         viewModelScope.launch(dispatcherIO) {
@@ -35,9 +43,37 @@ class ReferralHistoryViewModel @Inject constructor(
             referralTicketLiveData.postValue(
                 referralHistoryRepository.getReferralTicket(
                     ReferralDetailRequest(
-                        patientId = patientId?.toLong(),
+                        patientId = patientId,
                         ticketId = ticketId,
                         type = MedicalReviewTypeEnums.medicalReview.name
+                    )
+                )
+            )
+        }
+    }
+
+    fun getPrescriptionHistory(patientId: String? = null, prescriptionTicketId: String? = null) {
+        viewModelScope.launch(dispatcherIO) {
+            prescriptionTicketLiveData.postLoading()
+            prescriptionTicketLiveData.postValue(
+                referralHistoryRepository.getPrescription(
+                    ReferralDetailRequest(
+                        patientReference = patientId,
+                        encounterId = prescriptionTicketId,
+                    )
+                )
+            )
+        }
+    }
+
+    fun getMedicalReviewHistory(patientId: String? = null, medicalTicketId: String? = null) {
+        viewModelScope.launch(dispatcherIO) {
+            medicalReviewTicketLiveData.postLoading()
+            medicalReviewTicketLiveData.postValue(
+                referralHistoryRepository.getMedicalReviewHistory(
+                    ReferralDetailRequest(
+                        patientReference = patientId,
+                        encounterId = medicalTicketId,
                     )
                 )
             )

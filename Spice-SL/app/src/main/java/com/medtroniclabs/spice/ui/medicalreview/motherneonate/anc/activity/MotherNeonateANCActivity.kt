@@ -24,7 +24,6 @@ import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
-import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
 import com.medtroniclabs.spice.ui.dialog.MedicalReviewSuccessDialogFragment
 import com.medtroniclabs.spice.ui.landing.OnDialogDismissListener
 import com.medtroniclabs.spice.ui.medicalreview.ClinicalNotesFragment
@@ -631,11 +630,11 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
         binding.bottomNavigationView.visible()
     }
 
-    override fun onDataLoaded(data: PatientListRespModel) {
+    override fun onDataLoaded(details: PatientListRespModel) {
         binding.loadingProgress.visible()
         viewModel.ancVisit =
-            data.pregnancyDetails?.ancVisitMedicalReview?.takeIf { true }?.plus(1)?.toInt() ?: 1
-        viewModel.memberId = data.memberId
+            details.pregnancyDetails?.ancVisitMedicalReview?.takeIf { true }?.plus(1)?.toInt() ?: 1
+        viewModel.memberId = details.memberId
 
         val patientDetails = supportFragmentManager.findFragmentById(R.id.pregnancyDetailsConatiner)
 

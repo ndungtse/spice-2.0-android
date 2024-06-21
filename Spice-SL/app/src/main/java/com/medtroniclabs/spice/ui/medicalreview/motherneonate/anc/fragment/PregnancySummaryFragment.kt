@@ -85,7 +85,12 @@ class PregnancySummaryFragment() : BaseFragment() {
                         )
                     }
                 tvGestationalAgeValue.text =
-                    pregnancyDetailsModel.gestationalAge?.toString() ?: getString(R.string.hyphen_symbol)
+                    pregnancyDetailsModel.gestationalAge?.let {
+                        DateUtils.formatGestationalAge(
+                            it,
+                            requireContext()
+                        )
+                    } ?: getString(R.string.hyphen_symbol)
                 val pregnancyHistory = pregnancyHistoryChip?.map { it.name }
                 val pregnancyHistoryNotes = pregnancyHistoryNotes
 

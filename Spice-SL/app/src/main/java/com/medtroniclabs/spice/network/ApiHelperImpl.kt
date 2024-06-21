@@ -32,6 +32,8 @@ import com.medtroniclabs.spice.data.UnderFiveYearsMetaResponse
 import com.medtroniclabs.spice.data.UnderTwoMonthsMetaResponse
 import com.medtroniclabs.spice.data.UnderTwoMonthsSummarySubmitRequest
 import com.medtroniclabs.spice.data.UserSymptomsEntity
+import com.medtroniclabs.spice.data.history.MedicalReviewHistory
+import com.medtroniclabs.spice.data.history.PrescriptionHistoryEntity
 import com.medtroniclabs.spice.data.model.AboveFiveYearsSubmitRequest
 import com.medtroniclabs.spice.data.model.BpAndWeightRequestModel
 import com.medtroniclabs.spice.data.model.BpAndWeightResponse
@@ -209,5 +211,13 @@ class ApiHelperImpl @Inject constructor(private val apiService: ApiService) : Ap
 
     override suspend fun getUnderFiveYearsMetaData(): Response<APIResponse<UnderFiveYearsMetaResponse>> {
         return apiService.getUnderFiveYearsMetaData()
+    }
+
+    override suspend fun getPrescription(request: ReferralDetailRequest): Response<APIResponse<PrescriptionHistoryEntity>> {
+        return apiService.getPrescription(request)
+    }
+
+    override suspend fun getMedicalReviewHistory(request: ReferralDetailRequest): Response<APIResponse<MedicalReviewHistory>> {
+        return apiService.getMedicalReviewHistory(request)
     }
 }

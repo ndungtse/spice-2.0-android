@@ -32,6 +32,8 @@ import com.medtroniclabs.spice.data.UnderTwoMonthsSummarySubmitRequest
 import com.medtroniclabs.spice.data.Prescription
 import com.medtroniclabs.spice.data.RemovePrescriptionRequest
 import com.medtroniclabs.spice.data.UserSymptomsEntity
+import com.medtroniclabs.spice.data.history.MedicalReviewHistory
+import com.medtroniclabs.spice.data.history.PrescriptionHistoryEntity
 import com.medtroniclabs.spice.data.model.AboveFiveYearsSubmitRequest
 import com.medtroniclabs.spice.data.model.BpAndWeightRequestModel
 import com.medtroniclabs.spice.data.model.BpAndWeightResponse
@@ -173,4 +175,10 @@ interface ApiService {
 
     @POST("spice-service/prescription-request/remove")
     suspend fun removePrescription(@Body request: RemovePrescriptionRequest):Response<APIResponse<Map<String,Any>>>
+
+    @POST("/spice-service/prescription-request/prescribed-details")
+    suspend fun getPrescription(@Body request: ReferralDetailRequest): Response<APIResponse<PrescriptionHistoryEntity>>
+
+    @POST("/spice-service/medical-review/history")
+    suspend fun getMedicalReviewHistory(@Body request: ReferralDetailRequest): Response<APIResponse<MedicalReviewHistory>>
 }

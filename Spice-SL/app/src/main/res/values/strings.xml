@@ -522,5 +522,9 @@
     <string name="no_discontinued_medication">No Discontinued Medication</string>
     <string name="no_medication_prescribed">No Medication Prescribed</string>
     <string name="discontinued_on">Discontinued On</string>
-
+    <string name="medication_prescribed">Medication Prescribed</string>
+    <string name="date_of_prescription">Date of Prescription</string>
+    <string name="no_prescription_history">no Prescription History</string>
+    <string name="no_medical_review_history">no Medical review History</string>
+    <string name="chief_complaints">Chief Complaints</string>
 </resources>

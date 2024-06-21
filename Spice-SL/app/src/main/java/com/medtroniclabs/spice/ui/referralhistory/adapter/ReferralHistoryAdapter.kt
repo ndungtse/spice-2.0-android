@@ -27,7 +27,7 @@ class ReferralHistoryAdapter :RecyclerView.Adapter<ReferralHistoryAdapter.ViewHo
                     ?: binding.root.context.getString(R.string.hyphen_symbol)
                 val value = data[DefinedParams.value]
 
-                tvValue.text = processMapValue(value)
+                tvValue.text = processMapValue(value,data[DefinedParams.label] as? String)
                 val color = data[DefinedParams.valueColor] as? Int
                 color?.let {
                     tvValue.setTextColor(ContextCompat.getColor(context, color))
@@ -35,7 +35,7 @@ class ReferralHistoryAdapter :RecyclerView.Adapter<ReferralHistoryAdapter.ViewHo
             }
         }
 
-        private fun processMapValue(value: Any?): String {
+        private fun processMapValue(value: Any?, keys: String?): String {
             return when (value) {
                 is String -> value.ifBlank {
                     binding.root.context.getString(R.string.separator_double_hyphen)
@@ -44,11 +44,16 @@ class ReferralHistoryAdapter :RecyclerView.Adapter<ReferralHistoryAdapter.ViewHo
                 is List<*> -> if (value.isEmpty()) {
                     binding.root.context.getString(R.string.separator_double_hyphen)
                 } else {
-                    value.joinToString(", ")
+                    if (keys.equals(binding.root.context.getString(R.string.medication_prescribed),true)) {
+                        value.mapIndexed { index, item -> "${index + 1}. $item" }
+                            .joinToString(separator = "\n")
+                    } else {
+                        value.joinToString(", ")
+                    }
                 }
 
                 else -> binding.root.context.getString(R.string.separator_double_hyphen)
-            }
+            }.trim()
         }
     }
 

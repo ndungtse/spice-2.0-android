@@ -32,6 +32,8 @@ import com.medtroniclabs.spice.data.RemovePrescriptionRequest
 import com.medtroniclabs.spice.data.UnderTwoMonthsMetaResponse
 import com.medtroniclabs.spice.data.UnderTwoMonthsSummarySubmitRequest
 import com.medtroniclabs.spice.data.UserSymptomsEntity
+import com.medtroniclabs.spice.data.history.MedicalReviewHistory
+import com.medtroniclabs.spice.data.history.PrescriptionHistoryEntity
 import com.medtroniclabs.spice.data.model.AboveFiveYearsSubmitRequest
 import com.medtroniclabs.spice.data.model.BpAndWeightRequestModel
 import com.medtroniclabs.spice.data.model.BpAndWeightResponse
@@ -97,5 +99,6 @@ interface ApiHelper {
     suspend fun createPrescriptionRequest(request: RequestBody):Response<APIResponse<Map<String,Any>>>
     suspend fun getPrescriptionList(request: PrescriptionListRequest):Response<APIResponse<ArrayList<Prescription>>>
     suspend fun removePrescription(request: RemovePrescriptionRequest):Response<APIResponse<Map<String,Any>>>
-
+    suspend fun getPrescription(request: ReferralDetailRequest): Response<APIResponse<PrescriptionHistoryEntity>>
+    suspend fun getMedicalReviewHistory(request: ReferralDetailRequest): Response<APIResponse<MedicalReviewHistory>>
 }

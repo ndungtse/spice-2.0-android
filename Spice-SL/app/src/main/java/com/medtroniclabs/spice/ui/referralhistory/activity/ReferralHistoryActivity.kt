@@ -6,6 +6,7 @@ import android.os.Bundle
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.core.app.ActivityCompat
+import androidx.fragment.app.Fragment
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.isFineAndCoarseLocationPermissionGranted
 import com.medtroniclabs.spice.appextensions.isGpsEnabled
@@ -20,6 +21,8 @@ import com.medtroniclabs.spice.ui.home.MedicalReviewToolsActivity
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.AncVisitCallBack
 import com.medtroniclabs.spice.ui.mypatients.fragment.PatientInfoFragment
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
+import com.medtroniclabs.spice.ui.referralhistory.fragment.MedicalReviewHistoryFragment
+import com.medtroniclabs.spice.ui.referralhistory.fragment.PrescriptionHistoryFragment
 import com.medtroniclabs.spice.ui.referralhistory.fragment.ReferralTicketFragment
 import com.medtroniclabs.spice.ui.referralhistory.viewmodel.ReferralHistoryViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -125,19 +128,44 @@ class ReferralHistoryActivity : BaseActivity(), AncVisitCallBack {
             val dob = intent.getStringExtra(DefinedParams.DOB)
             dob?.let { DateUtils.calculateAge(dob) } ?: 0
             showLoading()
-            val referralTicketFragment =
-                ReferralTicketFragment.newInstance(details.id)
-            supportFragmentManager.beginTransaction()
-                .add(
-                    R.id.cardReferralTicket,
-                    referralTicketFragment
-                ).commit()
+            val referralTicketFragment = ReferralTicketFragment.newInstance(details.id)
+            addFragmentIfAbsent(
+                R.id.cardReferralTicket,
+                ReferralTicketFragment.TAG,
+                referralTicketFragment
+            )
 
+            val medicalReviewFragment = MedicalReviewHistoryFragment.newInstance(details.id)
+            addFragmentIfAbsent(
+                R.id.cardMedicalReviewContainer,
+                MedicalReviewHistoryFragment.TAG,
+                medicalReviewFragment
+            )
+
+            val prescriptionFragment = PrescriptionHistoryFragment.newInstance(details.id)
+            addFragmentIfAbsent(
+                R.id.cardPrescriptionContainer,
+                PrescriptionHistoryFragment.TAG,
+                prescriptionFragment
+            )
             binding.btnMedicalReview.safeClickListener {
                 if (ableToGetLocation())
                     launchToolsActivity()
             }
             hideLoading()
+        }
+    }
+
+    private fun addFragmentIfAbsent(
+        containerId: Int,
+        fragmentTag: String,
+        fragmentInstance: Fragment
+    ) {
+        val existingFragment = supportFragmentManager.findFragmentByTag(fragmentTag)
+        if (existingFragment == null) {
+            supportFragmentManager.beginTransaction()
+                .add(containerId, fragmentInstance, fragmentTag)
+                .commit()
         }
     }
 }

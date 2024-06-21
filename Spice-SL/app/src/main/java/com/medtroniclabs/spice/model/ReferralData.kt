@@ -14,6 +14,7 @@ data class ReferralData(
 
 data class ReferredDate(
     val id: String? = null,
-    val date: String? = null
+    val date: String? = null,
+    val type: String? = null
 )
 

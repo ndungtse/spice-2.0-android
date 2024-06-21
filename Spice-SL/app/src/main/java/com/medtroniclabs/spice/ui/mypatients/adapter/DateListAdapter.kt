@@ -60,6 +60,7 @@ class DateListAdapter(
         this.id = id
         notifyDataSetChanged()
     }
+
     override fun getItemCount(): Int {
         return list.size
     }

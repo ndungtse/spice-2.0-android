@@ -80,4 +80,6 @@ object DefinedParams {
     const val Recovered = "Recovered"
     const val PatientReference = "patientReference"
     const val valueColor = "color"
+    const val Above5MedicalReview = "Above5MedicalReview"
+    const val PregnancyAncMedicalReview = "pregnancyAncMedicalReview"
 }
