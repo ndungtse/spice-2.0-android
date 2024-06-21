@@ -343,11 +343,11 @@ class OfflineSyncRepository @Inject constructor(
         val clinicalInfos = mutableListOf<MemberClinicalEntity>()
         roomHelper.getPatientIdByFhirId(info.householdMemberId)?.let { patientId ->
             // Add Anc info
-            if (info.ancVisitNo != null && info.lastMenstrualPeriod != null) {
+            if (info.lastMenstrualPeriod != null) {
                 clinicalInfos.add(
                     MemberClinicalEntity(
                         patientId = patientId,
-                        visitCount = info.ancVisitNo.toLong(),
+                        visitCount = info.ancVisitNo ?: 0,
                         clinicalDate = info.lastMenstrualPeriod,
                         type = RMNCH.ANC_MENU.uppercase(Locale.getDefault())
                     )

@@ -48,7 +48,7 @@ interface MemberDAO {
         status: String = OfflineSyncStatus.NotSynced.name
     ): List<HouseHoldMember>
 
-    @Query("SELECT COUNT(id) FROM HouseholdMember where sync_status =:syncStatus OR fhir_id is null")
+    @Query("SELECT COUNT(id) FROM HouseholdMember where sync_status =:syncStatus")
     suspend fun getUnSyncedCount(syncStatus: String = OfflineSyncStatus.NotSynced.name): Int
 
     @Query("SELECT id FROM HouseholdMember WHERE fhir_id =:fhirId")

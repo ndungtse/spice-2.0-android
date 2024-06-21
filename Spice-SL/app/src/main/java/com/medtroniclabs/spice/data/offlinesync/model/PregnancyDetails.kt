@@ -2,7 +2,7 @@ package com.medtroniclabs.spice.data.offlinesync.model
 
 data class PregnancyDetails(
     val householdMemberId: String,
-    val ancVisitNo: Int?,
+    val ancVisitNo: Long?,
     val lastMenstrualPeriod: String?,
     val pncVisitNo: Int?,
     val dateOfDelivery: String?,

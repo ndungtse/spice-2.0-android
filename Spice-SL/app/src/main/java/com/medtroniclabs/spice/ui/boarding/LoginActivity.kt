@@ -177,11 +177,11 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
             return
         }
 
-        SecuredPreference.remove(SecuredPreference.EnvironmentKey.LAST_SYNCED_AT.name)
-        viewModel.doLogin(userName, password)
+        /*SecuredPreference.remove(SecuredPreference.EnvironmentKey.LAST_SYNCED_AT.name)
+        viewModel.doLogin(userName, password)*/
 
         // Check different account login
-        /*val oldUserName =
+        val oldUserName =
             SecuredPreference.getString(SecuredPreference.EnvironmentKey.USERNAME.name)
         val oldPhoneNumber =
             SecuredPreference.getString(SecuredPreference.EnvironmentKey.PHONE_NUMBER.name)
@@ -197,14 +197,16 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
                     positiveButtonName = getString(R.string.okay),
                     okayBtnEnable = true,
                 ) {
+
                 }
             } else {
                 SecuredPreference.remove(SecuredPreference.EnvironmentKey.LAST_SYNCED_AT.name)
                 viewModel.doLogin(userName, password)
             }
         } else {
+            SecuredPreference.remove(SecuredPreference.EnvironmentKey.LAST_SYNCED_AT.name)
             viewModel.doLogin(userName, password)
-        }*/
+        }
     }
 
     private fun validateNameOrNumber(

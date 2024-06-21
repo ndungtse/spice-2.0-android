@@ -54,7 +54,7 @@ interface HouseholdDAO {
     @RawQuery
     suspend fun updateFhirId(query: SimpleSQLiteQuery) : Long
 
-    @Query("SELECT COUNT(id) FROM Household WHERE sync_status =:syncStatus OR fhir_id is null")
+    @Query("SELECT COUNT(id) FROM Household WHERE sync_status =:syncStatus")
     suspend fun getUnSyncedCount(syncStatus: String = OfflineSyncStatus.NotSynced.name): Int
 
     @Query("SELECT id FROM Household WHERE fhir_id =:fhirId")
