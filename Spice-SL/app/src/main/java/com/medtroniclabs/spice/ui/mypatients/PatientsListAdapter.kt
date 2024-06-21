@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.databinding.ListItemPatientsBinding
+import com.medtroniclabs.spice.formgeneration.extension.capitalizeFirstChar
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.model.PatientListRespModel
 
@@ -25,7 +26,8 @@ class PatientsListAdapter(
         fun bind(item: PatientListRespModel) {
             val context = binding.root.context
             val name = item.name ?: context.getString(R.string.separator_hyphen)
-            val gender = item.gender ?: context.getString(R.string.separator_hyphen)
+            val gender = item.gender?.lowercase()?.capitalizeFirstChar()
+                ?: context.getString(R.string.separator_hyphen)
 
             val formattedAge = item.birthDate?.let { DateUtils.getAgeDescription(it,context) }
                 ?: context.getString(R.string.separator_hyphen)

@@ -23,6 +23,7 @@ class PatientDetailViewModel @Inject constructor(
     val patientDetailsLiveData = MutableLiveData<Resource<PatientListRespModel>>()
     //the below id is one which get from patient details response
     var patientDetailsId : String? = null
+    var isSummary : Boolean = false
 
     var encounterId: String ?= null
 

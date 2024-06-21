@@ -6,7 +6,6 @@ import android.content.res.AssetManager
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.nullIfEmpty
 import com.medtroniclabs.spice.common.DateUtils.calculateAge
-import com.medtroniclabs.spice.data.MedicationRequestObject
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.MONTHS
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.WEEKS
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.YEARS
@@ -307,7 +306,15 @@ object CommonUtils {
     }
 
     fun Double?.toDoubleOrEmptyString(): String {
-        return this?.toDouble().toString()
+        return if (this != null) {
+            if (this == this.toInt().toDouble()) {
+                this.toInt().toString()
+            } else {
+                this.toString()
+            }
+        } else {
+            ""
+        }
     }
 
     fun getFilePath(id: String, context: Context): File {

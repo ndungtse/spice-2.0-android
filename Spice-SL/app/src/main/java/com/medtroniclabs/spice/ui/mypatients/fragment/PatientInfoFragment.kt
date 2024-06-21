@@ -14,6 +14,7 @@ import com.medtroniclabs.spice.common.DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
 import com.medtroniclabs.spice.common.DateUtils.DATE_ddMMyyyy
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.databinding.FragmentPatientInfoBinding
+import com.medtroniclabs.spice.formgeneration.extension.capitalizeFirstChar
 import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
@@ -62,7 +63,7 @@ class PatientInfoFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
         val patientId = arguments?.getString(DefinedParams.PatientId, "")
         if (patientId?.isNotBlank() == true) {
-            viewModel.getPatients(patientId, if (isAnc() == true) "ANC" else null)
+            viewModel.getPatients(patientId, if (isAnc() == true) ANC.uppercase() else null)
         }
         attachObservers()
     }
@@ -102,7 +103,7 @@ class PatientInfoFragment : BaseFragment() {
         val age = patientListRespModel.birthDate?.let {
             DateUtils.getAgeDescription(patientListRespModel.birthDate, requireContext())
         } ?: (patientListRespModel.age ?: requireContext().getString(R.string.separator_hyphen))
-        setTitle(requireContext().getString(R.string.household_summary_member_info, name.trim(), age, gender.trim()))
+        setTitle(requireContext().getString(R.string.household_summary_member_info, name.trim(), age, gender.lowercase().capitalizeFirstChar().trim()))
         with(binding) {
             val lastMenstrualDate =
                 patientListRespModel.pregnancyDetails?.lastMenstrualPeriod.takeIf { it?.isNotBlank() == true }?.let {
@@ -141,8 +142,7 @@ class PatientInfoFragment : BaseFragment() {
                     )
                 )
             }
-
-            if (isAnc == true) {
+            if (isAnc == true && !(viewModel.isSummary)) {
                 dataList.add(
                     mapOf(
                         DefinedParams.label to requireContext().getString(R.string.anc_visit),

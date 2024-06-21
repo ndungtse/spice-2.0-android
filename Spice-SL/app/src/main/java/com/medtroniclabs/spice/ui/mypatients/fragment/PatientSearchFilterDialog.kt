@@ -41,6 +41,7 @@ class PatientSearchFilterDialog : DialogFragment(), View.OnClickListener {
     }
 
     private fun initView() {
+        binding.btnLayout.btnConfirm.text = requireContext().getString(R.string.apply)
         medicalReviewDueTag =
             TagListCustomView(binding.root.context, binding.medicalReviewDueChipGroup) { _, _, _ ->
                 patientListViewModel.medicalReviewDueTag = medicalReviewDueTag.getSelectedTags().takeIf { it.isNotEmpty() }

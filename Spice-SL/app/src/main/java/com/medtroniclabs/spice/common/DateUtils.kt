@@ -446,11 +446,11 @@ object DateUtils {
     fun getAgeDescription(birthDate: String,context: Context): String {
         val ageInYears = calculateAge(birthDateStr = birthDate)
         return when {
-            ageInYears > 5 -> {
+            ageInYears >= 5 -> {
                 "$ageInYears ${context.getString(R.string.years).lowercase()}"
             }
 
-            ageInYears in 1..5 -> {
+            ageInYears in 1..4 -> {
                 val ageInMonths = dateToMonths(birthDate) ?: 0
                 if (ageInMonths == 1) "$ageInMonths ${context.getString(R.string.month)}" else "$ageInMonths ${context.getString(R.string.months).lowercase()}"
             }
@@ -461,7 +461,7 @@ object DateUtils {
                     val ageInWeeks = dateToWeeks(birthDate)
                     if (ageInWeeks < 1) {
                         val ageInDays = dateToDays(birthDate)
-                        if (ageInDays == 1) "$ageInDays ${context.getString(R.string.day)}" else "$ageInDays ${context.getString(R.string.days).lowercase()}"
+                        if (ageInDays == 1 || ageInDays == 0) "$ageInDays ${context.getString(R.string.day)}" else "$ageInDays ${context.getString(R.string.days).lowercase()}"
                     } else {
                         if (ageInWeeks == 1) "$ageInWeeks ${context.getString(R.string.week)}" else "$ageInWeeks ${context.getString(R.string.weeks).lowercase()}"
                     }

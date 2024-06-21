@@ -45,7 +45,7 @@ desc "Submit a new dev Build to firebase"
      firebase_app_distribution(
           app: "1:791794371431:android:7a2a8380609de61d247dc2",
           firebase_cli_token:"1//0g-ubz1wdEX-PCgYIARAAGBASNgF-L9IrhmA36Ph_Q2GsqM0iBncWG-1GxUatwrJZ9kmgx-5LVJtzMBY3TYisMHTy5gBU90UXKA",
-          testers: "hariharan@ideas2it.com,suganth.sakthivel@ideas2it.com,narayanan.b@ideas2it.com,nithyanandakumar@ideas2it.com,saddamhussain.mohammed@ideas2it.com,praveenrajr@ideas2it.com,vijayakumar@ideas2it.com,parthasarathy.elumalai@ideas2it.com,mdt-build@ideas2it.com,muthusamy.sudalaiyandi@ideas2it.com",
+          testers: "hariharan@ideas2it.com,suganth.sakthivel@ideas2it.com,narayanan.b@ideas2it.com,nithyanandakumar@ideas2it.com,saddamhussain.mohammed@ideas2it.com,praveenrajr@ideas2it.com,vijayakumar@ideas2it.com,parthasarathy.elumalai@ideas2it.com,mdt-build@ideas2it.com,muthusamy.sudalaiyandi@ideas2it.com,vidhya.chandrasekar@ideas2it.com",
            release_notes: release_notes
       )
   end

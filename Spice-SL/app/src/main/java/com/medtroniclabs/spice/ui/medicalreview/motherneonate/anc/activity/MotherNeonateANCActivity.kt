@@ -634,7 +634,11 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
 
         if (patientDetails is MotherNeonateAncSummary || viewModel.ancVisit == 1) {
             when (patientDetails) {
-                is PregnancyDetailsFragment, is MotherNeonateAncSummary -> binding.loadingProgress.gone()
+                is PregnancyDetailsFragment -> binding.loadingProgress.gone()
+                is MotherNeonateAncSummary -> {
+                    patientViewModel.isSummary = true
+                    binding.loadingProgress.gone()
+                }
                 is MedicalReviewPatientDiagnosisFragment -> handleSubmit()
                 else -> {
                     initializePregnancyDetailsFragment()
@@ -661,6 +665,7 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
     }
 
     private fun replaceMotherNeonateSummary(encounterId: String?) {
+        patientViewModel.isSummary = true
         swipeRefresh()
         supportFragmentManager.beginTransaction()
             .replace(R.id.pregnancyDetailsConatiner, MotherNeonateAncSummary.newInstance(encounterId,patientViewModel.getPatientFHIRId()))

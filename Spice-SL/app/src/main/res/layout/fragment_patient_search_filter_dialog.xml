@@ -30,7 +30,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/_20sdp"
-            android:text="@string/filters"
+            android:text="@string/filter"
             android:textColor="@color/house_hold_title"
             android:textSize="@dimen/_20ssp"
             android:textStyle="bold"

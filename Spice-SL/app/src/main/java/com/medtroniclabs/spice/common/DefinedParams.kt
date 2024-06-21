@@ -40,7 +40,6 @@ object DefinedParams {
     const val PatientId = "PatientId"
     const val TimeOfDelivery = "timeOfDelivery"
     const val TimeOfLabourOnset = "timeOfLabourOnset"
-    const val NextVisitDate = "nextVisitDate"
     const val HouseholdHead = "HouseholdHead"
     const val CHIEF_DOM_CODE_LENGTH = 3
     const val VILLAGE_CODE_LENGTH = 4
@@ -49,17 +48,11 @@ object DefinedParams {
     const val Tear = "tear"
     const val Gender = "gender"
     const val StateOfBaby = "stateOfBaby"
-    const val Unit_Measurement_Metric_Type = "metric"
-    const val isFrom= "isFrom"
     const val iccm = "ICCM"
-    const val HH_VISIT = "HH_Visit"
     const val REFERRED = "Referred"
-    const val MEDICAL_REVIEW = "MedicalReview"
     const val CallResult = "CallResult"
     const val PatientStatus = "PatientStatus"
     const val UnSuccessful = "UnSuccessful"
-    const val SUCCESSFUL = "successful"
-    const val UNSUCCESSFUL = "unSuccessful"
 
     const val OnTreatment = "On Treatment"
     const val OnHold = "on-hold"
@@ -85,7 +78,6 @@ object DefinedParams {
 
     const val DOB = "DOB"
     const val Recovered = "Recovered"
-    const val Select = "Select"
     const val PatientReference = "patientReference"
     const val valueColor = "color"
 }

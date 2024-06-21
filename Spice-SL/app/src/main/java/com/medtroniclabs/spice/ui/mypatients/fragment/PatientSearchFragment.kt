@@ -62,13 +62,14 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
         patientListViewModel.totalPatientCount.observe(viewLifecycleOwner) { count ->
             if (!count.isNullOrBlank()) {
                 binding.tvPatientCount.text =
-                    getString(R.string.patients_found, count.toLong())
+                    if (count.toLong() > 1) getString(R.string.patients_found, count.toLong()) else
+                        getString(R.string.zero_patients_found, count.toLong())
 //                binding.llFilter.btnFilter.visibility = if (count.toLong() != 0L) View.VISIBLE else View.INVISIBLE
                 if (patientListViewModel.filterCount() > 0) {
                     binding.llFilter.btnFilter.text =
                         getString(R.string.filter_count, patientListViewModel.filterCount())
                 } else {
-                    binding.llFilter.btnFilter.text = getString(R.string.filters)
+                    binding.llFilter.btnFilter.text = getString(R.string.filter)
                 }
                 binding.tvNoPatientsFound.visibility =
                     if (count.toLong() != 0L) View.GONE else View.VISIBLE

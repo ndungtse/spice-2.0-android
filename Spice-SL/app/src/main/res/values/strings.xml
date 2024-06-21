@@ -85,7 +85,7 @@
     <string name="min">Mins</string>
     <string name="am">AM</string>
     <string name="pm">PM</string>
-    <string name="pulse">Pulse</string>
+    <string name="pulse">Pulse(BPM)</string>
     <string name="don_t_have_id_generate_id">Don\'t have ID? Generate ID</string>
     <string name="separator_hyphen">-</string>
     <string name="separator_double_hyphen">--</string>
@@ -199,8 +199,9 @@
     <string name="last_name">Last Name</string>
     <string name="mobile_number">Mobile Number</string>
     <string name="patients_found">%1d Patients</string>
+    <string name="zero_patients_found">%1d Patient</string>
     <string name="no_patients_found">No patients found.</string>
-    <string name="search_by_national_id">Search by National ID</string>
+    <string name="search_by_national_id">Enter Patient ID/Name</string>
     <string name="referral_ticket">Referral Ticket</string>
     <string name="cost">Cost</string>
     <string name="next_medical_review">Next Medical Review</string>
@@ -256,7 +257,7 @@
     <string name="treatment">Treatment</string>
     <string name="next_visit_date">Next visit date</string>
     <string name="reload">reload</string>
-    <string name="select_review_date">Select Review Date</string>
+    <string name="select_review_date">Select Date</string>
     <string name="selected">Selected</string>
     <string name="referral_date">Referral Date</string>
     <string name="referral_reason">Referral Reason</string>
@@ -341,8 +342,8 @@
     <string name="weight">Weight (in kg)</string>
     <string name="bmi">BMI</string>
     <string name="semicolon">:</string>
-    <string name="systolic">Systolic(hhHg)</string>
-    <string name="diastolic">Diastolic(mmhg)</string>
+    <string name="systolic">Systolic(mmHg)</string>
+    <string name="diastolic">Diastolic(mmHg)</string>
     <string name="plus">+</string>
     <string name="parity">Parity</string>
     <string name="weight_error">"Please enter weight between 10 to 400"</string>
