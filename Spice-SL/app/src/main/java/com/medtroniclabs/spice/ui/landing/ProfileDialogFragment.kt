@@ -10,6 +10,8 @@ import android.view.WindowManager
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.common.CommonUtils.getContactNumber
+import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.UserProfile
 import com.medtroniclabs.spice.databinding.FragmentProfileDialogBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
@@ -153,7 +155,7 @@ class ProfileDialogFragment : DialogFragment(), View.OnClickListener {
             }
             tvGenderText.text = user.gender.takeIf { it?.isNotBlank() == true } ?: getString(R.string.separator_double_hyphen)
             tvEmailText.text = user.username.takeIf { it.isNotBlank() } ?: getString(R.string.separator_double_hyphen)
-            tvPhoneNumberText.text = user.phoneNumber.takeIf { it?.isNotBlank() == true } ?: getString(R.string.separator_double_hyphen)
+            tvPhoneNumberText.text = getContactNumber(user.phoneNumber.takeIf { it?.isNotBlank() == true }) ?: getString(R.string.separator_double_hyphen)
             tvSuiteAccessText.text = user.suiteAccess?.let {
                 user.suiteAccess[0]
             } ?: getString(R.string.separator_double_hyphen)

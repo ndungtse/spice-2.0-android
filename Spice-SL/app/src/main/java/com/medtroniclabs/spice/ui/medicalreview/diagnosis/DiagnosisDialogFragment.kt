@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
@@ -24,7 +25,6 @@ import com.medtroniclabs.spice.databinding.FragmentDiagnosisDialogBinding
 import com.medtroniclabs.spice.formgeneration.DiagnosisGenerator
 import com.medtroniclabs.spice.formgeneration.DiagnosisListener
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
-import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.model.medicalreview.CreateUnderTwoMonthsResponse
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.TagListCustomView
@@ -155,10 +155,10 @@ class DiagnosisDialogFragment : DialogFragment(), View.OnClickListener, Diagnosi
                                     ArrayList<ChipViewItemModel>()
                                 diagnosisAccordionList.forEach {
                                     selectedDiagnosisMetaChipItemList.add(
-                                        ChipViewItemModel(
-                                            id = it.id, name = it.name, value = it.value
+                                            ChipViewItemModel(
+                                                id = it.id, name = it.name, value = it.value
+                                            )
                                         )
-                                    )
                                 }
 
                                 val selectedDiseaseConditionItemList = ArrayList<ChipViewItemModel>()
@@ -167,11 +167,13 @@ class DiagnosisDialogFragment : DialogFragment(), View.OnClickListener, Diagnosi
                                         diagnosisList.flatMap { item -> item.diseaseCondition }
                                             .find { conditionItem -> conditionItem.value == it.diseaseCondition }?.name
                                     nameItemValue?.let { value ->
-                                        selectedDiseaseConditionItemList.add(
-                                            ChipViewItemModel(
-                                                id = it.diseaseConditionId, name = value
+                                        if (value.lowercase() != Other.lowercase()) {
+                                            selectedDiseaseConditionItemList.add(
+                                                ChipViewItemModel(
+                                                    id = it.diseaseConditionId, name = value
+                                                )
                                             )
-                                        )
+                                        }
                                     }
                                 }
 
@@ -179,6 +181,8 @@ class DiagnosisDialogFragment : DialogFragment(), View.OnClickListener, Diagnosi
                                     diagnosisMetaChipItemList,
                                     selectedDiagnosisMetaChipItemList
                                 )
+                                diagnosisAccordionList.removeAll{it.name.lowercase() == Other.lowercase()}
+                                selectedDiseaseConditionItemList.removeAll{it.name.lowercase() == Other.lowercase()}
                                 diagnosisGenerator.populateDiagnosisView(
                                     diagnosisAccordionList,
                                     selectedDiseaseConditionItemList
@@ -250,7 +254,7 @@ class DiagnosisDialogFragment : DialogFragment(), View.OnClickListener, Diagnosi
         diseaseCategoryTagView = TagListCustomView(
             binding.root.context, binding.diseaseConditionChipGroup
         ) { name, _, isChecked ->
-            if (!diagnosisViewModel.viewDiagnosis && isShowAccordion() ) {
+            if (!diagnosisViewModel.viewDiagnosis && isShowAccordion() && name?.lowercase() != Other.lowercase() ) {
                 diagnosisViewModel.diagnosisMetaList.value?.data?.let { listItems ->
                     if (isChecked) {
                         val filteredList =
@@ -263,9 +267,10 @@ class DiagnosisDialogFragment : DialogFragment(), View.OnClickListener, Diagnosi
                     }
                 }
             }
+            saveBtnStateHandler()
         }
+        diagnosisGenerator.setDiagnosisCallback(this)
     }
-
 
     override fun onClick(view: View) {
         when (view.id) {
@@ -286,6 +291,7 @@ class DiagnosisDialogFragment : DialogFragment(), View.OnClickListener, Diagnosi
                                     DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
                                 )
                             ),
+                            otherNotes = binding.etOtherDiagnosisNotes.text?.trim().toString(),
                             type = diagnosisViewModel.diagnosisType
                         )
                         diagnosisViewModel.diagnosisCreate(request)
@@ -341,6 +347,21 @@ class DiagnosisDialogFragment : DialogFragment(), View.OnClickListener, Diagnosi
                 }
             }
         }
+        diseaseCategoryTagView.getSelectedTags().let { list ->
+            val otherItem = list.filter { item -> item.value?.lowercase() == Other.lowercase() }
+            if (otherItem.isNotEmpty()) {
+                otherItem[0].id?.let { otherId ->
+                    diagnosisList.add(
+                        DiagnosisDiseaseModel(
+                            diseaseCategoryId = otherId,
+                            diseaseConditionId = null,
+                            diseaseCategory = otherItem[0].value ?: otherItem[0].name,
+                            diseaseCondition = null
+                        )
+                    )
+                }
+            }
+        }
         return diagnosisList
     }
 
@@ -363,15 +384,6 @@ class DiagnosisDialogFragment : DialogFragment(), View.OnClickListener, Diagnosi
             if (isLandscape) 65 else 90
         }
         setWidth(width)
-    }
-
-    override fun onDialogueItemCheckListener(
-        id: String,
-        formLayout: FormLayout,
-        resultMap: Any?,
-        diseaseName: String
-    ) {
-
     }
 
     private fun showLoading() {
@@ -400,6 +412,46 @@ class DiagnosisDialogFragment : DialogFragment(), View.OnClickListener, Diagnosi
                 binding.tvSelectedDiseaseConditionLbl.text = requireContext().getString(R.string.select_diagnosis_found_on_the_patient)
                 binding.tvSelectedDiseaseConditionLbl.gone()
                 binding.llFamilyRoot.gone()
+            }
+        }
+    }
+
+    override fun onDiagnosisSelection(isEmptyOrNot : Boolean) {
+        val previousSelectedItems = diagnosisViewModel.diagnosisDetailsList.value?.data?.let {
+            it.isNotEmpty()
+        }
+        val otherSelection = diseaseCategoryTagView.getSelectedTags()
+            .any { it.name.lowercase() == Other.lowercase() }
+        binding.btnOkay.isEnabled = isEmptyOrNot|| (previousSelectedItems == true && diagnosisGenerator.isEmptyAccordion()) || otherSelection
+    }
+
+    private fun saveBtnStateHandler() {
+        val otherSelection = diseaseCategoryTagView.getSelectedTags()
+            .any { it.name.lowercase() == Other.lowercase() }
+        when (diagnosisViewModel.diagnosisType) {
+            MedicalReviewTypeEnums.AboveFiveYears.name -> {
+                diagnosisViewModel.diagnosisDetailsList.value?.data?.let {
+                    if ((diseaseCategoryTagView.getSelectedTags().size <= 1) || otherSelection) {
+                        binding.btnOkay.isEnabled =
+                            (it.isNotEmpty() && diseaseCategoryTagView.getSelectedTags()
+                                .isEmpty()) || otherSelection || diagnosisGenerator.isAccordionNotEmpty()
+                    } else {
+                        if (diagnosisViewModel.diagnosisType == MedicalReviewTypeEnums.AboveFiveYears.name) {
+                            binding.btnOkay.isEnabled = diagnosisGenerator.isAccordionNotEmpty()
+                        }
+                    }
+                }
+            }
+
+            MedicalReviewTypeEnums.ANC.name -> {
+                binding.btnOkay.isEnabled = diseaseCategoryTagView.getSelectedTags().isNotEmpty()
+                diagnosisViewModel.diagnosisDetailsList.value?.data?.let { list ->
+                    if (list.size > 0 && ((diseaseCategoryTagView.getSelectedTags().size <= 1) || otherSelection)) {
+                        binding.btnOkay.isEnabled =
+                            (list.isNotEmpty() && diseaseCategoryTagView.getSelectedTags()
+                                .isEmpty()) || otherSelection
+                    }
+                }
             }
         }
     }

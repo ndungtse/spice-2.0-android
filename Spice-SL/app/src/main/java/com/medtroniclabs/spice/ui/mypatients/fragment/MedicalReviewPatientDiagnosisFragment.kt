@@ -320,13 +320,16 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
                             binding.tvPatientStatusValue.text = patientStatus.status
                         }
                         patientViewModel.patientDetailsLiveData.value?.data?.let { details ->
-                            details.id?.let { id ->
-                                diagnosisViewModel.getDiagnosisDetails(
-                                    CreateUnderTwoMonthsResponse(
-                                        patientReference = id,
-                                        type = diagnosisViewModel.diagnosisType
+                            if (patientViewModel.patientDetailsId == null) {
+                                details.id?.let { id ->
+                                    diagnosisViewModel.getDiagnosisDetails(
+                                        CreateUnderTwoMonthsResponse(
+                                            patientReference = id,
+                                            type = diagnosisViewModel.diagnosisType
+                                        )
                                     )
-                                )
+                                    patientViewModel.patientDetailsId = id
+                                }
                             }
                         }
                     }

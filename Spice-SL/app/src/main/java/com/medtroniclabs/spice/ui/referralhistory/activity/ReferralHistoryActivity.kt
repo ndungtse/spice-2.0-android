@@ -16,6 +16,7 @@ import com.medtroniclabs.spice.common.DefinedParams.ID
 import com.medtroniclabs.spice.databinding.ActivityReferralTicketBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.model.PatientListRespModel
+import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.home.MedicalReviewToolsActivity
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.AncVisitCallBack
@@ -42,6 +43,35 @@ class ReferralHistoryActivity : BaseActivity(), AncVisitCallBack {
             getString(R.string.patient_medical_review)
         )
         initView()
+        initializeListener()
+        attachObserver()
+    }
+
+    private fun attachObserver() {
+        patientDetailViewModel.patientDetailsLiveData.observe(this) { resource ->
+            if (binding.refreshLayout.isRefreshing) {
+                binding.refreshLayout.isRefreshing = false
+            }
+            when (resource.state) {
+                ResourceState.LOADING -> {
+                    showLoading()
+                }
+
+                ResourceState.SUCCESS -> {
+                    hideLoading()
+                }
+
+                ResourceState.ERROR -> {
+                    hideLoading()
+                }
+            }
+        }
+    }
+
+    private fun initializeListener() {
+        binding.refreshLayout.setOnRefreshListener {
+            swipeRefresh()
+        }
     }
 
 
@@ -166,6 +196,14 @@ class ReferralHistoryActivity : BaseActivity(), AncVisitCallBack {
             supportFragmentManager.beginTransaction()
                 .add(containerId, fragmentInstance, fragmentTag)
                 .commit()
+        }
+    }
+
+    private fun swipeRefresh(){
+        patientDetailViewModel.patientDetailsLiveData.value?.data?.let { details ->
+            details.patientId?.let { id ->
+                patientDetailViewModel.getPatients(id)
+            }
         }
     }
 }

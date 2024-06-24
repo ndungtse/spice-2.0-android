@@ -112,7 +112,7 @@
             android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".ui.referralhistory.activity.ReferralHistoryActivity"
-            android:screenOrientation="sensorLandscape"
+            android:screenOrientation="landscape"
             android:exported="false" />
         <activity
             android:name=".ui.medicalreview.abovefiveyears.AboveFiveYearsBaseActivity"

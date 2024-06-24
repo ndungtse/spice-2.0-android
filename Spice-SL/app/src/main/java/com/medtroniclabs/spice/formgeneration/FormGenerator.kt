@@ -116,7 +116,6 @@ import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.PREGNANCY_MIN_AGE
 import java.util.Calendar
 import java.util.Date
 
-
 class FormGenerator(
     var context: Context,
     private val parentLayout: LinearLayout,
@@ -939,7 +938,7 @@ class FormGenerator(
                 showDatePicker(
                     context = context,
                     disableFutureDate = disableFutureDate ?: false,
-                    minDate = minDate,
+                    minDate = getMaxDateLimit(menstrualPeriod, minDate),
                     maxDate = maxDate,
                     date = dateInput
                 ) { _, year, month, dayOfMonth ->
@@ -964,6 +963,14 @@ class FormGenerator(
                 parentLayout.addView(binding.root)
             }
 
+        }
+    }
+
+    private fun getMaxDateLimit(menstrualPeriod: Boolean, maxDate: Long?): Long? {
+        return if (menstrualPeriod) {
+            DateUtils.calculateGestationPastMonths(System.currentTimeMillis(), 11)
+        } else {
+            maxDate
         }
     }
 

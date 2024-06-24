@@ -28,5 +28,9 @@ enum class MedicalReviewTypeEnums{
     UnderTwoMonths,
     PNC,
     ICCM,
-    RMNCH
+    RMNCH,
+    OD,
+    BD,
+    TDS,
+    QDS
 }

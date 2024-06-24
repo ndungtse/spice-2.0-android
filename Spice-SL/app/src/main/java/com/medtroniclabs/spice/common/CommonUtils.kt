@@ -340,7 +340,24 @@ object CommonUtils {
 
     fun createPrescription(prescriptions: List<Prescription>?): String? {
         return prescriptions?.takeIf { it.isNotEmpty() }?.mapIndexed { index, prescription ->
-            "${index + 1}. ${prescription.medicationName}/${prescription.frequency} /${prescription.prescribedDays} days"
+            "${index + 1}. ${prescription.medicationName} / ${getPrescriptionFreq(prescription.frequency)} / ${prescription.prescribedDays} days"
         }?.joinToString("\n")
+    }
+
+    fun getContactNumber(phNumber: String?): String? {
+        return SecuredPreference.getPhoneNumberCode()?.let { code ->
+            val formattedCode = if (!code.startsWith("+")) "+$code" else code
+            "$formattedCode $phNumber"
+        }
+    }
+
+    fun getPrescriptionFreq(days: Int?): String {
+        return when (days) {
+            1 -> MedicalReviewTypeEnums.OD.name
+            2 -> MedicalReviewTypeEnums.BD.name
+            3 -> MedicalReviewTypeEnums.TDS.name
+            4 -> MedicalReviewTypeEnums.QDS.name
+            else -> ""
+        }
     }
 }

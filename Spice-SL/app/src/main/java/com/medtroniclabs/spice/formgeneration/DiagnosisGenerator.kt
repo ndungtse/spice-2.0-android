@@ -18,6 +18,7 @@ import com.medtroniclabs.spice.data.model.ChipViewItemModel
 import com.medtroniclabs.spice.databinding.DiagnosisAccordionLayoutBinding
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.AccordionGroup
 import com.medtroniclabs.spice.ui.TagListCustomView
+import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.AncVisitCallBack
 
 class DiagnosisGenerator(
     val context: Context,
@@ -29,6 +30,7 @@ class DiagnosisGenerator(
     private val countSuffix = "countSuffix"
     private val tagViews = mutableListOf<TagListCustomView>()
     private val selectedTagsMap = hashMapOf<String, List<ChipViewItemModel>>()
+    private var diagnosisCallback: DiagnosisListener? = null
 
     fun populateDiagnosisView(
         diagnosis: List<DiseaseCategoryItems>,
@@ -69,7 +71,7 @@ class DiagnosisGenerator(
                     context, binding.diagnosisHolder
                 ) { _, _, _ ->
                     //updateSelectedCount()
-                    enableConfirmBtn()
+                    diagnosisCallback?.onDiagnosisSelection(isAccordionNotEmpty())
                 }
             renderDiagnosisAccordionView(
                 tagView,
@@ -136,7 +138,12 @@ class DiagnosisGenerator(
         tvCount.text = count.toString()
     }
 
-    private fun enableConfirmBtn() {
+    fun isAccordionNotEmpty(): Boolean {
+        return getSelectedTagsForAccordions().values.any { it.isNotEmpty() }
+    }
+
+    fun isEmptyAccordion(): Boolean {
+        return getSelectedTagsForAccordions().values.all { it.isEmpty() }
     }
 
     fun getSelectedTagsForAccordions(): HashMap<String, List<ChipViewItemModel>> {
@@ -177,5 +184,9 @@ class DiagnosisGenerator(
             val parent = view.parent as? ViewGroup
             parent?.removeView(view)
         }
+    }
+
+    fun setDiagnosisCallback(callback: DiagnosisListener) {
+        diagnosisCallback = callback
     }
 }

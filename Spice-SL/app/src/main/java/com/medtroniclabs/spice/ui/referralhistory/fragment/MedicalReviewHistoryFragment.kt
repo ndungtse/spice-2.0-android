@@ -341,7 +341,7 @@ class MedicalReviewHistoryFragment : BaseFragment(), View.OnClickListener {
                     mapOf(
                         DefinedParams.label to requireContext().getString(R.string.diagnosis),
                         DefinedParams.value to combineText(
-                            medicalReviewHistory.reviewDetails?.diagnosis?.map { it.diseaseCategory },
+                            medicalReviewHistory.reviewDetails?.diagnosis?.map { it.diseaseCategory }?.distinct(),
                             ""
                         )
                     ),
@@ -387,7 +387,7 @@ class MedicalReviewHistoryFragment : BaseFragment(), View.OnClickListener {
                     mapOf(
                         DefinedParams.label to requireContext().getString(R.string.diagnosis),
                         DefinedParams.value to combineText(
-                            medicalReviewHistory.reviewDetails?.diagnosis?.map { it.diseaseCategory },
+                            medicalReviewHistory.reviewDetails?.diagnosis?.map { it.diseaseCategory }?.distinct(),
                             ""
                         )
                     ),

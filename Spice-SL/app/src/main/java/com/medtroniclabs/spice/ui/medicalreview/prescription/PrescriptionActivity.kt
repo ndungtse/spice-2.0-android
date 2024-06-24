@@ -127,7 +127,11 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
 
                 ResourceState.SUCCESS -> {
                     resource.data?.let { data ->
-                        prescriptionViewModel.getPrescriptionList(data)
+                        data.id?.let {
+                            prescriptionViewModel.getPrescriptionList(data)
+                        } ?: kotlin.run {
+                            hideLoading()
+                        }
                     } ?: kotlin.run {
                         hideLoading()
                     }
@@ -230,7 +234,7 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
             discontinuedMedicationBinding.tvQuantity.text =
                 (data.prescribedDays * data.frequency).toString()
             discontinuedMedicationBinding.tvPrescribedDays.text = data.prescribedDays.toString()
-            data.endDate?.let {endDate ->
+            data.discontinuedDate?.let {endDate ->
                 discontinuedMedicationBinding.tvDiscontinuedOn.text = DateUtils.convertDateFormat(
                     endDate,
                     DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,

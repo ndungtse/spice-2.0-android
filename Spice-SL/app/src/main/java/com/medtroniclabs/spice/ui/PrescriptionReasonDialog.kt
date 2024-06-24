@@ -97,7 +97,7 @@ class PrescriptionReasonDialog() : DialogFragment(), View.OnClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        isCancelable = true
+        isCancelable = false
         readArguments()
         setupView()
         setupClickListeners()

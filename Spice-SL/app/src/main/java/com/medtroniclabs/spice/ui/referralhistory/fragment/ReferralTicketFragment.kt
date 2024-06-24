@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.visible
+import com.medtroniclabs.spice.common.CommonUtils.getContactNumber
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.databinding.FragmentReferralTicketBinding
@@ -188,8 +189,12 @@ class ReferralTicketFragment : BaseFragment(), View.OnClickListener {
         binding.tvNoHistory.gone()
         with(DefinedParams) {
             var referredBy = referralData.referredBy
-            referralData.phoneNumber.takeIf { it?.isNotBlank() == true }?.trim()?.let {
-                referredBy = requireContext().getString(R.string.referral_by_phone_number, referredBy, it)
+            referralData.phoneNumber.takeIf { it?.isNotBlank() == true }?.trim()?.let { number ->
+                referredBy = requireContext().getString(
+                    R.string.referral_by_phone_number,
+                    referredBy,
+                    getContactNumber(number)
+                )
             }
             adapters.updateList(listOf(
                 mapOf(

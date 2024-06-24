@@ -9,10 +9,12 @@ import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.CommonUtils
+import com.medtroniclabs.spice.common.CommonUtils.getContactNumber
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
 import com.medtroniclabs.spice.common.DateUtils.DATE_ddMMyyyy
 import com.medtroniclabs.spice.common.DefinedParams
+import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.databinding.FragmentPatientInfoBinding
 import com.medtroniclabs.spice.formgeneration.extension.capitalizeFirstChar
 import com.medtroniclabs.spice.model.PatientListRespModel
@@ -119,11 +121,13 @@ class PatientInfoFragment : BaseFragment() {
                 ),
                 mapOf(
                     DefinedParams.label to requireContext().getString(R.string.contact_number),
-                    DefinedParams.value to (patientListRespModel.phoneNumber.takeIf { it?.isNotBlank() == true }?.trim()
-                        ?: requireContext().getString(R.string.hyphen_symbol))),
+                    DefinedParams.value to (getContactNumber(patientListRespModel.phoneNumber.takeIf { it?.isNotBlank() == true }
+                        ?.trim())
+                        ?: requireContext().getString(R.string.hyphen_symbol))
+                ),
                 mapOf(
                     DefinedParams.label to requireContext().getString(R.string.hh_id),
-                    DefinedParams.value to (patientListRespModel.houseHoldId.takeIf { it?.isNotBlank() == true }?.trim()
+                    DefinedParams.value to (patientListRespModel.houseHoldNumber
                         ?: requireContext().getString(R.string.hyphen_symbol)).toString()
                 ),
                 mapOf(
@@ -166,6 +170,14 @@ class PatientInfoFragment : BaseFragment() {
             }
             rvPatientInfo.adapter = adapter
             hideProgress()
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        val patientId = arguments?.getString(DefinedParams.PatientId, "")
+        if (patientId?.isNotBlank() == true) {
+            viewModel.getPatients(patientId, if (isAnc() == true) ANC.uppercase() else null)
         }
     }
 }

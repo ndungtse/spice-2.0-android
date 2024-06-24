@@ -22,5 +22,6 @@ data class Prescription(
     val frequency: Int,
     val prescribedSince: String,
     val prescriptionId: String? = null,
-    val endDate: String? = null
+    val endDate: String? = null,
+    val discontinuedDate: String? = null,
 )

@@ -180,6 +180,7 @@
                         android:paddingVertical="@dimen/_16sdp"
                         android:text="@string/save"
                         android:textAllCaps="true"
+                        android:enabled="false"
                         android:textStyle="bold"
                         app:layout_constraintBottom_toBottomOf="@+id/btnCancel"
                         app:layout_constraintEnd_toEndOf="parent"

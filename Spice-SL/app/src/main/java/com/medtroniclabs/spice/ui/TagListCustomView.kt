@@ -71,7 +71,7 @@ class TagListCustomView(
             context.getColor(R.color.mild_gray)
         )
         chip.setOnCheckedChangeListener { _, isChecked ->
-            validateOtherSingleSelection(isChecked)
+            validateOtherSingleSelection(isChecked, chipData)
             if (isChecked) {
                 singleSelectionTypeMap?.let {
                     groupItemsEnableDisable(
@@ -210,18 +210,18 @@ class TagListCustomView(
         }
     }
 
-    private fun validateOtherSingleSelection(isChecked: Boolean) {
+    private fun validateOtherSingleSelection(isChecked: Boolean, chipData: Pair<String?, String>) {
         if (otherSingleSelect == true && isChecked)
-            uncheckOtherChip()
+            uncheckOtherChip(chipData)
     }
 
-    private fun uncheckOtherChip() {
+    private fun uncheckOtherChip(chipData: Pair<String?, String>) {
         chipGroup.findViewWithTag<LinearLayout>(Other)?.let { chipLayout ->
             val tvOther = chipLayout.getChildAt(0)
             val tagView = chipLayout.getChildAt(1)
             tagView?.tag?.let {
                 if (tvOther != null && tvOther is AppCompatTextView) {
-                    otherOnClick(tvOther, tagView)
+                    otherOnClick(tvOther, tagView, chipData)
                 }
             }
         }
@@ -237,7 +237,7 @@ class TagListCustomView(
         binding.tvOther.text = chipData.second
         binding.tvOther.tag = data
         binding.tvOther.safeClickListener {
-            otherOnClick(binding.tvOther, binding.tagView)
+            otherOnClick(binding.tvOther, binding.tagView, chipData)
         }
         chipGroup.addView(binding.root)
         /*selectedChipItemList?.let { selectedChipItemList ->
@@ -261,7 +261,8 @@ class TagListCustomView(
 
     private fun otherOnClick(
         tvOther: AppCompatTextView,
-        tagView: View
+        tagView: View,
+        chipData: Pair<String?, String>
     ) {
         if (tagView.tag == null) {
             tagView.tag = ENABLED
@@ -294,7 +295,7 @@ class TagListCustomView(
         if (otherCallBack != null)
             otherCallBack.invoke(Other, tagView.tag != null)
         else
-            callBack?.invoke(null ,chipGroup.checkedChipIds.isEmpty(), tagView.tag != null)
+            callBack?.invoke(chipData.second ,chipGroup.checkedChipIds.isEmpty(), tagView.tag != null)
     }
 
     private fun getColorStateList(

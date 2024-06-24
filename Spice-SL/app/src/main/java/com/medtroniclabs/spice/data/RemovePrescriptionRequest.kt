@@ -5,5 +5,5 @@ import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 data class RemovePrescriptionRequest(
     val prescriptionId: String,
     val provenance: ProvanceDto,
-    val reason: String? = null
+    val discontinuedReason: String? = null
 )

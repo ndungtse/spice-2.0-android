@@ -7,6 +7,7 @@ data class DiagnosisSaveUpdateRequest(
     val patientReference: String?,
     val diseases: ArrayList<DiagnosisDiseaseModel>,
     val provenance: ProvanceDto,
+    val otherNotes: String? = null,
     val type: String
 )
 

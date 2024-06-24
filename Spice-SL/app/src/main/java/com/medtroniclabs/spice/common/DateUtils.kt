@@ -473,4 +473,12 @@ object DateUtils {
             }
         }
     }
+
+    fun calculateGestationPastMonths(currentDateTimeInMillis: Long, months: Int): Long {
+        val calendar = Calendar.getInstance()
+        calendar.timeInMillis = currentDateTimeInMillis
+        calendar.add(Calendar.MONTH, -months)
+
+        return calendar.timeInMillis
+    }
 }

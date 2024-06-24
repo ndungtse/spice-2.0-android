@@ -488,7 +488,7 @@
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/tvClinicalNameLabel"
         style="@style/TextStyle_Regular_16"
-        android:layout_width="@dimen/_0dp"
+        android:layout_width="wrap_content"
         android:layout_marginTop="@dimen/_30sdp"
         android:text="@string/clinician_name"
         android:layout_marginBottom="@dimen/_30sdp"
@@ -535,9 +535,9 @@
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/tvDateOfReviewLabel"
         style="@style/TextStyle_Regular_16"
-        android:layout_width="@dimen/_0dp"
+        android:layout_width="wrap_content"
         android:layout_marginStart="@dimen/_8sdp"
-        android:text="@string/date_of_birth"
+        android:text="@string/date_of_review"
         app:layout_constraintBottom_toBottomOf="@id/tvClinicalNameLabel"
         app:layout_constraintEnd_toStartOf="@id/tvDateOfReviewSeparator"
         app:layout_constraintHorizontal_weight="0.4"
