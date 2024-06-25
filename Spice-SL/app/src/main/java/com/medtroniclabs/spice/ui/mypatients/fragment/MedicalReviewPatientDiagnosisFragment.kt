@@ -11,6 +11,7 @@ import androidx.fragment.app.activityViewModels
 import com.google.android.material.button.MaterialButton
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
+import com.medtroniclabs.spice.appextensions.invisible
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils.convertListToString
 import com.medtroniclabs.spice.common.DefinedParams
@@ -31,6 +32,7 @@ import com.medtroniclabs.spice.ui.mypatients.viewmodel.MotherNeonateBpWeightView
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import com.medtroniclabs.spice.ui.medicalreview.viewmodel.PatientStatusViewModel
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
+import com.medtroniclabs.spice.ui.mypatients.viewmodel.PregnancyDetailsViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 
@@ -43,6 +45,7 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
     private val statusViewModel: PatientStatusViewModel by activityViewModels()
     private val diagnosisViewModel: DiagnosisViewModel by activityViewModels()
     private val patientViewModel: PatientDetailViewModel by activityViewModels()
+    private val pregnancyDetailsViewModel: PregnancyDetailsViewModel by activityViewModels()
 
     companion object {
         fun newInstance(): MedicalReviewPatientDiagnosisFragment {
@@ -89,6 +92,20 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
         handleFlow()
         initializeListeners()
         attachListeners()
+        if (patientViewModel.getAncVisit() == 1) {
+            binding.tvWeightValue.text = MotherNeonateUtil.convertWeight(
+                pregnancyDetailsViewModel.pregnancyDetailsModel.weight,
+                requireContext()
+            )
+            binding.tvBpValue.text =
+                calculateBp(
+                    pregnancyDetailsViewModel.pregnancyDetailsModel.systolic,
+                    pregnancyDetailsViewModel.pregnancyDetailsModel.diastolic,
+                    requireContext()
+                )
+            binding.tvAddWeight.invisible()
+            binding.tvAddBp.invisible()
+        }
     }
 
     private fun attachListeners() {
@@ -217,7 +234,7 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
             if (isAnc == true) {
                 cardAddWeight.visible()
                 cardBloodPressure.visible()
-                if (connectivityManager.isNetworkAvailable()) {
+                if (connectivityManager.isNetworkAvailable() && patientViewModel.getAncVisit() > 1) {
                     viewModel.fetchWeight(MotherNeonateAncRequest(memberId = getMemberId()))
                     viewModel.fetchBloodPressure(MotherNeonateAncRequest(memberId = getMemberId()))
                 }

@@ -8,6 +8,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.appextensions.convertToUtcDateTime
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.isNotTabletAndPortrait
 import com.medtroniclabs.spice.appextensions.setPercentWidth
@@ -18,6 +19,8 @@ import com.medtroniclabs.spice.common.DefinedParams.PregnancyANC
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.SpiceLocationManager
 import com.medtroniclabs.spice.data.AboveFiveYearsSummarySubmitRequest
+import com.medtroniclabs.spice.data.model.BpAndWeightRequestModel
+import com.medtroniclabs.spice.data.model.MedicalReviewEncounter
 import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.databinding.ActivityMedicalReviewAncactivityBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
@@ -38,6 +41,8 @@ import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.fragment.Mothe
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.fragment.PregnancyDetailsFragment
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.fragment.PregnancyPastObstetricHistoryFragment
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.fragment.PregnancySummaryFragment
+import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.viewmodel.AddBpViewModel
+import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.viewmodel.AddWeightViewModel
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.viewmodel.MotherNeonateANCViewModel
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.viewmodel.MotherNeonateSummaryViewModel
 import com.medtroniclabs.spice.ui.medicalreview.prescription.PrescriptionActivity
@@ -46,6 +51,7 @@ import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import com.medtroniclabs.spice.ui.mypatients.fragment.MedicalReviewPatientDiagnosisFragment
 import com.medtroniclabs.spice.ui.mypatients.fragment.PatientInfoFragment
 import com.medtroniclabs.spice.ui.mypatients.fragment.ReferPatientFragment
+import com.medtroniclabs.spice.ui.mypatients.viewmodel.MotherNeonateBpWeightViewModel
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PregnancyDetailsViewModel
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PregnancyPastObstetricHistoryViewModel
@@ -66,7 +72,9 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
     private val pregnancyDetailsViewModel: PregnancyDetailsViewModel by viewModels()
     private val motherNeonateSummaryViewModel: MotherNeonateSummaryViewModel by viewModels()
     private val referPatientViewModel: ReferPatientViewModel by viewModels()
-
+    private val bpViewModel: AddBpViewModel by viewModels()
+    private val weightViewModel: AddWeightViewModel by viewModels()
+    private val motherNeonateBpWeightViewModel: MotherNeonateBpWeightViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
@@ -87,6 +95,7 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
         viewModel.patientId = intent.getStringExtra(DefinedParams.PatientId)
         initStaticDataCall()
         setButtonClickListener()
+        binding.loadingProgress.safeClickListener(this)
     }
 
     private fun getCurrentLocation() {
@@ -105,6 +114,50 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
     }
 
     private fun attachObservers() {
+        bpViewModel.saveBloodPressure.observe(this) { resourcesState ->
+            when (resourcesState.state) {
+                ResourceState.LOADING -> {
+                }
+
+                ResourceState.SUCCESS -> {
+                        handleSubmit()
+                }
+
+                ResourceState.ERROR -> {
+                    resourcesState.optionalData?.let {
+
+                    } ?: showErrorDialogue(
+                        title = getString(R.string.alert),
+                        message = getString(R.string.something_went_wrong_try_later),
+                        positiveButtonName = getString(R.string.ok),
+                    ) {
+
+                    }
+                }
+            }
+        }
+        weightViewModel.saveWeight.observe(this) { resourcesState ->
+            when (resourcesState.state) {
+                ResourceState.LOADING -> {
+                }
+
+                ResourceState.SUCCESS -> {
+                        handleSubmit()
+                }
+
+                ResourceState.ERROR -> {
+                    resourcesState.optionalData?.let {
+
+                    } ?: showErrorDialogue(
+                        title = getString(R.string.alert),
+                        message = getString(R.string.something_went_wrong_try_later),
+                        positiveButtonName = getString(R.string.ok),
+                    ) {
+
+                    }
+                }
+            }
+        }
         viewModel.summaryCreateResponse.observe(this) { resourceState ->
             when (resourceState.state) {
                 ResourceState.LOADING -> {
@@ -405,6 +458,9 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
                         )
                 }
             }
+            binding.loadingProgress.id -> {
+
+            }
         }
     }
 
@@ -459,11 +515,15 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
             fundalHeight = systemicExaminationViewModel.fundalHeight
             fetalHeartRate = systemicExaminationViewModel.fetalHeartRate
             clinicalNotes = clinicalNotesViewModel.enteredClinicalNotes
-            pregnancyDetails = pregnancyDetailsViewModel.pregnancyDetailsModel
+            pregnancyDetails = pregnancyDetailsViewModel.pregnancyDetailsModel.apply {
+                weight = motherNeonateBpWeightViewModel.getWeight()
+                diastolic = motherNeonateBpWeightViewModel.getBp()?.diastolic
+                systolic = motherNeonateBpWeightViewModel.getBp()?.systolic
+                pulse = motherNeonateBpWeightViewModel.getBp()?.pulse
+            }
             deliveryKit = pregnancyPastObstetricHistoryViewModel.deliveryKit
             pregnancyHistory = pregnancyPastObstetricHistoryViewModel.pregnancyHistoryChip
-                .filter { it.name != DefinedParams.Other }
-                .map { it.value}
+                .map { it.value }
             pregnancyHistoryNotes = pregnancyPastObstetricHistoryViewModel.pregnancyHistoryNotes
             patientReference = patientViewModel.getPatientFHIRId()
         }
@@ -482,9 +542,78 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
             supportFragmentManager.findFragmentById(R.id.pregnancyDetailsConatiner) as? PregnancyDetailsFragment
         if (pregnancyDetailsFragment?.validateInput() == true) {
             binding.loadingProgress.visible()
-            handleSubmit()
+            if ((pregnancyDetailsViewModel.pregnancyDetailsModel.systolic == null &&
+                        pregnancyDetailsViewModel.pregnancyDetailsModel.diastolic == null) && pregnancyDetailsViewModel.pregnancyDetailsModel.weight == null
+            ) {
+                handleSubmit()
+            } else {
+                handlePregnancyDetails(
+                    pregnancyDetailsViewModel,
+                    weightViewModel,
+                    bpViewModel,
+                    viewModel
+                )
+            }
         }
     }
+    private fun createEncounter(viewModel: MotherNeonateANCViewModel): MedicalReviewEncounter {
+        return MedicalReviewEncounter(
+            provenance = ProvanceDto(
+                createdDateTime = System.currentTimeMillis().convertToUtcDateTime()
+            ),
+            latitude = viewModel.lastLocation?.latitude,
+            longitude = viewModel.lastLocation?.longitude,
+            patientId = viewModel.patientId,
+            startTime = DateUtils.getCurrentDateAndTime(DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ),
+            endTime = DateUtils.getCurrentDateAndTime(DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ)
+        )
+    }
+
+    private fun saveWeightIfNeeded(
+        pregnancyDetailsViewModel: PregnancyDetailsViewModel,
+        weightViewModel: AddWeightViewModel,
+        viewModel: MotherNeonateANCViewModel
+    ) {
+        pregnancyDetailsViewModel.pregnancyDetailsModel.weight?.let {
+            weightViewModel.saveWeight(
+                BpAndWeightRequestModel(
+                    weight = it,
+                    encounter = createEncounter(viewModel)
+                )
+            )
+        }
+    }
+
+    private fun saveBloodPressureIfNeeded(
+        pregnancyDetailsViewModel: PregnancyDetailsViewModel,
+        bpViewModel: AddBpViewModel,
+        viewModel: MotherNeonateANCViewModel
+    ) {
+        if (pregnancyDetailsViewModel.pregnancyDetailsModel.systolic != null &&
+            pregnancyDetailsViewModel.pregnancyDetailsModel.diastolic != null ||
+            pregnancyDetailsViewModel.pregnancyDetailsModel.pulse != null
+        ) {
+            bpViewModel.saveBloodPressure(
+                BpAndWeightRequestModel(
+                    diastolic = pregnancyDetailsViewModel.pregnancyDetailsModel.diastolic,
+                    systolic = pregnancyDetailsViewModel.pregnancyDetailsModel.systolic,
+                    pulse = pregnancyDetailsViewModel.pregnancyDetailsModel.pulse,
+                    encounter = createEncounter(viewModel)
+                )
+            )
+        }
+    }
+
+    private fun handlePregnancyDetails(
+        pregnancyDetailsViewModel: PregnancyDetailsViewModel,
+        weightViewModel: AddWeightViewModel,
+        bpViewModel: AddBpViewModel,
+        viewModel: MotherNeonateANCViewModel
+    ) {
+        saveWeightIfNeeded(pregnancyDetailsViewModel, weightViewModel, viewModel)
+        saveBloodPressureIfNeeded(pregnancyDetailsViewModel, bpViewModel, viewModel)
+    }
+
 
     private fun backNavigation() {
         val fragmentManager = supportFragmentManager
@@ -634,7 +763,7 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
     override fun onDataLoaded(details: PatientListRespModel) {
         binding.loadingProgress.visible()
         viewModel.ancVisit =
-            details.pregnancyDetails?.ancVisitMedicalReview?.takeIf { true }?.plus(1)?.toInt() ?: 1
+            details.pregnancyDetails?.ancVisitMedicalReview?.takeIf { true }?.plus(1) ?: 1
         viewModel.memberId = details.memberId
 
         val patientDetails = supportFragmentManager.findFragmentById(R.id.pregnancyDetailsConatiner)

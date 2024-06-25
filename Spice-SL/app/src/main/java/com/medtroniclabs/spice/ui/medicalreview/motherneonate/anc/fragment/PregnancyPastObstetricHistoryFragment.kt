@@ -86,38 +86,9 @@ class PregnancyPastObstetricHistoryFragment : BaseFragment() {
             TagListCustomView(
                 binding.root.context,
                 binding.tagViewPresentingComplaints,
-                otherCallBack = { name, isChecked ->
-                    if (name == Other) {
-                        val containOther = viewModel.pregnancyHistoryChip.firstOrNull {
-                            it.name.equals(
-                                DefinedParams.Other,
-                                ignoreCase = true
-                            )
-                        }
-                        if (isChecked) {
-                            if (containOther == null) {
-                                isOtherChip = true
-                                viewModel.pregnancyHistoryOther?.let { otherChip ->
-                                    viewModel.pregnancyHistoryChip.add(otherChip)
-                                }
-                            }
-                        } else {
-                            isOtherChip = false
-                            containOther?.let {
-                                viewModel.pregnancyHistoryChip.remove(containOther)
-                            }
-                        }
-                    } else {
-                        viewModel.pregnancyHistoryChip =
-                            ArrayList(complaintsTagView.getSelectedTags())
-                        if (isOtherChip) {
-                            viewModel.pregnancyHistoryOther?.let {
-                                viewModel.pregnancyHistoryChip.add(
-                                    it
-                                )
-                            }
-                        }
-                    }
+                callBack = { name, _,isChecked ->
+                    viewModel.pregnancyHistoryChip =
+                        ArrayList(complaintsTagView.getSelectedTags())
                     updateNextButtonStateCallback?.invoke()
                 }
             )

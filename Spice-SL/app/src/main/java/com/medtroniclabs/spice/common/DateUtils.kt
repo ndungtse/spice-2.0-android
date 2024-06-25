@@ -438,8 +438,10 @@ object DateUtils {
 
     private fun dateToDays(birthDateStr: String?): Int {
         val birthDate = parseDate(birthDateStr)
+        val currentDate = LocalDate.now()
         return birthDate?.let {
-            ChronoUnit.DAYS.between(it, LocalDate.now()).toInt()
+            val daysBetween = ChronoUnit.DAYS.between(it, currentDate).toInt()
+            if (daysBetween < 0) 0 else daysBetween
         } ?: 0
     }
 

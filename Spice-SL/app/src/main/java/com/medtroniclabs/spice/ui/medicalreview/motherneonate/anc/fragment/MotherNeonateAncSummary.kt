@@ -22,6 +22,7 @@ import com.medtroniclabs.spice.formgeneration.extension.markMandatory
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
 import com.medtroniclabs.spice.network.resource.ResourceState
+import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil
@@ -118,7 +119,8 @@ class MotherNeonateAncSummary : BaseFragment(),View.OnClickListener {
             tvObstetricsExaminationText.setExpandableText(
                 fullText = obstetricsExaminationText,
                 moreColorResId = R.color.purple_700,
-                title = tvObstetricsExaminationLabel.text.toString()
+                title = tvObstetricsExaminationLabel.text.toString(),
+                activity = (requireActivity() as BaseActivity)
             )
 
             val presentingComplaintsText = combineText(
@@ -128,7 +130,8 @@ class MotherNeonateAncSummary : BaseFragment(),View.OnClickListener {
             tvPresentingComplaintsText.setExpandableText(
                 fullText = presentingComplaintsText,
                 moreColorResId = R.color.purple_700,
-                title = tvPresentingComplaintsLabel.text.toString()
+                title = tvPresentingComplaintsLabel.text.toString(),
+                activity = (requireActivity() as BaseActivity)
             )
             tvBMIText.text =
                 convertNullableDoubleToString(motherNeonateSummaryModel.bmi, requireContext())
@@ -140,7 +143,8 @@ class MotherNeonateAncSummary : BaseFragment(),View.OnClickListener {
                 tvClinicalNotesText.setExpandableText(
                     fullText = clinicalNotes,
                     moreColorResId = R.color.purple_700,
-                    title = tvClinicalNotesLabel.text.toString()
+                    title = tvClinicalNotesLabel.text.toString(),
+                    activity = (requireActivity() as BaseActivity)
                 )
             }
 

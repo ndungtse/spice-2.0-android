@@ -13,6 +13,7 @@ import com.medtroniclabs.spice.common.DefinedParams.PatientId
 import com.medtroniclabs.spice.data.MotherNeonateAncSummaryModel
 import com.medtroniclabs.spice.databinding.FragmentMotherNeonateAncHistoryBinding
 import com.medtroniclabs.spice.network.resource.ResourceState
+import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil.calculateBp
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil.convertBeatsPerMinute
@@ -91,7 +92,7 @@ class MotherNeonateAncHistoryFragment : BaseFragment() {
                     convertBeatsPerMinute(it.fetalHeartRate, requireContext())
                 tvFundalHeightValue.text =
                     convertCMS(it.fundalHeight, requireContext())
-                tvClinicalNotesValue.setExpandableText(convertNullableStringToString(it.clinicalNotes, requireContext()), title = tvClinicalNotesLabel.text.toString(),maxLength = 70)
+                tvClinicalNotesValue.setExpandableText(convertNullableStringToString(it.clinicalNotes, requireContext()), title = tvClinicalNotesLabel.text.toString(),maxLength = 70, activity = (requireActivity() as BaseActivity))
                 val combinedPresentingComplaints = StringBuilder()
 
                 it.presentingComplaints?.filterNotNull()?.takeIf { it.isNotEmpty() }?.joinToString(separator = ",")
@@ -111,7 +112,8 @@ class MotherNeonateAncHistoryFragment : BaseFragment() {
                 tvPresentingComplaintsValue.setExpandableText(
                     presentingComplaintsValue,
                     title = tvPresentingComplaintsLabel.text.toString(),
-                    maxLength = 70
+                    maxLength = 70,
+                    activity = (requireActivity() as BaseActivity)
                 )
                 val combinedObstetricsExamination = StringBuilder()
 
@@ -132,7 +134,8 @@ class MotherNeonateAncHistoryFragment : BaseFragment() {
                 tvObstetricsExaminationValue.setExpandableText(
                     obstetricsExaminationValue,
                     title = tvObstetricsExaminationLabel.text.toString(),
-                    maxLength = 70
+                    maxLength = 70,
+                    activity = (requireActivity() as BaseActivity)
                 )
             }
         }

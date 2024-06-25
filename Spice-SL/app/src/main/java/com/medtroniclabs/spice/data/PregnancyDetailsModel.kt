@@ -3,7 +3,7 @@ package com.medtroniclabs.spice.data
 data class PregnancyDetailsModel(
     var height: Double? = null,
     var weight: Double? = null,
-    var pulse: Int? = null,
+    var pulse: Double? = null,
     var lastMenstrualPeriod: String? = null,
     var estimatedDeliveryDate: String? = null,
     var gestationalAge: Long? = null,

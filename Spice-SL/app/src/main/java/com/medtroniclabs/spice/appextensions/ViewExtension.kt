@@ -24,7 +24,6 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.CommonUtils
-import com.medtroniclabs.spice.common.GeneralErrorDialog
 import com.medtroniclabs.spice.ui.BaseActivity
 
 fun Context.hideKeyboard(view: View) {
@@ -127,7 +126,8 @@ fun TextView.setExpandableText(
     maxLength: Int = 100,
     moreText: String = "…more",
     moreColorResId: Int = R.color.purple_700,
-    title: String
+    title: String,
+    activity: BaseActivity? = null
 ) {
     if (fullText.length <= maxLength) {
         this.text = fullText
@@ -141,13 +141,10 @@ fun TextView.setExpandableText(
 
     val clickableSpan = object : ClickableSpan() {
         override fun onClick(widget: View) {
-            (context as? BaseActivity)?.showErrorDialogue(
-                title = title,
+            activity?.showErrorDialogue( title = title,
                 message = fullText,
                 isNegativeButtonNeed = false,
-                positiveButtonName = context.getString(R.string.ok)
-            ) {
-                // Callback action if needed
+                positiveButtonName = context.getString(R.string.ok)) {
             }
         }
 

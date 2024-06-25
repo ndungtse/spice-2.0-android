@@ -10,6 +10,7 @@ import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.data.PregnancyDetailsModel
 import com.medtroniclabs.spice.data.model.ChipViewItemModel
 import com.medtroniclabs.spice.databinding.FragmentPregnancySummaryBinding
+import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil.convertNullableDoubleToString
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil.convertNullableIntToString
@@ -110,7 +111,8 @@ class PregnancySummaryFragment() : BaseFragment() {
                 tvPregnancyHistoryValue.setExpandableText(
                     pregnancyHistoryValue,
                     title = tvPregnancyHistoryLabel.text.toString(),
-                    maxLength = 60
+                    maxLength = 60,
+                    activity = (requireActivity() as BaseActivity)
                 )
                 tvBloodGroupValue.text =
                     convertNullableStringToString(

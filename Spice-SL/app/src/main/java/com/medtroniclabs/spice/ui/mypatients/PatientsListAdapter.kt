@@ -75,7 +75,7 @@ class PatientsListAdapter(
             oldItem: PatientListRespModel,
             newItem: PatientListRespModel
         ): Boolean {
-            return oldItem == newItem
+            return oldItem.id == newItem.id
         }
     }
 }

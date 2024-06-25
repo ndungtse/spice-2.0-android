@@ -351,7 +351,7 @@ class MedicalReviewHistoryFragment : BaseFragment(), View.OnClickListener {
                             ?: getString(R.string.separator_double_hyphen))
                     ),
                     mapOf(
-                        DefinedParams.label to requireContext().getString(R.string.date_of_prescription),
+                        DefinedParams.label to requireContext().getString(R.string.date_of_review),
                         DefinedParams.value to medicalReviewHistory.dateOfReview?.let {
                             DateUtils.convertDateFormat(
                                 it,
@@ -397,7 +397,7 @@ class MedicalReviewHistoryFragment : BaseFragment(), View.OnClickListener {
                             ?: getString(R.string.separator_double_hyphen))
                     ),
                     mapOf(
-                        DefinedParams.label to requireContext().getString(R.string.date_of_prescription),
+                        DefinedParams.label to requireContext().getString(R.string.date_of_review),
                         DefinedParams.value to medicalReviewHistory.dateOfReview?.let {
                             DateUtils.convertDateFormat(
                                 it,

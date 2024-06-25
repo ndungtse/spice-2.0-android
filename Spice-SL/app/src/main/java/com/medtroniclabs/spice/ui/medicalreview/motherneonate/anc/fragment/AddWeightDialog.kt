@@ -81,7 +81,7 @@ class AddWeightDialog : DialogFragment(), View.OnClickListener {
                     binding.loader.gone()
                     dismiss()
                     listener?.onDialogDismissed(false)
-                    viewModel.saveWeight.postError()
+                    viewModel.saveWeight.postError(optionalData = true)
                 }
 
                 ResourceState.ERROR -> {

@@ -48,4 +48,10 @@ class PatientDetailViewModel @Inject constructor(
     fun getPatientHouseholdId(): String? {
         return patientDetailsLiveData.value?.data?.houseHoldId
     }
+
+    fun getAncVisit(): Int {
+        return patientDetailsLiveData.value?.data?.pregnancyDetails?.ancVisitMedicalReview?.takeIf { true }
+            ?.plus(1)
+            ?: 1
+    }
 }

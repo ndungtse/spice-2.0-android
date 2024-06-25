@@ -253,7 +253,7 @@ class PregnancyDetailsFragment : BaseFragment(), View.OnClickListener {
                 pregnancyDetailsViewModel.pregnancyDetailsModel.diastolic = it
                 pregnancyDetailsViewModel.checkSubmitBtn()
             }
-            initTextWatcherForInt(etPulse) {
+            initTextWatcherForDouble(etPulse) {
                 pregnancyDetailsViewModel.pregnancyDetailsModel.pulse = it
                 pregnancyDetailsViewModel.checkSubmitBtn()
             }
@@ -281,7 +281,7 @@ class PregnancyDetailsFragment : BaseFragment(), View.OnClickListener {
                 etWeight.setText(model.weight?.toDoubleOrEmptyString())
                 etSystolic.setText(model.systolic?.toIntOrEmptyString())
                 etDiastolic.setText(model.diastolic?.toIntOrEmptyString())
-                etPulse.setText(model.pulse?.toString())
+                etPulse.setText(model.pulse?.toIntOrEmptyString())
                 tvLastMenstrualPeriodDate.text = model.lastMenstrualPeriod?.let {
                     DateUtils.convertDateFormat(it, DATE_FORMAT_yyyyMMdd, DATE_ddMMyyyy)
                 }

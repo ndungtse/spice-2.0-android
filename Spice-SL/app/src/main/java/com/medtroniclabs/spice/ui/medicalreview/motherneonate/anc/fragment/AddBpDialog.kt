@@ -104,7 +104,7 @@ class AddBpDialog : DialogFragment(), View.OnClickListener {
                     binding.loader.gone()
                     dismiss()
                     listener?.onDialogDismissed(true)
-                    viewModel.saveBloodPressure.postError()
+                    viewModel.saveBloodPressure.postError(optionalData = true)
                 }
 
                 ResourceState.ERROR -> {

@@ -17,6 +17,7 @@ import com.medtroniclabs.spice.databinding.FragmentPatientInfoBinding
 import com.medtroniclabs.spice.formgeneration.extension.capitalizeFirstChar
 import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.network.resource.ResourceState
+import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.ANC
@@ -153,7 +154,7 @@ class PatientInfoFragment : BaseFragment() {
                     )
                 )
             }
-            val adapter = PatientInfoAdapter(dataList,R.color.fragment_bg)
+            val adapter = PatientInfoAdapter(dataList,R.color.fragment_bg, (requireActivity() as BaseActivity))
             val isLandscape =
                 resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
 

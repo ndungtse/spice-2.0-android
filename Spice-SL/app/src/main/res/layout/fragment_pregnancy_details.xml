@@ -589,7 +589,6 @@
                 android:maxLength="1"
                 android:paddingHorizontal="@dimen/_12sdp"
                 android:paddingVertical="@dimen/_10sdp"
-                app:layout_constraintBottom_toBottomOf="@id/etParityFirst"
                 app:layout_constraintEnd_toStartOf="@id/seventyPercentGuideline"
                 app:layout_constraintHorizontal_chainStyle="packed"
                 app:layout_constraintHorizontal_weight="0.1"

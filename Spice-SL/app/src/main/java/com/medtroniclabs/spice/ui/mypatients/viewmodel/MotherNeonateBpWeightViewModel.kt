@@ -38,4 +38,13 @@ class MotherNeonateBpWeightViewModel @Inject constructor(
             getWeight.postValue(motherNeonateANCRepo.fetchWeight(motherNeonateAncRequest))
         }
     }
+
+    fun getWeight(): Double? {
+        return getWeight.value?.data?.Weight
+    }
+
+    fun getBp(): BpAndWeightResponse? {
+        return getBloodPressure.value?.data
+    }
+
 }
