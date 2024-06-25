@@ -1,4 +1,4 @@
-package com.medtroniclabs.spice.ui.medicalreview.undertwomonths
+package com.medtroniclabs.spice.ui.medicalreview.underfiveyears
 
 import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.model.medicalreview.CreateUnderTwoMonthsResponse
@@ -8,13 +8,12 @@ import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.network.resource.ResourceState
 import javax.inject.Inject
 
-class UnderTwoMonthsTreatmentSummaryRepository @Inject constructor(
+class UnderFiveYearsTreatmentSummaryRepository @Inject constructor(
     private val apiHelper: ApiHelper
 ) {
-
-    suspend fun getMedicalReviewForUnderTwoMonths(request: CreateUnderTwoMonthsResponse): Resource<SummaryDetails> {
+    suspend fun getUnderFiveYearsSummaryDetails(request: CreateUnderTwoMonthsResponse): Resource<SummaryDetails> {
         return try {
-            val response = apiHelper.getMedicalReviewForUnderTwoMonths(request)
+            val response = apiHelper.getUnderFiveYearsSummaryDetails(request)
             if (response.isSuccessful) {
                 Resource(state = ResourceState.SUCCESS, data = response.body()?.entity)
             } else {
@@ -26,6 +25,5 @@ class UnderTwoMonthsTreatmentSummaryRepository @Inject constructor(
             Resource(state = ResourceState.ERROR)
         }
     }
-
 
 }

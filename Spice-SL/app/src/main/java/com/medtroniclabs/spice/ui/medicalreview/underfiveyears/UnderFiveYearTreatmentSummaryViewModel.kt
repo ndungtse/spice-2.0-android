@@ -1,4 +1,4 @@
-package com.medtroniclabs.spice.ui.medicalreview.undertwomonths
+package com.medtroniclabs.spice.ui.medicalreview.underfiveyears
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -15,13 +15,12 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class UnderTwoMonthsTreatmentSummaryViewModel @Inject constructor(
+class UnderFiveYearTreatmentSummaryViewModel @Inject constructor(
     @IoDispatcher private val dispatcherIO: CoroutineDispatcher,
-    private var repository: UnderTwoMonthsTreatmentSummaryRepository
+    private var repository: UnderFiveYearsTreatmentSummaryRepository
 ) : ViewModel() {
     val summaryDetailsLiveData = MutableLiveData<Resource<SummaryDetails>>()
     var nextVisitDate: String? = null
-    var selectedPatientStatus: String? = null
     val checkSubmitBtn = MutableLiveData<Boolean>()
 
     private val _isRefreshing = MutableLiveData<Boolean>()
@@ -31,19 +30,15 @@ class UnderTwoMonthsTreatmentSummaryViewModel @Inject constructor(
         _isRefreshing.value = isRefreshing
     }
 
-    fun getUnderTwoMonthsSummaryDetails(request: CreateUnderTwoMonthsResponse) {
+    fun getUnderFiveYearsSummaryDetails(request: CreateUnderTwoMonthsResponse) {
         viewModelScope.launch(dispatcherIO) {
             summaryDetailsLiveData.postLoading()
             summaryDetailsLiveData.postValue(
-                repository.getMedicalReviewForUnderTwoMonths(
+                repository.getUnderFiveYearsSummaryDetails(
                     request
                 )
             )
         }
     }
 
-    fun setSubmitBtn() {
-        checkSubmitBtn.value = true
-    }
 }
-

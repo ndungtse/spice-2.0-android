@@ -30,7 +30,7 @@ import com.medtroniclabs.spice.data.ReferPatientResult
 import com.medtroniclabs.spice.data.RemovePrescriptionRequest
 import com.medtroniclabs.spice.data.UnderFiveYearsMetaResponse
 import com.medtroniclabs.spice.data.UnderTwoMonthsMetaResponse
-import com.medtroniclabs.spice.data.UnderTwoMonthsSummarySubmitRequest
+import com.medtroniclabs.spice.data.SummarySubmitRequest
 import com.medtroniclabs.spice.data.UserSymptomsEntity
 import com.medtroniclabs.spice.data.history.MedicalReviewHistory
 import com.medtroniclabs.spice.data.history.PrescriptionHistoryEntity
@@ -49,8 +49,9 @@ import com.medtroniclabs.spice.model.PatientsDataModel
 import com.medtroniclabs.spice.model.ReferralData
 import com.medtroniclabs.spice.model.ReferralDetailRequest
 import com.medtroniclabs.spice.model.SearchAndListResponse
+import com.medtroniclabs.spice.model.medicalreview.CreateUnderFiveYearsRequest
 import com.medtroniclabs.spice.model.medicalreview.CreateUnderTwoMonthsResponse
-import com.medtroniclabs.spice.model.medicalreview.UnderTwoMonthsSummaryDetails
+import com.medtroniclabs.spice.model.medicalreview.SummaryDetails
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
@@ -77,6 +78,7 @@ class ApiHelperImpl @Inject constructor(private val apiService: ApiService) : Ap
     override suspend fun getPatients(request: PatientsDataModel): APIResponse<SearchAndListResponse> {
         return apiService.getPatients(request)
     }
+
     override suspend fun postOfflineSync(request: Map<String, Any>): Response<SyncResponse> {
         return apiService.postOfflineSyncData(request)
     }
@@ -125,7 +127,7 @@ class ApiHelperImpl @Inject constructor(private val apiService: ApiService) : Ap
         return apiService.getUnderTwoMonthsMetaData()
     }
 
-    override suspend fun aboveFiveYearsSummaryCreate(request: AboveFiveYearsSummarySubmitRequest): Response<APIResponse<HashMap<String,Any>>> {
+    override suspend fun aboveFiveYearsSummaryCreate(request: AboveFiveYearsSummarySubmitRequest): Response<APIResponse<HashMap<String, Any>>> {
         return apiService.aboveFiveYearsSummaryCreate(request)
     }
 
@@ -145,11 +147,11 @@ class ApiHelperImpl @Inject constructor(private val apiService: ApiService) : Ap
         return apiService.createMedicalReviewForUnderTwoMonths(request)
     }
 
-    override suspend fun getMedicalReviewForUnderTwoMonths(request: CreateUnderTwoMonthsResponse): Response<APIResponse<UnderTwoMonthsSummaryDetails>> {
+    override suspend fun getMedicalReviewForUnderTwoMonths(request: CreateUnderTwoMonthsResponse): Response<APIResponse<SummaryDetails>> {
         return apiService.getUnderTwoMonthsSummaryDetails(request)
     }
 
-    override suspend fun underTwoMonthsSummaryCreate(request: UnderTwoMonthsSummarySubmitRequest): Response<APIResponse<HashMap<String, Any>>> {
+    override suspend fun underTwoMonthsSummaryCreate(request: SummarySubmitRequest): Response<APIResponse<HashMap<String, Any>>> {
         return apiService.underTwoMonthsSummaryCreate(request)
     }
 
@@ -170,11 +172,11 @@ class ApiHelperImpl @Inject constructor(private val apiService: ApiService) : Ap
         return apiService.fetchBloodPressure(motherNeonateAncRequest)
     }
 
-    override suspend fun createWeight(bpAndWeightRequestModel: BpAndWeightRequestModel): Response<APIResponse<HashMap<String,Any>>> {
+    override suspend fun createWeight(bpAndWeightRequestModel: BpAndWeightRequestModel): Response<APIResponse<HashMap<String, Any>>> {
         return apiService.createWeight(bpAndWeightRequestModel)
     }
 
-    override suspend fun createBloodPressure(bpAndWeightRequestModel: BpAndWeightRequestModel): Response<APIResponse<HashMap<String,Any>>> {
+    override suspend fun createBloodPressure(bpAndWeightRequestModel: BpAndWeightRequestModel): Response<APIResponse<HashMap<String, Any>>> {
         return apiService.createBloodPressure(bpAndWeightRequestModel)
     }
 
@@ -186,14 +188,15 @@ class ApiHelperImpl @Inject constructor(private val apiService: ApiService) : Ap
         return apiService.getDiagnosisDetails(request)
     }
 
-    override suspend fun getHealthFacilityMetaData(request: ReferPatientAPIRequest) : Response<APIResponse<List<ReferPatientHealthFacilityItem>>> {
+    override suspend fun getHealthFacilityMetaData(request: ReferPatientAPIRequest): Response<APIResponse<List<ReferPatientHealthFacilityItem>>> {
         return apiService.getHealthFacilityMetaData(request)
     }
 
     override suspend fun getReferPatientMobileUserList(tenantId: ReferPatientRequest): Response<APIResponse<List<ReferPatientNameNumber>>> {
         return apiService.getReferPatientMobileUserList(tenantId)
     }
-    override suspend fun createReferPatientResult(request: ReferPatientResult): Response<APIResponse<HashMap<String,Any>>> {
+
+    override suspend fun createReferPatientResult(request: ReferPatientResult): Response<APIResponse<HashMap<String, Any>>> {
         return apiService.createReferPatientResult(request)
     }
 
@@ -212,6 +215,15 @@ class ApiHelperImpl @Inject constructor(private val apiService: ApiService) : Ap
     override suspend fun getUnderFiveYearsMetaData(): Response<APIResponse<UnderFiveYearsMetaResponse>> {
         return apiService.getUnderFiveYearsMetaData()
     }
+
+    override suspend fun createMedicalReviewForUnderFiveYears(request: CreateUnderFiveYearsRequest): Response<APIResponse<CreateUnderTwoMonthsResponse>> {
+        return apiService.createMedicalReviewForUnderFiveYears(request)
+    }
+
+    override suspend fun getUnderFiveYearsSummaryDetails(request: CreateUnderTwoMonthsResponse): Response<APIResponse<SummaryDetails>> {
+        return apiService.getUnderFiveYearsSummaryDetails(request)
+    }
+
 
     override suspend fun getPrescription(request: ReferralDetailRequest): Response<APIResponse<PrescriptionHistoryEntity>> {
         return apiService.getPrescription(request)

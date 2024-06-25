@@ -30,7 +30,7 @@ import com.medtroniclabs.spice.data.ReferPatientResult
 import com.medtroniclabs.spice.data.UnderFiveYearsMetaResponse
 import com.medtroniclabs.spice.data.RemovePrescriptionRequest
 import com.medtroniclabs.spice.data.UnderTwoMonthsMetaResponse
-import com.medtroniclabs.spice.data.UnderTwoMonthsSummarySubmitRequest
+import com.medtroniclabs.spice.data.SummarySubmitRequest
 import com.medtroniclabs.spice.data.UserSymptomsEntity
 import com.medtroniclabs.spice.data.history.MedicalReviewHistory
 import com.medtroniclabs.spice.data.history.PrescriptionHistoryEntity
@@ -49,13 +49,13 @@ import com.medtroniclabs.spice.model.PatientsDataModel
 import com.medtroniclabs.spice.model.ReferralData
 import com.medtroniclabs.spice.model.ReferralDetailRequest
 import com.medtroniclabs.spice.model.SearchAndListResponse
+import com.medtroniclabs.spice.model.medicalreview.CreateUnderFiveYearsRequest
 import com.medtroniclabs.spice.model.medicalreview.CreateUnderTwoMonthsResponse
-import com.medtroniclabs.spice.model.medicalreview.UnderTwoMonthsSummaryDetails
+import com.medtroniclabs.spice.model.medicalreview.SummaryDetails
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
 import retrofit2.Response
-import retrofit2.http.Body
 
 interface ApiHelper {
     suspend fun doLogin(loginRequest: MultipartBody): Response<LoginResponse>
@@ -82,8 +82,8 @@ interface ApiHelper {
     suspend fun getPatientStatus(request: PatientStatusRequest): Response<APIResponse<PatientStatusResponse>>
     suspend fun searchMedicationByName(request: MedicationSearchRequest): Response<APIResponse<ArrayList<MedicationResponse>>>
     suspend fun createMedicalReviewForUnderTwoMonths(request: CreateUnderTwoMonthsRequest): Response<APIResponse<CreateUnderTwoMonthsResponse>>
-    suspend fun getMedicalReviewForUnderTwoMonths(request: CreateUnderTwoMonthsResponse): Response<APIResponse<UnderTwoMonthsSummaryDetails>>
-    suspend fun underTwoMonthsSummaryCreate(request: UnderTwoMonthsSummarySubmitRequest): Response<APIResponse<HashMap<String, Any>>>
+    suspend fun getMedicalReviewForUnderTwoMonths(request: CreateUnderTwoMonthsResponse): Response<APIResponse<SummaryDetails>>
+    suspend fun underTwoMonthsSummaryCreate(request: SummarySubmitRequest): Response<APIResponse<HashMap<String, Any>>>
     suspend fun saveMotherNeonateAnc(motherNeonateAncRequest: MotherNeonateAncRequest):Response<APIResponse<PatientEncounterResponse>>
     suspend fun fetchSummary(motherNeonateAncRequest : MotherNeonateAncRequest) : Response<APIResponse<MotherNeonateAncSummaryModel>>
     suspend fun fetchWeight(motherNeonateAncRequest: MotherNeonateAncRequest): Response<APIResponse<BpAndWeightResponse>>
@@ -96,6 +96,8 @@ interface ApiHelper {
     suspend fun getReferPatientMobileUserList(tenantId: ReferPatientRequest): Response<APIResponse<List<ReferPatientNameNumber>>>
     suspend fun createReferPatientResult(request: ReferPatientResult): Response<APIResponse<HashMap<String,Any>>>
     suspend fun getUnderFiveYearsMetaData(): Response<APIResponse<UnderFiveYearsMetaResponse>>
+    suspend fun createMedicalReviewForUnderFiveYears(request: CreateUnderFiveYearsRequest): Response<APIResponse<CreateUnderTwoMonthsResponse>>
+    suspend fun getUnderFiveYearsSummaryDetails(request: CreateUnderTwoMonthsResponse): Response<APIResponse<SummaryDetails>>
     suspend fun createPrescriptionRequest(request: RequestBody):Response<APIResponse<Map<String,Any>>>
     suspend fun getPrescriptionList(request: PrescriptionListRequest):Response<APIResponse<ArrayList<Prescription>>>
     suspend fun removePrescription(request: RemovePrescriptionRequest):Response<APIResponse<Map<String,Any>>>

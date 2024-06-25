@@ -1,8 +1,12 @@
 package com.medtroniclabs.spice.repo
 
 import com.medtroniclabs.spice.common.SecuredPreference
+import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.data.MedicalReviewMetaItems
+import com.medtroniclabs.spice.data.SummarySubmitRequest
 import com.medtroniclabs.spice.db.local.RoomHelper
+import com.medtroniclabs.spice.model.medicalreview.CreateUnderFiveYearsRequest
+import com.medtroniclabs.spice.model.medicalreview.CreateUnderTwoMonthsResponse
 import com.medtroniclabs.spice.network.ApiHelper
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.network.resource.ResourceState
@@ -55,6 +59,42 @@ class UnderFiveYearsRepository @Inject constructor(
         }
         chipItemList.addAll(systemicExaminations)
         return chipItemList
+    }
+
+    suspend fun createMedicalReviewForUnderFiveYears(request: CreateUnderFiveYearsRequest): Resource<CreateUnderTwoMonthsResponse> {
+        return try {
+            val response = apiHelper.createMedicalReviewForUnderFiveYears(request)
+            if (response.isSuccessful) {
+                Resource(state = ResourceState.SUCCESS, data = response.body()?.entity)
+            } else {
+                val errorMessage = StringConverter.getErrorMessage(response.errorBody())
+                Resource(state = ResourceState.ERROR, message = errorMessage)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Resource(state = ResourceState.ERROR)
+        }
+    }
+
+    suspend fun underFiveYearsSummaryCreate(
+        summarySubmitRequest: SummarySubmitRequest
+    ): Resource<HashMap<String, Any>> {
+        return try {
+            val response = apiHelper.underTwoMonthsSummaryCreate(summarySubmitRequest)
+            if (response.isSuccessful) {
+                val res = response.body()
+                if (res?.status == true) {
+                    Resource(state = ResourceState.SUCCESS)
+                } else {
+                    Resource(state = ResourceState.ERROR)
+                }
+            } else {
+                Resource(state = ResourceState.ERROR)
+            }
+
+        } catch (e: Exception) {
+            Resource(state = ResourceState.ERROR)
+        }
     }
 
 }

@@ -83,4 +83,12 @@ object DefinedParams {
     const val valueColor = "color"
     const val Above5MedicalReview = "Above5MedicalReview"
     const val PregnancyAncMedicalReview = "pregnancyAncMedicalReview"
+
+    const val Anaemia = "anaemia"
+    const val Hiv = "hivRDT"
+    const val Cough = "cough"
+    const val CoughOrDifficultBreathing = "Cough / Difficult Breathing"
+    const val MalnutritionOrAnaemia = "Malnutrition / Anaemia"
+    const val HivAndAids = "HIV / AIDS RDT"
+
 }

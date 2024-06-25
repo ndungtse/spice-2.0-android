@@ -6,11 +6,13 @@ data class CreateUnderTwoMonthsResponse(
     val type: String? = null
 )
 
-data class UnderTwoMonthsSummaryDetails(
+
+data class SummaryDetails(
     val id: String,
     val clinicalNotes: String?,
     val presentingComplaintsNotes: String?,
-    val examination: Map<String, List<ExaminationDetail>>?
+    val examination: Map<String, List<ExaminationDetail>>?,
+    val patientStatus:String?
 )
 
 data class ExaminationDetail(

@@ -1,11 +1,10 @@
-package com.medtroniclabs.spice.ui.mypatients.fragment
+package com.medtroniclabs.spice.ui.medicalreview.underfiveyears
 
 import android.app.DatePickerDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
 import androidx.core.os.bundleOf
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResult
@@ -19,38 +18,37 @@ import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.ViewUtils
 import com.medtroniclabs.spice.data.resource.ExaminationResult
-import com.medtroniclabs.spice.databinding.FragmentUnderTwoMonthsTreatmentSummaryBinding
+import com.medtroniclabs.spice.databinding.FragmentUnderFiveYearsTreatmentSummarryBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
-import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
 import com.medtroniclabs.spice.model.medicalreview.CreateUnderTwoMonthsResponse
 import com.medtroniclabs.spice.model.medicalreview.ExaminationDetail
 import com.medtroniclabs.spice.model.medicalreview.SummaryDetails
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.medicalreview.abovefiveyears.PresentingComplaintsViewModel
-import com.medtroniclabs.spice.ui.medicalreview.undertwomonths.UnderTwoMonthsTreatmentSummaryViewModel
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
 import com.medtroniclabs.spice.ui.mypatients.adapter.ExaminationSummaryAdapter
+import com.medtroniclabs.spice.ui.mypatients.fragment.UnderTwoMonthsTreatmentSummaryFragment
+
+class UnderFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListener {
 
 
-class UnderTwoMonthsTreatmentSummaryFragment : BaseFragment(), View.OnClickListener {
-
-    private lateinit var binding: FragmentUnderTwoMonthsTreatmentSummaryBinding
+    private lateinit var binding: FragmentUnderFiveYearsTreatmentSummarryBinding
     private var datePickerDialog: DatePickerDialog? = null
     private val presentingComplaintsViewModel: PresentingComplaintsViewModel by activityViewModels()
-    private val summaryViewModel: UnderTwoMonthsTreatmentSummaryViewModel by activityViewModels()
+    private val summaryViewModel: UnderFiveYearTreatmentSummaryViewModel by activityViewModels()
     private lateinit var examinationSummaryAdapter: ExaminationSummaryAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
-        binding = FragmentUnderTwoMonthsTreatmentSummaryBinding.inflate(inflater, container, false)
+        binding = FragmentUnderFiveYearsTreatmentSummarryBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     companion object {
-        const val TAG = "UnderTwoMonthsTreatmentSummaryFragment"
-        fun newInstance() = UnderTwoMonthsTreatmentSummaryFragment()
+        const val TAG = "UnderFiveYearsTreatmentSummaryFragment"
+        fun newInstance() = UnderFiveYearsTreatmentSummaryFragment()
 
         fun newInstance(
             encounterId: String?, patientReference: String?
@@ -68,14 +66,12 @@ class UnderTwoMonthsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initView()
-        spinnerForDeliveryType()
         setListeners()
         attachObserver()
     }
 
     private fun initView() {
-
-        summaryViewModel.getUnderTwoMonthsSummaryDetails(
+        summaryViewModel.getUnderFiveYearsSummaryDetails(
             CreateUnderTwoMonthsResponse(
                 encounterId = arguments?.getString(DefinedParams.EncounterId) ?: "",
                 patientReference = arguments?.getString(DefinedParams.PatientReference) ?: ""
@@ -110,17 +106,21 @@ class UnderTwoMonthsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
     }
 
     private fun renderSummaryDetails(details: SummaryDetails) {
-        if (presentingComplaintsViewModel.enteredComplaintNotes.equals("")) {
-            binding.tvPresentingComplaints.text = getString(R.string.separator_double_hyphen)
-        } else binding.tvPresentingComplaints.text =
-            presentingComplaintsViewModel.enteredComplaintNotes
-
+        binding.tvPresentingComplaints.text = presentingComplaintsViewModel.enteredComplaintNotes
+            .takeIf { it.isNotEmpty() }
+            ?: getString(R.string.separator_double_hyphen)
         binding.tvClinicalNotes.text = details.clinicalNotes.toString()
         binding.tvClinicalName.text = requireContext().getString(
             R.string.firstname_lastname,
             SecuredPreference.getUserDetails().firstName,
             SecuredPreference.getUserDetails().lastName
         )
+        if (details.patientStatus.isNullOrEmpty()) {
+            binding.tvPatientStatus.text = getString(R.string.empty__)
+        } else {
+            binding.tvPatientStatus.text = details.patientStatus.toString()
+        }
+
         binding.tvDateOfReviewValue.text = DateUtils.convertDateTimeToDate(
             DateUtils.getTodayDateDDMMYYYY(),
             DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
@@ -155,65 +155,6 @@ class UnderTwoMonthsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
         binding.etNextVisitDate.safeClickListener(this)
     }
 
-    private fun spinnerForDeliveryType() {
-        val list = arrayListOf<Map<String, Any>>()
-        list.add(
-            hashMapOf<String, Any>(
-                DefinedParams.NAME to DefinedParams.DefaultIDLabel,
-                DefinedParams.ID to DefinedParams.DefaultSelectID
-            )
-        )
-        list.add(
-            hashMapOf<String, Any>(
-                DefinedParams.NAME to DefinedParams.OnTreatment, DefinedParams.ID to "1"
-            )
-        )
-        list.add(
-            hashMapOf<String, Any>(
-                DefinedParams.NAME to DefinedParams.Recovered, DefinedParams.ID to "2"
-            )
-        )
-        list.add(
-            hashMapOf<String, Any>(
-                DefinedParams.NAME to DefinedParams.REFERRED, DefinedParams.ID to "3"
-            )
-        )
-        setListenerToDeliveryStatus(list)
-    }
-
-    private fun setListenerToDeliveryStatus(list: ArrayList<Map<String, Any>>) {
-        val adapter = CustomSpinnerAdapter(requireContext())
-        adapter.setData(list)
-        binding.tvPatientStatus.adapter = adapter
-        binding.tvPatientStatus.setSelection(0, false)
-        binding.tvPatientStatus.onItemSelectedListener =
-            object : AdapterView.OnItemSelectedListener {
-                override fun onItemSelected(
-                    parent: AdapterView<*>?, view: View?, position: Int, id: Long
-                ) {
-                    val selectedItem = adapter.getData(position = position)
-                    selectedItem?.let {
-                        val selectedName = it[DefinedParams.NAME] as String?
-                        if (selectedName != DefinedParams.DefaultIDLabel) {
-                            selectedName?.let { name ->
-                                summaryViewModel.selectedPatientStatus = name
-                            }
-                        } else {
-                            summaryViewModel.selectedPatientStatus = null
-                        }
-                    }
-                    binding.tvNextVisitTimeError.gone()
-                    summaryViewModel.setSubmitBtn()
-                }
-
-                override fun onNothingSelected(parent: AdapterView<*>?) {
-                    /**
-                     * this method is not used
-                     */
-                }
-
-            }
-    }
 
     private fun showDatePickerDialog() {
         var yearMonthDate: Triple<Int?, Int?, Int?>? = null
@@ -255,23 +196,14 @@ class UnderTwoMonthsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
 
     fun validateInput(): Boolean {
         val value = binding.etNextVisitDate.text?.trim().toString()
-        if (value.isBlank()) {
-            return if (summaryViewModel.selectedPatientStatus?.contains(DefinedParams.Recovered) == true) {
-                binding.etNextVisitDate.text = ""
-                binding.tvNextVisitTimeError.gone()
-                true
-            } else if (summaryViewModel.selectedPatientStatus?.contains(DefinedParams.OnTreatment) == true && value.isBlank()) {
-                binding.etNextVisitDate.requestFocus()
-                binding.tvNextVisitTimeError.visible()
-                false
-            } else if (summaryViewModel.selectedPatientStatus?.contains(DefinedParams.REFERRED) == true && value.isBlank()) {
-                binding.etNextVisitDate.requestFocus()
-                binding.tvNextVisitTimeError.visible()
-                false
-            } else {
-                false
-            }
+        return if (value.isBlank()) {
+            binding.tvNextVisitTimeError.visible()
+            false
+        } else {
+            binding.tvNextVisitTimeError.gone()
+            true
         }
-        return true
     }
 }
+
+

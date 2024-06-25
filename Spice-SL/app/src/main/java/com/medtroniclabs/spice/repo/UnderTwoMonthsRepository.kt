@@ -4,7 +4,7 @@ import CreateUnderTwoMonthsRequest
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.StringConverter
-import com.medtroniclabs.spice.data.UnderTwoMonthsSummarySubmitRequest
+import com.medtroniclabs.spice.data.SummarySubmitRequest
 import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.db.local.RoomHelper
 import com.medtroniclabs.spice.model.PatientListRespModel
@@ -92,10 +92,10 @@ class UnderTwoMonthsRepository @Inject constructor(
         details: PatientListRespModel,
         submitCreateId: String,
         nextFollowupDate: String?
-    ): UnderTwoMonthsSummarySubmitRequest? {
+    ): SummarySubmitRequest? {
         return details.patientId?.let { patientId ->
             details.memberId?.let { memberId ->
-                UnderTwoMonthsSummarySubmitRequest(
+                SummarySubmitRequest(
                     memberId = memberId,
                     id = submitCreateId,
                     provenance = ProvanceDto(

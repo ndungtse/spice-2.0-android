@@ -28,7 +28,7 @@ import com.medtroniclabs.spice.data.ReferPatientRequest
 import com.medtroniclabs.spice.data.ReferPatientResult
 import com.medtroniclabs.spice.data.UnderFiveYearsMetaResponse
 import com.medtroniclabs.spice.data.UnderTwoMonthsMetaResponse
-import com.medtroniclabs.spice.data.UnderTwoMonthsSummarySubmitRequest
+import com.medtroniclabs.spice.data.SummarySubmitRequest
 import com.medtroniclabs.spice.data.Prescription
 import com.medtroniclabs.spice.data.RemovePrescriptionRequest
 import com.medtroniclabs.spice.data.UserSymptomsEntity
@@ -49,8 +49,9 @@ import com.medtroniclabs.spice.model.PatientsDataModel
 import com.medtroniclabs.spice.model.ReferralData
 import com.medtroniclabs.spice.model.ReferralDetailRequest
 import com.medtroniclabs.spice.model.SearchAndListResponse
+import com.medtroniclabs.spice.model.medicalreview.CreateUnderFiveYearsRequest
 import com.medtroniclabs.spice.model.medicalreview.CreateUnderTwoMonthsResponse
-import com.medtroniclabs.spice.model.medicalreview.UnderTwoMonthsSummaryDetails
+import com.medtroniclabs.spice.model.medicalreview.SummaryDetails
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
 import retrofit2.Response
@@ -129,10 +130,10 @@ interface ApiService {
     suspend fun getPatientStatus(@Body request: PatientStatusRequest): Response<APIResponse<PatientStatusResponse>>
 
     @POST("/spice-service/medical-review/iccm-under-2months/details")
-    suspend fun getUnderTwoMonthsSummaryDetails(@Body request : CreateUnderTwoMonthsResponse ): Response<APIResponse<UnderTwoMonthsSummaryDetails>>
+    suspend fun getUnderTwoMonthsSummaryDetails(@Body request : CreateUnderTwoMonthsResponse ): Response<APIResponse<SummaryDetails>>
 
     @POST("/spice-service/medical-review/summary-create")
-    suspend fun underTwoMonthsSummaryCreate(@Body request: UnderTwoMonthsSummarySubmitRequest): Response<APIResponse<HashMap<String, Any>>>
+    suspend fun underTwoMonthsSummaryCreate(@Body request: SummarySubmitRequest): Response<APIResponse<HashMap<String, Any>>>
 
     @POST("/spice-service/medical-review/anc-pregnancy/create")
     suspend fun saveMotherNeonateAnc(@Body motherNeonateAncRequest: MotherNeonateAncRequest):Response<APIResponse<PatientEncounterResponse>>
@@ -175,6 +176,12 @@ interface ApiService {
 
     @POST("spice-service/prescription-request/remove")
     suspend fun removePrescription(@Body request: RemovePrescriptionRequest):Response<APIResponse<Map<String,Any>>>
+
+    @POST("/spice-service/medical-review/iccm-under-5years/details")
+    suspend fun getUnderFiveYearsSummaryDetails(@Body request : CreateUnderTwoMonthsResponse ): Response<APIResponse<SummaryDetails>>
+
+    @POST("/spice-service/medical-review/iccm-under-5years/create")
+    suspend fun createMedicalReviewForUnderFiveYears(@Body request: CreateUnderFiveYearsRequest): Response<APIResponse<CreateUnderTwoMonthsResponse>>
 
     @POST("/spice-service/prescription-request/prescribed-details")
     suspend fun getPrescription(@Body request: ReferralDetailRequest): Response<APIResponse<PrescriptionHistoryEntity>>
