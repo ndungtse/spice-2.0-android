@@ -18,6 +18,7 @@ class PatientsDataSource(
     private val patientRepository: PatientRepository,
     private val searchText: String,
     private val filter:MedicalReviewFilterModel?,
+    private var isRefresh: Boolean = false,
     private val getPatientsCount: (String) -> Unit
 ) : PagingSource<Int, PatientListRespModel>() {
 
@@ -35,6 +36,10 @@ class PatientsDataSource(
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, PatientListRespModel> {
         val pageIndex = params.key ?: PAGE_INDEX
+        if (isRefresh) {
+            loadedCount = 0
+            isRefresh = false
+        }
         return try {
             if (villages.isEmpty()) {
                 val villageIdNameList = patientRepository.getVillageIdName()

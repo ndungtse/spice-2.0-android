@@ -9,6 +9,8 @@ import android.widget.AdapterView
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.appextensions.gone
+import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.CommonUtils.toDoubleOrEmptyString
 import com.medtroniclabs.spice.common.CommonUtils.toIntOrEmptyString
@@ -19,6 +21,7 @@ import com.medtroniclabs.spice.common.DateUtils.DATE_ddMMyyyy
 import com.medtroniclabs.spice.common.DateUtils.calculateGestationalAge
 import com.medtroniclabs.spice.common.DateUtils.formatGestationalAge
 import com.medtroniclabs.spice.common.DefinedParams
+import com.medtroniclabs.spice.common.DefinedParams.LMB
 import com.medtroniclabs.spice.common.ViewUtils
 import com.medtroniclabs.spice.databinding.FragmentPregnancyDetailsBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
@@ -44,8 +47,12 @@ class PregnancyDetailsFragment : BaseFragment(), View.OnClickListener {
 
     companion object {
         const val TAG = "PregnancyDetailsFragment"
-        fun newInstance(): PregnancyDetailsFragment {
-            return PregnancyDetailsFragment()
+        fun newInstance(lmb: String?): PregnancyDetailsFragment {
+            val fragment = PregnancyDetailsFragment()
+            val bundle = Bundle()
+            bundle.putString(DefinedParams.LMB, lmb)
+            fragment.arguments = bundle
+            return fragment
         }
     }
 
@@ -131,6 +138,8 @@ class PregnancyDetailsFragment : BaseFragment(), View.OnClickListener {
             getString(R.string.error_label),
             context = requireContext()
         )
+        val isLmbValid = binding.tvLastMenstrualPeriodDate.text?.toString()?.trim()?.isBlank() == true
+        binding.tvLastMenstrualPeriodError.apply { if (isLmbValid) visible() else gone() }
         findFirstInvalidField(
             isSystolicValid,
             isDiastolicValid,
@@ -138,10 +147,11 @@ class PregnancyDetailsFragment : BaseFragment(), View.OnClickListener {
             isNoFoFetusValid,
             isGravidaValid,
             isParityFirstValid,
-            isParitySecondValid
+            isParitySecondValid,
+            isLmbValid
         )
         // Return true only if all validations pass
-        return isWeightValid && isHeightValid && isSystolicValid && isDiastolicValid && isPulseValid && isNoFoFetusValid && isGravidaValid && isParityFirstValid && isParitySecondValid
+        return isWeightValid && isHeightValid && isSystolicValid && isDiastolicValid && isPulseValid && isNoFoFetusValid && isGravidaValid && isParityFirstValid && isParitySecondValid && !isLmbValid
     }
 
     private fun findFirstInvalidField(
@@ -151,7 +161,8 @@ class PregnancyDetailsFragment : BaseFragment(), View.OnClickListener {
         isNoFoFetusValid: Boolean,
         isGravidaValid: Boolean,
         isParityFirstValid: Boolean,
-        isParitySecondValid: Boolean
+        isParitySecondValid: Boolean,
+        isLmbValid: Boolean
     ) {
         // Find and return the first invalid field
         val view = if (!isWeightValid()) {
@@ -172,6 +183,8 @@ class PregnancyDetailsFragment : BaseFragment(), View.OnClickListener {
             binding.etParityFirst
         } else if (!isParitySecondValid) {
             binding.etParitySecond
+        }  else if (isLmbValid) {
+            binding.tvLastMenstrualPeriodDate
         } else {
             null
         }
@@ -282,8 +295,19 @@ class PregnancyDetailsFragment : BaseFragment(), View.OnClickListener {
                 etSystolic.setText(model.systolic?.toIntOrEmptyString())
                 etDiastolic.setText(model.diastolic?.toIntOrEmptyString())
                 etPulse.setText(model.pulse?.toIntOrEmptyString())
-                tvLastMenstrualPeriodDate.text = model.lastMenstrualPeriod?.let {
-                    DateUtils.convertDateFormat(it, DATE_FORMAT_yyyyMMdd, DATE_ddMMyyyy)
+                val lmb = arguments?.getString(LMB)
+                if (!lmb.isNullOrBlank()) {
+                    binding.tvLastMenstrualPeriodDate.text =
+                        DateUtils.convertDateFormat(
+                            lmb,
+                            DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ, DATE_ddMMyyyy
+                        )
+                    calculateGestationalAgeAndEstimationDeliveryDate()
+                    binding.tvLastMenstrualPeriodDate.isEnabled = false
+                } else {
+                    tvLastMenstrualPeriodDate.text = model.lastMenstrualPeriod?.let {
+                        DateUtils.convertDateFormat(it, DATE_FORMAT_yyyyMMdd, DATE_ddMMyyyy)
+                    }
                 }
                 tvEstimatedDeliveryDate.text = model.estimatedDeliveryDate?.let {
                     DateUtils.convertDateFormat(it, DATE_FORMAT_yyyyMMdd, DATE_ddMMyyyy)

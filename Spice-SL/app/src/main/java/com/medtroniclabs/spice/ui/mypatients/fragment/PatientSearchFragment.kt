@@ -56,6 +56,14 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
         setAdapterViews()
         attachObservers()
         getPatientList()
+        binding.refreshLayout.setOnRefreshListener {
+            swipeRefresh()
+        }
+    }
+
+    private fun swipeRefresh() {
+        getPatientList()
+        scrollTop()
     }
 
     private fun attachObservers() {
@@ -73,6 +81,9 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
                 }
                 binding.tvNoPatientsFound.visibility =
                     if (count.toLong() != 0L) View.GONE else View.VISIBLE
+            }
+            if (binding.refreshLayout.isRefreshing) {
+                binding.refreshLayout.isRefreshing = false
             }
         }
         patientListViewModel.filterLiveData.observe(viewLifecycleOwner) {

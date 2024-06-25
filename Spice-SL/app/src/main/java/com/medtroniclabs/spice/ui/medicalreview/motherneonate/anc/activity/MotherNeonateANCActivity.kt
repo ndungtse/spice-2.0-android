@@ -357,11 +357,11 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
 
         if (existingFragment == null) {
             fragmentManager.beginTransaction()
-                .add(R.id.pregnancyDetailsConatiner, PregnancyDetailsFragment.newInstance())
+                .add(R.id.pregnancyDetailsConatiner, PregnancyDetailsFragment.newInstance(patientViewModel.getPatientLmb()))
                 .commit()
         } else if (existingFragment !is PregnancyDetailsFragment) {
             fragmentManager.beginTransaction()
-                .replace(R.id.pregnancyDetailsConatiner, PregnancyDetailsFragment.newInstance())
+                .replace(R.id.pregnancyDetailsConatiner, PregnancyDetailsFragment.newInstance(patientViewModel.getPatientLmb()))
                 .commit()
         }
     }

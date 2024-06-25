@@ -77,6 +77,7 @@ object DefinedParams {
     const val SIGN_SUFFIX = "_signature"
 
     const val DOB = "DOB"
+    const val LMB = "LMB"
     const val Recovered = "Recovered"
     const val PatientReference = "patientReference"
     const val valueColor = "color"
