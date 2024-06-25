@@ -31,6 +31,8 @@ class UnderFiveYearsRepository @Inject constructor(
                     )
                     roomHelper.deleteExaminationsList(MedicalReviewTypeEnums.UnderFiveYears.name)
                     roomHelper.saveExaminationsList(examinations)
+                    roomHelper.deleteDiagnosisList(MedicalReviewTypeEnums.UnderFiveYears.name)
+                    roomHelper.saveDiagnosisList(diseaseCategories)
                 }
                 SecuredPreference.putBoolean(
                     SecuredPreference.EnvironmentKey.IS_UNDER_FIVE_YEARS_LOADED.name,

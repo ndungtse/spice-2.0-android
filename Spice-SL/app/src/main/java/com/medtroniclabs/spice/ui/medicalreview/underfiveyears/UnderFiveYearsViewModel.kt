@@ -28,7 +28,6 @@ import com.medtroniclabs.spice.model.medicalreview.UnderFiveDiarrhoea
 import com.medtroniclabs.spice.model.medicalreview.UnderFiveExamination
 import com.medtroniclabs.spice.model.medicalreview.UnderFiveYearsDTO
 import com.medtroniclabs.spice.network.resource.Resource
-import com.medtroniclabs.spice.network.utils.ConnectivityManager
 import com.medtroniclabs.spice.repo.UnderFiveYearsRepository
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -42,9 +41,7 @@ class UnderFiveYearsViewModel @Inject constructor(
     private var underFiveYearsRepository: UnderFiveYearsRepository
 ) : ViewModel() {
 
-    @Inject
-    lateinit var connectivityManager: ConnectivityManager
-    private val createUnderFiveMedicalReviewLiveData =
+    val createUnderFiveMedicalReviewLiveData =
         MutableLiveData<Resource<CreateUnderTwoMonthsResponse>>()
     val createUnderFiveYearMedicalReview: LiveData<Resource<CreateUnderTwoMonthsResponse>>
         get() = createUnderFiveMedicalReviewLiveData
@@ -53,6 +50,10 @@ class UnderFiveYearsViewModel @Inject constructor(
 
     val underFiveYearsMetaLiveData = MutableLiveData<Resource<Boolean>>()
     var patientId: String? = null
+    var memberId: String? = null
+    var isSwipeRefresh: Boolean = false
+    var encounterId: String? = null
+    var patientReference:String? = null
 
     fun getStaticMetaData() {
         viewModelScope.launch(dispatcherIO) {

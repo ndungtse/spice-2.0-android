@@ -46,6 +46,7 @@
             android:fontFamily="@font/inter_bold"
             android:text="@string/done"
             android:textAllCaps="true"
+            android:enabled="false"
             android:background="@drawable/button_selector_cobalt"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

@@ -9,6 +9,7 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResult
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.invisible
@@ -19,6 +20,7 @@ import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.ViewUtils
 import com.medtroniclabs.spice.data.resource.ExaminationResult
 import com.medtroniclabs.spice.databinding.FragmentUnderFiveYearsTreatmentSummarryBinding
+import com.medtroniclabs.spice.formgeneration.extension.markMandatory
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.model.medicalreview.CreateUnderTwoMonthsResponse
 import com.medtroniclabs.spice.model.medicalreview.ExaminationDetail
@@ -77,7 +79,8 @@ class UnderFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
                 patientReference = arguments?.getString(DefinedParams.PatientReference) ?: ""
             )
         )
-
+        binding.tvNextVisitTimeLabel.markMandatory()
+        binding.tvPatientStatusLabel.markMandatory()
         examinationSummaryAdapter = ExaminationSummaryAdapter()
         binding.rvExaminationList.layoutManager = LinearLayoutManager(requireContext())
         binding.rvExaminationList.adapter = examinationSummaryAdapter
@@ -99,8 +102,12 @@ class UnderFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
                     resourceState.data?.let {
                         renderSummaryDetails(it)
                     }
-                    summaryViewModel.setRefreshing(false)
                 }
+            }
+            val swipeRefresh =
+                (activity as UnderFiveYearsBaseActivity).findViewById<SwipeRefreshLayout>(R.id.refreshLayout)
+            if (swipeRefresh.isRefreshing) {
+                swipeRefresh.isRefreshing = false
             }
         }
     }
