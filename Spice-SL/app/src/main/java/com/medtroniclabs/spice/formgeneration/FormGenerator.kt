@@ -1799,8 +1799,16 @@ class FormGenerator(
         focusNeeded = null
         serverData?.forEach { data ->
             data.apply {
+                if ((isMandatory && !resultHashMap.containsKey(id)
+                            && isViewVisible(id) && isViewEnabled(id))
+                    ||
+                    (isMandatory && resultHashMap.containsKey(id)
+                            && resultHashMap[id] is String && (resultHashMap[id] as String).isEmpty())
+                ) {
 
-                if ((id == headPhoneNumber || id == phoneNumber) && isMandatory && resultHashMap.containsKey(
+                    isValid = false
+                    requestFocusView(data)
+                } else if ((id == headPhoneNumber || id == phoneNumber) && isMandatory && resultHashMap.containsKey(
                         id
                     )
                 ) {
@@ -1840,29 +1848,94 @@ class FormGenerator(
                         isValid = false
                         requestFocusView(data)
                     }
-                } else if (isMandatory && ((!resultHashMap.containsKey(id) && isViewVisible(id) && isViewEnabled(
-                        id
-                    ))
-                            || (resultHashMap[id] is String && (resultHashMap[id] as String).isEmpty()))
-                ) {
-                    isValid = false
-                    requestFocusView(data)
-                } else if (viewType == VIEW_TYPE_FORM_EDITTEXT && isValid) {
-                    isValid = validateMinMaxLength(
-                        resultHashMap[id],
-                        isValid,
-                        data
-                    )
-                    if (isValid && data.onlyAlphabets == true) {
-                        isValid = checkOnlyAlphabets(
-                            resultHashMap[id],
-                            isValid,
-                            data
-                        )
-                    }
                 } else {
-                    hideValidationField(data)
+                    if (resultHashMap.containsKey(id)) {
+                        val actualValue = resultHashMap[id]
+                        if (actualValue is String && actualValue.isEmpty() && !isMandatory) {
+                            hideValidationField(data)
+                        } else {
+                            isValid = validateMinMaxLength(
+                                actualValue,
+                                isValid,
+                                data
+                            )
+                            if (isValid && data.onlyAlphabets == true) {
+                                isValid = checkOnlyAlphabets(
+                                    actualValue,
+                                    isValid,
+                                    data
+                                )
+                            }
+                        }
+                    } else {
+                        hideValidationField(data)
+                    }
                 }
+
+
+                /* if ((id == headPhoneNumber || id == phoneNumber) && isMandatory && resultHashMap.containsKey(
+                         id
+                     )
+                 ) {
+                     val actualValue = resultHashMap[id] as? String
+                     actualValue?.let {
+                         if (!startsWith.isNullOrEmpty() && !checkPhoneNumberValidOrNot(
+                                 it,
+                                 startsWith
+                             )
+                         ) {
+                             isValid = false
+                             requestFocusView(
+                                 data, getString(
+                                     R.string.start_with_validation,
+                                     startsWith?.joinToString(separator = " ${getString(R.string.or)} ")
+                                         ?: ""
+                                 )
+                             )
+                         } else if (!phoneNumberConatinMaxLength(
+                                 maxLength,
+                                 it
+                             )
+                         ) {
+                             isValid = false
+                             requestFocusView(data)
+                         } else if (!FormFieldValidator.isValidMobileNumber(it)) {
+                             isValid = false
+                             requestFocusView(
+                                 data, getString(
+                                     R.string.phone_number_invalid
+                                 )
+                             )
+                         } else {
+                             hideValidationField(data)
+                         }
+                     } ?: run {
+                         isValid = false
+                         requestFocusView(data)
+                     }
+                 } else if ((isMandatory && !resultHashMap.containsKey(id)
+                             && isViewVisible(id) && isViewEnabled(id))
+                     ||
+                     (isMandatory && resultHashMap.containsKey(id)
+                             && resultHashMap[id] is String && (resultHashMap[id] as String).isEmpty())) {
+                     isValid = false
+                     requestFocusView(data)
+                 } else if (viewType == VIEW_TYPE_FORM_EDITTEXT && isValid) {
+                     isValid = validateMinMaxLength(
+                         resultHashMap[id],
+                         isValid,
+                         data
+                     )
+                     if (isValid && data.onlyAlphabets == true) {
+                         isValid = checkOnlyAlphabets(
+                             resultHashMap[id],
+                             isValid,
+                             data
+                         )
+                     }
+                 } else {
+                     hideValidationField(data)
+                 }*/
             }
         }
         return isValid

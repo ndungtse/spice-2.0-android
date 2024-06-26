@@ -177,6 +177,9 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
                     patientViewModel.patientDetailsLiveData.value?.data?.let {
                         prescriptionViewModel.getPrescriptionList(it)
                     }
+                    binding.tvDiscontinuedMedication.text =
+                        getText(R.string.view_discontinued_medication)
+                    binding.cardDiscontinuedPrescriptionContainer.gone()
                 }
 
                 ResourceState.ERROR -> {
