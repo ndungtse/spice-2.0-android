@@ -1,11 +1,13 @@
 package com.medtroniclabs.spice.db.dao
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.RawQuery
+import androidx.room.Transaction
 import androidx.room.Update
 import androidx.sqlite.db.SimpleSQLiteQuery
 import com.medtroniclabs.spice.data.model.HouseholdCardDetail
@@ -23,6 +25,18 @@ interface HouseholdDAO {
 
     @Update
     suspend fun updateHouseHold(houseHold: HouseholdEntity)
+
+    @Query("SELECT * FROM Household WHERE fhir_id = :fhirId LIMIT 1")
+    suspend fun getByUniqueField(fhirId: String): HouseholdEntity?
+
+    @Transaction
+    suspend fun insertOrUpdateFromBE(entity: HouseholdEntity): Long {
+        val existingEntity = entity.fhirId?.let { getByUniqueField(it) }
+        val entityToInsert = existingEntity?.let { entity.copy(id = it.id) } ?: entity
+        entityToInsert.sync_status = OfflineSyncStatus.Success
+        entityToInsert.fhirId = entity.fhirId
+        return insertHouseHold(entityToInsert)
+    }
 
 
     @Query("SELECT MAX(household_no) FROM household WHERE village_id = :villageId")

@@ -186,4 +186,12 @@ interface RoomHelper {
     suspend fun updateOtherDuplicateTickets(id: Long, followUp: FollowUp)
 
     suspend fun updateOnTreatmentStatus(id: Long, followUp: FollowUp, updatedAt: Long)
+
+    suspend fun changeHouseholdStatus(idList: List<String>, status: String)
+
+    suspend fun changeHouseholdMemberStatus(idList: List<String>, status: String)
+
+    suspend fun insertOrUpdateHHFromBE(entity: HouseholdEntity): Long
+
+    suspend fun insertOrUpdateHHMFromBE(entity: HouseholdMemberEntity): Long
 }

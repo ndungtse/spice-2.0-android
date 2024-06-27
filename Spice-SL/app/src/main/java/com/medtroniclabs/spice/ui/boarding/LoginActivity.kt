@@ -177,9 +177,6 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
             return
         }
 
-        /*SecuredPreference.remove(SecuredPreference.EnvironmentKey.LAST_SYNCED_AT.name)
-        viewModel.doLogin(userName, password)*/
-
         // Check different account login
         val oldUserName =
             SecuredPreference.getString(SecuredPreference.EnvironmentKey.USERNAME.name)

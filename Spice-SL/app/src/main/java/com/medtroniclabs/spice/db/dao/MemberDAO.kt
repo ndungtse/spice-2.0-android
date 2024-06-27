@@ -1,15 +1,18 @@
 package com.medtroniclabs.spice.db.dao
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
 import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
 import com.medtroniclabs.spice.model.MemberDobGenderModel
 import com.medtroniclabs.spice.model.assessment.AssessmentMemberDetails
 import com.medtroniclabs.spice.data.offlinesync.model.HouseHoldMember
 import com.medtroniclabs.spice.data.offlinesync.utils.OfflineSyncStatus
+import com.medtroniclabs.spice.db.entity.HouseholdEntity
 
 @Dao
 interface MemberDAO {
@@ -62,5 +65,17 @@ interface MemberDAO {
 
     @Query("SELECT patient_id FROM HouseholdMember WHERE fhir_id =:fhirId")
     suspend fun getPatientIdByFhirId(fhirId: String): String?
+
+    @Query("SELECT * FROM HouseholdMember WHERE fhir_id = :fhirId LIMIT 1")
+    suspend fun getByUniqueField(fhirId: String): HouseholdMemberEntity?
+
+    @Transaction
+    suspend fun insertOrUpdateFromBE(entity: HouseholdMemberEntity): Long {
+        val existingEntity = entity.fhirId?.let { getByUniqueField(it) }
+        val entityToInsert = existingEntity?.let { entity.copy(id = it.id) } ?: entity
+        entityToInsert.sync_status = OfflineSyncStatus.Success
+        entityToInsert.fhirId = entity.fhirId
+        return insertMember(entityToInsert)
+    }
 
 }

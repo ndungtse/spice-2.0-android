@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.appextensions.postLoading
+import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.network.utils.ConnectivityManager
@@ -47,11 +48,15 @@ class ResourceLoadingViewModel @Inject constructor(
 
     fun downloadInitialDetails() {
         viewModelScope.launch(dispatcherIO) {
-            val requestIds = offlineSyncRepository.postOfflineUnSyncedChanges()
-            if (requestIds == null) {
-                householdsLiveData.postError()
-            } else {
-                offlineSyncRepository.getHouseholdAndMembers(householdsLiveData)
+            val longSyncedAt = SecuredPreference.getLong(SecuredPreference.EnvironmentKey.LAST_SYNCED_AT.name)
+            //Only download first time or different use login
+            if (longSyncedAt == 0L) {
+                val requestIds = offlineSyncRepository.postOfflineUnSyncedChanges()
+                if (requestIds == null) {
+                    householdsLiveData.postError()
+                } else {
+                    offlineSyncRepository.getHouseholdAndMembers(householdsLiveData)
+                }
             }
         }
     }

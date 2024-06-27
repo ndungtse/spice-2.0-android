@@ -1,5 +1,6 @@
 package com.medtroniclabs.spice.repo
 
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.google.gson.Gson
 import com.google.gson.JsonParser
@@ -86,10 +87,14 @@ class OfflineSyncRepository @Inject constructor(
     suspend fun getHouseholdAndMembers(liveData: MutableLiveData<Resource<Boolean>>) {
         liveData.postLoading()
         try {
-            roomHelper.deleteAllHouseholds()
-            roomHelper.deleteAllHouseholdMembers()
-            roomHelper.deleteAllMemberClinical()
-            roomHelper.deleteAllAssessments()
+            // Check and Delete local data
+            val longSyncedAt = SecuredPreference.getLong(SecuredPreference.EnvironmentKey.LAST_SYNCED_AT.name)
+            if (longSyncedAt == 0L) {
+                roomHelper.deleteAllHouseholds()
+                roomHelper.deleteAllHouseholdMembers()
+                roomHelper.deleteAllMemberClinical()
+                roomHelper.deleteAllAssessments()
+            }
 
             // Fetch Synced Data
             val isInitialDataSuccess = fetchSyncedData()
@@ -212,7 +217,7 @@ class OfflineSyncRepository @Inject constructor(
         val hhMap = mutableMapOf<String, Long>()
 
         households?.forEach { entity ->
-            hhMap[entity.id!!] = roomHelper.saveHouseHoldEntry(
+            hhMap[entity.id!!] = roomHelper.insertOrUpdateHHFromBE(
                 entity.toHouseholdEntity(
                     villageNameId,
                     OfflineSyncStatus.Success
@@ -228,13 +233,22 @@ class OfflineSyncRepository @Inject constructor(
         hhIdMap: Map<String, Long>
     ) {
         householdMembers?.forEach { member ->
-            hhIdMap[member.householdId]?.let {
-                roomHelper.registerMember(
+            if (hhIdMap.containsKey(member.householdId)) {
+                roomHelper.insertOrUpdateHHMFromBE(
                     member.toHouseholdMemberEntity(
-                        it,
+                        hhIdMap[member.householdId]!!,
                         OfflineSyncStatus.Success
                     )
                 )
+            } else {
+                roomHelper.getHouseholdIdByFhirId(member.householdId)?.let {
+                    roomHelper.insertOrUpdateHHMFromBE(
+                        member.toHouseholdMemberEntity(
+                            it,
+                            OfflineSyncStatus.Success
+                        )
+                    )
+                }
             }
         }
     }
@@ -394,10 +408,15 @@ class OfflineSyncRepository @Inject constructor(
     * 3. List is null -> Post un-synced local changes and API is failed
     * */
     suspend fun postOfflineUnSyncedChanges(): List<String>? {
+        val householdIds = mutableListOf<String>()
+        val householdMemberIds = mutableListOf<String>()
+
         val houseHoldList = roomHelper.getAllUnSyncedHouseHolds()
+        householdIds.addAll(houseHoldList.map { it.referenceId!! })
         houseHoldList.forEach { householdEntity ->
             val memberList =
                 roomHelper.getAllUnSyncedHouseHoldMembers((householdEntity.referenceId!!.toLong()))
+            householdMemberIds.addAll(memberList.map { it.referenceId!! })
 
             //Assessment
             memberList.forEach { hhm ->
@@ -411,6 +430,7 @@ class OfflineSyncRepository @Inject constructor(
         val otherHouseholdMembers = roomHelper.getOtherHouseholdMembers()
         //Assessment
         otherHouseholdMembers.forEach { hhm ->
+            householdMemberIds.add(hhm.referenceId!!)
             hhm.motherPatientId?.let { hhm.isChild = true }
             hhm.assessments = getUnSyncedAssessmentByPatientId(hhm.patientId)
         }
@@ -443,6 +463,8 @@ class OfflineSyncRepository @Inject constructor(
         try {
             val apiResponse = apiHelper.postOfflineSync(request)
             if (apiResponse.isSuccessful) {
+
+
                 return listOf(request[OfflineConstant.REQUEST_ID] as String)
             }
         } catch (e: Exception) {
@@ -450,5 +472,51 @@ class OfflineSyncRepository @Inject constructor(
         }
 
         return null
+    }
+
+    suspend fun getSyncStatusForOffline(id: String): Boolean {
+        val req = RequestGetSyncStatus(requestId = id)
+        try {
+            // Get Sync Status
+            val response = getSyncStatus(req)
+            if (response.isSuccessful) {
+                var isAllEntitiesSynced = true
+                response.body()?.entityList?.forEach { entity ->
+                    when(entity.status) {
+                        OfflineSyncStatus.Success.name -> {
+                            if (entity.type != null && entity.referenceId != null && entity.fhirId != null) {
+                                updateFhirId(
+                                    entity.type,
+                                    entity.referenceId,
+                                    entity.fhirId,
+                                    OfflineSyncStatus.Success.name
+                                )
+                            }
+                        }
+
+                        OfflineSyncStatus.Failed.name -> {
+                            if (entity.type != null && entity.referenceId != null) {
+                                updateFhirId(
+                                    entity.type,
+                                    entity.referenceId,
+                                    null,
+                                    OfflineSyncStatus.Failed.name
+                                )
+                            }
+                        }
+
+                        OfflineSyncStatus.InProgress.name -> {
+                            isAllEntitiesSynced = false
+                        }
+                    }
+                }
+
+                return isAllEntitiesSynced
+            } else {
+                return false
+            }
+        } catch (e: Exception) {
+            return false
+        }
     }
 }

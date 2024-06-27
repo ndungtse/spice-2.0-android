@@ -532,4 +532,20 @@ class RoomHelperImpl @Inject constructor(
     ) {
         followUpDao.updateOnTreatmentStatus(id, followUp.memberId, followUp.type, updateAt, followUp.encounterType, followUp.reason)
     }
+
+    override suspend fun insertOrUpdateHHFromBE(entity: HouseholdEntity): Long {
+        return householdDAO.insertOrUpdateFromBE(entity)
+    }
+
+    override suspend fun insertOrUpdateHHMFromBE(entity: HouseholdMemberEntity): Long {
+        return memberDAO.insertOrUpdateFromBE(entity)
+    }
+
+    override suspend fun changeHouseholdStatus(idList: List<String>, status: String) {
+
+    }
+
+    override suspend fun changeHouseholdMemberStatus(idList: List<String>, status: String) {
+
+    }
 }

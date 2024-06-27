@@ -46,7 +46,7 @@ class GetSyncStatusWorker @AssistedInject constructor(
 
             var isAllEntitiesSynced = true
             if (!requestIds.isNullOrEmpty()) {
-                isAllEntitiesSynced = getSyncStatusForHouseHolds(requestIds[0])
+                isAllEntitiesSynced = offlineSyncRepository.getSyncStatusForOffline(requestIds[0])
             }
 
             if (isAllEntitiesSynced) {
@@ -60,54 +60,5 @@ class GetSyncStatusWorker @AssistedInject constructor(
         }
 
         return Result.failure()
-    }
-
-    private suspend fun getSyncStatusForHouseHolds(id: String): Boolean {
-
-        val req = RequestGetSyncStatus(requestId = id)
-
-        try {
-            // Get Sync Status
-            val response = offlineSyncRepository.getSyncStatus(req)
-            if (response.isSuccessful) {
-                var isAllEntitiesSynced = true
-                response.body()?.entityList?.forEach { entity ->
-                   when(entity.status) {
-                       OfflineSyncStatus.Success.name -> {
-                           if (entity.type != null && entity.referenceId != null && entity.fhirId != null) {
-                               offlineSyncRepository.updateFhirId(
-                                   entity.type,
-                                   entity.referenceId,
-                                   entity.fhirId,
-                                   OfflineSyncStatus.Success.name
-                               )
-                           }
-                       }
-
-                       OfflineSyncStatus.Failed.name -> {
-                           if (entity.type != null && entity.referenceId != null) {
-                               offlineSyncRepository.updateFhirId(
-                                   entity.type,
-                                   entity.referenceId,
-                                   null,
-                                   OfflineSyncStatus.Failed.name
-                               )
-                           }
-                       }
-
-                       OfflineSyncStatus.InProgress.name -> {
-                           isAllEntitiesSynced = false
-                       }
-                   }
-                }
-
-                return isAllEntitiesSynced
-            } else {
-                return false
-            }
-        } catch (e: Exception) {
-            Log.e("Test","Exception : "+e.message)
-            return false
-        }
     }
 }
