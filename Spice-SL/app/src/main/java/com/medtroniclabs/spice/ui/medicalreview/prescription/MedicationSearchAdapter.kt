@@ -27,7 +27,7 @@ class MedicationSearchAdapter(context: Context) :
             viewHolder = ViewHolder(binding)
             viewHolder.bind(getItem(position))
             view.tag = viewHolder
-        } else{
+        } else {
             view = convertView
             viewHolder = convertView.tag as ViewHolder
             viewHolder.bind(getItem(position))
@@ -37,7 +37,9 @@ class MedicationSearchAdapter(context: Context) :
 
     class ViewHolder(val binding: MedicationSerachAdapterLayoutBinding) {
         fun bind(item: MedicationResponse) {
-            binding.tvMedicationName.text = item.name
+            val name = "${item.name}, ${item.brandName}, ${item.dosageFormName}"
+            binding.tvMedicationName.text = name
+            binding.tvClassification.text = item.classificationName
         }
     }
 

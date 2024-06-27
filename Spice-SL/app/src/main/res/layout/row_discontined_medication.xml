@@ -16,59 +16,60 @@
             android:layout_width="@dimen/_0dp"
             android:layout_height="wrap_content"
             android:layout_weight="0.2"
-            android:fontFamily="@font/inter_medium"
+            android:fontFamily="@font/inter_regular"
             android:gravity="start"
             android:padding="@dimen/_12sdp"
-            android:textColor="@color/grey_black"
-            android:textSize="@dimen/_16ssp" />
+            android:textColor="@color/black"
+            android:textSize="@dimen/_14ssp" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tvFrequency"
             android:layout_width="@dimen/_0dp"
             android:layout_height="wrap_content"
             android:layout_weight="0.2"
-            android:fontFamily="@font/inter_medium"
+            android:fontFamily="@font/inter_regular"
             android:gravity="center"
             android:padding="@dimen/_12sdp"
-            android:textColor="@color/grey_black"
-            android:textSize="@dimen/_16ssp" />
+            android:textColor="@color/black"
+            android:textSize="@dimen/_14ssp" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tvPrescribedDays"
             android:layout_width="@dimen/_0dp"
             android:layout_height="wrap_content"
             android:layout_weight="0.2"
-            android:fontFamily="@font/inter_medium"
+            android:fontFamily="@font/inter_regular"
             android:gravity="center"
             android:padding="@dimen/_12sdp"
-            android:textColor="@color/grey_black"
-            android:textSize="@dimen/_16ssp" />
+            android:textColor="@color/black"
+            android:textSize="@dimen/_14ssp" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tvQuantity"
             android:layout_width="@dimen/_0dp"
             android:layout_height="wrap_content"
             android:layout_weight="0.2"
-            android:fontFamily="@font/inter_medium"
+            android:fontFamily="@font/inter_regular"
             android:gravity="center"
             android:padding="@dimen/_12sdp"
-            android:textColor="@color/grey_black"
-            android:textSize="@dimen/_16ssp" />
+            android:textColor="@color/black"
+            android:textSize="@dimen/_14ssp" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tvDiscontinuedOn"
             android:layout_width="@dimen/_0dp"
             android:layout_height="wrap_content"
             android:layout_weight="0.2"
-            android:fontFamily="@font/inter_medium"
+            android:fontFamily="@font/inter_regular"
             android:gravity="center"
             android:padding="@dimen/_12sdp"
             android:textColor="@color/cobalt_blue"
-            android:textSize="@dimen/_16ssp" />
+            android:textSize="@dimen/_14ssp" />
 
     </LinearLayout>
 
     <View
+        android:id="@+id/viewDiscontinuedMedication"
         android:layout_width="match_parent"
         android:layout_height="@dimen/_1sdp"
         android:background="@color/edittext_stroke_50t" />

@@ -12,6 +12,7 @@ import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
+import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.StringConverter.stringToMap
@@ -128,7 +129,6 @@ class AssessmentRMNCHNeonateSummaryFragment : BaseFragment(), View.OnClickListen
             }
     }
 
-
     private fun updateStatusBar() {
         when (assessmentRMNCHNeonateViewModel.referralStatus) {
             ReferralStatus.Referred.name -> {
@@ -138,8 +138,8 @@ class AssessmentRMNCHNeonateSummaryFragment : BaseFragment(), View.OnClickListen
                 binding.riskResultLayout.backgroundTintList =
                     ContextCompat.getColorStateList(requireContext(), R.color.attention_color)
                 binding.riskResultLayout.text = getString(R.string.referred_for_further_assessment)
-                binding.labelPhuReferred.gone()
-                binding.etPhuChange.gone()
+                binding.labelPhuReferred.visible()
+                binding.etPhuChange.visible()
             }
 
             ReferralStatus.OnTreatment.name -> {
@@ -236,14 +236,17 @@ class AssessmentRMNCHNeonateSummaryFragment : BaseFragment(), View.OnClickListen
     override fun onClick(v: View) {
         when (v.id) {
             binding.btnDone.id -> {
-                if (binding.etNextFollowUpDate.text.isNotEmpty()) {
+                if (binding.etNextFollowUpDate.visibility == View.VISIBLE && binding.etNextFollowUpDate.text.isNotEmpty()) {
+                    updateFollowUpDate(binding.etNextFollowUpDate.text.trim().toString())
+                }
+                if (viewModel.otherAssessmentDetails.isEmpty()) {
+                    requireActivity().finish()
+                } else {
                     assessmentRMNCHNeonateViewModel.updateOtherAssessmentDetails(
                         viewModel.otherAssessmentDetails,
                         viewModel.getCurrentLocation(),
                         viewModel.assessmentUpdateLiveData
                     )
-                } else {
-                    requireActivity().finish()
                 }
             }
 
@@ -306,7 +309,6 @@ class AssessmentRMNCHNeonateSummaryFragment : BaseFragment(), View.OnClickListen
                            if (binding.etNextFollowUpDate.text.isNotEmpty()) {
                                binding.btnDone.isEnabled = true
                            }
-
                         }
                     }
                 }

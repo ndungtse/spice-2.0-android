@@ -15,12 +15,12 @@
         android:layout_marginVertical="@dimen/_16sdp"
         android:background="@drawable/edittext_background"
         android:drawableStart="@drawable/ic_search_blue"
-        android:drawablePadding="@dimen/_16sdp"
+        android:drawablePadding="@dimen/_12sdp"
         android:hint="@string/search_and_add"
-        android:maxLines="1"
-        android:padding="@dimen/_16sdp"
-        android:singleLine="true"
         android:inputType="text"
+        android:maxLines="1"
+        android:padding="@dimen/_12sdp"
+        android:singleLine="true"
         android:textColorHint="@color/btn_disable_grey"
         app:layout_constraintBottom_toTopOf="@id/nestedScrollView"
         app:layout_constraintEnd_toEndOf="parent"
@@ -52,17 +52,20 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <androidx.cardview.widget.CardView
+            <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cardPrescriptionContainer"
                 android:layout_width="@dimen/_0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="@dimen/_32sdp"
-                android:layout_marginTop="@dimen/_16sdp"
-                android:minHeight="@dimen/_240sdp"
+                android:layout_marginVertical="@dimen/_16sdp"
+                android:minHeight="@dimen/_192sdp"
                 app:cardCornerRadius="@dimen/_8sdp"
+                app:strokeWidth="@dimen/_1sdp"
+                app:cardElevation="@dimen/_4sdp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+                app:layout_constraintTop_toTopOf="parent"
+                app:strokeColor="@color/light_gray">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -80,11 +83,11 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="0.2"
                             android:fontFamily="@font/inter_regular"
-                            android:gravity="start"
+                            android:gravity="center"
                             android:padding="@dimen/_12sdp"
                             android:text="@string/medication_name"
                             android:textColor="@color/table_title"
-                            android:textSize="@dimen/_16ssp" />
+                            android:textSize="@dimen/_14ssp" />
 
                         <androidx.appcompat.widget.AppCompatTextView
                             android:layout_width="@dimen/_0dp"
@@ -92,11 +95,11 @@
                             android:layout_marginHorizontal="@dimen/_24sdp"
                             android:layout_weight="0.2"
                             android:fontFamily="@font/inter_regular"
-                            android:gravity="start"
+                            android:gravity="center"
                             android:padding="@dimen/_12sdp"
                             android:text="@string/frequency"
                             android:textColor="@color/table_title"
-                            android:textSize="@dimen/_16ssp" />
+                            android:textSize="@dimen/_14ssp" />
 
                         <androidx.appcompat.widget.AppCompatTextView
                             android:layout_width="@dimen/_0dp"
@@ -104,11 +107,11 @@
                             android:layout_marginHorizontal="@dimen/_24sdp"
                             android:layout_weight="0.2"
                             android:fontFamily="@font/inter_regular"
-                            android:gravity="start"
+                            android:gravity="center"
                             android:padding="@dimen/_12sdp"
                             android:text="@string/prescribed_days"
                             android:textColor="@color/table_title"
-                            android:textSize="@dimen/_16ssp" />
+                            android:textSize="@dimen/_14ssp" />
 
                         <androidx.appcompat.widget.AppCompatTextView
                             android:layout_width="@dimen/_0dp"
@@ -116,11 +119,11 @@
                             android:layout_marginHorizontal="@dimen/_24sdp"
                             android:layout_weight="0.2"
                             android:fontFamily="@font/inter_regular"
-                            android:gravity="start"
+                            android:gravity="center"
                             android:padding="@dimen/_12sdp"
                             android:text="@string/quantity"
                             android:textColor="@color/table_title"
-                            android:textSize="@dimen/_16ssp" />
+                            android:textSize="@dimen/_14ssp" />
 
                         <androidx.appcompat.widget.AppCompatTextView
                             android:layout_width="@dimen/_0dp"
@@ -128,17 +131,17 @@
                             android:layout_marginHorizontal="@dimen/_24sdp"
                             android:layout_weight="0.2"
                             android:fontFamily="@font/inter_regular"
-                            android:gravity="start"
+                            android:gravity="center"
                             android:padding="@dimen/_12sdp"
                             android:text="@string/prescribed_since"
                             android:textColor="@color/table_title"
-                            android:textSize="@dimen/_16ssp" />
+                            android:textSize="@dimen/_14ssp" />
 
                     </LinearLayout>
 
                     <View
                         android:layout_width="match_parent"
-                        android:layout_height="@dimen/_2sdp"
+                        android:layout_height="@dimen/_1sdp"
                         android:background="@color/edittext_stroke_50t" />
 
 
@@ -156,13 +159,14 @@
                         android:fontFamily="@font/inter_regular"
                         android:gravity="center"
                         android:text="@string/no_medication_prescribed"
-                        android:textSize="@dimen/_16ssp"
+                        android:textColor="@color/cobalt_blue"
+                        android:textSize="@dimen/_14ssp"
                         android:visibility="gone" />
 
 
                 </LinearLayout>
 
-            </androidx.cardview.widget.CardView>
+            </com.google.android.material.card.MaterialCardView>
 
             <TextView
                 android:id="@+id/tvDiscontinuedMedication"
@@ -178,19 +182,23 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/cardPrescriptionContainer" />
 
-            <androidx.cardview.widget.CardView
+            <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cardDiscontinuedPrescriptionContainer"
                 android:layout_width="@dimen/_0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="@dimen/_32sdp"
                 android:layout_marginVertical="@dimen/_16sdp"
-                android:layout_marginBottom="@dimen/_32sdp"
-                android:minHeight="@dimen/_240sdp"
+                android:minHeight="@dimen/_160sdp"
                 android:visibility="gone"
+                app:cardElevation="@dimen/_4sdp"
+                app:cardBackgroundColor="@color/white"
                 app:cardCornerRadius="@dimen/_8sdp"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tvDiscontinuedMedication">
+                app:strokeWidth="@dimen/_2sdp"
+                app:layout_constraintTop_toBottomOf="@id/tvDiscontinuedMedication"
+                app:strokeColor="@color/border_gray">
 
                 <LinearLayout
                     android:id="@+id/llDiscontinuedMedication"
@@ -209,11 +217,11 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="0.2"
                             android:fontFamily="@font/inter_regular"
-                            android:gravity="start"
+                            android:gravity="center"
                             android:padding="@dimen/_12sdp"
                             android:text="@string/medication_name"
                             android:textColor="@color/table_title"
-                            android:textSize="@dimen/_16ssp" />
+                            android:textSize="@dimen/_14ssp" />
 
                         <androidx.appcompat.widget.AppCompatTextView
                             android:layout_width="@dimen/_0dp"
@@ -224,7 +232,7 @@
                             android:padding="@dimen/_12sdp"
                             android:text="@string/frequency"
                             android:textColor="@color/table_title"
-                            android:textSize="@dimen/_16ssp" />
+                            android:textSize="@dimen/_14ssp" />
 
                         <androidx.appcompat.widget.AppCompatTextView
                             android:layout_width="@dimen/_0dp"
@@ -235,7 +243,7 @@
                             android:padding="@dimen/_12sdp"
                             android:text="@string/prescribed_days"
                             android:textColor="@color/table_title"
-                            android:textSize="@dimen/_16ssp" />
+                            android:textSize="@dimen/_14ssp" />
 
                         <androidx.appcompat.widget.AppCompatTextView
                             android:layout_width="@dimen/_0dp"
@@ -246,7 +254,7 @@
                             android:padding="@dimen/_12sdp"
                             android:text="@string/quantity"
                             android:textColor="@color/table_title"
-                            android:textSize="@dimen/_16ssp" />
+                            android:textSize="@dimen/_14ssp" />
 
                         <androidx.appcompat.widget.AppCompatTextView
                             android:layout_width="@dimen/_0dp"
@@ -257,13 +265,13 @@
                             android:padding="@dimen/_12sdp"
                             android:text="@string/discontinued_on"
                             android:textColor="@color/table_title"
-                            android:textSize="@dimen/_16ssp" />
+                            android:textSize="@dimen/_14ssp" />
 
                     </LinearLayout>
 
                     <View
                         android:layout_width="match_parent"
-                        android:layout_height="@dimen/_2sdp"
+                        android:layout_height="@dimen/_1sdp"
                         android:background="@color/edittext_stroke_50t" />
 
                     <LinearLayout
@@ -281,13 +289,14 @@
                         android:fontFamily="@font/inter_regular"
                         android:gravity="center"
                         android:text="@string/no_discontinued_medication"
-                        android:textSize="@dimen/_16ssp"
+                        android:textColor="@color/cobalt_blue"
+                        android:textSize="@dimen/_14ssp"
                         android:visibility="gone" />
 
                 </LinearLayout>
 
 
-            </androidx.cardview.widget.CardView>
+            </com.google.android.material.card.MaterialCardView>
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>

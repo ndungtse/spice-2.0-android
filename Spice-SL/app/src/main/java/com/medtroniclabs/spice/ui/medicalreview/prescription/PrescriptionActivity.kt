@@ -3,8 +3,6 @@ package com.medtroniclabs.spice.ui.medicalreview.prescription
 import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Bundle
-import android.text.SpannableString
-import android.text.style.UnderlineSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.AdapterView
@@ -225,7 +223,7 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
 
     private fun showDiscontinuedMedication(prescriptions: ArrayList<Prescription>) {
         binding.discontinuedMedicationHolder.removeAllViews()
-        prescriptions.forEach { data ->
+        prescriptions.forEachIndexed { index, data ->
             val discontinuedMedicationBinding =
                 RowDiscontinedMedicationBinding.inflate(LayoutInflater.from(this))
             discontinuedMedicationBinding.tvMedicationName.text = data.medicationName
@@ -237,12 +235,17 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
             discontinuedMedicationBinding.tvQuantity.text =
                 (data.prescribedDays * data.frequency).toString()
             discontinuedMedicationBinding.tvPrescribedDays.text = data.prescribedDays.toString()
-            data.discontinuedDate?.let {endDate ->
+            data.discontinuedDate?.let { endDate ->
                 discontinuedMedicationBinding.tvDiscontinuedOn.text = DateUtils.convertDateFormat(
                     endDate,
                     DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
                     DateUtils.DATE_ddMMyyyy
                 )
+            }
+            if (index == prescriptions.size - 1) {
+                discontinuedMedicationBinding.viewDiscontinuedMedication.gone()
+            } else {
+                discontinuedMedicationBinding.viewDiscontinuedMedication.visible()
             }
             binding.discontinuedMedicationHolder.addView(discontinuedMedicationBinding.root)
         }
@@ -251,7 +254,7 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
 
     private fun showMedicationList(list: ArrayList<MedicationRequestObject>) {
         binding.llPrescriptionHolder.removeAllViews()
-        list.forEach { data ->
+        list.forEachIndexed { index, data ->
             val prescriptionBinding = RowPrescriptionBinding.inflate(LayoutInflater.from(this))
             prescriptionBinding.medicationName.text = data.medicationResponse.name
             prescriptionBinding.etPrescribedDays.addTextChangedListener { prescribedDays ->
@@ -262,13 +265,13 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
                 prescriptionBinding.etPrescribedDays.setText(data.medicationResponse.prescribedDays.toString())
             }
 
-            if (data.medicationResponse.prescribedSince != null && !data.medicationResponse.isEditable){
+            if (data.medicationResponse.prescribedSince != null && !data.medicationResponse.isEditable) {
                 prescriptionBinding.tvPrescribedSince.text = DateUtils.convertDateFormat(
                     data.medicationResponse.prescribedSince!!,
                     DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
                     DateUtils.DATE_ddMMyyyy
                 )
-            }else {
+            } else {
                 prescriptionBinding.tvPrescribedSince.text = getString(R.string.hyphen_symbol)
             }
             if (data.medicationResponse.showErrorMessage) {
@@ -360,6 +363,11 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
                 val tempList = prescriptionViewModel.selectedMedicationLiveData.value ?: ArrayList()
                 prescriptionViewModel.selectedMedicationLiveData.value = tempList
             }
+            if (index == list.size - 1) {
+                prescriptionBinding.viewMedication.gone()
+            } else {
+                prescriptionBinding.viewMedication.visible()
+            }
 
             binding.llPrescriptionHolder.addView(prescriptionBinding.root)
         }
@@ -444,6 +452,17 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
                 if (status.first) {
                     SignatureDialogFragment.newInstance(this)
                         .show(supportFragmentManager, SignatureDialogFragment.TAG)
+                } else {
+                    val list =
+                        prescriptionViewModel.selectedMedicationLiveData.value?.filter { it.medicationResponse.prescribedSince == null }
+                    if (list.isNullOrEmpty()) {
+                        showErrorDialogue(
+                            getString(R.string.alert),
+                            getString(R.string.no_new_medicines_prescribed)
+                        ) {
+
+                        }
+                    }
                 }
             }
 
@@ -486,8 +505,10 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
 
         prescriptionViewModel.selectedMedicationLiveData.value =
             prescriptionViewModel.selectedMedicationLiveData.value
-        if (invalidList.isNotEmpty()) {
-            return Pair(false, invalidList)
+        val status =
+            prescriptionViewModel.selectedMedicationLiveData.value?.any { ((it.medicationResponse.prescriptionId != null && it.medicationResponse.isEditable && it.medicationResponse.prescribedDays != null && it.medicationResponse.prescribedDays != 0L) || (it.medicationResponse.prescriptionId == null && it.medicationResponse.prescribedDays != null && it.medicationResponse.prescribedDays != 0L)) }
+        if (status != null) {
+            return Pair(status, invalidList)
         }
         return Pair(true, null)
     }

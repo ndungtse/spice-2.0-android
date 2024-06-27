@@ -333,7 +333,7 @@
     <string name="search_and_add">Search medication and add</string>
     <string name="medication_name">Medication Name</string>
     <string name="frequency">Frequency</string>
-    <string name="prescribed_days">Prescribed days</string>
+    <string name="prescribed_days">Prescribed Days</string>
     <string name="quantity">Quantity</string>
     <string name="no_of_fetus">No. of fetus</string>
     <string name="pregnancy_details">Pregnancy Details</string>
@@ -532,4 +532,5 @@
     <string name="unsuccessful_calls">Unsuccessful Calls</string>
     <string name="called_at">Called At</string>
     <string name="referred_at">Referred At</string>
+    <string name="no_new_medicines_prescribed">No new medicines prescribed</string>
 </resources>

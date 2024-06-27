@@ -16,11 +16,11 @@
             android:layout_width="@dimen/_0dp"
             android:layout_height="wrap_content"
             android:layout_weight="0.2"
-            android:fontFamily="@font/inter_medium"
+            android:fontFamily="@font/inter_regular"
             android:gravity="start"
             android:padding="@dimen/_12sdp"
-            android:textColor="@color/grey_black"
-            android:textSize="@dimen/_16ssp" />
+            android:textColor="@color/black"
+            android:textSize="@dimen/_14ssp" />
 
         <androidx.appcompat.widget.AppCompatSpinner
             android:id="@+id/frequency"
@@ -32,8 +32,8 @@
             android:fontFamily="@font/inter_regular"
             android:gravity="start"
             android:text="@string/frequency"
-            android:textColor="@color/grey_black"
-            android:textSize="@dimen/_16ssp" />
+            android:textColor="@color/black"
+            android:textSize="@dimen/_14ssp" />
 
         <androidx.appcompat.widget.AppCompatEditText
             android:id="@+id/etPrescribedDays"
@@ -46,8 +46,8 @@
             android:gravity="start"
             android:inputType="number"
             android:padding="@dimen/_8sdp"
-            android:textColor="@color/grey_black"
-            android:textSize="@dimen/_16ssp" />
+            android:textColor="@color/black"
+            android:textSize="@dimen/_14ssp" />
 
         <androidx.appcompat.widget.AppCompatEditText
             android:id="@+id/etQuantity"
@@ -61,8 +61,8 @@
             android:gravity="start"
             android:inputType="number"
             android:padding="@dimen/_8sdp"
-            android:textColor="@color/grey_black"
-            android:textSize="@dimen/_16ssp" />
+            android:textColor="@color/black"
+            android:textSize="@dimen/_14ssp" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tvPrescribedSince"
@@ -73,7 +73,7 @@
             android:gravity="start"
             android:padding="@dimen/_12sdp"
             android:textColor="@color/cobalt_blue"
-            android:textSize="@dimen/_16ssp" />
+            android:textSize="@dimen/_14ssp" />
 
         <LinearLayout
             android:layout_width="@dimen/_0dp"
@@ -114,6 +114,7 @@
         android:visibility="gone" />
 
     <View
+        android:id="@+id/viewMedication"
         android:layout_width="match_parent"
         android:layout_height="@dimen/_1sdp"
         android:background="@color/edittext_stroke_50t" />

@@ -10,6 +10,7 @@ import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.databinding.PrescriptionReasonDialogueBinding
 import com.medtroniclabs.spice.formgeneration.extension.fetchString
+import com.medtroniclabs.spice.formgeneration.extension.markMandatory
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 
 class PrescriptionReasonDialog() : DialogFragment(), View.OnClickListener {
@@ -124,6 +125,8 @@ class PrescriptionReasonDialog() : DialogFragment(), View.OnClickListener {
         } else {
             binding.btnCancel.visibility = View.GONE
         }
+
+        binding.tvCommentLbl.markMandatory()
     }
 
     private fun setupClickListeners() {
