@@ -273,7 +273,8 @@ class AssessmentRMNCHNeonateFragment : BaseFragment(), View.OnClickListener,
                                 map,
                                 householdLocalId,
                                 motherDetailMap,
-                                memberDetail
+                                memberDetail,
+                                assessmentRMNCHNeonateViewModel.childMemberDetailsLiveData.value?.data
                             )
                         }
                     }

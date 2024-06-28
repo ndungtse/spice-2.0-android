@@ -77,5 +77,4 @@ interface MemberDAO {
         entityToInsert.fhirId = entity.fhirId
         return insertMember(entityToInsert)
     }
-
 }

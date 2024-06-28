@@ -44,7 +44,9 @@ class AssessmentRMNCHNeonateViewModel @Inject constructor(
     val assessmentSaveLiveData = MutableLiveData<Resource<AssessmentEntity>>()
 
     val childMemberDetailsLiveData = MutableLiveData<Resource<List<HouseholdMemberEntity>>>()
+
     var referralStatus: String? = null
+
     fun getFormData(formType: String) {
         viewModelScope.launch(dispatcherIO) {
             memberFormLayoutsLiveData.postLoading()
@@ -57,19 +59,30 @@ class AssessmentRMNCHNeonateViewModel @Inject constructor(
         childDetailMap: HashMap<String, Any>,
         householdId: Long,
         motherDetailMap: HashMap<String, Any>,
-        memberDetail: AssessmentMemberDetails
+        memberDetail: AssessmentMemberDetails,
+        childBioDataDetail: List<HouseholdMemberEntity>?
     ) {
         viewModelScope.launch(dispatcherIO) {
             if (memberMap != null) {
-                householdMemberRepository.registerMember(
+                val childMemberId = householdMemberRepository.registerMember(
                     memberMap!!,
                     householdId,
                     null,
                     memberDetail.patientId
                 )
-                savePNCDetails(motherDetailMap, childDetailMap, memberDetail)
+                savePNCDetails(motherDetailMap, childDetailMap, memberDetail,childMemberId)
             } else {
-                savePNCDetails(motherDetailMap, childDetailMap, memberDetail)
+                childBioDataDetail?.let { list ->
+                    if (list.isNotEmpty()) {
+                        val childDetail = list[0]
+                        savePNCDetails(
+                            motherDetailMap,
+                            childDetailMap,
+                            memberDetail,
+                            childDetail.id
+                        )
+                    }
+                }
             }
         }
     }
@@ -77,28 +90,29 @@ class AssessmentRMNCHNeonateViewModel @Inject constructor(
     private suspend fun savePNCDetails(
         motherDetailMap: HashMap<String, Any>,
         childDetailMap: HashMap<String, Any>,
-        memberDetail: AssessmentMemberDetails
+        memberDetail: AssessmentMemberDetails,
+        childMemberId: Long
     ) {
         val groupMap = HashMap<String, Any>()
         groupMap[RMNCH.PNC] = motherDetailMap[RMNCH.PNC] as Any
         groupMap[RMNCH.PNCNeonatal] = childDetailMap
         val resultGenerator = ReferralResultGenerator()
         val referralResult = resultGenerator.calculateRMNCHReferralResult(groupMap)
-        val assessmentDetail =
-            getAssessmentDetails(groupMap as HashMap<Any, Any>)
+        val assessmentDetail = getAssessmentDetails(groupMap as HashMap<Any, Any>)
         referralStatus = referralResult.first
         assessmentStringSaveLiveData.postValue(assessmentDetail.first)
         val otherDetails = calculateOtherDetails(groupMap, referralStatus)
-        assessmentSaveLiveData.postValue(
-            assessmentRepository.saveAssessment(
-                assessmentDetail.second,
-                memberDetail,
-                RMNCH.PNC_MENU,
-                referralResult,
-                null,
-                otherDetails
-            )
-        )
+         assessmentSaveLiveData.postValue(
+             assessmentRepository.savePNCAssessment(
+                 assessmentDetail.second,
+                 assessmentDetail.third,
+                 memberDetail,
+                 referralResult,
+                 null,
+                 otherDetails,
+                 childMemberId
+             )
+         )
     }
 
     private fun calculateOtherDetails(
@@ -136,10 +150,10 @@ class AssessmentRMNCHNeonateViewModel @Inject constructor(
         return if (otherDetails.isEmpty()) null else otherDetails
     }
 
-    private fun getAssessmentDetails(
-        map: HashMap<Any, Any>
-    ): Pair<String, String> {
+    private fun getAssessmentDetails(map: HashMap<Any, Any>): Triple<String, String, String> {
         val assessmentDetail = StringConverter.convertGivenMapToString(map) ?: ""
+        var motherMapString: String? = null
+        var childMapString: String? = null
 
         // Request modification for syncing PNC Mother to Backend
         if (map.containsKey(RMNCH.PNC)) {
@@ -160,6 +174,10 @@ class AssessmentRMNCHNeonateViewModel @Inject constructor(
                 pnc.remove(RMNCH.otherPncMotherSigns)
                 pnc[RMNCH.otherSigns] = os
             }
+
+            val parentMap = HashMap<String,Any>()
+            parentMap[RMNCH.PNC] = pnc
+            motherMapString = StringConverter.convertGivenMapToString(parentMap)
         }
 
         // Request modification for syncing PNC neonatal to Backend
@@ -183,10 +201,12 @@ class AssessmentRMNCHNeonateViewModel @Inject constructor(
                 pncNeonate.remove(RMNCH.otherPncNeonateSigns)
                 pncNeonate[RMNCH.otherSigns] = os
             }
+            val parentMap = HashMap<String,Any>()
+            parentMap[RMNCH.PNCNeonatal] = pncNeonate
+            childMapString = StringConverter.convertGivenMapToString(parentMap)
         }
 
-        val assessmentDetailBE = StringConverter.convertGivenMapToString(map) ?: ""
-        return Pair(assessmentDetail, assessmentDetailBE)
+        return Triple(assessmentDetail, motherMapString ?: "", childMapString ?: "")
     }
 
     fun getMemberDetailsByParentId(memberId: String) {

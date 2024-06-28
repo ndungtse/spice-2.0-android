@@ -194,4 +194,5 @@ interface RoomHelper {
     suspend fun insertOrUpdateHHFromBE(entity: HouseholdEntity): Long
 
     suspend fun insertOrUpdateHHMFromBE(entity: HouseholdMemberEntity): Long
+
 }

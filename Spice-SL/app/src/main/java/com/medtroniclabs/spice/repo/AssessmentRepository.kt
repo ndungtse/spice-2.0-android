@@ -14,6 +14,7 @@ import com.medtroniclabs.spice.model.assessment.AssessmentMemberDetails
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
+import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.util.Locale
@@ -22,6 +23,71 @@ import javax.inject.Inject
 class AssessmentRepository @Inject constructor(
     private var roomHelper: RoomHelper
 ) {
+
+    suspend fun savePNCAssessment(
+        second: String,
+        third: String,
+        memberDetail: AssessmentMemberDetails,
+        referralResult: Pair<String?, ArrayList<String>>,
+        lastLocation: Location?,
+        otherDetails: HashMap<String, Any>?,
+        childMemberId: Long
+    ): Resource<AssessmentEntity> {
+        return try {
+            val motherAssessmentEntity = getAssessmentEntity(
+                memberDetail,
+                second,
+                otherDetails,
+                referralResult,
+                lastLocation,
+                RMNCH.pnc_mother_key
+            )
+            motherAssessmentEntity.id = roomHelper.saveAssessment(motherAssessmentEntity)
+            val childMemberDetail = roomHelper.getAssessmentMemberDetails(childMemberId)
+            val childAssessmentEntity = getAssessmentEntity(
+                childMemberDetail,
+                third,
+                null,
+                Pair(ReferralStatus.Recovered.name, ArrayList()),
+                lastLocation,
+                RMNCH.pnc_neonate_key
+            )
+            roomHelper.saveAssessment(childAssessmentEntity)
+            Resource(state = ResourceState.SUCCESS, data = motherAssessmentEntity)
+        } catch (e: Exception) {
+            Resource(state = ResourceState.ERROR)
+        }
+    }
+
+    private fun getAssessmentEntity(
+        memberDetail: AssessmentMemberDetails,
+        second: String,
+        otherDetails: HashMap<String, Any>?,
+        referralResult: Pair<String?, ArrayList<String>>,
+        lastLocation: Location?,
+        menuId: String
+    ): AssessmentEntity {
+
+        val assessmentEntity = AssessmentEntity(
+            memberId = memberDetail.memberId,
+            householdId = memberDetail.householdId,
+            patientId = memberDetail.patientId,
+            villageId = memberDetail.villageId,
+            assessmentType = menuId,
+            assessmentDetails = second,
+            otherDetails = if (otherDetails != null) StringConverter.convertGivenMapToString(
+                otherDetails
+            ) else null,
+            isReferred = getReferralStatus(referralResult.first),
+            referralStatus = getReferralResult(referralResult.first),
+            referredReason = referralResult.second,
+            latitude = lastLocation?.latitude ?: 0.0,
+            longitude = lastLocation?.longitude ?: 0.0
+        )
+
+        return assessmentEntity
+    }
+
 
     suspend fun saveAssessment(
         resultData: String,
@@ -156,12 +222,10 @@ class AssessmentRepository @Inject constructor(
     }
 
     suspend fun updateMemberClinicalData(
-        patientId: String,
-        type: String,
-        visitCount: Long,
-        clinicalDate: String?
+        patientId: String, type: String, visitCount: Long, clinicalDate: String?
     ) {
         roomHelper.updateMemberClinicalData(patientId, type, visitCount, clinicalDate)
     }
+
 
 }
