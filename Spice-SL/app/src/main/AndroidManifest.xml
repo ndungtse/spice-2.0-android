@@ -9,7 +9,7 @@
 
     <application
         android:name=".SpiceBaseApplication"
-        android:allowBackup="true"
+        android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
@@ -92,23 +92,23 @@
         <activity
             android:name=".ui.medicalreview.prescription.PrescriptionActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
-            android:screenOrientation="sensorLandscape"
+            android:screenOrientation="landscape"
             android:exported="false" />
 
         <activity
             android:name=".ui.medicalreview.motherneonate.anc.activity.MotherNeonateANCActivity"
             android:exported="false"
-            android:screenOrientation="sensorLandscape"
+            android:screenOrientation="landscape"
             android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".ui.medicalreview.undertwomonths.UnderTwoMonthsBaseActivity"
             android:exported="false"
-            android:screenOrientation="sensorLandscape"
+            android:screenOrientation="landscape"
             android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".ui.medicalreview.LabourDeliveryBaseActivity"
             android:exported="false"
-            android:screenOrientation="sensorLandscape"
+            android:screenOrientation="landscape"
             android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".ui.referralhistory.activity.ReferralHistoryActivity"
@@ -117,18 +117,15 @@
         <activity
             android:name=".ui.medicalreview.abovefiveyears.AboveFiveYearsBaseActivity"
             android:exported="false"
-            android:screenOrientation="sensorLandscape"
+            android:screenOrientation="landscape"
             android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".ui.medicalreview.underfiveyears.UnderFiveYearsBaseActivity"
             android:exported="false"
-            android:screenOrientation="sensorLandscape"
+            android:screenOrientation="landscape"
             android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".ui.boarding.ResourceLoadingScreen"
-            android:exported="false" />
-        <activity
-            android:name=".ui.mypatients.PatientSearchActivity"
             android:exported="false" />
         <activity
             android:name=".ui.followup.FollowUpMyPatientActivity"
@@ -138,7 +135,7 @@
         <activity
             android:name=".ui.mypatients.MedicalReviewBaseActivity"
             android:exported="false"
-            android:screenOrientation="sensorLandscape" />
+            android:screenOrientation="landscape" />
 
 
         <provider

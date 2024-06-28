@@ -18,7 +18,6 @@ import com.medtroniclabs.spice.data.model.ChipViewItemModel
 import com.medtroniclabs.spice.databinding.DiagnosisAccordionLayoutBinding
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.AccordionGroup
 import com.medtroniclabs.spice.ui.TagListCustomView
-import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.AncVisitCallBack
 
 class DiagnosisGenerator(
     val context: Context,
@@ -64,7 +63,7 @@ class DiagnosisGenerator(
             val layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT
             )
-            layoutParams.setMargins(10, 10, 10, 10)
+            //layoutParams.setMargins(10, 10, 10, 10)
             binding.root.layoutParams = layoutParams
             val tagView =
                 TagListCustomView(

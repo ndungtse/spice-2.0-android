@@ -20,6 +20,7 @@ import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
 import com.medtroniclabs.spice.ui.dialog.MedicalReviewSuccessDialogFragment
+import com.medtroniclabs.spice.ui.landing.LandingActivity
 import com.medtroniclabs.spice.ui.landing.OnDialogDismissListener
 import com.medtroniclabs.spice.ui.medicalreview.ClinicalNotesFragment
 import com.medtroniclabs.spice.ui.medicalreview.PresentingComplaintsFragment
@@ -58,8 +59,12 @@ class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
             binding.root,
             true,
             getString(R.string.patient_medical_review),
+            homeAndBackVisibility = Pair(true, true),
             callback = {
                 backNavigation()
+            },
+            callbackHome = {
+                backNavigationToHome()
             }
         )
         initializeViews()
@@ -76,6 +81,18 @@ class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
         ) { isPositive ->
             if (isPositive) {
                 onBackPressPopStack()
+            }
+        }
+    }
+
+    private fun backNavigationToHome() {
+        showErrorDialogue(
+            getString(R.string.alert),
+            getString(R.string.exit_reason),
+            isNegativeButtonNeed = true
+        ) { isPositive ->
+            if (isPositive) {
+                startAsNewActivity(Intent(this, LandingActivity::class.java))
             }
         }
     }
@@ -231,16 +248,13 @@ class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
                 }
 
                 ResourceState.SUCCESS -> {
-                    binding.nestedScrollViewID.fullScroll(ScrollView.FOCUS_UP)
                     resourceState.data?.let {
                         if (connectivityManager.isNetworkAvailable()) {
-                            viewModel.getAboveFiveYearsSummaryDetails(
-                                AboveFiveYearsSummaryRequest(
-                                    id = it.encounterId,
-                                    patientReference = it.patientReference,
-                                    type = MedicalReviewTypeEnums.AboveFiveYears.name
-                                )
-                            )
+                            patientViewModel.patientDetailsLiveData.value?.data?.let { details ->
+                                details.patientId?.let { id ->
+                                    patientViewModel.getPatients(id)
+                                }
+                            }
                         } else {
                             showErrorDialogue(
                                 getString(R.string.error), getString(R.string.no_internet_error),
@@ -248,7 +262,6 @@ class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
                             ) {}
                         }
                     }
-                    initializeSummaryFragments()
                 }
             }
         }
@@ -403,10 +416,14 @@ class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
 
             binding.btnDone.id -> {
                 patientViewModel.patientDetailsLiveData.value?.data?.let { details ->
-                    viewModel.aboveFiveYearsCreateResponse.value?.data?.encounterId
-                        ?.let { submitCreateId ->
+                    viewModel.aboveFiveYearsCreateResponse.value?.data
+                        ?.let { response ->
                             if (connectivityManager.isNetworkAvailable()) {
-                                viewModel.aboveFiveYearsSummaryCreate(details, submitCreateId)
+                                response.encounterId?.let { submitEncounterId ->
+                                    response.patientReference?.let {submitPatientReferenceId ->
+                                        viewModel.aboveFiveYearsSummaryCreate(details, submitEncounterId, submitPatientReferenceId)
+                                    }
+                                }
                             } else {
                                 showErrorDialogue(
                                     getString(R.string.error),
@@ -451,7 +468,6 @@ class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
 
     private fun enableReferralDoneBtn() {
         binding.btnDone.isEnabled = getSummaryStatus()
-        binding.btnRefer.isEnabled = getSummaryStatus()
     }
 
     private fun getSummaryStatus(): Boolean {
@@ -471,7 +487,19 @@ class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
     }
 
     override fun onDataLoaded(details: PatientListRespModel) {
-        initializeFragments()
+        viewModel.aboveFiveYearsCreateResponse.value?.data?.let {
+            viewModel.getAboveFiveYearsSummaryDetails(
+                AboveFiveYearsSummaryRequest(
+                    id = it.encounterId,
+                    patientReference = it.patientReference,
+                    type = MedicalReviewTypeEnums.AboveFiveYears.name
+                )
+            )
+            initializeSummaryFragments()
+            binding.nestedScrollViewID.fullScroll(ScrollView.FOCUS_UP)
+        } ?: kotlin.run {
+            initializeFragments()
+        }
     }
 
     private val onBackPressedCallback: OnBackPressedCallback =

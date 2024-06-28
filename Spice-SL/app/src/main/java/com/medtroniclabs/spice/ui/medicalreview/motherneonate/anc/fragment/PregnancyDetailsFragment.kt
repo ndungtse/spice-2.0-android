@@ -407,6 +407,7 @@ class PregnancyDetailsFragment : BaseFragment(), View.OnClickListener {
                 context = requireContext(),
                 minDate = null,
                 date = yearMonthDate,
+                isMenstrualPeriod = true,
                 disableFutureDate = disableFuture,
                 cancelCallBack = { datePickerDialog = null }
             ) { _, year, month, dayOfMonth ->

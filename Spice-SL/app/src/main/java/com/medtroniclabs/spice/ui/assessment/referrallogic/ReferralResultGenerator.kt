@@ -68,7 +68,7 @@ class ReferralResultGenerator {
         calculateDangerSignsResult(map)
         calculateNutritionalStatusResult(map)
         calculateCoughStatus(map, memberDetails)
-        calculateFeverStatus(map, ReferralReasons.Malaria.name)
+        calculateFeverStatus(map, ReferralReasons.Fever.name)
         calculateDiarrhoeaStatus(map)
         return Pair(checkStatus(), referralReason)
     }
@@ -292,7 +292,7 @@ class ReferralResultGenerator {
                     } else {
                         if (map.containsKey(RdtTest) && map[RdtTest] == RdtPositive) {
                             addResultMap(referralKey.lowercase(), getMedicationStatus(map, ACT))
-                            addReferralReason(referralReason, referralKey)
+                            addReferralReason(referralReason, ReferralReasons.Malaria.name)
                         } else if (map.containsKey(RdtTest) && (map[RdtTest] == RdtNegative || map[RdtTest] == NA)) {
                             addResultMap(referralKey.lowercase(), ReferralStatus.Referred.name)
                             addReferralReason(referralReason, referralKey)

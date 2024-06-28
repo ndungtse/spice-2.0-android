@@ -166,7 +166,12 @@ object MotherNeonateUtil {
 
     fun convertWeight(value: Double?, context: Context): String {
         return if (value != null) {
-            "${value.toInt()} ${context.getString(R.string.kg)}"
+            val formattedValue = if (value % 1 == 0.0) {
+                value.toInt().toString()
+            } else {
+                String.format("%.2f", value).trimEnd('0').trimEnd('.')
+            }
+            "$formattedValue ${context.getString(R.string.kg)}"
         } else {
             context.getString(R.string.hyphen_symbol)
         }

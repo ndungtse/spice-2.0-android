@@ -79,17 +79,18 @@ class AboveFiveYearsViewModel @Inject constructor(
         }
     }
 
-    fun aboveFiveYearsSummaryCreate(details: PatientListRespModel, submitCreateId: String) {
+    fun aboveFiveYearsSummaryCreate(details: PatientListRespModel, submitEncounterId: String, submitPatientReferenceId: String) {
         viewModelScope.launch(dispatcherIO) {
             summaryCreateResponse.postLoading()
             summaryCreateResponse.postValue(
                 repository.aboveFiveYearsSummaryCreate(
                     details,
-                    submitCreateId,
+                    submitEncounterId,
                     selectedMedicalSupplyListItem,
                     selectedCostItem,
                     selectedPatientStatus,
-                    nextFollowupDate
+                    nextFollowupDate,
+                    submitPatientReferenceId
                 )
             )
         }

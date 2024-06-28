@@ -28,6 +28,7 @@ import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.dialog.MedicalReviewSuccessDialogFragment
+import com.medtroniclabs.spice.ui.landing.LandingActivity
 import com.medtroniclabs.spice.ui.landing.OnDialogDismissListener
 import com.medtroniclabs.spice.ui.medicalreview.ClinicalNotesFragment
 import com.medtroniclabs.spice.ui.medicalreview.PresentingComplaintsFragment
@@ -83,8 +84,12 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
             binding.root,
             true,
             getString(R.string.patient_medical_review),
+            homeAndBackVisibility = Pair(true, true),
             callback = {
                 backNavigation()
+            },
+            callbackHome = {
+                backNavigationToHome()
             }
         )
         attachObservers()
@@ -105,6 +110,18 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
         }
     }
 
+    private fun backNavigationToHome() {
+        showErrorDialogue(
+            getString(R.string.alert),
+            getString(R.string.exit_reason),
+            isNegativeButtonNeed = true
+        ) { isPositive ->
+            if (isPositive) {
+                startAsNewActivity(Intent(this, LandingActivity::class.java))
+            }
+        }
+    }
+
     private fun initStaticDataCall() {
         if (!SecuredPreference.getBoolean(SecuredPreference.EnvironmentKey.IS_MOTHER_NEONATE_LOADEDANC.name)) {
             viewModel.getMotherNeoNateAncStaticData()
@@ -120,7 +137,11 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
                 }
 
                 ResourceState.SUCCESS -> {
+                    if (viewModel.ancVisit > 1) {
+                        handleSubmit(false)
+                    } else {
                         handleSubmit()
+                    }
                 }
 
                 ResourceState.ERROR -> {
@@ -142,7 +163,11 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
                 }
 
                 ResourceState.SUCCESS -> {
+                    if (viewModel.ancVisit > 1) {
+                        handleSubmit(false)
+                    } else {
                         handleSubmit()
+                    }
                 }
 
                 ResourceState.ERROR -> {
@@ -474,7 +499,8 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
             val nextVisitDate = DateUtils.convertDateTimeToDate(
                 motherNeonateSummaryViewModel.nextFollowupDate,
                 DateUtils.DATE_ddMMyyyy,
-                DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
+                DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+                inUTC = true
             )
             val request = AboveFiveYearsSummarySubmitRequest(
                 referralTicketType = MedicalReviewTypeEnums.RMNCH.name,

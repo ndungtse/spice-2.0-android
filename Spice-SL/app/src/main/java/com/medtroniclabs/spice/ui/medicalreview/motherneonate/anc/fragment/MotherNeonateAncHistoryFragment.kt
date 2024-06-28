@@ -118,7 +118,7 @@ class MotherNeonateAncHistoryFragment : BaseFragment() {
                 )
                 val combinedObstetricsExamination = StringBuilder()
 
-                it.obstetricExaminations?.filterNotNull()?.takeIf { it.isEmpty() }?.joinToString(separator = ",")
+                it.obstetricExaminations?.filterNotNull()?.takeIf { it.isNotEmpty() }?.joinToString(separator = ",")
                     ?.let {
                         combinedObstetricsExamination.append(it)
                     }

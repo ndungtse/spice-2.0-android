@@ -360,4 +360,12 @@ object CommonUtils {
             else -> ""
         }
     }
+
+    fun getMaxDateLimit(menstrualPeriod: Boolean, minDate: Long?): Long? {
+        return if (menstrualPeriod) {
+            DateUtils.calculateGestationPastMonths(System.currentTimeMillis(), 11)
+        } else {
+            minDate
+        }
+    }
 }

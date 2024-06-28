@@ -128,7 +128,6 @@ class AboveFiveYearsRepository @Inject constructor(
         prescriptionEncounterId: String?
     ): AboveFiveYearsSubmitRequest? {
         return details.patientId?.let { patientId ->
-            lastLocation?.let { location ->
                 details.houseHoldId?.let { hhId ->
                     details.memberId?.let { memberId ->
                         AboveFiveYearsSubmitRequest(
@@ -145,8 +144,8 @@ class AboveFiveYearsRepository @Inject constructor(
                                 provenance = ProvanceDto(
                                     createdDateTime = System.currentTimeMillis().convertToUtcDateTime()
                                 ),
-                                latitude = location.latitude,
-                                longitude = lastLocation.longitude,
+                                latitude = lastLocation?.latitude ?: 0.0,
+                                longitude = lastLocation?.longitude ?: 0.0,
                                 householdId = hhId,
                                 memberId = memberId,
                                 startTime = DateUtils.getCurrentDateAndTime(
@@ -160,7 +159,6 @@ class AboveFiveYearsRepository @Inject constructor(
                         )
                     }
                 }
-            }
         }
     }
 
@@ -192,20 +190,22 @@ class AboveFiveYearsRepository @Inject constructor(
 
     suspend fun aboveFiveYearsSummaryCreate(
         details: PatientListRespModel,
-        submitCreateId: String,
+        submitEncounterId: String,
         selectedMedicalSupply: ArrayList<MultiSelectDropDownModel>?,
         selectedCostItem: String?,
         selectedPatientStatus: String?,
-        nextFollowupDate: String?
+        nextFollowupDate: String?,
+        submitPatientReferenceId: String
     ): Resource<HashMap<String, Any>> {
         return try {
             val request = createSummarySubmitRequest(
                 details,
-                submitCreateId,
+                submitEncounterId,
                 selectedMedicalSupply,
                 selectedCostItem,
                 selectedPatientStatus,
-                nextFollowupDate
+                nextFollowupDate,
+                submitPatientReferenceId
             )
             val response = request?.let { apiHelper.aboveFiveYearsSummaryCreate(it) }
             if (response != null && response.isSuccessful) {
@@ -226,44 +226,46 @@ class AboveFiveYearsRepository @Inject constructor(
 
     private fun createSummarySubmitRequest(
         details: PatientListRespModel,
-        submitCreateId: String,
+        submitEncounterId: String,
         selectedMedicalSupply: ArrayList<MultiSelectDropDownModel>?,
         selectedCostItem: String?,
         selectedPatientStatus: String?,
-        nextFollowupDate: String?
+        nextFollowupDate: String?,
+        submitPatientReferenceId: String
     ): AboveFiveYearsSummarySubmitRequest? {
         val medicalSupplyList = ArrayList<String>()
         selectedMedicalSupply?.map { item -> item.value?.let { value -> medicalSupplyList.add(value) } }
         return details.patientId?.let { patientId ->
-            details.memberId?.let { memberId ->
-                details.houseHoldId?.let { houseHoldId ->
-                    details.villageId?.let { villageId ->
-                        AboveFiveYearsSummarySubmitRequest(
-                            patientId = patientId,
-                            memberId = memberId,
-                            id = submitCreateId,
-                            provenance = ProvanceDto(
-                                createdDateTime = DateUtils.getCurrentDateAndTime(
-                                    DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
-                                )
-                            ),
-                            patientReference = details.id,
-                            medicalSupplies = medicalSupplyList.ifEmpty { null },
-                            cost = selectedCostItem,
-                            patientStatus = selectedPatientStatus,
-                            nextVisitDate = DateUtils.convertDateTimeToDate(
-                                nextFollowupDate,
-                                DateUtils.DATE_ddMMyyyy,
-                                DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
-                            ),
-                            householdId = houseHoldId,
-                            villageId = villageId,
-                            assessmentName = MedicalReviewTypeEnums.AboveFiveYears.name,
-                            referralTicketType = MedicalReviewTypeEnums.ICCM.name
-                        )
+                details.memberId?.let { memberId ->
+                    details.houseHoldId?.let { houseHoldId ->
+                        details.villageId?.let { villageId ->
+                            AboveFiveYearsSummarySubmitRequest(
+                                patientId = patientId,
+                                memberId = memberId,
+                                id = submitEncounterId,
+                                provenance = ProvanceDto(
+                                    createdDateTime = DateUtils.getCurrentDateAndTime(
+                                        DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
+                                    )
+                                ),
+                                patientReference = submitPatientReferenceId,
+                                medicalSupplies = medicalSupplyList.ifEmpty { null },
+                                cost = selectedCostItem,
+                                patientStatus = selectedPatientStatus,
+                                nextVisitDate = DateUtils.convertDateTimeToDate(
+                                    nextFollowupDate,
+                                    DateUtils.DATE_ddMMyyyy,
+                                    DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+                                    inUTC = true
+                                ),
+                                householdId = houseHoldId,
+                                villageId = villageId,
+                                assessmentName = MedicalReviewTypeEnums.AboveFiveYears.name,
+                                referralTicketType = MedicalReviewTypeEnums.ICCM.name
+                            )
+                        }
                     }
                 }
-            }
         }
     }
 }

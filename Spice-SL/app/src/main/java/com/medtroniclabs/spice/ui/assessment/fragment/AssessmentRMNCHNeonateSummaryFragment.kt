@@ -287,7 +287,8 @@ class AssessmentRMNCHNeonateSummaryFragment : BaseFragment(), View.OnClickListen
                 DateUtils.convertDateTimeToDate(
                     date,
                     DateUtils.DATE_ddMMyyyy,
-                    DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
+                    DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+                    inUTC = true
                 )
         }
     }

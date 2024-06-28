@@ -18,5 +18,5 @@ data class ReferPatientResult(
     val householdId: String?,
     val villageId: String?,
     val memberId: String?,
-    val referralTicketType:String? = null
+    val category:String? = null
 )

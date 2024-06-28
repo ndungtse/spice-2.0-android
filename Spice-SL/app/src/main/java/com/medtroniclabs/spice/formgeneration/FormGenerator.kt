@@ -44,6 +44,7 @@ import com.medtroniclabs.spice.appextensions.isVisible
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.CommonUtils.displayAge
+import com.medtroniclabs.spice.common.CommonUtils.getMaxDateLimit
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
 import com.medtroniclabs.spice.common.DateUtils.DATE_ddMMyyyy
@@ -964,14 +965,6 @@ class FormGenerator(
                 parentLayout.addView(binding.root)
             }
 
-        }
-    }
-
-    private fun getMaxDateLimit(menstrualPeriod: Boolean, maxDate: Long?): Long? {
-        return if (menstrualPeriod) {
-            DateUtils.calculateGestationPastMonths(System.currentTimeMillis(), 11)
-        } else {
-            maxDate
         }
     }
 

@@ -2,11 +2,8 @@ package com.medtroniclabs.spice.common
 
 import android.app.DatePickerDialog
 import android.content.Context
-import android.content.res.Resources
-import android.graphics.Rect
 import android.widget.DatePicker
-import android.view.WindowManager.LayoutParams
-import androidx.fragment.app.DialogFragment
+import com.medtroniclabs.spice.common.CommonUtils.getMaxDateLimit
 import java.util.Calendar
 
 object ViewUtils {
@@ -15,6 +12,7 @@ object ViewUtils {
         disableFutureDate: Boolean = false,
         minDate: Long? = null,
         maxDate: Long? = null,
+        isMenstrualPeriod: Boolean = false,
         date: Triple<Int?, Int?, Int?>? = null,
         cancelCallBack: (() -> Unit)? = null,
         callBack: (dialog: DatePicker, year: Int, month: Int, dayOfMonth: Int) -> Unit,
@@ -45,7 +43,7 @@ object ViewUtils {
                 cancelCallBack.invoke()
             }
         }
-        minDate?.let {
+        getMaxDateLimit(isMenstrualPeriod, minDate)?.let {
             dialog.datePicker.minDate = it
         }
         maxDate?.let {

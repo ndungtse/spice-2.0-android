@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
-import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
@@ -409,7 +408,7 @@ class DiagnosisDialogFragment : DialogFragment(), View.OnClickListener, Diagnosi
     private fun handleVisibility() {
         when(diagnosisViewModel.diagnosisType) {
             MedicalReviewTypeEnums.ANC.name -> {
-                binding.tvSelectedDiseaseConditionLbl.text = requireContext().getString(R.string.select_diagnosis_found_on_the_patient)
+                binding.tvSelectedDiseaseCategoryLbl.text = requireContext().getString(R.string.select_diagnosis_found_on_the_patient)
                 binding.tvSelectedDiseaseConditionLbl.gone()
                 binding.llFamilyRoot.gone()
             }
@@ -440,6 +439,8 @@ class DiagnosisDialogFragment : DialogFragment(), View.OnClickListener, Diagnosi
                             binding.btnOkay.isEnabled = diagnosisGenerator.isAccordionNotEmpty()
                         }
                     }
+                } ?: kotlin.run {
+                    binding.btnOkay.isEnabled = otherSelection
                 }
             }
 

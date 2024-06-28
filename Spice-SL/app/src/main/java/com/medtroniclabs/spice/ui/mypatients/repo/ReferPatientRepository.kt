@@ -112,7 +112,7 @@ class ReferPatientRepository @Inject constructor(
             householdId = houseHoldId,
             villageId = villageId,
             memberId = memberId,
-            referralTicketType = assessmentName.second
+            category = assessmentName.second
         )
     }
     suspend fun getDefaultHealthFacilityDistrictId(): Resource<HealthFacilityEntity?>? {
