@@ -1,7 +1,7 @@
 package com.medtroniclabs.spice.ui
 
 object MenuConstants {
-    const val HOUSEHOLD_MENU_ID = "HOUSEHOLD"
+    const val HOUSEHOLD_MENU_ID = "HOUSEHOLDS"
     const val MY_PATIENTS_MENU_ID = "MY PATIENTS"
     const val ICCM_MENU_ID = "iccm"
     const val RMNCH_MENU_ID = "rmnch"

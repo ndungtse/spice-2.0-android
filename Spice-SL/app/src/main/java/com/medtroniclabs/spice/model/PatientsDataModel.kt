@@ -1,7 +1,7 @@
 package com.medtroniclabs.spice.model
 
 data class PatientsDataModel(
-    var skip: Int? = null,
+    var skip: Long? = null,
     var limit: Int? = null,
     val villageIds: List<Long>? = null,
     val searchText: String? = null,

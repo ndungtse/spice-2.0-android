@@ -18,11 +18,10 @@ class PatientsDataSource(
     private val patientRepository: PatientRepository,
     private val searchText: String,
     private val filter:MedicalReviewFilterModel?,
-    private var isRefresh: Boolean = false,
     private val getPatientsCount: (String) -> Unit
 ) : PagingSource<Int, PatientListRespModel>() {
 
-    private var loadedCount = 0
+    private var loadedCount: Long = 0
     private var totalCount = 0
     private var villages: List<Long> = mutableListOf()
     private var districtId: Long? = null
@@ -36,53 +35,43 @@ class PatientsDataSource(
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, PatientListRespModel> {
         val pageIndex = params.key ?: PAGE_INDEX
-        if (isRefresh) {
-            loadedCount = 0
-            isRefresh = false
-        }
         return try {
             if (villages.isEmpty()) {
                 val villageIdNameList = patientRepository.getVillageIdName()
                 villages = villageIdNameList.map { it.id }
+                // TODO: After multiple health facility changes, retrieve the district ID during login once the changes are made by Backend.
                 districtId = districtId ?: villageIdNameList.firstOrNull()?.districtId
             }
+            val patientsDataModel = PatientsDataModel(
+                skip = loadedCount,
+                limit = LIST_LIMIT,
+                villageIds = villages,
+                referencePatientId = referencePatientId?.ifBlank { null },
+                filter = filter
+            )
+
             val response: APIResponse<SearchAndListResponse> = if (searchText.isEmpty()) {
-                apiHelper.getPatients(
-                    PatientsDataModel(
-                        skip = loadedCount,
-                        limit = LIST_LIMIT,
-                        villageIds = villages,
-                        referencePatientId = referencePatientId?.ifBlank { null },
-                        filter = filter
-                    )
-                )
+                apiHelper.getPatients(patientsDataModel)
             } else {
                 apiHelper.patientSearch(
-                    PatientsDataModel(
-                        skip = loadedCount,
-                        limit = LIST_LIMIT,
+                    patientsDataModel.copy(
+                        villageIds = null,
                         searchText = searchText.ifEmpty { null },
-                        districtId = districtId,
-                        referencePatientId = referencePatientId?.ifBlank { null },
-                        filter = filter
+                        districtId = districtId
                     )
                 )
             }
+
             /* Request construction - Ends */
 
 
             val patientList: List<PatientListRespModel> = response.entity?.patientList ?: emptyList()
             referencePatientId = response.entity?.referencePatientId
-
-            response.totalCount?.let { count ->
-                totalCount = count
-            } ?: kotlin.run {
-                totalCount += patientList.size
-                getPatientsCount(totalCount.toString())
-            }
-            if (loadedCount == 0)
-                getPatientsCount(totalCount.toString())
-            loadedCount += patientList.size
+            totalCount += patientList.size
+            getPatientsCount(totalCount.toString())
+//            For Patient List Skip increment as 15
+//            For Patient search Skip increment as patient list Size
+            loadedCount += if (searchText.isEmpty()) LIST_LIMIT else patientList.size
             LoadResult.Page(
                 data = patientList,
                 prevKey = (pageIndex - 1).takeIf { pageIndex > PAGE_INDEX },

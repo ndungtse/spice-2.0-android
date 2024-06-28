@@ -49,9 +49,6 @@ class ReferralHistoryActivity : BaseActivity(), AncVisitCallBack {
 
     private fun attachObserver() {
         patientDetailViewModel.patientDetailsLiveData.observe(this) { resource ->
-            if (binding.refreshLayout.isRefreshing) {
-                binding.refreshLayout.isRefreshing = false
-            }
             when (resource.state) {
                 ResourceState.LOADING -> {
                     showLoading()
@@ -59,10 +56,20 @@ class ReferralHistoryActivity : BaseActivity(), AncVisitCallBack {
 
                 ResourceState.SUCCESS -> {
                     hideLoading()
+                    if (binding.refreshLayout.isRefreshing) {
+                        binding.refreshLayout.isRefreshing = false
+                    }
                 }
 
                 ResourceState.ERROR -> {
                     hideLoading()
+                    showErrorDialogue(
+                        title = getString(R.string.alert),
+                        message = getString(R.string.something_went_wrong_try_later),
+                        positiveButtonName = getString(R.string.ok),
+                    ) {
+                        finish()
+                    }
                 }
             }
         }
@@ -196,10 +203,14 @@ class ReferralHistoryActivity : BaseActivity(), AncVisitCallBack {
             supportFragmentManager.beginTransaction()
                 .add(containerId, fragmentInstance, fragmentTag)
                 .commit()
+        } else {
+            supportFragmentManager.beginTransaction()
+                .replace(containerId, fragmentInstance, fragmentTag)
+                .commit()
         }
     }
 
-    private fun swipeRefresh(){
+    private fun swipeRefresh() {
         patientDetailViewModel.patientDetailsLiveData.value?.data?.let { details ->
             details.patientId?.let { id ->
                 patientDetailViewModel.getPatients(id)

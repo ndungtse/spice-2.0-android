@@ -242,12 +242,12 @@ class PrescriptionHistoryFragment : BaseFragment(), View.OnClickListener {
     }
 
     private fun setReferralDates(referredDates: List<ReferredDate>?, id: String?) {
-        if (referredDates != null && viewModel.prescriptionTicketId == null) {
-            dateListAdapter.submitData(referredDates, id)
-            viewModel.prescriptionTicketId = id
-            viewModel.prescriptionReferralDates = referredDates
-        } else {
-            dateListAdapter.updateSelectedId(id)
+        if (referredDates != null) {
+            if (viewModel.prescriptionTicketId == null) {
+                viewModel.prescriptionTicketId = id
+                viewModel.prescriptionReferralDates = referredDates
+            }
+            dateListAdapter.submitData(viewModel.prescriptionReferralDates, viewModel.prescriptionTicketId)
         }
         checkNextPreviousVisibility()
     }

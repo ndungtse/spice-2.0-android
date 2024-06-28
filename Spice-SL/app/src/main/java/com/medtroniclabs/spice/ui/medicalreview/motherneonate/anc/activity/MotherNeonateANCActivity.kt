@@ -338,12 +338,23 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
     }
 
     private fun swipeRefresh() {
-        supportFragmentManager.findFragmentById(R.id.patientDetailFragment)
-            .let {
-                patientViewModel.getPatientId()?.let { id ->
-                    patientViewModel.getPatients(id)
+        if (connectivityManager.isNetworkAvailable()) {
+            supportFragmentManager.findFragmentById(R.id.patientDetailFragment)
+                .let {
+                    patientViewModel.getPatientId()?.let { id ->
+                        patientViewModel.getPatients(id)
+                    }
+                }
+        } else {
+            showErrorDialogue(
+                getString(R.string.error), getString(R.string.no_internet_error),
+                isNegativeButtonNeed = false,
+            ) {
+                if (binding.refreshLayout.isRefreshing) {
+                    binding.refreshLayout.isRefreshing = false
                 }
             }
+        }
     }
 
     private fun initView() {
@@ -542,10 +553,12 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
             fetalHeartRate = systemicExaminationViewModel.fetalHeartRate
             clinicalNotes = clinicalNotesViewModel.enteredClinicalNotes
             pregnancyDetails = pregnancyDetailsViewModel.pregnancyDetailsModel.apply {
-                weight = motherNeonateBpWeightViewModel.getWeight()
-                diastolic = motherNeonateBpWeightViewModel.getBp()?.diastolic
-                systolic = motherNeonateBpWeightViewModel.getBp()?.systolic
-                pulse = motherNeonateBpWeightViewModel.getBp()?.pulse
+                if (viewModel.ancVisit > 1) {
+                    weight = motherNeonateBpWeightViewModel.getWeight()
+                    diastolic = motherNeonateBpWeightViewModel.getBp()?.diastolic
+                    systolic = motherNeonateBpWeightViewModel.getBp()?.systolic
+                    pulse = motherNeonateBpWeightViewModel.getBp()?.pulse
+                }
             }
             deliveryKit = pregnancyPastObstetricHistoryViewModel.deliveryKit
             pregnancyHistory = pregnancyPastObstetricHistoryViewModel.pregnancyHistoryChip
@@ -615,8 +628,8 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
         bpViewModel: AddBpViewModel,
         viewModel: MotherNeonateANCViewModel
     ) {
-        if (pregnancyDetailsViewModel.pregnancyDetailsModel.systolic != null &&
-            pregnancyDetailsViewModel.pregnancyDetailsModel.diastolic != null ||
+        if ((pregnancyDetailsViewModel.pregnancyDetailsModel.systolic != null &&
+            pregnancyDetailsViewModel.pregnancyDetailsModel.diastolic != null) ||
             pregnancyDetailsViewModel.pregnancyDetailsModel.pulse != null
         ) {
             bpViewModel.saveBloodPressure(
@@ -636,8 +649,17 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
         bpViewModel: AddBpViewModel,
         viewModel: MotherNeonateANCViewModel
     ) {
-        saveWeightIfNeeded(pregnancyDetailsViewModel, weightViewModel, viewModel)
-        saveBloodPressureIfNeeded(pregnancyDetailsViewModel, bpViewModel, viewModel)
+        if (connectivityManager.isNetworkAvailable()) {
+            saveWeightIfNeeded(pregnancyDetailsViewModel, weightViewModel, viewModel)
+            saveBloodPressureIfNeeded(pregnancyDetailsViewModel, bpViewModel, viewModel)
+        } else {
+            showErrorDialogue(
+                getString(R.string.error), getString(R.string.no_internet_error),
+                isNegativeButtonNeed = false,
+            ) {
+                binding.loadingProgress.gone()
+            }
+        }
     }
 
 

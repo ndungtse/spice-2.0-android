@@ -24,6 +24,7 @@ import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.LMB
 import com.medtroniclabs.spice.common.ViewUtils
 import com.medtroniclabs.spice.databinding.FragmentPregnancyDetailsBinding
+import com.medtroniclabs.spice.formgeneration.extension.markMandatory
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
 import com.medtroniclabs.spice.ui.BaseFragment
@@ -50,7 +51,7 @@ class PregnancyDetailsFragment : BaseFragment(), View.OnClickListener {
         fun newInstance(lmb: String?): PregnancyDetailsFragment {
             val fragment = PregnancyDetailsFragment()
             val bundle = Bundle()
-            bundle.putString(DefinedParams.LMB, lmb)
+            bundle.putString(LMB, lmb)
             fragment.arguments = bundle
             return fragment
         }
@@ -248,6 +249,7 @@ class PregnancyDetailsFragment : BaseFragment(), View.OnClickListener {
         pregnancyDetailsViewModel.setAncReqToGetMetaForBloodGroup(MedicalReviewTypeEnums.BloodGroup.name)
         adapter = CustomSpinnerAdapter(requireContext())
         with(binding) {
+            tvLastMenstrualPeriodLabel.markMandatory()
             initTextWatcherForDouble(etHeight) {
                 updateBMI()
                 pregnancyDetailsViewModel.pregnancyDetailsModel.height = it

@@ -255,12 +255,12 @@ class ReferralTicketFragment : BaseFragment(), View.OnClickListener {
     }
 
     private fun setReferralDates(referredDates: List<ReferredDate>?, id: String?) {
-        if (referredDates != null && viewModel.ticketId == null) {
-            dateListAdapter.submitData(referredDates, id)
-            viewModel.ticketId = id
-            viewModel.referralDates = referredDates
-        } else {
-            dateListAdapter.updateSelectedId(id)
+        if (referredDates != null) {
+            if (viewModel.ticketId == null) {
+                viewModel.ticketId = id
+                viewModel.referralDates = referredDates
+            }
+            dateListAdapter.submitData(viewModel.referralDates, viewModel.ticketId)
         }
         checkNextPreviousVisibility()
     }

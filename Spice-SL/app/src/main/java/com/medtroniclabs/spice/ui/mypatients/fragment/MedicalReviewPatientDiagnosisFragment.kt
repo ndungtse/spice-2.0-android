@@ -313,6 +313,7 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
                 }
 
                 ResourceState.SUCCESS -> {
+                    hideProgress()
                     resourceState.data?.let { patientStatus ->
                         if (patientStatus.status.isNullOrEmpty()) {
                             binding.tvPatientStatusValue.text = getString(R.string.seperator_hyphen)

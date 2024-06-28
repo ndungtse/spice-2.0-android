@@ -219,13 +219,14 @@ class MedicalReviewHistoryFragment : BaseFragment(), View.OnClickListener {
     }
 
     private fun setReferralDates(referredDates: List<ReferredDate>?, id: String?) {
-        if (referredDates != null && viewModel.medicalTicketId == null) {
-            dateListAdapter.submitData(referredDates, id)
-            viewModel.medicalTicketId = id
-            viewModel.medicalReferralDates = referredDates
-        } else {
-            dateListAdapter.updateSelectedId(id)
+        if (referredDates != null) {
+            if (viewModel.medicalTicketId == null) {
+                viewModel.medicalTicketId = id
+                viewModel.medicalReferralDates = referredDates
+            }
+            dateListAdapter.submitData(viewModel.medicalReferralDates, viewModel.medicalTicketId)
         }
+
         checkNextPreviousVisibility()
     }
 
