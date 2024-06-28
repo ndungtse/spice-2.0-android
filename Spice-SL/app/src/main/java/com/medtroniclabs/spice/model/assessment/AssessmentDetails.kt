@@ -18,7 +18,10 @@ data class AssessmentDetails(
     var latitude: Double = 0.0,
     var longitude: Double = 0.0,
 
-    val visitCount: Long? = null,
-    val clinicalDate: String? = null,
-    val numberOfNeonate: Long? = null
+    // Anc Details
+    val ancVisitNo: Long? = null,
+    // Pnc Detail
+    val pncVisitNo: Long? = null,
+    //Childhood Visit Detail
+    val childVisitNo: Long? = null,
 )

@@ -5,4 +5,5 @@ object EntitiesName {
     const val HOUSEHOLD_MEMBER = "HouseholdMember"
     const val MEMBER_CLINICAL = "MemberClinical"
     const val ASSESSMENT = "Assessment"
+    const val PREGNANCY_DETAIL = "PregnancyDetail"
 }

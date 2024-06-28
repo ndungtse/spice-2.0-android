@@ -227,16 +227,18 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
                 }
 
                 else -> {
-                    viewModel.memberDetailsLiveData.value?.data?.let { memberDetail ->
-                        viewModel.handlePregnancy(
-                            second,
-                            workflowName = name,
-                            memberDetail,
-                            viewModel.memberClinicalLiveData.value
-                        )
+                    if (!checkForOtherMetrics(second, name)) {
+                        viewModel.memberDetailsLiveData.value?.data?.let { memberDetail ->
+                            viewModel.handlePregnancy(
+                                second,
+                                workflowName = name,
+                                memberDetail,
+                                viewModel.memberClinicalLiveData.value
+                            )
+                        }
                     }
+
                     calculateGestationalAge(second, name)
-                    checkForOtherMetrics(second, name)
                     val resultGenerator = ReferralResultGenerator()
                     val referralResult = resultGenerator.calculateRMNCHReferralResult(second)
                     viewModel.saveAssessment(second, referralResult, RMNCH.getMenuName(viewModel.workflowName))
@@ -245,18 +247,20 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
         }
     }
 
-    private fun checkForOtherMetrics(details: HashMap<String, Any>, name: String) {
+    private fun checkForOtherMetrics(details: HashMap<String, Any>, name: String): Boolean {
         if (details.containsKey(name) && details[name] is Map<*, *>) {
             val second = details[name] as HashMap<String, Any>
             if (second.containsKey(Miscarriage)) {
                 val miscarriage = second[Miscarriage]
                 if (miscarriage is Boolean && miscarriage) {
                     viewModel.memberDetailsLiveData.value?.data?.let {
-                        viewModel.updateMemberClinicalData(it.patientId, RMNCH.ANC,0L,null)
+                        viewModel.updateMemberClinicalData(it.patientId,0L,null)
+                        return true
                     }
                 }
             }
         }
+        return false
     }
 
 

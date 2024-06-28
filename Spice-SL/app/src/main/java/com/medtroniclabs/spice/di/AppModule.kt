@@ -12,15 +12,15 @@ import com.medtroniclabs.spice.db.SpiceDataBase
 import com.medtroniclabs.spice.db.dao.AboveFiveYearsDAO
 import com.medtroniclabs.spice.db.dao.AssessmentDAO
 import com.medtroniclabs.spice.db.dao.DiagnosisDAO
-import com.medtroniclabs.spice.db.dao.HouseholdDAO
-import com.medtroniclabs.spice.db.dao.MemberClinicalDAO
-import com.medtroniclabs.spice.db.dao.MemberDAO
-import com.medtroniclabs.spice.db.dao.MetaDataDAO
 import com.medtroniclabs.spice.db.dao.ExaminationsComplaintsDAO
 import com.medtroniclabs.spice.db.dao.ExaminationsDAO
 import com.medtroniclabs.spice.db.dao.FollowUpCallsDao
 import com.medtroniclabs.spice.db.dao.FollowUpDao
+import com.medtroniclabs.spice.db.dao.HouseholdDAO
 import com.medtroniclabs.spice.db.dao.LabourDeliveryDAO
+import com.medtroniclabs.spice.db.dao.MemberDAO
+import com.medtroniclabs.spice.db.dao.MetaDataDAO
+import com.medtroniclabs.spice.db.dao.PregnancyDetailDao
 import com.medtroniclabs.spice.db.local.RoomHelper
 import com.medtroniclabs.spice.db.local.RoomHelperImpl
 import com.medtroniclabs.spice.network.ApiHelper
@@ -201,12 +201,6 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun provideMemberClinicalDAO(db: SpiceDataBase): MemberClinicalDAO {
-        return db.memberClinicalDAO()
-    }
-
-    @Singleton
-    @Provides
     fun provideAboveFiveYearsDAO(db: SpiceDataBase): AboveFiveYearsDAO {
         return db.aboveFiveYearsDAO()
     }
@@ -228,6 +222,12 @@ object AppModule {
     @Provides
     fun provideLabourDeliveryDAO(db: SpiceDataBase): LabourDeliveryDAO {
         return db.labourDeliveryDAO()
+    }
+
+    @Singleton
+    @Provides
+    fun providePregnancyDetailDAO(db: SpiceDataBase): PregnancyDetailDao {
+        return db.pregnancyDetailDao()
     }
 }
 

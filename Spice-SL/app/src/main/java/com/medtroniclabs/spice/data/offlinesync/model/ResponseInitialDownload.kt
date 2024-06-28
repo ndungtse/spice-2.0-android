@@ -1,11 +1,12 @@
 package com.medtroniclabs.spice.data.offlinesync.model
 
 import com.medtroniclabs.spice.db.entity.FollowUp
+import com.medtroniclabs.spice.db.entity.PregnancyDetail
 
 data class ResponseInitialDownload(
     val households: List<HouseHold>?,
     val members: List<HouseHoldMember>?,
-    val pregnancyInfos: List<PregnancyDetails>?,
+    val pregnancyInfos: List<PregnancyDetail>?,
     val followUps: List<FollowUp>?,
     val followUpCriteria: FollowUpCriteria?
 )

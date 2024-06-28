@@ -12,6 +12,7 @@ import com.medtroniclabs.spice.data.LocalSpinnerResponse
 import com.medtroniclabs.spice.data.model.RecommendedDosageListModel
 import com.medtroniclabs.spice.db.entity.AssessmentEntity
 import com.medtroniclabs.spice.db.entity.MemberClinicalEntity
+import com.medtroniclabs.spice.db.entity.PregnancyDetail
 import com.medtroniclabs.spice.db.entity.SignsAndSymptomsEntity
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
@@ -361,16 +362,10 @@ class AssessmentViewModel @Inject constructor(
         viewModelScope.launch(dispatcherIO) {
             memberClinicalLiveData.postValue(
                 memberRegistrationRepository.getPatientVisitCountByType(
-                    RMNCH.getMenuName(type),
+                    type,
                     patientId
                 )
             )
-        }
-    }
-
-    private fun savePatientVisitCountByType(memberClinicalEntity: MemberClinicalEntity) {
-        viewModelScope.launch(Dispatchers.IO) {
-            memberRegistrationRepository.savePatientVisitCountByType(memberClinicalEntity)
         }
     }
 
@@ -384,24 +379,26 @@ class AssessmentViewModel @Inject constructor(
         memberDetail.apply {
             if (details.containsKey(workflowName) && details[workflowName] is Map<*, *>) {
                 val map = details[workflowName] as HashMap<String, Any>
-                memberClinicalEntity?.let { memberClinicalEntity ->
-                    map[RMNCH.visitNo] = memberClinicalEntity.visitCount + 1
+                map[RMNCH.visitNo] = 1L
+                savePatientClinicalInformation(patientId, workflowName, map)
+
+                /*memberClinicalEntity?.let { memberClinicalEntity ->
+                    *//*map[RMNCH.visitNo] = memberClinicalEntity.visitCount + 1
                     memberClinicalEntity.clinicalDate?.let { date ->
                         getClinicalDateKey()?.let {
                             map[it] = date
                         }
                     }
-                    map[RMNCH.NoOfNeonate] = memberClinicalEntity.numberOfNeonate ?: 0L
+                    map[RMNCH.NoOfNeonate] = memberClinicalEntity.numberOfNeonate ?: 0L*//*
                     savePatientClinicalInformation(
                         patientId,
                         workflowName,
-                        map,
-                        memberClinicalEntity.id
+                        map
                     )
                 } ?: kotlin.run {
                     map[RMNCH.visitNo] = 1L
                     savePatientClinicalInformation(patientId, workflowName, map)
-                }
+                }*/
             }
         }
     }
@@ -422,67 +419,61 @@ class AssessmentViewModel @Inject constructor(
     private fun savePatientClinicalInformation(
         patientId: String?,
         workflowName: String,
-        map: HashMap<String, Any>,
-        rowId: Long = 0
+        map: HashMap<String, Any>
     ) {
-        patientId?.let { id ->
-            getClinicalDateAndVisitCount(map, workflowName).let {
-                val clinicalEntity = MemberClinicalEntity(
-                    id = rowId,
-                    patientId = id,
-                    type = RMNCH.getMenuName(workflowName),
-                    visitCount = it.first,
-                    clinicalDate = it.second,
-                    numberOfNeonate = it.third
-                )
-                savePatientVisitCountByType(clinicalEntity)
+        viewModelScope.launch(dispatcherIO) {
+            patientId?.let { id ->
+                val pregnancyDetail = memberRegistrationRepository.getPregnancyDetailByPatientId(id) ?: PregnancyDetail(patientId = id)
+                getClinicalDateAndVisitCount(map, workflowName, pregnancyDetail)
+                memberRegistrationRepository.savePregnancyDetail(pregnancyDetail)
             }
         }
     }
 
     private fun getClinicalDateAndVisitCount(
         details: HashMap<String, Any>,
-        workflowName: String
-    ): Triple<Long, String?, Long?> {
-        return when (workflowName) {
+        workflowName: String,
+        pregnancyDetail: PregnancyDetail
+    ) {
+        when (workflowName) {
             ANC -> {
-                Triple(
-                    details[RMNCH.visitNo] as Long,
-                    details[lastMenstrualPeriod] as String,
-                    null
-                )
+                pregnancyDetail.ancVisitNo = getVisitNumber(pregnancyDetail.ancVisitNo, details[RMNCH.visitNo])
+                pregnancyDetail.lastMenstrualPeriod = getClinicalDate(pregnancyDetail.lastMenstrualPeriod, details[lastMenstrualPeriod])
             }
 
             RMNCH.PNC -> {
-                Triple(
-                    details[RMNCH.visitNo] as Long,
-                    details[RMNCH.DateOfDelivery] as String,
-                    getNumberOfNeonates(details)
-                )
+                pregnancyDetail.pncVisitNo = getVisitNumber(pregnancyDetail.pncVisitNo, details[RMNCH.visitNo])
+                pregnancyDetail.dateOfDelivery = getClinicalDate(pregnancyDetail.dateOfDelivery, details[RMNCH.DateOfDelivery])
+                pregnancyDetail.noOfNeonates = getNumberOfNeonates(pregnancyDetail.noOfNeonates, details[RMNCH.NoOfNeonate])
             }
 
             else -> {
-                Triple(details[RMNCH.visitNo] as Long, null, null)
+                pregnancyDetail.childVisitNo = getVisitNumber(pregnancyDetail.childVisitNo, details[RMNCH.visitNo])
             }
         }
     }
 
-    private fun getNumberOfNeonates(details: HashMap<String, Any>): Long? {
-        val value = details[RMNCH.NoOfNeonate]
-        return value.toString().toLongOrNull()
+    private fun getVisitNumber(existingCount: Long?, visitNo: Any?): Long? {
+        existingCount?.let { return (it + 1) } ?: return visitNo?.let { it as Long }
+    }
+
+    private fun getClinicalDate(existingDate: String?, date: Any?): String? {
+        existingDate?.let { return it } ?: return date?.let { it as String }
+    }
+
+    private fun getNumberOfNeonates(existingCount: Long?, noOfNeonate: Any?): Long? {
+        existingCount?.let { return it } ?: return noOfNeonate?.let { (it as String).toLongOrNull() }
     }
 
 
     fun updateMemberClinicalData(
         patientId: String,
-        type: String,
         visitCount: Long,
         clinicalDate: String?
     ) {
         viewModelScope.launch(dispatcherIO) {
-            assessmentRepository.updateMemberClinicalData(
+            assessmentRepository.updatePregnancyAncDetail(
                 patientId,
-                RMNCH.getMenuName(type),
                 visitCount,
                 clinicalDate
             )

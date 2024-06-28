@@ -23,6 +23,7 @@ import com.medtroniclabs.spice.db.dao.LabourDeliveryDAO
 import com.medtroniclabs.spice.db.dao.MemberClinicalDAO
 import com.medtroniclabs.spice.db.dao.MemberDAO
 import com.medtroniclabs.spice.db.dao.MetaDataDAO
+import com.medtroniclabs.spice.db.dao.PregnancyDetailDao
 import com.medtroniclabs.spice.db.entity.AssessmentEntity
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowConditionEntity
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowEntity
@@ -35,6 +36,7 @@ import com.medtroniclabs.spice.db.entity.HouseholdEntity
 import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
 import com.medtroniclabs.spice.db.entity.MemberClinicalEntity
 import com.medtroniclabs.spice.db.entity.MenuEntity
+import com.medtroniclabs.spice.db.entity.PregnancyDetail
 import com.medtroniclabs.spice.db.entity.SignsAndSymptomsEntity
 import com.medtroniclabs.spice.db.entity.UserProfileEntity
 import com.medtroniclabs.spice.db.entity.VillageEntity
@@ -44,8 +46,10 @@ import com.medtroniclabs.spice.db.response.VillageBasicDetails
 import com.medtroniclabs.spice.model.MemberDobGenderModel
 import com.medtroniclabs.spice.model.assessment.AssessmentDetails
 import com.medtroniclabs.spice.model.assessment.AssessmentMemberDetails
+import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
 import com.medtroniclabs.spice.ui.boarding.MenuTypeEnums
 import com.medtroniclabs.spice.ui.followup.FollowUpDefinedParams
+import java.util.Locale
 import javax.inject.Inject
 
 class RoomHelperImpl @Inject constructor(
@@ -55,12 +59,12 @@ class RoomHelperImpl @Inject constructor(
     private val metaDataDAO: MetaDataDAO,
     private val examinationsComplaintsDAO: ExaminationsComplaintsDAO,
     private val diagnosisDAO: DiagnosisDAO,
-    private val memberClinicalDAO: MemberClinicalDAO,
     private val aboveFiveYearsDAO: AboveFiveYearsDAO,
     private val examinationsDAO: ExaminationsDAO,
     private val labourDeliveryDAO: LabourDeliveryDAO,
     private val followUpDao: FollowUpDao,
-    private val followUpCallsDao: FollowUpCallsDao
+    private val followUpCallsDao: FollowUpCallsDao,
+    private val pregnancyDetailDao: PregnancyDetailDao
 ) : RoomHelper {
     override suspend fun saveHouseHoldEntry(householdEntity: HouseholdEntity): Long {
         return householdDAO.insertHouseHold(householdEntity)
@@ -307,11 +311,15 @@ class RoomHelperImpl @Inject constructor(
         type: String,
         patientId: String
     ): MemberClinicalEntity? {
-        return memberClinicalDAO.getPatientVisitCountByType(type, patientId)
+        return when (type) {
+            RMNCH.ANC -> pregnancyDetailDao.getAncDetail(patientId)
+            RMNCH.PNC -> pregnancyDetailDao.getPncDetail(patientId)
+            else -> pregnancyDetailDao.getChildhoodVisitDetail(patientId)
+        }
     }
 
     override suspend fun savePatientVisitCountByType(memberClinicalEntity: MemberClinicalEntity) {
-        return memberClinicalDAO.savePatientVisitCountByType(memberClinicalEntity = memberClinicalEntity)
+      //  return memberClinicalDAO.savePatientVisitCountByType(memberClinicalEntity = memberClinicalEntity)
     }
 
     override suspend fun deleteExaminationsComplaints(menuType: String) {
@@ -367,13 +375,12 @@ class RoomHelperImpl @Inject constructor(
         return assessmentDAO.getUnSyncedCount()
     }
 
-    override suspend fun updateMemberClinicalData(
+    override suspend fun updatePregnancyAncDetail(
         patientId: String,
-        type: String,
         visitCount: Long,
         clinicalDate: String?
     ) {
-        memberClinicalDAO.updateMemberClinicalData(visitCount, clinicalDate, patientId, type)
+        pregnancyDetailDao.updatePregnancyAnc(visitCount, clinicalDate, patientId)
     }
 
     override suspend fun getSummaryDetailMetaItems(type: String): List<MedicalReviewMetaItems> {
@@ -465,12 +472,12 @@ class RoomHelperImpl @Inject constructor(
         return memberDAO.getPatientIdByFhirId(fhirId)
     }
 
-    override suspend fun deleteAllMemberClinical() {
-        memberClinicalDAO.deleteAllMemberClinical()
+    override suspend fun deleteAllPregnancyDetails() {
+        pregnancyDetailDao.deleteAllPregnancyDetails()
     }
 
-    override suspend fun insertClinicalInfos(list: List<MemberClinicalEntity>) {
-        memberClinicalDAO.insertClinicalInfos(list)
+    override suspend fun insertUpdatePregnancyDetailFromBE(pregnancyDetail: PregnancyDetail) {
+        pregnancyDetailDao.insertOrUpdateFromBE(pregnancyDetail)
     }
 
     override suspend fun addCallHistory(oldFollowUp: FollowUp, history: FollowUpCall, newFollowUp: FollowUp?) {
@@ -547,5 +554,13 @@ class RoomHelperImpl @Inject constructor(
 
     override suspend fun changeHouseholdMemberStatus(idList: List<String>, status: String) {
 
+    }
+
+    override suspend fun getPregnancyDetailByPatientId(patientId: String): PregnancyDetail? {
+        return pregnancyDetailDao.getPregnancyDetailByPatientId(patientId)
+    }
+
+    override suspend fun savePregnancyDetail(detail: PregnancyDetail): Long {
+        return pregnancyDetailDao.savePregnancyDetail(detail)
     }
 }

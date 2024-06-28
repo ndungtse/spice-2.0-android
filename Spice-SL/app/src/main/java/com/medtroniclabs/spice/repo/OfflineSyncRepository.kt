@@ -1,6 +1,5 @@
 package com.medtroniclabs.spice.repo
 
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.google.gson.Gson
 import com.google.gson.JsonParser
@@ -15,7 +14,6 @@ import com.medtroniclabs.spice.data.offlinesync.model.AssessmentEncounter
 import com.medtroniclabs.spice.data.offlinesync.model.FollowUpCriteria
 import com.medtroniclabs.spice.data.offlinesync.model.HouseHold
 import com.medtroniclabs.spice.data.offlinesync.model.HouseHoldMember
-import com.medtroniclabs.spice.data.offlinesync.model.PregnancyDetails
 import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.data.offlinesync.model.RequestGetSyncStatus
 import com.medtroniclabs.spice.data.offlinesync.model.ResponseInitialDownload
@@ -26,7 +24,6 @@ import com.medtroniclabs.spice.data.offlinesync.utils.OfflineSyncStatus
 import com.medtroniclabs.spice.data.offlinesync.utils.OfflineUtils
 import com.medtroniclabs.spice.data.resource.RequestAllEntities
 import com.medtroniclabs.spice.db.entity.EntitiesName
-import com.medtroniclabs.spice.db.entity.MemberClinicalEntity
 import com.medtroniclabs.spice.db.local.RoomHelper
 import com.medtroniclabs.spice.model.assessment.AssessmentDetails
 import com.medtroniclabs.spice.network.ApiHelper
@@ -36,7 +33,6 @@ import okhttp3.ResponseBody
 import retrofit2.Response
 import timber.log.Timber
 import java.lang.reflect.Type
-import java.util.Locale
 import javax.inject.Inject
 
 class OfflineSyncRepository @Inject constructor(
@@ -70,9 +66,18 @@ class OfflineSyncRepository @Inject constructor(
                     provenance = ProvanceDto(createdDateTime = entity.createdAt.convertToUtcDateTime()),
                     latitude = entity.latitude,
                     longitude = entity.longitude,
-                    visitNumber = entity.visitCount
+                    visitNumber = getVisitCount(entity)
                 )
             )
+        }
+    }
+
+    private fun getVisitCount(assessmentDetail: AssessmentDetails): Long? {
+        when(assessmentDetail.assessmentType.lowercase()) {
+            RMNCH.ANC_MENU.lowercase() -> return assessmentDetail.ancVisitNo
+            RMNCH.pnc_mother_key.lowercase() -> return assessmentDetail.pncVisitNo
+            RMNCH.CHILD_MENU.lowercase() -> return assessmentDetail.childVisitNo
+            else -> return null
         }
     }
 
@@ -92,7 +97,7 @@ class OfflineSyncRepository @Inject constructor(
             if (longSyncedAt == 0L) {
                 roomHelper.deleteAllHouseholds()
                 roomHelper.deleteAllHouseholdMembers()
-                roomHelper.deleteAllMemberClinical()
+                roomHelper.deleteAllPregnancyDetails()
                 roomHelper.deleteAllAssessments()
             }
 
@@ -168,11 +173,9 @@ class OfflineSyncRepository @Inject constructor(
         }
 
         // Insert Pregnancy Information
-        val pregnancyDetails = mutableListOf<MemberClinicalEntity>()
         requestInitialDownload.pregnancyInfos?.forEach {
-            pregnancyDetails.addAll(getMemberClinicalInfos(it))
+            roomHelper.insertUpdatePregnancyDetailFromBE(it)
         }
-        roomHelper.insertClinicalInfos(pregnancyDetails)
 
         // Set FollowUpCriteria in Preference
         requestInitialDownload.followUpCriteria?.let {
@@ -355,50 +358,6 @@ class OfflineSyncRepository @Inject constructor(
         )
 
         return apiHelper.getOfflineSyncStatus(req)
-    }
-
-    private suspend fun getMemberClinicalInfos(info: PregnancyDetails): List<MemberClinicalEntity> {
-        val clinicalInfos = mutableListOf<MemberClinicalEntity>()
-        roomHelper.getPatientIdByFhirId(info.householdMemberId)?.let { patientId ->
-            // Add Anc info
-            if (info.lastMenstrualPeriod != null) {
-                clinicalInfos.add(
-                    MemberClinicalEntity(
-                        patientId = patientId,
-                        visitCount = info.ancVisitNo ?: 0,
-                        clinicalDate = info.lastMenstrualPeriod,
-                        type = RMNCH.ANC_MENU.uppercase(Locale.getDefault())
-                    )
-                )
-            }
-
-            // Add pnc info
-            if (info.pncVisitNo != null && info.dateOfDelivery != null && info.noOfNeonates != null) {
-                clinicalInfos.add(
-                    MemberClinicalEntity(
-                        patientId = patientId,
-                        visitCount = info.pncVisitNo.toLong(),
-                        clinicalDate = info.dateOfDelivery,
-                        type = RMNCH.PNC_MENU.uppercase(Locale.getDefault()),
-                        numberOfNeonate = info.noOfNeonates.toLong()
-                    )
-                )
-            }
-
-            // Add childhood visit
-            if (info.childVisitNo != null) {
-                clinicalInfos.add(
-                    MemberClinicalEntity(
-                        patientId = patientId,
-                        visitCount = info.childVisitNo.toLong(),
-                        type = RMNCH.CHILD_MENU.uppercase(Locale.getDefault()),
-                        clinicalDate = null
-                    )
-                )
-            }
-        }
-
-        return clinicalInfos
     }
 
     /*

@@ -221,10 +221,12 @@ class AssessmentRepository @Inject constructor(
         return roomHelper.getUnSyncedAssessmentCount()
     }
 
-    suspend fun updateMemberClinicalData(
-        patientId: String, type: String, visitCount: Long, clinicalDate: String?
+    suspend fun updatePregnancyAncDetail(
+        patientId: String,
+        visitCount: Long,
+        clinicalDate: String?
     ) {
-        roomHelper.updateMemberClinicalData(patientId, type, visitCount, clinicalDate)
+        roomHelper.updatePregnancyAncDetail(patientId, visitCount, clinicalDate)
     }
 
 

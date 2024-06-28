@@ -23,6 +23,7 @@ import com.medtroniclabs.spice.db.entity.HouseholdEntity
 import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
 import com.medtroniclabs.spice.db.entity.MemberClinicalEntity
 import com.medtroniclabs.spice.db.entity.MenuEntity
+import com.medtroniclabs.spice.db.entity.PregnancyDetail
 import com.medtroniclabs.spice.db.entity.SignsAndSymptomsEntity
 import com.medtroniclabs.spice.db.entity.UserProfileEntity
 import com.medtroniclabs.spice.db.entity.VillageEntity
@@ -120,9 +121,8 @@ interface RoomHelper {
     suspend fun getUnSyncedAssessmentCount(): Int
 
     suspend fun deleteAllAssessments()
-    suspend fun updateMemberClinicalData(
+    suspend fun updatePregnancyAncDetail(
         patientId: String,
-        type: String,
         visitCount: Long,
         clinicalDate: String?
     )
@@ -160,10 +160,10 @@ interface RoomHelper {
 
     suspend fun getAllVillageIds(): List<Long>
 
-    suspend fun deleteAllMemberClinical()
+    suspend fun deleteAllPregnancyDetails()
     suspend fun getPatientIdByFhirId(fhirId: String): String?
 
-    suspend fun insertClinicalInfos(list: List<MemberClinicalEntity>)
+    suspend fun insertUpdatePregnancyDetailFromBE(pregnancyDetail: PregnancyDetail)
 
     suspend fun addCallHistory(oldFollowUp: FollowUp, history: FollowUpCall, newFollowUp: FollowUp? = null)
 
@@ -194,5 +194,9 @@ interface RoomHelper {
     suspend fun insertOrUpdateHHFromBE(entity: HouseholdEntity): Long
 
     suspend fun insertOrUpdateHHMFromBE(entity: HouseholdMemberEntity): Long
+
+    suspend fun getPregnancyDetailByPatientId(patientId: String): PregnancyDetail?
+
+    suspend fun savePregnancyDetail(detail: PregnancyDetail): Long
 
 }

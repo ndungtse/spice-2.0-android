@@ -13,6 +13,7 @@ import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.offlinesync.utils.OfflineSyncStatus
 import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
 import com.medtroniclabs.spice.db.entity.MemberClinicalEntity
+import com.medtroniclabs.spice.db.entity.PregnancyDetail
 import com.medtroniclabs.spice.db.local.RoomHelper
 import com.medtroniclabs.spice.mappingkey.MemberRegistration
 import com.medtroniclabs.spice.mappingkey.MemberRegistration.otherFamilyMember
@@ -176,5 +177,12 @@ class HouseholdMemberRepository @Inject constructor(
         roomHelper.savePatientVisitCountByType(memberClinicalEntity)
     }
 
+    suspend fun getPregnancyDetailByPatientId(patientId: String): PregnancyDetail? {
+        return roomHelper.getPregnancyDetailByPatientId(patientId)
+    }
+
+    suspend fun savePregnancyDetail(pregnancyDetail: PregnancyDetail): Long {
+        return roomHelper.savePregnancyDetail(pregnancyDetail)
+    }
 
 }
