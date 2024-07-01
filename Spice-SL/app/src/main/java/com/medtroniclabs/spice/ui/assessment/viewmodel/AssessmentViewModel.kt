@@ -36,6 +36,7 @@ import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.ANC
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.ANC_MENU
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.ChildHoodVisit
+import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.Miscarriage
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.ancSigns
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.childhoodVisitSigns
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.estimatedDeliveryDate
@@ -46,7 +47,6 @@ import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.otherSigns
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.pncChildSigns
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.util.Locale
 import javax.inject.Inject
@@ -79,6 +79,7 @@ class AssessmentViewModel @Inject constructor(
     var instructionId: String? = null
     val treatmentDays = HashMap<String, Int>()
     var referralReason: ArrayList<String>? = null
+    var pregnancyDetail: PregnancyDetail? = null
 
     init {
         val followUpCriteria = SecuredPreference.getFollowUpCriteria()
@@ -140,7 +141,7 @@ class AssessmentViewModel @Inject constructor(
             otherDetails[AssessmentDefinedParams.ReferredPHUSiteID] =
                 SecuredPreference.getString(SecuredPreference.EnvironmentKey.DEFAULT_SITE_ID.name)
                     ?: "-1"
-        } else if (referralStatus != null && referralStatus == ReferralStatus.OnTreatment.name){
+        } else if (referralStatus != null && referralStatus == ReferralStatus.OnTreatment.name) {
             otherDetails[AssessmentDefinedParams.NextFollowupDate] =
                 DateUtils.getDateAfterDays(referralReason?.mapNotNull { treatmentDays[it] }
                     ?.minOrNull() ?: 3)
@@ -150,8 +151,8 @@ class AssessmentViewModel @Inject constructor(
             if (assessmentMap.containsKey(ANC)) {
                 val ancMap = assessmentMap[ANC] as Map<*, *>
                 var miscarriageValue = false
-                if (ancMap.containsKey(RMNCH.Miscarriage)) {
-                    val miscarriage = ancMap[RMNCH.Miscarriage]
+                if (ancMap.containsKey(Miscarriage)) {
+                    val miscarriage = ancMap[Miscarriage]
                     if (miscarriage is Boolean && miscarriage) {
                         miscarriageValue = miscarriage
                     }
@@ -379,9 +380,12 @@ class AssessmentViewModel @Inject constructor(
         memberDetail.apply {
             if (details.containsKey(workflowName) && details[workflowName] is Map<*, *>) {
                 val map = details[workflowName] as HashMap<String, Any>
-                map[RMNCH.visitNo] = 1L
-                savePatientClinicalInformation(patientId, workflowName, map)
-
+                patientId.let { id ->
+                    val pregnancyDetail = pregnancyDetail
+                        ?: PregnancyDetail(patientId = id)
+                    getClinicalDateAndVisitCount(map, workflowName, pregnancyDetail)
+                    savePatientClinicalInformation(pregnancyDetail)
+                }
                 /*memberClinicalEntity?.let { memberClinicalEntity ->
                     *//*map[RMNCH.visitNo] = memberClinicalEntity.visitCount + 1
                     memberClinicalEntity.clinicalDate?.let { date ->
@@ -417,18 +421,23 @@ class AssessmentViewModel @Inject constructor(
     }
 
     private fun savePatientClinicalInformation(
-        patientId: String?,
-        workflowName: String,
-        map: HashMap<String, Any>
+        pregnancyDetail: PregnancyDetail,
     ) {
         viewModelScope.launch(dispatcherIO) {
-            patientId?.let { id ->
-                val pregnancyDetail = memberRegistrationRepository.getPregnancyDetailByPatientId(id) ?: PregnancyDetail(patientId = id)
-                getClinicalDateAndVisitCount(map, workflowName, pregnancyDetail)
-                memberRegistrationRepository.savePregnancyDetail(pregnancyDetail)
+            memberRegistrationRepository.savePregnancyDetail(pregnancyDetail)
+        }
+    }
+
+
+    fun getPregnancyDetailInformation() {
+        viewModelScope.launch(dispatcherIO) {
+            memberDetailsLiveData.value?.data?.let { detail ->
+                pregnancyDetail =
+                    memberRegistrationRepository.getPregnancyDetailByPatientId(detail.patientId)
             }
         }
     }
+
 
     private fun getClinicalDateAndVisitCount(
         details: HashMap<String, Any>,
@@ -437,24 +446,39 @@ class AssessmentViewModel @Inject constructor(
     ) {
         when (workflowName) {
             ANC -> {
-                pregnancyDetail.ancVisitNo = getVisitNumber(pregnancyDetail.ancVisitNo, details[RMNCH.visitNo])
-                pregnancyDetail.lastMenstrualPeriod = getClinicalDate(pregnancyDetail.lastMenstrualPeriod, details[lastMenstrualPeriod])
+                pregnancyDetail.ancVisitNo =
+                    getVisitNumber(pregnancyDetail.ancVisitNo)
+                pregnancyDetail.lastMenstrualPeriod = getClinicalDate(
+                    pregnancyDetail.lastMenstrualPeriod,
+                    details[lastMenstrualPeriod]
+                )
+                details[RMNCH.visitNo] = pregnancyDetail.ancVisitNo ?: 0L
+                details[lastMenstrualPeriod] = pregnancyDetail.lastMenstrualPeriod ?: ""
+                // Anc 2
             }
 
             RMNCH.PNC -> {
-                pregnancyDetail.pncVisitNo = getVisitNumber(pregnancyDetail.pncVisitNo, details[RMNCH.visitNo])
-                pregnancyDetail.dateOfDelivery = getClinicalDate(pregnancyDetail.dateOfDelivery, details[RMNCH.DateOfDelivery])
-                pregnancyDetail.noOfNeonates = getNumberOfNeonates(pregnancyDetail.noOfNeonates, details[RMNCH.NoOfNeonate])
+                pregnancyDetail.pncVisitNo =
+                    getVisitNumber(pregnancyDetail.pncVisitNo)
+                pregnancyDetail.dateOfDelivery =
+                    getClinicalDate(pregnancyDetail.dateOfDelivery, details[RMNCH.DateOfDelivery])
+                pregnancyDetail.noOfNeonates =
+                    getNumberOfNeonates(pregnancyDetail.noOfNeonates, details[RMNCH.NoOfNeonate])
+                details[RMNCH.visitNo] = pregnancyDetail.pncVisitNo ?: 0L
+                details[RMNCH.DateOfDelivery] = pregnancyDetail.dateOfDelivery ?: ""
+                details[RMNCH.NoOfNeonate] = pregnancyDetail.noOfNeonates ?: 0L
             }
 
             else -> {
-                pregnancyDetail.childVisitNo = getVisitNumber(pregnancyDetail.childVisitNo, details[RMNCH.visitNo])
+                pregnancyDetail.childVisitNo =
+                    getVisitNumber(pregnancyDetail.childVisitNo)
+                details[RMNCH.visitNo] = pregnancyDetail.childVisitNo ?: 0L
             }
         }
     }
 
-    private fun getVisitNumber(existingCount: Long?, visitNo: Any?): Long? {
-        existingCount?.let { return (it + 1) } ?: return visitNo?.let { it as Long }
+    private fun getVisitNumber(existingCount: Long?, visitNo: Long = 1): Long {
+        existingCount?.let { return (it + 1) } ?: return visitNo.let { it }
     }
 
     private fun getClinicalDate(existingDate: String?, date: Any?): String? {
@@ -462,7 +486,8 @@ class AssessmentViewModel @Inject constructor(
     }
 
     private fun getNumberOfNeonates(existingCount: Long?, noOfNeonate: Any?): Long? {
-        existingCount?.let { return it } ?: return noOfNeonate?.let { (it as String).toLongOrNull() }
+        existingCount?.let { return it }
+            ?: return noOfNeonate?.let { (it as String).toLongOrNull() }
     }
 
 
@@ -479,5 +504,6 @@ class AssessmentViewModel @Inject constructor(
             )
         }
     }
+
 
 }

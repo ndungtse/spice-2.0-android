@@ -231,6 +231,25 @@ class AssessmentRMNCHNeonateSummaryFragment : BaseFragment(), View.OnClickListen
             )
         )
 
+        binding.motherParentLayout.addView(
+            AssessmentCommonUtils.addViewSummaryLayout(
+                getString(R.string.date_of_delivery),
+                getValueFromMap(
+                    map,
+                    RMNCH.DateOfDelivery,
+                    ViewType.VIEW_TYPE_FORM_DATEPICKER,
+                    viewModel.workflowName,
+                    false,
+                    Triple(
+                        getString(R.string.yes),
+                        getString(R.string.no),
+                        getString(R.string.hyphen_symbol)
+                    )
+                ), null,
+                requireContext()
+            )
+        )
+
     }
 
     override fun onClick(v: View) {
@@ -307,9 +326,9 @@ class AssessmentRMNCHNeonateSummaryFragment : BaseFragment(), View.OnClickListen
                             binding.etNextFollowUpDate.text = DateUtils.getDateStringFromDate(
                                 visitDate, DateUtils.DATE_ddMMyyyy
                             )
-                           if (binding.etNextFollowUpDate.text.isNotEmpty()) {
-                               binding.btnDone.isEnabled = true
-                           }
+                            if (binding.etNextFollowUpDate.text.isNotEmpty()) {
+                                binding.btnDone.isEnabled = true
+                            }
                         }
                     }
                 }
@@ -317,7 +336,7 @@ class AssessmentRMNCHNeonateSummaryFragment : BaseFragment(), View.OnClickListen
         }
     }
 
-    fun getCurrentAnsweredStatus():Boolean {
+    fun getCurrentAnsweredStatus(): Boolean {
         return viewModel.otherAssessmentDetails.isNotEmpty()
     }
 }

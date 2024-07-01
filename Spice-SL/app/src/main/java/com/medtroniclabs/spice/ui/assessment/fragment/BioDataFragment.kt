@@ -58,6 +58,7 @@ class BioDataFragment : BaseFragment() {
 
                 ResourceState.SUCCESS -> {
                     hideProgress()
+                    viewModel.getPregnancyDetailInformation()
                     showPatientBioData(resourceState.data)
                 }
 

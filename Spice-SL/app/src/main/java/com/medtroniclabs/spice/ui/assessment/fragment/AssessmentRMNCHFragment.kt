@@ -237,7 +237,6 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
                             )
                         }
                     }
-
                     calculateGestationalAge(second, name)
                     val resultGenerator = ReferralResultGenerator()
                     val referralResult = resultGenerator.calculateRMNCHReferralResult(second)
