@@ -89,6 +89,7 @@ class MedicalReviewHistoryFragment : BaseFragment(), View.OnClickListener {
         } else {
             binding.tvNoHistory.gone()
             adapters = ReferralHistoryAdapter()
+            viewModel.medicalTicketId = null
             getInitialReferralTickets()
             setupClickListeners()
             binding.retryButtonBp.safeClickListener(this)
@@ -222,9 +223,17 @@ class MedicalReviewHistoryFragment : BaseFragment(), View.OnClickListener {
         if (referredDates != null) {
             if (viewModel.medicalTicketId == null) {
                 viewModel.medicalTicketId = id
-                viewModel.medicalReferralDates = referredDates
+                viewModel.medicalReferralDates.value = referredDates
             }
-            dateListAdapter.submitData(viewModel.medicalReferralDates, viewModel.medicalTicketId)
+            viewModel.medicalReferralDates.value?.let {list ->
+                if (referredDates.size > list.size){
+                    viewModel.medicalTicketId = id
+                    viewModel.medicalReferralDates.value = referredDates
+                }
+            }
+            viewModel.medicalReferralDates.value?.let {
+                dateListAdapter.submitData(it, viewModel.medicalTicketId)
+            }
         }
 
         checkNextPreviousVisibility()
@@ -286,7 +295,7 @@ class MedicalReviewHistoryFragment : BaseFragment(), View.OnClickListener {
 
     private fun checkForPreviousItem(): Int {
         var selectedIndex = -1
-        viewModel.medicalReferralDates.let {
+        viewModel.medicalReferralDates.value?.let {
             it.forEachIndexed { index, referredDate ->
                 if (referredDate.id == viewModel.medicalTicketId) {
                     selectedIndex = index - 1
@@ -298,7 +307,7 @@ class MedicalReviewHistoryFragment : BaseFragment(), View.OnClickListener {
 
     private fun checkNextItem(): Int {
         var selectedIndex = -1
-        viewModel.medicalReferralDates.let {
+        viewModel.medicalReferralDates.value?.let {
             it.forEachIndexed { index, referredDate ->
                 if ((referredDate.id == viewModel.medicalTicketId) && ((index + 1) < it.size)) {
                     selectedIndex = index + 1
@@ -311,7 +320,7 @@ class MedicalReviewHistoryFragment : BaseFragment(), View.OnClickListener {
     private fun getPreviousItemToCurrent() {
         val selectedIndex = checkForPreviousItem()
         if (selectedIndex != -1) {
-            viewModel.medicalReferralDates[selectedIndex].id?.let {
+            viewModel.medicalReferralDates.value?.get(selectedIndex)?.id?.let {
                 viewModel.getMedicalReviewHistory(
                     patientId = getPatientId(),
                     medicalTicketId = it
@@ -324,7 +333,7 @@ class MedicalReviewHistoryFragment : BaseFragment(), View.OnClickListener {
     private fun getNextItemToCurrent() {
         val selectedIndex = checkNextItem()
         if (selectedIndex != -1) {
-            viewModel.medicalReferralDates[selectedIndex].id?.let {
+            viewModel.medicalReferralDates.value?.get(selectedIndex)?.id?.let {
                 viewModel.getMedicalReviewHistory(
                     patientId = getPatientId(),
                     medicalTicketId = it

@@ -89,6 +89,7 @@ class PrescriptionHistoryFragment : BaseFragment(), View.OnClickListener {
         } else {
             binding.tvNoHistory.gone()
             adapters = ReferralHistoryAdapter()
+            viewModel.prescriptionTicketId = null
             getInitialReferralTickets()
             setupClickListeners()
             binding.retryButtonBp.safeClickListener(this)
@@ -245,9 +246,17 @@ class PrescriptionHistoryFragment : BaseFragment(), View.OnClickListener {
         if (referredDates != null) {
             if (viewModel.prescriptionTicketId == null) {
                 viewModel.prescriptionTicketId = id
-                viewModel.prescriptionReferralDates = referredDates
+                viewModel.prescriptionReferralDates.value = referredDates
             }
-            dateListAdapter.submitData(viewModel.prescriptionReferralDates, viewModel.prescriptionTicketId)
+            viewModel.prescriptionReferralDates.value?.let {list ->
+                if (referredDates.size > list.size){
+                    viewModel.prescriptionTicketId = id
+                    viewModel.prescriptionReferralDates.value = referredDates
+                }
+            }
+            viewModel.prescriptionReferralDates.value?.let {
+                dateListAdapter.submitData(it, viewModel.prescriptionTicketId)
+            }
         }
         checkNextPreviousVisibility()
     }
@@ -308,7 +317,7 @@ class PrescriptionHistoryFragment : BaseFragment(), View.OnClickListener {
 
     private fun checkForPreviousItem(): Int {
         var selectedIndex = -1
-        viewModel.prescriptionReferralDates.let {
+        viewModel.prescriptionReferralDates.value?.let {
             it.forEachIndexed { index, labTestDateModel ->
                 if (labTestDateModel.id == viewModel.prescriptionTicketId) {
                     selectedIndex = index - 1
@@ -320,7 +329,7 @@ class PrescriptionHistoryFragment : BaseFragment(), View.OnClickListener {
 
     private fun checkNextItem(): Int {
         var selectedIndex = -1
-        viewModel.prescriptionReferralDates.let {
+        viewModel.prescriptionReferralDates.value?.let {
             it.forEachIndexed { index, labTestDateModel ->
                 if ((labTestDateModel.id == viewModel.prescriptionTicketId) && ((index + 1) < it.size)) {
                     selectedIndex = index + 1
@@ -333,7 +342,7 @@ class PrescriptionHistoryFragment : BaseFragment(), View.OnClickListener {
     private fun getPreviousItemToCurrent() {
         val selectedIndex = checkForPreviousItem()
         if (selectedIndex != -1) {
-            viewModel.prescriptionReferralDates[selectedIndex].id?.let {
+            viewModel.prescriptionReferralDates.value?.get(selectedIndex)?.id?.let {
                 viewModel.getPrescriptionHistory(
                     patientId = getPatientId(),
                     prescriptionTicketId = it
@@ -346,7 +355,7 @@ class PrescriptionHistoryFragment : BaseFragment(), View.OnClickListener {
     private fun getNextItemToCurrent() {
         val selectedIndex = checkNextItem()
         if (selectedIndex != -1) {
-            viewModel.prescriptionReferralDates[selectedIndex].id?.let {
+            viewModel.prescriptionReferralDates.value?.get(selectedIndex)?.id?.let {
                 viewModel.getPrescriptionHistory(
                     patientId = getPatientId(),
                     prescriptionTicketId = it

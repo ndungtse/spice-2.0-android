@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.setExpandableText
 import com.medtroniclabs.spice.common.DateUtils
@@ -15,6 +16,8 @@ import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil.convertNullableDoubleToString
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil.convertNullableIntToString
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil.convertNullableStringToString
+import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
+import com.medtroniclabs.spice.ui.mypatients.viewmodel.PregnancyDetailsViewModel
 
 class PregnancySummaryFragment() : BaseFragment() {
 
@@ -22,6 +25,7 @@ class PregnancySummaryFragment() : BaseFragment() {
     private var pregnancyDetailsModel: PregnancyDetailsModel? = null
     private var pregnancyHistoryChip: ArrayList<ChipViewItemModel>? = null
     private var pregnancyHistoryNotes: String? = null
+    private val patientDetailsViewModel: PatientDetailViewModel by activityViewModels()
 
     fun setData(
         pregnancyHistoryChip: ArrayList<ChipViewItemModel>,
@@ -58,18 +62,23 @@ class PregnancySummaryFragment() : BaseFragment() {
                     convertNullableDoubleToString(pregnancyDetailsModel.bmi, requireContext())
                 tvGravidaValue.text =
                     convertNullableIntToString(pregnancyDetailsModel.gravida, requireContext())
-                tvLastMenstrualValue.text =  pregnancyDetailsModel.lastMenstrualPeriod?.let {
-                    DateUtils.convertDateFormat(
-                        it,
-                        DateUtils.DATE_FORMAT_yyyyMMdd,
-                        DateUtils.DATE_ddMMyyyy,
-                    )
-                }.let {
-                    convertNullableStringToString(
-                        it,
-                        requireContext()
-                    )
-                }
+                tvLastMenstrualValue.text =
+                    if (pregnancyDetailsModel.lastMenstrualPeriod != null || patientDetailsViewModel.getPatientLmb() != null) {
+                        val lmpDate = pregnancyDetailsModel.lastMenstrualPeriod
+                            ?: patientDetailsViewModel.getPatientLmb()
+                        lmpDate?.let {
+                            DateUtils.convertDateFormat(
+                                it,
+                                DateUtils.DATE_FORMAT_yyyyMMdd,
+                                DateUtils.DATE_ddMMyyyy,
+                            )
+                        }
+                    } else {
+                        convertNullableStringToString(
+                            null,
+                            requireContext()
+                        )
+                    }
                 tvParityValue.text =
                     convertNullableIntToString(pregnancyDetailsModel.parity, requireContext())
                 tvEstimatedDeliveryDateValue.text =

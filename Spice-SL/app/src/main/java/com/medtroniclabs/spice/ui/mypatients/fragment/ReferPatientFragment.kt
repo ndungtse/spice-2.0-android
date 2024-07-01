@@ -254,9 +254,10 @@ class ReferPatientFragment : DialogFragment(), View.OnClickListener {
         binding.btnCancel.safeClickListener(this)
         binding.ivClose.safeClickListener(this)
         binding.btnRefer.safeClickListener(this)
-        binding.etRefferedReason.doAfterTextChanged {
-            it?.let {
-                viewModel.enteredReferredReason = it.trim().toString()
+        binding.etRefferedReason.doAfterTextChanged { input ->
+            input?.let {
+                viewModel.enteredReferredReason =
+                    if (it.trim().isNotEmpty()) it.trim().toString() else null
             }
             isEnableRefer()
         }

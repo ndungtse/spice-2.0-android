@@ -30,9 +30,9 @@ class ReferralHistoryViewModel @Inject constructor(
     val referralTicketLiveData = MutableLiveData<Resource<ReferralData>>()
     val prescriptionTicketLiveData = MutableLiveData<Resource<PrescriptionHistoryEntity>>()
     val medicalReviewTicketLiveData = MutableLiveData<Resource<MedicalReviewHistory>>()
-    var referralDates = listOf<ReferredDate>()
-    var prescriptionReferralDates = listOf<ReferredDate>()
-    var medicalReferralDates = listOf<ReferredDate>()
+    var referralDates = MutableLiveData<List<ReferredDate>>()
+    var prescriptionReferralDates = MutableLiveData<List<ReferredDate>>()
+    var medicalReferralDates = MutableLiveData<List<ReferredDate>>()
     var ticketId: String? = null
     var prescriptionTicketId: String? = null
     var medicalTicketId: String? = null

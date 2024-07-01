@@ -179,15 +179,20 @@ class AddBpDialog : DialogFragment(), View.OnClickListener {
             getString(R.string.diastolic_error_min),
             maxErrorMessage = getString(R.string.diastolic_error_max)
         )
-        val isPulseValid = isValidMeasurement(
-            binding.etPulse.text.toString(),
-            binding.tvPulseError,
-            35,
-            300,
-            minErrorMessage = getString(R.string.pulse_error_min),
-            maxErrorMessage = getString(R.string.pulse_error_max),
-            isPulseRequired = (isDiastolicValid == isSystolicValid)
-        )
+        val isPulseValid = if ((binding.etPulse.text?.trim()
+                ?.isNotEmpty() == true)) {
+            isValidMeasurement(
+                binding.etPulse.text.toString(),
+                binding.tvPulseError,
+                35,
+                300,
+                minErrorMessage = getString(R.string.pulse_error_min),
+                maxErrorMessage = getString(R.string.pulse_error_max),
+                isPulseRequired = (isDiastolicValid == isSystolicValid)
+            )
+        } else {
+            true
+        }
         return isSystolicValid && isDiastolicValid && isPulseValid
     }
 

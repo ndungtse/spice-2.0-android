@@ -85,6 +85,7 @@ class ReferralTicketFragment : BaseFragment(), View.OnClickListener {
         } else {
             binding.tvNoHistory.gone()
             adapters = ReferralHistoryAdapter()
+            viewModel.ticketId = null
             getInitialReferralTickets()
             setupClickListeners()
             binding.retryButtonBp.safeClickListener(this)
@@ -258,9 +259,17 @@ class ReferralTicketFragment : BaseFragment(), View.OnClickListener {
         if (referredDates != null) {
             if (viewModel.ticketId == null) {
                 viewModel.ticketId = id
-                viewModel.referralDates = referredDates
+                viewModel.referralDates.value = referredDates
             }
-            dateListAdapter.submitData(viewModel.referralDates, viewModel.ticketId)
+            viewModel.referralDates.value?.let {list ->
+                if (referredDates.size > list.size){
+                    viewModel.ticketId = id
+                    viewModel.referralDates.value = referredDates
+                }
+            }
+            viewModel.referralDates.value?.let {
+                dateListAdapter.submitData(it, viewModel.ticketId)
+            }
         }
         checkNextPreviousVisibility()
     }
@@ -320,7 +329,7 @@ class ReferralTicketFragment : BaseFragment(), View.OnClickListener {
 
     private fun checkForPreviousItem(): Int {
         var selectedIndex = -1
-        viewModel.referralDates.let {
+        viewModel.referralDates.value?.let {
             it.forEachIndexed { index, referralModel ->
                 if (referralModel.id == viewModel.ticketId) {
                     selectedIndex = index - 1
@@ -332,7 +341,7 @@ class ReferralTicketFragment : BaseFragment(), View.OnClickListener {
 
     private fun checkNextItem(): Int {
         var selectedIndex = -1
-        viewModel.referralDates.let {
+        viewModel.referralDates.value?.let {
             it.forEachIndexed { index, referralModel ->
                 if ((referralModel.id == viewModel.ticketId) && ((index + 1) < it.size)) {
                     selectedIndex = index + 1
@@ -345,7 +354,7 @@ class ReferralTicketFragment : BaseFragment(), View.OnClickListener {
     private fun getPreviousItemToCurrent() {
         val selectedIndex = checkForPreviousItem()
         if (selectedIndex != -1) {
-            viewModel.referralDates[selectedIndex].id?.let {
+            viewModel.referralDates.value?.get(selectedIndex)?.id?.let {
                 viewModel.getReferralTicket(patientId = getPatientId(), ticketId = it)
                 viewModel.ticketId = it
             }
@@ -355,7 +364,7 @@ class ReferralTicketFragment : BaseFragment(), View.OnClickListener {
     private fun getNextItemToCurrent() {
         val selectedIndex = checkNextItem()
         if (selectedIndex != -1) {
-            viewModel.referralDates[selectedIndex].id?.let {
+            viewModel.referralDates.value?.get(selectedIndex)?.id?.let {
                 viewModel.getReferralTicket(patientId = getPatientId(), ticketId = it)
                 viewModel.ticketId = it
             }
