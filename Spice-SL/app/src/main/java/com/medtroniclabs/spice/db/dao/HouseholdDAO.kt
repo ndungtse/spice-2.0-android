@@ -80,4 +80,9 @@ interface HouseholdDAO {
     @Query("SELECT hh.id, hh.name, hh.household_no AS householdNo, hh.landmark, ve.name AS villageName, hh.head_phone_number AS householdHeadPhoneNumber, hh.no_of_people AS memberRegistered, COUNT(hhm.id) AS memberAdded " +
             "FROM Household as hh INNER JOIN VillageEntity as ve ON hh.village_id = ve.id LEFT JOIN HouseholdMember as hhm ON hhm.household_id = hh.id  WHERE hh.id =:id")
     fun getHouseholdCardDetailLiveData(id: Long): LiveData<HouseholdCardDetail>
+
+
+    @Query("UPDATE HouseHold SET sync_status =:syncStatus, updated_at =:updatedAt WHERE id IN (:householdIds)")
+    suspend fun updateInProgress(householdIds: List<String>, syncStatus: String = OfflineSyncStatus.InProgress.name, updatedAt: Long = System.currentTimeMillis())
+
 }

@@ -386,7 +386,7 @@ class OfflineSyncRepository @Inject constructor(
             householdEntity.householdMembers.addAll(memberList)
         }
 
-        val otherHouseholdMembers = roomHelper.getOtherHouseholdMembers()
+        val otherHouseholdMembers = roomHelper.getOtherHouseholdMembers(householdMemberIds)
         //Assessment
         otherHouseholdMembers.forEach { hhm ->
             householdMemberIds.add(hhm.referenceId!!)
@@ -422,8 +422,8 @@ class OfflineSyncRepository @Inject constructor(
         try {
             val apiResponse = apiHelper.postOfflineSync(request)
             if (apiResponse.isSuccessful) {
-
-
+                roomHelper.changeHouseholdStatus(householdIds) // Change Status to InProgress
+                roomHelper.changeHouseholdMemberStatus(householdMemberIds) // Change Status to InProgress
                 return listOf(request[OfflineConstant.REQUEST_ID] as String)
             }
         } catch (e: Exception) {

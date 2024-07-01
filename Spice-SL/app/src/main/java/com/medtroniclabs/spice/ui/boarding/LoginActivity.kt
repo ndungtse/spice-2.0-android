@@ -196,12 +196,12 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
                 ) {
 
                 }
-            } else {
+            } else { // Different user login so clear last synced at
                 SecuredPreference.remove(SecuredPreference.EnvironmentKey.LAST_SYNCED_AT.name)
                 viewModel.doLogin(userName, password)
             }
         } else {
-            SecuredPreference.remove(SecuredPreference.EnvironmentKey.LAST_SYNCED_AT.name)
+            // Same user login in online
             viewModel.doLogin(userName, password)
         }
     }

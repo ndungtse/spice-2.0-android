@@ -94,7 +94,7 @@ interface RoomHelper {
 
     suspend fun getAllUnSyncedHouseHoldMembers(houseHoldId: Long): List<HouseHoldMember>
 
-    suspend fun getOtherHouseholdMembers(): List<HouseHoldMember>
+    suspend fun getOtherHouseholdMembers(memberIds: List<String>): List<HouseHoldMember>
     suspend fun updateFhirId(tableName: String, id: String, fhirId: String?, status: String)
     fun getFilteredHouseholdsLiveData(
         searchInput: String,
@@ -187,9 +187,9 @@ interface RoomHelper {
 
     suspend fun updateOnTreatmentStatus(id: Long, followUp: FollowUp, updatedAt: Long)
 
-    suspend fun changeHouseholdStatus(idList: List<String>, status: String)
+    suspend fun changeHouseholdStatus(idList: List<String>)
 
-    suspend fun changeHouseholdMemberStatus(idList: List<String>, status: String)
+    suspend fun changeHouseholdMemberStatus(idList: List<String>)
 
     suspend fun insertOrUpdateHHFromBE(entity: HouseholdEntity): Long
 

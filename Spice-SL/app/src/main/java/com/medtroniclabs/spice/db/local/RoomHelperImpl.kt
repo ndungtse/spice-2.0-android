@@ -11,6 +11,7 @@ import com.medtroniclabs.spice.data.VillageInfo
 import com.medtroniclabs.spice.data.model.HouseholdCardDetail
 import com.medtroniclabs.spice.data.offlinesync.model.HouseHold
 import com.medtroniclabs.spice.data.offlinesync.model.HouseHoldMember
+import com.medtroniclabs.spice.data.offlinesync.utils.OfflineSyncStatus
 import com.medtroniclabs.spice.db.dao.AboveFiveYearsDAO
 import com.medtroniclabs.spice.db.dao.AssessmentDAO
 import com.medtroniclabs.spice.db.dao.DiagnosisDAO
@@ -118,8 +119,8 @@ class RoomHelperImpl @Inject constructor(
         return memberDAO.getAllUnSyncedHouseHoldMembers(houseHoldId)
     }
 
-    override suspend fun getOtherHouseholdMembers(): List<HouseHoldMember> {
-        return memberDAO.getOtherHouseholdMembers()
+    override suspend fun getOtherHouseholdMembers(memberIds: List<String>): List<HouseHoldMember> {
+        return memberDAO.getOtherHouseholdMembers(memberIds)
     }
 
     override suspend fun saveAssessment(assessmentEntity: AssessmentEntity): Long {
@@ -548,12 +549,12 @@ class RoomHelperImpl @Inject constructor(
         return memberDAO.insertOrUpdateFromBE(entity)
     }
 
-    override suspend fun changeHouseholdStatus(idList: List<String>, status: String) {
-
+    override suspend fun changeHouseholdStatus(idList: List<String>) {
+        householdDAO.updateInProgress(idList)
     }
 
-    override suspend fun changeHouseholdMemberStatus(idList: List<String>, status: String) {
-
+    override suspend fun changeHouseholdMemberStatus(idList: List<String>) {
+        memberDAO.updateInProgress(idList)
     }
 
     override suspend fun getPregnancyDetailByPatientId(patientId: String): PregnancyDetail? {
