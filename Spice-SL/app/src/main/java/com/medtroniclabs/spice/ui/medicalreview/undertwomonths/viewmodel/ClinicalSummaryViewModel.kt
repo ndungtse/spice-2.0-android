@@ -1,4 +1,4 @@
-package com.medtroniclabs.spice.ui.medicalreview.undertwomonths
+package com.medtroniclabs.spice.ui.medicalreview.undertwomonths.viewmodel
 
 import ClinicalSummaryAndSigns
 import androidx.lifecycle.ViewModel
@@ -10,7 +10,6 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ClinicalSummaryViewModel @Inject constructor() : ViewModel() {
-
     val resultBreastFeedingHashMap = HashMap<String, Any>()
     val resultMotherVitaminHashMap = HashMap<String, Any>()
     val exclusiveBreastFeedHashMap = HashMap<String, Any>()

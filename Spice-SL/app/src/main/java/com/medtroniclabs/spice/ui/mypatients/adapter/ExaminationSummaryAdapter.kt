@@ -66,21 +66,23 @@ class ExaminationSummaryAdapter() :
             } else {
                 "${diseaseInfo.index}. "
             }
-
-        holder.titleTextView.text = formattedSymptoms
-        diseaseInfo.description?.forEach { description ->
-            val textView = AppCompatTextView(holder.itemView.context).apply {
-                id = View.generateViewId()
-                layoutParams = ConstraintLayout.LayoutParams(
-                    ViewGroup.LayoutParams.WRAP_CONTENT,
-                    ViewGroup.LayoutParams.WRAP_CONTENT
-                )
-                setTextColor(ContextCompat.getColor(context, R.color.grey_black))
-                setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(R.dimen._18ssp))
-                text = description
+        holder.apply {
+            titleTextView.text = formattedSymptoms
+            linearLayout.removeAllViews()  // Clear previous views
+            diseaseInfo.description?.forEach { description ->
+                val textView = AppCompatTextView(itemView.context).apply {
+                    id = View.generateViewId()
+                    layoutParams = ConstraintLayout.LayoutParams(
+                        ViewGroup.LayoutParams.WRAP_CONTENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT
+                    )
+                    setTextColor(ContextCompat.getColor(context, R.color.grey_black))
+                    setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(R.dimen._18ssp))
+                    text = description
+                }
+                linearLayout.addView(textView)
             }
-            holder.linearLayout.addView(textView)
-        }
+    }
     }
 }
 

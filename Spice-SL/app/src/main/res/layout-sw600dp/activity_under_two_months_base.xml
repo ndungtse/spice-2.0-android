@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/white"
     android:fillViewport="true"
-    tools:context=".ui.medicalreview.undertwomonths.UnderTwoMonthsBaseActivity">
+    tools:context=".ui.medicalreview.undertwomonths.activity.UnderTwoMonthsBaseActivity">
 
     <LinearLayout
         android:id="@+id/bottomNavigationView"

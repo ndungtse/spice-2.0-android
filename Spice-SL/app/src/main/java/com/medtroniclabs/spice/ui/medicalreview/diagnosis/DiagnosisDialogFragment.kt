@@ -274,16 +274,22 @@ class DiagnosisDialogFragment : DialogFragment(), View.OnClickListener, Diagnosi
     }
 
     private fun handleSelectedDiseaseCategory() {
-        if (diseaseCategoryTagView.getSelectedTags().isEmpty()){
-            binding.tvSelectedDiseaseConditionLbl.gone()
-        }else if (diseaseCategoryTagView.getSelectedTags().size > 1){
-            binding.tvSelectedDiseaseConditionLbl.visible()
-        }else {
-            val list =  diseaseCategoryTagView.getSelectedTags().filter { it.name.equals(Other,true) }
-            if (list.isNotEmpty()){
-                binding.tvSelectedDiseaseConditionLbl.gone()
-            }else{
-                binding.tvSelectedDiseaseConditionLbl.visible()
+        when (diagnosisViewModel.diagnosisType) {
+            MedicalReviewTypeEnums.AboveFiveYears.name -> {
+                if (diseaseCategoryTagView.getSelectedTags().isEmpty()) {
+                    binding.tvSelectedDiseaseConditionLbl.gone()
+                } else if (diseaseCategoryTagView.getSelectedTags().size > 1) {
+                    binding.tvSelectedDiseaseConditionLbl.visible()
+                } else {
+                    val list =
+                        diseaseCategoryTagView.getSelectedTags()
+                            .filter { it.name.equals(Other, true) }
+                    if (list.isNotEmpty()) {
+                        binding.tvSelectedDiseaseConditionLbl.gone()
+                    } else {
+                        binding.tvSelectedDiseaseConditionLbl.visible()
+                    }
+                }
             }
         }
     }
@@ -412,7 +418,7 @@ class DiagnosisDialogFragment : DialogFragment(), View.OnClickListener, Diagnosi
 
     private fun isShowAccordion(): Boolean {
         return when (diagnosisViewModel.diagnosisType) {
-            MedicalReviewTypeEnums.ANC.name, MedicalReviewTypeEnums.PNC.name -> {
+            MedicalReviewTypeEnums.ANC.name, MedicalReviewTypeEnums.PNC.name, MedicalReviewTypeEnums.UnderTwoMonths.name, MedicalReviewTypeEnums.UnderFiveYears.name -> {
                 false
             }
 
@@ -427,6 +433,12 @@ class DiagnosisDialogFragment : DialogFragment(), View.OnClickListener, Diagnosi
             MedicalReviewTypeEnums.ANC.name -> {
                 binding.tvSelectedDiseaseCategoryLbl.text = requireContext().getString(R.string.select_diagnosis_found_on_the_patient)
                 binding.tvSelectedDiseaseConditionLbl.gone()
+                binding.llFamilyRoot.gone()
+            }
+            MedicalReviewTypeEnums.UnderTwoMonths.name, MedicalReviewTypeEnums.UnderFiveYears.name -> {
+                binding.tvSelectedDiseaseConditionLbl.gone()
+                binding.tvSelectedDiseaseCategoryLbl.gone()
+                binding.etOtherDiagnosisNotes.gone()
                 binding.llFamilyRoot.gone()
             }
         }
@@ -461,7 +473,7 @@ class DiagnosisDialogFragment : DialogFragment(), View.OnClickListener, Diagnosi
                 }
             }
 
-            MedicalReviewTypeEnums.ANC.name -> {
+            MedicalReviewTypeEnums.ANC.name, MedicalReviewTypeEnums.UnderFiveYears.name, MedicalReviewTypeEnums.UnderTwoMonths.name -> {
                 if (diseaseCategoryTagView.getSelectedTags().isNotEmpty() || otherSelection) {
                     binding.btnOkay.isEnabled = true
                 } else {

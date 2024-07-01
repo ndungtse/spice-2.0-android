@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.medicalreview.undertwomonths.UnderTwoMonthsBaseActivity">
+    tools:context=".ui.medicalreview.undertwomonths.activity.UnderTwoMonthsBaseActivity">
 
     <LinearLayout
         android:id="@+id/bottomNavigationView"
@@ -216,11 +216,11 @@
                     android:layout_height="wrap_content"
                     app:layout_constraintTop_toBottomOf="@+id/examinationsContainer" />
 
-                <com.medtroniclabs.spice.ui.common.FloatingDetectorFrameLayout
-                    android:id="@+id/underTwoSummaryContainer"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:layout_constraintTop_toBottomOf="@+id/clinicalNotesContainer" />
+<!--                <com.medtroniclabs.spice.ui.common.FloatingDetectorFrameLayout-->
+<!--                    android:id="@+id/underTwoSummaryContainer"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    app:layout_constraintTop_toBottomOf="@+id/clinicalNotesContainer" />-->
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 

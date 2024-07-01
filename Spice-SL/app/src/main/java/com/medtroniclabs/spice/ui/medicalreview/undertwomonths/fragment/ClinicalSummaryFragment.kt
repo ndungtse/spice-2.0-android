@@ -1,4 +1,4 @@
-package com.medtroniclabs.spice.ui.medicalreview.undertwomonths
+package com.medtroniclabs.spice.ui.medicalreview.undertwomonths.fragment
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -24,6 +24,7 @@ import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.ui.SingleSelectionCustomView
 import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
 import com.medtroniclabs.spice.ui.BaseFragment
+import com.medtroniclabs.spice.ui.medicalreview.undertwomonths.viewmodel.ClinicalSummaryViewModel
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.BREAST_FEEDING_TAG
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.EXCLUSIVE_BREAST_FEED_TAG
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.MOTHER_VITAMIN_TAG
@@ -32,6 +33,9 @@ class ClinicalSummaryFragment : BaseFragment(), View.OnClickListener {
     private lateinit var binding: FragmentClinicalSummaryBinding
     val viewModel: ClinicalSummaryViewModel by activityViewModels()
 
+    companion object{
+        const val TAG = "ClinicalSummaryFragment"
+    }
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -87,68 +91,71 @@ class ClinicalSummaryFragment : BaseFragment(), View.OnClickListener {
     }
 
     fun initView() {
-        getBreastFeedingFlowData().let {
-            val view = SingleSelectionCustomView(binding.root.context)
-            view.tag = BREAST_FEEDING_TAG
-            view.addViewElements(
-                it,
-                false,
-                viewModel.resultBreastFeedingHashMap,
-                Pair(BREAST_FEEDING_TAG, null),
-                FormLayout(viewType = "", id = "", title = "", visibility = "", optionsList = null),
-                breastFeedingSelectionCallback
-            )
-            binding.llBreastFeedingStatus.addView(view)
-        }
+        addCustomView(
+            getBreastFeedingFlowData(),
+            BREAST_FEEDING_TAG,
+            viewModel.resultBreastFeedingHashMap,
+            breastFeedingSelectionCallback,
+            binding.llBreastFeedingStatus
+        )
 
-        getVitaminAMotherFlowData().let {
-            val view = SingleSelectionCustomView(binding.root.context)
-            view.tag = MOTHER_VITAMIN_TAG
-            view.addViewElements(
-                it,
-                false,
-                viewModel.resultMotherVitaminHashMap,
-                Pair(MOTHER_VITAMIN_TAG, null),
-                FormLayout(viewType = "", id = "", title = "", visibility = "", optionsList = null),
-                vitaminAMotherSelectionCallBack
-            )
-            binding.etVitaminAForMother.addView(view)
-        }
+        addCustomView(
+            getVitaminAMotherFlowData(),
+            MOTHER_VITAMIN_TAG,
+            viewModel.resultMotherVitaminHashMap,
+            vitaminAMotherSelectionCallBack,
+            binding.etVitaminAForMother
+        )
 
-        getExclusiveBreastFeedingFlowData().let {
-            val view = SingleSelectionCustomView(binding.root.context)
-            view.tag = EXCLUSIVE_BREAST_FEED_TAG
-            view.addViewElements(
-                it,
-                false,
-                viewModel.exclusiveBreastFeedHashMap,
-                Pair(EXCLUSIVE_BREAST_FEED_TAG, null),
-                FormLayout(viewType = "", id = "", title = "", visibility = "", optionsList = null),
-                exclusiveBreastFeedingSelectionCallBack
-            )
-            binding.llExclusiveBreastFeedingStatus.addView(view)
-        }
-
+        addCustomView(
+            getExclusiveBreastFeedingFlowData(),
+            EXCLUSIVE_BREAST_FEED_TAG,
+            viewModel.exclusiveBreastFeedHashMap,
+            exclusiveBreastFeedingSelectionCallBack,
+            binding.llExclusiveBreastFeedingStatus
+        )
     }
 
-    private var breastFeedingSelectionCallback: ((selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit)? =
+    private fun addCustomView(
+        data: ArrayList<Map<String, Any>>,
+        tag: String,
+        hashMap: HashMap<String, Any>,
+        callback: ((selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit)?,
+        container: ViewGroup
+    ) {
+        SingleSelectionCustomView(binding.root.context).apply {
+            this.tag = tag
+            addViewElements(
+                data,
+                false,
+                hashMap,
+                Pair(tag, null),
+                FormLayout(viewType = "", id = "", title = "", visibility = "", optionsList = null),
+                callback
+            )
+            container.addView(this)
+        }
+    }
+
+    private val breastFeedingSelectionCallback: (selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit =
         { selectedID, _, _, _ ->
             viewModel.resultBreastFeedingHashMap[BREAST_FEEDING_TAG] = selectedID as String
             enableExclusiveBreastFeeding(selectedID)
             viewModel.updateBreastFeeding()
         }
 
-    private var vitaminAMotherSelectionCallBack: ((selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit)? =
+    private val vitaminAMotherSelectionCallBack: (selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit =
         { selectedID, _, _, _ ->
             viewModel.resultMotherVitaminHashMap[MOTHER_VITAMIN_TAG] = selectedID as String
             viewModel.updateVitaminAForMother()
         }
 
-    private var exclusiveBreastFeedingSelectionCallBack: ((selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit)? =
+    private val exclusiveBreastFeedingSelectionCallBack: (selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit =
         { selectedID, _, _, _ ->
             viewModel.exclusiveBreastFeedHashMap[EXCLUSIVE_BREAST_FEED_TAG] = selectedID as String
             viewModel.updateExclusiveBreastFeeding()
         }
+
 
     private fun enableExclusiveBreastFeeding(selectedID: Any?) {
         if (selectedID == Yes) {

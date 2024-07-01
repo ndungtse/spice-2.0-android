@@ -26,9 +26,9 @@ import com.medtroniclabs.spice.model.medicalreview.SummaryDetails
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.medicalreview.abovefiveyears.PresentingComplaintsViewModel
+import com.medtroniclabs.spice.ui.medicalreview.undertwomonths.fragment.UnderTwoMonthsTreatmentSummaryFragment
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
 import com.medtroniclabs.spice.ui.mypatients.adapter.ExaminationSummaryAdapter
-import com.medtroniclabs.spice.ui.mypatients.fragment.UnderTwoMonthsTreatmentSummaryFragment
 
 class UnderFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListener {
 

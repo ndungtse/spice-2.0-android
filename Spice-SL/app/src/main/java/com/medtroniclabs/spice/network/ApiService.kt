@@ -42,6 +42,8 @@ import com.medtroniclabs.spice.data.model.PatientEncounterResponse
 import com.medtroniclabs.spice.data.offlinesync.model.HouseHold
 import com.medtroniclabs.spice.data.offlinesync.model.RequestGetSyncStatus
 import com.medtroniclabs.spice.data.offlinesync.model.SyncResponse
+import com.medtroniclabs.spice.data.BirthHistoryRequest
+import com.medtroniclabs.spice.data.BirthHistoryResponse
 import com.medtroniclabs.spice.data.resource.RequestAllEntities
 import com.medtroniclabs.spice.model.PatientDetailRequest
 import com.medtroniclabs.spice.model.PatientListRespModel
@@ -188,4 +190,7 @@ interface ApiService {
 
     @POST("/spice-service/medical-review/history")
     suspend fun getMedicalReviewHistory(@Body request: ReferralDetailRequest): Response<APIResponse<MedicalReviewHistory>>
+
+    @POST("spice-service/medical-review/birth-history")
+    suspend fun getBirthHistoryDetails(@Body request: BirthHistoryRequest): Response<APIResponse<BirthHistoryResponse>>
 }

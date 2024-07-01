@@ -51,6 +51,8 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
     private val pregnancyDetailsViewModel: PregnancyDetailsViewModel by activityViewModels()
 
     companion object {
+
+        const val TAG: String = "MedicalReviewPatientDiagnosisFragment"
         fun newInstance(): MedicalReviewPatientDiagnosisFragment {
             return MedicalReviewPatientDiagnosisFragment()
         }

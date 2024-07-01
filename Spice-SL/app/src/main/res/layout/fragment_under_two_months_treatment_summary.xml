@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    tools:context=".ui.mypatients.fragment.UnderTwoMonthsTreatmentSummaryFragment">
+    tools:context=".ui.medicalreview.undertwomonths.fragment.UnderTwoMonthsTreatmentSummaryFragment">
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/underTwoMaterialCardView"
@@ -371,7 +371,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/_24sdp"
-                android:background="@drawable/edittext_background"
+                android:background="@drawable/edittext_background_selector"
                 android:drawableEnd="@drawable/ic_date_picker_calendar"
                 android:gravity="start|center"
                 android:paddingStart="@dimen/_10sdp"

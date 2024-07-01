@@ -1,4 +1,4 @@
-package com.medtroniclabs.spice.ui.mypatients.fragment
+package com.medtroniclabs.spice.ui.medicalreview.undertwomonths.fragment
 
 import android.app.DatePickerDialog
 import android.os.Bundle
@@ -18,8 +18,10 @@ import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.ViewUtils
+import com.medtroniclabs.spice.data.MedicalReviewMetaItems
 import com.medtroniclabs.spice.data.resource.ExaminationResult
 import com.medtroniclabs.spice.databinding.FragmentUnderTwoMonthsTreatmentSummaryBinding
+import com.medtroniclabs.spice.formgeneration.extension.markMandatory
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
 import com.medtroniclabs.spice.model.medicalreview.CreateUnderTwoMonthsResponse
@@ -27,9 +29,11 @@ import com.medtroniclabs.spice.model.medicalreview.ExaminationDetail
 import com.medtroniclabs.spice.model.medicalreview.SummaryDetails
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
+import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
 import com.medtroniclabs.spice.ui.medicalreview.abovefiveyears.PresentingComplaintsViewModel
-import com.medtroniclabs.spice.ui.medicalreview.undertwomonths.UnderTwoMonthsTreatmentSummaryViewModel
+import com.medtroniclabs.spice.ui.medicalreview.undertwomonths.viewmodel.UnderTwoMonthsTreatmentSummaryViewModel
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
+import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import com.medtroniclabs.spice.ui.mypatients.adapter.ExaminationSummaryAdapter
 
 
@@ -68,26 +72,42 @@ class UnderTwoMonthsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initView()
-        spinnerForDeliveryType()
         setListeners()
         attachObserver()
     }
 
     private fun initView() {
-
+        binding.tvNextVisitTimeLabel.markMandatory()
+        binding.tvPatientStatusLabel.markMandatory()
         summaryViewModel.getUnderTwoMonthsSummaryDetails(
             CreateUnderTwoMonthsResponse(
                 encounterId = arguments?.getString(DefinedParams.EncounterId) ?: "",
                 patientReference = arguments?.getString(DefinedParams.PatientReference) ?: ""
             )
         )
-
         examinationSummaryAdapter = ExaminationSummaryAdapter()
         binding.rvExaminationList.layoutManager = LinearLayoutManager(requireContext())
         binding.rvExaminationList.adapter = examinationSummaryAdapter
+        summaryViewModel.getSummaryListMetaItems(MedicalReviewTypeEnums.UnderTwoMonths.name)
     }
 
     fun attachObserver() {
+        summaryViewModel.summaryMetaListItems.observe(viewLifecycleOwner) { resourceState ->
+            when (resourceState.state) {
+                ResourceState.LOADING -> {
+                    showProgress()
+                }
+                ResourceState.SUCCESS -> {
+                    hideProgress()
+                    resourceState.data?.let { list ->
+                        initializePatientStatus(list)
+                    }
+                }
+                ResourceState.ERROR -> {
+                    hideProgress()
+                }
+            }
+        }
         summaryViewModel.summaryDetailsLiveData.observe(viewLifecycleOwner) { resourceState ->
             when (resourceState.state) {
                 ResourceState.LOADING -> {
@@ -96,6 +116,7 @@ class UnderTwoMonthsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
 
                 ResourceState.ERROR -> {
                     hideProgress()
+                    showErrorDialog(getString(R.string.error), getString(R.string.no_internet_error))
                 }
 
                 ResourceState.SUCCESS -> {
@@ -103,29 +124,28 @@ class UnderTwoMonthsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
                     resourceState.data?.let {
                         renderSummaryDetails(it)
                     }
-                    summaryViewModel.setRefreshing(false)
                 }
             }
         }
     }
 
     private fun renderSummaryDetails(details: SummaryDetails) {
-        if (presentingComplaintsViewModel.enteredComplaintNotes.equals("")) {
-            binding.tvPresentingComplaints.text = getString(R.string.separator_double_hyphen)
-        } else binding.tvPresentingComplaints.text =
-            presentingComplaintsViewModel.enteredComplaintNotes
+        binding.apply {
+            tvPresentingComplaints.text = presentingComplaintsViewModel.enteredComplaintNotes.takeIf { it.isNotEmpty() }
+                ?: getString(R.string.separator_double_hyphen)
 
-        binding.tvClinicalNotes.text = details.clinicalNotes.toString()
-        binding.tvClinicalName.text = requireContext().getString(
-            R.string.firstname_lastname,
-            SecuredPreference.getUserDetails().firstName,
-            SecuredPreference.getUserDetails().lastName
-        )
-        binding.tvDateOfReviewValue.text = DateUtils.convertDateTimeToDate(
-            DateUtils.getTodayDateDDMMYYYY(),
-            DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-            DateUtils.DATE_ddMMyyyy
-        )
+            tvClinicalNotes.text = details.clinicalNotes.toString()
+            tvClinicalName.text = requireContext().getString(
+                R.string.firstname_lastname,
+                SecuredPreference.getUserDetails().firstName,
+                SecuredPreference.getUserDetails().lastName
+            )
+            tvDateOfReviewValue.text = DateUtils.convertDateTimeToDate(
+                DateUtils.getTodayDateDDMMYYYY(),
+                DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+                DateUtils.DATE_ddMMyyyy
+            )
+        }
         examinationList(details)
     }
 
@@ -155,87 +175,29 @@ class UnderTwoMonthsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
         binding.etNextVisitDate.safeClickListener(this)
     }
 
-    private fun spinnerForDeliveryType() {
-        val list = arrayListOf<Map<String, Any>>()
-        list.add(
-            hashMapOf<String, Any>(
-                DefinedParams.NAME to DefinedParams.DefaultIDLabel,
-                DefinedParams.ID to DefinedParams.DefaultSelectID
-            )
-        )
-        list.add(
-            hashMapOf<String, Any>(
-                DefinedParams.NAME to DefinedParams.OnTreatment, DefinedParams.ID to "1"
-            )
-        )
-        list.add(
-            hashMapOf<String, Any>(
-                DefinedParams.NAME to DefinedParams.Recovered, DefinedParams.ID to "2"
-            )
-        )
-        list.add(
-            hashMapOf<String, Any>(
-                DefinedParams.NAME to DefinedParams.REFERRED, DefinedParams.ID to "3"
-            )
-        )
-        setListenerToDeliveryStatus(list)
-    }
-
-    private fun setListenerToDeliveryStatus(list: ArrayList<Map<String, Any>>) {
-        val adapter = CustomSpinnerAdapter(requireContext())
-        adapter.setData(list)
-        binding.tvPatientStatus.adapter = adapter
-        binding.tvPatientStatus.setSelection(0, false)
-        binding.tvPatientStatus.onItemSelectedListener =
-            object : AdapterView.OnItemSelectedListener {
-                override fun onItemSelected(
-                    parent: AdapterView<*>?, view: View?, position: Int, id: Long
-                ) {
-                    val selectedItem = adapter.getData(position = position)
-                    selectedItem?.let {
-                        val selectedName = it[DefinedParams.NAME] as String?
-                        if (selectedName != DefinedParams.DefaultIDLabel) {
-                            selectedName?.let { name ->
-                                summaryViewModel.selectedPatientStatus = name
-                            }
-                        } else {
-                            summaryViewModel.selectedPatientStatus = null
-                        }
-                    }
-                    binding.tvNextVisitTimeError.gone()
-                    summaryViewModel.setSubmitBtn()
-                }
-
-                override fun onNothingSelected(parent: AdapterView<*>?) {
-                    /**
-                     * this method is not used
-                     */
-                }
-
-            }
-    }
-
     private fun showDatePickerDialog() {
-        var yearMonthDate: Triple<Int?, Int?, Int?>? = null
-        if (!binding.etNextVisitDate.text.isNullOrBlank()) yearMonthDate =
-            DateUtils.convertedMMMToddMM(binding.etNextVisitDate.text.toString())
+        val yearMonthDate = binding.etNextVisitDate.text?.takeIf { it.isNotBlank() }
+            ?.let { DateUtils.convertedMMMToddMM(it.toString()) }
+
         if (datePickerDialog == null) {
-            datePickerDialog = ViewUtils.showDatePicker(context = requireContext(),
+            datePickerDialog = ViewUtils.showDatePicker(
+                context = requireContext(),
                 minDate = DateUtils.getTomorrowDate(),
                 date = yearMonthDate,
-                cancelCallBack = { datePickerDialog = null }) { _, year, month, dayOfMonth ->
+                cancelCallBack = { datePickerDialog = null }
+            ) { _, year, month, dayOfMonth ->
                 val stringDate = "$dayOfMonth-$month-$year"
                 binding.etNextVisitDate.text = DateUtils.convertDateTimeToDate(
                     stringDate, DateUtils.DATE_FORMAT_ddMMyyyy, DateUtils.DATE_ddMMyyyy
                 )
-                summaryViewModel.nextVisitDate =
-                    binding.etNextVisitDate.text.toString().trim().ifBlank { null }
+                summaryViewModel.nextVisitDate = binding.etNextVisitDate.text.toString().trim().takeIf { it.isNotBlank() }
                 datePickerDialog = null
                 binding.tvNextVisitTimeError.gone()
                 summaryListener()
             }
         }
     }
+
 
     override fun onClick(v: View?) {
         when (v?.id) {
@@ -253,25 +215,71 @@ class UnderTwoMonthsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
         )
     }
 
-    fun validateInput(): Boolean {
-        val value = binding.etNextVisitDate.text?.trim().toString()
-        if (value.isBlank()) {
-            return if (summaryViewModel.selectedPatientStatus?.contains(DefinedParams.Recovered) == true) {
+    private fun updateNextFollowUpDate() {
+        if (summaryViewModel.selectedPatientStatus == ReferralStatus.Recovered.name) {
+            if (summaryViewModel.nextVisitDate != null) {
+                summaryViewModel.nextVisitDate = null
                 binding.etNextVisitDate.text = ""
-                binding.tvNextVisitTimeError.gone()
-                true
-            } else if (summaryViewModel.selectedPatientStatus?.contains(DefinedParams.OnTreatment) == true && value.isBlank()) {
-                binding.etNextVisitDate.requestFocus()
-                binding.tvNextVisitTimeError.visible()
-                false
-            } else if (summaryViewModel.selectedPatientStatus?.contains(DefinedParams.REFERRED) == true && value.isBlank()) {
-                binding.etNextVisitDate.requestFocus()
-                binding.tvNextVisitTimeError.visible()
-                false
-            } else {
-                false
+            }
+            binding.etNextVisitDate.isEnabled = false
+        } else {
+            if (!binding.etNextVisitDate.isEnabled) {
+                binding.etNextVisitDate.isEnabled = true
             }
         }
-        return true
+    }
+
+    private fun initializePatientStatus(patientStatusList: List<MedicalReviewMetaItems>) {
+        val dropDownList = ArrayList<Map<String, Any>>()
+        for (item in patientStatusList) {
+            dropDownList.add(
+                hashMapOf<String, Any>(
+                    DefinedParams.NAME to item.name,
+                    DefinedParams.id to item.id.toString(),
+                    DefinedParams.value to (item.value ?: item.name)
+                )
+            )
+        }
+        val adapter = CustomSpinnerAdapter(requireContext())
+        adapter.setData(dropDownList)
+        var defaultPosition = 0
+        for ((index, patientStatus) in dropDownList.withIndex()) {
+            if ((patientStatus[DefinedParams.value] as? String).equals(
+                    ReferralStatus.OnTreatment.name,
+                    true
+                )
+            ) {
+                defaultPosition = index
+            }
+        }
+        binding.tvPatientStatus.post {
+            binding.tvPatientStatus.setSelection(defaultPosition, false)
+        }
+        binding.tvPatientStatus.adapter = adapter
+        binding.tvPatientStatus.onItemSelectedListener =
+            object : AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(
+                    adapterView: AdapterView<*>?,
+                    view: View?,
+                    pos: Int,
+                    itemId: Long
+                ) {
+                    val selectedItem = adapter.getData(position = pos)
+                    selectedItem?.let {
+                        val selectedName = it[DefinedParams.NAME] as String?
+                        selectedName?.let { name ->
+                            summaryViewModel.selectedPatientStatus = name
+                        }
+                        updateNextFollowUpDate()
+                    }
+                    summaryListener()
+                }
+
+                override fun onNothingSelected(p0: AdapterView<*>?) {
+                    /**
+                     * this method is not used
+                     */
+                }
+            }
     }
 }

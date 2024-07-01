@@ -42,6 +42,8 @@ import com.medtroniclabs.spice.data.model.PatientEncounterResponse
 import com.medtroniclabs.spice.data.offlinesync.model.HouseHold
 import com.medtroniclabs.spice.data.offlinesync.model.RequestGetSyncStatus
 import com.medtroniclabs.spice.data.offlinesync.model.SyncResponse
+import com.medtroniclabs.spice.data.BirthHistoryRequest
+import com.medtroniclabs.spice.data.BirthHistoryResponse
 import com.medtroniclabs.spice.data.resource.RequestAllEntities
 import com.medtroniclabs.spice.model.PatientDetailRequest
 import com.medtroniclabs.spice.model.PatientListRespModel
@@ -103,4 +105,6 @@ interface ApiHelper {
     suspend fun removePrescription(request: RemovePrescriptionRequest):Response<APIResponse<Map<String,Any>>>
     suspend fun getPrescription(request: ReferralDetailRequest): Response<APIResponse<PrescriptionHistoryEntity>>
     suspend fun getMedicalReviewHistory(request: ReferralDetailRequest): Response<APIResponse<MedicalReviewHistory>>
+    suspend fun getBirthHistoryDetails(request: BirthHistoryRequest): Response<APIResponse<BirthHistoryResponse>>
+
 }

@@ -24,9 +24,9 @@ import com.medtroniclabs.spice.ui.medicalreview.abovefiveyears.PresentingComplai
 import com.medtroniclabs.spice.ui.medicalreview.abovefiveyears.SystemicExaminationViewModel
 import com.medtroniclabs.spice.ui.medicalreview.examinations.ExaminationCardFragment
 import com.medtroniclabs.spice.ui.medicalreview.examinations.ExaminationCardViewModel
+import com.medtroniclabs.spice.ui.medicalreview.undertwomonths.fragment.ClinicalSummaryFragment
+import com.medtroniclabs.spice.ui.medicalreview.undertwomonths.viewmodel.ClinicalSummaryViewModel
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.AncVisitCallBack
-import com.medtroniclabs.spice.ui.medicalreview.undertwomonths.ClinicalSummaryFragment
-import com.medtroniclabs.spice.ui.medicalreview.undertwomonths.ClinicalSummaryViewModel
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import com.medtroniclabs.spice.ui.mypatients.fragment.MedicalReviewPatientDiagnosisFragment
@@ -60,10 +60,6 @@ class UnderFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
         initializeViews()
         attachObserver()
         initializeListeners()
-//        val swipeRefreshLayout = findViewById<SwipeRefreshLayout>(R.id.refreshLayout)
-//        summaryViewModel.isRefreshing.observe(this) { isRefreshing ->
-//            swipeRefreshLayout.isRefreshing = isRefreshing
-//        }
         viewModel.patientId = intent.getStringExtra(DefinedParams.PatientId)
     }
 

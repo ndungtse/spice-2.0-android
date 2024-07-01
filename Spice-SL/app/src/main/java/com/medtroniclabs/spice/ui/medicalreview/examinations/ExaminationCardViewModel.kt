@@ -1,7 +1,5 @@
 package com.medtroniclabs.spice.ui.medicalreview.examinations
 
-import BreastfeedingProblem
-import Examination
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -21,9 +19,9 @@ class ExaminationCardViewModel @Inject constructor(
     private val examinationsRepository: ExaminationsRepository
 ) : ViewModel() {
 
-    private val _examinationQuestionsLiveData = MutableLiveData<ArrayList<ExaminationModel>>()
+    private val examinationQuestionsMutableLiveData = MutableLiveData<ArrayList<ExaminationModel>>()
     val examinationQuestionsLiveData: LiveData<ArrayList<ExaminationModel>>
-        get() = _examinationQuestionsLiveData
+        get() = examinationQuestionsMutableLiveData
 
     var examinationResultHashMap = HashMap<String, Any>()
     var workFlowType: String =""
@@ -37,7 +35,7 @@ class ExaminationCardViewModel @Inject constructor(
                     it,
                     Array<ExaminationModel>::class.java
                 ).asList()
-                _examinationQuestionsLiveData.postValue(ArrayList(examinationModelList))
+                examinationQuestionsMutableLiveData.postValue(ArrayList(examinationModelList))
             }
         }
     }

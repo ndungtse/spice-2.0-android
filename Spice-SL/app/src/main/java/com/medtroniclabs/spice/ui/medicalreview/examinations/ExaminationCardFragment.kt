@@ -25,6 +25,9 @@ class ExaminationCardFragment : BaseFragment(), ExaminationListener {
     private lateinit var binding: FragmentExaminationCardBinding
     private lateinit var examinationGenerator: ExaminationGenerator
 
+    companion object{
+        const val TAG = "ExaminationCardFragment"
+    }
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,

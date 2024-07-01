@@ -46,6 +46,7 @@ class ExaminationGenerator(
     private val resultHashMap = HashMap<String, Any>()
 
     fun populateExaminationView(examinations: ArrayList<ExaminationModel>) {
+        parentLayout.removeAllViews()
         examinations.forEach {
             val binding = AccordionLayoutExaminationBinding.inflate(LayoutInflater.from(context))
             binding.tvDiseaseName.text = it.diseaseName

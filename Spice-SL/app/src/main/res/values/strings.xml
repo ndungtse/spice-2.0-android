@@ -538,4 +538,7 @@
     <string name="pncMotherSigns">PNC Mother Signs</string>
     <string name="pncNeonateSigns">PNC Neonate Signs</string>
     <string name="childhoodVisitSigns">Childhood Visit Signs</string>
+    <string name="weeks_baby">" weeks"</string>
+    <string name="gms_baby">" gms"</string>
+    <string name="premature_baby">" (Premature)"</string>
 </resources>

@@ -1,4 +1,4 @@
-package com.medtroniclabs.spice.ui.medicalreview.undertwomonths
+package com.medtroniclabs.spice.ui.medicalreview.undertwomonths.viewmodel
 
 import BreastfeedingProblem
 import ClinicalSummaryAndSigns
@@ -36,18 +36,20 @@ class UnderTwoMonthViewModel @Inject constructor(
     @IoDispatcher private val dispatcherIO: CoroutineDispatcher,
     private var repository: UnderTwoMonthsRepository
 ) : ViewModel() {
-
     @Inject
     lateinit var connectivityManager: ConnectivityManager
-    private val _createUnderTwoMonthsMedicalReview =
+    var memberId: String? = null
+    private val createUnderTwoMonthsMedicalReviewLiveData =
         MutableLiveData<Resource<CreateUnderTwoMonthsResponse>>()
     val createUnderTwoMonthsMedicalReview: LiveData<Resource<CreateUnderTwoMonthsResponse>>
-        get() = _createUnderTwoMonthsMedicalReview
+        get() = createUnderTwoMonthsMedicalReviewLiveData
     val underTwoMonthsMetaLiveData = MutableLiveData<Resource<Boolean>>()
     var patientId: String? = null
     private var lastLocation: Location? = null
     val summaryCreateResponse = MutableLiveData<Resource<HashMap<String, Any>>>()
-
+    var isRefresh: Boolean=false
+    var encounterId:String?=null
+    var patientReference:String?=null
     fun getStaticMetaData() {
         viewModelScope.launch(dispatcherIO) {
             underTwoMonthsMetaLiveData.postLoading()
@@ -94,8 +96,8 @@ class UnderTwoMonthViewModel @Inject constructor(
                                     )
                                 )
 
-                                _createUnderTwoMonthsMedicalReview.postLoading()
-                                _createUnderTwoMonthsMedicalReview.postValue(
+                                createUnderTwoMonthsMedicalReviewLiveData.postLoading()
+                                createUnderTwoMonthsMedicalReviewLiveData.postValue(
                                     repository.createMedicalReviewForUnderTwoMonths(
                                         underTwoMedicalReviewRequest
                                     )
@@ -116,7 +118,7 @@ class UnderTwoMonthViewModel @Inject constructor(
         val nonBreastFeeding = mapNonBreastFeeding(examinationResultHashMap)
         val breastFeeding = mapBreastFeeding(examinationResultHashMap)
         val hiv = mapHiv(examinationResultHashMap)
-        if (diarrhoea == null && verySevereDisease == null && jaundice == null && nonBreastFeeding == null) {
+        if (diarrhoea == null && verySevereDisease == null && jaundice == null && nonBreastFeeding == null && breastFeeding == null && hiv == null) {
             return null
         }
         return Examination(
@@ -395,7 +397,7 @@ class UnderTwoMonthViewModel @Inject constructor(
                 }
                 if (diarrhoeaHashMap.containsKey(UnderTwoExaminationKeyMapping.Diarrhoea.restlessOrIrritable)) {
                     diarrhoea =
-                        diarrhoea.copy(restlessOrIrritable = (diarrhoeaHashMap[UnderTwoExaminationKeyMapping.Diarrhoea.noMovementOnStimulation] as? String)?.let {
+                        diarrhoea.copy(restlessOrIrritable = (diarrhoeaHashMap[UnderTwoExaminationKeyMapping.Diarrhoea.restlessOrIrritable] as? String)?.let {
                             mapStringToBoolean(
                                 it
                             )
@@ -403,11 +405,11 @@ class UnderTwoMonthViewModel @Inject constructor(
                 }
                 if (diarrhoeaHashMap.containsKey(UnderTwoExaminationKeyMapping.Diarrhoea.sunkenEyes)) {
                     diarrhoea =
-                        diarrhoea.copy(sunkenEyes = mapStringToBoolean(diarrhoeaHashMap[UnderTwoExaminationKeyMapping.Diarrhoea.noMovementOnStimulation] as String))
+                        diarrhoea.copy(sunkenEyes = mapStringToBoolean(diarrhoeaHashMap[UnderTwoExaminationKeyMapping.Diarrhoea.sunkenEyes] as String))
                 }
                 if (diarrhoeaHashMap.containsKey(UnderTwoExaminationKeyMapping.Diarrhoea.skinPinch)) {
                     diarrhoea =
-                        diarrhoea.copy(skinPinch = diarrhoeaHashMap[UnderTwoExaminationKeyMapping.Diarrhoea.noMovementOnStimulation] as String)
+                        diarrhoea.copy(skinPinch = diarrhoeaHashMap[UnderTwoExaminationKeyMapping.Diarrhoea.skinPinch] as String)
                 }
                 return diarrhoea
             }
@@ -422,14 +424,15 @@ class UnderTwoMonthViewModel @Inject constructor(
     fun underTwoMonthsSummaryCreate(
         details: PatientListRespModel,
         submitCreateId: String,
-        nextVisitDate: String?
+        nextVisitDate: String?,
+        selectedPatientStatus: String?
     ) {
         viewModelScope.launch(dispatcherIO) {
             summaryCreateResponse.postLoading()
             summaryCreateResponse.postValue(
                 repository.underTwoMonthsSummaryCreate(
                     details, submitCreateId,
-                    nextVisitDate
+                    nextVisitDate,selectedPatientStatus
                 )
             )
         }

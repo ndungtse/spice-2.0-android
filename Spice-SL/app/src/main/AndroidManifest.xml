@@ -101,7 +101,7 @@
             android:screenOrientation="landscape"
             android:windowSoftInputMode="adjustPan" />
         <activity
-            android:name=".ui.medicalreview.undertwomonths.UnderTwoMonthsBaseActivity"
+            android:name=".ui.medicalreview.undertwomonths.activity.UnderTwoMonthsBaseActivity"
             android:exported="false"
             android:screenOrientation="landscape"
             android:windowSoftInputMode="adjustPan" />
