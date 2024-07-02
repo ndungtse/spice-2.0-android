@@ -78,7 +78,7 @@ class MotherNeonateAncHistoryFragment : BaseFragment() {
                     )
                 }
                 tvAncVisitLabelValue.text = it.visitNumber ?: getString(R.string.hyphen_symbol)
-                tvPrescriptionValue.text =  createPrescription(it.prescriptions) ?: getString(R.string.hyphen_symbol)
+                tvPrescriptionValue.text =  createPrescription(it.prescriptions, requireContext()) ?: getString(R.string.hyphen_symbol)
                 tvInvestigationValue.text =  getString(R.string.hyphen_symbol)
                 tvBpValue.text = if (it.systolic == null && it.diastolic == null) {
                     getString(R.string.hyphen_symbol)

@@ -11,6 +11,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.CommonUtils
+import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
 import com.medtroniclabs.spice.common.DateUtils.getYearMonthAndWeek
 import com.medtroniclabs.spice.common.DefinedParams.DefaultID
@@ -35,15 +36,22 @@ import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.ACTStatus
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.Amoxicillin
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.AmoxicillinStatus
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.BreathPerMinute
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.CoughCondition
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.DiarrheaCondition
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.FB_MAX_BREATHING
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.FB_MAX_MONTH
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.FB_MAX_YEAR
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.FB_MIN_BREATHING
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.FB_MIN_MONTH
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.FB_MIN_YEAR
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.FeverCondition
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.MUAC
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.MalnutritionCondition
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.ModerateDehydration
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.NoOfDaysDiarrhoea
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.ORSStatus
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.OrsDispensedStatus
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.SevereDehydration
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.ZincDispensedStatus
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.ZincStatus
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.chestInDrawing
@@ -57,6 +65,10 @@ import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.muacStatus
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.rootSuffix
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.summaryKey
 import com.medtroniclabs.spice.ui.assessment.referrallogic.ReferralResultGenerator
+import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefinedParams.IsBloodyDiarrhoea
+import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefinedParams.RdtPositive
+import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefinedParams.RdtTest
+import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralReasons
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -283,6 +295,7 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
 
     override fun onFormSubmit(resultMap: HashMap<String, Any>?, serverData: List<FormLayout?>?) {
         resultMap?.let { details ->
+            composeICCMOtherMetrics(details)
             val referralResult = ReferralResultGenerator().calculateIccmReferralResult(details, viewModel.memberDetailsLiveData.value?.data)
             val result = serverData?.let {
                 FormResultComposer().groupValues(
@@ -298,6 +311,49 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
             }
         }
     }
+
+    private fun composeICCMOtherMetrics(resultMap: HashMap<String, Any>) {
+        if (resultMap.containsKey(muacCode) && resultMap[muacCode] is String) {
+            getNutritionStatus(resultMap[muacCode] as String, requireContext()).let { value ->
+                if (value != "-") {
+                    viewModel.otherAssessmentDetails[MalnutritionCondition] = value
+                }
+            }
+        }
+        if (resultMap.containsKey(BreathPerMinute) && resultMap[BreathPerMinute] is Int) {
+            (resultMap[BreathPerMinute] as Int).let { bpmValue ->
+                viewModel.memberDetailsLiveData.value?.data?.let { details ->
+                    DateUtils.dateToMonths(details.dateOfBirth).let { month ->
+                        month?.let {
+                            if ((month in FB_MIN_MONTH..11) && bpmValue >= FB_MAX_BREATHING) {
+                                viewModel.otherAssessmentDetails[CoughCondition] =
+                                    ReferralReasons.Pneumonia.name
+                            } else if (month in FB_MAX_MONTH..60 && bpmValue >= FB_MIN_BREATHING) {
+                                viewModel.otherAssessmentDetails[CoughCondition] =
+                                    ReferralReasons.Pneumonia.name
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if (resultMap.containsKey(RdtTest) && resultMap[RdtTest] is String) {
+            if (resultMap[RdtTest] == RdtPositive) {
+                viewModel.otherAssessmentDetails[FeverCondition] =
+                    ReferralReasons.Malaria.name
+            }
+        }
+        if (resultMap.containsKey(hasDiarrhoea) && resultMap[hasDiarrhoea] is Boolean && resultMap[hasDiarrhoea] as Boolean) {
+            if ((resultMap.containsKey(NoOfDaysDiarrhoea) && resultMap[NoOfDaysDiarrhoea] is Int && ((resultMap[NoOfDaysDiarrhoea] as Int) >= 14)) ||
+                (resultMap.containsKey(IsBloodyDiarrhoea) && resultMap[IsBloodyDiarrhoea] is Boolean && resultMap[IsBloodyDiarrhoea] as Boolean)
+            ) {
+                viewModel.otherAssessmentDetails[DiarrheaCondition] = SevereDehydration
+            } else {
+                viewModel.otherAssessmentDetails[DiarrheaCondition] = ModerateDehydration
+            }
+        }
+    }
+
 
     override fun onRenderingComplete() {
 

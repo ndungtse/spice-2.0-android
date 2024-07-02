@@ -210,13 +210,15 @@ class BioDataFragment : BaseFragment() {
     }
 
     private fun getAgeValue(ageFromDob: String): String {
-        return if (!ageFromDob.contains(" "))
+        return if (!ageFromDob.contains(" ") && ageFromDob.isNotEmpty())
             requireContext().getString(
                 R.string.firstname_lastname,
                 ageFromDob,
                 getString(R.string.years)
             )
-        else
+        else if (ageFromDob.isEmpty()) {
+            requireContext().getString(R.string.seperator_hyphen)
+        } else
             ageFromDob
     }
 

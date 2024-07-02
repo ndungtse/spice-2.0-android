@@ -135,7 +135,11 @@ class AssessmentViewModel @Inject constructor(
         referralStatus: String?,
         menuId: String?
     ): HashMap<String, Any>? {
-        val otherDetails = HashMap<String, Any>()
+        var otherDetails = HashMap<String, Any>()
+
+        if (menuId == ICCM_MENU_ID){
+            otherDetails = otherAssessmentDetails
+        }
 
         if (referralStatus != null && referralStatus == ReferralStatus.Referred.name) {
             otherDetails[AssessmentDefinedParams.ReferredPHUSiteID] =

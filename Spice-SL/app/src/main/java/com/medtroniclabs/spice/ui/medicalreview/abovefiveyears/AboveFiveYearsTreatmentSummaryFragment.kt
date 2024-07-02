@@ -145,7 +145,7 @@ class AboveFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
             DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
             DateUtils.DATE_ddMMyyyy
         )
-        binding.tvPrescriptionsText.text = details.prescriptions?.let { createPrescription(it) }?.takeIf { it.isNotEmpty() }
+        binding.tvPrescriptionsText.text = details.prescriptions?.let { createPrescription(it, requireContext()) }?.takeIf { it.isNotEmpty() }
             ?: requireContext().getString(R.string.hyphen_symbol)
     }
 

@@ -164,15 +164,15 @@ object CommonUtils {
 
             val months = (yearMonthWeek.years * 12) + yearMonthWeek.months
             if (months > 0) {
-                return "$months ${context.getString(R.string.months)}"
+                return if (months == 1) "$months ${context.getString(R.string.month)}" else "$months ${context.getString(R.string.months)}"
             }
 
             if (yearMonthWeek.weeks > 0) {
-                return "${yearMonthWeek.weeks} ${context.getString(R.string.weeks)}"
+                return if (yearMonthWeek.weeks == 1) "${yearMonthWeek.weeks} ${context.getString(R.string.week)}" else "${yearMonthWeek.weeks} ${context.getString(R.string.weeks)}"
             }
 
             if (yearMonthWeek.days > 0) {
-                return "${yearMonthWeek.days} ${context.getString(R.string.days)}"
+                return if (yearMonthWeek.days == 1) "${yearMonthWeek.days} ${context.getString(R.string.day)}" else "${yearMonthWeek.days} ${context.getString(R.string.days)}"
             }
         }
         return ""
@@ -338,10 +338,18 @@ object CommonUtils {
         }
     }
 
-    fun createPrescription(prescriptions: List<Prescription>?): String? {
+    fun createPrescription(prescriptions: List<Prescription>?, context: Context): String? {
         return prescriptions?.takeIf { it.isNotEmpty() }?.mapIndexed { index, prescription ->
-            "${index + 1}. ${prescription.medicationName} / ${getPrescriptionFreq(prescription.frequency)} / ${prescription.prescribedDays} days"
+            "${index + 1}. ${prescription.medicationName} / ${getPrescriptionFreq(prescription.frequency)} / ${dayPeriod(prescription.prescribedDays, context)} days"
         }?.joinToString("\n")
+    }
+
+    private fun dayPeriod(prescribedDays: Long?, context: Context): String {
+        return if (prescribedDays == 1L){
+            context.getString(R.string.day)
+        } else {
+            context.getString(R.string.days)
+        }
     }
 
     fun getContactNumber(phNumber: String?): String? {

@@ -111,7 +111,7 @@ class PregnancySummaryFragment() : BaseFragment() {
                 }
                 if (!pregnancyHistoryNotes.isNullOrEmpty()) {
                     if (combinedHistory.isNotEmpty()) {
-                        combinedHistory.append(",")
+                        combinedHistory.append("-")
                     }
                     combinedHistory.append(pregnancyHistoryNotes)
                 }

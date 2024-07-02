@@ -173,11 +173,4 @@ class PatientInfoFragment : BaseFragment() {
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-        val patientId = arguments?.getString(DefinedParams.PatientId, "")
-        if (patientId?.isNotBlank() == true) {
-            viewModel.getPatients(patientId, if (isAnc() == true) ANC.uppercase() else null)
-        }
-    }
 }

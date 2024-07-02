@@ -68,4 +68,10 @@ object AssessmentDefinedParams {
     const val Signs = "Signs"
     const val Cough = "Cough"
     const val InformationLayoutFragment="InformationLayoutFragment"
+    const val MalnutritionCondition = "malnutritionCondition"
+    const val CoughCondition = "coughCondition"
+    const val FeverCondition = "feverCondition"
+    const val DiarrheaCondition = "diarrheaCondition"
+    const val SevereDehydration = "Severe Dehydration"
+    const val ModerateDehydration = "Moderate Dehydration"
 }

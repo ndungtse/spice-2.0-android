@@ -12,6 +12,7 @@ import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.setError
 import com.medtroniclabs.spice.appextensions.setWidth
+import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams.Other
@@ -348,7 +349,7 @@ class DiagnosisDialogFragment : DialogFragment(), View.OnClickListener, Diagnosi
         }
         diseaseCategoryTagView.getSelectedTags().let { list ->
             val otherItem = list.filter { item -> item.value?.lowercase() == Other.lowercase() }
-            if (otherItem.isNotEmpty()) {
+            if (otherItem.isNotEmpty() && diagnosisViewModel.diagnosisType == MedicalReviewTypeEnums.AboveFiveYears.name) {
                 otherItem[0].id?.let { otherId ->
                     diagnosisList.add(
                         DiagnosisDiseaseModel(
@@ -407,6 +408,9 @@ class DiagnosisDialogFragment : DialogFragment(), View.OnClickListener, Diagnosi
 
     private fun handleVisibility() {
         when(diagnosisViewModel.diagnosisType) {
+            MedicalReviewTypeEnums.AboveFiveYears.name -> {
+                binding.tvSelectedDiseaseConditionLbl.gone()
+            }
             MedicalReviewTypeEnums.ANC.name -> {
                 binding.tvSelectedDiseaseCategoryLbl.text = requireContext().getString(R.string.select_diagnosis_found_on_the_patient)
                 binding.tvSelectedDiseaseConditionLbl.gone()
@@ -429,6 +433,11 @@ class DiagnosisDialogFragment : DialogFragment(), View.OnClickListener, Diagnosi
             .any { it.name.lowercase() == Other.lowercase() }
         when (diagnosisViewModel.diagnosisType) {
             MedicalReviewTypeEnums.AboveFiveYears.name -> {
+                if (diseaseCategoryTagView.getSelectedTags().isNotEmpty() && (!otherSelection)){
+                    binding.tvSelectedDiseaseConditionLbl.visible()
+                } else {
+                    binding.tvSelectedDiseaseConditionLbl.gone()
+                }
                 diagnosisViewModel.diagnosisDetailsList.value?.data?.let {
                     if ((diseaseCategoryTagView.getSelectedTags().size <= 1) || otherSelection) {
                         binding.btnOkay.isEnabled =
@@ -445,13 +454,13 @@ class DiagnosisDialogFragment : DialogFragment(), View.OnClickListener, Diagnosi
             }
 
             MedicalReviewTypeEnums.ANC.name -> {
-                binding.btnOkay.isEnabled = diseaseCategoryTagView.getSelectedTags().isNotEmpty()
-                diagnosisViewModel.diagnosisDetailsList.value?.data?.let { list ->
-                    if (list.size > 0 && ((diseaseCategoryTagView.getSelectedTags().size <= 1) || otherSelection)) {
-                        binding.btnOkay.isEnabled =
-                            (list.isNotEmpty() && diseaseCategoryTagView.getSelectedTags()
-                                .isEmpty()) || otherSelection
-                    }
+                if (diseaseCategoryTagView.getSelectedTags().isNotEmpty() || otherSelection) {
+                    binding.btnOkay.isEnabled = true
+                } else {
+                    binding.btnOkay.isEnabled =
+                        diagnosisViewModel.diagnosisDetailsList.value?.data?.let { list ->
+                            list.size > 0
+                        } ?: false
                 }
             }
         }

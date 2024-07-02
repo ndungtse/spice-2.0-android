@@ -451,7 +451,7 @@ class MedicalReviewHistoryFragment : BaseFragment(), View.OnClickListener {
         }
         if (!notes.isNullOrEmpty()) {
             if (combinedText.isNotEmpty()) {
-                combinedText.append(",")
+                combinedText.append("-")
             }
             combinedText.append(notes)
         }

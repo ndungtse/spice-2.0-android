@@ -1,9 +1,12 @@
 package com.medtroniclabs.spice.ui.assessment.rmnch
 
+import android.content.Context
+import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.formgeneration.config.ViewType
 import com.medtroniclabs.spice.ui.MenuConstants
+import com.medtroniclabs.spice.ui.assessment.AssessmentCommonUtils
 import java.text.DecimalFormat
 import java.util.Date
 import java.util.Locale
@@ -42,6 +45,7 @@ object RMNCH {
     const val PREGNANCY_MAX_AGE = 49
     const val pnc_mother_key = "PNC_MOTHER"
     const val pnc_neonate_key = "PNC_NEONATE"
+    const val muac = "muac"
 
 
 
@@ -51,7 +55,8 @@ object RMNCH {
         viewType: String,
         workflowName: String?,
         isBooleanAnswer: Boolean,
-        triple: Triple<String, String, String>
+        triple: Triple<String, String, String>,
+        context: Context
     ): String {
         if (resultMap.containsKey(workflowName)) {
             val actualMap = resultMap[workflowName]
@@ -68,7 +73,18 @@ object RMNCH {
                 } else {
                     when (value) {
                         is String -> {
-                            return value
+                            return if (id == muac) {
+                                context.getString(
+                                    R.string.nutrition_summary,
+                                    value,
+                                    AssessmentCommonUtils.getNutritionStatus(
+                                        value,
+                                        context
+                                    )
+                                )
+                            } else {
+                                value
+                            }
                         }
 
                         is Boolean -> {
@@ -220,6 +236,5 @@ object RMNCH {
         }
         return MenuConstants.RMNCH_MENU_ID.uppercase(Locale.getDefault())
     }
-
 
 }

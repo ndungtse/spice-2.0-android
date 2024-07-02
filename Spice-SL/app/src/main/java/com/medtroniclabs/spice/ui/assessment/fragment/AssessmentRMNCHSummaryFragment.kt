@@ -118,7 +118,8 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
                                         getString(R.string.yes),
                                         getString(R.string.no),
                                         getString(R.string.hyphen_symbol)
-                                    )
+                                    ),
+                                    requireContext()
                                 ),
                                 null,
                                 requireContext()
@@ -216,7 +217,8 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
                             getString(R.string.yes),
                             getString(R.string.no),
                             getString(R.string.hyphen_symbol)
-                        )
+                        ),
+                        requireContext()
                     ),
                     null,
                     requireContext()
@@ -283,7 +285,8 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
                         getString(R.string.yes),
                         getString(R.string.no),
                         getString(R.string.hyphen_symbol)
-                    )
+                    ),
+                    requireContext()
                 ),
                 null,
                 requireContext()

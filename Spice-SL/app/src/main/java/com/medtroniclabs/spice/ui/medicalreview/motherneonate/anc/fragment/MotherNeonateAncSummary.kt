@@ -153,7 +153,7 @@ class MotherNeonateAncSummary : BaseFragment(),View.OnClickListener {
             tvFetalHeartRateText.text =
                 MotherNeonateUtil.convertBeatsPerMinute(motherNeonateSummaryModel.fetalHeartRate, requireContext())
 
-            tvPrescrptionText.text = motherNeonateSummaryModel.prescriptions?.let { CommonUtils.createPrescription(it) }?.takeIf { it.isNotEmpty() }
+            tvPrescrptionText.text = motherNeonateSummaryModel.prescriptions?.let { CommonUtils.createPrescription(it,requireContext()) }?.takeIf { it.isNotEmpty() }
                 ?: requireContext().getString(R.string.hyphen_symbol)
         }
     }
@@ -165,7 +165,7 @@ class MotherNeonateAncSummary : BaseFragment(),View.OnClickListener {
         }
         if (!notes.isNullOrEmpty()) {
             if (combinedText.isNotEmpty()) {
-                combinedText.append(",")
+                combinedText.append("-")
             }
             combinedText.append(notes)
         }

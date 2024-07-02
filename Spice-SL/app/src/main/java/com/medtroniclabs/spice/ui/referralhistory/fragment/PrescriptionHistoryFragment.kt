@@ -226,7 +226,15 @@ class PrescriptionHistoryFragment : BaseFragment(), View.OnClickListener {
 
     private fun createPrescription(prescriptions: List<Prescription>?): List<String>? {
         return prescriptions?.map { prescription ->
-            "${prescription.medicationName} / ${getPrescriptionFreq(prescription.frequency)} / ${prescription.prescribedDays} days"
+            "${prescription.medicationName} / ${getPrescriptionFreq(prescription.frequency)} / ${prescription.prescribedDays} ${dayPeriod(prescription.prescribedDays)}"
+        }
+    }
+
+    private fun dayPeriod(prescribedDays: Int?): String {
+        return if (prescribedDays == 1){
+            requireContext().getString(R.string.day)
+        } else {
+            requireContext().getString(R.string.days)
         }
     }
 

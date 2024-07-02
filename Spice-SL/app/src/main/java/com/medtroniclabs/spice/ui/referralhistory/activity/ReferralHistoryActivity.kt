@@ -217,4 +217,12 @@ class ReferralHistoryActivity : BaseActivity(), AncVisitCallBack {
             }
         }
     }
+
+    override fun onResume() {
+        super.onResume()
+        val patientId = intent.getStringExtra(DefinedParams.PatientId)
+        if (patientId != null) {
+            patientDetailViewModel.getPatients(patientId)
+        }
+    }
 }
