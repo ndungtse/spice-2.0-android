@@ -51,7 +51,9 @@ class GetSyncStatusWorker @AssistedInject constructor(
 
             if (isAllEntitiesSynced) {
                 SecuredPreference.remove(SecuredPreference.EnvironmentKey.OFFLINE_SYNC_REQUEST_ID.name)
-                return if (offlineSyncRepository.fetchSyncedData())
+                val villageIds = roomHelper.getAllVillageIds()
+                val lastSyncedAt = SecuredPreference.getLong(SecuredPreference.EnvironmentKey.LAST_SYNCED_AT.name)
+                return if (offlineSyncRepository.fetchSyncedData(villageIds, lastSyncedAt))
                     Result.success()
                 else
                     Result.failure()

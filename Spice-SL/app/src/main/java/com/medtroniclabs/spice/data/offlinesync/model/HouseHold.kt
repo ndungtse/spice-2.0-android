@@ -65,12 +65,12 @@ data class HouseHold(
     @Ignore
     var householdMembers: MutableList<HouseHoldMember> = mutableListOf()
 
-    fun toHouseholdEntity(villageMap: Map<String,Long>, status: OfflineSyncStatus = OfflineSyncStatus.Success, id: Long = 0): HouseholdEntity {
+    fun toHouseholdEntity(status: OfflineSyncStatus = OfflineSyncStatus.Success, id: Long = 0): HouseholdEntity {
         return HouseholdEntity(
             id = id,
             householdNo = this.householdNo,
             name = this.name,
-            villageId = villageMap[this.village] ?: 0L, // get by village name
+            villageId = this.villageId,
             landmark = this.landmark,
             headPhoneNumber = this.headPhoneNumber,
             noOfPeople = this.noOfPeople,

@@ -4,6 +4,8 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.activity.viewModels
+import com.medtroniclabs.spice.appextensions.gone
+import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.databinding.ActivityResourceLoadingScreenBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
@@ -30,6 +32,7 @@ class ResourceLoadingScreen : BaseActivity() {
         viewModel.metaDataCompleteLiveData.observe(this) { resourceState ->
             when (resourceState.state) {
                 ResourceState.LOADING -> {
+                    binding.tvOfflineSyncMessage.gone()
                 }
 
                 ResourceState.SUCCESS -> {
@@ -50,6 +53,7 @@ class ResourceLoadingScreen : BaseActivity() {
         viewModel.householdsLiveData.observe(this) { resourceState ->
             when (resourceState.state) {
                 ResourceState.LOADING -> {
+                    binding.tvOfflineSyncMessage.visible()
                 }
 
                 ResourceState.SUCCESS -> {

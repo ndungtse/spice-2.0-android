@@ -89,8 +89,7 @@ class OfflineSyncRepository @Inject constructor(
         roomHelper.updateFhirId(tableName, id, fhirId, status)
     }
 
-    suspend fun getHouseholdAndMembers(liveData: MutableLiveData<Resource<Boolean>>) {
-        liveData.postLoading()
+    suspend fun getInsertOrUpdateLocalData(liveData: MutableLiveData<Resource<Boolean>>) {
         try {
             // Check and Delete local data
             val longSyncedAt = SecuredPreference.getLong(SecuredPreference.EnvironmentKey.LAST_SYNCED_AT.name)
@@ -101,34 +100,38 @@ class OfflineSyncRepository @Inject constructor(
                 roomHelper.deleteAllAssessments()
             }
 
+            val villageIds = roomHelper.getAllVillageIds()
+            val lastSyncedAt = SecuredPreference.getLong(SecuredPreference.EnvironmentKey.LAST_SYNCED_AT.name)
             // Fetch Synced Data
-            val isInitialDataSuccess = fetchSyncedData()
+            val isInitialDataSuccess = fetchSyncedData(villageIds, lastSyncedAt)
 
             // Need to check this to be added for downloading error and inprogress data
             /* if (!fetchUnSyncedData()) {
                  liveData.postError("Something went wrong")
              }*/
 
-            if (isInitialDataSuccess)
+            if (isInitialDataSuccess) {
+                SecuredPreference.putBoolean(
+                    SecuredPreference.EnvironmentKey.ISLOGGEDIN.name,
+                    true
+                )
+                SecuredPreference.putBoolean(
+                    SecuredPreference.EnvironmentKey.ISMETALOADED.name,
+                    true
+                )
                 liveData.postSuccess(true)
-            else
+            } else {
                 liveData.postError("Something went wrong")
+            }
         } catch (e: Exception) {
             e.printStackTrace()
             liveData.postError(e.message)
         }
     }
 
-    suspend fun fetchSyncedData(): Boolean {
-        val villageNameId = mutableMapOf<String, Long>()
-        roomHelper.getAllVillageEntity().forEach {
-            villageNameId[it.name] = it.id
-        }
-
-        val longSyncedAt =
-            SecuredPreference.getLong(SecuredPreference.EnvironmentKey.LAST_SYNCED_AT.name)
+    suspend fun fetchSyncedData(villageIds: List<Long> = listOf(), longSyncedAt: Long = 0L): Boolean {
         val lastSyncedAt = if (longSyncedAt != 0L) longSyncedAt.convertToUtcDateTime() else null
-        val syncedResponse = getSyncedEntities(villageNameId.values.toList(), lastSyncedAt)
+        val syncedResponse = getSyncedEntities(villageIds, lastSyncedAt)
         if (syncedResponse.isSuccessful) {
             val response = syncedResponse.body()?.string()
             response?.let {
@@ -139,7 +142,7 @@ class OfflineSyncRepository @Inject constructor(
                     if (responseInitialDownload == null) {
                         return false
                     } else {
-                        saveRequestInitialDownload(responseInitialDownload, villageNameId)
+                        saveRequestInitialDownload(responseInitialDownload)
                         return true
                     }
 
@@ -154,11 +157,8 @@ class OfflineSyncRepository @Inject constructor(
         return false
     }
 
-    private suspend fun saveRequestInitialDownload(
-        requestInitialDownload: ResponseInitialDownload,
-        villageNameId: Map<String, Long>
-    ) {
-        val hhMapping = insertHouseholds(requestInitialDownload.households, villageNameId)
+    private suspend fun saveRequestInitialDownload(requestInitialDownload: ResponseInitialDownload) {
+        val hhMapping = insertHouseholds(requestInitialDownload.households)
         insertHouseholdMembers(requestInitialDownload.members, hhMapping)
 
         // Insert follow up
@@ -212,17 +212,13 @@ class OfflineSyncRepository @Inject constructor(
         }
     }
 
-    private suspend fun insertHouseholds(
-        households: List<HouseHold>?,
-        villageNameId: Map<String, Long>
-    ): Map<String, Long> {
+    private suspend fun insertHouseholds(households: List<HouseHold>?): Map<String, Long> {
         // fhir id, local id
         val hhMap = mutableMapOf<String, Long>()
 
         households?.forEach { entity ->
             hhMap[entity.id!!] = roomHelper.insertOrUpdateHHFromBE(
                 entity.toHouseholdEntity(
-                    villageNameId,
                     OfflineSyncStatus.Success
                 )
             )
@@ -271,7 +267,6 @@ class OfflineSyncRepository @Inject constructor(
                     if (dbHHId != null) { // Update Flow
                         roomHelper.updateHousehold(
                             houseHold.toHouseholdEntity(
-                                villageNameId,
                                 OfflineSyncStatus.Success,
                                 dbHHId
                             )
@@ -279,7 +274,6 @@ class OfflineSyncRepository @Inject constructor(
                     } else { // Insert Flow
                         dbHHId = roomHelper.saveHouseHoldEntry(
                             houseHold.toHouseholdEntity(
-                                villageNameId,
                                 OfflineSyncStatus.Success
                             )
                         )
@@ -287,7 +281,6 @@ class OfflineSyncRepository @Inject constructor(
                 } else { // Fhir id is null - Failed
                     dbHHId = roomHelper.saveHouseHoldEntry(
                         houseHold.toHouseholdEntity(
-                            villageNameId,
                             OfflineSyncStatus.Failed
                         )
                     )

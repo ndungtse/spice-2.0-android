@@ -10,7 +10,7 @@ import com.medtroniclabs.spice.db.entity.MenuEntity
 import com.medtroniclabs.spice.db.entity.VillageEntity
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.network.resource.Resource
-import com.medtroniclabs.spice.ui.boarding.repo.LoginRepository
+import com.medtroniclabs.spice.ui.boarding.repo.MetaRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
@@ -18,7 +18,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LandingViewModel @Inject constructor(
-    private val loginRepository: LoginRepository,
+    private val metaRepository: MetaRepository,
     @IoDispatcher private val dispatcherIO: CoroutineDispatcher
 ) : ViewModel() {
 
@@ -30,28 +30,28 @@ class LandingViewModel @Inject constructor(
     fun getMenus() {
         viewModelScope.launch(dispatcherIO) {
             menuListLiveData.postLoading()
-            menuListLiveData.postValue(loginRepository.getMenu())
+            menuListLiveData.postValue(metaRepository.getMenu())
         }
     }
 
     fun getUserProfile() {
         viewModelScope.launch(dispatcherIO) {
             userProfileLiveData.postLoading()
-            userProfileLiveData.postValue(loginRepository.getUserProfile())
+            userProfileLiveData.postValue(metaRepository.getUserProfile())
         }
     }
 
     fun getAllVillagesName() {
         viewModelScope.launch(dispatcherIO) {
             villageListResponse.postLoading()
-            villageListResponse.postValue(loginRepository.getAllVillagesName())
+            villageListResponse.postValue(metaRepository.getAllVillagesName())
         }
     }
 
     fun getDefaultHealthFacility() {
         viewModelScope.launch(dispatcherIO) {
             defaultHealthFacilityLiveData.postLoading()
-            defaultHealthFacilityLiveData.postValue(loginRepository.getDefaultHealthFacility())
+            defaultHealthFacilityLiveData.postValue(metaRepository.getDefaultHealthFacility())
         }
     }
 }

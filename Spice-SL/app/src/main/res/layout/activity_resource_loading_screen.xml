@@ -25,7 +25,7 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/_8sdp"
         android:layout_marginTop="@dimen/_16sdp"
-        android:text="@string/Offline_data"
+        android:text="@string/syncing_offline_data"
         android:visibility="gone"
         android:textColor="@color/black"
         android:textSize="@dimen/_18ssp"
