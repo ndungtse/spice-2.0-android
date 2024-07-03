@@ -449,20 +449,19 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
         when (v?.id) {
             binding.btnPrescribe.id -> {
                 val status = checkValidation()
-                if (status.first) {
-                    SignatureDialogFragment.newInstance(this)
-                        .show(supportFragmentManager, SignatureDialogFragment.TAG)
-                } else {
-                    val list =
-                        prescriptionViewModel.selectedMedicationLiveData.value?.filter { it.medicationResponse.prescribedSince == null }
-                    if (list.isNullOrEmpty()) {
-                        showErrorDialogue(
-                            getString(R.string.alert),
-                            getString(R.string.no_new_medicines_prescribed)
-                        ) {
+                if (status) {
+                  val list  = prescriptionViewModel.selectedMedicationLiveData.value?.filter { ((it.medicationResponse.prescriptionId != null && it.medicationResponse.isEditable && it.medicationResponse.prescribedDays != null && it.medicationResponse.prescribedDays != 0L) || (it.medicationResponse.prescriptionId == null && it.medicationResponse.prescribedDays != null && it.medicationResponse.prescribedDays != 0L)) }
+                   if (list!=null && list.isEmpty()){
+                       showErrorDialogue(
+                           getString(R.string.alert),
+                           getString(R.string.no_new_medicines_prescribed)
+                       ) {
 
-                        }
-                    }
+                       }
+                   }else{
+                       SignatureDialogFragment.newInstance(this)
+                           .show(supportFragmentManager, SignatureDialogFragment.TAG)
+                   }
                 }
             }
 
@@ -489,7 +488,7 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
     }
 
 
-    private fun checkValidation(): Pair<Boolean, List<MedicationRequestObject>?> {
+    private fun checkValidation(): Boolean {
 
         val invalidList = ArrayList<MedicationRequestObject>()
 
@@ -505,12 +504,8 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
 
         prescriptionViewModel.selectedMedicationLiveData.value =
             prescriptionViewModel.selectedMedicationLiveData.value
-        val status =
-            prescriptionViewModel.selectedMedicationLiveData.value?.any { ((it.medicationResponse.prescriptionId != null && it.medicationResponse.isEditable && it.medicationResponse.prescribedDays != null && it.medicationResponse.prescribedDays != 0L) || (it.medicationResponse.prescriptionId == null && it.medicationResponse.prescribedDays != null && it.medicationResponse.prescribedDays != 0L)) }
-        if (status != null) {
-            return Pair(status, invalidList)
-        }
-        return Pair(true, null)
+
+        return invalidList.size == 0
     }
 
     override fun applySignature(signature: Bitmap) {

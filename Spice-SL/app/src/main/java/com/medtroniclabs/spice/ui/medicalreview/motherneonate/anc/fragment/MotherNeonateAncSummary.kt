@@ -13,6 +13,8 @@ import com.medtroniclabs.spice.appextensions.setExpandableText
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DateUtils
+import com.medtroniclabs.spice.common.DateUtils.convertStringToDate
+import com.medtroniclabs.spice.common.DateUtils.getDateStringFromDate
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.ViewUtils
@@ -25,11 +27,13 @@ import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
+import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil.convertNullableDoubleToString
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil.convertWeight
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.viewmodel.MotherNeonateSummaryViewModel
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
+import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 
 class MotherNeonateAncSummary : BaseFragment(),View.OnClickListener {
 
@@ -37,6 +41,8 @@ class MotherNeonateAncSummary : BaseFragment(),View.OnClickListener {
     var adapter: CustomSpinnerAdapter? = null
     private var datePickerDialog: DatePickerDialog? = null
     val viewModel: MotherNeonateSummaryViewModel by activityViewModels()
+    val patientViewModel: PatientDetailViewModel by activityViewModels()
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -189,6 +195,24 @@ class MotherNeonateAncSummary : BaseFragment(),View.OnClickListener {
         viewModel.setAncReqToGetMetaForPatientStatus(MedicalReviewTypeEnums.patient_status.name)
         adapter = CustomSpinnerAdapter(requireContext())
         binding.tvNextMedicalReviewLabelText.safeClickListener(this)
+        patientViewModel.patientDetailsLiveData.value?.data?.let { detail ->
+            detail.pregnancyDetails?.lastMenstrualPeriod?.let { lmp ->
+                convertStringToDate(
+                    lmp,
+                    DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
+                )?.let { lmpDate ->
+                    RMNCH.calculateNextANCVisitDate(
+                        lmpDate,true
+                    )?.let { visitDate ->
+                        binding.tvNextMedicalReviewLabelText.text = getDateStringFromDate(
+                            visitDate, DateUtils.DATE_ddMMyyyy
+                        )
+                        viewModel.nextFollowupDate = binding.tvNextMedicalReviewLabelText.text.toString()
+                    }
+                }
+
+            }
+        }
     }
 
     override fun onClick(view: View) {

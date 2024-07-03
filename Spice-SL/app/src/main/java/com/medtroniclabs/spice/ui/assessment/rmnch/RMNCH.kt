@@ -153,26 +153,46 @@ object RMNCH {
         return (weeks.toDouble() / 4)
     }
 
-    fun calculateNextANCVisitDate(lmp: Date): Date? {
+    fun calculateNextANCVisitDate(lmp: Date, isMedicalReview: Boolean = false): Date? {
         return when (calculatePregnancyMonth(lmp)) {
             in 0.0..4.0 -> {
-                DateUtils.addDaysToDate(lmp, (28 * 5))
+                if (isMedicalReview) {
+                    DateUtils.addDaysToDate(lmp, ((28 * 5)))
+                } else {
+                    DateUtils.addDaysToDate(lmp, ((28 * 5) + 15))
+                }
             }
 
             in 4.1..5.0 -> {
-                DateUtils.addDaysToDate(lmp, (28 * 6))
+                if (isMedicalReview) {
+                    DateUtils.addDaysToDate(lmp, ((28 * 6)))
+                } else {
+                    DateUtils.addDaysToDate(lmp, ((28 * 6) + 15))
+                }
             }
 
             in 5.1..6.0 -> {
-                DateUtils.addDaysToDate(lmp, (28 * 7))
+                if (isMedicalReview) {
+                    DateUtils.addDaysToDate(lmp, ((28 * 7)))
+                } else {
+                    DateUtils.addDaysToDate(lmp, ((28 * 7) + 15))
+                }
             }
 
             in 6.1..7.0 -> {
-                DateUtils.addDaysToDate(lmp, (28 * 8))
+                if (isMedicalReview) {
+                    DateUtils.addDaysToDate(lmp, ((28 * 8)))
+                } else {
+                    DateUtils.addDaysToDate(lmp, ((28 * 8) + 15))
+                }
             }
 
             in 7.1..8.9 -> {
-                DateUtils.addDaysToDate(lmp, (28 * 9))
+                if (isMedicalReview) {
+                    DateUtils.addDaysToDate(lmp, ((28 * 9)))
+                } else {
+                    DateUtils.addDaysToDate(lmp, ((28 * 9) + 15))
+                }
             }
 
             else -> {
