@@ -102,9 +102,9 @@ class MotherNeonateAncHistoryFragment : BaseFragment() {
                     }
                 if (!it.presentingComplaintsNotes.isNullOrEmpty()) {
                     if (combinedPresentingComplaints.isNotEmpty()) {
-                        combinedPresentingComplaints.append(",")
+                        combinedPresentingComplaints.append("-")
                     }
-                    combinedPresentingComplaints.append(it.presentingComplaints)
+                    combinedPresentingComplaints.append(it.presentingComplaintsNotes)
                 }
                 val presentingComplaintsValue =
                     if (combinedPresentingComplaints.isNotEmpty()) combinedPresentingComplaints.toString() else getString(
@@ -113,7 +113,7 @@ class MotherNeonateAncHistoryFragment : BaseFragment() {
                 tvPresentingComplaintsValue.setExpandableText(
                     presentingComplaintsValue,
                     title = tvPresentingComplaintsLabel.text.toString(),
-                    maxLength = 70,
+                    maxLength = 35,
                     activity = (requireActivity() as BaseActivity)
                 )
                 val combinedObstetricsExamination = StringBuilder()
@@ -124,7 +124,7 @@ class MotherNeonateAncHistoryFragment : BaseFragment() {
                     }
                 if (!it.obstetricExaminationNotes.isNullOrEmpty()) {
                     if (combinedObstetricsExamination.isNotEmpty()) {
-                        combinedObstetricsExamination.append(",")
+                        combinedObstetricsExamination.append("-")
                     }
                     combinedObstetricsExamination.append(it.obstetricExaminationNotes)
                 }
@@ -135,7 +135,7 @@ class MotherNeonateAncHistoryFragment : BaseFragment() {
                 tvObstetricsExaminationValue.setExpandableText(
                     obstetricsExaminationValue,
                     title = tvObstetricsExaminationLabel.text.toString(),
-                    maxLength = 70,
+                    maxLength = 35,
                     activity = (requireActivity() as BaseActivity)
                 )
             }

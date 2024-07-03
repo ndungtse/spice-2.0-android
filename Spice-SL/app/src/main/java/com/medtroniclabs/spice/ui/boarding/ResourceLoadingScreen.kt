@@ -40,6 +40,10 @@ class ResourceLoadingScreen : BaseActivity() {
                     if (userRole == ROLE_CHW) {
                         viewModel.downloadInitialDetails()
                     } else {
+                        SecuredPreference.putBoolean(
+                            SecuredPreference.EnvironmentKey.ISMETALOADED.name,
+                            true
+                        )
                         startActivity(Intent(this, LandingActivity::class.java))
                         finish()
                     }

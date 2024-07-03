@@ -340,15 +340,20 @@ object CommonUtils {
 
     fun createPrescription(prescriptions: List<Prescription>?, context: Context): String? {
         return prescriptions?.takeIf { it.isNotEmpty() }?.mapIndexed { index, prescription ->
-            "${index + 1}. ${prescription.medicationName} / ${getPrescriptionFreq(prescription.frequency)} / ${dayPeriod(prescription.prescribedDays, context)} days"
+            "${index + 1}. ${prescription.medicationName} / ${getPrescriptionFreq(prescription.frequency)} / ${
+                dayPeriod(
+                    prescription.prescribedDays,
+                    context
+                )
+            }"
         }?.joinToString("\n")
     }
 
     private fun dayPeriod(prescribedDays: Long?, context: Context): String {
-        return if (prescribedDays == 1L){
-            context.getString(R.string.day)
+        return if (prescribedDays == 1L) {
+            "$prescribedDays ${context.getString(R.string.day)}"
         } else {
-            context.getString(R.string.days)
+            "$prescribedDays ${context.getString(R.string.days)}"
         }
     }
 

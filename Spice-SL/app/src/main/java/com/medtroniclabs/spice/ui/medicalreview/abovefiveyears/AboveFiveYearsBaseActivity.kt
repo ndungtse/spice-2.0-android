@@ -477,6 +477,10 @@ class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
 
     override fun onDialogDismissListener(isFinish: Boolean) {
         finish()
+        val intent = Intent(this, LandingActivity::class.java)
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+        startActivity(intent)
+        finish()
     }
 
     private fun getCurrentLocation() {

@@ -1,11 +1,15 @@
-In Medical Review:
-    1. Patient List
-    2. Filter
-    3. Referral Ticket History
-    4. Medical Review ANC.
-    5. Referral.
-    6. AboveFiveYears.
-    7. Prescription without Prescription history.
+Modules:
 
-In CHW:
-    1. RMNCH along with bug fixes.
+1.Household
+2.Member
+3.ICCM Assessment
+4.Other Symptoms
+5.RMNCH Assessment (ANC, PNC, Childhood visit)
+6.Offline Sync
+7.Patient List
+8.Referral ticket, Prescription and Medical review history
+9.Medical Review Prescription
+10.Medical Review Above 5 years
+11.Medical Review Mother Neonate (ANC)
+
+Also bugs with deployed status in the respective bug sheet. Let us know if any clarifications are needed.

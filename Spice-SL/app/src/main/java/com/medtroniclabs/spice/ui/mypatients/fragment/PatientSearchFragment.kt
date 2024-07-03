@@ -62,8 +62,15 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
     }
 
     private fun swipeRefresh() {
-        getPatientList()
-        scrollTop()
+        if (connectivityManager.isNetworkAvailable()) {
+            getPatientList()
+            scrollTop()
+        } else {
+            if (binding.refreshLayout.isRefreshing) {
+                binding.refreshLayout.isRefreshing = false
+            }
+            showErrorDialog(getString(R.string.error), getString(R.string.no_internet_error))
+        }
     }
 
     private fun attachObservers() {
