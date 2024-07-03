@@ -148,9 +148,10 @@ class BioDataFragment : BaseFragment() {
                     )
                 )
                 val lastMenstrualDate = DateUtils.getLastMenstrualDate(clinicalDate)
+                val gestationWeek = calculateGestationalAge(lastMenstrualDate).first
                 createSummary(
                     getString(R.string.gestational_age),
-                    "${calculateGestationalAge(lastMenstrualDate).first} ${getString(R.string.weeks)}"
+                    "$gestationWeek ${getWeekPeriod(gestationWeek)}"
                 )
                 val estimatedDeliveryDate = calculateEstimatedDeliveryDate(lastMenstrualDate)
                 val formattedEstimatedDeliveryDate =
@@ -161,6 +162,14 @@ class BioDataFragment : BaseFragment() {
                 )
 
             }
+        }
+    }
+
+    private fun getWeekPeriod(gestationWeek: Long): String {
+        return if (gestationWeek == 1L){
+            requireContext().getString(R.string.week)
+        } else{
+            requireContext().getString(R.string.weeks)
         }
     }
 

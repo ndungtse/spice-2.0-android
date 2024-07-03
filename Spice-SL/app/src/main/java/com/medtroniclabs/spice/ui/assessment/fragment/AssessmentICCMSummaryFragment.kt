@@ -1,6 +1,7 @@
 package com.medtroniclabs.spice.ui.assessment.fragment
 
 import android.app.DatePickerDialog
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -22,7 +23,6 @@ import com.medtroniclabs.spice.common.DefinedParams.Yes
 import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.common.ViewUtils
 import com.medtroniclabs.spice.databinding.FragmentAssessmentIccmSummaryBinding
-import com.medtroniclabs.spice.formgeneration.extension.markMandatory
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.ui.SingleSelectionCustomView
@@ -68,6 +68,7 @@ import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefined
 import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.otherSigns
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
+import com.medtroniclabs.spice.ui.landing.LandingActivity
 import org.json.JSONObject
 
 class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
@@ -559,6 +560,9 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
                     updateFollowUpDate(binding.etNextFollowUpDate.text.trim().toString())
                 }
                 if (viewModel.otherAssessmentDetails.isEmpty()) {
+                    val intent = Intent(requireActivity(), LandingActivity::class.java)
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+                    startActivity(intent)
                     requireActivity().finish()
                 } else {
                     viewModel.updateOtherAssessmentDetails()

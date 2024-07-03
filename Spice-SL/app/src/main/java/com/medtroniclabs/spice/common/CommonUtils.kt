@@ -7,7 +7,9 @@ import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.nullIfEmpty
 import com.medtroniclabs.spice.common.DateUtils.calculateAge
 import com.medtroniclabs.spice.data.Prescription
+import com.medtroniclabs.spice.formgeneration.config.DefinedParams.MONTH
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.MONTHS
+import com.medtroniclabs.spice.formgeneration.config.DefinedParams.WEEK
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.WEEKS
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.YEARS
 import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration
@@ -93,11 +95,21 @@ object CommonUtils {
             strBuilder.append("$years $YEARS ")
         }
 
-        if (months > 0)
-            strBuilder.append("$months $MONTHS ")
+        if (months > 0) {
+            if (months == 1) {
+                strBuilder.append("$months $MONTH")
+            } else {
+                strBuilder.append("$months $MONTHS")
+            }
+        }
 
-        if (weeks > 0)
-            strBuilder.append("$weeks $WEEKS")
+        if (weeks > 0){
+            if (weeks == 1){
+                strBuilder.append("$weeks $WEEK")
+            }else {
+                strBuilder.append("$weeks $WEEKS")
+            }
+        }
 
         return strBuilder.toString()
     }
