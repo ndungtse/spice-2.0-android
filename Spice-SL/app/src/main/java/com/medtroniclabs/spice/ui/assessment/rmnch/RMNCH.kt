@@ -46,6 +46,7 @@ object RMNCH {
     const val pnc_mother_key = "PNC_MOTHER"
     const val pnc_neonate_key = "PNC_NEONATE"
     const val muac = "muac"
+    const val Pregnancy = "Pregnant, "
 
 
 

@@ -18,6 +18,7 @@ import com.medtroniclabs.spice.network.ApiHelper
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.ANC
+import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.Pregnancy
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import javax.inject.Inject
 
@@ -91,8 +92,10 @@ class MotherNeonateANCRepo @Inject constructor(
                 category = MedicalReviewTypeEnums.BloodGroup.name
             }
         })
+        // TODO: remove Hard code Pregnancy after backend done
         chipItemList.addAll(patientStatus.map {
             it.apply {
+                name = Pregnancy + it.name
                 type = ANC.uppercase()
                 category = MedicalReviewTypeEnums.patient_status.name
             }

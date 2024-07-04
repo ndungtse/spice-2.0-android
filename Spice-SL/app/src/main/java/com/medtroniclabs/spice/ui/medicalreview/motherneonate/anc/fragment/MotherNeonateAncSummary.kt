@@ -12,6 +12,7 @@ import com.medtroniclabs.spice.appextensions.invisible
 import com.medtroniclabs.spice.appextensions.setExpandableText
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
+import com.medtroniclabs.spice.common.CommonUtils.getBMI
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DateUtils.convertStringToDate
 import com.medtroniclabs.spice.common.DateUtils.getDateStringFromDate
@@ -29,7 +30,6 @@ import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil
-import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil.convertNullableDoubleToString
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil.convertWeight
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.viewmodel.MotherNeonateSummaryViewModel
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
@@ -176,8 +176,13 @@ class MotherNeonateAncSummary : BaseFragment(),View.OnClickListener {
                 title = tvPresentingComplaintsLabel.text.toString(),
                 activity = (requireActivity() as BaseActivity)
             )
-            tvBMIText.text =
-                convertNullableDoubleToString(motherNeonateSummaryModel.bmi, requireContext())
+            if (motherNeonateSummaryModel.height != null && motherNeonateSummaryModel.weight != null) {
+                tvBMIText.text = getBMI(
+                    motherNeonateSummaryModel.height,
+                    motherNeonateSummaryModel.weight,
+                    requireContext()
+                )
+            }
             val clinicalNotes = motherNeonateSummaryModel.clinicalNotes
 
             if (clinicalNotes.isNullOrEmpty()) {

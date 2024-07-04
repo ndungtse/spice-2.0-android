@@ -379,6 +379,7 @@
                 android:drawableEnd="@drawable/ic_date_picker_calendar"
                 android:gravity="start|center"
                 android:paddingStart="@dimen/_10sdp"
+                android:enabled="false"
                 android:paddingEnd="@dimen/_0dp"
                 android:textColor="@color/black"
                 android:textSize="@dimen/_16ssp"

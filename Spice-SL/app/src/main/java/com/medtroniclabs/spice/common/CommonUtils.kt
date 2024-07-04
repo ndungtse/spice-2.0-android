@@ -288,7 +288,7 @@ object CommonUtils {
         if (bmi.isInfinite() || bmi.isNaN()) {
             return context.getString(R.string.hyphen_symbol)
         }
-        return String.format("%.2f", bmi)
+        return getDecimalFormatted(bmi)
     }
 
     fun convertStringDobToMonths(dateOfBirth: String): Int? {

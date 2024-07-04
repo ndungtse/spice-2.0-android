@@ -14,6 +14,7 @@ data class MotherNeonateAncSummaryModel(
     val diastolic: Double? = null,
     val pulse: Double? = null,
     val weight: Double? = null,
+    val height: Double? = null,
     val dateOfReview: String? = null,
     val visitNumber:String? = null,
     val prescriptions: List<Prescription>? = null

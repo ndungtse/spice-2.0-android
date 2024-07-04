@@ -8,7 +8,7 @@ data class MedicalReviewMetaItems(
     @PrimaryKey(autoGenerate = true)
     val itemId: Long,
     val id: Long,
-    val name: String,
+    var name: String,
     var category: String? = null,
     var type: String? = null,
     val displayOrder: Int,
