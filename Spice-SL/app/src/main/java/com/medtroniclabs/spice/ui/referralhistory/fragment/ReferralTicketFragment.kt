@@ -25,6 +25,7 @@ import com.medtroniclabs.spice.model.ReferralData
 import com.medtroniclabs.spice.model.ReferredDate
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
+import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralReasons
 import com.medtroniclabs.spice.ui.mypatients.adapter.DateListAdapter
 import com.medtroniclabs.spice.ui.referralhistory.adapter.ReferralHistoryAdapter
 import com.medtroniclabs.spice.ui.referralhistory.viewmodel.ReferralHistoryViewModel
@@ -212,7 +213,7 @@ class ReferralTicketFragment : BaseFragment(), View.OnClickListener {
                 ),
                 mapOf(
                     label to requireContext().getString(R.string.referral_reason),
-                    value to referralData.referredReason,
+                    value to getReferralReason(referralData.referredReason),
                     valueColor to R.color.red_risk_moderate
                 ),
                 mapOf(
@@ -242,6 +243,23 @@ class ReferralTicketFragment : BaseFragment(), View.OnClickListener {
         binding.rvHistory.adapter = adapters
         setReferralDates(referralData.referredDates, referralData.id)
     }
+
+    private fun getReferralReason(referredReason: String?): String {
+        fun getSingleReferralReason(reason: String?): String {
+            return when (reason) {
+                ReferralReasons.ANCSigns.name -> requireContext().getString(R.string.ancSigns)
+                ReferralReasons.GeneralDangerSigns.name -> requireContext().getString(R.string.general_danger_signs)
+                ReferralReasons.PNCMotherSigns.name -> requireContext().getString(R.string.pncMotherSigns)
+                ReferralReasons.PNCNeonateSigns.name -> requireContext().getString(R.string.pncNeonateSigns)
+                ReferralReasons.childhoodVisitSigns.name -> requireContext().getString(R.string.childhoodVisitSigns)
+                else -> reason ?: requireContext().getString(R.string.hyphen_symbol)
+            }
+        }
+
+        return referredReason?.split(",")?.joinToString(", ") { getSingleReferralReason(it.trim()) }
+            ?: requireContext().getString(R.string.hyphen_symbol)
+    }
+
 
     private fun adjustGuideline() {
         val params = binding.centerGuideline.layoutParams as ConstraintLayout.LayoutParams

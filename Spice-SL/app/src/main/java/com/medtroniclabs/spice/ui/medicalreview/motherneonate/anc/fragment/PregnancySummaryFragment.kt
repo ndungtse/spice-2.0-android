@@ -106,12 +106,12 @@ class PregnancySummaryFragment() : BaseFragment() {
 
                 val combinedHistory = StringBuilder()
 
-                pregnancyHistory?.takeIf { it.isNotEmpty() }?.joinToString(separator = ",")?.let {
+                pregnancyHistory?.takeIf { it.isNotEmpty() }?.joinToString(separator = ", ")?.let {
                     combinedHistory.append(it)
                 }
                 if (!pregnancyHistoryNotes.isNullOrEmpty()) {
                     if (combinedHistory.isNotEmpty()) {
-                        combinedHistory.append("-")
+                        combinedHistory.append(" - ")
                     }
                     combinedHistory.append(pregnancyHistoryNotes)
                 }

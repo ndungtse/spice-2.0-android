@@ -159,7 +159,7 @@ object RMNCH {
                 if (isMedicalReview) {
                     DateUtils.addDaysToDate(lmp, ((28 * 5)))
                 } else {
-                    DateUtils.addDaysToDate(lmp, ((28 * 5) + 15))
+                    DateUtils.addDaysToDate(lmp, ((28 * 5) - 15))
                 }
             }
 
@@ -167,7 +167,7 @@ object RMNCH {
                 if (isMedicalReview) {
                     DateUtils.addDaysToDate(lmp, ((28 * 6)))
                 } else {
-                    DateUtils.addDaysToDate(lmp, ((28 * 6) + 15))
+                    DateUtils.addDaysToDate(lmp, ((28 * 6) - 15))
                 }
             }
 
@@ -175,7 +175,7 @@ object RMNCH {
                 if (isMedicalReview) {
                     DateUtils.addDaysToDate(lmp, ((28 * 7)))
                 } else {
-                    DateUtils.addDaysToDate(lmp, ((28 * 7) + 15))
+                    DateUtils.addDaysToDate(lmp, ((28 * 7) - 15))
                 }
             }
 
@@ -183,7 +183,7 @@ object RMNCH {
                 if (isMedicalReview) {
                     DateUtils.addDaysToDate(lmp, ((28 * 8)))
                 } else {
-                    DateUtils.addDaysToDate(lmp, ((28 * 8) + 15))
+                    DateUtils.addDaysToDate(lmp, ((28 * 8) - 15))
                 }
             }
 
@@ -191,7 +191,7 @@ object RMNCH {
                 if (isMedicalReview) {
                     DateUtils.addDaysToDate(lmp, ((28 * 9)))
                 } else {
-                    DateUtils.addDaysToDate(lmp, ((28 * 9) + 15))
+                    DateUtils.addDaysToDate(lmp, ((28 * 9) - 15))
                 }
             }
 

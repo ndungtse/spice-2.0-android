@@ -458,7 +458,9 @@ class AssessmentViewModel @Inject constructor(
                 )
                 details[RMNCH.visitNo] = pregnancyDetail.ancVisitNo ?: 0L
                 details[lastMenstrualPeriod] = pregnancyDetail.lastMenstrualPeriod ?: ""
-                // Anc 2
+                pregnancyDetail.pncVisitNo = 0
+                pregnancyDetail.dateOfDelivery = null
+                pregnancyDetail.noOfNeonates = null
             }
 
             RMNCH.PNC -> {
@@ -471,6 +473,9 @@ class AssessmentViewModel @Inject constructor(
                 details[RMNCH.visitNo] = pregnancyDetail.pncVisitNo ?: 0L
                 details[RMNCH.DateOfDelivery] = pregnancyDetail.dateOfDelivery ?: ""
                 details[RMNCH.NoOfNeonate] = pregnancyDetail.noOfNeonates ?: 0L
+                pregnancyDetail.ancVisitNo = 0
+                pregnancyDetail.lastMenstrualPeriod = null
+                pregnancyDetail.estimatedDeliveryDate = null
             }
 
             else -> {

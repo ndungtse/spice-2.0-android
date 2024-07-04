@@ -321,16 +321,13 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
                             binding.tvPatientStatusValue.text = patientStatus.status
                         }
                         patientViewModel.patientDetailsLiveData.value?.data?.let { details ->
-                            if (patientViewModel.patientDetailsId == null) {
-                                details.id?.let { id ->
-                                    diagnosisViewModel.getDiagnosisDetails(
-                                        CreateUnderTwoMonthsResponse(
-                                            patientReference = id,
-                                            type = diagnosisViewModel.diagnosisType
-                                        )
+                            details.id?.let { id ->
+                                diagnosisViewModel.getDiagnosisDetails(
+                                    CreateUnderTwoMonthsResponse(
+                                        patientReference = id,
+                                        type = diagnosisViewModel.diagnosisType
                                     )
-                                    patientViewModel.patientDetailsId = id
-                                }
+                                )
                             }
                         }
                     }
@@ -406,12 +403,14 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
         diagnosisViewModel.getDiagnosisMetaList(diagnosisViewModel.diagnosisType)
         statusViewModel.patientId?.let {
             binding.tvPatientStatusValue.text = requireContext().getString(R.string.hyphen_symbol)
-            diagnosisViewModel.getDiagnosisDetails(
-                CreateUnderTwoMonthsResponse(
-                    patientReference = it,
-                    type = diagnosisViewModel.diagnosisType
+            if (it.isNotEmpty()){
+                diagnosisViewModel.getDiagnosisDetails(
+                    CreateUnderTwoMonthsResponse(
+                        patientReference = it,
+                        type = diagnosisViewModel.diagnosisType
+                    )
                 )
-            )
+            }
         }
     }
 

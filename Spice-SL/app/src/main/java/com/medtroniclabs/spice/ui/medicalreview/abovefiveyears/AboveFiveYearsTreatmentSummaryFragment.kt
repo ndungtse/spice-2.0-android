@@ -1,11 +1,13 @@
 package com.medtroniclabs.spice.ui.medicalreview.abovefiveyears
 
 import android.app.DatePickerDialog
+import android.graphics.Typeface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
+import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResult
@@ -117,6 +119,15 @@ class AboveFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
     }
 
     private fun renderSummaryDetails(details: AboveFiveYearsSummaryDetails) {
+        binding.tvDiagnosisText.text =
+            details.diagnosis?.let {list ->
+                if (list.isNotEmpty()){
+                    binding.tvDiagnosisText.setTextColor(ContextCompat.getColor(requireContext(), R.color.a_red_error))
+                }
+                convertListToString(
+                    ArrayList(list.map { it.diseaseCategory }.distinct())
+                )
+            } ?: requireContext().getString(R.string.hyphen_symbol)
         binding.tvPresentingComplaintsText.text = presentingComplaintsViewModel.selectedPresentingComplaints.map { it.name }.let {
             formatListToStringWithOther(
                 it, details.presentingComplaintsNotes
@@ -192,7 +203,7 @@ class AboveFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
                 ) {
                     val selectedItem = adapter.getData(position = pos)
                     selectedItem?.let {
-                        val selectedName = it[DefinedParams.NAME] as String?
+                        val selectedName = it[DefinedParams.value] as String?
                         selectedName?.let { name ->
                             viewModel.selectedPatientStatus = name
                         }

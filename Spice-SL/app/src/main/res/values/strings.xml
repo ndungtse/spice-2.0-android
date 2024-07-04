@@ -489,7 +489,7 @@
     <string name="type_comments">Type your comments</string>
     <string name="name_number">Name/Number</string>
     <string name="refer">Refer</string>
-    <string name="refer_patient_name_num_display">%1$s (%2$s) / %3$s %4$s</string>
+    <string name="refer_patient_name_num_display">%1$s (%2$s) / +%3$s %4$s</string>
     <string name="dispense">Dispense</string>
     <string name="renew_all">Renew All</string>
     <string name="clear_signature">Clear Signature</string>
@@ -534,4 +534,8 @@
     <string name="called_at">Called At</string>
     <string name="referred_at">Referred At</string>
     <string name="no_new_medicines_prescribed">No new medicines prescribed</string>
+    <string name="ancSigns">ANC Signs</string>
+    <string name="pncMotherSigns">PNC Mother Signs</string>
+    <string name="pncNeonateSigns">PNC Neonate Signs</string>
+    <string name="childhoodVisitSigns">Childhood Visit Signs</string>
 </resources>

@@ -96,13 +96,13 @@ class MotherNeonateAncHistoryFragment : BaseFragment() {
                 tvClinicalNotesValue.setExpandableText(convertNullableStringToString(it.clinicalNotes, requireContext()), title = tvClinicalNotesLabel.text.toString(),maxLength = 70, activity = (requireActivity() as BaseActivity))
                 val combinedPresentingComplaints = StringBuilder()
 
-                it.presentingComplaints?.filterNotNull()?.takeIf { it.isNotEmpty() }?.joinToString(separator = ",")
+                it.presentingComplaints?.filterNotNull()?.takeIf { it.isNotEmpty() }?.joinToString(separator = ", ")
                     ?.let {
                         combinedPresentingComplaints.append(it)
                     }
                 if (!it.presentingComplaintsNotes.isNullOrEmpty()) {
                     if (combinedPresentingComplaints.isNotEmpty()) {
-                        combinedPresentingComplaints.append("-")
+                        combinedPresentingComplaints.append(" - ")
                     }
                     combinedPresentingComplaints.append(it.presentingComplaintsNotes)
                 }
@@ -118,13 +118,13 @@ class MotherNeonateAncHistoryFragment : BaseFragment() {
                 )
                 val combinedObstetricsExamination = StringBuilder()
 
-                it.obstetricExaminations?.filterNotNull()?.takeIf { it.isNotEmpty() }?.joinToString(separator = ",")
+                it.obstetricExaminations?.filterNotNull()?.takeIf { it.isNotEmpty() }?.joinToString(separator = ", ")
                     ?.let {
                         combinedObstetricsExamination.append(it)
                     }
                 if (!it.obstetricExaminationNotes.isNullOrEmpty()) {
                     if (combinedObstetricsExamination.isNotEmpty()) {
-                        combinedObstetricsExamination.append("-")
+                        combinedObstetricsExamination.append(" - ")
                     }
                     combinedObstetricsExamination.append(it.obstetricExaminationNotes)
                 }

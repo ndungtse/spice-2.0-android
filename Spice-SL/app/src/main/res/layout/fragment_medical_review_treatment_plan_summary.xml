@@ -80,6 +80,7 @@
                 style="@style/TextStyle_Regular_16_Bold"
                 android:layout_width="@dimen/_0dp"
                 android:text="@string/seperator_hyphen"
+                android:paddingBottom="@dimen/_8sdp"
                 app:layout_constraintEnd_toEndOf="@id/endGuideline"
                 app:layout_constraintHorizontal_weight="0.6"
                 app:layout_constraintStart_toEndOf="@id/tvDiagnosisSeparator"

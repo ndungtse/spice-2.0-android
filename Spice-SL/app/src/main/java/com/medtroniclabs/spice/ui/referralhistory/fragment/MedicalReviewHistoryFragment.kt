@@ -446,12 +446,12 @@ class MedicalReviewHistoryFragment : BaseFragment(), View.OnClickListener {
 
     private fun combineText(items: List<String?>?, notes: String?): String {
         val combinedText = StringBuilder()
-        items?.filterNotNull()?.takeIf { it.isNotEmpty() }?.joinToString(separator = ",")?.let {
+        items?.filterNotNull()?.takeIf { it.isNotEmpty() }?.joinToString(separator = ", ")?.let {
             combinedText.append(it)
         }
         if (!notes.isNullOrEmpty()) {
             if (combinedText.isNotEmpty()) {
-                combinedText.append("-")
+                combinedText.append(" - ")
             }
             combinedText.append(notes)
         }
