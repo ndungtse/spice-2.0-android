@@ -26,6 +26,7 @@ import java.math.RoundingMode
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Locale
 
 object CommonUtils {
@@ -110,10 +111,10 @@ object CommonUtils {
             }
         }
 
-        if (weeks > 0){
-            if (weeks == 1){
+        if (weeks > 0) {
+            if (weeks == 1) {
                 strBuilder.append("$weeks $WEEK")
-            }else {
+            } else {
                 strBuilder.append("$weeks $WEEKS")
             }
         }
@@ -167,7 +168,8 @@ object CommonUtils {
     }
 
     fun isRolePresent(): Boolean {
-        val roleList = listOf(SECHN, MCHA, PROVIDER, CHA, MID_WIFE, LAB_ASSISTANT, SRN).map { it.lowercase() }
+        val roleList =
+            listOf(SECHN, MCHA, PROVIDER, CHA, MID_WIFE, LAB_ASSISTANT, SRN).map { it.lowercase() }
         val currentRole = SecuredPreference.getRole()?.lowercase()
         return roleList.contains(currentRole)
     }
@@ -190,11 +192,19 @@ object CommonUtils {
 
             val months = (yearMonthWeek.years * 12) + yearMonthWeek.months
             if (months > 0) {
-                return if (months == 1) "$months ${context.getString(R.string.month)}" else "$months ${context.getString(R.string.months)}"
+                return if (months == 1) "$months ${context.getString(R.string.month)}" else "$months ${
+                    context.getString(
+                        R.string.months
+                    )
+                }"
             }
 
             if (yearMonthWeek.weeks > 0) {
-                return if (yearMonthWeek.weeks == 1) "${yearMonthWeek.weeks} ${context.getString(R.string.week)}" else "${yearMonthWeek.weeks} ${context.getString(R.string.weeks)}"
+                return if (yearMonthWeek.weeks == 1) "${yearMonthWeek.weeks} ${context.getString(R.string.week)}" else "${yearMonthWeek.weeks} ${
+                    context.getString(
+                        R.string.weeks
+                    )
+                }"
             }
 
             if (yearMonthWeek.days >= 0) {
@@ -296,7 +306,7 @@ object CommonUtils {
         return try {
             val days = enteredDays.toDouble().toInt()
             if (days > maxDays) {
-                context.getString(R.string.days_summary, days, maxDays+1)
+                context.getString(R.string.days_summary, days, maxDays + 1)
             } else {
                 days.toString()
             }
@@ -355,7 +365,7 @@ object CommonUtils {
     }
 
     fun getTicketType(menuType: String): String? {
-        return when(menuType) {
+        return when (menuType) {
             MedicalReviewTypeEnums.AboveFiveYears.name, MedicalReviewTypeEnums.UnderTwoMonths.name, MedicalReviewTypeEnums.UnderFiveYears.name -> {
                 MedicalReviewTypeEnums.ICCM.name
             }
@@ -364,7 +374,9 @@ object CommonUtils {
                 MedicalReviewTypeEnums.RMNCH.name
             }
 
-            else -> {null}
+            else -> {
+                null
+            }
         }
     }
 
@@ -404,11 +416,25 @@ object CommonUtils {
         }
     }
 
-    fun getMaxDateLimit(menstrualPeriod: Boolean, minDate: Long?): Long? {
+    fun getMaxDateLimit(menstrualPeriod: Boolean, minDays: Int?): Long? {
         return if (menstrualPeriod) {
             DateUtils.calculateGestationPastMonths(System.currentTimeMillis(), 11)
         } else {
-            minDate
+            if (minDays != null) {
+                val calendar = Calendar.getInstance()
+                calendar.add(Calendar.DAY_OF_MONTH, -minDays)
+                return calendar.timeInMillis
+            } else {
+                return minDays
+            }
+        }
+    }
+
+    fun getMaxDateLimit(menstrualPeriod: Boolean, minDays: Long?): Long? {
+        return if (menstrualPeriod) {
+            DateUtils.calculateGestationPastMonths(System.currentTimeMillis(), 11)
+        } else {
+            return minDays
         }
     }
 }

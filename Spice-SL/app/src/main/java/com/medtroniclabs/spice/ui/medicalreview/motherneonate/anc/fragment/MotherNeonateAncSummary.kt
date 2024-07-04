@@ -106,6 +106,43 @@ class MotherNeonateAncSummary : BaseFragment(),View.OnClickListener {
                 }
             }
         }
+
+        patientViewModel.patientDetailsLiveData.observe(viewLifecycleOwner){ resourceState ->
+
+            when(resourceState.state){
+
+                ResourceState.LOADING -> {
+                    showProgress()
+                }
+
+                ResourceState.ERROR -> {
+                    hideProgress()
+                }
+
+                ResourceState.SUCCESS -> {
+                    resourceState.data?.let { detail ->
+                        detail.pregnancyDetails?.lastMenstrualPeriod?.let { lmp ->
+                            convertStringToDate(
+                                lmp,
+                                DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
+                            )?.let { lmpDate ->
+                                RMNCH.calculateNextANCVisitDate(
+                                    lmpDate,true
+                                )?.let { visitDate ->
+                                    binding.tvNextMedicalReviewLabelText.text = getDateStringFromDate(
+                                        visitDate, DateUtils.DATE_ddMMyyyy
+                                    )
+                                    viewModel.nextFollowupDate = binding.tvNextMedicalReviewLabelText.text.toString()
+                                }
+                            }
+
+                        }
+                    }
+                    viewModel.fetchMotherNeonateSummary(arguments?.getString(DefinedParams.EncounterId),arguments?.getString(DefinedParams.FhirId))
+                }
+            }
+
+        }
     }
 
     private fun populate(motherNeonateSummaryModel: MotherNeonateAncSummaryModel) {
@@ -181,7 +218,9 @@ class MotherNeonateAncSummary : BaseFragment(),View.OnClickListener {
     private fun initView() {
         binding.tvNextMedicalReviewLabel.markMandatory()
         binding.tvPatientStatus.markMandatory()
-        viewModel.fetchMotherNeonateSummary(arguments?.getString(DefinedParams.EncounterId),arguments?.getString(DefinedParams.FhirId))
+        patientViewModel.getPatientId()?.let { id ->
+            patientViewModel.getPatients(id)
+        }
         binding.tvClinicalName.text = requireContext().getString(
             R.string.firstname_lastname,
             SecuredPreference.getUserDetails().firstName,
@@ -195,24 +234,6 @@ class MotherNeonateAncSummary : BaseFragment(),View.OnClickListener {
         viewModel.setAncReqToGetMetaForPatientStatus(MedicalReviewTypeEnums.patient_status.name)
         adapter = CustomSpinnerAdapter(requireContext())
         binding.tvNextMedicalReviewLabelText.safeClickListener(this)
-        patientViewModel.patientDetailsLiveData.value?.data?.let { detail ->
-            detail.pregnancyDetails?.lastMenstrualPeriod?.let { lmp ->
-                convertStringToDate(
-                    lmp,
-                    DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
-                )?.let { lmpDate ->
-                    RMNCH.calculateNextANCVisitDate(
-                        lmpDate,true
-                    )?.let { visitDate ->
-                        binding.tvNextMedicalReviewLabelText.text = getDateStringFromDate(
-                            visitDate, DateUtils.DATE_ddMMyyyy
-                        )
-                        viewModel.nextFollowupDate = binding.tvNextMedicalReviewLabelText.text.toString()
-                    }
-                }
-
-            }
-        }
     }
 
     override fun onClick(view: View) {

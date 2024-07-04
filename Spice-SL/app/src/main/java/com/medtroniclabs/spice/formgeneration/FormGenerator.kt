@@ -940,7 +940,7 @@ class FormGenerator(
                 showDatePicker(
                     context = context,
                     disableFutureDate = disableFutureDate ?: false,
-                    minDate = getMaxDateLimit(menstrualPeriod, minDate),
+                    minDate = getMaxDateLimit(menstrualPeriod, minDays),
                     maxDate = maxDate,
                     date = dateInput
                 ) { _, year, month, dayOfMonth ->

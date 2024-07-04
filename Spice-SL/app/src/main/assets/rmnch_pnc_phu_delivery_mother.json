@@ -16,6 +16,7 @@
     "isMandatory": true,
     "disableFutureDate": true,
     "hint": "Select Date",
+    "minDays": 15,
     "errorMessage": "Please select a valid option",
     "visibility": "visible"
   },
