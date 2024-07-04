@@ -90,5 +90,8 @@ object DefinedParams {
     const val CoughOrDifficultBreathing = "Cough / Difficult Breathing"
     const val MalnutritionOrAnaemia = "Malnutrition / Anaemia"
     const val HivAndAids = "HIV / AIDS RDT"
+    const val Pregnant = "Pregnant"
+    const val Postpartum = "Postpartum"
+    const val Lactating = "Lactating"
 
 }

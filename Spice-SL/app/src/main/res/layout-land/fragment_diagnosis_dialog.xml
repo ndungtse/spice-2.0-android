@@ -102,6 +102,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:gravity="start"
+                        android:visibility="gone"
                         android:paddingHorizontal="@dimen/_16sdp"
                         android:text="@string/select_disease_condition"
                         android:textColor="@color/house_hold_title"

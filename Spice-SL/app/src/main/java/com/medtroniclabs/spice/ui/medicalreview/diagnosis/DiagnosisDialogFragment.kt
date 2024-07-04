@@ -268,8 +268,24 @@ class DiagnosisDialogFragment : DialogFragment(), View.OnClickListener, Diagnosi
                 }
             }
             saveBtnStateHandler()
+            handleSelectedDiseaseCategory()
         }
         diagnosisGenerator.setDiagnosisCallback(this)
+    }
+
+    private fun handleSelectedDiseaseCategory() {
+        if (diseaseCategoryTagView.getSelectedTags().isEmpty()){
+            binding.tvSelectedDiseaseConditionLbl.gone()
+        }else if (diseaseCategoryTagView.getSelectedTags().size > 1){
+            binding.tvSelectedDiseaseConditionLbl.visible()
+        }else {
+            val list =  diseaseCategoryTagView.getSelectedTags().filter { it.name.equals(Other,true) }
+            if (list.isNotEmpty()){
+                binding.tvSelectedDiseaseConditionLbl.gone()
+            }else{
+                binding.tvSelectedDiseaseConditionLbl.visible()
+            }
+        }
     }
 
     override fun onClick(view: View) {
@@ -408,9 +424,6 @@ class DiagnosisDialogFragment : DialogFragment(), View.OnClickListener, Diagnosi
 
     private fun handleVisibility() {
         when(diagnosisViewModel.diagnosisType) {
-            MedicalReviewTypeEnums.AboveFiveYears.name -> {
-                binding.tvSelectedDiseaseConditionLbl.gone()
-            }
             MedicalReviewTypeEnums.ANC.name -> {
                 binding.tvSelectedDiseaseCategoryLbl.text = requireContext().getString(R.string.select_diagnosis_found_on_the_patient)
                 binding.tvSelectedDiseaseConditionLbl.gone()
@@ -433,11 +446,6 @@ class DiagnosisDialogFragment : DialogFragment(), View.OnClickListener, Diagnosi
             .any { it.name.lowercase() == Other.lowercase() }
         when (diagnosisViewModel.diagnosisType) {
             MedicalReviewTypeEnums.AboveFiveYears.name -> {
-                if (diseaseCategoryTagView.getSelectedTags().isNotEmpty() && (!otherSelection)){
-                    binding.tvSelectedDiseaseConditionLbl.visible()
-                } else {
-                    binding.tvSelectedDiseaseConditionLbl.gone()
-                }
                 diagnosisViewModel.diagnosisDetailsList.value?.data?.let {
                     if ((diseaseCategoryTagView.getSelectedTags().size <= 1) || otherSelection) {
                         binding.btnOkay.isEnabled =

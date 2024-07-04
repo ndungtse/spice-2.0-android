@@ -15,6 +15,9 @@ import com.medtroniclabs.spice.appextensions.invisible
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils.convertListToString
 import com.medtroniclabs.spice.common.DefinedParams
+import com.medtroniclabs.spice.common.DefinedParams.Lactating
+import com.medtroniclabs.spice.common.DefinedParams.Postpartum
+import com.medtroniclabs.spice.common.DefinedParams.Pregnant
 import com.medtroniclabs.spice.data.model.MotherNeonateAncRequest
 import com.medtroniclabs.spice.databinding.FragmentMedicalReviewPatientDiagnosisBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
@@ -318,7 +321,7 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
                         if (patientStatus.status.isNullOrEmpty()) {
                             binding.tvPatientStatusValue.text = getString(R.string.seperator_hyphen)
                         } else {
-                            binding.tvPatientStatusValue.text = patientStatus.status
+                            binding.tvPatientStatusValue.text = getPatientStatus(patientStatus.status)
                         }
                         patientViewModel.patientDetailsLiveData.value?.data?.let { details ->
                             details.id?.let { id ->
@@ -396,6 +399,36 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
                     hideProgress()
                 }
             }
+        }
+    }
+
+    private fun getPatientStatus(status: String): String {
+        val formattedString = cleanString(status)
+        return if (diagnosisViewModel.diagnosisType == MedicalReviewTypeEnums.ANC.name) {
+            if (formattedString.isEmpty()){
+                Pregnant
+            }else if (formattedString.contains(Pregnant, ignoreCase = true)) {
+                formattedString
+            } else {
+                "$formattedString, $Pregnant"
+            }
+        } else {
+            status
+        }
+    }
+
+
+    private fun cleanString(input: String): String {
+        val toRemove = listOf(Postpartum, Lactating)
+        if (toRemove.any { input.contains(it) }) {
+            var cleanedString = input
+            for (str in toRemove) {
+                cleanedString = cleanedString.replace(str, "")
+            }
+            cleanedString = cleanedString.replace(",", "")
+            return cleanedString.trim()
+        } else {
+            return input
         }
     }
 

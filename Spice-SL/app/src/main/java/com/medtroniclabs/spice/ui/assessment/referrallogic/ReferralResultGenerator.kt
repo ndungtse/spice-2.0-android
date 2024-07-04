@@ -288,7 +288,7 @@ class ReferralResultGenerator {
                     val noOfDays = map[NoOfDaysOfFever] as Int
                     if (noOfDays >= MaxDaysOfFever) {
                         addResultMap(referralKey.lowercase(), ReferralStatus.Referred.name)
-                        addReferralReason(referralReason, referralKey)
+                        rdtReferralStatus(map, referralKey)
                     } else {
                         if (map.containsKey(RdtTest) && map[RdtTest] == RdtPositive) {
                             addResultMap(referralKey.lowercase(), getMedicationStatus(map, ACT))
@@ -301,8 +301,17 @@ class ReferralResultGenerator {
                 }
             } else if (map.containsKey(Temperature) && map[Temperature] is Double && (map[Temperature] as Double) >= MaxTemperature) {
                 addResultMap(referralKey.lowercase(), ReferralStatus.Referred.name)
-                addReferralReason(referralReason, referralKey)
+                rdtReferralStatus(map, referralKey)
             }
+
+        }
+    }
+
+    fun rdtReferralStatus(map: HashMap<String, Any>, referralKey: String) {
+        if (map.containsKey(RdtTest) && map[RdtTest] == RdtPositive) {
+            addReferralReason(referralReason, ReferralReasons.Malaria.name)
+        } else {
+            addReferralReason(referralReason, referralKey)
         }
     }
 
