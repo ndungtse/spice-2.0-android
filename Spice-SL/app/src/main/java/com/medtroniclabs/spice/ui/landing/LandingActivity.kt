@@ -84,7 +84,7 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
     private fun initializeDrawerView() {
         val menu: Menu = binding.navView.menu
         val menuItemToRemove: MenuItem? = menu.findItem(R.id.offline_sync)
-        if (CommonUtils.isProvider() && menuItemToRemove != null) {
+        if ((!CommonUtils.isChw()) && menuItemToRemove != null) {
             menu.removeItem(menuItemToRemove.itemId)
         }
         onNavigationItemSelected(binding.navView.menu.findItem(R.id.home))
@@ -168,7 +168,7 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
     private fun displayScreen(id: Int) {
         when (id) {
             R.id.home -> {
-                if (CommonUtils.isProvider()) {
+                if (CommonUtils.isRolePresent()) {
                     binding.appBarMain.tvTitle.text = getString(R.string.search_patient)
                     requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
                     replaceFragmentIfExists<PatientSearchFragment>(

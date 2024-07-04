@@ -6,6 +6,13 @@ import android.content.res.AssetManager
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.nullIfEmpty
 import com.medtroniclabs.spice.common.DateUtils.calculateAge
+import com.medtroniclabs.spice.common.RoleConstant.CHA
+import com.medtroniclabs.spice.common.RoleConstant.LAB_ASSISTANT
+import com.medtroniclabs.spice.common.RoleConstant.MCHA
+import com.medtroniclabs.spice.common.RoleConstant.MID_WIFE
+import com.medtroniclabs.spice.common.RoleConstant.PROVIDER
+import com.medtroniclabs.spice.common.RoleConstant.SECHN
+import com.medtroniclabs.spice.common.RoleConstant.SRN
 import com.medtroniclabs.spice.data.Prescription
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.MONTH
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.MONTHS
@@ -152,12 +159,19 @@ object CommonUtils {
     }
 
     fun isProvider(): Boolean {
-        return SecuredPreference.getRole() == RoleConstant.PROVIDER
+        return SecuredPreference.getRole() == PROVIDER
     }
 
     fun isChw(): Boolean {
         return SecuredPreference.getRole() == RoleConstant.COMMUNITY_HEALTH_WORKER
     }
+
+    fun isRolePresent(): Boolean {
+        val roleList = listOf(SECHN, MCHA, PROVIDER, CHA, MID_WIFE, LAB_ASSISTANT, SRN).map { it.lowercase() }
+        val currentRole = SecuredPreference.getRole()?.lowercase()
+        return roleList.contains(currentRole)
+    }
+
 
     fun getOptionMap(value: String, name: String): Map<String, Any> {
         val map = HashMap<String, Any>()
@@ -183,8 +197,12 @@ object CommonUtils {
                 return if (yearMonthWeek.weeks == 1) "${yearMonthWeek.weeks} ${context.getString(R.string.week)}" else "${yearMonthWeek.weeks} ${context.getString(R.string.weeks)}"
             }
 
-            if (yearMonthWeek.days > 0) {
-                return if (yearMonthWeek.days == 1) "${yearMonthWeek.days} ${context.getString(R.string.day)}" else "${yearMonthWeek.days} ${context.getString(R.string.days)}"
+            if (yearMonthWeek.days >= 0) {
+                return if (yearMonthWeek.days < 2) "${yearMonthWeek.days} ${context.getString(R.string.day)}" else "${yearMonthWeek.days} ${
+                    context.getString(
+                        R.string.days
+                    )
+                }"
             }
         }
         return ""

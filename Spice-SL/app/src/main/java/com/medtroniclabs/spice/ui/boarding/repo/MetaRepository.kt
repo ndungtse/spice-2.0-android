@@ -3,6 +3,7 @@ package com.medtroniclabs.spice.ui.boarding.repo
 import com.google.gson.Gson
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DateUtils
+import com.medtroniclabs.spice.common.RoleConstant.PROVIDER
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.ClinicalWorkflow
 import com.medtroniclabs.spice.data.FormData
@@ -23,6 +24,7 @@ import com.medtroniclabs.spice.db.local.RoomHelper
 import com.medtroniclabs.spice.network.ApiHelper
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.network.resource.ResourceState
+import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
@@ -56,8 +58,12 @@ class MetaRepository @Inject constructor(
                             saveVillage(villages)
                             saveFhirId(userProfile.fhirId, defaultHealthFacility.fhirId)
                             saveUserProfileDetailsInDb(userProfile)
-                            saveMenusInDb(menu.menus, menu.roleName)
-                            menu.meta?.let { meta.addAll(it) }
+                            if (CommonUtils.isRolePresent()) {
+                                saveClinicalWorkflowsForProvider(defaultHealthFacility.clinicalWorkflows)
+                            } else {
+                                saveMenusInDb(menu.menus, menu.roleName)
+                                menu.meta?.let { meta.addAll(it) }
+                            }
                             workflowNames.addAll(clinicalIds)
                         }
 
@@ -101,6 +107,25 @@ class MetaRepository @Inject constructor(
             e.printStackTrace()
             Resource(state = ResourceState.ERROR)
         }
+    }
+
+    private suspend fun saveClinicalWorkflowsForProvider(clinicalWorkflows: List<ClinicalWorkflow>) {
+        val workflowList = clinicalWorkflows.filter { workflow ->
+            workflow.conditions?.any { condition ->
+                condition.moduleType == MedicalReviewTypeEnums.medicalReview.name.lowercase()
+            } ?: false
+        }
+        val menuList = ArrayList<MenuDetail>()
+        workflowList.forEach {
+            menuList.add(
+                MenuDetail(
+                    name = it.workflowName,
+                    order = it.displayOrder,
+                    workflowName = it.workflowName
+                )
+            )
+        }
+        saveMenusInDb(menuList, PROVIDER)
     }
 
     private suspend fun saveHealthFacilityInDb(list: List<HealthFacility>, defaultId: Long) {
@@ -189,7 +214,7 @@ class MetaRepository @Inject constructor(
                     roleName = roleName,
                     name = menu.name,
                     displayOrder = menu.order,
-                    menuId = menu.name
+                    menuId = menu.workflowName ?: menu.name
                 )
             )
         }

@@ -4,7 +4,7 @@ import androidx.room.ColumnInfo
 import com.medtroniclabs.spice.db.entity.SignsAndSymptomsEntity
 import com.medtroniclabs.spice.db.entity.VillageEntity
 
-data class MetaDataResponse(
+data class MetaDataResponse (
     val nearestHealthFacilities: List<HealthFacility>,
     val villages: List<VillageEntity>,
     val defaultHealthFacility: HealthFacility,
@@ -69,12 +69,13 @@ data class Menu(
     val menus: ArrayList<MenuDetail>,
     val active: Boolean? = false,
     val deleted: Boolean? = false,
-    val meta: List<String>?
+    val meta: List<String>? = null
 )
 
 data class MenuDetail(
     val name: String,
-    val order: Int
+    val order: Int,
+    val workflowName: String? = null
 )
 
 data class UserProfile(

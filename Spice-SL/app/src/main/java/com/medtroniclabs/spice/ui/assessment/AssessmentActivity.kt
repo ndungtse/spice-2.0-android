@@ -109,10 +109,20 @@ class AssessmentActivity : BaseActivity() {
             startActivity(intent)
             finish()
         } else {
-            val intent = Intent(this, HouseholdSearchActivity::class.java)
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
-            startActivity(intent)
-            finish()
+            when (supportFragmentManager.findFragmentById(R.id.fragmentContainer)) {
+                is AssessmentICCMSummaryFragment,
+                is AssessmentRMNCHSummaryFragment,
+                is AssessmentRMNCHNeonateSummaryFragment,
+                is AssessmentOtherSymptomSummaryFragment -> {
+                    val intent = Intent(this, HouseholdSearchActivity::class.java)
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+                    startActivity(intent)
+                    finish()
+                }
+                else -> {
+                    this@AssessmentActivity.finish()
+                }
+            }
         }
     }
 

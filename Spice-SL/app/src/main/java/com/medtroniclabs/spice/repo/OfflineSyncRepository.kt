@@ -173,6 +173,7 @@ class OfflineSyncRepository @Inject constructor(
         }
 
         // Insert Pregnancy Information
+        roomHelper.deleteAllPregnancyDetails()
         requestInitialDownload.pregnancyInfos?.forEach {
             roomHelper.insertUpdatePregnancyDetailFromBE(it)
         }
