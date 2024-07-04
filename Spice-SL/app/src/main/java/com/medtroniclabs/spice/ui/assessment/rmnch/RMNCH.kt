@@ -236,7 +236,7 @@ object RMNCH {
                 return DateUtils.addDaysToDate(deliveryDate, 7)
             }
 
-            in 4..6 -> {
+            in 4..7 -> {
                 return DateUtils.addDaysToDate(deliveryDate, 15)
             }
 

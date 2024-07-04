@@ -111,7 +111,7 @@ class PatientInfoFragment : BaseFragment() {
             val lastMenstrualDate =
                 patientListRespModel.pregnancyDetails?.lastMenstrualPeriod.takeIf { it?.isNotBlank() == true }?.let {
                     DateUtils.convertDateFormat(it, DATE_FORMAT_yyyyMMddHHmmssZZZZZ, DATE_ddMMyyyy)
-                } ?: requireContext().getString(R.string.hyphen_symbol)
+                }
 
             val dataList = mutableListOf(
                 mapOf(
@@ -139,7 +139,7 @@ class PatientInfoFragment : BaseFragment() {
                     DefinedParams.value to (patientListRespModel.village.takeIf { it?.isNotBlank() == true }?.trim()
                         ?: requireContext().getString(R.string.hyphen_symbol)))
             )
-            if (isAnc == true) {
+            if (isAnc == true && lastMenstrualDate != null) {
                 dataList.add(
                     mapOf(
                         DefinedParams.label to requireContext().getString(R.string.last_menstrual_period),

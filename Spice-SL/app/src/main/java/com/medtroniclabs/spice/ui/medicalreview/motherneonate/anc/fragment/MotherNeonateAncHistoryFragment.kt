@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.setExpandableText
+import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.CommonUtils.createPrescription
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams.FhirId
@@ -29,7 +30,7 @@ class MotherNeonateAncHistoryFragment : BaseFragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         // Inflate the layout for this fragment
         binding = FragmentMotherNeonateAncHistoryBinding.inflate(inflater, container, false)
         return binding.root
@@ -78,8 +79,9 @@ class MotherNeonateAncHistoryFragment : BaseFragment() {
                     )
                 }
                 tvAncVisitLabelValue.text = it.visitNumber ?: getString(R.string.hyphen_symbol)
-                tvPrescriptionValue.text =  createPrescription(it.prescriptions, requireContext()) ?: getString(R.string.hyphen_symbol)
-                tvInvestigationValue.text =  getString(R.string.hyphen_symbol)
+                tvPrescriptionValue.text = createPrescription(it.prescriptions, requireContext())
+                    ?: getString(R.string.hyphen_symbol)
+                tvInvestigationValue.text = getString(R.string.hyphen_symbol)
                 tvBpValue.text = if (it.systolic == null && it.diastolic == null) {
                     getString(R.string.hyphen_symbol)
                 } else {
@@ -88,15 +90,31 @@ class MotherNeonateAncHistoryFragment : BaseFragment() {
                 tvAncVisitLabelValue.text =
                     convertNullableStringToString(it.visitNumber, requireContext())
                 tvBmiValue.text = convertNullableDoubleToString(it.bmi, requireContext())
-                tvWeightValue.text = convertNullableDoubleToString(it.weight, requireContext())
+                // tvWeightValue.text = convertNullableDoubleToString(it.weight, requireContext())
+                if (it.weight != null && it.weight != 0.0) {
+                    tvWeightValue.text = "${CommonUtils.getDecimalFormatted(
+                        it.weight
+                    )} ${getString(R.string.kg)}"
+                } else {
+                    tvWeightValue.text = getString(R.string.hyphen_symbol)
+                }
                 tvFetalHeartRateValue.text =
                     convertBeatsPerMinute(it.fetalHeartRate, requireContext())
                 tvFundalHeightValue.text =
                     convertCMS(it.fundalHeight, requireContext())
-                tvClinicalNotesValue.setExpandableText(convertNullableStringToString(it.clinicalNotes, requireContext()), title = tvClinicalNotesLabel.text.toString(),maxLength = 70, activity = (requireActivity() as BaseActivity))
+                tvClinicalNotesValue.setExpandableText(
+                    convertNullableStringToString(
+                        it.clinicalNotes,
+                        requireContext()
+                    ),
+                    title = tvClinicalNotesLabel.text.toString(),
+                    maxLength = 70,
+                    activity = (requireActivity() as BaseActivity)
+                )
                 val combinedPresentingComplaints = StringBuilder()
 
-                it.presentingComplaints?.filterNotNull()?.takeIf { it.isNotEmpty() }?.joinToString(separator = ", ")
+                it.presentingComplaints?.filterNotNull()?.takeIf { it.isNotEmpty() }
+                    ?.joinToString(separator = ", ")
                     ?.let {
                         combinedPresentingComplaints.append(it)
                     }
@@ -118,7 +136,8 @@ class MotherNeonateAncHistoryFragment : BaseFragment() {
                 )
                 val combinedObstetricsExamination = StringBuilder()
 
-                it.obstetricExaminations?.filterNotNull()?.takeIf { it.isNotEmpty() }?.joinToString(separator = ", ")
+                it.obstetricExaminations?.filterNotNull()?.takeIf { it.isNotEmpty() }
+                    ?.joinToString(separator = ", ")
                     ?.let {
                         combinedObstetricsExamination.append(it)
                     }
@@ -143,7 +162,10 @@ class MotherNeonateAncHistoryFragment : BaseFragment() {
     }
 
     private fun initView() {
-        viewModel.getMedicalReviewAncHistory(arguments?.getString(PatientId),arguments?.getString(FhirId))
+        viewModel.getMedicalReviewAncHistory(
+            arguments?.getString(PatientId),
+            arguments?.getString(FhirId)
+        )
     }
 
     companion object {
@@ -152,7 +174,7 @@ class MotherNeonateAncHistoryFragment : BaseFragment() {
             return MotherNeonateAncHistoryFragment()
         }
 
-        fun newInstance(patientId: String?,fhirId: String?): MotherNeonateAncHistoryFragment {
+        fun newInstance(patientId: String?, fhirId: String?): MotherNeonateAncHistoryFragment {
             val fragment = MotherNeonateAncHistoryFragment()
             fragment.arguments = Bundle().apply {
                 putString(PatientId, patientId)

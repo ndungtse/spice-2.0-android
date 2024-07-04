@@ -101,21 +101,26 @@ object CommonUtils {
             months += (years * 12)
         } else {
             strBuilder.append("$years $YEARS ")
+            strBuilder.append(" ")
         }
 
         if (months > 0) {
             if (months == 1) {
                 strBuilder.append("$months $MONTH")
+                strBuilder.append(" ")
             } else {
                 strBuilder.append("$months $MONTHS")
+                strBuilder.append(" ")
             }
         }
 
         if (weeks > 0) {
             if (weeks == 1) {
                 strBuilder.append("$weeks $WEEK")
+                strBuilder.append(" ")
             } else {
                 strBuilder.append("$weeks $WEEKS")
+                strBuilder.append(" ")
             }
         }
 

@@ -300,7 +300,7 @@ class MotherNeonateAncSummary : BaseFragment(),View.OnClickListener {
                         val selectedPatientStatus = it[DefinedParams.value] as String?
                         if (selectedId != DefinedParams.DefaultID) {
                             viewModel.patientStatus = selectedPatientStatus
-                            handleRecoveredState()
+                           // handleRecoveredState()
                         } else {
                             viewModel.patientStatus = null
                         }
