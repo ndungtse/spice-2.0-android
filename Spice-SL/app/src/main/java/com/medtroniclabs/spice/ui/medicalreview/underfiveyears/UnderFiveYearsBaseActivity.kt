@@ -6,9 +6,9 @@ import android.view.View
 import android.widget.ScrollView
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
+import androidx.core.widget.NestedScrollView
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
-import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.databinding.ActivityUnderFiveYearsBaseBinding
@@ -17,19 +17,18 @@ import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.model.medicalreview.CreateUnderTwoMonthsResponse
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
+import com.medtroniclabs.spice.ui.common.FloatingDetectorFrameLayout
 import com.medtroniclabs.spice.ui.dialog.MedicalReviewSuccessDialogFragment
+import com.medtroniclabs.spice.ui.landing.LandingActivity
 import com.medtroniclabs.spice.ui.landing.OnDialogDismissListener
 import com.medtroniclabs.spice.ui.medicalreview.ClinicalNotesFragment
 import com.medtroniclabs.spice.ui.medicalreview.PresentingComplaintsFragment
 import com.medtroniclabs.spice.ui.medicalreview.SystemicExaminationsFragment
-import com.medtroniclabs.spice.ui.medicalreview.abovefiveyears.AboveFiveYearsTreatmentSummaryFragment
 import com.medtroniclabs.spice.ui.medicalreview.abovefiveyears.ClinicalNotesViewModel
 import com.medtroniclabs.spice.ui.medicalreview.abovefiveyears.PresentingComplaintsViewModel
 import com.medtroniclabs.spice.ui.medicalreview.abovefiveyears.SystemicExaminationViewModel
 import com.medtroniclabs.spice.ui.medicalreview.examinations.ExaminationCardFragment
 import com.medtroniclabs.spice.ui.medicalreview.examinations.ExaminationCardViewModel
-import com.medtroniclabs.spice.ui.medicalreview.undertwomonths.fragment.ClinicalSummaryFragment
-import com.medtroniclabs.spice.ui.medicalreview.undertwomonths.viewmodel.ClinicalSummaryViewModel
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.AncVisitCallBack
 import com.medtroniclabs.spice.ui.medicalreview.prescription.PrescriptionActivity
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
@@ -51,7 +50,7 @@ class UnderFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
     private val systemicExaminationViewModel: SystemicExaminationViewModel by viewModels()
     private val clinicalNotesViewModel: ClinicalNotesViewModel by viewModels()
     private val presentingComplaintsViewModel: PresentingComplaintsViewModel by viewModels()
-    private val clinicalSummaryViewModel: ClinicalSummaryViewModel by viewModels()
+    private val clinicalSummaryViewModel: UnderFiveYearsClinicalSummaryViewModel by viewModels()
     private val examinationCardViewModel: ExaminationCardViewModel by viewModels()
     private val patientDetailViewModel: PatientDetailViewModel by viewModels()
     private val referPatientViewModel: ReferPatientViewModel by viewModels()
@@ -60,17 +59,32 @@ class UnderFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
         super.onCreate(savedInstanceState)
         onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
         binding = ActivityUnderFiveYearsBaseBinding.inflate(layoutInflater)
-        setMainContentView(
-            binding.root, true, getString(R.string.patient_medical_review),
+        setMainContentView(binding.root,
+            true,
+            getString(R.string.patient_medical_review),
             homeAndBackVisibility = Pair(true, true),
+            callbackHome = {
+                backNavigationToHome()
+            },
             callback = {
                 backNavigation()
-            }
-        )
+            })
         initializeViews()
         attachObserver()
         initializeListeners()
         viewModel.patientId = intent.getStringExtra(DefinedParams.PatientId)
+    }
+
+    private fun backNavigationToHome() {
+        showErrorDialogue(
+            getString(R.string.alert),
+            getString(R.string.exit_reason),
+            isNegativeButtonNeed = true
+        ) { isPositive ->
+            if (isPositive) {
+                startAsNewActivity(Intent(this, LandingActivity::class.java))
+            }
+        }
     }
 
     private fun initializeListeners() {
@@ -78,7 +92,6 @@ class UnderFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
         binding.underFiveSummaryBottomView.btnDone.safeClickListener(this)
         binding.underFiveSummaryBottomView.btnRefer.safeClickListener(this)
         binding.ivPrescription.safeClickListener(this)
-        binding.loadingProgress.safeClickListener(this)
         binding.refreshLayout.setOnRefreshListener {
             swipeRefresh()
         }
@@ -87,52 +100,50 @@ class UnderFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
     private fun swipeRefresh() {
         showLoading()
         viewModel.isSwipeRefresh = true
-        supportFragmentManager.findFragmentById(R.id.clinicalSummaryContainer).let {currentFragment ->
-            if (currentFragment is UnderFiveYearsTreatmentSummaryFragment) {
-                if (connectivityManager.isNetworkAvailable()) {
-                    summaryViewModel.getUnderFiveYearsSummaryDetails(
-                        CreateUnderTwoMonthsResponse(
-                            encounterId = viewModel.encounterId ?: "",
-                            patientReference = viewModel.patientReference ?: ""
+        supportFragmentManager.findFragmentById(R.id.clinicalSummaryContainer)
+            .let { currentFragment ->
+                if (currentFragment is UnderFiveYearsTreatmentSummaryFragment) {
+                    if (connectivityManager.isNetworkAvailable()) {
+                        summaryViewModel.getUnderFiveYearsSummaryDetails(
+                            CreateUnderTwoMonthsResponse(
+                                encounterId = viewModel.encounterId ?: "",
+                                patientReference = viewModel.patientReference ?: ""
+                            )
                         )
-                    )
+                    } else {
+                        showErrorDialogue(
+                            getString(R.string.error), getString(R.string.no_internet_error),
+                            isNegativeButtonNeed = false,
+                        ) {}
+                    }
                 } else {
-                    showErrorDialogue(
-                        getString(R.string.error), getString(R.string.no_internet_error),
-                        isNegativeButtonNeed = false,
-                    ) {}
-                }
-            } else {
-                patientDetailViewModel.patientDetailsLiveData.value?.data?.let { details ->
-                    details.patientId?.let { id ->
-                        patientDetailViewModel.getPatients(id)
+                    patientDetailViewModel.patientDetailsLiveData.value?.data?.let { details ->
+                        details.patientId?.let { id ->
+                            patientDetailViewModel.getPatients(id)
+                        }
                     }
                 }
             }
-        }
     }
 
     private fun diagnosisAndExaminationFragment() {
-        binding.loadingProgress.visible()
         replaceFragmentInId<MedicalReviewPatientDiagnosisFragment>(
             binding.patientDiagnosisContainer.id,
             bundle = initializeBundle(),
             tag = MedicalReviewPatientDiagnosisFragment.TAG
         )
+    }
+
+    private fun systemicExaminationFragment() {
         replaceFragmentInId<SystemicExaminationsFragment>(
             binding.systemicExaminationsContainer.id,
             bundle = initializeBundle(),
             tag = SystemicExaminationsFragment.TAG
         )
-        binding.loadingProgress.gone()
+
     }
+
     private fun attachObserver() {
-
-        clinicalNotesViewModel.submitButtonStateLiveData.observe(this) {
-            val clinicalNotes = clinicalNotesViewModel.enteredClinicalNotes
-            binding.btnSubmit.isEnabled = clinicalNotes.isNotEmpty() && clinicalNotes.isNotBlank()
-        }
-
         viewModel.underFiveYearsMetaLiveData.observe(this) { resourceState ->
             when (resourceState.state) {
                 ResourceState.LOADING -> {
@@ -153,7 +164,6 @@ class UnderFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
                 }
 
                 ResourceState.SUCCESS -> {
-                    binding.loadingProgress.visible()
                     initializePatientDetailFragment()
                 }
             }
@@ -165,7 +175,7 @@ class UnderFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
                 }
 
                 ResourceState.SUCCESS -> {
-                    binding.loadingProgress.gone()
+                    hideLoading()
                 }
 
                 ResourceState.ERROR -> {
@@ -256,8 +266,7 @@ class UnderFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
                         supportFragmentManager.findFragmentByTag(ReferPatientFragment.TAG) as? ReferPatientFragment
                     fragment?.dismiss()
                     MedicalReviewSuccessDialogFragment.newInstance().show(
-                        supportFragmentManager,
-                        MedicalReviewSuccessDialogFragment.TAG
+                        supportFragmentManager, MedicalReviewSuccessDialogFragment.TAG
                     )
                 }
 
@@ -267,6 +276,14 @@ class UnderFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
             }
         }
 
+        summaryViewModel.checkSubmitBtn.observe(this) {
+            summaryValidation()
+        }
+    }
+
+    private fun summaryValidation() {
+        binding.underFiveSummaryBottomView.btnDone.isEnabled =
+            summaryViewModel.nextVisitDate?.isNotBlank() == true || summaryViewModel.selectedPatientStatus?.isNotBlank() == true
     }
 
     private fun showReviewSummary(encounterId: String?, patientReference: String?) {
@@ -309,10 +326,8 @@ class UnderFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
     private fun initializePatientDetailFragment() {
         val patientInfoFragment =
             PatientInfoFragment.newInstance(intent.getStringExtra(DefinedParams.PatientId))
-        supportFragmentManager.beginTransaction()
-            .add(
-                R.id.patientDetailFragment,
-                patientInfoFragment
+        supportFragmentManager.beginTransaction().add(
+                R.id.patientDetailFragment, patientInfoFragment
             ).commit()
         patientInfoFragment.setDataCallback(this)
     }
@@ -332,12 +347,10 @@ class UnderFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
                 MedicalReviewTypeEnums.UnderFiveYears.name
             )
             putString(
-                DefinedParams.ID,
-                intent.getStringExtra(DefinedParams.ID)
+                DefinedParams.ID, intent.getStringExtra(DefinedParams.ID)
             )
             putString(
-                DefinedParams.MemberID,
-                viewModel.memberId
+                DefinedParams.MemberID, viewModel.memberId
             )
         }
     }
@@ -345,9 +358,10 @@ class UnderFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
     private fun initializeFragments() {
         binding.patientDiagnosisContainer.visibility = View.VISIBLE
         diagnosisAndExaminationFragment()
-        replaceFragmentInId<ClinicalSummaryFragment>(
-            binding.clinicalSummaryContainer.id,
-            tag = ClinicalSummaryFragment.TAG
+        showLoading()
+        systemicExaminationFragment()
+        replaceFragmentInId<ClinicalSummaryUnderFiveYearsFragment>(
+            binding.clinicalSummaryContainer.id, tag = ClinicalSummaryUnderFiveYearsFragment.TAG
         )
         replaceFragmentInId<ExaminationCardFragment>(
             binding.examinationsContainer.id,
@@ -355,16 +369,16 @@ class UnderFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
             tag = ExaminationCardFragment.TAG
         )
         replaceFragmentInId<PresentingComplaintsFragment>(
-            binding.presentingComplaintsContainer.id,
-            tag = PresentingComplaintsFragment.TAG
+            binding.presentingComplaintsContainer.id, tag = PresentingComplaintsFragment.TAG
         )
         replaceFragmentInId<ClinicalNotesFragment>(
-            binding.clinicalNotesContainer.id,
-            tag = ClinicalNotesFragment.TAG
+            binding.clinicalNotesContainer.id, tag = ClinicalNotesFragment.TAG
         )
 
-        supportFragmentManager
-            .setFragmentResultListener(MedicalReviewDefinedParams.SUMMARY_ITEM, this) { _, _ ->
+        supportFragmentManager.setFragmentResultListener(
+                MedicalReviewDefinedParams.SUMMARY_ITEM,
+                this
+            ) { _, _ ->
                 enableReferralDoneBtn()
             }
     }
@@ -375,18 +389,13 @@ class UnderFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
                 if (validateInputs()) {
                     summaryCreate()
                 }
+
             }
 
             R.id.btnDone -> {
-                val fragment =
-                    supportFragmentManager.findFragmentById(R.id.clinicalSummaryContainer) as? UnderFiveYearsTreatmentSummaryFragment
-                val nextVisitDateValidation = fragment?.validateInput() ?: false
-                if (nextVisitDateValidation) {
-                    summaryDone()
-                } else {
-                    binding.underFiveSummaryBottomView.btnDone.isEnabled = false
-                }
+                summaryDone()
             }
+
             binding.ivPrescription.id -> {
                 patientDetailViewModel.patientDetailsLiveData.value?.data?.let { data ->
                     val intent = Intent(this, PrescriptionActivity::class.java)
@@ -395,6 +404,7 @@ class UnderFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
                     startActivity(intent)
                 }
             }
+
             R.id.btnRefer -> {
                 viewModel.createUnderFiveMedicalReviewLiveData.value?.data?.let {
                     ReferPatientFragment.newInstance(
@@ -402,8 +412,7 @@ class UnderFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
                         it.patientReference,
                         it.encounterId
                     ).show(
-                        supportFragmentManager,
-                        ReferPatientFragment.TAG
+                        supportFragmentManager, ReferPatientFragment.TAG
                     )
                 }
             }
@@ -413,15 +422,15 @@ class UnderFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
     private fun summaryCreate() {
         if (connectivityManager.isNetworkAvailable()) {
             patientDetailViewModel.patientDetailsLiveData.value?.data?.let { patientDetail ->
-                    viewModel.createMedicalReviewForUnderFiveYears(
-                        patientDetail,
-                        clinicalSummaryAndSigns = clinicalSummaryViewModel.clinicalSummaryAndSigns,
-                        examinationResultHashMap = examinationCardViewModel.examinationResultHashMap,
-                        clinicalNotes = clinicalNotesViewModel.enteredClinicalNotes,
-                        presentingComplaints = presentingComplaintsViewModel.enteredComplaintNotes,
-                        systemicExaminations = systemicExaminationViewModel.selectedSystemicExaminations.map { it.value },
-                        systemicExaminationsNotes = systemicExaminationViewModel.enteredExaminationNotes
-                    )
+                viewModel.createMedicalReviewForUnderFiveYears(
+                    patientDetail,
+                    clinicalSummaryAndSigns = clinicalSummaryViewModel.clinicalSummaryAndSigns,
+                    examinationResultHashMap = examinationCardViewModel.examinationResultHashMap,
+                    clinicalNotes = clinicalNotesViewModel.enteredClinicalNotes,
+                    presentingComplaints = presentingComplaintsViewModel.enteredComplaintNotes,
+                    systemicExaminations = systemicExaminationViewModel.selectedSystemicExaminations.map { it.value },
+                    systemicExaminationsNotes = systemicExaminationViewModel.enteredExaminationNotes
+                )
             }
         } else {
             showErrorDialogue(
@@ -431,14 +440,16 @@ class UnderFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
         }
     }
 
-
     private fun summaryDone() {
         if (connectivityManager.isNetworkAvailable()) {
             binding.underFiveSummaryBottomView?.btnDone?.isEnabled = true
             patientDetailViewModel.patientDetailsLiveData.value?.data?.let { details ->
                 viewModel.createUnderFiveYearMedicalReview.value?.data?.encounterId?.let { submitCreateId ->
                     viewModel.underFiveYearsSummaryCreate(
-                        details, submitCreateId, summaryViewModel.nextVisitDate
+                        details,
+                        submitCreateId,
+                        summaryViewModel.nextVisitDate,
+                        summaryViewModel.selectedPatientStatus
                     )
                 }
             }
@@ -452,13 +463,26 @@ class UnderFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
 
 
     private fun validateInputs(): Boolean {
-        val clinicalSummaryFragment =
-            supportFragmentManager.findFragmentById(R.id.clinicalSummaryContainer) as? ClinicalSummaryFragment
+        val clinicalSummaryUnderFiveYearsFragment =
+            supportFragmentManager.findFragmentById(R.id.clinicalSummaryContainer) as? ClinicalSummaryUnderFiveYearsFragment
         val presentingComplaintsFragment =
             supportFragmentManager.findFragmentById(R.id.presentingComplaintsContainer) as? PresentingComplaintsFragment
+        val clinicalNotesFragment =
+            supportFragmentManager.findFragmentById(R.id.clinicalNotesContainer) as? ClinicalNotesFragment
         val isPresentingComplaintsValid = presentingComplaintsFragment?.validate()
-        val isClinicalSummaryValid = clinicalSummaryFragment?.validateEditFields()
-        return (isClinicalSummaryValid == true && isPresentingComplaintsValid == true)
+        val isClinicalSummaryValid = clinicalSummaryUnderFiveYearsFragment?.validateEditFields()
+        val isClinicalNotesValid = clinicalNotesFragment?.validateInput()
+        autoScrollError(isClinicalSummaryValid,isClinicalNotesValid)
+        return (isClinicalSummaryValid==true && isClinicalNotesValid==true && isPresentingComplaintsValid == true)
+    }
+
+    private fun autoScrollError(isClinicalSummaryValid: Boolean?, isClinicalNotesValid: Boolean?) {
+        if (isClinicalSummaryValid!=true && isClinicalNotesValid==true){
+            val nestedScrollView = findViewById<NestedScrollView>(R.id.nestedScrollViewID)
+            val clinicalSummaryContainer = findViewById<FloatingDetectorFrameLayout>(R.id.clinicalSummaryContainer)
+            val y = clinicalSummaryContainer.top
+            nestedScrollView.smoothScrollTo(0, y)
+        }
     }
 
     private fun removeFragment(clinicalSummaryContainer: Int) {
@@ -472,14 +496,12 @@ class UnderFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
     }
 
     private fun getSummaryStatus(): Boolean {
-        return summaryViewModel.nextVisitDate != null
+        return ((summaryViewModel.selectedPatientStatus == DefinedParams.Recovered && summaryViewModel.nextVisitDate == null) || (summaryViewModel.selectedPatientStatus != DefinedParams.Recovered && summaryViewModel.nextVisitDate != null))
     }
 
     private fun backNavigation() {
         showErrorDialogue(
-            getString(R.string.alert),
-            getString(R.string.exit_reason),
-            isNegativeButtonNeed = true
+            getString(R.string.alert), getString(R.string.exit_reason), isNegativeButtonNeed = true
         ) { isPositive ->
             if (isPositive) {
                 onBackPressPopStack()
@@ -497,12 +519,13 @@ class UnderFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
 
     override fun onDataLoaded(details: PatientListRespModel) {
         if (viewModel.isSwipeRefresh) {
-            diagnosisAndExaminationFragment()
+            systemicExaminationFragment()
         } else {
             initializeFragments()
         }
         viewModel.memberId = details.memberId
     }
+
     private val onBackPressedCallback: OnBackPressedCallback =
         object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {

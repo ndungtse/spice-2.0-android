@@ -17,9 +17,9 @@ import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.TagListCustomView
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.ANC
 import com.medtroniclabs.spice.ui.medicalreview.abovefiveyears.SystemicExaminationViewModel
+import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil.isDataValid
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
-import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil.isDataValid
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -29,7 +29,7 @@ class SystemicExaminationsFragment : BaseFragment() {
     private lateinit var examinationsTagView: TagListCustomView
     private val viewModel: SystemicExaminationViewModel by activityViewModels()
 
-    companion object{
+    companion object {
         const val TAG = "SystemicExaminationsFragment"
     }
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -70,7 +70,7 @@ class SystemicExaminationsFragment : BaseFragment() {
         binding.etFundalHeight.addTextChangedListener {
             it?.let {
                 val value = it.trim().toString()
-                viewModel.fundalHeight =  if (value.isNotBlank()) value.toDoubleOrNull() else null
+                viewModel.fundalHeight = if (value.isNotBlank()) value.toDoubleOrNull() else null
                 setFragmentResult(
                     MedicalReviewDefinedParams.SE_ITEM, bundleOf(
                         MedicalReviewDefinedParams.CHIP_ITEMS to true
@@ -113,7 +113,10 @@ class SystemicExaminationsFragment : BaseFragment() {
                                 )
                             )
                         }
-                        examinationsTagView.addChipItemList(chipItemList, viewModel.selectedSystemicExaminations)
+                        examinationsTagView.addChipItemList(
+                            chipItemList,
+                            viewModel.selectedSystemicExaminations
+                        )
                     }
                     hideProgress()
                 }
@@ -128,7 +131,12 @@ class SystemicExaminationsFragment : BaseFragment() {
     private fun initializeViews() {
         val (titleResId, showObstetricGroup) = when (viewModel.systemicExaminationsType) {
             MedicalReviewTypeEnums.ANC.name -> Pair(R.string.obstetric_examination, true)
-            MedicalReviewTypeEnums.AboveFiveYears.name,MedicalReviewTypeEnums.UnderFiveYears.name  -> Pair(
+            MedicalReviewTypeEnums.UnderFiveYears.name -> Pair(
+                R.string.systemic_examinations,
+                false
+            )
+
+            MedicalReviewTypeEnums.AboveFiveYears.name -> Pair(
                 R.string.systemic_examinations,
                 false
             )

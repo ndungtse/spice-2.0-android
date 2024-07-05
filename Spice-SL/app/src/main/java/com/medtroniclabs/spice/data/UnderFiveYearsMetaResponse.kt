@@ -3,5 +3,8 @@ package com.medtroniclabs.spice.data
 data class UnderFiveYearsMetaResponse(
     val systemicExaminations: ArrayList<MedicalReviewMetaItems>,
     val examinations : ArrayList<ExaminationListItems>,
-    val diseaseCategories : ArrayList<DiseaseCategoryItems>
+    val diseaseCategories : ArrayList<DiseaseCategoryItems>,
+    val patientStatus : ArrayList<MedicalReviewMetaItems>,
+    val immunisationStatus: ArrayList<MedicalReviewMetaItems>,
+    val muac : ArrayList<MedicalReviewMetaItems>,
 )

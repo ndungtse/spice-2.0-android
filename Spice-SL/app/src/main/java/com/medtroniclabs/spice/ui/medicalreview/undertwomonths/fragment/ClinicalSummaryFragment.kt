@@ -183,6 +183,7 @@ class ClinicalSummaryFragment : BaseFragment(), View.OnClickListener {
     private val breastFeedingSelectionCallback: (selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit =
         { selectedID, _, _, _ ->
             viewModel.resultBreastFeedingHashMap[BREAST_FEEDING_TAG] = selectedID as String
+            resetSelectionViews(EXCLUSIVE_BREAST_FEED_TAG)
             enableExclusiveBreastFeeding(selectedID)
             viewModel.updateBreastFeeding()
         }
@@ -386,6 +387,13 @@ class ClinicalSummaryFragment : BaseFragment(), View.OnClickListener {
             R.string.weight_error,
             requireContext()
         )
+    }
+
+    private fun resetSelectionViews(vararg viewTags: String) {
+        viewTags.forEach { tag ->
+            val view = binding.root.findViewWithTag<SingleSelectionCustomView>(tag)
+            view?.resetSingleSelectionChildViews()
+        }
     }
 
 }

@@ -1,0 +1,140 @@
+package com.medtroniclabs.spice.ui.medicalreview.underfiveyears
+
+import ClinicalSummaryAndSigns
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.medtroniclabs.spice.appextensions.postLoading
+import com.medtroniclabs.spice.common.DefinedParams
+import com.medtroniclabs.spice.common.MeasurementDefinedParams
+import com.medtroniclabs.spice.data.MedicalReviewMetaItems
+import com.medtroniclabs.spice.di.IoDispatcher
+import com.medtroniclabs.spice.network.resource.Resource
+import com.medtroniclabs.spice.repo.UnderFiveYearsRepository
+import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
+import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.launch
+import javax.inject.Inject
+
+@HiltViewModel
+class UnderFiveYearsClinicalSummaryViewModel @Inject constructor(
+    @IoDispatcher private val dispatcherIO: CoroutineDispatcher,
+    private var repository: UnderFiveYearsRepository
+) : ViewModel() {
+
+    val resultMotherVitaminHashMap = HashMap<String, Any>()
+    val albendazoleHashMap = HashMap<String, Any>()
+    var selectedImmunisationStatus: String? = null
+    var clinicalSummaryAndSigns = ClinicalSummaryAndSigns()
+    val summaryMetaListItems = MutableLiveData<Resource<List<MedicalReviewMetaItems>>>()
+    val summaryMuacMetaItems = MutableLiveData<Resource<List<MedicalReviewMetaItems>>>()
+    var selectedMuacStatus: String? = null
+
+    fun updateWeight(weight: String) {
+        val isEmpty = weight.isEmpty()
+        val weightDouble = if (isEmpty) null else weight.toDouble()
+        val weightUnit = if (isEmpty) null else MeasurementDefinedParams.Kilogram
+        clinicalSummaryAndSigns =
+            clinicalSummaryAndSigns.copy(weight = weightDouble, weightUnit = weightUnit)
+    }
+
+    fun updateVitaminAForMother() {
+        if (resultMotherVitaminHashMap.containsKey(MedicalReviewDefinedParams.MOTHER_VITAMIN_TAG)) {
+            val vitaminA =
+                resultMotherVitaminHashMap[MedicalReviewDefinedParams.MOTHER_VITAMIN_TAG] as String
+            clinicalSummaryAndSigns = if (vitaminA == DefinedParams.Yes) {
+                clinicalSummaryAndSigns.copy(vitAForMother = true)
+            } else {
+                clinicalSummaryAndSigns.copy(vitAForMother = false)
+            }
+        }
+    }
+
+    fun updateAlbendazole() {
+        if (albendazoleHashMap.containsKey(MedicalReviewDefinedParams.Albendazole)) {
+            val albendazole =
+                albendazoleHashMap[MedicalReviewDefinedParams.Albendazole] as String
+            clinicalSummaryAndSigns = if (albendazole == DefinedParams.Yes) {
+                clinicalSummaryAndSigns.copy(albendazole = true)
+            } else if (albendazole == DefinedParams.No) {
+                clinicalSummaryAndSigns.copy(albendazole = false)
+            } else {
+                clinicalSummaryAndSigns.copy(albendazole = null)
+            }
+        }
+    }
+
+    fun updateHeight(height: String) {
+        val heightGiven = height.isEmpty()
+        val heightDouble = if (heightGiven) null else height.toDouble()
+        val heightUnit = if (heightGiven) null else MeasurementDefinedParams.Centimeter
+        clinicalSummaryAndSigns =
+            clinicalSummaryAndSigns.copy(height = heightDouble, heightUnit = heightUnit)
+    }
+
+    fun updateWaz(waz: String) {
+        val wazDouble = if (waz.isEmpty()) null else waz.toDouble()
+        clinicalSummaryAndSigns = clinicalSummaryAndSigns.copy(waz = wazDouble)
+    }
+
+    fun updateWhz(whz: String) {
+        val whzDouble = if (whz.isEmpty()) null else whz.toDouble()
+        clinicalSummaryAndSigns = clinicalSummaryAndSigns.copy(whz = whzDouble)
+    }
+
+    fun updateTemperature(temperature: String) {
+        val temperatureGiven = temperature.isEmpty()
+        val temperatureInt = if (temperatureGiven) null else {
+            temperature.toInt()
+        }
+        val temperatureUnit = if (temperatureGiven) null else MeasurementDefinedParams.Celsius
+        clinicalSummaryAndSigns = clinicalSummaryAndSigns.copy(
+            temperature = temperatureInt,
+            temperatureUnit = temperatureUnit
+        )
+    }
+
+    fun updateImmunisationStatus() {
+        clinicalSummaryAndSigns =
+            clinicalSummaryAndSigns.copy(immunisationStatus = selectedImmunisationStatus)
+    }
+
+    fun updateRespiratoryRate(rate: String, repeatRate: String) {
+        val rateInpData = rate.toIntOrNull()
+        val repeatInpData = repeatRate.toIntOrNull()
+        clinicalSummaryAndSigns = clinicalSummaryAndSigns.copy(
+            respirationRate = listOfNotNull(rateInpData, repeatInpData)
+        )
+    }
+
+    fun updateMuac() {
+        clinicalSummaryAndSigns =
+            clinicalSummaryAndSigns.copy(muacStatus = selectedMuacStatus)
+    }
+
+    fun getImmunisationStatusMetaItems() {
+        viewModelScope.launch(dispatcherIO) {
+            summaryMetaListItems.postLoading()
+            summaryMetaListItems.postValue(
+                repository.getImmunisationStatusMetaItems(
+                    MedicalReviewTypeEnums.UnderFiveYears.name
+                )
+            )
+        }
+    }
+
+    fun getMuAcStatusMetaItems() {
+        viewModelScope.launch(dispatcherIO) {
+            summaryMuacMetaItems.postLoading()
+            summaryMuacMetaItems.postValue(
+                repository.getMuAcStatusMetaItems(
+                    MedicalReviewTypeEnums.UnderFiveYears.name
+                )
+            )
+        }
+    }
+
+
+}

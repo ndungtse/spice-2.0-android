@@ -385,12 +385,13 @@ class UnderFiveYearsViewModel @Inject constructor(
     fun underFiveYearsSummaryCreate(
         details: PatientListRespModel,
         submitCreateId: String,
-        nextFollowUpDate: String?
+        nextFollowUpDate: String?,
+        selectedPatientStatus: String?
     ) {
         details.patientId?.let { patientId ->
             details.memberId?.let { memberId ->
                 val summarySubmitRequest = SummarySubmitRequest(
-                    patientStatus = "OnTreatment",
+                    patientStatus = selectedPatientStatus,
                     submitCreateId = submitCreateId,
                     memberId = memberId,
                     id = submitCreateId,
@@ -403,7 +404,8 @@ class UnderFiveYearsViewModel @Inject constructor(
                     nextVisitDate = DateUtils.convertDateTimeToDate(
                         nextFollowUpDate,
                         DateUtils.DATE_ddMMyyyy,
-                        DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
+                        DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+                        inUTC = true
                     ),
 
                     )

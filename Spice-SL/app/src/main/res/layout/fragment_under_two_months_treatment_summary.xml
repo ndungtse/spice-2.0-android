@@ -75,8 +75,9 @@
                 android:layout_marginStart="@dimen/_24sdp"
                 android:layout_marginTop="@dimen/_16sdp"
                 android:text="@string/diagnosis"
+                android:fontFamily="@font/inter_regular"
                 android:textColor="@color/table_title"
-                android:textSize="@dimen/_18ssp"
+                android:textSize="@dimen/_16ssp"
                 app:layout_constraintEnd_toEndOf="@+id/startGuideline"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/titlePNCVisitSummaryMotherFragment" />
@@ -88,7 +89,7 @@
                 android:gravity="center"
                 android:text="@string/separator_colon"
                 android:textColor="@color/table_title"
-                android:textSize="@dimen/_18ssp"
+                android:textSize="@dimen/_16ssp"
                 app:layout_constraintEnd_toEndOf="@+id/centerGuideline"
                 app:layout_constraintStart_toStartOf="@+id/startGuideline"
                 app:layout_constraintTop_toTopOf="@+id/tvDiagnosisLabel" />
@@ -100,8 +101,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/_24sdp"
                 android:text="@string/empty__"
+                android:fontFamily="@font/inter_medium"
                 android:textColor="@color/a_red_error"
-                android:textSize="@dimen/_18ssp"
+                android:textSize="@dimen/_16ssp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="@+id/centerGuideline"
                 app:layout_constraintTop_toTopOf="@+id/tvSeperatorColon1" />
@@ -113,7 +115,8 @@
                 android:layout_marginTop="@dimen/_16sdp"
                 android:text="@string/patient_status"
                 android:textColor="@color/table_title"
-                android:textSize="@dimen/_18ssp"
+                android:textSize="@dimen/_16ssp"
+                android:fontFamily="@font/inter_regular"
                 app:layout_constraintEnd_toEndOf="@+id/startGuideline"
                 app:layout_constraintStart_toStartOf="@+id/tvDiagnosisLabel"
                 app:layout_constraintTop_toBottomOf="@+id/tvDiagnosis" />
@@ -125,7 +128,7 @@
                 android:gravity="center"
                 android:text="@string/separator_colon"
                 android:textColor="@color/table_title"
-                android:textSize="@dimen/_18ssp"
+                android:textSize="@dimen/_16ssp"
                 app:layout_constraintEnd_toEndOf="@+id/centerGuideline"
                 app:layout_constraintStart_toStartOf="@+id/startGuideline"
                 app:layout_constraintTop_toTopOf="@+id/tvPatientStatusLabel" />
@@ -138,7 +141,8 @@
                 android:layout_marginEnd="@dimen/_24sdp"
                 android:background="@drawable/edittext_background"
                 android:textColor="@color/grey_black"
-                android:textSize="@dimen/_18ssp"
+                android:textSize="@dimen/_16ssp"
+                android:fontFamily="@font/inter_medium"
                 app:layout_constraintBottom_toBottomOf="@+id/tvPatientStatusLabel"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="@+id/centerGuideline"
@@ -152,7 +156,8 @@
                 android:layout_marginTop="@dimen/_16sdp"
                 android:text="@string/presenting_complaints"
                 android:textColor="@color/table_title"
-                android:textSize="@dimen/_18ssp"
+                android:textSize="@dimen/_16ssp"
+                android:fontFamily="@font/inter_regular"
                 app:layout_constraintEnd_toEndOf="@+id/startGuideline"
                 app:layout_constraintStart_toStartOf="@+id/tvPatientStatusLabel"
                 app:layout_constraintTop_toBottomOf="@+id/tvPatientStatus" />
@@ -164,7 +169,7 @@
                 android:gravity="center"
                 android:text="@string/separator_colon"
                 android:textColor="@color/table_title"
-                android:textSize="@dimen/_18ssp"
+                android:textSize="@dimen/_16ssp"
                 app:layout_constraintEnd_toEndOf="@+id/centerGuideline"
                 app:layout_constraintStart_toStartOf="@+id/startGuideline"
                 app:layout_constraintTop_toTopOf="@+id/tvPresentingComplaintsLabel" />
@@ -178,7 +183,8 @@
                 android:text="@string/child"
                 android:textAlignment="textStart"
                 android:textColor="@color/grey_black"
-                android:textSize="@dimen/_18ssp"
+                android:textSize="@dimen/_16ssp"
+                android:fontFamily="@font/inter_medium"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="@+id/centerGuideline"
                 app:layout_constraintTop_toTopOf="@+id/tvSeperatorColon4" />
@@ -191,7 +197,8 @@
                 android:layout_marginTop="@dimen/_16sdp"
                 android:text="@string/examination"
                 android:textColor="@color/table_title"
-                android:textSize="@dimen/_18ssp"
+                android:textSize="@dimen/_16ssp"
+                android:fontFamily="@font/inter_regular"
                 app:layout_constraintEnd_toEndOf="@+id/startGuideline"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tvPresentingComplaints" />
@@ -203,7 +210,7 @@
                 android:gravity="center"
                 android:text="@string/separator_colon"
                 android:textColor="@color/secondary_black"
-                android:textSize="@dimen/_18ssp"
+                android:textSize="@dimen/_16ssp"
                 app:layout_constraintEnd_toEndOf="@+id/centerGuideline"
                 app:layout_constraintStart_toStartOf="@+id/startGuideline"
                 app:layout_constraintTop_toTopOf="@+id/tvGeneralSystemicExaminationLabel" />
@@ -221,7 +228,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="@color/table_title"
-                    android:textSize="@dimen/_18ssp"
+                    android:textSize="@dimen/_16ssp"
                     android:visibility="visible" />
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -231,7 +238,7 @@
                     android:layout_marginEnd="@dimen/_24sdp"
                     android:text="@string/empty__"
                     android:textColor="@color/grey_black"
-                    android:textSize="@dimen/_18ssp"
+                    android:textSize="@dimen/_16ssp"
                     android:visibility="gone" />
             </FrameLayout>
 
@@ -242,7 +249,8 @@
                 android:layout_marginTop="@dimen/_16sdp"
                 android:text="@string/clinical_notes"
                 android:textColor="@color/table_title"
-                android:textSize="@dimen/_18ssp"
+                android:textSize="@dimen/_16ssp"
+                android:fontFamily="@font/inter_regular"
                 app:layout_constraintEnd_toEndOf="@+id/startGuideline"
                 app:layout_constraintStart_toStartOf="@+id/tvGeneralSystemicExaminationLabel"
                 app:layout_constraintTop_toBottomOf="@+id/flExaminationContainer" />
@@ -254,7 +262,7 @@
                 android:gravity="center"
                 android:text="@string/separator_colon"
                 android:textColor="@color/table_title"
-                android:textSize="@dimen/_18ssp"
+                android:textSize="@dimen/_16ssp"
                 app:layout_constraintEnd_toEndOf="@+id/centerGuideline"
                 app:layout_constraintStart_toStartOf="@+id/startGuideline"
                 app:layout_constraintTop_toTopOf="@+id/tvClinicalNotesLabel" />
@@ -265,7 +273,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/_24sdp"
                 android:textColor="@color/grey_black"
-                android:textSize="@dimen/_18ssp"
+                android:textSize="@dimen/_16ssp"
+                android:fontFamily="@font/inter_medium"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="@+id/centerGuideline"
                 app:layout_constraintTop_toTopOf="@+id/tvSeperatorColon6" />
@@ -277,7 +286,8 @@
                 android:layout_marginTop="@dimen/_16sdp"
                 android:text="@string/investigation"
                 android:textColor="@color/table_title"
-                android:textSize="@dimen/_18ssp"
+                android:textSize="@dimen/_16ssp"
+                android:fontFamily="@font/inter_regular"
                 app:layout_constraintEnd_toEndOf="@+id/startGuideline"
                 app:layout_constraintStart_toStartOf="@+id/tvClinicalNotesLabel"
                 app:layout_constraintTop_toBottomOf="@+id/tvClinicalNotes" />
@@ -289,7 +299,7 @@
                 android:gravity="center"
                 android:text="@string/separator_colon"
                 android:textColor="@color/table_title"
-                android:textSize="@dimen/_18ssp"
+                android:textSize="@dimen/_16ssp"
                 app:layout_constraintEnd_toEndOf="@+id/centerGuideline"
                 app:layout_constraintStart_toStartOf="@+id/startGuideline"
                 app:layout_constraintTop_toTopOf="@+id/tvInvestigationLabel" />
@@ -301,7 +311,8 @@
                 android:layout_marginEnd="@dimen/_24sdp"
                 android:text="@string/gene_expert"
                 android:textColor="@color/grey_black"
-                android:textSize="@dimen/_18ssp"
+                android:textSize="@dimen/_16ssp"
+                android:fontFamily="@font/inter_medium"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="@+id/centerGuideline"
                 app:layout_constraintTop_toTopOf="@+id/tvSeperatorColon7" />
@@ -313,7 +324,8 @@
                 android:layout_marginTop="@dimen/_16sdp"
                 android:text="@string/prescription"
                 android:textColor="@color/table_title"
-                android:textSize="@dimen/_18ssp"
+                android:textSize="@dimen/_16ssp"
+                android:fontFamily="@font/inter_regular"
                 app:layout_constraintEnd_toEndOf="@+id/startGuideline"
                 app:layout_constraintStart_toStartOf="@+id/tvInvestigationLabel"
                 app:layout_constraintTop_toBottomOf="@+id/tvInvestigation" />
@@ -325,7 +337,7 @@
                 android:gravity="center"
                 android:text="@string/separator_colon"
                 android:textColor="@color/table_title"
-                android:textSize="@dimen/_18ssp"
+                android:textSize="@dimen/_16ssp"
                 app:layout_constraintEnd_toEndOf="@+id/centerGuideline"
                 app:layout_constraintStart_toStartOf="@+id/startGuideline"
                 app:layout_constraintTop_toTopOf="@+id/tvPrescriptionLabel" />
@@ -337,7 +349,8 @@
                 android:layout_marginEnd="@dimen/_24sdp"
                 android:text="@string/empty__"
                 android:textColor="@color/grey_black"
-                android:textSize="@dimen/_18ssp"
+                android:textSize="@dimen/_16ssp"
+                android:fontFamily="@font/inter_medium"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="@+id/centerGuideline"
                 app:layout_constraintTop_toTopOf="@+id/tvSeperatorColon8" />
@@ -350,7 +363,8 @@
                 android:layout_marginBottom="@dimen/_8sdp"
                 android:text="@string/next_visit_date"
                 android:textColor="@color/table_title"
-                android:textSize="@dimen/_18ssp"
+                android:textSize="@dimen/_16ssp"
+                android:fontFamily="@font/inter_regular"
                 app:layout_constraintEnd_toEndOf="@+id/startGuideline"
                 app:layout_constraintStart_toStartOf="@+id/tvPrescriptionLabel"
                 app:layout_constraintTop_toBottomOf="@+id/tvPrescription" />
@@ -362,7 +376,7 @@
                 android:gravity="center"
                 android:text="@string/separator_colon"
                 android:textColor="@color/table_title"
-                android:textSize="@dimen/_18ssp"
+                android:textSize="@dimen/_16ssp"
                 app:layout_constraintEnd_toEndOf="@+id/centerGuideline"
                 app:layout_constraintStart_toStartOf="@+id/startGuideline"
                 app:layout_constraintTop_toTopOf="@+id/tvNextVisitTimeLabel" />
@@ -377,8 +391,9 @@
                 android:drawableEnd="@drawable/ic_date_picker_calendar"
                 android:gravity="start|center"
                 android:paddingStart="@dimen/_10sdp"
-                android:textColor="@color/black"
+                android:textColor="@color/grey_black"
                 android:textSize="@dimen/_16ssp"
+                android:fontFamily="@font/inter_medium"
                 app:layout_constraintBottom_toBottomOf="@+id/tvNextVisitTimeLabel"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="@+id/centerGuideline"
@@ -435,7 +450,7 @@
         android:id="@+id/tvClinicalName"
         style="@style/TextStyle_Regular_16"
         android:layout_width="@dimen/_0dp"
-        android:fontFamily="@font/inter_regular"
+        android:fontFamily="@font/inter_medium"
         android:text="@string/seperator_hyphen"
         android:textColor="@color/grey_black"
         app:layout_constraintBottom_toBottomOf="@id/tvClinicalNameLabel"
@@ -481,7 +496,7 @@
         android:id="@+id/tvDateOfReviewValue"
         style="@style/TextStyle_Regular_16"
         android:layout_width="@dimen/_0dp"
-        android:fontFamily="@font/inter_regular"
+        android:fontFamily="@font/inter_medium"
         android:text="@string/seperator_hyphen"
         android:textColor="@color/grey_black"
         app:layout_constraintBottom_toBottomOf="@id/tvDateOfReviewLabel"

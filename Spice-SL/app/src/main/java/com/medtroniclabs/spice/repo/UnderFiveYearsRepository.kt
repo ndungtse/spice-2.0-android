@@ -27,7 +27,12 @@ class UnderFiveYearsRepository @Inject constructor(
                 response.body()?.entity?.apply {
                     roomHelper.deleteExaminationsComplaints(menuType)
                     roomHelper.insertExaminationsComplaint(
-                        generateChipItemByType(systemicExaminations)
+                        generateChipItemByType(
+                            systemicExaminations,
+                            patientStatus,
+                            immunisationStatus,
+                            muac
+                        )
                     )
                     roomHelper.deleteExaminationsList(MedicalReviewTypeEnums.UnderFiveYears.name)
                     roomHelper.saveExaminationsList(examinations)
@@ -54,12 +59,23 @@ class UnderFiveYearsRepository @Inject constructor(
 
     }
 
-    private fun generateChipItemByType(systemicExaminations: List<MedicalReviewMetaItems>): List<MedicalReviewMetaItems> {
+    private fun generateChipItemByType(
+        systemicExaminations: List<MedicalReviewMetaItems>,
+        patientStatus: List<MedicalReviewMetaItems>,
+        immunisationStatus: ArrayList<MedicalReviewMetaItems>,
+        muac: List<MedicalReviewMetaItems>
+    ): List<MedicalReviewMetaItems> {
         val chipItemList = ArrayList<MedicalReviewMetaItems>()
         systemicExaminations.forEach {
             it.category = MedicalReviewTypeEnums.SystemicExaminations.name
         }
+        immunisationStatus.forEach { it.type = MedicalReviewTypeEnums.UnderFiveYears.name }
+        muac.forEach { it.type = MedicalReviewTypeEnums.UnderFiveYears.name }
+        patientStatus.forEach { it.type = MedicalReviewTypeEnums.UnderFiveYears.name }
+        chipItemList.addAll(patientStatus)
         chipItemList.addAll(systemicExaminations)
+        chipItemList.addAll(immunisationStatus)
+        chipItemList.addAll(muac)
         return chipItemList
     }
 
@@ -99,4 +115,31 @@ class UnderFiveYearsRepository @Inject constructor(
         }
     }
 
+    suspend fun getImmunisationStatusMetaItems(
+        type: String
+    ): Resource<List<MedicalReviewMetaItems>> {
+        return try {
+            val response = roomHelper.getSummaryDetailMetaItems(type)
+            val filteredAndSortedResponse = response
+                .filter { item -> item.category == MedicalReviewTypeEnums.immunisation_status.name }
+                .sortedBy { it.displayOrder }
+            Resource(state = ResourceState.SUCCESS, data = filteredAndSortedResponse)
+        } catch (e: Exception) {
+            Resource(state = ResourceState.ERROR)
+        }
+    }
+
+    suspend fun getMuAcStatusMetaItems(
+        type: String
+    ): Resource<List<MedicalReviewMetaItems>> {
+        return try {
+            val response = roomHelper.getSummaryDetailMetaItems(type)
+            val filteredAndSortedResponse = response
+                .filter { item -> item.category == MedicalReviewTypeEnums.muac.name }
+                .sortedBy { it.displayOrder }
+            Resource(state = ResourceState.SUCCESS, data = filteredAndSortedResponse)
+        } catch (e: Exception) {
+            Resource(state = ResourceState.ERROR)
+        }
+    }
 }

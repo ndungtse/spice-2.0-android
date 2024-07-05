@@ -32,7 +32,7 @@ class ExaminationSummaryAdapter() :
         val layoutInflater = LayoutInflater.from(parent.context)
         return DiseaseViewHolder(
             layoutInflater.inflate(
-                R.layout.under_two_months_examination_summary_diease,
+                R.layout.examination_summary,
                 parent,
                 false
             )
@@ -62,7 +62,7 @@ class ExaminationSummaryAdapter() :
 
         val formattedSymptoms =
             if (!symptoms.isNullOrEmpty()) {
-                "${diseaseInfo.index}. ${symptoms[0].uppercaseChar()}${symptoms.substring(1)}"
+                "${diseaseInfo.index}.${symptoms[0].uppercaseChar()}${symptoms.substring(1)}  :"
             } else {
                 "${diseaseInfo.index}. "
             }
@@ -82,7 +82,7 @@ class ExaminationSummaryAdapter() :
                 }
                 linearLayout.addView(textView)
             }
-    }
+        }
     }
 }
 

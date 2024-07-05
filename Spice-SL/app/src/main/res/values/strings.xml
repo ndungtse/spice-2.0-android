@@ -208,7 +208,7 @@
     <string name="summary">Summary</string>
     <string name="pregnancy_summary">Pregnancy Summary</string>
     <string name="pregnancy_history">Pregnancy History</string>
-    <string name="diagnosis">Diagnosis</string>
+    <string name="diagnosis">Diagnoses</string>
     <string name="disease_category">Disease Category</string>
     <string name="disease_condition">Disease Condition</string>
     <string name="prescriptions">Prescriptions</string>
@@ -510,7 +510,7 @@
     <string name="pregnancy_history_past_obstetric_history">Pregnancy History (Past Obstetric History)</string>
     <string name="no_referral_history">No Referral History found</string>
     <string name="referral_by_phone_number">%1$s (%2$s)</string>
-    <string name="select_diagnosis_found_on_the_patient">Select diagnosis found on the patient</string>
+    <string name="select_diagnosis_found_on_the_patient">Select diagnoses found on the patient</string>
     <string name="something_went_wrong_try_later">Something went wrong. Please try again</string>
     <string name="view_discontinued_medication">View Discontinued Medication</string>
     <string name="hide_discontinued_medication">Hide Discontinued Medication</string>
@@ -548,4 +548,16 @@
     <string name="respiratory_error">Please enter respiratory rate between 0 to 100</string>
     <string name="please_enter_repeat_between_0_to_100">Please enter repeat between 0 to 100</string>
     <string name="sy">:</string>
+    <string name="albendazole">Albendazole</string>
+    <string name="muac_in_cm">MUAC (in cm)</string>muac_green
+    <string name="muac_green">MUAC Green</string>
+    <string name="muac_yellow">MUAC Yellow</string>
+    <string name="muac_red">MUAC Red</string>
+    <string name="title_clinical_summary">Clinical Summary</string>
+    <string name="green">Green</string>
+    <string name="yellow">Yellow</string>
+    <string name="red">Red</string>
+    <string name="severe_malnutrition">Severe Malnutrition</string>
+
+
 </resources>

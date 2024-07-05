@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.Fragment
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
@@ -21,6 +22,7 @@ import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.network.utils.ConnectivityManager
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
+import com.medtroniclabs.spice.ui.common.FloatingDetectorFrameLayout
 import com.medtroniclabs.spice.ui.dialog.MedicalReviewSuccessDialogFragment
 import com.medtroniclabs.spice.ui.landing.LandingActivity
 import com.medtroniclabs.spice.ui.landing.OnDialogDismissListener
@@ -370,9 +372,22 @@ private fun successSummaryDialog() {
             supportFragmentManager.findFragmentById(R.id.clinicalSummaryContainer) as? ClinicalSummaryFragment
         val presentingComplaintsFragment =
             supportFragmentManager.findFragmentById(R.id.presentingComplaintsContainer) as? PresentingComplaintsFragment
+        val clinicalNotesFragment =
+            supportFragmentManager.findFragmentById(R.id.clinicalNotesContainer) as? ClinicalNotesFragment
         val isPresentingComplaintsValid = presentingComplaintsFragment?.validate()
         val isClinicalSummaryValid = clinicalSummaryFragment?.validateEditFields()
-        return (isClinicalSummaryValid==true && isPresentingComplaintsValid == true&&clinicalNotesViewModel.enteredClinicalNotes.isNotEmpty())
+        val isClinicalNotesValid = clinicalNotesFragment?.validateInput()
+        autoScrollError(isClinicalSummaryValid,isClinicalNotesValid)
+        return (isClinicalSummaryValid==true && isPresentingComplaintsValid == true&& isClinicalNotesValid==true)
+    }
+
+    private fun autoScrollError(isClinicalSummaryValid: Boolean?, isClinicalNotesValid: Boolean?) {
+        if (isClinicalSummaryValid!=true && isClinicalNotesValid==true){
+            val nestedScrollView = findViewById<NestedScrollView>(R.id.nestedScrollViewID)
+            val clinicalSummaryContainer = findViewById<FloatingDetectorFrameLayout>(R.id.clinicalSummaryContainer)
+            val y = clinicalSummaryContainer.top
+            nestedScrollView.smoothScrollTo(0, y)
+        }
     }
 
     override fun onDialogDismissListener(isFinish: Boolean) {
