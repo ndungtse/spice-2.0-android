@@ -1,14 +1,11 @@
 package com.medtroniclabs.spice.repo
 
-import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import com.google.gson.Gson
 import com.google.gson.JsonParser
 import com.google.gson.reflect.TypeToken
-import com.medtroniclabs.spice.BuildConfig
 import com.medtroniclabs.spice.appextensions.convertToUtcDateTime
 import com.medtroniclabs.spice.appextensions.postError
-import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.appextensions.postSuccess
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.offlinesync.model.Assessment
@@ -87,7 +84,7 @@ class OfflineSyncRepository @Inject constructor(
         return apiHelper.getOfflineSyncStatus(request)
     }
 
-    suspend fun updateFhirId(tableName: String, id: String, fhirId: String?, status: String) {
+    private suspend fun updateFhirId(tableName: String, id: String, fhirId: String?, status: String) {
         roomHelper.updateFhirId(tableName, id, fhirId, status)
     }
 
@@ -236,12 +233,10 @@ class OfflineSyncRepository @Inject constructor(
     ) {
         householdMembers?.forEach { member ->
             if (hhIdMap.containsKey(member.householdId)) {
-                roomHelper.insertOrUpdateHHMFromBE(
-                    member.toHouseholdMemberEntity(
-                        hhIdMap[member.householdId]!!,
-                        OfflineSyncStatus.Success
-                    )
-                )
+                roomHelper.insertOrUpdateHHMFromBE(member.toHouseholdMemberEntity(
+                    hhIdMap[member.householdId]!!,
+                    OfflineSyncStatus.Success
+                ))
             } else {
                 roomHelper.getHouseholdIdByFhirId(member.householdId)?.let {
                     roomHelper.insertOrUpdateHHMFromBE(
@@ -365,6 +360,7 @@ class OfflineSyncRepository @Inject constructor(
     suspend fun postOfflineUnSyncedChanges(): List<String>? {
         val householdIds = mutableListOf<String>()
         val householdMemberIds = mutableListOf<String>()
+        val assessmentIds = mutableListOf<String>()
 
         val houseHoldList = roomHelper.getAllUnSyncedHouseHolds()
         householdIds.addAll(houseHoldList.map { it.referenceId!! })
@@ -377,6 +373,7 @@ class OfflineSyncRepository @Inject constructor(
             memberList.forEach { hhm ->
                 hhm.motherPatientId?.let { hhm.isChild = true }
                 hhm.assessments = getUnSyncedAssessmentByPatientId(hhm.patientId)
+                assessmentIds.addAll(hhm.assessments.map { it.referenceId.toString() })
             }
 
             householdEntity.householdMembers.addAll(memberList)
@@ -388,9 +385,11 @@ class OfflineSyncRepository @Inject constructor(
             householdMemberIds.add(hhm.referenceId!!)
             hhm.motherPatientId?.let { hhm.isChild = true }
             hhm.assessments = getUnSyncedAssessmentByPatientId(hhm.patientId)
+            assessmentIds.addAll(hhm.assessments.map { it.referenceId.toString() })
         }
 
         val otherAssessments = getOtherUnSyncedAssessments()
+        assessmentIds.addAll(otherAssessments.map { it.referenceId.toString() })
 
         //Followup
         val allFollowUps = roomHelper.getAllFollowUpRequests()
@@ -420,6 +419,7 @@ class OfflineSyncRepository @Inject constructor(
             if (apiResponse.isSuccessful) {
                 roomHelper.changeHouseholdStatus(householdIds) // Change Status to InProgress
                 roomHelper.changeHouseholdMemberStatus(householdMemberIds) // Change Status to InProgress
+                roomHelper.changeAssessmentStatus(assessmentIds) // Change status to InProgress
                 return listOf(request[OfflineConstant.REQUEST_ID] as String)
             }
         } catch (e: Exception) {
@@ -454,7 +454,7 @@ class OfflineSyncRepository @Inject constructor(
                                 updateFhirId(
                                     entity.type,
                                     entity.referenceId,
-                                    null,
+                                    entity.fhirId,
                                     OfflineSyncStatus.Failed.name
                                 )
                             }

@@ -33,7 +33,7 @@ interface HouseholdDAO {
     suspend fun insertOrUpdateFromBE(entity: HouseholdEntity): Long {
         val existingEntity = entity.fhirId?.let { getByUniqueField(it) }
         val entityToInsert = existingEntity?.let { entity.copy(id = it.id) } ?: entity
-        entityToInsert.sync_status = OfflineSyncStatus.Success
+        entityToInsert.sync_status = existingEntity?.sync_status ?: OfflineSyncStatus.Success
         entityToInsert.fhirId = entity.fhirId
         return insertHouseHold(entityToInsert)
     }

@@ -54,4 +54,8 @@ interface AssessmentDAO {
     @Query("DELETE FROM Assessment")
     suspend fun deleteAllAssessments()
 
+    @Query("UPDATE Assessment SET sync_status =:syncStatus, updated_at =:updatedAt WHERE id IN (:ids)")
+    suspend fun updateInProgress(ids: List<String>, syncStatus: String = OfflineSyncStatus.InProgress.name, updatedAt: Long = System.currentTimeMillis())
+
+
 }

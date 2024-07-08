@@ -271,8 +271,8 @@ class RoomHelperImpl @Inject constructor(
     override suspend fun updateFhirId(tableName: String, id: String, fhirId: String?, status: String) {
         val updatedAt = System.currentTimeMillis()
         val query =
-            "UPDATE $tableName SET sync_status = ?, fhir_id = ?, updated_at = ? WHERE id = ?"
-        householdDAO.updateFhirId(SimpleSQLiteQuery(query, arrayOf(status, fhirId, updatedAt, id)))
+            "UPDATE $tableName SET fhir_id = ?, updated_at = ?, sync_status = CASE WHEN sync_status = 'InProgress' THEN ? ELSE sync_status END WHERE id = ?"
+        householdDAO.updateFhirId(SimpleSQLiteQuery(query, arrayOf(fhirId, updatedAt, status, id)))
     }
 
     override fun getFilteredHouseholdsLiveData(
@@ -557,6 +557,9 @@ class RoomHelperImpl @Inject constructor(
         memberDAO.updateInProgress(idList)
     }
 
+    override suspend fun changeAssessmentStatus(idList: List<String>) {
+        assessmentDAO.updateInProgress(idList)
+    }
     override suspend fun getPregnancyDetailByPatientId(patientId: String): PregnancyDetail? {
         return pregnancyDetailDao.getPregnancyDetailByPatientId(patientId)
     }

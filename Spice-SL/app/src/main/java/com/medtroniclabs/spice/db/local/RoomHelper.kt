@@ -191,6 +191,8 @@ interface RoomHelper {
 
     suspend fun changeHouseholdMemberStatus(idList: List<String>)
 
+    suspend fun changeAssessmentStatus(idList: List<String>)
+
     suspend fun insertOrUpdateHHFromBE(entity: HouseholdEntity): Long
 
     suspend fun insertOrUpdateHHMFromBE(entity: HouseholdMemberEntity): Long

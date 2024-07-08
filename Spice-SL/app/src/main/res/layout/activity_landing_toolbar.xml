@@ -40,6 +40,7 @@
     </com.google.android.material.appbar.AppBarLayout>
 
     <include
+        android:id="@+id/includeMainContent"
         layout="@layout/activity_landing_content"
         android:layout_width="@dimen/_0dp"
         android:layout_height="@dimen/_0dp"

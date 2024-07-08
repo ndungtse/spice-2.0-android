@@ -558,6 +558,7 @@
     <string name="yellow">Yellow</string>
     <string name="red">Red</string>
     <string name="severe_malnutrition">Severe Malnutrition</string>
-
+    <string name="background_sync_in_progress">Background sync currently in progress. Please try again later</string>
+    <string name="syncing_is_in_progress">Syncing is In Progress</string>
 
 </resources>

@@ -1,9 +1,13 @@
 package com.medtroniclabs.spice.ui.boarding
 
+import android.Manifest
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.view.View
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.core.app.ActivityCompat
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.hideKeyboard
 import com.medtroniclabs.spice.appextensions.invisible
@@ -35,6 +39,7 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
         initView()
         setListeners()
         attachObservers()
+        checkNotificationPermission()
     }
 
     private fun attachObservers() {
@@ -215,4 +220,23 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
             oldUserName != userName
         }
     }
+
+    private fun checkNotificationPermission() {
+        if (Build.VERSION.SDK_INT > 32) {
+            if (!shouldShowRequestPermissionRationale("")){
+                requestPermissionLauncher.launch(
+                    arrayOf(
+                        Manifest.permission.POST_NOTIFICATIONS
+                    )
+                )
+            }
+        }
+    }
+
+    private val requestPermissionLauncher =
+        registerForActivityResult(
+            ActivityResultContracts.RequestMultiplePermissions()
+        ) { _ ->
+
+        }
 }

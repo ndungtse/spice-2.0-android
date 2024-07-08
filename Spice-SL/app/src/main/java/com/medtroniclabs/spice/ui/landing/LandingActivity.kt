@@ -12,11 +12,20 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.GravityCompat
 import androidx.core.view.forEach
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.work.WorkInfo
+import androidx.work.WorkManager
 import com.google.android.material.navigation.NavigationView
 import com.medtroniclabs.spice.BuildConfig
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.appextensions.cancelAllWorker
+import com.medtroniclabs.spice.appextensions.gone
+import com.medtroniclabs.spice.appextensions.isVisible
+import com.medtroniclabs.spice.appextensions.scheduleSyncWorker
+import com.medtroniclabs.spice.appextensions.syncWorkerName
+import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DefinedParams.REFRESH_FRAGMENT
+import com.medtroniclabs.spice.common.RoleConstant
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.databinding.ActivityLandingBinding
 import com.medtroniclabs.spice.ui.BaseActivity
@@ -29,6 +38,7 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
     DrawerLayout.DrawerListener, View.OnClickListener, OnDialogDismissListener {
 
     lateinit var binding: ActivityLandingBinding
+    private var isBGSyncInProgress = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         val splashScreen = installSplashScreen()
@@ -52,13 +62,8 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
             return
         }
 
-        // Check is any offline sync is pending
-        val isAnySyncInProgress =
-            SecuredPreference.getStringArray(SecuredPreference.EnvironmentKey.OFFLINE_SYNC_REQUEST_ID.name)
-        if (isAnySyncInProgress != null) {
-            startActivity(Intent(this, OfflineSyncActivity::class.java))
-            splashScreen.setKeepOnScreenCondition { false }
-        }
+        // Initiate schedule worker
+        startSyncWorker()
 
         binding = ActivityLandingBinding.inflate(layoutInflater)
         splashScreen.setKeepOnScreenCondition { false }
@@ -79,6 +84,14 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
             binding.drawerLayout.closeDrawer(GravityCompat.START)
         } else {
             finish()
+        }
+    }
+
+    private fun startSyncWorker() {
+        val userRole = SecuredPreference.getUserDetails().roles.joinToString { it.name }
+        if (userRole == RoleConstant.COMMUNITY_HEALTH_WORKER) {
+            scheduleSyncWorker()
+            checkBGSyncStatus()
         }
     }
 
@@ -123,19 +136,25 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.logout -> {
-                showErrorDialogue(
-                    getString(R.string.alert),
-                    getString(R.string.logout_alert),
-                    positiveButtonName = getString(R.string.yes),
-                    cancelBtnName = getString(R.string.no),
-                    isNegativeButtonNeed = true
-                ) { isPositive ->
-                    if (isPositive && SecuredPreference.logout()) {
-                        startActivity(Intent(this, LoginActivity::class.java))
-                        finish()
-                    } else {
-                        val homeMenuItem = binding.navView.menu.findItem(R.id.home)
-                        selectNavigationMenu(homeMenuItem)
+                if (binding.appBarMain.includeMainContent.syncingHolder.isVisible()) {
+                    showSyncInProgressWarning()
+                    return true
+                } else {
+                    showErrorDialogue(
+                        getString(R.string.alert),
+                        getString(R.string.logout_alert),
+                        positiveButtonName = getString(R.string.yes),
+                        cancelBtnName = getString(R.string.no),
+                        isNegativeButtonNeed = true
+                    ) { isPositive ->
+                        if (isPositive && SecuredPreference.logout()) {
+                            cancelAllWorker()
+                            startActivity(Intent(this, LoginActivity::class.java))
+                            finish()
+                        } else {
+                            val homeMenuItem = binding.navView.menu.findItem(R.id.home)
+                            selectNavigationMenu(homeMenuItem)
+                        }
                     }
                 }
             }
@@ -148,11 +167,11 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
             }
 
             R.id.offline_sync -> {
-                startActivity(Intent(this, OfflineSyncActivity::class.java))
-                binding.drawerLayout.closeDrawer(GravityCompat.START)
+                goToOfflineSyncPage()
                 return true
             }
-            R.id.privacy_policy ->{
+
+            R.id.privacy_policy -> {
                 binding.drawerLayout.closeDrawer(GravityCompat.START)
                 val homeMenuItem = binding.navView.menu.findItem(R.id.home)
                 selectNavigationMenu(homeMenuItem)
@@ -165,6 +184,22 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
         return true
     }
 
+    private fun goToOfflineSyncPage() {
+        if (binding.appBarMain.includeMainContent.syncingHolder.isVisible()) {
+            showSyncInProgressWarning()
+        } else {
+            startActivity(Intent(this, OfflineSyncActivity::class.java))
+            binding.drawerLayout.closeDrawer(GravityCompat.START)
+        }
+    }
+
+    private fun showSyncInProgressWarning() {
+        showErrorDialogue(
+            getString(R.string.alert),
+            getString(R.string.background_sync_in_progress),
+            isNegativeButtonNeed = false
+        ) {}
+    }
 
     private fun displayScreen(id: Int) {
         when (id) {
@@ -232,6 +267,17 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
                 R.id.fragmentContainerView,
                 tag = PatientSearchFragment.TAG
             )
+        }
+    }
+
+    private fun checkBGSyncStatus() {
+        val workManager = WorkManager.getInstance(this)
+        workManager.getWorkInfosForUniqueWorkLiveData(syncWorkerName).observe(this) {
+            if (!it.isNullOrEmpty() && it[0].state == WorkInfo.State.RUNNING) {
+                binding.appBarMain.includeMainContent.syncingHolder.visible()
+            } else {
+                binding.appBarMain.includeMainContent.syncingHolder.gone()
+            }
         }
     }
 }

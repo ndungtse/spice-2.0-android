@@ -6,6 +6,7 @@ import android.view.View
 import androidx.activity.viewModels
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.visible
+import com.medtroniclabs.spice.common.RoleConstant
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.databinding.ActivityResourceLoadingScreenBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
@@ -19,7 +20,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class ResourceLoadingScreen : BaseActivity() {
     private lateinit var binding: ActivityResourceLoadingScreenBinding
     private val viewModel: ResourceLoadingViewModel by viewModels()
-    private val ROLE_CHW = "CHW"
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityResourceLoadingScreenBinding.inflate(layoutInflater)
@@ -37,7 +38,7 @@ class ResourceLoadingScreen : BaseActivity() {
 
                 ResourceState.SUCCESS -> {
                     val userRole = SecuredPreference.getUserDetails().roles.joinToString { it.name }
-                    if (userRole == ROLE_CHW) {
+                    if (userRole == RoleConstant.COMMUNITY_HEALTH_WORKER) {
                         viewModel.downloadInitialDetails()
                     } else {
                         SecuredPreference.putBoolean(
@@ -57,7 +58,7 @@ class ResourceLoadingScreen : BaseActivity() {
         viewModel.householdsLiveData.observe(this) { resourceState ->
             when (resourceState.state) {
                 ResourceState.LOADING -> {
-                    binding.tvOfflineSyncMessage.visible()
+                    binding.tvOfflineSyncMessage.gone()
                 }
 
                 ResourceState.SUCCESS -> {
