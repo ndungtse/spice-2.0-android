@@ -8,6 +8,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.convertToLocalDateTime
+import com.medtroniclabs.spice.appextensions.getPatientStatus
 import com.medtroniclabs.spice.appextensions.invisible
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
@@ -15,6 +16,7 @@ import com.medtroniclabs.spice.common.DateUtils.DATE_TIME_CALL_DISPLAY_FORMAT
 import com.medtroniclabs.spice.data.FollowUpPatientModel
 import com.medtroniclabs.spice.databinding.LayoutItemMyPatientBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
+import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
 import com.medtroniclabs.spice.ui.followup.FollowUpDefinedParams.FU_TYPE_HH_VISIT
 import com.medtroniclabs.spice.ui.followup.FollowUpDefinedParams.FU_TYPE_REFERRED
 import java.time.LocalDate
@@ -61,7 +63,7 @@ class PatientListAdapter(private val callback: (Int, FollowUpPatientModel) -> Un
                 }
 
                 tvReason.text = data.reason
-                tvPatientStatus.text = data.patientStatus
+                tvPatientStatus.text = context.getPatientStatus(data.patientStatus) ?: context.getString(R.string.hyphen_symbol)
                 tvLastCallAtLabel.text = calledAtLabel(context, data.type)
                 tvLastCallAtValue.text = data.calledAt?.convertToLocalDateTime(format = DATE_TIME_CALL_DISPLAY_FORMAT) ?: "--"
 

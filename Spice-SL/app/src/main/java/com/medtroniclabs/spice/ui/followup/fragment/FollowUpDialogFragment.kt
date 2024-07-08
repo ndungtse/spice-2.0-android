@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.appextensions.getPatientStatus
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.setDialogWidthAndHeightAsWrapPercent
 import com.medtroniclabs.spice.appextensions.visible
@@ -77,8 +78,7 @@ class FollowUpDialogFragment : DialogFragment() {
             with(binding) {
                 tvTitle.text = getPatientName(details.name, details.dateOfBirth, details.gender)
                 tvReasonText.text = details.reason ?: getString(R.string.hyphen_symbol)
-                tvPatientStatusText.text =
-                    details.patientStatus ?: getString(R.string.hyphen_symbol)
+                tvPatientStatusText.text = requireContext().getPatientStatus(details.patientStatus) ?: getString(R.string.hyphen_symbol)
                 tvVillageText.text = details.village ?: getString(R.string.hyphen_symbol)
                 tvLandmarkText.text = details.landmark ?: getString(R.string.hyphen_symbol)
                 tvHHNameText.text = details.householdName ?: getString(R.string.hyphen_symbol)

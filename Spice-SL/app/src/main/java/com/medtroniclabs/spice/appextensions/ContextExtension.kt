@@ -11,8 +11,10 @@ import androidx.work.ExistingWorkPolicy
 import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
+import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.data.offlinesync.utils.OfflineConstant
 import com.medtroniclabs.spice.offlinesync.GetSyncStatusWorker
+import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
 import java.util.concurrent.TimeUnit
 
 private val getStatusWorker = "GetStatusWorker"
@@ -30,6 +32,28 @@ fun Context.isFineAndCoarseLocationPermissionGranted(): Boolean {
         this,
         Manifest.permission.ACCESS_COARSE_LOCATION
     ) == PackageManager.PERMISSION_GRANTED
+}
+
+fun Context.getPatientStatus(status: String?): String? {
+    status?.let {
+        return when (status) {
+            ReferralStatus.OnTreatment.name -> {
+                this.getString(R.string.on_treatment)
+            }
+
+            ReferralStatus.Referred.name -> {
+                this.getString(R.string.referred)
+            }
+
+            ReferralStatus.Recovered.name -> {
+                this.getString(R.string.recovered)
+            }
+
+            else -> {
+                return null
+            }
+        }
+    } ?: return null
 }
 
 fun Context.getSyncStatusWithDelay(requestIds: Array<String>, delay: Long) {
