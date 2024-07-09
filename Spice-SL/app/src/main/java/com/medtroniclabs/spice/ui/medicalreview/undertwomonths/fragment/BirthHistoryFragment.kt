@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
-import com.medtroniclabs.spice.common.DateUtils
+import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.data.BirthHistoryResponse
 import com.medtroniclabs.spice.databinding.FragmentBirthHistoryBinding
@@ -42,7 +42,7 @@ class BirthHistoryFragment : BaseFragment() {
     private fun getBirthHistory(){
         val patientId = arguments?.getString(DefinedParams.PatientId, "")
         val memberId = arguments?.getString(DefinedParams.MemberID, "")
-            viewModel.getBirthHistoryDetails(patientId, memberId)
+        viewModel.getBirthHistoryDetails(patientId, memberId)
     }
 
     fun attachObservers() {
@@ -68,21 +68,23 @@ class BirthHistoryFragment : BaseFragment() {
 
     private fun setBirthHistoryDetails(birthHistoryDetails: BirthHistoryResponse) {
         binding.apply {
-            tvBirthWeight.text = birthHistoryDetails.birthWeight?: "--"
-            tvGestationalAge.text = birthHistoryDetails.lastMenstrualPeriod?.let { lmp ->
-               val week=DateUtils.calculateGestationalAge(parseToLocalDate(lmp))
-                if (week<37){
-                    week.toString().plus(getString(R.string.weeks_baby)).plus(getString(R.string.premature_baby))
-                }else{
-                    week.toString().plus(getString(R.string.weeks_baby))
+            tvBirthWeight.text = birthHistoryDetails.birthWeight?.let {
+                val decimalBirthWeight = CommonUtils.getDecimalFormatted(it)
+                if (decimalBirthWeight.toDouble() < viewModel.lowBirthWeight) {
+                    decimalBirthWeight.plus(getString(R.string.kg)).plus(getString(R.string.low_birth_weight))
+                } else {
+                    decimalBirthWeight.plus(getString(R.string._kg))
                 }
             } ?: "--"
-            tvBreathingProblem.text = birthHistoryDetails.breathingProblem?: "--"
-        }
-    }
 
-    private fun parseToLocalDate(dateString: String): LocalDate {
-        val zonedDateTime = ZonedDateTime.parse(dateString, DateTimeFormatter.ISO_OFFSET_DATE_TIME)
-        return zonedDateTime.toLocalDate()
+            tvGestationalAge.text = birthHistoryDetails.gestationalAge?.let { ageWeek ->
+                val weeksText =
+                    if (ageWeek >= 1) getString(R.string.weeks_baby) else getString(R.string.week_baby)
+                val prematureText = if (ageWeek < 37) getString(R.string.premature_baby) else ""
+                ageWeek.toString().plus(weeksText).plus(prematureText)
+            } ?: "--"
+
+            tvBreathingProblem.text = (birthHistoryDetails.haveBreathingProblem ?: "--").toString()
+        }
     }
 }

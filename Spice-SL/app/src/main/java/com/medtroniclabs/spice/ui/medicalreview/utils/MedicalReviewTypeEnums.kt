@@ -32,5 +32,6 @@ enum class MedicalReviewTypeEnums{
     OD,
     BD,
     TDS,
-    QDS
+    QDS,
+    immunisation_status
 }

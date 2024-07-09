@@ -372,7 +372,7 @@ private fun successSummaryDialog() {
             supportFragmentManager.findFragmentById(R.id.presentingComplaintsContainer) as? PresentingComplaintsFragment
         val isPresentingComplaintsValid = presentingComplaintsFragment?.validate()
         val isClinicalSummaryValid = clinicalSummaryFragment?.validateEditFields()
-        return (isClinicalSummaryValid == true && isPresentingComplaintsValid == true)
+        return (isClinicalSummaryValid==true && isPresentingComplaintsValid == true&&clinicalNotesViewModel.enteredClinicalNotes.isNotEmpty())
     }
 
     override fun onDialogDismissListener(isFinish: Boolean) {

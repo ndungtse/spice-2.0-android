@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
+import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResult
@@ -14,6 +15,7 @@ import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.invisible
 import com.medtroniclabs.spice.appextensions.visible
+import com.medtroniclabs.spice.common.CommonUtils.convertListToString
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.SecuredPreference
@@ -98,7 +100,6 @@ class UnderTwoMonthsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
                     showProgress()
                 }
                 ResourceState.SUCCESS -> {
-                    hideProgress()
                     resourceState.data?.let { list ->
                         initializePatientStatus(list)
                     }
@@ -120,7 +121,7 @@ class UnderTwoMonthsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
                 }
 
                 ResourceState.SUCCESS -> {
-                    hideProgress()
+                    showProgress()
                     resourceState.data?.let {
                         renderSummaryDetails(it)
                     }
@@ -135,6 +136,16 @@ class UnderTwoMonthsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
                 ?: getString(R.string.separator_double_hyphen)
 
             tvClinicalNotes.text = details.clinicalNotes.toString()
+            tvDiagnosis.text =
+                details.diagnosis?.let {list ->
+                    if (list.isNotEmpty()){
+                        binding.tvDiagnosis.setTextColor(ContextCompat.getColor(requireContext(), R.color.a_red_error))
+                    }
+                    convertListToString(
+                        ArrayList(list.map { it.diseaseCategory }.distinct())
+                    )
+                } ?: requireContext().getString(R.string.empty__)
+
             tvClinicalName.text = requireContext().getString(
                 R.string.firstname_lastname,
                 SecuredPreference.getUserDetails().firstName,
@@ -161,6 +172,8 @@ class UnderTwoMonthsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
             binding.rvExaminationList.visible()
             binding.tvExaminationEmptyValue.invisible()
         }
+        binding.underTwoMaterialCardView.visible()
+        hideProgress()
     }
 
     private fun convertExaminationDetailsToString(details: List<ExaminationDetail>): List<String> {

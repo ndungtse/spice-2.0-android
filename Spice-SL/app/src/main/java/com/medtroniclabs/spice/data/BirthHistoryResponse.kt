@@ -4,7 +4,7 @@ import java.time.LocalDateTime
 
 data class BirthHistoryResponse(
     val birthWeight: String?=null,
-    val lastMenstrualPeriod: String?=null,
-    val dateOfDelivery: String?=null,
-    val breathingProblem: String?=null
+
+    val gestationalAge: Int?=null,
+    val haveBreathingProblem: Boolean?=null
 )

@@ -36,7 +36,9 @@ class UnderTwoMonthsRepository @Inject constructor(
                     roomHelper.deleteExaminationsComplaints(MedicalReviewTypeEnums.UnderTwoMonths.name)
                     roomHelper.insertExaminationsComplaint(
                         generateChipItemByType(
-                            patientStatus
+                            patientStatus,
+                            immunisationStatus
+
                         )
                     )
                 }
@@ -162,14 +164,30 @@ class UnderTwoMonthsRepository @Inject constructor(
             Resource(state = ResourceState.ERROR)
         }
     }
+    suspend fun getImmunisationStatusMetaItems(
+        type: String
+    ): Resource<List<MedicalReviewMetaItems>> {
+        return try {
+            val response = roomHelper.getSummaryDetailMetaItems(type)
+            val filteredAndSortedResponse = response
+                .filter { item -> item.category == MedicalReviewTypeEnums.immunisation_status.name }
+                .sortedBy { it.displayOrder }
+            Resource(state = ResourceState.SUCCESS, data = filteredAndSortedResponse)
+        } catch (e: Exception) {
+            Resource(state = ResourceState.ERROR)
+        }
+    }
 
     private fun generateChipItemByType(
-        patientStatus: List<MedicalReviewMetaItems>
+        patientStatus: List<MedicalReviewMetaItems>,
+        immunisationStatus: ArrayList<MedicalReviewMetaItems>
     ): List<MedicalReviewMetaItems> {
         val chipItemList = ArrayList<MedicalReviewMetaItems>()
-
         patientStatus.forEach { it.type = MedicalReviewTypeEnums.UnderTwoMonths.name }
         chipItemList.addAll(patientStatus)
+
+        immunisationStatus.forEach { it.type = MedicalReviewTypeEnums.UnderTwoMonths.name }
+        chipItemList.addAll(immunisationStatus)
         return chipItemList
     }
 

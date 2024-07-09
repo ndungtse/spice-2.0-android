@@ -320,7 +320,7 @@
     <string name="female">Female</string>
     <string name="state_of_baby">State Of Baby</string>
     <string name="abnormal">Abnormal</string>
-    <string name="birth_weight">Birth Weight (in Kg)</string>
+    <string name="birth_weight">Birth Weight </string>
     <string name="signs_symptoms_observed">Signs/Symptoms observed</string>
     <string name="state_of_the_baby">State of the Baby</string>
     <string name="apgar_score">APGAR Score</string>
@@ -541,4 +541,11 @@
     <string name="weeks_baby">" weeks"</string>
     <string name="gms_baby">" gms"</string>
     <string name="premature_baby">" (Premature)"</string>
+    <string name="low_birth_weight">" (Low birth weight)"</string>
+    <string name="_kg">" Kg"</string>
+    <string name="week_baby">" week"</string>
+    <string name="please_enter_temperature_between_10_to_200">Please enter Temperature between 10 to 200</string>
+    <string name="respiratory_error">Please enter respiratory rate between 0 to 100</string>
+    <string name="please_enter_repeat_between_0_to_100">Please enter repeat between 0 to 100</string>
+    <string name="sy">:</string>
 </resources>
