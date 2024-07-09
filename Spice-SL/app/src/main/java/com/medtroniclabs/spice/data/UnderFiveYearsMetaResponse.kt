@@ -7,4 +7,5 @@ data class UnderFiveYearsMetaResponse(
     val patientStatus : ArrayList<MedicalReviewMetaItems>,
     val immunisationStatus: ArrayList<MedicalReviewMetaItems>,
     val muac : ArrayList<MedicalReviewMetaItems>,
+    val symptoms : ArrayList<MedicalReviewMetaItems>
 )

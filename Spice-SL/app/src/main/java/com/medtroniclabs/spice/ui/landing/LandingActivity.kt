@@ -16,6 +16,7 @@ import com.google.android.material.navigation.NavigationView
 import com.medtroniclabs.spice.BuildConfig
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.CommonUtils
+import com.medtroniclabs.spice.common.DefinedParams.REFRESH_FRAGMENT
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.databinding.ActivityLandingBinding
 import com.medtroniclabs.spice.ui.BaseActivity
@@ -215,5 +216,22 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
     override fun onDialogDismissListener(isFinish: Boolean) {
         val homeMenuItem = binding.navView.menu.findItem(R.id.home)
         onNavigationItemSelected(homeMenuItem)
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        val refreshFragment =
+            intent?.getBooleanExtra(REFRESH_FRAGMENT, false)
+        if (refreshFragment == true) {
+            val fragment = supportFragmentManager.findFragmentByTag(PatientSearchFragment.TAG)
+            fragment?.let {
+                supportFragmentManager.beginTransaction().remove(it).commit()
+            }
+            replaceFragmentInId<PatientSearchFragment>(
+                R.id.fragmentContainerView,
+                tag = PatientSearchFragment.TAG
+            )
+        }
     }
 }

@@ -1,6 +1,6 @@
 package com.medtroniclabs.spice.mappingkey
 
-object UnderFIveYearExaminationKeyMapping {
+object UnderFiveYearExaminationKeyMapping {
 
     object DiseaseName {
         const val generalDangerSigns = "General Danger Signs"
@@ -31,7 +31,7 @@ object UnderFIveYearExaminationKeyMapping {
         const val hasDiarrhoea = "hasDiarrhoea"
         const val timePeriod = "timePeriod"
         const val bloodyDiarrhoea = "bloodyDiarrhoea"
-        const val sings = "signs"
+        const val sings = "diarrhoeaSigns"
     }
 
     object Fever {
@@ -39,7 +39,7 @@ object UnderFIveYearExaminationKeyMapping {
         const val noOfDays = "noOfDays"
         const val isMotherHasFever = "isMotherHasFever"
         const val microscopyResult = " microscopyResult"
-        const val signs = "signs"
+        const val signs = "feverSigns"
     }
 
     object EarProblem {
@@ -50,7 +50,7 @@ object UnderFIveYearExaminationKeyMapping {
 
     object MalnutritionAndAnaemia {
         const val appetiteTest = "appetiteTest"
-        const val signs = "signs"
+        const val signs = "malnutritionSigns"
     }
 
     object HivAndAids {

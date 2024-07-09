@@ -109,7 +109,7 @@ class ExaminationGenerator(
             binding.tvTitle.tag = id + titleSuffix
             binding.tvErrorMessage.tag = id + errorSuffix
             binding.tvTitle.text = FormSupport.translateTitle(titleCulture, title, false)
-
+            binding.parentLayout.minimumWidth =  dpToPx(520)
             hint?.let {
                 binding.etUserInput.hint = it
             }
@@ -331,19 +331,20 @@ class ExaminationGenerator(
             }
         } else {
             getCategorizedMap(resultHashMap, diseaseName)[id] = resultMap
-            getViewByTag(id)?.let { view ->
-                if (view is AppCompatTextView) {
-                    view.text = setCheckBoxDialogText(getCategorizedMap(resultHashMap,diseaseName), id)
-                }
+        }
+        getViewByTag(id)?.let { view ->
+            if (view is AppCompatTextView) {
+                view.text = setCheckBoxDialogText(getCategorizedMap(resultHashMap,diseaseName), id)
             }
         }
+        listener.setResultHashMap(resultHashMap)
     }
 
     private fun setCheckBoxDialogText(
         resultHashMap: HashMap<String, Any>,
         id: String
     ): String {
-        var text = getString(R.string.please_select)
+        var text = ""
         if (resultHashMap.containsKey(id)) {
             val mapList = resultHashMap[id]
             if (mapList is java.util.ArrayList<*>) {
@@ -358,7 +359,7 @@ class ExaminationGenerator(
                         "${mapList.size} ${getString(R.string.symptoms_selected)}"
                     }
                 } else {
-                    text = getString(R.string.please_select)
+                    text = ""
                 }
             }
         }
@@ -409,4 +410,7 @@ class ExaminationGenerator(
         return parentLayout.findViewWithTag(tag)
     }
 
+    private fun dpToPx(dp: Int): Int {
+        return (dp * resources.displayMetrics.density).toInt()
+    }
 }

@@ -84,11 +84,12 @@ class AssessmentViewModel @Inject constructor(
     var pregnancyDetail: PregnancyDetail? = null
 
     init {
-        val followUpCriteria = SecuredPreference.getFollowUpCriteria()
-        treatmentDays[ReferralReasons.Pneumonia.name] = followUpCriteria.pneumonia
-        treatmentDays[ReferralReasons.Diarrhoea.name] = followUpCriteria.diarrhea
-        treatmentDays[ReferralReasons.MUAC.name] = followUpCriteria.muac
-        treatmentDays[ReferralReasons.Malaria.name] = followUpCriteria.malaria
+        SecuredPreference.getFollowUpCriteria()?.let { followUpCriteria ->
+            treatmentDays[ReferralReasons.Pneumonia.name] = followUpCriteria.pneumonia
+            treatmentDays[ReferralReasons.Diarrhoea.name] = followUpCriteria.diarrhea
+            treatmentDays[ReferralReasons.MUAC.name] = followUpCriteria.muac
+            treatmentDays[ReferralReasons.Malaria.name] = followUpCriteria.malaria
+        }
     }
 
     fun getMemberDetailsById() {

@@ -4,6 +4,7 @@ import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.data.MedicalReviewMetaItems
 import com.medtroniclabs.spice.data.SummarySubmitRequest
+import com.medtroniclabs.spice.db.entity.SignsAndSymptomsEntity
 import com.medtroniclabs.spice.db.local.RoomHelper
 import com.medtroniclabs.spice.model.medicalreview.CreateUnderFiveYearsRequest
 import com.medtroniclabs.spice.model.medicalreview.CreateUnderTwoMonthsResponse
@@ -38,6 +39,8 @@ class UnderFiveYearsRepository @Inject constructor(
                     roomHelper.saveExaminationsList(examinations)
                     roomHelper.deleteDiagnosisList(MedicalReviewTypeEnums.UnderFiveYears.name)
                     roomHelper.saveDiagnosisList(diseaseCategories)
+                    roomHelper.deleteAllSymptoms()
+                    roomHelper.insertSymptoms(convertToSignsAndSymptomsEntity(symptoms))
                 }
                 SecuredPreference.putBoolean(
                     SecuredPreference.EnvironmentKey.IS_UNDER_FIVE_YEARS_LOADED.name,
@@ -57,6 +60,19 @@ class UnderFiveYearsRepository @Inject constructor(
             Resource(state = ResourceState.ERROR)
         }
 
+    }
+
+    private fun convertToSignsAndSymptomsEntity(examinationList: List<MedicalReviewMetaItems>): List<SignsAndSymptomsEntity> {
+        return examinationList.map { examination ->
+            SignsAndSymptomsEntity(
+                _id = examination.id,
+                symptom = examination.name,
+                type = examination.type,
+                cultureValue = null, // Assuming no direct mapping for this field
+                displayOrder = examination.displayOrder,
+                value = examination.value
+            )
+        }
     }
 
     private fun generateChipItemByType(

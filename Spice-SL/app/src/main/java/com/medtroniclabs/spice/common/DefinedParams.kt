@@ -82,6 +82,8 @@ object DefinedParams {
     const val PatientReference = "patientReference"
     const val valueColor = "color"
     const val Above5MedicalReview = "Above5MedicalReview"
+    const val ICCMUNDER2MONTHS = "iccm-under-2M"
+    const val ICCM_ABOVE_2M_5Y = "iccm-2M-5Y"
     const val PregnancyAncMedicalReview = "pregnancyAncMedicalReview"
 
     const val Anaemia = "anaemia"
@@ -93,6 +95,7 @@ object DefinedParams {
     const val Pregnant = "Pregnant"
     const val Postpartum = "Postpartum"
     const val Lactating = "Lactating"
+    const val REFRESH_FRAGMENT = "REFRESH_FRAGMENT"
 
     const val NeonatePatientIdPrefix = "HM-"
     const val NeonateBabyNamePrefix = "Baby Of"

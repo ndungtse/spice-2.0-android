@@ -424,7 +424,7 @@ object SecuredPreference {
         putString(EnvironmentKey.FOLLOW_UP_CRITERIA.name, followUpCriteriaString)
     }
 
-    fun getFollowUpCriteria(): FollowUpCriteria {
+    fun getFollowUpCriteria(): FollowUpCriteria? {
         val followUpCriteriaString = getString(EnvironmentKey.FOLLOW_UP_CRITERIA.name)
         val type: Type = object : TypeToken<FollowUpCriteria>() {}.type
         return Gson().fromJson(followUpCriteriaString, type)

@@ -96,6 +96,8 @@ class MetaRepository @Inject constructor(
                             } else {
                                 return@with Resource(state = ResourceState.ERROR)
                             }
+                        } else {
+                            roomHelper.deleteAllSymptoms()
                         }
                         Resource(state = ResourceState.SUCCESS)
                     }

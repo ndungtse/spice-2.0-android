@@ -27,7 +27,7 @@ data class ReviewDetails(
     val systemicExaminations: List<String?>? = null,
     val obstetricExaminations: List<String?>? = null,
     val systemicExaminationsNotes: String? = null,
-    val obstetricExaminationsNotes: String? = null,
+    val obstetricExaminationNotes: String? = null,
     val clinicalNotes: String? = null,
 )
 

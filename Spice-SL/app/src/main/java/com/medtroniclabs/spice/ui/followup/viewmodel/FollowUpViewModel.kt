@@ -42,13 +42,14 @@ class FollowUpViewModel @Inject constructor(
             followUpRepository.getFollowUpListLiveData(it)
         }
 
-    val maxSuccessfulCallLimit: Int
-    val maxUnSuccessfulCallLimit: Int
+    var maxSuccessfulCallLimit: Int = 5
+    private var maxUnSuccessfulCallLimit: Int = 5
 
     init {
-        val followUpCriteria = SecuredPreference.getFollowUpCriteria()
-        maxSuccessfulCallLimit = followUpCriteria.successfulAttempts
-        maxUnSuccessfulCallLimit = followUpCriteria.unsuccessfulAttempts
+        SecuredPreference.getFollowUpCriteria()?.let { followUpCriteria ->
+            maxSuccessfulCallLimit = followUpCriteria.successfulAttempts
+            maxUnSuccessfulCallLimit = followUpCriteria.unsuccessfulAttempts
+        }
 
         viewModelScope.launch {
             villages.addAll(followUpRepository.getVillageIds())

@@ -139,6 +139,7 @@ class AddWeightDialog : DialogFragment(), View.OnClickListener {
             binding.tvWeightErrorLabel,
             10.0..400.0,
             R.string.weight_error,
+            false,
             requireContext()
         )
     }

@@ -92,7 +92,7 @@ class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
             isNegativeButtonNeed = true
         ) { isPositive ->
             if (isPositive) {
-                startAsNewActivity(Intent(this, LandingActivity::class.java))
+                startActivityWithoutSplashScreen()
             }
         }
     }
@@ -476,11 +476,7 @@ class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
     }
 
     override fun onDialogDismissListener(isFinish: Boolean) {
-        finish()
-        val intent = Intent(this, LandingActivity::class.java)
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
-        startActivity(intent)
-        finish()
+        startActivityWithoutSplashScreen()
     }
 
     private fun getCurrentLocation() {

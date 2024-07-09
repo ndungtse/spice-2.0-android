@@ -338,8 +338,9 @@ class ClinicalSummaryFragment : BaseFragment(), View.OnClickListener {
             binding.etHeight.text.toString(),
             binding.etHeight,
             binding.tvHeightError,
-            50.0..300.0,
+            0.0..300.0,
             R.string.height_error,
+            true,
             requireContext()
         )
     }
@@ -351,6 +352,7 @@ class ClinicalSummaryFragment : BaseFragment(), View.OnClickListener {
             binding.tvRespirationRateError,
             0.0..100.0,
             (R.string.respiratory_error),
+            false,
             requireContext()
         )
     }
@@ -362,6 +364,7 @@ class ClinicalSummaryFragment : BaseFragment(), View.OnClickListener {
             binding.tvRepeatError,
             0.0..100.0,
             (R.string.please_enter_repeat_between_0_to_100),
+            false,
             requireContext()
         )
     }
@@ -373,6 +376,7 @@ class ClinicalSummaryFragment : BaseFragment(), View.OnClickListener {
             binding.tvTemperatureLabelError,
             10.0..300.0,
             (R.string.temperature),
+            false,
             requireContext()
         )
     }
@@ -383,8 +387,9 @@ class ClinicalSummaryFragment : BaseFragment(), View.OnClickListener {
             binding.etWeight.text.toString(),
             binding.etWeight,
             binding.tvWeightError,
-            10.0..400.0,
+            0.0..400.0,
             R.string.weight_error,
+            true,
             requireContext()
         )
     }

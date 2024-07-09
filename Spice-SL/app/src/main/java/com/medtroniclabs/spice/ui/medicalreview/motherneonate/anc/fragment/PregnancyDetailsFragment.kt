@@ -64,6 +64,7 @@ class PregnancyDetailsFragment : BaseFragment(), View.OnClickListener {
             binding.tvHeightError,
             50.0..300.0,
             R.string.height_error,
+            true,
             requireContext()
         )
     }
@@ -75,6 +76,7 @@ class PregnancyDetailsFragment : BaseFragment(), View.OnClickListener {
             binding.tvKgError,
             10.0..400.0,
             R.string.weight_error,
+            true,
             requireContext()
         )
     }
@@ -250,6 +252,8 @@ class PregnancyDetailsFragment : BaseFragment(), View.OnClickListener {
         adapter = CustomSpinnerAdapter(requireContext())
         with(binding) {
             tvLastMenstrualPeriodLabel.markMandatory()
+            tvHeight.markMandatory()
+            tvWeight.markMandatory()
             initTextWatcherForDouble(etHeight) {
                 updateBMI()
                 pregnancyDetailsViewModel.pregnancyDetailsModel.height = it

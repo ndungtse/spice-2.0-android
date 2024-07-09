@@ -297,6 +297,7 @@ class ClinicalSummaryUnderFiveYearsFragment : BaseFragment() {
             binding.tvHeightError,
             50.0..300.0,
             R.string.height_error,
+            true,
             requireContext()
         )
     }
@@ -308,6 +309,7 @@ class ClinicalSummaryUnderFiveYearsFragment : BaseFragment() {
             binding.tvRespirationRateError,
             0.0..100.0,
             (R.string.respiratory_error),
+            false,
             requireContext()
         )
     }
@@ -319,6 +321,7 @@ class ClinicalSummaryUnderFiveYearsFragment : BaseFragment() {
             binding.tvRepeatError,
             0.0..100.0,
             (R.string.please_enter_repeat_between_0_to_100),
+            false,
             requireContext()
         )
     }
@@ -330,6 +333,7 @@ class ClinicalSummaryUnderFiveYearsFragment : BaseFragment() {
             binding.tvTemperatureLabelError,
             10.0..300.0,
             (R.string.temperature),
+            false,
             requireContext()
         )
     }
@@ -342,6 +346,7 @@ class ClinicalSummaryUnderFiveYearsFragment : BaseFragment() {
             binding.tvWeightError,
             10.0..400.0,
             R.string.weight_error,
+            true,
             requireContext()
         )
     }

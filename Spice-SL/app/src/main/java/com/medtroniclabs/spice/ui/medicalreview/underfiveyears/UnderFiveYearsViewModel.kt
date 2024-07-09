@@ -12,9 +12,9 @@ import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.data.SummarySubmitRequest
 import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.di.IoDispatcher
-import com.medtroniclabs.spice.mappingkey.UnderFIveYearExaminationKeyMapping
-import com.medtroniclabs.spice.mappingkey.UnderFIveYearExaminationKeyMapping.Diarrhoea.bloodyDiarrhoea
-import com.medtroniclabs.spice.mappingkey.UnderFIveYearExaminationKeyMapping.Diarrhoea.sings
+import com.medtroniclabs.spice.mappingkey.UnderFiveYearExaminationKeyMapping
+import com.medtroniclabs.spice.mappingkey.UnderFiveYearExaminationKeyMapping.Diarrhoea.bloodyDiarrhoea
+import com.medtroniclabs.spice.mappingkey.UnderFiveYearExaminationKeyMapping.Diarrhoea.sings
 import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.model.medicalreview.CoughOrDifficultBreathing
 import com.medtroniclabs.spice.model.medicalreview.CreateUnderFiveYearsRequest
@@ -149,15 +149,15 @@ class UnderFiveYearsViewModel @Inject constructor(
 
 
     private fun mapDiarrhoea(examinationResultHashMap: HashMap<String, Any>): UnderFiveDiarrhoea? {
-        if (examinationResultHashMap.containsKey(UnderFIveYearExaminationKeyMapping.DiseaseName.diarrhoea)) {
+        if (examinationResultHashMap.containsKey(UnderFiveYearExaminationKeyMapping.DiseaseName.diarrhoea)) {
             val diarrhoeaHashMap =
-                examinationResultHashMap[UnderFIveYearExaminationKeyMapping.DiseaseName.diarrhoea] as HashMap<String, Any>
+                examinationResultHashMap[UnderFiveYearExaminationKeyMapping.DiseaseName.diarrhoea] as HashMap<String, Any>
 
             if (diarrhoeaHashMap.isNotEmpty()) {
                 var diarrhoea = UnderFiveDiarrhoea()
-                if (diarrhoeaHashMap.containsKey(UnderFIveYearExaminationKeyMapping.Diarrhoea.hasDiarrhoea)) {
+                if (diarrhoeaHashMap.containsKey(UnderFiveYearExaminationKeyMapping.Diarrhoea.hasDiarrhoea)) {
                     diarrhoea = diarrhoea.copy(
-                        hasDiarrhoea = mapStringToBoolean(diarrhoeaHashMap[UnderFIveYearExaminationKeyMapping.Diarrhoea.hasDiarrhoea] as String)
+                        hasDiarrhoea = mapStringToBoolean(diarrhoeaHashMap[UnderFiveYearExaminationKeyMapping.Diarrhoea.hasDiarrhoea] as String)
                     )
                 }
                 if (diarrhoeaHashMap.containsKey(bloodyDiarrhoea)) {
@@ -171,9 +171,9 @@ class UnderFiveYearsViewModel @Inject constructor(
                         sings = diarrhoeaHashMap[sings] as List<String?>?
                     )
                 }
-                if (diarrhoeaHashMap.containsKey(UnderFIveYearExaminationKeyMapping.Diarrhoea.timePeriod)) {
+                if (diarrhoeaHashMap.containsKey(UnderFiveYearExaminationKeyMapping.Diarrhoea.timePeriod)) {
                     diarrhoea = diarrhoea.copy(
-                        timePeriod = diarrhoeaHashMap[UnderFIveYearExaminationKeyMapping.Diarrhoea.timePeriod] as String
+                        timePeriod = diarrhoeaHashMap[UnderFiveYearExaminationKeyMapping.Diarrhoea.timePeriod] as String
                     )
                 }
                 return diarrhoea
@@ -187,21 +187,21 @@ class UnderFiveYearsViewModel @Inject constructor(
 
     private fun mapHivAndAids(examinationResultHashMap: HashMap<String, Any>): HivAndAids? {
 
-        if (examinationResultHashMap.containsKey(UnderFIveYearExaminationKeyMapping.DiseaseName.hivRDT)) {
+        if (examinationResultHashMap.containsKey(UnderFiveYearExaminationKeyMapping.DiseaseName.hivRDT)) {
             val hivAndAidsHashMap =
-                examinationResultHashMap[UnderFIveYearExaminationKeyMapping.DiseaseName.hivRDT] as HashMap<String, Any>
+                examinationResultHashMap[UnderFiveYearExaminationKeyMapping.DiseaseName.hivRDT] as HashMap<String, Any>
 
             if (hivAndAidsHashMap.isNotEmpty()) {
                 var hivAndAids = HivAndAids()
-                if (hivAndAidsHashMap.containsKey(UnderFIveYearExaminationKeyMapping.HivAndAids.mother)) {
+                if (hivAndAidsHashMap.containsKey(UnderFiveYearExaminationKeyMapping.HivAndAids.mother)) {
                     hivAndAids = hivAndAids.copy(
-                        mother = hivAndAidsHashMap[UnderFIveYearExaminationKeyMapping.HivAndAids.mother] as String
+                        mother = hivAndAidsHashMap[UnderFiveYearExaminationKeyMapping.HivAndAids.mother] as String
                     )
 
                 }
-                if (hivAndAidsHashMap.containsKey(UnderFIveYearExaminationKeyMapping.HivAndAids.child)) {
+                if (hivAndAidsHashMap.containsKey(UnderFiveYearExaminationKeyMapping.HivAndAids.child)) {
                     hivAndAids = hivAndAids.copy(
-                        child = hivAndAidsHashMap[UnderFIveYearExaminationKeyMapping.HivAndAids.child] as String
+                        child = hivAndAidsHashMap[UnderFiveYearExaminationKeyMapping.HivAndAids.child] as String
                     )
                 }
 
@@ -212,19 +212,19 @@ class UnderFiveYearsViewModel @Inject constructor(
     }
 
     private fun mapMalnutritionOrAnaemia(examinationResultHashMap: HashMap<String, Any>): MalnutritionOrAnaemia? {
-        if (examinationResultHashMap.containsKey(UnderFIveYearExaminationKeyMapping.DiseaseName.anaemia)) {
+        if (examinationResultHashMap.containsKey(UnderFiveYearExaminationKeyMapping.DiseaseName.anaemia)) {
             val malnutritionOrAnaemiaHashMap =
-                examinationResultHashMap[UnderFIveYearExaminationKeyMapping.DiseaseName.anaemia] as HashMap<String, Any>
+                examinationResultHashMap[UnderFiveYearExaminationKeyMapping.DiseaseName.anaemia] as HashMap<String, Any>
             if (malnutritionOrAnaemiaHashMap.isNotEmpty()) {
                 var malnutritionOrAnaemia = MalnutritionOrAnaemia()
-                if (malnutritionOrAnaemiaHashMap.containsKey(UnderFIveYearExaminationKeyMapping.MalnutritionAndAnaemia.appetiteTest)) {
+                if (malnutritionOrAnaemiaHashMap.containsKey(UnderFiveYearExaminationKeyMapping.MalnutritionAndAnaemia.appetiteTest)) {
                     malnutritionOrAnaemia = malnutritionOrAnaemia.copy(
-                        appetiteTest = mapStringToBoolean(malnutritionOrAnaemiaHashMap[UnderFIveYearExaminationKeyMapping.MalnutritionAndAnaemia.appetiteTest] as String)
+                        appetiteTest = mapStringToBoolean(malnutritionOrAnaemiaHashMap[UnderFiveYearExaminationKeyMapping.MalnutritionAndAnaemia.appetiteTest] as String)
                     )
                 }
-                if (malnutritionOrAnaemiaHashMap.containsKey(UnderFIveYearExaminationKeyMapping.MalnutritionAndAnaemia.signs)) {
+                if (malnutritionOrAnaemiaHashMap.containsKey(UnderFiveYearExaminationKeyMapping.MalnutritionAndAnaemia.signs)) {
                     malnutritionOrAnaemia = malnutritionOrAnaemia.copy(
-                        sings = malnutritionOrAnaemiaHashMap[UnderFIveYearExaminationKeyMapping.MalnutritionAndAnaemia.signs] as List<String?>?
+                        sings = malnutritionOrAnaemiaHashMap[UnderFiveYearExaminationKeyMapping.MalnutritionAndAnaemia.signs] as List<String?>?
                     )
                 }
                 return malnutritionOrAnaemia
@@ -235,31 +235,31 @@ class UnderFiveYearsViewModel @Inject constructor(
 
     private fun mapCoughOrDifficultBreathing(examinationResultHashMap: HashMap<String, Any>): CoughOrDifficultBreathing? {
 
-        if (examinationResultHashMap.containsKey(UnderFIveYearExaminationKeyMapping.DiseaseName.cough)) {
+        if (examinationResultHashMap.containsKey(UnderFiveYearExaminationKeyMapping.DiseaseName.cough)) {
             val coughOrDifficultBreathingHashMap =
-                examinationResultHashMap[UnderFIveYearExaminationKeyMapping.DiseaseName.cough] as HashMap<String, Any>
+                examinationResultHashMap[UnderFiveYearExaminationKeyMapping.DiseaseName.cough] as HashMap<String, Any>
             if (coughOrDifficultBreathingHashMap.isNotEmpty()) {
                 var coughOrDifficultBreathing = CoughOrDifficultBreathing()
-                if (coughOrDifficultBreathingHashMap.containsKey(UnderFIveYearExaminationKeyMapping.Cough.coughOrDifficultBreathing)) {
+                if (coughOrDifficultBreathingHashMap.containsKey(UnderFiveYearExaminationKeyMapping.Cough.coughOrDifficultBreathing)) {
                     coughOrDifficultBreathing = coughOrDifficultBreathing.copy(
                         coughOrDIfficultBreathing = mapStringToBoolean(
-                            coughOrDifficultBreathingHashMap[UnderFIveYearExaminationKeyMapping.Cough.coughOrDifficultBreathing] as String
+                            coughOrDifficultBreathingHashMap[UnderFiveYearExaminationKeyMapping.Cough.coughOrDifficultBreathing] as String
                         )
                     )
                 }
-                if (coughOrDifficultBreathingHashMap.containsKey(UnderFIveYearExaminationKeyMapping.Cough.chestIndrawing)) {
+                if (coughOrDifficultBreathingHashMap.containsKey(UnderFiveYearExaminationKeyMapping.Cough.chestIndrawing)) {
                     coughOrDifficultBreathing = coughOrDifficultBreathing.copy(
-                        chestIndrawing = mapStringToBoolean(coughOrDifficultBreathingHashMap[UnderFIveYearExaminationKeyMapping.Cough.chestIndrawing] as String)
+                        chestIndrawing = mapStringToBoolean(coughOrDifficultBreathingHashMap[UnderFiveYearExaminationKeyMapping.Cough.chestIndrawing] as String)
                     )
                 }
-                if (coughOrDifficultBreathingHashMap.containsKey(UnderFIveYearExaminationKeyMapping.Cough.stridor)) {
+                if (coughOrDifficultBreathingHashMap.containsKey(UnderFiveYearExaminationKeyMapping.Cough.stridor)) {
                     coughOrDifficultBreathing = coughOrDifficultBreathing.copy(
-                        stridor = mapStringToBoolean(coughOrDifficultBreathingHashMap[UnderFIveYearExaminationKeyMapping.Cough.stridor] as String)
+                        stridor = mapStringToBoolean(coughOrDifficultBreathingHashMap[UnderFiveYearExaminationKeyMapping.Cough.stridor] as String)
                     )
                 }
-                if (coughOrDifficultBreathingHashMap.containsKey(UnderFIveYearExaminationKeyMapping.Cough.noOfDays)) {
+                if (coughOrDifficultBreathingHashMap.containsKey(UnderFiveYearExaminationKeyMapping.Cough.noOfDays)) {
                     coughOrDifficultBreathing = coughOrDifficultBreathing.copy(
-                        noOfDays = coughOrDifficultBreathingHashMap[UnderFIveYearExaminationKeyMapping.Cough.noOfDays] as String
+                        noOfDays = coughOrDifficultBreathingHashMap[UnderFiveYearExaminationKeyMapping.Cough.noOfDays] as String
                     )
                 }
 
@@ -271,40 +271,40 @@ class UnderFiveYearsViewModel @Inject constructor(
 
     private fun mapFever(examinationResultHashMap: HashMap<String, Any>): Fever? {
 
-        if (examinationResultHashMap.containsKey(UnderFIveYearExaminationKeyMapping.DiseaseName.fever)) {
+        if (examinationResultHashMap.containsKey(UnderFiveYearExaminationKeyMapping.DiseaseName.fever)) {
             val feverHashMap =
-                examinationResultHashMap[UnderFIveYearExaminationKeyMapping.DiseaseName.fever] as HashMap<String, Any>
+                examinationResultHashMap[UnderFiveYearExaminationKeyMapping.DiseaseName.fever] as HashMap<String, Any>
 
             if (feverHashMap.isNotEmpty()) {
                 var fever = Fever()
-                if (feverHashMap.containsKey(UnderFIveYearExaminationKeyMapping.Fever.hasFever)) {
+                if (feverHashMap.containsKey(UnderFiveYearExaminationKeyMapping.Fever.hasFever)) {
                     fever = fever.copy(
-                        hasFever = mapStringToBoolean(feverHashMap[UnderFIveYearExaminationKeyMapping.Fever.hasFever] as String)
+                        hasFever = mapStringToBoolean(feverHashMap[UnderFiveYearExaminationKeyMapping.Fever.hasFever] as String)
                     )
                 }
 
-                if (feverHashMap.containsKey(UnderFIveYearExaminationKeyMapping.Fever.isMotherHasFever)) {
+                if (feverHashMap.containsKey(UnderFiveYearExaminationKeyMapping.Fever.isMotherHasFever)) {
                     fever = fever.copy(
-                        isMotherHasFever = feverHashMap[UnderFIveYearExaminationKeyMapping.Fever.isMotherHasFever] as String
+                        isMotherHasFever = feverHashMap[UnderFiveYearExaminationKeyMapping.Fever.isMotherHasFever] as String
                     )
                 }
 
-                if (feverHashMap.containsKey(UnderFIveYearExaminationKeyMapping.Fever.microscopyResult)) {
+                if (feverHashMap.containsKey(UnderFiveYearExaminationKeyMapping.Fever.microscopyResult)) {
                     fever = fever.copy(
-                        microscopyResult = feverHashMap[UnderFIveYearExaminationKeyMapping.Fever.microscopyResult] as String
+                        microscopyResult = feverHashMap[UnderFiveYearExaminationKeyMapping.Fever.microscopyResult] as String
                     )
 
                 }
 
-                if (feverHashMap.containsKey(UnderFIveYearExaminationKeyMapping.Fever.signs)) {
+                if (feverHashMap.containsKey(UnderFiveYearExaminationKeyMapping.Fever.signs)) {
                     fever = fever.copy(
-                        signs = feverHashMap[UnderFIveYearExaminationKeyMapping.Fever.signs] as List<String>?
+                        signs = feverHashMap[UnderFiveYearExaminationKeyMapping.Fever.signs] as List<String>?
                     )
                 }
 
-                if (feverHashMap.containsKey(UnderFIveYearExaminationKeyMapping.Fever.noOfDays)) {
+                if (feverHashMap.containsKey(UnderFiveYearExaminationKeyMapping.Fever.noOfDays)) {
                     fever = fever.copy(
-                        noOfDays = feverHashMap[UnderFIveYearExaminationKeyMapping.Fever.noOfDays] as String
+                        noOfDays = feverHashMap[UnderFiveYearExaminationKeyMapping.Fever.noOfDays] as String
                     )
                 }
                 return fever
@@ -314,24 +314,24 @@ class UnderFiveYearsViewModel @Inject constructor(
     }
 
     private fun mapEarProblem(examinationResultHashMap: HashMap<String, Any>): EarProblem? {
-        if (examinationResultHashMap.containsKey(UnderFIveYearExaminationKeyMapping.DiseaseName.earProblem)) {
+        if (examinationResultHashMap.containsKey(UnderFiveYearExaminationKeyMapping.DiseaseName.earProblem)) {
             val earProblemHashMap =
-                examinationResultHashMap[UnderFIveYearExaminationKeyMapping.DiseaseName.earProblem] as HashMap<String, Any>
+                examinationResultHashMap[UnderFiveYearExaminationKeyMapping.DiseaseName.earProblem] as HashMap<String, Any>
             if (earProblemHashMap.isNotEmpty()) {
                 var earProblem = EarProblem()
-                if (earProblemHashMap.containsKey(UnderFIveYearExaminationKeyMapping.EarProblem.hasEarPain)) {
+                if (earProblemHashMap.containsKey(UnderFiveYearExaminationKeyMapping.EarProblem.hasEarPain)) {
                     earProblem = earProblem.copy(
-                        hasEarPain = mapStringToBoolean(earProblemHashMap[UnderFIveYearExaminationKeyMapping.EarProblem.hasEarPain] as String)
+                        hasEarPain = mapStringToBoolean(earProblemHashMap[UnderFiveYearExaminationKeyMapping.EarProblem.hasEarPain] as String)
                     )
                 }
-                if (earProblemHashMap.containsKey(UnderFIveYearExaminationKeyMapping.EarProblem.earDischarge)) {
+                if (earProblemHashMap.containsKey(UnderFiveYearExaminationKeyMapping.EarProblem.earDischarge)) {
                     earProblem = earProblem.copy(
-                        earDischarge = earProblemHashMap[UnderFIveYearExaminationKeyMapping.EarProblem.earDischarge] as String
+                        earDischarge = earProblemHashMap[UnderFiveYearExaminationKeyMapping.EarProblem.earDischarge] as String
                     )
                 }
-                if (earProblemHashMap.containsKey(UnderFIveYearExaminationKeyMapping.EarProblem.noOfDays)) {
+                if (earProblemHashMap.containsKey(UnderFiveYearExaminationKeyMapping.EarProblem.noOfDays)) {
                     earProblem = earProblem.copy(
-                        noOfDays = earProblemHashMap[UnderFIveYearExaminationKeyMapping.EarProblem.noOfDays] as String
+                        noOfDays = earProblemHashMap[UnderFiveYearExaminationKeyMapping.EarProblem.noOfDays] as String
                     )
                 }
                 return earProblem
@@ -341,34 +341,34 @@ class UnderFiveYearsViewModel @Inject constructor(
     }
 
     private fun mapGeneralDangerSings(examinationResultHashMap: HashMap<String, Any>): GeneralDangerSings? {
-        if (examinationResultHashMap.containsKey(UnderFIveYearExaminationKeyMapping.DiseaseName.generalDangerSigns)) {
+        if (examinationResultHashMap.containsKey(UnderFiveYearExaminationKeyMapping.DiseaseName.generalDangerSigns)) {
             val generalDangerSingsHashMap =
-                examinationResultHashMap[UnderFIveYearExaminationKeyMapping.DiseaseName.generalDangerSigns] as HashMap<String, Any>
+                examinationResultHashMap[UnderFiveYearExaminationKeyMapping.DiseaseName.generalDangerSigns] as HashMap<String, Any>
             if (generalDangerSingsHashMap.isNotEmpty()) {
                 var generalDangerSings = GeneralDangerSings()
-                if (generalDangerSingsHashMap.containsKey(UnderFIveYearExaminationKeyMapping.GeneralDangerSigns.unableToDrinkOrBreastfeed)) {
+                if (generalDangerSingsHashMap.containsKey(UnderFiveYearExaminationKeyMapping.GeneralDangerSigns.unableToDrinkOrBreastfeed)) {
                     generalDangerSings = generalDangerSings.copy(
-                        unableToDrinkOrBreastfeed = mapStringToBoolean(generalDangerSingsHashMap[UnderFIveYearExaminationKeyMapping.GeneralDangerSigns.unableToDrinkOrBreastfeed] as String)
+                        unableToDrinkOrBreastfeed = mapStringToBoolean(generalDangerSingsHashMap[UnderFiveYearExaminationKeyMapping.GeneralDangerSigns.unableToDrinkOrBreastfeed] as String)
                     )
                 }
-                if (generalDangerSingsHashMap.containsKey(UnderFIveYearExaminationKeyMapping.GeneralDangerSigns.historyOfConvulsion)) {
+                if (generalDangerSingsHashMap.containsKey(UnderFiveYearExaminationKeyMapping.GeneralDangerSigns.historyOfConvulsion)) {
                     generalDangerSings = generalDangerSings.copy(
-                        historyOfConvulsion = mapStringToBoolean(generalDangerSingsHashMap[UnderFIveYearExaminationKeyMapping.GeneralDangerSigns.historyOfConvulsion] as String)
+                        historyOfConvulsion = mapStringToBoolean(generalDangerSingsHashMap[UnderFiveYearExaminationKeyMapping.GeneralDangerSigns.historyOfConvulsion] as String)
                     )
                 }
-                if (generalDangerSingsHashMap.containsKey(UnderFIveYearExaminationKeyMapping.GeneralDangerSigns.lethargicOrUnconscious)) {
+                if (generalDangerSingsHashMap.containsKey(UnderFiveYearExaminationKeyMapping.GeneralDangerSigns.lethargicOrUnconscious)) {
                     generalDangerSings = generalDangerSings.copy(
-                        lethargicOrUnconscious = mapStringToBoolean(generalDangerSingsHashMap[UnderFIveYearExaminationKeyMapping.GeneralDangerSigns.lethargicOrUnconscious] as String)
+                        lethargicOrUnconscious = mapStringToBoolean(generalDangerSingsHashMap[UnderFiveYearExaminationKeyMapping.GeneralDangerSigns.lethargicOrUnconscious] as String)
                     )
                 }
-                if (generalDangerSingsHashMap.containsKey(UnderFIveYearExaminationKeyMapping.GeneralDangerSigns.vomitingEverything)) {
+                if (generalDangerSingsHashMap.containsKey(UnderFiveYearExaminationKeyMapping.GeneralDangerSigns.vomitingEverything)) {
                     generalDangerSings = generalDangerSings.copy(
-                        vomitingEverything = mapStringToBoolean(generalDangerSingsHashMap[UnderFIveYearExaminationKeyMapping.GeneralDangerSigns.vomitingEverything] as String)
+                        vomitingEverything = mapStringToBoolean(generalDangerSingsHashMap[UnderFiveYearExaminationKeyMapping.GeneralDangerSigns.vomitingEverything] as String)
                     )
                 }
-                if (generalDangerSingsHashMap.containsKey(UnderFIveYearExaminationKeyMapping.GeneralDangerSigns.convulsingNow)) {
+                if (generalDangerSingsHashMap.containsKey(UnderFiveYearExaminationKeyMapping.GeneralDangerSigns.convulsingNow)) {
                     generalDangerSings = generalDangerSings.copy(
-                        convulsingNow = mapStringToBoolean(generalDangerSingsHashMap[UnderFIveYearExaminationKeyMapping.GeneralDangerSigns.convulsingNow] as String)
+                        convulsingNow = mapStringToBoolean(generalDangerSingsHashMap[UnderFiveYearExaminationKeyMapping.GeneralDangerSigns.convulsingNow] as String)
                     )
                 }
                 return generalDangerSings

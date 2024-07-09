@@ -48,10 +48,16 @@ object MotherNeonateUtil {
         errorTextView: TextView,
         validRange: ClosedRange<Double>,
         errorMessageResId: Int,
+        isMandatory: Boolean,
         context: Context
     ): Boolean {
         val input = inputText.toDoubleOrNull()
         if (editText.text.isNullOrBlank()) {
+            if (isMandatory) {
+                errorTextView.visible()
+                errorTextView.text = context.getText(R.string.error_label)
+                return false
+            }
             errorTextView.gone()
             return true
         }

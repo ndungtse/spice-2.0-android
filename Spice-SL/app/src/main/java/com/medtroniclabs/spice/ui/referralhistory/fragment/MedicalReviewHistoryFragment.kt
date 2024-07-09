@@ -19,6 +19,7 @@ import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.Above5MedicalReview
+import com.medtroniclabs.spice.common.DefinedParams.ICCM_ABOVE_2M_5Y
 import com.medtroniclabs.spice.common.DefinedParams.PregnancyAncMedicalReview
 import com.medtroniclabs.spice.data.history.MedicalReviewHistory
 import com.medtroniclabs.spice.databinding.FragmentReferralTicketBinding
@@ -345,103 +346,62 @@ class MedicalReviewHistoryFragment : BaseFragment(), View.OnClickListener {
 
 
     private fun createMedicalReview(medicalReviewHistory: MedicalReviewHistory): List<Map<String, String?>> {
-        return when (medicalReviewHistory.type?.lowercase()) {
-            Above5MedicalReview.lowercase() -> {
-                listOf(
-                    mapOf(
-                        DefinedParams.label to requireContext().getString(R.string.diagnosis),
-                        DefinedParams.value to combineText(
-                            medicalReviewHistory.reviewDetails?.diagnosis?.map { it.diseaseCategory }?.distinct(),
-                            ""
-                        )
-                    ),
-                    mapOf(
-                        DefinedParams.label to requireContext().getString(R.string.patient_status),
-                        DefinedParams.value to (medicalReviewHistory.reviewDetails?.patientStatus?.takeIf { it.isNotBlank() }
-                            ?: getString(R.string.separator_double_hyphen))
-                    ),
-                    mapOf(
-                        DefinedParams.label to requireContext().getString(R.string.date_of_review),
-                        DefinedParams.value to medicalReviewHistory.dateOfReview?.let {
-                            DateUtils.convertDateFormat(
-                                it,
-                                DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-                                DateUtils.DATE_ddMMyyyy
-                            )
-                        }
-                    ),
-                    mapOf(
-                        DefinedParams.label to requireContext().getString(R.string.presenting_complaints),
-                        DefinedParams.value to combineText(
-                            medicalReviewHistory.reviewDetails?.presentingComplaints,
-                            medicalReviewHistory.reviewDetails?.presentingComplaintsNotes
-                        )
-                    ),
-                    mapOf(
-                        DefinedParams.label to requireContext().getString(R.string.clinical_notes),
-                        DefinedParams.value to (medicalReviewHistory.reviewDetails?.clinicalNotes?.takeIf { it.isNotBlank() }
-                            ?: getString(R.string.separator_double_hyphen)
-                                )),
-                    mapOf(
-                        DefinedParams.label to requireContext().getString(R.string.systemic_examinations),
-                        DefinedParams.value to combineText(
-                            medicalReviewHistory.reviewDetails?.systemicExaminations,
-                            medicalReviewHistory.reviewDetails?.systemicExaminationsNotes
-                        )
-                    )
+        val commonFields = listOf(
+            mapOf(
+                DefinedParams.label to requireContext().getString(R.string.diagnosis),
+                DefinedParams.value to combineText(
+                    medicalReviewHistory.reviewDetails?.diagnosis?.map { it.diseaseCategory }?.distinct(),
+                    ""
                 )
-            }
-
-            PregnancyAncMedicalReview.lowercase() -> {
-                listOf(
-                    mapOf(
-                        DefinedParams.label to requireContext().getString(R.string.diagnosis),
-                        DefinedParams.value to combineText(
-                            medicalReviewHistory.reviewDetails?.diagnosis?.map { it.diseaseCategory }?.distinct(),
-                            ""
-                        )
-                    ),
-                    mapOf(
-                        DefinedParams.label to requireContext().getString(R.string.patient_status),
-                        DefinedParams.value to (medicalReviewHistory.reviewDetails?.patientStatus?.takeIf { it.isNotBlank() }
-                            ?: getString(R.string.separator_double_hyphen))
-                    ),
-                    mapOf(
-                        DefinedParams.label to requireContext().getString(R.string.date_of_review),
-                        DefinedParams.value to medicalReviewHistory.dateOfReview?.let {
-                            DateUtils.convertDateFormat(
-                                it,
-                                DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-                                DateUtils.DATE_ddMMyyyy
-                            )
-                        }
-                    ),
-                    mapOf(
-                        DefinedParams.label to requireContext().getString(R.string.presenting_complaints),
-                        DefinedParams.value to combineText(
-                            medicalReviewHistory.reviewDetails?.presentingComplaints,
-                            medicalReviewHistory.reviewDetails?.presentingComplaintsNotes
-                        )
-                    ),
-                    mapOf(
-                        DefinedParams.label to requireContext().getString(R.string.clinical_notes),
-                        DefinedParams.value to (medicalReviewHistory.reviewDetails?.clinicalNotes?.takeIf { it.isNotBlank() }
-                            ?: getString(R.string.separator_double_hyphen)
-                                )),
-                    mapOf(
-                        DefinedParams.label to requireContext().getString(R.string.obstetric_examination),
-                        DefinedParams.value to combineText(
-                            medicalReviewHistory.reviewDetails?.obstetricExaminations,
-                            medicalReviewHistory.reviewDetails?.obstetricExaminationsNotes
-                        )
+            ),
+            mapOf(
+                DefinedParams.label to requireContext().getString(R.string.patient_status),
+                DefinedParams.value to (medicalReviewHistory.reviewDetails?.patientStatus?.takeIf { it.isNotBlank() }
+                    ?: getString(R.string.separator_double_hyphen))
+            ),
+            mapOf(
+                DefinedParams.label to requireContext().getString(R.string.date_of_review),
+                DefinedParams.value to medicalReviewHistory.dateOfReview?.let {
+                    DateUtils.convertDateFormat(
+                        it,
+                        DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+                        DateUtils.DATE_ddMMyyyy
                     )
+                }
+            ),
+            mapOf(
+                DefinedParams.label to requireContext().getString(R.string.presenting_complaints),
+                DefinedParams.value to combineText(
+                    medicalReviewHistory.reviewDetails?.presentingComplaints,
+                    medicalReviewHistory.reviewDetails?.presentingComplaintsNotes
                 )
-            }
+            ),
+            mapOf(
+                DefinedParams.label to requireContext().getString(R.string.clinical_notes),
+                DefinedParams.value to (medicalReviewHistory.reviewDetails?.clinicalNotes?.takeIf { it.isNotBlank() }
+                    ?: getString(R.string.separator_double_hyphen))
+            )
+        )
 
-            else -> {
-                listOf<Map<String, String>>()
-            }
+        val additionalFields = when (medicalReviewHistory.type?.lowercase()) {
+            Above5MedicalReview.lowercase(),ICCM_ABOVE_2M_5Y.lowercase() -> mapOf(
+                DefinedParams.label to requireContext().getString(R.string.systemic_examinations),
+                DefinedParams.value to combineText(
+                    medicalReviewHistory.reviewDetails?.systemicExaminations,
+                    medicalReviewHistory.reviewDetails?.systemicExaminationsNotes
+                )
+            )
+            PregnancyAncMedicalReview.lowercase() -> mapOf(
+                DefinedParams.label to requireContext().getString(R.string.obstetric_examination),
+                DefinedParams.value to combineText(
+                    medicalReviewHistory.reviewDetails?.obstetricExaminations,
+                    medicalReviewHistory.reviewDetails?.obstetricExaminationNotes
+                )
+            )
+            else -> null
         }
+
+        return commonFields + listOfNotNull(additionalFields)
     }
 
     private fun combineText(items: List<String?>?, notes: String?): String {

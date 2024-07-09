@@ -117,7 +117,7 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
             isNegativeButtonNeed = true
         ) { isPositive ->
             if (isPositive) {
-                startAsNewActivity(Intent(this, LandingActivity::class.java))
+                startActivityWithoutSplashScreen()
             }
         }
     }
@@ -275,7 +275,7 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
                     hideLoading()
                     resource.data?.let {
                         binding.loadingProgress.visible()
-                        handleSummary(it.encounterId)
+                        handleSummary()
                     }
                 }
 
@@ -821,6 +821,9 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
                 is PregnancyDetailsFragment -> binding.loadingProgress.gone()
                 is MotherNeonateAncSummary -> {
                     patientViewModel.isSummary = true
+                    val motherNeonateSummary =
+                        supportFragmentManager.findFragmentById(R.id.pregnancyDetailsConatiner) as? MotherNeonateAncSummary
+                    motherNeonateSummary?.setIds(viewModel.getSubmitCreateId(), details.id)
                     binding.loadingProgress.gone()
                 }
                 is MedicalReviewPatientDiagnosisFragment -> handleSubmit()
@@ -837,22 +840,22 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
         }
     }
 
-    private fun handleSummary(encounterId: String?) {
+    private fun handleSummary() {
         with(binding) {
             bottomNavigationView.gone()
             referalBottomView.visible()
             btnLayout.btnNext.gone()
         }
-        replaceMotherNeonateSummary(encounterId)
+        replaceMotherNeonateSummary()
         scrollToTop()
         binding.loadingProgress.gone()
     }
 
-    private fun replaceMotherNeonateSummary(encounterId: String?) {
+    private fun replaceMotherNeonateSummary() {
         patientViewModel.isSummary = true
         swipeRefresh()
         supportFragmentManager.beginTransaction()
-            .replace(R.id.pregnancyDetailsConatiner, MotherNeonateAncSummary.newInstance(encounterId,patientViewModel.getPatientFHIRId()))
+            .replace(R.id.pregnancyDetailsConatiner, MotherNeonateAncSummary.newInstance())
             .commit()
         with(supportFragmentManager) {
             findFragmentById(R.id.pregnancyHistoryConatiner)?.let {
@@ -871,11 +874,7 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
     }
 
     override fun onDialogDismissListener(isFinish: Boolean) {
-        finish()
-        val intent = Intent(this, LandingActivity::class.java)
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
-        startActivity(intent)
-        finish()
+        startActivityWithoutSplashScreen()
     }
 
     private fun replaceWithMotherNeonateAncHistoryFragment() {

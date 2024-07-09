@@ -17,7 +17,8 @@ data class SignsAndSymptomsEntity(
     @ColumnInfo(name = "culture_value")
     val cultureValue: String? = null,
     @ColumnInfo(name = "display_order")
-    var displayOrder: Int? = null
+    var displayOrder: Int? = null,
+    var value: String? = null
 ) {
     @Ignore
     var isSelected = false
