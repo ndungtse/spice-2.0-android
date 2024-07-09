@@ -499,7 +499,6 @@ object DateUtils {
         val calendar = Calendar.getInstance()
         calendar.timeInMillis = currentDateTimeInMillis
         calendar.add(Calendar.MONTH, -months)
-
         return calendar.timeInMillis
     }
 }

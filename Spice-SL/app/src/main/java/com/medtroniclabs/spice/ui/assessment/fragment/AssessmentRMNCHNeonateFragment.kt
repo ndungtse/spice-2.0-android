@@ -96,20 +96,7 @@ class AssessmentRMNCHNeonateFragment : BaseFragment(), View.OnClickListener,
             )
         }
 
-        val objectList = Gson().fromJson(
-            CommonUtils.getStringFromAssets(
-                "rmnch_pnc_phu_delivery_child.json",
-                requireActivity().assets
-            ),
-            Array<FormLayout>::class.java
-        ).asList()
-
-        assessmentRMNCHNeonateViewModel.formLayoutsLiveData.setSuccess(
-            FormResponse(
-                objectList,
-                time = 123231231
-            )
-        )
+        assessmentRMNCHNeonateViewModel.getFormChildData(RMNCH.PNCNeonatal)
     }
 
 
@@ -267,7 +254,8 @@ class AssessmentRMNCHNeonateFragment : BaseFragment(), View.OnClickListener,
                                 motherDetailMap,
                                 workflowName = RMNCH.PNC,
                                 memberDetail,
-                                viewModel.memberClinicalLiveData.value
+                                viewModel.memberClinicalLiveData.value,
+                                map
                             )
                             assessmentRMNCHNeonateViewModel.savePNCDetail(
                                 map,

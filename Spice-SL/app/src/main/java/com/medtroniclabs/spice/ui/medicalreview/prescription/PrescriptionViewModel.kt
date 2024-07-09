@@ -146,7 +146,8 @@ class PrescriptionViewModel @Inject constructor(
                                 medicationId = it.medicationResponse.id,
                                 frequency = getMedicationFrequency(it),
                                 prescribedSince = System.currentTimeMillis().convertToUtcDateTime(),
-                                prescriptionId = it.medicationResponse.prescriptionId
+                                prescriptionId = it.medicationResponse.prescriptionId,
+                                codeDetails = it.medicationResponse.codeDetails
                             )
                         )
                     }
@@ -184,7 +185,8 @@ class PrescriptionViewModel @Inject constructor(
     ): ArrayList<MedicationRequestObject> {
         val medicationRequestObjectList = ArrayList<MedicationRequestObject>()
         list.forEach { prescription ->
-           val medicationRequestObject = MedicationRequestObject(constructMedicationRequestObject(prescription))
+            val medicationRequestObject =
+                MedicationRequestObject(constructMedicationRequestObject(prescription))
             medicationRequestObjectList.add(medicationRequestObject)
         }
         return medicationRequestObjectList
@@ -260,9 +262,9 @@ class PrescriptionViewModel @Inject constructor(
         }
     }
 
-    fun getPrescriptionList(data: PatientListRespModel,isDeleted:Boolean = true) {
+    fun getPrescriptionList(data: PatientListRespModel, isDeleted: Boolean = true) {
         data.id?.let { id ->
-            getPrescriptionList(PrescriptionListRequest(id,isDeleted))
+            getPrescriptionList(PrescriptionListRequest(id, isDeleted))
         }
     }
 

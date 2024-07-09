@@ -11,8 +11,11 @@ data class MedicationResponse(
     var prescribedDays: Long?,
     var prescriptionId: String? = null,
     var isEditable: Boolean = false,
-    var prescribedSince:String ?= null,
-    var showErrorMessage: Boolean = false
+    var prescribedSince: String? = null,
+    var showErrorMessage: Boolean = false,
+    var codeDetails: CodeDetailsObject? = null
 )
+
+data class CodeDetailsObject(var code: String, var url: String)
 
 data class MedicationRequestObject(var medicationResponse: MedicationResponse)

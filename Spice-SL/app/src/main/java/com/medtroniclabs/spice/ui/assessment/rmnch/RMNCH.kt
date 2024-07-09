@@ -150,8 +150,8 @@ object RMNCH {
         val today = Date()
         val diffInMillis = abs(today.time - lmp.time)
         val diff = TimeUnit.DAYS.convert(diffInMillis, TimeUnit.MILLISECONDS)
-        val weeks = diff / 7
-        return (weeks.toDouble() / 4)
+        val weeks = diff / 7.0
+        return (weeks / 4.0)
     }
 
     fun calculateNextANCVisitDate(lmp: Date, isMedicalReview: Boolean = false): Date? {

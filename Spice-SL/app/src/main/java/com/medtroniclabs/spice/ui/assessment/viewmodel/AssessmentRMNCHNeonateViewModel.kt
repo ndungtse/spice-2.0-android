@@ -54,6 +54,12 @@ class AssessmentRMNCHNeonateViewModel @Inject constructor(
         }
     }
 
+    fun getFormChildData(formType: String) {
+        viewModelScope.launch(dispatcherIO) {
+            formLayoutsLiveData.postLoading()
+            formLayoutsLiveData.postValue(assessmentRepository.getFormData(formType))
+        }
+    }
 
     fun savePNCDetail(
         childDetailMap: HashMap<String, Any>,

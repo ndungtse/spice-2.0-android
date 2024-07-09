@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.common.DateUtils
+import com.medtroniclabs.spice.common.DateUtils.calculateGestationalAge
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.data.LocalSpinnerResponse
@@ -40,6 +41,7 @@ import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.Miscarriage
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.ancSigns
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.childhoodVisitSigns
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.estimatedDeliveryDate
+import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.gestationalAge
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.lastMenstrualPeriod
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.otherAncSigns
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.otherChildhoodVisitSigns
@@ -379,7 +381,9 @@ class AssessmentViewModel @Inject constructor(
         details: HashMap<String, Any>,
         workflowName: String,
         memberDetail: AssessmentMemberDetails,
-        memberClinicalEntity: MemberClinicalEntity?
+        memberClinicalEntity: MemberClinicalEntity?,
+        childDetailsMap: HashMap<String,Any>? = null
+
     ) {
         memberDetail.apply {
             if (details.containsKey(workflowName) && details[workflowName] is Map<*, *>) {
@@ -387,7 +391,7 @@ class AssessmentViewModel @Inject constructor(
                 patientId.let { id ->
                     val pregnancyDetail = pregnancyDetail
                         ?: PregnancyDetail(patientId = id)
-                    getClinicalDateAndVisitCount(map, workflowName, pregnancyDetail)
+                    getClinicalDateAndVisitCount(map, workflowName, pregnancyDetail,childDetailsMap)
                     savePatientClinicalInformation(pregnancyDetail)
                 }
                 /*memberClinicalEntity?.let { memberClinicalEntity ->
@@ -446,7 +450,8 @@ class AssessmentViewModel @Inject constructor(
     private fun getClinicalDateAndVisitCount(
         details: HashMap<String, Any>,
         workflowName: String,
-        pregnancyDetail: PregnancyDetail
+        pregnancyDetail: PregnancyDetail,
+        childDetailsMap: HashMap<String, Any>?
     ) {
         when (workflowName) {
             ANC -> {
@@ -473,6 +478,14 @@ class AssessmentViewModel @Inject constructor(
                 details[RMNCH.visitNo] = pregnancyDetail.pncVisitNo ?: 0L
                 details[RMNCH.DateOfDelivery] = pregnancyDetail.dateOfDelivery ?: ""
                 details[RMNCH.NoOfNeonate] = pregnancyDetail.noOfNeonates ?: 0L
+                pregnancyDetail.lastMenstrualPeriod?.let { lmp ->
+                    childDetailsMap?.let {
+                        childDetailsMap[lastMenstrualPeriod] = lmp
+                        val lastMenstrualDate = DateUtils.getLastMenstrualDate(lmp)
+                        val gestationWeek = calculateGestationalAge(lastMenstrualDate).first
+                        childDetailsMap[gestationalAge] = gestationWeek
+                    }
+                }
                 pregnancyDetail.ancVisitNo = 0
                 pregnancyDetail.lastMenstrualPeriod = null
                 pregnancyDetail.estimatedDeliveryDate = null
