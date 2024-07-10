@@ -1,9 +1,11 @@
 package com.medtroniclabs.spice.repo
 
+import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import com.google.gson.Gson
 import com.google.gson.JsonParser
 import com.google.gson.reflect.TypeToken
+import com.medtroniclabs.spice.BuildConfig
 import com.medtroniclabs.spice.appextensions.convertToUtcDateTime
 import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.appextensions.postLoading
@@ -63,7 +65,7 @@ class OfflineSyncRepository @Inject constructor(
                     memberId = entity.memberId,
                     referred = entity.isReferred,
                     patientId = entity.patientId,
-                    provenance = ProvanceDto(createdDateTime = entity.createdAt.convertToUtcDateTime()),
+                    provenance = ProvanceDto(),
                     latitude = entity.latitude,
                     longitude = entity.longitude,
                     visitNumber = getVisitCount(entity)

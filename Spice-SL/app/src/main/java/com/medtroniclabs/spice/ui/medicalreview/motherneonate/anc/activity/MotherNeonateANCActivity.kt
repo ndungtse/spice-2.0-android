@@ -517,11 +517,7 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
                 referralTicketType = MedicalReviewTypeEnums.RMNCH.name,
                 memberId = patientViewModel.getPatientMemberId(),
                 id = submitCreateId,
-                provenance = ProvanceDto(
-                    createdDateTime = DateUtils.getCurrentDateAndTime(
-                        DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
-                    )
-                ),
+                provenance = ProvanceDto(),
                 householdId = patientViewModel.getPatientHouseholdId(),
                 patientReference = viewModel.getPatientReference(),
                 nextVisitDate = nextVisitDate,
@@ -597,9 +593,7 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
     }
     private fun createEncounter(viewModel: MotherNeonateANCViewModel): MedicalReviewEncounter {
         return MedicalReviewEncounter(
-            provenance = ProvanceDto(
-                createdDateTime = System.currentTimeMillis().convertToUtcDateTime()
-            ),
+            provenance = ProvanceDto(),
             latitude = viewModel.lastLocation?.latitude,
             longitude = viewModel.lastLocation?.longitude,
             patientId = viewModel.patientId,

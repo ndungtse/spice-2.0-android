@@ -102,9 +102,7 @@ class ReferPatientRepository @Inject constructor(
             referredClinicianId = selectedItems.second,
             patientReference = patientReference,
             referred = true,
-            provenance = ProvanceDto(
-                createdDateTime = System.currentTimeMillis().convertToUtcDateTime()
-            ),
+            provenance = ProvanceDto(),
             patientStatus = DefinedParams.REFERRED,
             currentPatientStatus = DefinedParams.REFERRED,
             assessmentName = assessmentName.first,

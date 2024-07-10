@@ -117,11 +117,7 @@ class UnderTwoMonthsRepository @Inject constructor(
                 SummarySubmitRequest(
                     memberId = memberId,
                     id = submitCreateId,
-                    provenance = ProvanceDto(
-                        createdDateTime = DateUtils.getCurrentDateAndTime(
-                            DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
-                        )
-                    ),
+                    provenance = ProvanceDto(),
                     patientReference = details.id,
                     nextVisitDate = DateUtils.convertDateTimeToDate(
                         nextFollowupDate,

@@ -23,5 +23,7 @@ data class HouseHoldEntityWithMemberCount(
     @ColumnInfo("bed_net_count")
     val bedNetCount: Int? = null,
     @ColumnInfo("member_count")
-    val registerMemberCount: Int = 0
+    val registerMemberCount: Int = 0,
+    @ColumnInfo("village_name")
+    val villageName: String
 )

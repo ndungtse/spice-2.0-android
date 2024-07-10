@@ -141,9 +141,7 @@ class AboveFiveYearsRepository @Inject constructor(
                             encounter = MedicalReviewEncounter(
                                 id = prescriptionEncounterId,
                                 patientId = patientId,
-                                provenance = ProvanceDto(
-                                    createdDateTime = System.currentTimeMillis().convertToUtcDateTime()
-                                ),
+                                provenance = ProvanceDto(),
                                 latitude = lastLocation?.latitude ?: 0.0,
                                 longitude = lastLocation?.longitude ?: 0.0,
                                 householdId = hhId,
@@ -243,11 +241,7 @@ class AboveFiveYearsRepository @Inject constructor(
                                 patientId = patientId,
                                 memberId = memberId,
                                 id = submitEncounterId,
-                                provenance = ProvanceDto(
-                                    createdDateTime = DateUtils.getCurrentDateAndTime(
-                                        DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
-                                    )
-                                ),
+                                provenance = ProvanceDto(),
                                 patientReference = submitPatientReferenceId,
                                 medicalSupplies = medicalSupplyList.ifEmpty { null },
                                 cost = selectedCostItem,

@@ -263,9 +263,7 @@ class AddBpDialog : DialogFragment(), View.OnClickListener {
 
     private fun createMedicalReviewEncounter(): MedicalReviewEncounter {
         return MedicalReviewEncounter(
-            provenance = ProvanceDto(
-                createdDateTime = System.currentTimeMillis().convertToUtcDateTime()
-            ),
+            provenance = ProvanceDto(),
             latitude = viewModel.lastLocation?.latitude,
             longitude = viewModel.lastLocation?.longitude,
             patientId = arguments?.getString(DefinedParams.PatientId, ""),

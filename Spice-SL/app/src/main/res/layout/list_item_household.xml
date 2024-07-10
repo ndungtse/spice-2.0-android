@@ -93,6 +93,46 @@
                 app:layout_constraintStart_toEndOf="@id/endGuideline"
                 app:layout_constraintTop_toTopOf="@+id/tvLabelHouseholdNo" />
 
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvLabelVillage"
+                style="@style/TextStyle_Regular_16_Blue"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:text="@string/village"
+                android:textColor="@color/charcoal_grey"
+                app:layout_constraintEnd_toStartOf="@id/startGuideline"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvLabelHouseholdNo" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvLblVillageSeperator"
+                style="@style/TextStyle_Regular_16_Blue"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/separator_colon"
+                android:textColor="@color/charcoal_grey"
+                app:layout_constraintEnd_toStartOf="@id/endGuideline"
+                app:layout_constraintStart_toEndOf="@id/startGuideline"
+                app:layout_constraintTop_toTopOf="@+id/tvLabelVillage" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvVillageName"
+                style="@style/TextStyle_Regular_16_Blue"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:paddingStart="@dimen/_0dp"
+                android:paddingEnd="@dimen/_8sdp"
+                android:text="Test"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:textColor="@color/secondary_black"
+                app:layout_constraintHorizontal_weight="5"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/endGuideline"
+                app:layout_constraintTop_toTopOf="@+id/tvLabelVillage" />
+
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvLabelMembersRegistered"
@@ -104,7 +144,7 @@
                 android:textColor="@color/charcoal_grey"
                 app:layout_constraintEnd_toStartOf="@id/startGuideline"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tvLabelHouseholdNo" />
+                app:layout_constraintTop_toBottomOf="@+id/tvLabelVillage" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvMembersRegisteredSeperator"

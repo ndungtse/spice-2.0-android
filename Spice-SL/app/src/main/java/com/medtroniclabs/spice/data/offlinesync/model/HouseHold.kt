@@ -60,7 +60,7 @@ data class HouseHold(
     val updatedAt: Long,
 ) {
     @Ignore
-    var provenance: ProvanceDto = ProvanceDto(createdDateTime = createdAt.convertToUtcDateTime())
+    var provenance: ProvanceDto = ProvanceDto(modifiedDate = updatedAt.convertToUtcDateTime())
 
     @Ignore
     var householdMembers: MutableList<HouseHoldMember> = mutableListOf()

@@ -65,7 +65,7 @@ data class HouseHoldMember(
     var isChild: Boolean? = false
 
     @Ignore
-    var provenance: ProvanceDto = ProvanceDto(createdDateTime = createdAt.convertToUtcDateTime())
+    var provenance: ProvanceDto = ProvanceDto(modifiedDate = updatedAt.convertToUtcDateTime())
 
     @Ignore
     var assessments = listOf<Assessment>()

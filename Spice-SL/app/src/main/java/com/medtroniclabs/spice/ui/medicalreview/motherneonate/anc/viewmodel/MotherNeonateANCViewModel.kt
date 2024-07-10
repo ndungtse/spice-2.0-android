@@ -48,9 +48,7 @@ class MotherNeonateANCViewModel @Inject constructor(
                     encounter = MedicalReviewEncounter(
                         id = prescriptionEncounterId,
                         patientId = this@MotherNeonateANCViewModel.patientId,
-                        provenance = ProvanceDto(
-                            createdDateTime = System.currentTimeMillis().convertToUtcDateTime()
-                        ),
+                        provenance = ProvanceDto(),
                         latitude = lastLocation?.latitude ?: 0.0,
                         longitude = lastLocation?.longitude ?: 0.0,
                         startTime = DateUtils.getCurrentDateAndTime(

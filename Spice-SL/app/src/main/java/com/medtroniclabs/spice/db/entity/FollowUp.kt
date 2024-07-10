@@ -37,5 +37,5 @@ data class FollowUp(
     var followUpDetails : List<FollowUpCall> = listOf()
 
     @Ignore
-    var provenance: ProvanceDto = ProvanceDto(createdDateTime = System.currentTimeMillis().convertToUtcDateTime())
+    var provenance: ProvanceDto = ProvanceDto(modifiedDate = System.currentTimeMillis().convertToUtcDateTime())
 }

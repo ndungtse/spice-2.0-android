@@ -160,9 +160,7 @@ class AddWeightDialog : DialogFragment(), View.OnClickListener {
         return BpAndWeightRequestModel(
             weight = binding.etWeight.text?.trim().toString().toDoubleOrNull(),
             encounter = MedicalReviewEncounter(
-                provenance = ProvanceDto(
-                    createdDateTime = System.currentTimeMillis().convertToUtcDateTime()
-                ),
+                provenance = ProvanceDto(),
                 latitude = viewModel.lastLocation?.latitude,
                 longitude = viewModel.lastLocation?.longitude,
                 patientId = arguments?.getString(DefinedParams.PatientId, ""),

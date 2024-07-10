@@ -9,5 +9,7 @@ object OfflineConstant {
     const val HOUSE_HOLD_MEMBERS = "householdMembers"
     const val ASSESSMENTS = "assessments"
     const val FOLLOWUPS = "followUps"
+    const val APP_VERSION_NAME = "appVersionName"
+    const val APP_VERSION_CODE = "appVersionCode"
 
 }

@@ -126,11 +126,17 @@ class FollowUpRepository @Inject constructor(
         followUp.successfulAttempts = followUp.successfulAttempts + 1
         if (followUp.successfulAttempts >= maxSuccessfulCallLimit) {
             followUp.isCompleted = true
+            roomHelper.updateOtherDuplicateTickets(id, followUp)
         }
 
-        if ((followUp.type == FollowUpDefinedParams.FU_TYPE_HH_VISIT || followUp.type == FollowUpDefinedParams.FU_TYPE_MEDICAL_REVIEW)
-            && call.patientStatus?.equals(ReferralStatus.Referred.name, true) == true
-        ) {
+        val shouldCreateReferralTicketForHHVisit = (followUp.type == FollowUpDefinedParams.FU_TYPE_HH_VISIT &&
+                (call.patientStatus?.equals(ReferralStatus.Referred.name, true) == true
+                        || followUp.successfulAttempts >= maxSuccessfulCallLimit))
+
+        val shouldCreateReferralTicketForMR = (followUp.type == FollowUpDefinedParams.FU_TYPE_MEDICAL_REVIEW &&
+                (call.patientStatus?.equals(ReferralStatus.Referred.name, true) == true))
+
+        if (shouldCreateReferralTicketForHHVisit || shouldCreateReferralTicketForMR) {
             return getNewFollowUp(
                 followUp,
                 FollowUpDefinedParams.FU_TYPE_REFERRED,
@@ -160,7 +166,6 @@ class FollowUpRepository @Inject constructor(
                     roomHelper.updateOtherDuplicateTickets(id, followUp)
                 }
             }
-
             else -> {
                 roomHelper.updateOnTreatmentStatus(id, followUp, currentTime)
             }

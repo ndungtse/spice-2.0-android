@@ -90,9 +90,7 @@ class UnderTwoMonthViewModel @Inject constructor(
                                         patientId = selectedPatientId,
                                         memberId = memberId,
                                         referred = true,
-                                        provenance = ProvanceDto(
-                                            createdDateTime = DateUtils.getCurrentDateAndTime(DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ)
-                                        )
+                                        provenance = ProvanceDto()
                                     )
                                 )
 

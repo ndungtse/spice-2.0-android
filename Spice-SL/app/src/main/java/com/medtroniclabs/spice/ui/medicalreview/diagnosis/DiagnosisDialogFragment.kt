@@ -308,11 +308,7 @@ class DiagnosisDialogFragment : DialogFragment(), View.OnClickListener, Diagnosi
                             patientId = patientId,
                             patientReference = details.id,
                             diseases = getDiagnosisDiseaseList(),
-                            provenance = ProvanceDto(
-                                createdDateTime = DateUtils.getCurrentDateAndTime(
-                                    DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
-                                )
-                            ),
+                            provenance = ProvanceDto(),
                             otherNotes = binding.etOtherDiagnosisNotes.text?.trim().toString(),
                             type = diagnosisViewModel.diagnosisType
                         )

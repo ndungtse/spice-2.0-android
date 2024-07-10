@@ -157,11 +157,7 @@ class PrescriptionViewModel @Inject constructor(
                         id = encounterId,
                         patientReference = data.id,
                         patientId = data.patientId ?: "",
-                        memberId = data.memberId ?: "", provenance = ProvanceDto(
-                            createdDateTime = DateUtils.getCurrentDateAndTime(
-                                DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
-                            )
-                        )
+                        memberId = data.memberId ?: "", provenance = ProvanceDto()
                     ),
                     prescriptions = prescriptionList
                 )
@@ -250,11 +246,7 @@ class PrescriptionViewModel @Inject constructor(
             removePrescriptionLiveData.postLoading()
             val response = medicationRepository.removePrescription(
                 RemovePrescriptionRequest(
-                    prescriptionId, ProvanceDto(
-                        createdDateTime = DateUtils.getCurrentDateAndTime(
-                            DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
-                        )
-                    ),
+                    prescriptionId, ProvanceDto(),
                     reason
                 )
             )

@@ -23,6 +23,7 @@ object SecuredPreference {
         ISMETALOADED,
         USER_RESPONSE,
         IS_ABOVE_FIVE_YEARS_LOADED,
+        USER_ID,
         USER_FHIR_ID,
         ORGANIZATION_FHIR_ID,
         IS_MOTHER_NEONATE_LOADEDANC,
@@ -410,6 +411,7 @@ object SecuredPreference {
 
     fun putUserDetails(loginResponse: LoginResponse) {
         val loginResponseString = Gson().toJson(loginResponse)
+        putLong(EnvironmentKey.USER_ID.name, loginResponse.id)
         putString(EnvironmentKey.USER_RESPONSE.name, loginResponseString)
     }
 
@@ -431,7 +433,7 @@ object SecuredPreference {
     }
 
     fun getUserId(): Long {
-        return getUserDetails().id
+        return getLong(EnvironmentKey.USER_ID.name)
     }
 
     fun getPhoneNumberCode(): String? {

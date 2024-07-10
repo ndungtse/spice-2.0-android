@@ -100,11 +100,7 @@ class UnderFiveYearsViewModel @Inject constructor(
                                         patientId = selectedPatientId,
                                         memberId = memberId,
                                         referred = true,
-                                        provenance = ProvanceDto(
-                                            createdDateTime = DateUtils.getCurrentDateAndTime(
-                                                DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
-                                            )
-                                        )
+                                        provenance = ProvanceDto()
                                     ),
                                     systemicExaminationNotes = systemicExaminationsNotes,
                                     systemicExamination = systemicExaminations
@@ -395,11 +391,7 @@ class UnderFiveYearsViewModel @Inject constructor(
                     submitCreateId = submitCreateId,
                     memberId = memberId,
                     id = submitCreateId,
-                    provenance = ProvanceDto(
-                        createdDateTime = DateUtils.getCurrentDateAndTime(
-                            DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
-                        )
-                    ),
+                    provenance = ProvanceDto(),
                     patientReference = details.id,
                     nextVisitDate = DateUtils.convertDateTimeToDate(
                         nextFollowUpDate,
