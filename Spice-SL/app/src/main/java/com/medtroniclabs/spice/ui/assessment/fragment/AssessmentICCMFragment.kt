@@ -496,8 +496,10 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
             else -> {
                 if (enteredDays!=null && enteredDays > noOfDays) {
                     updateColorCode(id, ContextCompat.getColor(requireContext(), R.color.medium_high_risk_color))
+                    displayDaysInformation(id, View.VISIBLE)
                 } else {
                     updateColorCode(id, ContextCompat.getColor(requireContext(), R.color.secondary_black))
+                    displayDaysInformation(id, View.INVISIBLE)
                 }
             }
         }
@@ -508,27 +510,27 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
     }
 
     private fun dismissAmoxicillinStatus(resultMap: HashMap<String, Any>?) {
-//        formGenerator.getViewByTag((Amoxicillin.lowercase()) + rootSuffix )?.apply {
-//            visibility = View.GONE
-//            resultMap?.let {map ->
-//                if (map.containsKey(Amoxicillin.lowercase())){
-//                    map.remove(Amoxicillin.lowercase())
-//                    formGenerator.resetSingleSelection(Amoxicillin.lowercase())
-//                }
-//            }
-//        }
-//        formGenerator.getViewByTag(AmoxicillinStatus + rootSuffix)?.apply {
-//            visibility = View.GONE
-//        }
+        formGenerator.getViewByTag((Amoxicillin.lowercase()) + rootSuffix )?.apply {
+            visibility = View.GONE
+            resultMap?.let {map ->
+                if (map.containsKey(Amoxicillin.lowercase())){
+                    map.remove(Amoxicillin.lowercase())
+                    formGenerator.resetSingleSelection(Amoxicillin.lowercase())
+                }
+            }
+        }
+        formGenerator.getViewByTag(AmoxicillinStatus + rootSuffix)?.apply {
+            visibility = View.GONE
+        }
     }
 
     private fun getAmoxicillinStatus() {
-//        formGenerator.getViewByTag((Amoxicillin.lowercase()) + rootSuffix )?.apply {
-//            visibility = View.VISIBLE
-//        }
-//        formGenerator.getViewByTag(AmoxicillinStatus + rootSuffix)?.apply {
-//            visibility = View.VISIBLE
-//        }
+        formGenerator.getViewByTag((Amoxicillin.lowercase()) + rootSuffix )?.apply {
+            visibility = View.VISIBLE
+        }
+        formGenerator.getViewByTag(AmoxicillinStatus + rootSuffix)?.apply {
+            visibility = View.VISIBLE
+        }
     }
 
     private fun updateColorCode(id: String, colorCode: Int) {
