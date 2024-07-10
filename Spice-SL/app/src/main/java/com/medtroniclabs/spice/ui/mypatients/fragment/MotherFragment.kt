@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.view.isVisible
+import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.CommonUtils
@@ -42,10 +43,24 @@ class MotherFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        initListeners()
         initializeChipItem()
         attachObserver()
         initializeStateOfPerineumLabel()
         initializeTearLabel()
+    }
+
+    private fun initListeners() {
+        binding.tvNumber.doAfterTextChanged {
+            val ttNoOfDosage = it?.trim().toString()
+            if(ttNoOfDosage.isNotEmpty()) {
+                viewModel.motherTTDosageSoFar = ttNoOfDosage
+                viewModel.validateSubmitButtonState()
+            }else {
+                viewModel.motherTTDosageSoFar = null
+                viewModel.validateSubmitButtonState()
+            }
+        }
     }
 
     private fun attachObserver() {
@@ -131,12 +146,24 @@ class MotherFragment : BaseFragment() {
 
     private fun initializeChipItem() {
         cgGeneralConditionOfMother =
-            TagListCustomView(binding.root.context, binding.cgGeneralConditionOfMother)
-        cgRiskFactors = TagListCustomView(binding.root.context, binding.cgRiskFactors)
+            TagListCustomView(binding.root.context, binding.cgGeneralConditionOfMother) { name, _, _ ->
+                viewModel.motherGeneralCondition = name
+                viewModel.validateSubmitButtonState()
+            }
+        cgRiskFactors = TagListCustomView(binding.root.context, binding.cgRiskFactors) { _, _, _ ->
+            viewModel.motherRiskFactors = cgRiskFactors.getSelectedTags()
+            viewModel.validateSubmitButtonState()
+        }
         cgStatus =
-            TagListCustomView(binding.root.context, binding.cgStatus)
+            TagListCustomView(binding.root.context, binding.cgStatus) { _, _, _ ->
+                viewModel.motherStatus = cgStatus.getSelectedTags()
+                viewModel.validateSubmitButtonState()
+            }
         cgSignSymptomsObserved =
-            TagListCustomView(binding.root.context, binding.cgSignsSymptomsObserved)
+            TagListCustomView(binding.root.context, binding.cgSignsSymptomsObserved) { _, _, _ ->
+                viewModel.motherSignsAndSymptoms = cgSignSymptomsObserved.getSelectedTags()
+                viewModel.validateSubmitButtonState()
+            }
     }
 
     companion object {
@@ -182,6 +209,7 @@ class MotherFragment : BaseFragment() {
     private var singleSelectionCallback: ((selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit)? =
         { selectedID, _, _, _ ->
             saveSelectedOptionValue(selectedID)
+            viewModel.validateSubmitButtonState()
         }
 
     private fun saveSelectedOptionValue(selectedID: Any?) {

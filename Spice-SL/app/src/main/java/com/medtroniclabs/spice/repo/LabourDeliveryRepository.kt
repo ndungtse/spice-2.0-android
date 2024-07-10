@@ -1,8 +1,13 @@
 package com.medtroniclabs.spice.repo
 
 import com.medtroniclabs.spice.common.SecuredPreference
+import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.data.LabourDeliveryMetaEntity
 import com.medtroniclabs.spice.db.local.RoomHelper
+import com.medtroniclabs.spice.model.medicalreview.CreateLabourDeliveryRequest
+import com.medtroniclabs.spice.model.medicalreview.CreateLabourDeliveryResponse
+import com.medtroniclabs.spice.model.medicalreview.LabourDeliverySummaryDetails
+import com.medtroniclabs.spice.model.medicalreview.LabourDeliverySummaryRequest
 import com.medtroniclabs.spice.network.ApiHelper
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.network.resource.ResourceState
@@ -97,6 +102,48 @@ class LabourDeliveryRepository @Inject constructor(
             Resource(ResourceState.SUCCESS, response)
         } catch (e: Exception) {
             Resource(ResourceState.ERROR)
+        }
+    }
+
+    suspend fun createLabourDeliveryMedicalReview(request: CreateLabourDeliveryRequest): Resource<CreateLabourDeliveryResponse> {
+        return try {
+            val response = apiHelper.createMedicalReviewLabourDelivery(request)
+            if (response.isSuccessful) {
+                Resource(ResourceState.SUCCESS, response.body()?.entity)
+            } else {
+                val errorMessage = StringConverter.getErrorMessage(response.errorBody())
+                Resource(state = ResourceState.ERROR, message = errorMessage)
+            }
+        } catch (e: Exception) {
+            Resource(ResourceState.ERROR, message = e.localizedMessage)
+        }
+    }
+
+    suspend fun getLabourDeliverySummaryDetails(request: LabourDeliverySummaryDetails): Resource<CreateLabourDeliveryRequest> {
+        return try {
+            val response = apiHelper.getLabourDeliverySummaryDetails(request)
+            if (response.isSuccessful) {
+                Resource(ResourceState.SUCCESS, response.body()?.entity)
+            } else {
+                val errorMessage = StringConverter.getErrorMessage(response.errorBody())
+                Resource(state = ResourceState.ERROR, message = errorMessage)
+            }
+        } catch (e: Exception) {
+            Resource(ResourceState.ERROR, message = e.localizedMessage)
+        }
+    }
+
+    suspend fun labourDeliverySummaryCreate(request: LabourDeliverySummaryRequest): Resource<HashMap<String, Any>> {
+        return try{
+            val response = apiHelper.labourDeliverySummaryCreate(request)
+            if (response.isSuccessful) {
+                Resource(ResourceState.SUCCESS, response.body()?.entity)
+            } else {
+                val errorMessage = StringConverter.getErrorMessage(response.errorBody())
+                Resource(state = ResourceState.ERROR, message = errorMessage)
+            }
+        } catch (e: Exception) {
+            Resource(ResourceState.ERROR, message = e.localizedMessage)
         }
     }
 }

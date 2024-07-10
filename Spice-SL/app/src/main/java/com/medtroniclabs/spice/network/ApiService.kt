@@ -41,6 +41,7 @@ import com.medtroniclabs.spice.data.model.MotherNeonateAncRequest
 import com.medtroniclabs.spice.data.model.PatientEncounterResponse
 import com.medtroniclabs.spice.data.offlinesync.model.HouseHold
 import com.medtroniclabs.spice.data.offlinesync.model.RequestGetSyncStatus
+import com.medtroniclabs.spice.data.offlinesync.model.ResponseInitialDownload
 import com.medtroniclabs.spice.data.offlinesync.model.SyncResponse
 import com.medtroniclabs.spice.data.BirthHistoryRequest
 import com.medtroniclabs.spice.data.BirthHistoryResponse
@@ -52,7 +53,11 @@ import com.medtroniclabs.spice.model.ReferralData
 import com.medtroniclabs.spice.model.ReferralDetailRequest
 import com.medtroniclabs.spice.model.SearchAndListResponse
 import com.medtroniclabs.spice.model.medicalreview.CreateUnderFiveYearsRequest
+import com.medtroniclabs.spice.model.medicalreview.CreateLabourDeliveryRequest
+import com.medtroniclabs.spice.model.medicalreview.CreateLabourDeliveryResponse
 import com.medtroniclabs.spice.model.medicalreview.CreateUnderTwoMonthsResponse
+import com.medtroniclabs.spice.model.medicalreview.LabourDeliverySummaryDetails
+import com.medtroniclabs.spice.model.medicalreview.LabourDeliverySummaryRequest
 import com.medtroniclabs.spice.model.medicalreview.SummaryDetails
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
@@ -113,6 +118,12 @@ interface ApiService {
     @POST("/spice-service/static-data/meta-data/mother-neonate-anc")
     suspend fun getMotherNeoNateAncStaticData(): Response<APIResponse<MotherNeonateAncMetaResponse>>
 
+    @POST("/spice-service/medical-review/labour-mother-neonate/create")
+    suspend fun createMedicalReviewForLaborDelivery(@Body labourDeliveryRequest: CreateLabourDeliveryRequest): Response<APIResponse<CreateLabourDeliveryResponse>>
+
+    @POST("/spice-service/medical-review/summary-create")
+    suspend fun labourDeliverySummaryCreate(@Body request: LabourDeliverySummaryRequest): Response<APIResponse<HashMap<String, Any>>>
+
     @POST("/spice-service/static-data/meta-data/iccm-under-two-months")
     suspend fun getUnderTwoMonthsMetaData(): Response<APIResponse<UnderTwoMonthsMetaResponse>>
 
@@ -122,6 +133,8 @@ interface ApiService {
     @POST("/spice-service/static-data/meta-data/mother-delivery")
     suspend fun getLabourDeliveryMetaData(): Response<APIResponse<LabourDeliveryMetaResponse>>
 
+    @POST("/spice-service/medical-review/labour-mother-neonate/details")
+    suspend fun getLabourDeliverySummaryDetails(@Body request: LabourDeliverySummaryDetails): Response<APIResponse<CreateLabourDeliveryRequest>>
     @POST("/admin-service/medication/search")
     suspend fun searchMedicationByName(@Body request: MedicationSearchRequest): Response<APIResponse<ArrayList<MedicationResponse>>>
 

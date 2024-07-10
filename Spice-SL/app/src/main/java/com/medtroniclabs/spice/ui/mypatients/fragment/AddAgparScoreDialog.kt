@@ -78,6 +78,7 @@ class AddAgparScoreDialog : DialogFragment() {
 
         binding.btnOkay.setOnClickListener {
             viewModel.updateAgparScore(binding.etAgparScore.text.toString())
+            viewModel.validateSubmitButtonState()
             dismiss()
         }
 

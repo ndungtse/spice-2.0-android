@@ -5,15 +5,27 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
+import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.setFragmentResult
+import com.medtroniclabs.spice.common.CommonUtils.convertListToString
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.ViewUtils
 import com.medtroniclabs.spice.databinding.FragmentMotherSummaryBinding
+import com.medtroniclabs.spice.formgeneration.extension.markMandatory
+import com.medtroniclabs.spice.model.medicalreview.MotherDTO
+import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
+import com.medtroniclabs.spice.ui.medicalreview.labourDelivery.LabourDeliveryViewModel
+import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 
 class MotherSummaryFragment : BaseFragment() {
 
     private lateinit var binding : FragmentMotherSummaryBinding
     private var datePickerDialog : DatePickerDialog? = null
+    private val viewModel: LabourDeliveryViewModel by activityViewModels()
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -24,7 +36,63 @@ class MotherSummaryFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        initView()
         initializeDatePicker()
+        attachObserver()
+    }
+
+    private fun initView() {
+        binding.tvNextVisitDateLabel.markMandatory()
+    }
+
+    private fun attachObserver() {
+        viewModel.summaryDetailsLiveData.observe(viewLifecycleOwner) { resourceState ->
+            when (resourceState.state) {
+                ResourceState.LOADING -> {
+                    showProgress()
+                }
+
+                ResourceState.SUCCESS -> {
+                    hideProgress()
+                    resourceState.data?.let { motherState ->
+                        setDetails(motherState.motherDTO)
+                    }
+                }
+
+                ResourceState.ERROR -> {
+                    hideProgress()
+                }
+
+            }
+        }
+    }
+
+    private fun setDetails(motherDTO: MotherDTO?) {
+        binding.tvDateOfDelivery.text =
+            calculateDateTime(motherDTO?.labourDTO?.dateAndTimeOfDelivery.toString(), true)
+        binding.tvDateOfLabourOnset.text =
+            calculateDateTime(motherDTO?.labourDTO?.dateAndTimeOfLabourOnset.toString(), true)
+        binding.tvDateType.text = motherDTO?.labourDTO?.deliveryType.toString()
+        binding.tvGeneralConditionOfMother.text = motherDTO?.generalConditions.toString()
+        binding.tvStateOfThePerineum.text = motherDTO?.stateOfPerineum.toString()
+        binding.tvPatientStatus.text = ""
+        binding.tvStatus.text = motherDTO?.status?.map { it }
+            ?.let { ArrayList(it) }?.let { convertListToString(it) }
+        binding.tvTimeOfDelivery.text =
+            calculateDateTime(motherDTO?.labourDTO?.dateAndTimeOfDelivery.toString(), false)
+        binding.tvTimeOfLabourOnset.text =
+            calculateDateTime(motherDTO?.labourDTO?.dateAndTimeOfLabourOnset.toString(), false)
+    }
+
+    private fun calculateDateTime(dateTime: String, isDate: Boolean): String? {
+        val inputFormatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME
+        val dateTime1 = ZonedDateTime.parse(dateTime, inputFormatter)
+        val timeFormatter: DateTimeFormatter = if (isDate) {
+            DateTimeFormatter.ofPattern(DateUtils.DATE_ddMMyyyy)
+        } else {
+            DateTimeFormatter.ofPattern(DateUtils.TIME_FORMAT_hhmma)
+        }
+        return dateTime1.format(timeFormatter)
     }
 
     private fun initializeDatePicker() {
@@ -51,7 +119,9 @@ class MotherSummaryFragment : BaseFragment() {
                         DateUtils.DATE_FORMAT_ddMMyyyy,
                         DateUtils.DATE_ddMMyyyy
                     )
+                viewModel.nextFollowupDate = binding.tvNextVisitDate.text.toString()
                 datePickerDialog = null
+                summaryListener()
             }
         }
     }
@@ -62,5 +132,12 @@ class MotherSummaryFragment : BaseFragment() {
         fun newInstance():MotherSummaryFragment {
             return MotherSummaryFragment()
         }
+    }
+    private fun summaryListener() {
+        setFragmentResult(
+            MedicalReviewDefinedParams.SUMMARY_ITEM, bundleOf(
+                MedicalReviewDefinedParams.SUMMARY_ITEM to true
+            )
+        )
     }
 }

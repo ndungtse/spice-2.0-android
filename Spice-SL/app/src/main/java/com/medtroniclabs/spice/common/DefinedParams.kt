@@ -94,4 +94,6 @@ object DefinedParams {
     const val Postpartum = "Postpartum"
     const val Lactating = "Lactating"
 
+    const val NeonatePatientIdPrefix = "HM-"
+    const val NeonateBabyNamePrefix = "Baby Of"
 }

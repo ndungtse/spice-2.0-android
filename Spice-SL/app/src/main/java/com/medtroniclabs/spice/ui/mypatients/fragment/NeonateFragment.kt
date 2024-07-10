@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.view.isVisible
+import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.CommonUtils
@@ -18,9 +19,9 @@ import com.medtroniclabs.spice.formgeneration.ui.SingleSelectionCustomView
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.TagListCustomView
-import com.medtroniclabs.spice.ui.mypatients.adapter.AgparScoreAdapter
 import com.medtroniclabs.spice.ui.medicalreview.labourDelivery.LabourDeliveryViewModel
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
+import com.medtroniclabs.spice.ui.mypatients.adapter.AgparScoreAdapter
 
 class NeonateFragment : BaseFragment() {
 
@@ -68,7 +69,7 @@ class NeonateFragment : BaseFragment() {
 
         }
 
-        viewModel.agparScoreLiveData.observe(viewLifecycleOwner) {
+        viewModel.apgarScoreLiveData.observe(viewLifecycleOwner) {
             agparScoreAdapter.submitData(it)
         }
     }
@@ -144,11 +145,13 @@ class NeonateFragment : BaseFragment() {
     private var genderSingleSelectionCallback: ((selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit)? =
         { selectedID, _, _, _ ->
             viewModel.genderFlow[DefinedParams.Gender] = selectedID as String
+            viewModel.validateSubmitButtonState()
         }
 
     private var stateOfBabySingleSelectionCallback: ((selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit)? =
         { selectedID, _, _, _ ->
             viewModel.stateOfBaby[DefinedParams.StateOfBaby] = selectedID as String
+            viewModel.validateSubmitButtonState()
         }
 
     private fun getGenderFlowData(): ArrayList<Map<String, Any>> {
@@ -198,9 +201,27 @@ class NeonateFragment : BaseFragment() {
         binding.rvAgparScores.adapter = agparScoreAdapter
         viewModel.getAgparScoreData()
 
-        cgNeonateOutcome = TagListCustomView(binding.root.context, binding.cgNeonateOutcome)
+        binding.etBirthWeight.doAfterTextChanged {
+            val birthWeight = it?.trim().toString()
+            if (birthWeight.isNotEmpty()) {
+                viewModel.neonateBirthWeight = birthWeight
+                viewModel.validateSubmitButtonState()
+            } else {
+                viewModel.neonateBirthWeight = null
+                viewModel.validateSubmitButtonState()
+            }
+        }
+
+        cgNeonateOutcome =
+            TagListCustomView(binding.root.context, binding.cgNeonateOutcome) { name, _, _ ->
+                viewModel.neonateOutcome = name
+                viewModel.validateSubmitButtonState()
+            }
         cgSignSymptomsObserved =
-            TagListCustomView(binding.root.context, binding.cgSignsSymptomsObserved)
+            TagListCustomView(binding.root.context, binding.cgSignsSymptomsObserved) { _, _, _ ->
+                viewModel.neonateSignsAndSymptoms = cgSignSymptomsObserved.getSelectedTags()
+                viewModel.validateSubmitButtonState()
+            }
     }
 
     private fun showAgparScoreDialog() {

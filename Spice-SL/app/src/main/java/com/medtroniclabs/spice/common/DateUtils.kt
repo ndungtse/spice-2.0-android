@@ -6,6 +6,7 @@ import com.medtroniclabs.spice.data.model.CalendarPeriod
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams
 import org.joda.time.PeriodType
 import java.text.SimpleDateFormat
+import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.OffsetDateTime
@@ -32,6 +33,9 @@ object DateUtils {
     const val DATE_FORMAT_ddMMMyyyy = "dd MMM, yyyy"
     const val DATE_TIME_DISPLAY_FORMAT = "dd MMM, yyyy - hh:mm a"
     const val DATE_TIME_CALL_DISPLAY_FORMAT = "dd MMM, hh:mm a"
+    const val TIME_FORMAT_hhmm = "hh:mm"
+    const val TIME_FORMAT_hhmma = "hh:mm a"
+
 
     fun getYearMonthAndWeek(
         inputDate: String,
@@ -416,6 +420,8 @@ object DateUtils {
         return dateFormat.format(tomorrowDate)
         
     }
+
+    fun getCurrentDateTimeInMillis(): Long = Instant.now().toEpochMilli()
 
     fun calculateGestationalAge(lmpDate: LocalDate): Long {
         val currentDate = LocalDate.now()

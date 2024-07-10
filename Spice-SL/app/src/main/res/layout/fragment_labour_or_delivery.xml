@@ -105,7 +105,7 @@
             android:textColor="@color/table_title"
             android:textSize="@dimen/_16ssp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvDateOfDeliveryError" />
+            app:layout_constraintTop_toBottomOf="@+id/barrierOne" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/etDateOfLabourOnset"
@@ -149,7 +149,7 @@
             android:textColor="@color/table_title"
             android:textSize="@dimen/_16ssp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvDateOfLabourOnsetError" />
+            app:layout_constraintTop_toBottomOf="@+id/barrierTwo" />
 
         <androidx.appcompat.widget.AppCompatSpinner
             android:id="@+id/etDeliveryType"
@@ -347,9 +347,8 @@
             android:text="@string/time_of_labour_onset"
             android:textColor="@color/table_title"
             android:textSize="@dimen/_16ssp"
-            app:layout_constraintBottom_toTopOf="@id/etDateOfLabourOnset"
             app:layout_constraintStart_toStartOf="@+id/centerGuideline"
-            app:layout_constraintTop_toBottomOf="@+id/tvTimeOfDeliveryError" />
+            app:layout_constraintTop_toBottomOf="@+id/barrierOne" />
 
         <androidx.appcompat.widget.AppCompatEditText
             android:id="@+id/etHrsTimeOfLabourOnset"
@@ -425,7 +424,7 @@
             android:textColor="@color/table_title"
             android:textSize="@dimen/_16ssp"
             app:layout_constraintStart_toStartOf="@+id/centerGuideline"
-            app:layout_constraintTop_toBottomOf="@+id/tvTimeOfLabourOnsetError" />
+            app:layout_constraintTop_toBottomOf="@+id/barrierTwo" />
 
         <androidx.appcompat.widget.AppCompatSpinner
             android:id="@+id/etDeliveryBy"
@@ -486,6 +485,19 @@
             app:layout_constraintStart_toStartOf="@id/etDeliveryStatus"
             app:layout_constraintTop_toBottomOf="@id/etDeliveryStatus" />
 
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/barrierOne"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:barrierDirection="bottom"
+            app:constraint_referenced_ids="tvTimeOfDeliveryError, tvDateOfDeliveryError "/>
+
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/barrierTwo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:constraint_referenced_ids="tvTimeOfLabourOnsetError,tvDateOfLabourOnsetError "
+            app:barrierDirection="bottom"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </com.google.android.material.card.MaterialCardView>

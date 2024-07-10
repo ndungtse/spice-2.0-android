@@ -7,7 +7,7 @@ import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.databinding.RowAgparFooterBinding
 import com.medtroniclabs.spice.databinding.RowAgparHeaderBinding
 import com.medtroniclabs.spice.databinding.RowAgparScoreBinding
-import com.medtroniclabs.spice.model.assessment.AgparScore
+import com.medtroniclabs.spice.model.assessment.ApgarScore
 import com.medtroniclabs.spice.model.assessment.AgparScoreFooter
 import com.medtroniclabs.spice.model.assessment.AgparScoreHeader
 import com.medtroniclabs.spice.model.assessment.AgparScoreRow
@@ -18,7 +18,7 @@ import com.medtroniclabs.spice.ui.mypatients.enumType.AgparRowIdentifierType
 class AgparScoreAdapter(val onClick: (rowType: AgparRowIdentifierType, columnType: AgparColumnIdentifierType, score: String?) -> Unit) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    private var agparScores = mutableListOf<AgparScore>()
+    private var apgarScores = mutableListOf<ApgarScore>()
 
     inner class AgparHeaderViewHolder(val binding: RowAgparHeaderBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(header: AgparScoreHeader) {
@@ -82,7 +82,7 @@ class AgparScoreAdapter(val onClick: (rowType: AgparRowIdentifierType, columnTyp
     }
 
     override fun getItemViewType(position: Int): Int {
-        return when (agparScores[position].viewType) {
+        return when (apgarScores[position].viewType) {
             AgparItemViewType.HEADER -> 0
             AgparItemViewType.ROW -> 1
             AgparItemViewType.FOOTER -> 2
@@ -100,29 +100,29 @@ class AgparScoreAdapter(val onClick: (rowType: AgparRowIdentifierType, columnTyp
     }
 
     override fun getItemCount(): Int {
-        return agparScores.size
+        return apgarScores.size
     }
 
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
             is AgparHeaderViewHolder -> {
-                agparScores[position].header?.let { holder.bind(it) }
+                apgarScores[position].header?.let { holder.bind(it) }
             }
 
             is AgparFooterViewHolder -> {
-                agparScores[position].footer?.let { holder.bind(it) }
+                apgarScores[position].footer?.let { holder.bind(it) }
             }
 
             is AgparItemViewHolder -> {
-                agparScores[position].row?.let { holder.bind(it) }
+                apgarScores[position].row?.let { holder.bind(it) }
             }
         }
     }
 
-    fun submitData(agparScores: List<AgparScore>) {
-        this.agparScores.clear()
-        this.agparScores = agparScores.toMutableList()
+    fun submitData(apgarScores: List<ApgarScore>) {
+        this.apgarScores.clear()
+        this.apgarScores = apgarScores.toMutableList()
         notifyDataSetChanged()
     }
 }

@@ -22,6 +22,8 @@ data class PatientListRespModel(
     val isPregnant: Boolean? = null,
     val pregnancyDetails: PregnancyDetails? = null,
     val villageId:String? = null,
+    val relationship:String? = null,
+    val phoneNumberCategory:String? = null
 )
 
 data class PregnancyDetails(
