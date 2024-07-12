@@ -1,15 +1,9 @@
-Modules:
+Modules
 
-1.Household
-2.Member
-3.ICCM Assessment
-4.Other Symptoms
-5.RMNCH Assessment (ANC, PNC, Childhood visit)
-6.Offline Sync
-7.Patient List
-8.Referral ticket, Prescription and Medical review history
-9.Medical Review Prescription
-10.Medical Review Above 5 years
-11.Medical Review Mother Neonate (ANC)
+CHW:
+1.Follow-up
+2.Schedule Sync (once every hour)
 
-Also bugs with deployed status in the respective bug sheet. Let us know if any clarifications are needed.
+Medical Review:
+1.Under 5 Years (0-2 Months)
+2.Under 2 to 5 Years

@@ -19,6 +19,7 @@ import com.medtroniclabs.spice.formgeneration.config.DefinedParams.MONTHS
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.WEEK
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.WEEKS
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.YEARS
+import com.medtroniclabs.spice.formgeneration.extension.capitalizeFirstChar
 import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import java.io.File
@@ -142,7 +143,8 @@ object CommonUtils {
     }
 
     fun convertListToString(dispensedList: ArrayList<String>): String {
-        return dispensedList.nullIfEmpty()?.joinToString(separator = ", ") ?: "-"
+        return dispensedList.nullIfEmpty()
+            ?.joinToString(separator = ", ") { it.capitalizeFirstChar() } ?: "-"
     }
 
     fun getYearMonthAndWeeks(dateString: String): Triple<String, String, String> {
@@ -443,19 +445,19 @@ object CommonUtils {
         }
     }
 
-    fun convertAnyToString(value: Any?): String {
+    fun convertAnyToString(value: Any?,context: Context): String {
         return when (value) {
             is String -> value
             is List<*> -> {
                 if (value.all { it is String }) {
                     (value as List<String>).joinToString(", ")
                 } else {
-                    ""
+                    context.getString(R.string.separator_double_hyphen)
                 }
             }
 
-            null -> "--"
-            else -> ""
+            null -> context.getString(R.string.separator_double_hyphen)
+            else -> context.getString(R.string.separator_double_hyphen)
         }
     }
 

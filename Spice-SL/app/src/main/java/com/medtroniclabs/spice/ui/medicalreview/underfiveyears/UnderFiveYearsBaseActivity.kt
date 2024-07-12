@@ -1,10 +1,12 @@
 package com.medtroniclabs.spice.ui.medicalreview.underfiveyears
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.ScrollView
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.core.widget.NestedScrollView
 import com.medtroniclabs.spice.R
@@ -396,12 +398,7 @@ class UnderFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
             }
 
             binding.ivPrescription.id -> {
-                patientDetailViewModel.patientDetailsLiveData.value?.data?.let { data ->
-                    val intent = Intent(this, PrescriptionActivity::class.java)
-                    intent.putExtra(DefinedParams.PatientId, data.patientId)
-                    intent.putExtra(DefinedParams.EncounterId, patientDetailViewModel.encounterId)
-                    startActivity(intent)
-                }
+                handlePrescriptionClick()
             }
 
             R.id.btnRefer -> {
@@ -414,6 +411,16 @@ class UnderFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
                         supportFragmentManager, ReferPatientFragment.TAG
                     )
                 }
+            }
+        }
+    }
+
+    private fun handlePrescriptionClick() {
+        patientDetailViewModel.patientDetailsLiveData.value?.data?.let { data ->
+            Intent(this, PrescriptionActivity::class.java).apply {
+                putExtra(DefinedParams.PatientId, data.patientId)
+                putExtra(DefinedParams.EncounterId, patientDetailViewModel.encounterId)
+                getResult.launch(this)
             }
         }
     }
@@ -439,6 +446,15 @@ class UnderFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
             ) {}
         }
     }
+
+    private val getResult =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                result.data?.getStringExtra(DefinedParams.EncounterId)?.let { value ->
+                    patientDetailViewModel.encounterId = value
+                }
+            }
+        }
 
     private fun summaryDone() {
         if (connectivityManager.isNetworkAvailable()) {

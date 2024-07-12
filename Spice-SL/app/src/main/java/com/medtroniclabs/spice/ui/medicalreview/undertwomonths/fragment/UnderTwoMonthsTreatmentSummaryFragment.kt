@@ -181,7 +181,7 @@ class UnderTwoMonthsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
     private fun convertExaminationDetailsToString(details: List<ExaminationDetail>): List<String> {
         return details.map { detail ->
             val title = detail.title ?: ""
-            val value = convertAnyToString(detail.value)
+            val value = convertAnyToString(detail.value, requireContext())
             "$title : $value"
         }
     }
