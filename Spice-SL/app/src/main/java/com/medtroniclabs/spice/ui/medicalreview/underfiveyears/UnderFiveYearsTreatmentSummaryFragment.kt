@@ -15,6 +15,8 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.invisible
 import com.medtroniclabs.spice.appextensions.visible
+import com.medtroniclabs.spice.common.CommonUtils
+import com.medtroniclabs.spice.common.CommonUtils.convertAnyToString
 import com.medtroniclabs.spice.common.CommonUtils.convertListToString
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
@@ -157,6 +159,8 @@ class UnderFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
                     ArrayList(list.map { it.diseaseCategory }.distinct())
                 )
             } ?: requireContext().getString(R.string.empty__)
+        binding.tvPrescription.text= details?.prescriptions.let { CommonUtils.createPrescription(it,requireContext()) }?.takeIf { it.isNotEmpty() }
+            ?: requireContext().getString(R.string.empty__)
         examinationList(details)
     }
 
@@ -177,7 +181,7 @@ class UnderFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
     private fun convertExaminationDetailsToString(details: List<ExaminationDetail>): List<String> {
         return details.map { detail ->
             val title = detail.title ?: ""
-            val value = detail.value ?: ""
+            val value = convertAnyToString(detail.value)
             "$title : $value"
         }
     }

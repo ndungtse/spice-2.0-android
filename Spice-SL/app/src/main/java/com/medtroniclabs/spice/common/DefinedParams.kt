@@ -36,6 +36,7 @@ object DefinedParams {
     const val PAGE_INDEX = 0
     const val label = "label"
     const val value = "value"
+    const val Value = "Value"
     const val MenuTitle = "MenuTitle"
     const val PatientId = "PatientId"
     const val TimeOfDelivery = "timeOfDelivery"

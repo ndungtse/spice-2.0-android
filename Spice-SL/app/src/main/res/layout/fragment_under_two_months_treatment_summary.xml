@@ -309,7 +309,7 @@
                 android:layout_width="@dimen/_0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/_24sdp"
-                android:text="@string/gene_expert"
+                android:text="@string/separator_double_hyphen"
                 android:textColor="@color/grey_black"
                 android:textSize="@dimen/_16ssp"
                 android:fontFamily="@font/inter_medium"

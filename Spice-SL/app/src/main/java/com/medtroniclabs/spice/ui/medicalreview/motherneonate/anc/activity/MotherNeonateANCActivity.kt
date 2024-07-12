@@ -28,7 +28,6 @@ import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.dialog.MedicalReviewSuccessDialogFragment
-import com.medtroniclabs.spice.ui.landing.LandingActivity
 import com.medtroniclabs.spice.ui.landing.OnDialogDismissListener
 import com.medtroniclabs.spice.ui.medicalreview.ClinicalNotesFragment
 import com.medtroniclabs.spice.ui.medicalreview.PresentingComplaintsFragment
@@ -449,54 +448,46 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
 
     override fun onClick(v: View?) {
         when (v?.id) {
-            binding.btnLayout.btnNext.id -> {
-                validatePregnantDetails()
-            }
+            binding.btnLayout.btnNext.id -> validatePregnantDetails()
+            binding.ivPrescription.id -> openPrescriptionActivity()
+            binding.btnSubmit.id -> validateAndSubmitRequest()
+            binding.btnDone.id -> submitSummary()
+            binding.btnRefer.id -> showReferPatientDialog()
+            binding.loadingProgress.id -> {}
+        }
+    }
 
-            binding.ivPrescription.id -> {
-                patientViewModel.patientDetailsLiveData.value?.data?.let {data ->
-                    val intent  = Intent(this, PrescriptionActivity::class.java)
-                    intent.putExtra(DefinedParams.PatientId,data.patientId)
-                    intent.putExtra(DefinedParams.EncounterId,patientViewModel.encounterId)
-                    getResult.launch(intent)
-                }
-            }
+    private fun validateAndSubmitRequest() {
+        val fragment =
+            supportFragmentManager.findFragmentById(R.id.systemicExaminationsContainer) as? SystemicExaminationsFragment
+        val clFragment =
+            supportFragmentManager.findFragmentById(R.id.clinicalNotesContainer) as? ClinicalNotesFragment
+        if (fragment != null && clFragment != null) {
+            val isFragmentValid = fragment.validateInput()
+            val isClFragmentValid = clFragment.validateInput()
 
-            binding.btnSubmit.id -> {
-                val fragment =
-                    supportFragmentManager.findFragmentById(R.id.systemicExaminationsContainer) as? SystemicExaminationsFragment
-                val clFragment =
-                    supportFragmentManager.findFragmentById(R.id.clinicalNotesContainer) as? ClinicalNotesFragment
-                if (fragment != null && clFragment != null) {
-                    val isFragmentValid = fragment.validateInput()
-                    val isClFragmentValid = clFragment.validateInput()
-
-                    if (isFragmentValid && isClFragmentValid) {
-                        submitRequest(patientViewModel.encounterId)
-                    }
-                }
+            if (isFragmentValid && isClFragmentValid) {
+                submitRequest(patientViewModel.encounterId)
             }
+        }
+    }
 
-            binding.btnDone.id -> {
-                submitSummary()
-            }
+    private fun showReferPatientDialog() {
+        viewModel.motherNeonateCreateResponse.value?.data?.let {
+            ReferPatientFragment.newInstance(
+                MedicalReviewTypeEnums.ANC.name,
+                it.patientReference,
+                it.encounterId
+            ).show(supportFragmentManager, ReferPatientFragment.TAG)
+        }
+    }
 
-            binding.btnRefer.id -> {
-                viewModel.motherNeonateCreateResponse.value?.data?.let {
-                    ReferPatientFragment.newInstance(
-                        MedicalReviewTypeEnums.ANC.name,
-                        it.patientReference,
-                        it.encounterId
-                    )
-                        .show(
-                            supportFragmentManager,
-                            ReferPatientFragment.TAG
-                        )
-                }
-            }
-            binding.loadingProgress.id -> {
-
-            }
+    private fun openPrescriptionActivity() {
+        patientViewModel.patientDetailsLiveData.value?.data?.let { data ->
+            val intent = Intent(this, PrescriptionActivity::class.java)
+            intent.putExtra(DefinedParams.PatientId, data.patientId)
+            intent.putExtra(DefinedParams.EncounterId, patientViewModel.encounterId)
+            getResult.launch(intent)
         }
     }
 
@@ -536,6 +527,18 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
 
 
     private fun submitRequest(prescriptionEncounterId: String?) {
+        createMotherNeonateRequest(prescriptionEncounterId)
+        if (connectivityManager.isNetworkAvailable()) {
+            viewModel.createMotherNeonate(patientViewModel.encounterId)
+        } else {
+            showErrorDialogue(
+                getString(R.string.error), getString(R.string.no_internet_error),
+                isNegativeButtonNeed = false,
+            ) {}
+        }
+    }
+
+    private fun createMotherNeonateRequest(prescriptionEncounterId: String?) {
         viewModel.motherNeonateAncRequest.apply {
             id = prescriptionEncounterId
             assessmentType = PregnancyANC
@@ -561,14 +564,6 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
                 .map { it.value }
             pregnancyHistoryNotes = pregnancyPastObstetricHistoryViewModel.pregnancyHistoryNotes
             patientReference = patientViewModel.getPatientFHIRId()
-        }
-        if (connectivityManager.isNetworkAvailable()) {
-            viewModel.createMotherNeonate(patientViewModel.encounterId)
-        } else {
-            showErrorDialogue(
-                getString(R.string.error), getString(R.string.no_internet_error),
-                isNegativeButtonNeed = false,
-            ) {}
         }
     }
 

@@ -61,23 +61,21 @@ class ClinicalSummaryFragment : BaseFragment(), View.OnClickListener {
     }
 
     private fun attachObserver() {
-        viewModel.summaryMetaListItems.observe(viewLifecycleOwner) {
-            viewModel.summaryMetaListItems.observe(viewLifecycleOwner) { resourceState ->
-                when (resourceState.state) {
-                    ResourceState.LOADING -> {
-                        showProgress()
-                    }
+        viewModel.summaryMetaListItems.observe(viewLifecycleOwner) { resourceState ->
+            when (resourceState.state) {
+                ResourceState.LOADING -> {
+                    showProgress()
+                }
 
-                    ResourceState.SUCCESS -> {
-                        hideProgress()
-                        resourceState.data?.let { list ->
-                            initializeDeliveryTypeItem(list)
-                        }
+                ResourceState.SUCCESS -> {
+                    hideProgress()
+                    resourceState.data?.let { list ->
+                        initializeDeliveryTypeItem(list)
                     }
+                }
 
-                    ResourceState.ERROR -> {
-                        hideProgress()
-                    }
+                ResourceState.ERROR -> {
+                    hideProgress()
                 }
             }
         }

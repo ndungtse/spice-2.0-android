@@ -1,30 +1,17 @@
 package com.medtroniclabs.spice.model.medicalreview
 
 import ClinicalSummaryAndSigns
-import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
-import com.medtroniclabs.spice.model.PatientListRespModel
+import com.medtroniclabs.spice.data.model.MedicalReviewEncounter
 
 data class CreateUnderFiveYearsRequest(
+    val id:String?=null,
     val clinicalNotes: String? = null,
     val clinicalSummaryAndSigns: ClinicalSummaryAndSigns? = null,
     val examination: UnderFiveExamination? = null,
     val presentingComplaints: String? = null,
-    val encounter: UnderFiveYearsDTO? = null,
+    val encounter: MedicalReviewEncounter? = null,
     var systemicExamination: List<String?>? = null,
     var systemicExaminationNotes: String? = null
-)
-
-data class UnderFiveYearsDTO(
-    val householdId: String? = null,
-    val memberId: String? = null,
-    val referred: Boolean? = null,
-    val patientId: String? = null,
-    val provenance: ProvanceDto? = null,
-    val latitude: Double? = null,
-    val longitude: Double? = null,
-    val visitNumber: Long? = null,
-    val startTime: String? = null,
-    val endTime: String? = null,
 )
 
 data class UnderFiveExamination(
@@ -40,7 +27,7 @@ data class UnderFiveExamination(
 data class UnderFiveDiarrhoea(
     val hasDiarrhoea: Boolean? = null,
     val bloodyDiarrhoea: Boolean? = null,
-    val sings: List<String?>? = null,
+    val signs: List<String?>? = null,
     val timePeriod: String? = null
 )
 
@@ -75,7 +62,7 @@ data class EarProblem(
 
 data class MalnutritionOrAnaemia(
     val appetiteTest: Boolean? = null,
-    val sings: List<String?>? = null
+    val signs: List<String?>? = null
 )
 
 data class HivAndAids(

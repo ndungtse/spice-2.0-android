@@ -31,7 +31,7 @@ object UnderFiveYearExaminationKeyMapping {
         const val hasDiarrhoea = "hasDiarrhoea"
         const val timePeriod = "timePeriod"
         const val bloodyDiarrhoea = "bloodyDiarrhoea"
-        const val sings = "diarrhoeaSigns"
+        const val signs = "diarrhoeaSigns"
     }
 
     object Fever {

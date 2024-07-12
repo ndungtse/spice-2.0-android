@@ -10,11 +10,12 @@ import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.data.SummarySubmitRequest
+import com.medtroniclabs.spice.data.model.MedicalReviewEncounter
 import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.mappingkey.UnderFiveYearExaminationKeyMapping
 import com.medtroniclabs.spice.mappingkey.UnderFiveYearExaminationKeyMapping.Diarrhoea.bloodyDiarrhoea
-import com.medtroniclabs.spice.mappingkey.UnderFiveYearExaminationKeyMapping.Diarrhoea.sings
+import com.medtroniclabs.spice.mappingkey.UnderFiveYearExaminationKeyMapping.Diarrhoea.signs
 import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.model.medicalreview.CoughOrDifficultBreathing
 import com.medtroniclabs.spice.model.medicalreview.CreateUnderFiveYearsRequest
@@ -26,7 +27,6 @@ import com.medtroniclabs.spice.model.medicalreview.HivAndAids
 import com.medtroniclabs.spice.model.medicalreview.MalnutritionOrAnaemia
 import com.medtroniclabs.spice.model.medicalreview.UnderFiveDiarrhoea
 import com.medtroniclabs.spice.model.medicalreview.UnderFiveExamination
-import com.medtroniclabs.spice.model.medicalreview.UnderFiveYearsDTO
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.repo.UnderFiveYearsRepository
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
@@ -73,53 +73,48 @@ class UnderFiveYearsViewModel @Inject constructor(
         clinicalNotes: String,
         presentingComplaints: String,
         systemicExaminations: List<String?>?,
-        systemicExaminationsNotes: String?
+        systemicExaminationsNotes: String?,
+        encounterId: String?
     ) {
-        patientDetail.patientId?.let { id ->
-            lastLocation.let { location ->
-                patientDetail.houseHoldId?.let { hhId ->
-                    patientDetail.memberId?.let { memberId ->
-                        patientId?.let { selectedPatientId ->
-                            viewModelScope.launch(dispatcherIO) {
-                                val examination = getUnderFiveExamination(examinationResultHashMap)
-                                val underFiveMedicalReviewRequest = CreateUnderFiveYearsRequest(
-                                    clinicalNotes = clinicalNotes,
-                                    clinicalSummaryAndSigns = if (clinicalSummaryAndSigns.isNotEmpty()) clinicalSummaryAndSigns else null,
-                                    examination = examination,
-                                    presentingComplaints = presentingComplaints.takeIf { it.isNotEmpty() },
-                                    encounter = UnderFiveYearsDTO(
-                                        startTime = DateUtils.getCurrentDateAndTime(
-                                            DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
-                                        ),
-                                        endTime = DateUtils.getCurrentDateAndTime(
-                                            DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
-                                        ),
-                                        latitude = location?.latitude,
-                                        longitude = location?.longitude,
-                                        householdId = hhId,
-                                        patientId = selectedPatientId,
-                                        memberId = memberId,
-                                        referred = true,
-                                        provenance = ProvanceDto()
-                                    ),
-                                    systemicExaminationNotes = systemicExaminationsNotes,
-                                    systemicExamination = systemicExaminations
-                                )
+        val hhId = patientDetail.houseHoldId
+        val memberId = patientDetail.memberId
+        val selectedPatientId = patientId
 
-                                createUnderFiveMedicalReviewLiveData.postLoading()
-                                createUnderFiveMedicalReviewLiveData.postValue(
-                                    underFiveYearsRepository.createMedicalReviewForUnderFiveYears(
-                                        underFiveMedicalReviewRequest
-                                    )
-                                )
-                            }
-                        }
-                    }
-                }
+        if (hhId != null && memberId != null && selectedPatientId != null) {
+            viewModelScope.launch(dispatcherIO) {
+                val examination = getUnderFiveExamination(examinationResultHashMap)
+                val currentDateAndTime = DateUtils.getCurrentDateAndTime(DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ)
+                val encounter = MedicalReviewEncounter(
+                    id = encounterId,
+                    startTime = currentDateAndTime,
+                    endTime = currentDateAndTime,
+                    latitude = lastLocation?.latitude ?: 0.0,
+                    longitude = lastLocation?.longitude ?: 0.0,
+                    householdId = hhId,
+                    patientId = selectedPatientId,
+                    memberId = memberId,
+                    referred = true,
+                    provenance = ProvanceDto()
+                )
+                val underFiveMedicalReviewRequest = CreateUnderFiveYearsRequest(
+                    id = encounterId,
+                    clinicalNotes = clinicalNotes,
+                    clinicalSummaryAndSigns = clinicalSummaryAndSigns.takeIf { it.isNotEmpty() },
+                    examination = examination,
+                    presentingComplaints = presentingComplaints.takeIf { it.isNotEmpty() },
+                    encounter = encounter,
+                    systemicExaminationNotes = systemicExaminationsNotes,
+                    systemicExamination = systemicExaminations
+                )
+
+                createUnderFiveMedicalReviewLiveData.postLoading()
+                createUnderFiveMedicalReviewLiveData.postValue(
+                    underFiveYearsRepository.createMedicalReviewForUnderFiveYears(underFiveMedicalReviewRequest)
+                )
             }
-
         }
     }
+
 
     private fun getUnderFiveExamination(examinationResultHashMap: HashMap<String, Any>): UnderFiveExamination? {
         val diarrhoea = mapDiarrhoea(examinationResultHashMap)
@@ -162,9 +157,10 @@ class UnderFiveYearsViewModel @Inject constructor(
                     )
 
                 }
-                if (diarrhoeaHashMap.containsKey(sings)) {
+                if (diarrhoeaHashMap.containsKey(signs)) {
                     diarrhoea = diarrhoea.copy(
-                        sings = diarrhoeaHashMap[sings] as List<String?>?
+                        signs = (diarrhoeaHashMap[signs] as List<HashMap<String, Any>?>?)?.filterNotNull()
+                            ?.mapNotNull { (it[DefinedParams.Value] as? String)?.takeIf { name -> name.isNotBlank() } }
                     )
                 }
                 if (diarrhoeaHashMap.containsKey(UnderFiveYearExaminationKeyMapping.Diarrhoea.timePeriod)) {
@@ -220,7 +216,8 @@ class UnderFiveYearsViewModel @Inject constructor(
                 }
                 if (malnutritionOrAnaemiaHashMap.containsKey(UnderFiveYearExaminationKeyMapping.MalnutritionAndAnaemia.signs)) {
                     malnutritionOrAnaemia = malnutritionOrAnaemia.copy(
-                        sings = malnutritionOrAnaemiaHashMap[UnderFiveYearExaminationKeyMapping.MalnutritionAndAnaemia.signs] as List<String?>?
+                        signs = (malnutritionOrAnaemiaHashMap[UnderFiveYearExaminationKeyMapping.MalnutritionAndAnaemia.signs] as List<HashMap<String, Any>?>?)?.filterNotNull()
+                        ?.mapNotNull { (it[DefinedParams.Value] as? String)?.takeIf { name -> name.isNotBlank() } }
                     )
                 }
                 return malnutritionOrAnaemia
@@ -294,7 +291,8 @@ class UnderFiveYearsViewModel @Inject constructor(
 
                 if (feverHashMap.containsKey(UnderFiveYearExaminationKeyMapping.Fever.signs)) {
                     fever = fever.copy(
-                        signs = feverHashMap[UnderFiveYearExaminationKeyMapping.Fever.signs] as List<String>?
+                        signs = (feverHashMap[UnderFiveYearExaminationKeyMapping.Fever.signs] as List<HashMap<String, Any>?>?)?.filterNotNull()
+                            ?.mapNotNull { (it[DefinedParams.Value] as? String)?.takeIf { name -> name.isNotBlank() } }
                     )
                 }
 
@@ -384,31 +382,28 @@ class UnderFiveYearsViewModel @Inject constructor(
         nextFollowUpDate: String?,
         selectedPatientStatus: String?
     ) {
-        details.patientId?.let { patientId ->
-            details.memberId?.let { memberId ->
-                val summarySubmitRequest = SummarySubmitRequest(
-                    patientStatus = selectedPatientStatus,
-                    submitCreateId = submitCreateId,
-                    memberId = memberId,
-                    id = submitCreateId,
-                    provenance = ProvanceDto(),
-                    patientReference = details.id,
-                    nextVisitDate = DateUtils.convertDateTimeToDate(
-                        nextFollowUpDate,
-                        DateUtils.DATE_ddMMyyyy,
-                        DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-                        inUTC = true
-                    ),
+        details.memberId?.let { memberId ->
+            val nextVisitDate = DateUtils.convertDateTimeToDate(
+                nextFollowUpDate,
+                DateUtils.DATE_ddMMyyyy,
+                DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+                inUTC = true
+            )
+            val summarySubmitRequest = SummarySubmitRequest(
+                patientStatus = selectedPatientStatus,
+                submitCreateId = submitCreateId,
+                memberId = memberId,
+                id = submitCreateId,
+                provenance = ProvanceDto(),
+                patientReference = details.id,
+                nextVisitDate = nextVisitDate
+            )
 
-                    )
-                viewModelScope.launch(dispatcherIO) {
-                    summaryCreateResponse.postLoading()
-                    summaryCreateResponse.postValue(
-                        underFiveYearsRepository.underFiveYearsSummaryCreate(
-                            summarySubmitRequest
-                        )
-                    )
-                }
+            viewModelScope.launch(dispatcherIO) {
+                summaryCreateResponse.postLoading()
+                summaryCreateResponse.postValue(
+                    underFiveYearsRepository.underFiveYearsSummaryCreate(summarySubmitRequest)
+                )
             }
         }
     }

@@ -8,7 +8,6 @@ import Examination
 import Hiv
 import Jaundice
 import NonBreastfeedingProblem
-import UnderTwoMonthsEncounterDTO
 import VerySevereDisease
 import android.location.Location
 import androidx.lifecycle.LiveData
@@ -18,6 +17,7 @@ import androidx.lifecycle.viewModelScope
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
+import com.medtroniclabs.spice.data.model.MedicalReviewEncounter
 import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.mappingkey.UnderTwoExaminationKeyMapping
@@ -63,50 +63,51 @@ class UnderTwoMonthViewModel @Inject constructor(
         examinationResultHashMap: HashMap<String, Any>,
         clinicalNotes: String,
         presentingComplaints: String,
+        prescriptionEncounterId: String?
     ) {
-        details.patientId?.let { id ->
-            lastLocation.let { location ->
-                details.houseHoldId?.let { hhId ->
-                    details.memberId?.let { memberId ->
-                        patientId?.let { selectedPatientId ->
-                            viewModelScope.launch(dispatcherIO) {
-                                val examination = getUnderTwoExamination(examinationResultHashMap)
-                                val underTwoMedicalReviewRequest = CreateUnderTwoMonthsRequest(
-                                    clinicalNotes = clinicalNotes,
-                                    clinicalSummaryAndSigns = if (clinicalSummaryAndSigns.isNotEmpty()) clinicalSummaryAndSigns else null,
-                                    examination = examination,
-                                    presentingComplaints = presentingComplaints.takeIf { it.isNotEmpty() },
-                                    encounter =
-                                    UnderTwoMonthsEncounterDTO(
-                                        startTime = DateUtils.getCurrentDateAndTime(
-                                            DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
-                                        ),
-                                        endTime = DateUtils.getCurrentDateAndTime(
-                                            DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
-                                        ),
-                                        latitude = location?.latitude,
-                                        longitude = location?.longitude,
-                                        householdId = hhId,
-                                        patientId = selectedPatientId,
-                                        memberId = memberId,
-                                        referred = true,
-                                        provenance = ProvanceDto()
-                                    )
-                                )
+        details.houseHoldId?.let { hhId ->
+            details.memberId?.let { memberId ->
+                patientId?.let { selectedPatientId ->
+                    viewModelScope.launch(dispatcherIO) {
+                        val examination = getUnderTwoExamination(examinationResultHashMap)
+                        val underTwoMedicalReviewRequest = CreateUnderTwoMonthsRequest(
+                            id = prescriptionEncounterId,
+                            clinicalNotes = clinicalNotes,
+                            clinicalSummaryAndSigns = clinicalSummaryAndSigns.takeIf { it.isNotEmpty() },
+                            examination = examination,
+                            presentingComplaints = presentingComplaints.takeIf { it.isNotEmpty() },
+                            encounter = createUnderTwoMonthsEncounter(hhId, selectedPatientId, memberId,prescriptionEncounterId)
+                        )
 
-                                createUnderTwoMonthsMedicalReviewLiveData.postLoading()
-                                createUnderTwoMonthsMedicalReviewLiveData.postValue(
-                                    repository.createMedicalReviewForUnderTwoMonths(
-                                        underTwoMedicalReviewRequest
-                                    )
-                                )
-                            }
-                        }
+                        createUnderTwoMonthsMedicalReviewLiveData.postLoading()
+                        createUnderTwoMonthsMedicalReviewLiveData.postValue(
+                            repository.createMedicalReviewForUnderTwoMonths(underTwoMedicalReviewRequest)
+                        )
                     }
                 }
             }
-
         }
+    }
+
+    private fun createUnderTwoMonthsEncounter(
+        householdId: String,
+        patientId: String,
+        memberId: String,
+        prescriptionEncounterId: String?
+    ): MedicalReviewEncounter {
+        val currentTime = DateUtils.getCurrentDateAndTime(DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ)
+        return MedicalReviewEncounter(
+            id = prescriptionEncounterId,
+            startTime = currentTime,
+            endTime = currentTime,
+            latitude = lastLocation?.latitude ?: 0.0,
+            longitude = lastLocation?.longitude ?: 0.0,
+            householdId = householdId,
+            patientId = patientId,
+            memberId = memberId,
+            referred = true,
+            provenance = ProvanceDto()
+        )
     }
 
     private fun getUnderTwoExamination(examinationResultHashMap: HashMap<String, Any>): Examination? {

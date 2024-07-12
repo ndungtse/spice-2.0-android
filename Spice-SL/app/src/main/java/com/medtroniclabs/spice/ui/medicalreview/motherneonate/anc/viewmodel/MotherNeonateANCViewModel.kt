@@ -4,7 +4,6 @@ import android.location.Location
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.medtroniclabs.spice.appextensions.convertToUtcDateTime
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.data.AboveFiveYearsSummarySubmitRequest
@@ -41,25 +40,11 @@ class MotherNeonateANCViewModel @Inject constructor(
         }
     }
 
-    fun createMotherNeonate(prescriptionEncounterId: String?) {
+    fun createMotherNeonate(encounterId: String?) {
         viewModelScope.launch(dispatcherIO) {
             try {
                 motherNeonateAncRequest.apply {
-                    encounter = MedicalReviewEncounter(
-                        id = prescriptionEncounterId,
-                        patientId = this@MotherNeonateANCViewModel.patientId,
-                        provenance = ProvanceDto(),
-                        latitude = lastLocation?.latitude ?: 0.0,
-                        longitude = lastLocation?.longitude ?: 0.0,
-                        startTime = DateUtils.getCurrentDateAndTime(
-                            DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
-                        ),
-                        endTime = DateUtils.getCurrentDateAndTime(
-                            DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
-                        ),
-                        referred = true,
-                        visitNumber = ancVisit
-                    )
+                    encounter = createMedicalReviewEncounter(encounterId)
                 }
                 motherNeonateCreateResponse.postLoading()
                 motherNeonateCreateResponse.postValue(
@@ -71,6 +56,21 @@ class MotherNeonateANCViewModel @Inject constructor(
                 e.printStackTrace()
             }
         }
+    }
+
+    private fun createMedicalReviewEncounter(encounterId: String?): MedicalReviewEncounter {
+        val currentTime = DateUtils.getCurrentDateAndTime(DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ)
+        return MedicalReviewEncounter(
+            id = encounterId,
+            patientId = this@MotherNeonateANCViewModel.patientId,
+            provenance = ProvanceDto(),
+            latitude = lastLocation?.latitude ?: 0.0,
+            longitude = lastLocation?.longitude ?: 0.0,
+            startTime = currentTime,
+            endTime = currentTime,
+            referred = true,
+            visitNumber = ancVisit
+        )
     }
 
     fun motherNeonateSummaryCreate(request: AboveFiveYearsSummarySubmitRequest){

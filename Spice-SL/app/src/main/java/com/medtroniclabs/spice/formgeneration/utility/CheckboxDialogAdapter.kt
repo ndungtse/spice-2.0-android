@@ -70,6 +70,9 @@ class CheckboxDialogAdapter(
             val map = HashMap<String, Any>()
             map[DefinedParams.ID] = it._id
             map[DefinedParams.NAME] = it.symptom
+            it.value?.let { value ->
+                map[DefinedParams.value] = value
+            }
             selectedItemList.add(map)
         }
         return selectedItemList

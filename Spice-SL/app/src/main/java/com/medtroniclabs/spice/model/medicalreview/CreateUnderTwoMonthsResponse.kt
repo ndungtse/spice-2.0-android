@@ -1,6 +1,7 @@
 package com.medtroniclabs.spice.model.medicalreview
 
 import com.medtroniclabs.spice.data.DiagnosisDiseaseModel
+import com.medtroniclabs.spice.data.Prescription
 
 data class CreateUnderTwoMonthsResponse(
     val encounterId: String? = null,
@@ -15,12 +16,13 @@ data class SummaryDetails(
     val presentingComplaints: String?,
     val examination: Map<String, List<ExaminationDetail>>?,
     val patientStatus:String?,
-    val diagnosis: ArrayList<DiagnosisDiseaseModel>? = null
+    val diagnosis: ArrayList<DiagnosisDiseaseModel>? = null,
+    val prescriptions: List<Prescription>? = null
 )
 
 data class ExaminationDetail(
     val title: String?,
-    val value: String?
+    val value: Any? = null
 )
 
 

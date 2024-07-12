@@ -15,6 +15,8 @@ import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.invisible
 import com.medtroniclabs.spice.appextensions.visible
+import com.medtroniclabs.spice.common.CommonUtils
+import com.medtroniclabs.spice.common.CommonUtils.convertAnyToString
 import com.medtroniclabs.spice.common.CommonUtils.convertListToString
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
@@ -156,6 +158,8 @@ class UnderTwoMonthsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
             )
         }
         examinationList(details)
+        binding.tvPrescription.text= details?.prescriptions.let { CommonUtils.createPrescription(it,requireContext()) }?.takeIf { it.isNotEmpty() }
+            ?: requireContext().getString(R.string.empty__)
     }
 
     private fun examinationList(details: SummaryDetails) {
@@ -177,7 +181,7 @@ class UnderTwoMonthsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
     private fun convertExaminationDetailsToString(details: List<ExaminationDetail>): List<String> {
         return details.map { detail ->
             val title = detail.title ?: ""
-            val value = detail.value ?: ""
+            val value = convertAnyToString(detail.value)
             "$title : $value"
         }
     }

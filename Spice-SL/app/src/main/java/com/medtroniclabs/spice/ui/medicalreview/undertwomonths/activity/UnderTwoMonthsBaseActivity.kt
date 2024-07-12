@@ -25,7 +25,6 @@ import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
 import com.medtroniclabs.spice.ui.common.FloatingDetectorFrameLayout
 import com.medtroniclabs.spice.ui.dialog.MedicalReviewSuccessDialogFragment
-import com.medtroniclabs.spice.ui.landing.LandingActivity
 import com.medtroniclabs.spice.ui.landing.OnDialogDismissListener
 import com.medtroniclabs.spice.ui.medicalreview.ClinicalNotesFragment
 import com.medtroniclabs.spice.ui.medicalreview.PresentingComplaintsFragment
@@ -38,7 +37,6 @@ import com.medtroniclabs.spice.ui.medicalreview.prescription.PrescriptionActivit
 import com.medtroniclabs.spice.ui.medicalreview.undertwomonths.fragment.BirthHistoryFragment
 import com.medtroniclabs.spice.ui.medicalreview.undertwomonths.fragment.ClinicalSummaryFragment
 import com.medtroniclabs.spice.ui.medicalreview.undertwomonths.fragment.UnderTwoMonthsTreatmentSummaryFragment
-import com.medtroniclabs.spice.ui.medicalreview.undertwomonths.viewmodel.BirthHistoryViewModel
 import com.medtroniclabs.spice.ui.medicalreview.undertwomonths.viewmodel.ClinicalSummaryViewModel
 import com.medtroniclabs.spice.ui.medicalreview.undertwomonths.viewmodel.UnderTwoMonthViewModel
 import com.medtroniclabs.spice.ui.medicalreview.undertwomonths.viewmodel.UnderTwoMonthsTreatmentSummaryViewModel
@@ -334,7 +332,7 @@ private fun successSummaryDialog() {
     private fun handleButtonRefer() {
         viewModel.createUnderTwoMonthsMedicalReview.value?.data?.let {
             ReferPatientFragment.newInstance(
-                MedicalReviewTypeEnums.UnderTwoMonths.name,
+                MedicalReviewTypeEnums.ICCM.name,
                 it.patientReference,
                 it.encounterId
             ).show(supportFragmentManager, ReferPatientFragment.TAG)
@@ -350,6 +348,7 @@ private fun successSummaryDialog() {
                     examinationResultHashMap = examinationCardViewModel.examinationResultHashMap,
                     clinicalNotes = clinicalNotesViewModel.enteredClinicalNotes,
                     presentingComplaints = presentingComplaintsViewModel.enteredComplaintNotes,
+                    patientDetailViewModel.encounterId
                 )
         }
     }
@@ -399,11 +398,7 @@ private fun successSummaryDialog() {
     }
 
     override fun onDialogDismissListener(isFinish: Boolean) {
-        finish()
-        val intent = Intent(this, LandingActivity::class.java)
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
-        startActivity(intent)
-        finish()
+        startActivityWithoutSplashScreen()
     }
 
     private fun enableReferralDoneBtn() {
@@ -507,7 +502,7 @@ private fun successSummaryDialog() {
             isNegativeButtonNeed = true
         ) { isPositive ->
             if (isPositive) {
-                startAsNewActivity(Intent(this, LandingActivity::class.java))
+                startActivityWithoutSplashScreen()
             }
         }
     }

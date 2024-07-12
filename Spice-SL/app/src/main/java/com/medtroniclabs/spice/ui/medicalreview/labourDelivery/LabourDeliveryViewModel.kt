@@ -255,7 +255,6 @@ class LabourDeliveryViewModel @Inject constructor(
     }
 
     fun createLabourDeliveryRequest() {
-        val provanceDto = ProvanceDto()
         val encounter = MedicalReviewEncounter(
             latitude = lastLocation?.latitude ?: 0.0,
             longitude = lastLocation?.longitude ?: 0.0,
@@ -266,14 +265,14 @@ class LabourDeliveryViewModel @Inject constructor(
             endTime = DateUtils.getCurrentDateAndTime(
                 DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
             ),
-            householdId = patientDetailModel?.houseHoldId?.toString(),
+            householdId = patientDetailModel?.houseHoldId,
             patientId = patientId,
-            provenance = provanceDto,
+            provenance = ProvanceDto(),
             memberId = patientDetailModel?.memberId.toString()
         )
         val motherModel = createMotherModel(encounter)
         val neonateModel = createNeonateModel(encounter)
-        val childModel = createChildModel(provanceDto)
+        val childModel = createChildModel(ProvanceDto())
         val createLabourMedicalReviewRequest = CreateLabourDeliveryRequest(
             motherDTO = motherModel,
             neonateDTO = neonateModel,

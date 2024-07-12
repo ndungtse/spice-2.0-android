@@ -442,4 +442,21 @@ object CommonUtils {
             return minDays
         }
     }
+
+    fun convertAnyToString(value: Any?): String {
+        return when (value) {
+            is String -> value
+            is List<*> -> {
+                if (value.all { it is String }) {
+                    (value as List<String>).joinToString(", ")
+                } else {
+                    ""
+                }
+            }
+
+            null -> "--"
+            else -> ""
+        }
+    }
+
 }

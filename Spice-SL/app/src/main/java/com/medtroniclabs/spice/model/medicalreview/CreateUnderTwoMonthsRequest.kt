@@ -1,25 +1,14 @@
-import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
+import com.medtroniclabs.spice.data.model.MedicalReviewEncounter
 
 data class CreateUnderTwoMonthsRequest(
+    val id: String? = null,
     val clinicalNotes: String?,
     val clinicalSummaryAndSigns: ClinicalSummaryAndSigns?,
     val examination: Examination?,
     val presentingComplaints: String?,
-    val encounter: UnderTwoMonthsEncounterDTO? = null
+    val encounter: MedicalReviewEncounter? = null
 )
 
-data class UnderTwoMonthsEncounterDTO(
-    val householdId: String,
-    val memberId: String,
-    val referred: Boolean,
-    val patientId: String,
-    val provenance: ProvanceDto,
-    val latitude: Double?,
-    val longitude: Double?,
-    val visitNumber: Long? = null,
-    val startTime: String?,
-    val endTime: String?
-)
 
 data class ClinicalSummaryAndSigns(
     val albendazole: Boolean? = null,

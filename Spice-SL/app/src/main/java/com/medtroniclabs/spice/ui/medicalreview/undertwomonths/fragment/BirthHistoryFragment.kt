@@ -10,12 +10,10 @@ import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.data.BirthHistoryResponse
 import com.medtroniclabs.spice.databinding.FragmentBirthHistoryBinding
+import com.medtroniclabs.spice.formgeneration.extension.capitalizeFirstChar
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.medicalreview.undertwomonths.viewmodel.BirthHistoryViewModel
-import java.time.LocalDate
-import java.time.ZonedDateTime
-import java.time.format.DateTimeFormatter
 
 class BirthHistoryFragment : BaseFragment() {
     private lateinit var binding: FragmentBirthHistoryBinding
@@ -84,7 +82,7 @@ class BirthHistoryFragment : BaseFragment() {
                 ageWeek.toString().plus(weeksText).plus(prematureText)
             } ?: "--"
 
-            tvBreathingProblem.text = (birthHistoryDetails.haveBreathingProblem ?: "--").toString()
+            tvBreathingProblem.text = (birthHistoryDetails.haveBreathingProblem?.toString()?.capitalizeFirstChar() ?: "--").toString()
         }
     }
 }

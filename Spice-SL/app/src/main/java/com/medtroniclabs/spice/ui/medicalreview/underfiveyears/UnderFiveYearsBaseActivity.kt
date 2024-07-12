@@ -19,7 +19,6 @@ import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.common.FloatingDetectorFrameLayout
 import com.medtroniclabs.spice.ui.dialog.MedicalReviewSuccessDialogFragment
-import com.medtroniclabs.spice.ui.landing.LandingActivity
 import com.medtroniclabs.spice.ui.landing.OnDialogDismissListener
 import com.medtroniclabs.spice.ui.medicalreview.ClinicalNotesFragment
 import com.medtroniclabs.spice.ui.medicalreview.PresentingComplaintsFragment
@@ -82,7 +81,7 @@ class UnderFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
             isNegativeButtonNeed = true
         ) { isPositive ->
             if (isPositive) {
-                startAsNewActivity(Intent(this, LandingActivity::class.java))
+                startActivityWithoutSplashScreen()
             }
         }
     }
@@ -408,7 +407,7 @@ class UnderFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
             R.id.btnRefer -> {
                 viewModel.createUnderFiveMedicalReviewLiveData.value?.data?.let {
                     ReferPatientFragment.newInstance(
-                        MedicalReviewTypeEnums.UnderFiveYears.name,
+                        MedicalReviewTypeEnums.ICCM.name,
                         it.patientReference,
                         it.encounterId
                     ).show(
@@ -429,7 +428,8 @@ class UnderFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
                     clinicalNotes = clinicalNotesViewModel.enteredClinicalNotes,
                     presentingComplaints = presentingComplaintsViewModel.enteredComplaintNotes,
                     systemicExaminations = systemicExaminationViewModel.selectedSystemicExaminations.map { it.value },
-                    systemicExaminationsNotes = systemicExaminationViewModel.enteredExaminationNotes
+                    systemicExaminationsNotes = systemicExaminationViewModel.enteredExaminationNotes,
+                    patientDetailViewModel.encounterId
                 )
             }
         } else {
@@ -514,7 +514,7 @@ class UnderFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
     }
 
     override fun onDialogDismissListener(isFinish: Boolean) {
-        finish()
+        startActivityWithoutSplashScreen()
     }
 
     override fun onDataLoaded(details: PatientListRespModel) {
