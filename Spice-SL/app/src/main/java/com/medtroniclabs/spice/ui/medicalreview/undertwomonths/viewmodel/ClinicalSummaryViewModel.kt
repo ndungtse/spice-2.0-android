@@ -25,7 +25,7 @@ class ClinicalSummaryViewModel @Inject constructor(
 ) : ViewModel() {
     val resultBreastFeedingHashMap = HashMap<String, Any>()
     val resultMotherVitaminHashMap = HashMap<String, Any>()
-    val exclusiveBreastFeedHashMap = HashMap<String, Any>()
+    val resultExclusiveBreastFeedHashMap = HashMap<String, Any>()
     var selectedImmunisationStatus: String? = null
     var clinicalSummaryAndSigns = ClinicalSummaryAndSigns()
     val summaryMetaListItems = MutableLiveData<Resource<List<MedicalReviewMetaItems>>>()
@@ -52,7 +52,7 @@ class ClinicalSummaryViewModel @Inject constructor(
     }
 
     fun updateBreastFeeding() {
-        if (resultMotherVitaminHashMap.containsKey(MedicalReviewDefinedParams.BREAST_FEEDING_TAG)) {
+        if (resultBreastFeedingHashMap.containsKey(MedicalReviewDefinedParams.BREAST_FEEDING_TAG)) {
             val breastFeeding =
                 resultBreastFeedingHashMap[MedicalReviewDefinedParams.BREAST_FEEDING_TAG] as String
             clinicalSummaryAndSigns = if (breastFeeding == DefinedParams.Yes) {
@@ -66,9 +66,9 @@ class ClinicalSummaryViewModel @Inject constructor(
     }
 
     fun updateExclusiveBreastFeeding() {
-        if (resultMotherVitaminHashMap.containsKey(MedicalReviewDefinedParams.EXCLUSIVE_BREAST_FEED_TAG)) {
+        if (resultExclusiveBreastFeedHashMap.containsKey(MedicalReviewDefinedParams.EXCLUSIVE_BREAST_FEED_TAG)) {
             val exclusiveBreastFeeding =
-                resultBreastFeedingHashMap[MedicalReviewDefinedParams.EXCLUSIVE_BREAST_FEED_TAG] as String
+                resultExclusiveBreastFeedHashMap[MedicalReviewDefinedParams.EXCLUSIVE_BREAST_FEED_TAG] as String
             clinicalSummaryAndSigns = if (exclusiveBreastFeeding == DefinedParams.Yes) {
                 clinicalSummaryAndSigns.copy(exclusiveBreastFeeding = true)
             } else if (exclusiveBreastFeeding == DefinedParams.No) {

@@ -255,11 +255,7 @@ class LabourDeliveryViewModel @Inject constructor(
     }
 
     fun createLabourDeliveryRequest() {
-        val provanceDto = ProvanceDto(
-            createdDateTime = DateUtils.getCurrentDateAndTime(
-                DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
-            )
-        )
+        val provanceDto = ProvanceDto()
         val encounter = MedicalReviewEncounter(
             latitude = lastLocation?.latitude ?: 0.0,
             longitude = lastLocation?.longitude ?: 0.0,
@@ -539,11 +535,7 @@ class LabourDeliveryViewModel @Inject constructor(
             memberId = memberId,
             patientStatus = "postal",
             patientReference = patientReference,
-            provenance = ProvanceDto(
-                createdDateTime = DateUtils.getCurrentDateAndTime(
-                    DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
-                )
-            ),
+            provenance = ProvanceDto(),
             referralTicketType = MedicalReviewTypeEnums.RMNCH.name
         )
         viewModelScope.launch(dispatcherIO) {

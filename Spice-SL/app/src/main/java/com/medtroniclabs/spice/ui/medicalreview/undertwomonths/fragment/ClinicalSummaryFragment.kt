@@ -18,6 +18,7 @@ import com.medtroniclabs.spice.common.DefinedParams.DefaultIDLabel
 import com.medtroniclabs.spice.common.DefinedParams.ID
 import com.medtroniclabs.spice.common.DefinedParams.NAME
 import com.medtroniclabs.spice.common.DefinedParams.Yes
+import com.medtroniclabs.spice.common.DefinedParams.value
 import com.medtroniclabs.spice.data.MedicalReviewMetaItems
 import com.medtroniclabs.spice.databinding.FragmentClinicalSummaryBinding
 import com.medtroniclabs.spice.formgeneration.extension.markMandatory
@@ -152,7 +153,7 @@ class ClinicalSummaryFragment : BaseFragment(), View.OnClickListener {
         addCustomView(
             getExclusiveBreastFeedingFlowData(),
             EXCLUSIVE_BREAST_FEED_TAG,
-            viewModel.exclusiveBreastFeedHashMap,
+            viewModel.resultExclusiveBreastFeedHashMap,
             exclusiveBreastFeedingSelectionCallBack,
             binding.llExclusiveBreastFeedingStatus
         )
@@ -196,7 +197,7 @@ class ClinicalSummaryFragment : BaseFragment(), View.OnClickListener {
 
     private val exclusiveBreastFeedingSelectionCallBack: (selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit =
         { selectedID, _, _, _ ->
-            viewModel.exclusiveBreastFeedHashMap[EXCLUSIVE_BREAST_FEED_TAG] = selectedID as String
+            viewModel.resultExclusiveBreastFeedHashMap[EXCLUSIVE_BREAST_FEED_TAG] = selectedID as String
             viewModel.updateExclusiveBreastFeeding()
         }
 
@@ -206,7 +207,7 @@ class ClinicalSummaryFragment : BaseFragment(), View.OnClickListener {
             binding.exclusiveBreastFeedingGroup.visible()
         } else {
             binding.exclusiveBreastFeedingGroup.gone()
-            viewModel.exclusiveBreastFeedHashMap.clear()
+            viewModel.resultExclusiveBreastFeedHashMap.clear()
         }
     }
 
@@ -267,7 +268,7 @@ class ClinicalSummaryFragment : BaseFragment(), View.OnClickListener {
                     val selectedItem = adapter.getData(position = position)
                     selectedItem?.let {
                         val selectedId = it[ID] as String?
-                        val selectedImmunisationStatus = it[NAME] as String?
+                        val selectedImmunisationStatus = it[value] as String?
                         if (selectedId != DefaultID) {
                             selectedImmunisationStatus?.let {
                                 viewModel.selectedImmunisationStatus = it
@@ -298,7 +299,7 @@ class ClinicalSummaryFragment : BaseFragment(), View.OnClickListener {
                 viewModel.selectedImmunisationStatus != null &&
                 viewModel.resultMotherVitaminHashMap[MOTHER_VITAMIN_TAG] != null &&
                 viewModel.resultBreastFeedingHashMap[BREAST_FEEDING_TAG] != null ||
-                viewModel.exclusiveBreastFeedHashMap[EXCLUSIVE_BREAST_FEED_TAG] != null
+                viewModel.resultExclusiveBreastFeedHashMap[EXCLUSIVE_BREAST_FEED_TAG] != null
     }
 
     fun validateEditFields(): Boolean {

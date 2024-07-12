@@ -12,7 +12,7 @@ data class CreateUnderTwoMonthsResponse(
 data class SummaryDetails(
     val id: String,
     val clinicalNotes: String?,
-    val presentingComplaintsNotes: String?,
+    val presentingComplaints: String?,
     val examination: Map<String, List<ExaminationDetail>>?,
     val patientStatus:String?,
     val diagnosis: ArrayList<DiagnosisDiseaseModel>? = null

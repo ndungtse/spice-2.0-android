@@ -554,9 +554,9 @@
     <string name="muac_yellow">MUAC Yellow</string>
     <string name="muac_red">MUAC Red</string>
     <string name="title_clinical_summary">Clinical Summary</string>
-    <string name="green">Green</string>
-    <string name="yellow">Yellow</string>
-    <string name="red">Red</string>
+    <string name="green">green</string>
+    <string name="yellow">yellow</string>
+    <string name="red">red</string>
     <string name="severe_malnutrition">Severe Malnutrition</string>
     <string name="background_sync_in_progress">Background sync currently in progress. Please try again later</string>
     <string name="syncing_is_in_progress">Syncing is In Progress</string>

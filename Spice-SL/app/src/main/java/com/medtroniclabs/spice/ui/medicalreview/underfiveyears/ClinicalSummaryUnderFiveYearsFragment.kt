@@ -18,6 +18,7 @@ import com.medtroniclabs.spice.common.DefinedParams.DefaultID
 import com.medtroniclabs.spice.common.DefinedParams.DefaultIDLabel
 import com.medtroniclabs.spice.common.DefinedParams.ID
 import com.medtroniclabs.spice.common.DefinedParams.NAME
+import com.medtroniclabs.spice.common.DefinedParams.value
 import com.medtroniclabs.spice.data.MedicalReviewMetaItems
 import com.medtroniclabs.spice.databinding.FragmentUnderFiveYearClinicalSummarryBinding
 import com.medtroniclabs.spice.formgeneration.extension.markMandatory
@@ -26,7 +27,6 @@ import com.medtroniclabs.spice.formgeneration.ui.SingleSelectionCustomView
 import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
-import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil.isValidInput
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.MOTHER_VITAMIN_TAG
@@ -38,7 +38,6 @@ class ClinicalSummaryUnderFiveYearsFragment : BaseFragment() {
     companion object {
         const val TAG = "ClinicalSummaryUnderFiveYearsFragment"
     }
-
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -97,7 +96,7 @@ class ClinicalSummaryUnderFiveYearsFragment : BaseFragment() {
                 hashMapOf<String, Any>(
                     NAME to item.name,
                     DefinedParams.id to item.id.toString(),
-                    DefinedParams.value to (item.value ?: item.name)
+                    value to (item.value ?: item.name)
                 )
             )
         }
@@ -116,7 +115,7 @@ class ClinicalSummaryUnderFiveYearsFragment : BaseFragment() {
                 hashMapOf<String, Any>(
                     NAME to item.name,
                     DefinedParams.id to item.id.toString(),
-                    DefinedParams.value to (item.value ?: item.name)
+                    value to (item.value ?: item.name)
                 )
             )
         }
@@ -137,7 +136,7 @@ class ClinicalSummaryUnderFiveYearsFragment : BaseFragment() {
                     val selectedItem = adapter.getData(position = position)
                     selectedItem?.let {
                         val selectedId = it[ID] as String?
-                        val selectedImmunisationStatus = it[NAME] as String?
+                        val selectedImmunisationStatus = it[DefinedParams.value] as String?
                         if (selectedId != DefaultID) {
                             selectedImmunisationStatus?.let {
                                 viewModel.selectedImmunisationStatus = it
@@ -338,7 +337,6 @@ class ClinicalSummaryUnderFiveYearsFragment : BaseFragment() {
         )
     }
 
-
     private fun weightValidate(): Boolean {
         return isValidInput(
             binding.etWeight.text.toString(),
@@ -355,37 +353,24 @@ class ClinicalSummaryUnderFiveYearsFragment : BaseFragment() {
 
         val adapter = CustomSpinnerAdapter(requireContext())
         adapter.setData(list)
-        var defaultPosition = 0
-        for ((index, patientStatus) in list.withIndex()) {
-            if ((patientStatus[DefinedParams.value] as? String).equals(
-                    ReferralStatus.OnTreatment.name, true
-                )
-            ) {
-                defaultPosition = index
-            }
-        }
-        binding.etMUACStatus.post {
-            binding.etMUACStatus.setSelection(defaultPosition, false)
-        }
         binding.etMUACStatus.adapter = adapter
         binding.etMUACStatus.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(
                 parent: AdapterView<*>?, view: View?, position: Int, id: Long
             ) {
                 val selectedItem = adapter.getData(position = position)
-                val selectedName = selectedItem?.get(NAME) as String?
+                val selectedValue = selectedItem?.get(value) as String?
                 val selectedId = selectedItem?.get(ID) as String?
                 if (selectedId != DefaultID) {
-                    selectedName?.let { name ->
+                    selectedValue?.let { value ->
                         binding.muacStatusGroup.visible()
-                        viewModel.selectedMuacStatus = name
+                        viewModel.selectedMuacStatus = value
                         viewModel.updateMuac()
                         setMuacStatus()
                     }
                 } else {
                     binding.muacStatusGroup.gone()
                 }
-
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -393,7 +378,6 @@ class ClinicalSummaryUnderFiveYearsFragment : BaseFragment() {
                  * this method is not used
                  */
             }
-
         }
     }
 

@@ -4,7 +4,7 @@ data class CreateUnderTwoMonthsRequest(
     val clinicalNotes: String?,
     val clinicalSummaryAndSigns: ClinicalSummaryAndSigns?,
     val examination: Examination?,
-    val presentingcomplaints: String?,
+    val presentingComplaints: String?,
     val encounter: UnderTwoMonthsEncounterDTO? = null
 )
 

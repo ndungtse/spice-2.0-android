@@ -8,6 +8,7 @@ import android.widget.LinearLayout
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.DefinedParams.Anaemia
@@ -17,7 +18,6 @@ import com.medtroniclabs.spice.common.DefinedParams.Hiv
 import com.medtroniclabs.spice.common.DefinedParams.HivAndAids
 import com.medtroniclabs.spice.common.DefinedParams.MalnutritionOrAnaemia
 import com.medtroniclabs.spice.data.resource.ExaminationResult
-
 class ExaminationSummaryAdapter() :
     RecyclerView.Adapter<ExaminationSummaryAdapter.DiseaseViewHolder>() {
     private var examinationResult = mutableListOf<ExaminationResult>()
@@ -77,7 +77,8 @@ class ExaminationSummaryAdapter() :
                         ViewGroup.LayoutParams.WRAP_CONTENT
                     )
                     setTextColor(ContextCompat.getColor(context, R.color.grey_black))
-                    setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(R.dimen._18ssp))
+                    setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(R.dimen._16ssp))
+                    typeface = ResourcesCompat.getFont(context, R.font.inter_medium)
                     text = description
                 }
                 linearLayout.addView(textView)

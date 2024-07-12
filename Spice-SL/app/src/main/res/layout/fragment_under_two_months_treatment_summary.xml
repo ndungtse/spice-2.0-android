@@ -180,7 +180,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/_24sdp"
                 android:layout_marginBottom="@dimen/_16sdp"
-                android:text="@string/child"
+                android:text="@string/empty__"
                 android:textAlignment="textStart"
                 android:textColor="@color/grey_black"
                 android:textSize="@dimen/_16ssp"

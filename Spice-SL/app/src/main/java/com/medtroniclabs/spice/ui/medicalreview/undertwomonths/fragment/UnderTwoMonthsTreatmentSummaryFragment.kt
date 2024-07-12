@@ -132,9 +132,7 @@ class UnderTwoMonthsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
 
     private fun renderSummaryDetails(details: SummaryDetails) {
         binding.apply {
-            tvPresentingComplaints.text = presentingComplaintsViewModel.enteredComplaintNotes.takeIf { it.isNotEmpty() }
-                ?: getString(R.string.separator_double_hyphen)
-
+            tvPresentingComplaints.text = details.presentingComplaints.takeIf { it != null }?.toString() ?: getString(R.string.empty__)
             tvClinicalNotes.text = details.clinicalNotes.toString()
             tvDiagnosis.text =
                 details.diagnosis?.let {list ->
@@ -203,7 +201,8 @@ class UnderTwoMonthsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
                 binding.etNextVisitDate.text = DateUtils.convertDateTimeToDate(
                     stringDate, DateUtils.DATE_FORMAT_ddMMyyyy, DateUtils.DATE_ddMMyyyy
                 )
-                summaryViewModel.nextVisitDate = binding.etNextVisitDate.text.toString().trim().takeIf { it.isNotBlank() }
+                summaryViewModel.nextVisitDate =
+                    binding.etNextVisitDate.text.toString().trim().takeIf { it.isNotBlank() }
                 datePickerDialog = null
                 binding.tvNextVisitTimeError.gone()
                 summaryListener()

@@ -136,9 +136,7 @@ class UnderFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
     }
 
     private fun renderSummaryDetails(details: SummaryDetails) {
-        binding.tvPresentingComplaints.text = presentingComplaintsViewModel.enteredComplaintNotes
-            .takeIf { it.isNotEmpty() }
-            ?: getString(R.string.separator_double_hyphen)
+        binding.tvPresentingComplaints.text = details.presentingComplaints.takeIf { it != null }?.toString() ?: getString(R.string.empty__)
         binding.tvClinicalNotes.text = details.clinicalNotes.toString()
         binding.tvClinicalName.text = requireContext().getString(
             R.string.firstname_lastname,

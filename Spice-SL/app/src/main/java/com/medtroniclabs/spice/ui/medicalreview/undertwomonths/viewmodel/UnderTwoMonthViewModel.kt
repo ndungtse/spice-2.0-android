@@ -75,7 +75,7 @@ class UnderTwoMonthViewModel @Inject constructor(
                                     clinicalNotes = clinicalNotes,
                                     clinicalSummaryAndSigns = if (clinicalSummaryAndSigns.isNotEmpty()) clinicalSummaryAndSigns else null,
                                     examination = examination,
-                                    presentingcomplaints = presentingComplaints.takeIf { it.isNotEmpty() },
+                                    presentingComplaints = presentingComplaints.takeIf { it.isNotEmpty() },
                                     encounter =
                                     UnderTwoMonthsEncounterDTO(
                                         startTime = DateUtils.getCurrentDateAndTime(
