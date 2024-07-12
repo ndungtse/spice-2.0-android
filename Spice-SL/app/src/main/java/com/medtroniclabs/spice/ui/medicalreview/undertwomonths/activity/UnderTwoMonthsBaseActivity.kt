@@ -358,12 +358,15 @@ private fun successSummaryDialog() {
         patientDetailViewModel.patientDetailsLiveData.value?.data?.let { details ->
             viewModel.createUnderTwoMonthsMedicalReview.value?.data?.encounterId
                 ?.let { submitCreateId ->
-                    viewModel.underTwoMonthsSummaryCreate(
-                        details,
-                        submitCreateId,
-                        summaryViewModel.nextVisitDate,
-                        summaryViewModel.selectedPatientStatus
-                    )
+                    viewModel.createUnderTwoMonthsMedicalReview.value?.data?.patientReference?.let { submitCreatePatientReference ->
+                        viewModel.underTwoMonthsSummaryCreate(
+                            details,
+                            submitCreateId,
+                            summaryViewModel.nextVisitDate,
+                            summaryViewModel.selectedPatientStatus,
+                            submitCreatePatientReference
+                        )
+                    }
                 }
         }
     }

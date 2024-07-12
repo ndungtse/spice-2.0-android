@@ -106,7 +106,6 @@ class UnderFiveYearsViewModel @Inject constructor(
                     systemicExaminationNotes = systemicExaminationsNotes,
                     systemicExamination = systemicExaminations
                 )
-
                 createUnderFiveMedicalReviewLiveData.postLoading()
                 createUnderFiveMedicalReviewLiveData.postValue(
                     underFiveYearsRepository.createMedicalReviewForUnderFiveYears(underFiveMedicalReviewRequest)
@@ -227,7 +226,6 @@ class UnderFiveYearsViewModel @Inject constructor(
     }
 
     private fun mapCoughOrDifficultBreathing(examinationResultHashMap: HashMap<String, Any>): CoughOrDifficultBreathing? {
-
         if (examinationResultHashMap.containsKey(UnderFiveYearExaminationKeyMapping.DiseaseName.cough)) {
             val coughOrDifficultBreathingHashMap =
                 examinationResultHashMap[UnderFiveYearExaminationKeyMapping.DiseaseName.cough] as HashMap<String, Any>
@@ -378,32 +376,42 @@ class UnderFiveYearsViewModel @Inject constructor(
 
     fun underFiveYearsSummaryCreate(
         details: PatientListRespModel,
-        submitCreateId: String,
+        submitEncounterId: String,
         nextFollowUpDate: String?,
-        selectedPatientStatus: String?
+        selectedPatientStatus: String?,
+        patientReferenceId: String
     ) {
         details.memberId?.let { memberId ->
-            val nextVisitDate = DateUtils.convertDateTimeToDate(
-                nextFollowUpDate,
-                DateUtils.DATE_ddMMyyyy,
-                DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-                inUTC = true
-            )
-            val summarySubmitRequest = SummarySubmitRequest(
-                patientStatus = selectedPatientStatus,
-                submitCreateId = submitCreateId,
-                memberId = memberId,
-                id = submitCreateId,
-                provenance = ProvanceDto(),
-                patientReference = details.id,
-                nextVisitDate = nextVisitDate
-            )
-
-            viewModelScope.launch(dispatcherIO) {
-                summaryCreateResponse.postLoading()
-                summaryCreateResponse.postValue(
-                    underFiveYearsRepository.underFiveYearsSummaryCreate(summarySubmitRequest)
-                )
+            details.patientId?.let { patientId ->
+                details.houseHoldId?.let { hhId ->
+                    details.villageId?.let { villageId ->
+                        viewModelScope.launch(dispatcherIO) {
+                            summaryCreateResponse.postLoading()
+                            summaryCreateResponse.postValue(
+                                underFiveYearsRepository.underFiveYearsSummaryCreate(
+                                    SummarySubmitRequest(
+                                        patientStatus = selectedPatientStatus,
+                                        patientId = patientId,
+                                        memberId = memberId,
+                                        id = submitEncounterId,
+                                        provenance = ProvanceDto(),
+                                        patientReference = patientReferenceId,
+                                        nextVisitDate = DateUtils.convertDateTimeToDate(
+                                            nextFollowUpDate,
+                                            DateUtils.DATE_ddMMyyyy,
+                                            DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+                                            inUTC = true
+                                        ),
+                                        householdId = hhId,
+                                        villageId = villageId,
+                                        assessmentName = MedicalReviewTypeEnums.UnderTwoMonths.name,
+                                        referralTicketType = MedicalReviewTypeEnums.ICCM.name
+                                    )
+                                )
+                            )
+                        }
+                    }
+                }
             }
         }
     }

@@ -460,13 +460,16 @@ class UnderFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
         if (connectivityManager.isNetworkAvailable()) {
             binding.underFiveSummaryBottomView?.btnDone?.isEnabled = true
             patientDetailViewModel.patientDetailsLiveData.value?.data?.let { details ->
-                viewModel.createUnderFiveYearMedicalReview.value?.data?.encounterId?.let { submitCreateId ->
-                    viewModel.underFiveYearsSummaryCreate(
-                        details,
-                        submitCreateId,
-                        summaryViewModel.nextVisitDate,
-                        summaryViewModel.selectedPatientStatus
-                    )
+                viewModel.createUnderFiveYearMedicalReview.value?.data?.encounterId?.let { submitEncounterId ->
+                    viewModel.createUnderFiveYearMedicalReview.value?.data?.patientReference?.let {patientReferenceId ->
+                        viewModel.underFiveYearsSummaryCreate(
+                            details,
+                            submitEncounterId,
+                            summaryViewModel.nextVisitDate,
+                            summaryViewModel.selectedPatientStatus,
+                            patientReferenceId
+                        )
+                    }
                 }
             }
         } else {

@@ -424,14 +424,18 @@ class UnderTwoMonthViewModel @Inject constructor(
         details: PatientListRespModel,
         submitCreateId: String,
         nextVisitDate: String?,
-        selectedPatientStatus: String?
+        selectedPatientStatus: String?,
+        submitCreatePatientReference: String
     ) {
         viewModelScope.launch(dispatcherIO) {
             summaryCreateResponse.postLoading()
             summaryCreateResponse.postValue(
                 repository.underTwoMonthsSummaryCreate(
-                    details, submitCreateId,
-                    nextVisitDate,selectedPatientStatus
+                    details,
+                    submitCreateId,
+                    nextVisitDate,
+                    selectedPatientStatus,
+                    submitCreatePatientReference
                 )
             )
         }

@@ -1,6 +1,7 @@
 package com.medtroniclabs.spice.repo
 
 import CreateUnderTwoMonthsRequest
+import android.location.Location
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.StringConverter
@@ -79,14 +80,16 @@ class UnderTwoMonthsRepository @Inject constructor(
         details: PatientListRespModel,
         submitCreateId: String,
         nextFollowupDate: String?,
-        selectedPatientStatus: String?
+        selectedPatientStatus: String?,
+        submitCreatePatientReference: String
     ): Resource<HashMap<String, Any>> {
         return try {
             val request = createSummarySubmitRequest(
                 details,
                 submitCreateId,
                 nextFollowupDate,
-                selectedPatientStatus
+                selectedPatientStatus,
+                submitCreatePatientReference
             )
             val response = request?.let { apiHelper.underTwoMonthsSummaryCreate(it) }
             if (response != null && response.isSuccessful) {
@@ -110,22 +113,33 @@ class UnderTwoMonthsRepository @Inject constructor(
         details: PatientListRespModel,
         submitCreateId: String,
         nextFollowupDate: String?,
-        selectedPatientStatus: String?
+        selectedPatientStatus: String?,
+        submitCreatePatientReference: String
     ): SummarySubmitRequest? {
         return details.patientId?.let { patientId ->
-            details.memberId?.let { memberId ->
-                SummarySubmitRequest(
-                    memberId = memberId,
-                    id = submitCreateId,
-                    provenance = ProvanceDto(),
-                    patientReference = details.id,
-                    nextVisitDate = DateUtils.convertDateTimeToDate(
-                        nextFollowupDate,
-                        DateUtils.DATE_ddMMyyyy,
-                        DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
-                    ),
-                    patientStatus = selectedPatientStatus
-                )
+            details.houseHoldId?.let {hhId ->
+                details.memberId?.let { memberId ->
+                    details.villageId?.let {villageId ->
+                        SummarySubmitRequest(
+                            memberId = memberId,
+                            id = submitCreateId,
+                            assessmentName = MedicalReviewTypeEnums.UnderTwoMonths.name,
+                            provenance = ProvanceDto(),
+                            patientReference = submitCreatePatientReference,
+                            patientId = patientId,
+                            nextVisitDate = DateUtils.convertDateTimeToDate(
+                                nextFollowupDate,
+                                DateUtils.DATE_ddMMyyyy,
+                                DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+                                inUTC = true
+                            ),
+                            householdId = hhId,
+                            villageId = villageId,
+                            referralTicketType = MedicalReviewTypeEnums.ICCM.name,
+                            patientStatus = selectedPatientStatus
+                        )
+                    }
+                }
             }
         }
     }
