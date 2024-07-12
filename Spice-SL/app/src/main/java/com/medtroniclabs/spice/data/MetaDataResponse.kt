@@ -1,16 +1,18 @@
 package com.medtroniclabs.spice.data
 
 import androidx.room.ColumnInfo
+import com.medtroniclabs.spice.db.entity.FrequencyEntity
 import com.medtroniclabs.spice.db.entity.SignsAndSymptomsEntity
 import com.medtroniclabs.spice.db.entity.VillageEntity
 
-data class MetaDataResponse (
+data class MetaDataResponse(
     val nearestHealthFacilities: List<HealthFacility>,
     val villages: List<VillageEntity>,
     val defaultHealthFacility: HealthFacility,
     val menu: Menu,
     val userProfile: UserProfile,
-    val clinicalIds: ArrayList<Long>
+    val clinicalIds: ArrayList<Long>,
+    val frequency: List<FrequencyEntity> ? = null
 )
 
 data class HealthFacility(
@@ -34,6 +36,7 @@ data class District(
     val name: String?,
     val code: String?
 )
+
 data class ClinicalWorkflow(
     val id: Long,
     val name: String,
@@ -99,7 +102,7 @@ data class UserProfile(
 data class Role(
     val id: Long,
     val name: String,
-    val displayName:String?,
+    val displayName: String?,
     val level: Int,
     val authority: String
 )

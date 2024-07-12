@@ -20,7 +20,7 @@ import com.medtroniclabs.spice.data.PrescriptionListRequest
 import com.medtroniclabs.spice.data.PrescriptionRequest
 import com.medtroniclabs.spice.data.RemovePrescriptionRequest
 import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
-import com.medtroniclabs.spice.db.entity.MedicationFrequencyEntity
+import com.medtroniclabs.spice.db.entity.FrequencyEntity
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.network.resource.Resource
@@ -41,6 +41,9 @@ class PrescriptionViewModel @Inject constructor(
     private val medicationRepository: MedicationRepository
 ) : ViewModel() {
 
+
+
+
     val medicationListLiveData =
         MutableLiveData<Resource<java.util.ArrayList<MedicationResponse>>>()
 
@@ -58,6 +61,8 @@ class PrescriptionViewModel @Inject constructor(
     val removePrescriptionLiveData = MutableLiveData<Resource<Map<String, Any>>>()
 
     var patientId: String? = null
+
+    val frequencyListLiveDate = MutableLiveData<Resource<List<FrequencyEntity>>>()
 
     fun searchMedicationByName(name: String) {
         viewModelScope.launch(dispatcherIO) {
@@ -89,26 +94,24 @@ class PrescriptionViewModel @Inject constructor(
         selectedMedicationLiveData.value = medicationList
     }
 
-    fun getFrequencyList(): ArrayList<MedicationFrequencyEntity> {
-        val list = ArrayList<MedicationFrequencyEntity>()
-        list.add(MedicationFrequencyEntity(10, "Daily", 100, "OD", 1))
-        list.add(MedicationFrequencyEntity(4, "Twice a day", 101, "BD", 2))
-        list.add(MedicationFrequencyEntity(1, "Three times a day", 102, "TDS", 3))
-        list.add(MedicationFrequencyEntity(7, "Four times a day", 103, "QDS", 4))
-        return list
+    fun getFrequencyList() {
+        viewModelScope.launch(dispatcherIO) {
+            frequencyListLiveDate.postValue(medicationRepository.getFrequencyList())
+        }
     }
 
     fun getFrequencyMap(): ArrayList<Map<String, Any>> {
         val mapList = ArrayList<Map<String, Any>>()
-        getFrequencyList().forEach { data ->
+        frequencyListLiveDate.value?.data?.forEach { data ->
             val map = HashMap<String, Any>()
             map[DefinedParams.NAME] = data.name
             map[DefinedParams.ID] = data.id
-            map[DefinedParams.Frequency] = data.frequency
-            map[DefinedParams.Description] = data.description
+            map[DefinedParams.Frequency] = data.frequency ?: 1
+            map[DefinedParams.Description] = data.description ?: ""
             map[DefinedParams.DisplayOrder] = data.displayOrder
             mapList.add(map)
         }
+
         return mapList
     }
 

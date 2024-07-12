@@ -16,6 +16,7 @@ import com.medtroniclabs.spice.db.dao.ExaminationsComplaintsDAO
 import com.medtroniclabs.spice.db.dao.ExaminationsDAO
 import com.medtroniclabs.spice.db.dao.FollowUpCallsDao
 import com.medtroniclabs.spice.db.dao.FollowUpDao
+import com.medtroniclabs.spice.db.dao.FrequencyDAO
 import com.medtroniclabs.spice.db.dao.HouseholdDAO
 import com.medtroniclabs.spice.db.dao.LabourDeliveryDAO
 import com.medtroniclabs.spice.db.dao.MemberDAO
@@ -228,6 +229,12 @@ object AppModule {
     @Provides
     fun providePregnancyDetailDAO(db: SpiceDataBase): PregnancyDetailDao {
         return db.pregnancyDetailDao()
+    }
+
+    @Singleton
+    @Provides
+    fun provideFrequencyDAO(db: SpiceDataBase): FrequencyDAO {
+        return db.frequencyDao()
     }
 }
 

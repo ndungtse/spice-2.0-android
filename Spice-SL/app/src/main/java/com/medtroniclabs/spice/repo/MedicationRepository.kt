@@ -5,6 +5,9 @@ import com.medtroniclabs.spice.data.MedicationSearchRequest
 import com.medtroniclabs.spice.data.Prescription
 import com.medtroniclabs.spice.data.PrescriptionListRequest
 import com.medtroniclabs.spice.data.RemovePrescriptionRequest
+import com.medtroniclabs.spice.db.entity.FrequencyEntity
+import com.medtroniclabs.spice.db.entity.VillageEntity
+import com.medtroniclabs.spice.db.local.RoomHelper
 import com.medtroniclabs.spice.network.ApiHelper
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.network.resource.ResourceState
@@ -12,7 +15,8 @@ import okhttp3.RequestBody
 import javax.inject.Inject
 
 class MedicationRepository @Inject constructor(
-    private var apiHelper: ApiHelper
+    private var apiHelper: ApiHelper,
+    private var roomHelper: RoomHelper
 ) {
     suspend fun searchMedicationByName(request: MedicationSearchRequest): Resource<ArrayList<MedicationResponse>> {
         return try {
@@ -62,6 +66,15 @@ class MedicationRepository @Inject constructor(
             } else {
                 Resource(state = ResourceState.ERROR)
             }
+        } catch (e: Exception) {
+            Resource(state = ResourceState.ERROR)
+        }
+    }
+
+    suspend fun getFrequencyList(): Resource<List<FrequencyEntity>> {
+        return try {
+            val response = roomHelper.getFrequencyList()
+            Resource(state = ResourceState.SUCCESS, data = response)
         } catch (e: Exception) {
             Resource(state = ResourceState.ERROR)
         }

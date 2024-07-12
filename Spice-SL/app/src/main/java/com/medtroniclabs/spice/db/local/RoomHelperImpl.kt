@@ -19,6 +19,7 @@ import com.medtroniclabs.spice.db.dao.ExaminationsComplaintsDAO
 import com.medtroniclabs.spice.db.dao.ExaminationsDAO
 import com.medtroniclabs.spice.db.dao.FollowUpCallsDao
 import com.medtroniclabs.spice.db.dao.FollowUpDao
+import com.medtroniclabs.spice.db.dao.FrequencyDAO
 import com.medtroniclabs.spice.db.dao.HouseholdDAO
 import com.medtroniclabs.spice.db.dao.LabourDeliveryDAO
 import com.medtroniclabs.spice.db.dao.MemberClinicalDAO
@@ -32,6 +33,7 @@ import com.medtroniclabs.spice.db.entity.ClinicalWorkflowEntityWithSubmodule
 import com.medtroniclabs.spice.db.entity.FollowUp
 import com.medtroniclabs.spice.db.entity.FollowUpCall
 import com.medtroniclabs.spice.db.entity.FormEntity
+import com.medtroniclabs.spice.db.entity.FrequencyEntity
 import com.medtroniclabs.spice.db.entity.HealthFacilityEntity
 import com.medtroniclabs.spice.db.entity.HouseholdEntity
 import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
@@ -65,7 +67,8 @@ class RoomHelperImpl @Inject constructor(
     private val labourDeliveryDAO: LabourDeliveryDAO,
     private val followUpDao: FollowUpDao,
     private val followUpCallsDao: FollowUpCallsDao,
-    private val pregnancyDetailDao: PregnancyDetailDao
+    private val pregnancyDetailDao: PregnancyDetailDao,
+    private val frequencyDAO: FrequencyDAO
 ) : RoomHelper {
     override suspend fun saveHouseHoldEntry(householdEntity: HouseholdEntity): Long {
         return householdDAO.insertHouseHold(householdEntity)
@@ -566,5 +569,17 @@ class RoomHelperImpl @Inject constructor(
 
     override suspend fun savePregnancyDetail(detail: PregnancyDetail): Long {
         return pregnancyDetailDao.savePregnancyDetail(detail)
+    }
+
+    override suspend fun deleteAllFrequencyList() {
+        return frequencyDAO.deleteAllVillages()
+    }
+
+    override suspend fun saveFrequencyList(frequencyList: List<FrequencyEntity>): List<Long> {
+        return frequencyDAO.insertFrequencyList(frequencyList)
+    }
+
+    override suspend fun getFrequencyList(): List<FrequencyEntity> {
+        return frequencyDAO.getFrequencyList()
     }
 }

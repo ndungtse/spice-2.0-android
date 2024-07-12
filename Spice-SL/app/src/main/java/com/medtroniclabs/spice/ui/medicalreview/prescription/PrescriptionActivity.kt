@@ -206,6 +206,12 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
             }
         }
 
+        prescriptionViewModel.frequencyListLiveDate.observe(this) { _ ->
+            prescriptionViewModel.patientId?.let {
+                patientViewModel.getPatients(it)
+            }
+        }
+
     }
 
     private fun processDiscontinuedMedication(prescriptions: ArrayList<Prescription>) {
@@ -419,9 +425,7 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
     private fun initView() {
         patientViewModel.encounterId = intent.getStringExtra(DefinedParams.EncounterId)
         prescriptionViewModel.patientId = intent.getStringExtra(DefinedParams.PatientId)
-        prescriptionViewModel.patientId?.let {
-            patientViewModel.getPatients(it)
-        }
+        prescriptionViewModel.getFrequencyList()
         binding.searchView.addTextChangedListener {
             if (it.isNullOrEmpty()) {
                 // default showing all medicines
@@ -450,18 +454,19 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
             binding.btnPrescribe.id -> {
                 val status = checkValidation()
                 if (status) {
-                  val list  = prescriptionViewModel.selectedMedicationLiveData.value?.filter { ((it.medicationResponse.prescriptionId != null && it.medicationResponse.isEditable && it.medicationResponse.prescribedDays != null && it.medicationResponse.prescribedDays != 0L) || (it.medicationResponse.prescriptionId == null && it.medicationResponse.prescribedDays != null && it.medicationResponse.prescribedDays != 0L)) }
-                   if (list!=null && list.isEmpty()){
-                       showErrorDialogue(
-                           getString(R.string.alert),
-                           getString(R.string.no_new_medicines_prescribed)
-                       ) {
+                    val list =
+                        prescriptionViewModel.selectedMedicationLiveData.value?.filter { ((it.medicationResponse.prescriptionId != null && it.medicationResponse.isEditable && it.medicationResponse.prescribedDays != null && it.medicationResponse.prescribedDays != 0L) || (it.medicationResponse.prescriptionId == null && it.medicationResponse.prescribedDays != null && it.medicationResponse.prescribedDays != 0L)) }
+                    if (list != null && list.isEmpty()) {
+                        showErrorDialogue(
+                            getString(R.string.alert),
+                            getString(R.string.no_new_medicines_prescribed)
+                        ) {
 
-                       }
-                   }else{
-                       SignatureDialogFragment.newInstance(this)
-                           .show(supportFragmentManager, SignatureDialogFragment.TAG)
-                   }
+                        }
+                    } else {
+                        SignatureDialogFragment.newInstance(this)
+                            .show(supportFragmentManager, SignatureDialogFragment.TAG)
+                    }
                 }
             }
 
@@ -533,12 +538,15 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
     }
 
     private fun getFrequencyName(frequency: Int, hypen: String): String {
-        val selectedFrequency =
-            prescriptionViewModel.getFrequencyList().filter { it.frequency == frequency }
-        return if (selectedFrequency.isNotEmpty()) {
-            selectedFrequency[0].name
-        } else {
-            hypen
+        prescriptionViewModel.frequencyListLiveDate.value?.data?.let { list ->
+            val selectedFrequency = list.filter { it.frequency == frequency }
+            return if (selectedFrequency.isNotEmpty()) {
+                selectedFrequency[0].name
+            } else {
+                hypen
+            }
+        } ?: kotlin.run {
+            return hypen
         }
     }
 }

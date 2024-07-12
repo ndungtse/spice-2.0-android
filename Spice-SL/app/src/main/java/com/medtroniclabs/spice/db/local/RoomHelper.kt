@@ -10,7 +10,6 @@ import com.medtroniclabs.spice.data.VillageInfo
 import com.medtroniclabs.spice.data.model.HouseholdCardDetail
 import com.medtroniclabs.spice.data.offlinesync.model.HouseHold
 import com.medtroniclabs.spice.data.offlinesync.model.HouseHoldMember
-import com.medtroniclabs.spice.data.offlinesync.model.RequestFollowUp
 import com.medtroniclabs.spice.db.entity.AssessmentEntity
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowConditionEntity
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowEntity
@@ -18,6 +17,7 @@ import com.medtroniclabs.spice.db.entity.ClinicalWorkflowEntityWithSubmodule
 import com.medtroniclabs.spice.db.entity.FollowUp
 import com.medtroniclabs.spice.db.entity.FollowUpCall
 import com.medtroniclabs.spice.db.entity.FormEntity
+import com.medtroniclabs.spice.db.entity.FrequencyEntity
 import com.medtroniclabs.spice.db.entity.HealthFacilityEntity
 import com.medtroniclabs.spice.db.entity.HouseholdEntity
 import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
@@ -33,7 +33,6 @@ import com.medtroniclabs.spice.db.response.VillageBasicDetails
 import com.medtroniclabs.spice.model.MemberDobGenderModel
 import com.medtroniclabs.spice.model.assessment.AssessmentDetails
 import com.medtroniclabs.spice.model.assessment.AssessmentMemberDetails
-import com.medtroniclabs.spice.model.followup.FollowUpFilter
 
 interface RoomHelper {
     suspend fun saveHouseHoldEntry(householdEntity: HouseholdEntity): Long
@@ -165,7 +164,11 @@ interface RoomHelper {
 
     suspend fun insertUpdatePregnancyDetailFromBE(pregnancyDetail: PregnancyDetail)
 
-    suspend fun addCallHistory(oldFollowUp: FollowUp, history: FollowUpCall, newFollowUp: FollowUp? = null)
+    suspend fun addCallHistory(
+        oldFollowUp: FollowUp,
+        history: FollowUpCall,
+        newFollowUp: FollowUp? = null
+    )
 
     suspend fun deleteAllFollowUpCalls()
 
@@ -181,7 +184,7 @@ interface RoomHelper {
 
     fun getHouseholdCardDetailLiveData(id: Long): LiveData<HouseholdCardDetail>
 
-    fun getAllHouseHoldMembersLiveData(hhId: Long) : LiveData<List<HouseholdMemberEntity>>
+    fun getAllHouseHoldMembersLiveData(hhId: Long): LiveData<List<HouseholdMemberEntity>>
 
     suspend fun updateOtherDuplicateTickets(id: Long, followUp: FollowUp)
 
@@ -200,5 +203,10 @@ interface RoomHelper {
     suspend fun getPregnancyDetailByPatientId(patientId: String): PregnancyDetail?
 
     suspend fun savePregnancyDetail(detail: PregnancyDetail): Long
+
+    suspend fun deleteAllFrequencyList()
+    suspend fun saveFrequencyList(villageEntityList: List<FrequencyEntity>): List<Long>
+    suspend fun getFrequencyList(): List<FrequencyEntity>
+
 
 }

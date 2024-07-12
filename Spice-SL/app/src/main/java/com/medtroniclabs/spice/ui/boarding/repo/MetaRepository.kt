@@ -56,6 +56,10 @@ class MetaRepository @Inject constructor(
                             )
                             deleteAllVillages()
                             saveVillage(villages)
+                            deleteAllFrequencyList()
+                            frequency?.let {
+                                saveFrequencyList(it)
+                            }
                             saveFhirId(userProfile.fhirId, defaultHealthFacility.fhirId)
                             saveUserProfileDetailsInDb(userProfile)
                             if (CommonUtils.isRolePresent()) {
