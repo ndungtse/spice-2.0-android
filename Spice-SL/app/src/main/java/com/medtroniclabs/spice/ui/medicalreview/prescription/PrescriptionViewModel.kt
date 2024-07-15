@@ -9,7 +9,6 @@ import com.medtroniclabs.spice.appextensions.convertToUtcDateTime
 import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.appextensions.postSuccess
-import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.data.EncounterDetails
 import com.medtroniclabs.spice.data.MedicationRequestObject
@@ -150,7 +149,8 @@ class PrescriptionViewModel @Inject constructor(
                                 frequency = getMedicationFrequency(it),
                                 prescribedSince = System.currentTimeMillis().convertToUtcDateTime(),
                                 prescriptionId = it.medicationResponse.prescriptionId,
-                                codeDetails = it.medicationResponse.codeDetails
+                                codeDetails = it.medicationResponse.codeDetails,
+                                frequencyName = getMedicationFrequencyName(it)
                             )
                         )
                     }
@@ -192,7 +192,7 @@ class PrescriptionViewModel @Inject constructor(
     }
 
     fun constructMedicationRequestObject(prescription: Prescription): MedicationResponse {
-        val selectedFrequencyMap = getSelectedFrequencyMap(prescription.frequency)
+        val selectedFrequencyMap = getSelectedFrequencyMap(prescription.frequencyName)
 
         return MedicationResponse(
             id = prescription.medicationId,
@@ -208,8 +208,8 @@ class PrescriptionViewModel @Inject constructor(
         )
     }
 
-    private fun getSelectedFrequencyMap(frequency: Int): HashMap<String, Any>? {
-        val list = getFrequencyMap().filter { it[DefinedParams.Frequency] == frequency }
+    private fun getSelectedFrequencyMap(frequency: String): HashMap<String, Any>? {
+        val list = getFrequencyMap().filter { it[DefinedParams.NAME] == frequency }
         return if (list.isNotEmpty())
             HashMap(list[0])
         else
@@ -218,6 +218,10 @@ class PrescriptionViewModel @Inject constructor(
 
     private fun getMedicationFrequency(data: MedicationRequestObject): Int {
         return data.medicationResponse.selectedMap?.get(DefinedParams.Frequency) as? Int? ?: 0
+    }
+
+    private fun getMedicationFrequencyName(data: MedicationRequestObject): String {
+        return data.medicationResponse.selectedMap?.get(DefinedParams.NAME) as? String? ?: ""
     }
 
     private fun getPrescriptionList(request: PrescriptionListRequest) {
