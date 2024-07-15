@@ -1,6 +1,6 @@
 package com.medtroniclabs.spice.ui.medicalreview.undertwomonths.viewmodel
 
-import ClinicalSummaryAndSigns
+import com.medtroniclabs.spice.model.medicalreview.ClinicalSummaryAndSigns
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

@@ -13,7 +13,7 @@ data class MedicationResponse(
     var isEditable: Boolean = false,
     var prescribedSince: String? = null,
     var showErrorMessage: Boolean = false,
-    var codeDetails: CodeDetailsObject? = null
+    var codeDetails: CodeDetailsObject? = null,
 )
 
 data class CodeDetailsObject(var code: String, var url: String)

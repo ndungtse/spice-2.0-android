@@ -1,6 +1,5 @@
 package com.medtroniclabs.spice.model.medicalreview
 
-import ClinicalSummaryAndSigns
 import com.medtroniclabs.spice.data.model.MedicalReviewEncounter
 
 data class CreateUnderFiveYearsRequest(

@@ -1,14 +1,14 @@
 package com.medtroniclabs.spice.ui.medicalreview.undertwomonths.viewmodel
 
-import BreastfeedingProblem
-import ClinicalSummaryAndSigns
-import CreateUnderTwoMonthsRequest
-import Diarrhoea
-import Examination
-import Hiv
-import Jaundice
-import NonBreastfeedingProblem
-import VerySevereDisease
+import com.medtroniclabs.spice.model.medicalreview.BreastfeedingProblem
+import com.medtroniclabs.spice.model.medicalreview.ClinicalSummaryAndSigns
+import com.medtroniclabs.spice.model.medicalreview.CreateUnderTwoMonthsRequest
+import com.medtroniclabs.spice.model.medicalreview.Diarrhoea
+import com.medtroniclabs.spice.model.medicalreview.Examination
+import com.medtroniclabs.spice.model.medicalreview.Hiv
+import com.medtroniclabs.spice.model.medicalreview.Jaundice
+import com.medtroniclabs.spice.model.medicalreview.NonBreastfeedingProblem
+import com.medtroniclabs.spice.model.medicalreview.VerySevereDisease
 import android.location.Location
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData

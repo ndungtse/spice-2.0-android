@@ -57,7 +57,7 @@ class PatientListAdapter(private val callback: (Int, FollowUpPatientModel) -> Un
                 }
 
                 if (data.type == FU_TYPE_REFERRED) {
-                    setOverDueInfo(data.encounterDate, tvDueInformation)
+                    setOverDueInfo(data.encounterDate, tvDueInformation,2)
                 } else {
                     setOverDueInfo(data.nextVisitDate, tvDueInformation)
                 }
@@ -123,11 +123,11 @@ class PatientListAdapter(private val callback: (Int, FollowUpPatientModel) -> Un
         holder.bind(listOfPatient[position])
     }
 
-    private fun setOverDueInfo(dateString: String?, tv: TextView) {
+    private fun setOverDueInfo(dateString: String?, tv: TextView, adjust:Long = 0) {
         if (dateString != null) {
             val currentDate = LocalDate.now()
             val dateTime = OffsetDateTime.parse(dateString,  DateTimeFormatter.ISO_OFFSET_DATE_TIME)
-            val date = dateTime.toLocalDate()
+            val date = dateTime.toLocalDate().plusDays(adjust)
             val daysBetween = ChronoUnit.DAYS.between(currentDate, date)
 
             when {

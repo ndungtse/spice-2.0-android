@@ -1,7 +1,6 @@
 package com.medtroniclabs.spice.repo
 
-import CreateUnderTwoMonthsRequest
-import android.location.Location
+import com.medtroniclabs.spice.model.medicalreview.CreateUnderTwoMonthsRequest
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.StringConverter

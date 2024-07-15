@@ -1,6 +1,6 @@
 package com.medtroniclabs.spice.ui.medicalreview.underfiveyears
 
-import ClinicalSummaryAndSigns
+import com.medtroniclabs.spice.model.medicalreview.ClinicalSummaryAndSigns
 import android.location.Location
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData

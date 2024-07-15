@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.appextensions.postLoading
+import com.medtroniclabs.spice.appextensions.postSuccess
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.network.resource.Resource
@@ -42,7 +43,12 @@ class ResourceLoadingViewModel @Inject constructor(
                 metaDataCompleteLiveData.postError()
                 return@launch
             }
-            metaDataCompleteLiveData.postValue(metaRepository.getMetaDataInformation(workflowNames,meta))
+            metaDataCompleteLiveData.postValue(
+                metaRepository.getMetaDataInformation(
+                    workflowNames,
+                    meta
+                )
+            )
         }
     }
 
@@ -56,7 +62,13 @@ class ResourceLoadingViewModel @Inject constructor(
             }
 
             // 2. Get Fetch sync
-            offlineSyncRepository.getInsertOrUpdateLocalData(householdsLiveData)
+            val longSyncedAt =
+                SecuredPreference.getLong(SecuredPreference.EnvironmentKey.LAST_SYNCED_AT.name)
+            if (longSyncedAt == 0L) {
+                offlineSyncRepository.getInsertOrUpdateLocalData(householdsLiveData)
+            } else {
+                householdsLiveData.postSuccess(true)
+            }
         }
     }
 
