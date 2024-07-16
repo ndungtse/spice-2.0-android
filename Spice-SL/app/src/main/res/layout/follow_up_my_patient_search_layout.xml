@@ -15,7 +15,7 @@
         android:background="@drawable/search_bar_background"
         android:drawableStart="@drawable/ic_search_patient_purple"
         android:drawablePadding="@dimen/_8sdp"
-        android:hint="@string/search"
+        android:hint="@string/search_name_patient_id"
         android:imeOptions="actionDone"
         android:inputType="textCapWords"
         android:maxLines="1"
@@ -36,25 +36,24 @@
         app:layout_constraintBottom_toBottomOf="@id/etSearchTerm"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_weight="2" />
+
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tabLayout"
-        app:tabTextAppearance="@android:style/TextAppearance.Widget.TabWidget"
-        android:layout_marginVertical="@dimen/_16sdp"
-        android:layout_height="wrap_content"
         android:layout_width="0dp"
-        app:tabMaxWidth="@dimen/_0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="@dimen/_16sdp"
+        android:textAlignment="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnSearch"
         app:tabGravity="fill"
         app:tabIndicator="@null"
-        app:tabTextColor="@color/grey_black"
-        android:textAlignment="center"
+        app:tabMaxWidth="@dimen/_0dp"
         app:tabSelectedTextColor="@color/white"
-        app:layout_constraintTop_toBottomOf="@+id/btnSearch"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        />
+        app:tabTextAppearance="@style/MyPatientTabTextAppearance"
+        app:tabTextColor="@color/grey_black" />
 
     <TextView
-        android:visibility="gone"
         android:id="@+id/tvHhVisit"
         style="@style/FollowUpTextView"
         android:layout_height="wrap_content"
@@ -64,13 +63,13 @@
         android:padding="@dimen/_10sdp"
         android:text="@string/hh_visit"
         android:textColor="@color/text_color_selector"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/tvReferred"
         app:layout_constraintStart_toStartOf="@id/etSearchTerm"
         app:layout_constraintTop_toBottomOf="@id/etSearchTerm" />
 
     <TextView
-        android:visibility="gone"
         android:id="@+id/tvReferred"
         style="@style/FollowUpTextView"
         android:layout_height="0dp"
@@ -79,13 +78,13 @@
         android:padding="@dimen/_10sdp"
         android:text="@string/referred"
         android:textColor="@color/text_color_selector"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@id/tvHhVisit"
         app:layout_constraintEnd_toStartOf="@id/tvMedicalReview"
         app:layout_constraintStart_toEndOf="@id/tvHhVisit"
         app:layout_constraintTop_toTopOf="@id/tvHhVisit" />
 
     <TextView
-        android:visibility="gone"
         android:id="@+id/tvMedicalReview"
         style="@style/FollowUpTextView"
         android:layout_height="wrap_content"
@@ -94,6 +93,7 @@
         android:padding="@dimen/_10sdp"
         android:text="@string/medical_review"
         android:textColor="@color/text_color_selector"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@id/tvReferred"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/tvReferred"

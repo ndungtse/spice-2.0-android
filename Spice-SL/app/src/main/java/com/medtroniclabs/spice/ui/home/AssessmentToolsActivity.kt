@@ -37,6 +37,7 @@ class AssessmentToolsActivity : BaseActivity() {
 
     private fun initializeView() {
         toolsViewModel.selectedHouseholdMemberID = intent.getLongExtra(DefinedParams.MemberID, -1)
+        toolsViewModel.followUpId = intent.getLongExtra(DefinedParams.FollowUpId, -1)
         val fragmentTag =
             ToolsMenuFragment.TAG
         var fragment = supportFragmentManager.findFragmentByTag(fragmentTag)

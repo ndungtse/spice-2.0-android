@@ -15,7 +15,6 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.hideKeyboard
-import com.medtroniclabs.spice.appextensions.invisible
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.databinding.FragmentPatientSearchBinding
@@ -62,14 +61,16 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
     }
 
     private fun swipeRefresh() {
-        if (connectivityManager.isNetworkAvailable()) {
-            getPatientList()
-            scrollTop()
-        } else {
-            if (binding.refreshLayout.isRefreshing) {
-                binding.refreshLayout.isRefreshing = false
+        connectivityManager.isNullableNetworkAvailable()?.let {
+            if (it) {
+                getPatientList()
+                scrollTop()
+            } else {
+                if (binding.refreshLayout.isRefreshing) {
+                    binding.refreshLayout.isRefreshing = false
+                }
+                showErrorDialog(getString(R.string.error), getString(R.string.no_internet_error))
             }
-            showErrorDialog(getString(R.string.error), getString(R.string.no_internet_error))
         }
     }
 
@@ -145,11 +146,13 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
     }
 
     private fun handleSearchBarAfterTextRemove() {
-        if (connectivityManager.isNetworkAvailable()) {
-            patientListViewModel.searchText = ""
-            getPatientList()
-        } else {
-            showErrorDialog(getString(R.string.error), getString(R.string.no_internet_error))
+        connectivityManager.isNullableNetworkAvailable()?.let {
+            if (it) {
+                patientListViewModel.searchText = ""
+                getPatientList()
+            } else {
+                showErrorDialog(getString(R.string.error), getString(R.string.no_internet_error))
+            }
         }
     }
 
@@ -173,15 +176,17 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
     }
 
     override fun onSelectedPatient(item: PatientListRespModel) {
-        if (connectivityManager.isNetworkAvailable()) {
-            val intent = Intent(requireActivity(), ReferralHistoryActivity::class.java)
-            intent.putExtra(DefinedParams.PatientId, item.patientId)
-            intent.putExtra(DefinedParams.Gender, item.gender)
-            intent.putExtra(DefinedParams.DOB, item.birthDate)
-            intent.putExtra(DefinedParams.FhirId, item.id)
-            startActivity(intent)
-        } else {
-            showErrorDialog(getString(R.string.error),getString(R.string.no_internet_error))
+        connectivityManager.isNullableNetworkAvailable()?.let {
+            if (it) {
+                val intent = Intent(requireActivity(), ReferralHistoryActivity::class.java)
+                intent.putExtra(DefinedParams.PatientId, item.patientId)
+                intent.putExtra(DefinedParams.Gender, item.gender)
+                intent.putExtra(DefinedParams.DOB, item.birthDate)
+                intent.putExtra(DefinedParams.FhirId, item.id)
+                startActivity(intent)
+            } else {
+                showErrorDialog(getString(R.string.error),getString(R.string.no_internet_error))
+            }
         }
     }
 
@@ -209,13 +214,15 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
     }
 
     private fun networkAvailability() {
-        if (connectivityManager.isNetworkAvailable()) {
-            patientListViewModel.searchText =
-                binding.llExactSearch.etPatientSearch.text?.trim().toString()
-            getPatientList()
-            scrollTop()
-        } else {
-            showErrorDialog(getString(R.string.error),getString(R.string.no_internet_error))
+        connectivityManager.isNullableNetworkAvailable()?.let {
+            if (it) {
+                patientListViewModel.searchText =
+                    binding.llExactSearch.etPatientSearch.text?.trim().toString()
+                getPatientList()
+                scrollTop()
+            } else {
+                showErrorDialog(getString(R.string.error),getString(R.string.no_internet_error))
+            }
         }
     }
 

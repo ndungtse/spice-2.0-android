@@ -2,10 +2,9 @@ package com.medtroniclabs.spice.repo
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.map
-import androidx.lifecycle.switchMap
 import com.medtroniclabs.spice.appextensions.convertToUtcDateTime
-import com.medtroniclabs.spice.common.DateUtils
-import com.medtroniclabs.spice.common.DefinedParams.OnTreatment
+import com.medtroniclabs.spice.common.DateUtils.DATE_FORMAT_yyyyMMdd
+import com.medtroniclabs.spice.common.DateUtils.DATE_ddMMyyyy
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.FollowUpPatientModel
 import com.medtroniclabs.spice.data.offlinesync.model.FollowUpCallStatus
@@ -18,8 +17,8 @@ import com.medtroniclabs.spice.model.followup.FollowUpFilter
 import com.medtroniclabs.spice.network.ApiHelper
 import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
 import com.medtroniclabs.spice.ui.followup.FollowUpDefinedParams
-import java.util.Calendar
-import java.util.Date
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 class FollowUpRepository @Inject constructor(
@@ -27,14 +26,14 @@ class FollowUpRepository @Inject constructor(
     private val roomHelper: RoomHelper
 ) {
 
-    fun getFollowUpListLiveData(filter: FollowUpFilter): LiveData<List<FollowUpPatientModel>> {
+    fun getFollowUpListLiveData(filter: FollowUpFilter, referralLimit: Int): LiveData<List<FollowUpPatientModel>> {
         val villageIds = if (filter.selectedVillages.isNullOrEmpty()) {
             filter.villages
         } else {
             filter.selectedVillages!!.map { it.id!! }
         }
 
-        val fromAndToDate = getFromDateAndToDate(filter)
+        val fromAndToDate = getFromDateAndToDate(filter, referralLimit)
 
         return roomHelper.getFollowUpPatientListLiveData(
             filter.type,
@@ -45,36 +44,60 @@ class FollowUpRepository @Inject constructor(
         ).map { list -> list.sortedBy { it.updatedAt } }
     }
 
-    private fun getFromDateAndToDate(filter: FollowUpFilter): Pair<String, String> {
+    private fun getFromDateAndToDate(filter: FollowUpFilter, referralLimit: Int): Pair<String, String> {
         if (filter.selectedDateRange.isNullOrEmpty()) {
             return Pair("", "")
         }
 
         if (filter.selectedDateRange?.any { it.name == FollowUpDefinedParams.FilterToday } == true) {
-            val date = DateUtils.getTodayStringDate()
+            val date = getTodayDateString(filter.type, referralLimit)
             return Pair(date, date)
         }
 
         if (filter.selectedDateRange?.any { it.name == FollowUpDefinedParams.FilterTomorrow } == true) {
-            val date = DateUtils.getTomorrowStringDate()
+            val date = getTomorrowDateString(filter.type, referralLimit)
             return Pair(date, date)
         }
 
         if (filter.selectedDateRange?.any { it.name == FollowUpDefinedParams.FilterCustomize } == true) {
-            val fromDate = DateUtils.convertDateFormat(
-                filter.fromDate,
-                DateUtils.DATE_ddMMyyyy,
-                DateUtils.DATE_FORMAT_yyyyMMdd
-            )
-            val toDate = DateUtils.convertDateFormat(
-                filter.toDate,
-                DateUtils.DATE_ddMMyyyy,
-                DateUtils.DATE_FORMAT_yyyyMMdd
-            )
-            return Pair(fromDate, toDate)
+            return getDateRange(filter, referralLimit)
         }
 
         return Pair("", "")
+    }
+
+    private fun getTodayDateString(type: String, referralLimit: Int) : String {
+        val format = DateTimeFormatter.ofPattern(DATE_FORMAT_yyyyMMdd)
+        var today = LocalDate.now().atStartOfDay()
+
+        if (type == FollowUpDefinedParams.FU_TYPE_REFERRED)
+            today = today.minusDays(referralLimit.toLong())
+
+        return today.format(format)
+    }
+
+    private fun getTomorrowDateString(type: String, referralLimit: Int): String {
+        val format = DateTimeFormatter.ofPattern(DATE_FORMAT_yyyyMMdd)
+        var tomorrow = LocalDate.now().atStartOfDay().plusDays(1)
+
+        if (type == FollowUpDefinedParams.FU_TYPE_REFERRED)
+            tomorrow = tomorrow.minusDays(referralLimit.toLong())
+
+        return tomorrow.format(format)
+    }
+
+    private fun getDateRange(filter: FollowUpFilter, referralLimit: Int): Pair<String, String> {
+        val outputFormat = DateTimeFormatter.ofPattern(DATE_FORMAT_yyyyMMdd)
+        val inputFormat = DateTimeFormatter.ofPattern(DATE_ddMMyyyy)
+        var fromDate = LocalDate.parse(filter.fromDate, inputFormat)
+        var toDate = LocalDate.parse(filter.toDate, inputFormat)
+
+        if (filter.type == FollowUpDefinedParams.FU_TYPE_REFERRED) {
+            fromDate = fromDate.minusDays(referralLimit.toLong())
+            toDate = toDate.minusDays(referralLimit.toLong())
+        }
+
+        return Pair(fromDate.format(outputFormat), toDate.format(outputFormat))
     }
 
     suspend fun getVillageIds(): List<VillageEntity> {
@@ -197,7 +220,8 @@ class FollowUpRepository @Inject constructor(
             unsuccessfulAttempts = 0,
             encounterDate = System.currentTimeMillis().convertToUtcDateTime(),
             nextVisitDate = nextVisitDate,
-            referredSiteId = referredSiteId
+            referredSiteId = referredSiteId,
+            calledAt = null
         )
     }
 

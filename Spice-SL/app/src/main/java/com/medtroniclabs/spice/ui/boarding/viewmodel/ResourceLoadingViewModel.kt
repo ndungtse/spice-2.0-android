@@ -62,13 +62,7 @@ class ResourceLoadingViewModel @Inject constructor(
             }
 
             // 2. Get Fetch sync
-            val longSyncedAt =
-                SecuredPreference.getLong(SecuredPreference.EnvironmentKey.LAST_SYNCED_AT.name)
-            if (longSyncedAt == 0L) {
-                offlineSyncRepository.getInsertOrUpdateLocalData(householdsLiveData)
-            } else {
-                householdsLiveData.postSuccess(true)
-            }
+            offlineSyncRepository.getInsertOrUpdateLocalData(householdsLiveData)
         }
     }
 

@@ -61,6 +61,7 @@ class AssessmentViewModel @Inject constructor(
 ) : ViewModel() {
 
     var selectedHouseholdMemberId = -1L
+    var followUpId = -1L
     val assessmentSaveLiveData = MutableLiveData<Resource<AssessmentEntity>>()
     val assessmentStringLiveData = MutableLiveData<String?>()
     val assessmentUpdateLiveData = MutableLiveData<Resource<String>>()

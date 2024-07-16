@@ -39,14 +39,17 @@ class FollowUpViewModel @Inject constructor(
     private val filterLiveData = MutableLiveData<FollowUpFilter>()
     val followUpPatientListLiveData: LiveData<List<FollowUpPatientModel>> =
         filterLiveData.switchMap {
-            followUpRepository.getFollowUpListLiveData(it)
+            val referralLimit = referralDayLimitLiveData.value ?: 2
+            followUpRepository.getFollowUpListLiveData(it, referralLimit)
         }
 
+    val referralDayLimitLiveData = MutableLiveData<Int>()
     var maxSuccessfulCallLimit: Int = 5
     private var maxUnSuccessfulCallLimit: Int = 5
 
     init {
         SecuredPreference.getFollowUpCriteria()?.let { followUpCriteria ->
+            referralDayLimitLiveData.postValue(followUpCriteria.referral)
             maxSuccessfulCallLimit = followUpCriteria.successfulAttempts
             maxUnSuccessfulCallLimit = followUpCriteria.unsuccessfulAttempts
         }

@@ -14,10 +14,15 @@ import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.setDialogWidthAndHeightAsWrapPercent
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
+import com.medtroniclabs.spice.common.DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
+import com.medtroniclabs.spice.common.DateUtils.DATE_ddMMyyyy
+import com.medtroniclabs.spice.common.DateUtils.convertDateTimeToDate
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.databinding.FragmentFollowUpDialogBinding
 import com.medtroniclabs.spice.ui.assessment.AssessmentActivity
 import com.medtroniclabs.spice.ui.followup.FollowUpDefinedParams.FU_TYPE_HH_VISIT
+import com.medtroniclabs.spice.ui.followup.FollowUpDefinedParams.FU_TYPE_MEDICAL_REVIEW
+import com.medtroniclabs.spice.ui.followup.FollowUpDefinedParams.FU_TYPE_REFERRED
 import com.medtroniclabs.spice.ui.followup.viewmodel.FollowUpViewModel
 
 class FollowUpDialogFragment : DialogFragment() {
@@ -78,18 +83,46 @@ class FollowUpDialogFragment : DialogFragment() {
             with(binding) {
                 tvTitle.text = getPatientName(details.name, details.dateOfBirth, details.gender)
                 tvReasonText.text = details.reason ?: getString(R.string.hyphen_symbol)
-                tvPatientStatusText.text = requireContext().getPatientStatus(details.patientStatus) ?: getString(R.string.hyphen_symbol)
+                tvPatientStatusText.text = requireContext().getPatientStatus(details.patientStatus)
+                    ?: getString(R.string.hyphen_symbol)
                 tvVillageText.text = details.village ?: getString(R.string.hyphen_symbol)
                 tvLandmarkText.text = details.landmark ?: getString(R.string.hyphen_symbol)
                 tvHHNameText.text = details.householdName ?: getString(R.string.hyphen_symbol)
                 tvMemberIDText.text = details.patientId ?: getString(R.string.hyphen_symbol)
                 tvCallsMadeText.text =
                     "${details.successfulAttempts}/${viewModel.maxSuccessfulCallLimit}"
+                tvStartDateText.text = convertDateTimeToDate(
+                    details.encounterDate,
+                    DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+                    DATE_ddMMyyyy,
+                    inUTC = true
+                )
 
-                if (details.type == FU_TYPE_HH_VISIT)
-                    btnAssessment.visible()
-                else
-                    btnAssessment.gone()
+                when (details.type) {
+                    FU_TYPE_HH_VISIT -> {
+                        btnAssessment.visible()
+                        tvStartDateLabel.text = getString(R.string.treatment_start_date)
+                        tvReasonLabel.visible()
+                        tvReasonText.visible()
+                        tvReasonSeparator.visible()
+                    }
+
+                    FU_TYPE_REFERRED -> {
+                        btnAssessment.gone()
+                        tvStartDateLabel.text = getString(R.string.referred_date)
+                        tvReasonLabel.visible()
+                        tvReasonText.visible()
+                        tvReasonSeparator.visible()
+                    }
+
+                    FU_TYPE_MEDICAL_REVIEW -> {
+                        btnAssessment.gone()
+                        tvStartDateLabel.text = getString(R.string.treatment_start_date)
+                        tvReasonLabel.gone()
+                        tvReasonText.gone()
+                        tvReasonSeparator.gone()
+                    }
+                }
             }
         }
     }

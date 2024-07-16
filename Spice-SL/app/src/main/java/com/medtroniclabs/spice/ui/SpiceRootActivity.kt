@@ -8,6 +8,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.appextensions.cancelAllWorker
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.GeneralErrorDialog
 import com.medtroniclabs.spice.common.SecuredPreference
@@ -51,6 +52,7 @@ open class SpiceRootActivity : AppCompatActivity() {
                     isNegativeButtonNeed = false
                 ) { status ->
                     if (status) {
+                        cancelAllWorker()
                         SecuredPreference.clear(this@SpiceRootActivity)
                         val i = Intent(context, LandingActivity::class.java)
                         i.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK

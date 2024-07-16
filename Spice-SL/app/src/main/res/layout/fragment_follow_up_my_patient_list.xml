@@ -24,7 +24,7 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:paddingHorizontal="@dimen/_15sdp"
-        android:text="@string/no_patient_found"
+        android:text="@string/no_patients_found"
         android:textColor="@color/medium_risk_color"
         android:textSize="@dimen/_16ssp"
         android:visibility="gone"

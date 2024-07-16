@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.convertToLocalDateTime
 import com.medtroniclabs.spice.appextensions.getPatientStatus
+import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.invisible
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
@@ -18,6 +19,7 @@ import com.medtroniclabs.spice.databinding.LayoutItemMyPatientBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
 import com.medtroniclabs.spice.ui.followup.FollowUpDefinedParams.FU_TYPE_HH_VISIT
+import com.medtroniclabs.spice.ui.followup.FollowUpDefinedParams.FU_TYPE_MEDICAL_REVIEW
 import com.medtroniclabs.spice.ui.followup.FollowUpDefinedParams.FU_TYPE_REFERRED
 import java.time.LocalDate
 import java.time.OffsetDateTime
@@ -34,6 +36,11 @@ class PatientListAdapter(private val callback: (Int, FollowUpPatientModel) -> Un
     }
 
     private val listOfPatient = mutableListOf<FollowUpPatientModel>()
+    private var referralDayLimit = 2
+
+    fun updateReferralDayLimit(limit: Int) {
+        referralDayLimit = limit
+    }
 
     fun updateList(list: List<FollowUpPatientModel>) {
         listOfPatient.clear()
@@ -50,21 +57,32 @@ class PatientListAdapter(private val callback: (Int, FollowUpPatientModel) -> Un
                 tvPatientName.text =
                     getPatientName(context, data.name, data.dateOfBirth, data.gender)
 
-                if (data.type == FU_TYPE_HH_VISIT) {
-                    assessmentButton.visible()
-                } else {
-                    assessmentButton.invisible()
-                }
+                assessmentButton.visible()
+                tvLabelReason.visible()
+                tvReason.visible()
+                tvLabelReasonSeperator.visible()
 
-                if (data.type == FU_TYPE_REFERRED) {
-                    setOverDueInfo(data.encounterDate, tvDueInformation,2)
-                } else {
-                    setOverDueInfo(data.nextVisitDate, tvDueInformation)
+                when(data.type) {
+                    FU_TYPE_HH_VISIT -> {
+                        setOverDueInfo(data.nextVisitDate, tvDueInformation)
+                    }
+
+                    FU_TYPE_REFERRED -> {
+                        assessmentButton.invisible()
+                        setOverDueInfo(data.encounterDate, tvDueInformation, referralDayLimit)
+                    }
+
+                    FU_TYPE_MEDICAL_REVIEW -> {
+                        assessmentButton.invisible()
+                        tvLabelReason.gone()
+                        tvReason.gone()
+                        tvLabelReasonSeperator.gone()
+                        setOverDueInfo(data.nextVisitDate, tvDueInformation)
+                    }
                 }
 
                 tvReason.text = data.reason
                 tvPatientStatus.text = context.getPatientStatus(data.patientStatus) ?: context.getString(R.string.hyphen_symbol)
-                tvLastCallAtLabel.text = calledAtLabel(context, data.type)
                 tvLastCallAtValue.text = data.calledAt?.convertToLocalDateTime(format = DATE_TIME_CALL_DISPLAY_FORMAT) ?: "--"
 
                 root.safeClickListener {
@@ -78,13 +96,6 @@ class PatientListAdapter(private val callback: (Int, FollowUpPatientModel) -> Un
                     callback(ConstantPatientListAdapter.ASSESSMENT, data)
                 }
             }
-        }
-    }
-
-    private fun calledAtLabel(context: Context, type: String?): String {
-        when(type) {
-            FU_TYPE_REFERRED -> return context.getString(R.string.referred_at)
-            else -> return context.getString(R.string.called_at)
         }
     }
 
@@ -123,30 +134,39 @@ class PatientListAdapter(private val callback: (Int, FollowUpPatientModel) -> Un
         holder.bind(listOfPatient[position])
     }
 
-    private fun setOverDueInfo(dateString: String?, tv: TextView, adjust:Long = 0) {
+    private fun setOverDueInfo(dateString: String?, tv: TextView, adjust: Int = 0) {
         if (dateString != null) {
             val currentDate = LocalDate.now()
-            val dateTime = OffsetDateTime.parse(dateString,  DateTimeFormatter.ISO_OFFSET_DATE_TIME)
-            val date = dateTime.toLocalDate().plusDays(adjust)
+            val dateTime = OffsetDateTime.parse(dateString, DateTimeFormatter.ISO_OFFSET_DATE_TIME)
+            val date = dateTime.toLocalDate().plusDays(adjust.toLong())
             val daysBetween = ChronoUnit.DAYS.between(currentDate, date)
 
             when {
                 daysBetween < 0L -> {
-                    tv.text = "${-daysBetween} days, Overdue"
+                    val suffix = if (daysBetween == -1L)
+                        "day, Overdue"
+                    else
+                        "days, Overdue"
+
+                    tv.text = "${-daysBetween} $suffix"
                     tv.setTextColor(Color.parseColor("#994242"))
                 }
+
                 daysBetween == 0L -> {
                     tv.text = "Today"
                     tv.setTextColor(Color.parseColor("#EB956A"))
                 }
+
                 daysBetween == 1L -> {
                     tv.text = "Tomorrow"
                     tv.setTextColor(Color.parseColor("#54CC90"))
                 }
+
                 daysBetween > 1L -> {
                     tv.text = "Upcoming in $daysBetween days"
                     tv.setTextColor(Color.parseColor("#54CC90"))
                 }
+
                 else -> {
                     tv.text = "--"
                     tv.setTextColor(Color.parseColor("#54CC90"))

@@ -33,6 +33,10 @@ constructor(
         return connectionLiveData.value ?: false
     }
 
+    fun isNullableNetworkAvailable(): Boolean? {
+        return connectionLiveData.value
+    }
+
     fun resetNetworkState(){
         connectionLiveData.checkInitialNetwork()
     }

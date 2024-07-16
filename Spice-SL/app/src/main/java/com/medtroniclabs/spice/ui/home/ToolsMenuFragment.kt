@@ -117,6 +117,7 @@ class ToolsMenuFragment : BaseFragment(), MenuSelectionListener {
     private fun startAssessmentActivity(menuId: String, workFlowName: String?) {
         val intent = Intent(requireContext(), AssessmentActivity::class.java)
         intent.putExtra(DefinedParams.MemberID, viewModel.selectedHouseholdMemberID)
+        intent.putExtra(DefinedParams.FollowUpId, viewModel.followUpId)
         intent.putExtra(DefinedParams.MenuId, menuId)
         workFlowName?.let { name ->
             intent.putExtra(WorkFlowName, name)

@@ -405,22 +405,6 @@ object DateUtils {
         return getDateString(calendar.time.time, DATE_FORMAT_yyyyMMddHHmmssZZZZZ)
     }
 
-
-    fun getTodayStringDate(displayFormat: String = DATE_FORMAT_yyyyMMdd): String {
-        val dateFormat = SimpleDateFormat(displayFormat)
-        val currentDate = Date()
-        return dateFormat.format(currentDate)
-    }
-
-    fun getTomorrowStringDate(displayFormat: String = DATE_FORMAT_yyyyMMdd): String {
-        val dateFormat = SimpleDateFormat(displayFormat)
-        val calendar = Calendar.getInstance()
-        calendar.add(Calendar.DAY_OF_YEAR, 1) // Adding one day
-        val tomorrowDate = calendar.time
-        return dateFormat.format(tomorrowDate)
-        
-    }
-
     fun getCurrentDateTimeInMillis(): Long = Instant.now().toEpochMilli()
 
     fun calculateGestationalAge(lmpDate: LocalDate): Long {

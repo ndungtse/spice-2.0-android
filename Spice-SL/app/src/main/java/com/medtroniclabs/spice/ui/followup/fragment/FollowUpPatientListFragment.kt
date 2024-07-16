@@ -5,22 +5,19 @@ import android.app.Activity.RESULT_OK
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.DefinedParams
-import com.medtroniclabs.spice.data.FollowUpPatientModel
 import com.medtroniclabs.spice.databinding.FragmentFollowUpMyPatientListBinding
 import com.medtroniclabs.spice.ui.BaseFragment
-import com.medtroniclabs.spice.ui.assessment.AssessmentActivity
 import com.medtroniclabs.spice.ui.followup.adapter.PatientListAdapter
 import com.medtroniclabs.spice.ui.followup.viewmodel.FollowUpViewModel
+import com.medtroniclabs.spice.ui.home.AssessmentToolsActivity
 
 class FollowUpPatientListFragment: BaseFragment(), FollowUpDialogFragment.FollowUpClickListener {
 
@@ -65,6 +62,10 @@ class FollowUpPatientListFragment: BaseFragment(), FollowUpDialogFragment.Follow
                 adapter.updateList(listOf())
             }
         }
+
+        viewModel.referralDayLimitLiveData.observe(viewLifecycleOwner) {
+            adapter.updateReferralDayLimit(it)
+        }
     }
 
     private fun initAdapter() {
@@ -102,9 +103,9 @@ class FollowUpPatientListFragment: BaseFragment(), FollowUpDialogFragment.Follow
 
     override fun onLaunchAssessment() {
         viewModel.selectedFollowUpDetail?.let { data ->
-            val intent = Intent(requireContext(), AssessmentActivity::class.java)
+            val intent = Intent(requireContext(), AssessmentToolsActivity::class.java)
             intent.putExtra(DefinedParams.MemberID, data.localPatientId)
-            intent.putExtra(DefinedParams.MenuId, data.encounterType?.lowercase())
+            intent.putExtra(DefinedParams.FollowUpId, data.id)
             startActivity(intent)
         }
     }

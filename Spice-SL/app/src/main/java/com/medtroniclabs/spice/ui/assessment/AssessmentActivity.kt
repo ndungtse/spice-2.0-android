@@ -25,6 +25,7 @@ import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentRMNCHSummaryFrag
 import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentTBFragment
 import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentTBSummaryFragment
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
+import com.medtroniclabs.spice.ui.followup.FollowUpMyPatientActivity
 import com.medtroniclabs.spice.ui.household.HouseholdSearchActivity
 import com.medtroniclabs.spice.ui.landing.LandingActivity
 import dagger.hilt.android.AndroidEntryPoint
@@ -114,10 +115,7 @@ class AssessmentActivity : BaseActivity() {
                 is AssessmentRMNCHSummaryFragment,
                 is AssessmentRMNCHNeonateSummaryFragment,
                 is AssessmentOtherSymptomSummaryFragment -> {
-                    val intent = Intent(this, HouseholdSearchActivity::class.java)
-                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
-                    startActivity(intent)
-                    finish()
+                    finishSuccessFlow()
                 }
                 else -> {
                     this@AssessmentActivity.finish()
@@ -227,10 +225,7 @@ class AssessmentActivity : BaseActivity() {
             when (resource.state) {
                 ResourceState.SUCCESS -> {
                     hideLoading()
-                    val intent = Intent(this, HouseholdSearchActivity::class.java)
-                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
-                    startActivity(intent)
-                    finish()
+                    finishSuccessFlow()
                 }
 
                 else -> {}
@@ -238,9 +233,20 @@ class AssessmentActivity : BaseActivity() {
         }
     }
 
+    private fun finishSuccessFlow() {
+        val intent = if (viewModel.followUpId != -1L)
+            Intent(this, FollowUpMyPatientActivity::class.java)
+        else
+            Intent(this, HouseholdSearchActivity::class.java)
+
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+        startActivity(intent)
+        finish()
+    }
 
     private fun getIntentValue() {
         viewModel.selectedHouseholdMemberId = intent.getLongExtra(DefinedParams.MemberID, -1L)
+        viewModel.followUpId = intent.getLongExtra(DefinedParams.FollowUpId, -1L)
         viewModel.menuId = intent.getStringExtra(DefinedParams.MenuId)
         viewModel.workflowName = intent.getStringExtra(MenuConstants.WorkFlowName)
     }

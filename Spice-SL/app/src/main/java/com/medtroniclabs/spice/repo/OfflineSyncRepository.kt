@@ -89,20 +89,17 @@ class OfflineSyncRepository @Inject constructor(
     }
 
     suspend fun getInsertOrUpdateLocalData(liveData: MutableLiveData<Resource<Boolean>>) {
-        try {
-            // Check and Delete local data
-            val longSyncedAt = SecuredPreference.getLong(SecuredPreference.EnvironmentKey.LAST_SYNCED_AT.name)
-            if (longSyncedAt == 0L) {
-                roomHelper.deleteAllHouseholds()
-                roomHelper.deleteAllHouseholdMembers()
-                roomHelper.deleteAllPregnancyDetails()
-                roomHelper.deleteAllAssessments()
-            }
+        // Check and Delete local data
+        val longSyncedAt = SecuredPreference.getLong(SecuredPreference.EnvironmentKey.LAST_SYNCED_AT.name)
+        if (longSyncedAt == 0L) {
+            roomHelper.deleteAllHouseholds()
+            roomHelper.deleteAllHouseholdMembers()
+            roomHelper.deleteAllPregnancyDetails()
+            roomHelper.deleteAllAssessments()
 
             val villageIds = roomHelper.getAllVillageIds()
-            val lastSyncedAt = SecuredPreference.getLong(SecuredPreference.EnvironmentKey.LAST_SYNCED_AT.name)
             // Fetch Synced Data
-            val isInitialDataSuccess = fetchSyncedData(villageIds, lastSyncedAt)
+            val isInitialDataSuccess = fetchSyncedData(villageIds, longSyncedAt)
 
             // Need to check this to be added for downloading error and inprogress data
             /* if (!fetchUnSyncedData()) {
@@ -122,9 +119,8 @@ class OfflineSyncRepository @Inject constructor(
             } else {
                 liveData.postError("Something went wrong")
             }
-        } catch (e: Exception) {
-            e.printStackTrace()
-            liveData.postError(e.message)
+        } else {
+            liveData.postSuccess(true)
         }
     }
 

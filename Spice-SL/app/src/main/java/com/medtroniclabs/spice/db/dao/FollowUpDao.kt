@@ -32,7 +32,7 @@ interface FollowUpDao {
             "FROM FollowUp AS fu INNER JOIN HouseholdMember AS hhm ON fu.memberId = hhm.fhir_id INNER JOIN Household AS hh ON hhm.household_id = hh.id INNER JOIN VillageEntity AS ve ON hh.village_id = ve.id " +
             "WHERE fu.isCompleted = 0 AND fu.id IS NOT NULL AND hh.village_id IN (:villageIds) AND " +
             "fu.type=:type AND " +
-            "(hhm.name LIKE '%' || :search || '%' OR :search IS NULL) AND " +
+            "(hhm.name LIKE '%' || :search || '%' OR fu.patientId LIKE :search || '%' OR :search IS NULL) AND " +
             "CASE WHEN :fromDate = '' THEN 1 ELSE date(fu.encounterDate) BETWEEN :fromDate AND :toDate END ORDER BY fu.encounterDate")
     fun getReferredFollowUpPatientListLiveData(
         type: String,
@@ -47,7 +47,7 @@ interface FollowUpDao {
             "FROM FollowUp AS fu INNER JOIN HouseholdMember AS hhm ON fu.memberId = hhm.fhir_id INNER JOIN Household AS hh ON hhm.household_id = hh.id INNER JOIN VillageEntity AS ve ON hh.village_id = ve.id " +
             "WHERE fu.isCompleted = 0 AND fu.id IS NOT NULL AND hh.village_id IN (:villageIds) AND " +
             "fu.type=:type AND " +
-            "(hhm.name LIKE '%' || :search || '%' OR :search IS NULL) AND " +
+            "(hhm.name LIKE '%' || :search || '%' OR fu.patientId LIKE :search || '%' OR :search IS NULL) AND " +
             "CASE WHEN :fromDate = '' THEN 1 ELSE date(fu.nextVisitDate) BETWEEN :fromDate AND :toDate END ORDER BY fu.nextVisitDate")
     fun getOtherFollowUpPatientListLiveData(
         type: String,

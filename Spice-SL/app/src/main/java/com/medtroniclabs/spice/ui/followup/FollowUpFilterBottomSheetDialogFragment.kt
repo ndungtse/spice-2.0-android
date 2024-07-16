@@ -18,6 +18,10 @@ import com.medtroniclabs.spice.databinding.FragmentFilterBottomSheetDialogBindin
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.ui.TagListCustomView
 import com.medtroniclabs.spice.ui.followup.viewmodel.FollowUpViewModel
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.LocalTime
+import java.time.ZoneOffset
 
 class FollowUpFilterBottomSheetDialogFragment : BottomSheetDialogFragment(), View.OnClickListener {
 
@@ -218,6 +222,7 @@ class FollowUpFilterBottomSheetDialogFragment : BottomSheetDialogFragment(), Vie
                 disableFutureDate = false,
                 date = date,
                 minDate = minMaxDate.first,
+                maxDate = getMaxDate(),
                 cancelCallBack = { datePickerDialog = null }) { _, year, month, dayOfMonth ->
                 DateUtils.convertDateTimeToDate(
                     "$dayOfMonth-$month-$year",
@@ -252,6 +257,11 @@ class FollowUpFilterBottomSheetDialogFragment : BottomSheetDialogFragment(), Vie
                 )
             else Pair(null, System.currentTimeMillis())
         }
+    }
+
+    private fun getMaxDate(): Long {
+        val localDate = LocalDate.now().atStartOfDay()
+        return localDate.plusDays(6).toInstant(ZoneOffset.UTC).toEpochMilli()
     }
 
 }

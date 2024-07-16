@@ -62,7 +62,7 @@
                 app:layout_constraintGuide_percent="0.44" />
 
             <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/tvLabelHouseholdNo"
+                android:id="@+id/tvLabelReason"
                 style="@style/TextStyle_Regular_16_Blue"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -74,7 +74,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/tvPatientName" />
 
             <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/tvLblHouseholdNoSeperator"
+                android:id="@+id/tvLabelReasonSeperator"
                 style="@style/TextStyle_Regular_16_Blue"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -83,7 +83,7 @@
                 android:textColor="@color/charcoal_grey"
                 app:layout_constraintEnd_toStartOf="@id/endGuideline"
                 app:layout_constraintStart_toEndOf="@id/startGuideline"
-                app:layout_constraintTop_toTopOf="@+id/tvLabelHouseholdNo" />
+                app:layout_constraintTop_toTopOf="@+id/tvLabelReason" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvReason"
@@ -99,7 +99,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_weight="5"
                 app:layout_constraintStart_toEndOf="@id/endGuideline"
-                app:layout_constraintTop_toTopOf="@+id/tvLabelHouseholdNo" />
+                app:layout_constraintTop_toTopOf="@+id/tvLabelReason" />
 
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -112,7 +112,7 @@
                 android:textColor="@color/charcoal_grey"
                 app:layout_constraintEnd_toStartOf="@id/startGuideline"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tvLabelHouseholdNo" />
+                app:layout_constraintTop_toBottomOf="@+id/tvLabelReason" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvMembersRegisteredSeperator"
