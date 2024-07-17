@@ -17,7 +17,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="0.2"
             android:fontFamily="@font/inter_regular"
-            android:gravity="start"
+            android:gravity="center"
             android:padding="@dimen/_12sdp"
             android:textColor="@color/black"
             android:textSize="@dimen/_14ssp" />

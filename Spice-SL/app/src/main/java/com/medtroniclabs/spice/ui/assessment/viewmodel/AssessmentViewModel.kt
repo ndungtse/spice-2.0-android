@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DateUtils.calculateGestationalAge
+import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.data.LocalSpinnerResponse
@@ -286,7 +287,7 @@ class AssessmentViewModel @Inject constructor(
                 val list = anc[ancSigns] as List<*>
                 list.forEach { it ->
                     if (it is HashMap<*, *>) {
-                        signsList.add(it["name"] as String)
+                        signsList.add(it[DefinedParams.NAME] as String)
                     }
                 }
                 anc[ancSigns] = signsList

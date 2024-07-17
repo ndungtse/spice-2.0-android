@@ -31,15 +31,19 @@ object RMNCH {
     const val gestationalAge = "gestationalAge"
     const val Miscarriage = "miscarriage"
     const val childhoodVisitSigns = "childhoodVisitSigns"
+    const val childhoodVisitSignsLabel = "Childhood Visit Signs"
     const val pncChildSigns = "pncChildSigns"
     const val otherChildhoodVisitSigns = "otherChildhoodVisitSigns"
     const val otherSigns = "otherSigns"
     const val ancSigns = "ancSigns"
+    const val ancSignsLabel = "ANC Signs"
     const val otherAncSigns = "otherAncSigns"
     const val pncNeonateSigns = "pncNeonateSigns"
+    const val pncNeonateSignsLabel = "PNC Neonate Signs"
     const val pncNeonatalSigns = "pncNeonatalSigns"
     const val otherPncNeonateSigns = "otherPncNeonateSigns"
     const val pncMotherSigns = "pncMotherSigns"
+    const val pncMotherSignsLabel = "PNC Mother Sings"
     const val otherPncMotherSigns = "otherPncMotherSigns"
     const val PREGNANCY_MIN_AGE = 18
     const val PREGNANCY_MAX_AGE = 49
@@ -47,7 +51,6 @@ object RMNCH {
     const val pnc_neonate_key = "PNC_NEONATE"
     const val muac = "muac"
     const val Pregnancy = "Pregnant, "
-
 
 
     fun getValueFromMap(

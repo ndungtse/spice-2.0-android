@@ -75,7 +75,7 @@ class ReferralResultGenerator {
 
     fun calculateRMNCHReferralResult(map: HashMap<String, Any>): Pair<String?, ArrayList<String>> {
         if (map.containsKey(RMNCH.ANC)) {
-            findSignListByWorkflow(RMNCH.ANC, map, RMNCH.ancSigns, ReferralReasons.ANCSigns.name)
+            findSignListByWorkflow(RMNCH.ANC, map, RMNCH.ancSigns, ReferralReasons.aliasOf(ReferralReasons.ANCSigns))
         } else if (map.containsKey(RMNCH.ChildHoodVisit)) {
             if (checkMUACReferralStatus(map, RMNCH.ChildHoodVisit, MUAC)){
                 addResultMap(ReferralReasons.MUAC.name, ReferralStatus.Referred.name)
@@ -85,20 +85,20 @@ class ReferralResultGenerator {
                 RMNCH.ChildHoodVisit,
                 map,
                 RMNCH.childhoodVisitSigns,
-                ReferralReasons.childhoodVisitSigns.name
+                ReferralReasons.aliasOf(ReferralReasons.childhoodVisitSigns)
             )
         } else {
             findSignListByWorkflow(
                 RMNCH.PNC,
                 map,
                 RMNCH.pncMotherSigns,
-                ReferralReasons.PNCMotherSigns.name
+                ReferralReasons.aliasOf(ReferralReasons.PNCMotherSigns)
             )
             findSignListByWorkflow(
                 RMNCH.PNCNeonatal,
                 map,
                 RMNCH.pncNeonateSigns,
-                ReferralReasons.PNCNeonateSigns.name
+                ReferralReasons.aliasOf(ReferralReasons.PNCNeonateSigns)
             )
         }
         return Pair(checkStatus(), referralReason)
