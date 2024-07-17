@@ -12,6 +12,7 @@ import com.medtroniclabs.spice.appextensions.invisible
 import com.medtroniclabs.spice.appextensions.setExpandableText
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
+import com.medtroniclabs.spice.common.CommonUtils.combineText
 import com.medtroniclabs.spice.common.CommonUtils.getBMI
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DateUtils.convertStringToDate
@@ -151,7 +152,8 @@ class MotherNeonateAncSummary : BaseFragment(),View.OnClickListener {
             }
             val obstetricsExaminationText = combineText(
                 motherNeonateSummaryModel.obstetricExaminations,
-                motherNeonateSummaryModel.obstetricExaminationNotes
+                motherNeonateSummaryModel.obstetricExaminationNotes,
+                getString(R.string.hyphen_symbol)
             )
             tvObstetricsExaminationText.setExpandableText(
                 fullText = obstetricsExaminationText,
@@ -162,7 +164,8 @@ class MotherNeonateAncSummary : BaseFragment(),View.OnClickListener {
 
             val presentingComplaintsText = combineText(
                 motherNeonateSummaryModel.presentingComplaints,
-                motherNeonateSummaryModel.presentingComplaintsNotes
+                motherNeonateSummaryModel.presentingComplaintsNotes,
+                getString(R.string.hyphen_symbol)
             )
             tvPresentingComplaintsText.setExpandableText(
                 fullText = presentingComplaintsText,
@@ -198,20 +201,6 @@ class MotherNeonateAncSummary : BaseFragment(),View.OnClickListener {
             tvPrescrptionText.text = motherNeonateSummaryModel.prescriptions?.let { CommonUtils.createPrescription(it,requireContext()) }?.takeIf { it.isNotEmpty() }
                 ?: requireContext().getString(R.string.hyphen_symbol)
         }
-    }
-
-    private fun combineText(items: List<String?>?, notes: String?): String {
-        val combinedText = StringBuilder()
-        items?.filterNotNull()?.takeIf { it.isNotEmpty() }?.joinToString(separator = ", ")?.let {
-            combinedText.append(it)
-        }
-        if (!notes.isNullOrEmpty()) {
-            if (combinedText.isNotEmpty()) {
-                combinedText.append(" - ")
-            }
-            combinedText.append(notes)
-        }
-        return if (combinedText.isNotEmpty()) combinedText.toString() else getString(R.string.hyphen_symbol)
     }
 
     private fun initView() {

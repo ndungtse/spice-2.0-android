@@ -100,6 +100,6 @@ object DefinedParams {
 
     const val NeonatePatientIdPrefix = "HM-"
     const val NeonateBabyNamePrefix = "Baby Of"
-
     const val FollowUpId = "FollowUpId"
+    const val IsReferredScreen = "isReferredScreen"
 }

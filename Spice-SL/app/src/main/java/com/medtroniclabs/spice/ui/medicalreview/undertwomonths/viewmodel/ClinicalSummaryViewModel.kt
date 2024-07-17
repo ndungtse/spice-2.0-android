@@ -33,7 +33,7 @@ class ClinicalSummaryViewModel @Inject constructor(
 
     fun updateWeight(weight: String) {
         val isEmpty = weight.isEmpty()
-        val weightDouble = if (isEmpty) null else weight.toDouble()
+        val weightDouble = if (isEmpty) null else weight.toDoubleOrNull()
         val weightUnit = if (isEmpty) null else MeasurementDefinedParams.Kilogram
         clinicalSummaryAndSigns =
             clinicalSummaryAndSigns.copy(weight = weightDouble, weightUnit = weightUnit)
@@ -81,26 +81,26 @@ class ClinicalSummaryViewModel @Inject constructor(
 
     fun updateHeight(height: String) {
         val isEmpty = height.isEmpty()
-        val heightDouble = if (isEmpty) null else height.toDouble()
+        val heightDouble = if (isEmpty) null else height.toDoubleOrNull()
         val heightUnit = if (isEmpty) null else MeasurementDefinedParams.Centimeter
         clinicalSummaryAndSigns =
             clinicalSummaryAndSigns.copy(height = heightDouble, heightUnit = heightUnit)
     }
 
     fun updateWaz(waz: String) {
-        val wazDouble = if (waz.isEmpty()) null else waz.toDouble()
+        val wazDouble = if (waz.isEmpty()) null else waz.toDoubleOrNull()
         clinicalSummaryAndSigns = clinicalSummaryAndSigns.copy(waz = wazDouble)
     }
 
     fun updateWhz(whz: String) {
-        val whzDouble = if (whz.isEmpty()) null else whz.toDouble()
+        val whzDouble = if (whz.isEmpty()) null else whz.toDoubleOrNull()
         clinicalSummaryAndSigns = clinicalSummaryAndSigns.copy(whz = whzDouble)
     }
 
     fun updateTemperature(temperature: String) {
         val isEmpty = temperature.isEmpty()
         val temperatureInt = if (isEmpty) null else {
-            temperature.toInt()
+            temperature.toIntOrNull()
         }
         val temperatureUnit = if (isEmpty) null else MeasurementDefinedParams.Celsius
         clinicalSummaryAndSigns = clinicalSummaryAndSigns.copy(

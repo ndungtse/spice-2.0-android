@@ -272,18 +272,6 @@ object CommonUtils {
         return if (value) HouseHoldRegistration.yes else HouseHoldRegistration.no
     }
 
-    fun formatListToStringWithOther(list: List<String?>, otherText: String? = null): String {
-        return when {
-            list.filterNotNull().isNotEmpty() && otherText != null -> "${
-                list.filterNotNull().joinToString(separator = ", ")
-            } - $otherText"
-
-            list.filterNotNull().isNotEmpty() -> list.filterNotNull().joinToString(separator = ", ")
-            otherText != null -> otherText
-            else -> "-"
-        }
-    }
-
     fun getBMI(heightInCM: Double, weight: Double, context: Context): String {
         val heightInMeter = heightInCM / 100
         val bmi = weight / (heightInMeter * heightInMeter)
@@ -459,6 +447,32 @@ object CommonUtils {
             null -> context.getString(R.string.separator_double_hyphen)
             else -> context.getString(R.string.separator_double_hyphen)
         }
+    }
+
+    fun convertAnyToListOfString(value: Any?): List<String?> {
+        return when (value) {
+            is String -> listOf(value)
+            is List<*> -> value.filterIsInstance<String?>()
+            else -> emptyList()
+        }
+    }
+
+    fun combineText(
+        items: List<String?>?,
+        notes: String?,
+        nullHandleString: String
+    ): String {
+        val combinedText = StringBuilder()
+        items?.filterNotNull()?.takeIf { it.isNotEmpty() }?.joinToString(separator = ", ")?.let {
+            combinedText.append(it)
+        }
+        if (!notes.isNullOrEmpty()) {
+            if (combinedText.isNotEmpty()) {
+                combinedText.append(" - ")
+            }
+            combinedText.append(notes)
+        }
+        return if (combinedText.isNotEmpty()) combinedText.toString() else nullHandleString
     }
 
 }

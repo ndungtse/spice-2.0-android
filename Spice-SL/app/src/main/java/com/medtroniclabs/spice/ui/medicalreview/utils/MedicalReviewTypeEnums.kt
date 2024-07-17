@@ -34,6 +34,6 @@ enum class MedicalReviewTypeEnums{
     TDS,
     QDS,
     immunisation_status,
-    muac
-
+    muac,
+    pregnancyAncMedicalReview
 }

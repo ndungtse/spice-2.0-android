@@ -253,7 +253,7 @@ class UnderFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
                 ) {
                     val selectedItem = adapter.getData(position = position)
                     selectedItem?.let {
-                        val selectedName = it[DefinedParams.NAME] as String?
+                        val selectedName = it[DefinedParams.value] as String?
                         selectedName?.let { name ->
                             summaryViewModel.selectedPatientStatus = name
                         }

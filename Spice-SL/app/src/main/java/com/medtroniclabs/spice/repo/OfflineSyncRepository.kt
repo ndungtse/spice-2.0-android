@@ -163,7 +163,7 @@ class OfflineSyncRepository @Inject constructor(
         val initialSyncTime = System.currentTimeMillis()
         requestInitialDownload.followUps?.forEach {
             it.syncStatus = initialSyncStatus
-            it.updatedAt = initialSyncTime
+            it.updatedAt = it.calledAt ?: 0
             roomHelper.insertFollowUp(it)
         }
 

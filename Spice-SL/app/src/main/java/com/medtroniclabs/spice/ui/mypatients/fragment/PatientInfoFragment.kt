@@ -9,12 +9,13 @@ import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.CommonUtils
+import com.medtroniclabs.spice.common.CommonUtils.combineText
 import com.medtroniclabs.spice.common.CommonUtils.getContactNumber
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
 import com.medtroniclabs.spice.common.DateUtils.DATE_ddMMyyyy
 import com.medtroniclabs.spice.common.DefinedParams
-import com.medtroniclabs.spice.common.SecuredPreference
+import com.medtroniclabs.spice.common.DefinedParams.IsReferredScreen
 import com.medtroniclabs.spice.databinding.FragmentPatientInfoBinding
 import com.medtroniclabs.spice.formgeneration.extension.capitalizeFirstChar
 import com.medtroniclabs.spice.model.PatientListRespModel
@@ -44,11 +45,16 @@ class PatientInfoFragment : BaseFragment() {
             return PatientInfoFragment()
         }
 
-        fun newInstance(patientId: String?,isAnc:Boolean = false): PatientInfoFragment {
+        fun newInstance(
+            patientId: String?,
+            isAnc: Boolean = false,
+            isReferredScreen: Boolean = false
+        ): PatientInfoFragment {
             val fragment = PatientInfoFragment()
             val bundle = Bundle()
             bundle.putString(DefinedParams.PatientId, patientId)
             bundle.putBoolean(ANC, isAnc)
+            bundle.putBoolean(IsReferredScreen, isReferredScreen)
             fragment.arguments = bundle
             return fragment
         }
@@ -94,6 +100,10 @@ class PatientInfoFragment : BaseFragment() {
 
     private fun isAnc(): Boolean? {
         return arguments?.getBoolean(ANC, false)
+    }
+
+    private fun isReferredScreen(): Boolean? {
+        return arguments?.getBoolean(IsReferredScreen, false)
     }
     private fun setDataInInfo(patientListRespModel: PatientListRespModel) {
         showProgress()
@@ -155,6 +165,18 @@ class PatientInfoFragment : BaseFragment() {
                             ?.plus(1)
                             ?.toString()
                             ?: "1")
+                    )
+                )
+            }
+            if (isReferredScreen() == true) {
+                dataList.add(
+                    mapOf(
+                        DefinedParams.label to requireContext().getString(R.string.diagnosis),
+                        DefinedParams.value to combineText(
+                            patientListRespModel.diagnosis?.map { it.diseaseCategory }?.distinct(),
+                            "",
+                            getString(R.string.hyphen_symbol)
+                        )
                     )
                 )
             }

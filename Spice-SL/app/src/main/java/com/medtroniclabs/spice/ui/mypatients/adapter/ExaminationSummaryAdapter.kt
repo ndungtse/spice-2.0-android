@@ -75,8 +75,10 @@ class ExaminationSummaryAdapter() :
                     layoutParams = ConstraintLayout.LayoutParams(
                         ViewGroup.LayoutParams.WRAP_CONTENT,
                         ViewGroup.LayoutParams.WRAP_CONTENT
-                    )
-                    setTextColor(ContextCompat.getColor(context, R.color.grey_black))
+                    ).apply {
+                        setMargins(0, resources.getDimensionPixelSize(R.dimen._4sdp), 0, 0)
+                    }
+                    setTextColor(ContextCompat.getColor(context, R.color.charcoal_grey))
                     setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(R.dimen._16ssp))
                     typeface = ResourcesCompat.getFont(context, R.font.inter_medium)
                     text = description

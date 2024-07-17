@@ -16,6 +16,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.visible
+import com.medtroniclabs.spice.common.CommonUtils
+import com.medtroniclabs.spice.common.CommonUtils.combineText
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.Above5MedicalReview
@@ -351,7 +353,8 @@ class MedicalReviewHistoryFragment : BaseFragment(), View.OnClickListener {
                 DefinedParams.label to requireContext().getString(R.string.diagnosis),
                 DefinedParams.value to combineText(
                     medicalReviewHistory.reviewDetails?.diagnosis?.map { it.diseaseCategory }?.distinct(),
-                    ""
+                    "",
+                    getString(R.string.separator_double_hyphen)
                 )
             ),
             mapOf(
@@ -372,8 +375,9 @@ class MedicalReviewHistoryFragment : BaseFragment(), View.OnClickListener {
             mapOf(
                 DefinedParams.label to requireContext().getString(R.string.presenting_complaints),
                 DefinedParams.value to combineText(
-                    medicalReviewHistory.reviewDetails?.presentingComplaints,
-                    medicalReviewHistory.reviewDetails?.presentingComplaintsNotes
+                    CommonUtils.convertAnyToListOfString(medicalReviewHistory.reviewDetails?.presentingComplaints),
+                    medicalReviewHistory.reviewDetails?.presentingComplaintsNotes,
+                    getString(R.string.separator_double_hyphen)
                 )
             ),
             mapOf(
@@ -388,33 +392,20 @@ class MedicalReviewHistoryFragment : BaseFragment(), View.OnClickListener {
                 DefinedParams.label to requireContext().getString(R.string.systemic_examinations),
                 DefinedParams.value to combineText(
                     medicalReviewHistory.reviewDetails?.systemicExaminations,
-                    medicalReviewHistory.reviewDetails?.systemicExaminationsNotes
+                    medicalReviewHistory.reviewDetails?.systemicExaminationsNotes,
+                    getString(R.string.separator_double_hyphen)
                 )
             )
             PregnancyAncMedicalReview.lowercase() -> mapOf(
                 DefinedParams.label to requireContext().getString(R.string.obstetric_examination),
                 DefinedParams.value to combineText(
                     medicalReviewHistory.reviewDetails?.obstetricExaminations,
-                    medicalReviewHistory.reviewDetails?.obstetricExaminationNotes
+                    medicalReviewHistory.reviewDetails?.obstetricExaminationNotes,
+                    getString(R.string.separator_double_hyphen)
                 )
             )
             else -> null
         }
-
         return commonFields + listOfNotNull(additionalFields)
-    }
-
-    private fun combineText(items: List<String?>?, notes: String?): String {
-        val combinedText = StringBuilder()
-        items?.filterNotNull()?.takeIf { it.isNotEmpty() }?.joinToString(separator = ", ")?.let {
-            combinedText.append(it)
-        }
-        if (!notes.isNullOrEmpty()) {
-            if (combinedText.isNotEmpty()) {
-                combinedText.append(" - ")
-            }
-            combinedText.append(notes)
-        }
-        return if (combinedText.isNotEmpty()) combinedText.toString() else getString(R.string.separator_double_hyphen)
     }
 }

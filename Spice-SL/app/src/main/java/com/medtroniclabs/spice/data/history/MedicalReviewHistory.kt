@@ -22,7 +22,7 @@ data class ReviewDetails(
     val breastConditionNotes: String? = null,
     val involutionsOfTheUterus: String? = null,
     val involutionsOfTheUterusNotes: String? = null,
-    val presentingComplaints: List<String?>? = null,
+    val presentingComplaints: Any? = null,
     val presentingComplaintsNotes: String? = null,
     val systemicExaminations: List<String?>? = null,
     val obstetricExaminations: List<String?>? = null,

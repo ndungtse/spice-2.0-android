@@ -28,6 +28,7 @@ import com.medtroniclabs.spice.formgeneration.ui.SingleSelectionCustomView
 import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
+import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil.initTextWatcherForString
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil.isValidInput
 import com.medtroniclabs.spice.ui.medicalreview.undertwomonths.viewmodel.ClinicalSummaryViewModel
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.BREAST_FEEDING_TAG
@@ -88,22 +89,21 @@ class ClinicalSummaryFragment : BaseFragment(), View.OnClickListener {
             tvWeightLabel.markMandatory()
             tvHeightLabel.markMandatory()
         }
-        binding.etWeight.doAfterTextChanged {
-            viewModel.updateWeight(it.toString())
+        initTextWatcherForString(binding.etWeight) {
+            viewModel.updateWeight(it)
         }
-        binding.etHeight.doAfterTextChanged {
-            viewModel.updateHeight(it.toString())
+        initTextWatcherForString(binding.etHeight) {
+            viewModel.updateHeight(it)
         }
-        binding.etTemperature.doAfterTextChanged {
-            viewModel.updateTemperature(it.toString())
+        initTextWatcherForString(binding.etTemperature) {
+            viewModel.updateTemperature(it)
         }
-        binding.etRespirationRate.doAfterTextChanged {
-            val respiration = it?.trim().toString()
+        initTextWatcherForString(binding.etRespirationRate) {
             viewModel.updateRespiratoryRate(
-                respiration,
+                it,
                 binding.etRepeat.text?.trim().toString()
             )
-            showHideRepeatField(respiration.toDoubleOrNull())
+            showHideRepeatField(it.toDoubleOrNull())
         }
         binding.etRepeat.doAfterTextChanged {
             viewModel.updateRespiratoryRate(
@@ -111,13 +111,14 @@ class ClinicalSummaryFragment : BaseFragment(), View.OnClickListener {
                 it?.trim().toString()
             )
         }
-        binding.etWAZ.doAfterTextChanged {
-            viewModel.updateWaz(it?.trim().toString())
+        initTextWatcherForString(binding.etWAZ) {
+            viewModel.updateWaz(it)
         }
-        binding.etWHZ.doAfterTextChanged {
-            viewModel.updateWhz(it?.trim().toString())
+        initTextWatcherForString(binding.etWHZ) {
+            viewModel.updateWhz(it)
         }
     }
+
     private fun showHideRepeatField(respiration: Double?) {
         if (respiration != null && respiration > 60.0) {
             binding.repeatGroup.visible()
@@ -241,9 +242,9 @@ class ClinicalSummaryFragment : BaseFragment(), View.OnClickListener {
         for (item in status) {
             dropDownList.add(
                 hashMapOf<String, Any>(
-                    DefinedParams.NAME to item.name,
+                    NAME to item.name,
                     DefinedParams.id to item.id.toString(),
-                    DefinedParams.value to (item.value ?: item.name)
+                    value to (item.value ?: item.name)
                 )
             )
         }
@@ -338,7 +339,7 @@ class ClinicalSummaryFragment : BaseFragment(), View.OnClickListener {
             binding.etHeight,
             binding.tvHeightError,
             0.0..300.0,
-            R.string.height_error,
+            R.string.height_error_0_300,
             true,
             requireContext()
         )
@@ -349,7 +350,7 @@ class ClinicalSummaryFragment : BaseFragment(), View.OnClickListener {
             binding.etRespirationRate.text.toString(),
             binding.etRespirationRate,
             binding.tvRespirationRateError,
-            0.0..100.0,
+            1.0..99.9,
             (R.string.respiratory_error),
             false,
             requireContext()
@@ -361,7 +362,7 @@ class ClinicalSummaryFragment : BaseFragment(), View.OnClickListener {
             binding.etRepeat.text.toString(),
             binding.etRepeat,
             binding.tvRepeatError,
-            0.0..100.0,
+            1.0..99.9,
             (R.string.please_enter_repeat_between_0_to_100),
             false,
             requireContext()
@@ -373,8 +374,8 @@ class ClinicalSummaryFragment : BaseFragment(), View.OnClickListener {
             binding.etTemperature.text.toString(),
             binding.etTemperature,
             binding.tvTemperatureLabelError,
-            10.0..300.0,
-            (R.string.temperature),
+            10.0..200.0,
+            (R.string.please_enter_temperature_between_10_to_200),
             false,
             requireContext()
         )
@@ -387,7 +388,7 @@ class ClinicalSummaryFragment : BaseFragment(), View.OnClickListener {
             binding.etWeight,
             binding.tvWeightError,
             0.0..400.0,
-            R.string.weight_error,
+            R.string.weight_error_0_400,
             true,
             requireContext()
         )

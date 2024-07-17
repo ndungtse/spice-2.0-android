@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.medtroniclabs.spice.appextensions.postLoading
+import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.data.AboveFiveYearsSummaryDetails
 import com.medtroniclabs.spice.data.AboveFiveYearsSummaryRequest
 import com.medtroniclabs.spice.data.MedicalReviewMetaItems
@@ -14,6 +15,8 @@ import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.network.utils.ConnectivityManager
 import com.medtroniclabs.spice.repo.AboveFiveYearsRepository
+import com.medtroniclabs.spice.repo.MedicalReviewSummaryRepository
+import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
@@ -22,7 +25,8 @@ import javax.inject.Inject
 @HiltViewModel
 class AboveFiveYearsViewModel @Inject constructor(
     @IoDispatcher private val dispatcherIO: CoroutineDispatcher,
-    private var repository: AboveFiveYearsRepository
+    private var repository: AboveFiveYearsRepository,
+    private var summaryRepository: MedicalReviewSummaryRepository
 ) : ViewModel() {
 
     @Inject
@@ -79,20 +83,44 @@ class AboveFiveYearsViewModel @Inject constructor(
         }
     }
 
-    fun aboveFiveYearsSummaryCreate(details: PatientListRespModel, submitEncounterId: String, submitPatientReferenceId: String) {
+    fun aboveFiveYearsSummaryCreate(
+        details: PatientListRespModel,
+        submitEncounterId: String,
+        submitPatientReferenceId: String
+    ) {
         viewModelScope.launch(dispatcherIO) {
             summaryCreateResponse.postLoading()
-            summaryCreateResponse.postValue(
-                repository.aboveFiveYearsSummaryCreate(
-                    details,
-                    submitEncounterId,
-                    selectedMedicalSupplyListItem,
-                    selectedCostItem,
-                    selectedPatientStatus,
+            val medicalSupplyList: List<String>? = selectedMedicalSupplyListItem.takeIf { it.isNotEmpty() }?.mapNotNull { it.value }
+            val patientId = details.patientId
+            val memberId = details.memberId
+            val patientStatus = selectedPatientStatus
+            val houseHoldId = details.houseHoldId
+            val villageId = details.villageId
+
+            if (patientId != null && memberId != null && patientStatus != null && houseHoldId != null && villageId != null) {
+                val nextVisitDate = DateUtils.convertDateTimeToDate(
                     nextFollowupDate,
-                    submitPatientReferenceId
+                    DateUtils.DATE_ddMMyyyy,
+                    DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+                    inUTC = true
                 )
-            )
+
+                val response = summaryRepository.createSummarySubmit(
+                    patientId = patientId,
+                    patientReference = submitPatientReferenceId,
+                    memberId = memberId,
+                    id = submitEncounterId,
+                    cost = selectedCostItem,
+                    medicalSupplies = medicalSupplyList,
+                    patientStatus = patientStatus,
+                    nextVisitDate = nextVisitDate,
+                    referralTicketType = MedicalReviewTypeEnums.ICCM.name,
+                    assessmentName = MedicalReviewTypeEnums.AboveFiveYears.name,
+                    householdId = houseHoldId,
+                    villageId = villageId
+                )
+                summaryCreateResponse.postValue(response)
+            }
         }
     }
 }

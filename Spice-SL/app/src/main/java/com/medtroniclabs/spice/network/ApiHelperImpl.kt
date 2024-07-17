@@ -5,7 +5,7 @@ import com.medtroniclabs.spice.data.APIResponse
 import com.medtroniclabs.spice.data.AboveFiveYearsMetaResponse
 import com.medtroniclabs.spice.data.AboveFiveYearsSummaryDetails
 import com.medtroniclabs.spice.data.AboveFiveYearsSummaryRequest
-import com.medtroniclabs.spice.data.AboveFiveYearsSummarySubmitRequest
+import com.medtroniclabs.spice.data.MedicalReviewSummarySubmitRequest
 import com.medtroniclabs.spice.data.DiagnosisDiseaseModel
 import com.medtroniclabs.spice.data.DiagnosisSaveUpdateRequest
 import com.medtroniclabs.spice.data.FormMetaRequest
@@ -30,7 +30,6 @@ import com.medtroniclabs.spice.data.ReferPatientResult
 import com.medtroniclabs.spice.data.RemovePrescriptionRequest
 import com.medtroniclabs.spice.data.UnderFiveYearsMetaResponse
 import com.medtroniclabs.spice.data.UnderTwoMonthsMetaResponse
-import com.medtroniclabs.spice.data.SummarySubmitRequest
 import com.medtroniclabs.spice.data.UserSymptomsEntity
 import com.medtroniclabs.spice.data.history.MedicalReviewHistory
 import com.medtroniclabs.spice.data.history.PrescriptionHistoryEntity
@@ -56,7 +55,6 @@ import com.medtroniclabs.spice.model.medicalreview.CreateLabourDeliveryResponse
 import com.medtroniclabs.spice.model.medicalreview.CreateUnderFiveYearsRequest
 import com.medtroniclabs.spice.model.medicalreview.CreateUnderTwoMonthsResponse
 import com.medtroniclabs.spice.model.medicalreview.LabourDeliverySummaryDetails
-import com.medtroniclabs.spice.model.medicalreview.LabourDeliverySummaryRequest
 import com.medtroniclabs.spice.model.medicalreview.SummaryDetails
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -133,8 +131,8 @@ class ApiHelperImpl @Inject constructor(private val apiService: ApiService) : Ap
         return apiService.getUnderTwoMonthsMetaData()
     }
 
-    override suspend fun aboveFiveYearsSummaryCreate(request: AboveFiveYearsSummarySubmitRequest): Response<APIResponse<HashMap<String, Any>>> {
-        return apiService.aboveFiveYearsSummaryCreate(request)
+    override suspend fun createSummarySubmit(request: MedicalReviewSummarySubmitRequest): Response<APIResponse<HashMap<String, Any>>> {
+        return apiService.createSummarySubmit(request)
     }
 
     override suspend fun getLabourDeliveryMetaData(): Response<APIResponse<LabourDeliveryMetaResponse>> {
@@ -158,10 +156,6 @@ class ApiHelperImpl @Inject constructor(private val apiService: ApiService) : Ap
 
     override suspend fun getMedicalReviewForUnderTwoMonths(request: CreateUnderTwoMonthsResponse): Response<APIResponse<SummaryDetails>> {
         return apiService.getUnderTwoMonthsSummaryDetails(request)
-    }
-
-    override suspend fun underTwoMonthsSummaryCreate(request: SummarySubmitRequest): Response<APIResponse<HashMap<String, Any>>> {
-        return apiService.underTwoMonthsSummaryCreate(request)
     }
 
 
@@ -247,9 +241,5 @@ class ApiHelperImpl @Inject constructor(private val apiService: ApiService) : Ap
 
     override suspend fun createMedicalReviewLabourDelivery(request: CreateLabourDeliveryRequest): Response<APIResponse<CreateLabourDeliveryResponse>> {
         return apiService.createMedicalReviewForLaborDelivery(request)
-    }
-
-    override suspend fun labourDeliverySummaryCreate(request: LabourDeliverySummaryRequest): Response<APIResponse<HashMap<String, Any>>> {
-        return apiService.labourDeliverySummaryCreate(request)
     }
 }

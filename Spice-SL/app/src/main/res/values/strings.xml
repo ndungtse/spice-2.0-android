@@ -350,6 +350,8 @@
     <string name="plus">+</string>
     <string name="parity">Parity</string>
     <string name="weight_error">"Please enter weight between 10 to 400"</string>
+    <string name="weight_error_0_400">"Please enter weight between 10 to 400"</string>
+    <string name="height_error_0_300">"Please enter height between 50 to 300"</string>
     <string name="height_error">"Please enter height between 50 to 300"</string>
     <string name="gestational_error">"Please enter Gestational age below 60"</string>
     <string name="patient_blood_group">Patient Blood Group</string>
@@ -552,7 +554,7 @@
     <string name="please_enter_repeat_between_0_to_100">Please enter repeat between 0 to 100</string>
     <string name="sy">:</string>
     <string name="albendazole">Albendazole</string>
-    <string name="muac_in_cm">MUAC</string>
+    <string name="muac_in_cm">MUAC (in cm)</string>
     <string name="muac_green">MUAC Green</string>
     <string name="muac_yellow">MUAC Yellow</string>
     <string name="muac_red">MUAC Red</string>

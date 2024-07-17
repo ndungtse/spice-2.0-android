@@ -1,16 +1,13 @@
 package com.medtroniclabs.spice.repo
 
 import android.location.Location
-import com.medtroniclabs.spice.appextensions.convertToUtcDateTime
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.AboveFiveYearsSummaryDetails
 import com.medtroniclabs.spice.data.AboveFiveYearsSummaryRequest
-import com.medtroniclabs.spice.data.AboveFiveYearsSummarySubmitRequest
 import com.medtroniclabs.spice.data.MedicalReviewMetaItems
 import com.medtroniclabs.spice.data.model.AboveFiveYearsSubmitRequest
 import com.medtroniclabs.spice.data.model.MedicalReviewEncounter
-import com.medtroniclabs.spice.data.model.MultiSelectDropDownModel
 import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.db.local.RoomHelper
 import com.medtroniclabs.spice.model.PatientListRespModel
@@ -183,83 +180,6 @@ class AboveFiveYearsRepository @Inject constructor(
             }
         } catch (e: Exception) {
             Resource(state = ResourceState.ERROR)
-        }
-    }
-
-    suspend fun aboveFiveYearsSummaryCreate(
-        details: PatientListRespModel,
-        submitEncounterId: String,
-        selectedMedicalSupply: ArrayList<MultiSelectDropDownModel>?,
-        selectedCostItem: String?,
-        selectedPatientStatus: String?,
-        nextFollowupDate: String?,
-        submitPatientReferenceId: String
-    ): Resource<HashMap<String, Any>> {
-        return try {
-            val request = createSummarySubmitRequest(
-                details,
-                submitEncounterId,
-                selectedMedicalSupply,
-                selectedCostItem,
-                selectedPatientStatus,
-                nextFollowupDate,
-                submitPatientReferenceId
-            )
-            val response = request?.let { apiHelper.aboveFiveYearsSummaryCreate(it) }
-            if (response != null && response.isSuccessful) {
-                val res = response.body()
-                if (res?.status == true) {
-                    Resource(state = ResourceState.SUCCESS)
-                } else {
-                    Resource(state = ResourceState.ERROR)
-                }
-            } else {
-                Resource(state = ResourceState.ERROR)
-            }
-
-        } catch (e: Exception) {
-            Resource(state = ResourceState.ERROR)
-        }
-    }
-
-    private fun createSummarySubmitRequest(
-        details: PatientListRespModel,
-        submitEncounterId: String,
-        selectedMedicalSupply: ArrayList<MultiSelectDropDownModel>?,
-        selectedCostItem: String?,
-        selectedPatientStatus: String?,
-        nextFollowupDate: String?,
-        submitPatientReferenceId: String
-    ): AboveFiveYearsSummarySubmitRequest? {
-        val medicalSupplyList = ArrayList<String>()
-        selectedMedicalSupply?.map { item -> item.value?.let { value -> medicalSupplyList.add(value) } }
-        return details.patientId?.let { patientId ->
-                details.memberId?.let { memberId ->
-                    details.houseHoldId?.let { houseHoldId ->
-                        details.villageId?.let { villageId ->
-                            AboveFiveYearsSummarySubmitRequest(
-                                patientId = patientId,
-                                memberId = memberId,
-                                id = submitEncounterId,
-                                provenance = ProvanceDto(),
-                                patientReference = submitPatientReferenceId,
-                                medicalSupplies = medicalSupplyList.ifEmpty { null },
-                                cost = selectedCostItem,
-                                patientStatus = selectedPatientStatus,
-                                nextVisitDate = DateUtils.convertDateTimeToDate(
-                                    nextFollowupDate,
-                                    DateUtils.DATE_ddMMyyyy,
-                                    DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-                                    inUTC = true
-                                ),
-                                householdId = houseHoldId,
-                                villageId = villageId,
-                                assessmentName = MedicalReviewTypeEnums.AboveFiveYears.name,
-                                referralTicketType = MedicalReviewTypeEnums.ICCM.name
-                            )
-                        }
-                    }
-                }
         }
     }
 }

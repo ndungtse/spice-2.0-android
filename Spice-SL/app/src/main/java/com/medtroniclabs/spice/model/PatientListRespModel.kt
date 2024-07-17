@@ -1,5 +1,7 @@
 package com.medtroniclabs.spice.model
 
+import com.medtroniclabs.spice.data.history.DiseaseInfo
+
 data class PatientListRespModel(
     val id: String? = null,
     val name: String? = null,
@@ -23,7 +25,8 @@ data class PatientListRespModel(
     val pregnancyDetails: PregnancyDetails? = null,
     val villageId:String? = null,
     val relationship:String? = null,
-    val phoneNumberCategory:String? = null
+    val phoneNumberCategory:String? = null,
+    val diagnosis: List<DiseaseInfo>? = null
 )
 
 data class PregnancyDetails(
@@ -50,5 +53,6 @@ data class PregnancyDetails(
 )
 data class SearchAndListResponse(
     val patientList: List<PatientListRespModel> = emptyList(),
-    val referencePatientId: String? = null
+    val referencePatientId: String? = null,
+    val totalCount: Int? = null
 )

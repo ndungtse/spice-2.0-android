@@ -8,6 +8,7 @@ import androidx.core.widget.doAfterTextChanged
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.visible
+import com.medtroniclabs.spice.formgeneration.extension.capitalizeFirstChar
 
 object MotherNeonateUtil {
     const val EstimatedDeliveryDate: Long = 280
@@ -39,6 +40,13 @@ object MotherNeonateUtil {
             val text = it.toString().trim()
             val value = if (text.isNotBlank()) text.toIntOrNull() else null
             propertySetter(value)
+        }
+    }
+
+    fun initTextWatcherForString(view: AppCompatEditText, propertySetter: (String) -> Unit) {
+        view.doAfterTextChanged {
+            val text = it?.toString()?.trim() ?: ""
+            propertySetter(text)
         }
     }
 
@@ -195,6 +203,14 @@ object MotherNeonateUtil {
             "${value.toInt()} ${context.getString(R.string.beats_per_minute)}"
         } else {
             context.getString(R.string.hyphen_symbol)
+        }
+    }
+
+    fun Boolean?.toYesNoOrDefault(default: String,trueString: String, falseString: String): String {
+        return when (this) {
+            true -> trueString.capitalizeFirstChar()
+            false -> falseString.capitalizeFirstChar()
+            else -> default
         }
     }
 }

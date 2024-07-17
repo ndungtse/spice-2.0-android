@@ -94,13 +94,3 @@ data class LabourDeliverySummaryDetails(
     val neonateId: String? ,
     val childPatientReference: String?
 )
-
-data class LabourDeliverySummaryRequest(
-    val id: String?,
-    val nextVisitDate: String?,
-    val memberId: String?,
-    val patientStatus: String?,
-    val patientReference: String?,
-    val provenance: ProvanceDto,
-    val referralTicketType: String?
-)

@@ -25,7 +25,9 @@ import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.model.medicalreview.CreateUnderTwoMonthsResponse
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.network.utils.ConnectivityManager
+import com.medtroniclabs.spice.repo.MedicalReviewSummaryRepository
 import com.medtroniclabs.spice.repo.UnderTwoMonthsRepository
+import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
@@ -34,7 +36,8 @@ import javax.inject.Inject
 @HiltViewModel
 class UnderTwoMonthViewModel @Inject constructor(
     @IoDispatcher private val dispatcherIO: CoroutineDispatcher,
-    private var repository: UnderTwoMonthsRepository
+    private var repository: UnderTwoMonthsRepository,
+    private var summaryRepository: MedicalReviewSummaryRepository
 ) : ViewModel() {
     @Inject
     lateinit var connectivityManager: ConnectivityManager
@@ -429,16 +432,35 @@ class UnderTwoMonthViewModel @Inject constructor(
     ) {
         viewModelScope.launch(dispatcherIO) {
             summaryCreateResponse.postLoading()
-            summaryCreateResponse.postValue(
-                repository.underTwoMonthsSummaryCreate(
-                    details,
-                    submitCreateId,
+
+            val patientId = details.patientId
+            val memberId = details.memberId
+            val householdId = details.houseHoldId
+            val villageId = details.villageId
+
+            if (patientId != null && memberId != null && householdId != null && villageId != null) {
+                val convertedNextVisitDate = DateUtils.convertDateTimeToDate(
                     nextVisitDate,
-                    selectedPatientStatus,
-                    submitCreatePatientReference
+                    DateUtils.DATE_ddMMyyyy,
+                    DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+                    inUTC = true
                 )
-            )
+
+                val response = summaryRepository.createSummarySubmit(
+                    patientId = patientId,
+                    patientReference = submitCreatePatientReference,
+                    memberId = memberId,
+                    id = submitCreateId,
+                    patientStatus = selectedPatientStatus ?: "",
+                    nextVisitDate = convertedNextVisitDate,
+                    referralTicketType = MedicalReviewTypeEnums.ICCM.name,
+                    assessmentName = MedicalReviewTypeEnums.UnderTwoMonths.name,
+                    householdId = householdId,
+                    villageId = villageId
+                )
+
+                summaryCreateResponse.postValue(response)
+            }
         }
     }
-
 }

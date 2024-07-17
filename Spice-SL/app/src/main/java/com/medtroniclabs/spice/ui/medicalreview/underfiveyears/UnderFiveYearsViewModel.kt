@@ -9,7 +9,6 @@ import androidx.lifecycle.viewModelScope
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
-import com.medtroniclabs.spice.data.SummarySubmitRequest
 import com.medtroniclabs.spice.data.model.MedicalReviewEncounter
 import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.di.IoDispatcher
@@ -28,6 +27,7 @@ import com.medtroniclabs.spice.model.medicalreview.MalnutritionOrAnaemia
 import com.medtroniclabs.spice.model.medicalreview.UnderFiveDiarrhoea
 import com.medtroniclabs.spice.model.medicalreview.UnderFiveExamination
 import com.medtroniclabs.spice.network.resource.Resource
+import com.medtroniclabs.spice.repo.MedicalReviewSummaryRepository
 import com.medtroniclabs.spice.repo.UnderFiveYearsRepository
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -38,7 +38,8 @@ import javax.inject.Inject
 @HiltViewModel
 class UnderFiveYearsViewModel @Inject constructor(
     @IoDispatcher private val dispatcherIO: CoroutineDispatcher,
-    private var underFiveYearsRepository: UnderFiveYearsRepository
+    private var underFiveYearsRepository: UnderFiveYearsRepository,
+    private var summaryRepository: MedicalReviewSummaryRepository
 ) : ViewModel() {
 
     val createUnderFiveMedicalReviewLiveData =
@@ -381,39 +382,35 @@ class UnderFiveYearsViewModel @Inject constructor(
         selectedPatientStatus: String?,
         patientReferenceId: String
     ) {
-        details.memberId?.let { memberId ->
-            details.patientId?.let { patientId ->
-                details.houseHoldId?.let { hhId ->
-                    details.villageId?.let { villageId ->
-                        viewModelScope.launch(dispatcherIO) {
-                            summaryCreateResponse.postLoading()
-                            summaryCreateResponse.postValue(
-                                underFiveYearsRepository.underFiveYearsSummaryCreate(
-                                    SummarySubmitRequest(
-                                        patientStatus = selectedPatientStatus,
-                                        patientId = patientId,
-                                        memberId = memberId,
-                                        id = submitEncounterId,
-                                        provenance = ProvanceDto(),
-                                        patientReference = patientReferenceId,
-                                        nextVisitDate = DateUtils.convertDateTimeToDate(
-                                            nextFollowUpDate,
-                                            DateUtils.DATE_ddMMyyyy,
-                                            DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-                                            inUTC = true
-                                        ),
-                                        householdId = hhId,
-                                        villageId = villageId,
-                                        assessmentName = MedicalReviewTypeEnums.UnderTwoMonths.name,
-                                        referralTicketType = MedicalReviewTypeEnums.ICCM.name
-                                    )
-                                )
-                            )
-                        }
-                    }
-                }
+        viewModelScope.launch(dispatcherIO) {
+            summaryCreateResponse.postLoading()
+            val patientId = details.patientId
+            val memberId = details.memberId
+            val householdId = details.houseHoldId
+            val villageId = details.villageId
+
+            if (patientId != null && memberId != null && householdId != null && villageId != null) {
+                val convertedNextVisitDate = DateUtils.convertDateTimeToDate(
+                    nextFollowUpDate,
+                    DateUtils.DATE_ddMMyyyy,
+                    DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+                    inUTC = true
+                )
+
+                val response = summaryRepository.createSummarySubmit(
+                    patientId = patientId,
+                    patientReference = patientReferenceId,
+                    memberId = memberId,
+                    id = submitEncounterId,
+                    patientStatus = selectedPatientStatus ?: "",
+                    nextVisitDate = convertedNextVisitDate,
+                    assessmentName = MedicalReviewTypeEnums.UnderFiveYears.name,
+                    referralTicketType = MedicalReviewTypeEnums.ICCM.name,
+                    householdId = householdId,
+                    villageId = villageId
+                )
+                summaryCreateResponse.postValue(response)
             }
         }
     }
-
 }

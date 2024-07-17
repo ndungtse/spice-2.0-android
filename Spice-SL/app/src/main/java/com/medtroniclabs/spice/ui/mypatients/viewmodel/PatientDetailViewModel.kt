@@ -58,4 +58,8 @@ class PatientDetailViewModel @Inject constructor(
     fun getPatientLmb():String? {
         return patientDetailsLiveData.value?.data?.pregnancyDetails?.lastMenstrualPeriod
     }
+
+    fun getVillageId(): String? {
+        return patientDetailsLiveData.value?.data?.villageId
+    }
 }

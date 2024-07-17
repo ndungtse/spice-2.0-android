@@ -10,9 +10,9 @@ import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.data.BirthHistoryResponse
 import com.medtroniclabs.spice.databinding.FragmentBirthHistoryBinding
-import com.medtroniclabs.spice.formgeneration.extension.capitalizeFirstChar
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
+import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil.toYesNoOrDefault
 import com.medtroniclabs.spice.ui.medicalreview.undertwomonths.viewmodel.BirthHistoryViewModel
 
 class BirthHistoryFragment : BaseFragment() {
@@ -68,21 +68,28 @@ class BirthHistoryFragment : BaseFragment() {
         binding.apply {
             tvBirthWeight.text = birthHistoryDetails.birthWeight?.let {
                 val decimalBirthWeight = CommonUtils.getDecimalFormatted(it)
-                if (decimalBirthWeight.toDouble() < viewModel.lowBirthWeight) {
-                    decimalBirthWeight.plus(getString(R.string.kg)).plus(getString(R.string.low_birth_weight))
-                } else {
-                    decimalBirthWeight.plus(getString(R.string._kg))
-                }
-            } ?: "--"
+                birthHistoryDetails.birthWeightCategory?.let {
+                    if (decimalBirthWeight.toDouble() < viewModel.lowBirthWeight && birthHistoryDetails.birthWeightCategory != null) {
+                        decimalBirthWeight.plus(getString(R.string.kg))
+                            .plus(birthHistoryDetails.birthWeightCategory)
+                    } else {
+                        decimalBirthWeight.plus(getString(R.string._kg))
+                    }
+                } ?: getString(R.string.separator_double_hyphen)
+            } ?:  getString(R.string.separator_double_hyphen)
 
             tvGestationalAge.text = birthHistoryDetails.gestationalAge?.let { ageWeek ->
                 val weeksText =
                     if (ageWeek >= 1) getString(R.string.weeks_baby) else getString(R.string.week_baby)
-                val prematureText = if (ageWeek < 37) getString(R.string.premature_baby) else ""
+                val prematureText =
+                    if (ageWeek < 37 && birthHistoryDetails.gestationalAgeCategory != null) birthHistoryDetails.gestationalAgeCategory else ""
                 ageWeek.toString().plus(weeksText).plus(prematureText)
-            } ?: "--"
-
-            tvBreathingProblem.text = (birthHistoryDetails.haveBreathingProblem?.toString()?.capitalizeFirstChar() ?: "--").toString()
+            } ?: getString(R.string.separator_double_hyphen)
+            tvBreathingProblem.text = birthHistoryDetails.haveBreathingProblem.toYesNoOrDefault(
+                getString(R.string.separator_double_hyphen),
+                getString(R.string.yes),
+                getString(R.string.no)
+            )
         }
     }
 }

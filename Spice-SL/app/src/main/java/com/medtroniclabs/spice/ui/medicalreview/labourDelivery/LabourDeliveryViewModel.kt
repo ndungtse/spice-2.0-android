@@ -9,6 +9,7 @@ import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
+import com.medtroniclabs.spice.data.MedicalReviewSummarySubmitRequest
 import com.medtroniclabs.spice.data.LabourDeliveryMetaEntity
 import com.medtroniclabs.spice.data.model.ChipViewItemModel
 import com.medtroniclabs.spice.data.model.MedicalReviewEncounter
@@ -27,12 +28,10 @@ import com.medtroniclabs.spice.model.medicalreview.CreateLabourDeliveryRequest
 import com.medtroniclabs.spice.model.medicalreview.CreateLabourDeliveryResponse
 import com.medtroniclabs.spice.model.medicalreview.LabourDTO
 import com.medtroniclabs.spice.model.medicalreview.LabourDeliverySummaryDetails
-import com.medtroniclabs.spice.model.medicalreview.LabourDeliverySummaryRequest
 import com.medtroniclabs.spice.model.medicalreview.MotherDTO
 import com.medtroniclabs.spice.model.medicalreview.NeonateDTO
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.repo.LabourDeliveryRepository
-import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import com.medtroniclabs.spice.ui.mypatients.enumType.AgparColumnIdentifierType
 import com.medtroniclabs.spice.ui.mypatients.enumType.AgparItemViewType
 import com.medtroniclabs.spice.ui.mypatients.enumType.AgparRowIdentifierType
@@ -99,7 +98,6 @@ class LabourDeliveryViewModel @Inject constructor(
     var isRefresh: Boolean = false
     var nextFollowupDate: String? = null
     val summaryCreateResponse = MutableLiveData<Resource<HashMap<String, Any>>>()
-
     fun getAgparScoreData() {
         val apgarScores = mutableListOf<ApgarScore>()
         apgarScores.add(
@@ -519,24 +517,8 @@ class LabourDeliveryViewModel @Inject constructor(
     }
 
     fun labourDeliverySummaryCreate(
-        patientReference: String,
-        motherId: String,
-        memberId: String?
+       request: MedicalReviewSummarySubmitRequest
     ) {
-        val request = LabourDeliverySummaryRequest(
-            id = motherId,
-            nextVisitDate = DateUtils.convertDateTimeToDate(
-                nextFollowupDate,
-                DateUtils.DATE_ddMMyyyy,
-                DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-                inUTC = true
-            ),
-            memberId = memberId,
-            patientStatus = "postal",
-            patientReference = patientReference,
-            provenance = ProvanceDto(),
-            referralTicketType = MedicalReviewTypeEnums.RMNCH.name
-        )
         viewModelScope.launch(dispatcherIO) {
             summaryCreateResponse.postLoading()
             summaryCreateResponse.postValue(repository.labourDeliverySummaryCreate(request))

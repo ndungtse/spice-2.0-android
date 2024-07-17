@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.setExpandableText
+import com.medtroniclabs.spice.common.CommonUtils.combineText
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.data.PregnancyDetailsModel
 import com.medtroniclabs.spice.data.model.ChipViewItemModel
@@ -101,24 +102,12 @@ class PregnancySummaryFragment() : BaseFragment() {
                             requireContext()
                         )
                     } ?: getString(R.string.hyphen_symbol)
-                val pregnancyHistory = pregnancyHistoryChip?.map { it.name }
-                val pregnancyHistoryNotes = pregnancyHistoryNotes
-
-                val combinedHistory = StringBuilder()
-
-                pregnancyHistory?.takeIf { it.isNotEmpty() }?.joinToString(separator = ", ")?.let {
-                    combinedHistory.append(it)
-                }
-                if (!pregnancyHistoryNotes.isNullOrEmpty()) {
-                    if (combinedHistory.isNotEmpty()) {
-                        combinedHistory.append(" - ")
-                    }
-                    combinedHistory.append(pregnancyHistoryNotes)
-                }
-                val pregnancyHistoryValue =
-                    if (combinedHistory.isNotEmpty()) combinedHistory.toString() else "-"
                 tvPregnancyHistoryValue.setExpandableText(
-                    pregnancyHistoryValue,
+                    combineText(
+                        pregnancyHistoryChip?.map { it.name },
+                        pregnancyHistoryNotes,
+                        getString(R.string.hyphen_symbol)
+                    ),
                     title = tvPregnancyHistoryLabel.text.toString(),
                     maxLength = 60,
                     activity = (requireActivity() as BaseActivity)

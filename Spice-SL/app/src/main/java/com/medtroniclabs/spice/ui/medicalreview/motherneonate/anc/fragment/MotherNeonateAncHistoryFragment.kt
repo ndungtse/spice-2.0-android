@@ -8,6 +8,7 @@ import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.setExpandableText
 import com.medtroniclabs.spice.common.CommonUtils
+import com.medtroniclabs.spice.common.CommonUtils.combineText
 import com.medtroniclabs.spice.common.CommonUtils.createPrescription
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams.FhirId
@@ -111,48 +112,22 @@ class MotherNeonateAncHistoryFragment : BaseFragment() {
                     maxLength = 70,
                     activity = (requireActivity() as BaseActivity)
                 )
-                val combinedPresentingComplaints = StringBuilder()
-
-                it.presentingComplaints?.filterNotNull()?.takeIf { it.isNotEmpty() }
-                    ?.joinToString(separator = ", ")
-                    ?.let {
-                        combinedPresentingComplaints.append(it)
-                    }
-                if (!it.presentingComplaintsNotes.isNullOrEmpty()) {
-                    if (combinedPresentingComplaints.isNotEmpty()) {
-                        combinedPresentingComplaints.append(" - ")
-                    }
-                    combinedPresentingComplaints.append(it.presentingComplaintsNotes)
-                }
-                val presentingComplaintsValue =
-                    if (combinedPresentingComplaints.isNotEmpty()) combinedPresentingComplaints.toString() else getString(
-                        R.string.hyphen_symbol
-                    )
                 tvPresentingComplaintsValue.setExpandableText(
-                    presentingComplaintsValue,
+                    combineText(
+                        it.presentingComplaints, it.presentingComplaintsNotes, getString(
+                            R.string.hyphen_symbol
+                        )
+                    ),
                     title = tvPresentingComplaintsLabel.text.toString(),
                     maxLength = 35,
                     activity = (requireActivity() as BaseActivity)
                 )
-                val combinedObstetricsExamination = StringBuilder()
-
-                it.obstetricExaminations?.filterNotNull()?.takeIf { it.isNotEmpty() }
-                    ?.joinToString(separator = ", ")
-                    ?.let {
-                        combinedObstetricsExamination.append(it)
-                    }
-                if (!it.obstetricExaminationNotes.isNullOrEmpty()) {
-                    if (combinedObstetricsExamination.isNotEmpty()) {
-                        combinedObstetricsExamination.append(" - ")
-                    }
-                    combinedObstetricsExamination.append(it.obstetricExaminationNotes)
-                }
-                val obstetricsExaminationValue =
-                    if (combinedObstetricsExamination.isNotEmpty()) combinedObstetricsExamination.toString() else getString(
-                        R.string.hyphen_symbol
-                    )
                 tvObstetricsExaminationValue.setExpandableText(
-                    obstetricsExaminationValue,
+                    combineText(
+                        it.obstetricExaminations, it.obstetricExaminationNotes, getString(
+                            R.string.hyphen_symbol
+                        )
+                    ),
                     title = tvObstetricsExaminationLabel.text.toString(),
                     maxLength = 35,
                     activity = (requireActivity() as BaseActivity)

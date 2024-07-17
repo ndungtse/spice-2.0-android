@@ -7,9 +7,12 @@ import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
 import androidx.core.view.isVisible
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.SpiceLocationManager
+import com.medtroniclabs.spice.data.MedicalReviewSummarySubmitRequest
+import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.databinding.ActivityMedicalReviewLabourDeliveryactivityBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.model.PatientListRespModel
@@ -285,7 +288,20 @@ class LabourDeliveryBaseActivity : BaseActivity(), View.OnClickListener, AncVisi
     private fun handleDoneClick() {
         patientViewModel.patientDetailsLiveData.value?.data?.let { patientDetails ->
             viewModel.createLabourDeliveryMedicalReviewResponse.value?.data?.let {
-                viewModel.labourDeliverySummaryCreate(it.patientReference, it.motherId, patientDetails.memberId)
+                val request = MedicalReviewSummarySubmitRequest(
+                    id = it.motherId,
+                    nextVisitDate = DateUtils.convertDateTimeToDate(
+                        viewModel.nextFollowupDate,
+                        DateUtils.DATE_ddMMyyyy,
+                        DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+                        inUTC = true
+                    ),
+                    memberId = patientDetails.memberId,
+                    patientReference = it.patientReference,
+                    provenance = ProvanceDto(),
+                    referralTicketType = MedicalReviewTypeEnums.RMNCH.name
+                )
+                viewModel.labourDeliverySummaryCreate(request)
             }
         }
     }

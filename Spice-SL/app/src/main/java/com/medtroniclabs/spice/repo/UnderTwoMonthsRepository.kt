@@ -1,16 +1,12 @@
 package com.medtroniclabs.spice.repo
 
 import com.medtroniclabs.spice.model.medicalreview.CreateUnderTwoMonthsRequest
-import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.data.BirthHistoryRequest
 import com.medtroniclabs.spice.data.BirthHistoryResponse
 import com.medtroniclabs.spice.data.MedicalReviewMetaItems
-import com.medtroniclabs.spice.data.SummarySubmitRequest
-import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.db.local.RoomHelper
-import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.model.medicalreview.CreateUnderTwoMonthsResponse
 import com.medtroniclabs.spice.model.medicalreview.SummaryDetails
 import com.medtroniclabs.spice.network.ApiHelper
@@ -72,74 +68,6 @@ class UnderTwoMonthsRepository @Inject constructor(
         } catch (e: Exception) {
             e.printStackTrace()
             Resource(state = ResourceState.ERROR)
-        }
-    }
-
-    suspend fun underTwoMonthsSummaryCreate(
-        details: PatientListRespModel,
-        submitCreateId: String,
-        nextFollowupDate: String?,
-        selectedPatientStatus: String?,
-        submitCreatePatientReference: String
-    ): Resource<HashMap<String, Any>> {
-        return try {
-            val request = createSummarySubmitRequest(
-                details,
-                submitCreateId,
-                nextFollowupDate,
-                selectedPatientStatus,
-                submitCreatePatientReference
-            )
-            val response = request?.let { apiHelper.underTwoMonthsSummaryCreate(it) }
-            if (response != null && response.isSuccessful) {
-                val res = response.body()
-                if (res?.status == true) {
-                    Resource(state = ResourceState.SUCCESS)
-                } else {
-                    Resource(state = ResourceState.ERROR)
-                }
-            } else {
-                Resource(state = ResourceState.ERROR)
-            }
-
-        } catch (e: Exception) {
-            Resource(state = ResourceState.ERROR)
-        }
-
-    }
-
-    private fun createSummarySubmitRequest(
-        details: PatientListRespModel,
-        submitCreateId: String,
-        nextFollowupDate: String?,
-        selectedPatientStatus: String?,
-        submitCreatePatientReference: String
-    ): SummarySubmitRequest? {
-        return details.patientId?.let { patientId ->
-            details.houseHoldId?.let {hhId ->
-                details.memberId?.let { memberId ->
-                    details.villageId?.let {villageId ->
-                        SummarySubmitRequest(
-                            memberId = memberId,
-                            id = submitCreateId,
-                            assessmentName = MedicalReviewTypeEnums.UnderTwoMonths.name,
-                            provenance = ProvanceDto(),
-                            patientReference = submitCreatePatientReference,
-                            patientId = patientId,
-                            nextVisitDate = DateUtils.convertDateTimeToDate(
-                                nextFollowupDate,
-                                DateUtils.DATE_ddMMyyyy,
-                                DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-                                inUTC = true
-                            ),
-                            householdId = hhId,
-                            villageId = villageId,
-                            referralTicketType = MedicalReviewTypeEnums.ICCM.name,
-                            patientStatus = selectedPatientStatus
-                        )
-                    }
-                }
-            }
         }
     }
 

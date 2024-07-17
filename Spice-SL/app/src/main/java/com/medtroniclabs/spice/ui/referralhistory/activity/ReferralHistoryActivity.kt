@@ -84,7 +84,8 @@ class ReferralHistoryActivity : BaseActivity(), AncVisitCallBack {
 
     private fun initView() {
         val patientFragment =
-            PatientInfoFragment.newInstance(intent.getStringExtra(DefinedParams.PatientId))
+            PatientInfoFragment.newInstance(intent.getStringExtra(DefinedParams.PatientId),
+                isReferredScreen = true)
         patientFragment.setDataCallback(this)
         supportFragmentManager.beginTransaction()
             .add(

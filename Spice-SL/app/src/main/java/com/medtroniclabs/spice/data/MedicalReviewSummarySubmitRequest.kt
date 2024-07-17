@@ -2,8 +2,7 @@ package com.medtroniclabs.spice.data
 
 import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 
-data class AboveFiveYearsSummarySubmitRequest(
-    val assessmentType: ArrayList<String>? = null,
+data class MedicalReviewSummarySubmitRequest(
     val patientId: String? = null,
     val patientReference: String? = null,
     val memberId: String? = null,
@@ -16,6 +15,5 @@ data class AboveFiveYearsSummarySubmitRequest(
     val referralTicketType:String? = null,
     val assessmentName: String? = null,
     val householdId: String? = null,
-    val villageId: String? = null,
-    val referralTicketId:String? = null
+    val villageId: String? = null
 )

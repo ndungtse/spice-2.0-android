@@ -26,6 +26,7 @@ class PatientsDataSource(
     private var villages: List<Long> = mutableListOf()
     private var districtId: Long? = null
     private var referencePatientId: String? = null
+    private var isInitialData: Boolean = false
     override fun getRefreshKey(state: PagingState<Int, PatientListRespModel>): Int? {
         return state.anchorPosition?.let { anchorPosition ->
             state.closestPageToPosition(anchorPosition)?.prevKey?.plus(1)
@@ -68,7 +69,15 @@ class PatientsDataSource(
             val patientList: List<PatientListRespModel> = response.entity?.patientList ?: emptyList()
             referencePatientId = response.entity?.referencePatientId
             totalCount += patientList.size
-            getPatientsCount(totalCount.toString())
+            if (!isInitialData) {
+                if (searchText.isEmpty()) {
+                    totalCount = response.entity?.totalCount ?: 0
+                    isInitialData = true
+                } else {
+                    totalCount += patientList.size
+                }
+                getPatientsCount(totalCount.toString())
+            }
 //            For Patient List Skip increment as 15
 //            For Patient search Skip increment as patient list Size
             loadedCount += if (searchText.isEmpty()) LIST_LIMIT else patientList.size

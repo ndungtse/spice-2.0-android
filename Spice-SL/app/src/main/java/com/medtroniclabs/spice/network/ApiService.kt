@@ -5,7 +5,7 @@ import com.medtroniclabs.spice.data.APIResponse
 import com.medtroniclabs.spice.data.AboveFiveYearsMetaResponse
 import com.medtroniclabs.spice.data.AboveFiveYearsSummaryDetails
 import com.medtroniclabs.spice.data.AboveFiveYearsSummaryRequest
-import com.medtroniclabs.spice.data.AboveFiveYearsSummarySubmitRequest
+import com.medtroniclabs.spice.data.MedicalReviewSummarySubmitRequest
 import com.medtroniclabs.spice.data.DiagnosisDiseaseModel
 import com.medtroniclabs.spice.data.DiagnosisSaveUpdateRequest
 import com.medtroniclabs.spice.data.FormMetaRequest
@@ -28,7 +28,6 @@ import com.medtroniclabs.spice.data.ReferPatientRequest
 import com.medtroniclabs.spice.data.ReferPatientResult
 import com.medtroniclabs.spice.data.UnderFiveYearsMetaResponse
 import com.medtroniclabs.spice.data.UnderTwoMonthsMetaResponse
-import com.medtroniclabs.spice.data.SummarySubmitRequest
 import com.medtroniclabs.spice.data.Prescription
 import com.medtroniclabs.spice.data.RemovePrescriptionRequest
 import com.medtroniclabs.spice.data.UserSymptomsEntity
@@ -56,7 +55,6 @@ import com.medtroniclabs.spice.model.medicalreview.CreateLabourDeliveryRequest
 import com.medtroniclabs.spice.model.medicalreview.CreateLabourDeliveryResponse
 import com.medtroniclabs.spice.model.medicalreview.CreateUnderTwoMonthsResponse
 import com.medtroniclabs.spice.model.medicalreview.LabourDeliverySummaryDetails
-import com.medtroniclabs.spice.model.medicalreview.LabourDeliverySummaryRequest
 import com.medtroniclabs.spice.model.medicalreview.SummaryDetails
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
@@ -120,14 +118,11 @@ interface ApiService {
     @POST("/spice-service/medical-review/labour-mother-neonate/create")
     suspend fun createMedicalReviewForLaborDelivery(@Body labourDeliveryRequest: CreateLabourDeliveryRequest): Response<APIResponse<CreateLabourDeliveryResponse>>
 
-    @POST("/spice-service/medical-review/summary-create")
-    suspend fun labourDeliverySummaryCreate(@Body request: LabourDeliverySummaryRequest): Response<APIResponse<HashMap<String, Any>>>
-
     @POST("/spice-service/static-data/meta-data/iccm-under-two-months")
     suspend fun getUnderTwoMonthsMetaData(): Response<APIResponse<UnderTwoMonthsMetaResponse>>
 
     @POST("/spice-service/medical-review/summary-create")
-    suspend fun aboveFiveYearsSummaryCreate(@Body request: AboveFiveYearsSummarySubmitRequest): Response<APIResponse<HashMap<String, Any>>>
+    suspend fun createSummarySubmit(@Body request: MedicalReviewSummarySubmitRequest): Response<APIResponse<HashMap<String, Any>>>
 
     @POST("/spice-service/static-data/meta-data/mother-delivery")
     suspend fun getLabourDeliveryMetaData(): Response<APIResponse<LabourDeliveryMetaResponse>>
@@ -145,9 +140,6 @@ interface ApiService {
 
     @POST("/spice-service/medical-review/iccm-under-2months/details")
     suspend fun getUnderTwoMonthsSummaryDetails(@Body request : CreateUnderTwoMonthsResponse ): Response<APIResponse<SummaryDetails>>
-
-    @POST("/spice-service/medical-review/summary-create")
-    suspend fun underTwoMonthsSummaryCreate(@Body request: SummarySubmitRequest): Response<APIResponse<HashMap<String, Any>>>
 
     @POST("/spice-service/medical-review/anc-pregnancy/create")
     suspend fun saveMotherNeonateAnc(@Body motherNeonateAncRequest: MotherNeonateAncRequest):Response<APIResponse<PatientEncounterResponse>>

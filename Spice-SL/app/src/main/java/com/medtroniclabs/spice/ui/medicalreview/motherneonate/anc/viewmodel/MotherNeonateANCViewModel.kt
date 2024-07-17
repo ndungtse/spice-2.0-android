@@ -6,13 +6,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.common.DateUtils
-import com.medtroniclabs.spice.data.AboveFiveYearsSummarySubmitRequest
 import com.medtroniclabs.spice.data.model.MedicalReviewEncounter
 import com.medtroniclabs.spice.data.model.MotherNeonateAncRequest
 import com.medtroniclabs.spice.data.model.PatientEncounterResponse
 import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.network.resource.Resource
+import com.medtroniclabs.spice.repo.MedicalReviewSummaryRepository
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.repo.MotherNeonateANCRepo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
@@ -22,6 +22,7 @@ import javax.inject.Inject
 @HiltViewModel
 class MotherNeonateANCViewModel @Inject constructor(
     private val motherNeonateANCRepo: MotherNeonateANCRepo,
+    private val summaryRepository: MedicalReviewSummaryRepository,
     @IoDispatcher private val dispatcherIO: CoroutineDispatcher
 ) : ViewModel() {
     val motherNeonateMetaResponse = MutableLiveData<Resource<Boolean>>()
@@ -73,10 +74,35 @@ class MotherNeonateANCViewModel @Inject constructor(
         )
     }
 
-    fun motherNeonateSummaryCreate(request: AboveFiveYearsSummarySubmitRequest){
+    fun motherNeonateSummaryCreate(
+        referralTicketType: String,
+        memberId: String?,
+        submitCreateId: String?,
+        householdId: String?,
+        patientReference: String?,
+        nextVisitDate: String,
+        patientStatus: String?,
+        villageId: String?,
+        patientId: String?,
+        assessmentName: String
+    ) {
         viewModelScope.launch(dispatcherIO) {
             summaryCreateResponse.postLoading()
-            summaryCreateResponse.postValue(motherNeonateANCRepo.motherNeonateSummaryCreate(request))
+            if (patientId != null && memberId != null && patientStatus != null && householdId != null && villageId != null && patientReference != null && submitCreateId != null) {
+                val response = summaryRepository.createSummarySubmit(
+                    patientId = patientId,
+                    patientReference = patientReference,
+                    memberId = memberId,
+                    id = submitCreateId,
+                    patientStatus = patientStatus,
+                    nextVisitDate = nextVisitDate,
+                    referralTicketType = referralTicketType,
+                    assessmentName = assessmentName,
+                    householdId = householdId,
+                    villageId = villageId
+                )
+                summaryCreateResponse.postValue(response)
+            }
         }
     }
 

@@ -8,7 +8,6 @@ import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import com.medtroniclabs.spice.R
-import com.medtroniclabs.spice.appextensions.convertToUtcDateTime
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.isNotTabletAndPortrait
 import com.medtroniclabs.spice.appextensions.setPercentWidth
@@ -18,7 +17,6 @@ import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.PregnancyANC
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.SpiceLocationManager
-import com.medtroniclabs.spice.data.AboveFiveYearsSummarySubmitRequest
 import com.medtroniclabs.spice.data.model.BpAndWeightRequestModel
 import com.medtroniclabs.spice.data.model.MedicalReviewEncounter
 import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
@@ -504,18 +502,19 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
                 DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
                 inUTC = true
             )
-            val request = AboveFiveYearsSummarySubmitRequest(
-                referralTicketType = MedicalReviewTypeEnums.RMNCH.name,
-                memberId = patientViewModel.getPatientMemberId(),
-                id = submitCreateId,
-                provenance = ProvanceDto(),
-                householdId = patientViewModel.getPatientHouseholdId(),
-                patientReference = viewModel.getPatientReference(),
-                nextVisitDate = nextVisitDate,
-                patientStatus = motherNeonateSummaryViewModel.patientStatus,
-            )
             if (connectivityManager.isNetworkAvailable()) {
-                viewModel.motherNeonateSummaryCreate(request)
+                viewModel.motherNeonateSummaryCreate(
+                    MedicalReviewTypeEnums.RMNCH.name,
+                    patientViewModel.getPatientMemberId(),
+                    submitCreateId,
+                    patientViewModel.getPatientHouseholdId(),
+                    viewModel.getPatientReference(),
+                    nextVisitDate,
+                    motherNeonateSummaryViewModel.patientStatus,
+                    patientViewModel.getVillageId(),
+                    patientViewModel.getPatientId(),
+                    MedicalReviewTypeEnums.pregnancyAncMedicalReview.name
+                )
             } else {
                 showErrorDialogue(
                     getString(R.string.error), getString(R.string.no_internet_error),

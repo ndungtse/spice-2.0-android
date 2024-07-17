@@ -3,7 +3,6 @@ package com.medtroniclabs.spice.repo
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.data.MedicalReviewMetaItems
-import com.medtroniclabs.spice.data.SummarySubmitRequest
 import com.medtroniclabs.spice.db.entity.SignsAndSymptomsEntity
 import com.medtroniclabs.spice.db.local.RoomHelper
 import com.medtroniclabs.spice.model.medicalreview.CreateUnderFiveYearsRequest
@@ -106,27 +105,6 @@ class UnderFiveYearsRepository @Inject constructor(
             }
         } catch (e: Exception) {
             e.printStackTrace()
-            Resource(state = ResourceState.ERROR)
-        }
-    }
-
-    suspend fun underFiveYearsSummaryCreate(
-        summarySubmitRequest: SummarySubmitRequest
-    ): Resource<HashMap<String, Any>> {
-        return try {
-            val response = apiHelper.underTwoMonthsSummaryCreate(summarySubmitRequest)
-            if (response.isSuccessful) {
-                val res = response.body()
-                if (res?.status == true) {
-                    Resource(state = ResourceState.SUCCESS)
-                } else {
-                    Resource(state = ResourceState.ERROR)
-                }
-            } else {
-                Resource(state = ResourceState.ERROR)
-            }
-
-        } catch (e: Exception) {
             Resource(state = ResourceState.ERROR)
         }
     }

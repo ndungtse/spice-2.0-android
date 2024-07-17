@@ -45,7 +45,6 @@ class UnderTwoMonthsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
 
     private lateinit var binding: FragmentUnderTwoMonthsTreatmentSummaryBinding
     private var datePickerDialog: DatePickerDialog? = null
-    private val presentingComplaintsViewModel: PresentingComplaintsViewModel by activityViewModels()
     private val summaryViewModel: UnderTwoMonthsTreatmentSummaryViewModel by activityViewModels()
     private lateinit var examinationSummaryAdapter: ExaminationSummaryAdapter
 
@@ -282,7 +281,7 @@ class UnderTwoMonthsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
                 ) {
                     val selectedItem = adapter.getData(position = pos)
                     selectedItem?.let {
-                        val selectedName = it[DefinedParams.NAME] as String?
+                        val selectedName = it[DefinedParams.value] as String?
                         selectedName?.let { name ->
                             summaryViewModel.selectedPatientStatus = name
                         }

@@ -27,6 +27,8 @@ import com.medtroniclabs.spice.formgeneration.ui.SingleSelectionCustomView
 import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
+import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil
+import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil.initTextWatcherForString
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil.isValidInput
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.MOTHER_VITAMIN_TAG
@@ -54,34 +56,32 @@ class ClinicalSummaryUnderFiveYearsFragment : BaseFragment() {
     }
 
     private fun initListeners() {
-        binding.etWeight.doAfterTextChanged {
-            viewModel.updateWeight(it.toString())
+        initTextWatcherForString(binding.etWeight) {
+            viewModel.updateWeight(it)
         }
-        binding.etHeight.doAfterTextChanged {
-            viewModel.updateHeight(it.toString())
+        initTextWatcherForString(binding.etHeight) {
+            viewModel.updateHeight(it)
         }
-        binding.etTemperature.doAfterTextChanged {
-            viewModel.updateTemperature(it.toString())
+        initTextWatcherForString(binding.etTemperature) {
+            viewModel.updateTemperature(it)
         }
-        binding.etRespirationRate.doAfterTextChanged {
-            val respiration = it?.trim().toString()
+        initTextWatcherForString(binding.etRespirationRate) {
             viewModel.updateRespiratoryRate(
-                respiration, binding.etRepeat.text?.trim().toString()
+                it, binding.etRepeat.text?.trim().toString()
             )
-            showHideRepeatField(respiration.toDoubleOrNull())
+            showHideRepeatField(it.toDoubleOrNull())
         }
-        binding.etRepeat.doAfterTextChanged {
+        initTextWatcherForString(binding.etRepeat) {
             viewModel.updateRespiratoryRate(
-                binding.etRespirationRate.text?.trim().toString(), it?.trim().toString()
+                binding.etRespirationRate.text?.trim().toString(), it
             )
         }
-        binding.etWAZ.doAfterTextChanged {
-            viewModel.updateWaz(it?.trim().toString())
+        initTextWatcherForString(binding.etWAZ) {
+            viewModel.updateWaz(it)
         }
-        binding.etWHZ.doAfterTextChanged {
-            viewModel.updateWhz(it?.trim().toString())
+        initTextWatcherForString(binding.etWHZ) {
+            viewModel.updateWhz(it)
         }
-
     }
 
     private fun initializeImmunisationStatus(list: List<MedicalReviewMetaItems>) {
@@ -294,8 +294,8 @@ class ClinicalSummaryUnderFiveYearsFragment : BaseFragment() {
             binding.etHeight.text.toString(),
             binding.etHeight,
             binding.tvHeightError,
-            50.0..300.0,
-            R.string.height_error,
+            0.0..300.0,
+            R.string.height_error_0_300,
             true,
             requireContext()
         )
@@ -306,7 +306,7 @@ class ClinicalSummaryUnderFiveYearsFragment : BaseFragment() {
             binding.etRespirationRate.text.toString(),
             binding.etRespirationRate,
             binding.tvRespirationRateError,
-            0.0..100.0,
+            1.0..99.9,
             (R.string.respiratory_error),
             false,
             requireContext()
@@ -318,7 +318,7 @@ class ClinicalSummaryUnderFiveYearsFragment : BaseFragment() {
             binding.etRepeat.text.toString(),
             binding.etRepeat,
             binding.tvRepeatError,
-            0.0..100.0,
+            1.0..99.9,
             (R.string.please_enter_repeat_between_0_to_100),
             false,
             requireContext()
@@ -330,8 +330,8 @@ class ClinicalSummaryUnderFiveYearsFragment : BaseFragment() {
             binding.etTemperature.text.toString(),
             binding.etTemperature,
             binding.tvTemperatureLabelError,
-            10.0..300.0,
-            (R.string.temperature),
+            10.0..200.0,
+            (R.string.please_enter_temperature_between_10_to_200),
             false,
             requireContext()
         )
@@ -342,8 +342,8 @@ class ClinicalSummaryUnderFiveYearsFragment : BaseFragment() {
             binding.etWeight.text.toString(),
             binding.etWeight,
             binding.tvWeightError,
-            10.0..400.0,
-            R.string.weight_error,
+            0.0..400.0,
+            R.string.weight_error_0_400,
             true,
             requireContext()
         )

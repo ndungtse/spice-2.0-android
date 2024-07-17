@@ -6,7 +6,6 @@ import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.appextensions.postSuccess
 import com.medtroniclabs.spice.common.SecuredPreference
-import com.medtroniclabs.spice.data.AboveFiveYearsSummarySubmitRequest
 import com.medtroniclabs.spice.data.MedicalReviewMetaItems
 import com.medtroniclabs.spice.data.MotherNeonateAncSummaryModel
 import com.medtroniclabs.spice.data.model.BpAndWeightRequestModel
@@ -122,27 +121,6 @@ class MotherNeonateANCRepo @Inject constructor(
             }
         } catch (e: Exception) {
             e.printStackTrace()
-            Resource(state = ResourceState.ERROR)
-        }
-    }
-
-    suspend fun motherNeonateSummaryCreate(
-        request: AboveFiveYearsSummarySubmitRequest,
-    ): Resource<HashMap<String, Any>> {
-        return try {
-            val response = apiHelper.aboveFiveYearsSummaryCreate(request)
-            if (response.isSuccessful) {
-                val res = response.body()
-                if (res?.status == true) {
-                    Resource(state = ResourceState.SUCCESS)
-                } else {
-                    Resource(state = ResourceState.ERROR)
-                }
-            } else{
-                Resource(state = ResourceState.ERROR)
-            }
-
-        } catch (e: Exception) {
             Resource(state = ResourceState.ERROR)
         }
     }
