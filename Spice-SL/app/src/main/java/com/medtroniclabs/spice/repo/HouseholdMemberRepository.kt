@@ -87,6 +87,7 @@ class HouseholdMemberRepository @Inject constructor(
         if (entity == null) {
             val householdDetails = roomHelper.getHouseHoldDetailsById(householdId)
             householdMemberEntity.householdId = householdId
+            householdMemberEntity.villageId = householdDetails.villageId
             householdMemberEntity.patientId = getNextPatientId(householdDetails.villageId)
         } else {
             householdMemberEntity.updatedAt = System.currentTimeMillis()

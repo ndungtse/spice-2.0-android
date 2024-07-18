@@ -70,7 +70,7 @@ data class HouseHoldMember(
     @Ignore
     var assessments = listOf<Assessment>()
 
-    fun toHouseholdMemberEntity(hhId: Long, status: OfflineSyncStatus, id: Long = 0): HouseholdMemberEntity {
+    fun toHouseholdMemberEntity(hhId: Long?, status: OfflineSyncStatus, id: Long = 0): HouseholdMemberEntity {
         return HouseholdMemberEntity(
             id = id,
             name = this.name,
@@ -82,7 +82,8 @@ data class HouseHoldMember(
             householdId = hhId,
             patientId = this.patientId,
             parentId = this.motherPatientId,
-            isPregnant = this.isPregnant
+            isPregnant = this.isPregnant,
+            villageId = this.villageId
         ).apply {
             fhirId = this@HouseHoldMember.id.toString()
             sync_status = status

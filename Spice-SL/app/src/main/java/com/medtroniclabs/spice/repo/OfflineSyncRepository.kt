@@ -235,10 +235,19 @@ class OfflineSyncRepository @Inject constructor(
                     OfflineSyncStatus.Success
                 ))
             } else {
-                roomHelper.getHouseholdIdByFhirId(member.householdId)?.let {
+                if (member.householdId != null) {
+                    roomHelper.getHouseholdIdByFhirId(member.householdId)?.let {
+                        roomHelper.insertOrUpdateHHMFromBE(
+                            member.toHouseholdMemberEntity(
+                                it,
+                                OfflineSyncStatus.Success
+                            )
+                        )
+                    }
+                } else {
                     roomHelper.insertOrUpdateHHMFromBE(
                         member.toHouseholdMemberEntity(
-                            it,
+                            null,
                             OfflineSyncStatus.Success
                         )
                     )

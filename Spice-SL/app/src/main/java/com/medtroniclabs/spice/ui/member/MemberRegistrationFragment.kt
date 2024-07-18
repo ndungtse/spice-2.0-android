@@ -155,7 +155,7 @@ class MemberRegistrationFragment : Fragment(), FormEventListener, View.OnClickLi
     }
 
     private fun autoPopulateDetails(details: HouseholdMemberEntity) {
-        details.householdId.let {id ->
+        details.householdId?.let {id ->
             householdRegistrationViewModel.householdId = id
         }
         formGenerator.getViewByTag(name)?.let { view ->

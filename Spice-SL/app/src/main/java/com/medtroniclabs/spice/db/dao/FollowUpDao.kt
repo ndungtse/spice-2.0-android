@@ -29,8 +29,8 @@ interface FollowUpDao {
     suspend fun getFollowUpDetailsById(id: Long): FollowUp
 
     @Query("SELECT fu.id, hhm.id AS localPatientId, hhm.name, fu.patientId, hhm.phone_number as phoneNumber, hhm.date_of_birth as dateOfBirth, hhm.gender, fu.reason, fu.patientStatus, ve.name AS village, hh.name AS householdName, hh.landmark, fu.type, fu.encounterType, fu.calledAt, fu.successfulAttempts, fu.unsuccessfulAttempts, fu.nextVisitDate, fu.encounterDate, fu.isWrongNumber, fu.updatedAt " +
-            "FROM FollowUp AS fu INNER JOIN HouseholdMember AS hhm ON fu.memberId = hhm.fhir_id INNER JOIN Household AS hh ON hhm.household_id = hh.id INNER JOIN VillageEntity AS ve ON hh.village_id = ve.id " +
-            "WHERE fu.isCompleted = 0 AND fu.id IS NOT NULL AND hh.village_id IN (:villageIds) AND " +
+            "FROM FollowUp AS fu INNER JOIN HouseholdMember AS hhm ON fu.memberId = hhm.fhir_id LEFT JOIN Household AS hh ON hhm.household_id = hh.id LEFT JOIN VillageEntity AS ve ON fu.villageId = ve.id " +
+            "WHERE fu.isCompleted = 0 AND fu.id IS NOT NULL AND fu.villageId IN (:villageIds) AND " +
             "fu.type=:type AND " +
             "(hhm.name LIKE '%' || :search || '%' OR fu.patientId LIKE :search || '%' OR :search IS NULL) AND " +
             "CASE WHEN :fromDate = '' THEN 1 ELSE date(fu.encounterDate) BETWEEN :fromDate AND :toDate END ORDER BY fu.encounterDate")
@@ -44,8 +44,8 @@ interface FollowUpDao {
 
 
     @Query("SELECT fu.id, hhm.id AS localPatientId, hhm.name, fu.patientId, hhm.phone_number as phoneNumber, hhm.date_of_birth as dateOfBirth, hhm.gender, fu.reason, fu.patientStatus, ve.name AS village, hh.name AS householdName, hh.landmark, fu.type, fu.encounterType, fu.calledAt, fu.successfulAttempts, fu.unsuccessfulAttempts, fu.nextVisitDate, fu.encounterDate, fu.isWrongNumber, fu.updatedAt " +
-            "FROM FollowUp AS fu INNER JOIN HouseholdMember AS hhm ON fu.memberId = hhm.fhir_id INNER JOIN Household AS hh ON hhm.household_id = hh.id INNER JOIN VillageEntity AS ve ON hh.village_id = ve.id " +
-            "WHERE fu.isCompleted = 0 AND fu.id IS NOT NULL AND hh.village_id IN (:villageIds) AND " +
+            "FROM FollowUp AS fu INNER JOIN HouseholdMember AS hhm ON fu.memberId = hhm.fhir_id LEFT JOIN Household AS hh ON hhm.household_id = hh.id LEFT JOIN VillageEntity AS ve ON fu.villageId = ve.id " +
+            "WHERE fu.isCompleted = 0 AND fu.id IS NOT NULL AND fu.villageId IN (:villageIds) AND " +
             "fu.type=:type AND " +
             "(hhm.name LIKE '%' || :search || '%' OR fu.patientId LIKE :search || '%' OR :search IS NULL) AND " +
             "CASE WHEN :fromDate = '' THEN 1 ELSE date(fu.nextVisitDate) BETWEEN :fromDate AND :toDate END ORDER BY fu.nextVisitDate")

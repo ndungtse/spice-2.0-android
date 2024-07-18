@@ -30,7 +30,10 @@ data class HouseholdMemberEntity(
     var householdHeadRelationship: String = "",
 
     @ColumnInfo("household_id")
-    var householdId: Long = 0,
+    var householdId: Long? = null,
+
+    @ColumnInfo("villageId")
+    var villageId: Long? = null,
 
     @ColumnInfo("patient_id")
     var patientId: String? = null,
