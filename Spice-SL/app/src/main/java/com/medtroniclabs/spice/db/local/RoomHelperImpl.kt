@@ -582,4 +582,8 @@ class RoomHelperImpl @Inject constructor(
     override suspend fun getFrequencyList(): List<FrequencyEntity> {
         return frequencyDAO.getFrequencyList()
     }
+
+    override suspend fun updateOtherFollowUpForWrongNumber(id: Long, fhirId: String) {
+        followUpDao.updateOtherFollowUpForWrongNumber(id, fhirId)
+    }
 }

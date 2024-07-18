@@ -134,7 +134,7 @@ class FollowUpRepository @Inject constructor(
         if (callDetail.status == FollowUpCallStatus.SUCCESSFUL) {
             newFollowUp = handleSuccessCall(followUpId, followUp, callDetail, maxSuccessfulCallLimit)
         } else {
-            handleUnSuccessfulCall(followUp, callDetail, maxUnSuccessfulCallLimit)
+            handleUnSuccessfulCall(followUpId, followUp, callDetail, maxUnSuccessfulCallLimit)
         }
 
         roomHelper.addCallHistory(followUp, callDetail, newFollowUp)
@@ -195,14 +195,16 @@ class FollowUpRepository @Inject constructor(
         }
     }
 
-    private fun handleUnSuccessfulCall(followUp: FollowUp, call: FollowUpCall, maxUnSuccessfulCallLimit: Int) {
+    private suspend fun handleUnSuccessfulCall(followUpId: Long, followUp: FollowUp, call: FollowUpCall, maxUnSuccessfulCallLimit: Int) {
         followUp.unsuccessfulAttempts = followUp.unsuccessfulAttempts + 1
         if (followUp.unsuccessfulAttempts >= maxUnSuccessfulCallLimit) {
             followUp.isCompleted = true
         }
 
         if (call.reason?.equals(FollowUpDefinedParams.WRONG_NUMBER, true) == true) {
-            followUp.isCompleted = true
+            followUp.isWrongNumber = true
+            followUp.isCompleted = followUp.type != FollowUpDefinedParams.FU_TYPE_HH_VISIT
+            roomHelper.updateOtherFollowUpForWrongNumber(followUpId, followUp.memberId)
         }
     }
 

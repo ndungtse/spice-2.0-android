@@ -20,5 +20,6 @@ data class FollowUpPatientModel(
     val unsuccessfulAttempts: Int = 0,
     val nextVisitDate: String? = null,
     val encounterDate: String? = null,
+    val isWrongNumber: Boolean,
     val updatedAt: Long
 )

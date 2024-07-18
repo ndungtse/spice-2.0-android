@@ -28,7 +28,7 @@ interface FollowUpDao {
     @Query("SELECT * FROM FollowUp WHERE id = :id")
     suspend fun getFollowUpDetailsById(id: Long): FollowUp
 
-    @Query("SELECT fu.id, hhm.id AS localPatientId, hhm.name, fu.patientId, hhm.phone_number as phoneNumber, hhm.date_of_birth as dateOfBirth, hhm.gender, fu.reason, fu.patientStatus, ve.name AS village, hh.name AS householdName, hh.landmark, fu.type, fu.encounterType, fu.calledAt, fu.successfulAttempts, fu.unsuccessfulAttempts, fu.nextVisitDate, fu.encounterDate, fu.updatedAt " +
+    @Query("SELECT fu.id, hhm.id AS localPatientId, hhm.name, fu.patientId, hhm.phone_number as phoneNumber, hhm.date_of_birth as dateOfBirth, hhm.gender, fu.reason, fu.patientStatus, ve.name AS village, hh.name AS householdName, hh.landmark, fu.type, fu.encounterType, fu.calledAt, fu.successfulAttempts, fu.unsuccessfulAttempts, fu.nextVisitDate, fu.encounterDate, fu.isWrongNumber, fu.updatedAt " +
             "FROM FollowUp AS fu INNER JOIN HouseholdMember AS hhm ON fu.memberId = hhm.fhir_id INNER JOIN Household AS hh ON hhm.household_id = hh.id INNER JOIN VillageEntity AS ve ON hh.village_id = ve.id " +
             "WHERE fu.isCompleted = 0 AND fu.id IS NOT NULL AND hh.village_id IN (:villageIds) AND " +
             "fu.type=:type AND " +
@@ -43,7 +43,7 @@ interface FollowUpDao {
     ): LiveData<List<FollowUpPatientModel>>
 
 
-    @Query("SELECT fu.id, hhm.id AS localPatientId, hhm.name, fu.patientId, hhm.phone_number as phoneNumber, hhm.date_of_birth as dateOfBirth, hhm.gender, fu.reason, fu.patientStatus, ve.name AS village, hh.name AS householdName, hh.landmark, fu.type, fu.encounterType, fu.calledAt, fu.successfulAttempts, fu.unsuccessfulAttempts, fu.nextVisitDate, fu.encounterDate, fu.updatedAt " +
+    @Query("SELECT fu.id, hhm.id AS localPatientId, hhm.name, fu.patientId, hhm.phone_number as phoneNumber, hhm.date_of_birth as dateOfBirth, hhm.gender, fu.reason, fu.patientStatus, ve.name AS village, hh.name AS householdName, hh.landmark, fu.type, fu.encounterType, fu.calledAt, fu.successfulAttempts, fu.unsuccessfulAttempts, fu.nextVisitDate, fu.encounterDate, fu.isWrongNumber, fu.updatedAt " +
             "FROM FollowUp AS fu INNER JOIN HouseholdMember AS hhm ON fu.memberId = hhm.fhir_id INNER JOIN Household AS hh ON hhm.household_id = hh.id INNER JOIN VillageEntity AS ve ON hh.village_id = ve.id " +
             "WHERE fu.isCompleted = 0 AND fu.id IS NOT NULL AND hh.village_id IN (:villageIds) AND " +
             "fu.type=:type AND " +
@@ -63,12 +63,14 @@ interface FollowUpDao {
     @Query("SELECT COUNT(referenceId) FROM FollowUp where syncStatus =:syncStatus")
     suspend fun getUnSyncedCount(syncStatus: String = OfflineSyncStatus.NotSynced.name): Int
 
-    @Query("UPDATE FollowUp SET isCompleted = 1 WHERE memberId = :fhirId AND id != :id  AND " +
+    @Query("UPDATE FollowUp SET isCompleted = 1, updatedAt = :updateAt WHERE memberId = :fhirId AND id != :id  AND " +
             "CASE WHEN :type = 'HH_VISIT' THEN (encounterType = :encounterType AND reason= :reason) ELSE encounterType= :encounterType END")
-    suspend fun updateOtherDuplicateTickets(id: Long, fhirId: String, type: String, encounterType: String?=null, reason: String? = null)
+    suspend fun updateOtherDuplicateTickets(id: Long, fhirId: String, type: String, encounterType: String?=null, reason: String? = null, updateAt: Long = System.currentTimeMillis())
 
     @Query("UPDATE FollowUp SET updatedAt = :updateAt, calledAt = :updateAt WHERE memberId = :fhirId AND id != :id  AND " +
             "CASE WHEN :type = 'HH_VISIT' THEN (encounterType = :encounterType AND reason= :reason) ELSE encounterType= :encounterType END")
     suspend fun updateOnTreatmentStatus(id: Long, fhirId: String, type: String,  updateAt:Long, encounterType: String?=null, reason: String? = null)
 
+    @Query("UPDATE FollowUp SET isWrongNumber = 1, syncStatus = :syncStatus, isCompleted = CASE WHEN type = 'HH_VISIT' THEN 0 ELSE 1 END WHERE memberId = :fhirId AND id != :id ")
+    suspend fun updateOtherFollowUpForWrongNumber(id: Long, fhirId: String, syncStatus: String = OfflineSyncStatus.NotSynced.name)
 }

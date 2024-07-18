@@ -29,6 +29,7 @@ data class FollowUp(
     val referredSiteId: String? = null,
     val villageId: String,
     var isCompleted: Boolean = false,
+    var isWrongNumber: Boolean = false,
     var calledAt: Long? = null,
     var syncStatus: OfflineSyncStatus = OfflineSyncStatus.Success,
     var updatedAt: Long = System.currentTimeMillis()

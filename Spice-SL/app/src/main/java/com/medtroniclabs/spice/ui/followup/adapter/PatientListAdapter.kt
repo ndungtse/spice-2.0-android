@@ -61,6 +61,7 @@ class PatientListAdapter(private val callback: (Int, FollowUpPatientModel) -> Un
                 tvLabelReason.visible()
                 tvReason.visible()
                 tvLabelReasonSeperator.visible()
+                callButton.isEnabled = !data.isWrongNumber
 
                 when(data.type) {
                     FU_TYPE_HH_VISIT -> {

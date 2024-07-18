@@ -62,11 +62,12 @@ class OfflineSyncRepository @Inject constructor(
                     memberId = entity.memberId,
                     referred = entity.isReferred,
                     patientId = entity.patientId,
-                    provenance = ProvanceDto(),
+                    provenance = ProvanceDto(modifiedDate = entity.createdAt.convertToUtcDateTime()),
                     latitude = entity.latitude,
                     longitude = entity.longitude,
                     visitNumber = getVisitCount(entity)
-                )
+                ),
+                updatedAt = entity.createdAt
             )
         }
     }

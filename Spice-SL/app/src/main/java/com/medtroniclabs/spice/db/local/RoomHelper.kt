@@ -188,6 +188,8 @@ interface RoomHelper {
 
     suspend fun updateOtherDuplicateTickets(id: Long, followUp: FollowUp)
 
+    suspend fun updateOtherFollowUpForWrongNumber(id: Long, fhirId: String)
+
     suspend fun updateOnTreatmentStatus(id: Long, followUp: FollowUp, updatedAt: Long)
 
     suspend fun changeHouseholdStatus(idList: List<String>)

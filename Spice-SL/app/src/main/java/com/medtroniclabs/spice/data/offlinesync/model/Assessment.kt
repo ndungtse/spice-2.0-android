@@ -11,5 +11,6 @@ data class Assessment(
     val patientStatus: String,
     val referredReasons: String? = null,
     val summary: JsonElement?,
-    val encounter: AssessmentEncounter
+    val encounter: AssessmentEncounter,
+    val updatedAt: Long
 )
