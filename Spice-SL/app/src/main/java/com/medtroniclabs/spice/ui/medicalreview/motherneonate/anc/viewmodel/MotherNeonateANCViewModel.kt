@@ -41,11 +41,11 @@ class MotherNeonateANCViewModel @Inject constructor(
         }
     }
 
-    fun createMotherNeonate(encounterId: String?) {
+    fun createMotherNeonate(encounterId: String?, patientHouseholdId: String?) {
         viewModelScope.launch(dispatcherIO) {
             try {
                 motherNeonateAncRequest.apply {
-                    encounter = createMedicalReviewEncounter(encounterId)
+                    encounter = createMedicalReviewEncounter(encounterId,patientHouseholdId)
                 }
                 motherNeonateCreateResponse.postLoading()
                 motherNeonateCreateResponse.postValue(
@@ -59,7 +59,7 @@ class MotherNeonateANCViewModel @Inject constructor(
         }
     }
 
-    private fun createMedicalReviewEncounter(encounterId: String?): MedicalReviewEncounter {
+    private fun createMedicalReviewEncounter(encounterId: String?, patientHouseholdId: String?): MedicalReviewEncounter {
         val currentTime = DateUtils.getCurrentDateAndTime(DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ)
         return MedicalReviewEncounter(
             id = encounterId,
@@ -69,6 +69,7 @@ class MotherNeonateANCViewModel @Inject constructor(
             longitude = lastLocation?.longitude ?: 0.0,
             startTime = currentTime,
             endTime = currentTime,
+            householdId = patientHouseholdId,
             referred = true,
             visitNumber = ancVisit
         )
@@ -88,7 +89,7 @@ class MotherNeonateANCViewModel @Inject constructor(
     ) {
         viewModelScope.launch(dispatcherIO) {
             summaryCreateResponse.postLoading()
-            if (patientId != null && memberId != null && patientStatus != null && householdId != null && villageId != null && patientReference != null && submitCreateId != null) {
+            if (patientId != null && memberId != null && patientStatus != null  && villageId != null && patientReference != null && submitCreateId != null) {
                 val response = summaryRepository.createSummarySubmit(
                     patientId = patientId,
                     patientReference = patientReference,

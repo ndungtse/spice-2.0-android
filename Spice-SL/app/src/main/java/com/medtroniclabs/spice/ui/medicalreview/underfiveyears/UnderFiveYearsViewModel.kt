@@ -81,7 +81,7 @@ class UnderFiveYearsViewModel @Inject constructor(
         val memberId = patientDetail.memberId
         val selectedPatientId = patientId
 
-        if (hhId != null && memberId != null && selectedPatientId != null) {
+        if (memberId != null && selectedPatientId != null) {
             viewModelScope.launch(dispatcherIO) {
                 val examination = getUnderFiveExamination(examinationResultHashMap)
                 val currentDateAndTime = DateUtils.getCurrentDateAndTime(DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ)
@@ -389,7 +389,7 @@ class UnderFiveYearsViewModel @Inject constructor(
             val householdId = details.houseHoldId
             val villageId = details.villageId
 
-            if (patientId != null && memberId != null && householdId != null && villageId != null) {
+            if (patientId != null && memberId != null && villageId != null) {
                 val convertedNextVisitDate = DateUtils.convertDateTimeToDate(
                     nextFollowUpDate,
                     DateUtils.DATE_ddMMyyyy,

@@ -7,11 +7,15 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.appcompat.widget.AppCompatSpinner
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.setFragmentResult
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.appextensions.gone
+import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils.getBooleanAsString
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
@@ -23,9 +27,11 @@ import com.medtroniclabs.spice.common.DefinedParams.No
 import com.medtroniclabs.spice.common.DefinedParams.Yes
 import com.medtroniclabs.spice.common.DefinedParams.female
 import com.medtroniclabs.spice.common.DefinedParams.male
+import com.medtroniclabs.spice.common.EntityMapper.getResultSpinnerMapList
 import com.medtroniclabs.spice.data.model.RecommendedDosageListModel
 import com.medtroniclabs.spice.databinding.FragmentMemberRegistrationBinding
 import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
+import com.medtroniclabs.spice.db.entity.VillageEntity
 import com.medtroniclabs.spice.formgeneration.FormGenerator
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams
 import com.medtroniclabs.spice.formgeneration.listener.FormEventListener
@@ -33,6 +39,7 @@ import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.model.FormResponse
 import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
 import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.no
+import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.villageId
 import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.yes
 import com.medtroniclabs.spice.mappingkey.MemberRegistration
 import com.medtroniclabs.spice.mappingkey.MemberRegistration.gender
@@ -49,6 +56,7 @@ import com.medtroniclabs.spice.ui.household.HouseholdActivity
 import com.medtroniclabs.spice.ui.household.HouseholdDefinedParams
 import com.medtroniclabs.spice.ui.household.summary.HouseholdSummaryActivity
 import com.medtroniclabs.spice.ui.household.viewmodel.HouseRegistrationViewModel
+import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -70,11 +78,47 @@ class MemberRegistrationFragment : Fragment(), FormEventListener, View.OnClickLi
         super.onViewCreated(view, savedInstanceState)
         initializeView()
         setListener()
-        memberRegistrationViewModel.getFormData(HOUSEHOLD_MEMBER_REGISTRATION)
+        initializeFlow()
         attachObserver()
     }
 
+    private fun initializeFlow() {
+        arguments?.let {
+            memberRegistrationViewModel.medicalReviewFlow =
+                it.getBoolean(MedicalReviewDefinedParams.MEDICAL_REVIEW_ADD_MEMBER)
+        } ?: false
+        if (memberRegistrationViewModel.medicalReviewFlow) {
+            binding.bottomNavigationView.gone()
+        } else {
+            binding.bottomNavigationView.visible()
+        }
+        memberRegistrationViewModel.getFormData(HOUSEHOLD_MEMBER_REGISTRATION)
+    }
+
+
     private fun attachObserver() {
+        if (memberRegistrationViewModel.medicalReviewFlow) {
+            householdRegistrationViewModel.villageListResponse.observe(viewLifecycleOwner) { resourceState ->
+                when (resourceState.state) {
+                    ResourceState.SUCCESS -> {
+                        resourceState.data?.let { data ->
+                            memberRegistrationViewModel.villageDetails =
+                                data.response as List<VillageEntity>
+                            formGenerator.spinnerDataInjection(data, getResultSpinnerMapList(data))
+                        }
+                    }
+
+                    ResourceState.LOADING -> {
+                        (activity as BaseActivity?)?.showLoading()
+                    }
+
+                    ResourceState.ERROR -> {
+                        (activity as BaseActivity?)?.hideLoading()
+                    }
+                }
+            }
+        }
+
         memberRegistrationViewModel.memberRegistrationLiveData.observe(viewLifecycleOwner) { resourceState ->
             when (resourceState.state) {
                 ResourceState.LOADING -> {
@@ -104,7 +148,10 @@ class MemberRegistrationFragment : Fragment(), FormEventListener, View.OnClickLi
                                 HouseholdDefinedParams.ID,
                                 memberRegistrationViewModel.selectedHouseholdId
                             )
-                            intent.putExtra(HouseholdDefinedParams.isFromHouseHoldRegistration, memberRegistrationViewModel.memberDetailsLiveData.value?.data?.id == null)
+                            intent.putExtra(
+                                HouseholdDefinedParams.isFromHouseHoldRegistration,
+                                memberRegistrationViewModel.memberDetailsLiveData.value?.data?.id == null
+                            )
                             startActivity(intent)
                         }
                         (activity as HouseholdActivity).finish()
@@ -134,9 +181,9 @@ class MemberRegistrationFragment : Fragment(), FormEventListener, View.OnClickLi
             }
         }
 
-        memberRegistrationViewModel.memberDetailsLiveData.observe(viewLifecycleOwner) {resourceState ->
-            when(resourceState.state){
-                ResourceState.LOADING ->{
+        memberRegistrationViewModel.memberDetailsLiveData.observe(viewLifecycleOwner) { resourceState ->
+            when (resourceState.state) {
+                ResourceState.LOADING -> {
                     (activity as BaseActivity?)?.showLoading()
                 }
 
@@ -145,6 +192,26 @@ class MemberRegistrationFragment : Fragment(), FormEventListener, View.OnClickLi
                     resourceState.data?.let { data ->
                         autoPopulateDetails(data)
                     }
+                }
+
+                ResourceState.ERROR -> {
+                    (activity as BaseActivity?)?.hideLoading()
+                }
+            }
+        }
+        memberRegistrationViewModel.addnewMemberReq.observe(viewLifecycleOwner) { resourceState ->
+            when (resourceState.state) {
+                ResourceState.LOADING -> {
+                    (activity as BaseActivity?)?.showLoading()
+                }
+
+                ResourceState.SUCCESS -> {
+                    (activity as BaseActivity?)?.hideLoading()
+                    setFragmentResult(
+                        MedicalReviewDefinedParams.MEMBER_REG, bundleOf(
+                            MedicalReviewDefinedParams.Notes to true
+                        )
+                    )
                 }
 
                 ResourceState.ERROR -> {
@@ -223,7 +290,8 @@ class MemberRegistrationFragment : Fragment(), FormEventListener, View.OnClickLi
             }
         }
         details.dateOfBirth.let {
-            val dateOfBirth = DateUtils.convertDateFormat(it, DATE_FORMAT_yyyyMMddHHmmssZZZZZ, DATE_ddMMyyyy)
+            val dateOfBirth =
+                DateUtils.convertDateFormat(it, DATE_FORMAT_yyyyMMddHHmmssZZZZZ, DATE_ddMMyyyy)
             val dateDob = DateUtils.convertStringToDate(it, DATE_FORMAT_yyyyMMddHHmmssZZZZZ)
             formGenerator.getViewByTag(MemberRegistration.dateOfBirth)?.let { view ->
                 if (dateOfBirth.isNotBlank()) {
@@ -232,8 +300,8 @@ class MemberRegistrationFragment : Fragment(), FormEventListener, View.OnClickLi
                 formGenerator.setValueForView(dateOfBirth, view)
             }
 
-            dateDob?.let {dob ->
-                formGenerator.fillDetailsOnDatePickerSet(dob,false)
+            dateDob?.let { dob ->
+                formGenerator.fillDetailsOnDatePickerSet(dob, false)
             }
 
         }
@@ -285,6 +353,10 @@ class MemberRegistrationFragment : Fragment(), FormEventListener, View.OnClickLi
     }
 
     override fun loadLocalCache(id: String, localDataCache: Any, selectedParent: Long?) {
+        if (localDataCache is String) {
+            householdRegistrationViewModel.loadDataCacheByType(id, localDataCache)
+        }
+
     }
 
     override fun onPopulate(targetId: String) {
@@ -296,25 +368,49 @@ class MemberRegistrationFragment : Fragment(), FormEventListener, View.OnClickLi
     }
 
     override fun onInstructionClicked(
-        id: String, title: String, informationList: ArrayList<String>?, description: String?, dosageListModel: ArrayList<RecommendedDosageListModel>?
+        id: String,
+        title: String,
+        informationList: ArrayList<String>?,
+        description: String?,
+        dosageListModel: ArrayList<RecommendedDosageListModel>?
     ) {
     }
 
     override fun onFormSubmit(resultMap: HashMap<String, Any>?, serverData: List<FormLayout?>?) {
         resultMap?.let { map ->
-            if (householdRegistrationViewModel.isMemberRegistration || householdRegistrationViewModel.memberID != -1L) {
-                memberRegistrationViewModel.registerMember(map, householdRegistrationViewModel.householdId)
+            if (memberRegistrationViewModel.medicalReviewFlow) {
+                memberRegistrationViewModel.addNewMember(map)
             } else {
-                householdRegistrationViewModel.householdEntityDetail?.let { householdEntity ->
-                    memberRegistrationViewModel.registerHouseThenMember(householdEntity, map, householdRegistrationViewModel.getCurrentLocation())
+                if (householdRegistrationViewModel.isMemberRegistration || householdRegistrationViewModel.memberID != -1L) {
+                    memberRegistrationViewModel.registerMember(
+                        map,
+                        householdRegistrationViewModel.householdId
+                    )
+                } else {
+                    householdRegistrationViewModel.householdEntityDetail?.let { householdEntity ->
+                        memberRegistrationViewModel.registerHouseThenMember(
+                            householdEntity,
+                            map,
+                            householdRegistrationViewModel.getCurrentLocation()
+                        )
+                    }
                 }
             }
         }
     }
 
     override fun onRenderingComplete() {
-        if (householdRegistrationViewModel.memberID != -1L){
-            memberRegistrationViewModel.getMemberDetailsByID(householdRegistrationViewModel.memberID)
+        val view = formGenerator.getViewByTag(villageId + formGenerator.rootSuffix)
+        val relationSipView=formGenerator.getViewByTag( MedicalReviewDefinedParams.HH_RELATIONSHIP+ formGenerator.rootSuffix)
+        if (memberRegistrationViewModel.medicalReviewFlow) {
+            view?.visible()
+            relationSipView?.gone()
+        } else {
+            view?.gone()
+            relationSipView?.visible()
+            if (householdRegistrationViewModel.memberID != -1L) {
+                memberRegistrationViewModel.getMemberDetailsByID(householdRegistrationViewModel.memberID)
+            }
         }
     }
 
@@ -348,4 +444,10 @@ class MemberRegistrationFragment : Fragment(), FormEventListener, View.OnClickLi
             }
         }
     }
+
+    // on MR add new member submit
+    fun medicalReviewAddMember(v: View) {
+        formGenerator.formSubmitAction(v)
+    }
+
 }

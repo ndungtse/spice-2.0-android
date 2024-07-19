@@ -21,6 +21,7 @@ import com.medtroniclabs.spice.databinding.FragmentPatientSearchBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.ui.BaseFragment
+import com.medtroniclabs.spice.ui.medicalreview.addnewmember.AddNewMemberActivity
 import com.medtroniclabs.spice.ui.mypatients.PatientSelectionListener
 import com.medtroniclabs.spice.ui.mypatients.PatientsListAdapter
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientListViewModel
@@ -105,7 +106,6 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
 
 
     private fun initViews() {
-        binding.btnAddNewMember.gone()
         binding.bottomCardView.gone()
         binding.llFilter.btnFilter.text = getString(R.string.filters)
         val tabletSize =
@@ -121,6 +121,7 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
         binding.llExactSearch.btnSearch.safeClickListener(this)
         binding.llFilter.btnFilter.safeClickListener(this)
         binding.loadingProgress.safeClickListener(this)
+        binding.btnAddNewMember.safeClickListener(this)
     }
 
     private val searchListener = object : TextWatcher {
@@ -210,6 +211,11 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
                 handleFilterClick()
             }
             binding.loadingProgress.id -> {}
+
+            binding.btnAddNewMember.id ->{
+                val intent = Intent(requireContext(), AddNewMemberActivity::class.java)
+                startActivity(intent)
+            }
         }
     }
 

@@ -22,7 +22,7 @@ class MedicalReviewSummaryRepository @Inject constructor(
         nextVisitDate: String,
         referralTicketType: String,
         assessmentName: String,
-        householdId: String,
+        householdId: String?,
         villageId: String
     ): Resource<HashMap<String, Any>> {
         return try {

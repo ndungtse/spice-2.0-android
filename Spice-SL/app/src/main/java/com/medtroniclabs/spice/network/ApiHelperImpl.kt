@@ -50,6 +50,7 @@ import com.medtroniclabs.spice.model.PatientsDataModel
 import com.medtroniclabs.spice.model.ReferralData
 import com.medtroniclabs.spice.model.ReferralDetailRequest
 import com.medtroniclabs.spice.model.SearchAndListResponse
+import com.medtroniclabs.spice.model.medicalreview.AddMemberRegRequest
 import com.medtroniclabs.spice.model.medicalreview.CreateLabourDeliveryRequest
 import com.medtroniclabs.spice.model.medicalreview.CreateLabourDeliveryResponse
 import com.medtroniclabs.spice.model.medicalreview.CreateUnderFiveYearsRequest
@@ -241,5 +242,9 @@ class ApiHelperImpl @Inject constructor(private val apiService: ApiService) : Ap
 
     override suspend fun createMedicalReviewLabourDelivery(request: CreateLabourDeliveryRequest): Response<APIResponse<CreateLabourDeliveryResponse>> {
         return apiService.createMedicalReviewForLaborDelivery(request)
+    }
+
+    override suspend fun addNewMember(request: AddMemberRegRequest): Response<APIResponse<String>> {
+        return apiService.addNewMember(request)
     }
 }

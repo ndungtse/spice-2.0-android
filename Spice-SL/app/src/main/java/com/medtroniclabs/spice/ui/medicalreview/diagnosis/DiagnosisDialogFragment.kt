@@ -434,7 +434,7 @@ class DiagnosisDialogFragment : DialogFragment(), View.OnClickListener, Diagnosi
             MedicalReviewTypeEnums.UnderTwoMonths.name, MedicalReviewTypeEnums.UnderFiveYears.name -> {
                 binding.tvSelectedDiseaseConditionLbl.gone()
                 binding.tvSelectedDiseaseCategoryLbl.gone()
-                binding.etOtherDiagnosisNotes.gone()
+                binding.etOtherDiagnosisNotes.visible()
                 binding.llFamilyRoot.gone()
             }
         }

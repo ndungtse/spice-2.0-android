@@ -50,6 +50,7 @@ import com.medtroniclabs.spice.model.PatientsDataModel
 import com.medtroniclabs.spice.model.ReferralData
 import com.medtroniclabs.spice.model.ReferralDetailRequest
 import com.medtroniclabs.spice.model.SearchAndListResponse
+import com.medtroniclabs.spice.model.medicalreview.AddMemberRegRequest
 import com.medtroniclabs.spice.model.medicalreview.CreateUnderFiveYearsRequest
 import com.medtroniclabs.spice.model.medicalreview.CreateLabourDeliveryRequest
 import com.medtroniclabs.spice.model.medicalreview.CreateLabourDeliveryResponse
@@ -197,4 +198,8 @@ interface ApiService {
 
     @POST("spice-service/medical-review/birth-history")
     suspend fun getBirthHistoryDetails(@Body request: BirthHistoryRequest): Response<APIResponse<BirthHistoryResponse>>
+
+    @POST("spice-service/household/create-member")
+    suspend fun addNewMember(@Body request: AddMemberRegRequest): Response<APIResponse<String>>
+
 }

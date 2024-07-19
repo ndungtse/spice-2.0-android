@@ -52,22 +52,9 @@ class ExaminationSummaryAdapter() :
     }
 
     private fun bindExaminationList(diseaseInfo: ExaminationResult, holder: DiseaseViewHolder) {
-        var symptoms = diseaseInfo.symptomsTitle
-
-        when (symptoms) {
-            Cough -> symptoms = CoughOrDifficultBreathing
-            Anaemia -> symptoms = MalnutritionOrAnaemia
-            Hiv -> symptoms = HivAndAids
-        }
-
-        val formattedSymptoms =
-            if (!symptoms.isNullOrEmpty()) {
-                "${diseaseInfo.index}.${symptoms[0].uppercaseChar()}${symptoms.substring(1)}  :"
-            } else {
-                "${diseaseInfo.index}. "
-            }
+        val symptoms = diseaseInfo.symptomsTitle
         holder.apply {
-            titleTextView.text = formattedSymptoms
+            titleTextView.text = symptoms
             linearLayout.removeAllViews()  // Clear previous views
             diseaseInfo.description?.forEach { description ->
                 val textView = AppCompatTextView(itemView.context).apply {

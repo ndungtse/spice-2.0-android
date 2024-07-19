@@ -33,8 +33,6 @@ import com.medtroniclabs.spice.model.medicalreview.SummaryDetails
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
-import com.medtroniclabs.spice.ui.medicalreview.abovefiveyears.PresentingComplaintsViewModel
-import com.medtroniclabs.spice.ui.medicalreview.undertwomonths.fragment.UnderTwoMonthsTreatmentSummaryFragment
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import com.medtroniclabs.spice.ui.mypatients.adapter.ExaminationSummaryAdapter
@@ -43,7 +41,6 @@ class UnderFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
 
     private lateinit var binding: FragmentUnderFiveYearsTreatmentSummarryBinding
     private var datePickerDialog: DatePickerDialog? = null
-    private val presentingComplaintsViewModel: PresentingComplaintsViewModel by activityViewModels()
     private val summaryViewModel: UnderFiveYearTreatmentSummaryViewModel by activityViewModels()
     private lateinit var examinationSummaryAdapter: ExaminationSummaryAdapter
 
@@ -159,7 +156,7 @@ class UnderFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
                     ArrayList(list.map { it.diseaseCategory }.distinct())
                 )
             } ?: requireContext().getString(R.string.empty__)
-        binding.tvPrescription.text= details?.prescriptions.let { CommonUtils.createPrescription(it,requireContext()) }?.takeIf { it.isNotEmpty() }
+        binding.tvPrescription.text= details.prescriptions.let { CommonUtils.createPrescription(it,requireContext()) }?.takeIf { it.isNotEmpty() }
             ?: requireContext().getString(R.string.empty__)
         examinationList(details)
     }
@@ -168,7 +165,16 @@ class UnderFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
         val diseaseList = details.examination?.entries?.mapIndexed { index, (key, value) ->
             ExaminationResult(index + 1, key, convertExaminationDetailsToString(value))
         } ?: emptyList()
-        examinationSummaryAdapter.updateData(diseaseList)
+        val updatedExaminationResults: List<ExaminationResult>?
+        updatedExaminationResults = diseaseList.map { result ->
+            val matchingName = details.examinationDisplayNames?.get(result.symptomsTitle)
+            if (matchingName != null) {
+                result.copy(symptomsTitle = matchingName)
+            } else {
+                result
+            }
+        }
+        updatedExaminationResults.let { examinationSummaryAdapter.updateData(it) }
         if (diseaseList.isEmpty()) {
             binding.rvExaminationList.invisible()
             binding.tvExaminationEmptyValue.visible()

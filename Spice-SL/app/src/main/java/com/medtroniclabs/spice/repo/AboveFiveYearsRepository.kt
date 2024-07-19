@@ -125,7 +125,6 @@ class AboveFiveYearsRepository @Inject constructor(
         prescriptionEncounterId: String?
     ): AboveFiveYearsSubmitRequest? {
         return details.patientId?.let { patientId ->
-                details.houseHoldId?.let { hhId ->
                     details.memberId?.let { memberId ->
                         AboveFiveYearsSubmitRequest(
                             id = prescriptionEncounterId,
@@ -141,7 +140,7 @@ class AboveFiveYearsRepository @Inject constructor(
                                 provenance = ProvanceDto(),
                                 latitude = lastLocation?.latitude ?: 0.0,
                                 longitude = lastLocation?.longitude ?: 0.0,
-                                householdId = hhId,
+                                householdId = details.houseHoldId,
                                 memberId = memberId,
                                 startTime = DateUtils.getCurrentDateAndTime(
                                     DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
@@ -152,7 +151,6 @@ class AboveFiveYearsRepository @Inject constructor(
                                 referred = true
                             )
                         )
-                    }
                 }
         }
     }

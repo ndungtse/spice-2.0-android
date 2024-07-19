@@ -17,7 +17,8 @@ data class SummaryDetails(
     val examination: Map<String, List<ExaminationDetail>>?,
     val patientStatus:String?,
     val diagnosis: ArrayList<DiagnosisDiseaseModel>? = null,
-    val prescriptions: List<Prescription>? = null
+    val prescriptions: List<Prescription>? = null,
+    var examinationDisplayNames:Map<String,String>?=null
 )
 
 data class ExaminationDetail(

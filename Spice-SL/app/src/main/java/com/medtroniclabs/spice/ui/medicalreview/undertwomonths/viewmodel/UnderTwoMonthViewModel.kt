@@ -68,7 +68,7 @@ class UnderTwoMonthViewModel @Inject constructor(
         presentingComplaints: String,
         prescriptionEncounterId: String?
     ) {
-        details.houseHoldId?.let { hhId ->
+        details.houseHoldId.let { hhId ->
             details.memberId?.let { memberId ->
                 patientId?.let { selectedPatientId ->
                     viewModelScope.launch(dispatcherIO) {
@@ -93,7 +93,7 @@ class UnderTwoMonthViewModel @Inject constructor(
     }
 
     private fun createUnderTwoMonthsEncounter(
-        householdId: String,
+        householdId: String?,
         patientId: String,
         memberId: String,
         prescriptionEncounterId: String?
@@ -438,7 +438,7 @@ class UnderTwoMonthViewModel @Inject constructor(
             val householdId = details.houseHoldId
             val villageId = details.villageId
 
-            if (patientId != null && memberId != null && householdId != null && villageId != null) {
+            if (patientId != null && memberId != null  && villageId != null) {
                 val convertedNextVisitDate = DateUtils.convertDateTimeToDate(
                     nextVisitDate,
                     DateUtils.DATE_ddMMyyyy,

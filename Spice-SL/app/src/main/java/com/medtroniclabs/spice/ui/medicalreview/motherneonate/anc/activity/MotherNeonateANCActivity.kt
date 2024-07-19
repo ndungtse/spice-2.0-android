@@ -528,7 +528,7 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
     private fun submitRequest(prescriptionEncounterId: String?) {
         createMotherNeonateRequest(prescriptionEncounterId)
         if (connectivityManager.isNetworkAvailable()) {
-            viewModel.createMotherNeonate(patientViewModel.encounterId)
+            viewModel.createMotherNeonate(patientViewModel.encounterId,patientViewModel.getPatientHouseholdId())
         } else {
             showErrorDialogue(
                 getString(R.string.error), getString(R.string.no_internet_error),

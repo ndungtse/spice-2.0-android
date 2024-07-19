@@ -71,7 +71,7 @@ class MetaRepository @Inject constructor(
                             workflowNames.addAll(clinicalIds)
                         }
 
-                        if (CommonUtils.isChw()) {
+//                        if (CommonUtils.isChw()) {
                             val formsResponse =
                                 async { apiHelper.getForms(FormRequest(workflowNames)) }.await()
                             if (formsResponse.isSuccessful && formsResponse.body()?.status == true) {
@@ -85,7 +85,7 @@ class MetaRepository @Inject constructor(
                             } else {
                                 return@with Resource(state = ResourceState.ERROR)
                             }
-                        }
+//                        }
                         if (meta.isNotEmpty()) {
                             val metadataResponse =
                                 async { apiHelper.getFormMetadata(FormMetaRequest(meta)) }.await()

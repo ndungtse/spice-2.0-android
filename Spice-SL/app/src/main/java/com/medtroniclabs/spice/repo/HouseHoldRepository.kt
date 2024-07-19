@@ -3,6 +3,7 @@ package com.medtroniclabs.spice.repo
 import androidx.lifecycle.LiveData
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.SecuredPreference
+import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.data.LocalSpinnerResponse
 import com.medtroniclabs.spice.data.model.HouseholdCardDetail
 import com.medtroniclabs.spice.data.offlinesync.model.HouseHoldMember
@@ -18,6 +19,7 @@ import com.medtroniclabs.spice.db.local.RoomHelper
 import com.medtroniclabs.spice.db.response.HouseHoldEntityWithMemberCount
 import com.medtroniclabs.spice.db.response.HouseholdMemberCount
 import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration
+import com.medtroniclabs.spice.model.medicalreview.AddMemberRegRequest
 import com.medtroniclabs.spice.network.ApiHelper
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.network.resource.ResourceState
@@ -188,5 +190,18 @@ class HouseHoldRepository @Inject constructor(
 
     fun getAllHouseHoldMembersLiveData(hhId: Long) : LiveData<List<HouseholdMemberEntity>> {
         return roomHelper.getAllHouseHoldMembersLiveData(hhId)
+    }
+    suspend fun addNewMember(request: AddMemberRegRequest): Resource<String> {
+        return try{
+            val response = apiHelper.addNewMember(request)
+            if (response.isSuccessful) {
+                Resource(ResourceState.SUCCESS, response.body()?.entity)
+            } else {
+                val errorMessage = StringConverter.getErrorMessage(response.errorBody())
+                Resource(state = ResourceState.ERROR, message = errorMessage)
+            }
+        } catch (e: Exception) {
+            Resource(ResourceState.ERROR, message = e.localizedMessage)
+        }
     }
 }

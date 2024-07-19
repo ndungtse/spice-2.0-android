@@ -7,9 +7,13 @@ import androidx.lifecycle.viewModelScope
 import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.appextensions.postSuccess
+import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.db.entity.HouseholdEntity
 import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
+import com.medtroniclabs.spice.db.entity.VillageEntity
 import com.medtroniclabs.spice.di.IoDispatcher
+import com.medtroniclabs.spice.mappingkey.MemberRegistration
+import com.medtroniclabs.spice.model.medicalreview.AddMemberRegRequest
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.repo.HouseHoldRepository
 import com.medtroniclabs.spice.repo.HouseholdMemberRepository
@@ -30,6 +34,9 @@ class MemberRegistrationViewModel @Inject constructor(
     var startAssessment: Boolean? = null
     val memberDetailsLiveData = MutableLiveData<Resource<HouseholdMemberEntity>>()
     val formLayoutsLiveData = MutableLiveData<Resource<String>>()
+    var medicalReviewFlow=false
+    val addnewMemberReq=MutableLiveData<Resource<String>>()
+    var villageDetails:List<VillageEntity>?= null
 
     fun getFormData(formType: String) {
         viewModelScope.launch(dispatcherIO) {
@@ -84,5 +91,26 @@ class MemberRegistrationViewModel @Inject constructor(
         }
     }
 
+    fun addNewMember(map: HashMap<String, Any>?) {
+        if (map == null) return
+        val villageId = map[MemberRegistration.villageId]?.toString()?.toIntOrNull()
+        val addMemberRegRequest = AddMemberRegRequest().apply {
+            name = map[MemberRegistration.name]?.toString().orEmpty()
+            this.villageId = villageId?.toString().orEmpty()
+            village = villageId?.let { id ->
+                villageDetails?.find { it.id == id.toLong() }?.name.orEmpty()
+            }.orEmpty()
+            dateOfBirth = map[MemberRegistration.dateOfBirth]?.toString().orEmpty()
+            gender = map[MemberRegistration.gender]?.toString().orEmpty()
+            phoneNumber = map[MemberRegistration.phoneNumber]?.toString().orEmpty()
+            phoneNumberCategory = map[MemberRegistration.phoneNumberCategory]?.toString().orEmpty()
+            provenance = ProvanceDto()
+            isPregnant = map[MemberRegistration.isPregnant]?.toString().toBoolean()
+        }
+        viewModelScope.launch(dispatcherIO) {
+            addnewMemberReq.postLoading()
+            addnewMemberReq.postValue(houseHoldRepository.addNewMember(addMemberRegRequest))
+        }
+    }
 
 }
