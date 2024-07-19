@@ -15,6 +15,7 @@ data class AssessmentDetails(
     val householdId: String?, // Household - FHIR id
     var isReferred: Boolean = false,
     val createdAt: Long,
+    val followUpId: Long? = null,
     var latitude: Double = 0.0,
     var longitude: Double = 0.0,
 

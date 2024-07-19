@@ -202,7 +202,7 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
 
                 }
             } else { // Different user login so clear last synced at
-                SecuredPreference.remove(SecuredPreference.EnvironmentKey.LAST_SYNCED_AT.name)
+                SecuredPreference.remove(SecuredPreference.EnvironmentKey.SERVER_LAST_SYNCED.name)
                 viewModel.doLogin(userName, password)
             }
         } else {

@@ -82,6 +82,7 @@ class FollowUpDialogFragment : DialogFragment() {
         viewModel.selectedFollowUpDetail?.let { details ->
             with(binding) {
                 tvTitle.text = getPatientName(details.name, details.dateOfBirth, details.gender)
+                btnCall.isEnabled = !details.isWrongNumber
                 tvReasonText.text = details.reason ?: getString(R.string.hyphen_symbol)
                 tvPatientStatusText.text = requireContext().getPatientStatus(details.patientStatus)
                     ?: getString(R.string.hyphen_symbol)

@@ -66,7 +66,8 @@ class AssessmentRMNCHNeonateViewModel @Inject constructor(
         householdId: Long,
         motherDetailMap: HashMap<String, Any>,
         memberDetail: AssessmentMemberDetails,
-        childBioDataDetail: List<HouseholdMemberEntity>?
+        childBioDataDetail: List<HouseholdMemberEntity>?,
+        followUpId: Long? = null
     ) {
         viewModelScope.launch(dispatcherIO) {
             if (memberMap != null) {
@@ -76,7 +77,7 @@ class AssessmentRMNCHNeonateViewModel @Inject constructor(
                     null,
                     memberDetail.patientId
                 )
-                savePNCDetails(motherDetailMap, childDetailMap, memberDetail,childMemberId)
+                savePNCDetails(motherDetailMap, childDetailMap, memberDetail,childMemberId, followUpId = followUpId)
             } else {
                 childBioDataDetail?.let { list ->
                     if (list.isNotEmpty()) {
@@ -85,7 +86,8 @@ class AssessmentRMNCHNeonateViewModel @Inject constructor(
                             motherDetailMap,
                             childDetailMap,
                             memberDetail,
-                            childDetail.id
+                            childDetail.id,
+                            followUpId = followUpId
                         )
                     }
                 }
@@ -97,7 +99,8 @@ class AssessmentRMNCHNeonateViewModel @Inject constructor(
         motherDetailMap: HashMap<String, Any>,
         childDetailMap: HashMap<String, Any>,
         memberDetail: AssessmentMemberDetails,
-        childMemberId: Long
+        childMemberId: Long,
+        followUpId: Long? = null
     ) {
         val groupMap = HashMap<String, Any>()
         groupMap[RMNCH.PNC] = motherDetailMap[RMNCH.PNC] as Any
@@ -116,7 +119,8 @@ class AssessmentRMNCHNeonateViewModel @Inject constructor(
                  referralResult,
                  null,
                  otherDetails,
-                 childMemberId
+                 childMemberId,
+                 followUpId = followUpId
              )
          )
     }

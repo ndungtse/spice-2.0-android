@@ -58,7 +58,13 @@ data class HouseHoldMember(
     val motherPatientId: String? = null,
 
     @ColumnInfo(name = "isPregnant")
-    val isPregnant: Boolean
+    val isPregnant: Boolean,
+
+    val isDeceased: Boolean = false,
+
+    val version: String? = null,
+
+    val lastUpdated: String? = null
 ) {
 
     @Ignore
@@ -83,7 +89,10 @@ data class HouseHoldMember(
             patientId = this.patientId,
             parentId = this.motherPatientId,
             isPregnant = this.isPregnant,
-            villageId = this.villageId
+            villageId = this.villageId,
+            isDeceased = this.isDeceased,
+            version = this.version,
+            lastUpdated = this.lastUpdated
         ).apply {
             fhirId = this@HouseHoldMember.id.toString()
             sync_status = status

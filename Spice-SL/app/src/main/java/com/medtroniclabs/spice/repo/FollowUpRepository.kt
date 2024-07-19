@@ -210,6 +210,7 @@ class FollowUpRepository @Inject constructor(
 
     private fun getNewFollowUp(followUp: FollowUp, type: String, status: String, referredSiteId: String? = null, nextVisitDate: String? = null): FollowUp {
         followUp.isCompleted = true
+        val updateAt = followUp.updatedAt + 100 // To handle concurrency
         return followUp.copy(
             referenceId = 0,
             id = null,
@@ -223,7 +224,8 @@ class FollowUpRepository @Inject constructor(
             encounterDate = System.currentTimeMillis().convertToUtcDateTime(),
             nextVisitDate = nextVisitDate,
             referredSiteId = referredSiteId,
-            calledAt = null
+            calledAt = null,
+            updatedAt = updateAt
         )
     }
 

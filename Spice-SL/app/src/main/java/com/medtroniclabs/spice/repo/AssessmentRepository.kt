@@ -31,7 +31,8 @@ class AssessmentRepository @Inject constructor(
         referralResult: Pair<String?, ArrayList<String>>,
         lastLocation: Location?,
         otherDetails: HashMap<String, Any>?,
-        childMemberId: Long
+        childMemberId: Long,
+        followUpId: Long? =null
     ): Resource<AssessmentEntity> {
         return try {
             val motherAssessmentEntity = getAssessmentEntity(
@@ -40,7 +41,8 @@ class AssessmentRepository @Inject constructor(
                 otherDetails,
                 referralResult,
                 lastLocation,
-                RMNCH.pnc_mother_key
+                RMNCH.pnc_mother_key,
+                followUpId = followUpId
             )
             motherAssessmentEntity.id = roomHelper.saveAssessment(motherAssessmentEntity)
             val childMemberDetail = roomHelper.getAssessmentMemberDetails(childMemberId)
@@ -50,7 +52,8 @@ class AssessmentRepository @Inject constructor(
                 null,
                 Pair(ReferralStatus.Recovered.name, ArrayList()),
                 lastLocation,
-                RMNCH.pnc_neonate_key
+                RMNCH.pnc_neonate_key,
+                followUpId = followUpId
             )
             roomHelper.saveAssessment(childAssessmentEntity)
             Resource(state = ResourceState.SUCCESS, data = motherAssessmentEntity)
@@ -65,7 +68,8 @@ class AssessmentRepository @Inject constructor(
         otherDetails: HashMap<String, Any>?,
         referralResult: Pair<String?, ArrayList<String>>,
         lastLocation: Location?,
-        menuId: String
+        menuId: String,
+        followUpId: Long?
     ): AssessmentEntity {
 
         val assessmentEntity = AssessmentEntity(
@@ -81,6 +85,7 @@ class AssessmentRepository @Inject constructor(
             isReferred = getReferralStatus(referralResult.first),
             referralStatus = getReferralResult(referralResult.first),
             referredReason = referralResult.second,
+            followUpId = followUpId,
             latitude = lastLocation?.latitude ?: 0.0,
             longitude = lastLocation?.longitude ?: 0.0
         )
@@ -95,7 +100,8 @@ class AssessmentRepository @Inject constructor(
         menuId: String?,
         referralResult: Pair<String?, ArrayList<String>>?,
         lastLocation: Location?,
-        otherDetails: HashMap<String, Any>? = null
+        otherDetails: HashMap<String, Any>? = null,
+        followUpId: Long? = null
     ): Resource<AssessmentEntity> {
         return try {
             val assessmentEntity = menuId?.let { menu ->
@@ -112,6 +118,7 @@ class AssessmentRepository @Inject constructor(
                     isReferred = getReferralStatus(referralResult?.first),
                     referralStatus = getReferralResult(referralResult?.first),
                     referredReason = referralResult?.second,
+                    followUpId = followUpId,
                     latitude = lastLocation?.latitude ?: 0.0,
                     longitude = lastLocation?.longitude ?: 0.0
                 )

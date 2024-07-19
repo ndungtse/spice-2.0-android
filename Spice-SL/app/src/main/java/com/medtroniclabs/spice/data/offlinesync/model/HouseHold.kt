@@ -58,6 +58,10 @@ data class HouseHold(
 
     @ColumnInfo(name = "updated_at")
     val updatedAt: Long,
+
+    val version: String? = null,
+
+    val lastUpdated: String? = null
 ) {
     @Ignore
     var provenance: ProvanceDto = ProvanceDto(modifiedDate = updatedAt.convertToUtcDateTime())
@@ -79,7 +83,9 @@ data class HouseHold(
             isOwnedATreatedBedNet = this.ownedTreatedBedNet,
             bedNetCount = this.bedNetCount,
             latitude = this.latitude,
-            longitude = this.longitude).apply {
+            longitude = this.longitude,
+            version = this.version,
+            lastUpdated = this.lastUpdated).apply {
                 fhirId = this@HouseHold.id.toString()
                 sync_status = status
         }

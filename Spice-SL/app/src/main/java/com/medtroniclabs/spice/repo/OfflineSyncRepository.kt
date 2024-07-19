@@ -67,6 +67,7 @@ class OfflineSyncRepository @Inject constructor(
                     longitude = entity.longitude,
                     visitNumber = getVisitCount(entity)
                 ),
+                followUpId = entity.followUpId,
                 updatedAt = entity.createdAt
             )
         }
@@ -91,8 +92,8 @@ class OfflineSyncRepository @Inject constructor(
 
     suspend fun getInsertOrUpdateLocalData(liveData: MutableLiveData<Resource<Boolean>>) {
         // Check and Delete local data
-        val longSyncedAt = SecuredPreference.getLong(SecuredPreference.EnvironmentKey.LAST_SYNCED_AT.name)
-        if (longSyncedAt == 0L) {
+        val lastSyncedAt = SecuredPreference.getString(SecuredPreference.EnvironmentKey.SERVER_LAST_SYNCED.name)
+        if (lastSyncedAt == null) {
             roomHelper.deleteAllHouseholds()
             roomHelper.deleteAllHouseholdMembers()
             roomHelper.deleteAllPregnancyDetails()
@@ -100,7 +101,7 @@ class OfflineSyncRepository @Inject constructor(
 
             val villageIds = roomHelper.getAllVillageIds()
             // Fetch Synced Data
-            val isInitialDataSuccess = fetchSyncedData(villageIds, longSyncedAt)
+            val isInitialDataSuccess = fetchSyncedData(villageIds, null)
 
             // Need to check this to be added for downloading error and inprogress data
             /* if (!fetchUnSyncedData()) {
@@ -125,9 +126,8 @@ class OfflineSyncRepository @Inject constructor(
         }
     }
 
-    suspend fun fetchSyncedData(villageIds: List<Long> = listOf(), longSyncedAt: Long = 0L): Boolean {
-        val lastSyncedAt = if (longSyncedAt != 0L) longSyncedAt.convertToUtcDateTime() else null
-        val syncedResponse = getSyncedEntities(villageIds, lastSyncedAt)
+    suspend fun fetchSyncedData(villageIds: List<Long> = listOf(), serverLastSyncedAt: String? = null): Boolean {
+        val syncedResponse = getSyncedEntities(villageIds, serverLastSyncedAt)
         if (syncedResponse.isSuccessful) {
             val response = syncedResponse.body()?.string()
             response?.let {
@@ -169,7 +169,6 @@ class OfflineSyncRepository @Inject constructor(
         }
 
         // Insert Pregnancy Information
-        roomHelper.deleteAllPregnancyDetails()
         requestInitialDownload.pregnancyInfos?.forEach {
             roomHelper.insertUpdatePregnancyDetailFromBE(it)
         }
@@ -182,10 +181,8 @@ class OfflineSyncRepository @Inject constructor(
             SecuredPreference.putFollowUpCriteria(followUpCriteria)
         }
 
-        SecuredPreference.putLong(
-            SecuredPreference.EnvironmentKey.LAST_SYNCED_AT.name,
-            System.currentTimeMillis()
-        )
+        SecuredPreference.putString(SecuredPreference.EnvironmentKey.SERVER_LAST_SYNCED.name,
+            requestInitialDownload.lastSyncTime)
     }
 
     private suspend fun fetchUnSyncedData(): Boolean {

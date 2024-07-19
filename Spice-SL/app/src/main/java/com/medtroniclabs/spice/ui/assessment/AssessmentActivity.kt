@@ -234,7 +234,7 @@ class AssessmentActivity : BaseActivity() {
     }
 
     private fun finishSuccessFlow() {
-        val intent = if (viewModel.followUpId != -1L)
+        val intent = if (viewModel.followUpId != null)
             Intent(this, FollowUpMyPatientActivity::class.java)
         else
             Intent(this, HouseholdSearchActivity::class.java)
@@ -246,9 +246,13 @@ class AssessmentActivity : BaseActivity() {
 
     private fun getIntentValue() {
         viewModel.selectedHouseholdMemberId = intent.getLongExtra(DefinedParams.MemberID, -1L)
-        viewModel.followUpId = intent.getLongExtra(DefinedParams.FollowUpId, -1L)
         viewModel.menuId = intent.getStringExtra(DefinedParams.MenuId)
         viewModel.workflowName = intent.getStringExtra(MenuConstants.WorkFlowName)
+        val followUpId = intent.getLongExtra(DefinedParams.FollowUpId, -1L)
+        if (followUpId != -1L)
+            viewModel.followUpId = followUpId
+        else
+            viewModel.followUpId = null
     }
 
     fun replaceAssessmentRMNCHNeonateFragment() {

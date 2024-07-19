@@ -40,5 +40,12 @@ data class HouseholdMemberEntity(
 
     var isPregnant: Boolean? = null,
 
-    var parentId: String? = null
+    var parentId: String? = null,
+
+    val isDeceased: Boolean = false,
+
+    val version: String? = null,
+
+    val lastUpdated: String? = null,
+
 ) : BaseEntity()

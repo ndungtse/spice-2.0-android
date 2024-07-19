@@ -30,11 +30,11 @@ object SecuredPreference {
         IS_UNDER_TWO_MONTHS_LOADED,
         IS_LABOUR_DELIVERY_LOADED,
         OFFLINE_SYNC_REQUEST_ID,
-        LAST_SYNCED_AT,
         FOLLOW_UP_CRITERIA,
         DEFAULT_SITE_ID,
         IS_UNDER_FIVE_YEARS_LOADED,
-        VILLAGE_IDS
+        VILLAGE_IDS,
+        SERVER_LAST_SYNCED
     }
 
 
@@ -393,6 +393,7 @@ object SecuredPreference {
             getStringArray(EnvironmentKey.OFFLINE_SYNC_REQUEST_ID.name)
         val followUpCriteria = getString(EnvironmentKey.FOLLOW_UP_CRITERIA.name)
         val villageIds = getString(EnvironmentKey.VILLAGE_IDS.name)
+        val serverLastSyncedTime = getString(EnvironmentKey.SERVER_LAST_SYNCED.name)
         try {
             preferences.edit().clear().apply()
         } catch (e: Exception) {
@@ -406,6 +407,7 @@ object SecuredPreference {
             putString(EnvironmentKey.FOLLOW_UP_CRITERIA.name, followUpCriteria)
             requestIds?.let { saveStringArray(EnvironmentKey.OFFLINE_SYNC_REQUEST_ID.name, it) }
             putString(EnvironmentKey.VILLAGE_IDS.name, villageIds)
+            putString(EnvironmentKey.SERVER_LAST_SYNCED.name, serverLastSyncedTime)
         }
     }
 

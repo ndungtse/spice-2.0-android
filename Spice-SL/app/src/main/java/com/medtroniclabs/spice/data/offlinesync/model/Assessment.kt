@@ -12,5 +12,6 @@ data class Assessment(
     val referredReasons: String? = null,
     val summary: JsonElement?,
     val encounter: AssessmentEncounter,
+    val followUpId: Long? = null,
     val updatedAt: Long
 )

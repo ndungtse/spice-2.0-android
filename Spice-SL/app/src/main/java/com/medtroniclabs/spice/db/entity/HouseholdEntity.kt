@@ -45,5 +45,9 @@ data class HouseholdEntity(
 
     @ColumnInfo("longitude")
     var longitude: Double = 0.0,
+
+    val version: String? = null,
+
+    val lastUpdated: String? = null,
 ): BaseEntity()
 

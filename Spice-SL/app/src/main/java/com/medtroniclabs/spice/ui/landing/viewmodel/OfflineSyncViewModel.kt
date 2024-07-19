@@ -3,12 +3,8 @@ package com.medtroniclabs.spice.ui.landing.viewmodel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.medtroniclabs.spice.appextensions.convertToLocalDateTime
+import com.medtroniclabs.spice.common.DateUtils.DATE_TIME_DISPLAY_FORMAT
 import com.medtroniclabs.spice.common.SecuredPreference
-import com.medtroniclabs.spice.data.offlinesync.utils.OfflineConstant.ASSESSMENTS
-import com.medtroniclabs.spice.data.offlinesync.utils.OfflineConstant.FOLLOWUPS
-import com.medtroniclabs.spice.data.offlinesync.utils.OfflineConstant.HOUSE_HOLDS
-import com.medtroniclabs.spice.data.offlinesync.utils.OfflineConstant.HOUSE_HOLD_MEMBERS
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.model.landing.OfflineSyncEntityDetail
 import com.medtroniclabs.spice.network.utils.ConnectivityManager
@@ -21,6 +17,9 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.time.ZoneId
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 @HiltViewModel
@@ -67,10 +66,18 @@ class OfflineSyncViewModel @Inject constructor(
     }
 
     private fun getLastSyncedAt() {
-        val longSyncedAt =
-            SecuredPreference.getLong(SecuredPreference.EnvironmentKey.LAST_SYNCED_AT.name)
-        val displayLastSyncedAt = if (longSyncedAt != 0L) longSyncedAt.convertToLocalDateTime() else "--"
-        lastSyncedAtLiveData.postValue(displayLastSyncedAt)
+        val utcLastSyncedAt =
+            SecuredPreference.getString(SecuredPreference.EnvironmentKey.SERVER_LAST_SYNCED.name)
+
+        if (utcLastSyncedAt != null) {
+            val zonedDateTime = ZonedDateTime.parse(utcLastSyncedAt)
+            val currentZoneDateTime = zonedDateTime.withZoneSameInstant(ZoneId.systemDefault())
+            val formatter = DateTimeFormatter.ofPattern(DATE_TIME_DISPLAY_FORMAT)
+            val formattedDateTime = currentZoneDateTime.format(formatter)
+            lastSyncedAtLiveData.postValue(formattedDateTime)
+        } else {
+            lastSyncedAtLiveData.postValue("--")
+        }
     }
 
     private fun updateSyncedCount(index: Int, unSyncedCount: Int) {

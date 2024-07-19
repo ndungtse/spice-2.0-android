@@ -12,7 +12,7 @@ data class FollowUp(
     @PrimaryKey(autoGenerate = true)
     val referenceId: Long = 0,
     val id: Long?,
-    val householdId: String,
+    val householdId: String?,
     val memberId: String,
     val patientId: String,
     val encounterId: String,

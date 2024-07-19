@@ -8,5 +8,6 @@ data class ResponseInitialDownload(
     val members: List<HouseHoldMember>?,
     val pregnancyInfos: List<PregnancyDetail>?,
     val followUps: List<FollowUp>?,
-    val followUpCriteria: FollowUpCriteria?
+    val followUpCriteria: FollowUpCriteria?,
+    val lastSyncTime: String,
 )

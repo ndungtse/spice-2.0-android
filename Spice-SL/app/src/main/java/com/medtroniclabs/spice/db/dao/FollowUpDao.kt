@@ -63,13 +63,13 @@ interface FollowUpDao {
     @Query("SELECT COUNT(referenceId) FROM FollowUp where syncStatus =:syncStatus")
     suspend fun getUnSyncedCount(syncStatus: String = OfflineSyncStatus.NotSynced.name): Int
 
-    @Query("UPDATE FollowUp SET isCompleted = 1, updatedAt = :updateAt WHERE memberId = :fhirId AND id != :id  AND " +
+    @Query("UPDATE FollowUp SET isCompleted = 1, updatedAt = :updateAt WHERE memberId = :fhirId AND id != :id AND type = :type AND " +
             "CASE WHEN :type = 'HH_VISIT' THEN (encounterType = :encounterType AND reason= :reason) ELSE encounterType= :encounterType END")
     suspend fun updateOtherDuplicateTickets(id: Long, fhirId: String, type: String, encounterType: String?=null, reason: String? = null, updateAt: Long = System.currentTimeMillis())
 
-    @Query("UPDATE FollowUp SET updatedAt = :updateAt, calledAt = :updateAt WHERE memberId = :fhirId AND id != :id  AND " +
+    @Query("UPDATE FollowUp SET updatedAt = :updateAt, calledAt = :updateAt, syncStatus = :syncStatus WHERE memberId = :fhirId AND id != :id AND type = :type AND " +
             "CASE WHEN :type = 'HH_VISIT' THEN (encounterType = :encounterType AND reason= :reason) ELSE encounterType= :encounterType END")
-    suspend fun updateOnTreatmentStatus(id: Long, fhirId: String, type: String,  updateAt:Long, encounterType: String?=null, reason: String? = null)
+    suspend fun updateOnTreatmentStatus(id: Long, fhirId: String, type: String,  updateAt:Long, encounterType: String?=null, reason: String? = null, syncStatus: String = OfflineSyncStatus.NotSynced.name)
 
     @Query("UPDATE FollowUp SET isWrongNumber = 1, syncStatus = :syncStatus, isCompleted = CASE WHEN type = 'HH_VISIT' THEN 0 ELSE 1 END WHERE memberId = :fhirId AND id != :id ")
     suspend fun updateOtherFollowUpForWrongNumber(id: Long, fhirId: String, syncStatus: String = OfflineSyncStatus.NotSynced.name)

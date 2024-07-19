@@ -91,7 +91,7 @@ class ScheduledSyncWork @AssistedInject constructor(
     private suspend fun fetchSyncedData(): Boolean {
         SecuredPreference.remove(SecuredPreference.EnvironmentKey.OFFLINE_SYNC_REQUEST_ID.name)
         val villageIds = roomHelper.getAllVillageIds()
-        val lastSyncedAt = SecuredPreference.getLong(SecuredPreference.EnvironmentKey.LAST_SYNCED_AT.name)
+        val lastSyncedAt = SecuredPreference.getString(SecuredPreference.EnvironmentKey.SERVER_LAST_SYNCED.name)
         return offlineSyncRepository.fetchSyncedData(villageIds, lastSyncedAt)
     }
 }

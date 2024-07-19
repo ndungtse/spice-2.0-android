@@ -81,9 +81,9 @@ class ResourceLoadingViewModel @Inject constructor(
                     householdsLiveData.postError()
                     return false
                 }
-                SecuredPreference.remove(SecuredPreference.EnvironmentKey.LAST_SYNCED_AT.name)
+                SecuredPreference.remove(SecuredPreference.EnvironmentKey.SERVER_LAST_SYNCED.name)
             } else if (newlyAddedVillage.isNotEmpty()) {
-                if (!offlineSyncRepository.fetchSyncedData(newlyAddedVillage.toList(), 0L)) {
+                if (!offlineSyncRepository.fetchSyncedData(newlyAddedVillage.toList())) {
                     householdsLiveData.postError()
                     return false
                 }

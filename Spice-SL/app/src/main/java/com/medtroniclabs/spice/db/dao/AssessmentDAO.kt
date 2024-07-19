@@ -28,7 +28,7 @@ interface AssessmentDAO {
     suspend fun getSymptomListByType(type: String): List<SignsAndSymptomsEntity>
 
     @Query(
-        "SELECT a.id, a.villageId, a.assessmentType, a.assessmentDetails, a.patientId, a.referralStatus, a.referredReason, a.otherDetails, a.memberId, a.householdId, a.isReferred, a.created_at AS createdAt, a.latitude, a.longitude, " +
+        "SELECT a.id, a.villageId, a.assessmentType, a.assessmentDetails, a.patientId, a.referralStatus, a.referredReason, a.otherDetails, a.memberId, a.householdId, a.isReferred, a.created_at AS createdAt, a.followUpId, a.latitude, a.longitude, " +
                 "pd.ancVisitNo, pd.pncVisitNo, pd.childVisitNo " +
                 "FROM Assessment AS a LEFT JOIN PregnancyDetail AS pd ON a.patientId = pd.patientId " +
                 "WHERE a.sync_status=:status AND a.patientId =:patientId AND a.memberId IS NULL"
@@ -39,7 +39,7 @@ interface AssessmentDAO {
     ): List<AssessmentDetails>
 
     @Query(
-        "SELECT a.id, a.villageId, a.assessmentType, a.assessmentDetails, a.patientId, a.referralStatus, a.referredReason, a.otherDetails, a.memberId, a.householdId, a.isReferred, a.created_at AS createdAt, a.latitude, a.longitude," +
+        "SELECT a.id, a.villageId, a.assessmentType, a.assessmentDetails, a.patientId, a.referralStatus, a.referredReason, a.otherDetails, a.memberId, a.householdId, a.isReferred, a.created_at AS createdAt, a.followUpId, a.latitude, a.longitude," +
                 "pd.ancVisitNo, pd.pncVisitNo, pd.childVisitNo " +
                 "FROM Assessment AS a LEFT JOIN PregnancyDetail AS pd ON a.patientId = pd.patientId " +
                 "WHERE a.memberId IS NOT NULL AND a.householdId IS NOT NULL AND a.sync_status=:status"

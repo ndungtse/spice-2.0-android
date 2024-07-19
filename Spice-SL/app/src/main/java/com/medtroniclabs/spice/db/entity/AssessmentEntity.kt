@@ -20,6 +20,7 @@ data class AssessmentEntity(
     var isReferred: Boolean = false,
     val referralStatus: ReferralStatus,
     val referredReason: ArrayList<String>?= null,
+    val followUpId: Long? = null,
     var latitude: Double = 0.0,
     var longitude: Double = 0.0,
 ): BaseEntity()
