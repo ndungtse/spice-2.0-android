@@ -41,7 +41,7 @@ android {
 
         release {
             applicationIdSuffix = ".sl.staging"
-            versionNameSuffix = "-(20240807_01)"
+            versionNameSuffix = "-(20240813_01)"
             isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
@@ -58,7 +58,7 @@ android {
         create("staging") {
             initWith(getByName("release"))
             applicationIdSuffix = ".sl.staging"
-            versionNameSuffix = "-(20240718_01)"
+            versionNameSuffix = "-(20240813_01)"
             isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
@@ -91,6 +91,7 @@ dependencies {
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation("androidx.hilt:hilt-common:1.2.0")
     implementation("androidx.hilt:hilt-work:1.2.0")
+    implementation("androidx.activity:activity:1.9.0")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")

@@ -1,6 +1,6 @@
 package com.medtroniclabs.spice.network
 
-import MotherNeonatePncRequest
+import com.medtroniclabs.spice.data.model.MotherNeonatePncRequest
 import com.medtroniclabs.spice.model.medicalreview.CreateUnderTwoMonthsRequest
 import com.medtroniclabs.spice.data.APIResponse
 import com.medtroniclabs.spice.data.AboveFiveYearsMetaResponse
@@ -35,7 +35,7 @@ import com.medtroniclabs.spice.data.UnderFiveYearsMetaResponse
 import com.medtroniclabs.spice.data.UnderTwoMonthsMetaResponse
 import com.medtroniclabs.spice.data.UserSymptomsEntity
 import com.medtroniclabs.spice.data.history.MedicalReviewHistory
-import com.medtroniclabs.spice.data.history.PrescriptionHistoryEntity
+import com.medtroniclabs.spice.data.history.HistoryEntity
 import com.medtroniclabs.spice.data.model.AboveFiveYearsSubmitRequest
 import com.medtroniclabs.spice.data.model.BpAndWeightRequestModel
 import com.medtroniclabs.spice.data.model.BpAndWeightResponse
@@ -53,18 +53,24 @@ import com.medtroniclabs.spice.data.MotherNeonatePncSummaryRequest
 import com.medtroniclabs.spice.data.MotherNeonatePncSummaryResponse
 import com.medtroniclabs.spice.data.SummaryCreateRequest
 import com.medtroniclabs.spice.data.resource.RequestAllEntities
+import com.medtroniclabs.spice.model.LabTestCreateRequest
+import com.medtroniclabs.spice.model.LabTestListRequest
+import com.medtroniclabs.spice.model.LabTestListResponse
 import com.medtroniclabs.spice.model.PatientDetailRequest
 import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.model.PatientsDataModel
 import com.medtroniclabs.spice.model.ReferralData
 import com.medtroniclabs.spice.model.ReferralDetailRequest
+import com.medtroniclabs.spice.model.RemoveLabTestRequest
 import com.medtroniclabs.spice.model.SearchAndListResponse
 import com.medtroniclabs.spice.model.medicalreview.AddMemberRegRequest
-import com.medtroniclabs.spice.model.medicalreview.CreateLabourDeliveryRequest
-import com.medtroniclabs.spice.model.medicalreview.CreateLabourDeliveryResponse
+import com.medtroniclabs.spice.data.model.CreateLabourDeliveryRequest
+import com.medtroniclabs.spice.data.model.CreateLabourDeliveryResponse
 import com.medtroniclabs.spice.model.medicalreview.CreateUnderFiveYearsRequest
 import com.medtroniclabs.spice.model.medicalreview.CreateUnderTwoMonthsResponse
-import com.medtroniclabs.spice.model.medicalreview.LabourDeliverySummaryDetails
+import com.medtroniclabs.spice.data.model.LabourDeliverySummaryDetails
+import com.medtroniclabs.spice.model.medicalreview.SearchLabTestResponse
+import com.medtroniclabs.spice.model.medicalreview.SearchRequestLabTest
 import com.medtroniclabs.spice.model.medicalreview.SummaryDetails
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -249,7 +255,7 @@ class ApiHelperImpl @Inject constructor(private val apiService: ApiService) : Ap
     }
 
 
-    override suspend fun getPrescription(request: ReferralDetailRequest): Response<APIResponse<PrescriptionHistoryEntity>> {
+    override suspend fun getPrescription(request: ReferralDetailRequest): Response<APIResponse<HistoryEntity>> {
         return apiService.getPrescription(request)
     }
 
@@ -276,7 +282,27 @@ class ApiHelperImpl @Inject constructor(private val apiService: ApiService) : Ap
     override suspend fun addNewMember(request: AddMemberRegRequest): Response<APIResponse<String>> {
         return apiService.addNewMember(request)
     }
+
+    override suspend fun searchLabTestByName(request: SearchRequestLabTest): Response<APIResponse<ArrayList<SearchLabTestResponse>>> {
+        return apiService.searchLabTestByName(request)
+    }
+
+    override suspend fun createLabTest(request: LabTestCreateRequest): Response<APIResponse<Map<String, Any>>> {
+        return apiService.createLabTest(request)
+    }
+
+    override suspend fun getLabTestList(request: LabTestListRequest): Response<APIResponse<ArrayList<LabTestListResponse>>> {
+        return apiService.getLabTestList(request)
+    }
+
+    override suspend fun removeLabTest(request: RemoveLabTestRequest): Response<APIResponse<Map<String, Any>>> {
+        return apiService.removeLabTest(request)
+    }
     override suspend fun createSummaryMotherNeonate(request: LabourDeliverySummaryRequest): Response<APIResponse<HashMap<String, Any>>> {
         return apiService.summaryCreateMotherNeonate(request)
+    }
+
+    override suspend fun getInvestigation(request: ReferralDetailRequest): Response<APIResponse<HistoryEntity>> {
+        return apiService.getInvestigationHistoryList(request)
     }
 }

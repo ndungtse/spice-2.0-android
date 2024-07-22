@@ -1,6 +1,6 @@
 package com.medtroniclabs.spice.ui.medicalreview.motherneonate.pnc.repo
 
-import MotherNeonatePncRequest
+import com.medtroniclabs.spice.data.model.MotherNeonatePncRequest
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.medtroniclabs.spice.appextensions.postError

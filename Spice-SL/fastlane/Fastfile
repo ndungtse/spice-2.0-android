@@ -25,7 +25,7 @@ desc "Submit a new dev Build to firebase"
      lane :fireInternal do
      gradle(task: "clean assemble",build_type: "staging" )
        # Read release notes from file
-       release_notes_file_path = "./release_notes/staging/release_notes.txt"
+       release_notes_file_path = "./release_notes/staging/release_notes1.txt"
        release_notes = File.read(release_notes_file_path)
      firebase_app_distribution(
           app: "1:791794371431:android:7a2a8380609de61d247dc2",
@@ -40,7 +40,7 @@ desc "Submit a new dev Build to firebase"
      lane :fireStaging do
      gradle(task: "clean assemble",build_type: "staging" )
      # Read release notes from file
-            release_notes_file_path = "./release_notes/staging/release_notes.txt"
+            release_notes_file_path = "./release_notes/staging/release_notes1.txt"
             release_notes = File.read(release_notes_file_path)
      firebase_app_distribution(
           app: "1:791794371431:android:7a2a8380609de61d247dc2",

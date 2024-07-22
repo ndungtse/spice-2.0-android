@@ -25,6 +25,7 @@ import com.medtroniclabs.spice.ui.landing.OnDialogDismissListener
 import com.medtroniclabs.spice.ui.medicalreview.ClinicalNotesFragment
 import com.medtroniclabs.spice.ui.medicalreview.PresentingComplaintsFragment
 import com.medtroniclabs.spice.ui.medicalreview.SystemicExaminationsFragment
+import com.medtroniclabs.spice.ui.medicalreview.investigation.InvestigationActivity
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.AncVisitCallBack
 import com.medtroniclabs.spice.ui.medicalreview.prescription.PrescriptionActivity
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.CLINICAL_NOTES
@@ -104,6 +105,7 @@ class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
     private fun initializeListeners() {
         binding.btnSubmit.safeClickListener(this)
         binding.ivPrescription.safeClickListener(this)
+        binding.ivInvestigation.safeClickListener(this)
         binding.refreshLayout.setOnRefreshListener {
             swipeRefresh()
         }
@@ -397,11 +399,17 @@ class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
                     val intent = Intent(this, PrescriptionActivity::class.java)
                     intent.putExtra(DefinedParams.PatientId, data.patientId)
                     intent.putExtra(DefinedParams.EncounterId,patientViewModel.encounterId)
-                    //startActivity(intent)
                     getResult.launch(intent)
                 }
             }
-
+            binding.ivInvestigation.id  -> {
+                patientViewModel.patientDetailsLiveData.value?.data?.let { data ->
+                    val intent = Intent(this, InvestigationActivity::class.java)
+                    intent.putExtra(DefinedParams.PatientId, data.patientId)
+                    intent.putExtra(DefinedParams.EncounterId,patientViewModel.encounterId)
+                    getResult.launch(intent)
+                }
+            }
             binding.btnRefer.id ->
                 viewModel.aboveFiveYearsCreateResponse.value?.data?.let {
                     ReferPatientFragment.newInstance(

@@ -1,8 +1,8 @@
 package com.medtroniclabs.spice.ui.medicalreview.motherneonate.pnc.viewmodel
 
-import MotherNeonatePncRequest
-import PncChild
-import PncMother
+import com.medtroniclabs.spice.data.model.MotherNeonatePncRequest
+import com.medtroniclabs.spice.data.model.PncChild
+import com.medtroniclabs.spice.data.model.PncMother
 import android.location.Location
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel

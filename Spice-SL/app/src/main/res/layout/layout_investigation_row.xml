@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="@dimen/_8sdp"
+        android:weightSum="1.0">
+
+        <LinearLayout
+            android:layout_width="@dimen/_0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.3"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/ivDropDown"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/_16sdp"
+                android:src="@drawable/ic_arrow_down" />
+
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvTestName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/inter_medium"
+                android:gravity="start"
+                android:padding="@dimen/_12sdp"
+                android:textColor="@color/table_title"
+                android:textSize="@dimen/_14ssp" />
+
+        </LinearLayout>
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvRecommendedOn"
+            android:layout_width="@dimen/_0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.3"
+            android:fontFamily="@font/inter_medium"
+            android:gravity="center"
+            android:padding="@dimen/_12sdp"
+            android:textColor="@color/table_title"
+            android:textSize="@dimen/_14ssp" />
+
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvRecommendedBy"
+            android:layout_width="@dimen/_0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.2"
+            android:fontFamily="@font/inter_medium"
+            android:gravity="center"
+            android:padding="@dimen/_12sdp"
+            android:textColor="@color/table_title"
+            android:textSize="@dimen/_14ssp" />
+
+        <LinearLayout
+            android:layout_width="@dimen/_0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="0.2"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/ivRemoveMedication"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/_38sdp"
+                android:layout_marginEnd="@dimen/_5sdp"
+                android:contentDescription="@string/remove_medication"
+                android:src="@drawable/icon_remove_blue" />
+
+            <ImageView
+                android:id="@+id/ivEditMedication"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/_38sdp"
+                android:contentDescription="@string/edit"
+                android:src="@drawable/icon_edit_blue"
+                android:visibility="invisible" />
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_1sdp"
+        android:background="@color/edittext_stroke_50t" />
+
+    <LinearLayout
+        android:id="@+id/resultContainerHolder"
+        android:layout_width="match_parent"
+        android:visibility="gone"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@color/bg_grey">
+
+        <com.google.android.flexbox.FlexboxLayout
+            android:id="@+id/resultContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:flexDirection="row"
+            app:flexWrap="wrap"
+            app:justifyContent="flex_start" />
+
+        <TextView
+            android:id="@+id/tvErrorMessage"
+            style="@style/TextStyle_Error_14"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="@dimen/_16sdp"
+            android:paddingVertical="@dimen/_8sdp"
+            android:visibility="gone" />
+
+    </LinearLayout>
+
+
+</LinearLayout>

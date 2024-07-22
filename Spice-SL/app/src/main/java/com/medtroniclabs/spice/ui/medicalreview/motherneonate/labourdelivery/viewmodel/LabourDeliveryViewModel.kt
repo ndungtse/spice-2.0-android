@@ -1,5 +1,7 @@
 package com.medtroniclabs.spice.ui.medicalreview.motherneonate.labourdelivery.viewmodel
 
+import android.annotation.SuppressLint
+import android.content.Context
 import android.location.Location
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -10,8 +12,18 @@ import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.data.LabourDeliveryMetaEntity
+import com.medtroniclabs.spice.data.MedicalReviewSummarySubmitRequest
+import com.medtroniclabs.spice.data.model.ApgarScoreFiveMinuteDTO
+import com.medtroniclabs.spice.data.model.ApgarScoreOneMinuteDTO
+import com.medtroniclabs.spice.data.model.ApgarScoreTenMinuteDTO
+import com.medtroniclabs.spice.data.model.Child
 import com.medtroniclabs.spice.data.model.ChipViewItemModel
+import com.medtroniclabs.spice.data.model.CreateLabourDeliveryRequest
+import com.medtroniclabs.spice.data.model.CreateLabourDeliveryResponse
+import com.medtroniclabs.spice.data.model.LabourDTO
 import com.medtroniclabs.spice.data.model.MedicalReviewEncounter
+import com.medtroniclabs.spice.data.model.MotherDTO
+import com.medtroniclabs.spice.data.model.NeonateDTO
 import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.data.resource.LabourDeliverySummaryRequest
 import com.medtroniclabs.spice.di.IoDispatcher
@@ -20,16 +32,8 @@ import com.medtroniclabs.spice.model.assessment.AgparScoreFooter
 import com.medtroniclabs.spice.model.assessment.AgparScoreHeader
 import com.medtroniclabs.spice.model.assessment.AgparScoreRow
 import com.medtroniclabs.spice.model.assessment.ApgarScore
-import com.medtroniclabs.spice.model.medicalreview.ApgarScoreFiveMinuteDTO
-import com.medtroniclabs.spice.model.medicalreview.ApgarScoreOneMinuteDTO
-import com.medtroniclabs.spice.model.medicalreview.ApgarScoreTenMinuteDTO
-import com.medtroniclabs.spice.model.medicalreview.Child
-import com.medtroniclabs.spice.model.medicalreview.CreateLabourDeliveryRequest
-import com.medtroniclabs.spice.model.medicalreview.CreateLabourDeliveryResponse
-import com.medtroniclabs.spice.model.medicalreview.LabourDTO
-import com.medtroniclabs.spice.model.medicalreview.MotherDTO
-import com.medtroniclabs.spice.model.medicalreview.NeonateDTO
 import com.medtroniclabs.spice.network.resource.Resource
+import com.medtroniclabs.spice.ui.medicalreview.motherneonate.labourdelivery.activity.LabourDeliveryBaseActivity
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.labourdelivery.repo.LabourDeliveryRepository
 import com.medtroniclabs.spice.ui.mypatients.enumType.AgparColumnIdentifierType
 import com.medtroniclabs.spice.ui.mypatients.enumType.AgparItemViewType
@@ -50,8 +54,10 @@ class LabourDeliveryViewModel @Inject constructor(
     private var repository: LabourDeliveryRepository
 ) : ViewModel() {
 
-    var motherPatientStatus: String?=null
-    var lastMensurationDate: String?=null
+
+    var context: Context? = null
+    var motherPatientStatus: String? = null
+    var lastMensurationDate: String? = null
     val timeOfDeliveryMap = HashMap<String, Any>()
     val timeOfLabourOnsetMap = HashMap<String, Any>()
     val perineumStateMap = HashMap<String, Any>()
@@ -103,9 +109,11 @@ class LabourDeliveryViewModel @Inject constructor(
 
     private val _gestationalDate = MutableLiveData<Calendar>()
     val gestationalDate: LiveData<Calendar> get() = _gestationalDate
-    private var summaryCreateRequest: LabourDeliverySummaryRequest?=null
+    private var summaryCreateRequest: LabourDeliverySummaryRequest? = null
 
-
+    fun set(context: Context) {
+        this.context = context
+    }
     fun getAgparScoreData() {
         val apgarScores = mutableListOf<ApgarScore>()
         apgarScores.add(
@@ -348,13 +356,13 @@ class LabourDeliveryViewModel @Inject constructor(
         }
 
         return ApgarScoreTenMinuteDTO(
-                activity = tenMinuteScores[0]?.toInt(),
-                pulse = tenMinuteScores[1]?.toInt(),
-                grimace = tenMinuteScores[2]?.toInt(),
-                appearance = tenMinuteScores[3]?.toInt(),
-                respiration = tenMinuteScores[4]?.toInt(),
-                tenMinuteTotalScore = tenMinuteTotal[0]?.toInt()
-            )
+            activity = tenMinuteScores[0]?.toInt(),
+            pulse = tenMinuteScores[1]?.toInt(),
+            grimace = tenMinuteScores[2]?.toInt(),
+            appearance = tenMinuteScores[3]?.toInt(),
+            respiration = tenMinuteScores[4]?.toInt(),
+            tenMinuteTotalScore = tenMinuteTotal[0]?.toInt()
+        )
     }
 
     private fun createFiveMinuteApgarScore(): ApgarScoreFiveMinuteDTO? {
@@ -369,13 +377,13 @@ class LabourDeliveryViewModel @Inject constructor(
         }
 
         return ApgarScoreFiveMinuteDTO(
-                activity = fiveMinuteScores[0]?.toInt(),
-                pulse = fiveMinuteScores[1]?.toInt(),
-                grimace = fiveMinuteScores[2]?.toInt(),
-                appearance = fiveMinuteScores[3]?.toInt(),
-                respiration = fiveMinuteScores[4]?.toInt(),
-                fiveMinuteTotalScore = fiveMinuteTotal[0]?.toInt()
-            )
+            activity = fiveMinuteScores[0]?.toInt(),
+            pulse = fiveMinuteScores[1]?.toInt(),
+            grimace = fiveMinuteScores[2]?.toInt(),
+            appearance = fiveMinuteScores[3]?.toInt(),
+            respiration = fiveMinuteScores[4]?.toInt(),
+            fiveMinuteTotalScore = fiveMinuteTotal[0]?.toInt()
+        )
     }
 
     private fun createOneMinuteApgarScore(): ApgarScoreOneMinuteDTO? {
@@ -390,13 +398,13 @@ class LabourDeliveryViewModel @Inject constructor(
         }
 
         return ApgarScoreOneMinuteDTO(
-                activity = oneMinuteScores[0]?.toInt(),
-                pulse = oneMinuteScores[1]?.toInt(),
-                grimace = oneMinuteScores[2]?.toInt(),
-                appearance = oneMinuteScores[3]?.toInt(),
-                respiration = oneMinuteScores[4]?.toInt(),
-                oneMinuteTotalScore = oneMinuteTotal[0]?.toInt()
-            )
+            activity = oneMinuteScores[0]?.toInt(),
+            pulse = oneMinuteScores[1]?.toInt(),
+            grimace = oneMinuteScores[2]?.toInt(),
+            appearance = oneMinuteScores[3]?.toInt(),
+            respiration = oneMinuteScores[4]?.toInt(),
+            oneMinuteTotalScore = oneMinuteTotal[0]?.toInt()
+        )
     }
 
     private fun createMotherModel(
@@ -432,44 +440,71 @@ class LabourDeliveryViewModel @Inject constructor(
     }
 
     private fun getTimeOfDelivery(): String? {
-        val dateOfDelivery = this.dateOfDelivery ?: return null
-        val timeOfDeliveryInHourInt = timeOfDeliveryInHour?.toInt() ?: 0
-        val timeOfDeliveryInMinutesInt = timeOfDeliveryInMinute?.toInt() ?: 0
-        val timeOfDeliveryMap = this.timeOfDeliveryMap[DefinedParams.TimeOfDelivery] as String
-        val localTimeWithAMPM = "${
-            DateTimeFormatter.ofPattern(DateUtils.TIME_FORMAT_hhmm)
-                .format(LocalTime.of(timeOfDeliveryInHourInt, timeOfDeliveryInMinutesInt))
-        } $timeOfDeliveryMap"
-        val localTime = LocalTime.parse(
-            localTimeWithAMPM,
-            DateTimeFormatter.ofPattern(DateUtils.TIME_FORMAT_hhmma)
-        )
-        val localDate =
-            LocalDate.of(dateOfDelivery.first, dateOfDelivery.second, dateOfDelivery.third)
-        val localDateTime = LocalDateTime.of(localDate, localTime)
-        return DateTimeFormatter.ofPattern(DateUtils.DATE_FORMAT_yyyyMMddHHmmss)
-            .format(localDateTime)
+            val dateOfLabourOnset = this.dateOfLabourOnset ?: return null
+            val timeOfLabourOnSetInHourInt = timeOfLabourOnSetInHour?.toInt() ?: 0
+            val timeOfLabourOnSetInMinuteInt = timeOfLabourOnSetInMinutes?.toInt() ?: 0
+            val timeOfLabourOnSetMap =
+                this.timeOfLabourOnsetMap[DefinedParams.TimeOfLabourOnset] as String
+            val year = dateOfLabourOnset.first
+            val month = dateOfLabourOnset.second
+            val day = dateOfLabourOnset.third
+
+            val hour = timeOfLabourOnSetInHourInt.toInt()
+            val minute = timeOfLabourOnSetInMinuteInt.toInt()
+
+            val adjustedHour = when (timeOfLabourOnSetMap) {
+                context?.getString(R.string.pm) -> if (hour == 12) hour else hour + 12
+                context?.getString(R.string.am) -> if (hour == 12) 0 else hour
+                else -> hour
+            }
+
+            val localDate = LocalDate.of(year.toInt(), month.toInt(), day.toInt())
+            val localTime = LocalTime.of(adjustedHour, minute)
+
+            val localDateTime = LocalDateTime.of(localDate, localTime)
+
+            val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
+            val formattedDateTime = localDateTime.format(formatter)
+
+
+            return formattedDateTime
+
     }
 
     private fun getTimeOfLabourOnset(): String? {
-        val dateOfLabourOnset = this.dateOfLabourOnset ?: return null
-        val timeOfLabourOnSetInHourInt = timeOfLabourOnSetInHour?.toInt() ?: 0
-        val timeOfLabourOnSetInMinuteInt = timeOfLabourOnSetInMinutes?.toInt() ?: 0
-        val timeOfLabourOnSetMap =
-            this.timeOfLabourOnsetMap[DefinedParams.TimeOfLabourOnset] as String
-        val localTimeWithAMPM = "${
-            DateTimeFormatter.ofPattern(DateUtils.TIME_FORMAT_hhmm)
-                .format(LocalTime.of(timeOfLabourOnSetInHourInt, timeOfLabourOnSetInMinuteInt))
-        } $timeOfLabourOnSetMap"
-        val localTime = LocalTime.parse(
-            localTimeWithAMPM,
-            DateTimeFormatter.ofPattern(DateUtils.TIME_FORMAT_hhmma)
-        )
-        val localDate =
-            LocalDate.of(dateOfLabourOnset.first, dateOfLabourOnset.second, dateOfLabourOnset.third)
-        val localDateTime = LocalDateTime.of(localDate, localTime)
-        return DateTimeFormatter.ofPattern(DateUtils.DATE_FORMAT_yyyyMMddHHmmss)
-            .format(localDateTime)
+            val dateOfLabourOnset = this.dateOfLabourOnset ?: return null
+            val timeOfLabourOnSetInHourInt = timeOfLabourOnSetInHour?.toInt() ?: 0
+            val timeOfLabourOnSetInMinuteInt = timeOfLabourOnSetInMinutes?.toInt() ?: 0
+            val timeOfLabourOnSetMap =
+                this.timeOfLabourOnsetMap[DefinedParams.TimeOfLabourOnset] as String
+            val year = dateOfLabourOnset.first
+            val month = dateOfLabourOnset.second
+            val day = dateOfLabourOnset.third
+
+            // Convert hour and minute to integers
+            val hour = timeOfLabourOnSetInHourInt.toInt()
+            val minute = timeOfLabourOnSetInMinuteInt.toInt()
+
+            // Adjust hour for AM/PM
+            val adjustedHour = when (timeOfLabourOnSetMap) {
+                context?.getString(R.string.pm) -> if (hour == 12) hour else hour + 12
+                context?.getString(R.string.am) -> if (hour == 12) 0 else hour
+                else -> hour
+            }
+
+            // Create LocalDate and LocalTime
+            val localDate = LocalDate.of(year.toInt(), month.toInt(), day.toInt())
+            val localTime = LocalTime.of(adjustedHour, minute)
+
+            // Combine LocalDate and LocalTime into LocalDateTime
+            val localDateTime = LocalDateTime.of(localDate, localTime)
+
+            // Format LocalDateTime
+            val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
+            val formattedDateTime = localDateTime.format(formatter)
+
+            // Output the formatted string
+            return formattedDateTime
     }
 
 
@@ -518,42 +553,13 @@ class LabourDeliveryViewModel @Inject constructor(
         }
         _gestationalDate.value = calendar
     }
+
     fun labourDeliverySummaryCreate(
-        nextVisit: String,
-        details: CreateLabourDeliveryRequest
+        request: MedicalReviewSummarySubmitRequest
     ) {
         viewModelScope.launch(dispatcherIO) {
-
-        val motherDetails= details.motherDTO?.encounter
-        val neonateDetails= details.neonateDTO?.encounter
-            LabourDeliverySummaryRequest(com.medtroniclabs.spice.data.resource.MotherDTO(
-                id=motherDetails?.id,
-                patientId = motherDetails?.patientId,
-                memberId = motherDetails?.memberId,
-                householdId = motherDetails?.householdId,
-                provenance = ProvanceDto(),
-                patientReference = motherDetails?.patientReference,
-                patientStatus = DefinedParams.Postnatal,
-                nextVisitDate = nextVisit
-            ), com.medtroniclabs.spice.data.resource.NeonateDTO(
-                id = neonateDetails?.id,
-                patientId = neonateDetails?.patientId,
-                memberId = neonateDetails?.memberId,
-                householdId = neonateDetails?.householdId,
-                provenance = ProvanceDto(),
-                patientReference = neonateDetails?.patientReference,
-                patientStatus = DefinedParams.Neonate,
-            )
-            ).also { this@LabourDeliveryViewModel.summaryCreateRequest = it }
-
             summaryCreateResponse.postLoading()
-            summaryCreateResponse.postValue(
-                summaryCreateRequest?.let {
-                    repository.labourDeliverySummaryCreate(
-                        it
-                    )
-                }
-            )
+            summaryCreateResponse.postValue(repository.labourDeliverySummaryCreate(request))
         }
     }
 }

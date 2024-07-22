@@ -40,9 +40,6 @@ class PrescriptionViewModel @Inject constructor(
     private val medicationRepository: MedicationRepository
 ) : ViewModel() {
 
-
-
-
     val medicationListLiveData =
         MutableLiveData<Resource<java.util.ArrayList<MedicationResponse>>>()
 

@@ -19,7 +19,7 @@ import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.data.history.Prescription
-import com.medtroniclabs.spice.data.history.PrescriptionHistoryEntity
+import com.medtroniclabs.spice.data.history.HistoryEntity
 import com.medtroniclabs.spice.databinding.FragmentReferralTicketBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.model.ReferredDate
@@ -195,7 +195,7 @@ class PrescriptionHistoryFragment : BaseFragment(), View.OnClickListener {
         binding.groupHistoryList.gone()
     }
 
-    private fun setReferralTicket(prescriptionData: PrescriptionHistoryEntity) {
+    private fun setReferralTicket(prescriptionData: HistoryEntity) {
         binding.tvNoHistory.gone()
         with(DefinedParams) {
             adapters.updateList(

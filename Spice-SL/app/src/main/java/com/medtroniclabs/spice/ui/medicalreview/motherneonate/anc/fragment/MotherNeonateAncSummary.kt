@@ -13,6 +13,7 @@ import com.medtroniclabs.spice.appextensions.setExpandableText
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.CommonUtils.combineText
+import com.medtroniclabs.spice.common.CommonUtils.createInvestigation
 import com.medtroniclabs.spice.common.CommonUtils.getBMI
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DateUtils.convertStringToDate
@@ -199,6 +200,8 @@ class MotherNeonateAncSummary : BaseFragment(),View.OnClickListener {
                 MotherNeonateUtil.convertBeatsPerMinute(motherNeonateSummaryModel.fetalHeartRate, requireContext())
 
             tvPrescrptionText.text = motherNeonateSummaryModel.prescriptions?.let { CommonUtils.createPrescription(it,requireContext()) }?.takeIf { it.isNotEmpty() }
+                ?: requireContext().getString(R.string.hyphen_symbol)
+            binding.tvInvestigationText.text = motherNeonateSummaryModel.investigations?.let { createInvestigation(it,requireContext()) }?.takeIf { it.isNotEmpty() }
                 ?: requireContext().getString(R.string.hyphen_symbol)
         }
     }

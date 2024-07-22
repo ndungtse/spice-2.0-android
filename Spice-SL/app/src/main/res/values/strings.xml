@@ -534,8 +534,11 @@
     <string name="no_medication_prescribed">No Medication Prescribed</string>
     <string name="discontinued_on">Discontinued On</string>
     <string name="medication_prescribed">Medication Prescribed</string>
+    <string name="investigations_referred">Investigations Referred</string>
     <string name="date_of_prescription">Date of Prescription</string>
+    <string name="date_of_investigation">Date of Investigation</string>
     <string name="no_prescription_history">No Prescription History</string>
+    <string name="no_investigation_history">No Investigation History</string>
     <string name="no_medical_review_history">No Medical Review History</string>
     <string name="chief_complaints">Chief Complaints</string>
 
@@ -575,6 +578,11 @@
     <string name="treatment_start_date">Treatment Start Date</string>
     <string name="referred_date">Referred Date</string>
     <string name="tab_medical_review">Medical Review</string>
+    <string name="test_name">Test Name</string>
+    <string name="recommended_on">Recommended On</string>
+    <string name="recommended_by">Recommended By</string>
+    <string name="no_investigation_referred">No Investigation Referred</string>
+    <string name="unit">Unit</string>
     <string name="call">Call</string>
     <string name="post_natal">Post Natal</string>
     <string name="tear_hypen">Tear- </string>
@@ -584,4 +592,6 @@
     <string name="involutions_of_the_nuterus_summary">Involutions of the uterus</string>
     <string name="breast_condition">Breast Condition</string>
     <string name="five_minutes">" (Five minutes)"</string>
+    <string name="tested_on">Tested On</string>
+    <string name="birth_weight_in_kgs">Birth Weight(in kgs)</string>
 </resources>

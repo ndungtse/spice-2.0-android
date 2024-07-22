@@ -4,11 +4,10 @@ import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.data.MedicalReviewSummarySubmitRequest
 import com.medtroniclabs.spice.data.LabourDeliveryMetaEntity
-import com.medtroniclabs.spice.data.resource.LabourDeliverySummaryRequest
 import com.medtroniclabs.spice.db.local.RoomHelper
-import com.medtroniclabs.spice.model.medicalreview.CreateLabourDeliveryRequest
-import com.medtroniclabs.spice.model.medicalreview.CreateLabourDeliveryResponse
-import com.medtroniclabs.spice.model.medicalreview.LabourDeliverySummaryDetails
+import com.medtroniclabs.spice.data.model.CreateLabourDeliveryRequest
+import com.medtroniclabs.spice.data.model.CreateLabourDeliveryResponse
+import com.medtroniclabs.spice.data.model.LabourDeliverySummaryDetails
 import com.medtroniclabs.spice.network.ApiHelper
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.network.resource.ResourceState
@@ -134,9 +133,9 @@ class LabourDeliveryRepository @Inject constructor(
         }
     }
 
-    suspend fun labourDeliverySummaryCreate(request: LabourDeliverySummaryRequest): Resource<HashMap<String, Any>> {
+    suspend fun labourDeliverySummaryCreate(request: MedicalReviewSummarySubmitRequest): Resource<HashMap<String, Any>> {
         return try{
-            val response = apiHelper.createSummaryMotherNeonate(request)
+            val response = apiHelper.createSummarySubmit(request)
             if (response.isSuccessful) {
                 Resource(ResourceState.SUCCESS, response.body()?.entity)
             } else {

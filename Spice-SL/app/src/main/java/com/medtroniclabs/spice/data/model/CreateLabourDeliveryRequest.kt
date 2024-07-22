@@ -1,7 +1,7 @@
-package com.medtroniclabs.spice.model.medicalreview
+package com.medtroniclabs.spice.data.model
 
 import com.medtroniclabs.spice.data.Prescription
-import com.medtroniclabs.spice.data.model.MedicalReviewEncounter
+import com.medtroniclabs.spice.data.history.Investigation
 import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 
 data class CreateLabourDeliveryRequest(
@@ -48,7 +48,7 @@ data class MotherDTO(
     val tear: String?,
     val ttDoseTaken: Int?,
     val prescriptions: List<Prescription>? = null,
-)
+    val investigations: List<Investigation>? = null,)
 
 data class NeonateDTO(
     val birthWeight: String?,

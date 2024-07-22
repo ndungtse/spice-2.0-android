@@ -110,6 +110,10 @@ object DefinedParams {
     const val SearchLength = 2
     const val OtherNotes = "otherNotes"
     const val Postnatal="Postnatal"
+
+    const val TestedOn = "TestedOn"
+    const val Unit = "_unit"
+    const val PostNatal="Post Natal"
     const val Neonate="Neonate"
     const val PncHistory="PncHistory"
 }

@@ -14,6 +14,7 @@ import com.medtroniclabs.spice.common.RoleConstant.PROVIDER
 import com.medtroniclabs.spice.common.RoleConstant.SECHN
 import com.medtroniclabs.spice.common.RoleConstant.SRN
 import com.medtroniclabs.spice.data.Prescription
+import com.medtroniclabs.spice.data.history.Investigation
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.MONTH
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.MONTHS
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.WEEK
@@ -96,7 +97,7 @@ object CommonUtils {
         if (months == 0 && years == 0 && weeks == 0) {
             return context.getString(R.string.separator_hyphen)
         }
-        
+
         val strBuilder = StringBuilder()
         if (years < 5) {
             months += (years * 12)
@@ -369,6 +370,13 @@ object CommonUtils {
             }"
         }?.joinToString("\n")
     }
+
+    fun createInvestigation(investigation: List<Investigation>?, context: Context): String? {
+        return investigation?.takeIf { it.isNotEmpty() }?.mapIndexed { index, investigation ->
+            "${index + 1}. ${investigation.testName} "
+        }?.joinToString("\n")
+    }
+
     fun createMotherNeonateExamination(
         prescriptions: List<HashMap<String, Pair<String?, Any?>>>,
         context: Context,
@@ -427,6 +435,16 @@ object CommonUtils {
         }
     }
 
+    fun getMaxDateLimit(maxDays: Int?): Long? {
+        if (maxDays != null) {
+            val calendar = Calendar.getInstance()
+            calendar.add(Calendar.DAY_OF_MONTH, maxDays)
+            return calendar.timeInMillis
+        } else {
+            return maxDays
+        }
+    }
+
     fun getMaxDateLimit(menstrualPeriod: Boolean, minDays: Long?): Long? {
         return if (menstrualPeriod) {
             DateUtils.calculateGestationPastMonths(System.currentTimeMillis(), 11)
@@ -435,7 +453,7 @@ object CommonUtils {
         }
     }
 
-    fun convertAnyToString(value: Any?,context: Context): String {
+    fun convertAnyToString(value: Any?, context: Context): String {
         return when (value) {
             is String -> value
             is List<*> -> {

@@ -16,6 +16,4 @@ data class MedicationResponse(
     var codeDetails: CodeDetailsObject? = null,
 )
 
-data class CodeDetailsObject(var code: String, var url: String)
-
 data class MedicationRequestObject(var medicationResponse: MedicationResponse)

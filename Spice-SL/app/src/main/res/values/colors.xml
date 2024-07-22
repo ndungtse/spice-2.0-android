@@ -103,4 +103,5 @@
     <color name="light_purple">#DDDEFF</color>
     <color name="table_row_color">#FAF8FA</color>
     <color name="table_header_text_color">#2C2C2C</color>
+    <color name="bg_grey">#F8F8F8</color>
 </resources>

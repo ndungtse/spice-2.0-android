@@ -66,10 +66,15 @@ data class FormLayout(
     var isBooleanAnswer: Boolean = false,
     var isInfo: String? = null,
     var dosageListItems: ArrayList<RecommendedDosageListModel>? = null,
-    var maxDecimalPlaces:Int? = null,
+    var maxDecimalPlaces: Int? = null,
     var menstrualPeriod: Boolean = false,
-    var minDays:Int ?= null,
-    var maxAge: Int? = null
+    var minDays: Int? = null,
+    var maxDays: Int? = null,
+    var unitList: ArrayList<Map<String, Any>>? = null,
+    var maxAge: Int? = null,
+    var code: String? = null,
+    var url: String? = null,
+    var resource: String? = null
 ) : BaseViewParams
 
 data class FormResponse(

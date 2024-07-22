@@ -1,4 +1,4 @@
-package com.medtroniclabs.spice.model.medicalreview
+package com.medtroniclabs.spice.data.model
 
 data class CreateLabourDeliveryResponse(
     val childPatientReference: String,

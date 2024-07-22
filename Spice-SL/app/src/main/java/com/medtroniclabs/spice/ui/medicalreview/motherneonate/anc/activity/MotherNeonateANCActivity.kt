@@ -33,6 +33,7 @@ import com.medtroniclabs.spice.ui.medicalreview.SystemicExaminationsFragment
 import com.medtroniclabs.spice.ui.medicalreview.abovefiveyears.ClinicalNotesViewModel
 import com.medtroniclabs.spice.ui.medicalreview.abovefiveyears.PresentingComplaintsViewModel
 import com.medtroniclabs.spice.ui.medicalreview.abovefiveyears.SystemicExaminationViewModel
+import com.medtroniclabs.spice.ui.medicalreview.investigation.InvestigationActivity
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.AncVisitCallBack
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.fragment.MotherNeonateAncHistoryFragment
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.fragment.MotherNeonateAncSummary
@@ -437,6 +438,7 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
         binding.btnDone.safeClickListener(this)
         binding.btnRefer.safeClickListener(this)
         binding.ivPrescription.safeClickListener(this)
+        binding.ivInvestigation.safeClickListener(this)
     }
 
     private fun setButtonWidth() {
@@ -448,10 +450,20 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
         when (v?.id) {
             binding.btnLayout.btnNext.id -> validatePregnantDetails()
             binding.ivPrescription.id -> openPrescriptionActivity()
+            binding.ivInvestigation.id -> openInvestigationActivity()
             binding.btnSubmit.id -> validateAndSubmitRequest()
             binding.btnDone.id -> submitSummary()
             binding.btnRefer.id -> showReferPatientDialog()
             binding.loadingProgress.id -> {}
+        }
+    }
+
+    private fun openInvestigationActivity() {
+        patientViewModel.patientDetailsLiveData.value?.data?.let { data ->
+            val intent = Intent(this, InvestigationActivity::class.java)
+            intent.putExtra(DefinedParams.PatientId, data.patientId)
+            intent.putExtra(DefinedParams.EncounterId,patientViewModel.encounterId)
+            getResult.launch(intent)
         }
     }
 

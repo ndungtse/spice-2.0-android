@@ -30,6 +30,7 @@ import com.medtroniclabs.spice.ui.medicalreview.abovefiveyears.PresentingComplai
 import com.medtroniclabs.spice.ui.medicalreview.abovefiveyears.SystemicExaminationViewModel
 import com.medtroniclabs.spice.ui.medicalreview.examinations.ExaminationCardFragment
 import com.medtroniclabs.spice.ui.medicalreview.examinations.ExaminationCardViewModel
+import com.medtroniclabs.spice.ui.medicalreview.investigation.InvestigationActivity
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.AncVisitCallBack
 import com.medtroniclabs.spice.ui.medicalreview.prescription.PrescriptionActivity
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
@@ -89,6 +90,7 @@ class UnderFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
 
     private fun initializeListeners() {
         binding.btnSubmit.safeClickListener(this)
+        binding.ivInvestigation.safeClickListener(this)
         binding.underFiveSummaryBottomView.btnDone.safeClickListener(this)
         binding.underFiveSummaryBottomView.btnRefer.safeClickListener(this)
         binding.ivPrescription.safeClickListener(this)
@@ -395,6 +397,14 @@ class UnderFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
 
             binding.ivPrescription.id -> {
                 handlePrescriptionClick()
+            }
+            binding.ivInvestigation.id  -> {
+                patientDetailViewModel.patientDetailsLiveData.value?.data?.let { data ->
+                    val intent = Intent(this, InvestigationActivity::class.java)
+                    intent.putExtra(DefinedParams.PatientId, data.patientId)
+                    intent.putExtra(DefinedParams.EncounterId,patientDetailViewModel.encounterId)
+                    getResult.launch(intent)
+                }
             }
 
             R.id.btnRefer -> {

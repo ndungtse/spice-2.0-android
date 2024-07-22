@@ -22,6 +22,7 @@ import com.medtroniclabs.spice.ui.home.MedicalReviewToolsActivity
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.AncVisitCallBack
 import com.medtroniclabs.spice.ui.mypatients.fragment.PatientInfoFragment
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
+import com.medtroniclabs.spice.ui.referralhistory.fragment.InvestigationHistoryFragment
 import com.medtroniclabs.spice.ui.referralhistory.fragment.MedicalReviewHistoryFragment
 import com.medtroniclabs.spice.ui.referralhistory.fragment.MotherPncVisitSummaryHistoryFragment
 import com.medtroniclabs.spice.ui.referralhistory.fragment.PrescriptionHistoryFragment
@@ -116,8 +117,10 @@ class ReferralHistoryActivity : BaseActivity(), AncVisitCallBack {
 
     private fun initView() {
         val patientFragment =
-            PatientInfoFragment.newInstance(intent.getStringExtra(DefinedParams.PatientId),
-                isReferredScreen = true)
+            PatientInfoFragment.newInstance(
+                intent.getStringExtra(DefinedParams.PatientId),
+                isReferredScreen = true
+            )
         patientFragment.setDataCallback(this)
         supportFragmentManager.beginTransaction()
             .add(
@@ -217,6 +220,14 @@ class ReferralHistoryActivity : BaseActivity(), AncVisitCallBack {
                 PrescriptionHistoryFragment.TAG,
                 prescriptionFragment
             )
+
+            val investigationFragment = InvestigationHistoryFragment.newInstance(details.id)
+            addFragmentIfAbsent(
+                R.id.cardInvestigationContainer,
+                InvestigationHistoryFragment.TAG,
+                investigationFragment
+            )
+
             binding.btnMedicalReview.safeClickListener {
                 if (ableToGetLocation())
                     launchToolsActivity()

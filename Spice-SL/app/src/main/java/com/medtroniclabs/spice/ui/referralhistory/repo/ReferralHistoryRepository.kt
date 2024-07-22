@@ -2,7 +2,7 @@ package com.medtroniclabs.spice.ui.referralhistory.repo
 
 import com.medtroniclabs.spice.data.PncChildMedicalReview
 import com.medtroniclabs.spice.data.history.MedicalReviewHistory
-import com.medtroniclabs.spice.data.history.PrescriptionHistoryEntity
+import com.medtroniclabs.spice.data.history.HistoryEntity
 import com.medtroniclabs.spice.db.local.RoomHelper
 import com.medtroniclabs.spice.model.ReferralData
 import com.medtroniclabs.spice.model.ReferralDetailRequest
@@ -32,9 +32,24 @@ class ReferralHistoryRepository @Inject constructor(
 
     suspend fun getPrescription(
         request: ReferralDetailRequest
-    ): Resource<PrescriptionHistoryEntity> {
+    ): Resource<HistoryEntity> {
         return try {
             val response = apiHelper.getPrescription(request)
+            if (response.isSuccessful) {
+                Resource(state = ResourceState.SUCCESS, data = response.body()?.entity)
+            } else {
+                Resource(state = ResourceState.ERROR)
+            }
+        } catch (e: Exception) {
+            Resource(state = ResourceState.ERROR)
+        }
+    }
+
+    suspend fun getInvestigation(
+        request: ReferralDetailRequest
+    ): Resource<HistoryEntity> {
+        return try {
+            val response = apiHelper.getInvestigation(request)
             if (response.isSuccessful) {
                 Resource(state = ResourceState.SUCCESS, data = response.body()?.entity)
             } else {

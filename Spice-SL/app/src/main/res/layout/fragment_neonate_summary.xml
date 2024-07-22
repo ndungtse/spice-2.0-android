@@ -124,7 +124,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/_16sdp"
-            android:text="@string/birth_weight"
+            android:text="@string/birth_weight_in_kgs"
             android:textSize="@dimen/_18ssp"
             android:textColor="@color/table_title"
             app:layout_constraintEnd_toEndOf="@+id/startGuideline"

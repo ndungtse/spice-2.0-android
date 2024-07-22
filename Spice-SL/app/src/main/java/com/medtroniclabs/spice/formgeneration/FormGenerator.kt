@@ -1802,7 +1802,6 @@ class FormGenerator(
                     (isMandatory && resultHashMap.containsKey(id)
                             && resultHashMap[id] is String && (resultHashMap[id] as String).isEmpty())
                 ) {
-
                     isValid = false
                     requestFocusView(data)
                 } else if ((id == headPhoneNumber || id == phoneNumber) && isMandatory && resultHashMap.containsKey(

@@ -15,6 +15,8 @@ import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.SpiceLocationManager
+import com.medtroniclabs.spice.data.MedicalReviewSummarySubmitRequest
+import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.databinding.ActivityMedicalReviewLabourDeliveryactivityBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.model.PatientListRespModel
@@ -23,6 +25,7 @@ import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.labourdelivery.fragment.LabourOrDeliveryFragment
 import com.medtroniclabs.spice.ui.dialog.MedicalReviewSuccessDialogFragment
 import com.medtroniclabs.spice.ui.landing.OnDialogDismissListener
+import com.medtroniclabs.spice.ui.medicalreview.investigation.InvestigationActivity
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.labourdelivery.viewmodel.LabourDeliveryViewModel
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.AncVisitCallBack
 import com.medtroniclabs.spice.ui.medicalreview.prescription.PrescriptionActivity
@@ -69,6 +72,7 @@ class LabourDeliveryBaseActivity : BaseActivity(), View.OnClickListener, AncVisi
         initializeListener()
         getCurrentLocation()
         viewModel.patientId = intent.getStringExtra(DefinedParams.PatientId)
+        viewModel.set(this)
     }
 
     private fun backNavigation() {
@@ -248,6 +252,7 @@ class LabourDeliveryBaseActivity : BaseActivity(), View.OnClickListener, AncVisi
         binding.btnRefer.safeClickListener(this)
         binding.btnDone.safeClickListener(this)
         binding.ivPrescription.safeClickListener(this)
+        binding.ivInvestigation.safeClickListener(this)
     }
 
     private fun swipeRefresh() {
@@ -293,6 +298,16 @@ class LabourDeliveryBaseActivity : BaseActivity(), View.OnClickListener, AncVisi
             binding.btnRefer.id -> handleReferClick()
             binding.btnDone.id -> handleDoneClick()
             binding.ivPrescription.id -> handlePrescriptionClick()
+            binding.ivInvestigation.id -> handleInvestigationClick()
+        }
+    }
+
+    private fun handleInvestigationClick() {
+        patientViewModel.patientDetailsLiveData.value?.data?.let { data ->
+            val intent = Intent(this, InvestigationActivity::class.java)
+            intent.putExtra(DefinedParams.PatientId, data.patientId)
+            intent.putExtra(DefinedParams.EncounterId,patientViewModel.encounterId)
+            getResult.launch(intent)
         }
     }
 
@@ -316,19 +331,25 @@ class LabourDeliveryBaseActivity : BaseActivity(), View.OnClickListener, AncVisi
     }
 
     private fun handleDoneClick() {
-       val nextVisit= DateUtils.convertDateTimeToDate(
-            viewModel.nextFollowupDate,
-            DateUtils.DATE_ddMMyyyy,
-            DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-            inUTC = true
-        )
-        viewModelSummary.summaryDetailsLiveData.value?.data
-            ?.let { response ->
-                viewModel.labourDeliverySummaryCreate(
-                    nextVisit,
-                    response
-                )
-            }
+        patientViewModel.patientDetailsLiveData.value?.data?.let { patientDetails ->
+            viewModel.createLabourDeliveryMedicalReviewResponse.value?.data?.let {
+                        val request = MedicalReviewSummarySubmitRequest(
+                            id = it.motherId,
+                            nextVisitDate = DateUtils.convertDateTimeToDate(
+                                viewModel.nextFollowupDate,
+                                DateUtils.DATE_ddMMyyyy,
+                                DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+                                inUTC = true
+                            ),
+                            memberId = patientDetails.memberId,
+                            patientReference = it.patientReference,
+                            patientStatus = DefinedParams.Postnatal,
+                            provenance = ProvanceDto(),
+                            category = MedicalReviewTypeEnums.MOTHER_LABOUR_MEDICAL_REVIEW.name
+                        )
+                        viewModel.labourDeliverySummaryCreate(request)
+                    }
+        }
     }
 
     private fun handlePrescriptionClick() {

@@ -18,6 +18,7 @@ import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.CommonUtils.convertAnyToString
 import com.medtroniclabs.spice.common.CommonUtils.convertListToString
+import com.medtroniclabs.spice.common.CommonUtils.createInvestigation
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.OtherNotes
@@ -158,8 +159,13 @@ class UnderFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
                         .map { it.diseaseCategory }.distinct())
                 )
             } ?: requireContext().getString(R.string.empty__)
+
         binding.tvPrescription.text= details.prescriptions.let { CommonUtils.createPrescription(it,requireContext()) }?.takeIf { it.isNotEmpty() }
             ?: requireContext().getString(R.string.empty__)
+
+        binding.tvInvestigation.text = details.investigations?.let { createInvestigation(it,requireContext()) }?.takeIf { it.isNotEmpty() }
+            ?: requireContext().getString(R.string.hyphen_symbol)
+
         examinationList(details)
     }
 

@@ -11,12 +11,12 @@ import androidx.fragment.app.setFragmentResult
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.CommonUtils.convertListToString
+import com.medtroniclabs.spice.common.CommonUtils.createInvestigation
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.ViewUtils
-import com.medtroniclabs.spice.data.resource.LabourDeliverySummaryRequest
 import com.medtroniclabs.spice.databinding.FragmentMotherSummaryBinding
 import com.medtroniclabs.spice.formgeneration.extension.markMandatory
-import com.medtroniclabs.spice.model.medicalreview.MotherDTO
+import com.medtroniclabs.spice.data.model.MotherDTO
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.labourdelivery.viewmodel.LabourDeliverySummaryViewModel
@@ -115,6 +115,9 @@ class MotherSummaryFragment : BaseFragment() {
             )
         binding.tvPrescriptionText.text= motherDTO?.prescriptions.let { CommonUtils.createPrescription(it,requireContext()) }?.takeIf { it.isNotEmpty() }
             ?: requireContext().getString(R.string.empty__)
+
+        binding.tvInvestigationText.text = motherDTO?.investigations?.let { createInvestigation(it,requireContext()) }?.takeIf { it.isNotEmpty() }
+            ?: requireContext().getString(R.string.hyphen_symbol)
     }
 
     private fun calculateDateTime(dateTime: String, isDate: Boolean): String? {

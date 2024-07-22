@@ -33,6 +33,7 @@ import com.medtroniclabs.spice.ui.medicalreview.PhysicalExaminationFragment
 import com.medtroniclabs.spice.ui.medicalreview.PresentingComplaintsFragment
 import com.medtroniclabs.spice.ui.medicalreview.abovefiveyears.ClinicalNotesViewModel
 import com.medtroniclabs.spice.ui.medicalreview.abovefiveyears.PresentingComplaintsViewModel
+import com.medtroniclabs.spice.ui.medicalreview.investigation.InvestigationActivity
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.AncVisitCallBack
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.pnc.fragment.MotherNeonatePncSummaryFragment
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.pnc.viewmodel.MotherNeonatePNCViewModel
@@ -158,6 +159,7 @@ class MotherNeonatePncActivity : BaseActivity(), View.OnClickListener, AncVisitC
         binding.btnSubmit.safeClickListener(this@MotherNeonatePncActivity)
         binding.btnDone.safeClickListener(this@MotherNeonatePncActivity)
         binding.ivPrescription.safeClickListener(this@MotherNeonatePncActivity)
+        binding.ivInvestigation.safeClickListener(this@MotherNeonatePncActivity)
 
     }
 
@@ -411,7 +413,11 @@ class MotherNeonatePncActivity : BaseActivity(), View.OnClickListener, AncVisitC
     private fun validateStatus(flowValue: String?) {
         viewModel.aliveStatus?.let {
             if (it) {
-                updatePrescriptionInvestigationVisible(true)
+                if ( viewModel.motherLiveStatus == getString(R.string.no)) {
+                    updatePrescriptionInvestigationVisible(false)
+                }else {
+                    updatePrescriptionInvestigationVisible(true)
+                }
                 binding.blurView.gone()
                 binding.btnSubmit.isEnabled = true
             } else {
@@ -536,7 +542,17 @@ class MotherNeonatePncActivity : BaseActivity(), View.OnClickListener, AncVisitC
             binding.btnSubmit.id -> validateAndSubmitRequest()
             binding.btnDone.id -> handleBtnDoneClick()
             binding.ivPrescription.id -> handleButtonPrescription()
+            binding.ivInvestigation.id -> handleInvestigation()
             binding.btnRefer.id -> handleButtonRefer()
+        }
+    }
+
+    private fun handleInvestigation() {
+        patientViewModel.patientDetailsLiveData.value?.data?.let { data ->
+            val intent = Intent(this, InvestigationActivity::class.java)
+            intent.putExtra(DefinedParams.PatientId, data.patientId)
+            intent.putExtra(DefinedParams.EncounterId,patientViewModel.encounterId)
+            getResult.launch(intent)
         }
     }
 

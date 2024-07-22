@@ -22,7 +22,6 @@ import com.medtroniclabs.spice.common.DefinedParams.female
 import com.medtroniclabs.spice.common.DefinedParams.male
 import com.medtroniclabs.spice.databinding.FragmentPatientMenuBinding
 import com.medtroniclabs.spice.db.entity.MenuEntity
-import com.medtroniclabs.spice.model.medicalreview.Child
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.BaseFragment
@@ -38,7 +37,6 @@ import com.medtroniclabs.spice.ui.medicalreview.underfiveyears.UnderFiveYearsBas
 import com.medtroniclabs.spice.ui.medicalreview.undertwomonths.activity.UnderTwoMonthsBaseActivity
 import com.medtroniclabs.spice.ui.mypatients.MedicalReviewBaseActivity
 import dagger.hilt.android.AndroidEntryPoint
-import org.checkerframework.checker.units.qual.s
 
 @AndroidEntryPoint
 class PatientMenuFragment : BaseFragment(), MenuSelectionListener {

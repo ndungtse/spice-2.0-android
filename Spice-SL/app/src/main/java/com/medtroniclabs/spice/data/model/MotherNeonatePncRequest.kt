@@ -1,4 +1,4 @@
-import com.medtroniclabs.spice.data.model.MedicalReviewEncounter
+package com.medtroniclabs.spice.data.model
 
 
 data class MotherNeonatePncRequest(

@@ -2,8 +2,8 @@ package com.medtroniclabs.spice.data.resource
 
 import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 
-data class LabourDeliverySummaryRequest ( val motherDTO: MotherDTO?,
-                                          val neonateDTO: NeonateDTO?)
+data class LabourDeliverySummaryRequest ( var motherDTO: MotherDTO?,
+                                          var neonateDTO: NeonateDTO?)
 
 
 

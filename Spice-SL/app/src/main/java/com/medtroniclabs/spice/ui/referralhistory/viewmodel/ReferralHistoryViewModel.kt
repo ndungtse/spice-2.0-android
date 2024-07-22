@@ -5,8 +5,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.data.PncChildMedicalReview
+import com.medtroniclabs.spice.data.history.HistoryEntity
 import com.medtroniclabs.spice.data.history.MedicalReviewHistory
-import com.medtroniclabs.spice.data.history.PrescriptionHistoryEntity
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.model.ReferralData
 import com.medtroniclabs.spice.model.ReferralDetailRequest
@@ -29,14 +29,17 @@ class ReferralHistoryViewModel @Inject constructor(
     @Inject
     lateinit var connectivityManager: ConnectivityManager
     val referralTicketLiveData = MutableLiveData<Resource<ReferralData>>()
-    val prescriptionTicketLiveData = MutableLiveData<Resource<PrescriptionHistoryEntity>>()
+    val prescriptionTicketLiveData = MutableLiveData<Resource<HistoryEntity>>()
+    val investigationTicketLiveData = MutableLiveData<Resource<HistoryEntity>>()
     val medicalReviewTicketLiveData = MutableLiveData<Resource<MedicalReviewHistory>>()
     val medicalReviewTicketLiveDataPNC = MutableLiveData<Resource<PncChildMedicalReview>>()
     var referralDates = MutableLiveData<List<ReferredDate>>()
     var prescriptionReferralDates = MutableLiveData<List<ReferredDate>>()
+    var investigationReferralDates = MutableLiveData<List<ReferredDate>>()
     var medicalReferralDates = MutableLiveData<List<ReferredDate>>()
     var ticketId: String? = null
     var prescriptionTicketId: String? = null
+    var investigationTicketId: String? = null
     var medicalTicketId: String? = null
     var patientReference:String?=null
 
@@ -90,6 +93,20 @@ class ReferralHistoryViewModel @Inject constructor(
                     ReferralDetailRequest(
                         patientReference = patientId,
                         encounterId = medicalTicketId,
+                    )
+                )
+            )
+        }
+    }
+
+    fun getInvestigationHistory(patientId: String? = null, investigationTicketId: String? = null) {
+        viewModelScope.launch(dispatcherIO) {
+            investigationTicketLiveData.postLoading()
+            investigationTicketLiveData.postValue(
+                referralHistoryRepository.getInvestigation(
+                    ReferralDetailRequest(
+                        patientReference = patientId,
+                        encounterId = investigationTicketId,
                     )
                 )
             )

@@ -15,6 +15,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.CommonUtils.combineText
 import com.medtroniclabs.spice.common.CommonUtils.convertListToString
+import com.medtroniclabs.spice.common.CommonUtils.createInvestigation
 import com.medtroniclabs.spice.common.CommonUtils.createPrescription
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
@@ -160,6 +161,9 @@ class AboveFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
             DateUtils.DATE_ddMMyyyy
         )
         binding.tvPrescriptionsText.text = details.prescriptions?.let { createPrescription(it, requireContext()) }?.takeIf { it.isNotEmpty() }
+            ?: requireContext().getString(R.string.hyphen_symbol)
+
+        binding.tvInvestigationText.text = details.investigations?.let { createInvestigation(it,requireContext()) }?.takeIf { it.isNotEmpty() }
             ?: requireContext().getString(R.string.hyphen_symbol)
     }
 

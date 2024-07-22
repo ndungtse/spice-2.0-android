@@ -13,7 +13,7 @@ import com.medtroniclabs.spice.formgeneration.extension.fetchString
 import com.medtroniclabs.spice.formgeneration.extension.markMandatory
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 
-class PrescriptionReasonDialog() : DialogFragment(), View.OnClickListener {
+class DeleteReasonDialog() : DialogFragment(), View.OnClickListener {
 
     var callback: ((isPositiveResult: Boolean, comments: String?) -> Unit)? = null
 
@@ -46,7 +46,7 @@ class PrescriptionReasonDialog() : DialogFragment(), View.OnClickListener {
             showComment: Boolean = true,
             callback: ((isPositiveResult: Boolean, comments: String?) -> Unit),
             message: Pair<String?, String?> = Pair(null, null),
-        ): PrescriptionReasonDialog {
+        ): DeleteReasonDialog {
 
             val args = Bundle()
             args.putString(KEY_TITLE, title)
@@ -56,7 +56,7 @@ class PrescriptionReasonDialog() : DialogFragment(), View.OnClickListener {
             args.putBoolean(KEY_SHOW_COMMENT, showComment)
             args.putBoolean(IS_NEGATIVE_BUTTON_NEEDED, isNegativeButtonNeed)
             args.putString(ERROR_MESSAGE, message.second)
-            val fragment = PrescriptionReasonDialog(callback)
+            val fragment = DeleteReasonDialog(callback)
             fragment.arguments = args
             return fragment
         }

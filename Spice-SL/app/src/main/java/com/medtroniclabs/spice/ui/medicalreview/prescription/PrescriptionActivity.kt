@@ -25,7 +25,7 @@ import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
-import com.medtroniclabs.spice.ui.PrescriptionReasonDialog
+import com.medtroniclabs.spice.ui.DeleteReasonDialog
 import com.medtroniclabs.spice.ui.medicalreview.SignatureDialogFragment
 import com.medtroniclabs.spice.ui.medicalreview.SignatureListener
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
@@ -343,7 +343,7 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
                     if (data.medicationResponse.isEditable) {
                         resetDataInitialData(data)
                     } else {
-                        val dialog = PrescriptionReasonDialog.newInstance(
+                        val dialog = DeleteReasonDialog.newInstance(
                             this,
                             getString(R.string.confirmation),
                             true,
@@ -355,7 +355,7 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
                             },
                             message = Pair(getString(R.string.delete_confirmation), null)
                         )
-                        dialog.show(supportFragmentManager, PrescriptionReasonDialog.TAG)
+                        dialog.show(supportFragmentManager, DeleteReasonDialog.TAG)
                     }
                 } ?: kotlin.run {
                     val tempList =
