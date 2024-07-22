@@ -28,7 +28,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginStart="@dimen/_35sdp"
-                android:layout_marginEnd="@dimen/_16sdp">
+                android:layout_marginEnd="@dimen/_35sdp">
 
 
                 <androidx.fragment.app.FragmentContainerView

@@ -138,9 +138,11 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
         }
 
         override fun afterTextChanged(s: Editable?) {
-            val hasString = (s?.trim()?.count() ?: 0) > 0
+            val enteredChar = s?.toString() ?: ""
+            val trimmedChar = enteredChar?.trim()
+            val hasString = !trimmedChar.isNullOrBlank()
             binding.llExactSearch.btnSearch.isEnabled = hasString
-            if (!hasString) {
+            if (enteredChar.isEmpty() && !hasString) {
                 handleSearchBarAfterTextRemove()
             }
         }

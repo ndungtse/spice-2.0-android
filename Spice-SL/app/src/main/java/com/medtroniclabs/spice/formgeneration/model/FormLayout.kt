@@ -68,7 +68,8 @@ data class FormLayout(
     var dosageListItems: ArrayList<RecommendedDosageListModel>? = null,
     var maxDecimalPlaces:Int? = null,
     var menstrualPeriod: Boolean = false,
-    var minDays:Int ?= null
+    var minDays:Int ?= null,
+    var maxAge: Int? = null
 ) : BaseViewParams
 
 data class FormResponse(

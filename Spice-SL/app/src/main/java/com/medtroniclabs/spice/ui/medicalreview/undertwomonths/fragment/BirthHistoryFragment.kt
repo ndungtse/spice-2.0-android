@@ -10,6 +10,7 @@ import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.data.BirthHistoryResponse
 import com.medtroniclabs.spice.databinding.FragmentBirthHistoryBinding
+import com.medtroniclabs.spice.formgeneration.extension.capitalizeFirstChar
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil.toYesNoOrDefault
@@ -83,7 +84,7 @@ class BirthHistoryFragment : BaseFragment() {
                     if (ageWeek >= 1) getString(R.string.weeks_baby) else getString(R.string.week_baby)
                 val prematureText =
                     if (ageWeek < 37 && birthHistoryDetails.gestationalAgeCategory != null) birthHistoryDetails.gestationalAgeCategory else ""
-                ageWeek.toString().plus(weeksText).plus(prematureText)
+                ageWeek.toString().plus(weeksText).plus(" ").plus("(${prematureText.capitalizeFirstChar()})")
             } ?: getString(R.string.separator_double_hyphen)
             tvBreathingProblem.text = birthHistoryDetails.haveBreathingProblem.toYesNoOrDefault(
                 getString(R.string.separator_double_hyphen),

@@ -282,7 +282,7 @@ class UnderTwoMonthViewModel @Inject constructor(
                 }
                 if (nonBreastfeedingHashMap.containsKey(UnderTwoExaminationKeyMapping.NonBreastFeedingProblem.thrush)) {
                     nonBreastfeedingProblem = nonBreastfeedingProblem.copy(
-                        thrush = nonBreastfeedingHashMap[UnderTwoExaminationKeyMapping.NonBreastFeedingProblem.feedFormHIVPositiveMother] as String
+                        thrush = nonBreastfeedingHashMap[UnderTwoExaminationKeyMapping.NonBreastFeedingProblem.thrush] as String
                     )
                 }
                 return nonBreastfeedingProblem

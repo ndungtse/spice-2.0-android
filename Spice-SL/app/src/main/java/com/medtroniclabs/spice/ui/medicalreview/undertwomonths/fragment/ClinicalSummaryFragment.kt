@@ -28,6 +28,7 @@ import com.medtroniclabs.spice.formgeneration.ui.SingleSelectionCustomView
 import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
+import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil.initTextWatcherForString
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil.isValidInput
 import com.medtroniclabs.spice.ui.medicalreview.undertwomonths.viewmodel.ClinicalSummaryViewModel
@@ -312,33 +313,33 @@ class ClinicalSummaryFragment : BaseFragment(), View.OnClickListener {
         return weight && height && temperature && respirationRate && repeat && whz && waz
     }
     private fun whzValidate(): Boolean {
-        return if (binding.etWHZ.text?.isEmpty() == true) {
-            binding.tvWHZError.visible()
-            binding.tvWHZError.text = getString(R.string.error_label)
-            false
-        } else {
-            binding.tvWHZError.gone() // Clear error message if needed
-            true
-        }
-    }
-    private fun wazValidate(): Boolean {
-        return if (binding.etWAZ.text?.isEmpty() == true) {
-            binding.tvWAZError.visible()
-            binding.tvWAZError.text = getString(R.string.error_label)
-            false
-        } else {
-            binding.tvWAZError.gone() // Clear error message if needed
-            true
-        }
+        return MotherNeonateUtil.isBasicValid(
+            binding.etWHZ.text.toString(),
+            binding.tvWHZError,
+            0,
+            getString(R.string.error_label),
+            context = requireContext(),
+            isMandatory = true
+        )
     }
 
+    private fun wazValidate(): Boolean {
+        return MotherNeonateUtil.isBasicValid(
+            binding.etWAZ.text.toString(),
+            binding.tvWAZError,
+            0,
+            getString(R.string.error_label),
+            context = requireContext(),
+            isMandatory = true
+        )
+    }
 
     private fun heightValidate(): Boolean {
         return isValidInput(
             binding.etHeight.text.toString(),
             binding.etHeight,
             binding.tvHeightError,
-            0.0..300.0,
+            10.0..300.0,
             R.string.height_error_0_300,
             true,
             requireContext()
@@ -387,7 +388,7 @@ class ClinicalSummaryFragment : BaseFragment(), View.OnClickListener {
             binding.etWeight.text.toString(),
             binding.etWeight,
             binding.tvWeightError,
-            0.0..400.0,
+            0.1..400.0,
             R.string.weight_error_0_400,
             true,
             requireContext()

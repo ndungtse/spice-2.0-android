@@ -124,10 +124,16 @@ object MotherNeonateUtil {
         errorMessage: String,
         maxValue: Int? = null,
         maxValueError: String? = null,
-        context: Context
+        context: Context,
+        isMandatory: Boolean = false
     ): Boolean {
         val value = valueText?.toIntOrNull()
         if (value == null) {
+            if (isMandatory) {
+                errorTextView.text = errorMessage
+                errorTextView.visible()
+                return false
+            }
             // Invalid input, display error message
             errorTextView.gone()
             return true

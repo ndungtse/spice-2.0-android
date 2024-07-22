@@ -68,7 +68,6 @@ class PatientsDataSource(
 
             val patientList: List<PatientListRespModel> = response.entity?.patientList ?: emptyList()
             referencePatientId = response.entity?.referencePatientId
-            totalCount += patientList.size
             if (!isInitialData) {
                 if (searchText.isEmpty()) {
                     totalCount = response.entity?.totalCount ?: 0

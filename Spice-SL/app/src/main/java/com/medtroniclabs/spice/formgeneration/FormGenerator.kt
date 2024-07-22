@@ -50,7 +50,6 @@ import com.medtroniclabs.spice.common.DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
 import com.medtroniclabs.spice.common.DateUtils.DATE_ddMMyyyy
 import com.medtroniclabs.spice.common.DateUtils.convertDateFormat
 import com.medtroniclabs.spice.common.DateUtils.convertDateToStringWithUTC
-import com.medtroniclabs.spice.common.DateUtils.getDateStringFromDate
 import com.medtroniclabs.spice.common.DefinedParams.female
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.LocalSpinnerResponse
@@ -111,6 +110,7 @@ import com.medtroniclabs.spice.formgeneration.utility.DigitsInputFilter
 import com.medtroniclabs.spice.formgeneration.utility.FormFieldValidator
 import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.headPhoneNumber
 import com.medtroniclabs.spice.mappingkey.MemberRegistration
+import com.medtroniclabs.spice.mappingkey.MemberRegistration.dateOfBirth
 import com.medtroniclabs.spice.mappingkey.MemberRegistration.gender
 import com.medtroniclabs.spice.mappingkey.MemberRegistration.phoneNumber
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.PREGNANCY_MAX_AGE
@@ -1840,6 +1840,28 @@ class FormGenerator(
                     } ?: run {
                         isValid = false
                         requestFocusView(data)
+                    }
+                } else if ((id == dateOfBirth) && isMandatory && resultHashMap.containsKey(id)) {
+                    val actualValue = resultHashMap[id] as? String
+                    maxAge?.let { ageLimit ->
+                        val isValidAge = actualValue?.let {
+                            val dob = DateUtils.getV2YearMonthAndWeek(it)
+                            dob.years < ageLimit || (dob.years == ageLimit && dob.months == 0 && dob.weeks == 0 && dob.days == 0)
+                        } ?: false
+
+                        if (!isValidAge) {
+                            isValid = false
+                            requestFocusView(data, getString(R.string.dob_invalid, maxAge))
+                        } else {
+                            hideValidationField(data)
+                        }
+                    } ?: run {
+                        actualValue?.let {
+                            hideValidationField(data)
+                        } ?: run {
+                            isValid = false
+                            requestFocusView(data)
+                        }
                     }
                 } else {
                     if (resultHashMap.containsKey(id)) {

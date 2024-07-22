@@ -290,7 +290,7 @@
     <string name="exit_reason">If you leave this screen, your entered data will not be saved.</string>
     <string name="add_new_member_small">Add New Member</string>
     <string name="birth_history">Birth History</string>
-    <string name="breathing_problem_at_birth">Breathing Problems at birth</string>
+    <string name="breathing_problem_at_birth">Breathing problems at birth</string>
     <string name="clinical_summary"><![CDATA[Clinical Summary & Vital Signs]]></string>
     <string name="weight_in_kgs">Weight (in Kgs)</string>
     <string name="waz">WAZ</string>
@@ -350,8 +350,8 @@
     <string name="plus">+</string>
     <string name="parity">Parity</string>
     <string name="weight_error">"Please enter weight between 10 to 400"</string>
-    <string name="weight_error_0_400">"Please enter weight between 10 to 400"</string>
-    <string name="height_error_0_300">"Please enter height between 50 to 300"</string>
+    <string name="weight_error_0_400">"Please enter weight between 0.1 to 400"</string>
+    <string name="height_error_0_300">"Please enter height between 10 to 300"</string>
     <string name="height_error">"Please enter height between 50 to 300"</string>
     <string name="gestational_error">"Please enter Gestational age below 60"</string>
     <string name="patient_blood_group">Patient Blood Group</string>
@@ -480,6 +480,7 @@
     <string name="fast_breathing">Fast Breathing</string>
     <string name="ddmmyyyy">dd/mm/yyyy</string>
     <string name="phone_number_invalid">Please enter a valid mobile number</string>
+    <string name="dob_invalid">Please enter an age between 0 to %1$d</string>
     <string name="zinc_ors_status">(Zinc - %1$s), (ORS - %2$s)</string>
     <string name="physical_examinations">Physical Examinations</string>
     <string name="congenital_detect">Congenital Detect</string>
@@ -550,8 +551,8 @@
     <string name="_kg">" Kg"</string>
     <string name="week_baby">" week"</string>
     <string name="please_enter_temperature_between_10_to_200">Please enter Temperature between 10 to 200</string>
-    <string name="respiratory_error">Please enter respiratory rate between 0 to 100</string>
-    <string name="please_enter_repeat_between_0_to_100">Please enter repeat between 0 to 100</string>
+    <string name="respiratory_error">Please enter respiratory rate between 1 to 99</string>
+    <string name="please_enter_repeat_between_0_to_100">Please enter repeat between 1 to 99</string>
     <string name="sy">:</string>
     <string name="albendazole">Albendazole</string>
     <string name="muac_in_cm">MUAC (in cm)</string>

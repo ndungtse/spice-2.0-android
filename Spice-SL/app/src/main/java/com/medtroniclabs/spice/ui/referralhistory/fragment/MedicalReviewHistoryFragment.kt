@@ -386,9 +386,13 @@ class MedicalReviewHistoryFragment : BaseFragment(), View.OnClickListener {
                     ?: getString(R.string.separator_double_hyphen))
             )
         )
+        // TODO Please note: Change the spelling of 'systemicExaminations'
+        //  consistently throughout the project. This may require effort
+        //  and could affect past data fetching, as it currently varies in some requests and responses
+        // after backend change this we need to change variables name
 
         val additionalFields = when (medicalReviewHistory.type?.lowercase()) {
-            Above5MedicalReview.lowercase(),ICCM_ABOVE_2M_5Y.lowercase() -> mapOf(
+            Above5MedicalReview.lowercase() -> mapOf(
                 DefinedParams.label to requireContext().getString(R.string.systemic_examinations),
                 DefinedParams.value to combineText(
                     medicalReviewHistory.reviewDetails?.systemicExaminations,
@@ -396,6 +400,16 @@ class MedicalReviewHistoryFragment : BaseFragment(), View.OnClickListener {
                     getString(R.string.separator_double_hyphen)
                 )
             )
+
+            ICCM_ABOVE_2M_5Y.lowercase() -> mapOf(
+                DefinedParams.label to requireContext().getString(R.string.systemic_examinations),
+                DefinedParams.value to combineText(
+                    medicalReviewHistory.reviewDetails?.systemicExamination,
+                    medicalReviewHistory.reviewDetails?.systemicExaminationNotes,
+                    getString(R.string.separator_double_hyphen)
+                )
+            )
+
             PregnancyAncMedicalReview.lowercase() -> mapOf(
                 DefinedParams.label to requireContext().getString(R.string.obstetric_examination),
                 DefinedParams.value to combineText(

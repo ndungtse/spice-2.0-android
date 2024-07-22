@@ -181,7 +181,7 @@
             android:background="@drawable/edittext_background"
             android:hint="@string/temperature"
             android:inputType="numberDecimal"
-            android:maxLength="3"
+            android:maxLength="5"
             android:paddingStart="@dimen/_10sdp"
             android:textAlignment="textStart"
             android:textColor="@color/grey_black"
