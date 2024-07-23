@@ -58,7 +58,7 @@ data class HouseHoldMember(
     val motherPatientId: String? = null,
 
     @ColumnInfo(name = "isPregnant")
-    val isPregnant: Boolean,
+    val isPregnant: Boolean? = null,
 
     val isDeceased: Boolean = false,
 

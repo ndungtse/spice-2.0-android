@@ -41,12 +41,7 @@ class ResourceLoadingScreen : BaseActivity() {
                     if (userRole == RoleConstant.COMMUNITY_HEALTH_WORKER) {
                         viewModel.downloadInitialDetails()
                     } else {
-                        SecuredPreference.putBoolean(
-                            SecuredPreference.EnvironmentKey.ISMETALOADED.name,
-                            true
-                        )
-                        startActivity(Intent(this, LandingActivity::class.java))
-                        finish()
+                       launchLandingScreen()
                     }
                 }
                 ResourceState.ERROR -> {
@@ -62,8 +57,7 @@ class ResourceLoadingScreen : BaseActivity() {
                 }
 
                 ResourceState.SUCCESS -> {
-                    startActivity(Intent(this, LandingActivity::class.java))
-                    finish()
+                    launchLandingScreen()
                 }
 
                 ResourceState.ERROR -> {
@@ -91,6 +85,19 @@ class ResourceLoadingScreen : BaseActivity() {
             binding.actionButton.visibility = View.GONE
             viewModel.getMetaDataInformation()
         }
+    }
+
+    private fun launchLandingScreen() {
+        SecuredPreference.putBoolean(
+            SecuredPreference.EnvironmentKey.ISLOGGEDIN.name,
+            true
+        )
+        SecuredPreference.putBoolean(
+            SecuredPreference.EnvironmentKey.ISMETALOADED.name,
+            true
+        )
+        startActivity(Intent(this, LandingActivity::class.java))
+        finish()
     }
 
 }

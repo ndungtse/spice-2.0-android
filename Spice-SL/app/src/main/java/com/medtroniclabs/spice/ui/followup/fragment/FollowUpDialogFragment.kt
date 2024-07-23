@@ -83,7 +83,7 @@ class FollowUpDialogFragment : DialogFragment() {
             with(binding) {
                 tvTitle.text = getPatientName(details.name, details.dateOfBirth, details.gender)
                 btnCall.isEnabled = !details.isWrongNumber
-                tvReasonText.text = details.reason ?: getString(R.string.hyphen_symbol)
+                tvReasonText.text = details.getReason(getString(R.string.hyphen_symbol))
                 tvPatientStatusText.text = requireContext().getPatientStatus(details.patientStatus)
                     ?: getString(R.string.hyphen_symbol)
                 tvVillageText.text = details.village ?: getString(R.string.hyphen_symbol)

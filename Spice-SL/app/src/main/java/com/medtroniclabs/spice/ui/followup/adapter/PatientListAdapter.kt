@@ -82,7 +82,7 @@ class PatientListAdapter(private val callback: (Int, FollowUpPatientModel) -> Un
                     }
                 }
 
-                tvReason.text = data.reason
+                tvReason.text = data.getReason(context.getString(R.string.hyphen_symbol))
                 tvPatientStatus.text = context.getPatientStatus(data.patientStatus) ?: context.getString(R.string.hyphen_symbol)
                 tvLastCallAtValue.text = data.calledAt?.convertToLocalDateTime(format = DATE_TIME_CALL_DISPLAY_FORMAT) ?: "--"
 

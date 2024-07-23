@@ -569,5 +569,6 @@
     <string name="treatment_start_date">Treatment Start Date</string>
     <string name="referred_date">Referred Date</string>
     <string name="tab_medical_review">Medical Review</string>
+    <string name="call">Call</string>
 
 </resources>

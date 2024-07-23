@@ -386,16 +386,16 @@
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/btnCall"
-                style="@style/Button_Style"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
+                android:background="@drawable/call_button_selector"
                 android:layout_margin="@dimen/_8sdp"
                 android:paddingVertical="@dimen/_12sdp"
                 android:paddingStart="@dimen/_10sdp"
                 android:paddingEnd="@dimen/_10sdp"
                 android:src="@drawable/ic_call_with_text"
-                android:text="Call"
+                android:text="@string/call"
                 android:textAllCaps="true"
                 app:layout_constraintBottom_toBottomOf="@id/btnAssessment"
                 app:layout_constraintEnd_toEndOf="parent"

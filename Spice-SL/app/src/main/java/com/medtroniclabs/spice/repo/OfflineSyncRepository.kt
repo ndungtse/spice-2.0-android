@@ -109,14 +109,6 @@ class OfflineSyncRepository @Inject constructor(
              }*/
 
             if (isInitialDataSuccess) {
-                SecuredPreference.putBoolean(
-                    SecuredPreference.EnvironmentKey.ISLOGGEDIN.name,
-                    true
-                )
-                SecuredPreference.putBoolean(
-                    SecuredPreference.EnvironmentKey.ISMETALOADED.name,
-                    true
-                )
                 liveData.postSuccess(true)
             } else {
                 liveData.postError("Something went wrong")

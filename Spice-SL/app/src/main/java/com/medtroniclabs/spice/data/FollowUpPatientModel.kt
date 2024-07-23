@@ -22,4 +22,12 @@ data class FollowUpPatientModel(
     val encounterDate: String? = null,
     val isWrongNumber: Boolean,
     val updatedAt: Long
-)
+) {
+    fun getReason(default: String): String {
+        return if (!reason?.trim().isNullOrEmpty()) {
+            reason!!.trim()
+        } else {
+            default
+        }
+    }
+}
