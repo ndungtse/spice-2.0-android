@@ -15,7 +15,7 @@ data class FollowUp(
     val householdId: String?,
     val memberId: String,
     val patientId: String,
-    val encounterId: String,
+    val encounterId: String?,
     val patientStatus: String,
     var currentPatientStatus: String? = null,
     val reason: String ? =null,

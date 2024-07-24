@@ -145,7 +145,6 @@ interface RoomHelper {
     suspend fun getExaminationQuestionsByWorkFlow(workFlowType: String): ExaminationListItems
 
     suspend fun insertFollowUp(followUp: FollowUp): Long
-    suspend fun insertFollowUps(list: List<FollowUp>)
 
     suspend fun deleteAllFollowUps()
 
@@ -198,6 +197,8 @@ interface RoomHelper {
 
     suspend fun changeAssessmentStatus(idList: List<String>)
 
+    suspend fun changeFollowUpStatus(idList: List<Long>)
+
     suspend fun insertOrUpdateHHFromBE(entity: HouseholdEntity): Long
 
     suspend fun insertOrUpdateHHMFromBE(entity: HouseholdMemberEntity): Long
@@ -210,5 +211,10 @@ interface RoomHelper {
     suspend fun saveFrequencyList(villageEntityList: List<FrequencyEntity>): List<Long>
     suspend fun getFrequencyList(): List<FrequencyEntity>
 
+    suspend fun deleteCreatedFollowUp()
+
+    suspend fun insertOrUpdateFollowUp(entity: FollowUp)
+
+    suspend fun deleteCompletedFollowUp()
 
 }

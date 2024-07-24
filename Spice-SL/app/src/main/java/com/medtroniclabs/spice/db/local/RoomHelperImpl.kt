@@ -11,7 +11,6 @@ import com.medtroniclabs.spice.data.VillageInfo
 import com.medtroniclabs.spice.data.model.HouseholdCardDetail
 import com.medtroniclabs.spice.data.offlinesync.model.HouseHold
 import com.medtroniclabs.spice.data.offlinesync.model.HouseHoldMember
-import com.medtroniclabs.spice.data.offlinesync.utils.OfflineSyncStatus
 import com.medtroniclabs.spice.db.dao.AboveFiveYearsDAO
 import com.medtroniclabs.spice.db.dao.AssessmentDAO
 import com.medtroniclabs.spice.db.dao.DiagnosisDAO
@@ -22,7 +21,6 @@ import com.medtroniclabs.spice.db.dao.FollowUpDao
 import com.medtroniclabs.spice.db.dao.FrequencyDAO
 import com.medtroniclabs.spice.db.dao.HouseholdDAO
 import com.medtroniclabs.spice.db.dao.LabourDeliveryDAO
-import com.medtroniclabs.spice.db.dao.MemberClinicalDAO
 import com.medtroniclabs.spice.db.dao.MemberDAO
 import com.medtroniclabs.spice.db.dao.MetaDataDAO
 import com.medtroniclabs.spice.db.dao.PregnancyDetailDao
@@ -52,7 +50,6 @@ import com.medtroniclabs.spice.model.assessment.AssessmentMemberDetails
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
 import com.medtroniclabs.spice.ui.boarding.MenuTypeEnums
 import com.medtroniclabs.spice.ui.followup.FollowUpDefinedParams
-import java.util.Locale
 import javax.inject.Inject
 
 class RoomHelperImpl @Inject constructor(
@@ -426,10 +423,6 @@ class RoomHelperImpl @Inject constructor(
         return diagnosisDAO.getDiagnosisList(diagnosisType)
     }
 
-    override suspend fun insertFollowUps(list: List<FollowUp>) {
-        followUpDao.insertFollowUps(list)
-    }
-
     override suspend fun insertFollowUp(followUp: FollowUp): Long {
         return followUpDao.insertFollowUp(followUp)
     }
@@ -486,7 +479,7 @@ class RoomHelperImpl @Inject constructor(
 
     override suspend fun addCallHistory(oldFollowUp: FollowUp, history: FollowUpCall, newFollowUp: FollowUp?) {
         followUpCallsDao.insertFollowUpCall(history)
-        followUpDao.updateFollowUps(oldFollowUp)
+        followUpDao.insertFollowUp(oldFollowUp)
         newFollowUp?.let {
             followUpDao.insertFollowUp(it)
         }
@@ -563,6 +556,11 @@ class RoomHelperImpl @Inject constructor(
     override suspend fun changeAssessmentStatus(idList: List<String>) {
         assessmentDAO.updateInProgress(idList)
     }
+
+    override suspend fun changeFollowUpStatus(idList: List<Long>) {
+        followUpDao.updateInProgress(idList)
+    }
+
     override suspend fun getPregnancyDetailByPatientId(patientId: String): PregnancyDetail? {
         return pregnancyDetailDao.getPregnancyDetailByPatientId(patientId)
     }
@@ -585,5 +583,17 @@ class RoomHelperImpl @Inject constructor(
 
     override suspend fun updateOtherFollowUpForWrongNumber(id: Long, fhirId: String) {
         followUpDao.updateOtherFollowUpForWrongNumber(id, fhirId)
+    }
+
+    override suspend fun deleteCreatedFollowUp() {
+        followUpDao.deleteCreatedFollowUp()
+    }
+
+    override suspend fun insertOrUpdateFollowUp(entity: FollowUp) {
+        followUpDao.insertOrUpdateFromBE(entity)
+    }
+
+    override suspend fun deleteCompletedFollowUp() {
+        followUpDao.deleteCompletedFollowUp()
     }
 }

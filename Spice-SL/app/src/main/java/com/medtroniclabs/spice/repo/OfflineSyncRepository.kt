@@ -2,6 +2,7 @@ package com.medtroniclabs.spice.repo
 
 import androidx.lifecycle.MutableLiveData
 import com.google.gson.Gson
+import com.google.gson.JsonElement
 import com.google.gson.JsonParser
 import com.google.gson.reflect.TypeToken
 import com.medtroniclabs.spice.appextensions.convertToUtcDateTime
@@ -28,6 +29,10 @@ import com.medtroniclabs.spice.model.assessment.AssessmentDetails
 import com.medtroniclabs.spice.network.ApiHelper
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
+import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.ANC
+import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.ChildHoodVisit
+import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.PNC
+import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.visitNo
 import okhttp3.ResponseBody
 import retrofit2.Response
 import timber.log.Timber
@@ -49,11 +54,12 @@ class OfflineSyncRepository @Inject constructor(
 
     private fun convertEntityToRequest(list: List<AssessmentDetails>): List<Assessment> {
         return list.map { entity ->
+            val assessmentDetail = JsonParser.parseString(entity.assessmentDetails)
             Assessment(
                 referenceId = entity.id,
                 villageId = entity.villageId,
                 assessmentType = entity.assessmentType,
-                assessmentDetails = JsonParser.parseString(entity.assessmentDetails),
+                assessmentDetails = assessmentDetail,
                 patientStatus = entity.referralStatus,
                 referredReasons = entity.referredReason?.joinToString(", "),
                 summary = entity.otherDetails?.let { JsonParser.parseString(it) },
@@ -65,7 +71,7 @@ class OfflineSyncRepository @Inject constructor(
                     provenance = ProvanceDto(modifiedDate = entity.createdAt.convertToUtcDateTime()),
                     latitude = entity.latitude,
                     longitude = entity.longitude,
-                    visitNumber = getVisitCount(entity)
+                    visitNumber = getVisitNumber(entity.assessmentType, assessmentDetail)
                 ),
                 followUpId = entity.followUpId,
                 updatedAt = entity.createdAt
@@ -73,13 +79,21 @@ class OfflineSyncRepository @Inject constructor(
         }
     }
 
-    private fun getVisitCount(assessmentDetail: AssessmentDetails): Long? {
-        when(assessmentDetail.assessmentType.lowercase()) {
-            RMNCH.ANC_MENU.lowercase() -> return assessmentDetail.ancVisitNo
-            RMNCH.pnc_mother_key.lowercase() -> return assessmentDetail.pncVisitNo
-            RMNCH.CHILD_MENU.lowercase() -> return assessmentDetail.childVisitNo
+    private fun getVisitNumber(assessmentType: String, assessmentDetails: JsonElement): Long? {
+        when (assessmentType.lowercase()) {
+            RMNCH.ANC_MENU.lowercase() -> return getRMNCHVisitNumber(ANC, assessmentDetails)
+            RMNCH.pnc_mother_key.lowercase() -> return getRMNCHVisitNumber(PNC, assessmentDetails)
+            RMNCH.CHILD_MENU.lowercase() -> return getRMNCHVisitNumber(
+                ChildHoodVisit,
+                assessmentDetails
+            )
+
             else -> return null
         }
+    }
+
+    private fun getRMNCHVisitNumber(key: String, assessmentDetails: JsonElement): Long {
+        return assessmentDetails.asJsonObject.get(key).asJsonObject.get(visitNo).asLong
     }
 
     suspend fun getSyncStatus(request: RequestGetSyncStatus): Response<SyncResponse> {
@@ -98,6 +112,7 @@ class OfflineSyncRepository @Inject constructor(
             roomHelper.deleteAllHouseholdMembers()
             roomHelper.deleteAllPregnancyDetails()
             roomHelper.deleteAllAssessments()
+            roomHelper.deleteAllFollowUps()
 
             val villageIds = roomHelper.getAllVillageIds()
             // Fetch Synced Data
@@ -149,16 +164,18 @@ class OfflineSyncRepository @Inject constructor(
         val hhMapping = insertHouseholds(requestInitialDownload.households)
         insertHouseholdMembers(requestInitialDownload.members, hhMapping)
 
+        // List of changes for Followup incremental
+        // 1. Delete All Followup where Followup id is null and SyncStatus is InProgress -> Because it is created from Mobile
+        // 2. Update record when sync status is Not NotSynced
+        // 3. Delete All FollowUp where isCompleted true and syncStatus is Success
         // Insert follow up
-        roomHelper.deleteAllFollowUps()
         roomHelper.deleteAllFollowUpCalls()
-        val initialSyncStatus = OfflineSyncStatus.Success
-        val initialSyncTime = System.currentTimeMillis()
-        requestInitialDownload.followUps?.forEach {
-            it.syncStatus = initialSyncStatus
-            it.updatedAt = it.calledAt ?: 0
-            roomHelper.insertFollowUp(it)
+        roomHelper.deleteCreatedFollowUp()
+        requestInitialDownload.followUps?.forEach { followUp ->
+            followUp.syncStatus = OfflineSyncStatus.Success
+            roomHelper.insertOrUpdateFollowUp(followUp)
         }
+        roomHelper.deleteCompletedFollowUp()
 
         // Insert Pregnancy Information
         requestInitialDownload.pregnancyInfos?.forEach {
@@ -356,6 +373,7 @@ class OfflineSyncRepository @Inject constructor(
         val householdIds = mutableListOf<String>()
         val householdMemberIds = mutableListOf<String>()
         val assessmentIds = mutableListOf<String>()
+        val followUpIds = mutableListOf<Long>()
 
         val houseHoldList = roomHelper.getAllUnSyncedHouseHolds()
         householdIds.addAll(houseHoldList.map { it.referenceId!! })
@@ -389,6 +407,7 @@ class OfflineSyncRepository @Inject constructor(
         //Followup
         val allFollowUps = roomHelper.getAllFollowUpRequests()
         allFollowUps.forEach { followUp ->
+            followUpIds.add(followUp.referenceId)
             followUp.id?.let {
                 followUp.followUpDetails = roomHelper.getAllFollowUpCalls(it)
             }
@@ -415,6 +434,7 @@ class OfflineSyncRepository @Inject constructor(
                 roomHelper.changeHouseholdStatus(householdIds) // Change Status to InProgress
                 roomHelper.changeHouseholdMemberStatus(householdMemberIds) // Change Status to InProgress
                 roomHelper.changeAssessmentStatus(assessmentIds) // Change status to InProgress
+                roomHelper.changeFollowUpStatus(followUpIds) // Change status to InProgress
                 return listOf(request[OfflineConstant.REQUEST_ID] as String)
             }
         } catch (e: Exception) {

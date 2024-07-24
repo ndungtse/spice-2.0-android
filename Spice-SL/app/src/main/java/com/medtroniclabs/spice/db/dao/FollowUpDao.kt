@@ -5,6 +5,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
 import androidx.room.Update
 import com.medtroniclabs.spice.data.FollowUpPatientModel
 import com.medtroniclabs.spice.data.offlinesync.model.RequestFollowUp
@@ -17,11 +18,6 @@ interface FollowUpDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertFollowUp(followUp: FollowUp): Long
-    @Insert
-    suspend fun insertFollowUps(followUpList: List<FollowUp>)
-
-    @Update
-    suspend fun updateFollowUps(followUp: FollowUp)
 
     @Query("DELETE FROM FollowUp")
     suspend fun deleteAllFollowUps()
@@ -71,6 +67,27 @@ interface FollowUpDao {
             "CASE WHEN :type = 'HH_VISIT' THEN (encounterType = :encounterType AND reason= :reason) ELSE encounterType= :encounterType END")
     suspend fun updateOnTreatmentStatus(id: Long, fhirId: String, type: String,  updateAt:Long, encounterType: String?=null, reason: String? = null, syncStatus: String = OfflineSyncStatus.NotSynced.name)
 
-    @Query("UPDATE FollowUp SET isWrongNumber = 1, syncStatus = :syncStatus, isCompleted = CASE WHEN type = 'HH_VISIT' THEN 0 ELSE 1 END WHERE memberId = :fhirId AND id != :id ")
+    @Query("UPDATE FollowUp SET isWrongNumber = 1, syncStatus = :syncStatus, isCompleted = CASE WHEN type = 'HH_VISIT' THEN 0 ELSE 1 END WHERE memberId = :fhirId AND isWrongNumber = 0 AND id != :id ")
     suspend fun updateOtherFollowUpForWrongNumber(id: Long, fhirId: String, syncStatus: String = OfflineSyncStatus.NotSynced.name)
+
+    @Query("UPDATE FollowUp SET syncStatus =:syncStatus WHERE referenceId IN (:ids)")
+    suspend fun updateInProgress(ids: List<Long>, syncStatus: String = OfflineSyncStatus.InProgress.name)
+
+    @Query("DELETE FROM FollowUp WHERE id IS NULL AND syncStatus = :syncStatus")
+    suspend fun deleteCreatedFollowUp(syncStatus: String = OfflineSyncStatus.InProgress.name)
+
+    @Transaction
+    suspend fun insertOrUpdateFromBE(entity: FollowUp) {
+        val existingEntity = entity.id?.let { getFollowUpDetailsById(it) }
+        if (existingEntity?.syncStatus != OfflineSyncStatus.NotSynced) {
+            val entityToInsert = existingEntity?.let { entity.copy(referenceId = it.referenceId) } ?: entity
+            entityToInsert.updatedAt = entity.calledAt ?: 0
+            entityToInsert.syncStatus = OfflineSyncStatus.Success
+            insertFollowUp(entityToInsert)
+        }
+    }
+
+    @Query("DELETE FROM FollowUp WHERE isCompleted = 1 AND syncStatus = :syncStatus")
+    suspend fun deleteCompletedFollowUp(syncStatus: String = OfflineSyncStatus.Success.name)
+
 }

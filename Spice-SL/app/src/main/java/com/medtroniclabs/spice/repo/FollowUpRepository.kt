@@ -152,22 +152,6 @@ class FollowUpRepository @Inject constructor(
             roomHelper.updateOtherDuplicateTickets(id, followUp)
         }
 
-        val shouldCreateReferralTicketForHHVisit = (followUp.type == FollowUpDefinedParams.FU_TYPE_HH_VISIT &&
-                (call.patientStatus?.equals(ReferralStatus.Referred.name, true) == true
-                        || followUp.successfulAttempts >= maxSuccessfulCallLimit))
-
-        val shouldCreateReferralTicketForMR = (followUp.type == FollowUpDefinedParams.FU_TYPE_MEDICAL_REVIEW &&
-                (call.patientStatus?.equals(ReferralStatus.Referred.name, true) == true))
-
-        if (shouldCreateReferralTicketForHHVisit || shouldCreateReferralTicketForMR) {
-            return getNewFollowUp(
-                followUp,
-                FollowUpDefinedParams.FU_TYPE_REFERRED,
-                ReferralStatus.Referred.name,
-                referredSiteId = SecuredPreference.getOrganizationFhirId()
-            )
-        }
-
         return null
     }
 
@@ -186,6 +170,7 @@ class FollowUpRepository @Inject constructor(
                 if (followUp.type == FollowUpDefinedParams.FU_TYPE_REFERRED) {
                     roomHelper.updateOnTreatmentStatus(id, followUp, currentTime)
                 } else {
+                    followUp.isCompleted = true
                     roomHelper.updateOtherDuplicateTickets(id, followUp)
                 }
             }
@@ -206,27 +191,6 @@ class FollowUpRepository @Inject constructor(
             followUp.isCompleted = followUp.type != FollowUpDefinedParams.FU_TYPE_HH_VISIT
             roomHelper.updateOtherFollowUpForWrongNumber(followUpId, followUp.memberId)
         }
-    }
-
-    private fun getNewFollowUp(followUp: FollowUp, type: String, status: String, referredSiteId: String? = null, nextVisitDate: String? = null): FollowUp {
-        followUp.isCompleted = true
-        val updateAt = followUp.updatedAt + 100 // To handle concurrency
-        return followUp.copy(
-            referenceId = 0,
-            id = null,
-            type = type,
-            patientStatus = status,
-            currentPatientStatus = null,
-            isCompleted = false,
-            attempts = 0,
-            successfulAttempts = 0,
-            unsuccessfulAttempts = 0,
-            encounterDate = System.currentTimeMillis().convertToUtcDateTime(),
-            nextVisitDate = nextVisitDate,
-            referredSiteId = referredSiteId,
-            calledAt = null,
-            updatedAt = updateAt
-        )
     }
 
 }
