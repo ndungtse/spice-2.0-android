@@ -8,6 +8,7 @@ import com.medtroniclabs.spice.databinding.ActivityAddNewMemberBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.dialog.MedicalReviewSuccessDialogFragment
+import com.medtroniclabs.spice.ui.dialog.SuccessDialogFragment
 import com.medtroniclabs.spice.ui.landing.OnDialogDismissListener
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
 import com.medtroniclabs.spice.ui.member.MemberRegistrationFragment
@@ -48,10 +49,10 @@ class AddNewMemberActivity : BaseActivity(), View.OnClickListener, OnDialogDismi
             MedicalReviewDefinedParams.MEMBER_REG,
             this
         ) { _, _ ->
-            MedicalReviewSuccessDialogFragment.newInstance().show(
-                supportFragmentManager,
-                MedicalReviewSuccessDialogFragment.TAG
-            )
+            SuccessDialogFragment.newInstance(
+                householdNo = -1L,
+                patientId = ""
+            ).show(supportFragmentManager, SuccessDialogFragment.TAG)
         }
     }
 

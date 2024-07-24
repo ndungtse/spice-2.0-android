@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import androidx.fragment.app.DialogFragment
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.common.DefinedParams.DefaultID
 import com.medtroniclabs.spice.common.DefinedParams.PatientId
 import com.medtroniclabs.spice.databinding.FragmentSuccessDialogBinding
@@ -77,8 +78,12 @@ class SuccessDialogFragment : DialogFragment(), View.OnClickListener {
         arguments?.getString(PatientId, DefaultID)?.let { patientId ->
             if (patientId != DefaultID) {
                 binding.successMessage.text = getString(R.string.member_registered_successfully)
-                binding.householdNo.text =
-                    requireContext().getString(R.string.patient_with_id, patientId)
+                if (patientId.isNotEmpty()) {
+                    binding.householdNo.text =
+                        requireContext().getString(R.string.patient_with_id, patientId)
+                }else{
+                    binding.householdNo.gone()
+                }
             }
         }
     }

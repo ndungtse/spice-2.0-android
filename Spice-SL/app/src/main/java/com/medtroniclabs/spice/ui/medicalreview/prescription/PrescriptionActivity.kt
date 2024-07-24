@@ -430,7 +430,9 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
             if (it.isNullOrEmpty()) {
                 // default showing all medicines
             } else {
-                prescriptionViewModel.searchMedicationByName(it.toString())
+                if (it.length >= 3) {
+                    prescriptionViewModel.searchMedicationByName(it.toString())
+                }
             }
         }
         binding.searchView.onItemClickListener = this

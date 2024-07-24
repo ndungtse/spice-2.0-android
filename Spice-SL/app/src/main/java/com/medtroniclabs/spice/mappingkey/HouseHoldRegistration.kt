@@ -12,4 +12,5 @@ object HouseHoldRegistration {
     const val yes = "yes"
     const val no = "no"
     const val villageId = "village_id"
+    const val isPregnant="isPregnant"
 }

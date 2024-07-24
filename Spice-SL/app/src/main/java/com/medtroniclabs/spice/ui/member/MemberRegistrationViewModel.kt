@@ -4,14 +4,20 @@ import android.location.Location
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.medtroniclabs.spice.appextensions.isVisible
 import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.appextensions.postSuccess
+import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.db.entity.HouseholdEntity
 import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
 import com.medtroniclabs.spice.db.entity.VillageEntity
 import com.medtroniclabs.spice.di.IoDispatcher
+import com.medtroniclabs.spice.formgeneration.FormGenerator
+import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration
+import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.isOwnedATreatedBedNet
+import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.isPregnant
 import com.medtroniclabs.spice.mappingkey.MemberRegistration
 import com.medtroniclabs.spice.model.medicalreview.AddMemberRegRequest
 import com.medtroniclabs.spice.network.resource.Resource
@@ -91,7 +97,7 @@ class MemberRegistrationViewModel @Inject constructor(
         }
     }
 
-    fun addNewMember(map: HashMap<String, Any>?) {
+    fun addNewMember(map: HashMap<String, Any>?, formGenerator: FormGenerator) {
         if (map == null) return
         val villageId = map[MemberRegistration.villageId]?.toString()?.toIntOrNull()
         val addMemberRegRequest = AddMemberRegRequest().apply {
@@ -105,7 +111,7 @@ class MemberRegistrationViewModel @Inject constructor(
             phoneNumber = map[MemberRegistration.phoneNumber]?.toString().orEmpty()
             phoneNumberCategory = map[MemberRegistration.phoneNumberCategory]?.toString().orEmpty()
             provenance = ProvanceDto()
-            isPregnant = map[MemberRegistration.isPregnant]?.toString().toBoolean()
+            isPregnant = map[MemberRegistration.isPregnant]?.let { CommonUtils.getIsBooleanFromString(it) }
         }
         viewModelScope.launch(dispatcherIO) {
             addnewMemberReq.postLoading()

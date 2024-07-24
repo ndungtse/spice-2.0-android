@@ -379,7 +379,7 @@ class MemberRegistrationFragment : Fragment(), FormEventListener, View.OnClickLi
     override fun onFormSubmit(resultMap: HashMap<String, Any>?, serverData: List<FormLayout?>?) {
         resultMap?.let { map ->
             if (memberRegistrationViewModel.medicalReviewFlow) {
-                memberRegistrationViewModel.addNewMember(map)
+                memberRegistrationViewModel.addNewMember(map,formGenerator)
             } else {
                 if (householdRegistrationViewModel.isMemberRegistration || householdRegistrationViewModel.memberID != -1L) {
                     memberRegistrationViewModel.registerMember(
