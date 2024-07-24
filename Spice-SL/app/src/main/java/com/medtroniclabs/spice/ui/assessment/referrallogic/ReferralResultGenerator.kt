@@ -187,7 +187,7 @@ class ReferralResultGenerator {
                     ReferralReasons.GeneralDangerSigns.name.lowercase(),
                     ReferralStatus.Referred.name
                 )
-                addReferralReason(referralReason, ReferralReasons.GeneralDangerSigns.name)
+                addReferralReason(referralReason, ReferralReasons.aliasOf(ReferralReasons.GeneralDangerSigns))
                 break
             }
         }
@@ -240,7 +240,7 @@ class ReferralResultGenerator {
                             )
                             addReferralReason(referralReason, ReferralReasons.Pneumonia.name)
                         }
-                       /*else if (map.containsKey(BreathPerMinute) && map[BreathPerMinute] is Int) {
+                       else if (map.containsKey(BreathPerMinute) && map[BreathPerMinute] is Int) {
                             val bpmValue = map[BreathPerMinute] as Int
                             memberDetails?.let { details ->
                                 DateUtils.dateToMonths(details.dateOfBirth).let { month ->
@@ -265,7 +265,7 @@ class ReferralResultGenerator {
                                     }
                                 }
                             }
-                        }*/
+                        }
                     }
                 }
             }

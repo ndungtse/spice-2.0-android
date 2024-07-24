@@ -332,7 +332,7 @@ private fun successSummaryDialog() {
     private fun handleButtonRefer() {
         viewModel.createUnderTwoMonthsMedicalReview.value?.data?.let {
             ReferPatientFragment.newInstance(
-                MedicalReviewTypeEnums.ICCM.name,
+                MedicalReviewTypeEnums.UnderTwoMonths.name,
                 it.patientReference,
                 it.encounterId
             ).show(supportFragmentManager, ReferPatientFragment.TAG)

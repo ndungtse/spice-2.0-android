@@ -14,6 +14,7 @@ import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.data.model.RecommendedDosageListModel
 import com.medtroniclabs.spice.databinding.FragmentAssessmentOtherSymptomsBinding
 import com.medtroniclabs.spice.formgeneration.FormGenerator
+import com.medtroniclabs.spice.formgeneration.config.DefinedParams
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.listener.FormEventListener
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
@@ -222,13 +223,16 @@ class AssessmentOtherSymptomsFragment : BaseFragment(), FormEventListener, View.
         resultMap: HashMap<String, Any>?
     ) {
         if (enteredDays!=null && enteredDays > noOfDays) {
-            updateColorCode(
-                id,
-                ContextCompat.getColor(requireContext(), R.color.medium_high_risk_color)
-            )
+            updateColorCode(id, ContextCompat.getColor(requireContext(), R.color.medium_high_risk_color))
+            displayDaysInformation(id, View.VISIBLE)
         } else {
             updateColorCode(id, ContextCompat.getColor(requireContext(), R.color.secondary_black))
+            displayDaysInformation(id, View.INVISIBLE)
         }
+    }
+
+    private fun displayDaysInformation(id: String, viewVisibility: Int) {
+        formGenerator.getViewByTag(id + DefinedParams.Information)?.apply { visibility = viewVisibility }
     }
 
     override fun onAgeCheckForPregnancy() {

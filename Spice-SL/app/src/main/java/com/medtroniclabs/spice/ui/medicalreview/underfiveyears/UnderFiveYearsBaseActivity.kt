@@ -404,7 +404,7 @@ class UnderFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
             R.id.btnRefer -> {
                 viewModel.createUnderFiveMedicalReviewLiveData.value?.data?.let {
                     ReferPatientFragment.newInstance(
-                        MedicalReviewTypeEnums.ICCM.name,
+                        MedicalReviewTypeEnums.UnderFiveYears.name,
                         it.patientReference,
                         it.encounterId
                     ).show(

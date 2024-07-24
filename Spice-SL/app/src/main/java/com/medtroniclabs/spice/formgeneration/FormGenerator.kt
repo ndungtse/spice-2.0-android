@@ -277,7 +277,11 @@ class FormGenerator(
             ) {
                 SecuredPreference.getPhoneNumberCode()?.let { phoneNumberCode ->
                     binding.llCountryCode.visibility = View.VISIBLE
-                    binding.tvCountryCode.text = phoneNumberCode
+                    binding.tvCountryCode.text = if (phoneNumberCode.startsWith("+")) {
+                        phoneNumberCode
+                    } else {
+                        "+$phoneNumberCode"
+                    }
                 }
             }
 

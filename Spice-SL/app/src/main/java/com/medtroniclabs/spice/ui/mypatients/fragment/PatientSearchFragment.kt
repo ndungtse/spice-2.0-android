@@ -17,6 +17,7 @@ import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.hideKeyboard
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.DefinedParams
+import com.medtroniclabs.spice.common.DefinedParams.SearchLength
 import com.medtroniclabs.spice.databinding.FragmentPatientSearchBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.model.PatientListRespModel
@@ -140,7 +141,7 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
         override fun afterTextChanged(s: Editable?) {
             val enteredChar = s?.toString() ?: ""
             val trimmedChar = enteredChar?.trim()
-            val hasString = !trimmedChar.isNullOrBlank()
+            val hasString = !trimmedChar.isNullOrBlank() && trimmedChar.length > SearchLength
             binding.llExactSearch.btnSearch.isEnabled = hasString
             if (enteredChar.isEmpty() && !hasString) {
                 handleSearchBarAfterTextRemove()

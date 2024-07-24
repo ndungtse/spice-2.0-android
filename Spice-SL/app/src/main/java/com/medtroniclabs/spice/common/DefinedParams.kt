@@ -102,4 +102,5 @@ object DefinedParams {
     const val NeonateBabyNamePrefix = "Baby Of"
     const val FollowUpId = "FollowUpId"
     const val IsReferredScreen = "isReferredScreen"
+    const val SearchLength = 2
 }

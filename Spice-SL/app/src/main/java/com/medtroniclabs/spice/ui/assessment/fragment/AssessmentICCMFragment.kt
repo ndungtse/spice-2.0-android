@@ -491,6 +491,8 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
                             }
                         }
                     }
+                } ?: kotlin.run {
+                    displayDaysInformation(id, View.INVISIBLE)
                 }
             }
             else -> {

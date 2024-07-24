@@ -287,19 +287,21 @@ class ReferPatientFragment : DialogFragment(), View.OnClickListener {
         }
     }
     private fun postResultInput() {
-        val assesmentName: String? = arguments?.getString(DefinedParams.NAME, "")
+        val assessmentName: String? = arguments?.getString(DefinedParams.NAME, "")
         val patientReference: String? = arguments?.getString(DefinedParams.PatientReference, "")
         val encounterId: String? = arguments?.getString(DefinedParams.EncounterId, "")
-        val referralTicketType: String = if (assesmentName == MedicalReviewTypeEnums.AboveFiveYears.name) {
-            DefinedParams.ICCM
-        } else {
-            DefinedParams.RMNCH
+        val referralTicketType: String = when (assessmentName) {
+            MedicalReviewTypeEnums.AboveFiveYears.name, MedicalReviewTypeEnums.UnderFiveYears.name, MedicalReviewTypeEnums.UnderTwoMonths.name -> DefinedParams.ICCM
+            MedicalReviewTypeEnums.ANC.name, MedicalReviewTypeEnums.PNC.name, MedicalReviewTypeEnums.LabourDelivery.name -> DefinedParams.RMNCH
+            else -> {
+                ""
+            }
         }
         patientViewModel.patientDetailsLiveData.value?.data?.let { patientDetails ->
             viewModel.createReferPatientResult(
                 patientReference,
                 encounterId,
-                Pair(assesmentName, referralTicketType),
+                Pair(assessmentName, referralTicketType),
                 patientDetails.patientId,
                 patientDetails.houseHoldId,
                 patientDetails.villageId,

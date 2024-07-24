@@ -20,6 +20,7 @@ import com.medtroniclabs.spice.common.DefinedParams.Postpartum
 import com.medtroniclabs.spice.common.DefinedParams.Pregnant
 import com.medtroniclabs.spice.data.model.MotherNeonateAncRequest
 import com.medtroniclabs.spice.databinding.FragmentMedicalReviewPatientDiagnosisBinding
+import com.medtroniclabs.spice.formgeneration.extension.capitalizeFirstChar
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.model.medicalreview.CreateUnderTwoMonthsResponse
 import com.medtroniclabs.spice.network.resource.ResourceState
@@ -405,7 +406,7 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
     }
 
     private fun getPatientStatus(status: String): String {
-        val formattedString = cleanString(status)
+        val formattedString = cleanString(status.lowercase())
         return if (diagnosisViewModel.diagnosisType == MedicalReviewTypeEnums.ANC.name) {
             if (formattedString.isEmpty()){
                 Pregnant
@@ -421,16 +422,16 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
 
 
     private fun cleanString(input: String): String {
-        val toRemove = listOf(Postpartum, Lactating)
+        val toRemove = listOf(Postpartum.lowercase(), Lactating.lowercase())
         if (toRemove.any { input.contains(it) }) {
             var cleanedString = input
             for (str in toRemove) {
                 cleanedString = cleanedString.replace(str, "")
             }
             cleanedString = cleanedString.replace(",", "")
-            return cleanedString.trim()
+            return cleanedString.trim().capitalizeFirstChar()
         } else {
-            return input
+            return input.capitalizeFirstChar()
         }
     }
 

@@ -377,7 +377,7 @@ object CommonUtils {
 
     fun createPrescription(prescriptions: List<Prescription>?, context: Context): String? {
         return prescriptions?.takeIf { it.isNotEmpty() }?.mapIndexed { index, prescription ->
-            "${index + 1}. ${prescription.medicationName} / ${getPrescriptionFreq(prescription.frequency)} / ${
+            "${index + 1}. ${prescription.medicationName} / ${prescription.frequencyName} / ${
                 dayPeriod(
                     prescription.prescribedDays,
                     context
@@ -443,10 +443,14 @@ object CommonUtils {
                     context.getString(R.string.separator_double_hyphen)
                 }
             }
-
+            is Boolean -> booleanToYesNo(value)
             null -> context.getString(R.string.separator_double_hyphen)
             else -> context.getString(R.string.separator_double_hyphen)
         }
+    }
+
+    private fun booleanToYesNo(value: Boolean): String {
+        return if (value) DefinedParams.Yes else DefinedParams.No
     }
 
     fun convertAnyToListOfString(value: Any?): List<String?> {
