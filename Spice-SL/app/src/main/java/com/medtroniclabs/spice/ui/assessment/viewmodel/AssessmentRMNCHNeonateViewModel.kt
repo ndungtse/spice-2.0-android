@@ -41,7 +41,7 @@ class AssessmentRMNCHNeonateViewModel @Inject constructor(
 
     val assessmentStringSaveLiveData = MutableLiveData<String?>()
 
-    val assessmentSaveLiveData = MutableLiveData<Resource<AssessmentEntity>>()
+    val assessmentSaveLiveData = MutableLiveData<Resource<Pair<AssessmentEntity,AssessmentEntity>>>()
 
     val childMemberDetailsLiveData = MutableLiveData<Resource<List<HouseholdMemberEntity>>>()
 
@@ -105,10 +105,10 @@ class AssessmentRMNCHNeonateViewModel @Inject constructor(
         val groupMap = HashMap<String, Any>()
         groupMap[RMNCH.PNC] = motherDetailMap[RMNCH.PNC] as Any
         groupMap[RMNCH.PNCNeonatal] = childDetailMap
-        val resultGenerator = ReferralResultGenerator()
-        val referralResult = resultGenerator.calculateRMNCHReferralResult(groupMap)
+        val motherReferralResult = ReferralResultGenerator().calculateRMNCHReferralResult(groupMap,false)
+        val childReferralResult = ReferralResultGenerator().calculateRMNCHReferralResult(groupMap,true)
         val assessmentDetail = getAssessmentDetails(groupMap as HashMap<Any, Any>)
-        referralStatus = referralResult.first
+        referralStatus = motherReferralResult.first
         assessmentStringSaveLiveData.postValue(assessmentDetail.first)
         val otherDetails = calculateOtherDetails(groupMap, referralStatus)
          assessmentSaveLiveData.postValue(
@@ -116,11 +116,12 @@ class AssessmentRMNCHNeonateViewModel @Inject constructor(
                  assessmentDetail.second,
                  assessmentDetail.third,
                  memberDetail,
-                 referralResult,
+                 motherReferralResult,
                  null,
                  otherDetails,
                  childMemberId,
-                 followUpId = followUpId
+                 followUpId = followUpId,
+                 childReferralResult
              )
          )
     }

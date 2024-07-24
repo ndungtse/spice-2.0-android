@@ -32,8 +32,9 @@ class AssessmentRepository @Inject constructor(
         lastLocation: Location?,
         otherDetails: HashMap<String, Any>?,
         childMemberId: Long,
-        followUpId: Long? =null
-    ): Resource<AssessmentEntity> {
+        followUpId: Long? = null,
+        childReferralResult: Pair<String?, ArrayList<String>>
+    ): Resource<Pair<AssessmentEntity, AssessmentEntity>> {
         return try {
             val motherAssessmentEntity = getAssessmentEntity(
                 memberDetail,
@@ -49,14 +50,17 @@ class AssessmentRepository @Inject constructor(
             val childAssessmentEntity = getAssessmentEntity(
                 childMemberDetail,
                 third,
-                null,
-                Pair(ReferralStatus.Recovered.name, ArrayList()),
+                if (childReferralResult.first.equals(ReferralStatus.Referred.name)) otherDetails else null,
+                childReferralResult,
                 lastLocation,
                 RMNCH.pnc_neonate_key,
                 followUpId = followUpId
             )
             roomHelper.saveAssessment(childAssessmentEntity)
-            Resource(state = ResourceState.SUCCESS, data = motherAssessmentEntity)
+            Resource(
+                state = ResourceState.SUCCESS,
+                data = Pair(motherAssessmentEntity, childAssessmentEntity)
+            )
         } catch (e: Exception) {
             Resource(state = ResourceState.ERROR)
         }
@@ -168,6 +172,40 @@ class AssessmentRepository @Inject constructor(
                         assessmentEntity.longitude = it.longitude
                     }
                     roomHelper.updateOtherAssessmentDetails(assessmentEntity)
+                }
+                Resource(state = ResourceState.SUCCESS)
+            } catch (e: Exception) {
+                Resource(state = ResourceState.ERROR)
+            }
+        }
+    }
+
+    suspend fun updateOtherAssessmentDetails(
+        pair: Pair<AssessmentEntity, AssessmentEntity>?,
+        otherAssessmentDetails: HashMap<String, Any>,
+        lastLocation: Location?
+    ): Resource<String> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val motherAssessmentEntity = pair?.first
+                if (motherAssessmentEntity != null) {
+                    motherAssessmentEntity.otherDetails =
+                        StringConverter.convertGivenMapToString(otherAssessmentDetails)
+                    lastLocation?.let {
+                        motherAssessmentEntity.latitude = it.latitude
+                        motherAssessmentEntity.longitude = it.longitude
+                    }
+                    roomHelper.updateOtherAssessmentDetails(motherAssessmentEntity)
+                }
+                val childAssessmentEntity = pair?.second
+                if (childAssessmentEntity != null) {
+                    childAssessmentEntity.otherDetails =
+                        StringConverter.convertGivenMapToString(otherAssessmentDetails)
+                    lastLocation?.let {
+                        childAssessmentEntity.latitude = it.latitude
+                        childAssessmentEntity.longitude = it.longitude
+                    }
+                    roomHelper.updateOtherAssessmentDetails(childAssessmentEntity)
                 }
                 Resource(state = ResourceState.SUCCESS)
             } catch (e: Exception) {

@@ -54,6 +54,7 @@ import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefined
 import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralReasons
 import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
+import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.Miscarriage
 
 class ReferralResultGenerator {
 
@@ -73,11 +74,24 @@ class ReferralResultGenerator {
         return Pair(checkStatus(), referralReason)
     }
 
-    fun calculateRMNCHReferralResult(map: HashMap<String, Any>): Pair<String?, ArrayList<String>> {
+    fun calculateRMNCHReferralResult(
+        map: HashMap<String, Any>,
+        isChild: Boolean = false
+    ): Pair<String?, ArrayList<String>> {
         if (map.containsKey(RMNCH.ANC)) {
-            findSignListByWorkflow(RMNCH.ANC, map, RMNCH.ancSigns, ReferralReasons.aliasOf(ReferralReasons.ANCSigns))
+            if (checkMiscarrageStatus(map, RMNCH.ANC, Miscarriage)) {
+                addResultMap(ReferralReasons.Miscarrage.name, ReferralStatus.Referred.name)
+                addReferralReason(referralReason, ReferralReasons.Miscarrage.name)
+            }
+            findSignListByWorkflow(
+                RMNCH.ANC,
+                map,
+                RMNCH.ancSigns,
+                ReferralReasons.aliasOf(ReferralReasons.ANCSigns)
+            )
+            updateVisitCount(map, RMNCH.ANC)
         } else if (map.containsKey(RMNCH.ChildHoodVisit)) {
-            if (checkMUACReferralStatus(map, RMNCH.ChildHoodVisit, MUAC)){
+            if (checkMUACReferralStatus(map, RMNCH.ChildHoodVisit, MUAC)) {
                 addResultMap(ReferralReasons.MUAC.name, ReferralStatus.Referred.name)
                 addReferralReason(referralReason, ReferralReasons.MUAC.name)
             }
@@ -87,24 +101,75 @@ class ReferralResultGenerator {
                 RMNCH.childhoodVisitSigns,
                 ReferralReasons.aliasOf(ReferralReasons.childhoodVisitSigns)
             )
+            updateVisitCount(map, RMNCH.ChildHoodVisit)
         } else {
-            findSignListByWorkflow(
-                RMNCH.PNC,
-                map,
-                RMNCH.pncMotherSigns,
-                ReferralReasons.aliasOf(ReferralReasons.PNCMotherSigns)
-            )
-            findSignListByWorkflow(
-                RMNCH.PNCNeonatal,
-                map,
-                RMNCH.pncNeonateSigns,
-                ReferralReasons.aliasOf(ReferralReasons.PNCNeonateSigns)
-            )
+
+            if (isChild) {
+                findSignListByWorkflow(
+                    RMNCH.PNCNeonatal,
+                    map,
+                    RMNCH.pncNeonateSigns,
+                    ReferralReasons.aliasOf(ReferralReasons.PNCNeonateSigns)
+                )
+                updateVisitCount(map, RMNCH.PNC)
+            } else {
+                findSignListByWorkflow(
+                    RMNCH.PNC,
+                    map,
+                    RMNCH.pncMotherSigns,
+                    ReferralReasons.aliasOf(ReferralReasons.PNCMotherSigns)
+                )
+                findSignListByWorkflow(
+                    RMNCH.PNCNeonatal,
+                    map,
+                    RMNCH.pncNeonateSigns,
+                    ReferralReasons.aliasOf(ReferralReasons.PNCNeonateSigns)
+                )
+                updateVisitCount(map, RMNCH.PNC)
+            }
+
         }
         return Pair(checkStatus(), referralReason)
     }
 
-    private fun checkMUACReferralStatus(map: HashMap<String, Any>, workflow: String, key: String): Boolean {
+    private fun updateVisitCount(map: HashMap<String, Any>, workFlow: String) {
+        if (referralReason.isNotEmpty()) {
+            var lastReason = referralReason[referralReason.size - 1]
+            val workflowMap = map[workFlow]
+            if (workflowMap is Map<*, *> && workflowMap.containsKey(RMNCH.visitNo)) {
+                val visitNo = workflowMap[RMNCH.visitNo]
+                if (visitNo is Long) {
+                    lastReason = "$lastReason - ${getVisitLabel(workFlow)} $visitNo"
+                    referralReason[referralReason.size - 1] = lastReason
+                }
+            }
+        }
+    }
+
+    private fun getVisitLabel(workFlow: String): String {
+
+        when (workFlow) {
+            RMNCH.ANC -> {
+                return RMNCH.ANCVisitNo
+            }
+
+            RMNCH.ChildHoodVisit -> {
+                return RMNCH.ChildHoodVisitNo
+            }
+
+            RMNCH.PNC -> {
+                return RMNCH.PNCVisitNo
+            }
+        }
+
+        return "Visit No: "
+    }
+
+    private fun checkMUACReferralStatus(
+        map: HashMap<String, Any>,
+        workflow: String,
+        key: String
+    ): Boolean {
         val workflowMap = map[workflow]
         if (workflowMap is Map<*, *> && workflowMap.containsKey(key)) {
             val value = workflowMap[key]
@@ -112,6 +177,21 @@ class ReferralResultGenerator {
                 if (value.equals(Red, true) || value.equals(Yellow, true)) {
                     return true
                 }
+            }
+        }
+        return false
+    }
+
+    private fun checkMiscarrageStatus(
+        map: HashMap<String, Any>,
+        workflow: String,
+        key: String
+    ): Boolean {
+        val workflowMap = map[workflow]
+        if (workflowMap is Map<*, *> && workflowMap.containsKey(key)) {
+            val value = workflowMap[key]
+            if (value is Boolean) {
+                return value
             }
         }
         return false
@@ -187,7 +267,10 @@ class ReferralResultGenerator {
                     ReferralReasons.GeneralDangerSigns.name.lowercase(),
                     ReferralStatus.Referred.name
                 )
-                addReferralReason(referralReason, ReferralReasons.aliasOf(ReferralReasons.GeneralDangerSigns))
+                addReferralReason(
+                    referralReason,
+                    ReferralReasons.aliasOf(ReferralReasons.GeneralDangerSigns)
+                )
                 break
             }
         }
@@ -239,8 +322,7 @@ class ReferralResultGenerator {
                                 ReferralStatus.Referred.name
                             )
                             addReferralReason(referralReason, ReferralReasons.Pneumonia.name)
-                        }
-                       else if (map.containsKey(BreathPerMinute) && map[BreathPerMinute] is Int) {
+                        } else if (map.containsKey(BreathPerMinute) && map[BreathPerMinute] is Int) {
                             val bpmValue = map[BreathPerMinute] as Int
                             memberDetails?.let { details ->
                                 DateUtils.dateToMonths(details.dateOfBirth).let { month ->
@@ -332,8 +414,7 @@ class ReferralResultGenerator {
                         ReferralReasons.Diarrhoea.name.lowercase(), ReferralStatus.Referred.name
                     )
                     addReferralReason(referralReason, ReferralReasons.Diarrhoea.name)
-                }
-                else if (map.containsKey(NoOfDaysOfDiarrhoea) && map[NoOfDaysOfDiarrhoea] is Int) {
+                } else if (map.containsKey(NoOfDaysOfDiarrhoea) && map[NoOfDaysOfDiarrhoea] is Int) {
                     val noOfDays = map[NoOfDaysOfDiarrhoea] as Int
                     if (noOfDays >= MaxDaysOfDiarrhoea) {
                         addResultMap(

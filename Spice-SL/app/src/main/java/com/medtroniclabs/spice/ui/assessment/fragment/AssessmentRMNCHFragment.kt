@@ -236,11 +236,21 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
                                 viewModel.memberClinicalLiveData.value
                             )
                         }
+                    } else {
+                        val visitCount = viewModel.memberClinicalLiveData.value?.visitCount ?: 1
+                        if (second.containsKey(name) && second[name] is Map<*,*>) {
+                            val clinicalMap = second[name] as HashMap<String,Any>
+                            clinicalMap[RMNCH.visitNo] = visitCount
+                        }
                     }
                     calculateGestationalAge(second, name)
                     val resultGenerator = ReferralResultGenerator()
-                    val referralResult = resultGenerator.calculateRMNCHReferralResult(second)
-                    viewModel.saveAssessment(second, referralResult, RMNCH.getMenuName(viewModel.workflowName))
+                    val referralResult = resultGenerator.calculateRMNCHReferralResult(second, false)
+                    viewModel.saveAssessment(
+                        second,
+                        referralResult,
+                        RMNCH.getMenuName(viewModel.workflowName)
+                    )
                 }
             }
         }
@@ -253,7 +263,7 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
                 val miscarriage = second[Miscarriage]
                 if (miscarriage is Boolean && miscarriage) {
                     viewModel.memberDetailsLiveData.value?.data?.let {
-                        viewModel.updateMemberClinicalData(it.patientId,0L,null)
+                        viewModel.updateMemberClinicalData(it.patientId, 0L, null)
                         return true
                     }
                 }
@@ -261,7 +271,6 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
         }
         return false
     }
-
 
 
     private fun calculateGestationalAge(details: HashMap<String, Any>, name: String) {
@@ -381,7 +390,7 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
     }
 
     fun getCurrentAnsweredStatus(): Boolean {
-      return formGenerator.getResultMap().isNotEmpty()
+        return formGenerator.getResultMap().isNotEmpty()
     }
 
 }
