@@ -1,5 +1,6 @@
 package com.medtroniclabs.spice.ui.mypatients.adapter
 
+import android.graphics.Typeface
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
@@ -11,13 +12,9 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.medtroniclabs.spice.R
-import com.medtroniclabs.spice.common.DefinedParams.Anaemia
-import com.medtroniclabs.spice.common.DefinedParams.Cough
-import com.medtroniclabs.spice.common.DefinedParams.CoughOrDifficultBreathing
-import com.medtroniclabs.spice.common.DefinedParams.Hiv
-import com.medtroniclabs.spice.common.DefinedParams.HivAndAids
-import com.medtroniclabs.spice.common.DefinedParams.MalnutritionOrAnaemia
 import com.medtroniclabs.spice.data.resource.ExaminationResult
+
+
 class ExaminationSummaryAdapter() :
     RecyclerView.Adapter<ExaminationSummaryAdapter.DiseaseViewHolder>() {
     private var examinationResult = mutableListOf<ExaminationResult>()
@@ -55,6 +52,7 @@ class ExaminationSummaryAdapter() :
         val symptoms = diseaseInfo.symptomsTitle
         holder.apply {
             titleTextView.text = symptoms
+            titleTextView.setTypeface(null, Typeface.BOLD)
             linearLayout.removeAllViews()  // Clear previous views
             diseaseInfo.description?.forEach { description ->
                 val textView = AppCompatTextView(itemView.context).apply {

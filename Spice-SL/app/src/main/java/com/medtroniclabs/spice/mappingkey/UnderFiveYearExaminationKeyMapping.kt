@@ -8,7 +8,7 @@ object UnderFiveYearExaminationKeyMapping {
         const val diarrhoea = "Diarrhoea"
         const val fever = "Fever"
         const val earProblem = "Ear Problem"
-        const val anaemia = "Malnutrition / Anaemia"
+        const val anaemia = "Malnutrition / Anemia"
         const val hivRDT = "HIV / AIDS RDT"
     }
 

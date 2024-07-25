@@ -59,24 +59,17 @@ open class BaseFragment : Fragment(){
             isNegativeButtonNeed = false,
         ) {}
     }
-    fun withNetworkCheck(
-        connectivityManager: ConnectivityManager,
-        onNetworkAvailable: () -> Unit,
-        onNetworkNotAvailable: (() -> Unit?)? = null
 
+    fun withNetworkAvailability(
+        online: () -> Unit,
+        offline: () -> Unit = {}
     ) {
-        if (connectivityManager.isNetworkAvailable()) {
-            onNetworkAvailable()
-        } else {
-            (requireActivity() as BaseActivity).showErrorDialogue(
-                getString(R.string.error),
-                getString(R.string.no_internet_error),
-                isNegativeButtonNeed = false
-            ) {
-                if (it && onNetworkNotAvailable != null) {
-                    onNetworkNotAvailable()
-                }
-                (requireActivity() as BaseActivity).hideLoading()
+        connectivityManager.isNullableNetworkAvailable()?.let { isNetworkAvailable ->
+            if (isNetworkAvailable) {
+                online()
+            } else {
+                showErrorDialog(getString(R.string.error), getString(R.string.no_internet_error))
+                offline()
             }
         }
     }

@@ -63,17 +63,14 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
     }
 
     private fun swipeRefresh() {
-        connectivityManager.isNullableNetworkAvailable()?.let {
-            if (it) {
-                getPatientList()
-                scrollTop()
-            } else {
-                if (binding.refreshLayout.isRefreshing) {
-                    binding.refreshLayout.isRefreshing = false
-                }
-                showErrorDialog(getString(R.string.error), getString(R.string.no_internet_error))
+        withNetworkAvailability(online = {
+            getPatientList()
+            scrollTop()
+        }, offline = {
+            if (binding.refreshLayout.isRefreshing) {
+                binding.refreshLayout.isRefreshing = false
             }
-        }
+        })
     }
 
     private fun attachObservers() {
@@ -97,11 +94,13 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
             }
         }
         patientListViewModel.filterLiveData.observe(viewLifecycleOwner) {
-            if (it) {
-                getPatientList()
-                scrollTop()
-                patientListViewModel.setFilter(false)
-            }
+            withNetworkAvailability(online = {
+                if (it) {
+                    getPatientList()
+                    scrollTop()
+                    patientListViewModel.setFilter(false)
+                }
+            })
         }
     }
 
@@ -150,14 +149,10 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
     }
 
     private fun handleSearchBarAfterTextRemove() {
-        connectivityManager.isNullableNetworkAvailable()?.let {
-            if (it) {
-                patientListViewModel.searchText = ""
-                getPatientList()
-            } else {
-                showErrorDialog(getString(R.string.error), getString(R.string.no_internet_error))
-            }
-        }
+        withNetworkAvailability(online = {
+            patientListViewModel.searchText = ""
+            getPatientList()
+        })
     }
 
     private fun setAdapterViews() {
@@ -180,18 +175,14 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
     }
 
     override fun onSelectedPatient(item: PatientListRespModel) {
-        connectivityManager.isNullableNetworkAvailable()?.let {
-            if (it) {
-                val intent = Intent(requireActivity(), ReferralHistoryActivity::class.java)
-                intent.putExtra(DefinedParams.PatientId, item.patientId)
-                intent.putExtra(DefinedParams.Gender, item.gender)
-                intent.putExtra(DefinedParams.DOB, item.birthDate)
-                intent.putExtra(DefinedParams.FhirId, item.id)
-                startActivity(intent)
-            } else {
-                showErrorDialog(getString(R.string.error),getString(R.string.no_internet_error))
-            }
-        }
+        withNetworkAvailability(online = {
+            val intent = Intent(requireActivity(), ReferralHistoryActivity::class.java)
+            intent.putExtra(DefinedParams.PatientId, item.patientId)
+            intent.putExtra(DefinedParams.Gender, item.gender)
+            intent.putExtra(DefinedParams.DOB, item.birthDate)
+            intent.putExtra(DefinedParams.FhirId, item.id)
+            startActivity(intent)
+        })
     }
 
     private fun getPatientList() {
@@ -223,16 +214,12 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
     }
 
     private fun networkAvailability() {
-        connectivityManager.isNullableNetworkAvailable()?.let {
-            if (it) {
-                patientListViewModel.searchText =
-                    binding.llExactSearch.etPatientSearch.text?.trim().toString()
-                getPatientList()
-                scrollTop()
-            } else {
-                showErrorDialog(getString(R.string.error),getString(R.string.no_internet_error))
-            }
-        }
+        withNetworkAvailability(online = {
+            patientListViewModel.searchText =
+                binding.llExactSearch.etPatientSearch.text?.trim().toString()
+            getPatientList()
+            scrollTop()
+        })
     }
 
     private fun scrollTop() {
@@ -252,6 +239,8 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
 
     override fun onResume() {
         super.onResume()
-        getPatientList()
+        withNetworkAvailability(online = {
+            getPatientList()
+        })
     }
 }

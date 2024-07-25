@@ -414,6 +414,7 @@ class ClinicalSummaryUnderFiveYearsFragment : BaseFragment() {
         if (respiration != null && respiration > 60.0) {
             binding.repeatGroup.visible()
         } else {
+            binding.etRepeat.setText("")
             binding.repeatGroup.invisible()
         }
     }

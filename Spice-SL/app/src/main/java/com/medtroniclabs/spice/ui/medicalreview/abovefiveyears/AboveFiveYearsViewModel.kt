@@ -97,7 +97,7 @@ class AboveFiveYearsViewModel @Inject constructor(
             val houseHoldId = details.houseHoldId
             val villageId = details.villageId
 
-            if (patientId != null && memberId != null && patientStatus != null && houseHoldId != null && villageId != null) {
+            if (patientId != null && memberId != null && patientStatus != null && villageId != null) {
                 val nextVisitDate = DateUtils.convertDateTimeToDate(
                     nextFollowupDate,
                     DateUtils.DATE_ddMMyyyy,

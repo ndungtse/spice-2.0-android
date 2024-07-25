@@ -124,6 +124,7 @@ class ClinicalSummaryFragment : BaseFragment(), View.OnClickListener {
         if (respiration != null && respiration > 60.0) {
             binding.repeatGroup.visible()
         } else {
+            binding.etRepeat.setText("")
             binding.repeatGroup.invisible()
         }
     }

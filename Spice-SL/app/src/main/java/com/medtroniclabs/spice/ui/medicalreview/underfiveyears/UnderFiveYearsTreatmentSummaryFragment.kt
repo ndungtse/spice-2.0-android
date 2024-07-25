@@ -165,14 +165,15 @@ class UnderFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
         val diseaseList = details.examination?.entries?.mapIndexed { index, (key, value) ->
             ExaminationResult(index + 1, key, convertExaminationDetailsToString(value))
         } ?: emptyList()
-        val updatedExaminationResults: List<ExaminationResult>?
-        updatedExaminationResults = diseaseList.map { result ->
+        val updatedExaminationResults: List<ExaminationResult> = diseaseList.map { result ->
             val matchingName = details.examinationDisplayNames?.get(result.symptomsTitle)
-            if (matchingName != null) {
-                result.copy(symptomsTitle = matchingName)
-            } else {
-                result
-            }
+            result.copy(
+                symptomsTitle = if (matchingName != null) {
+                    "${result.index}. $matchingName"
+                } else {
+                    result.symptomsTitle
+                }
+            )
         }
         updatedExaminationResults.let { examinationSummaryAdapter.updateData(it) }
         if (diseaseList.isEmpty()) {

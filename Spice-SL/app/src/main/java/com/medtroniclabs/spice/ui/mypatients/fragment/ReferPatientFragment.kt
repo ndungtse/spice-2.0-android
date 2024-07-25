@@ -69,10 +69,10 @@ class ReferPatientFragment : BaseDialogFragment(), View.OnClickListener {
         binding.tvReferToLabel.markMandatory()
         binding.tvReferredReasonLabel.markMandatory()
         initializeNameNumberAdapter(null)
-        withNetworkCheck(connectivityManager,{
+        withNetworkAvailability(online = {
             viewModel.getDefaultHealthFacilityDistrictId()
             viewModel.getHealthFacilityMetaData(null)
-        },::finishFragment)
+        }, ::finishFragment)
 
     }
 

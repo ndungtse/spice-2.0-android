@@ -128,19 +128,6 @@ object CommonUtils {
         return strBuilder.toString()
     }
 
-    fun getDuration(input: String, context: Context): String {
-        val parts = input.split('/')
-
-        return when {
-            parts[0] == DefinedParams.ZERO && parts[1] == DefinedParams.ZERO -> context.getString(
-                R.string.no_of_weeks,
-                parts[2]
-            )
-
-            parts[0] == DefinedParams.ZERO -> context.getString(R.string.no_of_months, parts[1])
-            else -> context.getString(R.string.no_of_years, parts[0])
-        }
-    }
 
     fun convertListToString(dispensedList: ArrayList<String>): String {
         return dispensedList.nullIfEmpty()
@@ -164,10 +151,6 @@ object CommonUtils {
             parts[0] == DefinedParams.ZERO -> context.getString(R.string.months_m, parts[1])
             else -> context.getString(R.string.years_y, parts[0])
         }
-    }
-
-    fun isProvider(): Boolean {
-        return SecuredPreference.getRole() == PROVIDER
     }
 
     fun isChw(): Boolean {
@@ -401,15 +384,6 @@ object CommonUtils {
         }
     }
 
-    fun getPrescriptionFreq(days: Int?): String {
-        return when (days) {
-            1 -> MedicalReviewTypeEnums.OD.name
-            2 -> MedicalReviewTypeEnums.BD.name
-            3 -> MedicalReviewTypeEnums.TDS.name
-            4 -> MedicalReviewTypeEnums.QDS.name
-            else -> ""
-        }
-    }
 
     fun getMaxDateLimit(menstrualPeriod: Boolean, minDays: Int?): Long? {
         return if (menstrualPeriod) {
@@ -443,14 +417,14 @@ object CommonUtils {
                     context.getString(R.string.separator_double_hyphen)
                 }
             }
-            is Boolean -> booleanToYesNo(value)
+            is Boolean -> booleanToYesNo(value,context)
             null -> context.getString(R.string.separator_double_hyphen)
             else -> context.getString(R.string.separator_double_hyphen)
         }
     }
 
-    private fun booleanToYesNo(value: Boolean): String {
-        return if (value) DefinedParams.Yes else DefinedParams.No
+    private fun booleanToYesNo(value: Boolean, context: Context): String {
+        return if (value) context.getString(R.string.yes) else context.getString(R.string.no)
     }
 
     fun convertAnyToListOfString(value: Any?): List<String?> {

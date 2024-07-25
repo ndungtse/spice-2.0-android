@@ -10,6 +10,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.activityViewModels
 import com.google.android.material.button.MaterialButton
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.appextensions.changePatientStatus
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.invisible
 import com.medtroniclabs.spice.appextensions.visible
@@ -408,15 +409,15 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
     private fun getPatientStatus(status: String): String {
         val formattedString = cleanString(status.lowercase())
         return if (diagnosisViewModel.diagnosisType == MedicalReviewTypeEnums.ANC.name) {
-            if (formattedString.isEmpty()){
+            if (formattedString.isEmpty()) {
                 Pregnant
-            }else if (formattedString.contains(Pregnant, ignoreCase = true)) {
-                formattedString
+            } else if (formattedString.contains(Pregnant, ignoreCase = true)) {
+                requireContext().changePatientStatus(formattedString)
             } else {
-                "$formattedString, $Pregnant"
+                "${requireContext().changePatientStatus(formattedString)}, $Pregnant"
             }
         } else {
-            status
+            requireContext().changePatientStatus(status)
         }
     }
 

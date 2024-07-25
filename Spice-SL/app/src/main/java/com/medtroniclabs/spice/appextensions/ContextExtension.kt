@@ -62,6 +62,12 @@ fun Context.getPatientStatus(status: String?): String? {
     } ?: return null
 }
 
+fun Context.changePatientStatus(input: String): String {
+    val onTreatmentString = getString(R.string.on_treatment)
+    val regex = Regex(ReferralStatus.OnTreatment.name, RegexOption.IGNORE_CASE)
+    return input.replace(regex, onTreatmentString)
+}
+
 fun Context.scheduleSyncWorker() {
     val workManager = WorkManager.getInstance(this)
 

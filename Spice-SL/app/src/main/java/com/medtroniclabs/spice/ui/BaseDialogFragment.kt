@@ -7,33 +7,34 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-open class BaseDialogFragment:DialogFragment() {
+open class BaseDialogFragment : DialogFragment() {
 
     @Inject
     lateinit var connectivityManager: ConnectivityManager
 
-    fun withNetworkCheck(
-        connectivityManager: ConnectivityManager,
-        onNetworkAvailable: () -> Unit,
-        onNetworkNotAvailable: (() -> Unit?)? = null
-
+    fun withNetworkAvailability(
+        online: () -> Unit,
+        offline: () -> Unit = {}
     ) {
-        if (connectivityManager.isNetworkAvailable()) {
-            onNetworkAvailable()
-        } else {
-            (requireActivity() as BaseActivity).showErrorDialogue(
-                getString(R.string.error),
-                getString(R.string.no_internet_error),
-                isNegativeButtonNeed = false
-            ) {
-                if (it && onNetworkNotAvailable != null) {
-                    onNetworkNotAvailable()
+        connectivityManager.isNullableNetworkAvailable()?.let { isNetworkAvailable ->
+            if (isNetworkAvailable) {
+                online()
+            } else {
+                (requireActivity() as BaseActivity).showErrorDialogue(
+                    getString(R.string.error),
+                    getString(R.string.no_internet_error),
+                    isNegativeButtonNeed = false
+                ) {
+                    if (it) {
+                        offline()
+                    }
+                    (requireActivity() as BaseActivity).hideLoading()
                 }
-                (requireActivity() as BaseActivity).hideLoading()
             }
         }
     }
-     fun finishFragment() {
+
+    fun finishFragment() {
         activity?.supportFragmentManager?.beginTransaction()?.remove(this)?.commit()
     }
 }
