@@ -20,7 +20,6 @@ import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.model.medicalreview.CreateUnderTwoMonthsResponse
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.network.resource.ResourceState
-import com.medtroniclabs.spice.network.utils.ConnectivityManager
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
 import com.medtroniclabs.spice.ui.common.FloatingDetectorFrameLayout
@@ -73,7 +72,6 @@ class UnderTwoMonthsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
             true,
             getString(R.string.patient_medical_review),
             homeAndBackVisibility = Pair(true, true),
-
             callback = {
                 backNavigation()
             },
@@ -81,10 +79,9 @@ class UnderTwoMonthsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
                 backNavigationToHome()
             }
         )
-        initializeViews()
+        withNetworkCheck(connectivityManager,::initializeViews,::onBackPressPopStack)
         attachObserver()
         initializeListeners()
-        swipeRefresh()
     }
 
     private val onBackPressedCallback: OnBackPressedCallback =
@@ -94,7 +91,6 @@ class UnderTwoMonthsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
             }
         }
     private fun swipeRefresh() {
-        binding.refreshLayout.setOnRefreshListener {
             supportFragmentManager.findFragmentById(R.id.clinicalSummaryContainer)
                 .let { currentFragment ->
                     viewModel.isRefresh = true
@@ -115,7 +111,7 @@ class UnderTwoMonthsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
                         setRefresh(false)
                     }
                 }
-        }
+
     }
 
     private fun attachObserver() {
@@ -207,11 +203,7 @@ private fun successSummaryDialog() {
         viewModel.patientId = intent.getStringExtra(DefinedParams.PatientId)
         examinationCardViewModel.workFlowType = MedicalReviewTypeEnums.UnderTwoMonths.name
         if (!(SecuredPreference.getBoolean(SecuredPreference.EnvironmentKey.IS_UNDER_TWO_MONTHS_LOADED.name))) {
-            withNetworkCheck(
-                connectivityManager,
-                onNetworkAvailable = {
-                    viewModel.getStaticMetaData()
-                })
+            viewModel.getStaticMetaData()
         } else {
             showLoading()
             initializePatientDetailsFragments()
@@ -299,6 +291,10 @@ private fun successSummaryDialog() {
         binding.underTwoSummaryBottomView.btnDone.isEnabled = false
         binding.underTwoSummaryBottomView.btnDone.safeClickListener(this)
         binding.underTwoSummaryBottomView.btnRefer.safeClickListener(this)
+        binding.refreshLayout.setOnRefreshListener {
+            withNetworkCheck(connectivityManager, ::swipeRefresh,
+                onNetworkNotAvailable = { setRefresh(false) })
+        }
     }
 
     override fun onClick(v: View?) {
@@ -453,20 +449,6 @@ private fun successSummaryDialog() {
     private fun setRefresh(isRefresh: Boolean) =
         with(binding.refreshLayout) { isRefreshing = isRefresh }
 
-    private fun withNetworkCheck(
-        connectivityManager: ConnectivityManager,
-        onNetworkAvailable: () -> Unit
-    ) {
-        if (connectivityManager.isNetworkAvailable()) {
-            onNetworkAvailable()
-        } else {
-            showErrorDialogue(
-                getString(R.string.error),
-                getString(R.string.no_internet_error),
-                isNegativeButtonNeed = false
-            ) {}
-        }
-    }
     private fun <T> handleResourceState(
         resourceState: Resource<T>,
         onSuccess: () -> Unit={},

@@ -43,7 +43,7 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
         super.onCreate(savedInstanceState)
         binding = ActivityPrescriptionBinding.inflate(layoutInflater)
         setMainContentView(binding.root, true, title = getString(R.string.prescription))
-        initView()
+        withNetworkCheck(connectivityManager,::initView,::finish)
         attachObserver()
         initListener()
     }

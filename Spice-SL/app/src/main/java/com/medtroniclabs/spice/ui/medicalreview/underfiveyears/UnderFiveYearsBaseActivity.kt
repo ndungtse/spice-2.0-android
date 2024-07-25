@@ -70,10 +70,9 @@ class UnderFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
             callback = {
                 backNavigation()
             })
-        initializeViews()
+        withNetworkCheck(connectivityManager,::initializeViews,::onBackPressPopStack)
         attachObserver()
         initializeListeners()
-        viewModel.patientId = intent.getStringExtra(DefinedParams.PatientId)
     }
 
     private fun backNavigationToHome() {
@@ -94,7 +93,10 @@ class UnderFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
         binding.underFiveSummaryBottomView.btnRefer.safeClickListener(this)
         binding.ivPrescription.safeClickListener(this)
         binding.refreshLayout.setOnRefreshListener {
-            swipeRefresh()
+            withNetworkCheck(
+                connectivityManager,
+                ::swipeRefresh,
+                onNetworkNotAvailable = { setRefresh(false) })
         }
     }
 
@@ -104,27 +106,28 @@ class UnderFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
         supportFragmentManager.findFragmentById(R.id.clinicalSummaryContainer)
             .let { currentFragment ->
                 if (currentFragment is UnderFiveYearsTreatmentSummaryFragment) {
-                    if (connectivityManager.isNetworkAvailable()) {
-                        summaryViewModel.getUnderFiveYearsSummaryDetails(
-                            CreateUnderTwoMonthsResponse(
-                                encounterId = viewModel.encounterId ?: "",
-                                patientReference = viewModel.patientReference ?: ""
-                            )
-                        )
-                    } else {
-                        showErrorDialogue(
-                            getString(R.string.error), getString(R.string.no_internet_error),
-                            isNegativeButtonNeed = false,
-                        ) {}
-                    }
+                    getUnderFiveYearsSummaryDetails()
                 } else {
                     patientDetailViewModel.patientDetailsLiveData.value?.data?.let { details ->
                         details.patientId?.let { id ->
                             patientDetailViewModel.getPatients(id)
+                            setRefresh(false)
                         }
                     }
                 }
             }
+    }
+
+    private fun setRefresh(isRefresh: Boolean) =
+        with(binding.refreshLayout) { isRefreshing = isRefresh }
+
+    private fun getUnderFiveYearsSummaryDetails(){
+        summaryViewModel.getUnderFiveYearsSummaryDetails(
+            CreateUnderTwoMonthsResponse(
+                encounterId = viewModel.encounterId ?: "",
+                patientReference = viewModel.patientReference ?: ""
+            )
+        )
     }
 
     private fun diagnosisAndExaminationFragment() {
@@ -309,16 +312,10 @@ class UnderFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
     }
 
     private fun initializeViews() {
+        viewModel.patientId = intent.getStringExtra(DefinedParams.PatientId)
         examinationCardViewModel.workFlowType = MedicalReviewTypeEnums.UnderFiveYears.name
         if (!(SecuredPreference.getBoolean(SecuredPreference.EnvironmentKey.IS_UNDER_FIVE_YEARS_LOADED.name))) {
-            if (connectivityManager.isNetworkAvailable()) {
-                viewModel.getStaticMetaData()
-            } else {
-                showErrorDialogue(
-                    getString(R.string.error), getString(R.string.no_internet_error),
-                    isNegativeButtonNeed = false,
-                ) {}
-            }
+            viewModel.getStaticMetaData()
         } else {
             initializePatientDetailFragment()
         }
@@ -388,13 +385,12 @@ class UnderFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
         when (v?.id) {
             R.id.btnSubmit -> {
                 if (validateInputs()) {
-                    summaryCreate()
+                   withNetworkCheck(connectivityManager,::summaryCreate)
                 }
-
             }
 
             R.id.btnDone -> {
-                summaryDone()
+                withNetworkCheck(connectivityManager,::summaryDone)
             }
 
             binding.ivPrescription.id -> {
@@ -426,24 +422,17 @@ class UnderFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
     }
 
     private fun summaryCreate() {
-        if (connectivityManager.isNetworkAvailable()) {
-            patientDetailViewModel.patientDetailsLiveData.value?.data?.let { patientDetail ->
-                viewModel.createMedicalReviewForUnderFiveYears(
-                    patientDetail,
-                    clinicalSummaryAndSigns = clinicalSummaryViewModel.clinicalSummaryAndSigns,
-                    examinationResultHashMap = examinationCardViewModel.examinationResultHashMap,
-                    clinicalNotes = clinicalNotesViewModel.enteredClinicalNotes,
-                    presentingComplaints = presentingComplaintsViewModel.enteredComplaintNotes,
-                    systemicExaminations = systemicExaminationViewModel.selectedSystemicExaminations.map { it.value },
-                    systemicExaminationsNotes = systemicExaminationViewModel.enteredExaminationNotes,
-                    patientDetailViewModel.encounterId
-                )
-            }
-        } else {
-            showErrorDialogue(
-                getString(R.string.error), getString(R.string.no_internet_error),
-                isNegativeButtonNeed = false,
-            ) {}
+        patientDetailViewModel.patientDetailsLiveData.value?.data?.let { patientDetail ->
+            viewModel.createMedicalReviewForUnderFiveYears(
+                patientDetail,
+                clinicalSummaryAndSigns = clinicalSummaryViewModel.clinicalSummaryAndSigns,
+                examinationResultHashMap = examinationCardViewModel.examinationResultHashMap,
+                clinicalNotes = clinicalNotesViewModel.enteredClinicalNotes,
+                presentingComplaints = presentingComplaintsViewModel.enteredComplaintNotes,
+                systemicExaminations = systemicExaminationViewModel.selectedSystemicExaminations.map { it.value },
+                systemicExaminationsNotes = systemicExaminationViewModel.enteredExaminationNotes,
+                patientDetailViewModel.encounterId
+            )
         }
     }
 
@@ -457,26 +446,19 @@ class UnderFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
         }
 
     private fun summaryDone() {
-        if (connectivityManager.isNetworkAvailable()) {
-            binding.underFiveSummaryBottomView?.btnDone?.isEnabled = true
-            patientDetailViewModel.patientDetailsLiveData.value?.data?.let { details ->
-                viewModel.createUnderFiveYearMedicalReview.value?.data?.encounterId?.let { submitEncounterId ->
-                    viewModel.createUnderFiveYearMedicalReview.value?.data?.patientReference?.let {patientReferenceId ->
-                        viewModel.underFiveYearsSummaryCreate(
-                            details,
-                            submitEncounterId,
-                            summaryViewModel.nextVisitDate,
-                            summaryViewModel.selectedPatientStatus,
-                            patientReferenceId
-                        )
-                    }
+        binding.underFiveSummaryBottomView.btnDone.isEnabled = true
+        patientDetailViewModel.patientDetailsLiveData.value?.data?.let { details ->
+            viewModel.createUnderFiveYearMedicalReview.value?.data?.encounterId?.let { submitEncounterId ->
+                viewModel.createUnderFiveYearMedicalReview.value?.data?.patientReference?.let { patientReferenceId ->
+                    viewModel.underFiveYearsSummaryCreate(
+                        details,
+                        submitEncounterId,
+                        summaryViewModel.nextVisitDate,
+                        summaryViewModel.selectedPatientStatus,
+                        patientReferenceId
+                    )
                 }
             }
-        } else {
-            showErrorDialogue(
-                getString(R.string.error), getString(R.string.no_internet_error),
-                isNegativeButtonNeed = false,
-            ) {}
         }
     }
 
@@ -511,7 +493,7 @@ class UnderFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
     }
 
     private fun enableReferralDoneBtn() {
-        binding.underFiveSummaryBottomView?.btnDone?.isEnabled = getSummaryStatus()
+        binding.underFiveSummaryBottomView.btnDone.isEnabled = getSummaryStatus()
     }
 
     private fun getSummaryStatus(): Boolean {

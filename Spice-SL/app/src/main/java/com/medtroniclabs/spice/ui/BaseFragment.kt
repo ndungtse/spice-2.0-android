@@ -6,9 +6,11 @@ import androidx.fragment.app.commit
 import androidx.fragment.app.replace
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.network.utils.ConnectivityManager
+import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
-open class BaseFragment : Fragment() {
+@AndroidEntryPoint
+open class BaseFragment : Fragment(){
 
     @Inject
     lateinit var connectivityManager: ConnectivityManager
@@ -56,5 +58,26 @@ open class BaseFragment : Fragment() {
             message,
             isNegativeButtonNeed = false,
         ) {}
+    }
+    fun withNetworkCheck(
+        connectivityManager: ConnectivityManager,
+        onNetworkAvailable: () -> Unit,
+        onNetworkNotAvailable: (() -> Unit?)? = null
+
+    ) {
+        if (connectivityManager.isNetworkAvailable()) {
+            onNetworkAvailable()
+        } else {
+            (requireActivity() as BaseActivity).showErrorDialogue(
+                getString(R.string.error),
+                getString(R.string.no_internet_error),
+                isNegativeButtonNeed = false
+            ) {
+                if (it && onNetworkNotAvailable != null) {
+                    onNetworkNotAvailable()
+                }
+                (requireActivity() as BaseActivity).hideLoading()
+            }
+        }
     }
 }

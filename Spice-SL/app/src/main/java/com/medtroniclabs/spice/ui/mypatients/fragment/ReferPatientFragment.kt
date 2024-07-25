@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import androidx.core.widget.doAfterTextChanged
-import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
@@ -24,11 +23,12 @@ import com.medtroniclabs.spice.formgeneration.extension.markMandatory
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
 import com.medtroniclabs.spice.network.resource.ResourceState
+import com.medtroniclabs.spice.ui.BaseDialogFragment
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.ReferPatientViewModel
 
-class ReferPatientFragment : DialogFragment(), View.OnClickListener {
+class ReferPatientFragment : BaseDialogFragment(), View.OnClickListener {
 
     private lateinit var binding: FragmentReferPatientBinding
     private val viewModel: ReferPatientViewModel by activityViewModels()
@@ -69,8 +69,11 @@ class ReferPatientFragment : DialogFragment(), View.OnClickListener {
         binding.tvReferToLabel.markMandatory()
         binding.tvReferredReasonLabel.markMandatory()
         initializeNameNumberAdapter(null)
-        viewModel.getDefaultHealthFacilityDistrictId()
-        viewModel.getHealthFacilityMetaData(null)
+        withNetworkCheck(connectivityManager,{
+            viewModel.getDefaultHealthFacilityDistrictId()
+            viewModel.getHealthFacilityMetaData(null)
+        },::finishFragment)
+
     }
 
     private fun attachObserver() {

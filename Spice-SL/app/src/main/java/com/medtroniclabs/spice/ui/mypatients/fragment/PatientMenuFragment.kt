@@ -153,12 +153,13 @@ class PatientMenuFragment : BaseFragment(), MenuSelectionListener {
             }
 
             MenuConstants.MOTHER_AND_NEONATE_ID -> {
-                val patientId = arguments?.getString(PatientId, "")
-                val id = arguments?.getString(ID, "")
-                if (patientId?.isNotBlank() == true) {
-                    SelectFlowDialog.newInstance(patientId, id)
-                        .show(childFragmentManager, SelectFlowDialog.TAG)
-                }
+                withNetworkCheck(connectivityManager,{
+                    val patientId = arguments?.getString(PatientId, "")
+                    val id = arguments?.getString(ID, "")
+                    if (patientId?.isNotBlank() == true) {
+                        SelectFlowDialog.newInstance(patientId, id)
+                            .show(childFragmentManager, SelectFlowDialog.TAG)
+                    }})
             }
 
             MenuConstants.UNDER_AGE_FIVE_TO_TWO_MONTHS_ID -> {
