@@ -52,9 +52,9 @@ object RMNCH {
     const val muac = "muac"
     const val Pregnancy = "Pregnant, "
 
-    const val ANCVisitNo = "ANC Visit No: "
-    const val PNCVisitNo = "PNC Visit No: "
-    const val ChildHoodVisitNo = "Childhood Visit No: "
+    const val ANCVisitNo = "ANC Visit "
+    const val PNCVisitNo = "PNC Visit "
+    const val ChildHoodVisitNo = "Childhood Visit "
 
 
 

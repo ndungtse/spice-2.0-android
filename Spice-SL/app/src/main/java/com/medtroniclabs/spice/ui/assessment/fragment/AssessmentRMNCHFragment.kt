@@ -240,7 +240,7 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
                         val visitCount = viewModel.memberClinicalLiveData.value?.visitCount ?: 1
                         if (second.containsKey(name) && second[name] is Map<*,*>) {
                             val clinicalMap = second[name] as HashMap<String,Any>
-                            clinicalMap[RMNCH.visitNo] = visitCount
+                            clinicalMap[RMNCH.visitNo] = visitCount + 1
                         }
                     }
                     calculateGestationalAge(second, name)

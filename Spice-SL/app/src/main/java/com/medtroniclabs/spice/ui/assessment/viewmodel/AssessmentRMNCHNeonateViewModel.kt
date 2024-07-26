@@ -104,6 +104,10 @@ class AssessmentRMNCHNeonateViewModel @Inject constructor(
     ) {
         val groupMap = HashMap<String, Any>()
         groupMap[RMNCH.PNC] = motherDetailMap[RMNCH.PNC] as Any
+        if (groupMap.containsKey(RMNCH.PNC)){
+            val motherMap = groupMap[RMNCH.PNC] as HashMap<String,Any>
+            childDetailMap[RMNCH.visitNo] = motherMap[RMNCH.visitNo] as Any
+        }
         groupMap[RMNCH.PNCNeonatal] = childDetailMap
         val motherReferralResult = ReferralResultGenerator().calculateRMNCHReferralResult(groupMap,false)
         val childReferralResult = ReferralResultGenerator().calculateRMNCHReferralResult(groupMap,true)
