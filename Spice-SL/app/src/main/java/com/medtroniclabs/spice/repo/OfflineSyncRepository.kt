@@ -32,6 +32,7 @@ import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.ANC
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.ChildHoodVisit
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.PNC
+import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.PNCNeonatal
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.visitNo
 import okhttp3.ResponseBody
 import retrofit2.Response
@@ -83,6 +84,7 @@ class OfflineSyncRepository @Inject constructor(
         when (assessmentType.lowercase()) {
             RMNCH.ANC_MENU.lowercase() -> return getRMNCHVisitNumber(ANC, assessmentDetails)
             RMNCH.pnc_mother_key.lowercase() -> return getRMNCHVisitNumber(PNC, assessmentDetails)
+            RMNCH.pnc_neonate_key.lowercase() -> return getRMNCHVisitNumber(PNCNeonatal, assessmentDetails)
             RMNCH.CHILD_MENU.lowercase() -> return getRMNCHVisitNumber(
                 ChildHoodVisit,
                 assessmentDetails
