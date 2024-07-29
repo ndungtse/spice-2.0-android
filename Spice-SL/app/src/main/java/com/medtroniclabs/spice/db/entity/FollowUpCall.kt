@@ -15,6 +15,7 @@ data class FollowUpCall(
     val status: FollowUpCallStatus = FollowUpCallStatus.UNSUCCESSFUL,
     val patientStatus: String? = null,
     val reason: String? = null,
+    val isSynced: Boolean = false,
     val latitude: Double = 0.0,
     val longitude:Double = 0.0
 )

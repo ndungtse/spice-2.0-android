@@ -114,6 +114,7 @@ class OfflineSyncRepository @Inject constructor(
             roomHelper.deleteAllHouseholdMembers()
             roomHelper.deleteAllPregnancyDetails()
             roomHelper.deleteAllAssessments()
+            roomHelper.deleteAllFollowUpCalls()
             roomHelper.deleteAllFollowUps()
 
             val villageIds = roomHelper.getAllVillageIds()
@@ -171,8 +172,6 @@ class OfflineSyncRepository @Inject constructor(
         // 2. Update record when sync status is Not NotSynced
         // 3. Delete All FollowUp where isCompleted true and syncStatus is Success
         // Insert follow up
-        roomHelper.deleteAllFollowUpCalls()
-        roomHelper.deleteCreatedFollowUp()
         requestInitialDownload.followUps?.forEach { followUp ->
             followUp.syncStatus = OfflineSyncStatus.Success
             roomHelper.insertOrUpdateFollowUp(followUp)
@@ -376,6 +375,7 @@ class OfflineSyncRepository @Inject constructor(
         val householdMemberIds = mutableListOf<String>()
         val assessmentIds = mutableListOf<String>()
         val followUpIds = mutableListOf<Long>()
+        val followUpCallIds = mutableListOf<Long>()
 
         val houseHoldList = roomHelper.getAllUnSyncedHouseHolds()
         householdIds.addAll(houseHoldList.map { it.referenceId!! })
@@ -411,7 +411,9 @@ class OfflineSyncRepository @Inject constructor(
         allFollowUps.forEach { followUp ->
             followUpIds.add(followUp.referenceId)
             followUp.id?.let {
-                followUp.followUpDetails = roomHelper.getAllFollowUpCalls(it)
+                val followUpDetails = roomHelper.getAllFollowUpCalls(it)
+                followUp.followUpDetails = followUpDetails
+                followUpCallIds.addAll(followUpDetails.map { call -> call.id })
             }
         }
 
@@ -437,6 +439,7 @@ class OfflineSyncRepository @Inject constructor(
                 roomHelper.changeHouseholdMemberStatus(householdMemberIds) // Change Status to InProgress
                 roomHelper.changeAssessmentStatus(assessmentIds) // Change status to InProgress
                 roomHelper.changeFollowUpStatus(followUpIds) // Change status to InProgress
+                roomHelper.changeFollowUpCallStatus(followUpCallIds) // Change isSynced Status to True
                 return listOf(request[OfflineConstant.REQUEST_ID] as String)
             }
         } catch (e: Exception) {

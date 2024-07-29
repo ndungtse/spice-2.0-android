@@ -73,8 +73,6 @@ interface FollowUpDao {
     @Query("UPDATE FollowUp SET syncStatus =:syncStatus WHERE referenceId IN (:ids)")
     suspend fun updateInProgress(ids: List<Long>, syncStatus: String = OfflineSyncStatus.InProgress.name)
 
-    @Query("DELETE FROM FollowUp WHERE id IS NULL AND syncStatus = :syncStatus")
-    suspend fun deleteCreatedFollowUp(syncStatus: String = OfflineSyncStatus.InProgress.name)
 
     @Transaction
     suspend fun insertOrUpdateFromBE(entity: FollowUp) {

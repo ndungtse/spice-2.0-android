@@ -1,7 +1,5 @@
 package com.medtroniclabs.spice.common
 
-import com.medtroniclabs.spice.BuildConfig
-
 object AppConstants {
 
     @JvmStatic

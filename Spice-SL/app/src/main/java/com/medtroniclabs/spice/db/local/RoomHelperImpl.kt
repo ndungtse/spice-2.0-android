@@ -585,15 +585,15 @@ class RoomHelperImpl @Inject constructor(
         followUpDao.updateOtherFollowUpForWrongNumber(id, fhirId)
     }
 
-    override suspend fun deleteCreatedFollowUp() {
-        followUpDao.deleteCreatedFollowUp()
-    }
-
     override suspend fun insertOrUpdateFollowUp(entity: FollowUp) {
         followUpDao.insertOrUpdateFromBE(entity)
     }
 
     override suspend fun deleteCompletedFollowUp() {
         followUpDao.deleteCompletedFollowUp()
+    }
+
+    override suspend fun changeFollowUpCallStatus(idList: List<Long>) {
+        followUpCallsDao.updateSyncSuccess(idList)
     }
 }

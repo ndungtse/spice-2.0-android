@@ -11,9 +11,12 @@ interface FollowUpCallsDao {
     @Insert
     suspend fun insertFollowUpCall(followUpCall: FollowUpCall)
 
-    @Query("SELECT * FROM FollowUpCall WHERE followUpId = :followUpId")
+    @Query("SELECT * FROM FollowUpCall WHERE followUpId = :followUpId AND isSynced = 0")
     suspend fun getAllFollowUpCalls(followUpId: Long): List<FollowUpCall>
 
     @Query("DELETE FROM FollowUpCall")
     suspend fun deleteAllFollowUpCalls()
+
+    @Query("UPDATE FollowUpCall SET isSynced = 1 WHERE id IN (:ids)")
+    suspend fun updateSyncSuccess(ids: List<Long>)
 }
