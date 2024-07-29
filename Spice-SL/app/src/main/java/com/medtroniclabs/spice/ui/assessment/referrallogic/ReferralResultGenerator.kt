@@ -80,8 +80,8 @@ class ReferralResultGenerator {
     ): Pair<String?, ArrayList<String>> {
         if (map.containsKey(RMNCH.ANC)) {
             if (checkMiscarrageStatus(map, RMNCH.ANC, Miscarriage)) {
-                addResultMap(ReferralReasons.Miscarrage.name, ReferralStatus.Referred.name)
-                addReferralReason(referralReason, ReferralReasons.Miscarrage.name)
+                addResultMap(ReferralReasons.Miscarriage.name, ReferralStatus.Referred.name)
+                addReferralReason(referralReason, ReferralReasons.Miscarriage.name)
             }
             findSignListByWorkflow(
                 RMNCH.ANC,

@@ -314,7 +314,7 @@ class MotherNeonateAncSummary : BaseFragment(),View.OnClickListener {
     fun validateInput(): Boolean {
         val value = binding.tvNextMedicalReviewLabelText.text?.trim().toString()
         if (value.isBlank()) {
-            if (viewModel.patientStatus?.contains(ReferralStatus.Recovered.name) == true) {
+            if (viewModel.patientStatus?.equals(ReferralStatus.Recovered.name, true) == true) {
                 binding.tvNextMedicalReviewError.invisible()
                 return true
             }

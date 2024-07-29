@@ -18,6 +18,7 @@ import com.medtroniclabs.spice.common.CommonUtils.convertListToString
 import com.medtroniclabs.spice.common.CommonUtils.createPrescription
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
+import com.medtroniclabs.spice.common.DefinedParams.OtherNotes
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.ViewUtils.showDatePicker
 import com.medtroniclabs.spice.data.AboveFiveYearsSummaryDetails
@@ -125,7 +126,7 @@ class AboveFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
                     binding.tvDiagnosisText.setTextColor(ContextCompat.getColor(requireContext(), R.color.a_red_error))
                 }
                 convertListToString(
-                    ArrayList(list.map { it.diseaseCategory }.distinct())
+                    ArrayList(list.filter { it.diseaseCategory.lowercase() != OtherNotes.lowercase() }.map { it.diseaseCategory }.distinct())
                 )
             } ?: requireContext().getString(R.string.hyphen_symbol)
         binding.tvPresentingComplaintsText.text = presentingComplaintsViewModel.selectedPresentingComplaints.map { it.name }.let {
@@ -134,15 +135,17 @@ class AboveFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
             )
         }
         binding.tvDiseaseCategoryText.text =
-            details.diagnosis?.let {list ->
+            details.diagnosis?.let { list ->
                 convertListToString(
-                    ArrayList(list.map { it.diseaseCategory }.distinct())
+                    ArrayList(list.filter { it.diseaseCategory.lowercase() != OtherNotes.lowercase() }
+                        .map { it.diseaseCategory }.distinct())
                 )
             } ?: requireContext().getString(R.string.hyphen_symbol)
         binding.tvDiseaseConditionText.text =
-            details.diagnosis?.let {list ->
+            details.diagnosis?.let { list ->
                 convertListToString(
-                    ArrayList(list.mapNotNull { it.diseaseCondition })
+                    ArrayList(list.filter { it.diseaseCategory.lowercase() != OtherNotes.lowercase() }
+                        .mapNotNull { it.diseaseCondition })
                 )
             } ?: requireContext().getString(R.string.hyphen_symbol)
         binding.tvClinicalNotesText.text = chipItemViewModel.enteredClinicalNotes
@@ -221,7 +224,7 @@ class AboveFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
     }
 
     private fun updateNextFollowUpDate() {
-        if (viewModel.selectedPatientStatus == ReferralStatus.Recovered.name) {
+        if (viewModel.selectedPatientStatus?.equals(ReferralStatus.Recovered.name, true) == true) {
             if (viewModel.nextFollowupDate != null) {
                 viewModel.nextFollowupDate = null
                 binding.tvNextMedicalReviewLabelText.text = ""

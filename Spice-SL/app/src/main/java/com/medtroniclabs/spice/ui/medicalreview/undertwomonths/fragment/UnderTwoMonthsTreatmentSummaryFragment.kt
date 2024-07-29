@@ -20,6 +20,7 @@ import com.medtroniclabs.spice.common.CommonUtils.convertAnyToString
 import com.medtroniclabs.spice.common.CommonUtils.convertListToString
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
+import com.medtroniclabs.spice.common.DefinedParams.OtherNotes
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.ViewUtils
 import com.medtroniclabs.spice.data.MedicalReviewMetaItems
@@ -141,7 +142,7 @@ class UnderTwoMonthsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
                         binding.tvDiagnosis.setTextColor(ContextCompat.getColor(requireContext(), R.color.a_red_error))
                     }
                     convertListToString(
-                        ArrayList(list.map { it.diseaseCategory }.distinct())
+                        ArrayList(list.filter { it.diseaseCategory.lowercase() != OtherNotes.lowercase() }.map { it.diseaseCategory }.distinct())
                     )
                 } ?: requireContext().getString(R.string.empty__)
 
@@ -241,7 +242,11 @@ class UnderTwoMonthsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
     }
 
     private fun updateNextFollowUpDate() {
-        if (summaryViewModel.selectedPatientStatus == ReferralStatus.Recovered.name) {
+        if (summaryViewModel.selectedPatientStatus?.equals(
+                ReferralStatus.Recovered.name,
+                true
+            ) == true
+        ) {
             if (summaryViewModel.nextVisitDate != null) {
                 summaryViewModel.nextVisitDate = null
                 binding.etNextVisitDate.text = ""

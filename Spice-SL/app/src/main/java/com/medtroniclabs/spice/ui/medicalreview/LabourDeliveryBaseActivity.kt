@@ -299,7 +299,7 @@ class LabourDeliveryBaseActivity : BaseActivity(), View.OnClickListener, AncVisi
                     memberId = patientDetails.memberId,
                     patientReference = it.patientReference,
                     provenance = ProvanceDto(),
-                    referralTicketType = MedicalReviewTypeEnums.RMNCH.name
+                    category = MedicalReviewTypeEnums.RMNCH.name
                 )
                 viewModel.labourDeliverySummaryCreate(request)
             }

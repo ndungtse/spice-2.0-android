@@ -14,8 +14,8 @@ import com.medtroniclabs.spice.appextensions.setError
 import com.medtroniclabs.spice.appextensions.setWidth
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
-import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams.Other
+import com.medtroniclabs.spice.common.DefinedParams.OtherNotes
 import com.medtroniclabs.spice.data.DiagnosisDiseaseModel
 import com.medtroniclabs.spice.data.DiagnosisSaveUpdateRequest
 import com.medtroniclabs.spice.data.DiseaseCategoryItems
@@ -134,6 +134,12 @@ class DiagnosisDialogFragment : DialogFragment(), View.OnClickListener, Diagnosi
                                  * selectedDiagnosisMetaChipItemList - It is to collect overall selected parent chip item list
                                  * selectedDiseaseConditionItemList - It is to select chips of disease conditions which is inside accordion of respective group
                                  */
+                                binding.etOtherDiagnosisNotes.setText(listItems.firstOrNull {
+                                    it.diseaseCategory.equals(
+                                        OtherNotes,
+                                        true
+                                    )
+                                }?.diseaseCondition.takeIf { !it.isNullOrBlank() })
 
                                 val diagnosisAccordionList = ArrayList<DiseaseCategoryItems>()
                                 for (diagnosis in diagnosisList) {

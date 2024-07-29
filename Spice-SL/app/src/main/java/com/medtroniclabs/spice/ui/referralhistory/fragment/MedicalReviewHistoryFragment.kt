@@ -22,6 +22,7 @@ import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.Above5MedicalReview
 import com.medtroniclabs.spice.common.DefinedParams.ICCM_ABOVE_2M_5Y
+import com.medtroniclabs.spice.common.DefinedParams.OtherNotes
 import com.medtroniclabs.spice.common.DefinedParams.PregnancyAncMedicalReview
 import com.medtroniclabs.spice.data.history.MedicalReviewHistory
 import com.medtroniclabs.spice.databinding.FragmentReferralTicketBinding
@@ -352,7 +353,8 @@ class MedicalReviewHistoryFragment : BaseFragment(), View.OnClickListener {
             mapOf(
                 DefinedParams.label to requireContext().getString(R.string.diagnosis),
                 DefinedParams.value to combineText(
-                    medicalReviewHistory.reviewDetails?.diagnosis?.map { it.diseaseCategory }?.distinct(),
+                    medicalReviewHistory.reviewDetails?.diagnosis?.filter { it.diseaseCategory?.lowercase() != OtherNotes.lowercase() }
+                        ?.map { it.diseaseCategory }?.distinct(),
                     "",
                     getString(R.string.separator_double_hyphen)
                 )

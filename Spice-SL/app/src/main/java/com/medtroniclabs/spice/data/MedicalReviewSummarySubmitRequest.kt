@@ -12,8 +12,8 @@ data class MedicalReviewSummarySubmitRequest(
     val medicalSupplies: List<String>? = null,
     val patientStatus: String? = null,
     val nextVisitDate: String? = null,
-    val referralTicketType:String? = null,
-    val assessmentName: String? = null,
+    val category:String? = null,
+    val encounterType: String? = null,
     val householdId: String? = null,
     val villageId: String? = null
 )

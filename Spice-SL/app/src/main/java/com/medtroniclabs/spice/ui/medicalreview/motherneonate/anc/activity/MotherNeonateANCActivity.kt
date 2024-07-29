@@ -513,7 +513,7 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
                     motherNeonateSummaryViewModel.patientStatus,
                     patientViewModel.getVillageId(),
                     patientViewModel.getPatientId(),
-                    MedicalReviewTypeEnums.pregnancyAncMedicalReview.name
+                    MedicalReviewTypeEnums.ANC_MEDICAL_REVIEW.name
                 )
             } else {
                 showErrorDialogue(
@@ -544,7 +544,7 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
     private fun createMotherNeonateRequest(prescriptionEncounterId: String?) {
         viewModel.motherNeonateAncRequest.apply {
             id = prescriptionEncounterId
-            assessmentType = PregnancyANC
+            assessmentType =  MedicalReviewTypeEnums.ANC_MEDICAL_REVIEW.name
             presentingComplaints =
                 presentingComplaintsViewModel.selectedPresentingComplaints.map { it.value }
             presentingComplaintsNotes = presentingComplaintsViewModel.enteredComplaintNotes

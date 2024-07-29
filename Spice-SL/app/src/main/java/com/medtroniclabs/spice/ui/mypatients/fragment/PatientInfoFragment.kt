@@ -16,6 +16,7 @@ import com.medtroniclabs.spice.common.DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
 import com.medtroniclabs.spice.common.DateUtils.DATE_ddMMyyyy
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.IsReferredScreen
+import com.medtroniclabs.spice.common.DefinedParams.OtherNotes
 import com.medtroniclabs.spice.databinding.FragmentPatientInfoBinding
 import com.medtroniclabs.spice.formgeneration.extension.capitalizeFirstChar
 import com.medtroniclabs.spice.model.PatientListRespModel
@@ -173,7 +174,8 @@ class PatientInfoFragment : BaseFragment() {
                     mapOf(
                         DefinedParams.label to requireContext().getString(R.string.diagnosis),
                         DefinedParams.value to combineText(
-                            patientListRespModel.diagnosis?.map { it.diseaseCategory }?.distinct(),
+                            patientListRespModel.diagnosis?.filter { it.diseaseCategory?.lowercase() != OtherNotes.lowercase() }
+                                ?.map { it.diseaseCategory }?.distinct(),
                             "",
                             getString(R.string.hyphen_symbol)
                         )

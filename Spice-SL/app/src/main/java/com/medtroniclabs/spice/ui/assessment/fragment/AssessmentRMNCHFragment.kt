@@ -237,7 +237,7 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
                             )
                         }
                     } else {
-                        val visitCount = viewModel.memberClinicalLiveData.value?.visitCount ?: 1
+                        val visitCount = viewModel.memberClinicalLiveData.value?.visitCount ?: 0
                         if (second.containsKey(name) && second[name] is Map<*,*>) {
                             val clinicalMap = second[name] as HashMap<String,Any>
                             clinicalMap[RMNCH.visitNo] = visitCount + 1
