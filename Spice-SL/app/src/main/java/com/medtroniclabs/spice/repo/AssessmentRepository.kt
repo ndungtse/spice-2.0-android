@@ -56,7 +56,7 @@ class AssessmentRepository @Inject constructor(
                 RMNCH.pnc_neonate_key,
                 followUpId = followUpId
             )
-            roomHelper.saveAssessment(childAssessmentEntity)
+            childAssessmentEntity.id =  roomHelper.saveAssessment(childAssessmentEntity)
             Resource(
                 state = ResourceState.SUCCESS,
                 data = Pair(motherAssessmentEntity, childAssessmentEntity)
