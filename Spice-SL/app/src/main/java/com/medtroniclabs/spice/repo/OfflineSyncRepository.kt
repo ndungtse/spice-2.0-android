@@ -49,8 +49,8 @@ class OfflineSyncRepository @Inject constructor(
         return convertEntityToRequest(roomHelper.getUnSyncedAssessmentByPatientId(patientId))
     }
 
-    private suspend fun getOtherUnSyncedAssessments(): List<Assessment> {
-        return convertEntityToRequest(roomHelper.getOtherUnSyncedAssessments())
+    private suspend fun getOtherUnSyncedAssessments(addedAssessmentIds: List<String>): List<Assessment> {
+        return convertEntityToRequest(roomHelper.getOtherUnSyncedAssessments(addedAssessmentIds))
     }
 
     private fun convertEntityToRequest(list: List<AssessmentDetails>): List<Assessment> {
@@ -403,7 +403,7 @@ class OfflineSyncRepository @Inject constructor(
             assessmentIds.addAll(hhm.assessments.map { it.referenceId.toString() })
         }
 
-        val otherAssessments = getOtherUnSyncedAssessments()
+        val otherAssessments = getOtherUnSyncedAssessments(assessmentIds)
         assessmentIds.addAll(otherAssessments.map { it.referenceId.toString() })
 
         //Followup

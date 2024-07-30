@@ -17,12 +17,5 @@ data class AssessmentDetails(
     val createdAt: Long,
     val followUpId: Long? = null,
     var latitude: Double = 0.0,
-    var longitude: Double = 0.0,
-
-    // Anc Details
-    val ancVisitNo: Long? = null,
-    // Pnc Detail
-    val pncVisitNo: Long? = null,
-    //Childhood Visit Detail
-    val childVisitNo: Long? = null,
+    var longitude: Double = 0.0
 )

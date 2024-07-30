@@ -364,8 +364,8 @@ class RoomHelperImpl @Inject constructor(
         return memberDAO.getAssessmentMemberDetails(id)
     }
 
-    override suspend fun getOtherUnSyncedAssessments(): List<AssessmentDetails> {
-        return assessmentDAO.getOtherUnSyncedAssessments()
+    override suspend fun getOtherUnSyncedAssessments(addedAssessmentIds: List<String>): List<AssessmentDetails> {
+        return assessmentDAO.getOtherUnSyncedAssessments(addedAssessmentIds)
     }
 
     override suspend fun getUnSyncedAssessmentByPatientId(patientId: String): List<AssessmentDetails> {
