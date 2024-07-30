@@ -173,7 +173,7 @@ class DiagnosisDialogFragment : DialogFragment(), View.OnClickListener, Diagnosi
                                         diagnosisList.flatMap { item -> item.diseaseCondition }
                                             .find { conditionItem -> conditionItem.value == it.diseaseCondition }?.name
                                     nameItemValue?.let { value ->
-                                        if (value.lowercase() != Other.lowercase()) {
+                                        if (value.lowercase() != Other.lowercase() || !it.diseaseCategory.equals(Other, true)) {
                                             selectedDiseaseConditionItemList.add(
                                                 ChipViewItemModel(
                                                     id = it.diseaseConditionId, name = value
@@ -188,7 +188,6 @@ class DiagnosisDialogFragment : DialogFragment(), View.OnClickListener, Diagnosi
                                     selectedDiagnosisMetaChipItemList
                                 )
                                 diagnosisAccordionList.removeAll{it.name.lowercase() == Other.lowercase()}
-                                selectedDiseaseConditionItemList.removeAll{it.name.lowercase() == Other.lowercase()}
                                 diagnosisGenerator.populateDiagnosisView(
                                     diagnosisAccordionList,
                                     selectedDiseaseConditionItemList
@@ -315,7 +314,7 @@ class DiagnosisDialogFragment : DialogFragment(), View.OnClickListener, Diagnosi
                             patientReference = details.id,
                             diseases = getDiagnosisDiseaseList(),
                             provenance = ProvanceDto(),
-                            otherNotes = binding.etOtherDiagnosisNotes.text?.trim().toString(),
+                            otherNotes = binding.etOtherDiagnosisNotes.text?.trim()?.takeIf { it.isNotEmpty() }?.toString(),
                             type = diagnosisViewModel.diagnosisType
                         )
                         diagnosisViewModel.diagnosisCreate(request)
