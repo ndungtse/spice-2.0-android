@@ -6,6 +6,7 @@ import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.medtroniclabs.spice.data.IdentityType
 import com.medtroniclabs.spice.data.LoginResponse
 import com.medtroniclabs.spice.data.offlinesync.model.FollowUpCriteria
 import java.lang.reflect.Type
@@ -39,7 +40,10 @@ object SecuredPreference {
         IS_MOTHER_LOADED_PNC,
         IS_NEONATE_LOADED_PNC,
         TENANT_ID,
-        DISTRICT_ID
+        DISTRICT_ID,
+        IDENTITY_TYPES,
+        IS_NON_NCD_WORKFLOW_ENABLED,
+        REMAINING_ATTEMPTS_COUNT
     }
 
 
@@ -459,6 +463,17 @@ object SecuredPreference {
 
     fun getRole(): String {
         return getUserDetails()?.roles?.first()?.name?: ""
+    }
+
+    fun putIdentityTypes(types: List<IdentityType>) {
+        val typesString = Gson().toJson(types)
+        putString(EnvironmentKey.IDENTITY_TYPES.name, typesString)
+    }
+
+    fun getIdentityTypes(): List<IdentityType>? {
+        val identityTypesString = getString(EnvironmentKey.IDENTITY_TYPES.name)
+        val type: Type = object : TypeToken<List<IdentityType>>() {}.type
+        return Gson().fromJson(identityTypesString, type)
     }
 
     fun logout(): Boolean {

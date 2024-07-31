@@ -75,6 +75,19 @@ class MetaRepository @Inject constructor(
                                 menu.meta?.let { meta.addAll(it) }
                             }
                             workflowNames.addAll(clinicalIds)
+                            identityTypes?.let { types ->
+                                SecuredPreference.putIdentityTypes(types)
+                            }
+                            SecuredPreference.putBoolean(
+                                SecuredPreference.EnvironmentKey.IS_NON_NCD_WORKFLOW_ENABLED.name,
+                                nonNcdWorkflowEnabled
+                            )
+                            remainingAttemptsCount?.let { remAttempts ->
+                                SecuredPreference.putInt(
+                                    SecuredPreference.EnvironmentKey.REMAINING_ATTEMPTS_COUNT.name,
+                                    remAttempts
+                                )
+                            }
                         }
 
 //                        if (CommonUtils.isChw()) {

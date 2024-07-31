@@ -4,6 +4,9 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import com.medtroniclabs.spice.data.CulturesEntity
+import com.medtroniclabs.spice.data.IdentityType
+import com.medtroniclabs.spice.data.ProgramEntity
 import com.medtroniclabs.spice.data.VillageInfo
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowConditionEntity
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowEntity
@@ -120,4 +123,22 @@ interface MetaDataDAO {
     @Query("SELECT * FROM HealthFacilityEntity Where isUserSite =:isUserSite")
     suspend fun getUserHealthFacility(isUserSite: Boolean): List<HealthFacilityEntity>
 
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertPrograms(programEntity: ProgramEntity)
+
+    @Query("SELECT * FROM ProgramEntity")
+    suspend fun getPrograms(): ProgramEntity?
+
+    @Query("DELETE FROM ProgramEntity")
+    suspend fun deletePrograms()
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertCultures(culturesEntity: CulturesEntity)
+
+    @Query("SELECT * FROM CulturesEntity")
+    suspend fun getCultures(): CulturesEntity?
+
+    @Query("DELETE FROM CulturesEntity")
+    suspend fun deleteCultures()
 }

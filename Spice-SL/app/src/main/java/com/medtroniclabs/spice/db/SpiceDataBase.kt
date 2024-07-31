@@ -5,11 +5,13 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import com.medtroniclabs.spice.data.CulturesEntity
 import com.medtroniclabs.spice.BuildConfig
 import com.medtroniclabs.spice.data.DiseaseCategoryItems
 import com.medtroniclabs.spice.data.ExaminationListItems
 import com.medtroniclabs.spice.data.LabourDeliveryMetaEntity
 import com.medtroniclabs.spice.data.MedicalReviewMetaItems
+import com.medtroniclabs.spice.data.ProgramEntity
 import com.medtroniclabs.spice.db.converters.OfflineStatusTypeConverter
 import com.medtroniclabs.spice.db.dao.AboveFiveYearsDAO
 import com.medtroniclabs.spice.db.dao.AssessmentDAO
@@ -51,8 +53,10 @@ import net.zetetic.database.sqlcipher.SupportOpenHelperFactory
     entities = [HouseholdEntity::class, HouseholdMemberEntity::class, SignsAndSymptomsEntity::class, AssessmentEntity::class, MenuEntity::class, UserProfileEntity::class,
         VillageEntity::class, HealthFacilityEntity::class, ClinicalWorkflowEntity::class, FormEntity::class, ClinicalWorkflowConditionEntity::class,
         MedicalReviewMetaItems::class, DiseaseCategoryItems::class, ExaminationListItems::class, LabourDeliveryMetaEntity::class, FollowUp::class, FollowUpCall::class,
-        PregnancyDetail::class, FrequencyEntity::class, ConsentForm::class, LinkHouseholdMember::class, CallHistory::class],
-    version = 2
+        PregnancyDetail::class, FrequencyEntity::class, ConsentForm::class, LinkHouseholdMember::class, CallHistory::class,
+        MedicalReviewMetaItems::class, DiseaseCategoryItems::class, ExaminationListItems::class, LabourDeliveryMetaEntity::class, FollowUp::class, FollowUpCall::class, PregnancyDetail::class, FrequencyEntity::class, ConsentForm::class,
+        ProgramEntity::class, CulturesEntity::class, ConsentForm::class],
+    version = 1
 )
 @TypeConverters(OfflineStatusTypeConverter::class)
 abstract class SpiceDataBase : RoomDatabase() {
