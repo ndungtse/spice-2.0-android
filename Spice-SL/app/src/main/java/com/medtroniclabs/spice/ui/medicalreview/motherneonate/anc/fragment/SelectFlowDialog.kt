@@ -17,7 +17,7 @@ import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.ui.SingleSelectionCustomView
 import com.medtroniclabs.spice.network.utils.ConnectivityManager
 import com.medtroniclabs.spice.ui.home.ToolsViewModel
-import com.medtroniclabs.spice.ui.medicalreview.LabourDeliveryBaseActivity
+import com.medtroniclabs.spice.ui.medicalreview.motherneonate.labourdelivery.activity.LabourDeliveryBaseActivity
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.activity.MotherNeonateANCActivity
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject

@@ -7,7 +7,7 @@
     android:layout_height="wrap_content"
     android:paddingBottom="@dimen/_16sdp"
     app:cardUseCompatPadding="true"
-    tools:context=".ui.mypatients.fragment.NeonateFragment">
+    tools:context=".ui.medicalreview.motherneonate.labourdelivery.fragment.NeonateFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"

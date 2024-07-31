@@ -1,4 +1,4 @@
-package com.medtroniclabs.spice.ui.common
+package com.medtroniclabs.spice.ui.medicalreview.motherneonate.labourdelivery.fragment
 
 import android.app.DatePickerDialog
 import android.os.Bundle
@@ -23,7 +23,7 @@ import com.medtroniclabs.spice.formgeneration.ui.SingleSelectionCustomView
 import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
-import com.medtroniclabs.spice.ui.medicalreview.labourDelivery.LabourDeliveryViewModel
+import com.medtroniclabs.spice.ui.medicalreview.motherneonate.labourdelivery.viewmodel.LabourDeliveryViewModel
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 
 class LabourOrDeliveryFragment : BaseFragment() {

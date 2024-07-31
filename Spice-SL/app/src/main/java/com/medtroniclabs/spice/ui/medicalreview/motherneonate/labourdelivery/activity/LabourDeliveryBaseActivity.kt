@@ -1,9 +1,11 @@
-package com.medtroniclabs.spice.ui.medicalreview
+package com.medtroniclabs.spice.ui.medicalreview.motherneonate.labourdelivery.activity
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.core.view.isVisible
 import com.medtroniclabs.spice.R
@@ -18,17 +20,19 @@ import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
-import com.medtroniclabs.spice.ui.common.LabourOrDeliveryFragment
+import com.medtroniclabs.spice.ui.medicalreview.motherneonate.labourdelivery.fragment.LabourOrDeliveryFragment
 import com.medtroniclabs.spice.ui.dialog.MedicalReviewSuccessDialogFragment
-import com.medtroniclabs.spice.ui.medicalreview.labourDelivery.LabourDeliveryViewModel
+import com.medtroniclabs.spice.ui.landing.OnDialogDismissListener
+import com.medtroniclabs.spice.ui.medicalreview.motherneonate.labourdelivery.viewmodel.LabourDeliveryViewModel
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.AncVisitCallBack
 import com.medtroniclabs.spice.ui.medicalreview.prescription.PrescriptionActivity
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
-import com.medtroniclabs.spice.ui.mypatients.fragment.MotherFragment
-import com.medtroniclabs.spice.ui.mypatients.fragment.MotherSummaryFragment
-import com.medtroniclabs.spice.ui.mypatients.fragment.NeonateFragment
-import com.medtroniclabs.spice.ui.mypatients.fragment.NeonateSummaryFragment
+import com.medtroniclabs.spice.ui.medicalreview.motherneonate.labourdelivery.fragment.MotherFragment
+import com.medtroniclabs.spice.ui.medicalreview.motherneonate.labourdelivery.fragment.MotherSummaryFragment
+import com.medtroniclabs.spice.ui.medicalreview.motherneonate.labourdelivery.fragment.NeonateFragment
+import com.medtroniclabs.spice.ui.medicalreview.motherneonate.labourdelivery.fragment.NeonateSummaryFragment
+import com.medtroniclabs.spice.ui.medicalreview.motherneonate.labourdelivery.viewmodel.LabourDeliverySummaryViewModel
 import com.medtroniclabs.spice.ui.mypatients.fragment.PatientInfoFragment
 import com.medtroniclabs.spice.ui.mypatients.fragment.ReferPatientFragment
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
@@ -37,10 +41,12 @@ import dagger.hilt.android.AndroidEntryPoint
 
 
 @AndroidEntryPoint
-class LabourDeliveryBaseActivity : BaseActivity(), View.OnClickListener, AncVisitCallBack {
+class LabourDeliveryBaseActivity : BaseActivity(), View.OnClickListener, AncVisitCallBack,
+    OnDialogDismissListener {
 
     private lateinit var binding: ActivityMedicalReviewLabourDeliveryactivityBinding
     private val viewModel: LabourDeliveryViewModel by viewModels()
+    private val viewModelSummary: LabourDeliverySummaryViewModel by viewModels()
     private val patientViewModel: PatientDetailViewModel by viewModels()
     private val referPatientViewModel: ReferPatientViewModel by viewModels()
 
@@ -87,20 +93,32 @@ class LabourDeliveryBaseActivity : BaseActivity(), View.OnClickListener, AncVisi
     private fun attachObserver() {
         referPatientViewModel.referPatientResultLiveData.observe(this) { resource ->
             when (resource.state) {
-                ResourceState.LOADING -> showLoading()
+                ResourceState.LOADING -> {
+                    showLoading()
+                }
+
                 ResourceState.SUCCESS -> {
                     hideLoading()
-                    val fragment = supportFragmentManager.findFragmentByTag(ReferPatientFragment.TAG) as? ReferPatientFragment
+                    val fragment =
+                        supportFragmentManager.findFragmentByTag(ReferPatientFragment.TAG) as? ReferPatientFragment
                     fragment?.dismiss()
-                    MedicalReviewSuccessDialogFragment.newInstance().show(supportFragmentManager, MedicalReviewSuccessDialogFragment.TAG)
+                    MedicalReviewSuccessDialogFragment.newInstance().show(
+                        supportFragmentManager,
+                        MedicalReviewSuccessDialogFragment.TAG
+                    )
                 }
-                ResourceState.ERROR -> hideLoading()
+
+                ResourceState.ERROR -> {
+                    hideLoading()
+                }
             }
         }
-
-        viewModel.summaryCreateResponse.observe(this) { resourceState ->
+        viewModelSummary.summaryCreateResponse.observe(this) { resourceState ->
             when (resourceState.state) {
-                ResourceState.LOADING -> showLoading()
+                ResourceState.LOADING -> {
+                    showLoading()
+                }
+
                 ResourceState.ERROR -> {
                     hideLoading()
                     showErrorDialogue(
@@ -109,22 +127,30 @@ class LabourDeliveryBaseActivity : BaseActivity(), View.OnClickListener, AncVisi
                         positiveButtonName = getString(R.string.ok)
                     ) {}
                 }
+
                 ResourceState.SUCCESS -> {
                     hideLoading()
-                    MedicalReviewSuccessDialogFragment.newInstance().show(supportFragmentManager, MedicalReviewSuccessDialogFragment.TAG)
+                    MedicalReviewSuccessDialogFragment.newInstance().show(
+                        supportFragmentManager,
+                        MedicalReviewSuccessDialogFragment.TAG
+                    )
                 }
             }
         }
 
         patientViewModel.patientDetailsLiveData.observe(this) { resource ->
             when (resource.state) {
-                ResourceState.LOADING -> showLoading()
+                ResourceState.LOADING -> {
+                    showLoading()
+                }
+
                 ResourceState.SUCCESS -> {
                     hideLoading()
                     if (binding.refreshLayout.isRefreshing) {
                         binding.refreshLayout.isRefreshing = false
                     }
                 }
+
                 ResourceState.ERROR -> {
                     hideLoading()
                     showErrorDialogue(
@@ -142,21 +168,37 @@ class LabourDeliveryBaseActivity : BaseActivity(), View.OnClickListener, AncVisi
 
         referPatientViewModel.referPatientResultLiveData.observe(this) { resource ->
             when (resource.state) {
-                ResourceState.LOADING -> showLoading()
+                ResourceState.LOADING -> {
+                    showLoading()
+                }
+
                 ResourceState.SUCCESS -> {
                     hideLoading()
-                    val fragment = supportFragmentManager.findFragmentByTag(ReferPatientFragment.TAG) as? ReferPatientFragment
+                    val fragment =
+                        supportFragmentManager.findFragmentByTag(ReferPatientFragment.TAG) as? ReferPatientFragment
                     fragment?.dismiss()
-                    MedicalReviewSuccessDialogFragment.newInstance().show(supportFragmentManager, MedicalReviewSuccessDialogFragment.TAG)
+                    MedicalReviewSuccessDialogFragment.newInstance().show(
+                        supportFragmentManager,
+                        MedicalReviewSuccessDialogFragment.TAG
+                    )
                 }
-                ResourceState.ERROR -> hideLoading()
+
+                ResourceState.ERROR -> {
+                    hideLoading()
+                }
             }
         }
 
         viewModel.labourDeliveryMetaLiveData.observe(this) { resourceState ->
             when (resourceState.state) {
-                ResourceState.LOADING -> showLoading()
-                ResourceState.ERROR -> hideLoading()
+                ResourceState.LOADING -> {
+                    showLoading()
+                }
+
+                ResourceState.ERROR -> {
+                    hideLoading()
+                }
+
                 ResourceState.SUCCESS -> {
                     viewModel.getLabourDeliveryMetaList()
                     initializePatientDetailsFragments()
@@ -170,12 +212,19 @@ class LabourDeliveryBaseActivity : BaseActivity(), View.OnClickListener, AncVisi
 
         viewModel.createLabourDeliveryMedicalReviewResponse.observe(this) { resourceState ->
             when (resourceState.state) {
-                ResourceState.LOADING -> showLoading()
-                ResourceState.ERROR -> hideLoading()
+                ResourceState.LOADING -> {
+                    showLoading()
+                }
+
+                ResourceState.ERROR -> {
+                    hideLoading()
+
+                }
+
                 ResourceState.SUCCESS -> {
                     hideLoading()
                     resourceState.data?.let {
-                        viewModel.getLabourDeliverySummaryDetails(
+                        viewModelSummary.getLabourDeliverySummaryDetails(
                             it.motherId,
                             it.patientReference,
                             it.childPatientReference,
@@ -189,24 +238,27 @@ class LabourDeliveryBaseActivity : BaseActivity(), View.OnClickListener, AncVisi
     }
 
     private fun initializeView() {
-        if (!SecuredPreference.getBoolean(SecuredPreference.EnvironmentKey.IS_LABOUR_DELIVERY_LOADED.name)) {
+        if (!(SecuredPreference.getBoolean(SecuredPreference.EnvironmentKey.IS_LABOUR_DELIVERY_LOADED.name))) {
             if (connectivityManager.isNetworkAvailable()) {
                 viewModel.getStaticMetaData()
             } else {
-                showErrorDialogue(getString(R.string.error), getString(R.string.no_internet_error), isNegativeButtonNeed = false) {}
+                showErrorDialogue(
+                    getString(R.string.error), getString(R.string.no_internet_error),
+                    isNegativeButtonNeed = false,
+                ) {}
             }
         } else {
             viewModel.getLabourDeliveryMetaList()
             initializePatientDetailsFragments()
         }
-
-        supportFragmentManager.setFragmentResultListener(MedicalReviewDefinedParams.SUMMARY_ITEM, this) { _, _ ->
-            enableReferralDoneBtn()
-        }
+        supportFragmentManager
+            .setFragmentResultListener(MedicalReviewDefinedParams.SUMMARY_ITEM, this) { _, _ ->
+                enableReferralDoneBtn()
+            }
     }
 
     private fun enableReferralDoneBtn() {
-        binding.btnDone.isEnabled = viewModel.nextFollowupDate != null
+        binding.btnDone.isEnabled = viewModelSummary.nextFollowupDate != null
     }
 
     private fun initializeListener() {
@@ -222,13 +274,17 @@ class LabourDeliveryBaseActivity : BaseActivity(), View.OnClickListener, AncVisi
     private fun swipeRefresh() {
         viewModel.isRefresh = true
         if (connectivityManager.isNetworkAvailable()) {
-            supportFragmentManager.findFragmentById(R.id.patientDetailFragment)?.let {
-                patientViewModel.getPatientId()?.let { id ->
-                    patientViewModel.getPatients(id)
+            supportFragmentManager.findFragmentById(R.id.patientDetailFragment)
+                .let {
+                    patientViewModel.getPatientId()?.let { id ->
+                        patientViewModel.getPatients(id)
+                    }
                 }
-            }
         } else {
-            showErrorDialogue(getString(R.string.error), getString(R.string.no_internet_error), isNegativeButtonNeed = false) {
+            showErrorDialogue(
+                getString(R.string.error), getString(R.string.no_internet_error),
+                isNegativeButtonNeed = false
+            ) {
                 if (binding.refreshLayout.isRefreshing) {
                     binding.refreshLayout.isRefreshing = false
                 }
@@ -263,18 +319,13 @@ class LabourDeliveryBaseActivity : BaseActivity(), View.OnClickListener, AncVisi
 
     private fun handleSubmitClick() {
         if (validateLabourOrDelivery()) {
-            if (connectivityManager.isNetworkAvailable()) {
-                viewModel.createLabourDeliveryRequest()
-            } else {
-                showErrorDialogue(
-                    getString(R.string.error),
-                    getString(R.string.no_internet_error),
-                    isNegativeButtonNeed = false
-                ) {}
-            }
+            withNetworkCheck(connectivityManager, ::submitDetails)
         }
     }
 
+    private fun submitDetails() {
+        viewModel.createLabourDeliveryRequest(patientViewModel.encounterId)
+    }
     private fun handleReferClick() {
         viewModel.createLabourDeliveryMedicalReviewResponse.value?.data?.let {
             ReferPatientFragment.newInstance(
@@ -291,7 +342,7 @@ class LabourDeliveryBaseActivity : BaseActivity(), View.OnClickListener, AncVisi
                 val request = MedicalReviewSummarySubmitRequest(
                     id = it.motherId,
                     nextVisitDate = DateUtils.convertDateTimeToDate(
-                        viewModel.nextFollowupDate,
+                        viewModelSummary.nextFollowupDate,
                         DateUtils.DATE_ddMMyyyy,
                         DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
                         inUTC = true
@@ -301,21 +352,28 @@ class LabourDeliveryBaseActivity : BaseActivity(), View.OnClickListener, AncVisi
                     provenance = ProvanceDto(),
                     category = MedicalReviewTypeEnums.RMNCH.name
                 )
-                viewModel.labourDeliverySummaryCreate(request)
+                viewModelSummary.labourDeliverySummaryCreate(request)
             }
         }
     }
 
     private fun handlePrescriptionClick() {
         patientViewModel.patientDetailsLiveData.value?.data?.let { data ->
-            val intent = Intent(this, PrescriptionActivity::class.java).apply {
+            Intent(this, PrescriptionActivity::class.java).apply {
                 putExtra(DefinedParams.PatientId, data.patientId)
                 putExtra(DefinedParams.EncounterId, patientViewModel.encounterId)
+                getResult.launch(this)
             }
-            startActivity(intent)
         }
     }
-
+    private val getResult =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                result.data?.getStringExtra(DefinedParams.EncounterId)?.let { value ->
+                    patientViewModel.encounterId = value
+                }
+            }
+        }
 
     private fun showLabourDeliverySummary() {
         viewModel.isRefresh = true
@@ -378,5 +436,9 @@ class LabourDeliveryBaseActivity : BaseActivity(), View.OnClickListener, AncVisi
 
     private fun onBackPressPopStack() {
         this@LabourDeliveryBaseActivity.finish()
+    }
+
+    override fun onDialogDismissListener(isFinish: Boolean) {
+        startActivityWithoutSplashScreen()
     }
 }

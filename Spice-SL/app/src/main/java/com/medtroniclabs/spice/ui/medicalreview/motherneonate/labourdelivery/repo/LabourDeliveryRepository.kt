@@ -1,4 +1,4 @@
-package com.medtroniclabs.spice.repo
+package com.medtroniclabs.spice.ui.medicalreview.motherneonate.labourdelivery.repo
 
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.StringConverter

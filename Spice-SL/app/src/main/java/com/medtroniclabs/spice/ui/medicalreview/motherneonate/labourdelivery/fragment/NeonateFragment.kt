@@ -1,4 +1,4 @@
-package com.medtroniclabs.spice.ui.mypatients.fragment
+package com.medtroniclabs.spice.ui.medicalreview.motherneonate.labourdelivery.fragment
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -19,9 +19,10 @@ import com.medtroniclabs.spice.formgeneration.ui.SingleSelectionCustomView
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.TagListCustomView
-import com.medtroniclabs.spice.ui.medicalreview.labourDelivery.LabourDeliveryViewModel
+import com.medtroniclabs.spice.ui.medicalreview.motherneonate.labourdelivery.viewmodel.LabourDeliveryViewModel
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import com.medtroniclabs.spice.ui.mypatients.adapter.AgparScoreAdapter
+import com.medtroniclabs.spice.ui.medicalreview.motherneonate.labourdelivery.AddAgparScoreDialog
 
 class NeonateFragment : BaseFragment() {
 
@@ -81,7 +82,8 @@ class NeonateFragment : BaseFragment() {
                 ChipViewItemModel(
                     id = it.id,
                     name = it.name,
-                    type = it.type
+                    type = it.type,
+                    value = it.value
                 )
             )
         }
@@ -95,7 +97,8 @@ class NeonateFragment : BaseFragment() {
                 ChipViewItemModel(
                     id = it.id,
                     name = it.name,
-                    type = it.type
+                    type = it.type,
+                    value = it.value
                 )
             )
         }

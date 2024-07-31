@@ -92,7 +92,7 @@
             android:screenOrientation="landscape"
             android:windowSoftInputMode="adjustPan" />
         <activity
-            android:name=".ui.medicalreview.LabourDeliveryBaseActivity"
+            android:name=".ui.medicalreview.motherneonate.labourdelivery.activity.LabourDeliveryBaseActivity"
             android:exported="false"
             android:screenOrientation="landscape"
             android:windowSoftInputMode="adjustPan" />

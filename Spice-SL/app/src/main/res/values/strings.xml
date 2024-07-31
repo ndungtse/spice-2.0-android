@@ -570,5 +570,6 @@
     <string name="referred_date">Referred Date</string>
     <string name="tab_medical_review">Medical Review</string>
     <string name="call">Call</string>
-
+    <string name="post_natal">Post Natal</string>
+    <string name="tear_hypen">Tear- </string>
 </resources>

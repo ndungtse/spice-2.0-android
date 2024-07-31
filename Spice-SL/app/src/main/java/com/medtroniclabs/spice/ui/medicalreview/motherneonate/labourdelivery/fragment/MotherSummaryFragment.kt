@@ -1,4 +1,4 @@
-package com.medtroniclabs.spice.ui.mypatients.fragment
+package com.medtroniclabs.spice.ui.medicalreview.motherneonate.labourdelivery.fragment
 
 import android.app.DatePickerDialog
 import android.os.Bundle
@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResult
+import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.CommonUtils.convertListToString
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.ViewUtils
@@ -16,7 +17,7 @@ import com.medtroniclabs.spice.formgeneration.extension.markMandatory
 import com.medtroniclabs.spice.model.medicalreview.MotherDTO
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
-import com.medtroniclabs.spice.ui.medicalreview.labourDelivery.LabourDeliveryViewModel
+import com.medtroniclabs.spice.ui.medicalreview.motherneonate.labourdelivery.viewmodel.LabourDeliverySummaryViewModel
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
@@ -25,7 +26,7 @@ class MotherSummaryFragment : BaseFragment() {
 
     private lateinit var binding : FragmentMotherSummaryBinding
     private var datePickerDialog : DatePickerDialog? = null
-    private val viewModel: LabourDeliveryViewModel by activityViewModels()
+    private val viewModel: LabourDeliverySummaryViewModel by activityViewModels()
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -69,19 +70,41 @@ class MotherSummaryFragment : BaseFragment() {
 
     private fun setDetails(motherDTO: MotherDTO?) {
         binding.tvDateOfDelivery.text =
-            calculateDateTime(motherDTO?.labourDTO?.dateAndTimeOfDelivery.toString(), true)
+            calculateDateTime(
+                motherDTO?.labourDTO?.dateAndTimeOfDelivery ?: getString(R.string.hyphen_symbol),
+                true
+            )
         binding.tvDateOfLabourOnset.text =
-            calculateDateTime(motherDTO?.labourDTO?.dateAndTimeOfLabourOnset.toString(), true)
-        binding.tvDateType.text = motherDTO?.labourDTO?.deliveryType.toString()
-        binding.tvGeneralConditionOfMother.text = motherDTO?.generalConditions.toString()
-        binding.tvStateOfThePerineum.text = motherDTO?.stateOfPerineum.toString()
-        binding.tvPatientStatus.text = ""
+            calculateDateTime(
+                motherDTO?.labourDTO?.dateAndTimeOfLabourOnset ?: getString(R.string.hyphen_symbol),
+                true
+            )
+        binding.tvDateType.text =
+            motherDTO?.labourDTO?.deliveryType ?: getString(R.string.hyphen_symbol)
+        binding.tvGeneralConditionOfMother.text =
+            motherDTO?.generalConditions ?: getString(R.string.hyphen_symbol)
+        binding.tvStateOfThePerineum.text = when {
+            motherDTO?.stateOfPerineum.equals(getString(R.string.episotomy)) ->
+                motherDTO?.stateOfPerineum ?: getString(R.string.hyphen_symbol)
+            motherDTO?.stateOfPerineum.isNullOrEmpty() ->
+                getString(R.string.hyphen_symbol)
+            else ->
+                "${getString(R.string.tear_hypen)}${motherDTO?.stateOfPerineum}"
+        }
+        binding.tvPatientStatus.text = getString(R.string.post_natal)
         binding.tvStatus.text = motherDTO?.status?.map { it }
             ?.let { ArrayList(it) }?.let { convertListToString(it) }
+            ?: getString(R.string.hyphen_symbol)
         binding.tvTimeOfDelivery.text =
-            calculateDateTime(motherDTO?.labourDTO?.dateAndTimeOfDelivery.toString(), false)
+            calculateDateTime(
+                motherDTO?.labourDTO?.dateAndTimeOfDelivery ?: getString(R.string.hyphen_symbol),
+                false
+            )
         binding.tvTimeOfLabourOnset.text =
-            calculateDateTime(motherDTO?.labourDTO?.dateAndTimeOfLabourOnset.toString(), false)
+            calculateDateTime(
+                motherDTO?.labourDTO?.dateAndTimeOfLabourOnset ?: getString(R.string.hyphen_symbol),
+                false
+            )
     }
 
     private fun calculateDateTime(dateTime: String, isDate: Boolean): String? {

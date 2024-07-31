@@ -36,6 +36,7 @@ data class LabourDTO(
 )
 
 data class MotherDTO(
+    val id: String?,
     val encounter: MedicalReviewEncounter?,
     val generalConditions: String?,
     val riskFactors: List<String>?,

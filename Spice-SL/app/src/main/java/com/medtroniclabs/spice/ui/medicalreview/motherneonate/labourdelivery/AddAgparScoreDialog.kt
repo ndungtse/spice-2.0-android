@@ -1,4 +1,4 @@
-package com.medtroniclabs.spice.ui.mypatients.fragment
+package com.medtroniclabs.spice.ui.medicalreview.motherneonate.labourdelivery
 
 import android.content.res.Configuration
 import android.os.Bundle
@@ -12,7 +12,7 @@ import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.setWidth
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.databinding.FragmentAddAgparScoreBinding
-import com.medtroniclabs.spice.ui.medicalreview.labourDelivery.LabourDeliveryViewModel
+import com.medtroniclabs.spice.ui.medicalreview.motherneonate.labourdelivery.viewmodel.LabourDeliveryViewModel
 
 class AddAgparScoreDialog : DialogFragment() {
 

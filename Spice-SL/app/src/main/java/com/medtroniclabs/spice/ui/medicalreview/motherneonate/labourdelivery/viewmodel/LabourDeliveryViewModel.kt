@@ -1,4 +1,4 @@
-package com.medtroniclabs.spice.ui.medicalreview.labourDelivery
+package com.medtroniclabs.spice.ui.medicalreview.motherneonate.labourdelivery.viewmodel
 
 import android.location.Location
 import androidx.lifecycle.LiveData
@@ -9,7 +9,6 @@ import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
-import com.medtroniclabs.spice.data.MedicalReviewSummarySubmitRequest
 import com.medtroniclabs.spice.data.LabourDeliveryMetaEntity
 import com.medtroniclabs.spice.data.model.ChipViewItemModel
 import com.medtroniclabs.spice.data.model.MedicalReviewEncounter
@@ -27,11 +26,10 @@ import com.medtroniclabs.spice.model.medicalreview.Child
 import com.medtroniclabs.spice.model.medicalreview.CreateLabourDeliveryRequest
 import com.medtroniclabs.spice.model.medicalreview.CreateLabourDeliveryResponse
 import com.medtroniclabs.spice.model.medicalreview.LabourDTO
-import com.medtroniclabs.spice.model.medicalreview.LabourDeliverySummaryDetails
 import com.medtroniclabs.spice.model.medicalreview.MotherDTO
 import com.medtroniclabs.spice.model.medicalreview.NeonateDTO
 import com.medtroniclabs.spice.network.resource.Resource
-import com.medtroniclabs.spice.repo.LabourDeliveryRepository
+import com.medtroniclabs.spice.ui.medicalreview.motherneonate.labourdelivery.repo.LabourDeliveryRepository
 import com.medtroniclabs.spice.ui.mypatients.enumType.AgparColumnIdentifierType
 import com.medtroniclabs.spice.ui.mypatients.enumType.AgparItemViewType
 import com.medtroniclabs.spice.ui.mypatients.enumType.AgparRowIdentifierType
@@ -62,7 +60,6 @@ class LabourDeliveryViewModel @Inject constructor(
     val stateOfBaby = HashMap<String, Any>()
     val labourDeliveryMetaLiveData = MutableLiveData<Resource<Boolean>>()
     val labourDeliveryMetaList = MutableLiveData<Resource<List<LabourDeliveryMetaEntity>>>()
-    val summaryDetailsLiveData = MutableLiveData<Resource<CreateLabourDeliveryRequest>>()
     val createLabourDeliveryMedicalReviewResponse =
         MutableLiveData<Resource<CreateLabourDeliveryResponse>>()
     var timeOfDeliveryInHour: String? = null
@@ -96,8 +93,6 @@ class LabourDeliveryViewModel @Inject constructor(
 
     var patientDetailModel: PatientListRespModel? = null
     var isRefresh: Boolean = false
-    var nextFollowupDate: String? = null
-    val summaryCreateResponse = MutableLiveData<Resource<HashMap<String, Any>>>()
     fun getAgparScoreData() {
         val apgarScores = mutableListOf<ApgarScore>()
         apgarScores.add(
@@ -252,7 +247,7 @@ class LabourDeliveryViewModel @Inject constructor(
         }
     }
 
-    fun createLabourDeliveryRequest() {
+    fun createLabourDeliveryRequest(prescriptionEncounterId: String?) {
         val encounter = MedicalReviewEncounter(
             latitude = lastLocation?.latitude ?: 0.0,
             longitude = lastLocation?.longitude ?: 0.0,
@@ -268,7 +263,7 @@ class LabourDeliveryViewModel @Inject constructor(
             provenance = ProvanceDto(),
             memberId = patientDetailModel?.memberId.toString()
         )
-        val motherModel = createMotherModel(encounter)
+        val motherModel = createMotherModel(encounter, prescriptionEncounterId)
         val neonateModel = createNeonateModel(encounter)
         val childModel = createChildModel(ProvanceDto())
         val createLabourMedicalReviewRequest = CreateLabourDeliveryRequest(
@@ -286,23 +281,6 @@ class LabourDeliveryViewModel @Inject constructor(
         }
     }
 
-    fun getLabourDeliverySummaryDetails(
-        motherId: String?,
-        patientReference: String?,
-        childPatientReference: String?,
-        neonateId: String?
-    ) {
-        val request = LabourDeliverySummaryDetails(
-            motherId = motherId,
-            patientReference = patientReference,
-            childPatientReference = childPatientReference,
-            neonateId = neonateId
-        )
-        viewModelScope.launch(dispatcherIO) {
-            summaryDetailsLiveData.postLoading()
-            summaryDetailsLiveData.postValue(repository.getLabourDeliverySummaryDetails(request))
-        }
-    }
     private fun createChildModel(provanceDto: ProvanceDto): Child {
         val motherName = patientDetailModel?.name
         val childName = if (motherName != null) {
@@ -320,12 +298,12 @@ class LabourDeliveryViewModel @Inject constructor(
             dateOfBirth = getTimeOfDelivery(),
             patientId = childPatientId,
             child = true,
-            gender = "male",
+            gender = genderFlow[DefinedParams.Gender].toString(),
             provenance = provanceDto,
             householdId = patientDetailModel?.houseHoldId.toString(),
             phoneNumber = patientDetailModel?.phoneNumber.toString(),
             householdHeadRelationship = patientDetailModel?.relationship.toString(),
-            phoneNumberCategory = "personal"
+            phoneNumberCategory = patientDetailModel?.phoneNumberCategory.toString()
         )
     }
 
@@ -334,10 +312,10 @@ class LabourDeliveryViewModel @Inject constructor(
         val apgarScoreFiveMinute = createFiveMinuteApgarScore()
         val apgarScoreTenMinute = createTenMinuteApgarScore()
         return NeonateDTO(neonateOutcome = neonateOutcome.takeIf { it != null },
-            gender = "male",
+            gender = genderFlow[DefinedParams.Gender].toString(),
             birthWeight = neonateBirthWeight.takeIf { it != null },
             stateOfBaby = stateOfBaby[DefinedParams.StateOfBaby] as? String,
-            signs = neonateSignsAndSymptoms.map { it.name }.takeIf { it.isNotEmpty() },
+            signs = neonateSignsAndSymptoms.map { it.value.toString() }.takeIf { it.isNotEmpty() },
             encounter = encounter,
             apgarScoreOneMinuteDTO = apgarScoreOneMinute.takeIf { it != null },
             apgarScoreFiveMinuteDTO = apgarScoreFiveMinute.takeIf { it != null },
@@ -408,15 +386,20 @@ class LabourDeliveryViewModel @Inject constructor(
             )
     }
 
-    private fun createMotherModel(encounter: MedicalReviewEncounter): MotherDTO {
+    private fun createMotherModel(
+        encounter: MedicalReviewEncounter,
+        prescriptionEncounterId: String?
+    ): MotherDTO {
+        encounter.id = prescriptionEncounterId
         val motherTTDosage = motherTTDosageSoFar
         val labourDTO = createLabourDeliveryModel()
-        return MotherDTO(signs = motherSignsAndSymptoms.map { it.name }.takeIf { it.isNotEmpty() },
+        return MotherDTO(id = prescriptionEncounterId,
+            signs = motherSignsAndSymptoms.map { it.value.toString() }.takeIf { it.isNotEmpty() },
             generalConditions = motherGeneralCondition.takeIf { it != null },
-            riskFactors = motherRiskFactors.map { it.name }.takeIf { it.isNotEmpty() },
+            riskFactors = motherRiskFactors.map { it.value.toString() }.takeIf { it.isNotEmpty() },
             stateOfPerineum = perineumStateMap[DefinedParams.StateOfPerineum] as? String,
             ttDoseTaken = if (motherTTDosage.isNullOrEmpty()) null else motherTTDosage.toInt(),
-            status = motherStatus.map { it.name }.takeIf { it.isNotEmpty() },
+            status = motherStatus.map { it.value.toString() }.takeIf { it.isNotEmpty() },
             tear = perineumStateMap[DefinedParams.Tear] as? String,
             encounter = encounter,
             labourDTO = labourDTO
@@ -516,12 +499,4 @@ class LabourDeliveryViewModel @Inject constructor(
 
     }
 
-    fun labourDeliverySummaryCreate(
-       request: MedicalReviewSummarySubmitRequest
-    ) {
-        viewModelScope.launch(dispatcherIO) {
-            summaryCreateResponse.postLoading()
-            summaryCreateResponse.postValue(repository.labourDeliverySummaryCreate(request))
-        }
-    }
 }
