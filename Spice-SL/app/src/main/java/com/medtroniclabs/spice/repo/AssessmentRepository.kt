@@ -198,7 +198,7 @@ class AssessmentRepository @Inject constructor(
                     roomHelper.updateOtherAssessmentDetails(motherAssessmentEntity)
                 }
                 val childAssessmentEntity = pair?.second
-                if (childAssessmentEntity != null) {
+                if (childAssessmentEntity != null && childAssessmentEntity.isReferred) {
                     childAssessmentEntity.otherDetails =
                         StringConverter.convertGivenMapToString(otherAssessmentDetails)
                     lastLocation?.let {

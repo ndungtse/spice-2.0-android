@@ -379,7 +379,7 @@
     <string name="successful">Successful</string>
     <string name="on_treatment">On Treatment</string>
     <string name="recovered">Recovered</string>
-    <string name="data_range">Data Range</string>
+    <string name="data_range">Date Range</string>
     <string name="from">From</string>
     <string name="to">To</string>
     <string name="un_reachable">Unreachable</string>

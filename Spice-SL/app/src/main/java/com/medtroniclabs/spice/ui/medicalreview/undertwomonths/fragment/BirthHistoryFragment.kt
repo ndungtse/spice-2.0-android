@@ -80,11 +80,12 @@ class BirthHistoryFragment : BaseFragment() {
             } ?:  getString(R.string.separator_double_hyphen)
 
             tvGestationalAge.text = birthHistoryDetails.gestationalAge?.let { ageWeek ->
-                val weeksText =
-                    if (ageWeek >= 1) getString(R.string.weeks_baby) else getString(R.string.week_baby)
-                val prematureText =
-                    if (ageWeek < 37 && birthHistoryDetails.gestationalAgeCategory != null) birthHistoryDetails.gestationalAgeCategory else ""
-                ageWeek.toString().plus(weeksText).plus(" ").plus("(${prematureText.capitalizeFirstChar()})")
+                val weeksText = getString(if (ageWeek >= 1) R.string.weeks_baby else R.string.week_baby)
+                val formattedPrematureText = birthHistoryDetails.gestationalAgeCategory
+                    ?.takeIf { it.isNotBlank() }
+                    ?.capitalizeFirstChar()
+                    ?.let { " ($it)" }.orEmpty()
+                "$ageWeek$weeksText$formattedPrematureText"
             } ?: getString(R.string.separator_double_hyphen)
             tvBreathingProblem.text = birthHistoryDetails.haveBreathingProblem.toYesNoOrDefault(
                 getString(R.string.separator_double_hyphen),
