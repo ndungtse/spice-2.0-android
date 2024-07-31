@@ -40,11 +40,11 @@ android {
             storePassword = "Med@Tr0ni#Lab$"
             storeFile = file("spice_sl.jks")
         }
-        create("staging") {
-            keyAlias = "spice"
-            keyPassword = "spice@123"
-            storePassword = "spice@123"
-            storeFile = file("spice")
+        create("africa") {
+            keyAlias = "medtronic"
+            keyPassword = "Med@Tr0ni#Lab$"
+            storePassword = "Med@Tr0ni#Lab$"
+            storeFile = file("spice_prod.jks")
         }
     }
 
@@ -170,6 +170,18 @@ android {
         buildConfig = true
     }
 
+    flavorDimensions += "version"
+    productFlavors {
+        create("sl") {
+            dimension = "version"
+            applicationIdSuffix = ".sl"
+            signingConfig = signingConfigs.getByName("sl")
+        }
+        create("africa") {
+            dimension = "version"
+            signingConfig = signingConfigs.getByName("africa")
+        }
+    }
 }
 
 dependencies {
@@ -181,7 +193,6 @@ dependencies {
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation("androidx.hilt:hilt-common:1.2.0")
     implementation("androidx.hilt:hilt-work:1.2.0")
-    implementation("androidx.activity:activity:1.9.0")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
