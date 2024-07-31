@@ -36,6 +36,7 @@ import com.medtroniclabs.spice.db.entity.CallHistory
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowConditionEntity
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowEntity
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowEntityWithSubmodule
+import com.medtroniclabs.spice.db.entity.ConsentEntity
 import com.medtroniclabs.spice.db.entity.ConsentForm
 import com.medtroniclabs.spice.db.entity.FollowUp
 import com.medtroniclabs.spice.db.entity.FollowUpCall
@@ -46,6 +47,7 @@ import com.medtroniclabs.spice.db.entity.HouseholdEntity
 import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
 import com.medtroniclabs.spice.db.entity.LinkHouseholdMember
 import com.medtroniclabs.spice.db.entity.MemberClinicalEntity
+import com.medtroniclabs.spice.db.entity.MentalHealthEntity
 import com.medtroniclabs.spice.db.entity.MenuEntity
 import com.medtroniclabs.spice.db.entity.PregnancyDetail
 import com.medtroniclabs.spice.db.entity.SignsAndSymptomsEntity
@@ -671,6 +673,34 @@ class RoomHelperImpl @Inject constructor(
 
     override suspend fun updateMemberDeceasedStatus(id: Long, status: Boolean) {
         memberDAO.updateMemberDeceasedStatus(id, status, OfflineSyncStatus.NotSynced)
+    }
+
+    override suspend fun saveForm(forms: FormEntity) {
+        return metaDataDAO.saveForm(forms)
+    }
+
+    override suspend fun saveConsent(consentEntity: ConsentEntity) {
+        return metaDataDAO.insertConsent(consentEntity)
+    }
+
+    override suspend fun getConsent(formType: String): ConsentEntity {
+        return metaDataDAO.getConsent(formType)
+    }
+
+    override suspend fun deleteConsent() {
+        return metaDataDAO.deleteConsent()
+    }
+
+    override suspend fun saveModelQuestions(mentalHealthEntity: List<MentalHealthEntity>) {
+        return metaDataDAO.insertModelQuestions(mentalHealthEntity)
+    }
+
+    override suspend fun getModelQuestions(formType: String): MentalHealthEntity {
+        return metaDataDAO.getModelQuestions(formType)
+    }
+
+    override suspend fun deleteModelQuestions() {
+        return metaDataDAO.deleteModelQuestions()
     }
 
     override suspend fun changeFollowUpCallStatus(idList: List<Long>) {

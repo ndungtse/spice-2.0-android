@@ -153,4 +153,8 @@ object DefinedParams {
 
     const val name = "name"
 
+    const val Screening = "screening"
+    const val Registration = "registration"
+    const val Assessment = "assessment"
+    const val Workflow = "workflow"
 }

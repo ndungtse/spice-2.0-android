@@ -10,6 +10,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.medtroniclabs.spice.BuildConfig
 import com.medtroniclabs.spice.app.analytics.db.AnalyticsRepository
 import com.medtroniclabs.spice.common.AppConstants
+import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.ACTION_SESSION_EXPIRED
 import com.medtroniclabs.spice.common.DefinedParams.SL_SESSION
 import com.medtroniclabs.spice.common.SecuredPreference
@@ -103,6 +104,10 @@ object AppModule {
                 .header("organizationId", SecuredPreference.getOrganizationFhirId())
                 .header("tenantId", SecuredPreference.getTenantId().toString())
 
+            SecuredPreference.getString(SecuredPreference.EnvironmentKey.TENANT_ID.toString())
+                ?.let { tenantId ->
+                    requestBuilder.header(DefinedParams.TenantId, tenantId)
+                }
 
             request = requestBuilder.build()
             val response = chain.proceed(request)

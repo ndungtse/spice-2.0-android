@@ -18,6 +18,7 @@ import com.medtroniclabs.spice.db.entity.CallHistory
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowConditionEntity
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowEntity
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowEntityWithSubmodule
+import com.medtroniclabs.spice.db.entity.ConsentEntity
 import com.medtroniclabs.spice.db.entity.ConsentForm
 import com.medtroniclabs.spice.db.entity.FollowUp
 import com.medtroniclabs.spice.db.entity.FollowUpCall
@@ -28,6 +29,7 @@ import com.medtroniclabs.spice.db.entity.HouseholdEntity
 import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
 import com.medtroniclabs.spice.db.entity.LinkHouseholdMember
 import com.medtroniclabs.spice.db.entity.MemberClinicalEntity
+import com.medtroniclabs.spice.db.entity.MentalHealthEntity
 import com.medtroniclabs.spice.db.entity.MenuEntity
 import com.medtroniclabs.spice.db.entity.PregnancyDetail
 import com.medtroniclabs.spice.db.entity.SignsAndSymptomsEntity
@@ -240,6 +242,7 @@ interface RoomHelper {
     suspend fun insertOrUpdateFollowUp(entity: FollowUp)
 
     suspend fun deleteCompletedFollowUp()
+    suspend fun saveForm(forms: FormEntity)
 
     suspend fun updateNeonatePatientId( hhmLocalId: Long, neonateId: Long)
 
@@ -279,4 +282,11 @@ interface RoomHelper {
 
     suspend fun updateMemberAsAssigned(memberId: String)
 
+    suspend fun saveConsent(consentEntity: ConsentEntity)
+    suspend fun getConsent(formType: String): ConsentEntity
+    suspend fun deleteConsent()
+
+    suspend fun saveModelQuestions(mentalHealthEntity: List<MentalHealthEntity>)
+    suspend fun getModelQuestions(formType: String): MentalHealthEntity
+    suspend fun deleteModelQuestions()
 }

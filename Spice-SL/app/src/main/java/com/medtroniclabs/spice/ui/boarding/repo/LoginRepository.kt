@@ -81,6 +81,18 @@ class LoginRepository @Inject constructor(
                 )
             }
         }
+
+        if (headers.containsKey(DefinedParams.TenantId)
+            && (headers[DefinedParams.TenantId]?.size
+                ?: 0) > 0
+        ) {
+            headers[DefinedParams.TenantId]?.get(0)?.let { token ->
+                SecuredPreference.putString(
+                    SecuredPreference.EnvironmentKey.TENANT_ID.name,
+                    token
+                )
+            }
+        }
     }
 
 }

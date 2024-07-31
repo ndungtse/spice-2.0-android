@@ -133,12 +133,36 @@ data class Organization(
 )
 
 data class FormRequest(
+    val nonNcdWorkflowEnabled: Boolean? = null,
     val workflowIds: List<Long>
 )
 
 data class FormResponse(
-    val formData: List<FormData>? = null,
-    val clinicalTools: List<ClinicalWorkflow>? = null
+    val formData: List<FormData>,
+    val clinicalTools: List<ClinicalWorkflow>,
+    val id: Long,
+    val enrollment: NcdFormData? = null,
+    val screening: NcdFormData? = null,
+    val assessment: NcdFormData? = null,
+    val customizedWorkflow: List<NcdCustomizedWorkflow>? = null,
+    val modelQuestions: List<ModelQuestion>? = null
+)
+
+data class NcdFormData(
+    val id: Long,
+    val inputForm: String,
+    val consentForm: String
+)
+
+data class NcdCustomizedWorkflow(
+    val viewScreens: List<String>,
+    val formInput: String,
+    val id: Long
+)
+
+data class ModelQuestion(
+    val type: String,
+    val questions: String?
 )
 
 data class FormData(

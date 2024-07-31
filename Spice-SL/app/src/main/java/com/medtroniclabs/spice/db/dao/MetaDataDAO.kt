@@ -11,8 +11,10 @@ import com.medtroniclabs.spice.data.VillageInfo
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowConditionEntity
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowEntity
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowEntityWithSubmodule
+import com.medtroniclabs.spice.db.entity.ConsentEntity
 import com.medtroniclabs.spice.db.entity.FormEntity
 import com.medtroniclabs.spice.db.entity.HealthFacilityEntity
+import com.medtroniclabs.spice.db.entity.MentalHealthEntity
 import com.medtroniclabs.spice.db.entity.MenuEntity
 import com.medtroniclabs.spice.db.entity.SignsAndSymptomsEntity
 import com.medtroniclabs.spice.db.entity.UserProfileEntity
@@ -141,4 +143,25 @@ interface MetaDataDAO {
 
     @Query("DELETE FROM CulturesEntity")
     suspend fun deleteCultures()
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun saveForm(forms: FormEntity)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertConsent(culturesEntity: ConsentEntity)
+
+    @Query("SELECT * FROM ConsentEntity where formType=:formType")
+    suspend fun getConsent(formType: String): ConsentEntity
+
+    @Query("DELETE FROM ConsentEntity")
+    suspend fun deleteConsent()
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertModelQuestions(mentalHealthEntity: List<MentalHealthEntity>)
+
+    @Query("SELECT * FROM MentalHealthEntity where formType=:formType")
+    suspend fun getModelQuestions(formType: String): MentalHealthEntity
+
+    @Query("DELETE FROM MentalHealthEntity")
+    suspend fun deleteModelQuestions()
 }

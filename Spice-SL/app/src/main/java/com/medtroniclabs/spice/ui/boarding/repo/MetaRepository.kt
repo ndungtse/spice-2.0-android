@@ -4,6 +4,7 @@ import com.google.gson.Gson
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.ConsentFormType
 import com.medtroniclabs.spice.common.DateUtils
+import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.RoleConstant.PROVIDER
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.ClinicalWorkflow
@@ -11,15 +12,19 @@ import com.medtroniclabs.spice.data.ConsentFormResponse
 import com.medtroniclabs.spice.data.FormData
 import com.medtroniclabs.spice.data.FormMetaRequest
 import com.medtroniclabs.spice.data.FormRequest
+import com.medtroniclabs.spice.data.FormResponse
 import com.medtroniclabs.spice.data.HealthFacility
 import com.medtroniclabs.spice.data.MenuDetail
+import com.medtroniclabs.spice.data.ModelQuestion
 import com.medtroniclabs.spice.data.UserProfile
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowConditionEntity
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowEntity
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowEntityWithSubmodule
+import com.medtroniclabs.spice.db.entity.ConsentEntity
 import com.medtroniclabs.spice.db.entity.ConsentForm
 import com.medtroniclabs.spice.db.entity.FormEntity
 import com.medtroniclabs.spice.db.entity.HealthFacilityEntity
+import com.medtroniclabs.spice.db.entity.MentalHealthEntity
 import com.medtroniclabs.spice.db.entity.MenuEntity
 import com.medtroniclabs.spice.db.entity.UserProfileEntity
 import com.medtroniclabs.spice.db.entity.VillageEntity
@@ -91,13 +96,22 @@ class MetaRepository @Inject constructor(
                         }
 
 //                        if (CommonUtils.isChw()) {
-                            val formsResponse =
-                                async { apiHelper.getForms(FormRequest(workflowNames)) }.await()
+                        val formsResponse = async {
+                            apiHelper.getForms(
+                                FormRequest(
+                                    nonNcdWorkflowEnabled = SecuredPreference.getBoolean(
+                                        SecuredPreference.EnvironmentKey.IS_NON_NCD_WORKFLOW_ENABLED.name,
+                                        true
+                                    ), workflowNames
+                                )
+                            )
+                        }.await()
                             if (formsResponse.isSuccessful && formsResponse.body()?.status == true) {
                                 if (formsResponse.body()?.entity == null) {
                                     return@with Resource(state = ResourceState.ERROR)
                                 }
                                 formsResponse.body()?.entity?.apply {
+                                    roomHelper.deleteAllForms()
                                     if (formData == null && clinicalTools == null) {
                                         return@with Resource(state = ResourceState.ERROR)
                                     }
@@ -107,6 +121,8 @@ class MetaRepository @Inject constructor(
                                     clinicalTools?.let {
                                         saveClinicalWorkflowsInDb(it)
                                     }
+                                    saveNcdFormsInDb(this)
+                                    saveNcdModelQuestions(modelQuestions)
                                 }
                             } else {
                                 return@with Resource(state = ResourceState.ERROR)
@@ -298,7 +314,6 @@ class MetaRepository @Inject constructor(
     }
 
     private suspend fun saveFormsInDb(formData: List<FormData>) {
-        roomHelper.deleteAllForms()
         roomHelper.saveForms(formData.map { data ->
             FormEntity(
                 id = data.id,
@@ -308,6 +323,88 @@ class MetaRepository @Inject constructor(
                 clinicalWorkflowId = data.clinicalWorkflowId
             )
         })
+    }
+
+    private suspend fun saveNcdFormsInDb(formResponse: FormResponse) {
+        formResponse.screening?.let { scr ->
+            roomHelper.saveForm(
+                FormEntity(
+                    id = scr.id,
+                    formType = DefinedParams.Screening,
+                    formInput = scr.inputForm
+                )
+            )
+            roomHelper.saveConsent(
+                ConsentEntity(
+                    id = scr.id,
+                    formType = DefinedParams.Screening,
+                    formInput = scr.consentForm
+                )
+            )
+        }
+        formResponse.enrollment?.let { enr ->
+            roomHelper.saveForm(
+                FormEntity(
+                    id = enr.id,
+                    formType = DefinedParams.Registration,
+                    formInput = enr.inputForm
+                )
+            )
+            roomHelper.saveConsent(
+                ConsentEntity(
+                    id = enr.id,
+                    formType = DefinedParams.Registration,
+                    formInput = enr.consentForm
+                )
+            )
+        }
+        formResponse.assessment?.let { ass ->
+            roomHelper.saveForm(
+                FormEntity(
+                    id = ass.id,
+                    formType = DefinedParams.Assessment,
+                    formInput = ass.inputForm
+                )
+            )
+            roomHelper.saveConsent(
+                ConsentEntity(
+                    id = ass.id,
+                    formType = DefinedParams.Assessment,
+                    formInput = ass.consentForm
+                )
+            )
+        }
+        formResponse.customizedWorkflow?.let { workflows ->
+            if (workflows.isNotEmpty()) {
+                val moduleString = Gson().toJson(workflows)
+                if (!moduleString.isNullOrBlank())
+                    roomHelper.saveForm(
+                        FormEntity(
+                            id = formResponse.id,
+                            formType = DefinedParams.Workflow,
+                            formInput = moduleString
+                        )
+                    )
+            }
+        }
+    }
+
+    private suspend fun saveNcdModelQuestions(modelQuestions: List<ModelQuestion>?) {
+        roomHelper.deleteModelQuestions()
+        modelQuestions?.let {
+            val mentalHealthList = ArrayList<MentalHealthEntity>()
+            it.forEach { listItem ->
+                mentalHealthList.add(
+                    MentalHealthEntity(
+                        formType = listItem.type,
+                        formInput = listItem.questions
+                    )
+                )
+            }
+            if (mentalHealthList.isNotEmpty()) {
+                roomHelper.saveModelQuestions(mentalHealthList)
+            }
+        }
     }
 
     private fun saveUserIsLogin() {
