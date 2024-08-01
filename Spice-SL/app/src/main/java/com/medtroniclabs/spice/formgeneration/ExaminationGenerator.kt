@@ -145,6 +145,14 @@ class ExaminationGenerator(
             binding.tvNationalIdAction.visibility = View.GONE
             binding.tvKey.tag = id + tvKey
             binding.tvValue.tag = id + tvValue
+            val leftRightPadding = dpToPx(16)
+            val topBottomPadding = dpToPx(0)
+            binding.root.setPadding(
+                leftRightPadding,
+                topBottomPadding,
+                leftRightPadding,
+                topBottomPadding
+            )
             binding.bgLastMeal.tag = id + rootSummary
             binding.tvTitle.text =
                 FormSupport.updateTitle(title, translate, titleCulture, unitMeasurement)
