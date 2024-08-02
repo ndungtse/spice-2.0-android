@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.cancelAllWorker
+import com.medtroniclabs.spice.common.AppConstants
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.GeneralErrorDialog
 import com.medtroniclabs.spice.common.SecuredPreference
@@ -45,7 +46,8 @@ open class SpiceRootActivity : AppCompatActivity() {
 
         override fun onReceive(context: Context, intent: Intent) {
             val sessionExpired = intent.getBooleanExtra(DefinedParams.SL_SESSION, false)
-            if (sessionExpired) {
+            val className = this.javaClass.simpleName
+            if (sessionExpired && !AppConstants.exemptionList.contains(className)) {
                 showErrorDialogue(
                     getString(R.string.alert),
                     getString(R.string.session_expired),

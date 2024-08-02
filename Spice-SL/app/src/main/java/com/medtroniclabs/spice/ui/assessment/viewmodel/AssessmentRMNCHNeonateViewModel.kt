@@ -81,7 +81,7 @@ class AssessmentRMNCHNeonateViewModel @Inject constructor(
             } else {
                 childBioDataDetail?.let { list ->
                     if (list.isNotEmpty()) {
-                        val childDetail = list[0]
+                        val childDetail = list.last()
                         savePNCDetails(
                             motherDetailMap,
                             childDetailMap,

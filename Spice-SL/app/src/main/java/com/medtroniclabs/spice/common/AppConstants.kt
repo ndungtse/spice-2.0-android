@@ -10,4 +10,5 @@ object AppConstants {
 
     val CLIENT_CONSTANT = "mob"
 
+    val exemptionList = listOf("HouseholdActivity", "AssessmentActivity", "FollowUpMyPatientActivity")
 }
