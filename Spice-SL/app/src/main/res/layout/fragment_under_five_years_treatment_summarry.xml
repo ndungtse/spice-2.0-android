@@ -97,7 +97,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/_24sdp"
                 android:fontFamily="@font/inter_medium"
-                android:text="@string/jaundice"
+                android:text="@string/hyphen_symbol"
                 android:textColor="@color/a_red_error"
                 android:textSize="@dimen/_16ssp"
                 app:layout_constraintEnd_toEndOf="parent"

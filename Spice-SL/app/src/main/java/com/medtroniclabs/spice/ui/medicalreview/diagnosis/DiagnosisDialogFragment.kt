@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
@@ -72,6 +73,12 @@ class DiagnosisDialogFragment : DialogFragment(), View.OnClickListener, Diagnosi
         binding.ivClose.safeClickListener(this)
         binding.btnOkay.safeClickListener(this)
         binding.loadingProgress.safeClickListener(this)
+
+        binding.etOtherDiagnosisNotes.addTextChangedListener {
+            if (!it.isNullOrEmpty() && !binding.btnOkay.isEnabled){
+                binding.btnOkay.isEnabled = true
+            }
+        }
     }
 
     private fun attachObserver() {
