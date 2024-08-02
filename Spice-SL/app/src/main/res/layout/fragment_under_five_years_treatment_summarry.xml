@@ -398,20 +398,17 @@
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/tvClinicalNameLabel"
-        android:layout_width="@dimen/_0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/_10sdp"
+        style="@style/TextStyle_Regular_16"
+        android:layout_width="wrap_content"
         android:layout_marginTop="@dimen/_30sdp"
-        android:layout_marginBottom="@dimen/_30sdp"
-        android:fontFamily="@font/inter_regular"
         android:text="@string/clinician_name"
-        android:textColor="@color/table_title"
-        android:textSize="@dimen/_16ssp"
+        android:layout_marginBottom="@dimen/_30sdp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/tvClinicalNameSeparator"
         app:layout_constraintHorizontal_weight="0.4"
         app:layout_constraintStart_toStartOf="@id/underTwoMaterialCardView"
-        app:layout_constraintTop_toBottomOf="@id/underTwoMaterialCardView" />
+        app:layout_constraintTop_toBottomOf="@id/underTwoMaterialCardView"
+        app:layout_constraintVertical_bias="0.0" />
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/tvClinicalNameSeparator"
@@ -420,7 +417,6 @@
         android:layout_height="@dimen/_0dp"
         android:gravity="center_horizontal"
         android:text="@string/separator_colon"
-        android:textSize="@dimen/_16ssp"
         app:layout_constraintBottom_toBottomOf="@id/tvClinicalNameLabel"
         app:layout_constraintEnd_toStartOf="@id/tvClinicalName"
         app:layout_constraintHorizontal_weight="0.1"
@@ -432,8 +428,8 @@
         style="@style/TextStyle_Regular_16"
         android:layout_width="@dimen/_0dp"
         android:fontFamily="@font/inter_medium"
-        android:text="@string/seperator_hyphen"
         android:textColor="@color/grey_black"
+        android:text="@string/seperator_hyphen"
         app:layout_constraintBottom_toBottomOf="@id/tvClinicalNameLabel"
         app:layout_constraintEnd_toEndOf="@id/centreGuideline"
         app:layout_constraintHorizontal_weight="0.5"
@@ -445,16 +441,15 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_begin="640dp" />
+        app:layout_constraintGuide_percent="0.5"  />
 
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/tvDateOfReviewLabel"
         style="@style/TextStyle_Regular_16"
-        android:layout_width="@dimen/_0dp"
+        android:layout_width="wrap_content"
         android:layout_marginStart="@dimen/_8sdp"
         android:text="@string/date_of_review"
-        android:textSize="@dimen/_16ssp"
         app:layout_constraintBottom_toBottomOf="@id/tvClinicalNameLabel"
         app:layout_constraintEnd_toStartOf="@id/tvDateOfReviewSeparator"
         app:layout_constraintHorizontal_weight="0.4"
@@ -468,7 +463,6 @@
         android:layout_height="0dp"
         android:gravity="center_horizontal"
         android:text="@string/separator_colon"
-        android:textSize="@dimen/_16ssp"
         app:layout_constraintBottom_toBottomOf="@id/tvDateOfReviewLabel"
         app:layout_constraintEnd_toStartOf="@id/tvDateOfReviewValue"
         app:layout_constraintHorizontal_weight="0.1"
@@ -479,9 +473,10 @@
         android:id="@+id/tvDateOfReviewValue"
         style="@style/TextStyle_Regular_16"
         android:layout_width="@dimen/_0dp"
+        android:layout_marginEnd="@dimen/_30sdp"
         android:fontFamily="@font/inter_medium"
-        android:text="@string/seperator_hyphen"
         android:textColor="@color/grey_black"
+        android:text="@string/seperator_hyphen"
         app:layout_constraintBottom_toBottomOf="@id/tvDateOfReviewLabel"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_weight="0.5"

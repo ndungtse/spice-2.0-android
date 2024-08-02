@@ -14,6 +14,8 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.appextensions.changePatientStatus
+import com.medtroniclabs.spice.appextensions.getPatientStatus
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
@@ -362,6 +364,7 @@ class MedicalReviewHistoryFragment : BaseFragment(), View.OnClickListener {
             mapOf(
                 DefinedParams.label to requireContext().getString(R.string.patient_status),
                 DefinedParams.value to (medicalReviewHistory.reviewDetails?.patientStatus?.takeIf { it.isNotBlank() }
+                    ?.let { requireContext().changePatientStatus(it) }
                     ?: getString(R.string.separator_double_hyphen))
             ),
             mapOf(

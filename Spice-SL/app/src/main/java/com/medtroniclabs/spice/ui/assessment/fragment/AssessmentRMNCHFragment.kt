@@ -11,6 +11,7 @@ import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.common.DateUtils
+import com.medtroniclabs.spice.common.DateUtils.formatGestationalAge
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.EntityMapper
 import com.medtroniclabs.spice.data.model.RecommendedDosageListModel
@@ -280,11 +281,9 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
                 val lastMenstrualDate = second[RMNCH.lastMenstrualPeriod]
                 if (lastMenstrualDate is String) {
                     val calendar = getLastMenstrualDate(lastMenstrualDate)
-                    second[RMNCH.gestationalAge] = "${
-                        DateUtils.calculateGestationalAge(
-                            calendar
-                        ).first
-                    } ${getString(R.string.weeks)}"
+                    second[RMNCH.gestationalAge] = formatGestationalAge(DateUtils.calculateGestationalAge(
+                        calendar
+                    ).first,requireContext())
                 }
             }
         }
