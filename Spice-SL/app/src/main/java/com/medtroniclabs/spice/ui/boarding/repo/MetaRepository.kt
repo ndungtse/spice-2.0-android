@@ -14,6 +14,7 @@ import com.medtroniclabs.spice.data.FormMetaRequest
 import com.medtroniclabs.spice.data.FormRequest
 import com.medtroniclabs.spice.data.FormResponse
 import com.medtroniclabs.spice.data.HealthFacility
+import com.medtroniclabs.spice.data.Menu
 import com.medtroniclabs.spice.data.MenuDetail
 import com.medtroniclabs.spice.data.ModelQuestion
 import com.medtroniclabs.spice.data.UserProfile
@@ -75,9 +76,10 @@ class MetaRepository @Inject constructor(
                             saveUserProfileDetailsInDb(userProfile)
                             if (CommonUtils.isRolePresent()) {
                                 saveClinicalWorkflowsForProvider(defaultHealthFacility.clinicalWorkflows)
+                                if (!nonNcdWorkflowEnabled)
+                                    handleMeta(menu, meta)
                             } else {
-                                saveMenusInDb(menu.menus, menu.roleName)
-                                menu.meta?.let { meta.addAll(it) }
+                                handleMeta(menu, meta)
                             }
                             workflowNames.addAll(clinicalIds)
                             identityTypes?.let { types ->
@@ -135,9 +137,15 @@ class MetaRepository @Inject constructor(
                                 if (metadataResponse.body()?.entity == null) {
                                     return@with Resource(state = ResourceState.ERROR)
                                 }
-                                metadataResponse.body()?.entity?.symptoms?.let {
-                                    roomHelper.deleteAllSymptoms()
-                                    roomHelper.insertSymptoms(it)
+                                metadataResponse.body()?.entity?.let { res ->
+                                    res.symptoms.let {
+                                        roomHelper.deleteAllSymptoms()
+                                        roomHelper.insertSymptoms(it)
+                                    }
+                                    res.medicalCompliances?.let {
+                                        roomHelper.deleteMedicalCompliance()
+                                        roomHelper.saveMedicalCompliance(it)
+                                    }
                                 }
                             } else {
                                 return@with Resource(state = ResourceState.ERROR)
@@ -155,6 +163,11 @@ class MetaRepository @Inject constructor(
             e.printStackTrace()
             Resource(state = ResourceState.ERROR)
         }
+    }
+
+    private suspend fun handleMeta(menu: Menu, meta: MutableList<String>) {
+        saveMenusInDb(menu.menus, menu.roleName)
+        menu.meta?.let { meta.addAll(it) }
     }
 
     private suspend fun saveClinicalWorkflowsForProvider(clinicalWorkflows: List<ClinicalWorkflow>) {

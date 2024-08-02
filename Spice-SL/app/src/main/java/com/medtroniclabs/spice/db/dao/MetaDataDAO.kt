@@ -14,6 +14,7 @@ import com.medtroniclabs.spice.db.entity.ClinicalWorkflowEntityWithSubmodule
 import com.medtroniclabs.spice.db.entity.ConsentEntity
 import com.medtroniclabs.spice.db.entity.FormEntity
 import com.medtroniclabs.spice.db.entity.HealthFacilityEntity
+import com.medtroniclabs.spice.db.entity.MedicalComplianceEntity
 import com.medtroniclabs.spice.db.entity.MentalHealthEntity
 import com.medtroniclabs.spice.db.entity.MenuEntity
 import com.medtroniclabs.spice.db.entity.SignsAndSymptomsEntity
@@ -164,4 +165,16 @@ interface MetaDataDAO {
 
     @Query("DELETE FROM MentalHealthEntity")
     suspend fun deleteModelQuestions()
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertMedicalCompliance(list: List<MedicalComplianceEntity>)
+
+    @Query("SELECT * FROM MedicalComplianceEntity where parent_compliance_id IS NULL OR parent_compliance_id = '' ORDER BY display_order")
+    suspend fun getMedicalComplianceList(): List<MedicalComplianceEntity>
+
+    @Query("SELECT * FROM MedicalComplianceEntity where parent_compliance_id =:parentId ORDER BY display_order")
+    suspend fun getMedicalComplianceList(parentId: Long): List<MedicalComplianceEntity>
+
+    @Query("DELETE FROM MedicalComplianceEntity")
+    suspend fun deleteMedicalComplianceList()
 }

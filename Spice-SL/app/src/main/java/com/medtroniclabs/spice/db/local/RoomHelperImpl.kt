@@ -45,6 +45,7 @@ import com.medtroniclabs.spice.db.entity.FrequencyEntity
 import com.medtroniclabs.spice.db.entity.HealthFacilityEntity
 import com.medtroniclabs.spice.db.entity.HouseholdEntity
 import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
+import com.medtroniclabs.spice.db.entity.MedicalComplianceEntity
 import com.medtroniclabs.spice.db.entity.LinkHouseholdMember
 import com.medtroniclabs.spice.db.entity.MemberClinicalEntity
 import com.medtroniclabs.spice.db.entity.MentalHealthEntity
@@ -775,5 +776,21 @@ class RoomHelperImpl @Inject constructor(
 
     override suspend fun updateMemberAsAssigned(memberId: String) {
         linkHouseholdMemberDao.updateMemberAsAssigned(memberId)
+    }
+
+    override suspend fun saveMedicalCompliance(list: List<MedicalComplianceEntity>) {
+        metaDataDAO.insertMedicalCompliance(list)
+    }
+
+    override suspend fun getMedicalParentComplianceList(): List<MedicalComplianceEntity> {
+        return metaDataDAO.getMedicalComplianceList()
+    }
+
+    override suspend fun getMedicalChildComplianceList(parentId: Long): List<MedicalComplianceEntity> {
+        return metaDataDAO.getMedicalComplianceList(parentId)
+    }
+
+    override suspend fun deleteMedicalCompliance() {
+        metaDataDAO.deleteMedicalComplianceList()
     }
 }

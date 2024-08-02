@@ -2,6 +2,7 @@ package com.medtroniclabs.spice.data
 
 import androidx.room.ColumnInfo
 import com.medtroniclabs.spice.db.entity.FrequencyEntity
+import com.medtroniclabs.spice.db.entity.MedicalComplianceEntity
 import com.medtroniclabs.spice.db.entity.SignsAndSymptomsEntity
 import com.medtroniclabs.spice.db.entity.VillageEntity
 
@@ -178,7 +179,8 @@ data class FormMetaRequest(
 )
 
 data class UserSymptomsEntity(
-    val symptoms: ArrayList<SignsAndSymptomsEntity>
+    val symptoms: ArrayList<SignsAndSymptomsEntity>,
+    var medicalCompliances: ArrayList<MedicalComplianceEntity>? = null,
 )
 
 data class VillageInfo(

@@ -43,6 +43,7 @@ import com.medtroniclabs.spice.db.entity.HealthFacilityEntity
 import com.medtroniclabs.spice.db.entity.HouseholdEntity
 import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
 import com.medtroniclabs.spice.db.entity.LinkHouseholdMember
+import com.medtroniclabs.spice.db.entity.MedicalComplianceEntity
 import com.medtroniclabs.spice.db.entity.MentalHealthEntity
 import com.medtroniclabs.spice.db.entity.MenuEntity
 import com.medtroniclabs.spice.db.entity.PregnancyDetail
@@ -59,7 +60,7 @@ import net.zetetic.database.sqlcipher.SupportOpenHelperFactory
         MedicalReviewMetaItems::class, DiseaseCategoryItems::class, ExaminationListItems::class, LabourDeliveryMetaEntity::class, FollowUp::class, FollowUpCall::class, PregnancyDetail::class, FrequencyEntity::class, ConsentForm::class,
         ProgramEntity::class, CulturesEntity::class, ConsentForm::class,
         MedicalReviewMetaItems::class, DiseaseCategoryItems::class, ExaminationListItems::class, LabourDeliveryMetaEntity::class, FollowUp::class, FollowUpCall::class, PregnancyDetail::class, FrequencyEntity::class,
-        ProgramEntity::class, CulturesEntity::class, ConsentForm::class, ConsentEntity::class, MentalHealthEntity::class],
+        ProgramEntity::class, CulturesEntity::class, ConsentForm::class, ConsentEntity::class, MentalHealthEntity::class, MedicalComplianceEntity::class],
     version = 1
 )
 @TypeConverters(OfflineStatusTypeConverter::class)
