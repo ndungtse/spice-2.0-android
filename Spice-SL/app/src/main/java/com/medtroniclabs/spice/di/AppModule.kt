@@ -103,6 +103,7 @@ object AppModule {
                 .header("client", AppConstants.CLIENT_CONSTANT)
                 .header("organizationId", SecuredPreference.getOrganizationFhirId())
                 .header("tenantId", SecuredPreference.getTenantId().toString())
+                .header("App-Version", getAppPackageInfo())
 
             SecuredPreference.getString(SecuredPreference.EnvironmentKey.TENANT_ID.toString())
                 ?.let { tenantId ->
@@ -290,6 +291,10 @@ object AppModule {
     @Provides
     fun provideFrequencyDAO(db: SpiceDataBase): FrequencyDAO {
         return db.frequencyDao()
+    }
+
+    private fun getAppPackageInfo(): String {
+        return BuildConfig.VERSION_NAME
     }
 }
 

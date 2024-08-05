@@ -677,4 +677,7 @@
     <string name="_patients">" Patients"</string>
     <string name="phu_walk_ins_title">PHU Walk-ins</string>
     <string name="households_in">" Households in "</string>
+    <string name="open_play_store">Open Play Store</string>
+    <string name="please_check_if_play_store_available">Please check if Google Play Store is installed in the device</string>
+
 </resources>

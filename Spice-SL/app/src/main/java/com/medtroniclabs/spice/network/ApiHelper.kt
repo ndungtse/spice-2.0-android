@@ -162,4 +162,5 @@ interface ApiHelper {
 
     suspend fun uploadAllConsentSignatures(request: RequestBody): Response<APIResponse<List<ResponseSignatureUpload>>>
 
+    suspend fun  checkAppVersion() : Response<APIResponse<Boolean>>
 }

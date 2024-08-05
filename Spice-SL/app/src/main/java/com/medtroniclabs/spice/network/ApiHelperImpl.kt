@@ -344,4 +344,8 @@ class ApiHelperImpl @Inject constructor(private val apiService: ApiService) : Ap
     override suspend fun uploadAllConsentSignatures(request: RequestBody): Response<APIResponse<List<ResponseSignatureUpload>>> {
         return apiService.uploadAllConsentSignatures(request)
     }
+
+    override suspend fun checkAppVersion(): Response<APIResponse<Boolean>> {
+        return apiService.checkAppVersion()
+    }
 }

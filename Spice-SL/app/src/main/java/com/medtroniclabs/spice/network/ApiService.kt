@@ -290,4 +290,6 @@ interface ApiService {
     @POST("/offline-service/offline-sync/upload-signatures")
     suspend fun uploadAllConsentSignatures(@Body request: RequestBody): Response<APIResponse<List<ResponseSignatureUpload>>>
 
+    @POST("spice-service/static-data/app-version")
+    suspend fun checkAppVersion(): Response<APIResponse<Boolean>>
 }

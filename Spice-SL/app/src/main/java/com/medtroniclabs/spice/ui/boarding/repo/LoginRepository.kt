@@ -29,13 +29,28 @@ class LoginRepository @Inject constructor(
             val response = apiHelper.doLogin(builder.build())
             if (response.isSuccessful) {
                 val headers = response.headers().toMultimap()
-                val loginResponseModel = response.body()
                 saveTokenInformation(headers)
-                loginResponseModel?.let {
-                    SecuredPreference.putUserDetails(it)
-                    saveUserNameAndPassword(username, securePassword)
-                }
-                Resource(state = ResourceState.SUCCESS, data = response.body())
+                val versionCheckResponse = apiHelper.checkAppVersion()
+                if (versionCheckResponse.isSuccessful) {
+                    val appVersionResponse = versionCheckResponse.body()
+                    if (appVersionResponse?.entity == true) {
+                        val loginResponseModel = response.body()
+                        loginResponseModel?.let {
+                            SecuredPreference.putUserDetails(it)
+                            saveUserNameAndPassword(username, securePassword)
+                        }
+                        Resource(state = ResourceState.SUCCESS, data = response.body())
+                    } else
+                        Resource(
+                            state = ResourceState.ERROR,
+                            message = appVersionResponse?.message,
+                            optionalData = true //Show update app alert dialog
+                        )
+                } else
+                    Resource(
+                        state = ResourceState.ERROR,
+                        message = getErrorMessage(response.errorBody())
+                    )
             } else {
                 Resource(
                     state = ResourceState.ERROR,

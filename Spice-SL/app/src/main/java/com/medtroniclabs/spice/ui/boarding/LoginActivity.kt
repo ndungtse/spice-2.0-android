@@ -2,11 +2,14 @@ package com.medtroniclabs.spice.ui.boarding
 
 import android.Manifest
 import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.core.app.ActivityCompat
+import com.medtroniclabs.spice.BuildConfig
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.app.analytics.model.UserDetail
 import com.medtroniclabs.spice.appextensions.hideKeyboard
@@ -82,7 +85,28 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
 
                 ResourceState.ERROR -> {
                     hideLoading()
-                    resourceState.message?.let {
+                    resourceState.optionalData?.let {
+                        resourceState.message?.let { message ->
+                            showErrorDialogue(
+                                title = getString(R.string.alert),
+                                message = message,
+                                positiveButtonName = getString(R.string.open_play_store),
+                            ) { status ->
+                                if (status) {
+                                    try {
+                                        startActivity(Intent(Intent.ACTION_VIEW).apply {
+                                            data = Uri.parse(
+                                                "https://play.google.com/store/apps/details?id=" + BuildConfig.APPLICATION_ID
+                                            )
+                                            setPackage("com.android.vending")
+                                        })
+                                    } catch (e: Exception) {
+                                        showErrorDialogue(message = getString(R.string.please_check_if_play_store_available)) {}
+                                    }
+                                }
+                            }
+                        }
+                    } ?: resourceState.message?.let {
                         showErrorSnackBar(it)
                     }
                 }
