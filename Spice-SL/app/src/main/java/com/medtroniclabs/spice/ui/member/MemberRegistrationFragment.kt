@@ -428,7 +428,7 @@ class MemberRegistrationFragment : Fragment(), FormEventListener, View.OnClickLi
     }
 
     override fun onAgeCheckForPregnancy() {
-        formGenerator.handlePregnancyCardBasedOnAge()
+        formGenerator.handlePregnancyCardBasedOnAgeAndWeeks()
     }
 
     override fun onClick(v: View?) {

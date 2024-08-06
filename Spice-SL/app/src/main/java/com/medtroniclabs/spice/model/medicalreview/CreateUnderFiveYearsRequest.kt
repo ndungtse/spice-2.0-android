@@ -27,7 +27,7 @@ data class UnderFiveDiarrhoea(
     val hasDiarrhoea: Boolean? = null,
     val bloodyDiarrhoea: Boolean? = null,
     val signs: List<String?>? = null,
-    val timePeriod: String? = null
+    val timePeriod: Int? = null
 )
 
 data class GeneralDangerSings(
@@ -42,7 +42,7 @@ data class CoughOrDifficultBreathing(
     val coughOrDIfficultBreathing: Boolean? = null,
     val chestIndrawing: Boolean? = null,
     val stridor: Boolean? = null,
-    val noOfDays: String? = null
+    val noOfDays: Int? = null
 )
 
 data class Fever(
@@ -50,11 +50,11 @@ data class Fever(
     val isMotherHasFever: String? = null,
     val signs: List<String>? = null,
     var microscopyResult: String? = null,
-    val noOfDays: String? = null
+    val noOfDays: Int? = null
 )
 
 data class EarProblem(
-    val noOfDays: String? = null,
+    val noOfDays: Int? = null,
     val hasEarPain: Boolean? = null,
     val earDischarge: String? = null
 )

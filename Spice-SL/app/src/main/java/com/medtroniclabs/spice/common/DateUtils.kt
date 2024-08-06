@@ -288,6 +288,25 @@ object DateUtils {
             null
         }
     }
+    fun dateToMonthsAndWeeks(
+        dateString: String,
+        givenFormat: String = DATE_FORMAT_yyyyMMddHHmmssZZZZZ
+    ): Pair<Int, Int>? {
+        return try {
+            val formatter = DateTimeFormatter.ofPattern(givenFormat)
+            val givenDateTime = LocalDateTime.parse(dateString, formatter)
+            val currentDateTime = LocalDateTime.now()
+
+            val totalMonths = ChronoUnit.MONTHS.between(givenDateTime, currentDateTime).toInt()
+
+            val adjustedGivenDate = givenDateTime.plusMonths(totalMonths.toLong())
+            val weeks = ChronoUnit.WEEKS.between(adjustedGivenDate, currentDateTime).toInt()
+
+            Pair(totalMonths, weeks)
+        } catch (e: Exception) {
+            Pair(0,0)
+        }
+    }
 
     fun calculateAge(
         birthDateString: String,
@@ -305,6 +324,30 @@ object DateUtils {
             0
         }
     }
+
+    fun calculateAgeAndWeek(
+        birthDateString: String,
+        givenFormat: String = DATE_FORMAT_yyyyMMddHHmmssZZZZZ
+    ): Pair<Int,Int> {
+        return try {
+            val yearInMillis = 1000L * 60 * 60 * 24 * 365.25
+            val weekInMillis = 1000L * 60 * 60 * 24 * 7
+
+            val dateFormat = SimpleDateFormat(givenFormat, Locale.getDefault())
+            val birthDate = dateFormat.parse(birthDateString)
+            val today = Calendar.getInstance().time
+
+            val diff = today.time - (birthDate?.time ?: 0)
+
+            val ageYears = (diff / yearInMillis).toInt()
+            val remainingMillisAfterYears = diff % yearInMillis
+            val ageWeeks = (remainingMillisAfterYears / weekInMillis).toInt()
+            Pair(ageYears, ageWeeks)
+        } catch (e: Exception) {
+            Pair(0, 0)
+        }
+    }
+
 
     fun getDateAfterDays(days: Int): String {
         val calendar = Calendar.getInstance()

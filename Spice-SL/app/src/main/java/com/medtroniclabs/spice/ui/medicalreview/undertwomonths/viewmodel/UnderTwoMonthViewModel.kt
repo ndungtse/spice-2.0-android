@@ -383,7 +383,7 @@ class UnderTwoMonthViewModel @Inject constructor(
                 var diarrhoea = Diarrhoea()
                 if (diarrhoeaHashMap.containsKey(UnderTwoExaminationKeyMapping.Diarrhoea.timePeriod)) {
                     diarrhoea =
-                        diarrhoea.copy(timePeriod = (diarrhoeaHashMap[UnderTwoExaminationKeyMapping.Diarrhoea.timePeriod] as String).toInt())
+                        diarrhoea.copy(timePeriod = (diarrhoeaHashMap[UnderTwoExaminationKeyMapping.Diarrhoea.timePeriod] as Double).toInt())
                 }
                 if (diarrhoeaHashMap.containsKey(UnderTwoExaminationKeyMapping.Diarrhoea.bloodInStool)) {
                     diarrhoea =

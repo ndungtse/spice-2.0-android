@@ -294,7 +294,7 @@
     <string name="clinical_summary"><![CDATA[Clinical Summary & Vital Signs]]></string>
     <string name="weight_in_kgs">Weight (in Kgs)</string>
     <string name="waz">WAZ</string>
-    <string name="temperature_in_c">Temperature (in C&#176;)</string>
+    <string name="temperature_in_c">Temperature (in &#176;C)</string>
     <string name="temperature">Temperature</string>
     <string name="respiration_rate">Respiration Rate</string>
     <string name="rate">Rate</string>

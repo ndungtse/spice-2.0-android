@@ -255,10 +255,13 @@ class MetaRepository @Inject constructor(
         return try {
             if (selectedHouseholdMemberID != -1L) {
                 val memberData = roomHelper.getDobAndGenderById(selectedHouseholdMemberID)
-                val list = roomHelper.getClinicalWorkflowId(
-                    memberData.gender,
-                    DateUtils.dateToMonths(memberData.dateOfBirth) ?: 0
-                )
+                val (months, weeks) = DateUtils.dateToMonthsAndWeeks(memberData.dateOfBirth) ?: Pair(0, 0)
+                val list = if (months == 15 && weeks == 0) {
+                    roomHelper.getClinicalWorkflowId(memberData.gender, months.minus(1))
+                } else {
+                    roomHelper.getClinicalWorkflowId(memberData.gender, months)
+                }
+
                 Resource(
                     state = ResourceState.SUCCESS,
                     data = convertorClinicalWorkflowsToMenuEntity(list)

@@ -165,7 +165,7 @@ class UnderFiveYearsViewModel @Inject constructor(
                 }
                 if (diarrhoeaHashMap.containsKey(UnderFiveYearExaminationKeyMapping.Diarrhoea.timePeriod)) {
                     diarrhoea = diarrhoea.copy(
-                        timePeriod = diarrhoeaHashMap[UnderFiveYearExaminationKeyMapping.Diarrhoea.timePeriod] as String
+                        timePeriod = (diarrhoeaHashMap[UnderFiveYearExaminationKeyMapping.Diarrhoea.timePeriod] as Double).toInt()
                     )
                 }
                 return diarrhoea
@@ -251,7 +251,7 @@ class UnderFiveYearsViewModel @Inject constructor(
                 }
                 if (coughOrDifficultBreathingHashMap.containsKey(UnderFiveYearExaminationKeyMapping.Cough.noOfDays)) {
                     coughOrDifficultBreathing = coughOrDifficultBreathing.copy(
-                        noOfDays = coughOrDifficultBreathingHashMap[UnderFiveYearExaminationKeyMapping.Cough.noOfDays] as String
+                        noOfDays = (coughOrDifficultBreathingHashMap[UnderFiveYearExaminationKeyMapping.Cough.noOfDays] as Double).toInt()
                     )
                 }
 
@@ -297,7 +297,7 @@ class UnderFiveYearsViewModel @Inject constructor(
 
                 if (feverHashMap.containsKey(UnderFiveYearExaminationKeyMapping.Fever.noOfDays)) {
                     fever = fever.copy(
-                        noOfDays = feverHashMap[UnderFiveYearExaminationKeyMapping.Fever.noOfDays] as String
+                        noOfDays = (feverHashMap[UnderFiveYearExaminationKeyMapping.Fever.noOfDays] as Double).toInt()
                     )
                 }
                 return fever
@@ -324,7 +324,7 @@ class UnderFiveYearsViewModel @Inject constructor(
                 }
                 if (earProblemHashMap.containsKey(UnderFiveYearExaminationKeyMapping.EarProblem.noOfDays)) {
                     earProblem = earProblem.copy(
-                        noOfDays = earProblemHashMap[UnderFiveYearExaminationKeyMapping.EarProblem.noOfDays] as String
+                        noOfDays = (earProblemHashMap[UnderFiveYearExaminationKeyMapping.EarProblem.noOfDays] as Double).toInt()
                     )
                 }
                 return earProblem
