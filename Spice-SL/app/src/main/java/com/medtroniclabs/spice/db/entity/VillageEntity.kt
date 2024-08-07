@@ -9,9 +9,9 @@ data class VillageEntity(
     val id: Long,
     val name: String,
     val villagecode: String,
-    val chiefdomId: Long,
+    val chiefdomId: Long? = null,
     val countryId: Long,
-    val districtId: Long,
-    val chiefdomCode: String,
-    val districtCode: String
+    val districtId: Long? = null,
+    val chiefdomCode: String? = null,
+    val districtCode: String? = null
 )

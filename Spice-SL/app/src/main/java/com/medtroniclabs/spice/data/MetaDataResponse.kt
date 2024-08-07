@@ -129,8 +129,8 @@ data class FormRequest(
 )
 
 data class FormResponse(
-    val formData: List<FormData>,
-    val clinicalTools: List<ClinicalWorkflow>
+    val formData: List<FormData>? = null,
+    val clinicalTools: List<ClinicalWorkflow>? = null
 )
 
 data class FormData(

@@ -90,7 +90,11 @@ class MemberRegistrationViewModel @Inject constructor(
                     householdId,
                     memberDetailsLiveData.value?.data,
                 )
-                memberRegistrationLiveData.postSuccess(memberId)
+                if (memberId == null) {
+                    memberRegistrationLiveData.postError()
+                } else {
+                    memberRegistrationLiveData.postSuccess(memberId)
+                }
             }
         } catch (e: Exception) {
             memberRegistrationLiveData.postError()

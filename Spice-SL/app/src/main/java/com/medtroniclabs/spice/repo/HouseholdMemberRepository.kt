@@ -30,8 +30,11 @@ class HouseholdMemberRepository @Inject constructor(
         householdId: Long,
         entity: HouseholdMemberEntity? = null,
         parentId: String? = null
-    ): Long {
+    ): Long? {
         val memberEntity = createOrUpdateHouseHoldMemberEntity(map, householdId, entity, parentId)
+        if (memberEntity.patientId == null) {
+            return  null
+        }
         val memberId = roomHelper.registerMember(memberEntity)
         //Update Member count in household only in insert case
         if (entity == null) {
@@ -112,8 +115,11 @@ class HouseholdMemberRepository @Inject constructor(
         }
     }
 
-    private suspend fun getNextPatientId(villageId: Long): String {
+    private suspend fun getNextPatientId(villageId: Long): String? {
         val villageDetail = roomHelper.getVillageByID(villageId)
+        if (villageDetail.chiefdomCode.isNullOrBlank()) {
+           return null
+        }
         val chiefDomCode = villageDetail.chiefdomCode.padStart(CHIEF_DOM_CODE_LENGTH, '0')
         val villageCode = villageDetail.villagecode.padStart(VILLAGE_CODE_LENGTH, '0')
         val chwUserId = SecuredPreference.getUserId().toString()

@@ -79,8 +79,15 @@ class MetaRepository @Inject constructor(
                                     return@with Resource(state = ResourceState.ERROR)
                                 }
                                 formsResponse.body()?.entity?.apply {
-                                    saveFormsInDb(formData)
-                                    saveClinicalWorkflowsInDb(clinicalTools)
+                                    if (formData == null && clinicalTools == null) {
+                                        return@with Resource(state = ResourceState.ERROR)
+                                    }
+                                    formData?.let {
+                                        saveFormsInDb(it)
+                                    }
+                                    clinicalTools?.let {
+                                        saveClinicalWorkflowsInDb(it)
+                                    }
                                 }
                             } else {
                                 return@with Resource(state = ResourceState.ERROR)

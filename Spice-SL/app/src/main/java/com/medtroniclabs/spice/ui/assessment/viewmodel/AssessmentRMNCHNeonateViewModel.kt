@@ -77,7 +77,10 @@ class AssessmentRMNCHNeonateViewModel @Inject constructor(
                     null,
                     memberDetail.patientId
                 )
-                savePNCDetails(motherDetailMap, childDetailMap, memberDetail,childMemberId, followUpId = followUpId)
+                if (childMemberId != null)
+                {
+                    savePNCDetails(motherDetailMap, childDetailMap, memberDetail,childMemberId, followUpId = followUpId)
+                }
             } else {
                 childBioDataDetail?.let { list ->
                     if (list.isNotEmpty()) {
