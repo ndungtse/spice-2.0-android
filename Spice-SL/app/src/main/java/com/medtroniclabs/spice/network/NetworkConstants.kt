@@ -1,7 +1,7 @@
 package com.medtroniclabs.spice.network
 
 object NetworkConstants {
-    const val BASE_URL = BaseUrl.DEV
+    const val BASE_URL = BaseUrl.TRAINING
     const val AUTH_SESSION = "/auth-service"
     const val OFFLINE_SYNC_CREATE = "/offline-service/offline-sync/create"
 }
