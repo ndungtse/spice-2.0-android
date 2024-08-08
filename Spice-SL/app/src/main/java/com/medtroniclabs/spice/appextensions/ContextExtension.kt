@@ -22,7 +22,7 @@ import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
 import java.util.concurrent.TimeUnit
 
 const val syncWorkerName = "SyncWorker"
-private const val durationGap = 15L // 1 * 60L - 1 hour once. Need to give in minutes
+private const val durationGap = 30L // 1 * 60L - 1 hour once. Need to give in minutes
 private const val notificationId = 99 // Unique ID for the notification
 
 fun Context.isGpsEnabled(): Boolean {

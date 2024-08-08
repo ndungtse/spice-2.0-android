@@ -113,7 +113,7 @@ class SelectFlowDialog : DialogFragment(), View.OnClickListener {
                     intent.putExtra(DefinedParams.PatientId, patientId)
                     intent.putExtra(DefinedParams.ID, id)
                 }
-                startActivity(intent)
+//                startActivity(intent)
             }
 
             getString(R.string.child_hood_visit) -> {
@@ -125,7 +125,7 @@ class SelectFlowDialog : DialogFragment(), View.OnClickListener {
                 if (patientId?.isNotBlank() == true) {
                     intent.putExtra(DefinedParams.PatientId, patientId)
                 }
-                startActivity(intent)
+//                startActivity(intent)
             }
         }
     }
