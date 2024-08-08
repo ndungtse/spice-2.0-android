@@ -1,23 +1,25 @@
 package com.medtroniclabs.spice.db.dao
 
+import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.medtroniclabs.spice.data.CulturesEntity
-import com.medtroniclabs.spice.data.IdentityType
 import com.medtroniclabs.spice.data.ProgramEntity
 import com.medtroniclabs.spice.data.VillageInfo
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowConditionEntity
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowEntity
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowEntityWithSubmodule
 import com.medtroniclabs.spice.db.entity.ConsentEntity
+import com.medtroniclabs.spice.db.entity.ChiefDomEntity
 import com.medtroniclabs.spice.db.entity.FormEntity
 import com.medtroniclabs.spice.db.entity.HealthFacilityEntity
 import com.medtroniclabs.spice.db.entity.MedicalComplianceEntity
 import com.medtroniclabs.spice.db.entity.MentalHealthEntity
 import com.medtroniclabs.spice.db.entity.MenuEntity
 import com.medtroniclabs.spice.db.entity.SignsAndSymptomsEntity
+import com.medtroniclabs.spice.db.entity.DistrictEntity
 import com.medtroniclabs.spice.db.entity.UserProfileEntity
 import com.medtroniclabs.spice.db.entity.VillageEntity
 import com.medtroniclabs.spice.db.response.VillageBasicDetails
@@ -128,10 +130,10 @@ interface MetaDataDAO {
 
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertPrograms(programEntity: ProgramEntity)
+    suspend fun insertPrograms(programEntity: List<ProgramEntity>)
 
     @Query("SELECT * FROM ProgramEntity")
-    suspend fun getPrograms(): ProgramEntity?
+    suspend fun getPrograms(): List<ProgramEntity>
 
     @Query("DELETE FROM ProgramEntity")
     suspend fun deletePrograms()
@@ -151,8 +153,8 @@ interface MetaDataDAO {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertConsent(culturesEntity: ConsentEntity)
 
-    @Query("SELECT * FROM ConsentEntity where formType=:formType")
-    suspend fun getConsent(formType: String): ConsentEntity
+    @Query("SELECT formInput FROM ConsentEntity where formType=:formType")
+    fun getConsent(formType: String): LiveData<String>
 
     @Query("DELETE FROM ConsentEntity")
     suspend fun deleteConsent()
@@ -177,4 +179,22 @@ interface MetaDataDAO {
 
     @Query("DELETE FROM MedicalComplianceEntity")
     suspend fun deleteMedicalComplianceList()
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertDistricts(counties: List<DistrictEntity>)
+
+    @Query("SELECT * FROM DistrictEntity where countryId=:countryId")
+    suspend fun getDistricts(countryId: Long): List<DistrictEntity>
+
+    @Query("DELETE FROM DistrictEntity")
+    suspend fun deleteCounties()
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertChiefDoms(counties: List<ChiefDomEntity>)
+
+    @Query("SELECT * FROM ChiefDomEntity where districtId=:districtId")
+    suspend fun getChiefDoms(districtId: Long): List<ChiefDomEntity>
+
+    @Query("DELETE FROM ChiefDomEntity")
+    suspend fun deleteChiefDoms()
 }

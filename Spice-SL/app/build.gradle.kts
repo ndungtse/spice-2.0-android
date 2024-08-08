@@ -180,7 +180,7 @@ android {
         create("africa") {
             dimension = "version"
             versionCode = 15
-            versionName = "1.0.0"
+            versionName = "2.1.0"
             signingConfig = signingConfigs.getByName("africa")
         }
     }

@@ -27,6 +27,7 @@ object SecuredPreference {
         USER_ID,
         DEVICE_ID,
         USER_FHIR_ID,
+        ORGANIZATION_ID,
         ORGANIZATION_FHIR_ID,
         IS_MOTHER_NEONATE_LOADEDANC,
         IS_UNDER_TWO_MONTHS_LOADED,
@@ -491,6 +492,10 @@ object SecuredPreference {
 
     fun getUserFhirId(): String {
         return getString(EnvironmentKey.USER_FHIR_ID.name) ?: ""
+    }
+
+    fun getOrganizationId(): Long {
+        return getLong(EnvironmentKey.ORGANIZATION_ID.name)
     }
 
     fun getOrganizationFhirId(): String {

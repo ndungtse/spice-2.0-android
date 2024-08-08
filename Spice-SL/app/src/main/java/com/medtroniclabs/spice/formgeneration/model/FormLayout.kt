@@ -75,6 +75,7 @@ data class FormLayout(
     var code: String? = null,
     var url: String? = null,
     var resource: String? = null,
+    var spinnerAsObject: Boolean = false,
     var ranges: ArrayList<RangeModel>? = null
 ) : BaseViewParams
 

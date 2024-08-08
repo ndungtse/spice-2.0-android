@@ -1,9 +1,11 @@
 package com.medtroniclabs.spice.data
 
 import androidx.room.ColumnInfo
+import com.medtroniclabs.spice.db.entity.ChiefDomEntity
 import com.medtroniclabs.spice.db.entity.FrequencyEntity
 import com.medtroniclabs.spice.db.entity.MedicalComplianceEntity
 import com.medtroniclabs.spice.db.entity.SignsAndSymptomsEntity
+import com.medtroniclabs.spice.db.entity.DistrictEntity
 import com.medtroniclabs.spice.db.entity.VillageEntity
 
 data class MetaDataResponse(
@@ -16,6 +18,8 @@ data class MetaDataResponse(
     val frequency: List<FrequencyEntity> ? = null,
     val userHealthFacilities: List<HealthFacility>? = null,
     val identityTypes: ArrayList<IdentityType>? = null,
+    val districts: ArrayList<DistrictEntity>? = null,
+    val chiefdoms: ArrayList<ChiefDomEntity>? = null,
     val programs: ArrayList<ProgramEntity>? = null,
     val cultures: ArrayList<CulturesEntity>? = null,
     val nonNcdWorkflowEnabled: Boolean = false,

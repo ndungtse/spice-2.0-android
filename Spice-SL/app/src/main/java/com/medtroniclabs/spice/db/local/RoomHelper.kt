@@ -6,6 +6,7 @@ import com.medtroniclabs.spice.data.ExaminationListItems
 import com.medtroniclabs.spice.data.FollowUpPatientModel
 import com.medtroniclabs.spice.data.LabourDeliveryMetaEntity
 import com.medtroniclabs.spice.data.MedicalReviewMetaItems
+import com.medtroniclabs.spice.data.ProgramEntity
 import com.medtroniclabs.spice.data.VillageInfo
 import com.medtroniclabs.spice.data.model.HouseholdCardDetail
 import com.medtroniclabs.spice.data.offlinesync.model.HHSignatureDetail
@@ -20,6 +21,7 @@ import com.medtroniclabs.spice.db.entity.ClinicalWorkflowEntity
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowEntityWithSubmodule
 import com.medtroniclabs.spice.db.entity.ConsentEntity
 import com.medtroniclabs.spice.db.entity.ConsentForm
+import com.medtroniclabs.spice.db.entity.ChiefDomEntity
 import com.medtroniclabs.spice.db.entity.FollowUp
 import com.medtroniclabs.spice.db.entity.FollowUpCall
 import com.medtroniclabs.spice.db.entity.FormEntity
@@ -34,6 +36,7 @@ import com.medtroniclabs.spice.db.entity.MentalHealthEntity
 import com.medtroniclabs.spice.db.entity.MenuEntity
 import com.medtroniclabs.spice.db.entity.PregnancyDetail
 import com.medtroniclabs.spice.db.entity.SignsAndSymptomsEntity
+import com.medtroniclabs.spice.db.entity.DistrictEntity
 import com.medtroniclabs.spice.db.entity.UserProfileEntity
 import com.medtroniclabs.spice.db.entity.VillageEntity
 import com.medtroniclabs.spice.db.response.HouseHoldEntityWithMemberCount
@@ -42,8 +45,6 @@ import com.medtroniclabs.spice.db.response.VillageBasicDetails
 import com.medtroniclabs.spice.model.MemberDobGenderModel
 import com.medtroniclabs.spice.model.assessment.AssessmentDetails
 import com.medtroniclabs.spice.model.assessment.AssessmentMemberDetails
-import com.medtroniclabs.spice.model.followup.FollowUpFilter
-import kotlinx.coroutines.flow.Flow
 
 interface RoomHelper {
     suspend fun saveHouseHoldEntry(householdEntity: HouseholdEntity): Long
@@ -284,7 +285,7 @@ interface RoomHelper {
     suspend fun updateMemberAsAssigned(memberId: String)
 
     suspend fun saveConsent(consentEntity: ConsentEntity)
-    suspend fun getConsent(formType: String): ConsentEntity
+    fun getConsent(formType: String): LiveData<String>
     suspend fun deleteConsent()
 
     suspend fun saveModelQuestions(mentalHealthEntity: List<MentalHealthEntity>)
@@ -295,4 +296,14 @@ interface RoomHelper {
     suspend fun getMedicalParentComplianceList(): List<MedicalComplianceEntity>
     suspend fun getMedicalChildComplianceList(parentId: Long): List<MedicalComplianceEntity>
     suspend fun deleteMedicalCompliance()
+
+    suspend fun saveDistricts(counties: List<DistrictEntity>)
+    suspend fun getDistricts(countryId: Long): List<DistrictEntity>
+    suspend fun deleteDistricts()
+    suspend fun saveChiefDoms(chiefdoms: List<ChiefDomEntity>)
+    suspend fun getChiefDoms(districtId: Long): List<ChiefDomEntity>
+    suspend fun deleteChiefDoms()
+    suspend fun savePrograms(programs: List<ProgramEntity>)
+    suspend fun getPrograms(): List<ProgramEntity>
+    suspend fun deletePrograms()
 }

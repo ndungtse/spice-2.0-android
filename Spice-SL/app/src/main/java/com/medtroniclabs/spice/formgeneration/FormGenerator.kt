@@ -727,8 +727,11 @@ class FormGenerator(
                         resultHashMap[id] = ""
                 }
             } else {
-                resultHashMap[id] =
-                    it[DefinedParams.ID] as Any
+                if (serverViewModel.spinnerAsObject)
+                    resultHashMap[id] = it
+                else
+                    resultHashMap[id] =
+                        it[DefinedParams.ID] as Any
                 dependentID?.let { deptId ->
                     resetDependantSpinnerView(deptId)
                     listener.loadLocalCache(
@@ -1035,7 +1038,7 @@ class FormGenerator(
                         parsedDate?.let {
                             binding.etDateOfBirth.text = DateUtils.getDateDDMMYYYY().format(it)
 
-                            fillDetailsOnDatePickerSet(it, true)
+                            fillDetailsOnDatePickerSet(it, true, id)
                         }
                     }
                 }
@@ -1055,10 +1058,10 @@ class FormGenerator(
         }
     }
 
-    fun fillDetailsOnDatePickerSet(date: Date, disable: Boolean) {
-        val yearView = getViewByTag(MemberRegistration.dateOfBirth + Year)
-        val monthView = getViewByTag(MemberRegistration.dateOfBirth + Month)
-        val weekView = getViewByTag(MemberRegistration.dateOfBirth + Week)
+    fun fillDetailsOnDatePickerSet(date: Date, disable: Boolean, id: String = dateOfBirth) {
+        val yearView = getViewByTag(id + Year)
+        val monthView = getViewByTag(id + Month)
+        val weekView = getViewByTag(id + Week)
         if (yearView is AppCompatEditText && monthView is AppCompatEditText && weekView is AppCompatEditText)
             removeWatcher(yearView, monthView, weekView)
 
@@ -1066,7 +1069,7 @@ class FormGenerator(
 
         val dobString = convertDateToStringWithUTC(date, DATE_FORMAT_yyyyMMddHHmmssZZZZZ)
 
-        addOrUpdateDOB(dobString, MemberRegistration.dateOfBirth)
+        addOrUpdateDOB(dobString, id)
 
         val yearMonthWeeks = DateUtils.getV2YearMonthAndWeek(dobString)
 
@@ -1087,7 +1090,7 @@ class FormGenerator(
                 resultHashMap[Week] = week
             }
             listener.onAgeCheckForPregnancy()
-            updateAgeView(MemberRegistration.dateOfBirth)
+            updateAgeView(id)
             addWatcher(yearView, monthView, weekView)
         }
     }

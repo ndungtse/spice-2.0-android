@@ -20,6 +20,7 @@ import androidx.work.Data
 import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequest
 import androidx.work.PeriodicWorkRequest
+import androidx.fragment.app.Fragment
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import com.google.android.material.navigation.NavigationView
@@ -293,24 +294,29 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
     private fun displayScreen(id: Int) {
         when (id) {
             R.id.home -> {
-                if (CommonUtils.isNonNcdWorkflow() && CommonUtils.isRolePresent()) {
-                    binding.appBarMain.tvTitle.text = getString(R.string.search_patient)
-                    requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
-                    replaceFragmentIfExists<PatientSearchFragment>(
-                        R.id.fragmentContainerView,
-                        bundle = null,
-                        tag = PatientSearchFragment.TAG
-                    )
-                } else {
-                    binding.appBarMain.tvTitle.text = getString(R.string.home_title)
-                    requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-                    replaceFragmentInId<HomeScreenFragment>(
-                        R.id.fragmentContainerView,
-                        tag = HomeScreenFragment.TAG
-                    )
-                }
+                handleNavigation()
             }
 
+        }
+    }
+
+    private fun handleNavigation() {
+        if (CommonUtils.isNonNcdWorkflow() && CommonUtils.isRolePresent()) {
+            binding.appBarMain.tvTitle.text = getString(R.string.search_patient)
+            requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+            replaceFragmentIfExists<PatientSearchFragment>(
+                R.id.fragmentContainerView,
+                bundle = null,
+                tag = PatientSearchFragment.TAG
+            )
+        } else {
+            binding.appBarMain.tvTitle.text = getString(R.string.home_title)
+            if (CommonUtils.isNonNcdWorkflow() && CommonUtils.isChw())
+                requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+            replaceFragmentInId<HomeScreenFragment>(
+                R.id.fragmentContainerView,
+                tag = HomeScreenFragment.TAG
+            )
         }
     }
 
@@ -348,14 +354,10 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
         val refreshFragment =
             intent.getBooleanExtra(REFRESH_FRAGMENT, false)
         if (refreshFragment == true) {
-            val fragment = supportFragmentManager.findFragmentByTag(PatientSearchFragment.TAG)
-            fragment?.let {
-                supportFragmentManager.beginTransaction().remove(it).commit()
+            supportFragmentManager.fragments.forEach { fragment ->
+                supportFragmentManager.beginTransaction().remove(fragment).commit()
             }
-            replaceFragmentInId<PatientSearchFragment>(
-                R.id.fragmentContainerView,
-                tag = PatientSearchFragment.TAG
-            )
+            handleNavigation()
         }
     }
 

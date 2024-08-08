@@ -157,4 +157,13 @@ object DefinedParams {
     const val Registration = "registration"
     const val Assessment = "assessment"
     const val Workflow = "workflow"
+    const val BioData = "bioData"
+    const val Country = "country"
+    const val District = "district"
+    const val Chiefdom = "chiefdom"
+    const val Village = "village"
+    const val Program = "program"
+    const val HealthFacilityId = "healthFacilityId"
+    const val HealthFacilityFhirId = "healthFacilityFhirId"
+    const val Provenance = "provenance"
 }

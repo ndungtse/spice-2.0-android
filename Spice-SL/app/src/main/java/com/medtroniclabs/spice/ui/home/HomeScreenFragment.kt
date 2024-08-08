@@ -24,6 +24,7 @@ import com.medtroniclabs.spice.ui.household.HouseholdSearchActivity
 import com.medtroniclabs.spice.ui.landing.viewmodel.LandingViewModel
 import com.medtroniclabs.spice.ui.peersupervisor.PerformanceMonitoringActivity
 import dagger.hilt.android.AndroidEntryPoint
+import com.medtroniclabs.spice.ui.registration.RegistrationActivity
 
 
 @AndroidEntryPoint
@@ -116,6 +117,10 @@ class HomeScreenFragment : BaseFragment(), MenuSelectionListener {
 
             }
 
+
+            MenuConstants.REGISTRATION -> {
+                startActivity(Intent(requireContext(), RegistrationActivity::class.java))
+            }
         }
     }
 }

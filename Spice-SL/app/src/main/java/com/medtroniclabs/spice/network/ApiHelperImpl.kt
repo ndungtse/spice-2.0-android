@@ -56,6 +56,7 @@ import com.medtroniclabs.spice.data.performance.CHWPerformanceMonitoring
 import com.medtroniclabs.spice.data.performance.ChwVillageFilterModel
 import com.medtroniclabs.spice.data.performance.FilterPreference
 import com.medtroniclabs.spice.data.performance.PerformanceReportRequest
+import com.medtroniclabs.spice.data.model.RegistrationResponse
 import com.medtroniclabs.spice.data.resource.RequestAllEntities
 import com.medtroniclabs.spice.model.LabTestCreateRequest
 import com.medtroniclabs.spice.model.LabTestListRequest
@@ -347,5 +348,9 @@ class ApiHelperImpl @Inject constructor(private val apiService: ApiService) : Ap
 
     override suspend fun checkAppVersion(): Response<APIResponse<Boolean>> {
         return apiService.checkAppVersion()
+    }
+
+    override suspend fun registerPatient(hashMap: HashMap<String, Any>): Response<APIResponse<RegistrationResponse>> {
+        return apiService.registerPatient(hashMap)
     }
 }

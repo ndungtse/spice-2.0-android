@@ -7,6 +7,7 @@ import com.medtroniclabs.spice.data.ExaminationListItems
 import com.medtroniclabs.spice.data.FollowUpPatientModel
 import com.medtroniclabs.spice.data.LabourDeliveryMetaEntity
 import com.medtroniclabs.spice.data.MedicalReviewMetaItems
+import com.medtroniclabs.spice.data.ProgramEntity
 import com.medtroniclabs.spice.data.VillageInfo
 import com.medtroniclabs.spice.data.model.HouseholdCardDetail
 import com.medtroniclabs.spice.data.offlinesync.model.HHSignatureDetail
@@ -33,6 +34,7 @@ import com.medtroniclabs.spice.db.dao.MetaDataDAO
 import com.medtroniclabs.spice.db.dao.PregnancyDetailDao
 import com.medtroniclabs.spice.db.entity.AssessmentEntity
 import com.medtroniclabs.spice.db.entity.CallHistory
+import com.medtroniclabs.spice.db.entity.ChiefDomEntity
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowConditionEntity
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowEntity
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowEntityWithSubmodule
@@ -52,6 +54,7 @@ import com.medtroniclabs.spice.db.entity.MentalHealthEntity
 import com.medtroniclabs.spice.db.entity.MenuEntity
 import com.medtroniclabs.spice.db.entity.PregnancyDetail
 import com.medtroniclabs.spice.db.entity.SignsAndSymptomsEntity
+import com.medtroniclabs.spice.db.entity.DistrictEntity
 import com.medtroniclabs.spice.db.entity.UserProfileEntity
 import com.medtroniclabs.spice.db.entity.VillageEntity
 import com.medtroniclabs.spice.db.response.HouseHoldEntityWithMemberCount
@@ -684,7 +687,7 @@ class RoomHelperImpl @Inject constructor(
         return metaDataDAO.insertConsent(consentEntity)
     }
 
-    override suspend fun getConsent(formType: String): ConsentEntity {
+    override fun getConsent(formType: String): LiveData<String> {
         return metaDataDAO.getConsent(formType)
     }
 
@@ -792,5 +795,41 @@ class RoomHelperImpl @Inject constructor(
 
     override suspend fun deleteMedicalCompliance() {
         metaDataDAO.deleteMedicalComplianceList()
+    }
+
+    override suspend fun saveDistricts(districts: List<DistrictEntity>) {
+        metaDataDAO.insertDistricts(districts)
+    }
+
+    override suspend fun getDistricts(countryId: Long): List<DistrictEntity> {
+        return metaDataDAO.getDistricts(countryId)
+    }
+
+    override suspend fun deleteDistricts() {
+        metaDataDAO.deleteCounties()
+    }
+
+    override suspend fun saveChiefDoms(chiefdoms: List<ChiefDomEntity>) {
+        metaDataDAO.insertChiefDoms(chiefdoms)
+    }
+
+    override suspend fun getChiefDoms(districtId: Long): List<ChiefDomEntity> {
+        return metaDataDAO.getChiefDoms(districtId)
+    }
+
+    override suspend fun deleteChiefDoms() {
+        metaDataDAO.deleteChiefDoms()
+    }
+
+    override suspend fun savePrograms(programs: List<ProgramEntity>) {
+        metaDataDAO.insertPrograms(programs)
+    }
+
+    override suspend fun getPrograms(): List<ProgramEntity> {
+        return metaDataDAO.getPrograms()
+    }
+
+    override suspend fun deletePrograms() {
+        metaDataDAO.deletePrograms()
     }
 }

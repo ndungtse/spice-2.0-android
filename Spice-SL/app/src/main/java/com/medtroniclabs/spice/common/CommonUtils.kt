@@ -569,4 +569,8 @@ object CommonUtils {
     fun isNonNcdWorkflow(): Boolean {
         return SecuredPreference.getBoolean(SecuredPreference.EnvironmentKey.IS_NON_NCD_WORKFLOW_ENABLED.name, true)
     }
+
+    fun formatConsent(consent: String): String {
+        return consent.replace("\\\"", "\"").replace("contenteditable=\"true\"", "")
+    }
 }

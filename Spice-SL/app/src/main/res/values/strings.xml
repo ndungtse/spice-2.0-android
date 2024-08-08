@@ -680,4 +680,15 @@
     <string name="open_play_store">Open Play Store</string>
     <string name="please_check_if_play_store_available">Please check if Google Play Store is installed in the device</string>
 
+    <!-- Registration -->
+    <string name="registration">Registration</string>
+    <string name="terms_and_conditions">Terms &amp; Conditions</string>
+    <string name="terms_and_conditions_info_enrollment">The healthcare worker will be accepting the terms &amp; conditions on behalf of the enrollment participant.</string>
+    <string name="patient_initial">Patient’s Initial</string>
+    <string name="enter_your_initials">Enter Your Initial</string>
+    <string name="accept_terms_condition">Accept Terms &amp; Conditions</string>
+    <string name="date_of_enrollment">Date of Enrollment</string>
+    <string name="program_id">Program ID</string>
+    <string name="facility_name">Facility Name</string>
+
 </resources>

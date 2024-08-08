@@ -50,6 +50,7 @@ import com.medtroniclabs.spice.data.MotherNeonatePncSummaryRequest
 import com.medtroniclabs.spice.data.MotherNeonatePncSummaryResponse
 import com.medtroniclabs.spice.data.SummaryCreateRequest
 import com.medtroniclabs.spice.data.PncChildMedicalReview
+import com.medtroniclabs.spice.data.model.RegistrationResponse
 import com.medtroniclabs.spice.data.resource.LabourDeliverySummaryRequest
 import com.medtroniclabs.spice.data.performance.CHWPerformanceMonitoring
 import com.medtroniclabs.spice.data.performance.ChwVillageFilterModel
@@ -292,4 +293,7 @@ interface ApiService {
 
     @POST("spice-service/static-data/app-version")
     suspend fun checkAppVersion(): Response<APIResponse<Boolean>>
+
+    @POST("spice-service/patient/register")
+    suspend fun registerPatient(@Body request: HashMap<String, Any>): Response<APIResponse<RegistrationResponse>>
 }

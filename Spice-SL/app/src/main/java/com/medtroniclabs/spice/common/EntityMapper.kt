@@ -1,7 +1,11 @@
 package com.medtroniclabs.spice.common
 
+import com.medtroniclabs.spice.data.CountryModel
 import com.medtroniclabs.spice.data.LocalSpinnerResponse
+import com.medtroniclabs.spice.data.ProgramEntity
+import com.medtroniclabs.spice.db.entity.ChiefDomEntity
 import com.medtroniclabs.spice.db.entity.HealthFacilityEntity
+import com.medtroniclabs.spice.db.entity.DistrictEntity
 import com.medtroniclabs.spice.db.entity.VillageEntity
 
 object EntityMapper {
@@ -24,6 +28,21 @@ object EntityMapper {
             }
             is HealthFacilityEntity -> {
                 updateMapsIdName(map,properties.name,properties.name)
+            }
+            is CountryModel -> {
+                updateMapsIdName(map, properties.id, properties.name)
+            }
+
+            is ChiefDomEntity -> {
+                updateMapsIdName(map, properties.id, properties.name)
+            }
+
+            is DistrictEntity -> {
+                updateMapsIdName(map, properties.id, properties.name)
+            }
+
+            is ProgramEntity -> {
+                updateMapsIdName(map, properties.id, properties.name)
             }
         }
     }

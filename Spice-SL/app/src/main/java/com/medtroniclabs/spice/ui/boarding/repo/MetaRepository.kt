@@ -72,6 +72,7 @@ class MetaRepository @Inject constructor(
                                 saveFrequencyList(it)
                             }
                             saveConsentForm(consentForm)
+                            saveOrganizationId(defaultHealthFacility.id)
                             saveFhirId(userProfile.fhirId, defaultHealthFacility,changeFacility)
                             saveUserProfileDetailsInDb(userProfile)
                             if (CommonUtils.isRolePresent()) {
@@ -84,6 +85,18 @@ class MetaRepository @Inject constructor(
                             workflowNames.addAll(clinicalIds)
                             identityTypes?.let { types ->
                                 SecuredPreference.putIdentityTypes(types)
+                            }
+                            districts?.let { districtList ->
+                                roomHelper.deleteDistricts()
+                                roomHelper.saveDistricts(districtList)
+                            }
+                            chiefdoms?.let { chiefdomList ->
+                                roomHelper.deleteChiefDoms()
+                                roomHelper.saveChiefDoms(chiefdomList)
+                            }
+                            programs?.let { programs ->
+                                roomHelper.deletePrograms()
+                                roomHelper.savePrograms(programs)
                             }
                             SecuredPreference.putBoolean(
                                 SecuredPreference.EnvironmentKey.IS_NON_NCD_WORKFLOW_ENABLED.name,
@@ -241,6 +254,12 @@ class MetaRepository @Inject constructor(
         }
     }
 
+    private fun saveOrganizationId(organizationId: Long?) {
+        organizationId?.let {
+            SecuredPreference.putLong(SecuredPreference.EnvironmentKey.ORGANIZATION_ID.name, it)
+        }
+    }
+
     private fun saveFhirId(
         userId: String?,
         healthFacility: HealthFacility,
@@ -340,6 +359,7 @@ class MetaRepository @Inject constructor(
     }
 
     private suspend fun saveNcdFormsInDb(formResponse: FormResponse) {
+        roomHelper.deleteConsent()
         formResponse.screening?.let { scr ->
             roomHelper.saveForm(
                 FormEntity(
