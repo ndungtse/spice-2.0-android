@@ -21,6 +21,8 @@ data class FormLayout(
     var minDate: Long? = null,
     var maxDate: Long? = null,
     var optionsList: ArrayList<Map<String, Any>>?,
+    var dayOptionsList: ArrayList<Map<String, Any>>? = null,
+    var timeOptionsList: ArrayList<Map<String, Any>>? = null,
     var isEnabled: Boolean? = null,
     var defaultValue: String? = null,
     var condition: ArrayList<ConditionalModel>? = null,
@@ -33,7 +35,11 @@ data class FormLayout(
     var isSummary: Boolean? = null,
     var maxLines: Int? = null,
     var minValue: Double? = null,
+    var minValueForHour: Int? = null,
+    var minValueForMinute: Int? = null,
     var maxValue: Double? = null,
+    var maxValueForHour: Int?=null,
+    var maxValueForMinute: Int?=null,
     var pulseMinValue: Double? = null,
     var pulseMaxValue: Double? = null,
     var totalCount: Int? = null,
@@ -89,4 +95,9 @@ data class RangeModel(
 
 data class FormResponse(
     var formLayout: List<FormLayout>, var time: Long
+)
+data class BPModel(
+    var systolic: Double? = null,
+    var diastolic: Double? = null,
+    var pulse: Double? = null,
 )

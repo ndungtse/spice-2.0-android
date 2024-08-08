@@ -37,6 +37,7 @@ import androidx.core.view.forEach
 import androidx.core.widget.NestedScrollView
 import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.isGone
@@ -52,8 +53,11 @@ import com.medtroniclabs.spice.common.DateUtils.convertDateFormat
 import com.medtroniclabs.spice.common.DateUtils.convertDateToStringWithUTC
 import com.medtroniclabs.spice.common.DefinedParams.female
 import com.medtroniclabs.spice.common.SecuredPreference
+import com.medtroniclabs.spice.common.StringConverter
+import com.medtroniclabs.spice.common.Validator
 import com.medtroniclabs.spice.data.LocalSpinnerResponse
 import com.medtroniclabs.spice.databinding.AgeDobLayoutBinding
+import com.medtroniclabs.spice.databinding.BpReadingLayoutBinding
 import com.medtroniclabs.spice.databinding.CardLayoutBinding
 import com.medtroniclabs.spice.databinding.CheckboxDialogSpinnerLayoutBinding
 import com.medtroniclabs.spice.databinding.CustomSpinnerBinding
@@ -66,6 +70,8 @@ import com.medtroniclabs.spice.databinding.MentalHealthLayoutBinding
 import com.medtroniclabs.spice.databinding.NoOfDaysLayoutBinding
 import com.medtroniclabs.spice.databinding.RadioGroupLayoutBinding
 import com.medtroniclabs.spice.databinding.TextLabelLayoutBinding
+import com.medtroniclabs.spice.databinding.TimeViewLayoutBinding
+import com.medtroniclabs.spice.db.entity.MentalHealthEntity
 import com.medtroniclabs.spice.formgeneration.FormSupport.getSpannableString
 import com.medtroniclabs.spice.formgeneration.FormSupport.isTranslatedOrNot
 import com.medtroniclabs.spice.formgeneration.FormSupport.translateTitle
@@ -83,6 +89,7 @@ import com.medtroniclabs.spice.formgeneration.config.DefinedParams.value
 import com.medtroniclabs.spice.formgeneration.config.ViewType.VIEW_INFORMATION_LABEL
 import com.medtroniclabs.spice.formgeneration.config.ViewType.VIEW_TYPE_DIALOG_CHECKBOX
 import com.medtroniclabs.spice.formgeneration.config.ViewType.VIEW_TYPE_FORM_AGE
+import com.medtroniclabs.spice.formgeneration.config.ViewType.VIEW_TYPE_FORM_BP
 import com.medtroniclabs.spice.formgeneration.config.ViewType.VIEW_TYPE_FORM_CARD_FAMILY
 import com.medtroniclabs.spice.formgeneration.config.ViewType.VIEW_TYPE_FORM_DATEPICKER
 import com.medtroniclabs.spice.formgeneration.config.ViewType.VIEW_TYPE_FORM_EDITTEXT
@@ -101,9 +108,11 @@ import com.medtroniclabs.spice.formgeneration.extension.markMandatory
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.extension.textSizeSsp
 import com.medtroniclabs.spice.formgeneration.listener.FormEventListener
+import com.medtroniclabs.spice.formgeneration.model.BPModel
 import com.medtroniclabs.spice.formgeneration.model.ConditionModelConfig
 import com.medtroniclabs.spice.formgeneration.model.ConditionalModel
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
+import com.medtroniclabs.spice.formgeneration.model.MentalHealthOption
 import com.medtroniclabs.spice.formgeneration.ui.SingleSelectionCustomView
 import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
 import com.medtroniclabs.spice.formgeneration.utility.DigitsInputFilter
@@ -113,10 +122,19 @@ import com.medtroniclabs.spice.mappingkey.MemberRegistration
 import com.medtroniclabs.spice.mappingkey.MemberRegistration.dateOfBirth
 import com.medtroniclabs.spice.mappingkey.MemberRegistration.gender
 import com.medtroniclabs.spice.mappingkey.MemberRegistration.phoneNumber
+import com.medtroniclabs.spice.mappingkey.Screening
+import com.medtroniclabs.spice.mappingkey.Screening.BMI
+import com.medtroniclabs.spice.mappingkey.Screening.Diastolic
+import com.medtroniclabs.spice.mappingkey.Screening.Height
+import com.medtroniclabs.spice.mappingkey.Screening.Hour
+import com.medtroniclabs.spice.mappingkey.Screening.Minute
+import com.medtroniclabs.spice.mappingkey.Screening.Systolic
+import com.medtroniclabs.spice.mappingkey.Screening.Weight
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.PREGNANCY_MAX_AGE
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.PREGNANCY_MIN_AGE
 import java.util.Calendar
 import java.util.Date
+import kotlin.math.roundToInt
 
 class FormGenerator(
     var context: Context,
@@ -139,6 +157,16 @@ class FormGenerator(
     private var focusNeeded: View? = null
     private val infoSuffix = "information"
     private val infoSuffixText = "informationSuffixText"
+    private val generateNationalIdSuffix = "generateNationalId"
+    private val diastolicSuffix = "DiastolicSuffix"
+    private val systolicSuffix = "SystolicSuffix"
+    private val pulseSuffix = "PulseSuffix"
+    private val lastMealTypeMeridiem  = "Meridiem"
+    private val lastMealTypeDateSuffix  = "Date"
+    private var mentalHealthQuestions: HashMap<String, ArrayList<MentalHealthOption>>? = null
+    private var mentalHealthEditList: ArrayList<Map<String, Any>>? = null
+    private var systolicAverageSummary: Int? = null
+    private var diastolicAverageSummary: Int? = null
 
     fun populateViews(
         serverData: List<FormLayout>,
@@ -160,6 +188,8 @@ class FormGenerator(
                 VIEW_TYPE_FORM_AGE -> createAgeView(serverViewModel)
                 VIEW_TYPE_NO_OF_DAYS -> createNoOfDaysView(serverViewModel)
                 VIEW_TYPE_FORM_DATEPICKER -> createDatePicker(serverViewModel)
+                VIEW_TYPE_FORM_BP -> createBPView(serverViewModel)
+                VIEW_TYPE_TIME -> createTimeView(serverViewModel)
             }
         }
         listener.onRenderingComplete()
@@ -267,8 +297,12 @@ class FormGenerator(
             binding.tvNationalIdAction.visibility = View.GONE
             binding.tvKey.tag = id + tvKey
             binding.tvValue.tag = id + tvValue
+            binding.tvNationalIdAction.tag = id + generateNationalIdSuffix
+            binding.tvNationalIdAction.visibility = View.GONE
             binding.bgLastMeal.tag = id + rootSummary
-            checkGenerateAction(this, binding)
+            if (isNeedAction) {
+                checkGenerateAction(this, binding)
+            }
             binding.tvTitle.text = updateTitle(title, translate, titleCulture, unitMeasurement)
 
             if (serverViewModel.id.contains(phoneNumber) || serverViewModel.id.contains(
@@ -379,17 +413,456 @@ class FormGenerator(
                             resultValue?.let {
                                 resultHashMap[id] = resultValue
                             }
+                            if (serverViewModel.id.contains(Weight) || serverViewModel.id.contains(Height)) {
+                                renderBMIValue()
+                            }
                         } else
                             resultHashMap[id] = editable.trim().toString()
                         setConditionalVisibility(serverViewModel, editable.trim().toString())
                     }
                 }
             }
+
             setViewVisibility(visibility, binding.root)
             setViewEnableDisable(isEnabled, binding.root)
         }
     }
 
+    private fun renderBMIValue() {
+        val bmiView = getViewByTag(BMI) as? AppCompatTextView
+        bmiView?.let { view ->
+            if (!resultHashMap.containsKey(Weight) || !resultHashMap.containsKey(Height)) {
+                view.text = getString(R.string.hyphen_symbol)
+                removeIfContains(BMI)
+            } else {
+                if (resultHashMap.containsKey(Weight) && resultHashMap.containsKey(Height)) {
+                    val weight = resultHashMap[Weight] as? Double
+                    val height = resultHashMap[Height] as? Double
+
+                    if (weight == null || height == null) {
+                        view.text = getString(R.string.hyphen_symbol)
+                    } else {
+                        val bmi = CommonUtils.getBMI(height, weight,context)
+                        view.text = bmi
+                    }
+                }
+            }
+        }
+    }
+
+    private fun generateNationalId() {
+        var nationalId = ""
+        var errorVisibility = View.GONE
+        val firstName = firstName(Screening.firstName)
+        firstName.first?.let {
+            nationalId = it
+        }
+        focusNeeded = null
+        firstNameError(nationalId, Screening.firstName, firstName.second)
+        val lastName = lastName(nationalId)
+        lastName.let {
+            it.first?.let { nId ->
+                nationalId = nId
+            }
+            it.second?.let { errVisibility ->
+                errorVisibility = errVisibility
+            }
+        }
+        lastNameError(errorVisibility, lastName.third)
+
+        phoneNumber(nationalId).let {
+            it.first?.let { nId ->
+                nationalId = nId
+            }
+            it.second?.let { errVisibility ->
+                errorVisibility = errVisibility
+            }
+        }
+        phoneNumberError(errorVisibility)
+
+        if (nationalId.isNotEmpty()) {
+            getViewByTag(Screening.nationalId)?.let { editText ->
+                if (editText is AppCompatEditText) {
+                    editText.setText(nationalId.uppercase())
+                    editText.isEnabled = false
+                }
+                getViewByTag("${Screening.nationalId}$errorSuffix")?.let { error ->
+                    (error as TextView).apply {
+                        gone()
+                    }
+                }
+            }
+        } else {
+            focusNeeded?.let { focusView ->
+                scrollView?.let { scrollView ->
+                    scrollToView(scrollView, focusView)
+                }
+            }
+        }
+    }
+
+    private fun phoneNumberError(errorVisibility: Int) {
+        getViewByTag("${Screening.phoneNumber}$errorSuffix")?.let { tvError ->
+            (tvError as TextView).apply {
+                text = getString(R.string.default_user_input_error)
+                visibility = errorVisibility
+                if (errorVisibility == View.VISIBLE && focusNeeded == null) focusNeeded =
+                    getViewByTag(Screening.phoneNumber + titleSuffix) ?: this
+            }
+        }
+    }
+
+    private fun firstNameError(nationalId: String, id: String, errorMessage: String) {
+        getViewByTag(id + errorSuffix)?.let { tvError ->
+            (tvError as TextView).apply {
+                text = errorMessage
+                if (nationalId.isEmpty()) {
+                    visibility = View.VISIBLE
+                    focusNeeded = getViewByTag(id + titleSuffix) ?: this
+                } else visibility = View.GONE
+            }
+        }
+    }
+
+    private fun lastNameError(errorVisibility: Int, errorMessage: String) {
+        getViewByTag("${Screening.lastName}$errorSuffix")?.let { tvError ->
+            (tvError as TextView).apply {
+                text = errorMessage
+                visibility = errorVisibility
+                if (errorVisibility == View.VISIBLE && focusNeeded == null) focusNeeded =
+                    getViewByTag("${Screening.lastName}$titleSuffix") ?: this
+            }
+        }
+    }
+
+    private fun phoneNumber(nationalId: String): Pair<String?, Int?> {
+        var nId = nationalId
+        var errorVisibility: Int? = null
+        try {
+            getViewByTag(Screening.phoneNumber)?.let { editText ->
+                if (editText is AppCompatEditText && (!editText.text.isNullOrBlank()) && Validator.isValidMobileNumber(
+                        editText.text.toString()
+                    )
+                ) {
+                    errorVisibility = View.GONE
+                    if (nId.isNotEmpty()) {
+                        val input = editText.text!!.trim().replace("\\s".toRegex(), "")
+                        nId = if (input.length > 5) {
+                            val phnStartIndex = input.length - 5
+
+                            "$nId${
+                                input.substring(phnStartIndex)
+                            }"
+                        } else "$nId$input"
+                    }
+                } else {
+                    nId = ""
+                    errorVisibility = View.VISIBLE
+                }
+            }
+        } catch (_: Exception) {
+            //Exception - Catch block
+        }
+        return Pair(nId, errorVisibility)
+    }
+
+    private fun validateNationalId(input: String, nId: String): String {
+        return if (input.length >= 4) "$nId${
+            input.substring(
+                0, 4
+            )
+        }"
+        else "$nId$input"
+    }
+
+    private fun lastName(nationalId: String): Triple<String?, Int?, String> {
+        var nId = nationalId
+        var errorVisibility: Int? = null
+        var errorMessage: String = getString(R.string.error_label)
+        getViewByTag("lastName")?.let { editText ->
+            if (editText is AppCompatEditText && ((!editText.text.isNullOrBlank()) && checkMinLength(
+                    "lastName", editText.text?.trim()?.length
+                ))
+            ) {
+                errorVisibility = View.GONE
+                if (nId.isNotEmpty()) {
+                    val input = editText.text!!.trim().replace("\\s".toRegex(), "")
+                    if (onlyAlphabet("lastName", input)) {
+                        nId = validateNationalId(input, nId)
+                    } else {
+                        nId = ""
+                        errorVisibility = View.VISIBLE
+                        errorMessage = getString(R.string.only_alphabets_validation)
+                    }
+                }
+            } else {
+                nId = ""
+                errorVisibility = View.VISIBLE
+            }
+        }
+        return Triple(nId, errorVisibility, errorMessage)
+    }
+
+    private fun firstName(
+        id: String,
+        defaultError: String = getString(R.string.default_user_input_error)
+    ): Pair<String?, String> {
+        var nationalId: String? = null
+        var errorMessage: String = defaultError
+        getViewByTag(id)?.let { editText ->
+            if (editText is AppCompatEditText && ((!editText.text.isNullOrBlank()) && checkMinLength(
+                    id, editText.text?.trim()?.length
+                ))
+            ) {
+                val input = editText.text!!.trim().replace("\\s".toRegex(), "")
+                if (onlyAlphabet(id, input)) {
+                    nationalId =
+                        if (input.length >= 4) input.substring(
+                            0, 4
+                        )
+                        else input
+                } else errorMessage = getString(R.string.only_alphabets_validation)
+            }
+        }
+        return Pair(nationalId, errorMessage)
+    }
+
+
+    private fun checkMinLength(name: String, actualLength: Int?): Boolean {
+        val minLength = serverData?.first { it.id == name }?.minLength
+        if (minLength == null) {
+            return true
+        } else {
+            if (actualLength != null && actualLength < minLength) {
+                return false
+            }
+        }
+        return true
+    }
+
+    private fun createBPView(serverViewModel: FormLayout) {
+        val binding = BpReadingLayoutBinding.inflate(LayoutInflater.from(context))
+        serverViewModel.apply {
+            binding.root.tag = id + rootSuffix
+            binding.tvErrorMessage.tag = id + errorSuffix
+            binding.tvInstructionBloodPressure.tag = id + titleSuffix
+            "${0}-${diastolicSuffix}".also { binding.etDiastolicOne.tag = it }
+            "${0}-${systolicSuffix}".also { binding.etSystolicOne.tag = it }
+            "${0}-${pulseSuffix}".also { binding.etPulseOne.tag = it }
+            "${1}-${diastolicSuffix}".also { binding.etDiastolicTwo.tag = it }
+            "${1}-${systolicSuffix}".also { binding.etSystolicTwo.tag = it }
+            "${1}-${pulseSuffix}".also { binding.etPulseTwo.tag = it }
+            "${2}-${diastolicSuffix}".also { binding.etDiastolicThree.tag = it }
+            "${2}-${systolicSuffix}".also { binding.etSystolicThree.tag = it }
+            "${2}-${pulseSuffix}".also { binding.etPulseThree.tag = it }
+            binding.tvSnoReadingTwo.isEnabled = false
+            binding.etSystolicTwo.isEnabled = false
+            binding.etDiastolicTwo.isEnabled = false
+            binding.etPulseTwo.isEnabled = false
+            binding.separatorRowTwo.isEnabled = false
+            binding.tvSnoReadingThree.isEnabled = false
+            binding.etSystolicThree.isEnabled = false
+            binding.etDiastolicThree.isEnabled = false
+            binding.etPulseThree.isEnabled = false
+            binding.separatorRowThree.isEnabled = false
+            val list = Screening.getEmptyBPReading(totalCount ?: 2)
+            resultHashMap[id] = list
+            binding.instructionsLayout.safeClickListener {
+                // Dialof shown
+            }
+            if (list.size > 2) {
+                binding.bpReadingThree.visibility = View.VISIBLE
+            } else {
+                binding.bpReadingThree.visibility = View.GONE
+            }
+
+            val inputFilter = arrayListOf<InputFilter>()
+            maxLength?.let {
+                inputFilter.add(InputFilter.LengthFilter(it))
+            }
+            if (inputFilter.isNotEmpty()) {
+                binding.etSystolicOne.filters = inputFilter.toTypedArray()
+                binding.etDiastolicOne.filters = inputFilter.toTypedArray()
+                binding.etPulseOne.filters = inputFilter.toTypedArray()
+                binding.etSystolicTwo.filters = inputFilter.toTypedArray()
+                binding.etDiastolicTwo.filters = inputFilter.toTypedArray()
+                binding.etPulseTwo.filters = inputFilter.toTypedArray()
+                binding.etSystolicThree.filters = inputFilter.toTypedArray()
+                binding.etDiastolicThree.filters = inputFilter.toTypedArray()
+                binding.etPulseThree.filters = inputFilter.toTypedArray()
+            }
+
+            binding.etSystolicOne.addTextChangedListener {
+                checkInputsAndEnableNextField(binding.tvSnoReading.text, binding, list)
+            }
+            binding.etDiastolicOne.addTextChangedListener {
+                checkInputsAndEnableNextField(binding.tvSnoReading.text, binding, list)
+            }
+            binding.etPulseOne.addTextChangedListener {
+                checkInputsAndEnableNextField(binding.tvSnoReading.text, binding, list)
+            }
+
+            binding.etSystolicTwo.addTextChangedListener {
+                checkInputsAndEnableNextField(binding.tvSnoReadingTwo.text, binding, list)
+            }
+            binding.etDiastolicTwo.addTextChangedListener {
+                checkInputsAndEnableNextField(binding.tvSnoReadingTwo.text, binding, list)
+            }
+            binding.etPulseTwo.addTextChangedListener {
+                checkInputsAndEnableNextField(binding.tvSnoReadingTwo.text, binding, list)
+            }
+            binding.etSystolicThree.addTextChangedListener {
+                checkInputsAndEnableNextField(binding.tvSnoReadingThree.text, binding, list)
+            }
+            binding.etDiastolicThree.addTextChangedListener {
+                checkInputsAndEnableNextField(binding.tvSnoReadingThree.text, binding, list)
+            }
+            binding.etPulseThree.addTextChangedListener {
+                checkInputsAndEnableNextField(binding.tvSnoReadingThree.text, binding, list)
+            }
+
+            getFamilyView(family)?.addView(binding.root) ?: kotlin.run {
+                parentLayout.addView(binding.root)
+            }
+            setViewVisibility(visibility, binding.root)
+            // setViewEnableDisable(isEnabled, binding.root)
+        }
+    }
+
+    private fun checkInputsAndEnableNextField(
+        text: CharSequence, binding: BpReadingLayoutBinding, list: ArrayList<BPModel>
+    ) {
+        if (text == getString(R.string.sno_1)) {
+            val systolicReadingOne = binding.etSystolicOne.text?.toString()
+            val diastolicReadingOne = binding.etDiastolicOne.text?.toString()
+            val pulseReadingOne = binding.etPulseOne.text?.toString()
+            if (list.size > 0) {
+                val model = list[0]
+                model.systolic = systolicReadingOne?.toDoubleOrNull()
+                model.diastolic = diastolicReadingOne?.toDoubleOrNull()
+                model.pulse = pulseReadingOne?.toDoubleOrNull()
+            }
+            if (!systolicReadingOne.isNullOrBlank() && !diastolicReadingOne.isNullOrBlank()) {
+                binding.tvSnoReadingTwo.isEnabled = true
+                binding.etSystolicTwo.isEnabled = true
+                binding.etDiastolicTwo.isEnabled = true
+                binding.etPulseTwo.isEnabled = true
+                binding.separatorRowTwo.isEnabled = true
+            }
+        } else if (text == getString(R.string.sno_2)) {
+            val systolicReading = binding.etSystolicTwo.text?.toString()
+            val diastolicReading = binding.etDiastolicTwo.text?.toString()
+            val pulseReading = binding.etPulseTwo.text?.toString()
+            if (list.size > 1) {
+                val model = list[1]
+                model.systolic = systolicReading?.toDoubleOrNull()
+                model.diastolic = diastolicReading?.toDoubleOrNull()
+                model.pulse = pulseReading?.toDoubleOrNull()
+            }
+            if (!systolicReading.isNullOrBlank() && !diastolicReading.isNullOrBlank()) {
+                binding.tvSnoReadingThree.isEnabled = true
+                binding.etSystolicThree.isEnabled = true
+                binding.etDiastolicThree.isEnabled = true
+                binding.etPulseThree.isEnabled = true
+                binding.separatorRowThree.isEnabled = true
+            }
+        } else if (text == getString(R.string.sno_3)) {
+            val systolicReading = binding.etSystolicThree.text?.toString()
+            val diastolicReading = binding.etDiastolicThree.text?.toString()
+            val pulseReading = binding.etPulseThree.text?.toString()
+            if (list.size > 2) {
+                val model = list[2]
+                model.systolic = systolicReading?.toDoubleOrNull()
+                model.diastolic = diastolicReading?.toDoubleOrNull()
+                model.pulse = pulseReading?.toDoubleOrNull()
+            }
+        }
+    }
+
+    private fun createTimeView(serverViewModel: FormLayout) {
+        val binding = TimeViewLayoutBinding.inflate(LayoutInflater.from(context))
+        serverViewModel.apply {
+            binding.root.tag = id + rootSuffix
+            binding.tvTitle.tag = id + titleSuffix
+            binding.tvErrorMessage.tag = id + errorSuffix
+            binding.etHour.tag = binding.etHour.id
+            binding.etMinute.tag = binding.etMinute.id
+            binding.tvTitle.text = title
+            binding.llDate.tag = id + lastMealTypeDateSuffix
+            binding.llTimeGroup.tag = id + lastMealTypeMeridiem
+            dayOptionsList?.let {
+                val view = SingleSelectionCustomView(context)
+                view.tag = id + lastMealTypeDateSuffix
+                view.addViewElements(
+                    it,
+                    translate,
+                    resultHashMap,
+                    Pair(id + lastMealTypeDateSuffix, null),
+                    serverViewModel,
+                    singleSelectionCallbackForDate
+                )
+                binding.llDate.addView(view)
+            }
+            timeOptionsList?.let {
+                val view = SingleSelectionCustomView(context)
+                view.tag = id + lastMealTypeMeridiem
+                view.addViewElements(
+                    it,
+                    translate,
+                    resultHashMap,
+                    Pair(id + lastMealTypeMeridiem, null),
+                    serverViewModel,
+                    singleSelectionCallbackForTime
+                )
+                binding.llTimeGroup.addView(view)
+            }
+            if (isMandatory) {
+                binding.tvTitle.markMandatory()
+            }
+            binding.etHour.addTextChangedListener {
+                storeTimeValue(Hour, it?.toString(), id)
+            }
+            binding.etMinute.addTextChangedListener {
+                storeTimeValue(Minute, it?.toString(), id)
+            }
+            getFamilyView(family)?.addView(binding.root) ?: kotlin.run {
+                parentLayout.addView(binding.root)
+            }
+            setViewVisibility(visibility, binding.root, true)
+            setViewEnableDisable(isEnabled, binding.root, true)
+        }
+    }
+
+    private var singleSelectionCallbackForDate: ((selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit)? =
+        { selectedId, elementID, serverViewModel, name ->
+            saveSelectedOptionValue(elementID, selectedId, serverViewModel, name)
+        }
+
+    private var singleSelectionCallbackForTime: ((selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit)? =
+        { selectedId, elementID, serverViewModel, name ->
+            saveSelectedOptionValue(elementID, selectedId, serverViewModel, name)
+        }
+
+    private fun storeTimeValue(key: String, value: String?, id: String) {
+        if (resultHashMap.containsKey(id)) {
+            if (resultHashMap[id] is Map<*, *>) {
+                if (!value.isNullOrBlank()) {
+                    (resultHashMap[id] as java.util.HashMap<String, String>)[key] = value
+                } else {
+                    (resultHashMap[id] as java.util.HashMap<String, String>).remove(key)
+                }
+            } else if (resultHashMap[id] is String) {
+                resultHashMap.remove(id)
+                storeTimeValue(key, value, id)
+            }
+        } else {
+            if (!value.isNullOrBlank()) {
+                val map = java.util.HashMap<String, String>()
+                map[key] = value
+                resultHashMap[id] = map
+            }
+        }
+    }
     private fun checkGenerateAction(serverViewModel: FormLayout, binding: EdittextLayoutBinding) {
         serverViewModel.apply {
             if (isNeedAction) {
@@ -399,6 +872,7 @@ class FormGenerator(
                         val clickableSpan = object : ClickableSpan() {
                             override fun onClick(mView: View) {
                                 // action click
+                                generateNationalId()
                             }
 
                             override fun updateDrawState(ds: TextPaint) {
@@ -1527,9 +2001,7 @@ class FormGenerator(
             when (model?.viewType) {
                 VIEW_TYPE_TIME -> {
                     if (!view.isEnabled) {
-                        getViewByTag(R.id.radioGrpDate)?.let {
-                            resetRadioGroup(it, model)
-                        }
+                        // Need to write method to disable and enable the view.
                     }
                 }
             }
@@ -1672,11 +2144,20 @@ class FormGenerator(
         getViewByTag(R.id.etMinute)?.let {
             resetEditTextDatePicker(it, model)
         }
-        getViewByTag(R.id.timeRadioGroup)?.let {
-            resetRadioGroup(it, model)
+        getViewByTag(R.id.etHour)?.let {
+            resetEditTextDatePicker(it, model)
         }
-        getViewByTag(R.id.radioGrpDate)?.let {
-            resetRadioGroup(it, model)
+        getViewByTag(model.id + lastMealTypeDateSuffix)?.let {
+            resultHashMap.remove(model.id)
+            if (view is SingleSelectionCustomView) {
+                view.resetSingleSelectionChildViews()
+            }
+        }
+        getViewByTag(model.id + lastMealTypeMeridiem)?.let {
+            resultHashMap.remove(model.id)
+            if (view is SingleSelectionCustomView) {
+                view.resetSingleSelectionChildViews()
+            }
         }
     }
 
@@ -1870,6 +2351,58 @@ class FormGenerator(
                             requestFocusView(data)
                         }
                     }
+                } else if (data.viewType.equals(VIEW_TYPE_FORM_BP, true)) {
+                    val list = resultHashMap[id] as ArrayList<BPModel>
+                    val validationBPResultModel = Validator.checkValidBPInput(
+                        context, list, data
+                    )
+                    if (validationBPResultModel.status) {
+                        calculateBPValues(formLayout = data, resultHashMap)
+                        hideValidationField(data)
+                    } else {
+                        isValid = false
+                        requestFocusView(data, validationBPResultModel.message)
+                    }
+                } else if (data.viewType.equals(VIEW_TYPE_TIME, true)) {
+                    val dateKey = id + lastMealTypeDateSuffix
+                    val timeKey = id + lastMealTypeMeridiem
+
+                    if (resultHashMap[dateKey] != null) {
+                        val result = resultHashMap[id] as? MutableMap<*, *>
+                        val hour = (result?.get(Hour) as? String)?.toIntOrNull()
+                        val minute = (result?.get(Minute) as? String)?.toIntOrNull()
+
+                        if (hour != null && minute != null && hour != 0 && resultHashMap[timeKey] != null) {
+                            val minHour = data.minValueForHour
+                            val maxHour = data.maxValueForHour
+                            val minMinute = data.minValueForMinute
+                            val maxMinute = data.maxValueForMinute
+
+                            val isValidHour =
+                                minHour != null && maxHour != null && hour in minHour..maxHour
+                            val isValidMinute =
+                                minMinute != null && maxMinute != null && minute in minMinute..maxMinute
+
+                            if (isValidHour && isValidMinute) {
+                                hideValidationField(data)
+                            } else {
+                                isValid = false
+                                requestFocusView(
+                                    data,
+                                    getString(
+                                        R.string.time_meal_error,
+                                        minHour,
+                                        maxHour,
+                                        minMinute,
+                                        maxMinute
+                                    )
+                                )
+                            }
+                        } else {
+                            isValid = false
+                            requestFocusView(data)
+                        }
+                    }
                 } else {
                     if (resultHashMap.containsKey(id)) {
                         val actualValue = resultHashMap[id]
@@ -1890,7 +2423,21 @@ class FormGenerator(
                             }
                         }
                     } else {
-                        hideValidationField(data)
+                        when (data.viewType) {
+                            VIEW_TYPE_METAL_HEALTH -> {
+                                if (isViewVisible(id)) {
+                                    if (checkValidMentalHealth(this, id)) {
+                                        hideValidationField(data)
+                                    } else {
+                                        isValid = false
+                                        requestFocusView(data)
+                                    }
+                                }
+                            }
+                            else -> {
+                                hideValidationField(data)
+                            }
+                        }
                     }
                 }
 
@@ -2458,5 +3005,226 @@ class FormGenerator(
         return serverItem?.let { it.onlyAlphabets == true && CommonUtils.isAlphabetsWithSpace(input) }
             ?: true
     }
+    private fun calculateBPValues(formLayout: FormLayout, resultMap: Map<String, Any>) {
+        formLayout.apply {
+            var systolic = 0.0
+            var diastolic = 0.0
+            if (resultMap.containsKey(id)) {
+                val actualMapList = resultMap[id]
+                if (actualMapList is java.util.ArrayList<*>) {
+                    var systolicEntries = 0
+                    var diastolicEntries = 0
+                    actualMapList.forEach { map ->
+                        if (map is BPModel) {
+                            map.systolic?.let {
+                                systolic += it
+                                systolicEntries++
+                            }
+                            map.diastolic?.let {
+                                diastolic += it
+                                diastolicEntries++
+                            }
+                        } else {
+                            validateMap(map, Systolic)?.let {
+                                systolic += it
+                                systolicEntries++
+                            }
+                            validateMap(map, Diastolic)?.let {
+                                diastolic += it
+                                diastolicEntries++
+                            }
+                        }
+                    }
+                    updateAverage(
+                        actualMapList, systolicEntries, diastolicEntries, systolic, diastolic
+                    )
+                }
+            }
+        }
+    }
 
+    private fun validateMap(map: Any?, value: String): Double? {
+        return if (map is Map<*, *> && map.containsKey(value)) map[value] as Double else null
+    }
+
+    private fun updateAverage(
+        actualMapList: java.util.ArrayList<*>,
+        systolicEntries: Int,
+        diastolicEntries: Int,
+        systolic: Double,
+        diastolic: Double
+    ) {
+        if (actualMapList.size > 0 && systolicEntries > 0 && diastolicEntries > 0) {
+            systolicAverageSummary = (systolic / systolicEntries).roundToInt()
+            diastolicAverageSummary = (diastolic / diastolicEntries).roundToInt()
+        }
+    }
+
+    fun checkValidMentalHealth(formLayout: FormLayout, id: String): Boolean {
+        val totalQuestions = mentalHealthQuestions?.get(id)?.size
+        formLayout.optionsList?.forEach { option ->
+            val isMandatory =
+                (option[Screening.isMandatory] as Boolean?) ?: false
+            if (isMandatory) {
+                if (resultHashMap.containsKey(id)) {
+                    val map = resultHashMap[id] as HashMap<String, String>
+                    val question = (option[DefinedParams.NAME] as String?) ?: ""
+                    if (!map.containsKey(question)) {
+                        return false
+                    }
+                } else {
+                    return false
+                }
+            }
+        }
+        if (mentalHealthQuestions == null || (mentalHealthQuestions?.containsKey(id) == false))
+            listener.loadLocalCache(id, localDataCache = Screening.Fetch_MH_Questions)
+        mentalHealthQuestions(id)?.let {
+            return it
+        }
+        return (resultHashMap.containsKey(id) && totalQuestions != null && ((resultHashMap[id] as HashMap<String, String>).size == totalQuestions))
+    }
+
+    private fun mentalHealthQuestions(id: String): Boolean? {
+        mentalHealthQuestions?.get(id)?.forEach { option ->
+            val isMandatory =
+                (option.map[Screening.Mandatory] as Boolean?) ?: false
+            if (isMandatory) {
+                if (resultHashMap.containsKey(id)) {
+                    val map = resultHashMap[id] as HashMap<String, String>
+                    val question = (option.map[Screening.Questions] as String?) ?: ""
+                    if (!map.containsKey(question)) {
+                        return false
+                    }
+                } else {
+                    return false
+                }
+            }
+        }
+        return null
+    }
+
+    fun fetchMHQuestions(id: String, questions: LocalSpinnerResponse?) {
+        questions?.let {
+            questions.response as MentalHealthEntity
+            val map = questions.response.formInput?.let {
+                StringConverter.convertStringToListOfMap(it)
+            }
+            map?.let { list ->
+                saveMentalHealthQuestions(id, questions = getUIModel(list))
+            }
+        }
+    }
+
+    fun loadMentalHealthQuestions(
+        questions: LocalSpinnerResponse?,
+        mentalHealthEditList: java.util.ArrayList<Map<String, Any>>? = null,
+        isViewOnly: Boolean = false
+    ) {
+        val recyclerView = questions?.tag?.let { getViewByTag(it) } ?: return
+        if (recyclerView.visibility == View.VISIBLE) {
+            this.mentalHealthEditList = mentalHealthEditList?.let {
+                java.util.ArrayList(mentalHealthEditList)
+            }
+            questions?.let { response ->
+                questions.response as MentalHealthEntity
+                val map = questions.response.formInput?.let {
+                    StringConverter.convertStringToListOfMap(it)
+                }
+                map?.let { list ->
+                    val model = getUIModel(list)
+                    saveMentalHealthQuestions(response.tag, questions = model)
+                    recyclerView.let {
+                        if (it is RecyclerView) {
+                            it.adapter = MentalHealthAdapter(
+                                context,
+                                model,
+                                response.tag,
+                                isViewOnly = isViewOnly,
+                                editList = this.mentalHealthEditList,
+                                resultMap = resultHashMap,
+                                translate = false
+                            ) { id, question, result, isUnselect, isClicked ->
+                                processMentalHealthResult(
+                                    id,
+                                    question,
+                                    result,
+                                    isUnselect,
+                                    isClicked
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun processMentalHealthResult(
+        id: String,
+        question: String,
+        result: HashMap<String, Any>,
+        isUnselect: Boolean,
+        isClicked: Boolean
+    ) {
+        if (resultHashMap.containsKey(id)) {
+            updateResultMap(resultHashMap, result, question, isUnselect, id, isClicked)
+        } else {
+            val map = HashMap<String, Map<String, Any>>()
+            map[question] = result
+            resultHashMap[id] = map
+        }
+    }
+
+    private fun updateResultMap(
+        resultHashMap: HashMap<String, Any>,
+        result: HashMap<String, Any>,
+        question: String,
+        isUnselect: Boolean,
+        id: String,
+        isClicked: Boolean
+    ) {
+        val mhResultMap = resultHashMap[id] as? HashMap<String, Any>
+        mhResultMap?.let {
+            if (isUnselect && areAnswersSame(mhResultMap, result, question) && isClicked) {
+                if (resultHashMap.containsKey(id) && mhResultMap.size == 1) {
+                    resultHashMap.remove(id)
+                } else {
+                    mhResultMap.remove(question)
+                }
+            } else {
+                mhResultMap[question] = result
+            }
+        }
+    }
+
+    private fun areAnswersSame(
+        mhResultMap: HashMap<String, Any>,
+        selectedAnswerMap: HashMap<String, Any>,
+        question: String
+    ): Boolean {
+        if (mhResultMap.containsKey(question)) {
+            val questionResultHashMap = mhResultMap[question] as HashMap<String, Any>
+            val mhMapQuestionId = questionResultHashMap[Screening.Question_Id]
+            val mhMapAnswerId = questionResultHashMap[Screening.Answer_Id]
+            val answerMapQuestionId = selectedAnswerMap[Screening.Question_Id]
+            val answerMapAnswerId = selectedAnswerMap[Screening.Answer_Id]
+            return mhMapQuestionId == answerMapQuestionId && mhMapAnswerId == answerMapAnswerId
+        }
+        return false
+    }
+
+    private fun getUIModel(optionList: ArrayList<Map<String, Any>>): ArrayList<MentalHealthOption> {
+        val optionListUI = ArrayList<MentalHealthOption>()
+        optionList.forEach {
+            optionListUI.add(MentalHealthOption(map = it))
+        }
+        return optionListUI
+    }
+
+    fun saveMentalHealthQuestions(id: String, questions: java.util.ArrayList<MentalHealthOption>) {
+        if (mentalHealthQuestions == null)
+            mentalHealthQuestions = HashMap()
+        mentalHealthQuestions?.put(id, questions)
+    }
 }

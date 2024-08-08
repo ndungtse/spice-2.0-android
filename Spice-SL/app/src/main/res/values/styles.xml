@@ -477,4 +477,17 @@
         <attr name="dialogTitle" format="string"/>
     </declare-styleable>
 
+    <style name="Form_BP_Style" parent="Form_Label_Style">
+        <item name="android:textSize">@dimen/_14ssp</item>
+    </style>
+
+    <style name="Form_BP_Counter_Style" parent="Form_Label_Style">
+        <item name="android:layout_width">@dimen/_24sdp</item>
+        <item name="android:layout_height">@dimen/_24sdp</item>
+        <item name="android:layout_centerInParent">true</item>
+        <item name="android:background">@drawable/bp_reading_selector</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">@dimen/_14ssp</item>
+    </style>
 </resources>

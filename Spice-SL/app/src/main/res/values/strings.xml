@@ -611,11 +611,33 @@
     <string name="toDate_colon">To :</string>
     <string name="_36_weeks"><![CDATA[" (<36 weeks)"]]></string>
 
-    <string name="change_facility">CHANGE HEALTH FACILITY\n</string>
+    // Screening
+    <string name="time_meal_error">Please enter an hour between %1$d to %2$d and a minute between %3$d to %4$d</string>
+    <string name="change_facility">CHANGE FACILITY\n</string>
     <string name="choose_site">Change Health Facility</string>
     <string name="display_range">Display Range</string>
     <string name="tested_value">Test Value</string>
     <string name="tested_result">Test Result</string>
+    <string name="separator_character">/</string>
+    <string name="sys">Sys</string>
+    <string name="dis">Dia</string>
+    <string name="string_1">1</string>
+    <string name="string_2">2</string>
+    <string name="string_3">3</string>
+    <string name="reading_nno">Reading\nNo.</string>
+    <string name="systolic_mmhg">Systolic\n(mmHg)</string>
+    <string name="diastolic_mmhg">Diastolic\n(mmHg)</string>
+    <string name="pulse_n_bpm">Pulse\n(BPM)</string>
+    <string name="blood_pressure_instructions">Blood Pressure Measurement Instructions</string>
+    <string name="bp_measure">While measuring blood pressure:</string>
+    <string name="sno_2">2</string>
+    <string name="sno_3">3</string>
+    <string name="sno_1">1</string>
+    <string name="systolic_diastolic_min_validation">Systolic and Diastolic value should be greater than %1$s</string>
+    <string name="systolic_diastolic_max_validation">Systolic and Diastolic values should be lesser than %1$s</string>
+    <string name="systolic_greater_than_diastolic">The Systolic value entered should always be greater than Diastolic value.</string>
+    <string name="pulse_min_validation">Pulse values should be greater than %1$s</string>
+    <string name="pulse_max_validation">Pulse values should be lesser than %1$s</string>
 
     //Forgot Password
 
@@ -639,8 +661,6 @@
     <string name="e_signature">E-Signature</string>
     <string name="terms_and_condition">Terms and Conditions</string>
     <string name="signature_or_initial">Enter Signature or Initial</string>
-    <string name="patient_initial">Patient Initial</string>
-    <string name="enter_your_initials">Enter your initial</string>
     <string name="reset">Reset</string>
     <string name="neonateOutcome">Neonate Outcome</string>
     <string name="stateOfBaby">State of Baby</string>
