@@ -7,6 +7,7 @@ import androidx.activity.viewModels
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.DefinedParams
+import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.RoleConstant
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.databinding.ActivityResourceLoadingScreenBinding

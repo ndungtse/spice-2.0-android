@@ -101,10 +101,8 @@ class MetaRepository @Inject constructor(
                         val formsResponse = async {
                             apiHelper.getForms(
                                 FormRequest(
-                                    nonNcdWorkflowEnabled = SecuredPreference.getBoolean(
-                                        SecuredPreference.EnvironmentKey.IS_NON_NCD_WORKFLOW_ENABLED.name,
-                                        true
-                                    ), workflowNames
+                                    nonNcdWorkflowEnabled = CommonUtils.isNonNcdWorkflow(),
+                                    workflowNames
                                 )
                             )
                         }.await()
@@ -114,17 +112,20 @@ class MetaRepository @Inject constructor(
                                 }
                                 formsResponse.body()?.entity?.apply {
                                     roomHelper.deleteAllForms()
-                                    if (formData == null && clinicalTools == null) {
-                                        return@with Resource(state = ResourceState.ERROR)
+                                    if (CommonUtils.isNonNcdWorkflow()) {
+                                        if (formData == null && clinicalTools == null) {
+                                            return@with Resource(state = ResourceState.ERROR)
+                                        }
+                                        formData?.let {
+                                            saveFormsInDb(it)
+                                        }
+                                        clinicalTools?.let {
+                                            saveClinicalWorkflowsInDb(it)
+                                        }
+                                    } else {
+                                        saveNcdFormsInDb(this)
+                                        saveNcdModelQuestions(modelQuestions)
                                     }
-                                    formData?.let {
-                                        saveFormsInDb(it)
-                                    }
-                                    clinicalTools?.let {
-                                        saveClinicalWorkflowsInDb(it)
-                                    }
-                                    saveNcdFormsInDb(this)
-                                    saveNcdModelQuestions(modelQuestions)
                                 }
                             } else {
                                 return@with Resource(state = ResourceState.ERROR)

@@ -148,6 +148,26 @@ class DashboardMenuItemsAdapter(
                 context,
                 R.drawable.ic_performance_monitoring
             )
+
+            MenuConstants.SCREENING -> return ContextCompat.getDrawable(
+                context,
+                R.drawable.ic_screening
+            )
+
+            MenuConstants.REGISTRATION -> return ContextCompat.getDrawable(
+                context,
+                R.drawable.ic_registration
+            )
+
+            MenuConstants.ASSESSMENT -> return ContextCompat.getDrawable(
+                context,
+                R.drawable.ic_assessment
+            )
+
+            MenuConstants.DASHBOARD -> return ContextCompat.getDrawable(
+                context,
+                R.drawable.ic_dashboard
+            )
             else -> null
         }
     }

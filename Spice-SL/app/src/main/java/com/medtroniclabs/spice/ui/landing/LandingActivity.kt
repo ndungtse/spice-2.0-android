@@ -293,7 +293,7 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
     private fun displayScreen(id: Int) {
         when (id) {
             R.id.home -> {
-                if (CommonUtils.isRolePresent()) {
+                if (CommonUtils.isNonNcdWorkflow() && CommonUtils.isRolePresent()) {
                     binding.appBarMain.tvTitle.text = getString(R.string.search_patient)
                     requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
                     replaceFragmentIfExists<PatientSearchFragment>(

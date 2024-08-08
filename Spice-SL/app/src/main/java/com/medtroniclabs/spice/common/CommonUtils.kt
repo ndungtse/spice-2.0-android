@@ -3,6 +3,7 @@ package com.medtroniclabs.spice.common
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.res.AssetManager
+import android.os.Environment
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.nullIfEmpty
 import com.medtroniclabs.spice.common.DateUtils.calculateAge
@@ -565,4 +566,7 @@ object CommonUtils {
         return months >=6
     }
 
+    fun isNonNcdWorkflow(): Boolean {
+        return SecuredPreference.getBoolean(SecuredPreference.EnvironmentKey.IS_NON_NCD_WORKFLOW_ENABLED.name, true)
+    }
 }

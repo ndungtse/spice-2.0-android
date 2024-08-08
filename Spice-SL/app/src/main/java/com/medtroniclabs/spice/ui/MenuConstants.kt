@@ -19,4 +19,8 @@ object MenuConstants {
     const val EPI_ID = "EPI"
     const val PerformanceMonitoring_ID = "PERFORMANCE MONITORING"
 
+    const val SCREENING = "SCREENING"
+    const val REGISTRATION = "REGISTRATION"
+    const val ASSESSMENT = "ASSESSMENT"
+    const val DASHBOARD = "DASHBOARD"
 }
