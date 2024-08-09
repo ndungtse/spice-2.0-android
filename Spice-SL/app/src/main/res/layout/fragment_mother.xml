@@ -69,11 +69,12 @@
             android:id="@+id/tvSignsSymptomsObservedLabel"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/_16sdp"
+            android:layout_marginStart= "@dimen/_16sdp"
             android:layout_marginTop="@dimen/_32sdp"
             android:text="@string/signs_Symptoms_observed"
             android:textColor="@color/table_title"
             android:textSize="@dimen/_16ssp"
+            app:fontFamily="@font/inter_regular"
             app:layout_constraintEnd_toEndOf="@+id/leftGuideline"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/titleMotherFragment" />
@@ -121,6 +122,7 @@
             android:text="@string/general_condition_of_mother"
             android:textColor="@color/table_title"
             android:textSize="@dimen/_16ssp"
+            app:fontFamily="@font/inter_regular"
             app:layout_constraintEnd_toEndOf="@id/leftGuideline"
             app:layout_constraintStart_toStartOf="@+id/tvSignsSymptomsObservedLabel"
             app:layout_constraintTop_toBottomOf="@+id/cgSignsSymptomsObservedError" />
@@ -168,6 +170,7 @@
             android:text="@string/risk_factor"
             android:textColor="@color/table_title"
             android:textSize="@dimen/_16ssp"
+            app:fontFamily="@font/inter_medium"
             app:layout_constraintEnd_toEndOf="@+id/leftGuideline"
             app:layout_constraintStart_toStartOf="@+id/tvGeneralConditionOfMotherLabel"
             app:layout_constraintTop_toBottomOf="@+id/cgGeneralConditionOfMotherError" />
@@ -214,6 +217,7 @@
             android:text="@string/state_of_the_perineum"
             android:textColor="@color/table_title"
             android:textSize="@dimen/_16ssp"
+            app:fontFamily="@font/inter_regular"
             app:layout_constraintEnd_toEndOf="@id/leftGuideline"
             app:layout_constraintStart_toStartOf="@+id/tvRiskFactorLabel"
             app:layout_constraintTop_toBottomOf="@+id/cgRiskFactorsError" />
@@ -315,6 +319,7 @@
             android:text="@string/TT_does_taken_so_far"
             android:textColor="@color/table_title"
             android:textSize="@dimen/_16ssp"
+            app:fontFamily="@font/inter_regular"
             app:layout_constraintEnd_toStartOf="@+id/leftGuideline"
             app:layout_constraintStart_toStartOf="@+id/tvStateOfThePerineumLabel"
             app:layout_constraintTop_toBottomOf="@+id/tvTearLabelError" />
@@ -340,6 +345,7 @@
             android:paddingStart="@dimen/_10sdp"
             android:textAlignment="textStart"
             android:textSize="@dimen/_16ssp"
+            android:fontFamily="@font/inter_medium"
             app:layout_constraintBottom_toBottomOf="@+id/tvTTDoesTakenLabel"
             app:layout_constraintEnd_toStartOf="@+id/endGuideline"
             app:layout_constraintStart_toStartOf="@+id/rightGuideline"
@@ -367,6 +373,7 @@
             android:text="@string/status"
             android:textColor="@color/table_title"
             android:textSize="@dimen/_16ssp"
+            app:fontFamily="@font/inter_regular"
             app:layout_constraintEnd_toEndOf="@+id/leftGuideline"
             app:layout_constraintStart_toStartOf="@+id/tvTTDoesTakenLabel"
             app:layout_constraintTop_toBottomOf="@+id/tvTTDoesTakenSoFarError" />

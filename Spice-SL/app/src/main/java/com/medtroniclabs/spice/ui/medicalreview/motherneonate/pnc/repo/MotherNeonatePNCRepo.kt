@@ -8,10 +8,10 @@ import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.appextensions.postSuccess
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.MedicalReviewMetaItems
-import com.medtroniclabs.spice.data.model.PncSubmitResponse
+import com.medtroniclabs.spice.data.MedicalReviewSummarySubmitRequest
 import com.medtroniclabs.spice.data.MotherNeonatePncSummaryRequest
 import com.medtroniclabs.spice.data.MotherNeonatePncSummaryResponse
-import com.medtroniclabs.spice.data.SummaryCreateRequest
+import com.medtroniclabs.spice.data.model.PncSubmitResponse
 import com.medtroniclabs.spice.db.local.RoomHelper
 import com.medtroniclabs.spice.network.ApiHelper
 import com.medtroniclabs.spice.network.resource.Resource
@@ -31,7 +31,10 @@ class MotherNeonatePNCRepo @Inject constructor(
             if (response.isSuccessful) {
                 response.body()?.entity?.let { data ->
                     roomHelper.apply {
-                        roomHelper.deleteDiagnosisList(MedicalReviewTypeEnums.PNC.name.plus("-").plus(MedicalReviewTypeEnums.Mother.name))
+                        roomHelper.deleteDiagnosisList(
+                            MedicalReviewTypeEnums.PNC.name.plus("-")
+                                .plus(MedicalReviewTypeEnums.Mother.name)
+                        )
                         roomHelper.saveDiagnosisList(data.diseaseCategories)
                         deleteExaminationsComplaintsForAnc(RMNCH.PNCMOTHER)
                         insertExaminationsComplaint(
@@ -121,7 +124,6 @@ class MotherNeonatePNCRepo @Inject constructor(
     }
 
 
-
     private fun generateNeonateChipItemByType(
         presentingComplaints: List<MedicalReviewMetaItems>,
         obstetricExaminations: List<MedicalReviewMetaItems>,
@@ -162,7 +164,7 @@ class MotherNeonatePNCRepo @Inject constructor(
             if (response.isSuccessful) {
                 val res = response.body()
                 if (res?.status == true) {
-                    Resource(state = ResourceState.SUCCESS,response.body()?.entity)
+                    Resource(state = ResourceState.SUCCESS, response.body()?.entity)
                 } else {
                     Resource(state = ResourceState.ERROR)
                 }
@@ -192,10 +194,10 @@ class MotherNeonatePNCRepo @Inject constructor(
     }
 
     suspend fun summaryCreatePncData(
-        summaryCreateRequest: SummaryCreateRequest
+        summaryCreateRequest: MedicalReviewSummarySubmitRequest
     ): Resource<HashMap<String, Any>> {
         return try {
-            val response = apiHelper.summaryCreatePncData(summaryCreateRequest)
+            val response = apiHelper.createSummarySubmit(summaryCreateRequest)
             if (response.isSuccessful) {
                 Resource(state = ResourceState.SUCCESS, data = response.body()?.entity)
             } else {
@@ -206,8 +208,6 @@ class MotherNeonatePNCRepo @Inject constructor(
             Resource(state = ResourceState.ERROR)
         }
     }
-
-
 
 
 }

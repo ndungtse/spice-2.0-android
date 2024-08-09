@@ -35,10 +35,10 @@ import javax.inject.Inject
 @HiltViewModel
 class MotherNeonatePNCViewModel @Inject constructor(
     private val motherNeonatePNCRepo: MotherNeonatePNCRepo,
-    private val patientRepository:PatientRepository,
+    private val patientRepository: PatientRepository,
     @IoDispatcher private val dispatcherIO: CoroutineDispatcher
 ) : ViewModel() {
-    var motherLiveStatus: String?=null
+    var motherLiveStatus: String? = null
     var aliveStatus: Boolean? = null
     val resultFlowHashMap = HashMap<String, Any>()
     var lastLocation: Location? = null
@@ -51,12 +51,12 @@ class MotherNeonatePNCViewModel @Inject constructor(
     var systemicExamination = ArrayList<ChipViewItemModel>()
     var motherNeonatePncRequest: MotherNeonatePncRequest = MotherNeonatePncRequest()
     val pncSaveResponse = MutableLiveData<Resource<PncSubmitResponse>>()
-    private val summaryCreateRequest: SummaryCreateRequest=SummaryCreateRequest()
+    private val summaryCreateRequest: SummaryCreateRequest = SummaryCreateRequest()
     val summaryCreateResponse = MutableLiveData<Resource<HashMap<String, Any>>>()
     var isNeonate = false
     var isSwipe = false
     var memberId: String? = null
-    var childMemberId:String? = null
+    var childMemberId: String? = null
     val childDetailsLiveData = MutableLiveData<Resource<PatientListRespModel>>()
 
     fun getMotherPncStaticData() {
@@ -74,7 +74,13 @@ class MotherNeonatePNCViewModel @Inject constructor(
     fun getChildMemberId(childPatientId: String?) {
         viewModelScope.launch(dispatcherIO) {
             childDetailsLiveData.postLoading()
-            childDetailsLiveData.postValue(patientRepository.getPatients(PatientDetailRequest(patientId = childPatientId)))
+            childDetailsLiveData.postValue(
+                patientRepository.getPatients(
+                    PatientDetailRequest(
+                        patientId = childPatientId
+                    )
+                )
+            )
         }
     }
 
@@ -88,17 +94,15 @@ class MotherNeonatePNCViewModel @Inject constructor(
             )
         }
     }
+
     fun summaryCreatePncData(
         motherDetails: com.medtroniclabs.spice.data.PncMother?,
-        childDetails: com.medtroniclabs.spice.data.PncChild?,
         motherPatientStatus: String?,
-        childPatientStatus: String?,
         motherNextVisitDate: String?,
         details: PatientListRespModel
     ) {
         val patientId = details.patientId
         val memberId = details.memberId
-        val neonateMemberId = details.neonateMemberId
         val houseHoldId = details.houseHoldId
         val villageId = details.villageId
         if (patientId != null && memberId != null && villageId != null) {
@@ -108,49 +112,30 @@ class MotherNeonatePNCViewModel @Inject constructor(
                 DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
                 inUTC = true
             )
-            summaryCreateRequest.apply {
-                motherDTO = MedicalReviewSummarySubmitRequest(
-                    patientId = patientId,
-                    memberId = memberId,
-                    id = motherDetails?.id.toString(),
-                    patientStatus = motherPatientStatus,
-                    nextVisitDate = convertedNextVisitDate,
-                    category = MedicalReviewTypeEnums.RMNCH.name,
-                    encounterType = MedicalReviewTypeEnums.PNC.name,
-                    householdId = houseHoldId,
-                    villageId = villageId,
-                    provenance = ProvanceDto(),
-                    patientReference = motherDetails?.patientReference.toString()
-                )
-            }
-            summaryCreateRequest.apply {
-                neonateDTO = MedicalReviewSummarySubmitRequest(
-                    patientId = details.childPatientId,
-                    memberId = childMemberId,
-                    id = childDetails?.id.toString(),
-                    patientStatus = childPatientStatus,
-                    nextVisitDate = null,
-                    category = MedicalReviewTypeEnums.RMNCH.name,
-                    encounterType = MedicalReviewTypeEnums.PNC.name,
-                    householdId = houseHoldId,
-                    villageId = villageId,
-                    provenance = ProvanceDto(),
-                    patientReference = childDetails?.patientReference.toString()
-                )
-            }
-
+            val summaryCreateRequest = MedicalReviewSummarySubmitRequest(
+                patientId = patientId,
+                memberId = memberId,
+                id = motherDetails?.id.toString(),
+                patientStatus = motherPatientStatus,
+                nextVisitDate = convertedNextVisitDate,
+                category = MedicalReviewTypeEnums.RMNCH.name,
+                encounterType = MedicalReviewTypeEnums.PNC_MEDICAL_REVIEW.name,
+                householdId = houseHoldId,
+                villageId = villageId,
+                provenance = ProvanceDto(),
+                patientReference = motherDetails?.patientReference.toString()
+            )
             viewModelScope.launch(dispatcherIO) {
                 summaryCreateResponse.postLoading()
                 summaryCreateResponse.postValue(
-                    summaryCreateRequest.let {
-                        motherNeonatePNCRepo.summaryCreatePncData(
-                            it
-                        )
-                    }
+                    motherNeonatePNCRepo.summaryCreatePncData(
+                        summaryCreateRequest
+                    )
                 )
             }
         }
     }
+
     private fun PncMother.setCommonFields(
         clinicalNotesViewModel: ClinicalNotesViewModel,
         presentingComplaintsViewModel: PresentingComplaintsViewModel,
@@ -174,18 +159,20 @@ class MotherNeonatePNCViewModel @Inject constructor(
         patientViewModel.patientDetailsLiveData.value?.data?.let { details ->
             motherNeonatePncRequest.apply {
                 pncMother = PncMother(
-                    id=patientViewModel.encounterId,
+                    id = patientViewModel.encounterId,
                     isMotherAlive = aliveStatus,
                     breastCondition = systemicExaminationViewModel.breastConditionValue,
                     breastConditionNotes = systemicExaminationViewModel.specifyCondition,
                     involutionsOfTheUterus = systemicExaminationViewModel.uterusConditionValue,
                     involutionsOfTheUterusNotes = systemicExaminationViewModel.specifyConditionUterus,
-                    encounter = patientId?.let { createEncounter(
-                        it,
-                        patientViewModel.encounterId,
-                        details,
-                        false
-                    ) }
+                    encounter = patientId?.let {
+                        createEncounter(
+                            it,
+                            patientViewModel.encounterId,
+                            details,
+                            false
+                        )
+                    }
                 ).apply {
                     setCommonFields(
                         clinicalNotesViewModel,
@@ -196,13 +183,14 @@ class MotherNeonatePNCViewModel @Inject constructor(
             }
         }
     }
+
     private fun createEncounter(
         patientId: String,
         encounterId: String?,
         details: PatientListRespModel,
         type: Boolean,
     ) = MedicalReviewEncounter(
-        id=encounterId,
+        id = encounterId,
         patientId = patientId,
         provenance = ProvanceDto(),
         latitude = lastLocation?.latitude ?: 0.0,
@@ -210,7 +198,7 @@ class MotherNeonatePNCViewModel @Inject constructor(
         startTime = DateUtils.getCurrentDateAndTime(DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ),
         endTime = DateUtils.getCurrentDateAndTime(DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ),
         householdId = details.houseHoldId,
-        memberId = if(type)details.memberId else childMemberId,
+        memberId = if (type) details.memberId else childMemberId,
         referred = true,
         visitNumber = pncVisit.toInt()
     )
@@ -249,6 +237,7 @@ class MotherNeonatePNCViewModel @Inject constructor(
             }
         }
     }
+
     private fun PncChild.setCommonFields(
         presentingComplaintsViewModel: PresentingComplaintsViewModel,
         physicalExaminationViewModel: PhysicalExaminationViewModel,
@@ -261,6 +250,7 @@ class MotherNeonatePNCViewModel @Inject constructor(
             physicalExaminationViewModel.selectedSystemicExaminations.map { it.value }
         clinicalNotes = clinicalNotesViewModel.enteredClinicalNotes
     }
+
     private fun PncChild.setCordExamination(physicalExaminationViewModel: PhysicalExaminationViewModel) {
         physicalExaminationViewModel.cordExaminationMap.forEach {
             cordExamination = it.value.toString()

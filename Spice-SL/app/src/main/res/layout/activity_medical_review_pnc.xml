@@ -317,7 +317,6 @@
             android:layout_width="@dimen/_0dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/_16sdp"
-            android:enabled="false"
             android:paddingHorizontal="@dimen/_40sdp"
             android:paddingVertical="@dimen/_12sdp"
             android:text="@string/refer_patient"

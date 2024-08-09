@@ -119,8 +119,8 @@ class LabourOrDeliveryFragment : BaseFragment() {
         }
     }
 
-    fun mandatoryFields(){
-       binding.tvDateOfDelivery.markMandatory()
+    fun mandatoryFields() {
+        binding.tvDateOfDelivery.markMandatory()
         binding.tvTimeOfDelivery.markMandatory()
         binding.tvDateOfLabourOnset.markMandatory()
         binding.tvTimeOfLabourOnset.markMandatory()
@@ -499,7 +499,7 @@ class LabourOrDeliveryFragment : BaseFragment() {
             tvTimeOfDeliveryError.showIf(etHourTimeOfDelivery.isEmpty() || etMinutesTimeOfDelivery.isEmpty() || viewModel.timeOfDeliveryMap[DefinedParams.TimeOfDelivery] == null)
             tvDateOfDeliveryError.showIf(dateOfDelivery == null)
             tvDateOfLabourOnsetError.showIf(dateOfLabourOnset == null)
-            tvTimeOfLabourOnsetError.showIf(etHourTimeOfLabourOnset.isEmpty() || etMinutesTimeOfLabourOnSet.isEmpty() ||viewModel.timeOfLabourOnsetMap[DefinedParams.TimeOfLabourOnset] != null)
+            tvTimeOfLabourOnsetError.showIf(etHourTimeOfLabourOnset.isEmpty() || etMinutesTimeOfLabourOnSet.isEmpty() || viewModel.timeOfLabourOnsetMap[DefinedParams.TimeOfLabourOnset] == null)
             tvDeliveryTypeError.showIf(viewModel.deliveryType == null)
             tvDeliveryByError.showIf(viewModel.deliveryBy == null)
             tvDeliveryAtError.showIf(viewModel.deliveryAt == null)

@@ -36,5 +36,6 @@ enum class MedicalReviewTypeEnums{
     Baby,
     immunisation_status,
     muac,
-    ANC_MEDICAL_REVIEW
+    ANC_MEDICAL_REVIEW,
+    PNC_MEDICAL_REVIEW
 }

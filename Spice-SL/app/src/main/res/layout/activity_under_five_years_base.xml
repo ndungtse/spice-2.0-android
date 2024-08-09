@@ -92,7 +92,7 @@
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
-    <FrameLayout
+    <com.medtroniclabs.spice.ui.common.FloatingDetectorFrameLayout
         android:id="@+id/bottomViewContainer"
         android:layout_width="@dimen/_0dp"
         android:layout_height="wrap_content"
@@ -249,7 +249,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/_16sdp"
             android:visibility="gone" />
-    </FrameLayout>
+    </com.medtroniclabs.spice.ui.common.FloatingDetectorFrameLayout>
 
     <RelativeLayout
         android:id="@+id/loadingProgress"

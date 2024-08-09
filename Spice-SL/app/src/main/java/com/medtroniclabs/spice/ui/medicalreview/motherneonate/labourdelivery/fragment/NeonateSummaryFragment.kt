@@ -59,13 +59,20 @@ class NeonateSummaryFragment : BaseFragment() {
         binding.tvStateOfBaby.text = neonateDTO?.stateOfBaby ?: getString(R.string.hyphen_symbol)
         binding.tvGestationalAge.text =
             neonateDTO?.gestationalAge ?: getString(R.string.hyphen_symbol)
-        binding.tvAPGARScore.text = neonateDTO?.apgarScoreFiveMinuteDTO?.fiveMinuteTotalScore.toString().plus(
-            getString(
-                R.string.five_minutes
-            )) ?: getString(R.string.hyphen_symbol)
+        binding.tvAPGARScore.text =
+            if (neonateDTO?.apgarScoreFiveMinuteDTO?.fiveMinuteTotalScore == null) {
+                getString(R.string.hyphen_symbol)
+            } else {
+                neonateDTO.apgarScoreFiveMinuteDTO.fiveMinuteTotalScore.toString().plus(
+                    getString(
+                        R.string.five_minutes
+                    )
+                )
+            }
         binding.tvSignsSymptomsObserved.text = neonateDTO?.signs?.map { it }
-            ?.let { ArrayList(it) }?.let { CommonUtils.convertListToString(it) }?.split(", ")?.joinToString("\n")
-        ?: getString(R.string.hyphen_symbol)
+            ?.let { ArrayList(it) }?.let { CommonUtils.convertListToString(it) }?.split(", ")
+            ?.joinToString("\n")
+            ?: getString(R.string.hyphen_symbol)
         binding.tvPatientStatus.text = getString(R.string.title_neonate)
     }
 

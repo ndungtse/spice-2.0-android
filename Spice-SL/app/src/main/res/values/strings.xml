@@ -303,8 +303,8 @@
     <string name="whz">WHZ</string>
     <string name="immunisation_status">Immunisation Status</string>
     <string name="repeat_if_60"><![CDATA[Repeat (if >60)]]></string>
-    <string name="breast_feeding">Breast feeding</string>
-    <string name="exclusive_breast_feeding">Exclusive Breast feeding</string>
+    <string name="breast_feeding">Breast Feeding</string>
+    <string name="exclusive_breast_feeding">Exclusive Breast Feeding</string>
     <string name="vitamin_a_for_mother">Vitamin A for mother</string>
     <string name="title_mother">Mother</string>
     <string name="signs_Symptoms_observed">Signs/Symptoms observed</string>
@@ -483,7 +483,7 @@
     <string name="dob_invalid">Please enter an age between 0 to %1$d</string>
     <string name="zinc_ors_status">(Zinc - %1$s), (ORS - %2$s)</string>
     <string name="physical_examinations">Physical Examinations</string>
-    <string name="congenital_detect">Congenital Detect</string>
+    <string name="congenital_detect">Congenital detect</string>
     <string name="cord_examination">Cord Examination</string>
     <string name="healing_satisfactorily">Healing satisfactorily</string>
     <string name="poor_healing">Poor healing</string>

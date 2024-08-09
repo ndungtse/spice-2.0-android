@@ -8,7 +8,6 @@ import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.commit
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
@@ -582,19 +581,14 @@ class MotherNeonatePncActivity : BaseActivity(), View.OnClickListener, AncVisitC
             patientViewModel.patientDetailsLiveData.value?.data?.let { details ->
                 val motherDetails =
                     motherNeonatePncSummaryViewModel.pncSummaryResponse.value?.data?.pncMother
-                val childDetails =
-                    motherNeonatePncSummaryViewModel.pncSummaryResponse.value?.data?.pncChild
                 val motherPatientStatus = motherNeonatePncSummaryViewModel.patientStatusMother
-                val childPatientStatus = motherNeonatePncSummaryViewModel.patientStatusChild
                 val motherNextVisitDate = motherNeonatePncSummaryViewModel.nextFollowupDate
                 withNetworkCheck(
                     connectivityManager,
                     {
                         ::viewModel.get().summaryCreatePncData(
                             motherDetails,
-                            childDetails,
                             motherPatientStatus,
-                            childPatientStatus,
                             motherNextVisitDate,
                             details
                         )
