@@ -10,7 +10,8 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:paddingBottom="@dimen/_12sdp">
 
         <View
             android:id="@+id/viewLabourOrDelivery"
@@ -230,7 +231,6 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/_10sdp"
             android:layout_marginEnd="@dimen/_25sdp"
-            android:layout_marginBottom="@dimen/_20sdp"
             android:background="@drawable/edittext_background"
             android:gravity="start|center"
             android:hint="@string/number"
@@ -243,7 +243,8 @@
             app:layout_constraintBottom_toTopOf="@+id/tvNoOfDeonatesError"
             app:layout_constraintEnd_toEndOf="@+id/centerGuideline"
             app:layout_constraintStart_toStartOf="@+id/tvNoOfDeonates"
-            app:layout_constraintTop_toBottomOf="@+id/tvNoOfDeonates" />
+            app:layout_constraintTop_toBottomOf="@+id/tvNoOfDeonates"
+            app:layout_constraintVertical_bias="0.0" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tvNoOfDeonatesError"

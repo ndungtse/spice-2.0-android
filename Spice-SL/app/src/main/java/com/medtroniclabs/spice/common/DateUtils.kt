@@ -35,6 +35,7 @@ object DateUtils {
     const val DATE_TIME_CALL_DISPLAY_FORMAT = "dd MMM, hh:mm a"
     const val TIME_FORMAT_hhmm = "hh:mm"
     const val TIME_FORMAT_hhmma = "hh:mm a"
+    const val CALENDAR_FORMAT="yyyy-MM-dd'T'HH:mm:ssXXX"
 
 
     fun getYearMonthAndWeek(
@@ -419,6 +420,14 @@ object DateUtils {
         val dateFormat = SimpleDateFormat(format, Locale.getDefault())
         return dateFormat.parse(dateString)
     }
+    fun convertStringToCalendar(dateString: String,format: String): Calendar {
+        val dateFormat = SimpleDateFormat(format,Locale.getDefault())
+        dateFormat.timeZone = TimeZone.getTimeZone("UTC")
+        val date: Date = dateFormat.parse(dateString) ?: throw IllegalArgumentException("Invalid date format")
+        return Calendar.getInstance().apply {
+            time = date
+        }
+    }
 
     fun getDateStringFromDate(date: Date, format: String): String {
         val dateFormat = SimpleDateFormat(format, Locale.getDefault())
@@ -453,6 +462,14 @@ object DateUtils {
     fun calculateGestationalAge(lmpDate: LocalDate): Long {
         val currentDate = LocalDate.now()
         return ChronoUnit.WEEKS.between(lmpDate, currentDate)
+    }
+
+    fun calculateGestationalAgeWithDod(lastMenstrualDate: Calendar, dod:Calendar): Pair<Long, Long> {
+        val diffInMillis = dod.timeInMillis - lastMenstrualDate.timeInMillis
+        val diffInDays = TimeUnit.MILLISECONDS.toDays(diffInMillis)
+        val weeks = diffInDays / 7
+        val days = diffInDays % 7
+        return Pair(weeks, days)
     }
 
     fun formatGestationalAge(gestationalAgeInWeeks: Long, context: Context): String {

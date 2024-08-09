@@ -17,12 +17,15 @@ import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.ViewUtils
 import com.medtroniclabs.spice.data.LabourDeliveryMetaEntity
 import com.medtroniclabs.spice.databinding.FragmentLabourOrDeliveryBinding
+import com.medtroniclabs.spice.formgeneration.extension.dp
+import com.medtroniclabs.spice.formgeneration.extension.markMandatory
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.ui.SingleSelectionCustomView
 import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
+import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil.isBasicValid
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.labourdelivery.viewmodel.LabourDeliveryViewModel
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 
@@ -49,6 +52,7 @@ class LabourOrDeliveryFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        mandatoryFields()
         attachObserver()
         initListeners()
         initializeDatePicker()
@@ -113,9 +117,21 @@ class LabourOrDeliveryFragment : BaseFragment() {
             }
 
         }
+    }
 
+    fun mandatoryFields(){
+       binding.tvDateOfDelivery.markMandatory()
+        binding.tvTimeOfDelivery.markMandatory()
+        binding.tvDateOfLabourOnset.markMandatory()
+        binding.tvTimeOfLabourOnset.markMandatory()
+        binding.tvDeliveryType.markMandatory()
+        binding.tvDeliveryBy.markMandatory()
+        binding.tvDeliveryAt.markMandatory()
+        binding.tvDeliveryStatus.markMandatory()
+        binding.tvNoOfDeonates.markMandatory()
 
     }
+
 
     private fun initializeTimeOfLabourOnset() {
         getDataFlowData().let {
@@ -198,6 +214,7 @@ class LabourOrDeliveryFragment : BaseFragment() {
                 val stringDate = "$dayOfMonth-$month-$year"
                 if (textView.id == binding.etDateOfDelivery.id) {
                     viewModel.dateOfDelivery = Triple(year, month, dayOfMonth)
+                    viewModel.setDate(year, month, dayOfMonth)
                 } else {
                     viewModel.dateOfLabourOnset = Triple(year, month, dayOfMonth)
                 }
@@ -427,169 +444,69 @@ class LabourOrDeliveryFragment : BaseFragment() {
     }
 
     fun validate(): Boolean {
-        val isValidDateTimeDelivery = validateTimeOfDeliveryDateTime()
-        val isValidLabourOnset = validateLabourOnsetDateTime()
-
-        return isValidDateTimeDelivery && isValidLabourOnset
+        val isValidDateTimeDelivery = labourDeliveryValidation()
+        return isValidDateTimeDelivery
     }
 
-    private fun clearLabourOnsetValidationErrors() {
-        binding.tvDateOfLabourOnsetError.isVisible = false
-        binding.tvTimeOfLabourOnsetError.isVisible = false
+    private fun View.showIf(condition: Boolean) {
+        this.isVisible = condition
     }
 
-    private fun showLabourOnsetDateErrorAndFocus() {
-        binding.tvDateOfLabourOnsetError.isVisible = true
-        binding.etDateOfDelivery.requestFocus()
-    }
-
-    private fun showLabourOnsetTimeErrorAndFocus() {
-        binding.tvTimeOfLabourOnsetError.isVisible = true
-        binding.etHrsTimeOfLabourOnset.requestFocus()
-    }
-
-    private fun showTimeOfDeliveryErrorAndFocus() {
-        binding.tvTimeOfDeliveryError.isVisible = true
-        binding.etHrsTimeOfDelivery.requestFocus()
-    }
-
-    private fun showDateOfDeliveryErrorAndFocus() {
-        binding.tvDateOfDeliveryError.isVisible = true
-        binding.etDateOfDelivery.requestFocus()
-    }
-
-    private fun clearTimeOfDeliveryValidationErrors() {
-        binding.tvTimeOfDeliveryError.isVisible = false
-        binding.tvDateOfDeliveryError.isVisible = false
-    }
-
-    private fun validateLabourOnsetDateTime(): Boolean {
-        clearLabourOnsetValidationErrors()
-        val etHourTimeOfLabourOnset = binding.etHrsTimeOfLabourOnset.text?.trim().toString()
-        val etMinutesOfLabourOnSet = binding.etMinutesTimeOfLabourOnset.text?.trim().toString()
-        val dateOfLabourOnset = viewModel.dateOfLabourOnset
-        val timeOfLabourOnsetMap = viewModel.timeOfLabourOnsetMap
-
-        val isValidationNeeded = etHourTimeOfLabourOnset.isNotEmpty()
-                || etMinutesOfLabourOnSet.isNotEmpty()
-                || timeOfLabourOnsetMap.isNotEmpty()
-                || (dateOfLabourOnset != null)
-
-        if (isValidationNeeded) {
-            var isValid = true
-            if (dateOfLabourOnset == null
-                && (etHourTimeOfLabourOnset.isNotEmpty()
-                        || etMinutesOfLabourOnSet.isNotEmpty()
-                        || timeOfLabourOnsetMap.isNotEmpty()
-                        )
-            ) {
-                isValid = false
-                showLabourOnsetDateErrorAndFocus()
-
-            }
-
-            if (etHourTimeOfLabourOnset.isEmpty()
-                && (dateOfLabourOnset != null
-                        || etMinutesOfLabourOnSet.isNotEmpty()
-                        || timeOfLabourOnsetMap.isNotEmpty())
-            ) {
-                isValid = false
-                showLabourOnsetTimeErrorAndFocus()
-            }
-
-            if (etMinutesOfLabourOnSet.isEmpty()
-                && (dateOfLabourOnset != null
-                        || etHourTimeOfLabourOnset.isNotEmpty()
-                        || timeOfLabourOnsetMap.isNotEmpty())
-            ) {
-                isValid = false
-                showLabourOnsetTimeErrorAndFocus()
-            }
-
-            if (timeOfLabourOnsetMap.isEmpty()
-                && (dateOfLabourOnset != null
-                        || etHourTimeOfLabourOnset.isNotEmpty()
-                        || etMinutesOfLabourOnSet.isNotEmpty())
-            ) {
-                isValid = false
-                showLabourOnsetTimeErrorAndFocus()
-            }
-
-            if (!valid12ClockHourRange(etHourTimeOfLabourOnset)
-                || !valid12ClockMinuteRange(etMinutesOfLabourOnSet)
-            ) {
-                isValid = false
-                showLabourOnsetTimeErrorAndFocus()
-
-            }
-            return isValid
-        } else {
-            return true
+    private fun showLabourDeliveryErrors(status: Boolean) {
+        with(binding) {
+            tvDateOfLabourOnsetError.showIf(status)
+            tvDateOfDeliveryError.showIf(status)
+            tvTimeOfDeliveryError.showIf(status)
+            tvTimeOfLabourOnsetError.showIf(status)
+            tvDeliveryTypeError.showIf(status)
+            tvDeliveryByError.showIf(status)
+            tvDeliveryAtError.showIf(status)
+            tvDeliveryStatusError.showIf(status)
+            tvNoOfDeonatesError.showIf(status)
         }
-
     }
 
-    private fun validateTimeOfDeliveryDateTime(): Boolean {
-        clearTimeOfDeliveryValidationErrors()
+    private fun labourDeliveryValidation(): Boolean {
+        showLabourDeliveryErrors(false)
+
         val etHourTimeOfDelivery = binding.etHrsTimeOfDelivery.text?.trim().toString()
         val etMinutesTimeOfDelivery = binding.etMinutesTimeOfDelivery.text?.trim().toString()
         val dateOfDelivery = viewModel.dateOfDelivery
-        val timeOfDDeliveryMap = viewModel.timeOfDeliveryMap
 
-        val isValidationNeeded = etHourTimeOfDelivery.isNotEmpty()
-                || etMinutesTimeOfDelivery.isNotEmpty()
-                || timeOfDDeliveryMap.isNotEmpty()
-                || (dateOfDelivery != null)
+        val etHourTimeOfLabourOnset = binding.etHrsTimeOfLabourOnset.text?.trim().toString()
+        val etMinutesTimeOfLabourOnSet = binding.etMinutesTimeOfLabourOnset.text?.trim().toString()
+        val dateOfLabourOnset = viewModel.dateOfLabourOnset
 
-        if (isValidationNeeded) {
-            var isValid = true
-            if (dateOfDelivery == null
-                && (etHourTimeOfDelivery.isNotEmpty()
-                        || etMinutesTimeOfDelivery.isNotEmpty()
-                        || timeOfDDeliveryMap.isNotEmpty()
-                        )
-            ) {
-                showDateOfDeliveryErrorAndFocus()
-                isValid = false
-            }
+        val isValidDelivery = etHourTimeOfDelivery.isNotEmpty() &&
+                etMinutesTimeOfDelivery.isNotEmpty() &&
+                dateOfDelivery != null &&
+                viewModel.timeOfDeliveryMap[DefinedParams.TimeOfDelivery] != null &&
+                etHourTimeOfLabourOnset.isNotEmpty() &&
+                etMinutesTimeOfLabourOnSet.isNotEmpty() &&
+                dateOfLabourOnset != null &&
+                viewModel.timeOfLabourOnsetMap[DefinedParams.TimeOfLabourOnset] != null &&
+                viewModel.deliveryType != null &&
+                viewModel.deliveryBy != null &&
+                viewModel.deliveryAt != null &&
+                viewModel.deliveryStatus != null &&
+                viewModel.noOfNeonates != null
 
-            if (etHourTimeOfDelivery.isEmpty()
-                && (dateOfDelivery != null
-                        || etMinutesTimeOfDelivery.isNotEmpty()
-                        || timeOfDDeliveryMap.isNotEmpty())
-            ) {
-                showTimeOfDeliveryErrorAndFocus()
-                isValid = false
-            }
-
-            if (etMinutesTimeOfDelivery.isEmpty()
-                && (dateOfDelivery != null
-                        || etHourTimeOfDelivery.isNotEmpty()
-                        || timeOfDDeliveryMap.isNotEmpty())
-            ) {
-                showTimeOfDeliveryErrorAndFocus()
-                isValid = false
-            }
-
-            if (timeOfDDeliveryMap.isEmpty()
-                && (dateOfDelivery != null
-                        || etHourTimeOfDelivery.isNotEmpty()
-                        || etMinutesTimeOfDelivery.isNotEmpty())
-            ) {
-                showTimeOfDeliveryErrorAndFocus()
-                isValid = false
-            }
-
-            if (!valid12ClockHourRange(etHourTimeOfDelivery)
-                || !valid12ClockMinuteRange(etMinutesTimeOfDelivery)
-            ) {
-                showTimeOfDeliveryErrorAndFocus()
-                isValid = false
-            }
-            return isValid
-        } else {
-            return true
+        if (!isValidDelivery) {
+            showLabourDeliveryErrors(true)
         }
 
+        with(binding) {
+            tvTimeOfDeliveryError.showIf(etHourTimeOfDelivery.isEmpty() || etMinutesTimeOfDelivery.isEmpty() || viewModel.timeOfDeliveryMap[DefinedParams.TimeOfDelivery] == null)
+            tvDateOfDeliveryError.showIf(dateOfDelivery == null)
+            tvDateOfLabourOnsetError.showIf(dateOfLabourOnset == null)
+            tvTimeOfLabourOnsetError.showIf(etHourTimeOfLabourOnset.isEmpty() || etMinutesTimeOfLabourOnSet.isEmpty() ||viewModel.timeOfLabourOnsetMap[DefinedParams.TimeOfLabourOnset] != null)
+            tvDeliveryTypeError.showIf(viewModel.deliveryType == null)
+            tvDeliveryByError.showIf(viewModel.deliveryBy == null)
+            tvDeliveryAtError.showIf(viewModel.deliveryAt == null)
+            tvDeliveryStatusError.showIf(viewModel.deliveryStatus == null)
+            tvNoOfDeonatesError.showIf(viewModel.noOfNeonates == null)
+        }
+        return isValidDelivery
     }
+
 }

@@ -9,15 +9,18 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResult
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.CommonUtils.convertListToString
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.ViewUtils
+import com.medtroniclabs.spice.data.resource.LabourDeliverySummaryRequest
 import com.medtroniclabs.spice.databinding.FragmentMotherSummaryBinding
 import com.medtroniclabs.spice.formgeneration.extension.markMandatory
 import com.medtroniclabs.spice.model.medicalreview.MotherDTO
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.labourdelivery.viewmodel.LabourDeliverySummaryViewModel
+import com.medtroniclabs.spice.ui.medicalreview.motherneonate.labourdelivery.viewmodel.LabourDeliveryViewModel
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
@@ -27,6 +30,7 @@ class MotherSummaryFragment : BaseFragment() {
     private lateinit var binding : FragmentMotherSummaryBinding
     private var datePickerDialog : DatePickerDialog? = null
     private val viewModel: LabourDeliverySummaryViewModel by activityViewModels()
+    private val viewModelLabourDeliver: LabourDeliveryViewModel by activityViewModels()
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -44,6 +48,7 @@ class MotherSummaryFragment : BaseFragment() {
 
     private fun initView() {
         binding.tvNextVisitDateLabel.markMandatory()
+        viewModelLabourDeliver.motherPatientStatus=binding.tvPatientStatus.text.toString()
     }
 
     private fun attachObserver() {
@@ -57,6 +62,9 @@ class MotherSummaryFragment : BaseFragment() {
                     hideProgress()
                     resourceState.data?.let { motherState ->
                         setDetails(motherState.motherDTO)
+                    }
+                    resourceState.data.let {
+
                     }
                 }
 
@@ -89,7 +97,7 @@ class MotherSummaryFragment : BaseFragment() {
             motherDTO?.stateOfPerineum.isNullOrEmpty() ->
                 getString(R.string.hyphen_symbol)
             else ->
-                "${getString(R.string.tear_hypen)}${motherDTO?.stateOfPerineum}"
+                "${getString(R.string.tear_hypen)}  ${motherDTO?.stateOfPerineum}"
         }
         binding.tvPatientStatus.text = getString(R.string.post_natal)
         binding.tvStatus.text = motherDTO?.status?.map { it }
@@ -105,6 +113,8 @@ class MotherSummaryFragment : BaseFragment() {
                 motherDTO?.labourDTO?.dateAndTimeOfLabourOnset ?: getString(R.string.hyphen_symbol),
                 false
             )
+        binding.tvPrescriptionText.text= motherDTO?.prescriptions.let { CommonUtils.createPrescription(it,requireContext()) }?.takeIf { it.isNotEmpty() }
+            ?: requireContext().getString(R.string.empty__)
     }
 
     private fun calculateDateTime(dateTime: String, isDate: Boolean): String? {
@@ -142,7 +152,8 @@ class MotherSummaryFragment : BaseFragment() {
                         DateUtils.DATE_FORMAT_ddMMyyyy,
                         DateUtils.DATE_ddMMyyyy
                     )
-                viewModel.nextFollowupDate = binding.tvNextVisitDate.text.toString()
+                viewModel.nextFollowupDate= binding.tvNextVisitDate.text.toString()
+                viewModelLabourDeliver.nextFollowupDate=binding.tvNextVisitDate.text.toString()
                 datePickerDialog = null
                 summaryListener()
             }

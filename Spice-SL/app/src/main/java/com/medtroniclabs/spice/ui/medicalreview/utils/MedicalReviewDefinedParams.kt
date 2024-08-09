@@ -15,5 +15,6 @@ object MedicalReviewDefinedParams {
     const val SUMMARY_ITEM = "SummaryItem"
     const val Albendazole = "Albendazole"
     const val HH_RELATIONSHIP= "household_head_relationship"
+    const val GESTATIONAL_AGE = "gestationalAge"
 
 }

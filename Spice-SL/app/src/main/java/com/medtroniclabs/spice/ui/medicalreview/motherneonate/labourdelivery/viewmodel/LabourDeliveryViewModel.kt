@@ -13,6 +13,7 @@ import com.medtroniclabs.spice.data.LabourDeliveryMetaEntity
 import com.medtroniclabs.spice.data.model.ChipViewItemModel
 import com.medtroniclabs.spice.data.model.MedicalReviewEncounter
 import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
+import com.medtroniclabs.spice.data.resource.LabourDeliverySummaryRequest
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.model.assessment.AgparScoreFooter
@@ -40,6 +41,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
+import java.util.Calendar
 import javax.inject.Inject
 
 @HiltViewModel
@@ -48,6 +50,8 @@ class LabourDeliveryViewModel @Inject constructor(
     private var repository: LabourDeliveryRepository
 ) : ViewModel() {
 
+    var motherPatientStatus: String?=null
+    var lastMensurationDate: String?=null
     val timeOfDeliveryMap = HashMap<String, Any>()
     val timeOfLabourOnsetMap = HashMap<String, Any>()
     val perineumStateMap = HashMap<String, Any>()
@@ -56,6 +60,7 @@ class LabourDeliveryViewModel @Inject constructor(
     var motherRiskFactors = listOf<ChipViewItemModel>()
     var motherTTDosageSoFar: String? = null
     var motherStatus = listOf<ChipViewItemModel>()
+    var motherStatusFactors = listOf<ChipViewItemModel>()
     val genderFlow = HashMap<String, Any>()
     val stateOfBaby = HashMap<String, Any>()
     val labourDeliveryMetaLiveData = MutableLiveData<Resource<Boolean>>()
@@ -93,6 +98,14 @@ class LabourDeliveryViewModel @Inject constructor(
 
     var patientDetailModel: PatientListRespModel? = null
     var isRefresh: Boolean = false
+    var nextFollowupDate: String? = null
+    val summaryCreateResponse = MutableLiveData<Resource<HashMap<String, Any>>>()
+
+    private val _gestationalDate = MutableLiveData<Calendar>()
+    val gestationalDate: LiveData<Calendar> get() = _gestationalDate
+    private var summaryCreateRequest: LabourDeliverySummaryRequest?=null
+
+
     fun getAgparScoreData() {
         val apgarScores = mutableListOf<ApgarScore>()
         apgarScores.add(
@@ -499,4 +512,48 @@ class LabourDeliveryViewModel @Inject constructor(
 
     }
 
+    fun setDate(year: Int, month: Int, dayOfMonth: Int) {
+        val calendar = Calendar.getInstance().apply {
+            set(year, month, dayOfMonth)
+        }
+        _gestationalDate.value = calendar
+    }
+    fun labourDeliverySummaryCreate(
+        nextVisit: String,
+        details: CreateLabourDeliveryRequest
+    ) {
+        viewModelScope.launch(dispatcherIO) {
+
+        val motherDetails= details.motherDTO?.encounter
+        val neonateDetails= details.neonateDTO?.encounter
+            LabourDeliverySummaryRequest(com.medtroniclabs.spice.data.resource.MotherDTO(
+                id=motherDetails?.id,
+                patientId = motherDetails?.patientId,
+                memberId = motherDetails?.memberId,
+                householdId = motherDetails?.householdId,
+                provenance = ProvanceDto(),
+                patientReference = motherDetails?.patientReference,
+                patientStatus = DefinedParams.PostNatal,
+                nextVisitDate = nextVisit
+            ), com.medtroniclabs.spice.data.resource.NeonateDTO(
+                id = neonateDetails?.id,
+                patientId = neonateDetails?.patientId,
+                memberId = neonateDetails?.memberId,
+                householdId = neonateDetails?.householdId,
+                provenance = ProvanceDto(),
+                patientReference = neonateDetails?.patientReference,
+                patientStatus = DefinedParams.Neonate,
+            )
+            ).also { this@LabourDeliveryViewModel.summaryCreateRequest = it }
+
+            summaryCreateResponse.postLoading()
+            summaryCreateResponse.postValue(
+                summaryCreateRequest?.let {
+                    repository.labourDeliverySummaryCreate(
+                        it
+                    )
+                }
+            )
+        }
+    }
 }

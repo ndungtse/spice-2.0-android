@@ -30,6 +30,7 @@ data class MedicalReviewEncounter(
     val latitude: Double? = null,
     val longitude: Double? = null,
     val referred: Boolean? = null,
+    val patientReference:String?=null,
     val provenance: ProvanceDto? = null,
     val startTime: String? = null,
     val endTime: String? = null,

@@ -4,7 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.medtroniclabs.spice.appextensions.postLoading
-import com.medtroniclabs.spice.data.MedicalReviewSummarySubmitRequest
+import com.medtroniclabs.spice.data.resource.LabourDeliverySummaryRequest
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.model.medicalreview.CreateLabourDeliveryRequest
 import com.medtroniclabs.spice.model.medicalreview.LabourDeliverySummaryDetails
@@ -23,6 +23,7 @@ class LabourDeliverySummaryViewModel @Inject constructor(
     val summaryDetailsLiveData = MutableLiveData<Resource<CreateLabourDeliveryRequest>>()
     val summaryCreateResponse = MutableLiveData<Resource<HashMap<String, Any>>>()
     var nextFollowupDate: String? = null
+    var neonatePatientStatus:String?=null
 
     fun getLabourDeliverySummaryDetails(
         motherId: String?,
@@ -42,12 +43,4 @@ class LabourDeliverySummaryViewModel @Inject constructor(
         }
     }
 
-    fun labourDeliverySummaryCreate(
-        request: MedicalReviewSummarySubmitRequest
-    ) {
-        viewModelScope.launch(dispatcherIO) {
-            summaryCreateResponse.postLoading()
-            summaryCreateResponse.postValue(repository.labourDeliverySummaryCreate(request))
-        }
-    }
 }

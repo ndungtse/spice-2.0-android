@@ -363,7 +363,7 @@
             android:id="@+id/tvGestationalAge"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="uegfycwngiwfhe"
+            android:text="@string/hyphen_symbol"
             app:layout_constraintStart_toEndOf="@+id/rightGuideline"
             app:layout_constraintTop_toTopOf="@+id/tvGestationalAgeLabel"
             app:layout_constraintBottom_toBottomOf="@+id/tvGestationalAgeLabel"

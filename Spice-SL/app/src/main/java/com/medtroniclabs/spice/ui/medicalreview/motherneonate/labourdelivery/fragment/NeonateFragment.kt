@@ -10,10 +10,12 @@ import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.CommonUtils
+import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.data.LabourDeliveryMetaEntity
 import com.medtroniclabs.spice.data.model.ChipViewItemModel
 import com.medtroniclabs.spice.databinding.FragmentNeonateBinding
+import com.medtroniclabs.spice.formgeneration.extension.markMandatory
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.ui.SingleSelectionCustomView
 import com.medtroniclabs.spice.network.resource.ResourceState
@@ -72,6 +74,12 @@ class NeonateFragment : BaseFragment() {
 
         viewModel.apgarScoreLiveData.observe(viewLifecycleOwner) {
             agparScoreAdapter.submitData(it)
+        }
+        viewModel.gestationalDate.observe(viewLifecycleOwner){
+            binding.tvGestationalAge.text= viewModel.lastMensurationDate?.let { it1 ->
+                DateUtils.convertStringToCalendar(
+                    it1,DateUtils.CALENDAR_FORMAT)
+            }?.let { it2 -> DateUtils.formatGestationalAge(DateUtils.calculateGestationalAgeWithDod(it2,it).first,requireContext()) }?:getString(R.string.empty__)
         }
     }
 
@@ -194,6 +202,7 @@ class NeonateFragment : BaseFragment() {
     }
 
     private fun initUI() {
+        binding.tvGenderLabel.markMandatory()
         agparScoreAdapter = AgparScoreAdapter { rowType, columnType, selectedScore ->
             viewModel.agparRowIdentifier = rowType
             viewModel.agparColumnIdentifier = columnType
@@ -266,5 +275,16 @@ class NeonateFragment : BaseFragment() {
             binding.cgNeonateOutcomeError.isVisible = false
         }
         return isValidOrNot
+    }
+    fun validate(): Boolean {
+        binding.tvGenderError.isVisible=false
+        return if(viewModel.genderFlow[DefinedParams.Gender]!=null){
+            true
+        }else{
+            binding.tvGenderError.isVisible=true
+            binding.tvGenderLabel.requestFocus()
+            false
+        }
+
     }
 }

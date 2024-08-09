@@ -389,8 +389,7 @@
             app:layout_constraintBottom_toBottomOf="@+id/tvStatusLabel"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/rightGuideline"
-            app:layout_constraintTop_toTopOf="@+id/tvStatusLabel"
-            app:singleSelection="true" />
+            app:layout_constraintTop_toTopOf="@+id/tvStatusLabel" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/cgStatusError"

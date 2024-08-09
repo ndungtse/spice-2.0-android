@@ -269,6 +269,73 @@
             app:layout_constraintStart_toEndOf="@+id/endGuideline"
             app:layout_constraintTop_toTopOf="@+id/tvStatusLabel" />
 
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvPrescriptionLabel"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_16sdp"
+            android:text="@string/prescription"
+            android:textSize="@dimen/_18ssp"
+            android:textColor="@color/table_title"
+            app:layout_constraintEnd_toEndOf="@+id/startGuideline"
+            app:layout_constraintStart_toStartOf="@+id/tvStatusLabel"
+            app:layout_constraintTop_toBottomOf="@+id/tvStatusLabel" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/separatorColon15"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/separator_colon"
+            app:layout_constraintEnd_toEndOf="@+id/endGuideline"
+            app:layout_constraintStart_toStartOf="@+id/startGuideline"
+            app:layout_constraintTop_toTopOf="@+id/tvPrescriptionLabel" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvPrescriptionText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/hyphen_symbol"
+            android:textSize="@dimen/_18ssp"
+            android:textColor="@color/grey_black"
+            app:layout_constraintEnd_toEndOf="@+id/centerGuideline"
+            app:layout_constraintStart_toEndOf="@+id/endGuideline"
+            app:layout_constraintTop_toTopOf="@+id/tvPrescriptionLabel" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvInvestigationLabel"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_16sdp"
+            android:text="@string/investigation"
+            android:textSize="@dimen/_18ssp"
+            android:textColor="@color/table_title"
+            app:layout_constraintEnd_toEndOf="@+id/startGuideline"
+            app:layout_constraintStart_toStartOf="@+id/tvPrescriptionLabel"
+            app:layout_constraintTop_toBottomOf="@+id/tvPrescriptionLabel" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/separatorColon16"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/separator_colon"
+            app:layout_constraintEnd_toEndOf="@+id/endGuideline"
+            app:layout_constraintStart_toStartOf="@+id/startGuideline"
+            app:layout_constraintTop_toTopOf="@+id/tvInvestigationLabel" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvInvestigationText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/hyphen_symbol"
+            android:textSize="@dimen/_18ssp"
+            android:textColor="@color/grey_black"
+            app:layout_constraintEnd_toEndOf="@+id/centerGuideline"
+            app:layout_constraintStart_toEndOf="@+id/endGuideline"
+            app:layout_constraintTop_toTopOf="@+id/tvInvestigationLabel" />
+
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tvPatientStatusLabel"
             android:layout_width="0dp"
@@ -278,8 +345,8 @@
             android:textSize="@dimen/_18ssp"
             android:textColor="@color/table_title"
             app:layout_constraintEnd_toEndOf="@+id/startGuideline"
-            app:layout_constraintStart_toStartOf="@+id/tvStatusLabel"
-            app:layout_constraintTop_toBottomOf="@+id/tvStatusLabel" />
+            app:layout_constraintStart_toStartOf="@+id/tvInvestigationLabel"
+            app:layout_constraintTop_toBottomOf="@+id/tvInvestigationLabel" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/separatorColon7"

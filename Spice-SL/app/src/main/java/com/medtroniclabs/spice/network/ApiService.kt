@@ -43,6 +43,7 @@ import com.medtroniclabs.spice.data.offlinesync.model.RequestGetSyncStatus
 import com.medtroniclabs.spice.data.offlinesync.model.SyncResponse
 import com.medtroniclabs.spice.data.BirthHistoryRequest
 import com.medtroniclabs.spice.data.BirthHistoryResponse
+import com.medtroniclabs.spice.data.resource.LabourDeliverySummaryRequest
 import com.medtroniclabs.spice.data.resource.RequestAllEntities
 import com.medtroniclabs.spice.model.PatientDetailRequest
 import com.medtroniclabs.spice.model.PatientListRespModel
@@ -202,4 +203,6 @@ interface ApiService {
     @POST("spice-service/household/create-member")
     suspend fun addNewMember(@Body request: AddMemberRegRequest): Response<APIResponse<String>>
 
+    @POST("/spice-service/medical-review/mother-neonate/summary-create")
+    suspend fun summaryCreateMotherNeonate(@Body request: LabourDeliverySummaryRequest): Response<APIResponse<HashMap<String, Any>>>
 }

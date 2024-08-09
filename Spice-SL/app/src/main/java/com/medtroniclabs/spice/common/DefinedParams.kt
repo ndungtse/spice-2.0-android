@@ -104,4 +104,6 @@ object DefinedParams {
     const val IsReferredScreen = "isReferredScreen"
     const val SearchLength = 2
     const val OtherNotes = "otherNotes"
+    const val PostNatal="Post Natal"
+    const val Neonate="Neonate"
 }

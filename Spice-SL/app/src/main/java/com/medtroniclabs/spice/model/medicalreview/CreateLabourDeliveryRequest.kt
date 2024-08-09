@@ -1,5 +1,6 @@
 package com.medtroniclabs.spice.model.medicalreview
 
+import com.medtroniclabs.spice.data.Prescription
 import com.medtroniclabs.spice.data.model.MedicalReviewEncounter
 import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 
@@ -45,7 +46,8 @@ data class MotherDTO(
     val stateOfPerineum: String?,
     val status: List<String>?,
     val tear: String?,
-    val ttDoseTaken: Int?
+    val ttDoseTaken: Int?,
+    val prescriptions: List<Prescription>? = null,
 )
 
 data class NeonateDTO(

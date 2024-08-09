@@ -8,13 +8,13 @@ import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.core.view.isVisible
+import androidx.core.widget.NestedScrollView
+import androidx.fragment.app.FragmentContainerView
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.SpiceLocationManager
-import com.medtroniclabs.spice.data.MedicalReviewSummarySubmitRequest
-import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.databinding.ActivityMedicalReviewLabourDeliveryactivityBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.model.PatientListRespModel
@@ -113,7 +113,7 @@ class LabourDeliveryBaseActivity : BaseActivity(), View.OnClickListener, AncVisi
                 }
             }
         }
-        viewModelSummary.summaryCreateResponse.observe(this) { resourceState ->
+        viewModel.summaryCreateResponse.observe(this) { resourceState ->
             when (resourceState.state) {
                 ResourceState.LOADING -> {
                     showLoading()
@@ -146,6 +146,7 @@ class LabourDeliveryBaseActivity : BaseActivity(), View.OnClickListener, AncVisi
 
                 ResourceState.SUCCESS -> {
                     hideLoading()
+                    viewModel.lastMensurationDate=resource.data?.pregnancyDetails?.lastMenstrualPeriod
                     if (binding.refreshLayout.isRefreshing) {
                         binding.refreshLayout.isRefreshing = false
                     }
@@ -166,28 +167,6 @@ class LabourDeliveryBaseActivity : BaseActivity(), View.OnClickListener, AncVisi
             }
         }
 
-        referPatientViewModel.referPatientResultLiveData.observe(this) { resource ->
-            when (resource.state) {
-                ResourceState.LOADING -> {
-                    showLoading()
-                }
-
-                ResourceState.SUCCESS -> {
-                    hideLoading()
-                    val fragment =
-                        supportFragmentManager.findFragmentByTag(ReferPatientFragment.TAG) as? ReferPatientFragment
-                    fragment?.dismiss()
-                    MedicalReviewSuccessDialogFragment.newInstance().show(
-                        supportFragmentManager,
-                        MedicalReviewSuccessDialogFragment.TAG
-                    )
-                }
-
-                ResourceState.ERROR -> {
-                    hideLoading()
-                }
-            }
-        }
 
         viewModel.labourDeliveryMetaLiveData.observe(this) { resourceState ->
             when (resourceState.state) {
@@ -206,9 +185,9 @@ class LabourDeliveryBaseActivity : BaseActivity(), View.OnClickListener, AncVisi
             }
         }
 
-        viewModel.submitButtonState.observe(this) {
-            binding.btnSubmit.isEnabled = it
-        }
+//        viewModel.submitButtonState.observe(this) {
+//            binding.btnSubmit.isEnabled = it
+//        }
 
         viewModel.createLabourDeliveryMedicalReviewResponse.observe(this) { resourceState ->
             when (resourceState.state) {
@@ -258,7 +237,7 @@ class LabourDeliveryBaseActivity : BaseActivity(), View.OnClickListener, AncVisi
     }
 
     private fun enableReferralDoneBtn() {
-        binding.btnDone.isEnabled = viewModelSummary.nextFollowupDate != null
+        binding.btnDone.isEnabled = viewModel.nextFollowupDate != null
     }
 
     private fun initializeListener() {
@@ -318,7 +297,7 @@ class LabourDeliveryBaseActivity : BaseActivity(), View.OnClickListener, AncVisi
     }
 
     private fun handleSubmitClick() {
-        if (validateLabourOrDelivery()) {
+        if (labourValidation()) {
             withNetworkCheck(connectivityManager, ::submitDetails)
         }
     }
@@ -337,24 +316,19 @@ class LabourDeliveryBaseActivity : BaseActivity(), View.OnClickListener, AncVisi
     }
 
     private fun handleDoneClick() {
-        patientViewModel.patientDetailsLiveData.value?.data?.let { patientDetails ->
-            viewModel.createLabourDeliveryMedicalReviewResponse.value?.data?.let {
-                val request = MedicalReviewSummarySubmitRequest(
-                    id = it.motherId,
-                    nextVisitDate = DateUtils.convertDateTimeToDate(
-                        viewModelSummary.nextFollowupDate,
-                        DateUtils.DATE_ddMMyyyy,
-                        DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-                        inUTC = true
-                    ),
-                    memberId = patientDetails.memberId,
-                    patientReference = it.patientReference,
-                    provenance = ProvanceDto(),
-                    category = MedicalReviewTypeEnums.RMNCH.name
+       val nextVisit= DateUtils.convertDateTimeToDate(
+            viewModel.nextFollowupDate,
+            DateUtils.DATE_ddMMyyyy,
+            DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+            inUTC = true
+        )
+        viewModelSummary.summaryDetailsLiveData.value?.data
+            ?.let { response ->
+                viewModel.labourDeliverySummaryCreate(
+                    nextVisit,
+                    response
                 )
-                viewModelSummary.labourDeliverySummaryCreate(request)
             }
-        }
     }
 
     private fun handlePrescriptionClick() {
@@ -386,8 +360,15 @@ class LabourDeliveryBaseActivity : BaseActivity(), View.OnClickListener, AncVisi
         binding.neonateContainer.isVisible = false
     }
 
+    private fun labourValidation(): Boolean {
+        val isLabourDelivery=validateLabourOrDelivery()
+        val isNeonateGender=validateNeonateGender()
+        autoScrollError(isLabourDelivery,isNeonateGender)
+        return (isLabourDelivery && isNeonateGender)
+    }
+
     private fun validateLabourOrDelivery(): Boolean {
-        var isValid = true
+        var isValid = false
         supportFragmentManager.findFragmentById(R.id.labourDeliveryContainer)
             ?.let { sessionFragment ->
                 if (sessionFragment is LabourOrDeliveryFragment) {
@@ -397,13 +378,21 @@ class LabourDeliveryBaseActivity : BaseActivity(), View.OnClickListener, AncVisi
             }
         return isValid
     }
+    private fun autoScrollError(isLabourDelivery: Boolean?, isNeonateGender: Boolean?) {
+        if (isNeonateGender!=true && isLabourDelivery==true){
+            val nestedScrollView = findViewById<NestedScrollView>(R.id.nestedScrollView)
+            val neonateContainer = findViewById<FragmentContainerView>(R.id.neonateContainer)
+            val y = neonateContainer.top
+            nestedScrollView.smoothScrollTo(0, y)
+        }
+    }
 
-    private fun validateNeonate(): Boolean {
-        var isValid = true
+    private  fun validateNeonateGender():Boolean{
+        var isValid = false
         supportFragmentManager.findFragmentById(R.id.neonateContainer)
             ?.let { sessionFragment ->
                 if (sessionFragment is NeonateFragment) {
-                    isValid = sessionFragment.validateInput()
+                    isValid = sessionFragment.validate()
                     return isValid
                 }
             }
@@ -427,8 +416,8 @@ class LabourDeliveryBaseActivity : BaseActivity(), View.OnClickListener, AncVisi
             .commit()
     }
 
-    override fun onDataLoaded(detail: PatientListRespModel) {
-        viewModel.patientDetailModel = detail
+    override fun onDataLoaded(detailPatient: PatientListRespModel) {
+        viewModel.patientDetailModel = detailPatient
         if (!viewModel.isRefresh) {
             initializeFragment()
         }

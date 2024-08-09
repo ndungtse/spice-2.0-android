@@ -572,4 +572,5 @@
     <string name="call">Call</string>
     <string name="post_natal">Post Natal</string>
     <string name="tear_hypen">Tear- </string>
+    <string name="five_minutes">" (Five minutes)"</string>
 </resources>

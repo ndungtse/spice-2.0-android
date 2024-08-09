@@ -1,0 +1,30 @@
+package com.medtroniclabs.spice.data.resource
+
+import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
+
+data class LabourDeliverySummaryRequest ( val motherDTO: MotherDTO?,
+                                          val neonateDTO: NeonateDTO?)
+
+
+
+data class MotherDTO(
+    val id: String?=null,
+    val patientReference: String?=null,
+    val patientId: String?=null,
+    val memberId: String?=null,
+    var nextVisitDate: String?=null,
+    val householdId: String?=null,
+    val provenance: ProvanceDto,
+    val patientStatus: String?=null
+)
+
+data class NeonateDTO(
+    val id: String?=null,
+    val patientReference: String?=null,
+    val patientId: String?=null,
+    val memberId: String?=null,
+    val householdId: String?=null,
+    val provenance: ProvanceDto,
+    val patientStatus: String?=null
+)
+
