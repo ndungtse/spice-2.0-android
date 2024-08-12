@@ -12,11 +12,12 @@ import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.databinding.FragmentMotherNeonarePncSummaryBinding
 import com.medtroniclabs.spice.databinding.FragmentMotherNeonateAncSummaryBinding
 import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
+import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.fragment.MotherNeonateAncSummary
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.viewmodel.MotherNeonateSummaryViewModel
 
 
-class MotherNeonarePncSummaryFragment : Fragment() {
+class MotherNeonarePncSummaryFragment : BaseFragment() {
     private lateinit var binding: FragmentMotherNeonarePncSummaryBinding
     var adapter: CustomSpinnerAdapter? = null
     private var datePickerDialog: DatePickerDialog? = null

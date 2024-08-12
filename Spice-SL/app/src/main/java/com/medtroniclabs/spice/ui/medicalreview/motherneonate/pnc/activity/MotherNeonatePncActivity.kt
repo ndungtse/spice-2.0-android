@@ -55,6 +55,7 @@ class MotherNeonatePncActivity : BaseActivity(), View.OnClickListener, PncVisitC
     private lateinit var physicalExaminationFragment: PhysicalExaminationFragment
     private var TAG = "MotherNeonatePncActivity"
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMedicalReviewPncBinding.inflate(layoutInflater)
@@ -69,13 +70,28 @@ class MotherNeonatePncActivity : BaseActivity(), View.OnClickListener, PncVisitC
         attachObservers()
         getCurrentLocation()
         initStaticDataCall()
+        viewModel.isNeonate = false
         viewModel.patientId = intent.getStringExtra(DefinedParams.PatientId)
         buttonClickListener()
+        binding.refreshLayout.setOnRefreshListener {
+            swipeRefresh()
+        }
     }
 
-    private fun buttonClickListener() {
-        binding.btnSubmit.text = getString(R.string.next)
-        binding.blurView.safeClickListener {}
+    private fun swipeRefresh() {
+        binding.refreshLayout.isRefreshing = false
+        if (binding.tvAliveStatus.text == getString(R.string.is_the_mother_alive)) {
+            viewModel.isNeonate = false
+            viewModel.isSwipe = true
+            showLoading()
+            initializePatientInfoFragment()
+
+        } else {
+            viewModel.isNeonate = true
+            viewModel.isSwipe = true
+            initializePatientInfoFragment()
+        }
+
     }
 
     private fun initStaticDataCall() {
@@ -86,6 +102,11 @@ class MotherNeonatePncActivity : BaseActivity(), View.OnClickListener, PncVisitC
         } else {
             initializePatientInfoFragment()
         }
+    }
+
+    private fun buttonClickListener() {
+        binding.btnSubmit.text = getString(R.string.next)
+        binding.blurView.safeClickListener {}
     }
 
     private fun getCurrentLocation() {
@@ -132,7 +153,6 @@ class MotherNeonatePncActivity : BaseActivity(), View.OnClickListener, PncVisitC
         setVisiblePncFragment()
     }
 
-
     private fun initializeBundle(): Bundle {
         val type = if (!viewModel.isNeonate) MedicalReviewTypeEnums.PNC.name.plus("-")
             .plus(MedicalReviewTypeEnums.Mother.name) else MedicalReviewTypeEnums.PNC.name.plus(
@@ -151,13 +171,13 @@ class MotherNeonatePncActivity : BaseActivity(), View.OnClickListener, PncVisitC
     }
 
     private fun setViewModelDataForMother() {
-        if (viewModel.isMotherOrChild == MedicalReviewTypeEnums.Mother.name) {
+        if (!viewModel.isNeonate) {
             presentingComplaintsViewModel.apply {
                 if (binding.tvAliveStatus.text == getString(R.string.is_the_mother_alive)) {
                     isMotherPnc = true
                     selectedPresentingComplaints = viewModel.presentingComplaints
                     enteredComplaintNotes =
-                        viewModel.motherNeonatePncRequest.pncMother?.presentingComplaintsNotes.toString()
+                        viewModel.motherNeonatePncRequest.pncMother?.presentingComplaintsNotes ?: ""
                 } else {
                     isMotherPnc = false
                 }
@@ -167,17 +187,17 @@ class MotherNeonatePncActivity : BaseActivity(), View.OnClickListener, PncVisitC
                     isMotherPnc = true
                     selectedSystemicExaminations = viewModel.systemicExamination
                     enteredExaminationNotes =
-                        viewModel.motherNeonatePncRequest.pncMother?.systemicExaminationsNotes.toString()
+                        viewModel.motherNeonatePncRequest.pncMother?.systemicExaminationsNotes ?: ""
                 } else isMotherPnc = false
             }
             clinicalNotesViewModel.apply {
                 if (binding.tvAliveStatus.text == getString(R.string.is_the_mother_alive)) {
                     isMotherPnc = true
                     enteredClinicalNotes =
-                        viewModel.motherNeonatePncRequest.pncMother?.clinicalNotes.toString()
+                        viewModel.motherNeonatePncRequest.pncMother?.clinicalNotes ?: ""
                 } else isMotherPnc = false
             }
-            viewModel.isMotherOrChild = MedicalReviewTypeEnums.Baby.name
+            viewModel.isNeonate = true
         }
 
     }
@@ -193,7 +213,6 @@ class MotherNeonatePncActivity : BaseActivity(), View.OnClickListener, PncVisitC
     }
 
     private fun setDiagnosisFragment() {
-        Timber.d("setDiagnosisFragment is deprecated and will be removed ${viewModel.memberId}")
         val medicalReviewPatientDiagnosisFragment =
             MedicalReviewPatientDiagnosisFragment.newInstance(
                 true,
@@ -207,6 +226,9 @@ class MotherNeonatePncActivity : BaseActivity(), View.OnClickListener, PncVisitC
     private fun setPresentingComplaintsFragment(bundle: Bundle) {
         presentingComplaintsFragment =
             PresentingComplaintsFragment::class.java.getDeclaredConstructor().newInstance()
+        if (viewModel.isNeonate) {
+            presentingComplaintsViewModel.isMotherPnc = false
+        }
         presentingComplaintsFragment.arguments = bundle
         addReplaceFragment(R.id.presentingComplaintsContainer, presentingComplaintsFragment)
 
@@ -231,6 +253,10 @@ class MotherNeonatePncActivity : BaseActivity(), View.OnClickListener, PncVisitC
     private fun setClinicalNotesFragment(bundle: Bundle) {
         clinicalNotesFragment =
             ClinicalNotesFragment::class.java.getDeclaredConstructor().newInstance()
+        if (viewModel.isNeonate) {
+
+            clinicalNotesViewModel.isMotherPnc = false
+        }
         clinicalNotesFragment.arguments = bundle
         addReplaceFragment(R.id.clinicalNotesContainer, clinicalNotesFragment)
     }
@@ -240,17 +266,22 @@ class MotherNeonatePncActivity : BaseActivity(), View.OnClickListener, PncVisitC
         viewModel.pncVisit = data.pregnancyDetails?.pncVisitAssessment?.takeIf { true } ?: 1
         viewModel.memberId = data.memberId
         if (viewModel.pncVisit == 1L) {
-            initView()
+            if (viewModel.isSwipe) {
+                setDiagnosisFragment()
+            } else {
+                initView()
+            }
         }
     }
 
     private fun initView() {
-        showLoading()
+//        showLoading()
         initializeFragment()
         showBottomNavigation()
         setButtonClickListener()
         clinicalNotesResult()
     }
+
 
     private fun initializeAliveStatusLayout() {
         getAliveStatusFlowData().let {
@@ -276,10 +307,6 @@ class MotherNeonatePncActivity : BaseActivity(), View.OnClickListener, PncVisitC
 
     private var singleSelectionCallback: ((selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit)? =
         { selectedID, _, _, _ ->
-
-            if (viewModel.isNeonate){
-                viewModel.resultFlowHashMap[TAG] = ""
-            }
             viewModel.resultFlowHashMap[TAG] =
                 selectedID as String
             val flowValue =
@@ -294,10 +321,40 @@ class MotherNeonatePncActivity : BaseActivity(), View.OnClickListener, PncVisitC
             }
         }
 
+    private fun resetSelectionViews(vararg viewTags: String) {
+        viewTags.forEach { tag ->
+            val view = binding.root.findViewWithTag<SingleSelectionCustomView>(tag)
+            view?.resetSingleSelectionChildViews()
+        }
+    }
+
+    private fun singleSelectValueOption(vararg viewTags: String) {
+        viewTags.forEach { tag ->
+            val view = binding.root.findViewWithTag<SingleSelectionCustomView>(tag)
+            view?.singleSelectionChildViewsOption(getString(R.string.yes))
+        }
+    }
+
     private fun refreshFragments() {
         presentingComplaintsFragment.refreshFragment()
-        systemicExaminationsFragment.refreshFragment()
+        if (binding.tvAliveStatus.text == getString(R.string.is_the_baby_alive)) {
+            physicalExaminationFragment.refreshFragment()
+        } else {
+            systemicExaminationsFragment.refreshFragment()
+        }
         clinicalNotesFragment.refreshFragment()
+
+    }
+
+    private fun refreshPresentingComplaintsFragment() {
+        val type = if (!viewModel.isNeonate) MedicalReviewTypeEnums.PNC.name.plus("-")
+            .plus(MedicalReviewTypeEnums.Mother.name) else MedicalReviewTypeEnums.PNC.name.plus(
+            "-"
+        ).plus(MedicalReviewTypeEnums.Baby.name)
+        presentingComplaintsFragment.refreshPresentingFragment(type, viewModel.presentingComplaints)
+        clinicalNotesFragment.reloadFragment(
+            viewModel.motherNeonatePncRequest.pncMother?.clinicalNotes ?: ""
+        )
     }
 
 
@@ -327,6 +384,7 @@ class MotherNeonatePncActivity : BaseActivity(), View.OnClickListener, PncVisitC
     }
 
     private fun backNavigation() {
+        singleSelectValueOption(TAG)
         binding.tvAliveStatus.text = applicationContext.getString(R.string.is_the_mother_alive)
         val fragmentManager = supportFragmentManager
         val systemicExaminationsFragment =
@@ -335,11 +393,11 @@ class MotherNeonatePncActivity : BaseActivity(), View.OnClickListener, PncVisitC
             // Show the dialog here
             showErrorDialog()
         } else if (viewModel.pncVisit == 1L && systemicExaminationsFragment is PhysicalExaminationFragment) {
-            viewModel.isMotherOrChild = MedicalReviewTypeEnums.Mother.name
             viewModel.isNeonate = false
-            initView()
-//            hideLoading
-        }else{
+            refreshPresentingComplaintsFragment()
+            setSystemicExaminationFragment(initializeBundle())
+
+        } else {
             // Show the dialog here
             showErrorDialog()
         }
@@ -358,6 +416,8 @@ class MotherNeonatePncActivity : BaseActivity(), View.OnClickListener, PncVisitC
                     neoNateSubmit()
                     scrollToTop()
                 } else {
+                    binding.blurView.visible()
+                    resetSelectionViews(TAG)
                     neonateFlow()
                     motherSubmit()
                     scrollToTop()
@@ -444,7 +504,6 @@ class MotherNeonatePncActivity : BaseActivity(), View.OnClickListener, PncVisitC
     }
 
     private fun setBackMotherData() {
-        Timber.d("setBackMotherData ${presentingComplaintsViewModel.selectedPresentingComplaints}")
         viewModel.presentingComplaints =
             presentingComplaintsViewModel.selectedPresentingComplaints
         viewModel.systemicExamination =
@@ -473,11 +532,9 @@ class MotherNeonatePncActivity : BaseActivity(), View.OnClickListener, PncVisitC
     // Is baby alive flow
     private fun neonateFlow() {
         binding.tvAliveStatus.text = applicationContext.getString(R.string.is_the_baby_alive)
-
         if (binding.btnSubmit.text == applicationContext.getString(R.string.next)) {
             viewModel.isNeonate = true
-            viewModel.isMotherOrChild = MedicalReviewTypeEnums.Baby.name
-            initView()
+            initializeFragment()
         }
     }
 

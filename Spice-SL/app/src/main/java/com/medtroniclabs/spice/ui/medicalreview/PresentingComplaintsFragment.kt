@@ -8,7 +8,6 @@ import androidx.core.os.bundleOf
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResult
-import com.google.android.material.chip.Chip
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.visible
@@ -21,7 +20,6 @@ import com.medtroniclabs.spice.ui.medicalreview.abovefiveyears.PresentingComplai
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.CHIP_ITEMS
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.PC_ITEM
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
-import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.viewmodel.MotherNeonateANCViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 
@@ -86,7 +84,7 @@ open class PresentingComplaintsFragment : BaseFragment() {
                                         value = it.value
                                     )
                                 }
-                        complaintsTagView.addChipItemList(chipItemList, viewModel.selectedPresentingComplaints)
+                        updateChipList(chipItemList)
                     }
                     hideProgress()
                 }
@@ -128,6 +126,22 @@ open class PresentingComplaintsFragment : BaseFragment() {
     }
 
 
+    private fun updateChipList(chipItemList: List<ChipViewItemModel>) {
+        if (viewModel.isMotherPnc) {
+            complaintsTagView.addChipItemList(chipItemList, viewModel.selectedPresentingComplaints)
+            binding.etPresentingComplaintsComments.setText(viewModel.enteredComplaintNotes)
+        } else  {
+            complaintsTagView.addChipItemList(chipItemList, null)
+        }
+    }
+    fun refreshPresentingFragment(type: String, presentingComplaints: ArrayList<ChipViewItemModel>) {
+        refreshFragment()
+        viewModel.selectedPresentingComplaints = presentingComplaints
+        viewModel.getPresentingComplaintsList(type)
+        viewModel.isMotherPnc=true
+// Ensure the ViewModel is updated
+        updateChipList(emptyList())  // Call updateChipList with an empty list to refresh the view
+    }
     fun refreshFragment() {
         complaintsTagView.clearSelection()
         complaintsTagView.clearOtherChip()

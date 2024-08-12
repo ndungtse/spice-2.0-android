@@ -35,13 +35,12 @@ class MotherNeonatePNCViewModel @Inject constructor(
     var presentingComplaints = ArrayList<ChipViewItemModel>()
     var systemicExamination = ArrayList<ChipViewItemModel>()
     var motherNeonatePncRequest: MotherNeonatePncRequest = MotherNeonatePncRequest().apply {
-        pncChild = PncChild().apply { encounter= MedicalReviewEncounter() }
-        pncMother = PncMother().apply { encounter= MedicalReviewEncounter() }
+        pncChild = PncChild().apply { encounter = MedicalReviewEncounter() }
+        pncMother = PncMother().apply { encounter = MedicalReviewEncounter() }
     }
     val pncSaveResponse = MutableLiveData<Resource<PatientEncounterResponse>>()
-
-    var isMotherOrChild: String? = null
     var isNeonate = false
+    var isSwipe = false
 
 
     var memberId: String? = null
@@ -56,14 +55,16 @@ class MotherNeonatePNCViewModel @Inject constructor(
             motherNeonatePNCRepo.getNeonatePncStaticData(neonateMetaResponse)
         }
     }
-     fun saveMotherNeonatePncData(){
-         viewModelScope.launch(dispatcherIO) {
-             pncSaveResponse.postLoading()
-             pncSaveResponse.postValue(
-                 motherNeonatePNCRepo.saveMotherNeonatePncData(
-                     motherNeonatePncRequest
-                 )
-             )         }
-     }
+
+    fun saveMotherNeonatePncData() {
+        viewModelScope.launch(dispatcherIO) {
+            pncSaveResponse.postLoading()
+            pncSaveResponse.postValue(
+                motherNeonatePNCRepo.saveMotherNeonatePncData(
+                    motherNeonatePncRequest
+                )
+            )
+        }
+    }
 
 }

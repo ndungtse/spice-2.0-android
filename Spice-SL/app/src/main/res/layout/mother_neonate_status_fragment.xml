@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <TextView
+        android:id="@+id/tvAliveStatus"
+        android:layout_width="@dimen/_0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="@dimen/_10sdp"
+        android:paddingHorizontal="@dimen/_25sdp"
+        android:text="@string/is_the_mother_alive"
+        android:textSize="@dimen/_16ssp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <LinearLayout
+        android:id="@+id/btnLayout"
+        android:layout_width="@dimen/_0dp"
+        android:paddingHorizontal="@dimen/_25sdp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingVertical="@dimen/_7sdp"
+        app:layout_constraintEnd_toEndOf="@id/tvAliveStatus"
+        app:layout_constraintStart_toStartOf="@id/tvAliveStatus"
+        app:layout_constraintTop_toBottomOf="@id/tvAliveStatus" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

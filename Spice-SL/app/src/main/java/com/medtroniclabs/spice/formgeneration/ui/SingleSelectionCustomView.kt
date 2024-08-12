@@ -6,7 +6,6 @@ import android.util.AttributeSet
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.content.ContextCompat
-import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.forEach
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams
@@ -118,6 +117,16 @@ class SingleSelectionCustomView : LinearLayout {
     fun resetSingleSelectionChildViews() {
         forEach {
             it.isSelected = false
+        }
+    }
+    fun singleSelectionChildViewsOption(string: String) {
+        forEach {
+            if (it is TextView) {
+               if( it.text==string) {
+                   it.isSelected = true
+                   it.performClick()
+               }
+            }
         }
     }
 

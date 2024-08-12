@@ -72,4 +72,7 @@ class ClinicalNotesFragment : BaseFragment() {
     fun refreshFragment() {
         binding.etClinicalNotes.text?.clear()
     }
+    fun reloadFragment(value: String) {
+        binding.etClinicalNotes.setText(value)
+    }
 }

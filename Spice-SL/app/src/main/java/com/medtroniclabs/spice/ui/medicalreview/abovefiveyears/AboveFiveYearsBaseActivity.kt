@@ -112,6 +112,7 @@ class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
     }
 
     private fun swipeRefresh() {
+        presentingComplaintsViewModel.isMotherPnc=true
         supportFragmentManager.findFragmentById(R.id.presentingComplaintsContainer)
             .let { currentFragment ->
                 if (currentFragment is AboveFiveYearsTreatmentSummaryFragment) {
