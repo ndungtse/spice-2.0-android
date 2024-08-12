@@ -40,6 +40,7 @@ class PatientStatusRepository @Inject constructor(
                     gender = patientDetails.gender,
                     ticketType = workflowType,
                     isPregnant = patientDetails.isPregnant ?: false,
+                    encounterType = menuType,
                     provenance = ProvanceDto()
                 )
             }
