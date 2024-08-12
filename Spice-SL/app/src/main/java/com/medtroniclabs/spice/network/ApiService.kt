@@ -50,6 +50,7 @@ import com.medtroniclabs.spice.data.BirthHistoryResponse
 import com.medtroniclabs.spice.data.MotherNeonatePncSummaryRequest
 import com.medtroniclabs.spice.data.MotherNeonatePncSummaryResponse
 import com.medtroniclabs.spice.data.SummaryCreateRequest
+import com.medtroniclabs.spice.data.PncChildMedicalReview
 import com.medtroniclabs.spice.data.resource.LabourDeliverySummaryRequest
 import com.medtroniclabs.spice.data.resource.RequestAllEntities
 import com.medtroniclabs.spice.model.PatientDetailRequest
@@ -226,4 +227,7 @@ interface ApiService {
 
     @POST("/spice-service/medical-review/mother-neonate/summary-create")
     suspend fun summaryCreateMotherNeonate(@Body request: LabourDeliverySummaryRequest): Response<APIResponse<HashMap<String, Any>>>
+
+    @POST("/spice-service/medical-review/pnc-history")
+    suspend fun getMedicalReviewHistoryPNC(@Body request: ReferralDetailRequest): Response<APIResponse<PncChildMedicalReview>>
 }

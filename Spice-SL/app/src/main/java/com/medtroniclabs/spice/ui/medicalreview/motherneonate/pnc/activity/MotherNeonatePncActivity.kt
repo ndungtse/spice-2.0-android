@@ -350,11 +350,11 @@ class MotherNeonatePncActivity : BaseActivity(), View.OnClickListener, AncVisitC
 
 
     override fun onDataLoaded(details: PatientListRespModel) {
-        viewModel.getChildMemberId(details.childPatientId)
-        viewModel.pncVisit = details.pregnancyDetails?.pncVisitAssessment?.takeIf { true } ?: 1
+            viewModel.pncVisit = details.pregnancyDetails?.pncVisitMedicalReview?.takeIf { true }?.plus(1) ?: 1
+        //        viewModel.getChildMemberId(details.childPatientId)
+
         viewModel.memberId = details.memberId
-        if (viewModel.pncVisit == 1L) {
-            if (viewModel.isSwipe) {
+        if (viewModel.isSwipe) {
                 val summaryFragment =
                     getFragmentById(supportFragmentManager, (R.id.diagnosisFragment))
                 if (summaryFragment is MotherNeonatePncSummaryFragment) {
@@ -367,7 +367,6 @@ class MotherNeonatePncActivity : BaseActivity(), View.OnClickListener, AncVisitC
                 hideLoading()
                 initView()
             }
-        }
     }
 
     private fun initView() {
@@ -520,9 +519,9 @@ class MotherNeonatePncActivity : BaseActivity(), View.OnClickListener, AncVisitC
         val fragmentManager = supportFragmentManager
         val systemicExaminationsFragment =
             fragmentManager.findFragmentById(R.id.systemicExaminationsContainer)
-        if (viewModel.pncVisit == 1L && systemicExaminationsFragment is GeneralExaminationFragment) {
+        if (viewModel.pncVisit == 1 && systemicExaminationsFragment is GeneralExaminationFragment) {
             showErrorDialog()
-        } else if (viewModel.pncVisit == 1L && systemicExaminationsFragment is PhysicalExaminationFragment) {
+        } else if (viewModel.pncVisit == 1 && systemicExaminationsFragment is PhysicalExaminationFragment) {
             viewModel.isNeonate = false
             refreshPresentingComplaintsFragment()
             initializeSystemicExaminationFragment(initializeBundle())

@@ -533,7 +533,7 @@ class LabourDeliveryViewModel @Inject constructor(
                 householdId = motherDetails?.householdId,
                 provenance = ProvanceDto(),
                 patientReference = motherDetails?.patientReference,
-                patientStatus = DefinedParams.PostNatal,
+                patientStatus = DefinedParams.Postnatal,
                 nextVisitDate = nextVisit
             ), com.medtroniclabs.spice.data.resource.NeonateDTO(
                 id = neonateDetails?.id,

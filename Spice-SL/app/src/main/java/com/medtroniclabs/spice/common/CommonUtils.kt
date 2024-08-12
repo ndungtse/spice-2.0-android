@@ -379,11 +379,11 @@ object CommonUtils {
         return prescriptions.takeIf { it.isNotEmpty() }?.mapIndexed { index, prescription ->
             prescription.entries.joinToString("\n") { (key, pair) ->
                 formattedFirst = if (key.length==maxKeyLength && type){
-                    key.plus(":").padEnd(maxKeyLength+3)
+                    key.plus(":").padEnd(maxKeyLength)
                 }else if(!type){
-                    key.plus(":").padEnd(maxKeyLength+5)
+                    key.plus(": ").padEnd(maxKeyLength)
                 } else {
-                    key.plus(":").padEnd((maxKeyLength+7.7).toInt())
+                    key.plus(":").padEnd((maxKeyLength+6).toInt())
                 }
                 val formattedPair = if (pair.second == null) {
                     "${index + 1}. $formattedFirst ${pair.first}"

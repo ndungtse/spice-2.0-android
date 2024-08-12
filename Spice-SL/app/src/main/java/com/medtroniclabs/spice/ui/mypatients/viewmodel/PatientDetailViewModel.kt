@@ -59,7 +59,7 @@ class PatientDetailViewModel @Inject constructor(
             ?.plus(1)
             ?: 1
     }
-    fun getPncVisit(): Long {
+    fun getPncVisit(): Int {
         return patientDetailsLiveData.value?.data?.pregnancyDetails?.pncVisitMedicalReview?.takeIf { true }
             ?.plus(1)
             ?: 1

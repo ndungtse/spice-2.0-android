@@ -43,7 +43,7 @@ class MotherNeonatePNCViewModel @Inject constructor(
     val resultFlowHashMap = HashMap<String, Any>()
     var lastLocation: Location? = null
     var id: String? = null
-    var pncVisit: Long = -1
+    var pncVisit: Int = -1
     val motherMetaResponse = MutableLiveData<Resource<Boolean>>()
     val neonateMetaResponse = MutableLiveData<Resource<Boolean>>()
     var patientId: String? = null
@@ -165,14 +165,12 @@ class MotherNeonatePNCViewModel @Inject constructor(
                     breastConditionNotes = systemicExaminationViewModel.specifyCondition,
                     involutionsOfTheUterus = systemicExaminationViewModel.uterusConditionValue,
                     involutionsOfTheUterusNotes = systemicExaminationViewModel.specifyConditionUterus,
-                    encounter = patientId?.let {
-                        createEncounter(
-                            it,
-                            patientViewModel.encounterId,
-                            details,
-                            false
-                        )
-                    }
+                    encounter = patientId?.let { createEncounter(
+                        it,
+                        patientViewModel.encounterId,
+                        details,
+                        true
+                    ) }
                 ).apply {
                     setCommonFields(
                         clinicalNotesViewModel,
@@ -221,7 +219,7 @@ class MotherNeonatePNCViewModel @Inject constructor(
                             it,
                             patientViewModel.childEncounterId,
                             details,
-                            true
+                            false
                         )
                     }
 

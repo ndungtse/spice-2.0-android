@@ -4,6 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.medtroniclabs.spice.appextensions.postLoading
+import com.medtroniclabs.spice.data.PncChildMedicalReview
 import com.medtroniclabs.spice.data.history.MedicalReviewHistory
 import com.medtroniclabs.spice.data.history.PrescriptionHistoryEntity
 import com.medtroniclabs.spice.di.IoDispatcher
@@ -30,12 +31,15 @@ class ReferralHistoryViewModel @Inject constructor(
     val referralTicketLiveData = MutableLiveData<Resource<ReferralData>>()
     val prescriptionTicketLiveData = MutableLiveData<Resource<PrescriptionHistoryEntity>>()
     val medicalReviewTicketLiveData = MutableLiveData<Resource<MedicalReviewHistory>>()
+    val medicalReviewTicketLiveDataPNC = MutableLiveData<Resource<PncChildMedicalReview>>()
     var referralDates = MutableLiveData<List<ReferredDate>>()
     var prescriptionReferralDates = MutableLiveData<List<ReferredDate>>()
     var medicalReferralDates = MutableLiveData<List<ReferredDate>>()
     var ticketId: String? = null
     var prescriptionTicketId: String? = null
     var medicalTicketId: String? = null
+    var patientReference:String?=null
+
 
     fun getReferralTicket(patientId: String? = null, ticketId: String? = null) {
         viewModelScope.launch(dispatcherIO) {
@@ -71,6 +75,18 @@ class ReferralHistoryViewModel @Inject constructor(
             medicalReviewTicketLiveData.postLoading()
             medicalReviewTicketLiveData.postValue(
                 referralHistoryRepository.getMedicalReviewHistory(
+                    ReferralDetailRequest(
+                        patientReference = patientId,
+                        encounterId = medicalTicketId,
+                    )
+                )
+            )
+        }
+    }fun getMedicalReviewHistoryPNC(patientId: String? = null, medicalTicketId: String? = null) {
+        viewModelScope.launch(dispatcherIO) {
+            medicalReviewTicketLiveDataPNC.postLoading()
+            medicalReviewTicketLiveDataPNC.postValue(
+                referralHistoryRepository.getMedicalReviewHistoryPNC(
                     ReferralDetailRequest(
                         patientReference = patientId,
                         encounterId = medicalTicketId,

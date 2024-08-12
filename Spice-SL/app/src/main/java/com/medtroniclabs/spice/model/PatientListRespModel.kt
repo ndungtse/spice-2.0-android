@@ -37,7 +37,7 @@ data class PregnancyDetails(
     val pncVisitAssessment: Long? = null,
     val childHoodVisitAssessment: Long? = null,
     val ancVisitMedicalReview: Int? = null,
-    val pncVisitMedicalReview: Long? = null,
+    val pncVisitMedicalReview: Int? = null,
     val childHoodVisitMedicalReview: Long? = null,
     val patientStatus: String? = null,
     val height: Double? = null,
