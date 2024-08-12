@@ -129,6 +129,9 @@ class ApiHelperImpl @Inject constructor(private val apiService: ApiService) : Ap
         return apiService.getMotherNeoNateAncStaticData()
     }
 
+    override suspend fun getMotherNeoNatePncStaticData(): Response<APIResponse<MotherNeonateAncMetaResponse>> {
+        return apiService.getMotherNeoNatePncStaticData()    }
+
     override suspend fun getUnderTwoMonthsMetaData(): Response<APIResponse<UnderTwoMonthsMetaResponse>> {
         return apiService.getUnderTwoMonthsMetaData()
     }

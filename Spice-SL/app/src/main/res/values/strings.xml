@@ -516,6 +516,8 @@
     <string name="does_mother_have_a_delivery_kit">Does mother have a delivery kit?</string>
     <string name="pregnancy_history_past_obstetric_history">Pregnancy History (Past Obstetric History)</string>
     <string name="no_referral_history">No Referral History Found</string>
+    <string name="pnc_visit_no">PNC Visit No</string>
+    <string name="general_systemic_examinations"><![CDATA[General & Systemic Examinations]]></string>
     <string name="referral_by_phone_number">%1$s (%2$s)</string>
     <string name="select_diagnosis_found_on_the_patient">Select diagnoses found on the patient</string>
     <string name="something_went_wrong_try_later">Something went wrong. Please try again</string>

@@ -123,6 +123,9 @@ interface ApiService {
     @POST("/spice-service/static-data/meta-data/iccm-under-two-months")
     suspend fun getUnderTwoMonthsMetaData(): Response<APIResponse<UnderTwoMonthsMetaResponse>>
 
+    @POST("/spice-service/static-data/meta-data/mother-neonate-pnc-mother")
+    suspend fun getMotherNeoNatePncStaticData(): Response<APIResponse<MotherNeonateAncMetaResponse>>
+
     @POST("/spice-service/medical-review/summary-create")
     suspend fun createSummarySubmit(@Body request: MedicalReviewSummarySubmitRequest): Response<APIResponse<HashMap<String, Any>>>
 
