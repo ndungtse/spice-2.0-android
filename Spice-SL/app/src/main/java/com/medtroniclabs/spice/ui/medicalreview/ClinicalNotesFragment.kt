@@ -55,9 +55,7 @@ class ClinicalNotesFragment : BaseFragment() {
         if (viewModel.isMotherPnc){
             binding.etClinicalNotes.setText(viewModel.enteredClinicalNotes)
         }
-        if (viewModel.enteredClinicalNotes.isNotBlank()) {
-            binding.etClinicalNotes.setText(viewModel.enteredClinicalNotes)
-        }
+
     }
 
     fun validateInput():Boolean {
@@ -71,6 +69,10 @@ class ClinicalNotesFragment : BaseFragment() {
     }
     fun refreshFragment() {
         binding.etClinicalNotes.text?.clear()
+        setFragmentResult(
+            MedicalReviewDefinedParams.CLINICAL_NOTES, bundleOf(
+                MedicalReviewDefinedParams.Notes to false)
+        )
     }
     fun reloadFragment(value: String) {
         binding.etClinicalNotes.setText(value)

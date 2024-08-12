@@ -41,9 +41,13 @@ import com.medtroniclabs.spice.data.model.BpAndWeightRequestModel
 import com.medtroniclabs.spice.data.model.BpAndWeightResponse
 import com.medtroniclabs.spice.data.model.MotherNeonateAncRequest
 import com.medtroniclabs.spice.data.model.PatientEncounterResponse
+import com.medtroniclabs.spice.data.model.PncSubmitResponse
 import com.medtroniclabs.spice.data.offlinesync.model.HouseHold
 import com.medtroniclabs.spice.data.offlinesync.model.RequestGetSyncStatus
 import com.medtroniclabs.spice.data.offlinesync.model.SyncResponse
+import com.medtroniclabs.spice.data.MotherNeonatePncSummaryRequest
+import com.medtroniclabs.spice.data.MotherNeonatePncSummaryResponse
+import com.medtroniclabs.spice.data.SummaryCreateRequest
 import com.medtroniclabs.spice.data.BirthHistoryRequest
 import com.medtroniclabs.spice.data.BirthHistoryResponse
 import com.medtroniclabs.spice.data.resource.LabourDeliverySummaryRequest
@@ -97,7 +101,7 @@ interface ApiHelper {
     suspend fun createMedicalReviewForUnderTwoMonths(request: CreateUnderTwoMonthsRequest): Response<APIResponse<CreateUnderTwoMonthsResponse>>
     suspend fun getMedicalReviewForUnderTwoMonths(request: CreateUnderTwoMonthsResponse): Response<APIResponse<SummaryDetails>>
     suspend fun saveMotherNeonateAnc(motherNeonateAncRequest: MotherNeonateAncRequest):Response<APIResponse<PatientEncounterResponse>>
-    suspend fun saveMotherNeonatePnc(motherNeonatePncRequest: MotherNeonatePncRequest):Response<APIResponse<PatientEncounterResponse>>
+    suspend fun saveMotherNeonatePnc(motherNeonatePncRequest: MotherNeonatePncRequest):Response<APIResponse<PncSubmitResponse>>
     suspend fun fetchSummary(motherNeonateAncRequest : MotherNeonateAncRequest) : Response<APIResponse<MotherNeonateAncSummaryModel>>
     suspend fun fetchWeight(motherNeonateAncRequest: MotherNeonateAncRequest): Response<APIResponse<BpAndWeightResponse>>
     suspend fun fetchBloodPressure(motherNeonateAncRequest: MotherNeonateAncRequest): Response<APIResponse<BpAndWeightResponse>>
@@ -116,6 +120,8 @@ interface ApiHelper {
     suspend fun removePrescription(request: RemovePrescriptionRequest):Response<APIResponse<Map<String,Any>>>
     suspend fun getPrescription(request: ReferralDetailRequest): Response<APIResponse<PrescriptionHistoryEntity>>
     suspend fun getMedicalReviewHistory(request: ReferralDetailRequest): Response<APIResponse<MedicalReviewHistory>>
+    suspend fun getPncSummaryDetails(request: MotherNeonatePncSummaryRequest): Response<APIResponse<MotherNeonatePncSummaryResponse>>
+    suspend fun summaryCreatePncData(summaryCreateRequest: SummaryCreateRequest):Response<APIResponse<HashMap<String, Any>>>
     suspend fun getBirthHistoryDetails(request: BirthHistoryRequest): Response<APIResponse<BirthHistoryResponse>>
     suspend fun createMedicalReviewLabourDelivery(request: CreateLabourDeliveryRequest): Response<APIResponse<CreateLabourDeliveryResponse>>
     suspend fun  addNewMember(request: AddMemberRegRequest) : Response<APIResponse<String>>

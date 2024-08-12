@@ -20,6 +20,7 @@ import com.medtroniclabs.spice.ui.home.ToolsViewModel
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.labourdelivery.activity.LabourDeliveryBaseActivity
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.activity.MotherNeonateANCActivity
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.pnc.activity.MotherNeonatePncActivity
+import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -28,6 +29,7 @@ class SelectFlowDialog : DialogFragment(), View.OnClickListener {
 
     private lateinit var binding: FragmentSelectFlowDialogBinding
     private val viewModel: ToolsViewModel by activityViewModels()
+    private val patientDetailViewModel :PatientDetailViewModel by activityViewModels()
     @Inject
     lateinit var connectivityManager: ConnectivityManager
 
@@ -47,11 +49,12 @@ class SelectFlowDialog : DialogFragment(), View.OnClickListener {
             return SelectFlowDialog()
         }
 
-        fun newInstance(patientId: String?, id: String?): SelectFlowDialog {
+        fun newInstance(patientId: String?, id: String?,childPatientId:String?): SelectFlowDialog {
             val fragment = SelectFlowDialog()
             val bundle = Bundle()
             bundle.putString(DefinedParams.PatientId, patientId)
             bundle.putString(DefinedParams.ID, id)
+            bundle.putString(DefinedParams.ChildPatientId,childPatientId)
             fragment.arguments = bundle
             return fragment
         }
@@ -163,7 +166,10 @@ class SelectFlowDialog : DialogFragment(), View.OnClickListener {
                 getString(R.string.labour_delivery)
             )
         )
-        flowList.add(CommonUtils.getOptionMap(getString(R.string.pnc), getString(R.string.pnc)))
+        val id = arguments?.getString(DefinedParams.ChildPatientId, null)
+        if (!id.isNullOrEmpty()) {
+            flowList.add(CommonUtils.getOptionMap(getString(R.string.pnc), getString(R.string.pnc)))
+        }
         return flowList
     }
 

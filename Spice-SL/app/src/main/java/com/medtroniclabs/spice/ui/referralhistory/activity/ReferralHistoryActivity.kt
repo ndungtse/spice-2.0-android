@@ -158,6 +158,10 @@ class ReferralHistoryActivity : BaseActivity(), AncVisitCallBack {
             DefinedParams.DOB,
             this.intent.getStringExtra(DefinedParams.DOB)
         )
+        intent.putExtra(
+            DefinedParams.ChildPatientId,
+            patientDetailViewModel.childPatientDetails
+        )
         startActivity(intent)
     }
 

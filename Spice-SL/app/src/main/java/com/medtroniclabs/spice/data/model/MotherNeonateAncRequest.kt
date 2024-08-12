@@ -43,3 +43,10 @@ data class PatientEncounterResponse(
     val patientReference: String? = null,
     val encounterId: String? = null
 )
+
+data class PncSubmitResponse(
+    val encounterId: String?=null,
+    val patientReference: String?=null,
+    val childEncounterId: String?=null,
+    val childPatientReference: String?=null
+)

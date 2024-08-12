@@ -768,6 +768,7 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
                 R.id.pregnancyDetailsConatiner,
                 MedicalReviewPatientDiagnosisFragment.newInstance(
                     true,
+                    false,
                     intent.getStringExtra(DefinedParams.PatientId),
                     viewModel.memberId,
                     intent.getStringExtra(DefinedParams.ID)

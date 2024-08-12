@@ -41,11 +41,15 @@ import com.medtroniclabs.spice.data.model.BpAndWeightRequestModel
 import com.medtroniclabs.spice.data.model.BpAndWeightResponse
 import com.medtroniclabs.spice.data.model.MotherNeonateAncRequest
 import com.medtroniclabs.spice.data.model.PatientEncounterResponse
+import com.medtroniclabs.spice.data.model.PncSubmitResponse
 import com.medtroniclabs.spice.data.offlinesync.model.HouseHold
 import com.medtroniclabs.spice.data.offlinesync.model.RequestGetSyncStatus
 import com.medtroniclabs.spice.data.offlinesync.model.SyncResponse
 import com.medtroniclabs.spice.data.BirthHistoryRequest
 import com.medtroniclabs.spice.data.BirthHistoryResponse
+import com.medtroniclabs.spice.data.MotherNeonatePncSummaryRequest
+import com.medtroniclabs.spice.data.MotherNeonatePncSummaryResponse
+import com.medtroniclabs.spice.data.SummaryCreateRequest
 import com.medtroniclabs.spice.data.resource.LabourDeliverySummaryRequest
 import com.medtroniclabs.spice.data.resource.RequestAllEntities
 import com.medtroniclabs.spice.model.PatientDetailRequest
@@ -155,7 +159,7 @@ interface ApiService {
     suspend fun saveMotherNeonateAnc(@Body motherNeonateAncRequest: MotherNeonateAncRequest):Response<APIResponse<PatientEncounterResponse>>
 
     @POST("/spice-service/medical-review/pnc/create")
-    suspend fun saveMotherNeonatePnc(@Body motherNeonatePncRequest: MotherNeonatePncRequest):Response<APIResponse<PatientEncounterResponse>>
+    suspend fun saveMotherNeonatePnc(@Body motherNeonatePncRequest: MotherNeonatePncRequest):Response<APIResponse<PncSubmitResponse>>
 
     @POST("/spice-service/medical-review/anc-pregnancy/details")
     suspend fun fetchSummary(@Body motherNeonateAncRequest : MotherNeonateAncRequest) : Response<APIResponse<MotherNeonateAncSummaryModel>>
@@ -207,6 +211,12 @@ interface ApiService {
 
     @POST("/spice-service/medical-review/history")
     suspend fun getMedicalReviewHistory(@Body request: ReferralDetailRequest): Response<APIResponse<MedicalReviewHistory>>
+
+    @POST("/spice-service/medical-review/pnc/details")
+    suspend fun getPncSummaryDetails(@Body request: MotherNeonatePncSummaryRequest): Response<APIResponse<MotherNeonatePncSummaryResponse>>
+
+    @POST("/spice-service/medical-review/mother-neonate/summary-create")
+    suspend fun summaryCreatePncData(@Body request: SummaryCreateRequest): Response<APIResponse<HashMap<String, Any>>>
 
     @POST("spice-service/medical-review/birth-history")
     suspend fun getBirthHistoryDetails(@Body request: BirthHistoryRequest): Response<APIResponse<BirthHistoryResponse>>

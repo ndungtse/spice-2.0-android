@@ -548,6 +548,8 @@
     <string name="pncMotherSigns">PNC Mother Signs</string>
     <string name="pncNeonateSigns">PNC Neonate Signs</string>
     <string name="childhoodVisitSigns">Childhood Visit Signs</string>
+    <string name="pnc_visit_summary_mother">PNC Visit Summary- Mother</string>
+    <string name="pnc_visit_summary_neonate">PNC Visit Summary- Neonate</string>
     <string name="weeks_baby">" weeks"</string>
     <string name="gms_baby">" gms"</string>
     <string name="premature_baby">" (Premature)"</string>
@@ -576,5 +578,10 @@
     <string name="call">Call</string>
     <string name="post_natal">Post Natal</string>
     <string name="tear_hypen">Tear- </string>
+
+    <string name="specify_your_ncondition">Specify your\ncondition</string>
+    <string name="involutions_of_the_nuterus">Involutions of the\nuterus</string>
+    <string name="involutions_of_the_nuterus_summary">Involutions of the uterus</string>
+    <string name="breast_condition">Breast Condition</string>
     <string name="five_minutes">" (Five minutes)"</string>
 </resources>

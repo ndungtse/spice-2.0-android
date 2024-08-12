@@ -255,6 +255,7 @@ object CommonUtils {
         return if (value) HouseHoldRegistration.yes else HouseHoldRegistration.no
     }
 
+
     fun getBMI(heightInCM: Double, weight: Double, context: Context): String {
         val heightInMeter = heightInCM / 100
         val bmi = weight / (heightInMeter * heightInMeter)
@@ -348,7 +349,7 @@ object CommonUtils {
                 MedicalReviewTypeEnums.ICCM.name
             }
 
-            MedicalReviewTypeEnums.ANC.name, MedicalReviewTypeEnums.PNC.name, MedicalReviewTypeEnums.LabourDelivery.name -> {
+            MedicalReviewTypeEnums.ANC.name, MedicalReviewTypeEnums.PNC.name.plus("-").plus(MedicalReviewTypeEnums.Mother.name), MedicalReviewTypeEnums.LabourDelivery.name -> {
                 MedicalReviewTypeEnums.RMNCH.name
             }
 
@@ -368,6 +369,33 @@ object CommonUtils {
             }"
         }?.joinToString("\n")
     }
+    fun createMotherNeonateExamination(
+        prescriptions: List<HashMap<String, Pair<String?, Any?>>>,
+        context: Context,
+        type: Boolean
+    ): String? {
+        val maxKeyLength = prescriptions.flatMap { it.keys }.maxOfOrNull { it.length} ?: 0
+        var formattedFirst=""
+        return prescriptions.takeIf { it.isNotEmpty() }?.mapIndexed { index, prescription ->
+            prescription.entries.joinToString("\n") { (key, pair) ->
+                formattedFirst = if (key.length==maxKeyLength && type){
+                    key.plus(":").padEnd(maxKeyLength+3)
+                }else if(!type){
+                    key.plus(":").padEnd(maxKeyLength+5)
+                } else {
+                    key.plus(":").padEnd((maxKeyLength+7.7).toInt())
+                }
+                val formattedPair = if (pair.second == null) {
+                    "${index + 1}. $formattedFirst ${pair.first}"
+                } else {
+                    "${index + 1}. $formattedFirst ${pair.first}- (${pair.second})"
+                }
+                formattedPair
+            }
+        }?.joinToString("\n")
+    }
+
+
 
     private fun dayPeriod(prescribedDays: Long?, context: Context): String {
         return if (prescribedDays == 1L) {

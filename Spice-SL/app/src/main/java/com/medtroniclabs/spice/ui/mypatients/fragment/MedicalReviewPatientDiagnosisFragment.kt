@@ -9,6 +9,7 @@ import androidx.appcompat.widget.AppCompatTextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.activityViewModels
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.card.MaterialCardView
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.changePatientStatus
 import com.medtroniclabs.spice.appextensions.gone
@@ -40,7 +41,6 @@ import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PregnancyDetailsViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
-
 @AndroidEntryPoint
 class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListener,
     DialogDismissListener {
@@ -59,10 +59,11 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
             return MedicalReviewPatientDiagnosisFragment()
         }
 
-        fun newInstance(isAnc: Boolean, patientId: String?,memberID: String?, id: String?): MedicalReviewPatientDiagnosisFragment {
+        fun newInstance(isAnc: Boolean,isPnc:Boolean=false, patientId: String?,memberID: String?, id: String?): MedicalReviewPatientDiagnosisFragment {
             val fragment = MedicalReviewPatientDiagnosisFragment()
             fragment.arguments = Bundle().apply {
                 putBoolean(DefinedParams.PregnancyANC, isAnc)
+                putBoolean(DefinedParams.PregnancyPNC,isPnc)
                 putString(DefinedParams.PatientId, patientId)
                 putString(DefinedParams.MemberID, memberID)
                 putString(DefinedParams.ID, id)
@@ -86,7 +87,9 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
         return arguments?.let {
             if (it.getBoolean(DefinedParams.PregnancyANC)){
                 MedicalReviewTypeEnums.ANC.name
-            } else {
+            }else if (it.getBoolean(DefinedParams.PregnancyPNC)){
+                MedicalReviewTypeEnums.PNC.name.plus(getString(R.string.hyphen_symbol)).plus(MedicalReviewTypeEnums.Mother.name)
+            }else {
                 it.getString(MedicalReviewTypeEnums.DiagnosisType.name)
             }
         } ?: ""
@@ -99,7 +102,7 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
         handleFlow()
         initializeListeners()
         attachListeners()
-        if (patientViewModel.getAncVisit() == 1) {
+        if (patientViewModel.getAncVisit() == 1 && diagnosisViewModel.diagnosisType!=MedicalReviewTypeEnums.PNC.name ) {
             binding.tvWeightValue.text = MotherNeonateUtil.convertWeight(
                 pregnancyDetailsViewModel.pregnancyDetailsModel.weight,
                 requireContext()
@@ -238,16 +241,12 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
     private fun handleFlow() {
         with(binding) {
             val isAnc = arguments?.getBoolean(DefinedParams.PregnancyANC, false)
-            if (isAnc == true) {
-                cardAddWeight.visible()
-                cardBloodPressure.visible()
-                if (connectivityManager.isNetworkAvailable() && patientViewModel.getAncVisit() > 1) {
-                    viewModel.fetchWeight(MotherNeonateAncRequest(memberId = getMemberId()))
-                    viewModel.fetchBloodPressure(MotherNeonateAncRequest(memberId = getMemberId()))
-                }
-            } else {
+            val isPnc = arguments?.getBoolean(DefinedParams.PregnancyPNC, false)
+            if (isAnc == false && isPnc == false) {
                 cardAddWeight.gone()
                 cardBloodPressure.gone()
+            }else {
+               ancPncFlow(cardAddWeight,cardBloodPressure)
             }
             tvAddWeight.safeClickListener(this@MedicalReviewPatientDiagnosisFragment)
             tvAddBp.safeClickListener(this@MedicalReviewPatientDiagnosisFragment)
@@ -258,6 +257,16 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
         }
     }
 
+    private fun ancPncFlow(cardAddWeight: MaterialCardView, cardBloodPressure: MaterialCardView) {
+        cardAddWeight.visible()
+        cardBloodPressure.visible()
+        if (connectivityManager.isNetworkAvailable()) {
+            if (patientViewModel.getAncVisit() > 1 || getDiagnosisType() == MedicalReviewTypeEnums.PNC.name.plus(getString(R.string.hyphen_symbol)).plus(MedicalReviewTypeEnums.Mother.name)) {
+                viewModel.fetchWeight(MotherNeonateAncRequest(memberId = getMemberId()))
+                viewModel.fetchBloodPressure(MotherNeonateAncRequest(memberId = getMemberId()))
+            }
+        }
+    }
     override fun onClick(v: View?) {
         when (v?.id) {
             binding.tvAddWeight.id -> showAddWeightDialog()

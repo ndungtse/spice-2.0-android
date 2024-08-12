@@ -4,6 +4,7 @@ object MedicalReviewDefinedParams {
     const val PC_ITEM = "PresentingComplaintsType"
     const val SE_ITEM = "SystemicExaminationsType"
     const val CLINICAL_NOTES = "ClinicalNotes"
+    const val GENERAL_SE_ITEM="GeneralExaminationsType"
     const val MEMBER_REG="MemberReg"
     const val Notes = "Notes"
     const val CHIP_ITEMS = "ChipItems"

@@ -13,6 +13,7 @@ import com.google.android.flexbox.JustifyContent
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DateUtils
+import com.medtroniclabs.spice.common.DefinedParams.ChildPatientId
 import com.medtroniclabs.spice.common.DefinedParams.DOB
 import com.medtroniclabs.spice.common.DefinedParams.Gender
 import com.medtroniclabs.spice.common.DefinedParams.ID
@@ -21,6 +22,7 @@ import com.medtroniclabs.spice.common.DefinedParams.female
 import com.medtroniclabs.spice.common.DefinedParams.male
 import com.medtroniclabs.spice.databinding.FragmentPatientMenuBinding
 import com.medtroniclabs.spice.db.entity.MenuEntity
+import com.medtroniclabs.spice.model.medicalreview.Child
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.BaseFragment
@@ -36,6 +38,7 @@ import com.medtroniclabs.spice.ui.medicalreview.underfiveyears.UnderFiveYearsBas
 import com.medtroniclabs.spice.ui.medicalreview.undertwomonths.activity.UnderTwoMonthsBaseActivity
 import com.medtroniclabs.spice.ui.mypatients.MedicalReviewBaseActivity
 import dagger.hilt.android.AndroidEntryPoint
+import org.checkerframework.checker.units.qual.s
 
 @AndroidEntryPoint
 class PatientMenuFragment : BaseFragment(), MenuSelectionListener {
@@ -123,7 +126,8 @@ class PatientMenuFragment : BaseFragment(), MenuSelectionListener {
             patientId: String?,
             id: String?,
             gender: String?,
-            dob: String?
+            dob: String?,
+            childPatientId: String?
         ): PatientMenuFragment {
             val fragment = PatientMenuFragment()
             val bundle = Bundle()
@@ -131,6 +135,7 @@ class PatientMenuFragment : BaseFragment(), MenuSelectionListener {
             bundle.putString(ID, id)
             bundle.putString(Gender, gender)
             bundle.putString(DOB, dob)
+            bundle.putString(ChildPatientId, childPatientId)
             fragment.arguments = bundle
             return fragment
         }
@@ -156,8 +161,9 @@ class PatientMenuFragment : BaseFragment(), MenuSelectionListener {
                 withNetworkAvailability(online = {
                     val patientId = arguments?.getString(PatientId, "")
                     val id = arguments?.getString(ID, "")
+                    val childPatientId=arguments?.getString(ChildPatientId,"")
                     if (patientId?.isNotBlank() == true) {
-                        SelectFlowDialog.newInstance(patientId, id)
+                        SelectFlowDialog.newInstance(patientId, id,childPatientId)
                             .show(childFragmentManager, SelectFlowDialog.TAG)
                     }
                 })

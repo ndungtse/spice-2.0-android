@@ -14,6 +14,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.add
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
@@ -24,6 +25,8 @@ import com.medtroniclabs.spice.common.DefinedParams.REFRESH_FRAGMENT
 import com.medtroniclabs.spice.databinding.ActivityBaseBinding
 import com.medtroniclabs.spice.databinding.ErrorLayoutBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
+import com.medtroniclabs.spice.network.resource.Resource
+import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.network.utils.ConnectivityManager
 import com.medtroniclabs.spice.ui.landing.LandingActivity
 import dagger.hilt.android.AndroidEntryPoint
@@ -345,6 +348,9 @@ open class BaseActivity : SpiceRootActivity() {
             }
         }
     }
+    fun getFragmentById(fragmentManager: FragmentManager, fragmentId: Int): Fragment? {
+        return fragmentManager.findFragmentById(fragmentId)
+    }
     fun withNetworkCheck(
         connectivityManager: ConnectivityManager,
         onNetworkAvailable: () -> Unit,
@@ -363,6 +369,38 @@ open class BaseActivity : SpiceRootActivity() {
                     onNetworkNotAvailable()
                 }
                 hideLoading()
+            }
+        }
+    }
+    fun <T> handleResourceState(
+        resourceState: Resource<T>,
+        onSuccess: () -> Unit ,
+        onSuccessParam: (T) -> Unit = {},
+        onBackPressPopStack: () -> Unit,
+        onError: () -> Unit = {
+            showErrorDialogue(
+                title = getString(R.string.alert),
+                message = getString(R.string.something_went_wrong_try_later),
+                positiveButtonName = getString(R.string.ok),
+            ) {
+                if (it) {
+                    onBackPressPopStack()
+                }
+            }
+        }
+    ) {
+        when (resourceState.state) {
+            ResourceState.LOADING -> {
+                showLoading()
+            }
+            ResourceState.ERROR -> {
+                hideLoading()
+                onError()
+            }
+            ResourceState.SUCCESS -> {
+                hideLoading()
+                onSuccess()
+                resourceState.data?.let(onSuccessParam)
             }
         }
     }

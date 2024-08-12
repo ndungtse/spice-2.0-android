@@ -17,6 +17,7 @@ import com.medtroniclabs.spice.data.model.ChipViewItemModel
 import com.medtroniclabs.spice.databinding.FragmentPhysicalExaminationBinding
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.ui.SingleSelectionCustomView
+import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.TagListCustomView
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
@@ -51,7 +52,7 @@ class PhysicalExaminationFragment : BaseFragment() {
     private fun attachObserver() {
         viewModel.systemicExaminationListLiveData.observe(viewLifecycleOwner) { list ->
             val chipItemList = ArrayList<ChipViewItemModel>()
-            list.filter { it.category == MedicalReviewTypeEnums.SystemicExaminations.name }
+            list.filter { it.category == MedicalReviewTypeEnums.ObstetricExaminations.name }
                 .forEach {
                     chipItemList.add(
                         ChipViewItemModel(
@@ -98,6 +99,10 @@ class PhysicalExaminationFragment : BaseFragment() {
         { selectedID, _, _, _ ->
             viewModel.congenitalDefectMap[DefinedParams.CongenitalDetect] = selectedID as String
             resetSelectionViews(DefinedParams.CordExamination)
+            val flowValue =
+                viewModel.congenitalDefectMap[DefinedParams.CongenitalDetect] as? String
+            viewModel.congenitalDefect =
+                flowValue?.equals(HouseHoldRegistration.yes, ignoreCase = true) ?: false
             if (selectedID == getString(R.string.no)) {
                 binding.CordExaminationGroup.visible()
                 binding.cordExaminationSelector.requestFocus()
@@ -187,6 +192,11 @@ class PhysicalExaminationFragment : BaseFragment() {
     private var breastConditionSelectionCallback: ((selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit)? =
         { selectedID, _, _, _ ->
             viewModel.breastCondition[DefinedParams.BreastCondition] = selectedID as String
+            val flowValue =
+                viewModel.breastCondition[DefinedParams.BreastCondition] as? String
+            viewModel.breastFeeding =
+                flowValue?.equals(HouseHoldRegistration.yes, ignoreCase = true) ?: false
+
         }
 
     private fun getBreastConditionFlowData(): ArrayList<Map<String, Any>> {
@@ -216,6 +226,10 @@ class PhysicalExaminationFragment : BaseFragment() {
         { selectedID, _, _, _ ->
             viewModel.exclusiveBreastCondition[DefinedParams.ExclusiveBreastCondition] =
                 selectedID as String
+            val flowValue =
+                viewModel.exclusiveBreastCondition[DefinedParams.ExclusiveBreastCondition] as? String
+            viewModel.exclusiveBreastFeeding =
+                flowValue?.equals(HouseHoldRegistration.yes, ignoreCase = true) ?: false
         }
 
     private fun getExclusiveBreastConditionFlowData(): ArrayList<Map<String, Any>> {
@@ -234,6 +248,13 @@ class PhysicalExaminationFragment : BaseFragment() {
     fun refreshFragment() {
         examinationsTagView.clearSelection()
         examinationsTagView.clearOtherChip()
+        resetSelectionViews(DefinedParams.CongenitalDetect)
+        resetSelectionViews(DefinedParams.CordExamination)
+        resetSelectionViews(DefinedParams.ExclusiveBreastCondition)
+        resetSelectionViews(DefinedParams.BreastCondition)
+        binding.CordExaminationGroup.gone()
+        binding.BreastFeedingGroup.gone()
+
     }
 
 

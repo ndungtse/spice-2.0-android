@@ -580,6 +580,12 @@ class RoomHelperImpl @Inject constructor(
     override suspend fun getFrequencyList(): List<FrequencyEntity> {
         return frequencyDAO.getFrequencyList()
     }
+    override fun getExaminationsComplaintsForPnc(
+        category: String,
+        type: String
+    ): LiveData<List<MedicalReviewMetaItems>> {
+        return examinationsComplaintsDAO.getExaminationsComplaintsForPnc(category,type)
+    }
 
     override suspend fun updateOtherFollowUpForWrongNumber(id: Long, fhirId: String) {
         followUpDao.updateOtherFollowUpForWrongNumber(id, fhirId)

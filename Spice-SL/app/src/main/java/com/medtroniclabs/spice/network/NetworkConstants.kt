@@ -7,7 +7,7 @@ object NetworkConstants {
 }
 
 object BaseUrl {
-    const val LOCAL = "http://192.168.20.252/"
+    const val LOCAL = "http://192.168.22.21:80/"
     const val DEV = "https://spice-dev-backend.sl.labsplatform.com/"
     const val DEV1 = "https://spice-dev-backend-v1.sl.labsplatform.com/"
     const val TRAINING = "https://spice-training-backend.sl.labsplatform.com/"

@@ -25,6 +25,7 @@ import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.ANC
+import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.PNC
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.AncVisitCallBack
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -49,12 +50,14 @@ class PatientInfoFragment : BaseFragment() {
         fun newInstance(
             patientId: String?,
             isAnc: Boolean = false,
+            isPnc:Boolean =false,
             isReferredScreen: Boolean = false
         ): PatientInfoFragment {
             val fragment = PatientInfoFragment()
             val bundle = Bundle()
             bundle.putString(DefinedParams.PatientId, patientId)
             bundle.putBoolean(ANC, isAnc)
+            bundle.putBoolean(PNC,isPnc)
             bundle.putBoolean(IsReferredScreen, isReferredScreen)
             fragment.arguments = bundle
             return fragment
@@ -102,6 +105,9 @@ class PatientInfoFragment : BaseFragment() {
     private fun isAnc(): Boolean? {
         return arguments?.getBoolean(ANC, false)
     }
+    private fun isPnc(): Boolean? {
+        return arguments?.getBoolean(PNC, false)
+    }
 
     private fun isReferredScreen(): Boolean? {
         return arguments?.getBoolean(IsReferredScreen, false)
@@ -109,7 +115,9 @@ class PatientInfoFragment : BaseFragment() {
     private fun setDataInInfo(patientListRespModel: PatientListRespModel) {
         showProgress()
         viewModel.patientDetailsId = patientListRespModel.id
+        viewModel.childPatientDetails=patientListRespModel.childPatientId
         val isAnc = isAnc()
+        val isPnc= isPnc()
         val name =
             patientListRespModel.name ?: requireContext().getString(R.string.separator_hyphen)
         val gender =
@@ -122,6 +130,10 @@ class PatientInfoFragment : BaseFragment() {
             val lastMenstrualDate =
                 patientListRespModel.pregnancyDetails?.lastMenstrualPeriod.takeIf { it?.isNotBlank() == true }?.let {
                     DateUtils.convertDateFormat(it, DATE_FORMAT_yyyyMMddHHmmssZZZZZ, DATE_ddMMyyyy)
+                }
+            val dateOfDelivery =
+                patientListRespModel.pregnancyDetails?.dateOfDelivery.takeIf { it?.isNotBlank() == true }?.let {
+                    DateUtils.convertDateFormat(it, DATE_FORMAT_yyyyMMddHHmmssZZZZZ, DATE_ddMMyyyy)?:requireContext().getString(R.string.hyphen_symbol)
                 }
 
             val dataList = mutableListOf(
@@ -155,6 +167,14 @@ class PatientInfoFragment : BaseFragment() {
                     mapOf(
                         DefinedParams.label to requireContext().getString(R.string.last_menstrual_period),
                         DefinedParams.value to lastMenstrualDate
+                    )
+                )
+            }
+            if (isPnc==true&&dateOfDelivery != null){
+                dataList.add(
+                    mapOf(
+                        DefinedParams.label to requireContext().getString(R.string.date_of_delivery),
+                        DefinedParams.value to dateOfDelivery
                     )
                 )
             }

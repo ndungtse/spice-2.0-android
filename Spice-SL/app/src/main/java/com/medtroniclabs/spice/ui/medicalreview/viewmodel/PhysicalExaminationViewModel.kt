@@ -16,6 +16,9 @@ class PhysicalExaminationViewModel @Inject constructor(
     private var repository: PhysicalExaminationRepository,
 ) : ViewModel() {
 
+    var congenitalDefect: Boolean?=null
+    var exclusiveBreastFeeding: Boolean?=null
+    var breastFeeding: Boolean?=null
     var selectedSystemicExaminations = ArrayList<ChipViewItemModel>()
     val cordExaminationMap = HashMap<String, Any>()
     val congenitalDefectMap = HashMap<String, Any>()

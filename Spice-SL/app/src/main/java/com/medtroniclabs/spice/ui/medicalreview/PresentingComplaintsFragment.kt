@@ -120,9 +120,9 @@ open class PresentingComplaintsFragment : BaseFragment() {
             setFragmentResult(PC_ITEM, bundleOf(CHIP_ITEMS to true))
         }
         viewModel.getPresentingComplaintsList(viewModel.presentingComplaintsType)
-        if (viewModel.enteredComplaintNotes.isNotBlank()) {
-            binding.etPresentingComplaintsComments.setText(viewModel.enteredComplaintNotes)
-        }
+//        if (viewModel.enteredComplaintNotes.isNotBlank()) {
+//            binding.etPresentingComplaintsComments.setText(viewModel.enteredComplaintNotes)
+//        }
     }
 
 

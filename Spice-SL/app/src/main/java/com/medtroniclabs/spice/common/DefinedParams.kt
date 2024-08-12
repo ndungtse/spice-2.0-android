@@ -39,6 +39,7 @@ object DefinedParams {
     const val Value = "Value"
     const val MenuTitle = "MenuTitle"
     const val PatientId = "PatientId"
+    const val ChildPatientId="childPatientId"
     const val TimeOfDelivery = "timeOfDelivery"
     const val TimeOfLabourOnset = "timeOfLabourOnset"
     const val HouseholdHead = "HouseholdHead"
@@ -59,11 +60,15 @@ object DefinedParams {
     const val OnHold = "on-hold"
     const val Active = "active"
     const val PregnancyANC = "PregnancyANC"
+    const val PregnancyPNC = "PregnancyPNC"
     const val EncounterId = "encounterId"
+    const val ChildEncounterId = "childEncounterId"
+    const val IsNeonate="isNeonate"
     const val True = "true"
 
     const val ExclusiveBreastCondition = "ExclusiveBreastCondition"
     const val BreastCondition = "BreastCondition"
+    const val UterusCondition ="UterusCondition"
     const val CordExamination = "CordExamination"
     const val CongenitalDetect = "CongenitalDetect"
 

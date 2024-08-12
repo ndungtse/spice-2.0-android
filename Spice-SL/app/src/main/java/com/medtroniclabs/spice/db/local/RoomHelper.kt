@@ -33,6 +33,8 @@ import com.medtroniclabs.spice.db.response.VillageBasicDetails
 import com.medtroniclabs.spice.model.MemberDobGenderModel
 import com.medtroniclabs.spice.model.assessment.AssessmentDetails
 import com.medtroniclabs.spice.model.assessment.AssessmentMemberDetails
+import com.medtroniclabs.spice.model.followup.FollowUpFilter
+import kotlinx.coroutines.flow.Flow
 
 interface RoomHelper {
     suspend fun saveHouseHoldEntry(householdEntity: HouseholdEntity): Long
@@ -209,6 +211,10 @@ interface RoomHelper {
 
     suspend fun savePregnancyDetail(detail: PregnancyDetail): Long
 
+    fun getExaminationsComplaintsForPnc(
+        category: String,
+        type: String
+    ): LiveData<List<MedicalReviewMetaItems>>
     suspend fun deleteAllFrequencyList()
     suspend fun saveFrequencyList(villageEntityList: List<FrequencyEntity>): List<Long>
     suspend fun getFrequencyList(): List<FrequencyEntity>

@@ -426,7 +426,7 @@ class DiagnosisDialogFragment : DialogFragment(), View.OnClickListener, Diagnosi
 
     private fun isShowAccordion(): Boolean {
         return when (diagnosisViewModel.diagnosisType) {
-            MedicalReviewTypeEnums.ANC.name, MedicalReviewTypeEnums.PNC.name, MedicalReviewTypeEnums.UnderTwoMonths.name, MedicalReviewTypeEnums.UnderFiveYears.name -> {
+            MedicalReviewTypeEnums.ANC.name, MedicalReviewTypeEnums.PNC.name.plus(getString(R.string.hyphen_symbol)).plus(MedicalReviewTypeEnums.Mother.name), MedicalReviewTypeEnums.UnderTwoMonths.name, MedicalReviewTypeEnums.UnderFiveYears.name -> {
                 false
             }
 
@@ -443,7 +443,7 @@ class DiagnosisDialogFragment : DialogFragment(), View.OnClickListener, Diagnosi
                 binding.tvSelectedDiseaseConditionLbl.gone()
                 binding.llFamilyRoot.gone()
             }
-            MedicalReviewTypeEnums.UnderTwoMonths.name, MedicalReviewTypeEnums.UnderFiveYears.name -> {
+            MedicalReviewTypeEnums.UnderTwoMonths.name, MedicalReviewTypeEnums.UnderFiveYears.name ,MedicalReviewTypeEnums.PNC.name.plus(getString(R.string.hyphen_symbol)).plus(MedicalReviewTypeEnums.Mother.name)-> {
                 binding.tvSelectedDiseaseConditionLbl.gone()
                 binding.tvSelectedDiseaseCategoryLbl.gone()
                 binding.etOtherDiagnosisNotes.visible()
@@ -481,7 +481,8 @@ class DiagnosisDialogFragment : DialogFragment(), View.OnClickListener, Diagnosi
                 }
             }
 
-            MedicalReviewTypeEnums.ANC.name, MedicalReviewTypeEnums.UnderFiveYears.name, MedicalReviewTypeEnums.UnderTwoMonths.name -> {
+            MedicalReviewTypeEnums.ANC.name, MedicalReviewTypeEnums.UnderFiveYears.name, MedicalReviewTypeEnums.UnderTwoMonths.name,
+            MedicalReviewTypeEnums.PNC.name.plus(getString(R.string.hyphen_symbol)).plus(MedicalReviewTypeEnums.Mother.name)-> {
                 if (diseaseCategoryTagView.getSelectedTags().isNotEmpty() || otherSelection) {
                     binding.btnOkay.isEnabled = true
                 } else {

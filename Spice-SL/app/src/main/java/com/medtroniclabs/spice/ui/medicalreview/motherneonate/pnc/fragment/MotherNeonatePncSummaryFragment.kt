@@ -1,0 +1,377 @@
+package com.medtroniclabs.spice.ui.medicalreview.motherneonate.pnc.fragment
+
+import android.app.DatePickerDialog
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.AdapterView
+import androidx.core.content.ContextCompat
+import androidx.core.os.bundleOf
+import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.setFragmentResult
+import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.appextensions.gone
+import com.medtroniclabs.spice.appextensions.setExpandableText
+import com.medtroniclabs.spice.common.CommonUtils
+import com.medtroniclabs.spice.common.CommonUtils.convertListToString
+import com.medtroniclabs.spice.common.CommonUtils.getBooleanAsString
+import com.medtroniclabs.spice.common.DateUtils
+import com.medtroniclabs.spice.common.DefinedParams
+import com.medtroniclabs.spice.common.SecuredPreference
+import com.medtroniclabs.spice.common.ViewUtils
+import com.medtroniclabs.spice.data.MedicalReviewMetaItems
+import com.medtroniclabs.spice.data.MotherNeonatePncSummaryResponse
+import com.medtroniclabs.spice.databinding.FragmentMotherNeonarePncSummaryBinding
+import com.medtroniclabs.spice.databinding.MotherNeonatePncSummaryLayoutBinding
+import com.medtroniclabs.spice.formgeneration.extension.capitalizeFirstChar
+import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
+import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
+import com.medtroniclabs.spice.network.resource.Resource
+import com.medtroniclabs.spice.network.resource.ResourceState
+import com.medtroniclabs.spice.ui.BaseActivity
+import com.medtroniclabs.spice.ui.BaseFragment
+import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
+import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
+import com.medtroniclabs.spice.ui.medicalreview.motherneonate.pnc.viewmodel.MotherNeonatePncSummaryViewModel
+import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
+
+
+class MotherNeonatePncSummaryFragment : BaseFragment(), View.OnClickListener {
+    private lateinit var binding: FragmentMotherNeonarePncSummaryBinding
+    var adapter: CustomSpinnerAdapter? = null
+    private var datePickerDialog: DatePickerDialog? = null
+    val viewModel: MotherNeonatePncSummaryViewModel by activityViewModels()
+
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        binding = FragmentMotherNeonarePncSummaryBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    companion object {
+        const val TAG = "MotherNeonateSummary"
+        fun newInstance(): MotherNeonatePncSummaryFragment {
+            return MotherNeonatePncSummaryFragment()
+        }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        getPncSummaryDetails()
+        getPncPatientStatus(RMNCH.PNCMOTHER)
+        clickListener()
+        attachObservers()
+    }
+
+    private fun getPncSummaryDetails() = viewModel.getPncSummaryDetails()
+    private fun getPncPatientStatus(category: String) =
+        viewModel.setPncReqToGetMetaForPatientStatus(category = category)
+
+    private fun clickListener() {
+        binding.motherSummary.tvNextMedicalReviewLabelText.safeClickListener(this)
+    }
+
+    private fun attachObservers() {
+        viewModel.pncMetaLiveDataForPatientStatus.observe(viewLifecycleOwner) { resource ->
+            patientStatusBasedOnType(resource)
+        }
+        viewModel.pncSummaryResponse.observe(viewLifecycleOwner) { resource ->
+            handleResourceState(resource) {
+                initializeMotherSummaryDetails(resource.data)
+                initializeNeonateSummaryDetails(resource.data)
+            }
+        }
+    }
+
+    private fun patientStatusBasedOnType(resource: List<MedicalReviewMetaItems>) {
+        binding.tvClinicalName.text = requireContext().getString(
+            R.string.firstname_lastname,
+            SecuredPreference.getUserDetails().firstName,
+            SecuredPreference.getUserDetails().lastName
+        )
+        binding.tvDateOfReviewValue.text = DateUtils.convertDateTimeToDate(
+            DateUtils.getTodayDateDDMMYYYY(),
+            DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+            DateUtils.DATE_ddMMyyyy
+        )
+        if (viewModel.motherNeonateAlive) {
+
+            if (resource[0].type == RMNCH.PNCMOTHER) {
+                viewModel.pncMotherPatientStatus = resource
+                viewModel.pncMotherPatientStatus?.let {
+                    initializePatientStatus(it, binding.motherSummary)
+                }
+                getPncPatientStatus(RMNCH.PNCNEONATE)
+            } else {
+                viewModel.pncChildPatientStatus = resource
+                viewModel.pncChildPatientStatus?.let {
+                    initializePatientStatus(it, binding.neonateSummary)
+                }
+                binding.neonateSummary.nextVisitDateGroup.gone()
+            }
+        } else {
+            binding.motherSummary.tvNextMedicalReviewLabel.gone()
+            binding.motherSummary.tvNextMedicalReviewSeparator.gone()
+            binding.motherSummary.tvNextMedicalReviewLabelText.gone()
+            binding.motherSummary.tvPatientStatus.gone()
+            binding.motherSummary.tvPatientSeparator.gone()
+            binding.motherSummary.tvPatientStatusSpinner.gone()
+        }
+    }
+
+
+    private fun initializeMotherSummaryDetails(data: MotherNeonatePncSummaryResponse?) {
+        binding.motherSummary.apply {
+            tvTitle.text = getString(R.string.pnc_visit_summary_mother)
+            tvPncVisitNoText.text =
+                ((data?.pncMother?.visitNumber) ?: getString(R.string.empty__)).toString()
+            tvPresentingComplaintsText.text =
+                (data?.pncMother?.presentingComplaints?.joinToString(", "))
+                    ?: getString(R.string.empty__)
+            tvClinicalNotesText.setExpandableText(
+                fullText = (data?.pncMother?.clinicalNotes) ?: getString(R.string.empty__),
+                moreColorResId = R.color.purple_700,
+                title = tvClinicalNotesLabel.text.toString(),
+                activity = (requireActivity() as BaseActivity)
+            )
+            val list = mutableListOf<HashMap<String, Pair<String?, Any?>>>()
+            data?.pncMother?.breastCondition?.let { breastCondition ->
+                data.pncMother.breastConditionNotes.let { breastConditionNotes ->
+                    list.add(
+                        hashMapOf(
+                            getString(R.string.breast_condition) to Pair(
+                                breastCondition,
+                                breastConditionNotes
+                            )
+                        )
+                    )
+                }
+            }
+            data?.pncMother?.involutionsOfTheUterus?.let { involutionsOfTheUterus ->
+                data.pncMother.involutionsOfTheUterusNotes.let { involutionsOfTheUterusNotes ->
+                    list.add(
+                        hashMapOf(
+                            getString(R.string.involutions_of_the_nuterus_summary) to Pair(
+                                involutionsOfTheUterus,
+                                involutionsOfTheUterusNotes
+                            )
+                        )
+                    )
+                }
+            }
+            tvExaminationsText.text =
+                list.let { CommonUtils.createMotherNeonateExamination(it, requireContext(), true) }
+                    ?.takeIf { it.isNotEmpty() }
+                    ?: requireContext().getString(R.string.empty__)
+
+
+            tvPrescriptionsText.text = data?.pncMother?.prescriptions.let {
+                CommonUtils.createPrescription(
+                    it,
+                    requireContext()
+                )
+            }?.takeIf { it.isNotEmpty() }
+                ?: requireContext().getString(R.string.empty__)
+
+            tvAncVisitText.text =
+                data?.pncMother?.diagnosis?.let { list ->
+                    if (list.isNotEmpty()) {
+                        binding.motherSummary.tvAncVisitText.setTextColor(
+                            ContextCompat.getColor(
+                                requireContext(),
+                                R.color.a_red_error
+                            )
+                        )
+                    }
+                    convertListToString(
+                        ArrayList(list.map { it.diseaseCategory }.distinct())
+                    )
+                } ?: requireContext().getString(R.string.empty__)
+
+        }
+    }
+
+
+    private fun initializeNeonateSummaryDetails(data: MotherNeonatePncSummaryResponse?) {
+        binding.neonateSummary.neonateflow.gone()
+        binding.neonateSummary.apply {
+            tvTitle.text = getString(R.string.pnc_visit_summary_neonate)
+            tvPncVisitNoText.text = (data?.pncChild?.visitNumber.toString())
+            tvPresentingComplaintsText.text =
+                (data?.pncChild?.presentingComplaints?.joinToString(", "))
+                    ?: getString(R.string.empty__)
+            tvClinicalNotesText.setExpandableText(
+                fullText = (data?.pncChild?.clinicalNotes) ?: getString(R.string.empty__),
+                moreColorResId = R.color.purple_700,
+                title = tvClinicalNotesLabel.text.toString(),
+                activity = (requireActivity() as BaseActivity)
+            )
+            val list = mutableListOf<HashMap<String, Pair<String?, Any?>>>()
+            data?.pncChild?.congenitalDetect?.let { congenitalDetect ->
+                list.add(
+                    hashMapOf(
+                        getString(R.string.congenital_detect) to Pair(
+                            getBooleanAsString(congenitalDetect.toBoolean()).capitalizeFirstChar(),
+                            null
+                        )
+                    )
+                )
+            }
+            data?.pncChild?.cordExamination?.let { cordExamination ->
+                list.add(
+                    hashMapOf(
+                        getString(R.string.cord_examination) to Pair(
+                            cordExamination,
+                            null
+                        )
+                    )
+                )
+            }
+            tvExaminationsLabel.text = getString(R.string.physical_examinations)
+
+            tvExaminationsText.text = list.let {
+                CommonUtils.createMotherNeonateExamination(
+                    it,
+                    requireContext(),
+                    false
+                )
+            }?.takeIf { it.isNotEmpty() }
+                ?: requireContext().getString(R.string.empty__)
+        }
+    }
+
+    private fun initializePatientStatus(
+        pncMotherPatientStatus: List<MedicalReviewMetaItems>,
+        patientStatusBinding: MotherNeonatePncSummaryLayoutBinding
+    ) {
+        val dropDownList = ArrayList<Map<String, Any>>()
+
+        for (item in pncMotherPatientStatus) {
+            dropDownList.add(
+                hashMapOf<String, Any>(
+                    DefinedParams.NAME to item.name,
+                    DefinedParams.id to item.id.toString(),
+                    DefinedParams.value to (item.value ?: item.name)
+                )
+            )
+        }
+        val adapter = CustomSpinnerAdapter(requireContext())
+        adapter.setData(dropDownList)
+        var defaultPosition = 0
+        for ((index, patientStatus) in dropDownList.withIndex()) {
+            if ((patientStatus[DefinedParams.value] as? String).equals(
+                    ReferralStatus.OnTreatment.name,
+                    true
+                )
+            ) {
+                defaultPosition = index
+            }
+        }
+        patientStatusBinding.tvPatientStatusSpinner.post {
+            patientStatusBinding.tvPatientStatusSpinner.setSelection(defaultPosition, false)
+        }
+        patientStatusBinding.tvPatientStatusSpinner.adapter = adapter
+        patientStatusBinding.tvPatientStatusSpinner.onItemSelectedListener =
+            object : AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(
+                    adapterView: AdapterView<*>?,
+                    view: View?,
+                    pos: Int,
+                    itemId: Long
+                ) {
+                    val selectedItem = adapter.getData(position = pos)
+                    selectedItem?.let {
+                        val selectedName = it[DefinedParams.NAME] as String?
+                        selectedName?.let { name ->
+                            pncMotherPatientStatus[0].type?.let { type ->
+                                viewModel.patientStatusMother = name
+                            }
+                        }
+                        updateNextFollowUpDate()
+                    }
+                    summaryListener()
+                }
+
+                override fun onNothingSelected(p0: AdapterView<*>?) {
+                    /**
+                     * this method is not used
+                     */
+                }
+            }
+    }
+
+    private fun summaryListener() {
+        setFragmentResult(
+            MedicalReviewDefinedParams.SUMMARY_ITEM, bundleOf(
+                MedicalReviewDefinedParams.SUMMARY_ITEM to true
+            )
+        )
+    }
+
+    private inline fun handleResourceState(resource: Resource<*>, onSuccessBlock: () -> Unit = {}) {
+        when (resource.state) {
+            ResourceState.LOADING -> showProgress()
+            ResourceState.SUCCESS -> {
+                hideProgress()
+                onSuccessBlock()
+            }
+
+            ResourceState.ERROR -> {
+                resource.optionalData?.let {
+                } ?: showErrorDialog(
+                    title = getString(R.string.alert),
+                    message = getString(R.string.something_went_wrong_try_later),
+                )
+            }
+        }
+    }
+
+    private fun showDatePickerDialog() {
+        var yearMonthDate: Triple<Int?, Int?, Int?>? = null
+        if (!binding.motherSummary.tvNextMedicalReviewLabelText.text.isNullOrBlank())
+            yearMonthDate =
+                DateUtils.convertedMMMToddMM(binding.motherSummary.tvNextMedicalReviewLabelText.text.toString())
+        if (datePickerDialog == null) {
+            datePickerDialog = ViewUtils.showDatePicker(
+                context = requireContext(),
+                minDate = DateUtils.getTomorrowDate(),
+                date = yearMonthDate,
+                cancelCallBack = { datePickerDialog = null }
+            ) { _, year, month, dayOfMonth ->
+                val stringDate = "$dayOfMonth-$month-$year"
+                binding.motherSummary.tvNextMedicalReviewLabelText.text =
+                    DateUtils.convertDateTimeToDate(
+                        stringDate,
+                        DateUtils.DATE_FORMAT_ddMMyyyy,
+                        DateUtils.DATE_ddMMyyyy
+                    )
+                viewModel.nextFollowupDate =
+                    binding.motherSummary.tvNextMedicalReviewLabelText.text.toString()
+                datePickerDialog = null
+                summaryListener()
+            }
+        }
+    }
+
+
+    private fun updateNextFollowUpDate() {
+        if (viewModel.patientStatusMother?.contains(ReferralStatus.Recovered.name) == true) {
+            binding.motherSummary.tvNextMedicalReviewLabelText.text = ""
+            binding.motherSummary.tvNextMedicalReviewLabelText.isEnabled = false
+        } else {
+            binding.motherSummary.tvNextMedicalReviewLabelText.isEnabled = true
+        }
+}
+
+override fun onClick(v: View?) {
+    when (v?.id) {
+        binding.motherSummary.tvNextMedicalReviewLabelText.id -> {
+            showDatePickerDialog()
+        }
+    }
+}
+}
+

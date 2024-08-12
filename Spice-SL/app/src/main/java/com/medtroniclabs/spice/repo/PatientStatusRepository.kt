@@ -1,7 +1,6 @@
 package com.medtroniclabs.spice.repo
 
 import com.medtroniclabs.spice.common.CommonUtils.getTicketType
-import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.data.PatientStatusRequest
 import com.medtroniclabs.spice.data.PatientStatusResponse
 import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto

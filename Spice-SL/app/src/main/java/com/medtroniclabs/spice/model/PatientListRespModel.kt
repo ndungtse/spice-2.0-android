@@ -13,11 +13,13 @@ data class PatientListRespModel(
     val nationalID: Long? = null,
     val phoneNumber: String? = null,
     val memberId: String? = null,
+    val neonateMemberId: String? = null,
     val occupation:String? =null,
     val landmark:String? = null,
     val fhirUrl: String? = null,
     val performer: String? = null,
     val chwName: String? = null,
+    val childPatientId:String? = null,
     val houseHoldId: String? = null,
     val houseHoldNumber: Long? = null,
     val dateOfOnset:String? = null,
@@ -49,7 +51,8 @@ data class PregnancyDetails(
     val bmi: Double? = null,
     val pregnant: Boolean? = null,
     val ancVisit:String? = null,
-    val villageId: String? = null
+    val villageId: String? = null,
+    val dateOfDelivery:String?=null
 )
 data class SearchAndListResponse(
     val patientList: List<PatientListRespModel> = emptyList(),

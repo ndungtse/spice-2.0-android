@@ -8,6 +8,7 @@ data class MotherNeonatePncRequest(
 
 
 data class PncMother(
+    var id:String?=null,
     var isMotherAlive: Boolean? = null,
     var breastCondition: String? = null,
     var breastConditionNotes: String? = null,
@@ -23,11 +24,12 @@ data class PncMother(
 
 
 data class PncChild(
+    var id:String?=null,
     var isChildAlive: Boolean? = null,
     var breastFeeding: Boolean? = null,
     var exclusiveBreastFeeding: Boolean? = null,
     var cordExamination: String? = null,
-    var congenitalDetect: String? = null,
+    var congenitalDetect: Boolean? = null,
     var presentingComplaints: List<String?>? = null,
     var presentingComplaintsNotes: String? = null,
     var physicalExaminations: List<String?>? = null,

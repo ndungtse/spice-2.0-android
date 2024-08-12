@@ -1,14 +1,17 @@
 package com.medtroniclabs.spice.ui.medicalreview.motherneonate.pnc.repo
 
 import MotherNeonatePncRequest
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.appextensions.postSuccess
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.MedicalReviewMetaItems
-import com.medtroniclabs.spice.data.model.MotherNeonateAncRequest
-import com.medtroniclabs.spice.data.model.PatientEncounterResponse
+import com.medtroniclabs.spice.data.model.PncSubmitResponse
+import com.medtroniclabs.spice.data.MotherNeonatePncSummaryRequest
+import com.medtroniclabs.spice.data.MotherNeonatePncSummaryResponse
+import com.medtroniclabs.spice.data.SummaryCreateRequest
 import com.medtroniclabs.spice.db.local.RoomHelper
 import com.medtroniclabs.spice.network.ApiHelper
 import com.medtroniclabs.spice.network.resource.Resource
@@ -28,11 +31,14 @@ class MotherNeonatePNCRepo @Inject constructor(
             if (response.isSuccessful) {
                 response.body()?.entity?.let { data ->
                     roomHelper.apply {
+                        roomHelper.deleteDiagnosisList(MedicalReviewTypeEnums.PNC.name.plus("-").plus(MedicalReviewTypeEnums.Mother.name))
+                        roomHelper.saveDiagnosisList(data.diseaseCategories)
                         deleteExaminationsComplaintsForAnc(RMNCH.PNCMOTHER)
                         insertExaminationsComplaint(
                             generateChipItemByType(
                                 data.presentingComplaints,
-                                data.systemicExaminations
+                                data.systemicExaminations,
+                                data.patientStatus
                             )
                         )
                         SecuredPreference.putBoolean(
@@ -52,9 +58,12 @@ class MotherNeonatePNCRepo @Inject constructor(
             motherNeonateMetaResponse.postError()
         }
     }
+
     private fun generateChipItemByType(
         presentingComplaints: List<MedicalReviewMetaItems>,
-        obstetricExaminations: List<MedicalReviewMetaItems>
+        obstetricExaminations: List<MedicalReviewMetaItems>,
+        patientStatus: List<MedicalReviewMetaItems>
+
     ): List<MedicalReviewMetaItems> {
         val chipItemList = mutableListOf<MedicalReviewMetaItems>()
         chipItemList.addAll(presentingComplaints.map {
@@ -69,8 +78,15 @@ class MotherNeonatePNCRepo @Inject constructor(
                 category = MedicalReviewTypeEnums.SystemicExaminations.name
             }
         })
+        chipItemList.addAll(patientStatus.map {
+            it.apply {
+                type = RMNCH.PNCMOTHER
+                category = MedicalReviewTypeEnums.patient_status.name
+            }
+        })
         return chipItemList
     }
+
     suspend fun getNeonatePncStaticData(motherNeonateMetaResponse: MutableLiveData<Resource<Boolean>>) {
         try {
             motherNeonateMetaResponse.postLoading()
@@ -82,11 +98,12 @@ class MotherNeonatePNCRepo @Inject constructor(
                         insertExaminationsComplaint(
                             generateNeonateChipItemByType(
                                 data.presentingComplaints,
-                                data.systemicExaminations
+                                data.obstetricExaminations,
+                                data.patientStatus
                             )
                         )
                         SecuredPreference.putBoolean(
-                            SecuredPreference.EnvironmentKey.IS_MOTHER_LOADED_PNC.name,
+                            SecuredPreference.EnvironmentKey.IS_NEONATE_LOADED_PNC.name,
                             true
                         )
                     }
@@ -102,9 +119,65 @@ class MotherNeonatePNCRepo @Inject constructor(
             motherNeonateMetaResponse.postError()
         }
     }
+
+
+
+    private fun generateNeonateChipItemByType(
+        presentingComplaints: List<MedicalReviewMetaItems>,
+        obstetricExaminations: List<MedicalReviewMetaItems>,
+        patientStatus: List<MedicalReviewMetaItems>
+    ): List<MedicalReviewMetaItems> {
+        val chipItemList = mutableListOf<MedicalReviewMetaItems>()
+        chipItemList.addAll(presentingComplaints.map {
+            it.apply {
+                type = RMNCH.PNCNEONATE
+                category = MedicalReviewTypeEnums.PresentingComplaints.name
+            }
+        })
+        chipItemList.addAll(obstetricExaminations.map {
+            it.apply {
+                type = RMNCH.PNCNEONATE
+                category = MedicalReviewTypeEnums.ObstetricExaminations.name
+            }
+        })
+        chipItemList.addAll(patientStatus.map {
+            it.apply {
+                type = RMNCH.PNCNEONATE
+                category = MedicalReviewTypeEnums.patient_status.name
+            }
+        })
+        return chipItemList
+    }
+
+    fun getExaminationsComplaintsForPnc(
+        category: String,
+        type: String
+    ): LiveData<List<MedicalReviewMetaItems>> {
+        return roomHelper.getExaminationsComplaintsForPnc(category, type)
+    }
+
+    suspend fun getPncSummaryDetails(motherNeonatePncSummaryRequest: MotherNeonatePncSummaryRequest): Resource<MotherNeonatePncSummaryResponse> {
+        return try {
+            val response = apiHelper.getPncSummaryDetails(motherNeonatePncSummaryRequest)
+            if (response.isSuccessful) {
+                val res = response.body()
+                if (res?.status == true) {
+                    Resource(state = ResourceState.SUCCESS,response.body()?.entity)
+                } else {
+                    Resource(state = ResourceState.ERROR)
+                }
+            } else {
+                Resource(state = ResourceState.ERROR)
+            }
+
+        } catch (e: Exception) {
+            Resource(state = ResourceState.ERROR)
+        }
+    }
+
     suspend fun saveMotherNeonatePncData(
         motherNeonatePncRequest: MotherNeonatePncRequest,
-    ):Resource<PatientEncounterResponse> {
+    ): Resource<PncSubmitResponse> {
         return try {
             val response = apiHelper.saveMotherNeonatePnc(motherNeonatePncRequest)
             if (response.isSuccessful) {
@@ -117,23 +190,24 @@ class MotherNeonatePNCRepo @Inject constructor(
             Resource(state = ResourceState.ERROR)
         }
     }
-    private fun generateNeonateChipItemByType(
-        presentingComplaints: List<MedicalReviewMetaItems>,
-        obstetricExaminations: List<MedicalReviewMetaItems>
-    ): List<MedicalReviewMetaItems> {
-        val chipItemList = mutableListOf<MedicalReviewMetaItems>()
-        chipItemList.addAll(presentingComplaints.map {
-            it.apply {
-                type = RMNCH.PNCNEONATE
-                category = MedicalReviewTypeEnums.PresentingComplaints.name
+
+    suspend fun summaryCreatePncData(
+        summaryCreateRequest: SummaryCreateRequest
+    ): Resource<HashMap<String, Any>> {
+        return try {
+            val response = apiHelper.summaryCreatePncData(summaryCreateRequest)
+            if (response.isSuccessful) {
+                Resource(state = ResourceState.SUCCESS, data = response.body()?.entity)
+            } else {
+                Resource(state = ResourceState.ERROR)
             }
-        })
-        chipItemList.addAll(obstetricExaminations.map {
-            it.apply {
-                type = RMNCH.PNCNEONATE
-                category = MedicalReviewTypeEnums.SystemicExaminations.name
-            }
-        })
-        return chipItemList
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Resource(state = ResourceState.ERROR)
+        }
     }
+
+
+
+
 }
