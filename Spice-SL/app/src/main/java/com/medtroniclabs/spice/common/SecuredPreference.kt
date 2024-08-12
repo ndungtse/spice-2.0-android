@@ -34,9 +34,9 @@ object SecuredPreference {
         DEFAULT_SITE_ID,
         IS_UNDER_FIVE_YEARS_LOADED,
         VILLAGE_IDS,
-        IS_MOTHER_NEONATE_LOADED_PNC,
-        VILLAGE_IDS,
-        SERVER_LAST_SYNCED
+        SERVER_LAST_SYNCED,
+        IS_MOTHER_LOADED_PNC,
+        IS_NEONATE_LOADED_PNC
     }
 
 

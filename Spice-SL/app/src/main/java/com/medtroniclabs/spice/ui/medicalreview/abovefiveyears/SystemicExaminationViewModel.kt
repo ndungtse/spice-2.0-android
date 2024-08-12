@@ -26,6 +26,7 @@ class SystemicExaminationViewModel @Inject constructor(
     val systemicExaminationList = MutableLiveData<Resource<List<MedicalReviewMetaItems>>>()
     var fundalHeight:Double? = null
     var fetalHeartRate:Double? = null
+    var isMotherPnc: Boolean = false
     fun getSystemicExaminationList(type: String) {
         viewModelScope.launch(dispatcherIO) {
             systemicExaminationList.postLoading()

@@ -9,6 +9,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ClinicalNotesViewModel @Inject constructor() : ViewModel() {
     var enteredClinicalNotes = ""
+    var isMotherPnc: Boolean = false
 
     private val _submitButtonStateLiveData = MutableLiveData<Boolean>()
     val submitButtonStateLiveData: LiveData<Boolean>

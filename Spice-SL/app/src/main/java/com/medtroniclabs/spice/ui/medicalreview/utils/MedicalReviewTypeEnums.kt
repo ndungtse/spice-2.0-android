@@ -33,6 +33,7 @@ enum class MedicalReviewTypeEnums{
     BD,
     TDS,
     QDS,
+    Baby,
     immunisation_status,
     muac,
     ANC_MEDICAL_REVIEW

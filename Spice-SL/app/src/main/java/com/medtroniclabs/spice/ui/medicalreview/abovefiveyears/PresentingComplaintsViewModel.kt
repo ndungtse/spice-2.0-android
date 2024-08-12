@@ -24,6 +24,7 @@ class PresentingComplaintsViewModel @Inject constructor(
     var selectedPresentingComplaints = ArrayList<ChipViewItemModel>()
     var enteredComplaintNotes = ""
     val presentingComplaintsList = MutableLiveData<Resource<List<MedicalReviewMetaItems>>>()
+    var isMotherPnc: Boolean = false
 
     fun getPresentingComplaintsList(type: String) {
         viewModelScope.launch(dispatcherIO) {

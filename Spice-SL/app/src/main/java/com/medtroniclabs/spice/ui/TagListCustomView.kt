@@ -367,4 +367,9 @@ class TagListCustomView(
     private fun resetOtherChip() {
         chipGroup.clearCheck()
     }
+
+    fun clearOtherChip() {
+        onNoneSelected()
+    }
+
 }

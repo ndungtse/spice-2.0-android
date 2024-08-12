@@ -129,8 +129,9 @@ open class PresentingComplaintsFragment : BaseFragment() {
 
 
     fun refreshFragment() {
-        Timber.tag("calledor not implemented")
         complaintsTagView.clearSelection()
+        complaintsTagView.clearOtherChip()
+        binding.etPresentingComplaintsComments.text?.clear()
     }
 
 

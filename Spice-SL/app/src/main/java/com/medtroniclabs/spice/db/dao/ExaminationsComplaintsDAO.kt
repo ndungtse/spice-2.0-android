@@ -27,6 +27,6 @@ interface ExaminationsComplaintsDAO {
         type: String
     ): LiveData<List<MedicalReviewMetaItems>>
 
-    @Query("SELECT * FROM MetaItemByTypeAndCategoryEntity WHERE category = :workflow ORDER BY displayOrder ASC")
+    @Query("SELECT * FROM MetaItemByTypeAndCategoryEntity WHERE type = :workflow ORDER BY displayOrder ASC")
     fun getExaminationsComplaintByTypeLiveData(workflow: String): LiveData<List<MedicalReviewMetaItems>>
 }

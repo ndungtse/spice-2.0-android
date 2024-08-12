@@ -52,6 +52,9 @@ class ClinicalNotesFragment : BaseFragment() {
                 )
             }
         }
+        if (viewModel.isMotherPnc){
+            binding.etClinicalNotes.setText(viewModel.enteredClinicalNotes)
+        }
         if (viewModel.enteredClinicalNotes.isNotBlank()) {
             binding.etClinicalNotes.setText(viewModel.enteredClinicalNotes)
         }
@@ -65,5 +68,8 @@ class ClinicalNotesFragment : BaseFragment() {
         }
         binding.tvClinicalNoteErrorMessage.gone()
         return true
+    }
+    fun refreshFragment() {
+        binding.etClinicalNotes.text?.clear()
     }
 }

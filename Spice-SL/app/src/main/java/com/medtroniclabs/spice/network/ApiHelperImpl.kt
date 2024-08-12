@@ -1,5 +1,6 @@
 package com.medtroniclabs.spice.network
 
+import MotherNeonatePncRequest
 import com.medtroniclabs.spice.model.medicalreview.CreateUnderTwoMonthsRequest
 import com.medtroniclabs.spice.data.APIResponse
 import com.medtroniclabs.spice.data.AboveFiveYearsMetaResponse
@@ -18,6 +19,8 @@ import com.medtroniclabs.spice.data.MedicationSearchRequest
 import com.medtroniclabs.spice.data.MetaDataResponse
 import com.medtroniclabs.spice.data.MotherNeonateAncMetaResponse
 import com.medtroniclabs.spice.data.MotherNeonateAncSummaryModel
+import com.medtroniclabs.spice.data.MotherPncResponse
+import com.medtroniclabs.spice.data.NeonatePncResponse
 import com.medtroniclabs.spice.data.PatientStatusRequest
 import com.medtroniclabs.spice.data.PatientStatusResponse
 import com.medtroniclabs.spice.data.Prescription
@@ -129,8 +132,12 @@ class ApiHelperImpl @Inject constructor(private val apiService: ApiService) : Ap
         return apiService.getMotherNeoNateAncStaticData()
     }
 
-    override suspend fun getMotherNeoNatePncStaticData(): Response<APIResponse<MotherNeonateAncMetaResponse>> {
-        return apiService.getMotherNeoNatePncStaticData()    }
+    override suspend fun getMotherPncStaticData(): Response<APIResponse<MotherPncResponse>> {
+        return apiService.getMotherPncStaticData()
+    }
+    override suspend fun getNeonatePncStaticData(): Response<APIResponse<NeonatePncResponse>> {
+        return apiService.getNeonatePncStaticData()
+    }
 
     override suspend fun getUnderTwoMonthsMetaData(): Response<APIResponse<UnderTwoMonthsMetaResponse>> {
         return apiService.getUnderTwoMonthsMetaData()
@@ -167,6 +174,10 @@ class ApiHelperImpl @Inject constructor(private val apiService: ApiService) : Ap
     override suspend fun saveMotherNeonateAnc(motherNeonateAncRequest: MotherNeonateAncRequest): Response<APIResponse<PatientEncounterResponse>> {
         return apiService.saveMotherNeonateAnc(motherNeonateAncRequest)
     }
+    override suspend fun saveMotherNeonatePnc(motherNeonatePncRequest: MotherNeonatePncRequest): Response<APIResponse<PatientEncounterResponse>> {
+        return apiService.saveMotherNeonatePnc(motherNeonatePncRequest)
+    }
+
 
     override suspend fun fetchSummary(motherNeonateAncRequest: MotherNeonateAncRequest): Response<APIResponse<MotherNeonateAncSummaryModel>> {
         return apiService.fetchSummary(motherNeonateAncRequest)

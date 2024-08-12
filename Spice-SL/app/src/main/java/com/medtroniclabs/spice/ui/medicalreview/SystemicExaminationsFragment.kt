@@ -130,6 +130,7 @@ class SystemicExaminationsFragment : BaseFragment() {
 
     private fun initializeViews() {
         val (titleResId, showObstetricGroup) = when (viewModel.systemicExaminationsType) {
+            MedicalReviewTypeEnums.PNC.name.plus("-").plus(MedicalReviewTypeEnums.Mother.name) -> {Pair(R.string.systemic_examinations, true)}
             MedicalReviewTypeEnums.ANC.name -> Pair(R.string.obstetric_examination, true)
             MedicalReviewTypeEnums.UnderFiveYears.name -> Pair(
                 R.string.systemic_examinations,
@@ -188,6 +189,11 @@ class SystemicExaminationsFragment : BaseFragment() {
                 requireContext()
             )
         return isFundalHeightValid && isFetalHeartRateValid
+    }
+    fun refreshFragment() {
+        examinationsTagView.clearSelection()
+        examinationsTagView.clearOtherChip()
+        binding.etPhysicalExaminationComments.text?.clear()
     }
 
 }

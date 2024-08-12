@@ -521,6 +521,7 @@
     <string name="referral_by_phone_number">%1$s (%2$s)</string>
     <string name="select_diagnosis_found_on_the_patient">Select diagnoses found on the patient</string>
     <string name="something_went_wrong_try_later">Something went wrong. Please try again</string>
+    <string name="is_the_baby_alive">Is the baby alive?</string>
     <string name="view_discontinued_medication">View Discontinued Medication</string>
     <string name="hide_discontinued_medication">Hide Discontinued Medication</string>
     <string name="no_data_found">No data found.</string>
