@@ -35,6 +35,7 @@ class AssessmentActivity : BaseActivity() {
 
     private lateinit var binding: ActivityAssessmentBinding
     private val viewModel: AssessmentViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         onBackPressedDispatcher.addCallback(this, onBackPressedCallback)

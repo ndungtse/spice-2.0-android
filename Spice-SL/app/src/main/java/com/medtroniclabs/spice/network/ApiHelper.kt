@@ -51,6 +51,10 @@ import com.medtroniclabs.spice.data.offlinesync.model.HouseHold
 import com.medtroniclabs.spice.data.offlinesync.model.RequestGetSyncStatus
 import com.medtroniclabs.spice.data.offlinesync.model.SyncResponse
 import com.medtroniclabs.spice.data.resource.LabourDeliverySummaryRequest
+import com.medtroniclabs.spice.data.performance.CHWPerformanceMonitoring
+import com.medtroniclabs.spice.data.performance.ChwVillageFilterModel
+import com.medtroniclabs.spice.data.performance.FilterPreference
+import com.medtroniclabs.spice.data.performance.PerformanceReportRequest
 import com.medtroniclabs.spice.data.resource.RequestAllEntities
 import com.medtroniclabs.spice.model.LabTestCreateRequest
 import com.medtroniclabs.spice.model.LabTestListRequest
@@ -139,4 +143,12 @@ interface ApiHelper {
     suspend fun createSummaryMotherNeonate(request: LabourDeliverySummaryRequest): Response<APIResponse<HashMap<String, Any>>>
     suspend fun getInvestigation(request: ReferralDetailRequest): Response<APIResponse<HistoryEntity>>
     suspend fun getMedicalReviewHistoryPNC(request: ReferralDetailRequest): Response<APIResponse<PncChildMedicalReview>>
+    suspend fun getPeerSupervisorLinkedChwList(): Response<APIResponse<List<ChwVillageFilterModel>>>
+
+    suspend fun getPeerSupervisorReport(request: PerformanceReportRequest): Response<APIResponse<List<CHWPerformanceMonitoring>>>
+
+    suspend fun getUserFilterPreference(request: FilterPreference): Response<APIResponse<FilterPreference>>
+
+    suspend fun saveUserFilterPreference(request: FilterPreference): Response<APIResponse<FilterPreference>>
+
 }

@@ -1,5 +1,7 @@
 package com.medtroniclabs.spice.appextensions
 
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
 import android.app.Activity
 import android.content.Context
 import android.content.res.Configuration
@@ -13,6 +15,7 @@ import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
 import android.text.style.ForegroundColorSpan
 import android.view.View
+import android.view.ViewGroup
 import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
@@ -170,4 +173,28 @@ fun TextView.setExpandableText(
 
     this.text = spannableString
     this.movementMethod = LinkMovementMethod.getInstance()
+}
+
+fun ViewGroup.showView() {
+    this.apply {
+        alpha = 0f
+        visibility = View.VISIBLE
+        animate()
+            .alpha(1f)
+            .setDuration(300)
+            .setListener(null)
+    }
+}
+
+fun ViewGroup.hideView() {
+    this.apply {
+        animate()
+            .alpha(0f)
+            .setDuration(300)
+            .setListener(object : AnimatorListenerAdapter() {
+                override fun onAnimationEnd(animation: Animator) {
+                    visibility = View.GONE
+                }
+            })
+    }
 }

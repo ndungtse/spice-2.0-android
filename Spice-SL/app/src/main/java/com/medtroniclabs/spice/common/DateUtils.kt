@@ -64,7 +64,10 @@ object DateUtils {
         }
     }
 
-    fun getV2YearMonthAndWeek(dob: String, format: String = DATE_FORMAT_yyyyMMddHHmmssZZZZZ): CalendarPeriod{
+    fun getV2YearMonthAndWeek(
+        dob: String,
+        format: String = DATE_FORMAT_yyyyMMddHHmmssZZZZZ
+    ): CalendarPeriod {
         val dobDate = LocalDate.parse(dob, DateTimeFormatter.ofPattern(format))
         val today = LocalDate.now()
 
@@ -74,11 +77,14 @@ object DateUtils {
         val months = period.months
 
         // Calculate the weeks by finding the number of days and then converting to weeks
-        val daysBetween = ChronoUnit.DAYS.between(dobDate.plusYears(years.toLong()).plusMonths(months.toLong()), today)
+        val daysBetween = ChronoUnit.DAYS.between(
+            dobDate.plusYears(years.toLong()).plusMonths(months.toLong()),
+            today
+        )
         val weeks = (daysBetween / 7).toInt()
         val days = (daysBetween % 7).toInt()
 
-        return CalendarPeriod(years,months,weeks,days)
+        return CalendarPeriod(years, months, weeks, days)
     }
 
     fun getYearMonthAndDate(
@@ -100,6 +106,23 @@ object DateUtils {
             return Triple(null, null, null)
         }
         return Triple(null, null, null)
+    }
+
+    fun getTimeInMilliFromDate(
+        dateString: String,
+        defaultFormat: SimpleDateFormat = getDateDDMMYYYY()
+    ): Long? {
+        try {
+            val date = formatStringToDate(dateString, defaultFormat)
+            date?.let {
+                val cal = Calendar.getInstance()
+                cal.time = date
+                return cal.timeInMillis
+            }
+        } catch (exception: Exception) {
+            return null
+        }
+        return null
     }
 
     fun formatStringToDate(dateString: String, format: SimpleDateFormat): Date? {
@@ -516,7 +539,7 @@ object DateUtils {
         } ?: 0
     }
 
-    fun getAgeDescription(birthDate: String,context: Context): String {
+    fun getAgeDescription(birthDate: String, context: Context): String {
         val ageInYears = calculateAge(birthDateStr = birthDate)
         return when {
             ageInYears >= 5 -> {
@@ -525,7 +548,11 @@ object DateUtils {
 
             ageInYears in 1..4 -> {
                 val ageInMonths = dateToMonths(birthDate) ?: 0
-                if (ageInMonths == 1) "$ageInMonths ${context.getString(R.string.month)}" else "$ageInMonths ${context.getString(R.string.months).lowercase()}"
+                if (ageInMonths == 1) "$ageInMonths ${context.getString(R.string.month)}" else "$ageInMonths ${
+                    context.getString(
+                        R.string.months
+                    ).lowercase()
+                }"
             }
 
             else -> {
@@ -534,12 +561,22 @@ object DateUtils {
                     val ageInWeeks = dateToWeeks(birthDate)
                     if (ageInWeeks < 1) {
                         val ageInDays = dateToDays(birthDate)
-                        if (ageInDays == 1 || ageInDays == 0) "$ageInDays ${context.getString(R.string.day)}" else "$ageInDays ${context.getString(R.string.days).lowercase()}"
+                        if (ageInDays == 1 || ageInDays == 0) "$ageInDays ${context.getString(R.string.day)}" else "$ageInDays ${
+                            context.getString(
+                                R.string.days
+                            ).lowercase()
+                        }"
                     } else {
-                        if (ageInWeeks == 1) "$ageInWeeks ${context.getString(R.string.week)}" else "$ageInWeeks ${context.getString(R.string.weeks).lowercase()}"
+                        if (ageInWeeks == 1) "$ageInWeeks ${context.getString(R.string.week)}" else "$ageInWeeks ${
+                            context.getString(
+                                R.string.weeks
+                            ).lowercase()
+                        }"
                     }
                 } else {
-                    if (ageInMonths == 1) "$ageInMonths ${context.getString(R.string.month).lowercase()}" else "$ageInMonths ${context.getString(R.string.months).lowercase()}"
+                    if (ageInMonths == 1) "$ageInMonths ${
+                        context.getString(R.string.month).lowercase()
+                    }" else "$ageInMonths ${context.getString(R.string.months).lowercase()}"
                 }
             }
         }

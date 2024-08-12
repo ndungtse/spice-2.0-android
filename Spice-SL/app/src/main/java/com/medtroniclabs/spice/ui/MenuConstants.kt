@@ -17,4 +17,6 @@ object MenuConstants {
     const val UNDER_AGE_FIVE_TO_TWO_MONTHS_ID = "UNDER 5Y AGE < 2M"
     const val UNDER_AGE_ABOVE_FIVE_YEAR_ID = "UNDER 5Y (2M TO 5Y)"
     const val EPI_ID = "EPI"
+    const val PerformanceMonitoring_ID = "PERFORMANCE MONITORING"
+
 }

@@ -52,6 +52,10 @@ import com.medtroniclabs.spice.data.resource.LabourDeliverySummaryRequest
 import com.medtroniclabs.spice.data.MotherNeonatePncSummaryRequest
 import com.medtroniclabs.spice.data.MotherNeonatePncSummaryResponse
 import com.medtroniclabs.spice.data.SummaryCreateRequest
+import com.medtroniclabs.spice.data.performance.CHWPerformanceMonitoring
+import com.medtroniclabs.spice.data.performance.ChwVillageFilterModel
+import com.medtroniclabs.spice.data.performance.FilterPreference
+import com.medtroniclabs.spice.data.performance.PerformanceReportRequest
 import com.medtroniclabs.spice.data.resource.RequestAllEntities
 import com.medtroniclabs.spice.model.LabTestCreateRequest
 import com.medtroniclabs.spice.model.LabTestListRequest
@@ -300,6 +304,22 @@ class ApiHelperImpl @Inject constructor(private val apiService: ApiService) : Ap
     }
     override suspend fun createSummaryMotherNeonate(request: LabourDeliverySummaryRequest): Response<APIResponse<HashMap<String, Any>>> {
         return apiService.summaryCreateMotherNeonate(request)
+    }
+
+    override suspend fun getPeerSupervisorLinkedChwList(): Response<APIResponse<List<ChwVillageFilterModel>>> {
+        return apiService.getPeerSupervisorLinkedChwList()
+    }
+
+    override suspend fun getPeerSupervisorReport(request: PerformanceReportRequest): Response<APIResponse<List<CHWPerformanceMonitoring>>> {
+        return apiService.getPeerSupervisorReport(request)
+    }
+
+    override suspend fun getUserFilterPreference(request: FilterPreference): Response<APIResponse<FilterPreference>> {
+        return apiService.getUserFilterPreference(request)
+    }
+
+    override suspend fun saveUserFilterPreference(request: FilterPreference): Response<APIResponse<FilterPreference>> {
+        return apiService.saveUserFilterPreference(request)
     }
 
     override suspend fun getInvestigation(request: ReferralDetailRequest): Response<APIResponse<HistoryEntity>> {

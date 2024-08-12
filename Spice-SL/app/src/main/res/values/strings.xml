@@ -595,4 +595,12 @@
     <string name="tested_on">Tested On</string>
     <string name="birth_weight_in_kgs">Birth Weight(in kgs)</string>
     <string name="kgs">kgs</string>
+    <string name="performance_monitoring">Performance Monitoring</string>
+    <string name="year_colon">Year :</string>
+    <string name="month_colon">Month :</string>
+    <string name="village_colon">Village :</string>
+    <string name="chw_colon">CHW :</string>
+    <string name="from_date_colon">From :</string>
+    <string name="toDate_colon">To :</string>
+
 </resources>

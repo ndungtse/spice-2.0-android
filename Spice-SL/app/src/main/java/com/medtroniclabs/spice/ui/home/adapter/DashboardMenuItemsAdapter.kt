@@ -144,6 +144,10 @@ class DashboardMenuItemsAdapter(
                 context,
                 R.drawable.ic_epi
             )
+            MenuConstants.PerformanceMonitoring_ID -> return ContextCompat.getDrawable(
+                context,
+                R.drawable.ic_performance_monitoring
+            )
             else -> null
         }
     }

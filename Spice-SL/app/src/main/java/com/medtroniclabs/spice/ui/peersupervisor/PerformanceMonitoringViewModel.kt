@@ -1,0 +1,257 @@
+package com.medtroniclabs.spice.ui.peersupervisor
+
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asLiveData
+import androidx.lifecycle.switchMap
+import androidx.lifecycle.viewModelScope
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
+import com.medtroniclabs.spice.appextensions.postLoading
+import com.medtroniclabs.spice.appextensions.toString
+import com.medtroniclabs.spice.common.DateUtils
+import com.medtroniclabs.spice.common.DateUtils.DATE_FORMAT_yyyyMMdd
+import com.medtroniclabs.spice.common.DateUtils.DATE_ddMMyyyy
+import com.medtroniclabs.spice.common.DefinedParams
+import com.medtroniclabs.spice.common.DefinedParams.LIST_LIMIT
+import com.medtroniclabs.spice.common.SecuredPreference
+import com.medtroniclabs.spice.data.PerformanceFilterModel
+import com.medtroniclabs.spice.data.performance.CHWPerformanceMonitoring
+import com.medtroniclabs.spice.data.performance.CheckBoxSpinnerData
+import com.medtroniclabs.spice.data.performance.ChwVillageFilterModel
+import com.medtroniclabs.spice.data.performance.FilterPreference
+import com.medtroniclabs.spice.data.performance.PerformanceReportRequest
+import com.medtroniclabs.spice.data.performance.Preference
+import com.medtroniclabs.spice.di.IoDispatcher
+import com.medtroniclabs.spice.network.ApiHelper
+import com.medtroniclabs.spice.network.resource.Resource
+import com.medtroniclabs.spice.network.utils.ConnectivityManager
+import com.medtroniclabs.spice.repo.PerformanceMonitoringRepository
+import com.medtroniclabs.spice.ui.peersupervisor.adapter.PerformanceReportDataSource
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.launch
+import java.text.DateFormatSymbols
+import java.util.Calendar
+import javax.inject.Inject
+
+private const val INT_SENTINEL: Int = Int.MIN_VALUE
+private const val LONG_SENTINEL: Long = Long.MIN_VALUE
+private const val STRING_SENTINEL: String = "STRING_SENTINEL"
+
+@HiltViewModel
+class PerformanceMonitoringViewModel @Inject constructor(
+    @IoDispatcher private val dispatcherIO: CoroutineDispatcher,
+    private val performanceMonitoringRepo: PerformanceMonitoringRepository,
+    private val apiHelper: ApiHelper
+) : ViewModel() {
+
+    @Inject
+    lateinit var connectivityManager: ConnectivityManager
+
+    val userFilterPreferenceLiveData = MutableLiveData<Resource<FilterPreference>>()
+    val saveUserFilterPreferenceLiveData = MutableLiveData<Resource<FilterPreference>>()
+    var userPreference: Preference? = null
+
+    val filterChwListLiveData = MutableLiveData<Resource<List<ChwVillageFilterModel>>>()
+    val chwFilterListLiveData = MutableLiveData<List<CheckBoxSpinnerData>>()
+    val villageFilterListLiveData = MutableLiveData<List<CheckBoxSpinnerData>>()
+
+    val anyFilterChanged = MutableLiveData<Boolean>()
+
+    val filterModel: PerformanceFilterModel = PerformanceFilterModel()
+
+    private val _refreshTrigger = MutableLiveData<PerformanceReportRequest>()
+    val dataFlow: LiveData<PagingData<CHWPerformanceMonitoring>> = _refreshTrigger.switchMap { request ->
+        Pager(
+            config = PagingConfig(
+                pageSize = LIST_LIMIT,
+                enablePlaceholders = false
+            ),
+            pagingSourceFactory = { PerformanceReportDataSource(apiHelper, request) }
+        ).flow.cachedIn(viewModelScope).asLiveData()
+    }
+
+    init {
+        getUserFilterPreference()
+        anyFilterChanged.value = false
+    }
+
+    private fun getUserFilterPreference() {
+        viewModelScope.launch(dispatcherIO) {
+            userFilterPreferenceLiveData.postLoading()
+            val request = FilterPreference(userId = SecuredPreference.getUserId().toString(), preference = null)
+            userFilterPreferenceLiveData.postValue(performanceMonitoringRepo.getUserFilterPreference(request))
+
+            getLinkedChwDetails()
+        }
+    }
+
+    private fun saveFilterPreference(fromDate: String, toDate: String, userIds : List<Long>, villageIds: List<Long>) {
+        viewModelScope.launch(dispatcherIO) {
+            saveUserFilterPreferenceLiveData.postLoading()
+            val request = FilterPreference(
+                userId = SecuredPreference.getUserId().toString(),
+                preference = Preference(
+                    fromDate = fromDate,
+                    toDate = toDate,
+                    userIds = userIds,
+                    villageIds = villageIds
+                )
+            )
+            saveUserFilterPreferenceLiveData.postValue(performanceMonitoringRepo.saveUserFilterPreference(request))
+        }
+    }
+
+    fun refreshData() {
+
+    }
+
+    fun getLinkedChwDetails() {
+        viewModelScope.launch(dispatcherIO) {
+            filterChwListLiveData.postLoading()
+            filterChwListLiveData.postValue(performanceMonitoringRepo.getLinkedChwDetails())
+        }
+    }
+
+    fun updateUserPreference(preference: Preference) {
+        userPreference = preference
+    }
+
+    fun initPagination() {
+        userPreference?.let { preference ->
+            val fromToDate = preference.getFromToDate()
+            val fromDate = fromToDate.first.toString(DATE_FORMAT_yyyyMMdd)
+            val toDate = fromToDate.second.toString(DATE_FORMAT_yyyyMMdd)
+            val userIds = preference.userIds
+            val villageIds = preference.villageIds
+
+            _refreshTrigger.postValue(
+                PerformanceReportRequest(
+                    userIds = userIds,
+                    villageIds = villageIds,
+                    fromDate = fromDate,
+                    toDate = toDate
+                )
+            )
+        }
+    }
+
+    fun updatePaginationWithNewFilter(
+        fromDate: String,
+        toDate: String,
+        userIds: List<Long>,
+        villageIds: List<Long>,
+        shouldSave: Boolean
+    ) {
+        if (shouldSave)
+            saveFilterPreference(fromDate, toDate, userIds, villageIds)
+
+        _refreshTrigger.postValue(
+            PerformanceReportRequest(
+                userIds = userIds,
+                villageIds = villageIds,
+                fromDate = fromDate,
+                toDate = toDate
+            )
+        )
+    }
+
+    fun updateChwFilterListLiveData(shouldReset: Boolean = true) {
+        val selectedIds = hashSetOf<Long>()
+        if (shouldReset){
+            userPreference?.userIds?.forEach {
+                selectedIds.add(it.toLong())
+            }
+        }
+
+        val allCHWs = filterChwListLiveData.value?.data
+
+        val chwList = mutableListOf<CheckBoxSpinnerData>()
+        allCHWs?.forEach { item ->
+            chwList.add(CheckBoxSpinnerData(item.id, "${item.firstName} ${item.lastName}", selectedIds.contains(item.id)))
+        }
+
+        chwFilterListLiveData.postValue(chwList);
+    }
+
+    fun updateVillageListLiveData(selectedCHWs: List<CheckBoxSpinnerData>, shouldReset: Boolean = true) {
+        val selectedIds = hashSetOf<Long>()
+        if (shouldReset){
+            userPreference?.villageIds?.forEach {
+                selectedIds.add(it.toLong())
+            }
+        }
+
+        val allCHWs = filterChwListLiveData.value?.data
+
+        val villageList = mutableListOf<CheckBoxSpinnerData>()
+        selectedCHWs.forEach { selectedChw ->
+            val villages = allCHWs?.find { it.id == selectedChw.id }?.villages
+            villages?.forEach { village ->
+                villageList.add(CheckBoxSpinnerData(village.id, village.name, selectedIds.contains(village.id), village.userId))
+            }
+        }
+
+        villageFilterListLiveData.postValue(villageList)
+    }
+
+    fun updateFilter(
+        year: Int? = INT_SENTINEL,
+        month: Int? = INT_SENTINEL,
+        startDate: Long? = LONG_SENTINEL,
+        endDate: Long? = LONG_SENTINEL,
+        fromDate: String? = STRING_SENTINEL,
+        toDate: String? = STRING_SENTINEL
+    ) {
+        if (year != INT_SENTINEL)
+            filterModel.year = year
+
+        if (month != INT_SENTINEL)
+            filterModel.month = month
+
+        if (startDate != LONG_SENTINEL)
+            filterModel.startDate = startDate
+
+        if (endDate != LONG_SENTINEL)
+            filterModel.endDate = endDate
+
+        if (fromDate != STRING_SENTINEL)
+            filterModel.fromDate = fromDate
+
+        if (toDate != STRING_SENTINEL)
+            filterModel.toDate = toDate
+    }
+
+    fun getYearList(): ArrayList<Map<String, Any>> {
+        val list = ArrayList<Map<String, Any>>()
+        val calendar: Calendar = Calendar.getInstance()
+        val currentYear: Int = calendar.get(Calendar.YEAR)
+
+        // Populate the list with the last 15 years
+        for (i in 0..14) {
+            val map = HashMap<String, Any>()
+            map[DefinedParams.NAME] = (currentYear - i).toString()
+            map[DefinedParams.ID] = (currentYear - i)
+            list.add(map)
+        }
+        return list
+    }
+
+    fun getMonthList(): ArrayList<Map<String, Any>> {
+
+        val list = ArrayList<Map<String, Any>>()
+        val monthNames: Array<String> = DateFormatSymbols().months
+        val monthList = monthNames.take(12)
+        monthList.forEachIndexed { index, month ->
+            val map = HashMap<String, Any>()
+            map[DefinedParams.NAME] = month
+            map[DefinedParams.ID] = index
+            list.add(map)
+        }
+        return list
+    }
+}

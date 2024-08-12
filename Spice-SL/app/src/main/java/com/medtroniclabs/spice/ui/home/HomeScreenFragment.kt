@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.google.android.flexbox.FlexDirection
 import com.google.android.flexbox.FlexboxLayoutManager
 import com.google.android.flexbox.JustifyContent
+import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.databinding.FragmentHomeScreenBinding
 import com.medtroniclabs.spice.db.entity.MenuEntity
@@ -17,11 +18,12 @@ import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.MenuConstants
+import com.medtroniclabs.spice.ui.followup.FollowUpMyPatientActivity
 import com.medtroniclabs.spice.ui.home.adapter.DashboardMenuItemsAdapter
 import com.medtroniclabs.spice.ui.household.HouseholdSearchActivity
 import com.medtroniclabs.spice.ui.landing.viewmodel.LandingViewModel
+import com.medtroniclabs.spice.ui.peersupervisor.PerformanceMonitoringActivity
 import dagger.hilt.android.AndroidEntryPoint
-import com.medtroniclabs.spice.ui.followup.FollowUpMyPatientActivity
 
 
 @AndroidEntryPoint
@@ -98,6 +100,21 @@ class HomeScreenFragment : BaseFragment(), MenuSelectionListener {
                 intent.putExtra(MenuConstants.MY_PATIENTS_MENU_ID,MenuConstants.MY_PATIENTS_MENU_ID)
                 startActivity(intent)
             }
+
+            MenuConstants.PerformanceMonitoring_ID -> {
+                if (connectivityManager.isNetworkAvailable()) {
+                    val intent = Intent(requireContext(),PerformanceMonitoringActivity::class.java)
+                    startActivity(intent)
+                } else {
+                    (activity as BaseActivity?)?.showErrorDialogue(
+                        getString(R.string.title_no_network),
+                        getString(R.string.message_no_network),
+                        isNegativeButtonNeed = false
+                    ) { _ -> }
+                }
+
+            }
+
         }
     }
 }

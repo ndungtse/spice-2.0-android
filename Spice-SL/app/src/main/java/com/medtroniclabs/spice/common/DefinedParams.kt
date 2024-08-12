@@ -117,4 +117,5 @@ object DefinedParams {
     const val PostNatal="Post Natal"
     const val Neonate="Neonate"
     const val PncHistory="PncHistory"
+    const val VillageList = "VillageList"
 }

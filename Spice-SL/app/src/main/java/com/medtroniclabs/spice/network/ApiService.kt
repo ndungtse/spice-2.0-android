@@ -51,6 +51,10 @@ import com.medtroniclabs.spice.data.MotherNeonatePncSummaryResponse
 import com.medtroniclabs.spice.data.SummaryCreateRequest
 import com.medtroniclabs.spice.data.PncChildMedicalReview
 import com.medtroniclabs.spice.data.resource.LabourDeliverySummaryRequest
+import com.medtroniclabs.spice.data.performance.CHWPerformanceMonitoring
+import com.medtroniclabs.spice.data.performance.ChwVillageFilterModel
+import com.medtroniclabs.spice.data.performance.FilterPreference
+import com.medtroniclabs.spice.data.performance.PerformanceReportRequest
 import com.medtroniclabs.spice.data.resource.RequestAllEntities
 import com.medtroniclabs.spice.model.LabTestCreateRequest
 import com.medtroniclabs.spice.model.LabTestListRequest
@@ -76,6 +80,7 @@ import okhttp3.RequestBody
 import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.GET
 import retrofit2.http.POST
 
 interface ApiService {
@@ -247,6 +252,18 @@ interface ApiService {
 
     @POST("/spice-service/medical-review/mother-neonate/summary-create")
     suspend fun summaryCreateMotherNeonate(@Body request: LabourDeliverySummaryRequest): Response<APIResponse<HashMap<String, Any>>>
+    @GET("user-service/user/peer-supervisor/linked-chw")
+    suspend fun getPeerSupervisorLinkedChwList(): Response<APIResponse<List<ChwVillageFilterModel>>>
+
+    @POST("spice-service/report/chw-performance")
+    suspend fun getPeerSupervisorReport(@Body request: PerformanceReportRequest): Response<APIResponse<List<CHWPerformanceMonitoring>>>
+
+    @POST("user-service/user/preferences")
+    suspend fun getUserFilterPreference(@Body request: FilterPreference): Response<APIResponse<FilterPreference>>
+
+    @POST("user-service/user/preferences/save")
+    suspend fun saveUserFilterPreference(@Body request: FilterPreference): Response<APIResponse<FilterPreference>>
+
 
     @POST("/spice-service/medical-review/pnc-history")
     suspend fun getMedicalReviewHistoryPNC(@Body request: ReferralDetailRequest): Response<APIResponse<PncChildMedicalReview>>
