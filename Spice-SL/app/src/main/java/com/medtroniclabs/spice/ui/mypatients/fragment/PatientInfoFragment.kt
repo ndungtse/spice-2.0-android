@@ -115,7 +115,8 @@ class PatientInfoFragment : BaseFragment() {
     private fun setDataInInfo(patientListRespModel: PatientListRespModel) {
         showProgress()
         viewModel.patientDetailsId = patientListRespModel.id
-        viewModel.childPatientDetails=patientListRespModel.childPatientId
+        viewModel.childPatientDetails=patientListRespModel.pregnancyDetails?.neonatePatientId
+        viewModel.dateOfDelivery=patientListRespModel.pregnancyDetails?.dateOfDelivery
         val isAnc = isAnc()
         val isPnc= isPnc()
         val name =

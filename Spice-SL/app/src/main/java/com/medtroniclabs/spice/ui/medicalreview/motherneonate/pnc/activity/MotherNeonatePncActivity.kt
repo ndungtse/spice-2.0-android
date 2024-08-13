@@ -24,6 +24,7 @@ import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.ui.SingleSelectionCustomView
 import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.network.resource.Resource
+import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.dialog.MedicalReviewSuccessDialogFragment
 import com.medtroniclabs.spice.ui.landing.OnDialogDismissListener
@@ -48,6 +49,7 @@ import com.medtroniclabs.spice.ui.mypatients.fragment.PatientInfoFragment
 import com.medtroniclabs.spice.ui.mypatients.fragment.ReferPatientFragment
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.MotherNeonateBpWeightViewModel
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
+import com.medtroniclabs.spice.ui.mypatients.viewmodel.ReferPatientViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -65,6 +67,8 @@ class MotherNeonatePncActivity : BaseActivity(), View.OnClickListener, AncVisitC
     private val clinicalNotesViewModel: ClinicalNotesViewModel by viewModels()
     private val physicalExaminationViewModel: PhysicalExaminationViewModel by viewModels()
     private val motherNeonatePncSummaryViewModel: MotherNeonatePncSummaryViewModel by viewModels()
+    private val referPatientViewModel: ReferPatientViewModel by viewModels()
+
 
     // Fragments
     private lateinit var presentingComplaintsFragment: PresentingComplaintsFragment
@@ -525,9 +529,9 @@ class MotherNeonatePncActivity : BaseActivity(), View.OnClickListener, AncVisitC
         val fragmentManager = supportFragmentManager
         val systemicExaminationsFragment =
             fragmentManager.findFragmentById(R.id.systemicExaminationsContainer)
-        if (viewModel.pncVisit == 1 && systemicExaminationsFragment is GeneralExaminationFragment) {
+        if ( systemicExaminationsFragment is GeneralExaminationFragment) {
             showErrorDialog()
-        } else if (viewModel.pncVisit == 1 && systemicExaminationsFragment is PhysicalExaminationFragment) {
+        } else if ( systemicExaminationsFragment is PhysicalExaminationFragment) {
             viewModel.isNeonate = false
             refreshPresentingComplaintsFragment()
             initializeSystemicExaminationFragment(initializeBundle())
@@ -559,7 +563,7 @@ class MotherNeonatePncActivity : BaseActivity(), View.OnClickListener, AncVisitC
     private fun handleButtonRefer() {
         viewModel.pncSaveResponse.value?.data?.let {
             ReferPatientFragment.newInstance(
-                MedicalReviewTypeEnums.PNC.name.plus(R.string.hyphen_symbol).plus(MedicalReviewTypeEnums.Mother.name),
+                MedicalReviewTypeEnums.PNC_MEDICAL_REVIEW.name,
                 it.patientReference,
                 it.encounterId
             ).show(supportFragmentManager, ReferPatientFragment.TAG)
@@ -647,7 +651,6 @@ class MotherNeonatePncActivity : BaseActivity(), View.OnClickListener, AncVisitC
         resetSelectionViews(TAG)
         neonateFlow()
         motherSubmit()
-
     }
 
     private fun neoNateSubmit() {
@@ -742,6 +745,15 @@ class MotherNeonatePncActivity : BaseActivity(), View.OnClickListener, AncVisitC
             }
         }
     }
+    private fun onReferPatient(){
+        val fragment =
+            supportFragmentManager.findFragmentByTag(ReferPatientFragment.TAG) as? ReferPatientFragment
+        fragment?.dismiss()
+        MedicalReviewSuccessDialogFragment.newInstance().show(
+            supportFragmentManager,
+            MedicalReviewSuccessDialogFragment.TAG
+        )
+    }
 
     private fun onBackPressPopStack() {
         this@MotherNeonatePncActivity.finish()
@@ -752,6 +764,12 @@ class MotherNeonatePncActivity : BaseActivity(), View.OnClickListener, AncVisitC
     }
 
     private fun attachObservers() {
+        referPatientViewModel.referPatientResultLiveData.observe(this) { resource ->
+            handleResourceState(
+                resource, onSuccess = { onReferPatient() },
+                onBackPressPopStack = ::onBackPressPopStack
+            )
+        }
         viewModel.pncSaveResponse.observe(this) { resource ->
             handleResourceState(
                 resource, onSuccess = { pncSummary(resource) },
@@ -799,17 +817,17 @@ class MotherNeonatePncActivity : BaseActivity(), View.OnClickListener, AncVisitC
     }
 
     private fun validateAndSubmitRequest() {
-        val clFragment = getFragmentById(
-            supportFragmentManager,
-            (R.id.clinicalNotesContainer)
-        ) as? ClinicalNotesFragment
-        clFragment?.let {
-            val isClFragmentValid = it.validateInput()
-            if ((isClFragmentValid && viewModel.aliveStatus == true) ) {
-                handleBtnSubmitClick()
-            }else if( viewModel.aliveStatus != true){
-                handleBtnSubmitClick()
-
+        if( viewModel.aliveStatus != true) {
+            handleBtnSubmitClick()
+        }else {
+            val clFragment = getFragmentById(
+                supportFragmentManager,
+                (R.id.clinicalNotesContainer)
+            ) as? ClinicalNotesFragment
+            clFragment?.let {
+                if ((it.validateInput() && viewModel.aliveStatus == true)) {
+                    handleBtnSubmitClick()
+                }
             }
         }
     }

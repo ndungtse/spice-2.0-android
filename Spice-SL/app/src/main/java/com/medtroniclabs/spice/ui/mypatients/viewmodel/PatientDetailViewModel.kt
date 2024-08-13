@@ -20,6 +20,7 @@ class PatientDetailViewModel @Inject constructor(
     @IoDispatcher private val dispatcherIO: CoroutineDispatcher
 ): ViewModel() {
 
+    var dateOfDelivery: String? =null
     var childPatientDetails: String? = null
     val patientDetailsLiveData = MutableLiveData<Resource<PatientListRespModel>>()
     //the below id is one which get from patient details response
@@ -48,7 +49,7 @@ class PatientDetailViewModel @Inject constructor(
         return patientDetailsLiveData.value?.data?.patientId
     }
     fun getChildPatientName(): String? {
-        return patientDetailsLiveData.value?.data?.childPatientId
+        return patientDetailsLiveData.value?.data?.pregnancyDetails?.neonatePatientId
     }
     fun getPatientHouseholdId(): String? {
         return patientDetailsLiveData.value?.data?.houseHoldId

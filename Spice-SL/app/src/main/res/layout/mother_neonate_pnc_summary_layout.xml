@@ -376,6 +376,7 @@
                     style="@style/TextStyle_Regular_16_Bold"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:lineSpacingExtra="@dimen/_6sdp"
                     android:text="@string/seperator_hyphen"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_weight="0.6"
@@ -386,13 +387,13 @@
                     android:id="@+id/tvNextMedicalReviewLabel"
                     style="@style/TextStyle_Regular_16"
                     android:layout_width="@dimen/_0dp"
-                    android:layout_marginTop="@dimen/_20sdp"
+                    android:layout_marginTop="20dp"
                     android:text="@string/next_visit_date"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@id/tvNextMedicalReviewSeparator"
                     app:layout_constraintHorizontal_weight="0.25"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/tvPrescriptionLabel"
+                    app:layout_constraintTop_toBottomOf="@+id/tvPrescriptionsText"
                     app:layout_constraintVertical_bias="0.0" />
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/tvNextMedicalReviewLabelHistory"

@@ -87,6 +87,7 @@ class LabourDeliveryViewModel @Inject constructor(
     var neonateOutcome: String? = null
     var neonateBirthWeight: String? = null
     var neonateSignsAndSymptoms = listOf<ChipViewItemModel>()
+    var gestationalAge:String?=null
     private val _apgarScoresLiveData = MutableLiveData<List<ApgarScore>>()
     val apgarScoreLiveData: LiveData<List<ApgarScore>>
         get() = _apgarScoresLiveData
@@ -269,37 +270,54 @@ class LabourDeliveryViewModel @Inject constructor(
     }
 
     fun createLabourDeliveryRequest(prescriptionEncounterId: String?) {
-        val encounter = MedicalReviewEncounter(
-            latitude = lastLocation?.latitude ?: 0.0,
-            longitude = lastLocation?.longitude ?: 0.0,
-            referred = true,
-            startTime = DateUtils.getCurrentDateAndTime(
-                DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
-            ),
-            endTime = DateUtils.getCurrentDateAndTime(
-                DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
-            ),
-            householdId = patientDetailModel?.houseHoldId,
-            patientId = patientId,
-            provenance = ProvanceDto(),
-            memberId = patientDetailModel?.memberId.toString()
-        )
-        val motherModel = createMotherModel(encounter, prescriptionEncounterId)
-        val neonateModel = createNeonateModel(encounter)
-        val childModel = createChildModel(ProvanceDto())
-        val createLabourMedicalReviewRequest = CreateLabourDeliveryRequest(
-            motherDTO = motherModel,
-            neonateDTO = neonateModel,
-            child = childModel
-        )
-        viewModelScope.launch(dispatcherIO) {
-            createLabourDeliveryMedicalReviewResponse.postLoading()
-            createLabourDeliveryMedicalReviewResponse.postValue(
-                repository.createLabourDeliveryMedicalReview(
-                    request = createLabourMedicalReviewRequest
-                )
+        if (timeOfDeliveryInHour?.toInt()!! <=12 && timeOfDeliveryInMinute?.toInt()!! <=60 && timeOfLabourOnSetInHour?.toInt()!!<=12 &&
+            timeOfLabourOnSetInMinutes?.toInt()!!<=60){
+            val encounter = MedicalReviewEncounter(
+                latitude = lastLocation?.latitude ?: 0.0,
+                longitude = lastLocation?.longitude ?: 0.0,
+                referred = true,
+                startTime = DateUtils.getCurrentDateAndTime(
+                    DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
+                ),
+                endTime = DateUtils.getCurrentDateAndTime(
+                    DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
+                ),
+                householdId = patientDetailModel?.houseHoldId,
+                patientId = patientId,
+                provenance = ProvanceDto(),
+                memberId = patientDetailModel?.memberId.toString()
             )
+            val encounterChild = MedicalReviewEncounter(
+                latitude = lastLocation?.latitude ?: 0.0,
+                longitude = lastLocation?.longitude ?: 0.0,
+                referred = true,
+                startTime = DateUtils.getCurrentDateAndTime(
+                    DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
+                ),
+                endTime = DateUtils.getCurrentDateAndTime(
+                    DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
+                ),
+                householdId = patientDetailModel?.houseHoldId,
+                provenance = ProvanceDto()
+            )
+            val motherModel = createMotherModel(encounter, prescriptionEncounterId)
+            val neonateModel = createNeonateModel(encounterChild)
+            val childModel = createChildModel(ProvanceDto())
+            val createLabourMedicalReviewRequest = CreateLabourDeliveryRequest(
+                motherDTO = motherModel,
+                neonateDTO = neonateModel,
+                child = childModel
+            )
+            viewModelScope.launch(dispatcherIO) {
+                createLabourDeliveryMedicalReviewResponse.postLoading()
+                createLabourDeliveryMedicalReviewResponse.postValue(
+                    repository.createLabourDeliveryMedicalReview(
+                        request = createLabourMedicalReviewRequest
+                    )
+                )
+            }
         }
+
     }
 
     private fun createChildModel(provanceDto: ProvanceDto): Child {
@@ -309,16 +327,15 @@ class LabourDeliveryViewModel @Inject constructor(
         } else null
         val village = patientDetailModel?.village.takeIf { it != null }
         val villageId = patientDetailModel?.villageId.takeIf { it != null }
-        val childPatientId =
-            "${DefinedParams.NeonatePatientIdPrefix}${DateUtils.getCurrentDateTimeInMillis()}"
+
         return Child(
             name = childName,
             village = village,
             villageId = villageId?.toInt(),
             motherPatientId = patientId,
             dateOfBirth = getTimeOfDelivery(),
-            patientId = childPatientId,
-            child = true,
+            patientId = patientDetailModel?.pregnancyDetails?.neonatePatientId,
+            isChild = true,
             gender = genderFlow[DefinedParams.Gender].toString(),
             provenance = provanceDto,
             householdId = patientDetailModel?.houseHoldId.toString(),
@@ -338,6 +355,7 @@ class LabourDeliveryViewModel @Inject constructor(
             stateOfBaby = stateOfBaby[DefinedParams.StateOfBaby] as? String,
             signs = neonateSignsAndSymptoms.map { it.value.toString() }.takeIf { it.isNotEmpty() },
             encounter = encounter,
+            gestationalAge = gestationalAge,
             apgarScoreOneMinuteDTO = apgarScoreOneMinute.takeIf { it != null },
             apgarScoreFiveMinuteDTO = apgarScoreFiveMinute.takeIf { it != null },
             apgarScoreTenMinuteDTO = apgarScoreTenMinute.takeIf { it != null }
@@ -440,19 +458,18 @@ class LabourDeliveryViewModel @Inject constructor(
     }
 
     private fun getTimeOfDelivery(): String? {
-            val dateOfLabourOnset = this.dateOfLabourOnset ?: return null
-            val timeOfLabourOnSetInHourInt = timeOfLabourOnSetInHour?.toInt() ?: 0
-            val timeOfLabourOnSetInMinuteInt = timeOfLabourOnSetInMinutes?.toInt() ?: 0
-            val timeOfLabourOnSetMap =
-                this.timeOfLabourOnsetMap[DefinedParams.TimeOfLabourOnset] as String
-            val year = dateOfLabourOnset.first
-            val month = dateOfLabourOnset.second
-            val day = dateOfLabourOnset.third
+        val dateOfDelivery = this.dateOfDelivery ?: return null
+        val timeOfDeliveryInHourInt = timeOfDeliveryInHour?.toInt() ?: 0
+        val timeOfDeliveryInMinutesInt = timeOfDeliveryInMinute?.toInt() ?: 0
+        val timeOfDeliveryMap = this.timeOfDeliveryMap[DefinedParams.TimeOfDelivery] as String
+        val year = dateOfDelivery.first
+            val month = dateOfDelivery.second
+            val day = dateOfDelivery.third
 
-            val hour = timeOfLabourOnSetInHourInt.toInt()
-            val minute = timeOfLabourOnSetInMinuteInt.toInt()
+            val hour = timeOfDeliveryInHourInt.toInt()
+            val minute = timeOfDeliveryInMinutesInt.toInt()
 
-            val adjustedHour = when (timeOfLabourOnSetMap) {
+            val adjustedHour = when (timeOfDeliveryMap) {
                 context?.getString(R.string.pm) -> if (hour == 12) hour else hour + 12
                 context?.getString(R.string.am) -> if (hour == 12) 0 else hour
                 else -> hour
@@ -463,7 +480,7 @@ class LabourDeliveryViewModel @Inject constructor(
 
             val localDateTime = LocalDateTime.of(localDate, localTime)
 
-            val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
+            val formatter = DateTimeFormatter.ofPattern(DateUtils.DATE_FORMAT_yyyyMMddHHmmss)
             val formattedDateTime = localDateTime.format(formatter)
 
 
@@ -500,7 +517,7 @@ class LabourDeliveryViewModel @Inject constructor(
             val localDateTime = LocalDateTime.of(localDate, localTime)
 
             // Format LocalDateTime
-            val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
+            val formatter = DateTimeFormatter.ofPattern(DateUtils.DATE_FORMAT_yyyyMMddHHmmss)
             val formattedDateTime = localDateTime.format(formatter)
 
             // Output the formatted string

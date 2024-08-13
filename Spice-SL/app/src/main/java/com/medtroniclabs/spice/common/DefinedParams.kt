@@ -43,6 +43,7 @@ object DefinedParams {
     const val TimeOfDelivery = "timeOfDelivery"
     const val TimeOfLabourOnset = "timeOfLabourOnset"
     const val HouseholdHead = "HouseholdHead"
+    const val DateOfDelivery="DateOfDelivery"
     const val CHIEF_DOM_CODE_LENGTH = 3
     const val VILLAGE_CODE_LENGTH = 4
     const val PATIENT_NUMBER_LENGTH = 4
@@ -104,7 +105,7 @@ object DefinedParams {
     const val REFRESH_FRAGMENT = "REFRESH_FRAGMENT"
 
     const val NeonatePatientIdPrefix = "HM-"
-    const val NeonateBabyNamePrefix = "Baby Of"
+    const val NeonateBabyNamePrefix = "Baby of"
     const val FollowUpId = "FollowUpId"
     const val IsReferredScreen = "isReferredScreen"
     const val SearchLength = 2

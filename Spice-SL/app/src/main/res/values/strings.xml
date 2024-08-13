@@ -594,4 +594,5 @@
     <string name="five_minutes">" (Five minutes)"</string>
     <string name="tested_on">Tested On</string>
     <string name="birth_weight_in_kgs">Birth Weight(in kgs)</string>
+    <string name="kgs">kgs</string>
 </resources>

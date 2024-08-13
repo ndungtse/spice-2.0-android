@@ -323,7 +323,7 @@ class LabourDeliveryBaseActivity : BaseActivity(), View.OnClickListener, AncVisi
     private fun handleReferClick() {
         viewModel.createLabourDeliveryMedicalReviewResponse.value?.data?.let {
             ReferPatientFragment.newInstance(
-                MedicalReviewTypeEnums.LabourDelivery.name,
+                MedicalReviewTypeEnums.MOTHER_LABOUR_MEDICAL_REVIEW.name,
                 it.patientReference,
                 it.motherId
             ).show(supportFragmentManager, ReferPatientFragment.TAG)
@@ -335,6 +335,7 @@ class LabourDeliveryBaseActivity : BaseActivity(), View.OnClickListener, AncVisi
             viewModel.createLabourDeliveryMedicalReviewResponse.value?.data?.let {
                         val request = MedicalReviewSummarySubmitRequest(
                             id = it.motherId,
+                            patientId = patientDetails.patientId,
                             nextVisitDate = DateUtils.convertDateTimeToDate(
                                 viewModel.nextFollowupDate,
                                 DateUtils.DATE_ddMMyyyy,
@@ -345,7 +346,10 @@ class LabourDeliveryBaseActivity : BaseActivity(), View.OnClickListener, AncVisi
                             patientReference = it.patientReference,
                             patientStatus = DefinedParams.Postnatal,
                             provenance = ProvanceDto(),
-                            category = MedicalReviewTypeEnums.MOTHER_LABOUR_MEDICAL_REVIEW.name
+                            householdId = patientDetails.houseHoldId,
+                            villageId = patientDetails.villageId,
+                            category = MedicalReviewTypeEnums.RMNCH.name,
+                            encounterType = MedicalReviewTypeEnums.MOTHER_LABOUR_MEDICAL_REVIEW.name,
                         )
                         viewModel.labourDeliverySummaryCreate(request)
                     }

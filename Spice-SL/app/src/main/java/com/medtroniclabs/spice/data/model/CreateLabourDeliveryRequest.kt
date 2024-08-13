@@ -22,7 +22,7 @@ data class Child(
     val phoneNumber: String?,
     val phoneNumberCategory: String?,
     val householdId: String?,
-    val child: Boolean,
+    val isChild: Boolean,
     val householdHeadRelationship: String?
 )
 

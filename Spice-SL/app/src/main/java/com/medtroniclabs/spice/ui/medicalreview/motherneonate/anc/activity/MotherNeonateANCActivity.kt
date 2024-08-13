@@ -485,7 +485,7 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
     private fun showReferPatientDialog() {
         viewModel.motherNeonateCreateResponse.value?.data?.let {
             ReferPatientFragment.newInstance(
-                MedicalReviewTypeEnums.ANC.name,
+                MedicalReviewTypeEnums.ANC_MEDICAL_REVIEW.name,
                 it.patientReference,
                 it.encounterId
             ).show(supportFragmentManager, ReferPatientFragment.TAG)

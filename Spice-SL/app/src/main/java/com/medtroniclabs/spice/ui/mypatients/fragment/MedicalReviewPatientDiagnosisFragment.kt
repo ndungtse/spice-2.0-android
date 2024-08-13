@@ -102,7 +102,7 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
         handleFlow()
         initializeListeners()
         attachListeners()
-        if (patientViewModel.getAncVisit() == 1 && diagnosisViewModel.diagnosisType!=MedicalReviewTypeEnums.PNC.name ) {
+        if (patientViewModel.getAncVisit() == 1 && diagnosisViewModel.diagnosisType!=MedicalReviewTypeEnums.PNC.name.plus(getString(R.string.hyphen_symbol).plus(MedicalReviewTypeEnums.Mother.name)) ) {
             binding.tvWeightValue.text = MotherNeonateUtil.convertWeight(
                 pregnancyDetailsViewModel.pregnancyDetailsModel.weight,
                 requireContext()

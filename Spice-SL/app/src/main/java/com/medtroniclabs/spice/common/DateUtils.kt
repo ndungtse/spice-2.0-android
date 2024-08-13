@@ -469,7 +469,7 @@ object DateUtils {
         val diffInDays = TimeUnit.MILLISECONDS.toDays(diffInMillis)
         val weeks = diffInDays / 7
         val days = diffInDays % 7
-        return Pair(weeks, days)
+        return Pair(weeks.minus(4), days)
     }
 
     fun formatGestationalAge(gestationalAgeInWeeks: Long, context: Context): String {

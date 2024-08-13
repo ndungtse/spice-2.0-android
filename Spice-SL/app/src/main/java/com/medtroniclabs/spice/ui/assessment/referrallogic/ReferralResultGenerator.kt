@@ -371,7 +371,12 @@ class ReferralResultGenerator {
                     if (noOfDays >= MaxDaysOfFever) {
                         addResultMap(referralKey.lowercase(), ReferralStatus.Referred.name)
                         rdtReferralStatus(map, referralKey)
-                    } else {
+                    }
+                    else if (map.containsKey(Temperature) && map[Temperature] is Double && (map[Temperature] as Double) >= MaxTemperature) {
+                        addResultMap(referralKey.lowercase(), ReferralStatus.Referred.name)
+                        rdtReferralStatus(map, referralKey)
+                    }
+                    else {
                         if (map.containsKey(RdtTest) && map[RdtTest] == RdtPositive) {
                             addResultMap(referralKey.lowercase(), getMedicationStatus(map, ACT))
                             addReferralReason(referralReason, ReferralReasons.Malaria.name)
@@ -381,9 +386,6 @@ class ReferralResultGenerator {
                         }
                     }
                 }
-            } else if (map.containsKey(Temperature) && map[Temperature] is Double && (map[Temperature] as Double) >= MaxTemperature) {
-                addResultMap(referralKey.lowercase(), ReferralStatus.Referred.name)
-                rdtReferralStatus(map, referralKey)
             }
 
         }

@@ -45,7 +45,8 @@ class MedicalReviewToolsActivity : BaseActivity() {
                 intent.getStringExtra(DefinedParams.ID),
                 intent.getStringExtra(DefinedParams.Gender),
                 intent.getStringExtra(DefinedParams.DOB),
-                intent.getStringExtra(DefinedParams.ChildPatientId)
+                childPatientId =intent.getStringExtra(DefinedParams.ChildPatientId),
+                dateOfDelivery = intent.getStringExtra(DefinedParams.DateOfDelivery)
             )
             setTitle(
                 intent.getStringExtra(DefinedParams.MenuTitle)

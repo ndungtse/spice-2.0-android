@@ -17,7 +17,6 @@ import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.ViewUtils
 import com.medtroniclabs.spice.data.LabourDeliveryMetaEntity
 import com.medtroniclabs.spice.databinding.FragmentLabourOrDeliveryBinding
-import com.medtroniclabs.spice.formgeneration.extension.dp
 import com.medtroniclabs.spice.formgeneration.extension.markMandatory
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
@@ -25,7 +24,6 @@ import com.medtroniclabs.spice.formgeneration.ui.SingleSelectionCustomView
 import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
-import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil.isBasicValid
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.labourdelivery.viewmodel.LabourDeliveryViewModel
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 
@@ -476,7 +474,7 @@ class LabourOrDeliveryFragment : BaseFragment() {
         val etHourTimeOfLabourOnset = binding.etHrsTimeOfLabourOnset.text?.trim().toString()
         val etMinutesTimeOfLabourOnSet = binding.etMinutesTimeOfLabourOnset.text?.trim().toString()
         val dateOfLabourOnset = viewModel.dateOfLabourOnset
-
+        val noOfNeonate = viewModel.noOfNeonates?.toInt()
         val isValidDelivery = etHourTimeOfDelivery.isNotEmpty() &&
                 etMinutesTimeOfDelivery.isNotEmpty() &&
                 dateOfDelivery != null &&
@@ -489,22 +487,41 @@ class LabourOrDeliveryFragment : BaseFragment() {
                 viewModel.deliveryBy != null &&
                 viewModel.deliveryAt != null &&
                 viewModel.deliveryStatus != null &&
-                viewModel.noOfNeonates != null
+                viewModel.noOfNeonates != null && noOfNeonate != 0
 
         if (!isValidDelivery) {
             showLabourDeliveryErrors(true)
         }
 
         with(binding) {
-            tvTimeOfDeliveryError.showIf(etHourTimeOfDelivery.isEmpty() || etMinutesTimeOfDelivery.isEmpty() || viewModel.timeOfDeliveryMap[DefinedParams.TimeOfDelivery] == null)
+            if(etHourTimeOfDelivery.isNotEmpty() || etMinutesTimeOfDelivery.isNotEmpty()) {
+                    if (etHourTimeOfDelivery.toInt() <= 12 && etMinutesTimeOfDelivery.toInt() <= 60 && viewModel.timeOfDeliveryMap[DefinedParams.TimeOfDelivery] != null) {
+                        tvTimeOfDeliveryError.showIf(false)
+                    } else {
+                        tvTimeOfDeliveryError.showIf(true)
+                    }
+                }
+            if (etHourTimeOfLabourOnset.isNotEmpty()||etMinutesTimeOfLabourOnSet.isNotEmpty()) {
+                if ( etHourTimeOfLabourOnset.toInt() <= 12 && etMinutesTimeOfLabourOnSet.toInt() <= 60 && viewModel.timeOfLabourOnsetMap[DefinedParams.TimeOfLabourOnset] != null) {
+                    tvTimeOfLabourOnsetError.showIf(false)
+                } else {
+                    tvTimeOfLabourOnsetError.showIf(true)
+                }
+            }
+//            tvTimeOfDeliveryError.showIf(etHourTimeOfDelivery.isEmpty() || etMinutesTimeOfDelivery.isEmpty() || viewModel.timeOfDeliveryMap[DefinedParams.TimeOfDelivery] == null)
             tvDateOfDeliveryError.showIf(dateOfDelivery == null)
             tvDateOfLabourOnsetError.showIf(dateOfLabourOnset == null)
-            tvTimeOfLabourOnsetError.showIf(etHourTimeOfLabourOnset.isEmpty() || etMinutesTimeOfLabourOnSet.isEmpty() || viewModel.timeOfLabourOnsetMap[DefinedParams.TimeOfLabourOnset] == null)
+//            tvTimeOfLabourOnsetError.showIf(etHourTimeOfLabourOnset.isEmpty() || etMinutesTimeOfLabourOnSet.isEmpty() || viewModel.timeOfLabourOnsetMap[DefinedParams.TimeOfLabourOnset] == null)
             tvDeliveryTypeError.showIf(viewModel.deliveryType == null)
             tvDeliveryByError.showIf(viewModel.deliveryBy == null)
             tvDeliveryAtError.showIf(viewModel.deliveryAt == null)
             tvDeliveryStatusError.showIf(viewModel.deliveryStatus == null)
-            tvNoOfDeonatesError.showIf(viewModel.noOfNeonates == null)
+            if (viewModel.noOfNeonates == null || noOfNeonate == 0) {
+                tvNoOfDeonatesError.showIf(true)
+            }else{
+                tvNoOfDeonatesError.showIf(false)
+            }
+
         }
         return isValidDelivery
     }

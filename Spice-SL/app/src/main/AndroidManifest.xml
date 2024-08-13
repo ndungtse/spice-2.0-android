@@ -87,47 +87,47 @@
             android:name=".ui.home.MedicalReviewToolsActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:exported="false"
-            android:screenOrientation="landscape" />
+            android:screenOrientation="sensorLandscape" />
 
         <activity
             android:name=".ui.medicalreview.prescription.PrescriptionActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
-            android:screenOrientation="landscape"
+            android:screenOrientation="sensorLandscape"
             android:exported="false" />
 
         <activity
             android:name=".ui.medicalreview.motherneonate.anc.activity.MotherNeonateANCActivity"
             android:exported="false"
-            android:screenOrientation="landscape"
+            android:screenOrientation="sensorLandscape"
             android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".ui.medicalreview.undertwomonths.activity.UnderTwoMonthsBaseActivity"
             android:exported="false"
-            android:screenOrientation="landscape"
+            android:screenOrientation="sensorLandscape"
             android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".ui.medicalreview.motherneonate.labourdelivery.activity.LabourDeliveryBaseActivity"
             android:exported="false"
-            android:screenOrientation="landscape"
+            android:screenOrientation="sensorLandscape"
             android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".ui.referralhistory.activity.ReferralHistoryActivity"
-            android:screenOrientation="landscape"
+            android:screenOrientation="sensorLandscape"
             android:exported="false" />
         <activity
             android:name=".ui.medicalreview.abovefiveyears.AboveFiveYearsBaseActivity"
             android:exported="false"
-            android:screenOrientation="landscape"
+            android:screenOrientation="sensorLandscape"
             android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".ui.medicalreview.underfiveyears.UnderFiveYearsBaseActivity"
             android:exported="false"
-            android:screenOrientation="landscape"
+            android:screenOrientation="sensorLandscape"
             android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".ui.medicalreview.addnewmember.AddNewMemberActivity"
             android:exported="false"
-            android:screenOrientation="landscape"
+            android:screenOrientation="sensorLandscape"
             android:windowSoftInputMode="adjustPan"
             />
         <activity
@@ -141,12 +141,12 @@
         <activity
             android:name=".ui.mypatients.MedicalReviewBaseActivity"
             android:exported="false"
-            android:screenOrientation="landscape" />
+            android:screenOrientation="sensorLandscape" />
 
         <activity
             android:name=".ui.medicalreview.motherneonate.pnc.activity.MotherNeonatePncActivity"
             android:exported="false"
-            android:screenOrientation="landscape"/>
+            android:screenOrientation="sensorLandscape"/>
 
         <provider
             android:name="androidx.startup.InitializationProvider"

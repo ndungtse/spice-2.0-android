@@ -341,6 +341,7 @@
             android:layout_height="wrap_content"
             android:background="@drawable/edittext_background"
             android:hint="@string/number"
+            android:maxLength="2"
             android:inputType="number"
             android:paddingStart="@dimen/_10sdp"
             android:textAlignment="textStart"

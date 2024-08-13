@@ -15,6 +15,7 @@ import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams.ChildPatientId
 import com.medtroniclabs.spice.common.DefinedParams.DOB
+import com.medtroniclabs.spice.common.DefinedParams.DateOfDelivery
 import com.medtroniclabs.spice.common.DefinedParams.Gender
 import com.medtroniclabs.spice.common.DefinedParams.ID
 import com.medtroniclabs.spice.common.DefinedParams.PatientId
@@ -125,7 +126,8 @@ class PatientMenuFragment : BaseFragment(), MenuSelectionListener {
             id: String?,
             gender: String?,
             dob: String?,
-            childPatientId: String?
+            childPatientId: String?,
+            dateOfDelivery:String?
         ): PatientMenuFragment {
             val fragment = PatientMenuFragment()
             val bundle = Bundle()
@@ -134,6 +136,7 @@ class PatientMenuFragment : BaseFragment(), MenuSelectionListener {
             bundle.putString(Gender, gender)
             bundle.putString(DOB, dob)
             bundle.putString(ChildPatientId, childPatientId)
+            bundle.putString(DateOfDelivery, dateOfDelivery)
             fragment.arguments = bundle
             return fragment
         }
@@ -160,8 +163,9 @@ class PatientMenuFragment : BaseFragment(), MenuSelectionListener {
                     val patientId = arguments?.getString(PatientId, "")
                     val id = arguments?.getString(ID, "")
                     val childPatientId=arguments?.getString(ChildPatientId,"")
+                    val dateOfDelivery=arguments?.getString(DateOfDelivery,"")
                     if (patientId?.isNotBlank() == true) {
-                        SelectFlowDialog.newInstance(patientId, id,childPatientId)
+                        SelectFlowDialog.newInstance(patientId, id,childPatientId,dateOfDelivery)
                             .show(childFragmentManager, SelectFlowDialog.TAG)
                     }
                 })

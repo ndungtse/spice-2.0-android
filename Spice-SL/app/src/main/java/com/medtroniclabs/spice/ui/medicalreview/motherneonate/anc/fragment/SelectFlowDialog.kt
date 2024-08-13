@@ -22,6 +22,10 @@ import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.activity.Mothe
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.pnc.activity.MotherNeonatePncActivity
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import java.time.LocalDateTime
+import java.time.ZoneOffset
+import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -49,12 +53,13 @@ class SelectFlowDialog : DialogFragment(), View.OnClickListener {
             return SelectFlowDialog()
         }
 
-        fun newInstance(patientId: String?, id: String?,childPatientId:String?): SelectFlowDialog {
+        fun newInstance(patientId: String?, id: String?,childPatientId:String?,dateOfDelivery:String?): SelectFlowDialog {
             val fragment = SelectFlowDialog()
             val bundle = Bundle()
             bundle.putString(DefinedParams.PatientId, patientId)
             bundle.putString(DefinedParams.ID, id)
             bundle.putString(DefinedParams.ChildPatientId,childPatientId)
+            bundle.putString(DefinedParams.DateOfDelivery,dateOfDelivery)
             fragment.arguments = bundle
             return fragment
         }
@@ -160,17 +165,49 @@ class SelectFlowDialog : DialogFragment(), View.OnClickListener {
     private fun getRMNCHFlowData(): ArrayList<Map<String, Any>> {
         val flowList = ArrayList<Map<String, Any>>()
         flowList.add(CommonUtils.getOptionMap(getString(R.string.anc), getString(R.string.anc)))
-        flowList.add(
-            CommonUtils.getOptionMap(
-                getString(R.string.labour_delivery),
-                getString(R.string.labour_delivery)
-            )
-        )
+
         val id = arguments?.getString(DefinedParams.ChildPatientId, null)
+        val dateOfDelivery = arguments?.getString(DefinedParams.DateOfDelivery, null)
         if (!id.isNullOrEmpty()) {
             flowList.add(CommonUtils.getOptionMap(getString(R.string.pnc), getString(R.string.pnc)))
         }
+        if (dateOfDelivery ==null){
+            flowList.add(
+                CommonUtils.getOptionMap(
+                    getString(R.string.labour_delivery),
+                    getString(R.string.labour_delivery)
+                )
+            )
+        }
+        else if(enableLabourBasedOnDate(dateOfDelivery)){
+            flowList.add(
+                CommonUtils.getOptionMap(
+                    getString(R.string.labour_delivery),
+                    getString(R.string.labour_delivery)
+                )
+            )
+        }
         return flowList
+    }
+    private fun enableLabourBasedOnDate(dateString: String): Boolean {
+        if(dateString.isEmpty()){
+            return true
+        }else {
+            // Define the date format
+            val dateTimeFormatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME
+
+            // Parse the date string to LocalDateTime
+            val dateTime = LocalDateTime.parse(dateString, dateTimeFormatter)
+
+            // Get the current date and time in UTC
+            val currentDateTime = LocalDateTime.now(ZoneOffset.UTC)
+
+            // Calculate the date and time 60 days from now
+            val dateTimePlus60Days = currentDateTime.plus(60, ChronoUnit.DAYS)
+
+            // Compare the parsed date with the current date + 60 days
+            return dateTime.isAfter(dateTimePlus60Days)
+        }
     }
 
     override fun onClick(view: View?) {
