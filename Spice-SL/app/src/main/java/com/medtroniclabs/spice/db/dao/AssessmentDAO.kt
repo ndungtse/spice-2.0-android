@@ -27,7 +27,7 @@ interface AssessmentDAO {
     @Query("SELECT * FROM SymptomEntity WHERE LOWER(type) = LOWER(:type) ORDER BY display_order")
     suspend fun getSymptomListByType(type: String): List<SignsAndSymptomsEntity>
 
-    @Query("SELECT a.id, a.villageId, a.assessmentType, a.assessmentDetails, a.patientId, a.referralStatus, a.referredReason, a.otherDetails, a.memberId, a.householdId, a.isReferred, a.created_at AS createdAt, a.followUpId, a.latitude, a.longitude " +
+    @Query("SELECT a.id, a.villageId, a.assessmentType, a.assessmentDetails, a.patientId, a.referralStatus, a.referredReason, a.otherDetails, a.memberId, a.householdId, a.isReferred, a.created_at AS createdAt, a.followUpId, a.latitude, a.longitude, pd.neonatePatientId as neonatePatientId " +
                 "FROM Assessment AS a LEFT JOIN PregnancyDetail AS pd ON a.patientId = pd.patientId " +
                 "WHERE a.sync_status=:status AND a.patientId =:patientId AND a.memberId IS NULL")
     suspend fun getUnSyncedAssessmentByPatientId(
@@ -35,8 +35,8 @@ interface AssessmentDAO {
         status: String = OfflineSyncStatus.NotSynced.name
     ): List<AssessmentDetails>
 
-    @Query("SELECT a.id, a.villageId, a.assessmentType, a.assessmentDetails, a.patientId, a.referralStatus, a.referredReason, a.otherDetails, hhm.fhir_id as memberId, hh.fhir_id as householdId, a.isReferred, a.created_at AS createdAt, a.followUpId, a.latitude, a.longitude " +
-                "FROM Assessment AS a INNER JOIN HouseholdMember AS hhm ON a.patientId = hhm.patient_id INNER JOIN Household AS hh ON hhm.household_id = hh.id " +
+    @Query("SELECT a.id, a.villageId, a.assessmentType, a.assessmentDetails, a.patientId, a.referralStatus, a.referredReason, a.otherDetails, hhm.fhir_id as memberId, hh.fhir_id as householdId, a.isReferred, a.created_at AS createdAt, a.followUpId, a.latitude, a.longitude, pd.neonatePatientId as neonatePatientId " +
+                "FROM Assessment AS a LEFT JOIN PregnancyDetail AS pd ON a.patientId = pd.patientId INNER JOIN HouseholdMember AS hhm ON a.patientId = hhm.patient_id INNER JOIN Household AS hh ON hhm.household_id = hh.id " +
                 "WHERE a.id NOT IN (:addedAssessmentIds) AND hhm.fhir_id IS NOT NULL AND hhm.fhir_id IS NOT NULL AND a.sync_status=:status")
     suspend fun getOtherUnSyncedAssessments(
         addedAssessmentIds: List<String>,

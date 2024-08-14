@@ -154,6 +154,17 @@ class HouseholdMemberRepository @Inject constructor(
         }
     }
 
+    suspend fun getMemberDetailsByPatientId(
+        patientId: String,
+    ): Resource<HouseholdMemberEntity> {
+        return try {
+            val memberEntity = roomHelper.getMemberDetailsByPatientId(patientId)
+            Resource(state = ResourceState.SUCCESS, data = memberEntity)
+        } catch (e: Exception) {
+            Resource(state = ResourceState.ERROR)
+        }
+    }
+
     suspend fun getAssessmentMemberDetails(
         id: Long
     ): Resource<AssessmentMemberDetails> {

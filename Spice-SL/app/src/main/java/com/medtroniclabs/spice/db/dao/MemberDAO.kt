@@ -28,6 +28,9 @@ interface MemberDAO {
     @Query("SELECT * FROM HouseHoldMember WHERE id = :memberId")
     suspend fun getMemberDetailsById(memberId: Long): HouseholdMemberEntity
 
+    @Query("SELECT * FROM HouseHoldMember WHERE patient_id = :patientId")
+    suspend fun getMemberDetailsByPatientId(patientId: String): HouseholdMemberEntity?
+
     @Query("SELECT * FROM HouseHoldMember WHERE parentId = :memberId ORDER BY fhir_id IS NULL, fhir_id ASC")
     suspend fun getMemberDetailsByParentId(memberId: String): List<HouseholdMemberEntity>
 

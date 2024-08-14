@@ -34,11 +34,17 @@ interface PregnancyDetailDao {
     @Query("UPDATE PregnancyDetail SET ancVisitNo = :visitCount, lastMenstrualPeriod = :clinicalDate WHERE patientId = :patientId")
     suspend fun updatePregnancyAnc(visitCount: Long, clinicalDate: String?, patientId: String, )
 
+    @Query("UPDATE PregnancyDetail SET neonatePatientId = :neonatePatientId WHERE patientId = :parentPatientId")
+    suspend fun updateNeonatePatientId( parentPatientId: String, neonatePatientId: String)
+
     @Query("SELECT pd.* FROM PregnancyDetail AS pd JOIN HouseholdMember AS hh ON pd.patientId = hh.patient_id WHERE hh.fhir_id=:memberId Limit 1")
     suspend fun getPregnancyDetailByMemberId(memberId: String): PregnancyDetail?
 
     @Query("SELECT patient_id from HouseholdMember where fhir_id =:memberId")
     suspend fun getPatientId(memberId: String): String
+
+    @Query("SELECT neonatePatientId FROM PregnancyDetail where patientId =:patientId")
+    suspend fun getChildPatientId(patientId: String): String?
 
     @Transaction
     suspend fun insertOrUpdateFromBE(entity: PregnancyDetail): Long {

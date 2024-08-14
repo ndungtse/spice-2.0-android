@@ -470,6 +470,7 @@ class AssessmentViewModel @Inject constructor(
                 pregnancyDetail.pncVisitNo = 0
                 pregnancyDetail.dateOfDelivery = null
                 pregnancyDetail.noOfNeonates = null
+                pregnancyDetail.neonatePatientId = null
             }
 
             RMNCH.PNC -> {

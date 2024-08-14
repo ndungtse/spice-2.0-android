@@ -43,6 +43,7 @@ object RMNCH {
     const val pncNeonatalSigns = "pncNeonatalSigns"
     const val otherPncNeonateSigns = "otherPncNeonateSigns"
     const val pncMotherSigns = "pncMotherSigns"
+    const val NeonatePatientId = "neonatePatientId"
     const val pncMotherSignsLabel = "PNC Mother Signs"
     const val otherPncMotherSigns = "otherPncMotherSigns"
     const val PREGNANCY_MIN_AGE = 18

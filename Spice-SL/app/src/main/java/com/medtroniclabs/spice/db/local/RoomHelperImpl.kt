@@ -602,4 +602,16 @@ class RoomHelperImpl @Inject constructor(
     override suspend fun changeFollowUpCallStatus(idList: List<Long>) {
         followUpCallsDao.updateSyncSuccess(idList)
     }
+
+    override suspend fun updateNeonatePatientId(parentPatientId: String, neonatePatientId: String) {
+        pregnancyDetailDao.updateNeonatePatientId(parentPatientId, neonatePatientId)
+    }
+
+    override suspend fun getMemberDetailsByPatientId(patientId: String): HouseholdMemberEntity? {
+       return memberDAO.getMemberDetailsByPatientId(patientId)
+    }
+
+    override suspend fun getChildPatientId(patientId: String): String? {
+        return pregnancyDetailDao.getChildPatientId(patientId)
+    }
 }

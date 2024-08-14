@@ -223,4 +223,10 @@ interface RoomHelper {
 
     suspend fun deleteCompletedFollowUp()
 
+    suspend fun updateNeonatePatientId( parentPatientId: String, neonatePatientId: String)
+
+    suspend fun getMemberDetailsByPatientId(patientId: String): HouseholdMemberEntity?
+
+    suspend fun getChildPatientId(patientId: String): String?
+
 }

@@ -56,8 +56,7 @@ class BioDataChildFragment : BaseFragment() {
                 ResourceState.SUCCESS -> {
                     hideProgress()
                     resource.data?.let { data ->
-                       if (data.isNotEmpty())
-                            showPatientBioData(data[0])
+                        showPatientBioData(data)
                     }
                 }
             }

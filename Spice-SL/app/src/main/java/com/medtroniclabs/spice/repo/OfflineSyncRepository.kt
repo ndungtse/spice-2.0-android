@@ -31,6 +31,7 @@ import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.ANC
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.ChildHoodVisit
+import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.NeonatePatientId
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.PNC
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.PNCNeonatal
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.visitNo
@@ -72,7 +73,7 @@ class OfflineSyncRepository @Inject constructor(
                     provenance = ProvanceDto(modifiedDate = entity.createdAt.convertToUtcDateTime()),
                     latitude = entity.latitude,
                     longitude = entity.longitude,
-                    visitNumber = getVisitNumber(entity.assessmentType, assessmentDetail)
+                    visitNumber = getVisitNumber(entity.assessmentType, assessmentDetail, entity.neonatePatientId)
                 ),
                 followUpId = entity.followUpId,
                 updatedAt = entity.createdAt
@@ -80,10 +81,10 @@ class OfflineSyncRepository @Inject constructor(
         }
     }
 
-    private fun getVisitNumber(assessmentType: String, assessmentDetails: JsonElement): Long? {
+    private fun getVisitNumber(assessmentType: String, assessmentDetails: JsonElement, neonatePatientId: String?): Long? {
         when (assessmentType.lowercase()) {
             RMNCH.ANC_MENU.lowercase() -> return getRMNCHVisitNumber(ANC, assessmentDetails)
-            RMNCH.pnc_mother_key.lowercase() -> return getRMNCHVisitNumber(PNC, assessmentDetails)
+            RMNCH.pnc_mother_key.lowercase() -> return getRMNCHPNCVisitNumber(PNC, assessmentDetails, neonatePatientId)
             RMNCH.pnc_neonate_key.lowercase() -> return getRMNCHVisitNumber(PNCNeonatal, assessmentDetails)
             RMNCH.CHILD_MENU.lowercase() -> return getRMNCHVisitNumber(
                 ChildHoodVisit,
@@ -96,6 +97,12 @@ class OfflineSyncRepository @Inject constructor(
 
     private fun getRMNCHVisitNumber(key: String, assessmentDetails: JsonElement): Long {
         return assessmentDetails.asJsonObject.get(key).asJsonObject.get(visitNo).asLong
+    }
+
+    private fun getRMNCHPNCVisitNumber(key: String, assessmentDetails: JsonElement, neonatePatientId: String?): Long {
+        val assessmentObject = assessmentDetails.asJsonObject.get(key).asJsonObject
+        assessmentObject.addProperty(NeonatePatientId, neonatePatientId)
+        return assessmentObject.get(visitNo).asLong
     }
 
     suspend fun getSyncStatus(request: RequestGetSyncStatus): Response<SyncResponse> {

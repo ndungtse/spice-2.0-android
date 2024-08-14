@@ -11,6 +11,7 @@ data class AssessmentEncounter(
     val latitude: Double,
     val longitude: Double,
     val visitNumber: Long? = null,
+    val neonatePatientId: String? = null,
     val startTime: String = System.currentTimeMillis().convertToUtcDateTime(),
     val endTime: String = System.currentTimeMillis().convertToUtcDateTime()
 )

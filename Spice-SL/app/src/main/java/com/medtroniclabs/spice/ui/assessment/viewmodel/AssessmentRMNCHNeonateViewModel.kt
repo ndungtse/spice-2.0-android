@@ -43,7 +43,7 @@ class AssessmentRMNCHNeonateViewModel @Inject constructor(
 
     val assessmentSaveLiveData = MutableLiveData<Resource<Pair<AssessmentEntity,AssessmentEntity>>>()
 
-    val childMemberDetailsLiveData = MutableLiveData<Resource<List<HouseholdMemberEntity>>>()
+    val childMemberDetailsLiveData = MutableLiveData<Resource<HouseholdMemberEntity>>()
 
     var referralStatus: String? = null
 
@@ -66,7 +66,7 @@ class AssessmentRMNCHNeonateViewModel @Inject constructor(
         householdId: Long,
         motherDetailMap: HashMap<String, Any>,
         memberDetail: AssessmentMemberDetails,
-        childBioDataDetail: List<HouseholdMemberEntity>?,
+        childBioDataDetail: HouseholdMemberEntity?,
         followUpId: Long? = null
     ) {
         viewModelScope.launch(dispatcherIO) {
@@ -82,17 +82,14 @@ class AssessmentRMNCHNeonateViewModel @Inject constructor(
                     savePNCDetails(motherDetailMap, childDetailMap, memberDetail,childMemberId, followUpId = followUpId)
                 }
             } else {
-                childBioDataDetail?.let { list ->
-                    if (list.isNotEmpty()) {
-                        val childDetail = list.last()
-                        savePNCDetails(
-                            motherDetailMap,
-                            childDetailMap,
-                            memberDetail,
-                            childDetail.id,
-                            followUpId = followUpId
-                        )
-                    }
+                childBioDataDetail?.let { childDetail ->
+                    savePNCDetails(
+                        motherDetailMap,
+                        childDetailMap,
+                        memberDetail,
+                        childDetail.id,
+                        followUpId = followUpId
+                    )
                 }
             }
         }
@@ -227,14 +224,14 @@ class AssessmentRMNCHNeonateViewModel @Inject constructor(
         return Triple(assessmentDetail, motherMapString ?: "", childMapString ?: "")
     }
 
-    fun getMemberDetailsByParentId(memberId: String) {
+    fun getMemberDetailsByParentId(patientId: String) {
         viewModelScope.launch(dispatcherIO) {
             childMemberDetailsLiveData.postLoading()
-            childMemberDetailsLiveData.postValue(
-                householdMemberRepository.getMemberDetailsByParentId(
-                    memberId
+            assessmentRepository.getChildPatientId(patientId)?.let { childPatientId ->
+                childMemberDetailsLiveData.postValue(
+                    householdMemberRepository.getMemberDetailsByPatientId(childPatientId)
                 )
-            )
+            }
         }
     }
 

@@ -47,6 +47,7 @@ class AssessmentRepository @Inject constructor(
             )
             motherAssessmentEntity.id = roomHelper.saveAssessment(motherAssessmentEntity)
             val childMemberDetail = roomHelper.getAssessmentMemberDetails(childMemberId)
+
             val childAssessmentEntity = getAssessmentEntity(
                 childMemberDetail,
                 third,
@@ -57,6 +58,11 @@ class AssessmentRepository @Inject constructor(
                 followUpId = followUpId
             )
             childAssessmentEntity.id =  roomHelper.saveAssessment(childAssessmentEntity)
+
+            /**/
+            roomHelper.updateNeonatePatientId(memberDetail.patientId, childMemberDetail.patientId)
+            /**/
+
             Resource(
                 state = ResourceState.SUCCESS,
                 data = Pair(motherAssessmentEntity, childAssessmentEntity)
@@ -274,5 +280,8 @@ class AssessmentRepository @Inject constructor(
         roomHelper.updatePregnancyAncDetail(patientId, visitCount, clinicalDate)
     }
 
+    suspend fun getChildPatientId(patientId: String): String? {
+        return roomHelper.getChildPatientId(patientId)
+    }
 
 }
