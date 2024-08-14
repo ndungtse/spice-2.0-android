@@ -21,6 +21,7 @@ import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.invisible
 import com.medtroniclabs.spice.appextensions.visible
+import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.CommonUtils.getDecimalFormatted
 import com.medtroniclabs.spice.common.CommonUtils.getMaxDateLimit
 import com.medtroniclabs.spice.common.DateUtils
@@ -28,6 +29,7 @@ import com.medtroniclabs.spice.common.DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
 import com.medtroniclabs.spice.common.DateUtils.DATE_ddMMyyyy
 import com.medtroniclabs.spice.common.DateUtils.convertDateFormat
 import com.medtroniclabs.spice.common.DefinedParams.TestedOn
+import com.medtroniclabs.spice.common.DefinedParams.both
 import com.medtroniclabs.spice.databinding.CustomSpinnerLayoutInvestigationBinding
 import com.medtroniclabs.spice.databinding.DatepickerLayoutBinding
 import com.medtroniclabs.spice.databinding.EdittextLayoutInvestigationBinding
@@ -62,7 +64,7 @@ class InvestigationGenerator(
     private val titleSuffix = "titleTextView"
     private val errorSuffix = "errorMessageView"
     private val unitSuffix = "_unit"
-    private var focusNeededView: View? = null
+    private var Gender: String? = null
 
     fun populateViews(
         serverData: ArrayList<InvestigationModel>,
@@ -111,14 +113,18 @@ class InvestigationGenerator(
                 investigationBinding.resultContainerHolder.setPadding(
                     resources.getDimension(R.dimen._16sdp).roundToInt()
                 )
+                investigationBinding.resultViewContainer.visible()
+                investigationBinding.resultContainer.gone()
                 renderInvestigationResultViewContainer(
                     investigation,
-                    investigationBinding.resultContainer
+                    investigationBinding.resultViewContainer
                 )
             } else {
                 investigationBinding.resultContainerHolder.setPadding(
                     resources.getDimension(R.dimen._0dp).roundToInt()
                 )
+                investigationBinding.resultViewContainer.gone()
+                investigationBinding.resultContainer.visible()
                 renderInvestigationResultContainer(
                     investigation,
                     investigationBinding.resultContainer
@@ -131,7 +137,7 @@ class InvestigationGenerator(
 
     private fun renderInvestigationResultViewContainer(
         investigation: InvestigationModel,
-        resultContainer: FlexboxLayout
+        resultContainer: LinearLayout
     ) {
         investigation.labTestResultList?.forEach { investigationResult ->
             if (resultContainer.findViewWithTag<TextView>(TestedOn) == null) {
@@ -152,22 +158,55 @@ class InvestigationGenerator(
             summaryLayoutBinding.root.minimumWidth =
                 resources.getDimension(R.dimen._328sdp).roundToInt()
             summaryLayoutBinding.tvKey.text = investigationResult.name
-            investigationResult.value.let {
-                if (it is String) {
-                    summaryLayoutBinding.tvValue.text = appendUnitIfExist(it,investigationResult.unit)
-                } else {
-                    summaryLayoutBinding.tvValue.text = appendUnitIfExist(getDecimalFormatted(it),investigationResult.unit)
+
+            var rangeBoolean = false
+            var rangeDisplay: String? = null
+
+            investigation.resultList?.formLayout?.filter { it.id == investigationResult.name }
+                ?.let { list ->
+                    if (list.isNotEmpty()) {
+                        val formData = list[0]
+                        formData.ranges?.filter { (it.gender.equals(Gender,true) || it.gender.equals(both, true) )  }?.let { ranges ->
+                            if (ranges.isNotEmpty()) {
+                                val numberValue: Double? =
+                                    investigationResult.value.toDoubleOrNull()
+                                val range = ranges[0]
+                                if (numberValue != null && (numberValue < range.minRange || numberValue > range.maxRange)) {
+                                    rangeDisplay = range.displayRange
+                                    rangeBoolean = true
+                                }
+                            }
+                        }
+                    }
                 }
+
+            investigationResult.value.let {
+                if (rangeBoolean) {
+                    summaryLayoutBinding.tvValueRange.setTextColor(getColor(R.color.medium_high_risk_color))
+                    summaryLayoutBinding.tvValue.setTextColor(getColor(R.color.medium_high_risk_color))
+                } else {
+                    summaryLayoutBinding.tvValueRange.setTextColor(getColor(R.color.navy_blue))
+                    summaryLayoutBinding.tvValue.setTextColor(getColor(R.color.navy_blue))
+                }
+                if (rangeDisplay != null) {
+                    summaryLayoutBinding.tvValueRange.text = rangeDisplay
+                }
+                summaryLayoutBinding.tvValue.text =
+                    appendUnitIfExist(it, investigationResult.unit)
             }
+
             resultContainer.addView(summaryLayoutBinding.root)
         }
     }
 
-    private fun appendUnitIfExist(value : String, unit: String?): CharSequence? {
+    private fun appendUnitIfExist(
+        value: String,
+        unit: String?
+    ): CharSequence {
         return if (unit != null)
-            "$value $unit"
+            "${getDecimalFormatted(value)} $unit"
         else
-            value
+            getDecimalFormatted(value)
     }
 
     private fun renderInvestigationResultContainer(
@@ -569,51 +608,52 @@ class InvestigationGenerator(
     fun onValidateInput(): Boolean {
         var isValid = true
         this.serverData?.let { investigationList ->
-            investigationList.forEach { data ->
-                if (data.resultHashMap != null && data.resultHashMap!!.size == 0) {
-                    isValid = true
-                    data.dataError = true
-                } else {
-                    data.resultList?.formLayout?.forEach { formData ->
-                        if ((formData.isMandatory && data.resultHashMap != null && !data.resultHashMap!!.containsKey(
-                                formData.id
-                            ))
-                            ||
-                            (formData.isMandatory && data.resultHashMap != null && data.resultHashMap!!.containsKey(
-                                formData.id
-                            )
-                                    && data.resultHashMap!![formData.id] is String && (data.resultHashMap!![formData.id] as String).isEmpty())
-                        ) {
-                            isValid = false
-                            data.dataError = false
-                        } else if (formData.viewType == VIEW_TYPE_FORM_EDITTEXT) {
-                            if (data.resultHashMap != null && data.resultHashMap!!.containsKey(
+            investigationList.filter{ it.id == null || (it.resultHashMap != null && it.resultHashMap!!.size > 0) }
+                .forEach { data ->
+                    if (data.resultHashMap != null && data.resultHashMap!!.size == 0) {
+                        isValid = true
+                        data.dataError = true
+                    } else {
+                        data.resultList?.formLayout?.forEach { formData ->
+                            if ((formData.isMandatory && data.resultHashMap != null && !data.resultHashMap!!.containsKey(
+                                    formData.id
+                                ))
+                                ||
+                                (formData.isMandatory && data.resultHashMap != null && data.resultHashMap!!.containsKey(
                                     formData.id
                                 )
+                                        && data.resultHashMap!![formData.id] is String && (data.resultHashMap!![formData.id] as String).isEmpty())
                             ) {
-                                val actualValue = data.resultHashMap!![formData.id]
-                                if (actualValue is String && actualValue.isEmpty() && !formData.isMandatory) {
-                                    // hideValidationField(data)
+                                isValid = false
+                                data.dataError = false
+                            } else if (formData.viewType == VIEW_TYPE_FORM_EDITTEXT) {
+                                if (data.resultHashMap != null && data.resultHashMap!!.containsKey(
+                                        formData.id
+                                    )
+                                ) {
+                                    val actualValue = data.resultHashMap!![formData.id]
+                                    if (actualValue is String && actualValue.isEmpty() && !formData.isMandatory) {
+                                        // hideValidationField(data)
+                                    } else {
+                                        isValid = validateMinMaxLength(
+                                            actualValue,
+                                            isValid,
+                                            formData
+                                        ) && validateUnit(formData, data)
+                                        data.dataError = isValid
+                                    }
                                 } else {
-                                    isValid = validateMinMaxLength(
-                                        actualValue,
-                                        isValid,
-                                        formData
-                                    ) && validateUnit(formData,data)
-                                    data.dataError = isValid
+                                    // hideValidationField(data)
                                 }
                             } else {
                                 // hideValidationField(data)
                             }
-                        } else {
-                            // hideValidationField(data)
+                        } ?: kotlin.run {
+                            isValid = false
+                            data.dataError = false
                         }
-                    } ?: kotlin.run {
-                        isValid = false
-                        data.dataError = false
                     }
                 }
-            }
         } ?: kotlin.run {
             isValid = false
         }
@@ -621,10 +661,10 @@ class InvestigationGenerator(
     }
 
     private fun validateUnit(formData: FormLayout, data: InvestigationModel): Boolean {
-        return if (formData.unitList == null || (formData.unitList != null && formData.unitList!!.size == 0)){
+        return if (formData.unitList == null || (formData.unitList != null && formData.unitList!!.size == 0)) {
             true
-        }else {
-             data.resultHashMap!!.containsKey(
+        } else {
+            data.resultHashMap!!.containsKey(
                 formData.id + com.medtroniclabs.spice.common.DefinedParams.Unit
             )
         }
@@ -800,6 +840,10 @@ class InvestigationGenerator(
 
     fun getResultFromInvestigation(): List<InvestigationModel>? {
         return serverData
+    }
+
+    fun setPatientGender(gender: String) {
+        Gender = gender
     }
 
 

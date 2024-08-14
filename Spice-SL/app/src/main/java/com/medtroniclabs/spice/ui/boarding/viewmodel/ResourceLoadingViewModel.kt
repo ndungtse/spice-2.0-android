@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.appextensions.postLoading
-import com.medtroniclabs.spice.appextensions.postSuccess
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.network.resource.Resource
@@ -31,10 +30,8 @@ class ResourceLoadingViewModel @Inject constructor(
     private val workflowNames = mutableListOf<Long>()
     private val meta = mutableListOf<String>()
     private val syncDelay = 20 * 1000L // 20 Sec
+    var changeFacility = false
 
-    init {
-        getMetaDataInformation()
-    }
 
     fun getMetaDataInformation() {
         viewModelScope.launch(dispatcherIO) {
@@ -46,7 +43,8 @@ class ResourceLoadingViewModel @Inject constructor(
             metaDataCompleteLiveData.postValue(
                 metaRepository.getMetaDataInformation(
                     workflowNames,
-                    meta
+                    meta,
+                    changeFacility
                 )
             )
         }

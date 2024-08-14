@@ -1,6 +1,7 @@
 package com.medtroniclabs.spice.ui.assessment.fragment
 
 import android.app.DatePickerDialog
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -32,6 +33,7 @@ import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.getValueFromMap
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentRMNCHNeonateViewModel
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
+import com.medtroniclabs.spice.ui.household.HouseholdSearchActivity
 
 class AssessmentRMNCHNeonateSummaryFragment : BaseFragment(), View.OnClickListener {
 
@@ -262,6 +264,9 @@ class AssessmentRMNCHNeonateSummaryFragment : BaseFragment(), View.OnClickListen
                     updateFollowUpDate(binding.etNextFollowUpDate.text.trim().toString())
                 }
                 if (viewModel.otherAssessmentDetails.isEmpty()) {
+                    val intent =  Intent(requireActivity(), HouseholdSearchActivity::class.java)
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+                    startActivity(intent)
                     requireActivity().finish()
                 } else {
                     assessmentRMNCHNeonateViewModel.updateOtherAssessmentDetails(

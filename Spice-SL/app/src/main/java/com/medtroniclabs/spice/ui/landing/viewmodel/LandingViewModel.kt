@@ -26,6 +26,10 @@ class LandingViewModel @Inject constructor(
     val menuListLiveData = MutableLiveData<Resource<List<MenuEntity>>>()
     val userProfileLiveData = MutableLiveData<Resource<UserProfile>>()
     val defaultHealthFacilityLiveData = MutableLiveData<Resource<HealthFacilityEntity?>>()
+    val userHealthFacilityLiveData = MutableLiveData<Resource<ArrayList<HealthFacilityEntity>>>()
+
+    var selectedSiteEntity: HealthFacilityEntity ?= null
+
 
     fun getMenus() {
         viewModelScope.launch(dispatcherIO) {
@@ -54,4 +58,12 @@ class LandingViewModel @Inject constructor(
             defaultHealthFacilityLiveData.postValue(metaRepository.getDefaultHealthFacility())
         }
     }
+
+    fun getUserHealthFacility() {
+        viewModelScope.launch(dispatcherIO) {
+            userHealthFacilityLiveData.postLoading()
+            userHealthFacilityLiveData.postValue(metaRepository.getUserHealthFacility())
+        }
+    }
+
 }

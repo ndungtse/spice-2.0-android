@@ -68,7 +68,7 @@ import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefined
 import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.otherSigns
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
-import com.medtroniclabs.spice.ui.landing.LandingActivity
+import com.medtroniclabs.spice.ui.household.HouseholdSearchActivity
 import org.json.JSONObject
 
 class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
@@ -560,8 +560,8 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
                     updateFollowUpDate(binding.etNextFollowUpDate.text.trim().toString())
                 }
                 if (viewModel.otherAssessmentDetails.isEmpty()) {
-                    val intent = Intent(requireActivity(), LandingActivity::class.java)
-                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+                    val intent =  Intent(requireActivity(), HouseholdSearchActivity::class.java)
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
                     startActivity(intent)
                     requireActivity().finish()
                 } else {

@@ -54,7 +54,11 @@ import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefined
 import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralReasons
 import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
+import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.DeathOfMother
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.Miscarriage
+import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.deathOfBaby
+import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.deathOfNewborn
+import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.getDeathStatus
 
 class ReferralResultGenerator {
 
@@ -79,39 +83,47 @@ class ReferralResultGenerator {
         isChild: Boolean = false
     ): Pair<String?, ArrayList<String>> {
         if (map.containsKey(RMNCH.ANC)) {
-            if (checkMiscarrageStatus(map, RMNCH.ANC, Miscarriage)) {
-                addResultMap(ReferralReasons.Miscarriage.name, ReferralStatus.Referred.name)
-                addReferralReason(referralReason, ReferralReasons.Miscarriage.name)
-            }
-            findSignListByWorkflow(
-                RMNCH.ANC,
-                map,
-                RMNCH.ancSigns,
-                ReferralReasons.aliasOf(ReferralReasons.ANCSigns)
-            )
-            updateVisitCount(map, RMNCH.ANC)
-        } else if (map.containsKey(RMNCH.ChildHoodVisit)) {
-            if (checkMUACReferralStatus(map, RMNCH.ChildHoodVisit, MUAC)) {
-                addResultMap(ReferralReasons.MUAC.name, ReferralStatus.Referred.name)
-                addReferralReason(referralReason, ReferralReasons.MUAC.name)
-            }
-            findSignListByWorkflow(
-                RMNCH.ChildHoodVisit,
-                map,
-                RMNCH.childhoodVisitSigns,
-                ReferralReasons.aliasOf(ReferralReasons.childhoodVisitSigns)
-            )
-            updateVisitCount(map, RMNCH.ChildHoodVisit)
-        } else {
-
-            if (isChild) {
+            val deathOfMother = getDeathStatus(map, RMNCH.ANC, DeathOfMother)
+            if (!deathOfMother) {
+                if (checkMiscarrageStatus(map, RMNCH.ANC, Miscarriage)) {
+                    addResultMap(ReferralReasons.Miscarriage.name, ReferralStatus.Referred.name)
+                    addReferralReason(referralReason, ReferralReasons.Miscarriage.name)
+                }
                 findSignListByWorkflow(
-                    RMNCH.PNCNeonatal,
+                    RMNCH.ANC,
                     map,
-                    RMNCH.pncNeonateSigns,
-                    ReferralReasons.aliasOf(ReferralReasons.PNCNeonateSigns)
+                    RMNCH.ancSigns,
+                    ReferralReasons.aliasOf(ReferralReasons.ANCSigns)
                 )
-                updateVisitCount(map, RMNCH.PNC)
+                updateVisitCount(map, RMNCH.ANC)
+            }
+        } else if (map.containsKey(RMNCH.ChildHoodVisit)) {
+            val deathOfBaby = getDeathStatus(map, RMNCH.ChildHoodVisit, deathOfBaby)
+            if (!deathOfBaby) {
+                if (checkMUACReferralStatus(map, RMNCH.ChildHoodVisit, MUAC)) {
+                    addResultMap(ReferralReasons.MUAC.name, ReferralStatus.Referred.name)
+                    addReferralReason(referralReason, ReferralReasons.MUAC.name)
+                }
+                findSignListByWorkflow(
+                    RMNCH.ChildHoodVisit,
+                    map,
+                    RMNCH.childhoodVisitSigns,
+                    ReferralReasons.aliasOf(ReferralReasons.childhoodVisitSigns)
+                )
+                updateVisitCount(map, RMNCH.ChildHoodVisit)
+            }
+        } else {
+            val deathOfNewBorn = getDeathStatus(map, RMNCH.PNCNeonatal, deathOfNewborn)
+            if (isChild) {
+                if (!deathOfNewBorn){
+                    findSignListByWorkflow(
+                        RMNCH.PNCNeonatal,
+                        map,
+                        RMNCH.pncNeonateSigns,
+                        ReferralReasons.aliasOf(ReferralReasons.PNCNeonateSigns)
+                    )
+                    updateVisitCount(map, RMNCH.PNC)
+                }
             } else {
                 findSignListByWorkflow(
                     RMNCH.PNC,
@@ -119,18 +131,21 @@ class ReferralResultGenerator {
                     RMNCH.pncMotherSigns,
                     ReferralReasons.aliasOf(ReferralReasons.PNCMotherSigns)
                 )
-                findSignListByWorkflow(
-                    RMNCH.PNCNeonatal,
-                    map,
-                    RMNCH.pncNeonateSigns,
-                    ReferralReasons.aliasOf(ReferralReasons.PNCNeonateSigns)
-                )
+                if (!deathOfNewBorn) {
+                    findSignListByWorkflow(
+                        RMNCH.PNCNeonatal,
+                        map,
+                        RMNCH.pncNeonateSigns,
+                        ReferralReasons.aliasOf(ReferralReasons.PNCNeonateSigns)
+                    )
+                }
                 updateVisitCount(map, RMNCH.PNC)
             }
-
         }
         return Pair(checkStatus(), referralReason)
     }
+
+
 
     private fun updateVisitCount(map: HashMap<String, Any>, workFlow: String) {
         if (referralReason.isNotEmpty()) {
@@ -371,12 +386,10 @@ class ReferralResultGenerator {
                     if (noOfDays >= MaxDaysOfFever) {
                         addResultMap(referralKey.lowercase(), ReferralStatus.Referred.name)
                         rdtReferralStatus(map, referralKey)
-                    }
-                    else if (map.containsKey(Temperature) && map[Temperature] is Double && (map[Temperature] as Double) >= MaxTemperature) {
+                    } else if (map.containsKey(Temperature) && map[Temperature] is Double && (map[Temperature] as Double) >= MaxTemperature) {
                         addResultMap(referralKey.lowercase(), ReferralStatus.Referred.name)
                         rdtReferralStatus(map, referralKey)
-                    }
-                    else {
+                    } else {
                         if (map.containsKey(RdtTest) && map[RdtTest] == RdtPositive) {
                             addResultMap(referralKey.lowercase(), getMedicationStatus(map, ACT))
                             addReferralReason(referralReason, ReferralReasons.Malaria.name)

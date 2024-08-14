@@ -42,7 +42,7 @@ data class HouseholdMemberEntity(
 
     var parentId: String? = null,
 
-    val isDeceased: Boolean = false,
+    var isDeceased: Boolean = false,
 
     val version: String? = null,
 

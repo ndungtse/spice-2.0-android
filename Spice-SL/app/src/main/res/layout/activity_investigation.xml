@@ -16,7 +16,7 @@
         android:background="@drawable/edittext_background"
         android:drawableStart="@drawable/ic_search_blue"
         android:drawablePadding="@dimen/_12sdp"
-        android:hint="@string/search_and_add"
+        android:hint="@string/search_investigation_and_add"
         android:inputType="text"
         android:maxLines="1"
         android:padding="@dimen/_12sdp"

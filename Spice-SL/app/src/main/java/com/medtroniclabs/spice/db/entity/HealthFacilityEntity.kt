@@ -12,5 +12,6 @@ data class HealthFacilityEntity(
     val districtId: Long,
     val chiefdomId: Long,
     val fhirId: String? = null,
-    val isDefault: Boolean = false
+    val isDefault: Boolean = false,
+    val isUserSite: Boolean = false
 )

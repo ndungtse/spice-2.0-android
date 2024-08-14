@@ -38,11 +38,14 @@ import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.ANC
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.ANC_MENU
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.ChildHoodVisit
+import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.DeathOfMother
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.Miscarriage
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.ancSigns
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.childhoodVisitSigns
+import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.deathOfBaby
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.estimatedDeliveryDate
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.gestationalAge
+import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.getDeathStatus
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.lastMenstrualPeriod
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.otherAncSigns
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.otherChildhoodVisitSigns
@@ -62,7 +65,7 @@ class AssessmentViewModel @Inject constructor(
 ) : ViewModel() {
 
     var selectedHouseholdMemberId = -1L
-    var followUpId : Long? = null
+    var followUpId: Long? = null
     val assessmentSaveLiveData = MutableLiveData<Resource<AssessmentEntity>>()
     val assessmentStringLiveData = MutableLiveData<String?>()
     val assessmentUpdateLiveData = MutableLiveData<Resource<String>>()
@@ -109,7 +112,7 @@ class AssessmentViewModel @Inject constructor(
     }
 
     fun saveAssessment(
-        assessmentMap: HashMap<*, *>,
+        assessmentMap: HashMap<String, Any>,
         referralResult: Pair<String?, ArrayList<String>>?,
         menuId: String?
     ) {
@@ -137,13 +140,13 @@ class AssessmentViewModel @Inject constructor(
     }
 
     private fun calculateOtherDetails(
-        assessmentMap: HashMap<Any, Any>,
+        assessmentMap: HashMap<String, Any>,
         referralStatus: String?,
         menuId: String?
     ): HashMap<String, Any>? {
         var otherDetails = HashMap<String, Any>()
 
-        if (menuId == ICCM_MENU_ID){
+        if (menuId == ICCM_MENU_ID) {
             otherDetails = otherAssessmentDetails
         }
 
@@ -167,7 +170,9 @@ class AssessmentViewModel @Inject constructor(
                         miscarriageValue = miscarriage
                     }
                 }
-                if (!miscarriageValue && ancMap.containsKey(lastMenstrualPeriod)) {
+                val deathOfMother = getDeathStatus(assessmentMap, ANC, DeathOfMother)
+
+                if (!deathOfMother && !miscarriageValue && ancMap.containsKey(lastMenstrualPeriod)) {
                     val lmp = ancMap[lastMenstrualPeriod] as String
                     DateUtils.convertStringToDate(
                         lmp,
@@ -189,21 +194,25 @@ class AssessmentViewModel @Inject constructor(
                 }
             }
         } else if (menuId == RMNCH.CHILD_MENU.uppercase(Locale.getDefault())) {
+            val deathOfBaby = getDeathStatus(assessmentMap, ChildHoodVisit, deathOfBaby)
+
             memberDetailsLiveData.value?.data?.dateOfBirth?.let {
-                DateUtils.calculateAgeInMonths(it)?.let { pair ->
-                    if (pair.first <= RMNCH.childHoodVisitMaxMonth) {
-                        RMNCH.calculateNextChildHoodVisitDate(
-                            age = pair.first,
-                            birthDate = pair.second
-                        )?.let { visitDate ->
-                            otherDetails[AssessmentDefinedParams.NextFollowupDate] =
-                                DateUtils.convertDateTimeToDate(
-                                    DateUtils.getDateStringFromDate(
-                                        visitDate, DateUtils.DATE_ddMMyyyy
-                                    ),
-                                    DateUtils.DATE_ddMMyyyy,
-                                    DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
-                                )
+                if (!deathOfBaby) {
+                    DateUtils.calculateAgeInMonths(it)?.let { pair ->
+                        if (pair.first <= RMNCH.childHoodVisitMaxMonth) {
+                            RMNCH.calculateNextChildHoodVisitDate(
+                                age = pair.first,
+                                birthDate = pair.second
+                            )?.let { visitDate ->
+                                otherDetails[AssessmentDefinedParams.NextFollowupDate] =
+                                    DateUtils.convertDateTimeToDate(
+                                        DateUtils.getDateStringFromDate(
+                                            visitDate, DateUtils.DATE_ddMMyyyy
+                                        ),
+                                        DateUtils.DATE_ddMMyyyy,
+                                        DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
+                                    )
+                            }
                         }
                     }
                 }
@@ -227,7 +236,7 @@ class AssessmentViewModel @Inject constructor(
                     val list = diarrhoea[DiarrhoeaSigns] as List<*>
                     list.forEach { it ->
                         if (it is HashMap<*, *>) {
-                            signsList.add(it["name"] as String)
+                            signsList.add(it[DefinedParams.Value] as String)
                         }
                     }
                     diarrhoea[DiarrhoeaSigns] = signsList
@@ -245,7 +254,7 @@ class AssessmentViewModel @Inject constructor(
                     val list = signsAndSymptom[otherSymptoms] as List<*>
                     list.forEach { it ->
                         if (it is HashMap<*, *>) {
-                            signsList.add(it["name"] as String)
+                            signsList.add(it[DefinedParams.Value] as String)
                         }
                     }
 
@@ -265,7 +274,7 @@ class AssessmentViewModel @Inject constructor(
                 val list = childHoodVisit[childhoodVisitSigns] as List<*>
                 list.forEach { it ->
                     if (it is HashMap<*, *>) {
-                        signsList.add(it["name"] as String)
+                        signsList.add(it[DefinedParams.Value] as String)
                     }
                 }
 
@@ -288,7 +297,7 @@ class AssessmentViewModel @Inject constructor(
                 val list = anc[ancSigns] as List<*>
                 list.forEach { it ->
                     if (it is HashMap<*, *>) {
-                        signsList.add(it[DefinedParams.NAME] as String)
+                        signsList.add(it[DefinedParams.Value] as String)
                     }
                 }
                 anc[ancSigns] = signsList
@@ -386,7 +395,7 @@ class AssessmentViewModel @Inject constructor(
         workflowName: String,
         memberDetail: AssessmentMemberDetails,
         memberClinicalEntity: MemberClinicalEntity?,
-        childDetailsMap: HashMap<String,Any>? = null
+        childDetailsMap: HashMap<String, Any>? = null
 
     ) {
         memberDetail.apply {
@@ -395,7 +404,12 @@ class AssessmentViewModel @Inject constructor(
                 patientId.let { id ->
                     val pregnancyDetail = pregnancyDetail
                         ?: PregnancyDetail(patientId = id)
-                    getClinicalDateAndVisitCount(map, workflowName, pregnancyDetail,childDetailsMap)
+                    getClinicalDateAndVisitCount(
+                        map,
+                        workflowName,
+                        pregnancyDetail,
+                        childDetailsMap
+                    )
                     savePatientClinicalInformation(pregnancyDetail)
                 }
                 /*memberClinicalEntity?.let { memberClinicalEntity ->
@@ -528,6 +542,15 @@ class AssessmentViewModel @Inject constructor(
                 patientId,
                 visitCount,
                 clinicalDate
+            )
+        }
+    }
+
+    fun updateMemberDeceasedStatus(patientId: String, status: Boolean) {
+        viewModelScope.launch(dispatcherIO) {
+            memberRegistrationRepository.updateMemberDeceasedStatus(
+                patientId,
+                status
             )
         }
     }

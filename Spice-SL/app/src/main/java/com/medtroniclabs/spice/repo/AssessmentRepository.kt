@@ -31,8 +31,7 @@ class AssessmentRepository @Inject constructor(
         referralResult: Pair<String?, ArrayList<String>>,
         lastLocation: Location?,
         otherDetails: HashMap<String, Any>?,
-        childMemberId: Long,
-        followUpId: Long? = null,
+        childMemberIdFollowupIDAndDeathOfNewBorn: Triple<Long, Long?, Boolean?>,
         childReferralResult: Pair<String?, ArrayList<String>>
     ): Resource<Pair<AssessmentEntity, AssessmentEntity>> {
         return try {
@@ -43,10 +42,11 @@ class AssessmentRepository @Inject constructor(
                 referralResult,
                 lastLocation,
                 RMNCH.pnc_mother_key,
-                followUpId = followUpId
+                followUpId = childMemberIdFollowupIDAndDeathOfNewBorn.second
             )
             motherAssessmentEntity.id = roomHelper.saveAssessment(motherAssessmentEntity)
-            val childMemberDetail = roomHelper.getAssessmentMemberDetails(childMemberId)
+            val childMemberDetail =
+                roomHelper.getAssessmentMemberDetails(childMemberIdFollowupIDAndDeathOfNewBorn.first)
 
             val childAssessmentEntity = getAssessmentEntity(
                 childMemberDetail,
@@ -55,9 +55,15 @@ class AssessmentRepository @Inject constructor(
                 childReferralResult,
                 lastLocation,
                 RMNCH.pnc_neonate_key,
-                followUpId = followUpId
+                followUpId = childMemberIdFollowupIDAndDeathOfNewBorn.second
             )
-            childAssessmentEntity.id =  roomHelper.saveAssessment(childAssessmentEntity)
+            childAssessmentEntity.id = roomHelper.saveAssessment(childAssessmentEntity)
+
+            childMemberIdFollowupIDAndDeathOfNewBorn.third?.let { deathOfNewborn ->
+                if (deathOfNewborn){
+                    roomHelper.updateMemberDeceasedStatus(childMemberDetail.patientId, true)
+                }
+            }
 
             /**/
             roomHelper.updateNeonatePatientId(memberDetail.patientId, childMemberDetail.patientId)
@@ -67,6 +73,7 @@ class AssessmentRepository @Inject constructor(
                 state = ResourceState.SUCCESS,
                 data = Pair(motherAssessmentEntity, childAssessmentEntity)
             )
+
         } catch (e: Exception) {
             Resource(state = ResourceState.ERROR)
         }

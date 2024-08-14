@@ -5,9 +5,9 @@ import android.text.SpannableStringBuilder
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.card.MaterialCardView
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.CommonUtils.getAgeFromDOB
-import com.medtroniclabs.spice.common.CommonUtils.getAgeFromDob
 import com.medtroniclabs.spice.common.CommonUtils.getGenderText
 import com.medtroniclabs.spice.databinding.MembersSummaryListItemBinding
 import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
@@ -29,10 +29,25 @@ class HouseholdMemberListAdapter(
         position: Int
     ) {
         val item = houseHoldMembersList[position]
+        if (item.isDeceased) {
+            disableAllChildren(holder.binding.root, 0.5f, false)
+        } else {
+            disableAllChildren(holder.binding.root, 1f, true)
+        }
         holder.binding.tvMemberName.text = getMemberInfoText(holder.context, item)
         holder.binding.tvPatientId.text = item.patientId
         holder.binding.cardPatient.safeClickListener {
-            listener.onMemberSelected(item.id, false)
+            if (!item.isDeceased) {
+                listener.onMemberSelected(item.id, false)
+            }
+        }
+    }
+
+    private fun disableAllChildren(root: MaterialCardView, alpha: Float, enabled: Boolean) {
+        for (i in 0 until root.childCount) {
+            val child = root.getChildAt(i)
+            child.alpha = alpha // Set 50% opacity to indicate a disabled state
+            child.isEnabled = enabled // Optionally disable interaction
         }
     }
 

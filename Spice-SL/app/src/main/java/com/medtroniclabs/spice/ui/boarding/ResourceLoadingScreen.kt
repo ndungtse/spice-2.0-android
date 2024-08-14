@@ -6,6 +6,7 @@ import android.view.View
 import androidx.activity.viewModels
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.visible
+import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.RoleConstant
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.databinding.ActivityResourceLoadingScreenBinding
@@ -25,8 +26,14 @@ class ResourceLoadingScreen : BaseActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityResourceLoadingScreenBinding.inflate(layoutInflater)
         setMainContentView(binding.root)
+        initView()
         attachObserver()
         setViewListener()
+    }
+
+    private fun initView() {
+        viewModel.changeFacility = intent.getBooleanExtra(DefinedParams.changeFacility,false)
+        viewModel.getMetaDataInformation()
     }
 
     private fun attachObserver() {

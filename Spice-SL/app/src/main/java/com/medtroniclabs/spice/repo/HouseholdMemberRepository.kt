@@ -20,6 +20,8 @@ import com.medtroniclabs.spice.mappingkey.MemberRegistration.otherFamilyMember
 import com.medtroniclabs.spice.model.assessment.AssessmentMemberDetails
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.network.resource.ResourceState
+import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
+import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.isDeceased
 import javax.inject.Inject
 
 class HouseholdMemberRepository @Inject constructor(
@@ -87,6 +89,10 @@ class HouseholdMemberRepository @Inject constructor(
         householdMemberEntity.isPregnant =
             isPregnantOrNot?.let { CommonUtils.getIsBooleanFromString(isPregnantOrNot) }
 
+        val isDeceased = map[isDeceased]
+        if (isDeceased != null && isDeceased is Boolean && isDeceased){
+             householdMemberEntity.isDeceased = isDeceased
+        }
         if (entity == null) {
             val householdDetails = roomHelper.getHouseHoldDetailsById(householdId)
             householdMemberEntity.householdId = householdId
@@ -201,6 +207,10 @@ class HouseholdMemberRepository @Inject constructor(
 
     suspend fun savePregnancyDetail(pregnancyDetail: PregnancyDetail): Long {
         return roomHelper.savePregnancyDetail(pregnancyDetail)
+    }
+
+   suspend fun updateMemberDeceasedStatus(patientId: String, status: Boolean) {
+        return roomHelper.updateMemberDeceasedStatus(patientId, status)
     }
 
 }

@@ -30,6 +30,7 @@ object RMNCH {
     const val NoOfNeonate = "noOfNeonates"
     const val gestationalAge = "gestationalAge"
     const val Miscarriage = "miscarriage"
+    const val DeathOfMother = "deathOfMother"
     const val childhoodVisitSigns = "childhoodVisitSigns"
     const val childhoodVisitSignsLabel = "Childhood Visit Signs"
     const val pncChildSigns = "pncChildSigns"
@@ -58,6 +59,10 @@ object RMNCH {
     const val ANCVisitNo = "ANC Visit "
     const val PNCVisitNo = "PNC Visit "
     const val ChildHoodVisitNo = "Childhood Visit "
+
+    const val deathOfNewborn = "deathOfNewborn"
+    const val deathOfBaby = "deathOfBaby"
+    const val isDeceased = "isDeceased"
 
 
 
@@ -267,6 +272,21 @@ object RMNCH {
             PNC -> return PNC_MENU.uppercase(Locale.getDefault())
         }
         return MenuConstants.RMNCH_MENU_ID.uppercase(Locale.getDefault())
+    }
+
+    fun getDeathStatus(
+        map: HashMap<String, Any>,
+        workFlowName: String,
+        keyName: String
+    ): Boolean {
+        var deathOfMother = false
+        val workFlowMap = map[workFlowName]
+        if (workFlowMap is Map<*, *> && workFlowMap.containsKey(keyName)) {
+            if (workFlowMap[keyName] is Boolean) {
+                deathOfMother = workFlowMap[keyName] as Boolean
+            }
+        }
+        return deathOfMother
     }
 
 }

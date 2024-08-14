@@ -54,11 +54,11 @@ class InvestigationViewModel @Inject constructor(
 
     val removeLabTestLiveData = MutableLiveData<Resource<Map<String, Any>>>()
 
-    fun searchInvestigationByName(name: String) {
+    fun searchInvestigationByName(searchTerm: String) {
         viewModelScope.launch(dispatcherIO) {
             try {
                 investigationSearchResponseListLiveData.postLoading()
-                val request = SearchRequestLabTest(name)
+                val request = SearchRequestLabTest(searchTerm)
                 val response = investigationRepository.searchInvestigationByName(request)
                 response.data?.let {
                     investigationSearchResponseListLiveData.postSuccess(it)
@@ -227,25 +227,27 @@ class InvestigationViewModel @Inject constructor(
                     }
                 }
                 actualValue?.let { value ->
-                    val resultObject = LabTestResultObject(
-                        name = formData.id,
-                        value = value,
-                        SecuredPreference.getUserFhirId(),
-                        getCodeDetailsObject(formData),
-                        testedOn = testedOn,
-                        resource = formData.resource,
-                        unitValue
-                    )
-                    list.add(resultObject)
+                    if (value is String){
+                        val resultObject = LabTestResultObject(
+                            name = formData.id,
+                            value = value,
+                            SecuredPreference.getUserFhirId(),
+                            getCodeDetailsObject(formData),
+                            testedOn = testedOn,
+                            resource = formData.resource,
+                            unitValue
+                        )
+                        list.add(resultObject)
+                    }
                 }
             } else {
                 validResultList = false
             }
         }
-        if (validResultList) {
-            return list
+        return if (validResultList) {
+            list
         } else {
-            return null
+            null
         }
     }
 

@@ -15,6 +15,11 @@
             />
 
         <item
+            android:id="@+id/changeFacility"
+            android:icon="@drawable/ic_change_facility"
+            android:title="@string/change_facility" />
+
+        <item
             android:id="@+id/offline_sync"
             android:icon="@drawable/ic_offline_sync_image"
             android:title="@string/offline_sync"
@@ -29,6 +34,7 @@
             android:id="@+id/logout"
             android:icon="@drawable/ic_logout"
             android:title="@string/logout" />
+
     </group>
 
 </menu>

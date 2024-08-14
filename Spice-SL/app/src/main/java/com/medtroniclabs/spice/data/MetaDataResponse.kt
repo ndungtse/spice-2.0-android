@@ -12,7 +12,8 @@ data class MetaDataResponse(
     val menu: Menu,
     val userProfile: UserProfile,
     val clinicalIds: ArrayList<Long>,
-    val frequency: List<FrequencyEntity> ? = null
+    val frequency: List<FrequencyEntity> ? = null,
+    val userHealthFacilities: List<HealthFacility> ?= null
 )
 
 data class HealthFacility(

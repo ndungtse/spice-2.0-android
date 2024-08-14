@@ -98,18 +98,75 @@
     <LinearLayout
         android:id="@+id/resultContainerHolder"
         android:layout_width="match_parent"
-        android:visibility="gone"
         android:layout_height="wrap_content"
+        android:background="@color/bg_grey"
         android:orientation="vertical"
-        android:background="@color/bg_grey">
+        android:visibility="gone">
 
         <com.google.android.flexbox.FlexboxLayout
             android:id="@+id/resultContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:flexDirection="row"
+            android:visibility="gone"
             app:flexWrap="wrap"
             app:justifyContent="flex_start" />
+
+        <LinearLayout
+            android:id="@+id/resultViewContainer"
+            android:layout_width="match_parent"
+            android:visibility="gone"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:orientation="horizontal"
+                android:paddingHorizontal="@dimen/_8sdp"
+                android:paddingVertical="@dimen/_8sdp"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_width="@dimen/_0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/tested_result"
+                    android:fontFamily="@font/inter_bold"
+                    android:textColor="@color/navy_blue"
+                    android:textSize="@dimen/_16ssp" />
+
+
+                <LinearLayout
+                    android:layout_width="@dimen/_0dp"
+                    android:orientation="horizontal"
+                    android:layout_weight="2"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:id="@+id/tvValue"
+                        android:layout_width="@dimen/_0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/tested_value"
+                        android:fontFamily="@font/inter_bold"
+                        android:textColor="@color/navy_blue"
+                        android:textSize="@dimen/_16ssp" />
+
+                    <TextView
+                        android:id="@+id/tvValueRange"
+                        android:layout_width="@dimen/_0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/display_range"
+                        android:fontFamily="@font/inter_bold"
+                        android:textColor="@color/navy_blue"
+                        android:textSize="@dimen/_16ssp" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </LinearLayout>
 
         <TextView
             android:id="@+id/tvErrorMessage"

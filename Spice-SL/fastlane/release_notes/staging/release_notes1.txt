@@ -1,8 +1,17 @@
 Modules
 
+CHW:
+Death of mother - ANC,PNC,Childhood visit - with out offline sync.
+Change facility - Need backend build to test on this build.
+
+Peer Supervisor
+Performance monitoring and Filter
+
 Medical Review:
 1.PNC Medical Review
 2.Labour and Delivery
 3.Investigation
 4.Investigation history
 5.Investigation Summary
+
+Bug fixing status updated on the sheet.

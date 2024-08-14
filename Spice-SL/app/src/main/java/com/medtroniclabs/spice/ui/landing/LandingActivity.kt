@@ -29,6 +29,7 @@ import com.medtroniclabs.spice.common.RoleConstant
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.databinding.ActivityLandingBinding
 import com.medtroniclabs.spice.ui.BaseActivity
+import com.medtroniclabs.spice.ui.ChooseSiteDialogueFragment
 import com.medtroniclabs.spice.ui.boarding.LoginActivity
 import com.medtroniclabs.spice.ui.home.HomeScreenFragment
 import com.medtroniclabs.spice.ui.mypatients.fragment.PatientSearchFragment
@@ -38,7 +39,6 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
     DrawerLayout.DrawerListener, View.OnClickListener, OnDialogDismissListener {
 
     lateinit var binding: ActivityLandingBinding
-    private var isBGSyncInProgress = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         val splashScreen = installSplashScreen()
@@ -101,6 +101,13 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
         if ((!CommonUtils.isChw()) && menuItemToRemove != null) {
             menu.removeItem(menuItemToRemove.itemId)
         }
+
+        val changeFacilityMenuItem: MenuItem? = menu.findItem(R.id.changeFacility)
+
+        if (CommonUtils.isChw() && changeFacilityMenuItem != null) {
+            menu.removeItem(changeFacilityMenuItem.itemId)
+        }
+
         onNavigationItemSelected(binding.navView.menu.findItem(R.id.home))
         val toolBar = binding.appBarMain.toolbar
         val toggle = ActionBarDrawerToggle(
@@ -175,6 +182,16 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
                 binding.drawerLayout.closeDrawer(GravityCompat.START)
                 val homeMenuItem = binding.navView.menu.findItem(R.id.home)
                 selectNavigationMenu(homeMenuItem)
+                return true
+            }
+
+            R.id.changeFacility -> {
+                binding.drawerLayout.closeDrawer(GravityCompat.START)
+                val chooseSiteDialogueFragment = ChooseSiteDialogueFragment.newInstance()
+                chooseSiteDialogueFragment.show(
+                    supportFragmentManager,
+                    ChooseSiteDialogueFragment.TAG
+                )
                 return true
             }
         }
@@ -257,7 +274,7 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
         super.onNewIntent(intent)
         setIntent(intent)
         val refreshFragment =
-            intent?.getBooleanExtra(REFRESH_FRAGMENT, false)
+            intent.getBooleanExtra(REFRESH_FRAGMENT, false)
         if (refreshFragment == true) {
             val fragment = supportFragmentManager.findFragmentByTag(PatientSearchFragment.TAG)
             fragment?.let {

@@ -32,7 +32,7 @@ class InvestigationActivity : BaseActivity(), AdapterView.OnItemClickListener,
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityInvestigationBinding.inflate(layoutInflater)
-        setMainContentView(binding.root, true, title = getString(R.string.prescription))
+        setMainContentView(binding.root, true, title = getString(R.string.investigation))
         initView()
         setListeners()
         attachObserver()
@@ -73,6 +73,9 @@ class InvestigationActivity : BaseActivity(), AdapterView.OnItemClickListener,
 
                 ResourceState.SUCCESS -> {
                     resource.data?.let { data ->
+                        if (data.gender != null){
+                            investigationGenerator.setPatientGender(data.gender)
+                        }
                         data.id?.let {
                             investigationViewModel.getLabTestList(data)
                         } ?: kotlin.run {

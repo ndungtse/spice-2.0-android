@@ -8,6 +8,7 @@ object DefinedParams {
     const val ID = "id"
     const val male = "male"
     const val female = "female"
+    const val both = "both"
     const val AT_CHAR = "@"
     const val span_count_1 = 1
     const val span_count_3 = 3
@@ -117,5 +118,7 @@ object DefinedParams {
     const val PostNatal="Post Natal"
     const val Neonate="Neonate"
     const val PncHistory="PncHistory"
+
+    val changeFacility = "changeFacility"
     const val VillageList = "VillageList"
 }

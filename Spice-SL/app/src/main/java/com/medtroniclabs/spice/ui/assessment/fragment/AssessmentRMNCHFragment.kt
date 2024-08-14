@@ -34,8 +34,10 @@ import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.rootSuffix
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.summaryKey
 import com.medtroniclabs.spice.ui.assessment.referrallogic.ReferralResultGenerator
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
+import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.DeathOfMother
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.Miscarriage
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.PlaceOfDelivery
+import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.deathOfBaby
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import java.text.SimpleDateFormat
@@ -239,8 +241,8 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
                         }
                     } else {
                         val visitCount = viewModel.memberClinicalLiveData.value?.visitCount ?: 0
-                        if (second.containsKey(name) && second[name] is Map<*,*>) {
-                            val clinicalMap = second[name] as HashMap<String,Any>
+                        if (second.containsKey(name) && second[name] is Map<*, *>) {
+                            val clinicalMap = second[name] as HashMap<String, Any>
                             clinicalMap[RMNCH.visitNo] = visitCount + 1
                         }
                     }
@@ -258,19 +260,48 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
     }
 
     private fun checkForOtherMetrics(details: HashMap<String, Any>, name: String): Boolean {
+        var status = false
+        var miscarriageReset = false
+        var deathOfMotherReset = false
+
         if (details.containsKey(name) && details[name] is Map<*, *>) {
             val second = details[name] as HashMap<String, Any>
             if (second.containsKey(Miscarriage)) {
                 val miscarriage = second[Miscarriage]
                 if (miscarriage is Boolean && miscarriage) {
+                    status = true
+                    miscarriageReset = true
+                }
+            }
+
+            if (second.containsKey(DeathOfMother)) {
+                val deathOfMother = second[DeathOfMother]
+                if (deathOfMother is Boolean && deathOfMother) {
                     viewModel.memberDetailsLiveData.value?.data?.let {
-                        viewModel.updateMemberClinicalData(it.patientId, 0L, null)
-                        return true
+                        viewModel.updateMemberDeceasedStatus(it.patientId, true)
+                        deathOfMotherReset = true
+                        status = true
                     }
                 }
             }
+
+            if (second.containsKey(deathOfBaby)) {
+                val deathOfBaby = second[deathOfBaby]
+                if (deathOfBaby is Boolean && deathOfBaby) {
+                    viewModel.memberDetailsLiveData.value?.data?.let {
+                        viewModel.updateMemberDeceasedStatus(it.patientId, true)
+                        status = true
+                    }
+                }
+            }
+
+            if (miscarriageReset && !deathOfMotherReset) {
+                viewModel.memberDetailsLiveData.value?.data?.let {
+                    viewModel.updateMemberClinicalData(it.patientId, 0L, null)
+                }
+            }
         }
-        return false
+        return status
     }
 
 
@@ -281,9 +312,11 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
                 val lastMenstrualDate = second[RMNCH.lastMenstrualPeriod]
                 if (lastMenstrualDate is String) {
                     val calendar = getLastMenstrualDate(lastMenstrualDate)
-                    second[RMNCH.gestationalAge] = formatGestationalAge(DateUtils.calculateGestationalAge(
-                        calendar
-                    ).first,requireContext())
+                    second[RMNCH.gestationalAge] = formatGestationalAge(
+                        DateUtils.calculateGestationalAge(
+                            calendar
+                        ).first, requireContext()
+                    )
                 }
             }
         }

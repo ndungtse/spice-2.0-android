@@ -37,7 +37,8 @@ class MetaRepository @Inject constructor(
 
     suspend fun getMetaDataInformation(
         workflowNames: MutableList<Long>,
-        meta: MutableList<String>
+        meta: MutableList<String>,
+        changeFacility: Boolean
     ): Resource<Boolean> {
         return try {
             withContext(Dispatchers.IO) {
@@ -48,7 +49,8 @@ class MetaRepository @Inject constructor(
                         response.body()?.entity?.apply {
                             saveHealthFacilityInDb(
                                 nearestHealthFacilities,
-                                defaultHealthFacility.id
+                                defaultHealthFacility.id,
+                                userHealthFacilities
                             )
                             SecuredPreference.putString(
                                 SecuredPreference.EnvironmentKey.DEFAULT_SITE_ID.name,
@@ -60,7 +62,7 @@ class MetaRepository @Inject constructor(
                             frequency?.let {
                                 saveFrequencyList(it)
                             }
-                            saveFhirId(userProfile.fhirId, defaultHealthFacility.fhirId)
+                            saveFhirId(userProfile.fhirId, defaultHealthFacility.fhirId,defaultHealthFacility.tenantId,changeFacility)
                             saveUserProfileDetailsInDb(userProfile)
                             if (CommonUtils.isRolePresent()) {
                                 saveClinicalWorkflowsForProvider(defaultHealthFacility.clinicalWorkflows)
@@ -141,7 +143,11 @@ class MetaRepository @Inject constructor(
         saveMenusInDb(menuList, PROVIDER)
     }
 
-    private suspend fun saveHealthFacilityInDb(list: List<HealthFacility>, defaultId: Long) {
+    private suspend fun saveHealthFacilityInDb(
+        list: List<HealthFacility>,
+        defaultId: Long,
+        userHealthFacilities: List<HealthFacility>?
+    ) {
         roomHelper.deleteAllHealthFacility()
         list.forEach { healthFacility ->
             healthFacility.district?.let {
@@ -153,24 +159,56 @@ class MetaRepository @Inject constructor(
                     tenantId = healthFacility.tenantId,
                     fhirId = healthFacility.fhirId,
                     isDefault = healthFacility.id == defaultId,
+                    isUserSite = userHealthFacilities?.any { userSiteFacility -> userSiteFacility.id == healthFacility.id } ?: false
                 )
             }?.let {
                 roomHelper.saveHealthFacility(
                     it
                 )
             }
+            val otherUserHealthFacility = userHealthFacilities?.filterNot { it in list }
+            otherUserHealthFacility?.forEach { healthFacility ->
+                healthFacility.district?.let {
+                    HealthFacilityEntity(
+                        id = healthFacility.id,
+                        name = healthFacility.name,
+                        districtId = it.id,
+                        chiefdomId = healthFacility.chiefdomId,
+                        tenantId = healthFacility.tenantId,
+                        fhirId = healthFacility.fhirId,
+                        isDefault = healthFacility.id == defaultId,
+                        isUserSite = userHealthFacilities?.any { userSiteFacility -> userSiteFacility.id == healthFacility.id } ?: false
+                    )
+                }?.let {
+                    roomHelper.saveHealthFacility(
+                        it
+                    )
+                }
+            }
         }
     }
 
-    private fun saveFhirId(userId: String?, organizationId: String?) {
+    private fun saveFhirId(
+        userId: String?,
+        organizationId: String?,
+        tenantId: Long,
+        changeFacility: Boolean
+    ) {
         userId?.let {
             SecuredPreference.putString(SecuredPreference.EnvironmentKey.USER_FHIR_ID.name, it)
         }
 
-        organizationId?.let {
-            SecuredPreference.putString(
-                SecuredPreference.EnvironmentKey.ORGANIZATION_FHIR_ID.name,
-                it
+        if (!changeFacility) {
+            organizationId?.let {
+                SecuredPreference.putString(
+                    SecuredPreference.EnvironmentKey.ORGANIZATION_FHIR_ID.name,
+                    it
+                )
+            }
+
+            SecuredPreference.putLong(
+                SecuredPreference.EnvironmentKey.TENANT_ID.name,
+                tenantId
             )
         }
     }
@@ -334,4 +372,14 @@ class MetaRepository @Inject constructor(
     suspend fun getAllVillageIds(): List<Long> {
         return roomHelper.getAllVillageIds()
     }
+
+    suspend fun getUserHealthFacility(): Resource<ArrayList<HealthFacilityEntity>> {
+        return try {
+            val response = roomHelper.getUserHealthFacility(true)
+            Resource(state = ResourceState.SUCCESS, data = response)
+        } catch (e: Exception) {
+            Resource(state = ResourceState.ERROR)
+        }
+    }
+
 }

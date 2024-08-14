@@ -74,8 +74,17 @@ data class FormLayout(
     var maxAge: Int? = null,
     var code: String? = null,
     var url: String? = null,
-    var resource: String? = null
+    var resource: String? = null,
+    var ranges: ArrayList<RangeModel>? = null
 ) : BaseViewParams
+
+data class RangeModel(
+    val unitType: String,
+    val gender: String,
+    val minRange: Double,
+    val maxRange: Double,
+    val displayRange: String
+)
 
 data class FormResponse(
     var formLayout: List<FormLayout>, var time: Long

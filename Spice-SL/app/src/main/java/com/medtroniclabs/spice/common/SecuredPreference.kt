@@ -36,7 +36,8 @@ object SecuredPreference {
         VILLAGE_IDS,
         SERVER_LAST_SYNCED,
         IS_MOTHER_LOADED_PNC,
-        IS_NEONATE_LOADED_PNC
+        IS_NEONATE_LOADED_PNC,
+        TENANT_ID
     }
 
 
@@ -444,7 +445,7 @@ object SecuredPreference {
         return getUserDetails().country.phoneNumberCode
     }
 
-    fun getRole(): String? {
+    fun getRole(): String {
         return getUserDetails().roles.first().name
     }
 
@@ -468,4 +469,9 @@ object SecuredPreference {
     fun getOrganizationFhirId(): String {
         return getString(EnvironmentKey.ORGANIZATION_FHIR_ID.name) ?: ""
     }
+
+    fun getTenantId(): Long {
+        return getLong(EnvironmentKey.TENANT_ID.name)
+    }
+
 }

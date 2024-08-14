@@ -1,6 +1,7 @@
 package com.medtroniclabs.spice.ui.assessment.fragment
 
 import android.app.DatePickerDialog
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -29,9 +30,12 @@ import com.medtroniclabs.spice.ui.assessment.AssessmentCommonUtils
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
 import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
+import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.DeathOfMother
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.childHoodVisitMaxMonth
+import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.deathOfBaby
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.getValueFromMap
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
+import com.medtroniclabs.spice.ui.household.HouseholdSearchActivity
 
 class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
 
@@ -150,9 +154,11 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
         if (map.containsKey(viewModel.workflowName)) {
             val workflowMap = map[viewModel.workflowName]
             if (workflowMap is Map<*, *>) {
-                if (workflowMap.containsKey(RMNCH.Miscarriage)) {
+                if (workflowMap.containsKey(RMNCH.Miscarriage) || workflowMap.containsKey(DeathOfMother) || workflowMap.containsKey(deathOfBaby)) {
                     val miscarriageValue = workflowMap[RMNCH.Miscarriage]
-                    if (miscarriageValue is Boolean && miscarriageValue) {
+                    val deathOfMother = workflowMap[DeathOfMother]
+                    val deathOfBaby = workflowMap[deathOfBaby]
+                    if ((miscarriageValue is Boolean && miscarriageValue) || (deathOfMother is Boolean && deathOfMother) || (deathOfBaby is Boolean && deathOfBaby)) {
                         binding.etNextFollowUpDate.gone()
                         binding.tvNextFollowupDateTitle.gone()
                         binding.btnDone.isEnabled = true
@@ -307,6 +313,9 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
                     updateFollowUpDate(binding.etNextFollowUpDate.text.trim().toString())
                 }
                 if (viewModel.otherAssessmentDetails.isEmpty()) {
+                    val intent =  Intent(requireActivity(), HouseholdSearchActivity::class.java)
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+                    startActivity(intent)
                     requireActivity().finish()
                 } else {
                     viewModel.updateOtherAssessmentDetails()

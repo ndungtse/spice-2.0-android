@@ -11,6 +11,7 @@ import com.medtroniclabs.spice.data.VillageInfo
 import com.medtroniclabs.spice.data.model.HouseholdCardDetail
 import com.medtroniclabs.spice.data.offlinesync.model.HouseHold
 import com.medtroniclabs.spice.data.offlinesync.model.HouseHoldMember
+import com.medtroniclabs.spice.data.offlinesync.utils.OfflineSyncStatus
 import com.medtroniclabs.spice.db.dao.AboveFiveYearsDAO
 import com.medtroniclabs.spice.db.dao.AssessmentDAO
 import com.medtroniclabs.spice.db.dao.DiagnosisDAO
@@ -268,7 +269,12 @@ class RoomHelperImpl @Inject constructor(
         return memberDAO.getDobAndGenderById(memberId)
     }
 
-    override suspend fun updateFhirId(tableName: String, id: String, fhirId: String?, status: String) {
+    override suspend fun updateFhirId(
+        tableName: String,
+        id: String,
+        fhirId: String?,
+        status: String
+    ) {
         val updatedAt = System.currentTimeMillis()
         val query =
             "UPDATE $tableName SET fhir_id = ?, updated_at = ?, sync_status = CASE WHEN sync_status = 'InProgress' THEN ? ELSE sync_status END WHERE id = ?"
@@ -320,7 +326,7 @@ class RoomHelperImpl @Inject constructor(
     }
 
     override suspend fun savePatientVisitCountByType(memberClinicalEntity: MemberClinicalEntity) {
-      //  return memberClinicalDAO.savePatientVisitCountByType(memberClinicalEntity = memberClinicalEntity)
+        //  return memberClinicalDAO.savePatientVisitCountByType(memberClinicalEntity = memberClinicalEntity)
     }
 
     override suspend fun deleteExaminationsComplaints(menuType: String) {
@@ -396,7 +402,7 @@ class RoomHelperImpl @Inject constructor(
         category: String,
         type: String
     ): LiveData<List<MedicalReviewMetaItems>> {
-        return examinationsComplaintsDAO.getExaminationsComplaintsForAnc(category,type)
+        return examinationsComplaintsDAO.getExaminationsComplaintsForAnc(category, type)
     }
 
     override suspend fun deleteExaminationsList(menuType: String) {
@@ -477,14 +483,17 @@ class RoomHelperImpl @Inject constructor(
         pregnancyDetailDao.insertOrUpdateFromBE(pregnancyDetail)
     }
 
-    override suspend fun addCallHistory(oldFollowUp: FollowUp, history: FollowUpCall, newFollowUp: FollowUp?) {
+    override suspend fun addCallHistory(
+        oldFollowUp: FollowUp,
+        history: FollowUpCall,
+        newFollowUp: FollowUp?
+    ) {
         followUpCallsDao.insertFollowUpCall(history)
         followUpDao.insertFollowUp(oldFollowUp)
         newFollowUp?.let {
             followUpDao.insertFollowUp(it)
         }
     }
-
 
 
     override suspend fun getAllFollowUpRequests(): List<FollowUp> {
@@ -525,16 +534,30 @@ class RoomHelperImpl @Inject constructor(
 
     override suspend fun updateOtherDuplicateTickets(
         id: Long,
-       followUp: FollowUp
+        followUp: FollowUp
     ) {
-        followUpDao.updateOtherDuplicateTickets(id, followUp.memberId, followUp.type, followUp.encounterType, followUp.reason)
+        followUpDao.updateOtherDuplicateTickets(
+            id,
+            followUp.memberId,
+            followUp.type,
+            followUp.encounterType,
+            followUp.reason
+        )
     }
+
     override suspend fun updateOnTreatmentStatus(
         id: Long,
         followUp: FollowUp,
         updateAt: Long
     ) {
-        followUpDao.updateOnTreatmentStatus(id, followUp.memberId, followUp.type, updateAt, followUp.encounterType, followUp.reason)
+        followUpDao.updateOnTreatmentStatus(
+            id,
+            followUp.memberId,
+            followUp.type,
+            updateAt,
+            followUp.encounterType,
+            followUp.reason
+        )
     }
 
     override suspend fun insertOrUpdateHHFromBE(entity: HouseholdEntity): Long {
@@ -580,11 +603,12 @@ class RoomHelperImpl @Inject constructor(
     override suspend fun getFrequencyList(): List<FrequencyEntity> {
         return frequencyDAO.getFrequencyList()
     }
+
     override fun getExaminationsComplaintsForPnc(
         category: String,
         type: String
     ): LiveData<List<MedicalReviewMetaItems>> {
-        return examinationsComplaintsDAO.getExaminationsComplaintsForPnc(category,type)
+        return examinationsComplaintsDAO.getExaminationsComplaintsForPnc(category, type)
     }
 
     override suspend fun updateOtherFollowUpForWrongNumber(id: Long, fhirId: String) {
@@ -597,6 +621,14 @@ class RoomHelperImpl @Inject constructor(
 
     override suspend fun deleteCompletedFollowUp() {
         followUpDao.deleteCompletedFollowUp()
+    }
+
+    override suspend fun getUserHealthFacility(isUserSite: Boolean): ArrayList<HealthFacilityEntity> {
+        return ArrayList(metaDataDAO.getUserHealthFacility(isUserSite))
+    }
+
+    override suspend fun updateMemberDeceasedStatus(patientId: String, status: Boolean) {
+        memberDAO.updateMemberDeceasedStatus(patientId,status, OfflineSyncStatus.NotSynced)
     }
 
     override suspend fun changeFollowUpCallStatus(idList: List<Long>) {

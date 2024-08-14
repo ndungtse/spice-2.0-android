@@ -21,6 +21,7 @@ import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
 import com.medtroniclabs.spice.ui.assessment.referrallogic.ReferralResultGenerator
 import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
+import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.isDeceased
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
@@ -41,7 +42,8 @@ class AssessmentRMNCHNeonateViewModel @Inject constructor(
 
     val assessmentStringSaveLiveData = MutableLiveData<String?>()
 
-    val assessmentSaveLiveData = MutableLiveData<Resource<Pair<AssessmentEntity,AssessmentEntity>>>()
+    val assessmentSaveLiveData =
+        MutableLiveData<Resource<Pair<AssessmentEntity, AssessmentEntity>>>()
 
     val childMemberDetailsLiveData = MutableLiveData<Resource<HouseholdMemberEntity>>()
 
@@ -70,16 +72,31 @@ class AssessmentRMNCHNeonateViewModel @Inject constructor(
         followUpId: Long? = null
     ) {
         viewModelScope.launch(dispatcherIO) {
+            var deathOfNewBorn = false
+            if (childDetailMap.containsKey(RMNCH.deathOfNewborn)) {
+                if (childDetailMap[RMNCH.deathOfNewborn] is Boolean) {
+                    deathOfNewBorn = childDetailMap[RMNCH.deathOfNewborn] as Boolean
+                }
+            }
             if (memberMap != null) {
+                if (deathOfNewBorn) {
+                    memberMap!![isDeceased] = deathOfNewBorn
+                }
                 val childMemberId = householdMemberRepository.registerMember(
                     memberMap!!,
                     householdId,
                     null,
                     memberDetail.patientId
                 )
-                if (childMemberId != null)
-                {
-                    savePNCDetails(motherDetailMap, childDetailMap, memberDetail,childMemberId, followUpId = followUpId)
+                if (childMemberId != null) {
+                    savePNCDetails(
+                        motherDetailMap,
+                        childDetailMap,
+                        memberDetail,
+                        childMemberId,
+                        followUpId = followUpId,
+                        null
+                    )
                 }
             } else {
                 childBioDataDetail?.let { childDetail ->
@@ -88,7 +105,8 @@ class AssessmentRMNCHNeonateViewModel @Inject constructor(
                         childDetailMap,
                         memberDetail,
                         childDetail.id,
-                        followUpId = followUpId
+                        followUpId = followUpId,
+                        deathOfNewBorn
                     )
                 }
             }
@@ -100,34 +118,36 @@ class AssessmentRMNCHNeonateViewModel @Inject constructor(
         childDetailMap: HashMap<String, Any>,
         memberDetail: AssessmentMemberDetails,
         childMemberId: Long,
-        followUpId: Long? = null
+        followUpId: Long? = null,
+        deathOfNewborn: Boolean?
     ) {
         val groupMap = HashMap<String, Any>()
         groupMap[RMNCH.PNC] = motherDetailMap[RMNCH.PNC] as Any
-        if (groupMap.containsKey(RMNCH.PNC)){
-            val motherMap = groupMap[RMNCH.PNC] as HashMap<String,Any>
+        if (groupMap.containsKey(RMNCH.PNC)) {
+            val motherMap = groupMap[RMNCH.PNC] as HashMap<String, Any>
             childDetailMap[RMNCH.visitNo] = motherMap[RMNCH.visitNo] as Any
         }
         groupMap[RMNCH.PNCNeonatal] = childDetailMap
-        val motherReferralResult = ReferralResultGenerator().calculateRMNCHReferralResult(groupMap,false)
-        val childReferralResult = ReferralResultGenerator().calculateRMNCHReferralResult(groupMap,true)
+        val motherReferralResult =
+            ReferralResultGenerator().calculateRMNCHReferralResult(groupMap, false)
+        val childReferralResult =
+            ReferralResultGenerator().calculateRMNCHReferralResult(groupMap, true)
         val assessmentDetail = getAssessmentDetails(groupMap as HashMap<Any, Any>)
         referralStatus = motherReferralResult.first
         assessmentStringSaveLiveData.postValue(assessmentDetail.first)
         val otherDetails = calculateOtherDetails(groupMap, referralStatus)
-         assessmentSaveLiveData.postValue(
-             assessmentRepository.savePNCAssessment(
-                 assessmentDetail.second,
-                 assessmentDetail.third,
-                 memberDetail,
-                 motherReferralResult,
-                 null,
-                 otherDetails,
-                 childMemberId,
-                 followUpId = followUpId,
-                 childReferralResult
-             )
-         )
+        assessmentSaveLiveData.postValue(
+            assessmentRepository.savePNCAssessment(
+                assessmentDetail.second,
+                assessmentDetail.third,
+                memberDetail,
+                motherReferralResult,
+                null,
+                otherDetails,
+                Triple(childMemberId, followUpId,deathOfNewborn),
+                childReferralResult
+            )
+        )
     }
 
     private fun calculateOtherDetails(
@@ -178,7 +198,7 @@ class AssessmentRMNCHNeonateViewModel @Inject constructor(
                 val list = pnc[RMNCH.pncMotherSigns] as List<*>
                 list.forEach { it ->
                     if (it is HashMap<*, *>) {
-                        signsList.add(it[DefinedParams.NAME] as String)
+                        signsList.add(it[DefinedParams.Value] as String)
                     }
                 }
                 pnc[RMNCH.pncMotherSigns] = signsList
@@ -190,7 +210,7 @@ class AssessmentRMNCHNeonateViewModel @Inject constructor(
                 pnc[RMNCH.otherSigns] = os
             }
 
-            val parentMap = HashMap<String,Any>()
+            val parentMap = HashMap<String, Any>()
             parentMap[RMNCH.PNC] = pnc
             motherMapString = StringConverter.convertGivenMapToString(parentMap)
         }
@@ -203,7 +223,7 @@ class AssessmentRMNCHNeonateViewModel @Inject constructor(
                 val list = pncNeonate[RMNCH.pncNeonateSigns] as List<*>
                 list.forEach { it ->
                     if (it is HashMap<*, *>) {
-                        signsList.add(it[DefinedParams.NAME] as String)
+                        signsList.add(it[DefinedParams.Value] as String)
                     }
                 }
 
@@ -216,7 +236,7 @@ class AssessmentRMNCHNeonateViewModel @Inject constructor(
                 pncNeonate.remove(RMNCH.otherPncNeonateSigns)
                 pncNeonate[RMNCH.otherSigns] = os
             }
-            val parentMap = HashMap<String,Any>()
+            val parentMap = HashMap<String, Any>()
             parentMap[RMNCH.PNCNeonatal] = pncNeonate
             childMapString = StringConverter.convertGivenMapToString(parentMap)
         }

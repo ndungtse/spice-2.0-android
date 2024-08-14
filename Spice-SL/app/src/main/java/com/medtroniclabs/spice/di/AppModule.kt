@@ -89,6 +89,8 @@ object AppModule {
                         ?: ""
                 )
                 .header("client", AppConstants.CLIENT_CONSTANT)
+                .header("organizationId", SecuredPreference.getOrganizationFhirId())
+                .header("tenantId", SecuredPreference.getTenantId().toString())
 
 
             request = requestBuilder.build()

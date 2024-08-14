@@ -229,4 +229,7 @@ interface RoomHelper {
 
     suspend fun getChildPatientId(patientId: String): String?
 
+    suspend fun getUserHealthFacility(isUserSite: Boolean): ArrayList<HealthFacilityEntity>
+    suspend fun updateMemberDeceasedStatus(patientId: String, status: Boolean)
+
 }

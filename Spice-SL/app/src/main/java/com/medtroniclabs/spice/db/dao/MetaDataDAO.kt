@@ -1,6 +1,5 @@
 package com.medtroniclabs.spice.db.dao
 
-import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -94,7 +93,7 @@ interface MetaDataDAO {
     suspend fun getVillageByID(villageId: Long): VillageEntity
 
     @Query("SELECT * FROM ClinicalWorkflowEntity")
-    suspend fun getMenuForClinicalWorkflows() :List<ClinicalWorkflowEntity>
+    suspend fun getMenuForClinicalWorkflows(): List<ClinicalWorkflowEntity>
 
     @Query("DELETE FROM ClinicalWorkflowConditionEntity")
     suspend fun deleteClinicalWorkflowConditions()
@@ -103,13 +102,22 @@ interface MetaDataDAO {
     suspend fun insertClinicalWorkflowConditions(clinicalWorkflowConditions: List<ClinicalWorkflowConditionEntity>)
 
     @Query("SELECT DISTINCT wf.*, wfc.subModule FROM ClinicalWorkflowEntity AS wf LEFT JOIN ClinicalWorkflowConditionEntity AS wfc ON wf.id = wfc.clinicalWorkflowId WHERE (LOWER(wfc.gender) = 'both' OR LOWER(wfc.gender) = LOWER(:gender)) AND (wfc.maxAge IS NULL OR wfc.maxAge > :age) AND (wfc.minAge IS NULL OR wfc.minAge <= :age) AND (wfc.moduleType = :moduleType ) ORDER BY wf.displayOrder")
-    suspend fun getClinicalWorkflowId(gender: String, age: Int, moduleType: String): List<ClinicalWorkflowEntityWithSubmodule>
+    suspend fun getClinicalWorkflowId(
+        gender: String,
+        age: Int,
+        moduleType: String
+    ): List<ClinicalWorkflowEntityWithSubmodule>
 
     @Query("SELECT * FROM HealthFacilityEntity Order by isDefault DESC")
     suspend fun getNearestHealthFacility(): List<HealthFacilityEntity>
 
     @Query("SELECT id,name,districtId FROM VillageEntity")
     suspend fun getVillageIdName(): List<VillageBasicDetails>
+
     @Query("SELECT id FROM VillageEntity")
     suspend fun getVillageIds(): List<Long>
+
+    @Query("SELECT * FROM HealthFacilityEntity Where isUserSite =:isUserSite")
+    suspend fun getUserHealthFacility(isUserSite: Boolean): List<HealthFacilityEntity>
+
 }
