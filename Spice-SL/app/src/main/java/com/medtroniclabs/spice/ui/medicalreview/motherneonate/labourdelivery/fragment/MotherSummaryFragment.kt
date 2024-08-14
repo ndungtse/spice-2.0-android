@@ -91,13 +91,11 @@ class MotherSummaryFragment : BaseFragment() {
             motherDTO?.labourDTO?.deliveryType ?: getString(R.string.hyphen_symbol)
         binding.tvGeneralConditionOfMother.text =
             motherDTO?.generalConditions ?: getString(R.string.hyphen_symbol)
-        binding.tvStateOfThePerineum.text = when {
-            motherDTO?.stateOfPerineum.equals(getString(R.string.episotomy)) ->
-                motherDTO?.stateOfPerineum ?: getString(R.string.hyphen_symbol)
-            motherDTO?.stateOfPerineum.isNullOrEmpty() ->
-                getString(R.string.hyphen_symbol)
-            else ->
-                "${getString(R.string.tear_hypen)}  ${motherDTO?.stateOfPerineum}"
+        binding.tvStateOfThePerineum.text = when (motherDTO?.stateOfPerineum) {
+            getString(R.string.episotomy) -> getString(R.string.episotomy)
+            getString(R.string.tear) -> getString(R.string.hyphen_symbol)
+            null -> getString(R.string.hyphen_symbol)
+            else -> "${getString(R.string.tear_hypen)} ${motherDTO.stateOfPerineum}"
         }
         binding.tvPatientStatus.text = getString(R.string.post_natal)
         binding.tvStatus.text = motherDTO?.status?.map { it }

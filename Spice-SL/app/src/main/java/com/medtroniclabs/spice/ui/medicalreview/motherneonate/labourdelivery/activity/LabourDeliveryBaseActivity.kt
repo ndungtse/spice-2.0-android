@@ -400,12 +400,14 @@ class LabourDeliveryBaseActivity : BaseActivity(), View.OnClickListener, AncVisi
         return isValid
     }
     private fun autoScrollError(isLabourDelivery: Boolean?, isNeonateGender: Boolean?) {
-        if (isNeonateGender!=true && isLabourDelivery==true){
-            val nestedScrollView = findViewById<NestedScrollView>(R.id.nestedScrollView)
-            val neonateContainer = findViewById<FragmentContainerView>(R.id.neonateContainer)
-            val y = neonateContainer.top
-            nestedScrollView.smoothScrollTo(0, y)
+        val nestedScrollView = binding.nestedScrollView
+        val container = when {
+            isNeonateGender == false && isLabourDelivery == true -> binding.neonateContainer
+            isNeonateGender == true && isLabourDelivery == false -> binding.labourDeliveryContainer
+            else -> binding.labourDeliveryContainer
         }
+        val y = container.top
+        nestedScrollView.smoothScrollTo(0, y)
     }
 
     private  fun validateNeonateGender():Boolean{

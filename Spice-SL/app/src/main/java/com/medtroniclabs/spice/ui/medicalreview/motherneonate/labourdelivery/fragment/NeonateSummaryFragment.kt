@@ -7,8 +7,9 @@ import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.CommonUtils
-import com.medtroniclabs.spice.databinding.FragmentNeonateSummaryBinding
 import com.medtroniclabs.spice.data.model.NeonateDTO
+import com.medtroniclabs.spice.databinding.FragmentNeonateSummaryBinding
+import com.medtroniclabs.spice.formgeneration.extension.capitalizeFirstChar
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.labourdelivery.viewmodel.LabourDeliverySummaryViewModel
@@ -54,7 +55,8 @@ class NeonateSummaryFragment : BaseFragment() {
     private fun setDetails(neonateDTO: NeonateDTO?) {
         binding.tvNeonateOutcome.text =
             neonateDTO?.neonateOutcome ?: getString(R.string.hyphen_symbol)
-        binding.tvGender.text = neonateDTO?.gender ?: getString(R.string.hyphen_symbol)
+        binding.tvGender.text =
+            neonateDTO?.gender?.capitalizeFirstChar() ?: getString(R.string.hyphen_symbol)
         binding.tvBirthWeight.text = neonateDTO?.birthWeight ?: getString(R.string.hyphen_symbol)
         binding.tvStateOfBaby.text = neonateDTO?.stateOfBaby ?: getString(R.string.hyphen_symbol)
         binding.tvGestationalAge.text =

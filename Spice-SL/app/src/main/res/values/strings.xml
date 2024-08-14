@@ -264,11 +264,11 @@
     <string name="referral_reason">Referral Reason</string>
     <string name="referral_to">Referred To</string>
     <string name="referral_by">Referred By</string>
-    <string name="date_of_delivery_label">Date Of Delivery</string>
+    <string name="date_of_delivery_label">Date of Delivery</string>
     <string name="date_type">Date Type</string>
     <string name="labour_delivery">Labour/Delivery</string>
     <string name="date_of_delivery">Date of Delivery</string>
-    <string name="date_of_labour_onset">Date of Labour onset</string>
+    <string name="date_of_labour_onset">Date of Labour Onset</string>
     <string name="delivery_type">Delivery Type</string>
     <string name="delivery_at">Delivery At</string>
     <string name="no_of_neonates">No of Neonates</string>
@@ -308,9 +308,9 @@
     <string name="vitamin_a_for_mother">Vitamin A for mother</string>
     <string name="title_mother">Mother</string>
     <string name="signs_Symptoms_observed">Signs/Symptoms observed</string>
-    <string name="general_condition_of_mother">General Condition Of Mother</string>
+    <string name="general_condition_of_mother">General Condition of Mother</string>
     <string name="risk_factor">Risk Factors</string>
-    <string name="state_of_the_perineum">State Of The Perineum</string>
+    <string name="state_of_the_perineum">State of The Perineum</string>
     <string name="episotomy">Episotomy</string>
     <string name="tear">Tear</string>
     <string name="TT_does_taken_so_far">TT Dose taken so far</string>
@@ -402,7 +402,7 @@
     <string name="grimace_label">G-Grimace</string>
     <string name="appearance_label">A-Appearance</string>
     <string name="respiration_label">R-Respiration</string>
-    <string name="total_label">Total</string>
+    <string name="total_label">TOTAL</string>
     <string name="save" translatable="false">save</string>
     <string name="select_disease_category">Select Disease Category</string>
     <string name="select_disease_condition">Select Disease Condition</string>
