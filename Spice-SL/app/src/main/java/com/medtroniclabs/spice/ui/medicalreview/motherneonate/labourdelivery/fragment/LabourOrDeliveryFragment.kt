@@ -207,6 +207,7 @@ class LabourOrDeliveryFragment : BaseFragment() {
                 requireContext(),
                 date = yearMonthDate,
                 disableFutureDate = true,
+                isMenstrualPeriod = true,
                 cancelCallBack = { datePickerDialog = null }
             ) { _, year, month, dayOfMonth ->
                 val stringDate = "$dayOfMonth-$month-$year"
@@ -495,14 +496,14 @@ class LabourOrDeliveryFragment : BaseFragment() {
 
         with(binding) {
             if(etHourTimeOfDelivery.isNotEmpty() || etMinutesTimeOfDelivery.isNotEmpty()) {
-                    if (etHourTimeOfDelivery.toInt() <= 12 && etMinutesTimeOfDelivery.toInt() <= 60 && viewModel.timeOfDeliveryMap[DefinedParams.TimeOfDelivery] != null) {
+                    if (etHourTimeOfDelivery.toInt() <= 12 && etMinutesTimeOfDelivery.toInt() <= 59 && viewModel.timeOfDeliveryMap[DefinedParams.TimeOfDelivery] != null) {
                         tvTimeOfDeliveryError.showIf(false)
                     } else {
                         tvTimeOfDeliveryError.showIf(true)
                     }
                 }
             if (etHourTimeOfLabourOnset.isNotEmpty()||etMinutesTimeOfLabourOnSet.isNotEmpty()) {
-                if ( etHourTimeOfLabourOnset.toInt() <= 12 && etMinutesTimeOfLabourOnSet.toInt() <= 60 && viewModel.timeOfLabourOnsetMap[DefinedParams.TimeOfLabourOnset] != null) {
+                if ( etHourTimeOfLabourOnset.toInt() <= 12 && etMinutesTimeOfLabourOnSet.toInt() <= 59 && viewModel.timeOfLabourOnsetMap[DefinedParams.TimeOfLabourOnset] != null) {
                     tvTimeOfLabourOnsetError.showIf(false)
                 } else {
                     tvTimeOfLabourOnsetError.showIf(true)

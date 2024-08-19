@@ -5,6 +5,7 @@ import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.data.model.CalendarPeriod
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams
 import org.joda.time.PeriodType
+import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.time.Instant
 import java.time.LocalDate
@@ -36,6 +37,7 @@ object DateUtils {
     const val TIME_FORMAT_hhmm = "hh:mm"
     const val TIME_FORMAT_hhmma = "hh:mm a"
     const val CALENDAR_FORMAT="yyyy-MM-dd'T'HH:mm:ssXXX"
+    const val GESTATIONALAGE_CALENDAR="yyyy-MM-dd"
 
 
     fun getYearMonthAndWeek(
@@ -487,12 +489,13 @@ object DateUtils {
         return ChronoUnit.WEEKS.between(lmpDate, currentDate)
     }
 
-    fun calculateGestationalAgeWithDod(lastMenstrualDate: Calendar, dod:Calendar): Pair<Long, Long> {
-        val diffInMillis = dod.timeInMillis - lastMenstrualDate.timeInMillis
-        val diffInDays = TimeUnit.MILLISECONDS.toDays(diffInMillis)
-        val weeks = diffInDays / 7
-        val days = diffInDays % 7
-        return Pair(weeks.minus(4), days)
+    fun calculateGestationalAgeWeeks(startDateString: String, endDateString: String): Long {
+        val formatter = DateTimeFormatter.ISO_DATE_TIME
+        val startDate = ZonedDateTime.parse(startDateString, formatter)
+        val endDate = ZonedDateTime.parse(endDateString, formatter)
+        val daysBetween = ChronoUnit.DAYS.between(startDate, endDate)
+        val weeksBetween = daysBetween / 7
+        return weeksBetween
     }
 
     fun formatGestationalAge(gestationalAgeInWeeks: Long, context: Context): String {

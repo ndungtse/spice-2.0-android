@@ -103,13 +103,6 @@ class PhysicalExaminationFragment : BaseFragment() {
                 viewModel.congenitalDefectMap[DefinedParams.CongenitalDetect] as? String
             viewModel.congenitalDefect =
                 flowValue?.equals(HouseHoldRegistration.yes, ignoreCase = true) ?: false
-            if (selectedID == getString(R.string.no)) {
-                binding.CordExaminationGroup.visible()
-                binding.cordExaminationSelector.requestFocus()
-            } else {
-                binding.CordExaminationGroup.gone()
-                binding.BreastFeedingGroup.gone()
-            }
         }
 
     private fun getCongenitalDetectFlowData(): ArrayList<Map<String, Any>> {
@@ -142,13 +135,6 @@ class PhysicalExaminationFragment : BaseFragment() {
                 DefinedParams.BreastCondition,
                 DefinedParams.ExclusiveBreastCondition
             )
-            if (selectedID == getString(R.string.healing_satisfactorily)) {
-                binding.BreastFeedingGroup.visible()
-                binding.breastFeedingSelector.requestFocus()
-                binding.exclusiveBreastFeedingSelector.requestFocus()
-            } else {
-                binding.BreastFeedingGroup.gone()
-            }
         }
 
     private fun getCordExaminationFlowData(): ArrayList<Map<String, Any>> {
@@ -196,6 +182,11 @@ class PhysicalExaminationFragment : BaseFragment() {
                 viewModel.breastCondition[DefinedParams.BreastCondition] as? String
             viewModel.breastFeeding =
                 flowValue?.equals(HouseHoldRegistration.yes, ignoreCase = true) ?: false
+            if (selectedID == getString(R.string.yes)) {
+                binding.BreastFeedingGroup.visible()
+            } else {
+                binding.BreastFeedingGroup.gone()
+            }
 
         }
 
@@ -252,7 +243,6 @@ class PhysicalExaminationFragment : BaseFragment() {
         resetSelectionViews(DefinedParams.CordExamination)
         resetSelectionViews(DefinedParams.ExclusiveBreastCondition)
         resetSelectionViews(DefinedParams.BreastCondition)
-        binding.CordExaminationGroup.gone()
         binding.BreastFeedingGroup.gone()
 
     }

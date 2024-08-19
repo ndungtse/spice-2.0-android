@@ -162,7 +162,13 @@ class GeneralExaminationFragment : BaseFragment() {
     fun refreshFragment() {
         examinationsTagView.clearSelection()
         examinationsTagView.clearOtherChip()
+        resetSelectionViews(DefinedParams.BreastCondition)
+        resetSelectionViews(DefinedParams.UterusCondition)
         binding.etPhysicalExaminationComments.text?.clear()
+        binding.specifyConditionGroupUterus.gone()
+        binding.specifyConditionGroup.gone()
+        binding.conditionSelector.text?.clear()
+        binding.conditionSelectorUterus.text?.clear()
     }
     private fun initializeBreastCondition() {
         getBreastConditionFlowData().let {

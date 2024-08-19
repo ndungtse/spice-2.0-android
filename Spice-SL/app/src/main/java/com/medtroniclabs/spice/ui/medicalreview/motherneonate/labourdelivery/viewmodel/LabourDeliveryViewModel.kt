@@ -44,6 +44,7 @@ import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
+import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import java.util.Calendar
 import javax.inject.Inject
@@ -108,8 +109,8 @@ class LabourDeliveryViewModel @Inject constructor(
     var nextFollowupDate: String? = null
     val summaryCreateResponse = MutableLiveData<Resource<HashMap<String, Any>>>()
 
-    private val _gestationalDate = MutableLiveData<Calendar>()
-    val gestationalDate: LiveData<Calendar> get() = _gestationalDate
+    private val _gestationalDate = MutableLiveData<String>()
+    val gestationalDate: LiveData<String> get() = _gestationalDate
     private var summaryCreateRequest: LabourDeliverySummaryRequest? = null
 
     fun set(context: Context) {
@@ -270,8 +271,8 @@ class LabourDeliveryViewModel @Inject constructor(
     }
 
     fun createLabourDeliveryRequest(prescriptionEncounterId: String?) {
-        if (timeOfDeliveryInHour?.toInt()!! <=12 && timeOfDeliveryInMinute?.toInt()!! <=60 && timeOfLabourOnSetInHour?.toInt()!!<=12 &&
-            timeOfLabourOnSetInMinutes?.toInt()!!<=60){
+        if (timeOfDeliveryInHour?.toInt()!! <=12 && timeOfDeliveryInMinute?.toInt()!! <=59 && timeOfLabourOnSetInHour?.toInt()!!<=12 &&
+            timeOfLabourOnSetInMinutes?.toInt()!!<=59){
             val encounter = MedicalReviewEncounter(
                 latitude = lastLocation?.latitude ?: 0.0,
                 longitude = lastLocation?.longitude ?: 0.0,
@@ -565,10 +566,11 @@ class LabourDeliveryViewModel @Inject constructor(
     }
 
     fun setDate(year: Int, month: Int, dayOfMonth: Int) {
-        val calendar = Calendar.getInstance().apply {
-            set(year, month, dayOfMonth)
-        }
-        _gestationalDate.value = calendar
+        val localDate = LocalDate.of(year, month, dayOfMonth)
+        val zonedDateTime = localDate.atStartOfDay(ZoneOffset.UTC)
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssXXX")
+        val formattedDate = zonedDateTime.format(formatter)
+        _gestationalDate.value = formattedDate
     }
 
     fun labourDeliverySummaryCreate(

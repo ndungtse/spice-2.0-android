@@ -98,7 +98,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/seperatorColon1"
             app:layout_constraintTop_toTopOf="@+id/tvSignsSymptomsObservedLabel"
-            app:singleSelection="true" />
+            app:singleSelection="false" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/cgSignsSymptomsObservedError"
@@ -170,7 +170,7 @@
             android:text="@string/risk_factor"
             android:textColor="@color/table_title"
             android:textSize="@dimen/_16ssp"
-            app:fontFamily="@font/inter_medium"
+            app:fontFamily="@font/inter_regular"
             app:layout_constraintEnd_toEndOf="@+id/leftGuideline"
             app:layout_constraintStart_toStartOf="@+id/tvGeneralConditionOfMotherLabel"
             app:layout_constraintTop_toBottomOf="@+id/cgGeneralConditionOfMotherError" />

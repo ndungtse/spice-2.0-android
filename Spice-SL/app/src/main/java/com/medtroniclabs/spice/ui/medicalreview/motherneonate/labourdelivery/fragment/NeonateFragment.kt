@@ -1,6 +1,8 @@
 package com.medtroniclabs.spice.ui.medicalreview.motherneonate.labourdelivery.fragment
 
 import android.os.Bundle
+import android.text.InputFilter
+import android.text.Spanned
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -75,11 +77,26 @@ class NeonateFragment : BaseFragment() {
         viewModel.apgarScoreLiveData.observe(viewLifecycleOwner) {
             agparScoreAdapter.submitData(it)
         }
-        viewModel.gestationalDate.observe(viewLifecycleOwner){
-            binding.tvGestationalAge.text= viewModel.lastMensurationDate?.let { it1 ->
-                DateUtils.convertStringToCalendar(
-                    it1,DateUtils.CALENDAR_FORMAT)
-            }?.let { it2 -> DateUtils.formatGestationalAge(DateUtils.calculateGestationalAgeWithDod(it2,it).first,requireContext()) }?:getString(R.string.empty__)
+
+        viewModel.gestationalDate.observe(viewLifecycleOwner) { it ->
+            viewModel.gestationalAge= ((viewModel.lastMensurationDate?.let { it1 ->
+                DateUtils.calculateGestationalAgeWeeks(
+                    it1,it)
+            }).toString())
+            binding.tvGestationalAge.text = when {
+                viewModel.gestationalAge.isNullOrBlank() || viewModel.gestationalAge!!.contains("-") -> {
+                    getString(R.string.empty__)
+                }
+                else -> {
+                    var weeks =viewModel.gestationalAge!!.toLongOrNull()?.let { it2 ->
+                        DateUtils.formatGestationalAge(it2, requireContext())
+                    } ?: getString(R.string.hyphen_symbol)
+                    if (viewModel.gestationalAge!!.toLongOrNull()!! < 36){
+                        weeks.plus(getString(R.string._36_weeks))
+                    }else
+                        weeks
+                }
+            }
         }
     }
 
@@ -213,6 +230,7 @@ class NeonateFragment : BaseFragment() {
         binding.rvAgparScores.adapter = agparScoreAdapter
         viewModel.getAgparScoreData()
 
+        binding.etBirthWeight.filters = arrayOf(DecimalInputFilter())
         binding.etBirthWeight.doAfterTextChanged {
             val birthWeight = it?.trim().toString()
             if (birthWeight.isNotEmpty()) {
@@ -276,15 +294,36 @@ class NeonateFragment : BaseFragment() {
         }
         return isValidOrNot
     }
+
     fun validate(): Boolean {
-        binding.tvGenderError.isVisible=false
-        return if(viewModel.genderFlow[DefinedParams.Gender]!=null){
+        binding.tvGenderError.isVisible = false
+        return if (viewModel.genderFlow[DefinedParams.Gender] != null) {
             true
-        }else{
-            binding.tvGenderError.isVisible=true
+        } else {
+            binding.tvGenderError.isVisible = true
             binding.tvGenderLabel.requestFocus()
             false
         }
 
+    }
+
+    class DecimalInputFilter : InputFilter {
+        override fun filter(
+            source: CharSequence?,
+            start: Int,
+            end: Int,
+            dest: Spanned?,
+            dstart: Int,
+            dend: Int
+        ): CharSequence? {
+            val newInput = StringBuilder(dest).replace(dstart, dend, source?.subSequence(start, end).toString())
+            val newText = newInput.toString()
+            val pattern = Regex("^\\d{0,2}(\\.\\d?)?$")
+            return if (newText.matches(pattern)) {
+                null  // Accept the input
+            } else {
+                ""    // Reject the input
+            }
+        }
     }
 }

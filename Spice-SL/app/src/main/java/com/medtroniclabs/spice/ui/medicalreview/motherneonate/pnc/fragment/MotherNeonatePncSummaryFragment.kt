@@ -26,6 +26,7 @@ import com.medtroniclabs.spice.data.MotherNeonatePncSummaryResponse
 import com.medtroniclabs.spice.databinding.FragmentMotherNeonarePncSummaryBinding
 import com.medtroniclabs.spice.databinding.MotherNeonatePncSummaryLayoutBinding
 import com.medtroniclabs.spice.formgeneration.extension.capitalizeFirstChar
+import com.medtroniclabs.spice.formgeneration.extension.markMandatory
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
 import com.medtroniclabs.spice.network.resource.Resource
@@ -72,6 +73,7 @@ class MotherNeonatePncSummaryFragment : BaseFragment(), View.OnClickListener {
         viewModel.setPncReqToGetMetaForPatientStatus(category = category)
 
     private fun clickListener() {
+        binding.motherSummary.tvNextMedicalReviewLabel.markMandatory()
         binding.motherSummary.tvNextMedicalReviewLabelText.safeClickListener(this)
     }
 
@@ -99,7 +101,6 @@ class MotherNeonatePncSummaryFragment : BaseFragment(), View.OnClickListener {
             DateUtils.DATE_ddMMyyyy
         )
         if (viewModel.motherNeonateAlive) {
-
             if (resource[0].type == RMNCH.PNCMOTHER) {
                 viewModel.pncMotherPatientStatus = resource
                 viewModel.pncMotherPatientStatus?.let {

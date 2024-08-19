@@ -319,7 +319,7 @@
     <string name="neonate_outcome">Neonate Outcome</string>
     <string name="male">Male</string>
     <string name="female">Female</string>
-    <string name="state_of_baby">State Of Baby</string>
+    <string name="state_of_baby">State of Baby</string>
     <string name="abnormal">Abnormal</string>
     <string name="birth_weight">Birth Weight </string>
     <string name="signs_symptoms_observed">Signs/Symptoms observed</string>
@@ -602,5 +602,6 @@
     <string name="chw_colon">CHW :</string>
     <string name="from_date_colon">From :</string>
     <string name="toDate_colon">To :</string>
+    <string name="_36_weeks"><![CDATA[" (<36 weeks)"]]></string>
 
 </resources>

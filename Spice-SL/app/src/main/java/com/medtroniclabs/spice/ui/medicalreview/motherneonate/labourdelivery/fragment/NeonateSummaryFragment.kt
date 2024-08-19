@@ -15,7 +15,6 @@ import com.medtroniclabs.spice.data.model.NeonateDTO
 import com.medtroniclabs.spice.formgeneration.extension.capitalizeFirstChar
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
-import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.gestationalAge
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.labourdelivery.viewmodel.LabourDeliverySummaryViewModel
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.labourdelivery.viewmodel.LabourDeliveryViewModel
 
@@ -75,9 +74,9 @@ class NeonateSummaryFragment : BaseFragment() {
             neonateDTO?.gender?.capitalizeFirstChar() ?: getString(R.string.hyphen_symbol)
         if (!neonateDTO?.birthWeight.isNullOrEmpty()) {
             var weight = getDecimalFormatted(neonateDTO?.birthWeight)
-            binding.tvBirthWeight.text = if (weight.toInt()== 0){
+            binding.tvBirthWeight.text = if (weight.toDouble().toInt()== 0){
                 (getString(R.string.hyphen_symbol))
-            }else if (weight.toInt()==1){
+            }else if (weight.toDouble().toInt()==1){
                 weight.plus(" ").plus(getString(R.string.kg))
             } else{
                 weight.plus(" ").plus(getString(R.string.kgs))
@@ -89,8 +88,9 @@ class NeonateSummaryFragment : BaseFragment() {
 
         binding.tvStateOfBaby.text = neonateDTO?.stateOfBaby ?: getString(R.string.hyphen_symbol)
         binding.tvGestationalAge.text =
-            neonateDTO?.gestationalAge ?: getString(R.string.hyphen_symbol)
-        viewModelLabour.gestationalAge = binding.tvGestationalAge.text.toString()
+            neonateDTO?.gestationalAge?.let { DateUtils.formatGestationalAge(it.toLong(),requireContext()) }
+                ?: getString(R.string.hyphen_symbol)
+        viewModelLabour.gestationalAge =  neonateDTO?.gestationalAge
         binding.tvAPGARScore.text =
             if (neonateDTO?.apgarScoreFiveMinuteDTO?.fiveMinuteTotalScore == null) {
                 getString(R.string.hyphen_symbol)
@@ -101,10 +101,7 @@ class NeonateSummaryFragment : BaseFragment() {
                     )
                 )
             }
-        binding.tvSignsSymptomsObserved.text = neonateDTO?.signs?.map { it }
-            ?.let { ArrayList(it) }?.let { CommonUtils.convertListToString(it) }?.split(", ")
-            ?.joinToString("\n")
-            ?: getString(R.string.hyphen_symbol)
+        binding.tvSignsSymptomsObserved.text = neonateDTO?.signs?.joinToString(separator = "\n")?:getString(R.string.hyphen_symbol)
         binding.tvPatientStatus.text = getString(R.string.title_neonate)
     }
 

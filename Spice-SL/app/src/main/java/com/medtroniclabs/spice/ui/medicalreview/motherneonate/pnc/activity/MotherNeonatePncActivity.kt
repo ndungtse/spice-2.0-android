@@ -417,11 +417,15 @@ class MotherNeonatePncActivity : BaseActivity(), View.OnClickListener, AncVisitC
     private fun validateStatus(flowValue: String?) {
         viewModel.aliveStatus?.let {
             if (it) {
-                if ( viewModel.motherLiveStatus == getString(R.string.no)) {
-                    updatePrescriptionInvestigationVisible(false)
-                }else {
-                    updatePrescriptionInvestigationVisible(true)
-                }
+                    if (viewModel.motherLiveStatus == getString(R.string.no)) {
+                        if(binding.tvAliveStatus.text==(getString(R.string.is_the_baby_alive))) {
+                            updatePrescriptionInvestigationVisible(false)
+                        }else{
+                            updatePrescriptionInvestigationVisible(true)
+                        }
+                    } else {
+                        updatePrescriptionInvestigationVisible(true)
+                    }
                 binding.blurView.gone()
                 binding.btnSubmit.isEnabled = true
             } else {

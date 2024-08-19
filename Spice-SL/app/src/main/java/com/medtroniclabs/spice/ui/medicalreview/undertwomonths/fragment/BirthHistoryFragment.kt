@@ -67,14 +67,16 @@ class BirthHistoryFragment : BaseFragment() {
 
     private fun setBirthHistoryDetails(birthHistoryDetails: BirthHistoryResponse) {
         binding.apply {
-            tvBirthWeight.text = birthHistoryDetails.birthWeight?.let {
+            tvBirthWeight.text = birthHistoryDetails.birthWeight?.let { it ->
                 val decimalBirthWeight = CommonUtils.getDecimalFormatted(it)
-                birthHistoryDetails.birthWeightCategory?.let {
-                    if (decimalBirthWeight.toDouble() < viewModel.lowBirthWeight && birthHistoryDetails.birthWeightCategory != null) {
-                        decimalBirthWeight.plus(getString(R.string.kg))
-                            .plus(birthHistoryDetails.birthWeightCategory)
+                birthHistoryDetails.birthWeightCategory?.let {it2->
+                    if (decimalBirthWeight.toDouble() < viewModel.lowBirthWeight){
+                        decimalBirthWeight.plus(
+                            " ").plus(getString(R.string.kg))
+                            .plus(" ($it2)")
                     } else {
-                        decimalBirthWeight.plus(getString(R.string._kg))
+                        decimalBirthWeight.plus(
+                            " ").plus(getString(R.string.kgs)).plus(" ($it2)")
                     }
                 } ?: getString(R.string.separator_double_hyphen)
             } ?:  getString(R.string.separator_double_hyphen)
