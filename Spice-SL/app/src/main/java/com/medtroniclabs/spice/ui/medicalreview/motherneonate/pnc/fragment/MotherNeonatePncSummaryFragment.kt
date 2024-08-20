@@ -14,6 +14,7 @@ import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.setExpandableText
 import com.medtroniclabs.spice.common.CommonUtils
+import com.medtroniclabs.spice.common.CommonUtils.combineText
 import com.medtroniclabs.spice.common.CommonUtils.convertListToString
 import com.medtroniclabs.spice.common.CommonUtils.createInvestigation
 import com.medtroniclabs.spice.common.CommonUtils.getBooleanAsString
@@ -37,6 +38,7 @@ import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.pnc.viewmodel.MotherNeonatePncSummaryViewModel
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
+import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 
 
 class MotherNeonatePncSummaryFragment : BaseFragment(), View.OnClickListener {
@@ -44,6 +46,8 @@ class MotherNeonatePncSummaryFragment : BaseFragment(), View.OnClickListener {
     var adapter: CustomSpinnerAdapter? = null
     private var datePickerDialog: DatePickerDialog? = null
     val viewModel: MotherNeonatePncSummaryViewModel by activityViewModels()
+    private val patientDetailViewModel: PatientDetailViewModel by activityViewModels()
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -121,6 +125,7 @@ class MotherNeonatePncSummaryFragment : BaseFragment(), View.OnClickListener {
             binding.motherSummary.tvPatientStatus.gone()
             binding.motherSummary.tvPatientSeparator.gone()
             binding.motherSummary.tvPatientStatusSpinner.gone()
+            notAliveFlow()
         }
     }
 
@@ -130,11 +135,20 @@ class MotherNeonatePncSummaryFragment : BaseFragment(), View.OnClickListener {
             tvTitle.text = getString(R.string.pnc_visit_summary_mother)
             tvPncVisitNoText.text =
                 ((data?.pncMother?.visitNumber) ?: getString(R.string.empty__)).toString()
-            tvPresentingComplaintsText.text =
-                (data?.pncMother?.presentingComplaints?.joinToString(", "))
-                    ?: getString(R.string.empty__)
+            val presentingComplaintsText = combineText(
+                data?.pncMother?.presentingComplaints,
+                data?.pncMother?.presentingComplaintsNotes,
+                getString(R.string.hyphen_symbol)
+            )
+            tvPresentingComplaintsText.setExpandableText(
+                fullText = presentingComplaintsText,
+                moreColorResId = R.color.purple_700,
+                title = tvPresentingComplaintsLabel.text.toString(),
+                activity = (requireActivity() as BaseActivity)
+            )
+
             tvClinicalNotesText.setExpandableText(
-                fullText = (data?.pncMother?.clinicalNotes) ?: getString(R.string.empty__),
+                fullText = (data?.pncMother?.clinicalNotes) ?: getString(R.string.hyphen_symbol),
                 moreColorResId = R.color.purple_700,
                 title = tvClinicalNotesLabel.text.toString(),
                 activity = (requireActivity() as BaseActivity)
@@ -167,7 +181,7 @@ class MotherNeonatePncSummaryFragment : BaseFragment(), View.OnClickListener {
             tvExaminationsText.text =
                 list.let { CommonUtils.createMotherNeonateExamination(it, requireContext(), true) }
                     ?.takeIf { it.isNotEmpty() }
-                    ?: requireContext().getString(R.string.empty__)
+                    ?: requireContext().getString(R.string.hyphen_symbol)
 
 
             tvPrescriptionsText.text = data?.pncMother?.prescriptions.let {
@@ -176,7 +190,7 @@ class MotherNeonatePncSummaryFragment : BaseFragment(), View.OnClickListener {
                     requireContext()
                 )
             }?.takeIf { it.isNotEmpty() }
-                ?: requireContext().getString(R.string.empty__)
+                ?: requireContext().getString(R.string.hyphen_symbol)
 
             tvInvestigationText.text = data?.pncMother?.investigations?.let { createInvestigation(it,requireContext()) }?.takeIf { it.isNotEmpty() }
                 ?: requireContext().getString(R.string.hyphen_symbol)
@@ -197,6 +211,21 @@ class MotherNeonatePncSummaryFragment : BaseFragment(), View.OnClickListener {
                 } ?: requireContext().getString(R.string.empty__)
 
         }
+       patientDetailViewModel.dateOfDelivery?.let {
+            DateUtils.convertStringToDate(
+                it,
+                DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
+            )?.let { deliveryDate ->
+                RMNCH.calculateNextPNCVisitDate(deliveryDate)?.let { visitDate ->
+                    binding.motherSummary.tvNextMedicalReviewLabelText.text = DateUtils.getDateStringFromDate(
+                        visitDate, DateUtils.DATE_ddMMyyyy
+                    )
+                    viewModel.nextFollowupDate= binding.motherSummary.tvNextMedicalReviewLabelText.text.toString()
+                    summaryListener()
+                }
+            }
+        }
+
     }
 
 
@@ -205,11 +234,21 @@ class MotherNeonatePncSummaryFragment : BaseFragment(), View.OnClickListener {
         binding.neonateSummary.apply {
             tvTitle.text = getString(R.string.pnc_visit_summary_neonate)
             tvPncVisitNoText.text = (data?.pncChild?.visitNumber.toString())
-            tvPresentingComplaintsText.text =
-                (data?.pncChild?.presentingComplaints?.joinToString(", "))
-                    ?: getString(R.string.empty__)
+
+            val presentingComplaintsText = combineText(
+                data?.pncChild?.presentingComplaints,
+                data?.pncChild?.presentingComplaintsNotes,
+                getString(R.string.hyphen_symbol)
+            )
+            tvPresentingComplaintsText.setExpandableText(
+                fullText = presentingComplaintsText,
+                moreColorResId = R.color.purple_700,
+                title = tvPresentingComplaintsLabel.text.toString(),
+                activity = (requireActivity() as BaseActivity)
+            )
+
             tvClinicalNotesText.setExpandableText(
-                fullText = (data?.pncChild?.clinicalNotes) ?: getString(R.string.empty__),
+                fullText = (data?.pncChild?.clinicalNotes) ?: getString(R.string.hyphen_symbol),
                 moreColorResId = R.color.purple_700,
                 title = tvClinicalNotesLabel.text.toString(),
                 activity = (requireActivity() as BaseActivity)
@@ -244,7 +283,7 @@ class MotherNeonatePncSummaryFragment : BaseFragment(), View.OnClickListener {
                     false
                 )
             }?.takeIf { it.isNotEmpty() }
-                ?: requireContext().getString(R.string.empty__)
+                ?: requireContext().getString(R.string.hyphen_symbol)
         }
     }
 
@@ -378,5 +417,12 @@ override fun onClick(v: View?) {
         }
     }
 }
+    private fun notAliveFlow() {
+        setFragmentResult(
+            MedicalReviewDefinedParams.NOT_ALIVE, bundleOf(
+                MedicalReviewDefinedParams.NOT_ALIVE to true
+            )
+        )
+    }
 }
 

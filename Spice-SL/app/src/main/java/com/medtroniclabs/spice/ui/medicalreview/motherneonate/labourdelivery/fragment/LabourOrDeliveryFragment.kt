@@ -495,14 +495,14 @@ class LabourOrDeliveryFragment : BaseFragment() {
         }
 
         with(binding) {
-            if(etHourTimeOfDelivery.isNotEmpty() || etMinutesTimeOfDelivery.isNotEmpty()) {
+            if(etHourTimeOfDelivery.isNotEmpty() && etMinutesTimeOfDelivery.isNotEmpty()) {
                     if (etHourTimeOfDelivery.toInt() <= 12 && etMinutesTimeOfDelivery.toInt() <= 59 && viewModel.timeOfDeliveryMap[DefinedParams.TimeOfDelivery] != null) {
                         tvTimeOfDeliveryError.showIf(false)
                     } else {
                         tvTimeOfDeliveryError.showIf(true)
                     }
                 }
-            if (etHourTimeOfLabourOnset.isNotEmpty()||etMinutesTimeOfLabourOnSet.isNotEmpty()) {
+            if (etHourTimeOfLabourOnset.isNotEmpty()&&etMinutesTimeOfLabourOnSet.isNotEmpty()) {
                 if ( etHourTimeOfLabourOnset.toInt() <= 12 && etMinutesTimeOfLabourOnSet.toInt() <= 59 && viewModel.timeOfLabourOnsetMap[DefinedParams.TimeOfLabourOnset] != null) {
                     tvTimeOfLabourOnsetError.showIf(false)
                 } else {

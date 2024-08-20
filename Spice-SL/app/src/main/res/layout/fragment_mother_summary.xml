@@ -325,16 +325,16 @@
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tvInvestigationLabel"
+            style="@style/TextStyle_Regular_16"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/_16sdp"
+            android:fontFamily="@font/inter_regular"
             android:text="@string/investigation"
             android:textSize="@dimen/_16ssp"
-            style="@style/TextStyle_Regular_16"
-            android:fontFamily="@font/inter_regular"
             app:layout_constraintEnd_toEndOf="@+id/startGuideline"
             app:layout_constraintStart_toStartOf="@+id/tvPrescriptionLabel"
-            app:layout_constraintTop_toBottomOf="@+id/tvPrescriptionLabel" />
+            app:layout_constraintTop_toBottomOf="@+id/tvPrescriptionText" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/separatorColon16"
@@ -361,16 +361,16 @@
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tvPatientStatusLabel"
+            style="@style/TextStyle_Regular_16"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/_16sdp"
+            android:fontFamily="@font/inter_regular"
             android:text="@string/patient_status"
             android:textSize="@dimen/_16ssp"
-            style="@style/TextStyle_Regular_16"
-            android:fontFamily="@font/inter_regular"
             app:layout_constraintEnd_toEndOf="@+id/startGuideline"
             app:layout_constraintStart_toStartOf="@+id/tvInvestigationLabel"
-            app:layout_constraintTop_toBottomOf="@+id/tvInvestigationLabel" />
+            app:layout_constraintTop_toBottomOf="@+id/tvInvestigationText" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/separatorColon7"
@@ -445,6 +445,7 @@
             android:layout_marginTop="@dimen/_16sdp"
             android:text="@string/time_of_delivery"
             android:textSize="@dimen/_16ssp"
+            style="@style/TextStyle_Regular_16"
             android:textColor="@color/table_title"
             app:layout_constraintEnd_toEndOf="@+id/leftGuideline"
             app:layout_constraintStart_toStartOf="@+id/centerGuideline"
@@ -482,6 +483,7 @@
             android:layout_marginTop="@dimen/_16sdp"
             android:text="@string/time_of_labour_onset"
             android:textSize="@dimen/_16ssp"
+            style="@style/TextStyle_Regular_16"
             android:textColor="@color/table_title"
             app:layout_constraintEnd_toEndOf="@+id/leftGuideline"
             app:layout_constraintStart_toStartOf="@+id/tvTimeOfDeliveryLabel"

@@ -83,18 +83,24 @@ class NeonateFragment : BaseFragment() {
                 DateUtils.calculateGestationalAgeWeeks(
                     it1,it)
             }).toString())
-            binding.tvGestationalAge.text = when {
+            when {
                 viewModel.gestationalAge.isNullOrBlank() || viewModel.gestationalAge!!.contains("-") -> {
-                    getString(R.string.empty__)
+                    binding.tvGestationalAge.text = getString(R.string.empty__)
+                    viewModel.gestationalAge=null
                 }
                 else -> {
-                    var weeks =viewModel.gestationalAge!!.toLongOrNull()?.let { it2 ->
-                        DateUtils.formatGestationalAge(it2, requireContext())
+                    val gestationalAge = viewModel.gestationalAge?.toLongOrNull()
+                    val weeks = gestationalAge?.let {
+                        DateUtils.formatGestationalAge(it, requireContext())
                     } ?: getString(R.string.hyphen_symbol)
-                    if (viewModel.gestationalAge!!.toLongOrNull()!! < 36){
-                        weeks.plus(getString(R.string._36_weeks))
-                    }else
-                        weeks
+
+                    val result = if (gestationalAge != null && gestationalAge < 36) {
+                          weeks.plus(getString(R.string._36_weeks))
+                    } else {
+                         weeks
+                    }
+
+                    binding.tvGestationalAge.text = result
                 }
             }
         }

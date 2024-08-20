@@ -24,7 +24,6 @@ import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.ui.SingleSelectionCustomView
 import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.network.resource.Resource
-import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.dialog.MedicalReviewSuccessDialogFragment
 import com.medtroniclabs.spice.ui.landing.OnDialogDismissListener
@@ -533,15 +532,18 @@ class MotherNeonatePncActivity : BaseActivity(), View.OnClickListener, AncVisitC
         val fragmentManager = supportFragmentManager
         val systemicExaminationsFragment =
             fragmentManager.findFragmentById(R.id.systemicExaminationsContainer)
-        if ( systemicExaminationsFragment is GeneralExaminationFragment) {
-            showErrorDialog()
+        val summaryFragment =
+            getFragmentById(supportFragmentManager, (R.id.diagnosisFragment))
+        if (summaryFragment is MotherNeonatePncSummaryFragment) {
+            backNavigationToHome()
         } else if ( systemicExaminationsFragment is PhysicalExaminationFragment) {
             viewModel.isNeonate = false
             refreshPresentingComplaintsFragment()
             initializeSystemicExaminationFragment(initializeBundle())
+        } else if ( systemicExaminationsFragment is GeneralExaminationFragment) {
+            backMenuFlow()
         } else {
-            // Show the dialog here
-            showErrorDialog()
+            backMenuFlow ()
         }
     }
 
@@ -736,15 +738,18 @@ class MotherNeonatePncActivity : BaseActivity(), View.OnClickListener, AncVisitC
             ) { _, _ ->
                 enableDoneBtn()
             }
+        supportFragmentManager
+            .setFragmentResultListener(MedicalReviewDefinedParams.NOT_ALIVE, this) { _, _ ->
+                startActivityWithoutSplashScreen()
+            }
     }
-
-    private fun showErrorDialog() {
+    private fun backMenuFlow() {
         showErrorDialogue(
             getString(R.string.alert),
             getString(R.string.exit_reason),
             isNegativeButtonNeed = true
         ) { isPositive ->
-            if (isPositive) {
+            if (isPositive){
                 onBackPressPopStack()
             }
         }

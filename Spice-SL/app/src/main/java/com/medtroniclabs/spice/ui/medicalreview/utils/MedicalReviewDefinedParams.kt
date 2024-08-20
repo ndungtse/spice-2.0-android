@@ -14,6 +14,7 @@ object MedicalReviewDefinedParams {
     const val BREAST_FEEDING_TAG = "breastFeedingTag"
     const val EXCLUSIVE_BREAST_FEED_TAG = "exclusiveBreastFeedTag"
     const val SUMMARY_ITEM = "SummaryItem"
+    const val NOT_ALIVE="NotAlive"
     const val Albendazole = "Albendazole"
     const val HH_RELATIONSHIP= "household_head_relationship"
     const val GESTATIONAL_AGE = "gestationalAge"

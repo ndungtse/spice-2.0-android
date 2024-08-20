@@ -186,6 +186,7 @@ class PhysicalExaminationFragment : BaseFragment() {
                 binding.BreastFeedingGroup.visible()
             } else {
                 binding.BreastFeedingGroup.gone()
+                resetSelectionViews(DefinedParams.ExclusiveBreastCondition)
             }
 
         }

@@ -35,6 +35,7 @@ class PatientStatusRepository @Inject constructor(
         return patientDetails.memberId?.let { patientMemberId ->
             getTicketType(menuType)?.let {workflowType ->
                 PatientStatusRequest(
+                    patientId=patientDetails.patientId,
                     memberId = patientMemberId,
                     type = MedicalReviewTypeEnums.medicalReview.name,
                     gender = patientDetails.gender,

@@ -22,6 +22,7 @@ import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.labourdelivery.viewmodel.LabourDeliverySummaryViewModel
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.labourdelivery.viewmodel.LabourDeliveryViewModel
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
+import java.time.LocalDate
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 
@@ -77,11 +78,17 @@ class MotherSummaryFragment : BaseFragment() {
     }
 
     private fun setDetails(motherDTO: MotherDTO?) {
-        binding.tvDateOfDelivery.text =
-            calculateDateTime(
-                motherDTO?.labourDTO?.dateAndTimeOfDelivery ?: getString(R.string.hyphen_symbol),
-                true
-            )
+        binding.tvDateOfDelivery.text =calculateDateTime(
+            motherDTO?.labourDTO?.dateAndTimeOfDelivery ?: getString(R.string.hyphen_symbol),
+            true
+        )
+        binding.tvNextVisitDate.text=calculateLabourDeliveryNextVisitDate(
+            motherDTO?.labourDTO?.dateAndTimeOfDelivery ?: getString(R.string.hyphen_symbol),
+            true
+        )
+        viewModelLabourDeliver.nextFollowupDate=binding.tvNextVisitDate.text.toString()
+        summaryListener()
+
         binding.tvDateOfLabourOnset.text =
             calculateDateTime(
                 motherDTO?.labourDTO?.dateAndTimeOfLabourOnset ?: getString(R.string.hyphen_symbol),
@@ -112,7 +119,7 @@ class MotherSummaryFragment : BaseFragment() {
                 false
             )
         binding.tvPrescriptionText.text= motherDTO?.prescriptions.let { CommonUtils.createPrescription(it,requireContext()) }?.takeIf { it.isNotEmpty() }
-            ?: requireContext().getString(R.string.empty__)
+            ?: requireContext().getString(R.string.hyphen_symbol)
 
         binding.tvInvestigationText.text = motherDTO?.investigations?.let { createInvestigation(it,requireContext()) }?.takeIf { it.isNotEmpty() }
             ?: requireContext().getString(R.string.hyphen_symbol)
@@ -127,6 +134,20 @@ class MotherSummaryFragment : BaseFragment() {
             DateTimeFormatter.ofPattern(DateUtils.TIME_FORMAT_hhmma)
         }
         return dateTime1.format(timeFormatter)
+    }
+    private fun calculateLabourDeliveryNextVisitDate(dateTime: String, isDate: Boolean): String? {
+        val inputFormatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME
+        val dateTime1 = ZonedDateTime.parse(dateTime, inputFormatter)
+        val adjustedDate = dateTime1.toLocalDate().plusDays(3)
+        if (adjustedDate == LocalDate.now()) {
+            return "" // Return empty string if the adjusted date is today
+        }
+        val timeFormatter: DateTimeFormatter = if (isDate) {
+            DateTimeFormatter.ofPattern(DateUtils.DATE_ddMMyyyy)
+        } else {
+            DateTimeFormatter.ofPattern(DateUtils.TIME_FORMAT_hhmma)
+        }
+        return adjustedDate.format(timeFormatter)
     }
 
     private fun initializeDatePicker() {

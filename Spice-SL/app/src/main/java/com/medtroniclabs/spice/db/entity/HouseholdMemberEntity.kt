@@ -42,10 +42,10 @@ data class HouseholdMemberEntity(
 
     var parentId: String? = null,
 
-    val isActive: Boolean = true,
+    var isActive: Boolean = true,
 
     val version: String? = null,
 
     val lastUpdated: String? = null,
 
-) : BaseEntity()
+    ) : BaseEntity()

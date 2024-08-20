@@ -284,7 +284,7 @@
     <string name="member_registered_successfully">Member registration \n completed successfully.</string>
     <string name="patient_with_id">Patient ID : %1$s</string>
     <string name="result_mother">Result - Mother</string>
-    <string name="result_neonate">Result - Neonatal</string>
+    <string name="result_neonate">Result - Neonate</string>
     <string name="anc_visit">ANC Visit</string>
     <string name="pnc_visit">PNC Visit</string>
     <string name="exit_reason">If you leave this screen, your entered data will not be saved.</string>
