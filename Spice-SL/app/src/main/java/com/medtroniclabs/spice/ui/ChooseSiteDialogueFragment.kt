@@ -112,6 +112,7 @@ class ChooseSiteDialogueFragment : DialogFragment(),
                     )
                     SecuredPreference.putLong(SecuredPreference.EnvironmentKey.TENANT_ID.name,it.tenantId)
                     SecuredPreference.putString(SecuredPreference.EnvironmentKey.ORGANIZATION_FHIR_ID.name,it.fhirId)
+                    SecuredPreference.putLong(SecuredPreference.EnvironmentKey.DISTRICT_ID.name,it.districtId)
                     triggerResourceLoading()
                     dismiss()
                 }

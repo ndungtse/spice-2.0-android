@@ -20,7 +20,7 @@ data class LabTestDetails(
 
 data class LabTestResultObject(
     var name: String,
-    var value: String,
+    var value: Any? = null,
     var performedBy: String,
     val codeDetails: CodeDetailsObject? = null,
     val testedOn: String? = null,

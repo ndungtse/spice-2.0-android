@@ -334,6 +334,9 @@ class AssessmentRMNCHNeonateSummaryFragment : BaseFragment(), View.OnClickListen
                             binding.etNextFollowUpDate.text = DateUtils.getDateStringFromDate(
                                 visitDate, DateUtils.DATE_ddMMyyyy
                             )
+                            updateFollowUpDate(DateUtils.getDateStringFromDate(
+                                visitDate, DateUtils.DATE_ddMMyyyy
+                            ))
                             if (binding.etNextFollowUpDate.text.isNotEmpty()) {
                                 binding.btnDone.isEnabled = true
                             }

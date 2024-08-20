@@ -335,7 +335,7 @@
     <string name="title_labour_delivery">Labour/Delivery</string>
     <string name="labour_delivery_medical_review">Medical Review Labour/Delivery</string>
     <string name="search_and_add">Search medication and add</string>
-    <string name="search_investigation_and_add">Search Investigation and add</string>
+    <string name="search_investigation_and_add">Search lab/radiology test and add</string>
     <string name="medication_name">Medication Name</string>
     <string name="frequency">Frequency</string>
     <string name="prescribed_days">Prescribed Days</string>
@@ -609,7 +609,7 @@
     <string name="_36_weeks"><![CDATA[" (<36 weeks)"]]></string>
 
     <string name="change_facility">CHANGE FACILITY\n</string>
-    <string name="choose_site">Choose Health Facility</string>
+    <string name="choose_site">Change Health Facility</string>
     <string name="display_range">Display Range</string>
     <string name="tested_value">Test Value</string>
     <string name="tested_result">Test Result</string>
@@ -620,6 +620,8 @@
     <string name="go_back">Go Back to Login</string>
     <string name="login_forgot_email">Email </string>
     <string name="confirm_password">Confirm Password </string>
+    <string name="confirm_new_password">Confirm New Password </string>
+    <string name="new_password">New Password</string>
     <string name="forgot_email_message">forgotEmailMessage </string>
     <string name="email_registered_successfully">The reset password link has been sent to email / phone number.</string>
     <string name="reset_password"> Reset Password </string>

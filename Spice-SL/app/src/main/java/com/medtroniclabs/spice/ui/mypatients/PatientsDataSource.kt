@@ -41,9 +41,10 @@ class PatientsDataSource(
             if (villages.isEmpty()) {
                 val villageIdNameList = patientRepository.getVillageIdName()
                 villages = villageIdNameList.map { it.id }
-                // TODO: After multiple health facility changes, retrieve the district ID during login once the changes are made by Backend.
-                districtId = districtId ?: villageIdNameList.firstOrNull()?.districtId
             }
+
+            districtId = districtId ?: SecuredPreference.getDistrictId()
+
             val patientsDataModel = PatientsDataModel(
                 skip = loadedCount,
                 limit = LIST_LIMIT,

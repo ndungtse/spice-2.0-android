@@ -170,6 +170,10 @@ object CommonUtils {
         return SecuredPreference.getRole() == RoleConstant.COMMUNITY_HEALTH_WORKER
     }
 
+    fun isProvider(): Boolean {
+        return SecuredPreference.getRole() == RoleConstant.PROVIDER
+    }
+
     fun isRolePresent(): Boolean {
         val roleList =
             listOf(SECHN, MCHA, PROVIDER, CHA, MID_WIFE, LAB_ASSISTANT, SRN).map { it.lowercase() }

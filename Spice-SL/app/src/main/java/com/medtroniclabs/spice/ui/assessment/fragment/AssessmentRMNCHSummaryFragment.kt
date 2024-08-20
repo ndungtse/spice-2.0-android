@@ -256,6 +256,9 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
                             binding.etNextFollowUpDate.text = getDateStringFromDate(
                                 visitDate, DateUtils.DATE_ddMMyyyy
                             )
+                            updateFollowUpDate(getDateStringFromDate(
+                                visitDate, DateUtils.DATE_ddMMyyyy
+                            ))
                         }
 
                     }
@@ -272,6 +275,9 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
                             binding.etNextFollowUpDate.text = getDateStringFromDate(
                                 visitDate, DateUtils.DATE_ddMMyyyy
                             )
+                            updateFollowUpDate(getDateStringFromDate(
+                                visitDate, DateUtils.DATE_ddMMyyyy
+                            ))
                         }
                     }
                 }

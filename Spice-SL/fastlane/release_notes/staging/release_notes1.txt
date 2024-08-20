@@ -1,11 +1,11 @@
 Modules
 
 CHW:
-Death of mother - ANC,PNC,Childhood visit - with out offline sync.
-Change facility - Need backend build to test on this build.
+Death of mother
+Change facility
+ForgotPassword - We have to get the email link from outbound email backend for dev build.
+Peer supervisor
 
-Peer Supervisor
-Performance monitoring and Filter
 
 Medical Review:
 1.PNC Medical Review
@@ -13,5 +13,8 @@ Medical Review:
 3.Investigation
 4.Investigation history
 5.Investigation Summary
+
+Feedback points also addressed in this build.
+
 
 Bug fixing status updated on the sheet.

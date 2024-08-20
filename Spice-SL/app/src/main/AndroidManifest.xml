@@ -30,6 +30,7 @@
         <!-- Common Activities -->
         <activity
             android:name=".ui.boarding.ForgetPasswordActivity"
+            android:configChanges="orientation|screenSize"
             android:exported="true">
 
             <intent-filter android:autoVerify="true">

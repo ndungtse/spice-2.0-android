@@ -25,6 +25,9 @@ interface MemberDAO {
     @Query("SELECT * FROM HouseHoldMember WHERE household_id = :houseHoldId")
     fun getAllHouseHoldMembersLiveData(houseHoldId: Long): LiveData<List<HouseholdMemberEntity>>
 
+    @Query("SELECT * FROM HouseHoldMember WHERE household_id = :houseHoldId AND isActive =:aliveStatus")
+    fun getAliveHouseHoldMembers(houseHoldId: Long,aliveStatus: Boolean): List<HouseholdMemberEntity>
+
     @Query("SELECT * FROM HouseHoldMember WHERE id = :memberId")
     suspend fun getMemberDetailsById(memberId: Long): HouseholdMemberEntity
 

@@ -9,6 +9,7 @@ import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.setExpandableText
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.CommonUtils.combineText
+import com.medtroniclabs.spice.common.CommonUtils.createInvestigation
 import com.medtroniclabs.spice.common.CommonUtils.createPrescription
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams.FhirId
@@ -82,7 +83,8 @@ class MotherNeonateAncHistoryFragment : BaseFragment() {
                 tvAncVisitLabelValue.text = it.visitNumber ?: getString(R.string.hyphen_symbol)
                 tvPrescriptionValue.text = createPrescription(it.prescriptions, requireContext())
                     ?: getString(R.string.hyphen_symbol)
-                tvInvestigationValue.text = getString(R.string.hyphen_symbol)
+                tvInvestigationValue.text =  createInvestigation(it.investigations,requireContext())
+                    ?: requireContext().getString(R.string.hyphen_symbol)
                 tvBpValue.text = if (it.systolic == null && it.diastolic == null) {
                     getString(R.string.hyphen_symbol)
                 } else {

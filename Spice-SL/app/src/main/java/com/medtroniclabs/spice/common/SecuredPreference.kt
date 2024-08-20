@@ -37,7 +37,8 @@ object SecuredPreference {
         SERVER_LAST_SYNCED,
         IS_MOTHER_LOADED_PNC,
         IS_NEONATE_LOADED_PNC,
-        TENANT_ID
+        TENANT_ID,
+        DISTRICT_ID
     }
 
 
@@ -472,6 +473,10 @@ object SecuredPreference {
 
     fun getTenantId(): Long {
         return getLong(EnvironmentKey.TENANT_ID.name)
+    }
+
+    fun getDistrictId(): Long {
+        return getLong(EnvironmentKey.DISTRICT_ID.name)
     }
 
 }

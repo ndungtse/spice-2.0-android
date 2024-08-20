@@ -303,10 +303,10 @@ class ReferralResultGenerator {
                 addResultMap(ReferralReasons.MUAC.name.lowercase(), ReferralStatus.Referred.name)
                 addReferralReason(referralReason, ReferralReasons.MUAC.name)
             }
-            if (map.containsKey(hasOedemaOfBothFeet) && ((map[hasOedemaOfBothFeet] is String && map[hasOedemaOfBothFeet] == Yes) || (map[hasOedemaOfBothFeet] is Boolean && map[hasOedemaOfBothFeet] == true))) {
-                addResultMap(ReferralReasons.MUAC.name.lowercase(), ReferralStatus.Referred.name)
-                addReferralReason(referralReason, ReferralReasons.MUAC.name)
-            }
+        }
+        if (map.containsKey(hasOedemaOfBothFeet) && ((map[hasOedemaOfBothFeet] is String && map[hasOedemaOfBothFeet] == Yes) || (map[hasOedemaOfBothFeet] is Boolean && map[hasOedemaOfBothFeet] == true))) {
+            addResultMap(ReferralReasons.MUAC.name.lowercase(), ReferralStatus.Referred.name)
+            addReferralReason(referralReason, ReferralReasons.MUAC.name)
         }
     }
 

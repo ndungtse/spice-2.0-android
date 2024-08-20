@@ -104,7 +104,7 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
 
         val changeFacilityMenuItem: MenuItem? = menu.findItem(R.id.changeFacility)
 
-        if (CommonUtils.isChw() && changeFacilityMenuItem != null) {
+        if ( !CommonUtils.isProvider()  && changeFacilityMenuItem != null) {
             menu.removeItem(changeFacilityMenuItem.itemId)
         }
 

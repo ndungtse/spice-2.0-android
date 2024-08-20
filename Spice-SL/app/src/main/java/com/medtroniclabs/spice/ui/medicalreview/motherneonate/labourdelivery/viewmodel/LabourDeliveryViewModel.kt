@@ -1,6 +1,5 @@
 package com.medtroniclabs.spice.ui.medicalreview.motherneonate.labourdelivery.viewmodel
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.location.Location
 import androidx.lifecycle.LiveData
@@ -33,7 +32,6 @@ import com.medtroniclabs.spice.model.assessment.AgparScoreHeader
 import com.medtroniclabs.spice.model.assessment.AgparScoreRow
 import com.medtroniclabs.spice.model.assessment.ApgarScore
 import com.medtroniclabs.spice.network.resource.Resource
-import com.medtroniclabs.spice.ui.medicalreview.motherneonate.labourdelivery.activity.LabourDeliveryBaseActivity
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.labourdelivery.repo.LabourDeliveryRepository
 import com.medtroniclabs.spice.ui.mypatients.enumType.AgparColumnIdentifierType
 import com.medtroniclabs.spice.ui.mypatients.enumType.AgparItemViewType
@@ -46,7 +44,6 @@ import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
-import java.util.Calendar
 import javax.inject.Inject
 
 @HiltViewModel
@@ -340,10 +337,10 @@ class LabourDeliveryViewModel @Inject constructor(
             isChild = true,
             gender = genderFlow[DefinedParams.Gender].toString(),
             provenance = provanceDto,
-            householdId = patientDetailModel?.houseHoldId.toString(),
-            phoneNumber = patientDetailModel?.phoneNumber.toString(),
-            householdHeadRelationship = patientDetailModel?.relationship.toString(),
-            phoneNumberCategory = patientDetailModel?.phoneNumberCategory.toString()
+            householdId = patientDetailModel?.houseHoldId,
+            phoneNumber = patientDetailModel?.phoneNumber,
+            householdHeadRelationship = patientDetailModel?.relationship,
+            phoneNumberCategory = patientDetailModel?.phoneNumberCategory
         )
     }
 

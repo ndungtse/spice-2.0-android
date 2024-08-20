@@ -59,6 +59,7 @@ class InvestigationActivity : BaseActivity(), AdapterView.OnItemClickListener,
 
         investigationViewModel.investigationListLiveData.observe(this) { investigationList ->
             showAdapterList(investigationList)
+            enableDisableSubmitButton()
         }
 
         patientViewModel.patientDetailsLiveData.observe(this) { resource ->
@@ -161,6 +162,12 @@ class InvestigationActivity : BaseActivity(), AdapterView.OnItemClickListener,
         }
     }
 
+    private fun enableDisableSubmitButton() {
+        investigationViewModel.investigationListLiveData.value?.let { investigationList ->
+            binding.btnSubmit.isEnabled = investigationList.any { it.id == null || (it.resultHashMap != null && it.resultHashMap!!.size > 0) }
+        }
+    }
+
     private fun showAdapterList(investigationList: ArrayList<InvestigationModel>) {
         binding.llInvestigationHolder.removeAllViews()
         if (investigationList.size > 0) {
@@ -233,6 +240,10 @@ class InvestigationActivity : BaseActivity(), AdapterView.OnItemClickListener,
             message = Pair(getString(R.string.delete_confirmation), null)
         )
         dialog.show(supportFragmentManager, DeleteReasonDialog.TAG)
+    }
+
+    override fun checkValidation() {
+        enableDisableSubmitButton()
     }
 
     override fun onClick(v: View?) {

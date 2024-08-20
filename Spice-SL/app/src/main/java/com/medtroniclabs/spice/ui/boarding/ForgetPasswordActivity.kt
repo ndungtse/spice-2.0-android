@@ -68,12 +68,7 @@ class ForgetPasswordActivity : BaseActivity(), OnDialogDismissListener {
                         positiveButtonName = getString(R.string.ok)
                     ) { isPositive ->
                         if (isPositive) {
-                            startAsNewActivity(
-                                Intent(
-                                    this,
-                                    LoginActivity::class.java
-                                )
-                            )
+                            redirectToLogin()
                         }
                     }
                 }
@@ -126,7 +121,8 @@ class ForgetPasswordActivity : BaseActivity(), OnDialogDismissListener {
                         message = getString(R.string.password_registered_successfully),
                         positiveButtonName = getString(R.string.ok)
                     ) {
-                        startAsNewActivity(Intent(this, LoginActivity::class.java))
+                        redirectToLogin()
+
                     }
                 }
             }
@@ -134,12 +130,12 @@ class ForgetPasswordActivity : BaseActivity(), OnDialogDismissListener {
 
     }
 
+    private fun redirectToLogin() {
+        finish()
+        startAsNewActivity(Intent(this, LoginActivity::class.java))
+    }
+
     override fun onDialogDismissListener(isFinish: Boolean) {
-        startAsNewActivity(
-            Intent(
-                this,
-                LoginActivity::class.java
-            )
-        )
+        redirectToLogin()
     }
 }

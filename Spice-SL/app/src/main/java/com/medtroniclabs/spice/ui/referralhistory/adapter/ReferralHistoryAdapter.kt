@@ -44,7 +44,7 @@ class ReferralHistoryAdapter :RecyclerView.Adapter<ReferralHistoryAdapter.ViewHo
                 is List<*> -> if (value.isEmpty()) {
                     binding.root.context.getString(R.string.separator_double_hyphen)
                 } else {
-                    if (keys.equals(binding.root.context.getString(R.string.medication_prescribed),true)) {
+                    if (keys.equals(binding.root.context.getString(R.string.medication_prescribed),true) || keys.equals(binding.root.context.getString(R.string.investigations_referred),true)) {
                         value.mapIndexed { index, item -> "${index + 1}. $item" }
                             .joinToString(separator = "\n")
                     } else {

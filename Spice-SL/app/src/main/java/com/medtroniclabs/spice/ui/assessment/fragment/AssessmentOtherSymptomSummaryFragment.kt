@@ -119,9 +119,12 @@ class AssessmentOtherSymptomSummaryFragment : BaseFragment(), View.OnClickListen
 
             ReferralStatus.OnTreatment.name -> {
                 binding.coughMalariaGroup.visibility = View.VISIBLE
-                binding.etNextFollowUpDate.text =
-                    DateUtils.getDateAfterDays(viewModel.referralReason?.mapNotNull { viewModel.treatmentDays[it] }
-                        ?.minOrNull() ?: 3)
+                val date = DateUtils.getDateAfterDays(viewModel.referralReason?.mapNotNull { viewModel.treatmentDays[it] }
+                    ?.minOrNull() ?: 3)
+                binding.etNextFollowUpDate.text = date
+                if (date.isNotEmpty()) {
+                    updateFollowUpDate(date)
+                }
                 binding.riskResultLayout.backgroundTintList =
                     ContextCompat.getColorStateList(requireContext(), R.color.red_risk_moderate)
                 binding.riskResultLayout.text = getString(R.string.patient_on_treatment)

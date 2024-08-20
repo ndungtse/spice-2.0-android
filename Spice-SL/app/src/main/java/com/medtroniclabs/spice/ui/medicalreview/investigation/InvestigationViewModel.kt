@@ -73,6 +73,7 @@ class InvestigationViewModel @Inject constructor(
         viewModelScope.launch(dispatcherIO) {
             val investigationList = investigationListLiveData.value ?: ArrayList()
             if (investigationResponse.formInput != null) {
+                investigationList.forEach { it.dropdownState = false }
                 try {
                     investigationList.add(
                         InvestigationModel(
@@ -82,7 +83,8 @@ class InvestigationViewModel @Inject constructor(
                             SecuredPreference.getUserFhirId(),
                             DateUtils.getTodayDateDDMMYYYY(),
                             null,
-                            investigationResponse.codeDetails
+                            investigationResponse.codeDetails,
+                            dropdownState = true
                         )
                     )
 
@@ -227,7 +229,6 @@ class InvestigationViewModel @Inject constructor(
                     }
                 }
                 actualValue?.let { value ->
-                    if (value is String){
                         val resultObject = LabTestResultObject(
                             name = formData.id,
                             value = value,
@@ -238,7 +239,6 @@ class InvestigationViewModel @Inject constructor(
                             unitValue
                         )
                         list.add(resultObject)
-                    }
                 }
             } else {
                 validResultList = false
@@ -286,7 +286,8 @@ class InvestigationViewModel @Inject constructor(
                         recommendedByName = investigationExisting.recommendedName,
                         labTestResultList = investigationExisting.labTestResults,
                         id = investigationExisting.id,
-                        resultList = getInvestigationModelWithResult(investigationExisting.labTestCustomization)
+                        resultList = getInvestigationModelWithResult(investigationExisting.labTestCustomization),
+                        dropdownState = false
                     )
                 )
             }

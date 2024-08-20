@@ -203,9 +203,12 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
 
             ReferralStatus.OnTreatment.name -> {
                 binding.coughMalariaGroup.visibility = View.VISIBLE
-                binding.etNextFollowUpDate.text =
-                    getDateAfterDays(viewModel.referralReason?.mapNotNull { viewModel.treatmentDays[it] }
-                        ?.minOrNull() ?: 3)
+                val date = getDateAfterDays(viewModel.referralReason?.mapNotNull { viewModel.treatmentDays[it] }
+                    ?.minOrNull() ?: 3)
+                binding.etNextFollowUpDate.text = date
+                if (date.isNotEmpty()) {
+                    updateFollowUpDate(date)
+                }
                 binding.riskResultLayout.backgroundTintList =
                     ContextCompat.getColorStateList(requireContext(), R.color.red_risk_moderate)
                 binding.riskResultLayout.text = getString(R.string.patient_on_treatment)
@@ -271,14 +274,16 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
             .forEach { item ->
                 when (item.id) {
                     muacCode -> {
-                        bindICCMSummaryView(
-                            item.title,
-                            requireContext().getString(
-                                R.string.nutrition_summary,
-                                item.value,
-                                getNutritionStatus(item.value, requireContext())
+                        if (item.value != null) {
+                            bindICCMSummaryView(
+                                item.title,
+                                requireContext().getString(
+                                    R.string.nutrition_summary,
+                                    item.value,
+                                    getNutritionStatus(item.value, requireContext())
+                                )
                             )
-                        )
+                        }
                     }
 
                     hasDiarrhoea -> {
@@ -560,7 +565,7 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
                     updateFollowUpDate(binding.etNextFollowUpDate.text.trim().toString())
                 }
                 if (viewModel.otherAssessmentDetails.isEmpty()) {
-                    val intent =  Intent(requireActivity(), HouseholdSearchActivity::class.java)
+                    val intent = Intent(requireActivity(), HouseholdSearchActivity::class.java)
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
                     startActivity(intent)
                     requireActivity().finish()

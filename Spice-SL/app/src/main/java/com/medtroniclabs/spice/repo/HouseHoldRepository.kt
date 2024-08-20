@@ -191,6 +191,11 @@ class HouseHoldRepository @Inject constructor(
     fun getAllHouseHoldMembersLiveData(hhId: Long) : LiveData<List<HouseholdMemberEntity>> {
         return roomHelper.getAllHouseHoldMembersLiveData(hhId)
     }
+
+    fun getAliveHouseHoldMembersLiveData(hhId: Long) : List<HouseholdMemberEntity> {
+        return roomHelper.getAliveHouseHoldMembersLiveData(hhId)
+    }
+
     suspend fun addNewMember(request: AddMemberRegRequest): Resource<String> {
         return try{
             val response = apiHelper.addNewMember(request)

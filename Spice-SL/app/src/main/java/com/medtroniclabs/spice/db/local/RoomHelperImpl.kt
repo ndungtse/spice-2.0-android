@@ -532,6 +532,10 @@ class RoomHelperImpl @Inject constructor(
         return memberDAO.getAllHouseHoldMembersLiveData(hhId)
     }
 
+    override fun getAliveHouseHoldMembersLiveData(hhId: Long): List<HouseholdMemberEntity> {
+      return memberDAO.getAliveHouseHoldMembers(hhId,true)
+    }
+
     override suspend fun updateOtherDuplicateTickets(
         id: Long,
         followUp: FollowUp

@@ -155,9 +155,13 @@ class AssessmentViewModel @Inject constructor(
                 SecuredPreference.getString(SecuredPreference.EnvironmentKey.DEFAULT_SITE_ID.name)
                     ?: "-1"
         } else if (referralStatus != null && referralStatus == ReferralStatus.OnTreatment.name) {
-            otherDetails[AssessmentDefinedParams.NextFollowupDate] =
-                DateUtils.getDateAfterDays(referralReason?.mapNotNull { treatmentDays[it] }
-                    ?.minOrNull() ?: 3)
+            otherDetails[AssessmentDefinedParams.NextFollowupDate] = DateUtils.convertDateTimeToDate(
+                    DateUtils.getDateAfterDays(referralReason?.mapNotNull { treatmentDays[it] }
+                        ?.minOrNull() ?: 3),
+                    DateUtils.DATE_ddMMyyyy,
+                    DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+                    inUTC = true
+                )
         }
 
         if (menuId == ANC_MENU.uppercase(Locale.getDefault())) {

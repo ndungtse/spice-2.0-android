@@ -107,14 +107,12 @@ class PerformanceMonitoringActivity : BaseActivity() {
                 }
 
                 ResourceState.SUCCESS -> {
-                    val preference = it.data?.preference
-                    preference?.let { pref ->
-                        viewModel.updateUserPreference(pref)
-                        viewModel.getLinkedChwDetails()
-                        setFilterValueForDates(pref)
-                        viewModel.initPagination()
-                    }
-                    val isUnlocked = (preference?.fromDate.isNullOrEmpty() && preference?.toDate.isNullOrEmpty())
+                    val preference = it.data?.preference ?: Preference()
+                    viewModel.updateUserPreference(preference)
+                    viewModel.getLinkedChwDetails()
+                    setFilterValueForDates(preference)
+                    viewModel.initPagination()
+                    val isUnlocked = (preference.fromDate.isNullOrEmpty() && preference.toDate.isNullOrEmpty())
                     updateLockButtonStatus(isUnlocked)
                 }
 
@@ -250,7 +248,7 @@ class PerformanceMonitoringActivity : BaseActivity() {
         }
 
         binding.btnCancel.setOnClickListener {
-           resetFilter()
+            resetFilter()
         }
 
         binding.btnApply.setOnClickListener {
@@ -321,7 +319,7 @@ class PerformanceMonitoringActivity : BaseActivity() {
     }
 
     private fun validateFilterInputs(shouldSave: Boolean = false) {
-       val fromDate = binding.etFromDate.text.toString()
+        val fromDate = binding.etFromDate.text.toString()
         if (fromDate.isNullOrEmpty()) {
             binding.tvInvalidFilterInputs.visible()
             return
@@ -334,10 +332,10 @@ class PerformanceMonitoringActivity : BaseActivity() {
         }
 
         val selectedCHWs = chwFilterAdapter.getSelectedItems()
-       /* if (selectedCHWs.isNullOrEmpty()){
-            binding.tvInvalidFilterInputs.visible()
-            return
-        }*/
+        /* if (selectedCHWs.isNullOrEmpty()){
+             binding.tvInvalidFilterInputs.visible()
+             return
+         }*/
 
         val selectedVillages = villageFilterAdapter.getSelectedItems()
         /*if (selectedVillages.isNullOrEmpty()) {
@@ -491,15 +489,18 @@ class PerformanceMonitoringActivity : BaseActivity() {
         adapter = PerformanceMonitoringAdapter()
         binding.rvPerformanceList.adapter = adapter
         adapter.addLoadStateListener { loadState ->
-           if (loadState.refresh is LoadState.Loading)
-               showLoading()
+            if (loadState.refresh is LoadState.Loading)
+                showLoading()
             else
                 hideLoading()
 
-           if (loadState.append is LoadState.Loading)
-               binding.paginationLoader.visible()
+            if (loadState.append is LoadState.Loading)
+                binding.paginationLoader.visible()
             else
                 binding.paginationLoader.gone()
+
+            if (loadState.refresh is LoadState.Error || loadState.append is LoadState.Error)
+                Toast.makeText(this, getString(R.string.something_went_wrong), Toast.LENGTH_LONG).show()
 
         }
 
@@ -520,8 +521,8 @@ class PerformanceMonitoringActivity : BaseActivity() {
 
     private val chwSpinnerListener = object : CheckBoxSpinnerAdapter.OnCheckBoxSpinnerListener {
         override fun onCheckBoxSpinnerItemClick(selectedItems: List<CheckBoxSpinnerData>) {
-             viewModel.anyFilterChanged.value = true
-             viewModel.updateVillageListLiveData(selectedItems, true)
+            viewModel.anyFilterChanged.value = true
+            viewModel.updateVillageListLiveData(selectedItems, true)
         }
     }
 

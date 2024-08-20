@@ -118,7 +118,7 @@ class SelectFlowDialog : DialogFragment(), View.OnClickListener {
                 val patientId = arguments?.getString(DefinedParams.PatientId, "")
                 val id = arguments?.getString(DefinedParams.ID, "")
                 val intent = Intent(requireContext(), MotherNeonatePncActivity::class.java)
-                if (patientId?.isNotBlank() == true && id?.isNotBlank() == true) {
+                if (patientId?.isNotBlank() == true) {
                     intent.putExtra(DefinedParams.PatientId, patientId)
                     intent.putExtra(DefinedParams.ID, id)
                 }

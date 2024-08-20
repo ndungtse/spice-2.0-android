@@ -20,7 +20,7 @@ data class HealthFacility(
     val id: Long,
     val name: String,
     val type: String?,
-    val district: District?,
+    val district: District,
     val chiefdomId: Long,
     val latitude: String?,
     val longitude: String?,

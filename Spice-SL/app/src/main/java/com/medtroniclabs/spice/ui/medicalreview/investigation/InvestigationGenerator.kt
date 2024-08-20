@@ -21,7 +21,6 @@ import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.invisible
 import com.medtroniclabs.spice.appextensions.visible
-import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.CommonUtils.getDecimalFormatted
 import com.medtroniclabs.spice.common.CommonUtils.getMaxDateLimit
 import com.medtroniclabs.spice.common.DateUtils
@@ -89,15 +88,11 @@ class InvestigationGenerator(
             } else {
                 investigationBinding.ivRemoveMedication.visible()
             }
+            toggleFacility(investigationBinding,investigation)
             investigationBinding.tvRecommendedBy.text = investigation.recommendedByName
             investigationBinding.root.setOnClickListener {
-                if (investigationBinding.resultContainerHolder.visibility == View.VISIBLE) {
-                    investigationBinding.resultContainerHolder.gone()
-                    investigationBinding.ivDropDown.setImageDrawable(getDrawable(R.drawable.ic_arrow_down))
-                } else {
-                    investigationBinding.resultContainerHolder.visible()
-                    investigationBinding.ivDropDown.setImageDrawable(getDrawable(R.drawable.ic_arrow_up))
-                }
+                investigation.dropdownState = !investigation.dropdownState
+                toggleFacility(investigationBinding,investigation)
             }
             if (investigation.dataError) {
                 investigationBinding.tvErrorMessage.visibility = View.GONE
@@ -135,6 +130,19 @@ class InvestigationGenerator(
 
     }
 
+    private fun toggleFacility(
+        investigationBinding: LayoutInvestigationRowBinding,
+        investigation: InvestigationModel
+    ) {
+        if (!investigation.dropdownState) {
+            investigationBinding.resultContainerHolder.gone()
+            investigationBinding.ivDropDown.setImageDrawable(getDrawable(R.drawable.ic_arrow_down))
+        } else {
+            investigationBinding.resultContainerHolder.visible()
+            investigationBinding.ivDropDown.setImageDrawable(getDrawable(R.drawable.ic_arrow_up))
+        }
+    }
+
     private fun renderInvestigationResultViewContainer(
         investigation: InvestigationModel,
         resultContainer: LinearLayout
@@ -166,13 +174,18 @@ class InvestigationGenerator(
                 ?.let { list ->
                     if (list.isNotEmpty()) {
                         val formData = list[0]
-                        formData.ranges?.filter { (it.gender.equals(Gender,true) || it.gender.equals(both, true) )  }?.let { ranges ->
+                        formData.ranges?.filter {
+                            it.unitType.equals(
+                                investigationResult.unit,
+                                true
+                            ) && (it.gender.equals(Gender, true) || it.gender.equals(both, true))
+                        }?.let { ranges ->
                             if (ranges.isNotEmpty()) {
                                 val numberValue: Double? =
-                                    investigationResult.value.toDoubleOrNull()
+                                    investigationResult.value.toString().toDoubleOrNull()
                                 val range = ranges[0]
+                                rangeDisplay = range.displayRange
                                 if (numberValue != null && (numberValue < range.minRange || numberValue > range.maxRange)) {
-                                    rangeDisplay = range.displayRange
                                     rangeBoolean = true
                                 }
                             }
@@ -200,13 +213,26 @@ class InvestigationGenerator(
     }
 
     private fun appendUnitIfExist(
-        value: String,
+        value: Any?,
         unit: String?
     ): CharSequence {
+
+        val displayValue: String
+
+        if (getDecimalFormatted(value).isNotEmpty()) {
+            displayValue = getDecimalFormatted(value)
+        } else if (value is String) {
+            displayValue = value
+        } else {
+            displayValue = value.toString()
+        }
+
+
         return if (unit != null)
-            "${getDecimalFormatted(value)} $unit"
+            "$displayValue $unit"
         else
-            getDecimalFormatted(value)
+            displayValue
+
     }
 
     private fun renderInvestigationResultContainer(
@@ -283,7 +309,6 @@ class InvestigationGenerator(
                          */
                     }
                 }
-
             val existingValue = getCategorizedMap(investigation)[id]
             setExistingValueToAdapter(existingValue, dropDownList, binding.etUserInput)
             resultContainer.addView(binding.root)
@@ -399,6 +424,7 @@ class InvestigationGenerator(
                 when {
                     editable.isNullOrBlank() -> {
                         getCategorizedMap(investigation).remove(id)
+                        listener.checkValidation()
                     }
 
                     else -> {
@@ -408,10 +434,13 @@ class InvestigationGenerator(
                             val resultValue = editable.trim().toString().toDoubleOrNull()
                             resultValue?.let {
                                 getCategorizedMap(investigation)[id] = resultValue
+                                listener.checkValidation()
                             }
-                        } else
+                        } else {
                             getCategorizedMap(investigation)[id] =
                                 editable.trim().toString()
+                            listener.checkValidation()
+                        }
                     }
                 }
             }
@@ -437,8 +466,10 @@ class InvestigationGenerator(
                 getCategorizedMap(investigation)[id] =
                     selectedId as Any
             }
+            listener.checkValidation()
         } ?: kotlin.run {
             getCategorizedMap(investigation).remove(id)
+            listener.checkValidation()
         }
     }
 
@@ -513,6 +544,7 @@ class InvestigationGenerator(
                             inputFormat = DateUtils.DATE_FORMAT_yyyyMMdd,
                             outputFormat = DATE_FORMAT_yyyyMMddHHmmssZZZZZ
                         )
+                        listener.checkValidation()
                     }
                 }
             }
@@ -608,7 +640,7 @@ class InvestigationGenerator(
     fun onValidateInput(): Boolean {
         var isValid = true
         this.serverData?.let { investigationList ->
-            investigationList.filter{ it.id == null || (it.resultHashMap != null && it.resultHashMap!!.size > 0) }
+            investigationList.filter { it.id == null || (it.resultHashMap != null && it.resultHashMap!!.size > 0) }
                 .forEach { data ->
                     if (data.resultHashMap != null && data.resultHashMap!!.size == 0) {
                         isValid = true

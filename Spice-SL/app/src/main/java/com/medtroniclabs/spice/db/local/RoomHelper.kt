@@ -187,6 +187,8 @@ interface RoomHelper {
 
     fun getAllHouseHoldMembersLiveData(hhId: Long): LiveData<List<HouseholdMemberEntity>>
 
+    fun getAliveHouseHoldMembersLiveData(hhId: Long): List<HouseholdMemberEntity>
+
     suspend fun updateOtherDuplicateTickets(id: Long, followUp: FollowUp)
 
     suspend fun updateOtherFollowUpForWrongNumber(id: Long, fhirId: String)

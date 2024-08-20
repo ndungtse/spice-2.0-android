@@ -15,7 +15,7 @@ android {
     defaultConfig {
         applicationId = "com.medtroniclabs.spice"
         minSdk = 23
-        targetSdk = 33
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0"
 
@@ -54,13 +54,13 @@ android {
             applicationIdSuffix = ".sl.staging"
             isDebuggable = true
             // below line for test the forgot password in mobile
-//            signingConfig = signingConfigs.getByName("release")
+         //  signingConfig = signingConfigs.getByName("release")
         }
 
         create("staging") {
             initWith(getByName("release"))
             applicationIdSuffix = ".sl.staging"
-            versionNameSuffix = "-(20240819_01)"
+            versionNameSuffix = "-(20240823_01)"
             isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
