@@ -15,6 +15,8 @@ import com.medtroniclabs.spice.common.RoleConstant.SECHN
 import com.medtroniclabs.spice.common.RoleConstant.SRN
 import com.medtroniclabs.spice.data.Prescription
 import com.medtroniclabs.spice.data.history.Investigation
+import com.medtroniclabs.spice.formgeneration.config.DefinedParams.DAY
+import com.medtroniclabs.spice.formgeneration.config.DefinedParams.DAYS
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.MONTH
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.MONTHS
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.WEEK
@@ -93,12 +95,22 @@ object CommonUtils {
         val years = yearMonthWeek.years
         var months = yearMonthWeek.months
         val weeks = yearMonthWeek.weeks
-
-        if (months == 0 && years == 0 && weeks == 0) {
-            return context.getString(R.string.separator_hyphen)
-        }
+        val days = yearMonthWeek.days
 
         val strBuilder = StringBuilder()
+
+        if (months == 0 && years == 0 && weeks == 0) {
+            if (days > 1) {
+                strBuilder.append("$days $DAYS")
+                strBuilder.append(" ")
+            } else {
+                strBuilder.append("$days $DAY")
+                strBuilder.append(" ")
+            }
+            return strBuilder.toString()
+        }
+
+
         if (years < 5) {
             months += (years * 12)
         } else {

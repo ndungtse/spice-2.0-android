@@ -91,7 +91,7 @@ class HouseholdMemberRepository @Inject constructor(
 
         val isDeceased = map[isDeceased]
         if (isDeceased != null && isDeceased is Boolean && isDeceased){
-             householdMemberEntity.isDeceased = isDeceased
+             householdMemberEntity.isActive = false
         }
         if (entity == null) {
             val householdDetails = roomHelper.getHouseHoldDetailsById(householdId)

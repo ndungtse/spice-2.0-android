@@ -89,7 +89,7 @@ interface MemberDAO {
     @Query("UPDATE HouseholdMember SET sync_status =:syncStatus, updated_at =:updatedAt WHERE id IN (:memberIds)")
     suspend fun updateInProgress(memberIds: List<String>, syncStatus: String = OfflineSyncStatus.InProgress.name, updatedAt: Long = System.currentTimeMillis())
 
-    @Query("UPDATE HouseholdMember SET isDeceased = :status, sync_status =:syncStatus  WHERE patient_id = :patientId")
+    @Query("UPDATE HouseholdMember SET isActive = :status, sync_status =:syncStatus  WHERE patient_id = :patientId")
     suspend fun updateMemberDeceasedStatus(
         patientId: String,
         status: Boolean,

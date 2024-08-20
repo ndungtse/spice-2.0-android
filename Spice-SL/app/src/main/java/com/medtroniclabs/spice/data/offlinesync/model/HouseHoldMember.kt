@@ -60,7 +60,7 @@ data class HouseHoldMember(
     @ColumnInfo(name = "isPregnant")
     val isPregnant: Boolean? = null,
 
-    val isDeceased: Boolean = false,
+    val isActive: Boolean = true,
 
     val version: String? = null,
 
@@ -90,7 +90,7 @@ data class HouseHoldMember(
             parentId = this.motherPatientId,
             isPregnant = this.isPregnant,
             villageId = this.villageId,
-            isDeceased = this.isDeceased,
+            isActive = this.isActive,
             version = this.version,
             lastUpdated = this.lastUpdated
         ).apply {

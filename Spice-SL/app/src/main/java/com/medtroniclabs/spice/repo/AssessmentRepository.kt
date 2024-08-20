@@ -61,7 +61,7 @@ class AssessmentRepository @Inject constructor(
 
             childMemberIdFollowupIDAndDeathOfNewBorn.third?.let { deathOfNewborn ->
                 if (deathOfNewborn){
-                    roomHelper.updateMemberDeceasedStatus(childMemberDetail.patientId, true)
+                    roomHelper.updateMemberDeceasedStatus(childMemberDetail.patientId, false)
                 }
             }
 

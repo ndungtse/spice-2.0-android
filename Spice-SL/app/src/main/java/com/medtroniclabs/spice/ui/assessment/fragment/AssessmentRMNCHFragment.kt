@@ -278,7 +278,7 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
                 val deathOfMother = second[DeathOfMother]
                 if (deathOfMother is Boolean && deathOfMother) {
                     viewModel.memberDetailsLiveData.value?.data?.let {
-                        viewModel.updateMemberDeceasedStatus(it.patientId, true)
+                        viewModel.updateMemberDeceasedStatus(it.patientId, false)
                         deathOfMotherReset = true
                         status = true
                     }
@@ -289,7 +289,7 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
                 val deathOfBaby = second[deathOfBaby]
                 if (deathOfBaby is Boolean && deathOfBaby) {
                     viewModel.memberDetailsLiveData.value?.data?.let {
-                        viewModel.updateMemberDeceasedStatus(it.patientId, true)
+                        viewModel.updateMemberDeceasedStatus(it.patientId, false)
                         status = true
                     }
                 }

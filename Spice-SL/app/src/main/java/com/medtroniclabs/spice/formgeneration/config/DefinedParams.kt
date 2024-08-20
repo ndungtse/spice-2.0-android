@@ -31,6 +31,8 @@ object DefinedParams {
     const val WEEK = "Week"
     const val value = "Value"
     const val Other = "Other"
+    const val DAY = "Day"
+    const val DAYS = "Days"
     const val NoSymptoms = "No symptoms"
     const val Information= "information"
     const val HouseholdHeadRelationship = "household_head_relationship"

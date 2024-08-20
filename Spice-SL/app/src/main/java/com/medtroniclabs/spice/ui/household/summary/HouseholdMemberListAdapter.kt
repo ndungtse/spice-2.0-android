@@ -29,15 +29,15 @@ class HouseholdMemberListAdapter(
         position: Int
     ) {
         val item = houseHoldMembersList[position]
-        if (item.isDeceased) {
-            disableAllChildren(holder.binding.root, 0.5f, false)
-        } else {
+        if (item.isActive) {
             disableAllChildren(holder.binding.root, 1f, true)
+        } else {
+            disableAllChildren(holder.binding.root, 0.5f, false)
         }
         holder.binding.tvMemberName.text = getMemberInfoText(holder.context, item)
         holder.binding.tvPatientId.text = item.patientId
         holder.binding.cardPatient.safeClickListener {
-            if (!item.isDeceased) {
+            if (item.isActive) {
                 listener.onMemberSelected(item.id, false)
             }
         }
