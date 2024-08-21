@@ -38,6 +38,7 @@ import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.pnc.viewmodel.MotherNeonatePncSummaryViewModel
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
+import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 
 
@@ -67,7 +68,7 @@ class MotherNeonatePncSummaryFragment : BaseFragment(), View.OnClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         getPncSummaryDetails()
-        getPncPatientStatus(RMNCH.PNCMOTHER)
+        getPncPatientStatus(MedicalReviewTypeEnums.PNC_MOTHER_REVIEW.name)
         clickListener()
         attachObservers()
     }
@@ -105,12 +106,12 @@ class MotherNeonatePncSummaryFragment : BaseFragment(), View.OnClickListener {
             DateUtils.DATE_ddMMyyyy
         )
         if (viewModel.motherNeonateAlive) {
-            if (resource[0].type == RMNCH.PNCMOTHER) {
+            if (resource[0].type == MedicalReviewTypeEnums.PNC_MOTHER_REVIEW.name) {
                 viewModel.pncMotherPatientStatus = resource
                 viewModel.pncMotherPatientStatus?.let {
                     initializePatientStatus(it, binding.motherSummary)
                 }
-                getPncPatientStatus(RMNCH.PNCNEONATE)
+                getPncPatientStatus(MedicalReviewTypeEnums.PNC_CHILD_REVIEW.name)
             } else {
                 viewModel.pncChildPatientStatus = resource
                 viewModel.pncChildPatientStatus?.let {

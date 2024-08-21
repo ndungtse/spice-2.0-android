@@ -202,7 +202,7 @@ private fun successSummaryDialog() {
 
     private fun initializeViews() {
         viewModel.patientId = intent.getStringExtra(DefinedParams.PatientId)
-        examinationCardViewModel.workFlowType = MedicalReviewTypeEnums.UnderTwoMonths.name
+        examinationCardViewModel.workFlowType = MedicalReviewTypeEnums.UNDER_TWO_MONTHS.name
         if (!(SecuredPreference.getBoolean(SecuredPreference.EnvironmentKey.IS_UNDER_TWO_MONTHS_LOADED.name))) {
             viewModel.getStaticMetaData()
         } else {
@@ -252,7 +252,7 @@ private fun successSummaryDialog() {
             )
             putString(
                 MedicalReviewTypeEnums.DiagnosisType.name,
-                MedicalReviewTypeEnums.UnderTwoMonths.name
+                MedicalReviewTypeEnums.UNDER_TWO_MONTHS.name
             )
             putString(
                 DefinedParams.PatientId,
@@ -338,7 +338,7 @@ private fun successSummaryDialog() {
     private fun handleButtonRefer() {
         viewModel.createUnderTwoMonthsMedicalReview.value?.data?.let {
             ReferPatientFragment.newInstance(
-                MedicalReviewTypeEnums.UnderTwoMonths.name,
+                MedicalReviewTypeEnums.UNDER_TWO_MONTHS.name,
                 it.patientReference,
                 it.encounterId
             ).show(supportFragmentManager, ReferPatientFragment.TAG)

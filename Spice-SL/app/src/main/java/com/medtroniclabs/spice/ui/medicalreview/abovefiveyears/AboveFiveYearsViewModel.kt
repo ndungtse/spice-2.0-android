@@ -115,7 +115,7 @@ class AboveFiveYearsViewModel @Inject constructor(
                     patientStatus = patientStatus,
                     nextVisitDate = nextVisitDate,
                     referralTicketType = MedicalReviewTypeEnums.ICCM.name,
-                    assessmentName = MedicalReviewTypeEnums.AboveFiveYears.name,
+                    assessmentName = MedicalReviewTypeEnums.ABOVE_FIVE_YEARS.name,
                     householdId = houseHoldId,
                     villageId = villageId
                 )

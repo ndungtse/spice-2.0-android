@@ -61,7 +61,7 @@ class UnderFiveYearsViewModel @Inject constructor(
             underFiveYearsMetaLiveData.postLoading()
             underFiveYearsMetaLiveData.postValue(
                 underFiveYearsRepository.getStaticMetaData(
-                    MedicalReviewTypeEnums.UnderFiveYears.name
+                    MedicalReviewTypeEnums.UNDER_FIVE_YEARS.name
                 )
             )
         }
@@ -404,7 +404,7 @@ class UnderFiveYearsViewModel @Inject constructor(
                     id = submitEncounterId,
                     patientStatus = selectedPatientStatus ?: "",
                     nextVisitDate = convertedNextVisitDate,
-                    assessmentName = MedicalReviewTypeEnums.UnderFiveYears.name,
+                    assessmentName = MedicalReviewTypeEnums.UNDER_FIVE_YEARS.name,
                     referralTicketType = MedicalReviewTypeEnums.ICCM.name,
                     householdId = householdId,
                     villageId = villageId

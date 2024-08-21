@@ -294,8 +294,8 @@ class ReferPatientFragment : BaseDialogFragment(), View.OnClickListener {
         val patientReference: String? = arguments?.getString(DefinedParams.PatientReference, "")
         val encounterId: String? = arguments?.getString(DefinedParams.EncounterId, "")
         val referralTicketType: String = when (assessmentName) {
-            MedicalReviewTypeEnums.AboveFiveYears.name, MedicalReviewTypeEnums.UnderFiveYears.name, MedicalReviewTypeEnums.UnderTwoMonths.name -> DefinedParams.ICCM
-            MedicalReviewTypeEnums.ANC.name, MedicalReviewTypeEnums.PNC.name, MedicalReviewTypeEnums.LabourDelivery.name -> DefinedParams.RMNCH
+            MedicalReviewTypeEnums.ABOVE_FIVE_YEARS.name, MedicalReviewTypeEnums.UNDER_FIVE_YEARS.name, MedicalReviewTypeEnums.UNDER_TWO_MONTHS.name -> DefinedParams.ICCM
+            MedicalReviewTypeEnums.ANC_REVIEW.name, MedicalReviewTypeEnums.PNC_MOTHER_REVIEW.name, MedicalReviewTypeEnums.MOTHER_DELIVERY_REVIEW.name -> DefinedParams.RMNCH
             else -> {
                 ""
             }

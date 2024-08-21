@@ -315,7 +315,7 @@ class UnderFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
 
     private fun initializeViews() {
         viewModel.patientId = intent.getStringExtra(DefinedParams.PatientId)
-        examinationCardViewModel.workFlowType = MedicalReviewTypeEnums.UnderFiveYears.name
+        examinationCardViewModel.workFlowType = MedicalReviewTypeEnums.UNDER_FIVE_YEARS.name
         if (!(SecuredPreference.getBoolean(SecuredPreference.EnvironmentKey.IS_UNDER_FIVE_YEARS_LOADED.name))) {
             viewModel.getStaticMetaData()
         } else {
@@ -336,15 +336,15 @@ class UnderFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
         return Bundle().apply {
             putString(
                 MedicalReviewTypeEnums.PresentingComplaints.name,
-                MedicalReviewTypeEnums.UnderFiveYears.name
+                MedicalReviewTypeEnums.UNDER_FIVE_YEARS.name
             )
             putString(
                 MedicalReviewTypeEnums.SystemicExaminations.name,
-                MedicalReviewTypeEnums.UnderFiveYears.name
+                MedicalReviewTypeEnums.UNDER_FIVE_YEARS.name
             )
             putString(
                 MedicalReviewTypeEnums.DiagnosisType.name,
-                MedicalReviewTypeEnums.UnderFiveYears.name
+                MedicalReviewTypeEnums.UNDER_FIVE_YEARS.name
             )
             putString(
                 DefinedParams.ID, intent.getStringExtra(DefinedParams.ID)
@@ -410,7 +410,7 @@ class UnderFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
             R.id.btnRefer -> {
                 viewModel.createUnderFiveMedicalReviewLiveData.value?.data?.let {
                     ReferPatientFragment.newInstance(
-                        MedicalReviewTypeEnums.UnderFiveYears.name,
+                        MedicalReviewTypeEnums.UNDER_FIVE_YEARS.name,
                         it.patientReference,
                         it.encounterId
                     ).show(

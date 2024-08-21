@@ -119,7 +119,7 @@ class UnderFiveYearsClinicalSummaryViewModel @Inject constructor(
             summaryMetaListItems.postLoading()
             summaryMetaListItems.postValue(
                 repository.getImmunisationStatusMetaItems(
-                    MedicalReviewTypeEnums.UnderFiveYears.name
+                    MedicalReviewTypeEnums.UNDER_FIVE_YEARS.name
                 )
             )
         }
@@ -130,7 +130,7 @@ class UnderFiveYearsClinicalSummaryViewModel @Inject constructor(
             summaryMuacMetaItems.postLoading()
             summaryMuacMetaItems.postValue(
                 repository.getMuAcStatusMetaItems(
-                    MedicalReviewTypeEnums.UnderFiveYears.name
+                    MedicalReviewTypeEnums.UNDER_FIVE_YEARS.name
                 )
             )
         }

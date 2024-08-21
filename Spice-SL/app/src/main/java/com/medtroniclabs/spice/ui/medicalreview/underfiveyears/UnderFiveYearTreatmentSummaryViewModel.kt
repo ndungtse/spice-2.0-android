@@ -32,7 +32,7 @@ class UnderFiveYearTreatmentSummaryViewModel @Inject constructor(
         getMetaPatientStatus.switchMap {
             repository.getExaminationsComplaints(
                 it,
-                MedicalReviewTypeEnums.UnderFiveYears.name
+                MedicalReviewTypeEnums.UNDER_FIVE_YEARS.name
             )
         }
 

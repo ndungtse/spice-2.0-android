@@ -76,7 +76,7 @@ class PhysicalExaminationFragment : BaseFragment() {
                 )
             )
         }
-        viewModel.setType(MedicalReviewTypeEnums.PNC.name.plus("-").plus(MedicalReviewTypeEnums.Baby))
+        viewModel.setType(MedicalReviewTypeEnums.PNC_CHILD_REVIEW.name)
     }
 
     private fun initializeCongenitalDetect() {

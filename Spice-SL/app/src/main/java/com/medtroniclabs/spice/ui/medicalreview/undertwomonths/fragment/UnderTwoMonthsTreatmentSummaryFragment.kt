@@ -36,7 +36,6 @@ import com.medtroniclabs.spice.model.medicalreview.SummaryDetails
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
-import com.medtroniclabs.spice.ui.medicalreview.abovefiveyears.PresentingComplaintsViewModel
 import com.medtroniclabs.spice.ui.medicalreview.undertwomonths.viewmodel.UnderTwoMonthsTreatmentSummaryViewModel
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
@@ -93,7 +92,7 @@ class UnderTwoMonthsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
         examinationSummaryAdapter = ExaminationSummaryAdapter()
         binding.rvExaminationList.layoutManager = LinearLayoutManager(requireContext())
         binding.rvExaminationList.adapter = examinationSummaryAdapter
-        summaryViewModel.getSummaryListMetaItems(MedicalReviewTypeEnums.UnderTwoMonths.name)
+        summaryViewModel.getSummaryListMetaItems(MedicalReviewTypeEnums.UNDER_TWO_MONTHS.name)
     }
 
     fun attachObserver() {

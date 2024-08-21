@@ -26,7 +26,7 @@ class PregnancyPastObstetricHistoryViewModel@Inject constructor(
     var pregnancyHistoryChip:ArrayList<ChipViewItemModel> = ArrayList()
     private val getAncMetaForPregnancyHistory = MutableLiveData<String>()
     val ancMetaLiveDataForPregnancyHistory: LiveData<List<MedicalReviewMetaItems>> = getAncMetaForPregnancyHistory.switchMap {
-        motherNeonateANCRepo.getExaminationsComplaintsForAnc(it, MedicalReviewTypeEnums.ANC.name)
+        motherNeonateANCRepo.getExaminationsComplaintsForAnc(it, MedicalReviewTypeEnums.ANC_REVIEW.name)
     }
 
     fun setAncReqToGetMetaForPregnancyHistory(category: String) {

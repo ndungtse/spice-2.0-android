@@ -345,7 +345,7 @@ private fun submitDetails() {
 private fun handleReferClick() {
     viewModel.createLabourDeliveryMedicalReviewResponse.value?.data?.let {
         ReferPatientFragment.newInstance(
-            MedicalReviewTypeEnums.MOTHER_LABOUR_MEDICAL_REVIEW.name,
+            MedicalReviewTypeEnums.MOTHER_DELIVERY_REVIEW.name,
             it.patientReference,
             it.motherId
         ).show(supportFragmentManager, ReferPatientFragment.TAG)
@@ -371,7 +371,7 @@ private fun handleDoneClick() {
                 householdId = patientDetails.houseHoldId,
                 villageId = patientDetails.villageId,
                 category = MedicalReviewTypeEnums.RMNCH.name,
-                encounterType = MedicalReviewTypeEnums.MOTHER_LABOUR_MEDICAL_REVIEW.name,
+                encounterType = MedicalReviewTypeEnums.MOTHER_DELIVERY_REVIEW.name,
             )
             viewModel.labourDeliverySummaryCreate(request)
         }

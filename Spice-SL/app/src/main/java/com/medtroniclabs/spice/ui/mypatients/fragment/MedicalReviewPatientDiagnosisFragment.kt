@@ -86,9 +86,9 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
     private fun getDiagnosisType(): String {
         return arguments?.let {
             if (it.getBoolean(DefinedParams.PregnancyANC)){
-                MedicalReviewTypeEnums.ANC.name
+                MedicalReviewTypeEnums.ANC_REVIEW.name
             }else if (it.getBoolean(DefinedParams.PregnancyPNC)){
-                MedicalReviewTypeEnums.PNC.name.plus(getString(R.string.hyphen_symbol)).plus(MedicalReviewTypeEnums.Mother.name)
+                MedicalReviewTypeEnums.PNC_MOTHER_REVIEW.name
             }else {
                 it.getString(MedicalReviewTypeEnums.DiagnosisType.name)
             }
@@ -102,7 +102,7 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
         handleFlow()
         initializeListeners()
         attachListeners()
-        if (patientViewModel.getAncVisit() == 1 && diagnosisViewModel.diagnosisType!=MedicalReviewTypeEnums.PNC.name.plus(getString(R.string.hyphen_symbol).plus(MedicalReviewTypeEnums.Mother.name)) ) {
+        if (patientViewModel.getAncVisit() == 1 && diagnosisViewModel.diagnosisType!=MedicalReviewTypeEnums.PNC_MOTHER_REVIEW.name ) {
             binding.tvWeightValue.text = MotherNeonateUtil.convertWeight(
                 pregnancyDetailsViewModel.pregnancyDetailsModel.weight,
                 requireContext()
@@ -261,7 +261,7 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
         cardAddWeight.visible()
         cardBloodPressure.visible()
         if (connectivityManager.isNetworkAvailable()) {
-            if (patientViewModel.getAncVisit() > 1 || getDiagnosisType() == MedicalReviewTypeEnums.PNC.name.plus(getString(R.string.hyphen_symbol)).plus(MedicalReviewTypeEnums.Mother.name)) {
+            if (patientViewModel.getAncVisit() > 1 || getDiagnosisType() == MedicalReviewTypeEnums.PNC_MOTHER_REVIEW.name) {
                 viewModel.fetchWeight(MotherNeonateAncRequest(memberId = getMemberId()))
                 viewModel.fetchBloodPressure(MotherNeonateAncRequest(memberId = getMemberId()))
             }
@@ -418,7 +418,7 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
 
     private fun getPatientStatus(status: String): String {
         val formattedString = cleanString(status.lowercase())
-        return if (diagnosisViewModel.diagnosisType == MedicalReviewTypeEnums.ANC.name) {
+        return if (diagnosisViewModel.diagnosisType == MedicalReviewTypeEnums.ANC_REVIEW.name) {
             if (formattedString.isEmpty()) {
                 Pregnant
             } else if (formattedString.contains(Pregnant, ignoreCase = true)) {

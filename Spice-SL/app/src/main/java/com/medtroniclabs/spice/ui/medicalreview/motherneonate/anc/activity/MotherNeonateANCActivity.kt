@@ -14,7 +14,6 @@ import com.medtroniclabs.spice.appextensions.setPercentWidth
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
-import com.medtroniclabs.spice.common.DefinedParams.PregnancyANC
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.SpiceLocationManager
 import com.medtroniclabs.spice.data.model.BpAndWeightRequestModel
@@ -485,7 +484,7 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
     private fun showReferPatientDialog() {
         viewModel.motherNeonateCreateResponse.value?.data?.let {
             ReferPatientFragment.newInstance(
-                MedicalReviewTypeEnums.ANC_MEDICAL_REVIEW.name,
+                MedicalReviewTypeEnums.ANC_REVIEW.name,
                 it.patientReference,
                 it.encounterId
             ).show(supportFragmentManager, ReferPatientFragment.TAG)
@@ -525,7 +524,7 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
                     motherNeonateSummaryViewModel.patientStatus,
                     patientViewModel.getVillageId(),
                     patientViewModel.getPatientId(),
-                    MedicalReviewTypeEnums.ANC_MEDICAL_REVIEW.name
+                    MedicalReviewTypeEnums.ANC_REVIEW.name
                 )
             } else {
                 showErrorDialogue(
@@ -556,7 +555,7 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
     private fun createMotherNeonateRequest(prescriptionEncounterId: String?) {
         viewModel.motherNeonateAncRequest.apply {
             id = prescriptionEncounterId
-            assessmentType =  MedicalReviewTypeEnums.ANC_MEDICAL_REVIEW.name
+            assessmentType =  MedicalReviewTypeEnums.ANC_REVIEW.name
             presentingComplaints =
                 presentingComplaintsViewModel.selectedPresentingComplaints.map { it.value }
             presentingComplaintsNotes = presentingComplaintsViewModel.enteredComplaintNotes
@@ -714,11 +713,11 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
         val bundle = Bundle().apply {
             putString(
                 MedicalReviewTypeEnums.PresentingComplaints.name,
-                MedicalReviewTypeEnums.ANC.name
+                MedicalReviewTypeEnums.ANC_REVIEW.name
             )
             putString(
                 MedicalReviewTypeEnums.SystemicExaminations.name,
-                MedicalReviewTypeEnums.ANC.name
+                MedicalReviewTypeEnums.ANC_REVIEW.name
             )
         }
         replaceFragmentOrCreateNewFragment<PresentingComplaintsFragment>(

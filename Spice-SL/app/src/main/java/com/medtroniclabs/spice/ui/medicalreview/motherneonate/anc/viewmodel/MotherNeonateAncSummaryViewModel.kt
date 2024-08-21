@@ -32,7 +32,7 @@ class MotherNeonateSummaryViewModel @Inject constructor(
 
     val ancMetaLiveDataForPatientStatus: LiveData<List<MedicalReviewMetaItems>> =
         getAncMetaForPatientStatus.switchMap {
-            motherNeonateANCRepo.getExaminationsComplaintsForAnc(it, MedicalReviewTypeEnums.ANC.name)
+            motherNeonateANCRepo.getExaminationsComplaintsForAnc(it, MedicalReviewTypeEnums.ANC_REVIEW.name)
         }
 
     fun setAncReqToGetMetaForPatientStatus(category: String) {

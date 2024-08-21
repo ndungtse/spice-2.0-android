@@ -119,7 +119,7 @@ class MotherNeonatePNCViewModel @Inject constructor(
                 patientStatus = motherPatientStatus,
                 nextVisitDate = convertedNextVisitDate,
                 category = MedicalReviewTypeEnums.RMNCH.name,
-                encounterType = MedicalReviewTypeEnums.PNC_MEDICAL_REVIEW.name,
+                encounterType = MedicalReviewTypeEnums.PNC_MOTHER_REVIEW.name,
                 householdId = houseHoldId,
                 villageId = villageId,
                 provenance = ProvanceDto(),

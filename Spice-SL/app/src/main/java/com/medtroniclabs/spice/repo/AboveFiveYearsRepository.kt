@@ -38,9 +38,9 @@ class AboveFiveYearsRepository @Inject constructor(
                             patientStatus
                         )
                     )
-                    roomHelper.deleteDiagnosisList(MedicalReviewTypeEnums.AboveFiveYears.name)
+                    roomHelper.deleteDiagnosisList(MedicalReviewTypeEnums.ABOVE_FIVE_YEARS.name)
                     //TODO: Type should be given from backend until we added type
-                    diseaseCategories.onEach { it.type = MedicalReviewTypeEnums.AboveFiveYears.name }
+                    diseaseCategories.onEach { it.type = MedicalReviewTypeEnums.ABOVE_FIVE_YEARS.name }
                     roomHelper.saveDiagnosisList(diseaseCategories)
                 }
                 SecuredPreference.putBoolean(
@@ -77,7 +77,7 @@ class AboveFiveYearsRepository @Inject constructor(
         systemicExaminations.forEach {
             it.category = MedicalReviewTypeEnums.SystemicExaminations.name
         }
-        patientStatus.forEach { it.type = MedicalReviewTypeEnums.AboveFiveYears.name }
+        patientStatus.forEach { it.type = MedicalReviewTypeEnums.ABOVE_FIVE_YEARS.name }
         chipItemList.addAll(presentingComplaints)
         chipItemList.addAll(systemicExaminations)
         chipItemList.addAll(medicalSupplies)
@@ -128,7 +128,7 @@ class AboveFiveYearsRepository @Inject constructor(
                     details.memberId?.let { memberId ->
                         AboveFiveYearsSubmitRequest(
                             id = prescriptionEncounterId,
-                            assessmentType = MedicalReviewTypeEnums.AboveFiveYears.name,
+                            assessmentType = MedicalReviewTypeEnums.ABOVE_FIVE_YEARS.name,
                             presentingComplaints = selectedComplaintsExaminationsPair.first.filterNotNull(),
                             presentingComplaintsNotes = enteredComplaintsExaminationsClinicalNotes.first,
                             systemicExaminations = selectedComplaintsExaminationsPair.second.filterNotNull(),

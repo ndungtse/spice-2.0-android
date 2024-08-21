@@ -65,7 +65,7 @@ class LabourDeliveryRepository @Inject constructor(
         motherDeliveryStatus: List<LabourDeliveryMetaEntity>
     ): List<LabourDeliveryMetaEntity> {
         val chipItemList = ArrayList<LabourDeliveryMetaEntity>()
-        symptoms.forEach { it.category = MedicalReviewTypeEnums.LabourDelivery.name }
+        symptoms.forEach { it.category = MedicalReviewTypeEnums.MOTHER_DELIVERY_REVIEW.name }
         deliveryAtDeliveryByPair.first.forEach {
             it.category = MedicalReviewTypeEnums.DeliveryAt.name
         }

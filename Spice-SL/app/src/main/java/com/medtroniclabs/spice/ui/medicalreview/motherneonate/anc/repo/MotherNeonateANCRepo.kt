@@ -32,7 +32,7 @@ class MotherNeonateANCRepo @Inject constructor(
             if (response.isSuccessful) {
                 response.body()?.entity?.let { data ->
                     roomHelper.apply {
-                        deleteExaminationsComplaintsForAnc(ANC.uppercase())
+                        deleteExaminationsComplaintsForAnc(MedicalReviewTypeEnums.ANC_REVIEW.name)
                         insertExaminationsComplaint(
                             generateChipItemByType(
                                 data.presentingComplaints,
@@ -42,7 +42,7 @@ class MotherNeonateANCRepo @Inject constructor(
                                 data.patientStatus
                             )
                         )
-                        roomHelper.deleteDiagnosisList(MedicalReviewTypeEnums.ANC.name)
+                        roomHelper.deleteDiagnosisList(MedicalReviewTypeEnums.ANC_REVIEW.name)
                         roomHelper.saveDiagnosisList(data.diseaseCategories)
                         SecuredPreference.putBoolean(
                             SecuredPreference.EnvironmentKey.IS_MOTHER_NEONATE_LOADEDANC.name,
@@ -87,7 +87,7 @@ class MotherNeonateANCRepo @Inject constructor(
         })
         chipItemList.addAll(bloodGroup.map {
             it.apply {
-                type = ANC.uppercase()
+                type = MedicalReviewTypeEnums.ANC_REVIEW.name
                 category = MedicalReviewTypeEnums.BloodGroup.name
             }
         })
@@ -95,7 +95,7 @@ class MotherNeonateANCRepo @Inject constructor(
         chipItemList.addAll(patientStatus.map {
             it.apply {
                 name = Pregnancy + it.name
-                type = ANC.uppercase()
+                type = MedicalReviewTypeEnums.ANC_REVIEW.name
                 category = MedicalReviewTypeEnums.patient_status.name
             }
         })

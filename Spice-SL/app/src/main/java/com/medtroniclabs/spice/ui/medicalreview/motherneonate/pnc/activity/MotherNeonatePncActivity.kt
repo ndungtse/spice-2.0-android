@@ -203,11 +203,10 @@ class MotherNeonatePncActivity : BaseActivity(), View.OnClickListener, AncVisitC
     }
 
     private fun initializeBundle(): Bundle {
-        val baseType = MedicalReviewTypeEnums.PNC.name.plus("-")
-        val type = baseType + if (viewModel.isNeonate) {
-            MedicalReviewTypeEnums.Baby.name
+        val type = if (viewModel.isNeonate) {
+            MedicalReviewTypeEnums.PNC_CHILD_REVIEW.name
         } else {
-            MedicalReviewTypeEnums.Mother.name
+            MedicalReviewTypeEnums.PNC_MOTHER_REVIEW.name
         }
 
         return Bundle().apply {
@@ -222,8 +221,7 @@ class MotherNeonatePncActivity : BaseActivity(), View.OnClickListener, AncVisitC
             )
             putString(
                 MedicalReviewTypeEnums.DiagnosisType.name,
-                MedicalReviewTypeEnums.PNC.name.plus(getString(R.string.hyphen_symbol))
-                    .plus(MedicalReviewTypeEnums.Mother.name)
+                MedicalReviewTypeEnums.PNC_MOTHER_REVIEW.name
             )
             putString(
                 DefinedParams.PatientId,
@@ -471,10 +469,7 @@ class MotherNeonatePncActivity : BaseActivity(), View.OnClickListener, AncVisitC
     }
 
     private fun refreshPresentingComplaintsFragment() {
-        val type = if (!viewModel.isNeonate) MedicalReviewTypeEnums.PNC.name.plus("-")
-            .plus(MedicalReviewTypeEnums.Mother.name) else MedicalReviewTypeEnums.PNC.name.plus(
-            "-"
-        ).plus(MedicalReviewTypeEnums.Baby.name)
+        val type = if (!viewModel.isNeonate) MedicalReviewTypeEnums.PNC_MOTHER_REVIEW.name else MedicalReviewTypeEnums.PNC_CHILD_REVIEW.name
         presentingComplaintsFragment.refreshPresentingFragment(type, viewModel.presentingComplaints)
         clinicalNotesFragment.reloadFragment(
             viewModel.motherNeonatePncRequest.pncMother?.clinicalNotes ?: ""
@@ -569,7 +564,7 @@ class MotherNeonatePncActivity : BaseActivity(), View.OnClickListener, AncVisitC
     private fun handleButtonRefer() {
         viewModel.pncSaveResponse.value?.data?.let {
             ReferPatientFragment.newInstance(
-                MedicalReviewTypeEnums.PNC_MEDICAL_REVIEW.name,
+                MedicalReviewTypeEnums.PNC_MOTHER_REVIEW.name,
                 it.patientReference,
                 it.encounterId
             ).show(supportFragmentManager, ReferPatientFragment.TAG)

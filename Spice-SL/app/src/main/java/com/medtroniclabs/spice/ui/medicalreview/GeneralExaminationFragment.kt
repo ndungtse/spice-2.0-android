@@ -131,7 +131,7 @@ class GeneralExaminationFragment : BaseFragment() {
 
     private fun initializeViews() {
         val (titleResId, showObstetricGroup) = when (viewModel.systemicExaminationsType) {
-            MedicalReviewTypeEnums.PNC.name.plus("-").plus(MedicalReviewTypeEnums.Mother.name) -> {Pair(R.string.general_systemic_examinations, true)}
+            MedicalReviewTypeEnums.PNC_MOTHER_REVIEW.name -> {Pair(R.string.general_systemic_examinations, true)}
             else -> return // Handle other cases or provide a default behavior
         }
 

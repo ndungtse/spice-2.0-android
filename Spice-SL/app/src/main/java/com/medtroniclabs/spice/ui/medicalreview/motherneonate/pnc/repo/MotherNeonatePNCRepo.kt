@@ -32,11 +32,10 @@ class MotherNeonatePNCRepo @Inject constructor(
                 response.body()?.entity?.let { data ->
                     roomHelper.apply {
                         roomHelper.deleteDiagnosisList(
-                            MedicalReviewTypeEnums.PNC.name.plus("-")
-                                .plus(MedicalReviewTypeEnums.Mother.name)
+                            MedicalReviewTypeEnums.PNC_MOTHER_REVIEW.name
                         )
                         roomHelper.saveDiagnosisList(data.diseaseCategories)
-                        deleteExaminationsComplaintsForAnc(RMNCH.PNCMOTHER)
+                        deleteExaminationsComplaintsForAnc( MedicalReviewTypeEnums.PNC_MOTHER_REVIEW.name)
                         insertExaminationsComplaint(
                             generateChipItemByType(
                                 data.presentingComplaints,
@@ -71,19 +70,19 @@ class MotherNeonatePNCRepo @Inject constructor(
         val chipItemList = mutableListOf<MedicalReviewMetaItems>()
         chipItemList.addAll(presentingComplaints.map {
             it.apply {
-                type = RMNCH.PNCMOTHER
+                type =  MedicalReviewTypeEnums.PNC_MOTHER_REVIEW.name
                 category = MedicalReviewTypeEnums.PresentingComplaints.name
             }
         })
         chipItemList.addAll(obstetricExaminations.map {
             it.apply {
-                type = RMNCH.PNCMOTHER
+                type =  MedicalReviewTypeEnums.PNC_MOTHER_REVIEW.name
                 category = MedicalReviewTypeEnums.SystemicExaminations.name
             }
         })
         chipItemList.addAll(patientStatus.map {
             it.apply {
-                type = RMNCH.PNCMOTHER
+                type =  MedicalReviewTypeEnums.PNC_MOTHER_REVIEW.name
                 category = MedicalReviewTypeEnums.patient_status.name
             }
         })
@@ -97,7 +96,7 @@ class MotherNeonatePNCRepo @Inject constructor(
             if (response.isSuccessful) {
                 response.body()?.entity?.let { data ->
                     roomHelper.apply {
-                        deleteExaminationsComplaintsForAnc(RMNCH.PNCNEONATE)
+                        deleteExaminationsComplaintsForAnc( MedicalReviewTypeEnums.PNC_CHILD_REVIEW.name)
                         insertExaminationsComplaint(
                             generateNeonateChipItemByType(
                                 data.presentingComplaints,
@@ -132,19 +131,19 @@ class MotherNeonatePNCRepo @Inject constructor(
         val chipItemList = mutableListOf<MedicalReviewMetaItems>()
         chipItemList.addAll(presentingComplaints.map {
             it.apply {
-                type = RMNCH.PNCNEONATE
+                type =  MedicalReviewTypeEnums.PNC_CHILD_REVIEW.name
                 category = MedicalReviewTypeEnums.PresentingComplaints.name
             }
         })
         chipItemList.addAll(obstetricExaminations.map {
             it.apply {
-                type = RMNCH.PNCNEONATE
+                type =  MedicalReviewTypeEnums.PNC_CHILD_REVIEW.name
                 category = MedicalReviewTypeEnums.ObstetricExaminations.name
             }
         })
         chipItemList.addAll(patientStatus.map {
             it.apply {
-                type = RMNCH.PNCNEONATE
+                type =  MedicalReviewTypeEnums.PNC_CHILD_REVIEW.name
                 category = MedicalReviewTypeEnums.patient_status.name
             }
         })

@@ -24,7 +24,7 @@ class PregnancyDetailsViewModel @Inject constructor(
     private val getAncMetaForBloodGroup = MutableLiveData<String>()
     val ancMetaLiveDataForBloodGroup: LiveData<List<MedicalReviewMetaItems>> =
         getAncMetaForBloodGroup.switchMap {
-            motherNeonateANCRepo.getExaminationsComplaintsForAnc(it, MedicalReviewTypeEnums.ANC.name)
+            motherNeonateANCRepo.getExaminationsComplaintsForAnc(it, MedicalReviewTypeEnums.ANC_REVIEW.name)
         }
     fun checkSubmitBtn() {
         checkSubmitBtn.value = true

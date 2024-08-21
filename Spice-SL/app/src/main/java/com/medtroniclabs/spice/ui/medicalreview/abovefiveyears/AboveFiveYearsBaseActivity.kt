@@ -123,7 +123,7 @@ class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
                                 AboveFiveYearsSummaryRequest(
                                     id = it.encounterId,
                                     patientReference = it.patientReference,
-                                    type = MedicalReviewTypeEnums.AboveFiveYears.name
+                                    type = MedicalReviewTypeEnums.ABOVE_FIVE_YEARS.name
                                 )
                             )
                         } else {
@@ -135,7 +135,7 @@ class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
                         viewModel.getAboveFiveYearsSummaryDetails(
                             AboveFiveYearsSummaryRequest(
                                 id = it.id,
-                                type = MedicalReviewTypeEnums.AboveFiveYears.name
+                                type = MedicalReviewTypeEnums.ABOVE_FIVE_YEARS.name
                             )
                         )
                     }
@@ -152,7 +152,7 @@ class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
     private fun initializeViews() {
         if (!(SecuredPreference.getBoolean(SecuredPreference.EnvironmentKey.IS_ABOVE_FIVE_YEARS_LOADED.name))) {
             if (connectivityManager.isNetworkAvailable()) {
-                viewModel.getStaticMetaData(MedicalReviewTypeEnums.AboveFiveYears.name)
+                viewModel.getStaticMetaData(MedicalReviewTypeEnums.ABOVE_FIVE_YEARS.name)
                 addPatientDetails()
             } else {
                 showErrorDialogue(
@@ -350,15 +350,15 @@ class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
         val bundle = Bundle().apply {
             putString(
                 MedicalReviewTypeEnums.PresentingComplaints.name,
-                MedicalReviewTypeEnums.AboveFiveYears.name
+                MedicalReviewTypeEnums.ABOVE_FIVE_YEARS.name
             )
             putString(
                 MedicalReviewTypeEnums.SystemicExaminations.name,
-                MedicalReviewTypeEnums.AboveFiveYears.name
+                MedicalReviewTypeEnums.ABOVE_FIVE_YEARS.name
             )
             putString(
                 MedicalReviewTypeEnums.DiagnosisType.name,
-                MedicalReviewTypeEnums.AboveFiveYears.name
+                MedicalReviewTypeEnums.ABOVE_FIVE_YEARS.name
             )
             putString(
                 DefinedParams.ID,
@@ -412,7 +412,7 @@ class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
             binding.btnRefer.id ->
                 viewModel.aboveFiveYearsCreateResponse.value?.data?.let {
                     ReferPatientFragment.newInstance(
-                        MedicalReviewTypeEnums.AboveFiveYears.name,
+                        MedicalReviewTypeEnums.ABOVE_FIVE_YEARS.name,
                         it.patientReference,
                         it.encounterId
                     )
@@ -500,7 +500,7 @@ class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
                 AboveFiveYearsSummaryRequest(
                     id = it.encounterId,
                     patientReference = it.patientReference,
-                    type = MedicalReviewTypeEnums.AboveFiveYears.name
+                    type = MedicalReviewTypeEnums.ABOVE_FIVE_YEARS.name
                 )
             )
             initializeSummaryFragments()

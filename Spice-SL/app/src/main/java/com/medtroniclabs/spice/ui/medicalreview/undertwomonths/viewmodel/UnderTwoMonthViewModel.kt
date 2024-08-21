@@ -454,7 +454,7 @@ class UnderTwoMonthViewModel @Inject constructor(
                     patientStatus = selectedPatientStatus ?: "",
                     nextVisitDate = convertedNextVisitDate,
                     referralTicketType = MedicalReviewTypeEnums.ICCM.name,
-                    assessmentName = MedicalReviewTypeEnums.UnderTwoMonths.name,
+                    assessmentName = MedicalReviewTypeEnums.UNDER_TWO_MONTHS.name,
                     householdId = householdId,
                     villageId = villageId
                 )

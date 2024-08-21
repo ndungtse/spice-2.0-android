@@ -362,11 +362,11 @@ object CommonUtils {
 
     fun getTicketType(menuType: String): String? {
         return when (menuType) {
-            MedicalReviewTypeEnums.AboveFiveYears.name, MedicalReviewTypeEnums.UnderTwoMonths.name, MedicalReviewTypeEnums.UnderFiveYears.name -> {
+            MedicalReviewTypeEnums.ABOVE_FIVE_YEARS.name, MedicalReviewTypeEnums.UNDER_TWO_MONTHS.name, MedicalReviewTypeEnums.UNDER_FIVE_YEARS.name -> {
                 MedicalReviewTypeEnums.ICCM.name
             }
 
-            MedicalReviewTypeEnums.ANC.name, MedicalReviewTypeEnums.PNC.name.plus("-").plus(MedicalReviewTypeEnums.Mother.name), MedicalReviewTypeEnums.LabourDelivery.name -> {
+            MedicalReviewTypeEnums.ANC_REVIEW.name, MedicalReviewTypeEnums.PNC_MOTHER_REVIEW.name, MedicalReviewTypeEnums.MOTHER_DELIVERY_REVIEW.name -> {
                 MedicalReviewTypeEnums.RMNCH.name
             }
 

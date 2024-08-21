@@ -103,7 +103,7 @@ class SystemicExaminationsFragment : BaseFragment() {
                     resource.data?.let { listItems ->
                         val chipItemList = ArrayList<ChipViewItemModel>()
                         val category =
-                            if (viewModel.systemicExaminationsType == ANC.uppercase()) MedicalReviewTypeEnums.ObstetricExaminations.name else MedicalReviewTypeEnums.SystemicExaminations.name
+                            if (viewModel.systemicExaminationsType == MedicalReviewTypeEnums.ANC_REVIEW.name) MedicalReviewTypeEnums.ObstetricExaminations.name else MedicalReviewTypeEnums.SystemicExaminations.name
                         listItems.filter { it.category == category }.forEach {
                             chipItemList.add(
                                 ChipViewItemModel(
@@ -130,14 +130,14 @@ class SystemicExaminationsFragment : BaseFragment() {
 
     private fun initializeViews() {
         val (titleResId, showObstetricGroup) = when (viewModel.systemicExaminationsType) {
-            MedicalReviewTypeEnums.PNC.name.plus("-").plus(MedicalReviewTypeEnums.Mother.name) -> {Pair(R.string.systemic_examinations, true)}
-            MedicalReviewTypeEnums.ANC.name -> Pair(R.string.obstetric_examination, true)
-            MedicalReviewTypeEnums.UnderFiveYears.name -> Pair(
+            MedicalReviewTypeEnums.PNC_MOTHER_REVIEW.name -> {Pair(R.string.systemic_examinations, true)}
+            MedicalReviewTypeEnums.ANC_REVIEW.name -> Pair(R.string.obstetric_examination, true)
+            MedicalReviewTypeEnums.UNDER_FIVE_YEARS.name -> Pair(
                 R.string.systemic_examinations,
                 false
             )
 
-            MedicalReviewTypeEnums.AboveFiveYears.name -> Pair(
+            MedicalReviewTypeEnums.ABOVE_FIVE_YEARS.name -> Pair(
                 R.string.systemic_examinations,
                 false
             )

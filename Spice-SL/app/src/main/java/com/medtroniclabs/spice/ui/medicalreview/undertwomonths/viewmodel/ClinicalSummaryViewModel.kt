@@ -125,7 +125,7 @@ class ClinicalSummaryViewModel @Inject constructor(
     fun getImmunisationStatusMetaItems() {
         viewModelScope.launch(dispatcherIO) {
             summaryMetaListItems.postLoading()
-            summaryMetaListItems.postValue(repository.getImmunisationStatusMetaItems(MedicalReviewTypeEnums.UnderTwoMonths.name))
+            summaryMetaListItems.postValue(repository.getImmunisationStatusMetaItems(MedicalReviewTypeEnums.UNDER_TWO_MONTHS.name))
         }
     }
 }

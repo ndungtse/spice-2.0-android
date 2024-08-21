@@ -34,9 +34,9 @@ class UnderFiveYearsRepository @Inject constructor(
                             muac
                         )
                     )
-                    roomHelper.deleteExaminationsList(MedicalReviewTypeEnums.UnderFiveYears.name)
+                    roomHelper.deleteExaminationsList(MedicalReviewTypeEnums.UNDER_FIVE_YEARS.name)
                     roomHelper.saveExaminationsList(examinations)
-                    roomHelper.deleteDiagnosisList(MedicalReviewTypeEnums.UnderFiveYears.name)
+                    roomHelper.deleteDiagnosisList(MedicalReviewTypeEnums.UNDER_FIVE_YEARS.name)
                     roomHelper.saveDiagnosisList(diseaseCategories)
                     roomHelper.deleteAllSymptoms()
                     roomHelper.insertSymptoms(convertToSignsAndSymptomsEntity(symptoms))
@@ -84,9 +84,9 @@ class UnderFiveYearsRepository @Inject constructor(
         systemicExaminations.forEach {
             it.category = MedicalReviewTypeEnums.SystemicExaminations.name
         }
-        immunisationStatus.forEach { it.type = MedicalReviewTypeEnums.UnderFiveYears.name }
-        muac.forEach { it.type = MedicalReviewTypeEnums.UnderFiveYears.name }
-        patientStatus.forEach { it.type = MedicalReviewTypeEnums.UnderFiveYears.name }
+        immunisationStatus.forEach { it.type = MedicalReviewTypeEnums.UNDER_FIVE_YEARS.name }
+        muac.forEach { it.type = MedicalReviewTypeEnums.UNDER_FIVE_YEARS.name }
+        patientStatus.forEach { it.type = MedicalReviewTypeEnums.UNDER_FIVE_YEARS.name }
         chipItemList.addAll(patientStatus)
         chipItemList.addAll(systemicExaminations)
         chipItemList.addAll(immunisationStatus)

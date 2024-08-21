@@ -1,7 +1,6 @@
 package com.medtroniclabs.spice.ui.medicalreview.abovefiveyears
 
 import android.app.DatePickerDialog
-import android.graphics.Typeface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -170,7 +169,7 @@ class AboveFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
     private fun initView() {
         binding.tvNextMedicalReviewLabel.markMandatory()
         binding.tvPatientStatus.markMandatory()
-        viewModel.getSummaryListMetaItems(MedicalReviewTypeEnums.AboveFiveYears.name)
+        viewModel.getSummaryListMetaItems(MedicalReviewTypeEnums.ABOVE_FIVE_YEARS.name)
     }
 
     private fun initializePatientStatus(patientStatusList: List<MedicalReviewMetaItems>) {

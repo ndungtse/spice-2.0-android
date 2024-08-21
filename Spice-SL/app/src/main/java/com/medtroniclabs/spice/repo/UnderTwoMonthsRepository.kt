@@ -25,11 +25,11 @@ class UnderTwoMonthsRepository @Inject constructor(
             val response = apiHelper.getUnderTwoMonthsMetaData()
             if (response.isSuccessful) {
                 response.body()?.entity?.apply {
-                    roomHelper.deleteDiagnosisList(MedicalReviewTypeEnums.UnderTwoMonths.name)
+                    roomHelper.deleteDiagnosisList(MedicalReviewTypeEnums.UNDER_TWO_MONTHS.name)
                     roomHelper.saveDiagnosisList(diseaseCategories)
-                    roomHelper.deleteExaminationsList(MedicalReviewTypeEnums.UnderTwoMonths.name)
+                    roomHelper.deleteExaminationsList(MedicalReviewTypeEnums.UNDER_TWO_MONTHS.name)
                     roomHelper.saveExaminationsList(examinations)
-                    roomHelper.deleteExaminationsComplaints(MedicalReviewTypeEnums.UnderTwoMonths.name)
+                    roomHelper.deleteExaminationsComplaints(MedicalReviewTypeEnums.UNDER_TWO_MONTHS.name)
                     roomHelper.insertExaminationsComplaint(
                         generateChipItemByType(
                             patientStatus,
@@ -120,10 +120,10 @@ class UnderTwoMonthsRepository @Inject constructor(
         immunisationStatus: ArrayList<MedicalReviewMetaItems>
     ): List<MedicalReviewMetaItems> {
         val chipItemList = ArrayList<MedicalReviewMetaItems>()
-        patientStatus.forEach { it.type = MedicalReviewTypeEnums.UnderTwoMonths.name }
+        patientStatus.forEach { it.type = MedicalReviewTypeEnums.UNDER_TWO_MONTHS.name }
         chipItemList.addAll(patientStatus)
 
-        immunisationStatus.forEach { it.type = MedicalReviewTypeEnums.UnderTwoMonths.name }
+        immunisationStatus.forEach { it.type = MedicalReviewTypeEnums.UNDER_TWO_MONTHS.name }
         chipItemList.addAll(immunisationStatus)
         return chipItemList
     }
