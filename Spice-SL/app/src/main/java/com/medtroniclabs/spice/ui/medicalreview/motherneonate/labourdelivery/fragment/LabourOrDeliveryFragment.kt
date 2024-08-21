@@ -7,10 +7,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import androidx.appcompat.widget.AppCompatTextView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.appextensions.gone
+import com.medtroniclabs.spice.appextensions.invisible
+import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
@@ -115,10 +119,22 @@ class LabourOrDeliveryFragment : BaseFragment() {
             }
 
         }
+        binding.etDeliveryByOthers.doAfterTextChanged {
+            val deliveryByOthers = it?.trim().toString()
+            if (deliveryByOthers.isNotEmpty()) {
+                viewModel.deliveryByOthers = it.toString()
+                viewModel.validateSubmitButtonState()
+            } else {
+                viewModel.deliveryByOthers = null
+                viewModel.validateSubmitButtonState()
+            }
+
+        }
     }
 
     fun mandatoryFields() {
         binding.tvDateOfDelivery.markMandatory()
+        binding.tvDeliveryByOthers.markMandatory()
         binding.tvTimeOfDelivery.markMandatory()
         binding.tvDateOfLabourOnset.markMandatory()
         binding.tvTimeOfLabourOnset.markMandatory()
@@ -368,8 +384,27 @@ class LabourOrDeliveryFragment : BaseFragment() {
                     val selectedName = it[DefinedParams.NAME] as String?
                     if (selectedName != DefinedParams.DefaultIDLabel) {
                         viewModel.deliveryBy = selectedName.toString()
+                        if(viewModel.deliveryBy==DefinedParams.Others_Specify){
+                           binding.deliveryOthersGroup.visible()
+                            val newMarginTop = resources.getDimensionPixelSize(R.dimen._20sdp)
+                            binding.tvDeliveryStatus.layoutParams = (binding.tvDeliveryStatus.layoutParams as ConstraintLayout.LayoutParams).apply {
+                                topMargin = newMarginTop
+                            }
+                            binding.tvDeliveryStatus.requestLayout()
+                        }else{
+                            binding.tvDeliveryStatus.layoutParams = (binding.tvDeliveryStatus.layoutParams as ConstraintLayout.LayoutParams).apply {
+                                topMargin = 0
+                            }
+                            binding.tvDeliveryByOthersError.gone()
+                            binding.deliveryOthersGroup.gone()
+                        }
                         viewModel.validateSubmitButtonState()
                     } else {
+                        binding.tvDeliveryStatus.layoutParams = (binding.tvDeliveryStatus.layoutParams as ConstraintLayout.LayoutParams).apply {
+                            topMargin = 0
+                        }
+                        binding.tvDeliveryByOthersError.gone()
+                        binding.deliveryOthersGroup.gone()
                         viewModel.deliveryBy = null
                         viewModel.validateSubmitButtonState()
                     }
@@ -462,6 +497,11 @@ class LabourOrDeliveryFragment : BaseFragment() {
             tvDeliveryAtError.showIf(status)
             tvDeliveryStatusError.showIf(status)
             tvNoOfDeonatesError.showIf(status)
+            val deliveryByOthers=viewModel.deliveryByOthers
+            if (viewModel.deliveryBy==DefinedParams.Others_Specify){
+                tvDeliveryByOthersError.showIf(deliveryByOthers?.isEmpty() == true)
+            }
+
         }
     }
 
@@ -476,6 +516,9 @@ class LabourOrDeliveryFragment : BaseFragment() {
         val etMinutesTimeOfLabourOnSet = binding.etMinutesTimeOfLabourOnset.text?.trim().toString()
         val dateOfLabourOnset = viewModel.dateOfLabourOnset
         val noOfNeonate = viewModel.noOfNeonates?.toInt()
+        val deliveryByOthers=viewModel.deliveryByOthers
+        val deliveryOthers = viewModel.deliveryBy
+        var deliveryOther= deliveryOthers==DefinedParams.Others_Specify&& deliveryByOthers?.isNotEmpty() == true
         val isValidDelivery = etHourTimeOfDelivery.isNotEmpty() &&
                 etMinutesTimeOfDelivery.isNotEmpty() &&
                 dateOfDelivery != null &&
@@ -489,6 +532,7 @@ class LabourOrDeliveryFragment : BaseFragment() {
                 viewModel.deliveryAt != null &&
                 viewModel.deliveryStatus != null &&
                 viewModel.noOfNeonates != null && noOfNeonate != 0
+
 
         if (!isValidDelivery) {
             showLabourDeliveryErrors(true)
@@ -509,10 +553,8 @@ class LabourOrDeliveryFragment : BaseFragment() {
                     tvTimeOfLabourOnsetError.showIf(true)
                 }
             }
-//            tvTimeOfDeliveryError.showIf(etHourTimeOfDelivery.isEmpty() || etMinutesTimeOfDelivery.isEmpty() || viewModel.timeOfDeliveryMap[DefinedParams.TimeOfDelivery] == null)
             tvDateOfDeliveryError.showIf(dateOfDelivery == null)
             tvDateOfLabourOnsetError.showIf(dateOfLabourOnset == null)
-//            tvTimeOfLabourOnsetError.showIf(etHourTimeOfLabourOnset.isEmpty() || etMinutesTimeOfLabourOnSet.isEmpty() || viewModel.timeOfLabourOnsetMap[DefinedParams.TimeOfLabourOnset] == null)
             tvDeliveryTypeError.showIf(viewModel.deliveryType == null)
             tvDeliveryByError.showIf(viewModel.deliveryBy == null)
             tvDeliveryAtError.showIf(viewModel.deliveryAt == null)
@@ -522,7 +564,18 @@ class LabourOrDeliveryFragment : BaseFragment() {
             }else{
                 tvNoOfDeonatesError.showIf(false)
             }
-
+            if(deliveryOthers == DefinedParams.Others_Specify) {
+                tvDeliveryByOthersError.showIf(deliveryByOthers==null)
+            }
+            if (viewModel.deliveryAt==null && viewModel.deliveryBy==DefinedParams.Others_Specify && viewModel.deliveryByOthers!=null){
+                binding.tvDeliveryByOthersError.invisible()
+            }
+            if (viewModel.deliveryAt!=null && viewModel.deliveryBy==DefinedParams.Others_Specify && viewModel.deliveryByOthers==null){
+                binding.tvDeliveryAtError.invisible()
+            }
+            if (viewModel.deliveryType!=null && viewModel.deliveryBy==null){
+            binding.tvDeliveryTypeError.invisible()
+        }
         }
         return isValidDelivery
     }

@@ -20,7 +20,7 @@ class BirthHistoryViewModel @Inject constructor(
     private var repository: UnderTwoMonthsRepository
 ) : ViewModel() {
     val birthHistoryLiveData = MutableLiveData<Resource<BirthHistoryResponse>>()
-    val lowBirthWeight=1
+    val lowBirthWeight=2.0
 
     fun getBirthHistoryDetails(patientId: String?, memberId: String?) {
         val birthHistoryRequest =

@@ -9,6 +9,7 @@ import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.CommonUtils.getDecimalFormatted
 import com.medtroniclabs.spice.common.DateUtils
+import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.databinding.FragmentNeonateSummaryBinding
 import com.medtroniclabs.spice.data.model.NeonateDTO
@@ -74,17 +75,16 @@ class NeonateSummaryFragment : BaseFragment() {
             neonateDTO?.gender?.capitalizeFirstChar() ?: getString(R.string.hyphen_symbol)
         if (!neonateDTO?.birthWeight.isNullOrEmpty()) {
             var weight = getDecimalFormatted(neonateDTO?.birthWeight)
-            binding.tvBirthWeight.text = if (weight.toDouble().toInt()== 0){
-                (getString(R.string.hyphen_symbol))
-            }else if (weight.toDouble().toInt()==1){
+            binding.tvBirthWeight.text = if (weight.toDouble()== 0.0){
+                (getString(R.string.na))
+            }else if (weight.toDouble() < DefinedParams.LowBirthWeight){
                 weight.plus(" ").plus(getString(R.string.kg))
             } else{
                 weight.plus(" ").plus(getString(R.string.kgs))
             }
         }else{
-            binding.tvBirthWeight.text= (getString(R.string.hyphen_symbol))
+            binding.tvBirthWeight.text= (getString(R.string.na))
         }
-            ?:(getString(R.string.hyphen_symbol))
 
         binding.tvStateOfBaby.text = neonateDTO?.stateOfBaby ?: getString(R.string.hyphen_symbol)
         binding.tvGestationalAge.text =

@@ -233,9 +233,10 @@
             style="@style/Form_MH_Style_with_padding"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/_10sdp"
+            android:layout_marginTop="@dimen/_4sdp"
             android:layout_marginEnd="@dimen/_25sdp"
             android:background="@drawable/edittext_background"
+            android:fontFamily="@font/inter_medium"
             android:gravity="start|center"
             android:hint="@string/number"
             android:inputType="number"
@@ -243,9 +244,8 @@
             android:paddingStart="@dimen/_10sdp"
             android:textAlignment="textStart"
             android:textColorHint="@color/btn_disable_grey"
-            android:fontFamily="@font/inter_medium"
             android:textSize="@dimen/_16ssp"
-            app:layout_constraintBottom_toTopOf="@+id/tvNoOfDeonatesError"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@+id/centerGuideline"
             app:layout_constraintStart_toStartOf="@+id/tvNoOfDeonates"
             app:layout_constraintTop_toBottomOf="@+id/tvNoOfDeonates"
@@ -458,6 +458,57 @@
             app:layout_constraintEnd_toEndOf="@id/etDeliveryBy"
             app:layout_constraintStart_toStartOf="@id/etDeliveryBy"
             app:layout_constraintTop_toBottomOf="@id/etDeliveryBy" />
+        <androidx.constraintlayout.widget.Group
+            android:id="@+id/deliveryOthersGroup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:constraint_referenced_ids="tvDeliveryByOthers, etDeliveryByOthers" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvDeliveryByOthers"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_10sdp"
+            android:fontFamily="@font/inter_regular"
+            android:text="@string/delivery_by_others"
+            android:textColor="@color/table_title"
+            android:textSize="@dimen/_16ssp"
+            app:layout_constraintStart_toStartOf="@+id/centerGuideline"
+            app:layout_constraintTop_toTopOf="@+id/tvDeliveryAt" />
+
+        <androidx.appcompat.widget.AppCompatEditText
+            android:id="@+id/etDeliveryByOthers"
+            style="@style/Form_Min_Style_with_padding"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_5sdp"
+            android:layout_marginEnd="@dimen/_25sdp"
+            android:background="@drawable/edittext_background"
+            android:gravity="start|center"
+            android:hint="@string/type_notes"
+            android:inputType="text"
+            android:paddingStart="@dimen/_10sdp"
+            android:textAlignment="textStart"
+            android:textColorHint="@color/btn_disable_grey"
+            android:fontFamily="@font/inter_medium"
+            android:textSize="@dimen/_16ssp"
+            app:layout_constraintStart_toStartOf="@+id/tvDeliveryByOthers"
+            app:layout_constraintTop_toBottomOf="@+id/tvDeliveryByOthers"
+            app:layout_constraintEnd_toEndOf="parent" />
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvDeliveryByOthersError"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/inter_regular"
+            android:padding="@dimen/_5sdp"
+            android:text="@string/error_label"
+            android:textColor="@color/a_red_error"
+            android:textSize="@dimen/_12ssp"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="@id/etDeliveryByOthers"
+            app:layout_constraintStart_toStartOf="@id/etDeliveryByOthers"
+            app:layout_constraintTop_toBottomOf="@id/etDeliveryByOthers" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tvDeliveryStatus"
@@ -470,16 +521,18 @@
             android:textColor="@color/table_title"
             android:textSize="@dimen/_16ssp"
             app:layout_constraintStart_toStartOf="@+id/centerGuideline"
-            app:layout_constraintTop_toBottomOf="@+id/tvDeliveryByError" />
+            app:layout_constraintTop_toBottomOf="@+id/tvDeliveryByOthersError" />
 
         <androidx.appcompat.widget.AppCompatSpinner
             android:id="@+id/etDeliveryStatus"
             style="@style/Labour_Delivery_Spinner_Style"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/tvDeliveryStatus"
-            app:layout_constraintTop_toBottomOf="@+id/tvDeliveryStatus" />
+            app:layout_constraintTop_toBottomOf="@+id/tvDeliveryStatus"
+            app:layout_constraintVertical_bias="0.0" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tvDeliveryStatusError"

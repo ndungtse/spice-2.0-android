@@ -82,6 +82,7 @@ class LabourDeliveryViewModel @Inject constructor(
     var dateOfLabourOnset: Triple<Int, Int, Int>? = null
     var deliveryType: String? = null
     var deliveryBy: String? = null
+    var deliveryByOthers: String? =null
     var deliveryAt: String? = null
     var deliveryStatus: String? = null
     var noOfNeonates: String? = null
@@ -452,6 +453,7 @@ class LabourDeliveryViewModel @Inject constructor(
             deliveryBy = deliveryBy,
             deliveryStatus = deliveryStatus,
             deliveryType = deliveryType,
+            deliveryByOther = deliveryByOthers,
             noOfNeoNates = noOfNeonates?.toInt(),
             dateAndTimeOfDelivery = getTimeOfDelivery(),
             dateAndTimeOfLabourOnset = getTimeOfLabourOnset()

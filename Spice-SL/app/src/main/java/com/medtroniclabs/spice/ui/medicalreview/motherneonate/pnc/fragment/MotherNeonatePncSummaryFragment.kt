@@ -402,12 +402,8 @@ class MotherNeonatePncSummaryFragment : BaseFragment(), View.OnClickListener {
 
 
     private fun updateNextFollowUpDate() {
-        if (viewModel.patientStatusMother?.contains(ReferralStatus.Recovered.name) == true) {
-            binding.motherSummary.tvNextMedicalReviewLabelText.text = ""
-            binding.motherSummary.tvNextMedicalReviewLabelText.isEnabled = false
-        } else {
-            binding.motherSummary.tvNextMedicalReviewLabelText.isEnabled = true
-        }
+        binding.motherSummary.tvNextMedicalReviewLabelText.isEnabled = true
+
 }
 
 override fun onClick(v: View?) {

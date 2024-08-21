@@ -165,28 +165,29 @@ class SelectFlowDialog : DialogFragment(), View.OnClickListener {
     private fun getRMNCHFlowData(): ArrayList<Map<String, Any>> {
         val flowList = ArrayList<Map<String, Any>>()
         flowList.add(CommonUtils.getOptionMap(getString(R.string.anc), getString(R.string.anc)))
-
+        flowList.add(
+            CommonUtils.getOptionMap(
+                getString(R.string.labour_delivery),
+                getString(R.string.labour_delivery)
+            )
+        )
         val id = arguments?.getString(DefinedParams.ChildPatientId, null)
         val dateOfDelivery = arguments?.getString(DefinedParams.DateOfDelivery, null)
         if (!id.isNullOrEmpty()) {
             flowList.add(CommonUtils.getOptionMap(getString(R.string.pnc), getString(R.string.pnc)))
         }
-        if (dateOfDelivery ==null){
-            flowList.add(
-                CommonUtils.getOptionMap(
-                    getString(R.string.labour_delivery),
-                    getString(R.string.labour_delivery)
-                )
-            )
-        }
-        else if(enableLabourBasedOnDate(dateOfDelivery)){
-            flowList.add(
-                CommonUtils.getOptionMap(
-                    getString(R.string.labour_delivery),
-                    getString(R.string.labour_delivery)
-                )
-            )
-        }
+//        if (dateOfDelivery ==null){
+
+//        }
+        // Enable the labour Delivery based on the delivery date
+//        else if(enableLabourBasedOnDate(dateOfDelivery)){
+//            flowList.add(
+//                CommonUtils.getOptionMap(
+//                    getString(R.string.labour_delivery),
+//                    getString(R.string.labour_delivery)
+//                )
+//            )
+//        }
         return flowList
     }
     private fun enableLabourBasedOnDate(dateString: String): Boolean {

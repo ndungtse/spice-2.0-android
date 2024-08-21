@@ -19,6 +19,7 @@ import com.medtroniclabs.spice.formgeneration.extension.markMandatory
 import com.medtroniclabs.spice.data.model.MotherDTO
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
+import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.labourdelivery.viewmodel.LabourDeliverySummaryViewModel
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.labourdelivery.viewmodel.LabourDeliveryViewModel
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
@@ -82,13 +83,25 @@ class MotherSummaryFragment : BaseFragment() {
             motherDTO?.labourDTO?.dateAndTimeOfDelivery ?: getString(R.string.hyphen_symbol),
             true
         )
-        binding.tvNextVisitDate.text=calculateLabourDeliveryNextVisitDate(
-            motherDTO?.labourDTO?.dateAndTimeOfDelivery ?: getString(R.string.hyphen_symbol),
-            true
-        )
-        viewModelLabourDeliver.nextFollowupDate=binding.tvNextVisitDate.text.toString()
-        summaryListener()
-
+//        binding.tvNextVisitDate.text=calculateLabourDeliveryNextVisitDate(
+//            motherDTO?.labourDTO?.dateAndTimeOfDelivery ?: getString(R.string.hyphen_symbol),
+//            true
+//        )
+        motherDTO?.labourDTO?.dateAndTimeOfDelivery?.let {
+            DateUtils.convertStringToDate(
+                it,
+                DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
+            )?.let { deliveryDate ->
+                RMNCH.calculateNextPNCVisitDate(deliveryDate)?.let { visitDate ->
+                    binding.tvNextVisitDate.text = DateUtils.getDateStringFromDate(
+                        visitDate, DateUtils.DATE_ddMMyyyy
+                    )
+                    viewModelLabourDeliver.nextFollowupDate=binding.tvNextVisitDate.text.toString()
+                    summaryListener()
+                }
+            }
+        }
+        
         binding.tvDateOfLabourOnset.text =
             calculateDateTime(
                 motherDTO?.labourDTO?.dateAndTimeOfLabourOnset ?: getString(R.string.hyphen_symbol),

@@ -67,19 +67,33 @@ class BirthHistoryFragment : BaseFragment() {
 
     private fun setBirthHistoryDetails(birthHistoryDetails: BirthHistoryResponse) {
         binding.apply {
-            tvBirthWeight.text = birthHistoryDetails.birthWeight?.let { it ->
-                val decimalBirthWeight = CommonUtils.getDecimalFormatted(it)
-                birthHistoryDetails.birthWeightCategory?.let {it2->
-                    if (decimalBirthWeight.toDouble() < viewModel.lowBirthWeight){
-                        decimalBirthWeight.plus(
-                            " ").plus(getString(R.string.kg))
-                            .plus(" ($it2)")
-                    } else {
-                        decimalBirthWeight.plus(
-                            " ").plus(getString(R.string.kgs)).plus(" ($it2)")
+            tvBirthWeight.text = birthHistoryDetails.birthWeight?.let { weight ->
+                val decimalBirthWeight = CommonUtils.getDecimalFormatted(weight)
+                birthHistoryDetails.birthWeightCategory?.let { category ->
+                    when {
+                        decimalBirthWeight.toDouble() == 0.0 -> getString(R.string.na)
+                        decimalBirthWeight.toDouble() < DefinedParams.LowBirthWeight -> {
+                            decimalBirthWeight.plus(" ").plus(getString(R.string.kg)).plus(" ($category)")
+                        }
+                        else -> {
+                            decimalBirthWeight.plus(" ").plus(getString(R.string.kgs)).plus(" ($category)")
+                        }
                     }
                 } ?: getString(R.string.separator_double_hyphen)
-            } ?:  getString(R.string.separator_double_hyphen)
+            } ?: getString(R.string.na)
+//            tvBirthWeight.text = birthHistoryDetails.birthWeight?.let { it ->
+//                val decimalBirthWeight = CommonUtils.getDecimalFormatted(it)
+//                birthHistoryDetails.birthWeightCategory?.let {it2->
+//                    if (decimalBirthWeight.toDouble() < viewModel.lowBirthWeight){
+//                        decimalBirthWeight.plus(
+//                            " ").plus(getString(R.string.kg))
+//                            .plus(" ($it2)")
+//                    } else {
+//                        decimalBirthWeight.plus(
+//                            " ").plus(getString(R.string.kgs)).plus(" ($it2)")
+//                    }
+//                } ?: getString(R.string.separator_double_hyphen)
+//            } ?:  getString(R.string.separator_double_hyphen)
 
             tvGestationalAge.text = birthHistoryDetails.gestationalAge?.let { ageWeek ->
                 val weeksText = getString(if (ageWeek >= 1) R.string.weeks_baby else R.string.week_baby)

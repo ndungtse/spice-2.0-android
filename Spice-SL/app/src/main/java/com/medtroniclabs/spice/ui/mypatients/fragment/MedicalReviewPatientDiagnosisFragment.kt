@@ -206,7 +206,7 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
         textView: AppCompatTextView,
         clView: ConstraintLayout
     ) {
-        pageProgress.visible()
+//        pageProgress.visible()
         textView.isEnabled = false
         clView.setBackgroundResource(R.color.grey_bg)
     }

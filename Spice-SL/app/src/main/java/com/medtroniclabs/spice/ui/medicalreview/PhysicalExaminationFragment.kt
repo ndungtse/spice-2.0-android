@@ -131,10 +131,6 @@ class PhysicalExaminationFragment : BaseFragment() {
     private var cordExaminationSelectionCallback: ((selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit)? =
         { selectedID, _, _, _ ->
             viewModel.cordExaminationMap[DefinedParams.CordExamination] = selectedID as String
-            resetSelectionViews(
-                DefinedParams.BreastCondition,
-                DefinedParams.ExclusiveBreastCondition
-            )
         }
 
     private fun getCordExaminationFlowData(): ArrayList<Map<String, Any>> {

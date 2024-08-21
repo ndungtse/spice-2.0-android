@@ -32,6 +32,7 @@ data class LabourDTO(
     val deliveryAt: String?,
     val deliveryBy: String?,
     val deliveryStatus: String?,
+    val deliveryByOther:String?,
     val deliveryType: String?,
     val noOfNeoNates: Int?
 )
