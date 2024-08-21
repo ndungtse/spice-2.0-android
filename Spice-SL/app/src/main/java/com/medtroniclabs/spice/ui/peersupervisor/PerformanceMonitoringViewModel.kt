@@ -90,7 +90,7 @@ class PerformanceMonitoringViewModel @Inject constructor(
         }
     }
 
-    private fun saveFilterPreference(fromDate: String, toDate: String, userIds : List<Long>, villageIds: List<Long>) {
+    fun saveFilterPreference(fromDate: String, toDate: String, userIds : List<Long>, villageIds: List<Long>) {
         viewModelScope.launch(dispatcherIO) {
             saveUserFilterPreferenceLiveData.postLoading()
             val request = FilterPreference(
@@ -160,12 +160,10 @@ class PerformanceMonitoringViewModel @Inject constructor(
         )
     }
 
-    fun updateChwFilterListLiveData(shouldReset: Boolean = true) {
+    fun updateChwFilterListLiveData() {
         val selectedIds = hashSetOf<Long>()
-        if (shouldReset){
-            userPreference?.userIds?.forEach {
-                selectedIds.add(it.toLong())
-            }
+        userPreference?.userIds?.forEach {
+            selectedIds.add(it)
         }
 
         val allCHWs = filterChwListLiveData.value?.data
@@ -178,9 +176,9 @@ class PerformanceMonitoringViewModel @Inject constructor(
         chwFilterListLiveData.postValue(chwList);
     }
 
-    fun updateVillageListLiveData(selectedCHWs: List<CheckBoxSpinnerData>, shouldReset: Boolean = true) {
+    fun updateVillageListLiveData(selectedCHWs: List<CheckBoxSpinnerData>, shouldSelectAll: Boolean = false) {
         val selectedIds = hashSetOf<Long>()
-        if (shouldReset){
+        if (!shouldSelectAll){
             userPreference?.villageIds?.forEach {
                 selectedIds.add(it.toLong())
             }
@@ -192,11 +190,36 @@ class PerformanceMonitoringViewModel @Inject constructor(
         selectedCHWs.forEach { selectedChw ->
             val villages = allCHWs?.find { it.id == selectedChw.id }?.villages
             villages?.forEach { village ->
-                villageList.add(CheckBoxSpinnerData(village.id, village.name, selectedIds.contains(village.id), village.userId))
+                val isSelected = if (shouldSelectAll) true else selectedIds.contains(village.id)
+                villageList.add(CheckBoxSpinnerData(village.id, village.name, isSelected, village.userId))
             }
         }
 
         villageFilterListLiveData.postValue(villageList)
+    }
+
+    fun getAllCHWAsSelected() : List<CheckBoxSpinnerData> {
+        val allCHWs = filterChwListLiveData.value?.data
+
+        val chwList = mutableListOf<CheckBoxSpinnerData>()
+        allCHWs?.forEach { item ->
+            chwList.add(CheckBoxSpinnerData(item.id, "${item.firstName} ${item.lastName}", true))
+        }
+
+        return chwList
+    }
+
+    fun getAllVillagesAsSelected(): List<CheckBoxSpinnerData> {
+        val allCHWs = filterChwListLiveData.value?.data
+
+        val villageList = mutableListOf<CheckBoxSpinnerData>()
+        allCHWs?.forEach { selectedChw ->
+            selectedChw.villages.forEach { village ->
+                villageList.add(CheckBoxSpinnerData(village.id, village.name, true, village.userId))
+            }
+        }
+
+        return villageList
     }
 
     fun updateFilter(
@@ -228,14 +251,13 @@ class PerformanceMonitoringViewModel @Inject constructor(
 
     fun getYearList(): ArrayList<Map<String, Any>> {
         val list = ArrayList<Map<String, Any>>()
-        val calendar: Calendar = Calendar.getInstance()
-        val currentYear: Int = calendar.get(Calendar.YEAR)
+        val currentYear = Calendar.getInstance().get(Calendar.YEAR)
+        val startYear = 2024 // Since sl first release going by 2024
 
-        // Populate the list with the last 15 years
-        for (i in 0..14) {
+        for (year in currentYear downTo startYear) {
             val map = HashMap<String, Any>()
-            map[DefinedParams.NAME] = (currentYear - i).toString()
-            map[DefinedParams.ID] = (currentYear - i)
+            map[DefinedParams.NAME] = year.toString()
+            map[DefinedParams.ID] = year
             list.add(map)
         }
         return list

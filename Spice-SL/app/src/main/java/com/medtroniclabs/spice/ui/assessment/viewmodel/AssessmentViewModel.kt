@@ -485,15 +485,18 @@ class AssessmentViewModel @Inject constructor(
                 pregnancyDetail.dateOfDelivery = null
                 pregnancyDetail.noOfNeonates = null
                 pregnancyDetail.neonatePatientId = null
+                pregnancyDetail.isDeliveryAtHome = null
             }
 
             RMNCH.PNC -> {
-                pregnancyDetail.pncVisitNo =
-                    getVisitNumber(pregnancyDetail.pncVisitNo)
+                val visitNo = getVisitNumber(pregnancyDetail.pncVisitNo)
+                pregnancyDetail.pncVisitNo = visitNo
                 pregnancyDetail.dateOfDelivery =
                     getClinicalDate(pregnancyDetail.dateOfDelivery, details[RMNCH.DateOfDelivery])
                 pregnancyDetail.noOfNeonates =
                     getNumberOfNeonates(pregnancyDetail.noOfNeonates, details[RMNCH.NoOfNeonate])
+                pregnancyDetail.isDeliveryAtHome = if (visitNo == 1L) true else pregnancyDetail.isDeliveryAtHome
+
                 details[RMNCH.visitNo] = pregnancyDetail.pncVisitNo ?: 0L
                 details[RMNCH.DateOfDelivery] = pregnancyDetail.dateOfDelivery ?: ""
                 details[RMNCH.NoOfNeonate] = pregnancyDetail.noOfNeonates ?: 0L

@@ -76,6 +76,7 @@ class BioDataFragment : BaseFragment() {
 
     private fun showPatientOtherInformation(entity: MemberClinicalEntity?) {
         val title: String
+        val visitCount = getVisitCount(entity?.visitCount)
         when (viewModel.workflowName) {
             RMNCH.ANC -> {
                 title = getString(R.string.anc_visit)
@@ -84,7 +85,7 @@ class BioDataFragment : BaseFragment() {
 
             RMNCH.PNC -> {
                 title = getString(R.string.pnc_visit)
-                showPncRelatedInformation(entity)
+                showPncRelatedInformation(entity, visitCount)
             }
 
             RMNCH.ChildHoodVisit -> {
@@ -99,15 +100,37 @@ class BioDataFragment : BaseFragment() {
         binding.llPatientInfo.addView(
             AssessmentCommonUtils.addViewSummaryLayout(
                 title = title,
-                value = getVisitCount(entity?.visitCount),
+                value = visitCount.toString(),
                 null,
                 binding.root.context
             )
         )
     }
 
-    private fun showPncRelatedInformation(entity: MemberClinicalEntity?) {
+    private fun showPncRelatedInformation(entity: MemberClinicalEntity?, visitCount: Long) {
         entity?.apply {
+
+            if (visitCount == 1L) {
+                binding.llPatientInfo.addView(
+                    AssessmentCommonUtils.addViewSummaryLayout(
+                        title = getString(R.string.delivery_at),
+                        value = getString(R.string.home_title),
+                        context = binding.llPatientInfo.context
+                    )
+                )
+            } else {
+                isDeliveryAtHome?.let {
+                    val value = if (it) getString(R.string.home_title) else getString(R.string.phu)
+                    binding.llPatientInfo.addView(
+                        AssessmentCommonUtils.addViewSummaryLayout(
+                            title = getString(R.string.delivery_at),
+                            value = value,
+                            context = binding.llPatientInfo.context
+                        )
+                    )
+                }
+            }
+
             clinicalDate?.let {
                 binding.llPatientInfo.addView(
                     AssessmentCommonUtils.addViewSummaryLayout(
@@ -183,11 +206,11 @@ class BioDataFragment : BaseFragment() {
         )
     }
 
-    private fun getVisitCount(visitCount: Long?): String {
+    private fun getVisitCount(visitCount: Long?): Long {
         return if (visitCount == null) {
-            "1"
+            1L
         } else {
-            (visitCount + 1).toString()
+            (visitCount + 1)
         }
     }
 

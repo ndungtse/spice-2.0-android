@@ -25,7 +25,7 @@ interface PregnancyDetailDao {
     @Query("SELECT patientId, ancVisitNo as visitCount, lastMenstrualPeriod as clinicalDate FROM PregnancyDetail WHERE patientId=:patientId Limit 1")
     suspend fun getAncDetail(patientId: String): MemberClinicalEntity?
 
-    @Query("SELECT patientId, pncVisitNo as visitCount, dateOfDelivery as clinicalDate, noOfNeonates as numberOfNeonate FROM PregnancyDetail WHERE patientId=:patientId Limit 1")
+    @Query("SELECT patientId, pncVisitNo as visitCount, dateOfDelivery as clinicalDate, noOfNeonates as numberOfNeonate, isDeliveryAtHome FROM PregnancyDetail WHERE patientId=:patientId Limit 1")
     suspend fun getPncDetail(patientId: String): MemberClinicalEntity?
 
     @Query("SELECT patientId, childVisitNo as visitCount FROM PregnancyDetail WHERE patientId=:patientId Limit 1")

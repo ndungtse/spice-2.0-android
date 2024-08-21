@@ -8,10 +8,9 @@ import android.widget.AdapterView
 import android.widget.DatePicker
 import android.widget.Toast
 import androidx.activity.viewModels
+import androidx.core.content.ContextCompat
 import androidx.paging.LoadState
 import com.medtroniclabs.spice.R
-import com.medtroniclabs.spice.appextensions.getFirstAndLastDateOfMonth
-import com.medtroniclabs.spice.appextensions.getLongTime
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.hideView
 import com.medtroniclabs.spice.appextensions.isVisible
@@ -64,6 +63,18 @@ class PerformanceMonitoringActivity : BaseActivity() {
         initObserver()
     }
 
+    private fun updateLockButtonStatus(isUnlocked: Boolean) {
+        if (isUnlocked) {
+            binding.flLockButton.tag = false // Unlocked
+            binding.flLockButton.background = ContextCompat.getDrawable(this, R.drawable.button_white_background)
+            binding.flLockButton.setColorFilter(ContextCompat.getColor(this, R.color.cobalt_blue))
+        } else {
+            binding.flLockButton.tag = true // Locked
+            binding.flLockButton.background = ContextCompat.getDrawable(this, R.drawable.button_selector_cobalt)
+            binding.flLockButton.setColorFilter(ContextCompat.getColor(this, R.color.white))
+        }
+    }
+
     private fun setFilterValueForDates(preference: Preference) {
         viewModel.anyFilterChanged.value = false
         val yearMonth = preference.getYearAndMonth()
@@ -85,7 +96,7 @@ class PerformanceMonitoringActivity : BaseActivity() {
 
         binding.etFromDate.text = fromToDate.first.toString(DATE_ddMMyyyy)
         binding.etEndDate.text = fromToDate.second.toString(DATE_ddMMyyyy)
-        setMinAndMaxDate()
+        setMinAndMaxDate(false)
     }
 
     private fun initObserver() {
@@ -96,12 +107,15 @@ class PerformanceMonitoringActivity : BaseActivity() {
                 }
 
                 ResourceState.SUCCESS -> {
-                    it.data?.preference?.let { pref ->
+                    val preference = it.data?.preference
+                    preference?.let { pref ->
                         viewModel.updateUserPreference(pref)
                         viewModel.getLinkedChwDetails()
                         setFilterValueForDates(pref)
                         viewModel.initPagination()
                     }
+                    val isUnlocked = (preference?.fromDate.isNullOrEmpty() && preference?.toDate.isNullOrEmpty())
+                    updateLockButtonStatus(isUnlocked)
                 }
 
                 ResourceState.ERROR -> {
@@ -122,10 +136,16 @@ class PerformanceMonitoringActivity : BaseActivity() {
                 }
 
                 ResourceState.SUCCESS -> {
-                   // hideLoading()
-                    it.data?.preference?.let { pref ->
+                    val preference = it.data?.preference
+                    preference?.let { pref ->
                         viewModel.updateUserPreference(pref)
                     }
+
+                    val isUnlocked = (preference?.fromDate.isNullOrEmpty() && preference?.toDate.isNullOrEmpty())
+                    updateLockButtonStatus(isUnlocked)
+                    if (isUnlocked)
+                        hideLoading()
+
                     Toast.makeText(this, "Saved Filter Preference Successfully", Toast.LENGTH_LONG)
                         .show()
                 }
@@ -143,6 +163,13 @@ class PerformanceMonitoringActivity : BaseActivity() {
 
         viewModel.dataFlow.observe(this) {
             adapter.submitData(lifecycle, it)
+            if (adapter.itemCount > 0) {
+                binding.rvPerformanceList.visible()
+                binding.tvNoRecords.gone()
+            } else {
+                binding.rvPerformanceList.gone()
+                binding.tvNoRecords.visible()
+            }
         }
 
 
@@ -195,7 +222,7 @@ class PerformanceMonitoringActivity : BaseActivity() {
 
         binding.ivRefreshPage.setOnClickListener {
             if (connectivityManager.isNetworkAvailable()) {
-                viewModel.initPagination()
+                validateFilterInputs()
             } else {
                 showErrorDialogue(
                     getString(R.string.title_no_network),
@@ -207,7 +234,12 @@ class PerformanceMonitoringActivity : BaseActivity() {
 
         binding.flLockButton.setOnClickListener {
             if (connectivityManager.isNetworkAvailable()) {
-                validateFilterInputs(true)
+                val isLocked = binding.flLockButton.tag as Boolean
+                if (isLocked) { // Continue with unlock
+                    viewModel.saveFilterPreference("", "", listOf(), listOf())
+                } else { // Continue with lock
+                    validateFilterInputs(true)
+                }
             } else {
                 showErrorDialogue(
                     getString(R.string.title_no_network),
@@ -218,10 +250,7 @@ class PerformanceMonitoringActivity : BaseActivity() {
         }
 
         binding.btnCancel.setOnClickListener {
-            viewModel.userPreference?.let {
-                setFilterValueForDates(it)
-                viewModel.updateChwFilterListLiveData()
-            }
+           resetFilter()
         }
 
         binding.btnApply.setOnClickListener {
@@ -305,21 +334,50 @@ class PerformanceMonitoringActivity : BaseActivity() {
         }
 
         val selectedCHWs = chwFilterAdapter.getSelectedItems()
-        if (selectedCHWs.isNullOrEmpty()){
+       /* if (selectedCHWs.isNullOrEmpty()){
             binding.tvInvalidFilterInputs.visible()
             return
-        }
+        }*/
 
         val selectedVillages = villageFilterAdapter.getSelectedItems()
-        if (selectedVillages.isNullOrEmpty()) {
+        /*if (selectedVillages.isNullOrEmpty()) {
             binding.tvInvalidFilterInputs.visible()
             return
-        }
+        }*/
 
         binding.tvInvalidFilterInputs.gone()
 
-        val serverFromDate = DateUtils.convertDateFormat(fromDate, DATE_ddMMyyyy, DateUtils.DATE_FORMAT_yyyyMMdd)
-        val serverToDate = DateUtils.convertDateFormat(toDate, DATE_ddMMyyyy, DateUtils.DATE_FORMAT_yyyyMMdd)
+        updateReport(fromDate, toDate, selectedCHWs, selectedVillages, shouldSave)
+    }
+
+    private fun resetFilter() {
+        setFilterValueForDates(Preference(fromDate = "", toDate = ""))
+
+        val chwAllSelectedList = viewModel.getAllCHWAsSelected()
+        chwFilterAdapter.updateData(chwAllSelectedList)
+        binding.chwSpinner.isEnabled = chwAllSelectedList.isNotEmpty()
+
+        val villageAllAsSelectedList = viewModel.getAllVillagesAsSelected()
+        villageFilterAdapter.updateData(villageAllAsSelectedList)
+        binding.villageSpinner.isEnabled = villageAllAsSelectedList.isNotEmpty()
+
+        val fromDate = binding.etFromDate.text.toString()
+        val toDate = binding.etEndDate.text.toString()
+
+        updateReport(fromDate, toDate, chwAllSelectedList, villageAllAsSelectedList, false)
+    }
+
+    private fun updateReport(
+        fromDate: String,
+        toDate: String,
+        selectedCHWs: List<CheckBoxSpinnerData>,
+        selectedVillages: List<CheckBoxSpinnerData>,
+        shouldSave: Boolean
+    ) {
+        val serverFromDate =
+            DateUtils.convertDateFormat(fromDate, DATE_ddMMyyyy, DateUtils.DATE_FORMAT_yyyyMMdd)
+        val serverToDate =
+            DateUtils.convertDateFormat(toDate, DATE_ddMMyyyy, DateUtils.DATE_FORMAT_yyyyMMdd)
 
         viewModel.updatePaginationWithNewFilter(
             serverFromDate,
@@ -400,7 +458,7 @@ class PerformanceMonitoringActivity : BaseActivity() {
         viewModel.updateFilter(toDate = null)
     }
 
-    private fun setMinAndMaxDate() {
+    private fun setMinAndMaxDate(shouldResetDate: Boolean = true) {
         val year = viewModel.filterModel.year
         val month = viewModel.filterModel.month
         if (year != null && month != null) {
@@ -414,13 +472,16 @@ class PerformanceMonitoringActivity : BaseActivity() {
             calendar.set(Calendar.DAY_OF_MONTH, 1)
             val startDate = calendar.timeInMillis
 
-           // binding.etFromDate.text = DateUtils.getDateDDMMYYYY().format(startDate)
+            if (shouldResetDate)
+                binding.etFromDate.text = DateUtils.getDateDDMMYYYY().format(startDate)
 
             // Get the last day of the month
             val lastDay = calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
             calendar.set(Calendar.DAY_OF_MONTH, lastDay)
             val endDate = calendar.timeInMillis
-           // binding.etEndDate.text = DateUtils.getDateDDMMYYYY().format(endDate)
+
+            if (shouldResetDate)
+                binding.etEndDate.text = DateUtils.getDateDDMMYYYY().format(endDate)
 
             viewModel.updateFilter(startDate = startDate, endDate = endDate)
         }
@@ -460,7 +521,7 @@ class PerformanceMonitoringActivity : BaseActivity() {
     private val chwSpinnerListener = object : CheckBoxSpinnerAdapter.OnCheckBoxSpinnerListener {
         override fun onCheckBoxSpinnerItemClick(selectedItems: List<CheckBoxSpinnerData>) {
              viewModel.anyFilterChanged.value = true
-             viewModel.updateVillageListLiveData(selectedItems, false)
+             viewModel.updateVillageListLiveData(selectedItems, true)
         }
     }
 

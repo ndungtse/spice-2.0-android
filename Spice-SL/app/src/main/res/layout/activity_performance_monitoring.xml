@@ -27,11 +27,13 @@
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/flLockButton"
         android:layout_width="@dimen/_52sdp"
-        android:layout_height="@dimen/_38sdp"
+        android:layout_height="@dimen/_40sdp"
         android:layout_gravity="center"
         android:layout_marginEnd="@dimen/_16sdp"
-        android:background="@drawable/lock_gradiant_background"
-        android:padding="@dimen/_8sdp"
+        android:background="@drawable/button_white_background"
+        android:paddingHorizontal="@dimen/_10sdp"
+        android:paddingVertical="@dimen/_10sdp"
+        android:tint="@color/cobalt_blue"
         app:layout_constraintBottom_toBottomOf="@+id/tvPerformanceMonitoring"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/tvPerformanceMonitoring"
@@ -42,8 +44,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/_16sdp"
-        android:background="@drawable/ic_gradiant_background"
-        android:padding="@dimen/_10sdp"
+        android:background="@drawable/button_white_background"
+        android:paddingHorizontal="@dimen/_16sdp"
+        android:paddingVertical="@dimen/_12sdp"
+        android:tint="@color/cobalt_blue"
         app:layout_constraintBottom_toBottomOf="@+id/flLockButton"
         app:layout_constraintEnd_toStartOf="@+id/flLockButton"
         app:layout_constraintTop_toTopOf="@+id/flLockButton"
@@ -54,8 +58,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/_16sdp"
-        android:background="@drawable/ic_gradiant_background"
-        android:padding="@dimen/_10sdp"
+        android:background="@drawable/button_white_background"
+        android:paddingHorizontal="@dimen/_16sdp"
+        android:paddingVertical="@dimen/_12sdp"
         app:layout_constraintBottom_toBottomOf="@+id/ivRefreshPage"
         app:layout_constraintEnd_toStartOf="@+id/ivRefreshPage"
         app:layout_constraintTop_toTopOf="@+id/ivRefreshPage"
@@ -249,13 +254,13 @@
             android:id="@+id/tvInvalidFilterInputs"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/a_red_error"
-            android:visibility="gone"
             android:layout_marginStart="@dimen/_16sdp"
             android:text="Please select valid inputs in all fields"
+            android:textColor="@color/a_red_error"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@+id/bottomView"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/bottomView"
-            app:layout_constraintBottom_toBottomOf="@+id/bottomView"/>
+            app:layout_constraintTop_toTopOf="@+id/bottomView" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -266,9 +271,7 @@
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        />
-
+        app:layout_constraintStart_toStartOf="parent" />
 
 
     <androidx.cardview.widget.CardView
@@ -284,7 +287,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:orientation="vertical">
 
             <include
@@ -296,13 +299,23 @@
                 android:id="@+id/rvPerformanceList"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:visibility="visible"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 tools:listitem="@layout/row_performance_monitoring" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvNoRecords"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="@string/no_records_found"
+                android:textColor="@color/medium_risk_color"
+                android:textSize="@dimen/_16ssp"
+                android:visibility="gone" />
 
         </LinearLayout>
 
     </androidx.cardview.widget.CardView>
-
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

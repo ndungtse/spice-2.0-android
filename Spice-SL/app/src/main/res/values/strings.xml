@@ -145,6 +145,7 @@
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="phu_referred_to">Nearest PHU Referred to</string>
+    <string name="phu">PHU</string>
     <string name="was_the_child">Was the child actually taken to the Clinic ?</string>
     <string name="next_follow_up_date">Next visit date</string>
     <string name="presumptive_tb_no">Presumptive TB No</string>
@@ -202,6 +203,7 @@
     <string name="patients_found">%1d Patients</string>
     <string name="zero_patients_found">%1d Patient</string>
     <string name="no_patients_found">No Patients found.</string>
+    <string name="no_records_found">No Records found.</string>
     <string name="search_by_national_id">Enter Patient ID/Name</string>
     <string name="referral_ticket">Referral Ticket</string>
     <string name="cost">Cost</string>
