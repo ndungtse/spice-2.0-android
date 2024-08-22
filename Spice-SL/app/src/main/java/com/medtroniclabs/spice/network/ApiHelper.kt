@@ -73,6 +73,8 @@ import com.medtroniclabs.spice.model.medicalreview.CreateUnderFiveYearsRequest
 import com.medtroniclabs.spice.model.medicalreview.CreateUnderTwoMonthsRequest
 import com.medtroniclabs.spice.model.medicalreview.CreateUnderTwoMonthsResponse
 import com.medtroniclabs.spice.data.model.LabourDeliverySummaryDetails
+import com.medtroniclabs.spice.data.model.RequestChangePassword
+import com.medtroniclabs.spice.data.model.ResponseChangePassword
 import com.medtroniclabs.spice.model.medicalreview.SearchLabTestResponse
 import com.medtroniclabs.spice.model.medicalreview.SearchRequestLabTest
 import com.medtroniclabs.spice.model.medicalreview.SummaryDetails
@@ -150,5 +152,11 @@ interface ApiHelper {
     suspend fun getUserFilterPreference(request: FilterPreference): Response<APIResponse<FilterPreference>>
 
     suspend fun saveUserFilterPreference(request: FilterPreference): Response<APIResponse<FilterPreference>>
+
+    suspend fun forgotPassword(email: String, clientConstant: String): Response<APIResponse<String?>>
+
+    suspend fun verifyToken(token: String): Response<APIResponse<String?>>
+
+    suspend fun resetPassword(token: String, request: RequestChangePassword): Response<APIResponse<ResponseChangePassword>>
 
 }

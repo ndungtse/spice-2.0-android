@@ -53,6 +53,8 @@ android {
         debug {
             applicationIdSuffix = ".sl.staging"
             isDebuggable = true
+            // below line for test the forgot password in mobile
+//            signingConfig = signingConfigs.getByName("release")
         }
 
         create("staging") {

@@ -103,7 +103,6 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
     private fun initView() {
         binding.tvUserNameLabel.markMandatory()
         binding.tvPasswordLabel.markMandatory()
-        binding.tvForgotPassword.invisible()
     }
 
     override fun onClick(view: View) {
@@ -114,7 +113,8 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
             }
 
             R.id.tvForgotPassword -> {
-
+                val intent = Intent(this, ForgetPasswordActivity::class.java)
+                startActivity(intent)
             }
         }
     }
@@ -158,15 +158,15 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
         binding.tvUserPasswordError.visibility = View.GONE
         if (!connectivityManager.isNetworkAvailable()) {
             showErrorSnackBar(getString(R.string.no_internet_error))
-            val isToShowAlert = ((userName == SecuredPreference.getString(
+            val isToShowAlert = ((((userName == SecuredPreference.getString(
                 SecuredPreference.EnvironmentKey.USERNAME.name
-            ) || userName == SecuredPreference.getString(
+            )) || (userName == SecuredPreference.getString(
                 SecuredPreference.EnvironmentKey.PHONE_NUMBER.name
-            )) && EncryptionUtil.getSecurePassword(
+            ))) && (EncryptionUtil.getSecurePassword(
                 password
             ) == SecuredPreference.getString(
                 SecuredPreference.EnvironmentKey.PASSWORD.name
-            ))
+            ))))
             if (isToShowAlert && CommonUtils.isChw()) {
                 showErrorDialogue(
                     getString(R.string.alert),

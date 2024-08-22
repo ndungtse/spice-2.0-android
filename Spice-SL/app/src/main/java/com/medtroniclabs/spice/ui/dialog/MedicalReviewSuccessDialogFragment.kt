@@ -7,6 +7,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
+import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.setWidth
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.databinding.FragmentMedicalReviewSucessDialogBinding
@@ -31,10 +33,10 @@ class MedicalReviewSuccessDialogFragment : DialogFragment(), View.OnClickListene
         isCancelable = false
         return binding.root
     }
+
     companion object {
         const val TAG = "MedicalReviewSuccessDialogFragment"
-        fun newInstance() =
-            MedicalReviewSuccessDialogFragment()
+        fun newInstance() = MedicalReviewSuccessDialogFragment()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -48,7 +50,7 @@ class MedicalReviewSuccessDialogFragment : DialogFragment(), View.OnClickListene
     }
 
     override fun onClick(view: View) {
-        when(view.id) {
+        when (view.id) {
             binding.btnDone.id, binding.ivClose.id -> {
                 onDismissListener?.onDialogDismissListener()
                 dismiss()

@@ -73,6 +73,8 @@ import com.medtroniclabs.spice.data.model.CreateLabourDeliveryResponse
 import com.medtroniclabs.spice.model.medicalreview.CreateUnderFiveYearsRequest
 import com.medtroniclabs.spice.model.medicalreview.CreateUnderTwoMonthsResponse
 import com.medtroniclabs.spice.data.model.LabourDeliverySummaryDetails
+import com.medtroniclabs.spice.data.model.RequestChangePassword
+import com.medtroniclabs.spice.data.model.ResponseChangePassword
 import com.medtroniclabs.spice.model.medicalreview.SearchLabTestResponse
 import com.medtroniclabs.spice.model.medicalreview.SearchRequestLabTest
 import com.medtroniclabs.spice.model.medicalreview.SummaryDetails
@@ -324,5 +326,17 @@ class ApiHelperImpl @Inject constructor(private val apiService: ApiService) : Ap
 
     override suspend fun getInvestigation(request: ReferralDetailRequest): Response<APIResponse<HistoryEntity>> {
         return apiService.getInvestigationHistoryList(request)
+    }
+
+    override suspend fun forgotPassword(email: String, clientConstant: String): Response<APIResponse<String?>> {
+        return apiService.forgotPassword(email, clientConstant)
+    }
+
+    override suspend fun verifyToken(token: String): Response<APIResponse<String?>> {
+        return apiService.verifyToken(token)
+    }
+
+    override suspend fun resetPassword(token: String, request: RequestChangePassword): Response<APIResponse<ResponseChangePassword>> {
+        return apiService.resetPassword(token, request)
     }
 }

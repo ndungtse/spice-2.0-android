@@ -144,7 +144,6 @@
                     android:id="@+id/tvForgotPassword"
                     style="@style/Button_Style_Plain"
                     android:layout_marginTop="@dimen/_40sdp"
-                    android:visibility="invisible"
                     android:text="@string/forgot_password"
                     android:textColor="@color/blue" />
 

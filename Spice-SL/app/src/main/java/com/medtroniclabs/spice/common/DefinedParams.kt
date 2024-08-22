@@ -121,6 +121,10 @@ object DefinedParams {
 
     val changeFacility = "changeFacility"
     const val VillageList = "VillageList"
+
+    const val passwordRegexPattern = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=\\S+$).{6,64}$"
+
+
     const val LowBirthWeight=  2.0
     const val Others_Specify="Others (Specify)"
 }

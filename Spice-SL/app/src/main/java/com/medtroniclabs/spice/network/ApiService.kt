@@ -73,6 +73,8 @@ import com.medtroniclabs.spice.model.medicalreview.CreateUnderFiveYearsRequest
 import com.medtroniclabs.spice.model.medicalreview.CreateUnderTwoMonthsRequest
 import com.medtroniclabs.spice.model.medicalreview.CreateUnderTwoMonthsResponse
 import com.medtroniclabs.spice.data.model.LabourDeliverySummaryDetails
+import com.medtroniclabs.spice.data.model.RequestChangePassword
+import com.medtroniclabs.spice.data.model.ResponseChangePassword
 import com.medtroniclabs.spice.model.medicalreview.SearchLabTestResponse
 import com.medtroniclabs.spice.model.medicalreview.SearchRequestLabTest
 import com.medtroniclabs.spice.model.medicalreview.SummaryDetails
@@ -82,6 +84,7 @@ import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.Path
 
 interface ApiService {
     @POST("/auth-service/session")
@@ -270,5 +273,14 @@ interface ApiService {
 
     @POST("/spice-service/investigation/history-list")
     suspend fun getInvestigationHistoryList(@Body request: ReferralDetailRequest): Response<APIResponse<HistoryEntity>>
+
+    @POST("/user-service/user/forgot-password/{email}/{client}")
+    suspend fun forgotPassword(@Path("email") email: String, @Path("client") client: String): Response<APIResponse<String?>>
+
+    @POST("/user-service/user/verify-token/{token}")
+    suspend fun verifyToken(@Path("token") token: String): Response<APIResponse<String?>>
+
+    @POST("/user-service/user/reset-password/{token}")
+    suspend fun resetPassword(@Path("token") token: String, @Body request: RequestChangePassword): Response<APIResponse<ResponseChangePassword>>
 
 }
