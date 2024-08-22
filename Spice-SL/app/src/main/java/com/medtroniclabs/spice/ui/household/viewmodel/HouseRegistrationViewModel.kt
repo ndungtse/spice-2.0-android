@@ -35,6 +35,10 @@ class HouseRegistrationViewModel @Inject constructor(
     var memberID: Long = -1L
     private var lastLocation: Location? = null
 
+    var signatureFilename: String? = null
+    var initialValue: String? = null
+
+
     fun getFormData(formType: String) {
         viewModelScope.launch(dispatcherIO) {
             formLayoutsLiveData.postLoading()

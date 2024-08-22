@@ -8,12 +8,14 @@ import com.medtroniclabs.spice.data.LabourDeliveryMetaEntity
 import com.medtroniclabs.spice.data.MedicalReviewMetaItems
 import com.medtroniclabs.spice.data.VillageInfo
 import com.medtroniclabs.spice.data.model.HouseholdCardDetail
+import com.medtroniclabs.spice.data.offlinesync.model.HHSignatureDetail
 import com.medtroniclabs.spice.data.offlinesync.model.HouseHold
 import com.medtroniclabs.spice.data.offlinesync.model.HouseHoldMember
 import com.medtroniclabs.spice.db.entity.AssessmentEntity
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowConditionEntity
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowEntity
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowEntityWithSubmodule
+import com.medtroniclabs.spice.db.entity.ConsentForm
 import com.medtroniclabs.spice.db.entity.FollowUp
 import com.medtroniclabs.spice.db.entity.FollowUpCall
 import com.medtroniclabs.spice.db.entity.FormEntity
@@ -235,5 +237,15 @@ interface RoomHelper {
 
     suspend fun getUserHealthFacility(isUserSite: Boolean): ArrayList<HealthFacilityEntity>
     suspend fun updateMemberDeceasedStatus(patientId: String, status: Boolean)
+
+    suspend fun getPatientIdById(id: Long): String
+
+    suspend fun insertConsentForm(form: ConsentForm): Long
+
+    suspend fun getConsentFormByType(type: String): ConsentForm
+
+    suspend fun deleteAllConsentForm()
+
+    suspend fun getHHSignatureDetails(): List<HHSignatureDetail>
 
 }

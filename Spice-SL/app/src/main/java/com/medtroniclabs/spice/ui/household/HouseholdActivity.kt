@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.MemberID
 import com.medtroniclabs.spice.common.DefinedParams.isMemberRegistration
 import com.medtroniclabs.spice.common.SpiceLocationManager
@@ -40,6 +41,15 @@ class HouseholdActivity : BaseActivity(), OnDialogDismissListener {
                 backNavigation()
             }
         )
+
+        intent.getStringExtra(DefinedParams.KeySignature)?.let {
+            householdRegistrationViewModel.signatureFilename = it
+        }
+
+        intent.getStringExtra(DefinedParams.KeyInitial)?.let {
+            householdRegistrationViewModel.initialValue = it
+        }
+
         initializeView()
         attachObserver()
         getCurrentLocation()

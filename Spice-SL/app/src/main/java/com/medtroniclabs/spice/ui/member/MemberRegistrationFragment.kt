@@ -132,33 +132,13 @@ class MemberRegistrationFragment : Fragment(), FormEventListener, View.OnClickLi
 
                 ResourceState.SUCCESS -> {
                     (activity as BaseActivity?)?.hideLoading()
-                    if (memberRegistrationViewModel.startAssessment != null && memberRegistrationViewModel.startAssessment!!) {
-                        val intent = Intent(requireActivity(), AssessmentToolsActivity::class.java)
-                        resourceState.data.let {
-                            intent.putExtra(MemberID, it ?: -1)
-                        }
-                        startActivity(intent)
-                        (activity as HouseholdActivity).finish()
-                    } else {
-                        if (!householdRegistrationViewModel.isMemberRegistration) {
-                            val intent = Intent(
-                                requireActivity(), HouseholdSummaryActivity::class.java
-                            )
-                            intent.putExtra(
-                                HouseholdDefinedParams.ID,
-                                memberRegistrationViewModel.selectedHouseholdId
-                            )
-                            intent.putExtra(
-                                HouseholdDefinedParams.isFromHouseHoldRegistration,
-                                memberRegistrationViewModel.memberDetailsLiveData.value?.data?.id == null
-                            )
-                            startActivity(intent)
-                        }
-                        (activity as HouseholdActivity).finish()
+                    resourceState.data?.let {
+                        launchSummaryOrAssessmentPage()
                     }
                 }
             }
         }
+
         memberRegistrationViewModel.formLayoutsLiveData.observe(viewLifecycleOwner) { resources ->
             when (resources.state) {
                 ResourceState.LOADING -> {
@@ -219,6 +199,38 @@ class MemberRegistrationFragment : Fragment(), FormEventListener, View.OnClickLi
                 }
             }
         }
+    }
+
+    private fun launchSummaryOrAssessmentPage() {
+        if (memberRegistrationViewModel.startAssessment != null && memberRegistrationViewModel.startAssessment!!) {
+            val intent = Intent(requireActivity(), AssessmentToolsActivity::class.java)
+            memberRegistrationViewModel.memberRegistrationLiveData.value?.data.let {
+                intent.putExtra(MemberID, it ?: -1)
+            }
+            startActivity(intent)
+            (activity as HouseholdActivity).finish()
+        } else {
+            if (!householdRegistrationViewModel.isMemberRegistration) {
+                val intent = Intent(
+                    requireActivity(), HouseholdSummaryActivity::class.java
+                )
+                intent.putExtra(
+                    HouseholdDefinedParams.ID,
+                    memberRegistrationViewModel.selectedHouseholdId
+                )
+                intent.putExtra(
+                    HouseholdDefinedParams.isFromHouseHoldRegistration,
+                    memberRegistrationViewModel.memberDetailsLiveData.value?.data?.id == null
+                )
+                startActivity(intent)
+            }
+            (activity as HouseholdActivity).finish()
+        }
+    }
+
+    private fun launchHouseholdSummary() {
+
+        (activity as HouseholdActivity).finish()
     }
 
     private fun autoPopulateDetails(details: HouseholdMemberEntity) {
@@ -391,7 +403,9 @@ class MemberRegistrationFragment : Fragment(), FormEventListener, View.OnClickLi
                         memberRegistrationViewModel.registerHouseThenMember(
                             householdEntity,
                             map,
-                            householdRegistrationViewModel.getCurrentLocation()
+                            householdRegistrationViewModel.getCurrentLocation(),
+                            householdRegistrationViewModel.initialValue,
+                            householdRegistrationViewModel.signatureFilename
                         )
                     }
                 }

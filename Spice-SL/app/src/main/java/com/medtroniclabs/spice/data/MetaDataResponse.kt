@@ -13,7 +13,9 @@ data class MetaDataResponse(
     val userProfile: UserProfile,
     val clinicalIds: ArrayList<Long>,
     val frequency: List<FrequencyEntity> ? = null,
-    val userHealthFacilities: List<HealthFacility> ?= null
+    val userHealthFacilities: List<HealthFacility> ?= null,
+    val consentForm: ConsentFormResponse ? = null
+
 )
 
 data class HealthFacility(
@@ -161,3 +163,5 @@ data class LastCreatedAtAndPatientId(
     @ColumnInfo(name = "lastPatientId")
     val lastPatientId: String?
 )
+
+data class ConsentFormResponse(val household: String?)

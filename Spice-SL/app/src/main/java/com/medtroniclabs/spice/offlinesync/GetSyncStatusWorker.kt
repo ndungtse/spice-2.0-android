@@ -50,6 +50,10 @@ class GetSyncStatusWorker @AssistedInject constructor(
             }
 
             if (isAllEntitiesSynced) {
+                /*Upload images here*/
+                val signatureStatus = offlineSyncRepository.uploadAllSignatures()
+                Log.e("Test", "Signature Upload Status : "+signatureStatus)
+
                 SecuredPreference.remove(SecuredPreference.EnvironmentKey.OFFLINE_SYNC_REQUEST_ID.name)
                 val villageIds = roomHelper.getAllVillageIds()
                 val lastSyncedAt = SecuredPreference.getString(SecuredPreference.EnvironmentKey.SERVER_LAST_SYNCED.name)

@@ -5,9 +5,12 @@ import com.google.gson.Gson
 import com.google.gson.JsonElement
 import com.google.gson.JsonParser
 import com.google.gson.reflect.TypeToken
+import com.medtroniclabs.spice.BuildConfig
 import com.medtroniclabs.spice.appextensions.convertToUtcDateTime
+import com.medtroniclabs.spice.appextensions.imgFileNameExtension
 import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.appextensions.postSuccess
+import com.medtroniclabs.spice.appextensions.signatureFolder
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.offlinesync.model.Assessment
 import com.medtroniclabs.spice.data.offlinesync.model.AssessmentEncounter
@@ -35,9 +38,13 @@ import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.NeonatePatientId
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.PNC
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.PNCNeonatal
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.visitNo
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.ResponseBody
 import retrofit2.Response
 import timber.log.Timber
+import java.io.File
 import java.lang.reflect.Type
 import javax.inject.Inject
 
@@ -371,6 +378,74 @@ class OfflineSyncRepository @Inject constructor(
         return apiHelper.getOfflineSyncStatus(req)
     }
 
+
+    suspend fun uploadAllSignatures(): Boolean {
+        val hhSignatureDetails = roomHelper.getHHSignatureDetails()
+
+        if (hhSignatureDetails.isEmpty())
+            return true
+
+        val builder = MultipartBody.Builder()
+        builder.setType(MultipartBody.FORM)
+
+        hhSignatureDetails.forEach { hhSignatureDetail ->
+            getRenamedFile(hhSignatureDetail.signatureName, hhSignatureDetail.fhirId)?.let { file ->
+                val requestFile = file.asRequestBody("image/jpeg".toMediaTypeOrNull())
+                builder.addFormDataPart("signatureFile", file.name, requestFile)
+            }
+        }
+
+        val dataRequest = Gson().toJson(ProvanceDto())
+        builder.addFormDataPart("provenance", dataRequest)
+
+        return try {
+            val response = apiHelper.uploadAllConsentSignatures(builder.build())
+            if (response.isSuccessful)
+                deleteAllSyncedImages()
+            true
+        } catch (e: Exception) {
+            false
+        }
+    }
+
+    private fun getRenamedFile(oldFileName: String, newFileName: String): File? {
+        val signatureDirPath = "/data/data/${BuildConfig.APPLICATION_ID}/files/${signatureFolder}"
+        val signatureDir = File(signatureDirPath)
+
+        if (signatureDir.exists()) {
+            val oldFileNameWithExtension = "$oldFileName.$imgFileNameExtension"
+            val newFileNameWithExtension = "$newFileName.$imgFileNameExtension"
+            val oldFile = File(signatureDir, oldFileNameWithExtension)
+            val newFile = File(signatureDir, newFileNameWithExtension)
+            if (oldFile.exists()) {
+                oldFile.renameTo(newFile)
+                return newFile
+            }
+        }
+
+        return null
+    }
+
+    private fun deleteAllSyncedImages(): Boolean {
+        val imagesDirPath = "/data/data/${BuildConfig.APPLICATION_ID}/files/${signatureFolder}"
+        val imagesDir = File(imagesDirPath)
+        return deleteDirectory(imagesDir)
+    }
+
+    private fun deleteDirectory(directory: File): Boolean {
+        if (directory.exists()) {
+            directory.listFiles()?.forEach { file ->
+                if (file.isDirectory) {
+                    deleteDirectory(file)
+                } else {
+                    file.delete()
+                }
+            }
+        }
+
+        return directory.delete()
+    }
+
     /*
     * It will post all un-synced changes from local database and returns List<String>?
     * 1. list size > 0 -> Posted un-synced local changes and API is success
@@ -383,6 +458,8 @@ class OfflineSyncRepository @Inject constructor(
         val assessmentIds = mutableListOf<String>()
         val followUpIds = mutableListOf<Long>()
         val followUpCallIds = mutableListOf<Long>()
+
+        //uploadAllSignatures()
 
         val houseHoldList = roomHelper.getAllUnSyncedHouseHolds()
         householdIds.addAll(houseHoldList.map { it.referenceId!! })
@@ -424,12 +501,6 @@ class OfflineSyncRepository @Inject constructor(
             }
         }
 
-        val request = OfflineUtils.getRequestObject()
-        request[OfflineConstant.HOUSE_HOLDS] = houseHoldList
-        request[OfflineConstant.HOUSE_HOLD_MEMBERS] = otherHouseholdMembers
-        request[OfflineConstant.ASSESSMENTS] = otherAssessments
-        request[OfflineConstant.FOLLOWUPS] = allFollowUps
-
         // Nothing to Post anything
         if (houseHoldList.isEmpty()
             && otherHouseholdMembers.isEmpty()
@@ -438,6 +509,12 @@ class OfflineSyncRepository @Inject constructor(
         ) {
             return listOf()
         }
+
+        val request = OfflineUtils.getRequestObject()
+        request[OfflineConstant.HOUSE_HOLDS] = houseHoldList
+        request[OfflineConstant.HOUSE_HOLD_MEMBERS] = otherHouseholdMembers
+        request[OfflineConstant.ASSESSMENTS] = otherAssessments
+        request[OfflineConstant.FOLLOWUPS] = allFollowUps
 
         try {
             val apiResponse = apiHelper.postOfflineSync(request)

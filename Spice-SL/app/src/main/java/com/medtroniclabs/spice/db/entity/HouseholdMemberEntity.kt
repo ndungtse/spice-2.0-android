@@ -44,8 +44,14 @@ data class HouseholdMemberEntity(
 
     var isActive: Boolean = true,
 
+    var signature: String? = null,
+
+    var initial: String? = null,
+
     val version: String? = null,
 
     val lastUpdated: String? = null,
+
+    var localSignatureFile: String? = null
 
     ) : BaseEntity()

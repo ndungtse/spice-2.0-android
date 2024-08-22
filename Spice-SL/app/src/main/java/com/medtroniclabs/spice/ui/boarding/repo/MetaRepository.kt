@@ -2,10 +2,12 @@ package com.medtroniclabs.spice.ui.boarding.repo
 
 import com.google.gson.Gson
 import com.medtroniclabs.spice.common.CommonUtils
+import com.medtroniclabs.spice.common.ConsentFormType
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.RoleConstant.PROVIDER
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.ClinicalWorkflow
+import com.medtroniclabs.spice.data.ConsentFormResponse
 import com.medtroniclabs.spice.data.FormData
 import com.medtroniclabs.spice.data.FormMetaRequest
 import com.medtroniclabs.spice.data.FormRequest
@@ -15,6 +17,7 @@ import com.medtroniclabs.spice.data.UserProfile
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowConditionEntity
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowEntity
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowEntityWithSubmodule
+import com.medtroniclabs.spice.db.entity.ConsentForm
 import com.medtroniclabs.spice.db.entity.FormEntity
 import com.medtroniclabs.spice.db.entity.HealthFacilityEntity
 import com.medtroniclabs.spice.db.entity.MenuEntity
@@ -62,6 +65,7 @@ class MetaRepository @Inject constructor(
                             frequency?.let {
                                 saveFrequencyList(it)
                             }
+                            saveConsentForm(consentForm)
                             saveFhirId(userProfile.fhirId, defaultHealthFacility,changeFacility)
                             saveUserProfileDetailsInDb(userProfile)
                             if (CommonUtils.isRolePresent()) {
@@ -141,6 +145,20 @@ class MetaRepository @Inject constructor(
             )
         }
         saveMenusInDb(menuList, PROVIDER)
+    }
+
+    private suspend fun saveConsentForm(consentForm: ConsentFormResponse?) {
+        roomHelper.deleteAllConsentForm()
+        consentForm?.let { forms ->
+            forms.household?.let {
+                roomHelper.insertConsentForm(
+                    ConsentForm(
+                        type = ConsentFormType.Household,
+                        content = it
+                    )
+                )
+            }
+        }
     }
 
     private suspend fun saveHealthFacilityInDb(

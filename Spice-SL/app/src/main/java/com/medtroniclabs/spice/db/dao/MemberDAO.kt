@@ -7,6 +7,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
+import com.medtroniclabs.spice.data.offlinesync.model.HHSignatureDetail
 import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
 import com.medtroniclabs.spice.model.MemberDobGenderModel
 import com.medtroniclabs.spice.model.assessment.AssessmentMemberDetails
@@ -36,6 +37,9 @@ interface MemberDAO {
 
     @Query("SELECT * FROM HouseHoldMember WHERE parentId = :memberId ORDER BY fhir_id IS NULL, fhir_id ASC")
     suspend fun getMemberDetailsByParentId(memberId: String): List<HouseholdMemberEntity>
+
+    @Query("SELECT id, fhir_id AS fhirId, localSignatureFile AS signatureName FROM HouseHoldMember WHERE localSignatureFile IS NOT NULL AND fhir_id IS NOT NULL")
+    suspend fun getHHSignatureDetails(): List<HHSignatureDetail>
 
     @Query("SELECT COUNT(household_id) FROM HouseHoldMember WHERE household_id = :householdId")
     suspend fun getMemberCountPerHouseHold(householdId: Long): Int
@@ -72,6 +76,9 @@ interface MemberDAO {
 
     @Query("SELECT patient_id FROM HouseholdMember WHERE fhir_id =:fhirId")
     suspend fun getPatientIdByFhirId(fhirId: String): String?
+
+    @Query("SELECT patient_id FROM HouseholdMember WHERE id =:id")
+    suspend fun getPatientIdById(id: Long): String
 
     @Query("SELECT * FROM HouseholdMember WHERE fhir_id = :fhirId LIMIT 1")
     suspend fun getByUniqueField(fhirId: String): HouseholdMemberEntity?

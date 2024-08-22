@@ -62,6 +62,10 @@ data class HouseHoldMember(
 
     val isActive: Boolean = true,
 
+    val signature: String? = null,
+
+    val initial: String? = null,
+
     val version: String? = null,
 
     val lastUpdated: String? = null
@@ -91,6 +95,8 @@ data class HouseHoldMember(
             isPregnant = this.isPregnant,
             villageId = this.villageId,
             isActive = this.isActive,
+            signature = this.signature,
+            initial = this.initial,
             version = this.version,
             lastUpdated = this.lastUpdated
         ).apply {

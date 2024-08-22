@@ -7,4 +7,5 @@ object EntitiesName {
     const val ASSESSMENT = "Assessment"
     const val PREGNANCY_DETAIL = "PregnancyDetail"
     const val FrequencyEntity = "FrequencyEntity"
+    const val CONSENT_FORM = "ConsentForm"
 }

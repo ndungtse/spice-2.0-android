@@ -83,6 +83,9 @@ class ScheduledSyncWork @AssistedInject constructor(
             if (!getSyncStatus()) {
                 return false
             }
+
+            /*Upload images here*/
+            offlineSyncRepository.uploadAllSignatures()
         }
 
         return true

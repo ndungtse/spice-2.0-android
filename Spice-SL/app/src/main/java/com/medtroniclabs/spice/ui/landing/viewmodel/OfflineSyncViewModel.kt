@@ -96,9 +96,9 @@ class OfflineSyncViewModel @Inject constructor(
 
     fun startUploadingData(minutes: Long = 3) {
         viewModelScope.launch(dispatcherIO) {
+            startProgress(minutes)
             val requestIds = offlineSyncRepository.postOfflineUnSyncedChanges()
             if (requestIds != null) {
-                startProgress(minutes)
                 if (requestIds.isNotEmpty()) { // Has some changes in local
                     SecuredPreference.saveStringArray(
                         SecuredPreference.EnvironmentKey.OFFLINE_SYNC_REQUEST_ID.name,

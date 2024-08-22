@@ -103,6 +103,13 @@
             tools:ignore="LockedOrientationActivity" />
 
         <activity
+            android:name=".ui.household.ConsentFormActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+
+        <activity
             android:name=".ui.home.AssessmentToolsActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:exported="false"

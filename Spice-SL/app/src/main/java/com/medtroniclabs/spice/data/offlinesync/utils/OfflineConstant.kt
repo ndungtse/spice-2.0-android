@@ -11,5 +11,6 @@ object OfflineConstant {
     const val FOLLOWUPS = "followUps"
     const val APP_VERSION_NAME = "appVersionName"
     const val APP_VERSION_CODE = "appVersionCode"
+    const val DEVICE_ID = "deviceId"
 
 }

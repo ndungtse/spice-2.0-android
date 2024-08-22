@@ -2,6 +2,7 @@ package com.medtroniclabs.spice.repo
 
 import androidx.lifecycle.LiveData
 import com.medtroniclabs.spice.common.CommonUtils
+import com.medtroniclabs.spice.common.ConsentFormType
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.data.LocalSpinnerResponse
@@ -10,6 +11,7 @@ import com.medtroniclabs.spice.data.offlinesync.model.HouseHoldMember
 import com.medtroniclabs.spice.data.offlinesync.model.RequestGetSyncStatus
 import com.medtroniclabs.spice.data.offlinesync.model.SyncResponse
 import com.medtroniclabs.spice.data.offlinesync.utils.OfflineSyncStatus
+import com.medtroniclabs.spice.db.entity.ConsentForm
 import com.medtroniclabs.spice.db.entity.EntitiesName.HOUSEHOLD
 import com.medtroniclabs.spice.db.entity.EntitiesName.HOUSEHOLD_MEMBER
 import com.medtroniclabs.spice.db.entity.HouseholdEntity
@@ -208,5 +210,9 @@ class HouseHoldRepository @Inject constructor(
         } catch (e: Exception) {
             Resource(ResourceState.ERROR, message = e.localizedMessage)
         }
+    }
+
+    suspend fun getConsentForm() : ConsentForm {
+        return roomHelper.getConsentFormByType(ConsentFormType.Household)
     }
 }

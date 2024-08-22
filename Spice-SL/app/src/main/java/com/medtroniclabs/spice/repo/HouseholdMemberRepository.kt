@@ -31,9 +31,11 @@ class HouseholdMemberRepository @Inject constructor(
         map: HashMap<String, Any>,
         householdId: Long,
         entity: HouseholdMemberEntity? = null,
-        parentId: String? = null
+        parentId: String? = null,
+        initial: String? = null,
+        signature: String? = null
     ): Long? {
-        val memberEntity = createOrUpdateHouseHoldMemberEntity(map, householdId, entity, parentId)
+        val memberEntity = createOrUpdateHouseHoldMemberEntity(map, householdId, entity, parentId, initial, signature)
         if (memberEntity.patientId == null) {
             return  null
         }
@@ -55,7 +57,9 @@ class HouseholdMemberRepository @Inject constructor(
         map: HashMap<String, Any>,
         householdId: Long,
         entity: HouseholdMemberEntity? = null,
-        parentId: String?
+        parentId: String?,
+        initial: String? = null,
+        signature: String? = null
     ): HouseholdMemberEntity {
         val householdMemberEntity = entity ?: HouseholdMemberEntity()
 
@@ -98,6 +102,8 @@ class HouseholdMemberRepository @Inject constructor(
             householdMemberEntity.householdId = householdId
             householdMemberEntity.villageId = householdDetails.villageId
             householdMemberEntity.patientId = getNextPatientId(householdDetails.villageId)
+            householdMemberEntity.initial = initial
+            householdMemberEntity.localSignatureFile = signature
         } else {
             householdMemberEntity.updatedAt = System.currentTimeMillis()
             householdMemberEntity.sync_status = OfflineSyncStatus.NotSynced
@@ -213,4 +219,7 @@ class HouseholdMemberRepository @Inject constructor(
         return roomHelper.updateMemberDeceasedStatus(patientId, status)
     }
 
+    suspend fun getPatientIdById(id: Long): String {
+        return roomHelper.getPatientIdById(id)
+    }
 }

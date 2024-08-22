@@ -24,6 +24,7 @@ object SecuredPreference {
         USER_RESPONSE,
         IS_ABOVE_FIVE_YEARS_LOADED,
         USER_ID,
+        DEVICE_ID,
         USER_FHIR_ID,
         ORGANIZATION_FHIR_ID,
         IS_MOTHER_NEONATE_LOADEDANC,
@@ -398,6 +399,7 @@ object SecuredPreference {
         val followUpCriteria = getString(EnvironmentKey.FOLLOW_UP_CRITERIA.name)
         val villageIds = getString(EnvironmentKey.VILLAGE_IDS.name)
         val serverLastSyncedTime = getString(EnvironmentKey.SERVER_LAST_SYNCED.name)
+        val deviceId = getString(EnvironmentKey.DEVICE_ID.name)
         try {
             preferences.edit().clear().apply()
         } catch (e: Exception) {
@@ -412,6 +414,7 @@ object SecuredPreference {
             requestIds?.let { saveStringArray(EnvironmentKey.OFFLINE_SYNC_REQUEST_ID.name, it) }
             putString(EnvironmentKey.VILLAGE_IDS.name, villageIds)
             putString(EnvironmentKey.SERVER_LAST_SYNCED.name, serverLastSyncedTime)
+            putString(EnvironmentKey.DEVICE_ID.name, deviceId)
         }
     }
 
@@ -440,6 +443,10 @@ object SecuredPreference {
 
     fun getUserId(): Long {
         return getLong(EnvironmentKey.USER_ID.name)
+    }
+
+    fun getDeviceId(): String? {
+        return getString(EnvironmentKey.DEVICE_ID.name)
     }
 
     fun getPhoneNumberCode(): String? {

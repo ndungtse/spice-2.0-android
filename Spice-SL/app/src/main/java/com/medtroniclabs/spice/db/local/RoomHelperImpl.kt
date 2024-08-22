@@ -9,11 +9,13 @@ import com.medtroniclabs.spice.data.LabourDeliveryMetaEntity
 import com.medtroniclabs.spice.data.MedicalReviewMetaItems
 import com.medtroniclabs.spice.data.VillageInfo
 import com.medtroniclabs.spice.data.model.HouseholdCardDetail
+import com.medtroniclabs.spice.data.offlinesync.model.HHSignatureDetail
 import com.medtroniclabs.spice.data.offlinesync.model.HouseHold
 import com.medtroniclabs.spice.data.offlinesync.model.HouseHoldMember
 import com.medtroniclabs.spice.data.offlinesync.utils.OfflineSyncStatus
 import com.medtroniclabs.spice.db.dao.AboveFiveYearsDAO
 import com.medtroniclabs.spice.db.dao.AssessmentDAO
+import com.medtroniclabs.spice.db.dao.ConsentFormDao
 import com.medtroniclabs.spice.db.dao.DiagnosisDAO
 import com.medtroniclabs.spice.db.dao.ExaminationsComplaintsDAO
 import com.medtroniclabs.spice.db.dao.ExaminationsDAO
@@ -29,6 +31,7 @@ import com.medtroniclabs.spice.db.entity.AssessmentEntity
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowConditionEntity
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowEntity
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowEntityWithSubmodule
+import com.medtroniclabs.spice.db.entity.ConsentForm
 import com.medtroniclabs.spice.db.entity.FollowUp
 import com.medtroniclabs.spice.db.entity.FollowUpCall
 import com.medtroniclabs.spice.db.entity.FormEntity
@@ -66,7 +69,8 @@ class RoomHelperImpl @Inject constructor(
     private val followUpDao: FollowUpDao,
     private val followUpCallsDao: FollowUpCallsDao,
     private val pregnancyDetailDao: PregnancyDetailDao,
-    private val frequencyDAO: FrequencyDAO
+    private val frequencyDAO: FrequencyDAO,
+    private val consentFormDao: ConsentFormDao
 ) : RoomHelper {
     override suspend fun saveHouseHoldEntry(householdEntity: HouseholdEntity): Long {
         return householdDAO.insertHouseHold(householdEntity)
@@ -662,5 +666,24 @@ class RoomHelperImpl @Inject constructor(
 
     override suspend fun getChildPatientId(patientId: String): String? {
         return pregnancyDetailDao.getChildPatientId(patientId)
+    }
+
+    override suspend fun getPatientIdById(id: Long): String {
+        return memberDAO.getPatientIdById(id)
+    }
+
+    override suspend fun insertConsentForm(form: ConsentForm): Long {
+        return consentFormDao.insert(form)
+    }
+    override suspend fun getConsentFormByType(type: String): ConsentForm {
+        return consentFormDao.getConsentFormByType(type)
+    }
+
+    override suspend fun deleteAllConsentForm() {
+        consentFormDao.delete()
+    }
+
+    override suspend fun getHHSignatureDetails(): List<HHSignatureDetail> {
+        return memberDAO.getHHSignatureDetails()
     }
 }

@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
-import androidx.core.app.ActivityCompat
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.hideKeyboard
 import com.medtroniclabs.spice.appextensions.invisible
@@ -25,6 +24,7 @@ import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.boarding.viewmodel.LoginViewModel
 import com.medtroniclabs.spice.ui.landing.LandingActivity
 import dagger.hilt.android.AndroidEntryPoint
+import java.util.UUID
 
 @AndroidEntryPoint
 class LoginActivity : BaseActivity(), View.OnClickListener {
@@ -39,7 +39,16 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
         initView()
         setListeners()
         attachObservers()
+        createAndSaveDeviceId()
         checkNotificationPermission()
+    }
+
+    private fun createAndSaveDeviceId() {
+        val deviceId = SecuredPreference.getDeviceId()
+        if (deviceId == null) {
+            val createdId =  UUID.randomUUID().toString()
+            SecuredPreference.putString(SecuredPreference.EnvironmentKey.DEVICE_ID.name, createdId)
+        }
     }
 
     private fun attachObservers() {

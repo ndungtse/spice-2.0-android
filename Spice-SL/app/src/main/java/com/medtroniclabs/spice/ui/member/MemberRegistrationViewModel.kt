@@ -63,7 +63,9 @@ class MemberRegistrationViewModel @Inject constructor(
     fun registerHouseThenMember(
         householdEntity: HouseholdEntity,
         memberResultMap: HashMap<String, Any>,
-        location: Location?
+        location: Location?,
+        initial: String? = null,
+        signature: String? = null
     ) {
          memberRegistrationLiveData.postLoading()
           try {
@@ -73,14 +75,14 @@ class MemberRegistrationViewModel @Inject constructor(
                       householdEntity.longitude = it.longitude
                   }
                   val houseHoldId = houseHoldRepository.insertHouseHoldEntity(householdEntity)
-                  registerMember(memberResultMap, houseHoldId)
+                  registerMember(memberResultMap, houseHoldId, initial, signature)
               }
           }catch (e: Exception) {
               memberRegistrationLiveData.postError(e.message)
           }
     }
 
-    fun registerMember(map: HashMap<String, Any>, householdId: Long) {
+    fun registerMember(map: HashMap<String, Any>, householdId: Long, initial: String? = null, signature: String? = null) {
          memberRegistrationLiveData.postLoading()
         try {
             viewModelScope.launch(dispatcherIO) {
@@ -89,6 +91,8 @@ class MemberRegistrationViewModel @Inject constructor(
                     map,
                     householdId,
                     memberDetailsLiveData.value?.data,
+                    initial = initial,
+                    signature = signature
                 )
                 if (memberId == null) {
                     memberRegistrationLiveData.postError()

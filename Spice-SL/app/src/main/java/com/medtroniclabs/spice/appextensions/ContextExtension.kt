@@ -5,6 +5,7 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.location.LocationManager
 import android.os.Build
 import android.util.Log
@@ -19,11 +20,16 @@ import androidx.work.WorkManager
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.offlinesync.ScheduledSyncWork
 import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
+import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
 import java.util.concurrent.TimeUnit
 
 const val syncWorkerName = "SyncWorker"
 private const val durationGap = 30L // 1 * 60L - 1 hour once. Need to give in minutes
 private const val notificationId = 99 // Unique ID for the notification
+const val signatureFolder = "signatures"
+const val imgFileNameExtension = "JPEG"
 
 fun Context.isGpsEnabled(): Boolean {
     val locationManager = this.getSystemService(Context.LOCATION_SERVICE) as LocationManager
@@ -132,4 +138,34 @@ fun Context.showNotification(title: String = "Background Task", message: String 
 fun Context.hideNotification() {
     val notificationManager = this.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
     notificationManager.cancel(notificationId)
+}
+
+fun Context.saveBitmapAsJpeg(bitmap: Bitmap, fileName: String): Boolean {
+    // Get the directory for the app's private files directory
+    val directory = File(this.filesDir, signatureFolder)
+    if (!directory.exists()) {
+        directory.mkdir()
+    }
+
+    val fileNameWithExtension = "$fileName.$imgFileNameExtension"
+
+    // Create a file to save the image
+    val imageFile = File(directory, fileNameWithExtension)
+
+    var fileOutputStream: FileOutputStream? = null
+    return try {
+        fileOutputStream = FileOutputStream(imageFile)
+        // Compress the bitmap and save it as a JPEG
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 30, fileOutputStream)
+        true
+    } catch (e: IOException) {
+        e.printStackTrace()
+        false
+    } finally {
+        try {
+            fileOutputStream?.close()
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+    }
 }

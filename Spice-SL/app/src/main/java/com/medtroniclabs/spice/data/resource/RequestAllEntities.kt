@@ -8,5 +8,6 @@ data class RequestAllEntities(
     val lastSyncTime: String? = null,
     val userId: Long = SecuredPreference.getUserId(),
     val appVersionName: String = BuildConfig.VERSION_NAME,
-    val appVersionCode: Int = BuildConfig.VERSION_CODE
+    val appVersionCode: Int = BuildConfig.VERSION_CODE,
+    val deviceId: String? = SecuredPreference.getDeviceId()
 )

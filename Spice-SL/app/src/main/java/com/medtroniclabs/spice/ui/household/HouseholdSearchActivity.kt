@@ -165,7 +165,7 @@ class HouseholdSearchActivity : BaseActivity(), View.OnClickListener {
     }
 
     private fun launchHouseholdActivity() {
-        startActivity(Intent(this, HouseholdActivity::class.java))
+        startActivity(Intent(this, ConsentFormActivity::class.java))
     }
 
     private fun ableToGetLocation(): Boolean {

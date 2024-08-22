@@ -505,6 +505,7 @@
     <string name="renew_all">Renew All</string>
     <string name="clear_signature">Clear Signature</string>
     <string name="signature_required">Signature is required</string>
+    <string name="signature_or_initial_required">Signature or Initial is required</string>
     <string name="sign_and_confirm_prescription">Sign and Confirm Prescription</string>
     <string name="week">week</string>
     <string name="month">Month</string>
@@ -633,6 +634,11 @@
 
     <string name="mismatch_password">The password must contain at least a number, lowercase, uppercase and be a minimum of 6 characters</string>
     <string name="na">NA</string>
+    <string name="e_signature">E-Signature</string>
+    <string name="terms_and_condition">Terms and Conditions</string>
+    <string name="signature_or_initial">Enter Signature or Initial</string>
+    <string name="patient_initial">Patient Initial</string>
+    <string name="enter_your_initials">Enter your initial</string>
     <string name="reset">Reset</string>
 
 </resources>

@@ -1,6 +1,7 @@
 package com.medtroniclabs.spice.data.offlinesync.utils
 
 import com.medtroniclabs.spice.BuildConfig
+import com.medtroniclabs.spice.common.SecuredPreference
 import java.util.UUID
 
 object OfflineUtils {
@@ -10,6 +11,10 @@ object OfflineUtils {
         map[OfflineConstant.REQUEST_ID] = UUID.randomUUID().toString()
         map[OfflineConstant.APP_VERSION_NAME] = BuildConfig.VERSION_NAME
         map[OfflineConstant.APP_VERSION_CODE] = BuildConfig.VERSION_CODE
+        SecuredPreference.getDeviceId()?.let {
+            map[OfflineConstant.DEVICE_ID] = it
+        }
+
         return map
     }
 }
