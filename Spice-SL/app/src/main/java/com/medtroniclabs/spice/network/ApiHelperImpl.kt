@@ -353,4 +353,12 @@ class ApiHelperImpl @Inject constructor(private val apiService: ApiService) : Ap
     override suspend fun registerPatient(hashMap: HashMap<String, Any>): Response<APIResponse<RegistrationResponse>> {
         return apiService.registerPatient(hashMap)
     }
+
+    override suspend fun ncdPatientSearch(request: PatientsDataModel): APIResponse<SearchAndListResponse> {
+        return apiService.ncdPatientSearch(request)
+    }
+
+    override suspend fun getNcdPatient(request: PatientDetailRequest): Response<APIResponse<PatientListRespModel>> {
+        return apiService.getNcdPatient(request)
+    }
 }

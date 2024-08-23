@@ -166,4 +166,5 @@ object DefinedParams {
     const val HealthFacilityId = "healthFacilityId"
     const val HealthFacilityFhirId = "healthFacilityFhirId"
     const val Provenance = "provenance"
+    const val ORIGIN = "origin"
 }

@@ -31,6 +31,7 @@ import com.medtroniclabs.spice.mappingkey.Screening.CAGEAID
 import com.medtroniclabs.spice.mappingkey.Screening.PHQ4
 import com.medtroniclabs.spice.mappingkey.Screening.substanceAbuse
 import com.medtroniclabs.spice.ncd.screening.ReferredReason
+import com.medtroniclabs.spice.ui.MenuConstants
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import java.io.File
 import java.math.RoundingMode
@@ -971,5 +972,12 @@ object CommonUtils {
             return context?.getString(R.string.hyphen_symbol)
         }
         return getDecimalFormatted(bmi)
+    }
+
+    fun canAddNewMember(origin: String?): Boolean {
+        return when (origin) {
+            MenuConstants.REGISTRATION, MenuConstants.ASSESSMENT -> false
+            else -> true
+        }
     }
 }

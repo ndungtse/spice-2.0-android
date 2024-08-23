@@ -4,6 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.medtroniclabs.spice.appextensions.postLoading
+import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.model.PatientDetailRequest
 import com.medtroniclabs.spice.model.PatientListRespModel
@@ -30,10 +31,16 @@ class PatientDetailViewModel @Inject constructor(
     var encounterId: String ?= null
     var childEncounterId: String ?= null
 
-    fun getPatients(id: String, assessmentType: String? = null) {
+    var origin: String? = null
+
+    fun getPatients(id: String, assessmentType: String? = null, type: String? = null) {
         viewModelScope.launch(dispatcherIO) {
             patientDetailsLiveData.postLoading()
-            patientDetailsLiveData.postValue(patientRepository.getPatients(PatientDetailRequest(patientId = id, assessmentType = assessmentType)))
+            val patientDetailRequest: PatientDetailRequest = if (CommonUtils.isNonNcdWorkflow())
+                PatientDetailRequest(patientId = id, assessmentType = assessmentType, type = type)
+            else
+                PatientDetailRequest(id = id, assessmentType = assessmentType, type = type)
+            patientDetailsLiveData.postValue(patientRepository.getPatients(patientDetailRequest))
         }
     }
 

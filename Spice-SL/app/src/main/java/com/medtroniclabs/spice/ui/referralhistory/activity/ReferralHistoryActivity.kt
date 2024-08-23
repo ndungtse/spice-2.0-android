@@ -11,6 +11,7 @@ import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.appextensions.isFineAndCoarseLocationPermissionGranted
 import com.medtroniclabs.spice.appextensions.isGpsEnabled
+import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.ID
@@ -117,6 +118,7 @@ class ReferralHistoryActivity : BaseActivity(), AncVisitCallBack {
 
 
     private fun initView() {
+        patientDetailViewModel.origin = intent.extras?.getString(DefinedParams.ORIGIN)
         val patientFragment =
             PatientInfoFragment.newInstance(
                 intent.getStringExtra(DefinedParams.PatientId),
@@ -260,17 +262,25 @@ class ReferralHistoryActivity : BaseActivity(), AncVisitCallBack {
 
     private fun swipeRefresh() {
         patientDetailViewModel.patientDetailsLiveData.value?.data?.let { details ->
-            details.patientId?.let { id ->
-                patientDetailViewModel.getPatients(id)
-            }
+            if (CommonUtils.isNonNcdWorkflow())
+                details.patientId?.let { id ->
+                    patientDetailViewModel.getPatients(id, type = patientDetailViewModel.origin)
+                }
+            else
+                details.id?.let { id ->
+                    patientDetailViewModel.getPatients(id, type = patientDetailViewModel.origin)
+                }
         }
     }
 
     override fun onResume() {
         super.onResume()
-        val patientId = intent.getStringExtra(DefinedParams.PatientId)
+        val patientId = if (CommonUtils.isNonNcdWorkflow())
+            intent.getStringExtra(DefinedParams.PatientId)
+        else
+            intent.getStringExtra(DefinedParams.FhirId)
         if (patientId != null) {
-            patientDetailViewModel.getPatients(patientId)
+            patientDetailViewModel.getPatients(patientId, type = patientDetailViewModel.origin)
         }
     }
 }

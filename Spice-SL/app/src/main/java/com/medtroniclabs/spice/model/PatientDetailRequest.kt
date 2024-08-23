@@ -4,6 +4,7 @@ data class PatientDetailRequest(
     val id: String? = null,
     val patientId: String? = null,
     val ticketId:String? = null,
+    val type: String? = null,
     val assessmentType:String? = null
 )
 

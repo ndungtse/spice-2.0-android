@@ -12,6 +12,7 @@ import com.google.android.flexbox.FlexboxLayoutManager
 import com.google.android.flexbox.JustifyContent
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.CommonUtils
+import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.databinding.FragmentHomeScreenBinding
 import com.medtroniclabs.spice.db.entity.MenuEntity
 import com.medtroniclabs.spice.ncd.screening.ScreeningActivity
@@ -19,13 +20,13 @@ import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.MenuConstants
+import com.medtroniclabs.spice.ui.common.PatientSearchActivity
 import com.medtroniclabs.spice.ui.followup.FollowUpMyPatientActivity
 import com.medtroniclabs.spice.ui.home.adapter.DashboardMenuItemsAdapter
 import com.medtroniclabs.spice.ui.household.HouseholdSearchActivity
 import com.medtroniclabs.spice.ui.landing.viewmodel.LandingViewModel
 import com.medtroniclabs.spice.ui.peersupervisor.PerformanceMonitoringActivity
 import dagger.hilt.android.AndroidEntryPoint
-import com.medtroniclabs.spice.ui.registration.RegistrationActivity
 
 
 @AndroidEntryPoint
@@ -124,7 +125,21 @@ class HomeScreenFragment : BaseFragment(), MenuSelectionListener {
             }
 
             MenuConstants.REGISTRATION -> {
-                startActivity(Intent(requireContext(), RegistrationActivity::class.java))
+                val bundle = Bundle().apply {
+                    putString(DefinedParams.ORIGIN, MenuConstants.REGISTRATION)
+                }
+                val intent = Intent(requireContext(), PatientSearchActivity::class.java)
+                intent.putExtras(bundle)
+                startActivity(intent)
+            }
+
+            MenuConstants.ASSESSMENT -> {
+                val bundle = Bundle().apply {
+                    putString(DefinedParams.ORIGIN, MenuConstants.ASSESSMENT)
+                }
+                val intent = Intent(requireContext(), PatientSearchActivity::class.java)
+                intent.putExtras(bundle)
+                startActivity(intent)
             }
         }
     }

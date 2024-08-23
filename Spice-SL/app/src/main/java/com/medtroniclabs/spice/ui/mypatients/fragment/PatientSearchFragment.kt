@@ -17,6 +17,7 @@ import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.hideKeyboard
 import com.medtroniclabs.spice.appextensions.visible
+import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.SearchLength
 import com.medtroniclabs.spice.databinding.FragmentPatientSearchBinding
@@ -108,6 +109,7 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
 
 
     private fun initViews() {
+        patientListViewModel.origin = arguments?.getString(DefinedParams.ORIGIN)
         binding.bottomCardView.gone()
         binding.llFilter.btnFilter.text = getString(R.string.filters)
         val tabletSize =
@@ -124,6 +126,7 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
         binding.llFilter.btnFilter.safeClickListener(this)
         binding.loadingProgress.safeClickListener(this)
         binding.btnAddNewMember.safeClickListener(this)
+        binding.btnAddNewMember.visibility = if(CommonUtils.canAddNewMember(patientListViewModel.origin)) View.VISIBLE else View.GONE
     }
 
     private val searchListener = object : TextWatcher {
@@ -183,6 +186,7 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
             intent.putExtra(DefinedParams.Gender, item.gender)
             intent.putExtra(DefinedParams.DOB, item.birthDate)
             intent.putExtra(DefinedParams.FhirId, item.id)
+            intent.putExtra(DefinedParams.ORIGIN, patientListViewModel.origin)
             startActivity(intent)
         })
     }

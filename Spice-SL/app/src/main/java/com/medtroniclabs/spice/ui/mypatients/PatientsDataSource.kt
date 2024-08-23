@@ -2,6 +2,7 @@ package com.medtroniclabs.spice.ui.mypatients
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
+import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DefinedParams.LIST_LIMIT
 import com.medtroniclabs.spice.common.DefinedParams.PAGE_INDEX
 import com.medtroniclabs.spice.common.SecuredPreference
@@ -56,13 +57,15 @@ class PatientsDataSource(
             val response: APIResponse<SearchAndListResponse> = if (searchText.isEmpty()) {
                 apiHelper.getPatients(patientsDataModel)
             } else {
-                apiHelper.patientSearch(
-                    patientsDataModel.copy(
-                        villageIds = null,
-                        searchText = searchText.ifEmpty { null },
-                        districtId = districtId
-                    )
+                val searchRequest = patientsDataModel.copy(
+                    villageIds = null,
+                    searchText = searchText.ifEmpty { null },
+                    districtId = districtId
                 )
+                if (CommonUtils.isNonNcdWorkflow())
+                    apiHelper.patientSearch(searchRequest)
+                else
+                    apiHelper.ncdPatientSearch(searchRequest)
             }
 
             /* Request construction - Ends */

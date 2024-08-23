@@ -37,6 +37,8 @@ class PatientListViewModel @Inject constructor(
     var patientStatusTag: List<ChipViewItemModel>? = null
     var filterLiveData = MutableLiveData<Boolean>()
 
+    var origin: String? = null
+
     val patientsDataSource =
         Pager(config = PagingConfig(pageSize = LIST_LIMIT), pagingSourceFactory = {
             PatientsDataSource(
