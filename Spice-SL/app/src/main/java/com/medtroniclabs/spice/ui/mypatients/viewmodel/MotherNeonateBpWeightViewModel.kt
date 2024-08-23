@@ -40,7 +40,7 @@ class MotherNeonateBpWeightViewModel @Inject constructor(
     }
 
     fun getWeight(): Double? {
-        return getWeight.value?.data?.Weight
+        return getWeight.value?.data?.weight
     }
 
     fun getBp(): BpAndWeightResponse? {

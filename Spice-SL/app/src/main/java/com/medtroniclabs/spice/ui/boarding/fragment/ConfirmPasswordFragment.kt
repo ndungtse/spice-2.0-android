@@ -14,6 +14,7 @@ import com.medtroniclabs.spice.common.DefinedParams.passwordRegexPattern
 import com.medtroniclabs.spice.databinding.FragmentConfirmPasswordBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.ui.BaseFragment
+import com.medtroniclabs.spice.ui.boarding.ForgetPasswordActivity
 import com.medtroniclabs.spice.ui.boarding.viewmodel.ForgotPasswordViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -101,7 +102,9 @@ class ConfirmPasswordFragment : BaseFragment(), View.OnClickListener {
             }
 
             R.id.tvGoBack -> {
-                activity?.finish()
+              if(activity!= null && activity is ForgetPasswordActivity) {
+                  (activity as ForgetPasswordActivity?)?.redirectToLogin()
+              }
             }
         }
     }

@@ -626,14 +626,13 @@
     <string name="email_registered_successfully">The reset password link has been sent to email / phone number.</string>
     <string name="reset_password"> Reset Password </string>
     <string name="confirm_password_cannot_be_empty">Please enter password.</string>
-    <string name="password_does_not_match">Password Does not match</string>
-    <string name="password_registered_successfully">The reset password has been successfully sent.</string>
+    <string name="password_does_not_match">Password does not match</string>
+    <string name="password_registered_successfully">The password has been successfully reset.</string>
     <string name="password_error_message">The password must contain at least a number, lowercase, uppercase and be a minimum of 6 characters</string>
 
 
     <string name="mismatch_password">The password must contain at least a number, lowercase, uppercase and be a minimum of 6 characters</string>
-
-
     <string name="na">NA</string>
     <string name="reset">Reset</string>
+
 </resources>

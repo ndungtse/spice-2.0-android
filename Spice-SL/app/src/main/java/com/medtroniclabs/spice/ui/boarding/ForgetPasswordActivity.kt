@@ -130,7 +130,7 @@ class ForgetPasswordActivity : BaseActivity(), OnDialogDismissListener {
 
     }
 
-    private fun redirectToLogin() {
+    fun redirectToLogin() {
         finish()
         startAsNewActivity(Intent(this, LoginActivity::class.java))
     }

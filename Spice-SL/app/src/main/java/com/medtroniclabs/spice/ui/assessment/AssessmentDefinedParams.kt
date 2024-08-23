@@ -13,6 +13,7 @@ object AssessmentDefinedParams {
     const val hasCough = "hasCough"
     const val hasFever = "hasFever"
     const val hasDiarrhoea = "hasDiarrhoea"
+    const val rdtTest = "rdtTest"
     const val Dispensed = "Dispensed"
     const val Amoxicillin = "Amoxicillin"
     const val ACT = "ACT"

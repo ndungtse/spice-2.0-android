@@ -329,18 +329,23 @@ class InvestigationGenerator(
             binding.tvErrorMessage.tag = id + errorSuffix
             binding.tvTitleUnit.text = resources.getString(R.string.unit)
             val unitDropDownList = ArrayList<Map<String, Any>>()
-            unitDropDownList.add(
-                hashMapOf<String, Any>(
-                    DefinedParams.NAME to DefaultIDLabel,
-                    DefinedParams.ID to "-1"
-                )
-            )
-            unitList?.let { list ->
-                addDropDownList(list, unitDropDownList)
-            }
             val adapter = CustomSpinnerAdapter(context, translate)
-            adapter.setData(unitDropDownList)
-            binding.etUserInputSpinner.adapter = adapter
+            unitList?.let { list ->
+                binding.tvTitleUnit.visible()
+                binding.etUserInputSpinner.visible()
+                unitDropDownList.add(
+                    hashMapOf<String, Any>(
+                        DefinedParams.NAME to DefaultIDLabel,
+                        DefinedParams.ID to "-1"
+                    )
+                )
+                addDropDownList(list, unitDropDownList)
+                adapter.setData(unitDropDownList)
+                binding.etUserInputSpinner.adapter = adapter
+            }?:kotlin.run {
+                binding.etUserInputSpinner.gone()
+                binding.tvTitleUnit.gone()
+            }
             binding.etUserInputSpinner.onItemSelectedListener =
                 object : AdapterView.OnItemSelectedListener {
                     override fun onItemSelected(

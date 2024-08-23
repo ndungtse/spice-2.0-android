@@ -135,7 +135,7 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
                     resourceState.data?.let {
                         binding.tvWeightValue.text =
                             MotherNeonateUtil.convertWeight(
-                                it.Weight,
+                                it.weight,
                                 requireContext()
                             )
                     }

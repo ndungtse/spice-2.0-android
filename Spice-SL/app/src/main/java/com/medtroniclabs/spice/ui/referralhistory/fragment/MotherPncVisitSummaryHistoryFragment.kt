@@ -14,6 +14,7 @@ import com.medtroniclabs.spice.appextensions.setExpandableText
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.CommonUtils.convertListToString
+import com.medtroniclabs.spice.common.CommonUtils.createInvestigation
 import com.medtroniclabs.spice.common.CommonUtils.getBooleanAsString
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
@@ -100,6 +101,8 @@ class MotherPncVisitSummaryHistoryFragment(private var pncDetails: PncChildMedic
                     ?.takeIf { it.isNotEmpty() }
                     ?: requireContext().getString(R.string.empty__)
 
+            tvInvestigationText.text = data?.reviewDetails?.pncMother?.investigations?.let { createInvestigation(it,requireContext()) }?.takeIf { it.isNotEmpty() }
+                ?: requireContext().getString(R.string.empty__)
 
             tvPrescriptionsText.text = data?.reviewDetails?.pncMother?.prescriptions.let {
                 CommonUtils.createPrescription(
@@ -112,7 +115,7 @@ class MotherPncVisitSummaryHistoryFragment(private var pncDetails: PncChildMedic
             binding.motherSummary.tvNextMedicalReviewLabelTextNot.text=calculateDateTime(
                 data?.nextVisitDate,
                 true
-            )?:getString(R.string.hyphen_symbol)
+            )?:getString(R.string.empty__)
 
 
             binding.motherSummary.historyFlow.visible()

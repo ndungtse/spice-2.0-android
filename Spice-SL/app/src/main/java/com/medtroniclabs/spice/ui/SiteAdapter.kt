@@ -46,19 +46,13 @@ class SiteAdapter(
                 healthFacilitySelectionCallback.invoke(siteModel)
                 holder.binding.ivChecked.visibility = View.VISIBLE
                 holder.binding.tvSiteName.isEnabled = true
-                holder.binding.tvRole.isEnabled = true
-                holder.binding.tvSiteName.typeface =
-                    ResourcesCompat.getFont(holder.viewContext, R.font.inter_bold)
-                holder.binding.tvRole.typeface =
-                    ResourcesCompat.getFont(holder.viewContext, R.font.inter_regular)
+               /* holder.binding.tvSiteName.typeface =
+                    ResourcesCompat.getFont(holder.viewContext, R.font.inter_bold)*/
             } else {
-                holder.binding.ivChecked.visibility = View.GONE
+                holder.binding.ivChecked.visibility = View.INVISIBLE
                 holder.binding.tvSiteName.isEnabled = false
-                holder.binding.tvRole.isEnabled = false
-                holder.binding.tvSiteName.typeface =
-                    ResourcesCompat.getFont(holder.viewContext, R.font.inter_regular)
-                holder.binding.tvRole.typeface =
-                    ResourcesCompat.getFont(holder.viewContext, R.font.inter_regular)
+                /*holder.binding.tvSiteName.typeface =
+                    ResourcesCompat.getFont(holder.viewContext, R.font.inter_regular)*/
             }
         } ?: run {
             holder.binding.ivChecked.visibility = View.GONE

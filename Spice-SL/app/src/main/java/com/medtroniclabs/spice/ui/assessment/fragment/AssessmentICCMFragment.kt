@@ -62,6 +62,7 @@ import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.hasOedemaOf
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.infoSuffixText
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.muacCode
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.muacStatus
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.rdtTest
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.rootSuffix
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.summaryKey
 import com.medtroniclabs.spice.ui.assessment.referrallogic.ReferralResultGenerator
@@ -130,7 +131,6 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
         val age = CommonUtils.convertStringDobToMonths(
             dateOfBirth
         )
-
         age?.let {
             /**
              * ACT Status Condition Rendering
@@ -392,7 +392,7 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
                 }
                 handleRecommendedDoseage(hasCough)
             }
-            hasDiarrhoea, hasFever -> {
+            hasDiarrhoea,rdtTest -> {
                 viewModel.memberDetailsLiveData.value?.data?.let {
                     renderDosageDetails(it.dateOfBirth)
                 }

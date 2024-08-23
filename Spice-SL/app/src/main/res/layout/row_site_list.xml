@@ -7,9 +7,24 @@
     android:background="@color/white"
     android:paddingTop="@dimen/_8sdp">
 
+    <ImageView
+        android:id="@+id/ivChecked"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:contentDescription="@string/selected"
+        android:padding="@dimen/_16sdp"
+        android:src="@drawable/ic_tick"
+        android:visibility="invisible"
+        app:layout_constraintStart_toEndOf="@+id/tvSiteName"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/tvSiteName"
-        style="@style/TextStyle_Regular_16_NoBG"
+        style="@style/TextStyle_Bold_16_NoBG"
         android:layout_width="@dimen/_0dp"
         android:layout_gravity="center"
         android:enabled="false"
@@ -17,39 +32,11 @@
         android:paddingHorizontal="@dimen/_10sdp"
         android:textColor="@color/site_change_color_selector"
         android:textSize="@dimen/_16ssp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/ivChecked"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Apollo Health Clinic" />
-
-
-    <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/tvRole"
-        style="@style/TextStyle_Regular_16"
-        android:layout_width="@dimen/_0dp"
-        android:layout_gravity="center"
-        android:enabled="false"
-        android:visibility="gone"
-        android:paddingHorizontal="@dimen/_10sdp"
-        android:textColor="@color/site_change_color_selector"
-        app:layout_constraintEnd_toStartOf="@+id/ivChecked"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvSiteName"
-        tools:text="Health Screener" />
-
-
-    <ImageView
-        android:id="@+id/ivChecked"
-        android:layout_width="@dimen/_0dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:contentDescription="@string/selected"
-        android:padding="@dimen/_16sdp"
-        android:src="@drawable/ic_tick"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 
     <View
         android:id="@+id/divider"
@@ -60,7 +47,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvSiteName" />
-
+        app:layout_constraintTop_toBottomOf="@+id/tvSiteName"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

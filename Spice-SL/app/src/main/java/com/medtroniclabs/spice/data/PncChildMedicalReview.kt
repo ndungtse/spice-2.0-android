@@ -1,5 +1,7 @@
 package com.medtroniclabs.spice.data
 
+import com.medtroniclabs.spice.data.history.Investigation
+
 data class PncChildMedicalReview(
     val id: String? = null,
     val patientId: String? = null,
@@ -54,7 +56,8 @@ data class PncMotherDetails(
     val systemicExaminationsNotes: String? = null,
     val clinicalNotes: String? = null,
     val encounter: String? = null,
-    val prescriptions:  List<Prescription>? = null
+    val prescriptions:  List<Prescription>? = null,
+    val investigations: List<Investigation>? = null
 )
 
 data class HistoryItem(
