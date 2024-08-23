@@ -206,14 +206,14 @@ class LabourOrDeliveryFragment : BaseFragment() {
 
     private fun initializeDatePicker() {
         binding.etDateOfDelivery.safeClickListener {
-            setListenerToDatePicker(binding.etDateOfDelivery)
+            setListenerToDatePicker(binding.etDateOfDelivery,true)
         }
         binding.etDateOfLabourOnset.safeClickListener {
             setListenerToDatePicker(binding.etDateOfLabourOnset)
         }
     }
 
-    private fun setListenerToDatePicker(textView: AppCompatTextView) {
+    private fun setListenerToDatePicker(textView: AppCompatTextView,isDelivery : Boolean = false) {
         var yearMonthDate: Triple<Int?, Int?, Int?>? = null
         if (textView.text.toString().isNotEmpty())
             yearMonthDate =
@@ -221,8 +221,8 @@ class LabourOrDeliveryFragment : BaseFragment() {
         if (datePickerDialog == null) {
             datePickerDialog = ViewUtils.showDatePicker(
                 requireContext(),
-                date = yearMonthDate,
-                disableFutureDate = true,
+                date =  yearMonthDate,
+                disableFutureDate = false,
                 isMenstrualPeriod = true,
                 cancelCallBack = { datePickerDialog = null }
             ) { _, year, month, dayOfMonth ->
@@ -392,6 +392,7 @@ class LabourOrDeliveryFragment : BaseFragment() {
                             }
                             binding.tvDeliveryStatus.requestLayout()
                         }else{
+                            binding.etDeliveryByOthers.text=null
                             binding.tvDeliveryStatus.layoutParams = (binding.tvDeliveryStatus.layoutParams as ConstraintLayout.LayoutParams).apply {
                                 topMargin = 0
                             }

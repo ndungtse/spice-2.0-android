@@ -164,6 +164,10 @@ class GeneralExaminationFragment : BaseFragment() {
         examinationsTagView.clearOtherChip()
         resetSelectionViews(DefinedParams.BreastCondition)
         resetSelectionViews(DefinedParams.UterusCondition)
+        viewModel.breastConditionValue=null
+        viewModel.uterusConditionValue=null
+        viewModel.specifyConditionUterus=null
+        viewModel.specifyCondition=null
         binding.etPhysicalExaminationComments.text?.clear()
         binding.specifyConditionGroupUterus.gone()
         binding.specifyConditionGroup.gone()

@@ -151,9 +151,16 @@ class MotherFragment : BaseFragment() {
     private fun initializeChipItem() {
         cgGeneralConditionOfMother =
             TagListCustomView(binding.root.context, binding.cgGeneralConditionOfMother) { name, _, _ ->
-                viewModel.motherGeneralCondition = name
+                cgGeneralConditionOfMother.getSelectedTags().let {
+                    if (it.isNotEmpty()) {
+                        viewModel.motherGeneralCondition = it[0].value
+                    } else {
+                        viewModel.motherGeneralCondition = null
+                    }
+                }
                 viewModel.validateSubmitButtonState()
             }
+
         cgRiskFactors = TagListCustomView(binding.root.context, binding.cgRiskFactors) { _, _, _ ->
             viewModel.motherRiskFactors = cgRiskFactors.getSelectedTags()
             viewModel.validateSubmitButtonState()

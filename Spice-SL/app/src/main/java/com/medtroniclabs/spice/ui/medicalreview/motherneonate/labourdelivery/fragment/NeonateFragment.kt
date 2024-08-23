@@ -249,8 +249,14 @@ class NeonateFragment : BaseFragment() {
         }
 
         cgNeonateOutcome =
-            TagListCustomView(binding.root.context, binding.cgNeonateOutcome) { name, _, _ ->
-                viewModel.neonateOutcome = name
+            TagListCustomView(binding.root.context, binding.cgNeonateOutcome) { _, _, _ ->
+                cgNeonateOutcome.getSelectedTags().let {
+                    if (it.isNotEmpty()) {
+                        viewModel.neonateOutcome = it[0].value
+                    } else {
+                        viewModel.neonateOutcome = null
+                    }
+                }
                 viewModel.validateSubmitButtonState()
             }
         cgSignSymptomsObserved =

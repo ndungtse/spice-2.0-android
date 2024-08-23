@@ -72,6 +72,7 @@
                 android:layout_marginHorizontal="@dimen/_10sdp"
                 android:hint="@string/enter_the_weight"
                 android:inputType="numberDecimal"
+                android:maxLength="5"
                 android:paddingHorizontal="@dimen/_12sdp"
                 android:paddingVertical="@dimen/_10sdp"
                 app:layout_constraintEnd_toEndOf="parent"

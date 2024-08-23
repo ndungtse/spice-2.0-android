@@ -15,6 +15,7 @@ import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.CommonUtils.convertListToString
 import com.medtroniclabs.spice.common.CommonUtils.getBooleanAsString
+import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.data.PncChildMedicalReview
 import com.medtroniclabs.spice.databinding.PncMedicalHistoryFragmentBinding
@@ -22,6 +23,8 @@ import com.medtroniclabs.spice.formgeneration.extension.capitalizeFirstChar
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.referralhistory.viewmodel.ReferralHistoryViewModel
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 
 class MotherPncVisitSummaryHistoryFragment(private var pncDetails: PncChildMedicalReview?) : BaseFragment() {
     lateinit var binding: PncMedicalHistoryFragmentBinding
@@ -53,6 +56,8 @@ class MotherPncVisitSummaryHistoryFragment(private var pncDetails: PncChildMedic
 
     private fun initializeMotherSummaryDetails(data: PncChildMedicalReview?) {
         binding.motherSummary.apply {
+            binding.motherSummary.tvPatientStatusSpinner.gone()
+
             tvTitle.text = getString(R.string.pnc_visit_summary_mother)
             tvPncVisitNoText.text =
                 ((data?.reviewDetails?.pncMother?.visitNumber) ?: getString(R.string.empty__)).toString()
@@ -104,14 +109,20 @@ class MotherPncVisitSummaryHistoryFragment(private var pncDetails: PncChildMedic
             }?.takeIf { it.isNotEmpty() }
                 ?: requireContext().getString(R.string.empty__)
 
-            binding.motherSummary.tvNextMedicalReviewLabelTextNot.text=data?.nextVisitDate?:getString(R.string.empty__)
+            binding.motherSummary.tvNextMedicalReviewLabelTextNot.text=calculateDateTime(
+                data?.nextVisitDate,
+                true
+            )?:getString(R.string.hyphen_symbol)
+
+
             binding.motherSummary.historyFlow.visible()
             val textView = binding.motherSummary.tvPncVisitNoLabel
             val params = textView.layoutParams as ConstraintLayout.LayoutParams
             params.topToBottom = R.id.tvPatientStatusLabel // First view
             textView.layoutParams = params
             binding.motherSummary.historyFlowNot.gone()
-            binding.motherSummary.tvPatientStatusText.text=data?.patientStatus?:getString(R.string.empty__)
+            binding.motherSummary.tvPatientStatusText.text=data?.reviewDetails?.pncMother?.patientStatus?:getString(R.string.empty__)
+            binding.motherSummary.tvPatientStatusText.visible()
 
             tvAncVisitText.text =
                 data?.reviewDetails?.pncMother?.diagnosis?.let { list ->
@@ -177,7 +188,21 @@ class MotherPncVisitSummaryHistoryFragment(private var pncDetails: PncChildMedic
                 )
             }?.takeIf { it.isNotEmpty() }
                 ?: requireContext().getString(R.string.empty__)
+
+
         }
+
+    }
+    fun calculateDateTime(dateTime: String?, isDate: Boolean): String? {
+        val inputFormatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME
+        if (dateTime.isNullOrEmpty()) return null
+        val dateTime1 = ZonedDateTime.parse(dateTime, inputFormatter)
+        val timeFormatter: DateTimeFormatter = if (isDate) {
+            DateTimeFormatter.ofPattern(DateUtils.DATE_ddMMyyyy)
+        } else {
+            DateTimeFormatter.ofPattern(DateUtils.TIME_FORMAT_hhmma)
+        }
+        return dateTime1.format(timeFormatter)
     }
 
 }

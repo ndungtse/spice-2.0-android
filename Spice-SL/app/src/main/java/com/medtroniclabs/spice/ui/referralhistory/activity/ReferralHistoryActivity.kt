@@ -85,22 +85,21 @@ class ReferralHistoryActivity : BaseActivity(), AncVisitCallBack {
 
                     ResourceState.SUCCESS -> {
                         hideLoading()
-                        if (resource.data?.id == null) {
-                            val medicalReviewFragment = MedicalReviewHistoryFragment.newInstance(viewModel.patientReference)
-                            addFragmentIfAbsent(
-                                R.id.cardMedicalReviewContainer,
-                                MedicalReviewHistoryFragment.TAG,
-                                medicalReviewFragment
-                            )
-                        }else{
+                        if (resource.data?.id != null) {
                             val medicalReviewFragmentPNC = MotherPncVisitSummaryHistoryFragment.newInstance(resource.data)
                             addFragmentIfAbsent(
                                 R.id.cardMedicalReviewContainer,
                                 MotherPncVisitSummaryHistoryFragment.TAG,
                                 medicalReviewFragmentPNC
                             )
-
                         }
+                            val medicalReviewFragment = MedicalReviewHistoryFragment.newInstance(viewModel.patientReference)
+                            addFragmentIfAbsent(
+                                R.id.cardMotherNeonateContainer,
+                                MedicalReviewHistoryFragment.TAG,
+                                medicalReviewFragment
+                            )
+
                     }
                     ResourceState.ERROR -> {
                     }

@@ -202,6 +202,14 @@ object DateUtils {
         chosenDate.add(Calendar.DAY_OF_MONTH, 1)
         return chosenDate.timeInMillis
     }
+    fun getMinDateBasedOnDeliveryDate(currentDateTimeInMillis: Triple<Int, Int, Int>?): Long {
+        if (currentDateTimeInMillis == null) return 0L
+        val (year, month, day) = currentDateTimeInMillis
+        val calendar = Calendar.getInstance()
+        calendar.set(year, month - 1, day)
+        calendar.add(Calendar.MONTH, 0)
+        return calendar.timeInMillis
+    }
 
     fun convertDateToLong(date: String?, format: String? = DATE_FORMAT_yyyyMMddHHmmssZZZZZ): Long? {
         try {
