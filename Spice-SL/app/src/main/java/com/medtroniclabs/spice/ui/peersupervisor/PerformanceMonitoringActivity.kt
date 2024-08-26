@@ -161,13 +161,6 @@ class PerformanceMonitoringActivity : BaseActivity() {
 
         viewModel.dataFlow.observe(this) {
             adapter.submitData(lifecycle, it)
-            if (adapter.itemCount > 0) {
-                binding.rvPerformanceList.visible()
-                binding.tvNoRecords.gone()
-            } else {
-                binding.rvPerformanceList.gone()
-                binding.tvNoRecords.visible()
-            }
         }
 
 
@@ -500,8 +493,20 @@ class PerformanceMonitoringActivity : BaseActivity() {
                 binding.paginationLoader.gone()
 
             if (loadState.refresh is LoadState.Error || loadState.append is LoadState.Error)
-                Toast.makeText(this, getString(R.string.something_went_wrong), Toast.LENGTH_LONG).show()
+                Toast.makeText(this, getString(R.string.something_went_wrong), Toast.LENGTH_LONG)
+                    .show()
 
+            val isListEmpty = adapter.itemCount == 0 &&
+                    loadState.refresh is LoadState.NotLoading &&
+                    loadState.append.endOfPaginationReached
+
+            if (isListEmpty) {
+                binding.rvPerformanceList.gone()
+                binding.tvNoRecords.visible()
+            } else {
+                binding.rvPerformanceList.visible()
+                binding.tvNoRecords.gone()
+            }
         }
 
         chwFilterAdapter = CheckBoxSpinnerAdapter(this, mutableListOf(), chwSpinnerListener)

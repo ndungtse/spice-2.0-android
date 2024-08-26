@@ -88,4 +88,14 @@ interface FollowUpDao {
     @Query("DELETE FROM FollowUp WHERE isCompleted = 1 AND syncStatus = :syncStatus")
     suspend fun deleteCompletedFollowUp(syncStatus: String = OfflineSyncStatus.Success.name)
 
+    @Query("UPDATE FollowUp SET isCompleted = 1, updatedAt = :updateAt WHERE memberId = :fhirId AND id != :id AND type = :type AND encounterType = :encounterType AND reason= :reason")
+    suspend fun updateHHVisitTicketsOnRecovered(id: Long, fhirId: String, type: String, encounterType: String?=null, reason: String? = null, updateAt: Long = System.currentTimeMillis())
+
+    @Query("UPDATE FollowUp SET isCompleted = 1, updatedAt = :updateAt WHERE memberId = :fhirId AND id != :id AND type IN (:types)")
+    suspend fun closeTicketsForRMNCH(id: Long, fhirId: String, types: List<String>, updateAt: Long = System.currentTimeMillis())
+
+    @Query("UPDATE FollowUp SET isCompleted = 1, updatedAt = :updateAt WHERE memberId = :fhirId AND id != :id AND type IN (:types) AND " +
+            "CASE WHEN :type = 'MEDICAL_REVIEW' THEN (encounterType != 'RMNCH' ) ELSE 1 END")
+    suspend fun closeTicketsForNonRMNCH(id: Long, fhirId: String, type: String, types: List<String>, updateAt: Long = System.currentTimeMillis())
+
 }

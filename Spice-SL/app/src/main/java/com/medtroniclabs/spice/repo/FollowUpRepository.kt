@@ -163,7 +163,7 @@ class FollowUpRepository @Inject constructor(
         when (status.lowercase()) {
             ReferralStatus.Recovered.name.lowercase() -> {
                 followUp.isCompleted = true
-                roomHelper.updateOtherDuplicateTickets(id, followUp)
+                roomHelper.updateDuplicateTicketsAsCompleted(id, followUp)
             }
 
             ReferralStatus.Referred.name.lowercase() -> {
@@ -171,7 +171,7 @@ class FollowUpRepository @Inject constructor(
                     roomHelper.updateOnTreatmentStatus(id, followUp, currentTime)
                 } else {
                     followUp.isCompleted = true
-                    roomHelper.updateOtherDuplicateTickets(id, followUp)
+                    roomHelper.updateDuplicateTicketsAsCompleted(id, followUp)
                 }
             }
             else -> {

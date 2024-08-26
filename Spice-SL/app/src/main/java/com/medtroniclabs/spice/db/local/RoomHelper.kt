@@ -191,6 +191,8 @@ interface RoomHelper {
 
     suspend fun updateOtherDuplicateTickets(id: Long, followUp: FollowUp)
 
+    suspend fun updateDuplicateTicketsAsCompleted(id: Long, followUp: FollowUp)
+
     suspend fun updateOtherFollowUpForWrongNumber(id: Long, fhirId: String)
 
     suspend fun updateOnTreatmentStatus(id: Long, followUp: FollowUp, updatedAt: Long)

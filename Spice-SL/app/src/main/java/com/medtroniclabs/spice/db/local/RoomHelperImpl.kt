@@ -549,6 +549,19 @@ class RoomHelperImpl @Inject constructor(
         )
     }
 
+    override suspend fun updateDuplicateTicketsAsCompleted(id: Long, followUp: FollowUp) {
+        if (followUp.type == FollowUpDefinedParams.FU_TYPE_HH_VISIT) {
+            followUpDao.updateHHVisitTicketsOnRecovered(id,followUp.memberId, followUp.type, followUp.encounterType, followUp.reason)
+        } else {
+            val types = listOf(FollowUpDefinedParams.FU_TYPE_REFERRED, FollowUpDefinedParams.FU_TYPE_MEDICAL_REVIEW)
+            if (followUp.encounterType == FollowUpDefinedParams.FU_ENCOUNTER_TYPE_RMNCH) {
+                followUpDao.closeTicketsForRMNCH(id, followUp.memberId, types)
+            } else {
+                followUpDao.closeTicketsForNonRMNCH(id,followUp.memberId, followUp.type, types)
+            }
+        }
+    }
+
     override suspend fun updateOnTreatmentStatus(
         id: Long,
         followUp: FollowUp,

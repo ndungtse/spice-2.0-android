@@ -216,38 +216,40 @@
 
         <LinearLayout
             android:id="@+id/bottomView"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/white"
             android:gravity="bottom"
             android:orientation="horizontal"
             android:paddingHorizontal="@dimen/_8sdp"
             android:paddingTop="@dimen/_8sdp"
+            android:layoutDirection="rtl"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/llFilterSection">
 
             <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/btnCancel"
-                style="@style/Button_Style_Border"
-                android:layout_width="@dimen/_0dp"
-                android:layout_gravity="center"
-                android:layout_margin="@dimen/_8sdp"
-                android:layout_weight="1"
-                android:text="Reset"
-                android:textAllCaps="true"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btnApply"
                 style="@style/Button_Style"
-                android:layout_width="@dimen/_0dp"
+                android:layout_width="wrap_content"
                 android:layout_gravity="center"
                 android:layout_margin="@dimen/_8sdp"
-                android:layout_weight="1"
                 android:background="@drawable/button_selector_cobalt"
                 android:text="@string/apply"
                 android:textAllCaps="true"
                 app:layout_constraintTop_toTopOf="parent" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btnCancel"
+                style="@style/Button_Style_Border"
+                android:layout_width="wrap_content"
+                android:layout_gravity="center"
+                android:layout_margin="@dimen/_8sdp"
+                android:text="@string/reset"
+                android:textAllCaps="true"
+                app:layout_constraintTop_toTopOf="parent" />
+
+
         </LinearLayout>
 
         <androidx.appcompat.widget.AppCompatTextView
