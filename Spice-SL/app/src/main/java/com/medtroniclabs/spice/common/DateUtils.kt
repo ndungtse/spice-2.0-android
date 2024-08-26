@@ -599,4 +599,12 @@ object DateUtils {
         calendar.add(Calendar.MONTH, -months)
         return calendar.timeInMillis
     }
+
+    fun calculateTripleDateToLong(currentDateTimeInMillis: Triple<Int, Int, Int>?): Long? {
+        if (currentDateTimeInMillis == null) return null
+        val (year, month, day) = currentDateTimeInMillis
+        val calendar = Calendar.getInstance()
+        calendar.set(year, month - 1, day)
+        return calendar.timeInMillis
+    }
 }
