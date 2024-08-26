@@ -35,6 +35,7 @@ import com.medtroniclabs.spice.db.entity.MemberClinicalEntity
 import com.medtroniclabs.spice.db.entity.MentalHealthEntity
 import com.medtroniclabs.spice.db.entity.MenuEntity
 import com.medtroniclabs.spice.db.entity.PregnancyDetail
+import com.medtroniclabs.spice.db.entity.ScreeningEntity
 import com.medtroniclabs.spice.db.entity.SignsAndSymptomsEntity
 import com.medtroniclabs.spice.db.entity.DistrictEntity
 import com.medtroniclabs.spice.db.entity.UserProfileEntity
@@ -296,7 +297,6 @@ interface RoomHelper {
     suspend fun getMedicalParentComplianceList(): List<MedicalComplianceEntity>
     suspend fun getMedicalChildComplianceList(parentId: Long): List<MedicalComplianceEntity>
     suspend fun deleteMedicalCompliance()
-
     suspend fun saveDistricts(counties: List<DistrictEntity>)
     suspend fun getDistricts(countryId: Long): List<DistrictEntity>
     suspend fun deleteDistricts()
@@ -306,4 +306,7 @@ interface RoomHelper {
     suspend fun savePrograms(programs: List<ProgramEntity>)
     suspend fun getPrograms(): List<ProgramEntity>
     suspend fun deletePrograms()
+     fun getMentalQuestion(formType: String): LiveData<MentalHealthEntity>
+    fun getSites(): LiveData<List<HealthFacilityEntity>>
+    suspend fun savePatientScreeningInformation(screeningEntity: ScreeningEntity) : ScreeningEntity
 }

@@ -711,4 +711,28 @@
     <string name="program_id">Program ID</string>
     <string name="facility_name">Facility Name</string>
 
+    <!-- Screening -->
+    <string name="screening">Screening</string>
+    <string name="general_details_label">Screened participants will be linked to the site:</string>
+    <string name="screening_catagory">Screening Category</string>
+    <string name="clinic">Facility</string>
+    <string name="camp">Camp</string>
+    <string name="community">Community</string>
+    <string name="door_to_door">Door to Door</string>
+    <string name="pharmacy">Pharmacy</string>
+    <string name="screening_type">Department/Screening Type</string>
+    <string name="type_your_comments">Type your comments</string>
+    <string name="Other">Other</string>
+    <string name="outpatient">Outpatient</string>
+    <string name="inpatient">Inpatient</string>
+    <string name="opd_triage">Triage</string>
+    <string name="facility_error">Please select a facility.</string>
+    <string name="people_screened">Screened</string>
+    <string name="people_referred">Referred</string>
+    <string name="screening_category">Screening Category</string>
+    <string name="screen_next_patient">Screen Patient</string>
+    <string name="today_s_stats">Today’s Screening Stats</string>
+    <string name="zero_label">0</string>
+    <string name="dot">•</string>
+
 </resources>

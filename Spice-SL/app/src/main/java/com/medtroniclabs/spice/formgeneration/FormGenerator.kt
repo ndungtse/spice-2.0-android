@@ -123,18 +123,12 @@ import com.medtroniclabs.spice.mappingkey.MemberRegistration.dateOfBirth
 import com.medtroniclabs.spice.mappingkey.MemberRegistration.gender
 import com.medtroniclabs.spice.mappingkey.MemberRegistration.phoneNumber
 import com.medtroniclabs.spice.mappingkey.Screening
-import com.medtroniclabs.spice.mappingkey.Screening.BMI
-import com.medtroniclabs.spice.mappingkey.Screening.Diastolic
-import com.medtroniclabs.spice.mappingkey.Screening.Height
 import com.medtroniclabs.spice.mappingkey.Screening.Hour
 import com.medtroniclabs.spice.mappingkey.Screening.Minute
-import com.medtroniclabs.spice.mappingkey.Screening.Systolic
-import com.medtroniclabs.spice.mappingkey.Screening.Weight
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.PREGNANCY_MAX_AGE
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.PREGNANCY_MIN_AGE
 import java.util.Calendar
 import java.util.Date
-import kotlin.math.roundToInt
 
 class FormGenerator(
     var context: Context,
@@ -142,7 +136,8 @@ class FormGenerator(
     private val resultLauncher: ActivityResultLauncher<Intent>? = null,
     private val listener: FormEventListener,
     var scrollView: NestedScrollView? = null,
-    val translate: Boolean = false
+    val translate: Boolean = false,
+    private val callback: ((HashMap<String, Any>,String) -> Unit)? = null
 ) : ContextWrapper(context) {
 
     private var serverData: List<FormLayout>? = null
@@ -165,8 +160,6 @@ class FormGenerator(
     private val lastMealTypeDateSuffix  = "Date"
     private var mentalHealthQuestions: HashMap<String, ArrayList<MentalHealthOption>>? = null
     private var mentalHealthEditList: ArrayList<Map<String, Any>>? = null
-    private var systolicAverageSummary: Int? = null
-    private var diastolicAverageSummary: Int? = null
 
     fun populateViews(
         serverData: List<FormLayout>,
@@ -413,9 +406,7 @@ class FormGenerator(
                             resultValue?.let {
                                 resultHashMap[id] = resultValue
                             }
-                            if (serverViewModel.id.contains(Weight) || serverViewModel.id.contains(Height)) {
-                                renderBMIValue()
-                            }
+                            callback?.invoke(resultHashMap,id)
                         } else
                             resultHashMap[id] = editable.trim().toString()
                         setConditionalVisibility(serverViewModel, editable.trim().toString())
@@ -425,28 +416,6 @@ class FormGenerator(
 
             setViewVisibility(visibility, binding.root)
             setViewEnableDisable(isEnabled, binding.root)
-        }
-    }
-
-    private fun renderBMIValue() {
-        val bmiView = getViewByTag(BMI) as? AppCompatTextView
-        bmiView?.let { view ->
-            if (!resultHashMap.containsKey(Weight) || !resultHashMap.containsKey(Height)) {
-                view.text = getString(R.string.hyphen_symbol)
-                removeIfContains(BMI)
-            } else {
-                if (resultHashMap.containsKey(Weight) && resultHashMap.containsKey(Height)) {
-                    val weight = resultHashMap[Weight] as? Double
-                    val height = resultHashMap[Height] as? Double
-
-                    if (weight == null || height == null) {
-                        view.text = getString(R.string.hyphen_symbol)
-                    } else {
-                        val bmi = CommonUtils.getBMI(height, weight,context)
-                        view.text = bmi
-                    }
-                }
-            }
         }
     }
 
@@ -668,7 +637,14 @@ class FormGenerator(
             val list = Screening.getEmptyBPReading(totalCount ?: 2)
             resultHashMap[id] = list
             binding.instructionsLayout.safeClickListener {
-                // Dialof shown
+                instructions?.let {
+                    listener.onInstructionClicked(
+                        id = id,
+                        title = title,
+                        informationList = it,
+                        description = getString(R.string.bp_measure)
+                    )
+                }
             }
             if (list.size > 2) {
                 binding.bpReadingThree.visibility = View.VISIBLE
@@ -2357,7 +2333,6 @@ class FormGenerator(
                         context, list, data
                     )
                     if (validationBPResultModel.status) {
-                        calculateBPValues(formLayout = data, resultHashMap)
                         hideValidationField(data)
                     } else {
                         isValid = false
@@ -2383,7 +2358,7 @@ class FormGenerator(
                             val isValidMinute =
                                 minMinute != null && maxMinute != null && minute in minMinute..maxMinute
 
-                            if (isValidHour && isValidMinute) {
+                            if (((!(minHour != null && maxHour != null)) && (!(minMinute != null && maxMinute != null))) || (isValidHour && isValidMinute)) {
                                 hideValidationField(data)
                             } else {
                                 isValid = false
@@ -2918,7 +2893,7 @@ class FormGenerator(
 
     fun handlePregnancyCardBasedOnAge() {
         val dateOfBirthView =
-            getViewByTag(MemberRegistration.dateOfBirth) as? AppCompatTextView ?: return
+            getViewByTag(dateOfBirth) as? AppCompatTextView ?: return
         val dateOfBirth = dateOfBirthView.text?.toString()?.trim() ?: return
 
         if (DateUtils.calculateAge(
@@ -3004,60 +2979,6 @@ class FormGenerator(
         val serverItem = serverData?.firstOrNull { it.id == itemId }
         return serverItem?.let { it.onlyAlphabets == true && CommonUtils.isAlphabetsWithSpace(input) }
             ?: true
-    }
-    private fun calculateBPValues(formLayout: FormLayout, resultMap: Map<String, Any>) {
-        formLayout.apply {
-            var systolic = 0.0
-            var diastolic = 0.0
-            if (resultMap.containsKey(id)) {
-                val actualMapList = resultMap[id]
-                if (actualMapList is java.util.ArrayList<*>) {
-                    var systolicEntries = 0
-                    var diastolicEntries = 0
-                    actualMapList.forEach { map ->
-                        if (map is BPModel) {
-                            map.systolic?.let {
-                                systolic += it
-                                systolicEntries++
-                            }
-                            map.diastolic?.let {
-                                diastolic += it
-                                diastolicEntries++
-                            }
-                        } else {
-                            validateMap(map, Systolic)?.let {
-                                systolic += it
-                                systolicEntries++
-                            }
-                            validateMap(map, Diastolic)?.let {
-                                diastolic += it
-                                diastolicEntries++
-                            }
-                        }
-                    }
-                    updateAverage(
-                        actualMapList, systolicEntries, diastolicEntries, systolic, diastolic
-                    )
-                }
-            }
-        }
-    }
-
-    private fun validateMap(map: Any?, value: String): Double? {
-        return if (map is Map<*, *> && map.containsKey(value)) map[value] as Double else null
-    }
-
-    private fun updateAverage(
-        actualMapList: java.util.ArrayList<*>,
-        systolicEntries: Int,
-        diastolicEntries: Int,
-        systolic: Double,
-        diastolic: Double
-    ) {
-        if (actualMapList.size > 0 && systolicEntries > 0 && diastolicEntries > 0) {
-            systolicAverageSummary = (systolic / systolicEntries).roundToInt()
-            diastolicAverageSummary = (diastolic / diastolicEntries).roundToInt()
-        }
     }
 
     fun checkValidMentalHealth(formLayout: FormLayout, id: String): Boolean {

@@ -9,6 +9,7 @@ import com.google.gson.reflect.TypeToken
 import com.medtroniclabs.spice.data.IdentityType
 import com.medtroniclabs.spice.data.LoginResponse
 import com.medtroniclabs.spice.data.offlinesync.model.FollowUpCriteria
+import com.medtroniclabs.spice.mappingkey.Screening
 import java.lang.reflect.Type
 
 
@@ -44,7 +45,10 @@ object SecuredPreference {
         DISTRICT_ID,
         IDENTITY_TYPES,
         IS_NON_NCD_WORKFLOW_ENABLED,
-        REMAINING_ATTEMPTS_COUNT
+        REMAINING_ATTEMPTS_COUNT,
+        CURRENT_LATITUDE,
+        CURRENT_LONGITUDE,
+        MEASUREMENT_TYPE_KEY
     }
 
 
@@ -510,4 +514,28 @@ object SecuredPreference {
         return getLong(EnvironmentKey.DISTRICT_ID.name)
     }
 
+
+    fun getUnitMeasurementType(): String {
+        getString(
+            EnvironmentKey.MEASUREMENT_TYPE_KEY.name,
+            Screening.Unit_Measurement_Metric_Type
+        )?.let {
+            return it
+        } ?: kotlin.run {
+            return Screening.Unit_Measurement_Metric_Type
+        }
+    }
+
+    fun getTimeZoneId(): String? {
+        getString(EnvironmentKey.USER_RESPONSE.name)?.let { userResponseString ->
+            val type: Type = object : TypeToken<LoginResponse>() {}.type
+            val usersResponse = Gson().fromJson<LoginResponse>(userResponseString, type)
+            return usersResponse.timezone?.offset
+        }
+        return null
+    }
+
+    fun getDeviceID(): Long? {
+        return getUserDetails().deviceInfoId
+    }
 }

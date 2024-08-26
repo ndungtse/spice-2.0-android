@@ -29,6 +29,7 @@ import com.medtroniclabs.spice.db.dao.LinkHouseholdMemberDao
 import com.medtroniclabs.spice.db.dao.MemberDAO
 import com.medtroniclabs.spice.db.dao.MetaDataDAO
 import com.medtroniclabs.spice.db.dao.PregnancyDetailDao
+import com.medtroniclabs.spice.db.dao.ScreeningDAO
 import com.medtroniclabs.spice.db.entity.AssessmentEntity
 import com.medtroniclabs.spice.db.entity.CallHistory
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowConditionEntity
@@ -48,6 +49,7 @@ import com.medtroniclabs.spice.db.entity.MedicalComplianceEntity
 import com.medtroniclabs.spice.db.entity.MentalHealthEntity
 import com.medtroniclabs.spice.db.entity.MenuEntity
 import com.medtroniclabs.spice.db.entity.PregnancyDetail
+import com.medtroniclabs.spice.db.entity.ScreeningEntity
 import com.medtroniclabs.spice.db.entity.SignsAndSymptomsEntity
 import com.medtroniclabs.spice.db.entity.DistrictEntity
 import com.medtroniclabs.spice.db.entity.UserProfileEntity
@@ -62,7 +64,7 @@ import net.zetetic.database.sqlcipher.SupportOpenHelperFactory
         MedicalReviewMetaItems::class, DiseaseCategoryItems::class, ExaminationListItems::class, LabourDeliveryMetaEntity::class, FollowUp::class, FollowUpCall::class, PregnancyDetail::class, FrequencyEntity::class, ConsentForm::class,
         ProgramEntity::class, CulturesEntity::class, ConsentForm::class,
         MedicalReviewMetaItems::class, DiseaseCategoryItems::class, ExaminationListItems::class, LabourDeliveryMetaEntity::class, FollowUp::class, FollowUpCall::class, PregnancyDetail::class, FrequencyEntity::class,
-        ProgramEntity::class, CulturesEntity::class, ConsentForm::class, ConsentEntity::class, MentalHealthEntity::class, MedicalComplianceEntity::class, ChiefDomEntity::class, DistrictEntity::class],
+        ProgramEntity::class, CulturesEntity::class, ConsentForm::class, ConsentEntity::class, MentalHealthEntity::class, MedicalComplianceEntity::class, ChiefDomEntity::class, DistrictEntity::class, ScreeningEntity::class],
     version = 1
 )
 @TypeConverters(OfflineStatusTypeConverter::class)
@@ -89,6 +91,8 @@ abstract class SpiceDataBase : RoomDatabase() {
     abstract fun linkHouseholdMemberDao(): LinkHouseholdMemberDao
 
     abstract fun callHistoryDao(): CallHistoryDao
+
+    abstract fun screeningDAO(): ScreeningDAO
 
     companion object {
         private const val DATABASE_NAME = "SpiceDataBase"

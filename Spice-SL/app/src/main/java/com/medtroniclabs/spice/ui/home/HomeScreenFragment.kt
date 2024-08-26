@@ -14,6 +14,7 @@ import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.databinding.FragmentHomeScreenBinding
 import com.medtroniclabs.spice.db.entity.MenuEntity
+import com.medtroniclabs.spice.ncd.screening.ScreeningActivity
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.BaseFragment
@@ -117,6 +118,10 @@ class HomeScreenFragment : BaseFragment(), MenuSelectionListener {
 
             }
 
+            /*  NCD WorkFlow                           */
+            MenuConstants.SCREENING ->{
+                startActivity(Intent(requireContext(), ScreeningActivity::class.java))
+            }
 
             MenuConstants.REGISTRATION -> {
                 startActivity(Intent(requireContext(), RegistrationActivity::class.java))

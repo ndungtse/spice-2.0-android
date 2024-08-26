@@ -183,6 +183,13 @@
             android:authorities="${applicationId}.androidx-startup"
             android:exported="false"
             tools:node="remove" />
+
+        <!--  NCD WorkFlow      -->
+
+        <activity
+            android:name=".ncd.screening.ScreeningActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"/>
     </application>
 
 </manifest>

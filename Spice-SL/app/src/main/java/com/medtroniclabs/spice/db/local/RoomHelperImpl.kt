@@ -32,6 +32,7 @@ import com.medtroniclabs.spice.db.dao.LinkHouseholdMemberDao
 import com.medtroniclabs.spice.db.dao.MemberDAO
 import com.medtroniclabs.spice.db.dao.MetaDataDAO
 import com.medtroniclabs.spice.db.dao.PregnancyDetailDao
+import com.medtroniclabs.spice.db.dao.ScreeningDAO
 import com.medtroniclabs.spice.db.entity.AssessmentEntity
 import com.medtroniclabs.spice.db.entity.CallHistory
 import com.medtroniclabs.spice.db.entity.ChiefDomEntity
@@ -53,6 +54,7 @@ import com.medtroniclabs.spice.db.entity.MemberClinicalEntity
 import com.medtroniclabs.spice.db.entity.MentalHealthEntity
 import com.medtroniclabs.spice.db.entity.MenuEntity
 import com.medtroniclabs.spice.db.entity.PregnancyDetail
+import com.medtroniclabs.spice.db.entity.ScreeningEntity
 import com.medtroniclabs.spice.db.entity.SignsAndSymptomsEntity
 import com.medtroniclabs.spice.db.entity.DistrictEntity
 import com.medtroniclabs.spice.db.entity.UserProfileEntity
@@ -85,6 +87,7 @@ class RoomHelperImpl @Inject constructor(
     private val consentFormDao: ConsentFormDao,
     private val linkHouseholdMemberDao: LinkHouseholdMemberDao,
     private val callHistoryDao: CallHistoryDao
+    private val screeningDAO: ScreeningDAO,
 ) : RoomHelper {
     override suspend fun saveHouseHoldEntry(householdEntity: HouseholdEntity): Long {
         return householdDAO.insertHouseHold(householdEntity)
@@ -831,5 +834,18 @@ class RoomHelperImpl @Inject constructor(
 
     override suspend fun deletePrograms() {
         metaDataDAO.deletePrograms()
+    }
+
+    override fun getMentalQuestion(formType: String): LiveData<MentalHealthEntity> {
+        return metaDataDAO.getMentalQuestion(formType)
+    }
+
+    override fun getSites(): LiveData<List<HealthFacilityEntity>> {
+        return metaDataDAO.getSites()
+    }
+
+    override suspend fun savePatientScreeningInformation(screeningEntity: ScreeningEntity): ScreeningEntity {
+        val id = screeningDAO.insertScreening(screeningEntity)
+        return screeningDAO.getScreeningById(id)
     }
 }

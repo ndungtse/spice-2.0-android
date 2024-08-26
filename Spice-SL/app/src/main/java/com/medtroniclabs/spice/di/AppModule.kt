@@ -32,6 +32,7 @@ import com.medtroniclabs.spice.db.dao.MemberDAO
 import com.medtroniclabs.spice.db.dao.MetaDataDAO
 import com.medtroniclabs.spice.db.dao.PregnancyDetailDao
 import com.medtroniclabs.spice.db.entity.ConsentForm
+import com.medtroniclabs.spice.db.dao.ScreeningDAO
 import com.medtroniclabs.spice.db.local.RoomHelper
 import com.medtroniclabs.spice.db.local.RoomHelperImpl
 import com.medtroniclabs.spice.network.ApiHelper
@@ -295,6 +296,13 @@ object AppModule {
 
     private fun getAppPackageInfo(): String {
         return BuildConfig.VERSION_NAME
+    }
+
+    /* NCD WorkFlow */
+    @Singleton
+    @Provides
+    fun provideScreeningDAO(db: SpiceDataBase): ScreeningDAO {
+        return db.screeningDAO()
     }
 }
 

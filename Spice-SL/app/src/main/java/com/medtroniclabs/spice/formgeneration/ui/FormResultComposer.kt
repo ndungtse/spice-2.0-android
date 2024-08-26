@@ -4,6 +4,7 @@ import android.content.Context
 import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.formgeneration.config.ViewType
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
+import com.medtroniclabs.spice.mappingkey.Screening
 
 class FormResultComposer {
 
@@ -13,10 +14,11 @@ class FormResultComposer {
         context: Context,
         serverData: List<FormLayout?>,
         resultMap: HashMap<String, *>,
-        menuType: String? = null
+        menuType: String? = null,
+        bmiCategoryGroupId: String? = null
     ): Pair<String?, HashMap<String, Any>> {
         serverData.forEach { serverViewModel ->
-           when (serverViewModel?.viewType) {
+            when (serverViewModel?.viewType) {
                 ViewType.VIEW_TYPE_FORM_CARD_FAMILY -> createGroup(serverViewModel.id)
                 else -> {
                     addToGroup(
@@ -28,10 +30,49 @@ class FormResultComposer {
                 }
             }
         }
-        return Pair(StringConverter.convertGivenMapToString(groupedResultMap), addToMenuGroup(groupedResultMap, menuType))
+
+
+        for (key in resultMap.keys) {
+            groupResultsForNCD(serverData, key, resultMap[key])
+        }
+
+
+
+        if (groupedResultMap.containsKey(Screening.PCMentalHealth))
+            (groupedResultMap[Screening.PCMentalHealth] as? HashMap<*, *>)?.let { pcMap ->
+                val pcMH = HashMap<String, Any>()
+                pcMH[Screening.PCMentalHealth] = pcMap
+                (groupedResultMap[Screening.PIScore] as? String?)?.let { score ->
+                    pcMH[Screening.PIScore] = score
+                }
+                groupedResultMap.remove(Screening.PIScore)
+                groupedResultMap.remove(Screening.PCMentalHealth)
+                groupedResultMap[Screening.PHQ4.lowercase()] = pcMH
+            }
+
+        bmiCategoryGroupId?.let { groupId ->
+            if (groupedResultMap.containsKey(Screening.BMI_CATEGORY) && groupedResultMap.containsKey(
+                    groupId
+                )
+            ) {
+                (groupedResultMap[groupId] as? HashMap<String, Any>)?.let {
+                    it[Screening.BMI_CATEGORY] =
+                        groupedResultMap[Screening.BMI_CATEGORY] as String
+                    groupedResultMap.remove(Screening.BMI_CATEGORY)
+                }
+            }
+        }
+
+        return Pair(
+            StringConverter.convertGivenMapToString(groupedResultMap),
+            addToMenuGroup(groupedResultMap, menuType)
+        )
     }
 
-    fun addToMenuGroup(groupedResultMap: HashMap<String, Any>, menuType: String?): HashMap<String, Any> {
+    fun addToMenuGroup(
+        groupedResultMap: HashMap<String, Any>,
+        menuType: String?
+    ): HashMap<String, Any> {
         val menuGroupMap = HashMap<String, Any>()
         menuType?.let {
             menuGroupMap[menuType] = groupedResultMap
@@ -55,6 +96,54 @@ class FormResultComposer {
             any?.let { value ->
                 subMap.put(id, value)
             }
+        }
+    }
+
+    private fun groupResultsForNCD(serverData: List<FormLayout?>, id: String, any: Any?) {
+
+        val familyGroup = findGroupIdForNCD(serverData, id)
+
+        var subMap: HashMap<String, Any>? = null
+
+        if (familyGroup != null) {
+            if (!groupedResultMap.containsKey(familyGroup))
+                createGroup(familyGroup)
+            subMap = groupedResultMap[familyGroup] as HashMap<String, Any>?
+        }
+
+        any?.let { value ->
+            if (subMap != null)
+                subMap.put(id, value)
+            else groupedResultMap.put(id, value)
+        }
+
+    }
+
+    companion object {
+        fun findGroupIdForNCD(serverData: List<FormLayout?>, id: String): String? {
+            val baseId = when (id) {
+                Screening.BMI -> Screening.Height
+                Screening.Glucose_Value, Screening.Glucose_Type, Screening.HbA1c_Date_Time, Screening.Glucose_Date_Time, Screening.GlucoseId, Screening.BloodGlucoseUnit, Screening.GlucoseLogId, Screening.BGTakenOn -> Screening.BloodGlucoseID
+                Screening.PHQ4_Result, Screening.PHQ4_Score, Screening.PHQ4_Risk_Level -> Screening.PHQ4_Mental_Health
+                Screening.PHQ9_Result, Screening.PHQ9_Score, Screening.PHQ9_Risk_Level -> Screening.PHQ9_Mental_Health
+                Screening.GAD7_Score, Screening.GAD7_Risk_Level -> Screening.GAD7_Mental_Health
+                Screening.Avg_Blood_pressure, Screening.Avg_Pulse, Screening.Avg_Systolic, Screening.Avg_Diastolic, Screening.bp_log_id, Screening.BPTakenOn -> Screening.BPLog_Details
+                Screening.Initial -> Screening.First_Name
+                Screening.isDiabetesDiagnosis -> Screening.DiabetesPatientType
+                else -> {
+                    if (id.endsWith(Screening.unitMeasurement_KEY)) {
+                        val parts = id.split(Screening.unitMeasurement_KEY)
+                        if (parts.isNotEmpty()) {
+                            parts[0]
+                        } else {
+                            id
+                        }
+                    } else {
+                        id
+                    }
+                }
+            }
+            return serverData.find { it?.id == baseId }?.family
         }
     }
 }

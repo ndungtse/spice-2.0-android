@@ -73,4 +73,23 @@ open class BaseFragment : Fragment(){
             }
         }
     }
+
+    inline fun <reified F : Fragment> replaceFragmentIfExists(
+        id: Int,
+        bundle: Bundle? = null,
+        tag: String? = null
+    ) {
+        val existingFragment = parentFragmentManager.findFragmentByTag(tag)
+
+        parentFragmentManager.commit {
+            setReorderingAllowed(true)
+            if (existingFragment != null) {
+                // Fragment exists, replace it
+                replace(id, existingFragment, tag)
+            } else {
+                // Fragment does not exist, create a new instance and replace it
+                replace<F>(id, args = bundle, tag = tag)
+            }
+        }
+    }
 }

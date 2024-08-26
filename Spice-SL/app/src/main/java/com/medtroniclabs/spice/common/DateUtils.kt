@@ -608,4 +608,20 @@ object DateUtils {
         }
     }
 
+
+    fun getCurrentDateTimeInUserTimeZone(inputFormat: String): String {
+        val calendar = Calendar.getInstance()
+        return parseDateWithTimeZone(inputFormat)?.format(calendar.time) ?: ""
+    }
+    fun parseDateWithTimeZone(inputFormat : String): SimpleDateFormat? {
+        try {
+            val sdf = SimpleDateFormat(inputFormat, Locale.ENGLISH)
+            SecuredPreference.getTimeZoneId()?.let {
+                sdf.timeZone = TimeZone.getTimeZone("GMT$it")
+            }
+            return sdf
+        }catch (_:Exception){
+            return null
+        }
+    }
 }

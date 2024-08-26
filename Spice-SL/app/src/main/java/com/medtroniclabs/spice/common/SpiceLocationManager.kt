@@ -25,6 +25,14 @@ class SpiceLocationManager(private val context: Context) {
 
             fusedLocationProviderClient.lastLocation.addOnSuccessListener { lastLocation ->
                 lastLocation?.let {
+                    SecuredPreference.putDouble(
+                        SecuredPreference.EnvironmentKey.CURRENT_LATITUDE.name,
+                        it.latitude
+                    )
+                    SecuredPreference.putDouble(
+                        SecuredPreference.EnvironmentKey.CURRENT_LONGITUDE.name,
+                        it.longitude
+                    )
                     callback(it)
                 }
 
@@ -36,6 +44,14 @@ class SpiceLocationManager(private val context: Context) {
                     cancellationTokenSource.token
                 ).addOnSuccessListener { currentLocation ->
                     currentLocation?.let {
+                        SecuredPreference.putDouble(
+                            SecuredPreference.EnvironmentKey.CURRENT_LATITUDE.name,
+                            it.latitude
+                        )
+                        SecuredPreference.putDouble(
+                            SecuredPreference.EnvironmentKey.CURRENT_LONGITUDE.name,
+                            it.longitude
+                        )
                         callback(it)
                     }
                 }

@@ -3,7 +3,6 @@ package com.medtroniclabs.spice.common
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.res.AssetManager
-import android.os.Environment
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.nullIfEmpty
 import com.medtroniclabs.spice.common.DateUtils.calculateAge
@@ -24,7 +23,14 @@ import com.medtroniclabs.spice.formgeneration.config.DefinedParams.WEEK
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.WEEKS
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.YEARS
 import com.medtroniclabs.spice.formgeneration.extension.capitalizeFirstChar
+import com.medtroniclabs.spice.formgeneration.model.BPModel
+import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration
+import com.medtroniclabs.spice.mappingkey.Screening
+import com.medtroniclabs.spice.mappingkey.Screening.CAGEAID
+import com.medtroniclabs.spice.mappingkey.Screening.PHQ4
+import com.medtroniclabs.spice.mappingkey.Screening.substanceAbuse
+import com.medtroniclabs.spice.ncd.screening.ReferredReason
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import java.io.File
 import java.math.RoundingMode
@@ -33,6 +39,7 @@ import java.text.DecimalFormatSymbols
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
+import kotlin.math.roundToInt
 
 object CommonUtils {
     fun checkIsTablet(context: Context): Boolean {
@@ -532,9 +539,6 @@ object CommonUtils {
         return if (combinedText.isNotEmpty()) combinedText.toString() else nullHandleString
     }
 
-    fun formatConsent(consent: String): String {
-        return consent.replace("\\\"", "\"").replace("contenteditable=\"true\"", "")
-    }
 
     fun composeLabelName(name: String, status: String?, context: Context): String {
         return if (!(status.isNullOrEmpty())) {
@@ -572,5 +576,400 @@ object CommonUtils {
 
     fun formatConsent(consent: String): String {
         return consent.replace("\\\"", "\"").replace("contenteditable=\"true\"", "")
+    }
+
+    fun calculateBMI(map: HashMap<String, Any>): Double? {
+        if (map.containsKey(Screening.Weight) &&
+            map.containsKey(Screening.Height)
+        ) {
+            var height: Double? = null
+            val weight = fetchValue(map, Screening.Weight)
+            if (map[Screening.Height] is Map<*, *>) {
+                val heightMap = map[Screening.Height] as Map<*, *>
+                if (heightMap.containsKey(Screening.Feet) && heightMap.containsKey(Screening.Inches)) {
+                    val feet = heightMap[Screening.Feet] as Double
+                    val inches = heightMap[Screening.Inches] as Double
+                    height = (feet * 12) + inches
+                }
+            } else {
+                height = fetchValue(map, Screening.Height)
+            }
+            height?.let {
+                val bmiValue = getBMIForNcd(it, weight)
+                val formattedValue = String.format(Locale.US, "%.2f", bmiValue).toDouble()
+                map[Screening.BMI] = formattedValue
+                return formattedValue
+            }
+        } else {
+            map.remove(Screening.BMI)
+        }
+        return null
+    }
+
+    private fun fetchValue(map: HashMap<String, Any>, params: String): Double {
+        return if (map[params] is String)
+            (map[params] as String).toDouble()
+        else
+            map[params] as Double
+    }
+
+    fun calculateAverageBloodPressure(
+        resultMap: HashMap<String, Any>,
+        addDateTime: Boolean = false
+    ) {
+        if (resultMap.containsKey(Screening.BPLog_Details)) {
+            val actualMapList = resultMap[Screening.BPLog_Details]
+            if (actualMapList is ArrayList<*>) {
+                var systolic = 0.0
+                var diastolic = 0.0
+                var enteredBGCount = 0
+                actualMapList.forEach { map ->
+                    val sys = getSystolicValue(map)
+                    val dia = getDiastolicValue(map)
+                    if (sys > 0 && dia > 0) {
+                        enteredBGCount++
+                        systolic += sys
+                        diastolic += dia
+                    }
+                }
+                val finalSys = (systolic / enteredBGCount).roundToInt()
+                val finalDia = (diastolic / enteredBGCount).roundToInt()
+                resultMap[Screening.Avg_Systolic] = finalSys
+                resultMap[Screening.Avg_Diastolic] = finalDia
+                if (addDateTime)
+                    resultMap[Screening.BPTakenOn] = DateUtils.getTodayDateDDMMYYYY()
+                resultMap[Screening.Avg_Blood_pressure] = ("$finalSys/$finalDia")
+                resultMap[Screening.BPLog_Details] = parsedList(actualMapList)
+            }
+        }
+    }
+
+    private fun parsedList(actualList: ArrayList<*>): ArrayList<*> {
+        try {
+            val modifiedList = ArrayList<HashMap<String, String>>()
+            actualList.forEachIndexed { _, any ->
+                (any as? BPModel?)?.let { record ->
+                    val data = HashMap<String, String>()
+                    record.systolic?.let { sys ->
+                        data[Screening.Systolic] = parseDouble(sys)
+                    }
+                    record.diastolic?.let { dia ->
+                        data[Screening.Diastolic] = parseDouble(dia)
+                    }
+                    record.pulse?.let { pul ->
+                        data[Screening.Pulse] = parseDouble(pul)
+                    }
+                    if (data.isNotEmpty())
+                        modifiedList.add(data)
+                }
+            }
+            return modifiedList.ifEmpty { actualList }
+        } catch (_: Exception) {
+            return actualList
+        }
+    }
+
+    fun parseDouble(dValue: Double): String {
+        return dValue.toString().replace(".0", "")
+    }
+
+    private fun getSystolicValue(map: Any?): Double {
+        var returnValue = 0.0
+        if (map is Map<*, *> && map.containsKey(Screening.Systolic))
+            returnValue = map[Screening.Systolic] as Double
+        else if (map is BPModel)
+            map.systolic?.let {
+                returnValue = it
+            }
+        return returnValue
+    }
+    private fun getDiastolicValue(map: Any?): Double {
+        var returnValue = 0.0
+        if (map is Map<*, *> && map.containsKey(Screening.Diastolic))
+            returnValue = map[Screening.Diastolic] as Double
+        else if (map is BPModel)
+            map.diastolic?.let {
+                returnValue = it
+            }
+        return returnValue
+    }
+
+    fun mentalHealthKey(type: String): String {
+        var key = Screening.PHQ4_Mental_Health
+        return key
+    }
+    fun calculatePHQScore(
+        map: HashMap<String, Any>,
+        type: String = PHQ4
+    ): Int {
+        val key = mentalHealthKey(type)
+        if (map.containsKey(key)) {
+            val phqMap = ArrayList<HashMap<String, Any>>()
+            var phqScore = 0
+            val mentalHealthResultMap = map[key]
+            if (mentalHealthResultMap is Map<*, *>) {
+                mentalHealthResultMap.keys.forEach { mapKey ->
+                    val optionsMap = HashMap<String, Any>()
+                    val actualValue = mentalHealthResultMap[mapKey]
+                    optionsMap[Screening.Questions] = mapKey as String
+                    if (actualValue is HashMap<*, *>) {
+                        (actualValue[Screening.mentalHealthScore] as? Double)?.toInt()?.let {
+                            phqScore += it
+                            optionsMap[Screening.mentalHealthScore] = it
+                        }
+                        optionsMap[Screening.Question_Id] =
+                            actualValue[Screening.Question_Id] as Long
+                        optionsMap[Screening.Answer_Id] =
+                            actualValue[Screening.Answer_Id] as Long
+                        optionsMap[Screening.Answer] =
+                            actualValue[Screening.Answer] as String
+                        optionsMap[Screening.Display_Order] =
+                            actualValue[Screening.Display_Order] as Long
+                        phqMap.add(optionsMap)
+                    }
+                }
+            }
+            applyScores(type, map, phqMap, phqScore)
+            return phqScore
+        }
+        return 0
+    }
+
+    private fun applyScores(
+        type: String,
+        map: HashMap<String, Any>,
+        phqMap: ArrayList<HashMap<String, Any>>,
+        phqScore: Int
+    ) {
+        when (type) {
+            PHQ4 -> {
+                map[Screening.PHQ4_Score] = phqScore
+                map[Screening.PHQ4_Risk_Level] = getPhQ4RiskLevel(phqScore)
+                map[Screening.PHQ4_Mental_Health] = phqMap
+            }
+
+        }
+    }
+
+    private fun getPhQ4RiskLevel(phq4Score: Int): String {
+        return when (phq4Score) {
+            4, 5 -> Screening.Mild
+            6, 7, 8 -> Screening.Moderate
+            0, 1, 2, 3 -> Screening.Normal
+            else -> Screening.Severe
+        }
+    }
+
+    fun calculateSuicidalIdeation(map: HashMap<String, Any>) {
+        if (map.containsKey(Screening.SuicidalIdeationQuestion)) {
+            val actual = map[Screening.SuicidalIdeationQuestion]
+            if (actual is String) {
+                map[Screening.SuicidalIdeation] = actual
+            }
+        }
+    }
+
+    fun calculateCAGEAIDSCore(map: HashMap<String, Any>, serverData: List<FormLayout?>?) {
+        var cageAid = 0
+        serverData?.let { dataList ->
+            val substanceAbuseList = dataList.filter { it != null && it.family == substanceAbuse }
+            substanceAbuseList.forEach { formData ->
+                formData?.let { data ->
+                    if (map.containsKey(data.id)) {
+                        val actualValue = map[data.id]
+                        if (actualValue != null && actualValue is String && actualValue.equals(
+                                DefinedParams.Yes,
+                                true
+                            )
+                        ) {
+                            cageAid += 1
+                        }
+                    }
+                }
+            }
+        }
+
+        if (cageAid > 0) {
+            cageAid -= 1
+            map[CAGEAID] = cageAid
+        } else {
+            map[CAGEAID] = 0
+        }
+    }
+
+    fun getMeasurementTypeValues(map: HashMap<String, Any>): String {
+        val unitType = map[Screening.BloodGlucoseID + Screening.unitMeasurement_KEY]
+        if (unitType is String) {
+            return unitType
+        }
+        return Screening.mmoll
+    }
+
+    fun checkAssessmentCondition(
+        systolicAverage: Int? = null,
+        diastolicAverage: Int? = null,
+        phQ4Score: Int? = null,
+        glucoseValuePair: Pair<Double, Double>,
+        unitGenericType: String,
+        pregnantSymptoms: Int? = null,
+        resultMapPair: Pair<Boolean?, HashMap<String, Any>>
+    ): Pair<Boolean, java.util.ArrayList<String>> {
+        var status = false
+        var cageAId = 0
+        val referredReasonList = ArrayList<String>()
+        if (resultMapPair.second.containsKey(CAGEAID)) {
+            cageAId = (resultMapPair.second[CAGEAID] as? Int?) ?: 0
+        }
+        if ((systolicAverage ?: 0) > Screening.UpperLimitSystolic || (diastolicAverage
+                ?: 0) > Screening.UpperLimitDiastolic
+        ) {
+            referredReasonList.add(ReferredReason.bloodPressure)
+            status = true
+        }
+        if ((phQ4Score ?: 0) > 4) {
+            referredReasonList.add(ReferredReason.PHQ4)
+            status = true
+        }
+        if (unitGenericType == Screening.mgdl && (glucoseValuePair.first > Screening.FBSMaximumMGDlValue || glucoseValuePair.second >= Screening.RBSMaximumMGDlValue)) {
+            referredReasonList.add(ReferredReason.bloodGlucose)
+            status = true
+        }
+
+        if (glucoseValuePair.first > Screening.FBSMaximumValue || glucoseValuePair.second >= Screening.RBSMaximumValue) {
+            referredReasonList.add(ReferredReason.bloodGlucose)
+            status = true
+        }
+        if (pregnantSymptoms != null && pregnantSymptoms >= 1) {
+            referredReasonList.add(ReferredReason.pregnancySymptoms)
+            status = true
+        }
+        if (resultMapPair.second.containsKey(Screening.SuicidalIdeation) && (resultMapPair.second[Screening.SuicidalIdeation] as String).lowercase() == DefinedParams.Yes) {
+            referredReasonList.add(ReferredReason.SuicidalIdeation)
+            status = true
+        }
+        if (cageAId >= 2) {
+            referredReasonList.add(ReferredReason.CAGEAID)
+            status = true
+        }
+
+        return Pair(status, referredReasonList)
+    }
+
+
+    fun calculateBloodGlucose(
+        map: HashMap<String, Any>,
+        addDateTime: Boolean = false,
+        getRbsFbs: (Pair<Double?,Double?>) -> Unit
+    ) {
+        if (map.containsKey(Screening.BloodGlucoseID)) {
+            val bloodGlucoseString = map[Screening.BloodGlucoseID]
+            val bloodGlucoseValue: Double? = parseGlucoseValue(bloodGlucoseString)
+            if (bloodGlucoseValue != null) {
+                map[Screening.Glucose_Value] = bloodGlucoseValue
+                if (map.containsKey(Screening.lastMealTime) && map[Screening.lastMealTime] is Number) {
+                    setFBSAndRBSValues(map, bloodGlucoseValue, 1) {
+                        getRbsFbs.invoke(it)
+                    }
+                } else {
+                    setFBSAndRBSValues(map, bloodGlucoseValue, 2) {
+                        getRbsFbs.invoke(it)
+                    }
+                }
+                val dateTime = DateUtils.getTodayDateDDMMYYYY()
+                map[Screening.Glucose_Date_Time] = dateTime
+                if (addDateTime)
+                    map[Screening.BGTakenOn] = dateTime
+            }
+        } else {
+            if (map.containsKey(Screening.lastMealTime) && map[Screening.lastMealTime] is Long) {
+                map[Screening.lastMealTime] =
+                    DateUtils.getDateString(map[Screening.lastMealTime] as Long)
+            }
+        }
+    }
+
+    private fun setFBSAndRBSValues(
+        map: HashMap<String, Any>,
+        bloodGlucoseValue: Double,
+        code: Int,
+        getRbsFbs: (Pair<Double?,Double?>) -> Unit
+    ) {
+        when (code) {
+            1 -> {
+                if (checkFBS(map)) {
+                    map[Screening.Glucose_Type] = Screening.fbs
+                    getRbsFbs.invoke(Pair(bloodGlucoseValue, null))
+                } else {
+                    map[Screening.Glucose_Type] = Screening.rbs
+                    getRbsFbs.invoke(Pair(null, bloodGlucoseValue))
+                }
+
+                if (map[Screening.lastMealTime] is Number)
+                    map[Screening.lastMealTime] =
+                        DateUtils.getDateString(map[Screening.lastMealTime] as Long)
+            }
+
+            2 -> {
+                if (map.containsKey(Screening.Glucose_Type)) {
+                    when ((map[Screening.Glucose_Type] as String).lowercase()) {
+                        Screening.rbs -> {
+                            getRbsFbs.invoke(Pair(bloodGlucoseValue, null))
+                        }
+
+                        Screening.fbs -> {
+                            getRbsFbs.invoke(Pair(null, bloodGlucoseValue))
+                        }
+                    }
+
+                }
+            }
+        }
+    }
+    private fun checkFBS(map: HashMap<String, Any>): Boolean {
+        if (map.containsKey(Screening.lastMealTime) && map[Screening.lastMealTime] is Number) {
+            val lastMealCalendar = Calendar.getInstance()
+            lastMealCalendar.timeInMillis = map[Screening.lastMealTime] as Long
+            val calendar = Calendar.getInstance()
+            var different: Long = calendar.timeInMillis - lastMealCalendar.timeInMillis
+            val secondsInMilli: Long = 1000
+            val minutesInMilli = secondsInMilli * 60
+            val hoursInMilli = minutesInMilli * 60
+            val elapsedHours: Long = different / hoursInMilli
+            different %= hoursInMilli
+            if (elapsedHours >= 8) {
+                return true
+            }
+        }
+        return false
+    }
+    private fun parseGlucoseValue(bloodGlucoseString: Any?): Double? {
+        return when (bloodGlucoseString) {
+            is String -> {
+                bloodGlucoseString.toDoubleOrNull()
+            }
+
+            is Double -> {
+                bloodGlucoseString
+            }
+
+            else -> null
+        }
+    }
+
+    fun calculatePregnancySymptomCount(list: ArrayList<Map<*, *>>): Int {
+        return when {
+            list.size > 1 -> list.size
+            list.size == 1 && !((list).first().containsValue(Screening.NoSymptoms)) -> 1
+            else -> 0
+        }
+    }
+
+    fun getBMIForNcd(heightInCM: Double, weight: Double, context: Context? = null): String? {
+        val heightInMeter = heightInCM / 100
+        val bmi = weight / (heightInMeter * heightInMeter)
+        if (bmi.isInfinite() || bmi.isNaN()) {
+            return context?.getString(R.string.hyphen_symbol)
+        }
+        return getDecimalFormatted(bmi)
     }
 }
