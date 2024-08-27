@@ -37,18 +37,10 @@ class HouseHoldSummaryViewModel @Inject constructor(
             houseHoldRepository.getAllHouseHoldMembersLiveData(id)
         }
 
-    val householdAliveMembersLiveData = MutableLiveData<List<HouseholdMemberEntity>>()
-
-    private fun getAliveMemberLiveData(hhId: Long) {
-        viewModelScope.launch(dispatcherIO) {
-            householdAliveMembersLiveData.postValue(houseHoldRepository.getAliveHouseHoldMembersLiveData(hhId))
-        }
-    }
 
 
     fun setHouseholdId(hhId: Long) {
         this.houseHoldId = hhId
         houseHoldNoLiveData.value = hhId
-        getAliveMemberLiveData(hhId)
     }
 }

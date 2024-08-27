@@ -1,15 +1,12 @@
 package com.medtroniclabs.spice.offlinesync
 
 import android.content.Context
-import android.util.Log
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.Data
 import androidx.work.WorkerParameters
 import com.medtroniclabs.spice.common.SecuredPreference
-import com.medtroniclabs.spice.data.offlinesync.model.RequestGetSyncStatus
 import com.medtroniclabs.spice.data.offlinesync.utils.OfflineConstant.KEY_REQUESTS_ID
-import com.medtroniclabs.spice.data.offlinesync.utils.OfflineSyncStatus
 import com.medtroniclabs.spice.db.local.RoomHelper
 import com.medtroniclabs.spice.network.utils.ConnectivityManager
 import com.medtroniclabs.spice.repo.OfflineSyncRepository
@@ -51,8 +48,7 @@ class GetSyncStatusWorker @AssistedInject constructor(
 
             if (isAllEntitiesSynced) {
                 /*Upload images here*/
-                val signatureStatus = offlineSyncRepository.uploadAllSignatures()
-                Log.e("Test", "Signature Upload Status : "+signatureStatus)
+                offlineSyncRepository.uploadAllSignatures()
 
                 SecuredPreference.remove(SecuredPreference.EnvironmentKey.OFFLINE_SYNC_REQUEST_ID.name)
                 val villageIds = roomHelper.getAllVillageIds()

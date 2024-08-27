@@ -6,12 +6,12 @@ import androidx.activity.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.work.Constraints
 import androidx.work.Data
-import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
+import com.medtroniclabs.spice.appextensions.syncWorkerName
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.offlinesync.utils.OfflineConstant.KEY_REQUESTS_ID
@@ -31,6 +31,7 @@ class OfflineSyncActivity : SpiceRootActivity() {
     private lateinit var binding: FragmentOfflineSyncBinding
     private lateinit var unSyncedCountAdapter: OfflineSyncEntitiesAdapter
     private val getStatusStartTimer = 30L // Seconds
+    private var isBackgroundSyncRunning: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,6 +42,14 @@ class OfflineSyncActivity : SpiceRootActivity() {
 
         setListener()
         initObserver()
+        checkBGSyncStatus()
+    }
+
+    private fun checkBGSyncStatus() {
+        val workManager = WorkManager.getInstance(this)
+        workManager.getWorkInfosForUniqueWorkLiveData(syncWorkerName).observe(this) {
+            isBackgroundSyncRunning = !it.isNullOrEmpty() && it[0].state == WorkInfo.State.RUNNING
+        }
     }
 
     private fun setListener() {
@@ -49,7 +58,17 @@ class OfflineSyncActivity : SpiceRootActivity() {
         binding.rvUnSyncedDetail.adapter = unSyncedCountAdapter
 
         binding.btnStart.setOnClickListener {
-            initiateUpload()
+            if (isBackgroundSyncRunning) {
+                showErrorDialogue(
+                    getString(R.string.alert),
+                    getString(R.string.background_sync_in_progress),
+                    isNegativeButtonNeed = false
+                ) {
+                    finish()
+                }
+            } else {
+                initiateUpload()
+            }
         }
 
         binding.btnCancel.setOnClickListener {

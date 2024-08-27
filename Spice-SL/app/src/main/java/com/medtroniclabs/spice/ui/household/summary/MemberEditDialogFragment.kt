@@ -60,17 +60,19 @@ class MemberEditDialogFragment() : DialogFragment(), View.OnClickListener {
                 name = DefinedParams.DefaultIDLabel
             )
         )
-        householdSummaryViewModel.householdAliveMembersLiveData.value?.let { data ->
-            data.forEach {item ->
-                dropDownList.add(
-                    MemberDetailsSpinnerModel(
-                        id = item.id,
-                        name = item.name,
-                        age = "",
-                        gender = item.gender,
-                        dob = item.dateOfBirth
+        householdSummaryViewModel.householdMembersLiveData.value?.let { data ->
+            data.forEach { item ->
+                if (item.isActive) {
+                    dropDownList.add(
+                        MemberDetailsSpinnerModel(
+                            id = item.id,
+                            name = item.name,
+                            age = "",
+                            gender = item.gender,
+                            dob = item.dateOfBirth
+                        )
                     )
-                )
+                }
             }
         }
         memberAdapter.setData(dropDownList)

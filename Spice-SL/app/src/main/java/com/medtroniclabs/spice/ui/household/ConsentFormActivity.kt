@@ -2,11 +2,15 @@ package com.medtroniclabs.spice.ui.household
 
 import android.content.Intent
 import android.graphics.Bitmap
+import android.net.http.SslError
 import android.os.Bundle
 import android.util.Log
+import android.view.MotionEvent
 import android.webkit.JavascriptInterface
+import android.webkit.SslErrorHandler
 import android.webkit.WebResourceError
 import android.webkit.WebResourceRequest
+import android.webkit.WebResourceResponse
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.activity.viewModels
@@ -42,17 +46,12 @@ class ConsentFormActivity : BaseActivity() {
             ConsentSignatureDialogFragment().show(supportFragmentManager, ConsentSignatureDialogFragment.TAG)
         }
 
-        binding.wvTermAndCondition.isFocusable = false
-        binding.wvTermAndCondition.isFocusableInTouchMode = false
         binding.wvTermAndCondition.webViewClient = webViewClientCallBack
         binding.wvTermAndCondition.settings.javaScriptEnabled = true
-        binding.wvTermAndCondition.settings.setSupportMultipleWindows(true)
-        binding.wvTermAndCondition.addJavascriptInterface(object {
-            @JavascriptInterface
-            fun openEmailClient(mailto: String) {
-               Log.e("Test","afds")
-            }
-        }, "Android")
+        binding.wvTermAndCondition.settings.apply {
+            builtInZoomControls = false
+            setSupportZoom(false)
+        }
 
         viewModel.termsAndConditionStringLiveData.observe(this) {
             binding.wvTermAndCondition.loadDataWithBaseURL(
@@ -70,6 +69,7 @@ class ConsentFormActivity : BaseActivity() {
             view: WebView?,
             request: WebResourceRequest?
         ): Boolean {
+
             request?.url?.let { emailUri ->
                 if (emailUri.toString().startsWith("mailto")) {
                     try {
@@ -83,13 +83,14 @@ class ConsentFormActivity : BaseActivity() {
                     view?.loadUrl(emailUri.toString())
                 }
             }
-            return super.shouldOverrideUrlLoading(view, request)
+            return false
         }
 
         override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
             super.onPageStarted(view, url, favicon)
             showLoading()
         }
+
 
         override fun onPageFinished(view: WebView?, url: String?) {
             super.onPageFinished(view, url)
@@ -102,6 +103,23 @@ class ConsentFormActivity : BaseActivity() {
             error: WebResourceError?
         ) {
             super.onReceivedError(view, request, error)
+            hideLoading()
+        }
+
+        override fun onReceivedHttpError(
+            view: WebView?,
+            request: WebResourceRequest?,
+            errorResponse: WebResourceResponse?
+        ) {
+            hideLoading()
+        }
+
+        override fun onReceivedSslError(
+            view: WebView?,
+            handler: SslErrorHandler?,
+            error: SslError?
+        ) {
+            super.onReceivedSslError(view, handler, error)
             hideLoading()
         }
     }

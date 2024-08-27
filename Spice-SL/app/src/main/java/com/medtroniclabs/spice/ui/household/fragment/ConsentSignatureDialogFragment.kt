@@ -2,6 +2,7 @@ package com.medtroniclabs.spice.ui.household.fragment
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,6 +12,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.saveBitmapAsJpeg
+import com.medtroniclabs.spice.appextensions.setTextChangeListener
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.databinding.DialogConsentSignatureBinding
@@ -44,6 +46,7 @@ class ConsentSignatureDialogFragment : DialogFragment() {
         super.onViewCreated(view, savedInstanceState)
         initializeView()
         setListeners()
+        initObserver()
     }
 
     override fun onStart() {
@@ -59,6 +62,10 @@ class ConsentSignatureDialogFragment : DialogFragment() {
     }
 
     private fun setListeners() {
+        binding.etUserInitial.setTextChangeListener {
+            viewModel.enableForInitial((it != null && it.trim().isNotEmpty()))
+        }
+
         binding.signatureView.setOnSignedListener(signListener)
         binding.btnClearSign.setOnClickListener {
             binding.signatureView.clear()
@@ -74,6 +81,12 @@ class ConsentSignatureDialogFragment : DialogFragment() {
 
         binding.btnConfirm.setOnClickListener {
             onConfirm()
+        }
+    }
+
+    private fun initObserver() {
+        viewModel.enableConfirmLiveData.observe(viewLifecycleOwner) {
+            binding.btnConfirm.isEnabled = (it.first || it.second)
         }
     }
 
@@ -108,6 +121,7 @@ class ConsentSignatureDialogFragment : DialogFragment() {
 
     private val signListener = object : SignatureView.OnSignedListener {
         override fun onStartSigning() {
+            viewModel.enableForSignature(true)
             binding.tvErrorSignature.visibility = View.GONE
         }
 
@@ -117,6 +131,7 @@ class ConsentSignatureDialogFragment : DialogFragment() {
         }
 
         override fun onClear() {
+            viewModel.enableForSignature(false)
             isSigned = false
             binding.tvErrorSignature.visibility = View.GONE
         }

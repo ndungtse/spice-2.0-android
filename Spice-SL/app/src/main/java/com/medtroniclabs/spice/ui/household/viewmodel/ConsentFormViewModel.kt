@@ -3,6 +3,7 @@ package com.medtroniclabs.spice.ui.household.viewmodel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.repo.HouseHoldRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -16,20 +17,25 @@ class ConsentFormViewModel @Inject constructor(
     private val houseHoldRepository: HouseHoldRepository
 ) : ViewModel() {
 
-    private var signatureFilename: String? = null
-    private var initialValue: String? = null
+    var enableConfirmLiveData = MutableLiveData<Pair<Boolean, Boolean>>()
     val termsAndConditionStringLiveData = MutableLiveData<String>()
 
     init {
         viewModelScope.launch(dispatcherIO) {
-            termsAndConditionStringLiveData.postValue(houseHoldRepository.getConsentForm().content)
+            val content = houseHoldRepository.getConsentForm().content
+            termsAndConditionStringLiveData.postValue(CommonUtils.formatConsent(content))
         }
+
+        enableConfirmLiveData.postValue(Pair(false, false))
     }
 
-    fun updateSignatureDetails(path: String?, initial: String?) {
-        signatureFilename = path
-        initialValue = initial
+    fun enableForInitial(flag: Boolean) {
+        val old = enableConfirmLiveData.value ?: Pair(false, false)
+        enableConfirmLiveData.postValue(Pair(flag, old.second))
     }
 
-
+    fun enableForSignature(flag: Boolean) {
+        val old = enableConfirmLiveData.value ?: Pair(false, false)
+        enableConfirmLiveData.postValue(Pair(old.first, flag))
+    }
 }

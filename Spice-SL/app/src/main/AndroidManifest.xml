@@ -45,6 +45,9 @@
                 <data android:host="spice-dev.sl.labsplatform.com"/>
                 <data android:pathPrefix="/reset-password"/>
 
+                <data android:host="spice-training.sl.labsplatform.com"/>
+                <data android:pathPrefix="/reset-password"/>
+
             </intent-filter>
 
         </activity>

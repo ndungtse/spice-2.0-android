@@ -516,4 +516,8 @@ object CommonUtils {
         return if (combinedText.isNotEmpty()) combinedText.toString() else nullHandleString
     }
 
+    fun formatConsent(consent: String): String {
+        return consent.replace("\\\"", "\"").replace("contenteditable=\"true\"", "")
+    }
+
 }
