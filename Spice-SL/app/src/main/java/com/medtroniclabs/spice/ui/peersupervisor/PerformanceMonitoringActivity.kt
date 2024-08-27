@@ -141,8 +141,6 @@ class PerformanceMonitoringActivity : BaseActivity() {
 
                     val isUnlocked = (preference?.fromDate.isNullOrEmpty() && preference?.toDate.isNullOrEmpty())
                     updateLockButtonStatus(isUnlocked)
-                    if (isUnlocked)
-                        hideLoading()
 
                     Toast.makeText(this, "Saved Filter Preference Successfully", Toast.LENGTH_LONG)
                         .show()
@@ -228,6 +226,7 @@ class PerformanceMonitoringActivity : BaseActivity() {
                 val isLocked = binding.flLockButton.tag as Boolean
                 if (isLocked) { // Continue with unlock
                     viewModel.saveFilterPreference("", "", listOf(), listOf())
+                    resetFilter()
                 } else { // Continue with lock
                     validateFilterInputs(true)
                 }
