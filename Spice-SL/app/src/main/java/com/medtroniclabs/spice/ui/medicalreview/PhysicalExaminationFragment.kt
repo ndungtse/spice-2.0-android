@@ -98,7 +98,6 @@ class PhysicalExaminationFragment : BaseFragment() {
     private var congenitalDetectSelectionCallback: ((selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit)? =
         { selectedID, _, _, _ ->
             viewModel.congenitalDefectMap[DefinedParams.CongenitalDetect] = selectedID as String
-            resetSelectionViews(DefinedParams.CordExamination)
             val flowValue =
                 viewModel.congenitalDefectMap[DefinedParams.CongenitalDetect] as? String
             viewModel.congenitalDefect =

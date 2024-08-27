@@ -267,7 +267,7 @@
     <string name="referral_to">Referred To</string>
     <string name="referral_by">Referred By</string>
     <string name="date_of_delivery_label">Date of Delivery</string>
-    <string name="date_type">Date Type</string>
+    <string name="date_type">Delivery Type</string>
     <string name="labour_delivery">Labour/Delivery</string>
     <string name="date_of_delivery">Date of Delivery</string>
     <string name="date_of_labour_onset">Date of Labour Onset</string>

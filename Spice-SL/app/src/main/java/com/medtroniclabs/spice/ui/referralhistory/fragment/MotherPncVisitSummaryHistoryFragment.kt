@@ -58,6 +58,7 @@ class MotherPncVisitSummaryHistoryFragment(private var pncDetails: PncChildMedic
     private fun initializeMotherSummaryDetails(data: PncChildMedicalReview?) {
         binding.motherSummary.apply {
             binding.motherSummary.tvPatientStatusSpinner.gone()
+            binding.motherSummary.investigationFlowNot.gone()
 
             tvTitle.text = getString(R.string.pnc_visit_summary_mother)
             tvPncVisitNoText.text =
@@ -101,16 +102,18 @@ class MotherPncVisitSummaryHistoryFragment(private var pncDetails: PncChildMedic
                     ?.takeIf { it.isNotEmpty() }
                     ?: requireContext().getString(R.string.empty__)
 
-            tvInvestigationText.text = data?.reviewDetails?.pncMother?.investigations?.let { createInvestigation(it,requireContext()) }?.takeIf { it.isNotEmpty() }
-                ?: requireContext().getString(R.string.empty__)
-
-            tvPrescriptionsText.text = data?.reviewDetails?.pncMother?.prescriptions.let {
-                CommonUtils.createPrescription(
-                    it,
-                    requireContext()
-                )
-            }?.takeIf { it.isNotEmpty() }
-                ?: requireContext().getString(R.string.empty__)
+//            tvInvestigationText.text = data?.reviewDetails?.pncMother?.investigations?.let { createInvestigation(it,requireContext()) }?.takeIf { it.isNotEmpty() }
+//                ?: requireContext().getString(R.string.empty__)
+//
+//            tvInvestigationText.text = data?.reviewDetails?.pncMother?.investigations?.let { createInvestigation(it,requireContext()) }?.takeIf { it.isNotEmpty() }
+//                ?: requireContext().getString(R.string.empty__)
+//            tvPrescriptionsText.text = data?.reviewDetails?.pncMother?.prescriptions.let {
+//                CommonUtils.createPrescription(
+//                    it,
+//                    requireContext()
+//                )
+//            }?.takeIf { it.isNotEmpty() }
+//                ?: requireContext().getString(R.string.empty__)
 
             binding.motherSummary.tvNextMedicalReviewLabelTextNot.text=calculateDateTime(
                 data?.nextVisitDate,

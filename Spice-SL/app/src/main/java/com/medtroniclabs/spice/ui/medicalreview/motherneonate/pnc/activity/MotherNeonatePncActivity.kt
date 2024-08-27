@@ -25,6 +25,7 @@ import com.medtroniclabs.spice.formgeneration.ui.SingleSelectionCustomView
 import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.ui.BaseActivity
+import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
 import com.medtroniclabs.spice.ui.dialog.MedicalReviewSuccessDialogFragment
 import com.medtroniclabs.spice.ui.landing.OnDialogDismissListener
 import com.medtroniclabs.spice.ui.medicalreview.ClinicalNotesFragment
@@ -544,7 +545,7 @@ class MotherNeonatePncActivity : BaseActivity(), View.OnClickListener, AncVisitC
 
     override fun onClick(v: View?) {
         when (v?.id) {
-            binding.btnSubmit.id -> validateAndSubmitRequest()
+            binding.btnSubmit.id ->withNetworkCheck(connectivityManager, ::validateAndSubmitRequest)
             binding.btnDone.id -> handleBtnDoneClick()
             binding.ivPrescription.id -> handleButtonPrescription()
             binding.ivInvestigation.id -> handleInvestigation()
@@ -622,7 +623,7 @@ class MotherNeonatePncActivity : BaseActivity(), View.OnClickListener, AncVisitC
     private fun enableDoneBtn() {
         val patientStatus = motherNeonatePncSummaryViewModel.patientStatusMother
         binding.btnDone.isEnabled = when {
-            patientStatus == DefinedParams.OnTreatment && motherNeonatePncSummaryViewModel.nextFollowupDate != null -> true
+            patientStatus == ReferralStatus.OnTreatment.name && motherNeonatePncSummaryViewModel.nextFollowupDate != null -> true
             patientStatus == DefinedParams.Recovered -> true
             else -> false
         }

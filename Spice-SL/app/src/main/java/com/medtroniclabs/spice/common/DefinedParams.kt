@@ -126,7 +126,7 @@ object DefinedParams {
 
 
     const val LowBirthWeight=  2.0
-    const val Others_Specify="Others (Specify)"
+    const val Others_Specify="others"
 
     const val KeySignature = "KeySignature"
     const val KeyInitial = "KeyInitial"

@@ -110,6 +110,12 @@
                     android:layout_height="wrap_content"
                     android:visibility="visible"
                     app:constraint_referenced_ids="tvNextMedicalReviewLabelText,tvNextMedicalReviewSeparator,tvNextMedicalReviewLabel,tvPatientStatus,tvPatientSeparator,tvPatientStatusSpinner" />
+                <androidx.constraintlayout.widget.Group
+                    android:id="@+id/investigation_flow_not"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="visible"
+                    app:constraint_referenced_ids="tvInvestigationLabel,tvInvestigationSeparator,tvInvestigationText,tvPrescriptionLabel,tvPrescriptionSeparator,tvPrescriptionsText" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/tvPatientStatusLabel"
