@@ -18,7 +18,6 @@ import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.ReferPatientHealthFacilityItem
 import com.medtroniclabs.spice.data.ReferPatientNameNumber
 import com.medtroniclabs.spice.databinding.FragmentReferPatientBinding
-import com.medtroniclabs.spice.db.entity.HealthFacilityEntity
 import com.medtroniclabs.spice.formgeneration.extension.markMandatory
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
@@ -70,14 +69,14 @@ class ReferPatientFragment : BaseDialogFragment(), View.OnClickListener {
         binding.tvReferredReasonLabel.markMandatory()
         initializeNameNumberAdapter(null)
         withNetworkAvailability(online = {
-            viewModel.getDefaultHealthFacilityDistrictId()
-            viewModel.getHealthFacilityMetaData(null)
+            setHealthFacilityDistrictId(SecuredPreference.getDistrictId())
+            viewModel.getHealthFacilityMetaData(SecuredPreference.getDistrictId().toString())
         }, ::finishFragment)
 
     }
 
     private fun attachObserver() {
-        viewModel.defaultHealthFacilityLiveData.observe(viewLifecycleOwner) { resource ->
+       /* viewModel.defaultHealthFacilityLiveData.observe(viewLifecycleOwner) { resource ->
             when (resource.state) {
                 ResourceState.LOADING -> {
                     showLoadingProgress()
@@ -94,7 +93,7 @@ class ReferPatientFragment : BaseDialogFragment(), View.OnClickListener {
                     hideLoadingProgress()
                 }
             }
-        }
+        }*/
         viewModel.healthFacilityLiveData.observe(viewLifecycleOwner) { resource ->
             when (resource.state) {
                 ResourceState.LOADING -> {
@@ -150,8 +149,8 @@ class ReferPatientFragment : BaseDialogFragment(), View.OnClickListener {
         }
     }
 
-    private fun setHealthFacilityDistrictId(healthFacility: HealthFacilityEntity) {
-        viewModel.getHealthFacilityMetaData(healthFacility.districtId.toString())
+    private fun setHealthFacilityDistrictId(districtId: Long) {
+        viewModel.getHealthFacilityMetaData(districtId.toString())
     }
 
     private fun initializeNameNumberAdapter(listItems: List<ReferPatientNameNumber>?) {

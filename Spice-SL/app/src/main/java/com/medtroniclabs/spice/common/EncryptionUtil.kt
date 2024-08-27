@@ -1,5 +1,6 @@
 package com.medtroniclabs.spice.common
 
+import com.medtroniclabs.spice.BuildConfig
 import timber.log.Timber
 import java.math.BigInteger
 import java.nio.charset.StandardCharsets
@@ -19,7 +20,7 @@ object EncryptionUtil {
     fun getSecurePassword(passwordToHash: String): String {
         try {
             val secretKeySpec = SecretKeySpec(
-                AppConstants.SALT.toByteArray(StandardCharsets.UTF_8),
+                BuildConfig.SALT.toByteArray(StandardCharsets.UTF_8),
                 AppConstants.SHA_MAC
             )
             val mac = Mac.getInstance(AppConstants.SHA_MAC)

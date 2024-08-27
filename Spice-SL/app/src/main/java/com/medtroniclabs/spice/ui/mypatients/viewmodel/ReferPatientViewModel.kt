@@ -31,7 +31,6 @@ class ReferPatientViewModel @Inject constructor(
     val healthFacilityLiveData = MutableLiveData<Resource<List<ReferPatientHealthFacilityItem>>>()
     val nameNumberListLiveData = MutableLiveData<Resource<List<ReferPatientNameNumber>>>()
     val referPatientResultLiveData = MutableLiveData<Resource<HashMap<String,Any>>>()
-    val defaultHealthFacilityLiveData = MutableLiveData<Resource<HealthFacilityEntity?>>()
 
     fun getHealthFacilityMetaData(districtId: String?) {
         districtId?.let {
@@ -70,13 +69,6 @@ class ReferPatientViewModel @Inject constructor(
                     memberId
                 )
             )
-        }
-    }
-
-    fun getDefaultHealthFacilityDistrictId() {
-        viewModelScope.launch(dispatcherIO){
-            defaultHealthFacilityLiveData.postLoading()
-            defaultHealthFacilityLiveData.postValue(repository.getDefaultHealthFacilityDistrictId())
         }
     }
 }

@@ -11,15 +11,26 @@ plugins {
 android {
     namespace = "com.medtroniclabs.spice"
     compileSdk = 34
+    var commonPrefix = "SPICE"
+
+
 
     defaultConfig {
         applicationId = "com.medtroniclabs.spice"
         minSdk = 23
         targetSdk = 34
         versionCode = 1
-        versionName = "1.0"
-
+        versionName = "2.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    flavorDimensions += "version"
+    productFlavors {
+        create("sl") {
+            dimension = "version"
+            applicationIdSuffix = ".sl"
+            commonPrefix = "SPICE 2.0"
+        }
     }
 
     signingConfigs {
@@ -40,34 +51,93 @@ android {
     buildTypes {
 
         release {
-            applicationIdSuffix = ".sl.staging"
-            versionNameSuffix = "-(20240813_01)"
             isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            applicationVariants.all {
+                if (buildType.name == "release") {
+                    manifestPlaceholders["appNameSuffix"] = commonPrefix
+                    if (productFlavors[0].name == "sl") {
+                        buildConfigField("String", "API_BASE_URL", "\"https://localhost.com/\"")
+                        buildConfigField("String", "SALT", "\"\"")
+                    } else if (productFlavors[0].name == "africa") {
+                        manifestPlaceholders["appNameSuffix"] = commonPrefix
+                        buildConfigField("String", "API_BASE_URL", "\"https://localhost.com/\"")
+                        buildConfigField("String", "SALT", "\" \"")
+                    }
+                }
+            }
             signingConfig = signingConfigs.getByName("release")
         }
 
         debug {
-            applicationIdSuffix = ".sl.staging"
             isDebuggable = true
+            applicationIdSuffix = ".dev"
+            applicationVariants.all {
+                if (buildType.name == "debug") {
+                    manifestPlaceholders["appNameSuffix"] = "$commonPrefix Dev"
+                    if (productFlavors[0].name == "sl") {
+                        buildConfigField("String", "API_BASE_URL", "\"https://spice-dev-backend.sl.labsplatform.com/\"")
+                        buildConfigField("String", "SALT", "\"spice_uat\"")
+                    } else if (productFlavors[0].name == "africa") {
+                        buildConfigField("String", "API_BASE_URL", "\"https://localhost.com/\"")
+                        buildConfigField("String", "SALT", "\" \"")
+                    }
+                }
+            }
             // below line for test the forgot password in mobile
            // signingConfig = signingConfigs.getByName("release")
         }
 
         create("staging") {
             initWith(getByName("release"))
-            applicationIdSuffix = ".sl.staging"
-            versionNameSuffix = "-(20240827_01)"
+            applicationIdSuffix = ".staging"
+            versionNameSuffix = "-(20240827_02)"
             isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            applicationVariants.all {
+                if (buildType.name == "staging") {
+                    manifestPlaceholders["appNameSuffix"] = "$commonPrefix Dev"
+                    if (productFlavors[0].name == "sl") {
+                        buildConfigField("String", "API_BASE_URL", "\"https://spice-dev-backend.sl.labsplatform.com/\"")
+                        buildConfigField("String", "SALT", "\"spice_uat\"")
+                    } else if (productFlavors[0].name == "africa") {
+                        buildConfigField("String", "API_BASE_URL", "\"https://localhost.com/\"")
+                        buildConfigField("String", "SALT", "\" \"")
+                    }
+                }
+            }
             signingConfig = signingConfigs.getByName("staging")
         }
+
+        create("training") {
+            initWith(getByName("release"))
+            applicationIdSuffix = ".training"
+            isMinifyEnabled = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+            applicationVariants.all {
+                if (buildType.name == "training") {
+                    manifestPlaceholders["appNameSuffix"] = "$commonPrefix Training"
+                    if (productFlavors[0].name == "sl") {
+                        buildConfigField("String", "API_BASE_URL", "\"https://spice-training-backend.sl.labsplatform.com/\"")
+                        buildConfigField("String", "SALT", "\"spice_uat\"")
+                    } else if (productFlavors[0].name == "africa") {
+                        buildConfigField("String", "API_BASE_URL", "\"https://localhost.com/\"")
+                        buildConfigField("String", "SALT", "\" \"")
+                    }
+                }
+            }
+            signingConfig = signingConfigs.getByName("staging")
+        }
+
     }
 
     compileOptions {
@@ -81,6 +151,7 @@ android {
 
     buildFeatures {
         viewBinding = true
+        buildConfig = true
     }
 
 }

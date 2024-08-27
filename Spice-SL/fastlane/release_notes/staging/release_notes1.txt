@@ -15,5 +15,6 @@ Medical Review:
 
 Feedback points also addressed in this build.
 
-
 Bug fixing status updated on the sheet.
+
+Crashlytics added and Training and Production Setup with app name changes added.

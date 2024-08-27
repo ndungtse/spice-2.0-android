@@ -9,6 +9,7 @@ import com.medtroniclabs.spice.log.CrashReportingTree
 import dagger.hilt.android.HiltAndroidApp
 import timber.log.Timber
 import javax.inject.Inject
+import com.medtroniclabs.spice.BuildConfig
 
 
 @HiltAndroidApp
