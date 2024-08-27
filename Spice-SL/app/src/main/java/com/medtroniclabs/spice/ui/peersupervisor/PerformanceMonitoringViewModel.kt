@@ -121,23 +121,24 @@ class PerformanceMonitoringViewModel @Inject constructor(
         userPreference = preference
     }
 
-    fun initPagination() {
-        userPreference?.let { preference ->
-            val fromToDate = preference.getFromToDate()
-            val fromDate = fromToDate.first.toString(DATE_FORMAT_yyyyMMdd)
-            val toDate = fromToDate.second.toString(DATE_FORMAT_yyyyMMdd)
-            val userIds = preference.userIds
-            val villageIds = preference.villageIds
+    fun initPagination(preference: Preference) {
+        val isUnlocked = (preference.fromDate.isNullOrEmpty() && preference.toDate.isNullOrEmpty())
 
-            _refreshTrigger.postValue(
-                PerformanceReportRequest(
-                    userIds = userIds,
-                    villageIds = villageIds,
-                    fromDate = fromDate,
-                    toDate = toDate
-                )
+        val fromToDate = preference.getFromToDate()
+        val fromDate = fromToDate.first.toString(DATE_FORMAT_yyyyMMdd)
+        val toDate = fromToDate.second.toString(DATE_FORMAT_yyyyMMdd)
+        val userIds = if (isUnlocked) null else preference.userIds
+        val villageIds = if (isUnlocked) null else preference.villageIds
+
+        _refreshTrigger.postValue(
+            PerformanceReportRequest(
+                userIds = userIds,
+                villageIds = villageIds,
+                fromDate = fromDate,
+                toDate = toDate
             )
-        }
+        )
+
     }
 
     fun updatePaginationWithNewFilter(
@@ -162,6 +163,7 @@ class PerformanceMonitoringViewModel @Inject constructor(
 
     fun updateChwFilterListLiveData() {
         val selectedIds = hashSetOf<Long>()
+        val isUnlocked = (userPreference?.fromDate.isNullOrEmpty() && userPreference?.toDate.isNullOrEmpty())
         userPreference?.userIds?.forEach {
             selectedIds.add(it)
         }
@@ -170,7 +172,8 @@ class PerformanceMonitoringViewModel @Inject constructor(
 
         val chwList = mutableListOf<CheckBoxSpinnerData>()
         allCHWs?.forEach { item ->
-            chwList.add(CheckBoxSpinnerData(item.id, "${item.firstName} ${item.lastName}", selectedIds.contains(item.id)))
+            val isSelected = if (isUnlocked) true else selectedIds.contains(item.id)
+            chwList.add(CheckBoxSpinnerData(item.id, "${item.firstName} ${item.lastName}", isSelected))
         }
 
         chwFilterListLiveData.postValue(chwList);
@@ -178,6 +181,7 @@ class PerformanceMonitoringViewModel @Inject constructor(
 
     fun updateVillageListLiveData(selectedCHWs: List<CheckBoxSpinnerData>, shouldSelectAll: Boolean = false) {
         val selectedIds = hashSetOf<Long>()
+        val isUnlocked = (userPreference?.fromDate.isNullOrEmpty() && userPreference?.toDate.isNullOrEmpty())
         if (!shouldSelectAll){
             userPreference?.villageIds?.forEach {
                 selectedIds.add(it.toLong())
@@ -190,8 +194,23 @@ class PerformanceMonitoringViewModel @Inject constructor(
         selectedCHWs.forEach { selectedChw ->
             val villages = allCHWs?.find { it.id == selectedChw.id }?.villages
             villages?.forEach { village ->
-                val isSelected = if (shouldSelectAll) true else selectedIds.contains(village.id)
-                villageList.add(CheckBoxSpinnerData(village.id, village.name, isSelected, village.userId))
+                val isSelected = if (shouldSelectAll) {
+                    true
+                } else {
+                    if (isUnlocked) {
+                        true
+                    } else {
+                        selectedIds.contains(village.id)
+                    }
+                }
+                villageList.add(
+                    CheckBoxSpinnerData(
+                        village.id,
+                        village.name,
+                        isSelected,
+                        village.userId
+                    )
+                )
             }
         }
 

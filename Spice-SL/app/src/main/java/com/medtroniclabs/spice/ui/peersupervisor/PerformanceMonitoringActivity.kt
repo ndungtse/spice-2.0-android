@@ -111,7 +111,7 @@ class PerformanceMonitoringActivity : BaseActivity() {
                     viewModel.updateUserPreference(preference)
                     viewModel.getLinkedChwDetails()
                     setFilterValueForDates(preference)
-                    viewModel.initPagination()
+                    viewModel.initPagination(preference)
                     val isUnlocked = (preference.fromDate.isNullOrEmpty() && preference.toDate.isNullOrEmpty())
                     updateLockButtonStatus(isUnlocked)
                 }
@@ -353,6 +353,9 @@ class PerformanceMonitoringActivity : BaseActivity() {
 
         val fromDate = binding.etFromDate.text.toString()
         val toDate = binding.etEndDate.text.toString()
+
+        shouldTriggerYearSpinner = true
+        shouldTriggerMonthSpinner = true
 
         updateReport(fromDate, toDate, chwAllSelectedList, villageAllAsSelectedList, false)
     }
