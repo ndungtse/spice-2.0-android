@@ -44,12 +44,10 @@ class PatientSearchFilterDialog : DialogFragment(), View.OnClickListener {
         binding.btnLayout.btnConfirm.text = requireContext().getString(R.string.apply)
         medicalReviewDueTag =
             TagListCustomView(binding.root.context, binding.medicalReviewDueChipGroup) { _, _, _ ->
-                patientListViewModel.medicalReviewDueTag = medicalReviewDueTag.getSelectedTags().takeIf { it.isNotEmpty() }
                 enableConfirm()
             }
         patientStatusTag =
             TagListCustomView(binding.root.context, binding.patientStatusChipGroup) { _, _, _ ->
-                patientListViewModel.patientStatusTag = patientStatusTag.getSelectedTags().takeIf { it.isNotEmpty() }
                 enableConfirm()
             }
         medicalReviewDueTag.addChipItemList(
@@ -67,7 +65,7 @@ class PatientSearchFilterDialog : DialogFragment(), View.OnClickListener {
 
     private fun enableConfirm() {
         binding.btnLayout.btnConfirm.isEnabled =
-            patientListViewModel.patientStatusTag?.isNotEmpty() == true || patientListViewModel.medicalReviewDueTag?.isNotEmpty() == true
+            patientStatusTag.getSelectedTags().isNotEmpty() || medicalReviewDueTag.getSelectedTags().isNotEmpty()
     }
 
     override fun onStart() {
@@ -108,6 +106,8 @@ class PatientSearchFilterDialog : DialogFragment(), View.OnClickListener {
             }
 
             binding.btnLayout.btnConfirm.id -> {
+                patientListViewModel.medicalReviewDueTag = medicalReviewDueTag.getSelectedTags().takeIf { it.isNotEmpty() }
+                patientListViewModel.patientStatusTag = patientStatusTag.getSelectedTags().takeIf { it.isNotEmpty() }
                 patientListViewModel.setFilter(true)
                 dismiss()
             }
