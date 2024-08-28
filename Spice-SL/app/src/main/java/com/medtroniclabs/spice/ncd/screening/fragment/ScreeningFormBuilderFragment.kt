@@ -13,6 +13,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.medtroniclabs.spice.BuildConfig
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.CommonUtils.calculateAverageBloodPressure
 import com.medtroniclabs.spice.common.CommonUtils.calculateBMI
@@ -58,7 +59,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlin.math.roundToInt
 import java.lang.reflect.Type
 
-@AndroidEntryPoint
 class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener, View.OnClickListener {
 
     private lateinit var binding: FragmentScreeningFormBuilderBinding
@@ -111,6 +111,7 @@ class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener, View.OnC
 
     private fun initView() {
         showProgress()
+        binding.btnNext.text = getString(R.string.submit)
         formGenerator =
             FormGenerator(
                 requireContext(), binding.llForm, listener = this, scrollView = binding.scrollView
@@ -135,6 +136,7 @@ class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener, View.OnC
     private var screeningJSON: List<FormLayout>? = null
     private fun attachObservers() {
         viewModel.formLayoutsLiveData.observe(viewLifecycleOwner) { data ->
+            showProgress()
             val formFieldsType = object : TypeToken<FormResponse>() {}.type
             val formFields: FormResponse = Gson().fromJson(data, formFieldsType)
             formGenerator.populateViews(formFields.formLayout)
@@ -169,6 +171,7 @@ class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener, View.OnC
                             tag = ScreeningSummaryFragment.TAG
                         )
                     }
+                    viewModel.screeningSaveResponse.postError()
                 }
 
                 ResourceState.ERROR -> {
@@ -222,7 +225,6 @@ class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener, View.OnC
     }
 
     override fun onFormSubmit(resultMap: HashMap<String, Any>?, serverData: List<FormLayout?>?) {
-        val unitGenericType = getUnitMeasurementType()
         resultMap?.let {
             viewModel.getCurrentLocation()?.let { location ->
                 resultMap[Screening.Latitude] = location.latitude.toString()
@@ -240,13 +242,12 @@ class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener, View.OnC
             resultMap[Screening.Screening_Date_Time] =
                 DateUtils.getCurrentDateTimeInUserTimeZone(DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ)
             resultMap[Screening.AppVersion] = BuildConfig.VERSION_NAME
-            processValuesAndProceed(resultMap, unitGenericType, serverData)
+            processValuesAndProceed(resultMap, serverData)
         }
     }
 
     private fun processValuesAndProceed(
         resultMap: HashMap<String, Any>,
-        unitGenericType: String,
         serverData: List<FormLayout?>?
     ) {
         val map = HashMap<String, Any>()

@@ -164,6 +164,9 @@ object Screening {
     const val medium_high_risk_limit = 30
     const val SiteName = "siteName"
     const val UserId = "userId"
+    const val otherType = "otherType"
+    const val siteId = "siteId"
+    const val userSiteId = "userSiteId"
     fun getEmptyBPReading(size: Int): ArrayList<BPModel> {
         val list = ArrayList<BPModel>()
         for (i in 1..size) {

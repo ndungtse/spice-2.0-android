@@ -9,7 +9,9 @@ import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.databinding.FragmentStatsBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.ncd.screening.viewmodel.GeneralDetailsViewModel
+import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.BaseFragment
+import com.medtroniclabs.spice.ui.registration.fragment.TermsAndConditionsFragment
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -61,15 +63,16 @@ class StatsFragment : BaseFragment(), View.OnClickListener {
             btnScreenNextPatient.safeClickListener(this@StatsFragment)
         }
         viewModel.toGetCount(true)
+        (activity as? BaseActivity)?.showBackButton()
     }
 
     override fun onClick(v: View?) {
         when (v?.id) {
             R.id.btnScreenNextPatient -> {
-                replaceFragmentIfExists<ScreeningFormBuilderFragment>(
+                replaceFragmentIfExists<TermsAndConditionsFragment>(
                     R.id.screeningParentLayout,
                     bundle = null,
-                    tag = ScreeningFormBuilderFragment.TAG
+                    tag = TermsAndConditionsFragment.TAG
                 )
             }
         }

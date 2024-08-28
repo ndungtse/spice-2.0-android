@@ -2,18 +2,24 @@ package com.medtroniclabs.spice.ncd.screening
 
 import android.os.Bundle
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.viewModels
+import androidx.fragment.app.Fragment
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.databinding.ActivityScreeningBinding
 import com.medtroniclabs.spice.ncd.screening.fragment.GeneralDetailsFragment
+import com.medtroniclabs.spice.ncd.screening.fragment.ScreeningFormBuilderFragment
+import com.medtroniclabs.spice.ncd.screening.fragment.ScreeningSummaryFragment
+import com.medtroniclabs.spice.ncd.screening.fragment.StatsFragment
+import com.medtroniclabs.spice.ncd.screening.viewmodel.ScreeningFormBuilderViewModel
 import com.medtroniclabs.spice.ui.BaseActivity
-import com.medtroniclabs.spice.ui.mypatients.fragment.PatientSearchFragment
+import com.medtroniclabs.spice.ui.registration.fragment.TermsAndConditionsFragment
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class ScreeningActivity : BaseActivity() {
 
     private lateinit var binding: ActivityScreeningBinding
-
+    private val viewModel: ScreeningFormBuilderViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
@@ -24,6 +30,7 @@ class ScreeningActivity : BaseActivity() {
             title = getString(R.string.screening),
             homeAndBackVisibility = Pair(true, true),
             callback = {
+                backNavigation()
             }
         )
         initView()
@@ -37,10 +44,42 @@ class ScreeningActivity : BaseActivity() {
         )
     }
 
-    private val onBackPressedCallback: OnBackPressedCallback =
-        object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
+    private val onBackPressedCallback = object : OnBackPressedCallback(true) {
+        override fun handleOnBackPressed() {
+            backNavigation()
+        }
+    }
+
+    fun backNavigation() {
+        val fragmentManager = supportFragmentManager
+
+        when (fragmentManager.findFragmentById(R.id.screeningParentLayout)) {
+            is GeneralDetailsFragment, is ScreeningSummaryFragment -> finish()
+            is StatsFragment -> {
+                if (viewModel.screeningSaveResponse.value?.data != null) {
+                    finish()
+                } else {
+                    replaceFragment<GeneralDetailsFragment>(GeneralDetailsFragment.TAG)
+                }
+            }
+
+            is TermsAndConditionsFragment -> replaceFragment<StatsFragment>(StatsFragment.TAG)
+            is ScreeningFormBuilderFragment -> replaceFragment<TermsAndConditionsFragment>(
+                TermsAndConditionsFragment.TAG
+            )
+
+            else -> {
 
             }
         }
+    }
+
+    private inline fun <reified T : Fragment> replaceFragment(tag: String) {
+        replaceFragmentIfExists<T>(
+            R.id.screeningParentLayout,
+            bundle = null,
+            tag = tag
+        )
+    }
+
 }

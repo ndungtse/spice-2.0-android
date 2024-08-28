@@ -7,9 +7,12 @@ import android.view.ViewGroup
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.appextensions.gone
+import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.databinding.FragmentTermsAndConditionsBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
+import com.medtroniclabs.spice.ncd.screening.fragment.ScreeningFormBuilderFragment
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.registration.RegistrationActivity
 import com.medtroniclabs.spice.ui.registration.viewmodel.TermsAndConditionsViewModel
@@ -36,9 +39,17 @@ class TermsAndConditionsFragment : BaseFragment(), View.OnClickListener {
     private fun initViews() {
         if (isRegistration()) {
             binding.btnAccept.isEnabled = false
+            binding.tvTitle.visible()
+            binding.etUserInitial.visible()
+            binding.tvTermsAndConditionInfo.text =
+                getString(R.string.terms_condition_info_enrollment)
             viewModel.getConsentForm(DefinedParams.Registration)
         } else {
             binding.btnAccept.isEnabled = true
+            binding.tvTitle.gone()
+            binding.etUserInitial.gone()
+            binding.tvTermsAndConditionInfo.text =
+                getString(R.string.terms_condition_info_screening)
             viewModel.getConsentForm(DefinedParams.Screening)
         }
 
@@ -68,7 +79,11 @@ class TermsAndConditionsFragment : BaseFragment(), View.OnClickListener {
                 if (isRegistration()) {
                     (activity as RegistrationActivity?)?.loadRegistrationFormFragment()
                 } else {
-                    //Screening flow
+                    replaceFragmentIfExists<ScreeningFormBuilderFragment>(
+                        R.id.screeningParentLayout,
+                        bundle = null,
+                        tag = ScreeningFormBuilderFragment.TAG
+                    )
                 }
             }
         }

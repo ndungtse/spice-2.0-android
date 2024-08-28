@@ -34,11 +34,15 @@ import com.medtroniclabs.spice.mappingkey.Screening.PHQ4
 import com.medtroniclabs.spice.mappingkey.Screening.CategoryDisplayName
 import com.medtroniclabs.spice.mappingkey.Screening.CategoryDisplayType
 import com.medtroniclabs.spice.mappingkey.Screening.CategoryType
+import com.medtroniclabs.spice.mappingkey.Screening.SiteName
 import com.medtroniclabs.spice.mappingkey.Screening.Type
 import com.medtroniclabs.spice.mappingkey.Screening.lastMealTime
 import com.medtroniclabs.spice.mappingkey.Screening.lastMealTypeDateSuffix
 import com.medtroniclabs.spice.mappingkey.Screening.lastMealTypeMeridiem
+import com.medtroniclabs.spice.mappingkey.Screening.otherType
+import com.medtroniclabs.spice.mappingkey.Screening.siteId
 import com.medtroniclabs.spice.mappingkey.Screening.substanceAbuse
+import com.medtroniclabs.spice.mappingkey.Screening.userSiteId
 import com.medtroniclabs.spice.ncd.screening.ReferredReason
 import com.medtroniclabs.spice.ui.MenuConstants
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
@@ -877,7 +881,7 @@ object CommonUtils {
             if (bloodGlucoseValue != null) {
                 map[Screening.Glucose_Value] = bloodGlucoseValue
                 formatLastMealTime(map)
-                if (map.containsKey(Screening.lastMealTime) && map[Screening.lastMealTime] is Number) {
+                if (map.containsKey(Screening.lastMealTime) && map[Screening.lastMealTime] is String) {
                     setFBSAndRBSValues(map, bloodGlucoseValue, 1) {
                         getRbsFbs.invoke(it)
                     }
@@ -1070,8 +1074,10 @@ object CommonUtils {
     private fun setType(hashMap: HashMap<String, Any>, generalData: Map<String, Any>?) {
         generalData?.forEach { (key, value) ->
             when (key) {
-                CategoryDisplayName, CategoryDisplayType -> Unit // Skip these keys
+                CategoryDisplayName, CategoryDisplayType, SiteName, siteId -> Unit // Skip these keys
                 CategoryType -> hashMap[Type] = value // Change key from "categoryType" to "type"
+                otherType -> hashMap[key] = value
+                userSiteId -> hashMap[siteId] = value
                 else -> hashMap[key] = value
             }
         }

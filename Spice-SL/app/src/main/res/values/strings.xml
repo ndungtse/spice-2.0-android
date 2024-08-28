@@ -755,4 +755,6 @@
     <string name="phq4_mild">%1$d - Mild</string>
     <string name="phq4_moderate">%1$d - Moderate</string>
     <string name="phq4_severe">%1$d - Severe</string>
+    <string name="terms_condition_info_screening"><![CDATA[The healthcare worker will be accepting the terms & conditions on behalf of the screening participant.]]></string>
+    <string name="terms_condition_info_enrollment"><![CDATA[The healthcare worker will be accepting the terms & conditions on behalf of the enrollment participant.]]></string>
 </resources>

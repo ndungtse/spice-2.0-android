@@ -13,6 +13,7 @@ import androidx.fragment.app.activityViewModels
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.appextensions.triggerOneTimeWorker
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.CommonUtils.getGlucoseUnit
@@ -104,7 +105,12 @@ class ScreeningSummaryFragment : BaseFragment(), View.OnClickListener {
                 ResourceState.SUCCESS -> {
                     (activity as? BaseActivity)?.hideLoading()
                     requireContext().triggerOneTimeWorker()
-                    (activity as? ScreeningActivity)?.finish()
+                    replaceFragmentIfExists<StatsFragment>(
+                        R.id.screeningParentLayout,
+                        bundle = null,
+                        tag = StatsFragment.TAG
+                    )
+                    viewModel.screeningUpdateResponse.postError()
                 }
 
                 ResourceState.ERROR -> {

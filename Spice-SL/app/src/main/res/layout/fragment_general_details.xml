@@ -141,6 +141,22 @@
                     android:paddingEnd="@dimen/_24sdp"
                     android:text="@string/Other" />
 
+                <RadioButton
+                    android:id="@+id/rbTypeBtn6"
+                    style="@style/RadioButton_General"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingEnd="@dimen/_24sdp"
+                    android:text="@string/door_to_door" />
+
+                <RadioButton
+                    android:id="@+id/rbTypeBtn7"
+                    style="@style/RadioButton_General"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingEnd="@dimen/_24sdp"
+                    android:text="@string/camp" />
+
             </com.askjeffreyliu.flexboxradiogroup.FlexBoxRadioGroup>
 
             <androidx.appcompat.widget.AppCompatEditText

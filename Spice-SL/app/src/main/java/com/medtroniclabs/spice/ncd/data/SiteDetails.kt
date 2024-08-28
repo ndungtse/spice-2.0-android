@@ -8,6 +8,8 @@ data class SiteDetails(
     var tenantId: Long? = null,
     var categoryDisplayType: String? = null,
     var categoryDisplayName: String? = null,
+    var otherType: String? = null,
     var referredSiteId: Long? = null,
-    var counselorId: Long? = null
+    var counselorId: Long? = null,
+    var userSiteId: Long? = null
 )
