@@ -1,6 +1,8 @@
 package com.medtroniclabs.spice.network
 
 import com.medtroniclabs.spice.data.model.MotherNeonatePncRequest
+import com.google.gson.JsonObject
+import com.medtroniclabs.spice.model.medicalreview.CreateUnderTwoMonthsRequest
 import com.medtroniclabs.spice.data.APIResponse
 import com.medtroniclabs.spice.data.AboveFiveYearsMetaResponse
 import com.medtroniclabs.spice.data.AboveFiveYearsSummaryDetails
@@ -71,7 +73,6 @@ import com.medtroniclabs.spice.model.medicalreview.AddMemberRegRequest
 import com.medtroniclabs.spice.data.model.CreateLabourDeliveryRequest
 import com.medtroniclabs.spice.data.model.CreateLabourDeliveryResponse
 import com.medtroniclabs.spice.model.medicalreview.CreateUnderFiveYearsRequest
-import com.medtroniclabs.spice.model.medicalreview.CreateUnderTwoMonthsRequest
 import com.medtroniclabs.spice.model.medicalreview.CreateUnderTwoMonthsResponse
 import com.medtroniclabs.spice.data.model.LabourDeliverySummaryDetails
 import com.medtroniclabs.spice.data.model.RequestChangePassword
@@ -81,6 +82,7 @@ import com.medtroniclabs.spice.model.medicalreview.SearchLabTestResponse
 import com.medtroniclabs.spice.model.medicalreview.SearchRequestLabTest
 import com.medtroniclabs.spice.model.medicalreview.SummaryDetails
 import okhttp3.MultipartBody
+import com.medtroniclabs.spice.ncd.data.ScreeningPatientResponse
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
 import retrofit2.Response
@@ -293,6 +295,9 @@ interface ApiService {
 
     @POST("spice-service/static-data/app-version")
     suspend fun checkAppVersion(): Response<APIResponse<Boolean>>
+
+    @POST("/spice-service/screening/create")
+    suspend fun createScreening(@Body createRequest: JsonObject): Response<ScreeningPatientResponse>
 
     @POST("spice-service/patient/register")
     suspend fun registerPatient(@Body request: HashMap<String, Any>): Response<APIResponse<RegistrationResponse>>

@@ -123,6 +123,7 @@ import com.medtroniclabs.spice.mappingkey.MemberRegistration.dateOfBirth
 import com.medtroniclabs.spice.mappingkey.MemberRegistration.gender
 import com.medtroniclabs.spice.mappingkey.MemberRegistration.phoneNumber
 import com.medtroniclabs.spice.mappingkey.Screening
+import com.medtroniclabs.spice.mappingkey.Screening.DateOfBirth
 import com.medtroniclabs.spice.mappingkey.Screening.Hour
 import com.medtroniclabs.spice.mappingkey.Screening.Minute
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.PREGNANCY_MAX_AGE
@@ -156,8 +157,8 @@ class FormGenerator(
     private val diastolicSuffix = "DiastolicSuffix"
     private val systolicSuffix = "SystolicSuffix"
     private val pulseSuffix = "PulseSuffix"
-    private val lastMealTypeMeridiem  = "Meridiem"
-    private val lastMealTypeDateSuffix  = "Date"
+    val lastMealTypeMeridiem  = "Meridiem"
+    val lastMealTypeDateSuffix  = "Date"
     private var mentalHealthQuestions: HashMap<String, ArrayList<MentalHealthOption>>? = null
     private var mentalHealthEditList: ArrayList<Map<String, Any>>? = null
 
@@ -326,6 +327,9 @@ class FormGenerator(
             maxDecimalPlaces?.let {
                 binding.etUserInput.filters = arrayOf<InputFilter>(DecimalDigitsInputFilter(it))
             }
+            unitMeasurement?.let {
+                it.also { resultHashMap[Screening.GlucoseUnit] = it }
+            }
             hint?.let {
                 if (translate) {
                     binding.etUserInput.hint = hintCulture ?: it
@@ -351,7 +355,7 @@ class FormGenerator(
             if (applyDecimalFilter == true)
                 inputFilter.add(DigitsInputFilter())
 
-            if (id == DefinedParams.NationalId) {
+            if (id == Screening.identityValue) {
                 inputFilter.add(InputFilter.AllCaps())
             }
 
@@ -450,12 +454,12 @@ class FormGenerator(
         phoneNumberError(errorVisibility)
 
         if (nationalId.isNotEmpty()) {
-            getViewByTag(Screening.nationalId)?.let { editText ->
+            getViewByTag(Screening.identityValue)?.let { editText ->
                 if (editText is AppCompatEditText) {
                     editText.setText(nationalId.uppercase())
                     editText.isEnabled = false
                 }
-                getViewByTag("${Screening.nationalId}$errorSuffix")?.let { error ->
+                getViewByTag("${Screening.identityValue}$errorSuffix")?.let { error ->
                     (error as TextView).apply {
                         gone()
                     }
@@ -843,7 +847,7 @@ class FormGenerator(
         serverViewModel.apply {
             if (isNeedAction) {
                 when (id) {
-                    DefinedParams.NationalId -> {
+                    Screening.identityValue -> {
                         binding.tvNationalIdAction.visibility = View.VISIBLE
                         val clickableSpan = object : ClickableSpan() {
                             override fun onClick(mView: View) {
@@ -1464,6 +1468,7 @@ class FormGenerator(
                     fillDetailsOnEditText(years, months, weeks, id, binding.etDateOfBirth)
 
                     listener.onAgeCheckForPregnancy()
+                    callback?.invoke(resultHashMap,id)
                 }
 
                 override fun afterTextChanged(s: Editable?) {
@@ -1487,8 +1492,8 @@ class FormGenerator(
                         val parsedDate = DateUtils.getDatePatternDDMMYYYY().parse(stringDate)
                         parsedDate?.let {
                             binding.etDateOfBirth.text = DateUtils.getDateDDMMYYYY().format(it)
-
                             fillDetailsOnDatePickerSet(it, true, id)
+                            callback?.invoke(resultHashMap,id)
                         }
                     }
                 }
@@ -1973,11 +1978,30 @@ class FormGenerator(
 
     private fun resetSpecificChildViews(view: View?) {
         view?.apply {
-            val model = serverData?.find { it.id == tag }
+            val specialChildView = listOf(VIEW_TYPE_TIME)
+            val model = serverData?.find { specialChildView.contains(it.viewType) }
             when (model?.viewType) {
                 VIEW_TYPE_TIME -> {
                     if (!view.isEnabled) {
-                        // Need to write method to disable and enable the view.
+                        (getViewByTag(model.id + errorSuffix) as? TextView)?.gone()
+                        getViewByTag(R.id.etMinute)?.let {
+                            resetEditTextDatePicker(it, model)
+                        }
+                        getViewByTag(R.id.etHour)?.let {
+                            resetEditTextDatePicker(it, model)
+                        }
+                        listOf(model.dayOptionsList, model.timeOptionsList).forEach { optionList ->
+                            optionList?.forEach { option ->
+                                val suffix = if (optionList == model.dayOptionsList) lastMealTypeDateSuffix else lastMealTypeMeridiem
+                                getViewByTag(option[DefinedParams.ID] as String + "_" + model.id + suffix)?.let { view ->
+                                    resultHashMap.remove(model.id)
+                                    resultHashMap.remove(model.id + suffix)
+                                    if (view is TextView) {
+                                        isSelected = false
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -2054,10 +2078,15 @@ class FormGenerator(
                     this,
                     model
                 )
-
-                VIEW_TYPE_TIME -> resetTimeView(this, model)
                 VIEW_TYPE_FORM_AGE -> resetAgeView(this, model)
                 VIEW_TYPE_DIALOG_CHECKBOX -> resetCheckBoxDialogView(this, model)
+                else -> {
+                    val specialChildView = listOf(VIEW_TYPE_TIME)
+                    val model = serverData?.find { specialChildView.contains(it.viewType) }
+                    if (VIEW_TYPE_TIME == model?.viewType) {
+                        resetTimeView(model)
+                    }
+                }
             }
         }
     }
@@ -2115,24 +2144,24 @@ class FormGenerator(
         }
     }
 
-    private fun resetTimeView(view: View, model: FormLayout) {
-        resetEditTextDatePicker(view, model)
+    private fun resetTimeView(model: FormLayout) {
+        (getViewByTag(model.id + errorSuffix) as? TextView)?.gone()
         getViewByTag(R.id.etMinute)?.let {
             resetEditTextDatePicker(it, model)
         }
         getViewByTag(R.id.etHour)?.let {
             resetEditTextDatePicker(it, model)
         }
-        getViewByTag(model.id + lastMealTypeDateSuffix)?.let {
-            resultHashMap.remove(model.id)
-            if (view is SingleSelectionCustomView) {
-                view.resetSingleSelectionChildViews()
-            }
-        }
-        getViewByTag(model.id + lastMealTypeMeridiem)?.let {
-            resultHashMap.remove(model.id)
-            if (view is SingleSelectionCustomView) {
-                view.resetSingleSelectionChildViews()
+        listOf(model.dayOptionsList, model.timeOptionsList).forEach { optionList ->
+            optionList?.forEach { option ->
+                val suffix = if (optionList == model.dayOptionsList) lastMealTypeDateSuffix else lastMealTypeMeridiem
+                getViewByTag(option[DefinedParams.ID] as String + "_" + model.id + suffix)?.let { view ->
+                    resultHashMap.remove(model.id)
+                    resultHashMap.remove(model.id + suffix)
+                    if (view is TextView) {
+                        view.isSelected = false
+                    }
+                }
             }
         }
     }
@@ -2305,7 +2334,7 @@ class FormGenerator(
                         isValid = false
                         requestFocusView(data)
                     }
-                } else if ((id == dateOfBirth) && isMandatory && resultHashMap.containsKey(id)) {
+                } else if ((id == dateOfBirth || id == DateOfBirth) && isMandatory && resultHashMap.containsKey(id)) {
                     val actualValue = resultHashMap[id] as? String
                     maxAge?.let { ageLimit ->
                         val isValidAge = actualValue?.let {
@@ -2341,37 +2370,60 @@ class FormGenerator(
                 } else if (data.viewType.equals(VIEW_TYPE_TIME, true)) {
                     val dateKey = id + lastMealTypeDateSuffix
                     val timeKey = id + lastMealTypeMeridiem
+                    if (resultHashMap.containsKey(Screening.BloodGlucoseID) && resultHashMap[Screening.BloodGlucoseID] != null) {
+                        if (resultHashMap[dateKey] != null) {
+                            val result = resultHashMap[id] as? MutableMap<*, *>
+                            val hour = (result?.get(Hour) as? String)?.toIntOrNull()
+                            val minute = (result?.get(Minute) as? String)?.toIntOrNull()
+                            if (hour != null && minute != null && hour != 0 && resultHashMap[timeKey] != null) {
+                                val minHour = data.minValueForHour
+                                val maxHour = data.maxValueForHour
+                                val minMinute = data.minValueForMinute
+                                val maxMinute = data.maxValueForMinute
 
-                    if (resultHashMap[dateKey] != null) {
-                        val result = resultHashMap[id] as? MutableMap<*, *>
-                        val hour = (result?.get(Hour) as? String)?.toIntOrNull()
-                        val minute = (result?.get(Minute) as? String)?.toIntOrNull()
+                                val isValidHour =
+                                    minHour != null && maxHour != null && hour in minHour..maxHour
+                                val isValidMinute =
+                                    minMinute != null && maxMinute != null && minute in minMinute..maxMinute
 
-                        if (hour != null && minute != null && hour != 0 && resultHashMap[timeKey] != null) {
-                            val minHour = data.minValueForHour
-                            val maxHour = data.maxValueForHour
-                            val minMinute = data.minValueForMinute
-                            val maxMinute = data.maxValueForMinute
-
-                            val isValidHour =
-                                minHour != null && maxHour != null && hour in minHour..maxHour
-                            val isValidMinute =
-                                minMinute != null && maxMinute != null && minute in minMinute..maxMinute
-
-                            if (((!(minHour != null && maxHour != null)) && (!(minMinute != null && maxMinute != null))) || (isValidHour && isValidMinute)) {
-                                hideValidationField(data)
+                                if (((!(minHour != null && maxHour != null)) && (!(minMinute != null && maxMinute != null))) || (isValidHour && isValidMinute)) {
+                                    val res = (resultHashMap[dateKey] as? String)?.let { date ->
+                                        if (date.equals(
+                                                Screening.Today,
+                                                ignoreCase = true
+                                            ) && hour != null && minute != null && hour != 0 && resultHashMap[timeKey] != null
+                                        ) {
+                                            DateUtils.isValidTimeForLastMealTime(
+                                                hour,
+                                                minute,
+                                                resultHashMap[timeKey] as String
+                                            )
+                                        } else {
+                                            true
+                                        }
+                                    } ?: false
+                                    if (res) {
+                                        hideValidationField(data)
+                                    } else {
+                                        isValid = false
+                                        requestFocusView(data)
+                                    }
+                                } else {
+                                    isValid = false
+                                    requestFocusView(
+                                        data,
+                                        getString(
+                                            R.string.time_meal_error,
+                                            minHour,
+                                            maxHour,
+                                            minMinute,
+                                            maxMinute
+                                        )
+                                    )
+                                }
                             } else {
                                 isValid = false
-                                requestFocusView(
-                                    data,
-                                    getString(
-                                        R.string.time_meal_error,
-                                        minHour,
-                                        maxHour,
-                                        minMinute,
-                                        maxMinute
-                                    )
-                                )
+                                requestFocusView(data)
                             }
                         } else {
                             isValid = false
@@ -2379,7 +2431,10 @@ class FormGenerator(
                         }
                     }
                 } else {
-                    if (resultHashMap.containsKey(id)) {
+                    if (resultHashMap.containsKey(id) && data.viewType.equals(
+                            VIEW_TYPE_FORM_EDITTEXT, true
+                        )
+                    ) {
                         val actualValue = resultHashMap[id]
                         if (actualValue is String && actualValue.isEmpty() && !isMandatory) {
                             hideValidationField(data)
@@ -2752,6 +2807,7 @@ class FormGenerator(
                 null
             )
         }
+        callback?.invoke(resultHashMap,id)
     }
 
     private fun setCheckBoxDialogText(
@@ -3143,9 +3199,25 @@ class FormGenerator(
         return optionListUI
     }
 
-    fun saveMentalHealthQuestions(id: String, questions: java.util.ArrayList<MentalHealthOption>) {
+    private fun saveMentalHealthQuestions(id: String, questions: java.util.ArrayList<MentalHealthOption>) {
         if (mentalHealthQuestions == null)
             mentalHealthQuestions = HashMap()
         mentalHealthQuestions?.put(id, questions)
+    }
+
+    fun checkIfNoSymptomsPresent(diabetes: Any?): Boolean {
+        var status = false
+        if ((diabetes is java.util.ArrayList<*>) && diabetes.size > 0) {
+            if (diabetes.size == 1) {
+                diabetes[0]?.let { map ->
+                    if (map is Map<*, *>) {
+                        status = map[DefinedParams.NAME] != Screening.NoSymptoms
+                    }
+                }
+            } else {
+                status = true
+            }
+        }
+        return status
     }
 }

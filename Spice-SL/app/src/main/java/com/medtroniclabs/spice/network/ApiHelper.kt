@@ -1,6 +1,8 @@
 package com.medtroniclabs.spice.network
 
 import com.medtroniclabs.spice.data.model.MotherNeonatePncRequest
+import com.google.gson.JsonObject
+import com.medtroniclabs.spice.model.medicalreview.CreateUnderTwoMonthsRequest
 import com.medtroniclabs.spice.data.APIResponse
 import com.medtroniclabs.spice.data.AboveFiveYearsMetaResponse
 import com.medtroniclabs.spice.data.AboveFiveYearsSummaryDetails
@@ -71,7 +73,6 @@ import com.medtroniclabs.spice.model.medicalreview.AddMemberRegRequest
 import com.medtroniclabs.spice.data.model.CreateLabourDeliveryRequest
 import com.medtroniclabs.spice.data.model.CreateLabourDeliveryResponse
 import com.medtroniclabs.spice.model.medicalreview.CreateUnderFiveYearsRequest
-import com.medtroniclabs.spice.model.medicalreview.CreateUnderTwoMonthsRequest
 import com.medtroniclabs.spice.model.medicalreview.CreateUnderTwoMonthsResponse
 import com.medtroniclabs.spice.data.model.LabourDeliverySummaryDetails
 import com.medtroniclabs.spice.data.model.RequestChangePassword
@@ -80,6 +81,7 @@ import com.medtroniclabs.spice.data.offlinesync.model.ResponseSignatureUpload
 import com.medtroniclabs.spice.model.medicalreview.SearchLabTestResponse
 import com.medtroniclabs.spice.model.medicalreview.SearchRequestLabTest
 import com.medtroniclabs.spice.model.medicalreview.SummaryDetails
+import com.medtroniclabs.spice.ncd.data.ScreeningPatientResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
@@ -167,4 +169,5 @@ interface ApiHelper {
     suspend fun  registerPatient(hashMap: HashMap<String, Any>) : Response<APIResponse<RegistrationResponse>>
     suspend fun ncdPatientSearch(request: PatientsDataModel): APIResponse<SearchAndListResponse>
     suspend fun getNcdPatient(request: PatientDetailRequest): Response<APIResponse<PatientListRespModel>>
+    suspend fun createScreening(createRequest: JsonObject): Response<ScreeningPatientResponse>
 }

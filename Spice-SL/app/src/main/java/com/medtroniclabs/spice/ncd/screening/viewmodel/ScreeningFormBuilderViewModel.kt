@@ -11,6 +11,7 @@ import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.appextensions.postSuccess
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.db.entity.MentalHealthEntity
+import com.medtroniclabs.spice.db.entity.RiskFactorEntity
 import com.medtroniclabs.spice.db.entity.ScreeningEntity
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.ncd.screening.repo.ScreeningRepository
@@ -26,15 +27,19 @@ class ScreeningFormBuilderViewModel @Inject constructor(
     private val screeningRepository: ScreeningRepository
 ) : ViewModel() {
 
-    val formLayoutsLiveData = MutableLiveData<Resource<String>>()
-    private var getMentalQuestion = MutableLiveData<Pair<String,String>>()
-    private var screeningEntityRowId :ScreeningEntity? = null
+    private var getMentalQuestion = MutableLiveData<Pair<String, String>>()
     var screeningSaveResponse = MutableLiveData<Resource<ScreeningEntity>>()
+    var screeningUpdateResponse = MutableLiveData<Resource<ScreeningEntity>>()
     val getMentalQuestions: LiveData<MentalHealthEntity> =
-    getMentalQuestion.switchMap {
+        getMentalQuestion.switchMap {
             screeningRepository.getMentalQuestion(it.second)
         }
     private var lastLocation: Location? = null
+    var summaryMap: Map<String, Any>? = null
+    val getFormData = MutableLiveData<String>()
+    val formLayoutsLiveData: LiveData<String> = getFormData.switchMap {
+        screeningRepository.getFormData(it)
+    }
     private var phQ4Score: Int? = null
     private var fbsBloodGlucose: Double? = null
     private var rbsBloodGlucose: Double? = null
@@ -47,10 +52,7 @@ class ScreeningFormBuilderViewModel @Inject constructor(
 
     fun getIdOfMentalHealth() = getMentalQuestion.value
     fun getFormData(formType: String) {
-        viewModelScope.launch(dispatcherIO) {
-            formLayoutsLiveData.postLoading()
-            formLayoutsLiveData.postValue(screeningRepository.getFormData(formType))
-        }
+        getFormData.value = formType
     }
 
     fun setCurrentLocation(location: Location) {
@@ -84,6 +86,15 @@ class ScreeningFormBuilderViewModel @Inject constructor(
     fun getRbsBloodGlucose(): Double {
         return rbsBloodGlucose ?: 0.0
     }
+
+    fun getSystolicAverage(): Int? {
+        return systolicAverageSummary
+    }
+
+    fun getDiastolicAverage(): Int? {
+        return diastolicAverageSummary
+    }
+
     fun savePatientScreeningInformation(
         screeningEntityRawString: String,
         generalDetail: String,
@@ -101,7 +112,6 @@ class ScreeningFormBuilderViewModel @Inject constructor(
                     isReferred = isReferred
                 )
                 val rowId = screeningRepository.savePatientScreeningInformation(screeningEntity)
-                screeningEntityRowId = rowId
                 screeningSaveResponse.postSuccess(rowId)
             } catch (e: Exception) {
                 screeningSaveResponse.postError()
@@ -109,11 +119,31 @@ class ScreeningFormBuilderViewModel @Inject constructor(
         }
     }
 
-    fun getSystolicAverage(): Int? {
-        return systolicAverageSummary
+    fun updatePatientScreeningInformation(
+        generalDetail: String,
+    ) {
+        viewModelScope.launch(dispatcherIO)
+        {
+            try {
+                screeningUpdateResponse.postLoading()
+                screeningSaveResponse.value?.data?.let {
+                    it.apply {
+                        generalDetails = generalDetail
+                    }
+                    val screeningEntity = screeningRepository.savePatientScreeningInformation(it)
+                    screeningUpdateResponse.postSuccess(screeningEntity)
+                }
+            } catch (e: Exception) {
+                screeningUpdateResponse.postError()
+            }
+        }
+    }
+    private val getRiskEntityList = MutableLiveData<Boolean>()
+    val getRiskEntityListLiveData: LiveData<List<RiskFactorEntity>> = getRiskEntityList.switchMap {
+        screeningRepository.riskFactorListing()
     }
 
-    fun getDiastolicAverage(): Int? {
-        return diastolicAverageSummary
+    fun getRiskEntityList() {
+        getRiskEntityList.value = true
     }
 }

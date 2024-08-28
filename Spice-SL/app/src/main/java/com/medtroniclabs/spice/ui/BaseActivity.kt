@@ -434,4 +434,8 @@ open class BaseActivity : SpiceRootActivity() {
                 }
             }
         }
+
+    fun hiddenBackButton() {
+        binding.ivBack.visibility = checkVisibility(false)
+    }
 }

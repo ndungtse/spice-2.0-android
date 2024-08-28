@@ -77,6 +77,7 @@ class MentalHealthAdapter(
                         result[Screening.Answer_Id] = answerId
                         result[Screening.Display_Order] = displayOrder
                         result[Screening.mentalHealthScore] = score
+                        result[Screening.MHAnswer] = answerName
                         callback?.invoke(
                             baseId,
                             question,

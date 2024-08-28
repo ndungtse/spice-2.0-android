@@ -1,6 +1,7 @@
 package com.medtroniclabs.spice.ui.boarding.repo
 
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.ConsentFormType
 import com.medtroniclabs.spice.common.DateUtils
@@ -27,6 +28,8 @@ import com.medtroniclabs.spice.db.entity.FormEntity
 import com.medtroniclabs.spice.db.entity.HealthFacilityEntity
 import com.medtroniclabs.spice.db.entity.MentalHealthEntity
 import com.medtroniclabs.spice.db.entity.MenuEntity
+import com.medtroniclabs.spice.db.entity.RiskClassificationModel
+import com.medtroniclabs.spice.db.entity.RiskFactorEntity
 import com.medtroniclabs.spice.db.entity.UserProfileEntity
 import com.medtroniclabs.spice.db.entity.VillageEntity
 import com.medtroniclabs.spice.db.local.RoomHelper
@@ -37,6 +40,7 @@ import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
+import java.lang.reflect.Type
 import javax.inject.Inject
 
 class MetaRepository @Inject constructor(
@@ -159,6 +163,23 @@ class MetaRepository @Inject constructor(
                                     res.medicalCompliances?.let {
                                         roomHelper.deleteMedicalCompliance()
                                         roomHelper.saveMedicalCompliance(it)
+                                    }
+                                    res.cvdRiskAlgorithms?.nonLab?.let { nonLab ->
+                                        val baseType: Type =
+                                            object :
+                                                TypeToken<ArrayList<RiskClassificationModel>>() {}.type
+                                        val resultString = Gson().toJson(
+                                            nonLab,
+                                            baseType
+                                        )
+                                        roomHelper.run {
+                                            deleteRiskFactor()
+                                            insertRiskFactor(
+                                                RiskFactorEntity(
+                                                    nonLabEntity = resultString
+                                                )
+                                            )
+                                        }
                                     }
                                 }
                             } else {

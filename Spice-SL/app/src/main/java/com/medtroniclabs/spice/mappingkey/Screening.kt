@@ -20,7 +20,6 @@ object Screening {
     const val Hour = "hour"
     const val Minute = "minute"
     const val AM_PM = "am/pm"
-    const val Last_Meal_Date = "last_meal_date"
     const val Today = "Today"
     const val Yesterday = "Yesterday"
     const val AM = "AM"
@@ -46,7 +45,6 @@ object Screening {
     const val Screening_Date_Time = "screeningDateTime"
     const val AppVersion = "appVersion"
     const val Unit_Measurement_Metric_Type = "metric"
-    const val Unit_Measurement_Imperial_Type = "imperial"
     const val Feet = "feet"
     const val Inches = "inches"
     const val BPLog_Details = "bpLogDetails"
@@ -129,9 +127,43 @@ object Screening {
     const val Camp = "camp"
     const val Pharmacy = "pharmacy"
     const val Type = "type"
+    const val bioData = "bioData"
+    const val identityType = "identityType"
+    const val GlucoseUnit = "glucoseUnit"
+    const val DateOfBirth = "dateOfBirth"
+    const val lastMealTypeMeridiem  = "Meridiem"
+    const val lastMealTypeDateSuffix  = "Date"
+    const val MHAnswer = "answer"
+    const val MHQuestion = "question"
+    const val diabetes = "diabetes"
+    const val national_id = "national-id"
+    const val passport = "passport"
+    const val birthCertificate = "birth-certificate"
+    const val CategoryType = "categoryType"
+    const val CategoryDisplayName = "categoryDisplayName"
+    const val CategoryDisplayType = "categoryDisplayType"
+    const val bp_log = "bpLog"
+    const val GlucoseLog = "glucoseLog"
+    const val YESTERDAY = "YESTERDAY"
+    const val TODAY ="TODAY"
     const val Facility = "Facility"
     const val Community = "Community"
+    const val identityValue = "identityValue"
+    const val CVD_Risk_Score = "cvdRiskScore"
+    const val CVD_Risk_Level = "cvdRiskLevel"
+    const val CVD_Risk_Score_Display = "cvdRiskScoreDisplay"
+    const val Age = "age"
 
+    const val Female = "Female"
+    const val Male = "Male"
+    const val is_regular_smoker = "isRegularSmoker"
+    // CVD Risks
+    const val very_low_risk_limit = 5
+    const val low_risk_limit = 10
+    const val medium_risk_limit = 20
+    const val medium_high_risk_limit = 30
+    const val SiteName = "siteName"
+    const val UserId = "userId"
     fun getEmptyBPReading(size: Int): ArrayList<BPModel> {
         val list = ArrayList<BPModel>()
         for (i in 1..size) {

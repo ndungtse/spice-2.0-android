@@ -15,6 +15,8 @@ import com.medtroniclabs.spice.common.RoleConstant.SECHN
 import com.medtroniclabs.spice.common.RoleConstant.SRN
 import com.medtroniclabs.spice.data.Prescription
 import com.medtroniclabs.spice.data.history.Investigation
+import com.medtroniclabs.spice.db.entity.RiskClassificationModel
+import com.medtroniclabs.spice.db.entity.RiskFactorModel
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.DAY
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.DAYS
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.MONTH
@@ -29,6 +31,13 @@ import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration
 import com.medtroniclabs.spice.mappingkey.Screening
 import com.medtroniclabs.spice.mappingkey.Screening.CAGEAID
 import com.medtroniclabs.spice.mappingkey.Screening.PHQ4
+import com.medtroniclabs.spice.mappingkey.Screening.CategoryDisplayName
+import com.medtroniclabs.spice.mappingkey.Screening.CategoryDisplayType
+import com.medtroniclabs.spice.mappingkey.Screening.CategoryType
+import com.medtroniclabs.spice.mappingkey.Screening.Type
+import com.medtroniclabs.spice.mappingkey.Screening.lastMealTime
+import com.medtroniclabs.spice.mappingkey.Screening.lastMealTypeDateSuffix
+import com.medtroniclabs.spice.mappingkey.Screening.lastMealTypeMeridiem
 import com.medtroniclabs.spice.mappingkey.Screening.substanceAbuse
 import com.medtroniclabs.spice.ncd.screening.ReferredReason
 import com.medtroniclabs.spice.ui.MenuConstants
@@ -596,7 +605,7 @@ object CommonUtils {
                 height = fetchValue(map, Screening.Height)
             }
             height?.let {
-                val bmiValue = getBMIForNcd(it, weight)
+                val bmiValue = getBMIForNcd(it, weight)?.toDoubleOrNull()
                 val formattedValue = String.format(Locale.US, "%.2f", bmiValue).toDouble()
                 map[Screening.BMI] = formattedValue
                 return formattedValue
@@ -712,7 +721,7 @@ object CommonUtils {
                 mentalHealthResultMap.keys.forEach { mapKey ->
                     val optionsMap = HashMap<String, Any>()
                     val actualValue = mentalHealthResultMap[mapKey]
-                    optionsMap[Screening.Questions] = mapKey as String
+                    optionsMap[Screening.MHQuestion] = mapKey as String
                     if (actualValue is HashMap<*, *>) {
                         (actualValue[Screening.mentalHealthScore] as? Double)?.toInt()?.let {
                             phqScore += it
@@ -722,8 +731,8 @@ object CommonUtils {
                             actualValue[Screening.Question_Id] as Long
                         optionsMap[Screening.Answer_Id] =
                             actualValue[Screening.Answer_Id] as Long
-                        optionsMap[Screening.Answer] =
-                            actualValue[Screening.Answer] as String
+                        optionsMap[Screening.MHAnswer] =
+                            actualValue[Screening.MHAnswer] as String
                         optionsMap[Screening.Display_Order] =
                             actualValue[Screening.Display_Order] as Long
                         phqMap.add(optionsMap)
@@ -867,6 +876,7 @@ object CommonUtils {
             val bloodGlucoseValue: Double? = parseGlucoseValue(bloodGlucoseString)
             if (bloodGlucoseValue != null) {
                 map[Screening.Glucose_Value] = bloodGlucoseValue
+                formatLastMealTime(map)
                 if (map.containsKey(Screening.lastMealTime) && map[Screening.lastMealTime] is Number) {
                     setFBSAndRBSValues(map, bloodGlucoseValue, 1) {
                         getRbsFbs.invoke(it)
@@ -882,13 +892,35 @@ object CommonUtils {
                     map[Screening.BGTakenOn] = dateTime
             }
         } else {
-            if (map.containsKey(Screening.lastMealTime) && map[Screening.lastMealTime] is Long) {
-                map[Screening.lastMealTime] =
-                    DateUtils.getDateString(map[Screening.lastMealTime] as Long)
-            }
+            formatLastMealTime(map)
         }
     }
 
+    private fun formatLastMealTime(map: HashMap<String, Any>) {
+        if (map["${lastMealTime}${lastMealTypeMeridiem}"] is String &&
+            map["${lastMealTime}${lastMealTypeDateSuffix}"] is String &&
+            map[lastMealTime] is Map<*, *>
+        ) {
+            val hourMinMap = map[lastMealTime] as? Map<*, *> ?: emptyMap<Any, Any>()
+            val hour = (hourMinMap[Screening.Hour] as? String)?.toIntOrNull() ?: -1
+            val minute = (hourMinMap[Screening.Minute] as? String)?.toIntOrNull() ?: -1
+
+            val hourMinPair = Pair(hour, minute)
+            val formattedDateTime = DateUtils.getFormattedDateTimeForLastMeal(
+                map["${lastMealTime}${lastMealTypeDateSuffix}"] as String,
+                map["${lastMealTime}${lastMealTypeMeridiem}"] as String,
+                hourMinPair
+            )
+            formattedDateTime?.let {
+                map.apply {
+                    remove("${lastMealTime}${lastMealTypeMeridiem}")
+                    remove("${lastMealTime}${lastMealTypeDateSuffix}")
+                    remove(lastMealTime)
+                    this[lastMealTime] = formattedDateTime
+                }
+            }
+        }
+    }
     private fun setFBSAndRBSValues(
         map: HashMap<String, Any>,
         bloodGlucoseValue: Double,
@@ -904,10 +936,6 @@ object CommonUtils {
                     map[Screening.Glucose_Type] = Screening.rbs
                     getRbsFbs.invoke(Pair(null, bloodGlucoseValue))
                 }
-
-                if (map[Screening.lastMealTime] is Number)
-                    map[Screening.lastMealTime] =
-                        DateUtils.getDateString(map[Screening.lastMealTime] as Long)
             }
 
             2 -> {
@@ -927,11 +955,11 @@ object CommonUtils {
         }
     }
     private fun checkFBS(map: HashMap<String, Any>): Boolean {
-        if (map.containsKey(Screening.lastMealTime) && map[Screening.lastMealTime] is Number) {
-            val lastMealCalendar = Calendar.getInstance()
-            lastMealCalendar.timeInMillis = map[Screening.lastMealTime] as Long
+        if (map.containsKey(lastMealTime) && map[lastMealTime] is String) {
+            val lastMealTimeInMillis =
+                DateUtils.convertDateTimeToMillisUsingLocal(map[lastMealTime] as String)
             val calendar = Calendar.getInstance()
-            var different: Long = calendar.timeInMillis - lastMealCalendar.timeInMillis
+            var different: Long = calendar.timeInMillis - lastMealTimeInMillis
             val secondsInMilli: Long = 1000
             val minutesInMilli = secondsInMilli * 60
             val hoursInMilli = minutesInMilli * 60
@@ -943,6 +971,7 @@ object CommonUtils {
         }
         return false
     }
+
     private fun parseGlucoseValue(bloodGlucoseString: Any?): Double? {
         return when (bloodGlucoseString) {
             is String -> {
@@ -965,6 +994,150 @@ object CommonUtils {
         }
     }
 
+    fun getBMIInformation(context: Context, bmi: Double?): Pair<String, Int>? {
+        bmi?.let {
+            if (bmi <= 18.49) {
+                return Pair(
+                    first = context.getString(R.string.under_weight),
+                    second = R.color.bmi_under_weight
+                )
+            } else if (bmi in 18.50..24.99) {
+                return Pair(
+                    first = context.getString(R.string.normal_weight),
+                    second = R.color.bmi_normal_weight
+                )
+            } else if (bmi in 25.00..29.99) {
+                return Pair(
+                    first = context.getString(R.string.over_weight),
+                    second = R.color.bmi_over_weight
+                )
+            } else if (bmi in 30.00..34.99) {
+                return Pair(
+                    first = context.getString(R.string.obese),
+                    second = R.color.bmi_obese
+                )
+            } else if (bmi >= 35.00) {
+                return Pair(
+                    first = context.getString(R.string.extremely_obese),
+                    second = R.color.bmi_extremely_obese
+                )
+            } else {
+                return null
+            }
+        }
+        return null
+    }
+
+    fun getIdentityDisplayName(identityType: String?): String {
+        if (identityType == null) {
+            return ""
+        }
+        val identityTypes = SecuredPreference.getIdentityTypes()
+        return identityTypes?.find { identityType == it.value }?.name ?: ""
+    }
+
+    fun getGlucoseUnit(glucoseUnit: String?, withoutBracket: Boolean): String {
+        return if (glucoseUnit.isNullOrBlank()) {
+            ""
+        } else if (withoutBracket) {
+            "$glucoseUnit"
+        } else {
+            "(${glucoseUnit})"
+        }
+    }
+
+
+    fun parseRequest(
+        generalDetails: String,
+        screeningDetails: String,
+        userId: Long?
+    ): HashMap<String, Any>? {
+        val generalData: Map<String, Any>? =
+            StringConverter.convertStringToMap(generalDetails)
+        (StringConverter.convertStringToMap(screeningDetails))?.let { map ->
+            HashMap(map).let {
+                setType(it, generalData)
+                handleBPLogs(it)
+                updateGlucoseData(it)
+                it[Screening.UserId] = userId
+                return it
+            }
+        }
+
+        return null
+    }
+
+    private fun setType(hashMap: HashMap<String, Any>, generalData: Map<String, Any>?) {
+        generalData?.forEach { (key, value) ->
+            when (key) {
+                CategoryDisplayName, CategoryDisplayType -> Unit // Skip these keys
+                CategoryType -> hashMap[Type] = value // Change key from "categoryType" to "type"
+                else -> hashMap[key] = value
+            }
+        }
+    }
+
+    private fun handleBPLogs(map: HashMap<String, Any>) {
+        try {
+                val bpLog = map[Screening.bp_log] as? MutableMap<String, Any>?
+                bpLog?.let { log ->
+                    val logDetail =
+                        log.entries.first { (key, _) -> key == Screening.BPLog_Details }.value as? java.util.ArrayList<*>
+                    val newList = ArrayList<HashMap<String, String>>()
+                    logDetail?.forEachIndexed { _, any ->
+                        (any as? Map<*, *>?)?.let { record ->
+                            val data = HashMap<String, String>()
+                            (record[Screening.Systolic] as? Double?)?.let { sys ->
+                                data[Screening.Systolic] = CommonUtils.parseDouble(sys)
+                            }
+                            (record[Screening.Diastolic] as? Double?)?.let { dia ->
+                                data[Screening.Diastolic] = CommonUtils.parseDouble(dia)
+                            }
+                            (record[Screening.Pulse] as? Double?)?.let { pul ->
+                                data[Screening.Pulse] = CommonUtils.parseDouble(pul)
+                            }
+                            if (data.isNotEmpty())
+                                newList.add(data)
+                        }
+                    }
+                    if (newList.isNotEmpty())
+                        log[Screening.BPLog_Details] = newList
+                }
+        } catch (_: Exception) {
+            //Catch Block
+        }
+    }
+
+    private fun updateGlucoseData(givenMap: HashMap<String, Any>) {
+        if (givenMap.containsKey(Screening.GlucoseLog) && givenMap[Screening.GlucoseLog] is Map<*, *>) {
+            (givenMap[Screening.GlucoseLog] as Map<*, *>?)?.let { map ->
+                updateGlucoseLog(givenMap, map)
+            }
+        }
+    }
+
+    private fun updateGlucoseLog(hashMap: HashMap<String, Any>, map: Map<*, *>) {
+        var isChanged = false
+        val subMap = HashMap(map)
+        if (!subMap.containsKey(Screening.BloodGlucoseID) && subMap.containsKey(
+                lastMealTime
+            )
+        ) {
+            isChanged = true
+            subMap.remove(key = lastMealTime)
+        }
+        if (subMap.containsKey(Screening.BloodGlucoseID) &&
+            !subMap.containsKey(Screening.BloodGlucoseID + Screening.unitMeasurement_KEY)
+        ) {
+            isChanged = true
+            subMap[Screening.BloodGlucoseID + Screening.unitMeasurement_KEY] =
+                Screening.mmoll
+        }
+        if (isChanged) {
+            hashMap[Screening.GlucoseLog] = subMap
+        }
+    }
+
     fun getBMIForNcd(heightInCM: Double, weight: Double, context: Context? = null): String? {
         val heightInMeter = heightInCM / 100
         val bmi = weight / (heightInMeter * heightInMeter)
@@ -978,6 +1151,207 @@ object CommonUtils {
         return when (origin) {
             MenuConstants.REGISTRATION, MenuConstants.ASSESSMENT -> false
             else -> true
+        }
+    }
+
+    fun calculateCVDRiskFactor(
+        map: HashMap<String, Any>,
+        list: ArrayList<RiskClassificationModel>,
+        avgSystolic: Int?
+    ) {
+        if (map.containsKey(Screening.BMI) && list.isNotEmpty()) {
+            val riskFactor = calculateRiskFactor(
+                map,
+                list,
+                (map[Screening.BMI] as Double),
+                avgSystolic
+            )
+
+            riskFactor?.let { riskFactorMap ->
+                map[Screening.CVD_Risk_Score] =
+                    riskFactorMap[Screening.CVD_Risk_Score] as Int
+                map[Screening.CVD_Risk_Level] =
+                    riskFactorMap[Screening.CVD_Risk_Level] as String
+                map[Screening.CVD_Risk_Score_Display] =
+                    riskFactorMap[Screening.CVD_Risk_Score_Display] as String
+            }
+        }
+    }
+
+    fun calculateRiskFactor(
+        map: Map<String, Any>,
+        list: ArrayList<RiskClassificationModel>,
+        bmiValue: Double?,
+        systolicAverage: Int?
+    ): Map<String, Any>? {
+
+        val age: Double? = if (map.containsKey(Screening.DateOfBirth)) {
+            when {
+                map.containsKey(Screening.DateOfBirth) -> {
+                    (map[Screening.DateOfBirth] as String).let {
+                        DateUtils.getV2YearMonthAndWeek(it).years.toDouble()
+                    }
+                }
+
+                else -> {
+                    null
+                }
+            }
+        } else {
+            null
+        }
+
+        val gender: String? = if (map.containsKey(DefinedParams.Gender)) {
+            val value = map[DefinedParams.Gender] as String
+            if (value.equals(Screening.Female, ignoreCase = true))
+                value
+            else
+                Screening.Male
+        } else {
+            null
+        }
+
+        val smoker: Boolean? = if (map.containsKey(Screening.is_regular_smoker)) {
+            val tobaccoUsage = map[Screening.is_regular_smoker] as Boolean
+            tobaccoUsage
+        } else {
+            null
+        }
+
+        val resultModel = list.filter {
+            it.isSmoker == smoker && it.gender.equals(gender, true) && isAgeInLimit(
+                age,
+                it.age
+            )
+        }
+
+        if (resultModel.isNotEmpty()) {
+            return getRiskBasedOnParams(resultModel[0].riskFactors, bmiValue, systolicAverage)
+        }
+        return null
+    }
+
+    private fun isAgeInLimit(age: Double?, limit: String): Boolean {
+        var status = false
+        val limitArray = limit.split("-")
+        if (age != null && limitArray.size == 2) {
+            val minValue = limitArray[0].toIntOrNull()
+            val maxValue = limitArray[1].toIntOrNull()
+            if (minValue != null && maxValue != null) {
+                status = age >= minValue && age <= maxValue
+            }
+        }
+        return status
+    }
+
+    private fun getRiskBasedOnParams(
+        riskFactors: ArrayList<RiskFactorModel>,
+        bmiValue: Double?,
+        systolicAverage: Int?
+    ): Map<String, Any>? {
+        if (bmiValue == null || systolicAverage == null)
+            return null
+        riskFactors.forEach { riskFactorModel ->
+            if (checkBMIValue(riskFactorModel.bmi, bmiValue) && checkSystolicBPValue(
+                    riskFactorModel.sbp,
+                    systolicAverage
+                )
+            ) {
+                val resultMap = HashMap<String, Any>()
+                resultMap[Screening.CVD_Risk_Score] = riskFactorModel.riskScore
+                resultMap[Screening.CVD_Risk_Score_Display] =
+                    "${riskFactorModel.riskScore}% - ${riskFactorModel.riskLevel}"
+                resultMap[Screening.CVD_Risk_Level] = riskFactorModel.riskLevel
+                return resultMap
+            }
+        }
+
+        return null
+    }
+
+    private fun checkBMIValue(bmi: String, bmiValue: Double): Boolean {
+        when {
+            bmi.contains(">=") -> {
+                getCheckList(bmi, ">=")?.let {
+                    val maxvalue = it[1].trim().toDouble()
+                    return bmiValue >= maxvalue
+                }
+            }
+
+            bmi.contains("<=") -> {
+                getCheckList(bmi, "<=")?.let {
+                    val maxvalue = it[1].trim().toDouble()
+                    return bmiValue <= maxvalue
+                }
+            }
+
+            bmi.startsWith("<") -> {
+                getCheckList(bmi, "<")?.let {
+                    val maxvalue = it[1].trim().toDouble()
+                    return bmiValue < maxvalue
+                }
+            }
+
+            bmi.contains("-") -> {
+                getCheckList(bmi, "-")?.let {
+                    val minValue = it[0].trim().toDouble()
+                    val maxValue = it[1].trim().toDouble()
+                    return bmiValue in minValue..maxValue
+                }
+            }
+
+            bmi.contains(">") -> {
+                getCheckList(bmi, ">")?.let {
+                    val minValue = it[1].trim().toDouble()
+                    return bmiValue > minValue
+                }
+            }
+        }
+        return false
+    }
+
+    private fun getCheckList(s: String, character: String): List<String>? {
+        s.split(character).let {
+            if (it.size > 1)
+                return it
+        }
+        return null
+    }
+
+    private fun checkSystolicBPValue(sbp: String, systolicAverage: Int): Boolean {
+        when {
+            sbp.startsWith("<") -> {
+                getCheckList(sbp, "<")?.let {
+                    val maxvalue = it[1].trim().toInt()
+                    return systolicAverage < maxvalue
+                }
+            }
+
+            sbp.contains("-") -> {
+                getCheckList(sbp, "-")?.let {
+                    val minValue = it[0].trim().toInt()
+                    val maxValue = it[1].trim().toInt()
+                    return systolicAverage in minValue..maxValue
+                }
+            }
+
+            sbp.contains(">=") -> {
+                getCheckList(sbp, ">=")?.let {
+                    val minValue = it[1].trim().toInt()
+                    return systolicAverage >= minValue
+                }
+            }
+        }
+        return false
+    }
+
+    fun cvdRiskColorCode(score: Double, context: Context): Int {
+        return when {
+            score < Screening.very_low_risk_limit -> context.getColor(R.color.very_low_risk_color)
+            score < Screening.low_risk_limit -> context.getColor(R.color.low_risk_color)
+            score < Screening.medium_risk_limit -> context.getColor(R.color.medium_risk_color)
+            score < Screening.medium_high_risk_limit -> context.getColor(R.color.medium_high_risk_color)
+            else -> context.getColor(R.color.high_risk_color)
         }
     }
 }

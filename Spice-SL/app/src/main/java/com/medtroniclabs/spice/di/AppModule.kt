@@ -32,6 +32,7 @@ import com.medtroniclabs.spice.db.dao.MemberDAO
 import com.medtroniclabs.spice.db.dao.MetaDataDAO
 import com.medtroniclabs.spice.db.dao.PregnancyDetailDao
 import com.medtroniclabs.spice.db.entity.ConsentForm
+import com.medtroniclabs.spice.db.dao.RiskFactorDAO
 import com.medtroniclabs.spice.db.dao.ScreeningDAO
 import com.medtroniclabs.spice.db.local.RoomHelper
 import com.medtroniclabs.spice.db.local.RoomHelperImpl
@@ -303,6 +304,12 @@ object AppModule {
     @Provides
     fun provideScreeningDAO(db: SpiceDataBase): ScreeningDAO {
         return db.screeningDAO()
+    }
+
+    @Singleton
+    @Provides
+    fun provideRiskFactorDao(db: SpiceDataBase): RiskFactorDAO {
+        return db.riskFactorDao()
     }
 }
 

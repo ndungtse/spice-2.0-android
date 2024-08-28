@@ -40,11 +40,11 @@ android {
             storePassword = "Med@Tr0ni#Lab$"
             storeFile = file("spice_sl.jks")
         }
-        create("africa") {
-            keyAlias = "medtronic"
-            keyPassword = "Med@Tr0ni#Lab$"
-            storePassword = "Med@Tr0ni#Lab$"
-            storeFile = file("spice_prod.jks")
+        create("staging") {
+            keyAlias = "spice"
+            keyPassword = "spice@123"
+            storePassword = "spice@123"
+            storeFile = file("spice")
         }
     }
 
@@ -170,20 +170,6 @@ android {
         buildConfig = true
     }
 
-    flavorDimensions += "version"
-    productFlavors {
-        create("sl") {
-            dimension = "version"
-            applicationIdSuffix = ".sl"
-            signingConfig = signingConfigs.getByName("sl")
-        }
-        create("africa") {
-            dimension = "version"
-            versionCode = 15
-            versionName = "2.1.0"
-            signingConfig = signingConfigs.getByName("africa")
-        }
-    }
 }
 
 dependencies {

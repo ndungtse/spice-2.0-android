@@ -1,10 +1,13 @@
 package com.medtroniclabs.spice.ncd.screening.fragment
 
 import android.os.Bundle
+import android.text.SpannableStringBuilder
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.widget.AppCompatEditText
 import androidx.appcompat.widget.AppCompatTextView
+import androidx.core.text.color
 import androidx.fragment.app.activityViewModels
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -15,6 +18,7 @@ import com.medtroniclabs.spice.common.CommonUtils.calculateAverageBloodPressure
 import com.medtroniclabs.spice.common.CommonUtils.calculateBMI
 import com.medtroniclabs.spice.common.CommonUtils.calculateBloodGlucose
 import com.medtroniclabs.spice.common.CommonUtils.calculateCAGEAIDSCore
+import com.medtroniclabs.spice.common.CommonUtils.calculateCVDRiskFactor
 import com.medtroniclabs.spice.common.CommonUtils.calculatePHQScore
 import com.medtroniclabs.spice.common.CommonUtils.calculateSuicidalIdeation
 import com.medtroniclabs.spice.common.CommonUtils.checkAssessmentCondition
@@ -23,10 +27,16 @@ import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.SecuredPreference.getUnitMeasurementType
 import com.medtroniclabs.spice.common.SpiceLocationManager
+import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.data.LocalSpinnerResponse
 import com.medtroniclabs.spice.data.model.RecommendedDosageListModel
 import com.medtroniclabs.spice.databinding.FragmentScreeningFormBuilderBinding
+import com.medtroniclabs.spice.db.entity.RiskClassificationModel
 import com.medtroniclabs.spice.formgeneration.FormGenerator
+import com.medtroniclabs.spice.formgeneration.config.DefinedParams.Days
+import com.medtroniclabs.spice.formgeneration.config.DefinedParams.Month
+import com.medtroniclabs.spice.formgeneration.config.DefinedParams.Week
+import com.medtroniclabs.spice.formgeneration.config.DefinedParams.Year
 import com.medtroniclabs.spice.formgeneration.config.ViewType
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.listener.FormEventListener
@@ -42,12 +52,14 @@ import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.MenuConstants
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.rootSuffix
 import com.medtroniclabs.spice.ui.common.GeneralInfoDialog
 import dagger.hilt.android.AndroidEntryPoint
 import kotlin.math.roundToInt
+import java.lang.reflect.Type
 
 @AndroidEntryPoint
-class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener,View.OnClickListener {
+class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener, View.OnClickListener {
 
     private lateinit var binding: FragmentScreeningFormBuilderBinding
     private lateinit var formGenerator: FormGenerator
@@ -98,47 +110,36 @@ class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener,View.OnCl
     }
 
     private fun initView() {
+        showProgress()
         formGenerator =
             FormGenerator(
                 requireContext(), binding.llForm, listener = this, scrollView = binding.scrollView
             ) { map, id ->
                 when (id) {
-                    Screening.Weight -> {
+                    Screening.Weight, Screening.Height -> {
                         renderBMIValue(map)
+                        showBGCardOrNot(map)
                     }
 
-                    Screening.Height -> {
-                        renderBMIValue(map)
+                    Screening.DateOfBirth, Screening.BloodGlucoseID,Screening.diabetes -> {
+                        showBGCardOrNot(map)
                     }
+
                 }
-
             }
 
         viewModel.getFormData(MenuConstants.SCREENING.lowercase())
+        viewModel.getRiskEntityList()
     }
 
     private var screeningJSON: List<FormLayout>? = null
     private fun attachObservers() {
-        viewModel.formLayoutsLiveData.observe(viewLifecycleOwner) { resources ->
-            when (resources.state) {
-                ResourceState.LOADING -> {
-                    (activity as? BaseActivity)?.showLoading()
-                }
-
-                ResourceState.SUCCESS -> {
-                    (activity as? BaseActivity)?.hideLoading()
-                    resources.data?.let { data ->
-                        val formFieldsType = object : TypeToken<FormResponse>() {}.type
-                        val formFields: FormResponse = Gson().fromJson(data, formFieldsType)
-                        formGenerator.populateViews(formFields.formLayout)
-                        screeningJSON = formFields.formLayout
-                    }
-                }
-
-                ResourceState.ERROR -> {
-                    (activity as? BaseActivity)?.hideLoading()
-                }
-            }
+        viewModel.formLayoutsLiveData.observe(viewLifecycleOwner) { data ->
+            val formFieldsType = object : TypeToken<FormResponse>() {}.type
+            val formFields: FormResponse = Gson().fromJson(data, formFieldsType)
+            formGenerator.populateViews(formFields.formLayout)
+            screeningJSON = formFields.formLayout
+            hideProgress()
         }
 
         viewModel.getMentalQuestions.observe(viewLifecycleOwner) { mentalQuestions ->
@@ -151,6 +152,32 @@ class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener,View.OnCl
             mhResponse.forEach {
                 formGenerator.loadMentalHealthQuestions(it.value)
             }
+        }
+
+        viewModel.screeningSaveResponse.observe(viewLifecycleOwner) { resources ->
+            when (resources.state) {
+                ResourceState.LOADING -> {
+                    (activity as? BaseActivity)?.showLoading()
+                }
+
+                ResourceState.SUCCESS -> {
+                    (activity as? BaseActivity)?.hideLoading()
+                    resources.data?.let {
+                        replaceFragmentIfExists<ScreeningSummaryFragment>(
+                            R.id.screeningParentLayout,
+                            bundle = null,
+                            tag = ScreeningSummaryFragment.TAG
+                        )
+                    }
+                }
+
+                ResourceState.ERROR -> {
+                    (activity as? BaseActivity)?.hideLoading()
+                }
+            }
+        }
+        viewModel.getRiskEntityListLiveData.observe(viewLifecycleOwner){
+
         }
     }
 
@@ -238,6 +265,15 @@ class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener,View.OnCl
         calculateSuicidalIdeation(map)
         calculateCAGEAIDSCore(map, serverData)
         calculateFurtherAssessment(map, getMeasurementTypeValues(map))
+        val resultOne = viewModel.getRiskEntityListLiveData.value
+        val baseType: Type = object : TypeToken<ArrayList<RiskClassificationModel>>() {}.type
+        if (resultOne?.isNotEmpty() == true) {
+            val resultList = Gson().fromJson<ArrayList<RiskClassificationModel>>(
+                resultOne[0].nonLabEntity,
+                baseType
+            )
+            calculateCVDRiskFactor(map, ArrayList(resultList), viewModel.getSystolicAverage())
+        }
         var isReferred = false
         if (map.containsKey(Screening.ReferAssessment)) {
             val referralString = map[Screening.ReferAssessment] as Boolean
@@ -250,14 +286,19 @@ class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener,View.OnCl
         }
 
         map[Screening.UnitMeasurement] = getUnitMeasurementType()
-       val result =  screeningJSON?.let {
+        val unwantedKeys = setOf(Week, Year, Month, Days)
+        map.keys.removeAll(unwantedKeys)
+        var result = screeningJSON?.let {
             FormResultComposer().groupValues(
-                requireContext(),
+                context = requireContext(),
                 serverData = it,
                 map,
                 bmiCategoryGroupId = Screening.BioMetrics
             )
         }
+        val bioDataMap = result?.second?.get(Screening.bioData) as HashMap<String, Any>
+        bioDataMap[Screening.identityType] = Screening.nationalId
+        result = Pair(StringConverter.convertGivenMapToString(result.second), result.second)
         val siteDetail = Gson().toJson(generalDetailsViewModel.siteDetail)
         if (result != null) {
             result.first?.let {
@@ -291,7 +332,7 @@ class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener,View.OnCl
     }
 
     private fun calculateFurtherAssessment(map: HashMap<String, Any>, unitGenericType: String) {
-        screeningJSON?.find { it.viewType == ViewType.VIEW_TYPE_FORM_BP }?.let {
+        screeningJSON?.first { it.viewType == ViewType.VIEW_TYPE_FORM_BP }?.let {
             calculateBPValues(it, map)
         }
 
@@ -369,7 +410,7 @@ class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener,View.OnCl
     }
 
     private fun validateMap(map: Any?, value: String): Double? {
-        return if (map is Map<*, *> && map.containsKey(value)) map[value] as Double else null
+        return if (map is Map<*, *> && map.containsKey(value)) ( map[value] as String).toDoubleOrNull() else null
     }
 
     private fun renderBMIValue(resultHashMap: HashMap<String, Any>) {
@@ -389,10 +430,71 @@ class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener,View.OnCl
                     if (weight == null || height == null) {
                         view.text = getString(R.string.hyphen_symbol)
                     } else {
-                        val bmi = CommonUtils.getBMIForNcd(height, weight, context)
-                        view.text = bmi ?: getString(R.string.hyphen_symbol)
+                        val bmi = CommonUtils.getBMIForNcd(height, weight)
+                        CommonUtils.getBMIInformation(requireContext(), bmi?.toDoubleOrNull())
+                            ?.let { info ->
+                                resultHashMap[Screening.BMI_CATEGORY] = info.first
+
+                                val bmiWithInfoSpannableStringBuilder = if (bmi == null) {
+                                    requireContext().getString(R.string.hyphen_symbol)
+                                } else {
+                                    SpannableStringBuilder().append(bmi)
+                                        .color(requireContext().getColor(info.second)) {
+                                            append(" (${info.first})")
+                                        }
+                                }
+                                view.text = bmiWithInfoSpannableStringBuilder
+                            }
                     }
                 }
+            }
+        }
+    }
+
+    private fun showBGCardOrNot(resultHashMap: HashMap<String, Any>) {
+        val dob = (resultHashMap[Screening.DateOfBirth] as? String)?.let {
+            DateUtils.getV2YearMonthAndWeek(it)
+        }
+        val bmi = calculateBMI(resultHashMap)
+        val diabetes = resultHashMap[Screening.diabetes]
+        val shouldShow =
+            (dob != null && dob.years > 40) || (bmi != null && bmi > 25) || formGenerator.checkIfNoSymptomsPresent(
+                diabetes
+            )
+        showGlucoseValues(shouldShow)
+    }
+
+    private fun showGlucoseValues(status: Boolean) {
+        formGenerator.getViewByTag(Screening.BloodGlucoseID + formGenerator.rootSuffix)
+            ?.let { view ->
+                if (status) {
+                    view.visibility = View.VISIBLE
+                } else {
+                    formGenerator.getViewByTag(Screening.BloodGlucoseID)?.let { editText ->
+                        if (editText is AppCompatEditText) {
+                            editText.setText("")
+                            formGenerator.removeIfContains(Screening.BloodGlucoseID)
+                        }
+                    }
+                    view.visibility = View.GONE
+                }
+            }
+        formGenerator.getViewByTag(Screening.lastMealTime + rootSuffix)?.let { view ->
+            view.visibility = if (status) View.VISIBLE else {
+                formGenerator.getViewByTag(R.id.etHour)?.let { editText ->
+                    if (editText is AppCompatEditText) {
+                        editText.setText("")
+                    }
+                }
+                formGenerator.getViewByTag(R.id.etMinute)?.let { editText ->
+                    if (editText is AppCompatEditText) {
+                        editText.setText("")
+                    }
+                }
+                formGenerator.removeIfContains(Screening.lastMealTime)
+                formGenerator.removeIfContains(Screening.lastMealTime + formGenerator.lastMealTypeMeridiem)
+                formGenerator.removeIfContains(Screening.lastMealTime + formGenerator.lastMealTypeDateSuffix)
+                View.GONE
             }
         }
     }

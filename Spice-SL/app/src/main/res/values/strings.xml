@@ -735,4 +735,24 @@
     <string name="zero_label">0</string>
     <string name="dot">•</string>
 
+    <string name="under_weight">Under Weight</string>
+    <string name="normal_weight">Normal Weight</string>
+    <string name="over_weight">Over Weight</string>
+    <string name="obese">Obese</string>
+    <string name="extremely_obese">Extremely Obese</string>
+    <string name="facility_referred_to">Nearest Facility Referred to</string>
+    <string name="average_blood_pressure">Average Blood Pressure</string>
+    <string name="average_mmhg_string" translatable="false">%1$s/%2$s mmHg</string>
+    <string name="blood_glucose_rbs">Blood Glucose (RBS)</string>
+    <string name="blood_glucose_fbs">Blood Glucose (FBS)</string>
+    <string name="phq4_score">PHQ4 Score</string>
+    <string name="referred_for_nfurther_assessment">Referred for\nFurther Assessment</string>
+    <string name="no_assessment_required">No Assessment required</string>
+    <string name="cage_aid">CAGE-AID</string>
+    <string name="suicidcal_ideation">Suicidal Ideation</string>
+    <string name="cvd_risk_level">CVD Risk Level</string>
+    <string name="phq4_normal">%1$d - Normal</string>
+    <string name="phq4_mild">%1$d - Mild</string>
+    <string name="phq4_moderate">%1$d - Moderate</string>
+    <string name="phq4_severe">%1$d - Severe</string>
 </resources>

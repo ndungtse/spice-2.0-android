@@ -4,6 +4,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.switchMap
+import com.medtroniclabs.spice.common.DateUtils
+import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.db.entity.HealthFacilityEntity
 import com.medtroniclabs.spice.ncd.data.SiteDetails
 import com.medtroniclabs.spice.ncd.screening.repo.ScreeningRepository
@@ -21,7 +23,28 @@ class GeneralDetailsViewModel @Inject constructor(
             screeningRepository.getUserHealthFacilityEntity()
         }
 
+    private var toGetCount = MutableLiveData<Boolean>()
+    val screenedPatientCount: LiveData<Long> =
+        toGetCount.switchMap {
+            screeningRepository.getScreenedPatientCount(
+                DateUtils.getStartDate(),
+                DateUtils.getEndDate(),
+                SecuredPreference.getUserId()
+            )
+        }
+    val referredPatientCount: LiveData<Long> =
+        toGetCount.switchMap {
+            screeningRepository.getScreenedPatientReferredCount(
+                DateUtils.getStartDate(),
+                DateUtils.getEndDate(),
+                SecuredPreference.getUserId(), true
+            )
+        }
     fun getSites(isTrigger: Boolean) {
         getSites.value = isTrigger
+    }
+
+    fun toGetCount(isTrigger: Boolean) {
+        toGetCount.value = isTrigger
     }
 }

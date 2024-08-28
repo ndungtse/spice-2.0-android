@@ -1,11 +1,13 @@
 package com.medtroniclabs.spice.data
 
 import androidx.room.ColumnInfo
+import com.google.gson.annotations.SerializedName
 import com.medtroniclabs.spice.db.entity.ChiefDomEntity
 import com.medtroniclabs.spice.db.entity.FrequencyEntity
 import com.medtroniclabs.spice.db.entity.MedicalComplianceEntity
 import com.medtroniclabs.spice.db.entity.SignsAndSymptomsEntity
 import com.medtroniclabs.spice.db.entity.DistrictEntity
+import com.medtroniclabs.spice.db.entity.RiskClassificationModel
 import com.medtroniclabs.spice.db.entity.VillageEntity
 
 data class MetaDataResponse(
@@ -185,6 +187,7 @@ data class FormMetaRequest(
 data class UserSymptomsEntity(
     val symptoms: ArrayList<SignsAndSymptomsEntity>,
     var medicalCompliances: ArrayList<MedicalComplianceEntity>? = null,
+    val cvdRiskAlgorithms: RiskFactorResponse? = null
 )
 
 data class VillageInfo(
@@ -200,3 +203,8 @@ data class LastCreatedAtAndPatientId(
 )
 
 data class ConsentFormResponse(val household: String?)
+
+data class RiskFactorResponse(
+    @SerializedName("non_lab")
+    var nonLab: ArrayList<RiskClassificationModel>?
+)

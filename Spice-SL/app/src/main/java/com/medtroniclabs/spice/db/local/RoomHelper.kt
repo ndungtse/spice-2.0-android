@@ -38,6 +38,7 @@ import com.medtroniclabs.spice.db.entity.PregnancyDetail
 import com.medtroniclabs.spice.db.entity.ScreeningEntity
 import com.medtroniclabs.spice.db.entity.SignsAndSymptomsEntity
 import com.medtroniclabs.spice.db.entity.DistrictEntity
+import com.medtroniclabs.spice.db.entity.RiskFactorEntity
 import com.medtroniclabs.spice.db.entity.UserProfileEntity
 import com.medtroniclabs.spice.db.entity.VillageEntity
 import com.medtroniclabs.spice.db.response.HouseHoldEntityWithMemberCount
@@ -309,4 +310,26 @@ interface RoomHelper {
      fun getMentalQuestion(formType: String): LiveData<MentalHealthEntity>
     fun getSites(): LiveData<List<HealthFacilityEntity>>
     suspend fun savePatientScreeningInformation(screeningEntity: ScreeningEntity) : ScreeningEntity
+
+    fun getScreenedPatientCount(startDate: Long, endDate: Long, userId: Long): LiveData<Long>
+    fun getScreenedPatientReferredCount(
+        startDate: Long,
+        endDate: Long,
+        userId: Long,
+        isReferred: Boolean
+    ): LiveData<Long>
+
+    suspend fun getAllScreeningRecords(uploadStatus: Boolean): List<ScreeningEntity>?
+
+    suspend fun deleteUploadedScreeningRecords(todayDateTimeInMilliSeconds: Long)
+
+    suspend fun updateScreeningRecordById(id: Long, uploadStatus: Boolean)
+
+    fun getFormDataForNcd(
+        formType: String
+    ): LiveData<String>
+
+    suspend fun insertRiskFactor(riskFactorEntity: RiskFactorEntity)
+    fun getRiskFactorEntity(): LiveData<List<RiskFactorEntity>>
+    suspend fun deleteRiskFactor()
 }

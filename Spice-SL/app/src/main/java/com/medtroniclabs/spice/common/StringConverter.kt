@@ -1,7 +1,10 @@
 package com.medtroniclabs.spice.common
 
+import android.content.Context
 import com.google.gson.Gson
+import com.google.gson.JsonObject
 import com.google.gson.reflect.TypeToken
+import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.data.ErrorResponse
 import okhttp3.ResponseBody
 import java.lang.reflect.Type
@@ -39,5 +42,38 @@ object StringConverter {
         } catch (e: Exception) {
             null
         }
+    }
+
+    fun convertStringToMap(data: String): Map<String, Any>? {
+        return try {
+            val gson = Gson()
+            val type: Type = object : TypeToken<Map<String, Any>>() {}.type
+            val map: Map<String, Any>? = gson.fromJson(data, type)
+            map
+        } catch (e: Exception) {
+            null
+        }
+    }
+
+    fun getPHQ4ReadableName(score: Int, context: Context): String {
+        return when (score) {
+            in 0..3 -> {
+                context.getString(R.string.phq4_normal, score)
+            }
+            in 4..5 -> {
+                context.getString(R.string.phq4_mild, score)
+            }
+            in 6..8 -> {
+                context.getString(R.string.phq4_moderate, score)
+            }
+            in 9..12 -> {
+                context.getString(R.string.phq4_severe, score)
+            }
+            else -> score.toString()
+        }
+    }
+
+    fun getJsonObject(inputJson: String): JsonObject {
+        return Gson().fromJson(inputJson, JsonObject::class.java)
     }
 }

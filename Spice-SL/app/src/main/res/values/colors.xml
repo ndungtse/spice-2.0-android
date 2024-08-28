@@ -103,5 +103,11 @@
     <color name="light_purple">#DDDEFF</color>
     <color name="table_row_color">#FAF8FA</color>
     <color name="table_header_text_color">#2C2C2C</color>
+    <color name="border_color_medication">#4DB3B3B3</color>
+    <color name="bmi_under_weight">#667DFC</color>
+    <color name="bmi_normal_weight">#49AB60</color>
+    <color name="bmi_over_weight">#FFB502</color>
+    <color name="bmi_obese">#FE8700</color>
+    <color name="bmi_extremely_obese">#FB565E</color>
     <color name="bg_grey">#F8F8F8</color>
 </resources>

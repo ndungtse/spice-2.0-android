@@ -21,6 +21,7 @@ import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.offlinesync.PostDataWorker
+import com.medtroniclabs.spice.offlinesync.GetSyncStatusWorker
 import com.medtroniclabs.spice.offlinesync.ScheduledSyncWork
 import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
 import java.io.File
@@ -99,6 +100,20 @@ fun Context.scheduleSyncWorker() {
     )
 
 }
+
+fun Context.triggerOneTimeWorker() {
+    val constraints = Constraints.Builder()
+        .setRequiredNetworkType(NetworkType.CONNECTED) // Requires internet connection
+        .setRequiresBatteryNotLow(false)                // Requires battery to not be low
+        .build()
+
+    val workRequest = OneTimeWorkRequestBuilder<GetSyncStatusWorker>()
+        .setConstraints(constraints)
+        .build()
+
+    WorkManager.getInstance(this).enqueue(workRequest)
+}
+
 private fun observerStatus(workManager: WorkManager) {
     workManager.getWorkInfosForUniqueWorkLiveData(syncWorkerName).observeForever {
         for (woker in it) {

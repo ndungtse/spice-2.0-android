@@ -4,11 +4,14 @@ import android.content.Context
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.data.model.CalendarPeriod
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams
+import com.medtroniclabs.spice.mappingkey.Screening.TODAY
+import com.medtroniclabs.spice.mappingkey.Screening.YESTERDAY
 import org.joda.time.PeriodType
 import java.text.SimpleDateFormat
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.LocalTime
 import java.time.OffsetDateTime
 import java.time.Period
 import java.time.ZoneId
@@ -623,5 +626,97 @@ object DateUtils {
         }catch (_:Exception){
             return null
         }
+    }
+
+    fun getFormattedDateTimeForLastMeal(
+        dayIndicator: String, // "YESTERDAY" or "TODAY"
+        amPmIndicator: String, // "AM" or "PM"
+        time: Pair<Int, Int> // Pair of Hour and Minute
+    ): String? {
+        // Get the current date
+        try {
+            val currentDate = LocalDate.now()
+            val date = when (dayIndicator.uppercase()) {
+                YESTERDAY -> currentDate.minusDays(1)
+                TODAY -> currentDate
+                else -> currentDate
+            }
+
+            // Adjust hour based on AM/PM
+            var hour = time.first
+            if (amPmIndicator.uppercase() == "PM" && hour < 12) {
+                hour += 12
+            } else if (amPmIndicator.uppercase() == "AM" && hour == 12) {
+                hour = 0 // Midnight case for AM
+            }
+
+            // Create LocalTime
+            val localTime = LocalTime.of(hour, time.second)
+
+            // Combine date and time to form LocalDateTime
+            val localDateTime = LocalDateTime.of(date, localTime)
+
+            // Define a formatter to match the required output format
+            val formatter = DateTimeFormatter.ofPattern(CALENDAR_FORMAT)
+
+            // Convert LocalDateTime to a ZonedDateTime using the system's default time zone
+            val zonedDateTime = localDateTime.atZone(ZoneId.systemDefault())
+
+            // Format the ZonedDateTime to the desired string format
+            return zonedDateTime.format(formatter)
+        } catch (e: Exception) {
+            return  null
+        }
+
+    }
+
+    fun convertDateTimeToMillisUsingLocal(dateTimeString: String): Long {
+        val formatter = DateTimeFormatter.ofPattern(CALENDAR_FORMAT)
+        val dateTime = LocalDateTime.parse(dateTimeString, formatter)
+        val offset = ZoneOffset.of(dateTimeString.takeLast(6))
+        val instant = dateTime.toInstant(offset)
+        return instant.toEpochMilli()
+    }
+
+    fun getStartDate(): Long {
+        val todayDate = Calendar.getInstance()
+        todayDate.set(Calendar.HOUR, todayDate.getActualMinimum(Calendar.HOUR))
+        todayDate.set(Calendar.HOUR_OF_DAY, todayDate.getActualMinimum(Calendar.HOUR_OF_DAY))
+        todayDate.set(Calendar.MINUTE, todayDate.getActualMinimum(Calendar.MINUTE))
+        todayDate.set(Calendar.SECOND, todayDate.getActualMinimum(Calendar.SECOND))
+        todayDate.set(Calendar.MILLISECOND, todayDate.getActualMinimum(Calendar.MILLISECOND))
+        return todayDate.timeInMillis
+    }
+
+    fun getEndDate(): Long {
+        val calendar = Calendar.getInstance()
+        calendar.set(Calendar.HOUR, calendar.getActualMaximum(Calendar.HOUR))
+        calendar.set(Calendar.HOUR_OF_DAY, calendar.getActualMaximum(Calendar.HOUR_OF_DAY))
+        calendar.set(Calendar.MINUTE, calendar.getActualMaximum(Calendar.MINUTE))
+        calendar.set(Calendar.SECOND, calendar.getActualMaximum(Calendar.SECOND))
+        calendar.set(Calendar.MILLISECOND, calendar.getActualMaximum(Calendar.MILLISECOND))
+        return calendar.timeInMillis
+    }
+
+    fun isValidTimeForLastMealTime(hour: Int, minute: Int, amOrPm: String): Boolean {
+        val adjustedHour = when (amOrPm) {
+            "PM" -> if (hour == 12) hour else hour + 12
+            "AM" -> if (hour == 12) 0 else hour
+            else -> hour
+        }
+        val inputTime = LocalTime.of(adjustedHour, minute)
+        val currentTime = LocalTime.now()
+        return inputTime.isBefore(currentTime) || inputTime.equals(currentTime)
+    }
+
+    fun getTodayDateInMilliseconds(): Long {
+        val calendar = Calendar.getInstance()
+
+        calendar.set(Calendar.HOUR, 0)
+        calendar.set(Calendar.HOUR_OF_DAY, 0)
+        calendar.set(Calendar.MINUTE, 0)
+        calendar.set(Calendar.SECOND, 0)
+        calendar.set(Calendar.MILLISECOND, 0)
+        return calendar.timeInMillis
     }
 }

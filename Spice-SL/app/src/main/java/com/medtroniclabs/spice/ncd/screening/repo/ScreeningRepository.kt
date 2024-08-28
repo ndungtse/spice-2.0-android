@@ -1,13 +1,12 @@
 package com.medtroniclabs.spice.ncd.screening.repo
 
 import androidx.lifecycle.LiveData
+import com.google.gson.JsonObject
 import com.medtroniclabs.spice.db.entity.HealthFacilityEntity
 import com.medtroniclabs.spice.db.entity.MentalHealthEntity
 import com.medtroniclabs.spice.db.entity.ScreeningEntity
 import com.medtroniclabs.spice.db.local.RoomHelper
 import com.medtroniclabs.spice.network.ApiHelper
-import com.medtroniclabs.spice.network.resource.Resource
-import com.medtroniclabs.spice.network.resource.ResourceState
 import javax.inject.Inject
 
 class ScreeningRepository @Inject constructor(
@@ -19,15 +18,10 @@ class ScreeningRepository @Inject constructor(
         return roomHelper.getSites()
     }
 
-    suspend fun getFormData(
+    fun getFormData(
         formType: String,
-    ): Resource<String> {
-        return try {
-            val response = roomHelper.getFormData(formType)
-            Resource(state = ResourceState.SUCCESS, data = response)
-        } catch (e: Exception) {
-            Resource(state = ResourceState.ERROR)
-        }
+    ): LiveData<String> {
+        return roomHelper.getFormDataForNcd(formType)
     }
 
     fun getMentalQuestion(type:String) :  LiveData<MentalHealthEntity>{
@@ -36,4 +30,24 @@ class ScreeningRepository @Inject constructor(
 
     suspend fun savePatientScreeningInformation(screeningEntity: ScreeningEntity) =
         roomHelper.savePatientScreeningInformation(screeningEntity)
+
+    fun getScreenedPatientCount(startDate: Long, endDate: Long, userId: Long) =
+        roomHelper.getScreenedPatientCount(startDate, endDate, userId)
+
+    fun getScreenedPatientReferredCount(startDate: Long, endDate: Long, userId: Long, isReferred: Boolean) =
+        roomHelper.getScreenedPatientReferredCount(startDate, endDate, userId,isReferred)
+
+    suspend fun getAllScreeningRecords(uploadStatus: Boolean): List<ScreeningEntity>? =
+        roomHelper.getAllScreeningRecords(uploadStatus)
+
+    suspend fun createScreeningLog(createPatientRequest: JsonObject) =
+        apiHelper.createScreening(createPatientRequest)
+
+    suspend fun deleteUploadedScreeningRecords(todayDateTimeInMilliSeconds: Long) =
+        roomHelper.deleteUploadedScreeningRecords(todayDateTimeInMilliSeconds)
+
+    suspend fun updateScreeningRecordById(id: Long, uploadStatus: Boolean) =
+        roomHelper.updateScreeningRecordById(id, uploadStatus)
+
+    fun riskFactorListing() = roomHelper.getRiskFactorEntity()
 }

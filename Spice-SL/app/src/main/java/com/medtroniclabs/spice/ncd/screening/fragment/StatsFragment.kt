@@ -35,6 +35,16 @@ class StatsFragment : BaseFragment(), View.OnClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initView()
+        attachObserver()
+    }
+
+    private fun attachObserver() {
+        viewModel.screenedPatientCount.observe(viewLifecycleOwner) {
+            binding.tvPeopleScreened.text = it.toString()
+        }
+        viewModel.referredPatientCount.observe(viewLifecycleOwner) {
+            binding.tvPeopleReferred.text = it.toString()
+        }
     }
 
     private fun initView() {
@@ -50,6 +60,7 @@ class StatsFragment : BaseFragment(), View.OnClickListener {
                     ?: getString(R.string.hyphen_symbol)
             btnScreenNextPatient.safeClickListener(this@StatsFragment)
         }
+        viewModel.toGetCount(true)
     }
 
     override fun onClick(v: View?) {

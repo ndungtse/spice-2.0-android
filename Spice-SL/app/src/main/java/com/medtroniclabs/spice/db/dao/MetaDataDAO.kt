@@ -203,4 +203,9 @@ interface MetaDataDAO {
 
     @Query("SELECT * FROM HealthFacilityEntity Order by isDefault DESC")
     fun getSites(): LiveData<List<HealthFacilityEntity>>
+
+    @Query("SELECT formInput FROM FormEntity where formType =:formType")
+    fun getFormDataForNcd(
+        formType: String
+    ): LiveData<String>
 }
