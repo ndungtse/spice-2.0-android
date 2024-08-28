@@ -102,7 +102,7 @@ android {
             )
             applicationVariants.all {
                 if (buildType.name == "staging") {
-                    manifestPlaceholders["appNameSuffix"] = "$commonPrefix Dev"
+                    manifestPlaceholders["appNameSuffix"] = "$commonPrefix Staging"
                     if (productFlavors[0].name == "sl") {
                         buildConfigField("String", "API_BASE_URL", "\"https://spice-dev-backend.sl.labsplatform.com/\"")
                         buildConfigField("String", "SALT", "\"spice_uat\"")
@@ -202,7 +202,7 @@ dependencies {
     implementation("com.google.android.flexbox:flexbox:3.0.0")
 
     //Lottie
-    implementation("com.airbnb.android:lottie:6.2.0")
+    implementation("com.airbnb.android:lottie:6.5.0")
 
     implementation("com.jakewharton.timber:timber:5.0.1")
 

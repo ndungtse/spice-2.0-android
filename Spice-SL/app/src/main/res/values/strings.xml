@@ -642,7 +642,6 @@
     <string name="reset">Reset</string>
     <string name="neonateOutcome">Neonate Outcome</string>
     <string name="stateOfBaby">State of Baby</string>
-
-
+    <string name="loading" translatable="false">loading...</string>
 
 </resources>

@@ -5,7 +5,6 @@ import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.data.model.CalendarPeriod
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams
 import org.joda.time.PeriodType
-import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.time.Instant
 import java.time.LocalDate
@@ -36,8 +35,8 @@ object DateUtils {
     const val DATE_TIME_CALL_DISPLAY_FORMAT = "dd MMM, hh:mm a"
     const val TIME_FORMAT_hhmm = "hh:mm"
     const val TIME_FORMAT_hhmma = "hh:mm a"
-    const val CALENDAR_FORMAT="yyyy-MM-dd'T'HH:mm:ssXXX"
-    const val GESTATIONALAGE_CALENDAR="yyyy-MM-dd"
+    const val CALENDAR_FORMAT = "yyyy-MM-dd'T'HH:mm:ssXXX"
+    const val GESTATIONALAGE_CALENDAR = "yyyy-MM-dd"
 
 
     fun getYearMonthAndWeek(
@@ -202,6 +201,7 @@ object DateUtils {
         chosenDate.add(Calendar.DAY_OF_MONTH, 1)
         return chosenDate.timeInMillis
     }
+
     fun getMinDateBasedOnDeliveryDate(currentDateTimeInMillis: Triple<Int, Int, Int>?): Long {
         if (currentDateTimeInMillis == null) return 0L
         val (year, month, day) = currentDateTimeInMillis
@@ -322,6 +322,7 @@ object DateUtils {
             null
         }
     }
+
     fun dateToMonthsAndWeeks(
         dateString: String,
         givenFormat: String = DATE_FORMAT_yyyyMMddHHmmssZZZZZ
@@ -338,7 +339,7 @@ object DateUtils {
 
             Pair(totalMonths, weeks)
         } catch (e: Exception) {
-            Pair(0,0)
+            Pair(0, 0)
         }
     }
 
@@ -362,7 +363,7 @@ object DateUtils {
     fun calculateAgeAndWeek(
         birthDateString: String,
         givenFormat: String = DATE_FORMAT_yyyyMMddHHmmssZZZZZ
-    ): Pair<Int,Int> {
+    ): Pair<Int, Int> {
         return try {
             val yearInMillis = 1000L * 60 * 60 * 24 * 365.25
             val weekInMillis = 1000L * 60 * 60 * 24 * 7
@@ -453,14 +454,7 @@ object DateUtils {
         val dateFormat = SimpleDateFormat(format, Locale.getDefault())
         return dateFormat.parse(dateString)
     }
-    fun convertStringToCalendar(dateString: String,format: String): Calendar {
-        val dateFormat = SimpleDateFormat(format,Locale.getDefault())
-        dateFormat.timeZone = TimeZone.getTimeZone("UTC")
-        val date: Date = dateFormat.parse(dateString) ?: throw IllegalArgumentException("Invalid date format")
-        return Calendar.getInstance().apply {
-            time = date
-        }
-    }
+
 
     fun getDateStringFromDate(date: Date, format: String): String {
         val dateFormat = SimpleDateFormat(format, Locale.getDefault())
@@ -600,11 +594,18 @@ object DateUtils {
         return calendar.timeInMillis
     }
 
-    fun calculateTripleDateToLong(currentDateTimeInMillis: Triple<Int, Int, Int>?): Long? {
-        if (currentDateTimeInMillis == null) return null
-        val (year, month, day) = currentDateTimeInMillis
-        val calendar = Calendar.getInstance()
-        calendar.set(year, month - 1, day)
-        return calendar.timeInMillis
+    fun getCalendarFromString(dateString: String, format: String = "yyyy-MM-dd HH:mm:ss"): Long? {
+        val dateFormat = SimpleDateFormat(format, Locale.getDefault())
+        try {
+            val date = dateFormat.parse(dateString)
+            val timeInMillis = Calendar.getInstance().apply {
+                time = date
+            }.timeInMillis
+            return timeInMillis
+        } catch (e: Exception) {
+            e.printStackTrace()
+            return null
+        }
     }
+
 }

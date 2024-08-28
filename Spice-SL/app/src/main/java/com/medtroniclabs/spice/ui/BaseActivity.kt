@@ -21,6 +21,8 @@ import androidx.fragment.app.replace
 import com.google.android.material.snackbar.Snackbar
 import com.medtroniclabs.spice.BuildConfig
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.appextensions.loadAsGif
+import com.medtroniclabs.spice.appextensions.resetImageView
 import com.medtroniclabs.spice.common.DefinedParams.REFRESH_FRAGMENT
 import com.medtroniclabs.spice.databinding.ActivityBaseBinding
 import com.medtroniclabs.spice.databinding.ErrorLayoutBinding
@@ -167,10 +169,17 @@ open class BaseActivity : SpiceRootActivity() {
 
     fun showLoading() {
         binding.loadingProgress.visibility = View.VISIBLE
+        binding.loaderImage.apply {
+            loadAsGif(R.drawable.loader_spice)
+        }
+
     }
 
     fun hideLoading() {
         binding.loadingProgress.visibility = View.GONE
+        binding.loaderImage.apply {
+            resetImageView()
+        }
     }
 
     fun showErrorSnackBar(
@@ -372,9 +381,10 @@ open class BaseActivity : SpiceRootActivity() {
             }
         }
     }
+
     fun <T> handleResourceState(
         resourceState: Resource<T>,
-        onSuccess: () -> Unit ,
+        onSuccess: () -> Unit,
         onSuccessParam: (T) -> Unit = {},
         onBackPressPopStack: () -> Unit,
         onError: () -> Unit = {
@@ -393,10 +403,12 @@ open class BaseActivity : SpiceRootActivity() {
             ResourceState.LOADING -> {
                 showLoading()
             }
+
             ResourceState.ERROR -> {
                 hideLoading()
                 onError()
             }
+
             ResourceState.SUCCESS -> {
                 hideLoading()
                 onSuccess()

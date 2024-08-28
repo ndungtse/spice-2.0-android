@@ -19,12 +19,15 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.ui.BaseActivity
@@ -78,7 +81,7 @@ fun View.isVisible(): Boolean {
     return this.visibility == View.VISIBLE
 }
 
-fun View.isGone() : Boolean{
+fun View.isGone(): Boolean {
     return this.visibility == View.GONE
 }
 
@@ -144,10 +147,12 @@ fun TextView.setExpandableText(
 
     val clickableSpan = object : ClickableSpan() {
         override fun onClick(widget: View) {
-            activity?.showErrorDialogue( title = title,
+            activity?.showErrorDialogue(
+                title = title,
                 message = fullText,
                 isNegativeButtonNeed = false,
-                positiveButtonName = context.getString(R.string.ok)) {
+                positiveButtonName = context.getString(R.string.ok)
+            ) {
             }
         }
 
@@ -197,4 +202,17 @@ fun ViewGroup.hideView() {
                 }
             })
     }
+}
+
+fun ImageView.loadAsGif(drawable: Int) {
+    Glide.with(this)
+        .asGif()
+        .placeholder(R.drawable.ic_spice_logo)
+        .load(drawable)
+        .diskCacheStrategy(DiskCacheStrategy.ALL)  // Cache all versions of the image
+        .into(this)
+}
+
+fun ImageView.resetImageView() {
+    this.setImageDrawable(null)
 }

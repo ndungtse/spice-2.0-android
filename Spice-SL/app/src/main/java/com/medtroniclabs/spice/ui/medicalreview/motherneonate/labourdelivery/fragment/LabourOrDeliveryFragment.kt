@@ -1,6 +1,5 @@
 package com.medtroniclabs.spice.ui.medicalreview.motherneonate.labourdelivery.fragment
 
-import android.app.DatePickerDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -17,6 +16,8 @@ import com.medtroniclabs.spice.appextensions.invisible
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DateUtils
+import com.medtroniclabs.spice.common.DateUtils.calculateGestationPastMonths
+import com.medtroniclabs.spice.common.DateUtils.getCalendarFromString
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.ViewUtils
 import com.medtroniclabs.spice.data.LabourDeliveryMetaEntity
@@ -30,11 +31,11 @@ import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.labourdelivery.viewmodel.LabourDeliveryViewModel
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
+import java.util.Calendar
 
 class LabourOrDeliveryFragment : BaseFragment() {
 
     private lateinit var binding: FragmentLabourOrDeliveryBinding
-    private var datePickerDialog: DatePickerDialog? = null
     private val viewModel: LabourDeliveryViewModel by activityViewModels()
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -206,45 +207,50 @@ class LabourOrDeliveryFragment : BaseFragment() {
 
     private fun initializeDatePicker() {
         binding.etDateOfDelivery.safeClickListener {
-            setListenerToDatePicker(binding.etDateOfDelivery)
+            setListenerToDatePicker(binding.etDateOfDelivery, true)
         }
         binding.etDateOfLabourOnset.safeClickListener {
-            setListenerToDatePicker(binding.etDateOfLabourOnset, true)
+            setListenerToDatePicker(binding.etDateOfLabourOnset)
         }
     }
 
     private fun setListenerToDatePicker(textView: AppCompatTextView, isDelivery: Boolean = false) {
         var yearMonthDate: Triple<Int?, Int?, Int?>? = null
-        if (textView.text.toString().isNotEmpty())
-            yearMonthDate =
-                DateUtils.convertedMMMToddMM(textView.text.toString())
-        if (datePickerDialog == null) {
-            datePickerDialog = ViewUtils.showDatePicker(
-                requireContext(),
-                date = yearMonthDate,
-                disableFutureDate = if (viewModel.dateOfDelivery == null) true else !isDelivery,
-                maxDate = if (isDelivery) DateUtils.calculateTripleDateToLong(viewModel.dateOfDelivery) else null,
-                isMenstrualPeriod = true,
-                cancelCallBack = { datePickerDialog = null }
-            ) { _, year, month, dayOfMonth ->
-                val stringDate = "$dayOfMonth-$month-$year"
-                if (textView.id == binding.etDateOfDelivery.id) {
-                    viewModel.dateOfDelivery = Triple(year, month, dayOfMonth)
-                    viewModel.setDate(year, month, dayOfMonth)
-                    viewModel.dateOfLabourOnset = null
-                    binding.etDateOfLabourOnset.text = ""
-                } else {
-                    viewModel.dateOfLabourOnset = Triple(year, month, dayOfMonth)
-                }
-                viewModel.validateSubmitButtonState()
-                textView.text =
-                    DateUtils.convertDateTimeToDate(
-                        stringDate,
-                        DateUtils.DATE_FORMAT_ddMMyyyy,
-                        DateUtils.DATE_ddMMyyyy
-                    )
-                datePickerDialog = null
+        if (textView.text.isNotEmpty())
+            yearMonthDate = DateUtils.convertedMMMToddMM(textView.text.toString())
+        ViewUtils.showDatePicker(
+            requireContext(),
+            date = yearMonthDate,
+            maxDate = if (isDelivery) Calendar.getInstance().timeInMillis else getMaxDateForOnset(),
+            cancelCallBack = { }
+        ) { _, year, month, dayOfMonth ->
+            val stringDate = "$dayOfMonth-$month-$year"
+            if (isDelivery) {
+                viewModel.dateOfDelivery = Triple(year, month, dayOfMonth)
+                viewModel.setDate(year, month, dayOfMonth)
+                viewModel.dateOfLabourOnset = null
+                binding.etDateOfLabourOnset.text = ""
+            } else {
+                viewModel.dateOfLabourOnset = Triple(year, month, dayOfMonth)
             }
+            textView.text =
+                DateUtils.convertDateTimeToDate(
+                    stringDate,
+                    DateUtils.DATE_FORMAT_ddMMyyyy,
+                    DateUtils.DATE_ddMMyyyy
+                )
+            viewModel.validateSubmitButtonState()
+        }
+    }
+
+    private fun getMaxDateForOnset(): Long? {
+        if (binding.etDateOfDelivery.text.isNotEmpty()) {
+            return getCalendarFromString(
+                binding.etDateOfDelivery.text.toString(),
+                DateUtils.DATE_ddMMyyyy
+            )
+        } else {
+            return Calendar.getInstance().timeInMillis
         }
     }
 
@@ -531,7 +537,8 @@ class LabourOrDeliveryFragment : BaseFragment() {
         val noOfNeonate = viewModel.noOfNeonates?.toInt()
         val deliveryByOthers = viewModel.deliveryByOthers
         val deliveryOthers = viewModel.deliveryBy
-        val deliveryOther = (deliveryOthers == DefinedParams.Others_Specify && deliveryByOthers?.isNotEmpty() == true||deliveryOthers!=DefinedParams.Others_Specify)
+        val deliveryOther =
+            (deliveryOthers == DefinedParams.Others_Specify && deliveryByOthers?.isNotEmpty() == true || deliveryOthers != DefinedParams.Others_Specify)
 
         var isValidDeliveryBy = viewModel.deliveryBy != null &&
                 viewModel.deliveryAt != null &&
@@ -540,7 +547,12 @@ class LabourOrDeliveryFragment : BaseFragment() {
                 etMinutesTimeOfDelivery.isNotEmpty() &&
                 dateOfDelivery != null &&
                 deliveryOther &&
-                timeValidation(etHourTimeOfLabourOnset,etHourTimeOfDelivery,etMinutesTimeOfLabourOnSet,etMinutesTimeOfDelivery) &&
+                timeValidation(
+                    etHourTimeOfLabourOnset,
+                    etHourTimeOfDelivery,
+                    etMinutesTimeOfLabourOnSet,
+                    etMinutesTimeOfDelivery
+                ) &&
                 viewModel.timeOfDeliveryMap[DefinedParams.TimeOfDelivery] != null &&
                 etHourTimeOfLabourOnset.isNotEmpty() &&
                 etMinutesTimeOfLabourOnSet.isNotEmpty() &&
@@ -560,7 +572,7 @@ class LabourOrDeliveryFragment : BaseFragment() {
 
 
         with(binding) {
-            if (etHourTimeOfDelivery.isEmpty() || etMinutesTimeOfDelivery.isEmpty()||etHourTimeOfLabourOnset.isEmpty() || etMinutesTimeOfLabourOnSet.isEmpty()){
+            if (etHourTimeOfDelivery.isEmpty() || etMinutesTimeOfDelivery.isEmpty() || etHourTimeOfLabourOnset.isEmpty() || etMinutesTimeOfLabourOnSet.isEmpty()) {
                 tvTimeOfDeliveryError.showIf(true)
                 tvTimeOfLabourOnsetError.showIf(true)
             }
@@ -593,16 +605,16 @@ class LabourOrDeliveryFragment : BaseFragment() {
                         R.string.pm
                     ) && viewModel.timeOfDeliveryMap[DefinedParams.TimeOfDelivery] == getString(R.string.am)
                 ) {
-                    if (etHourTimeOfLabourOnset.isEmpty() && etHourTimeOfDelivery.isEmpty() && etMinutesTimeOfLabourOnSet.isEmpty()&&etMinutesTimeOfDelivery.isEmpty()) {
+                    if (etHourTimeOfLabourOnset.isEmpty() && etHourTimeOfDelivery.isEmpty() && etMinutesTimeOfLabourOnSet.isEmpty() && etMinutesTimeOfDelivery.isEmpty()) {
                         tvTimeOfLabourOnsetError.showIf(true)
                         tvTimeOfDeliveryError.showIf(true)
-                    }else{
-                        if( etHourTimeOfDelivery == ""  || etMinutesTimeOfDelivery == ""){
+                    } else {
+                        if (etHourTimeOfDelivery == "" || etMinutesTimeOfDelivery == "") {
                             tvTimeOfDeliveryError.showIf(true)
-                        }else if (etHourTimeOfLabourOnset == "" || etMinutesTimeOfLabourOnSet == ""){
+                        } else if (etHourTimeOfLabourOnset == "" || etMinutesTimeOfLabourOnSet == "") {
                             tvTimeOfLabourOnsetError.showIf(true)
                         } else {
-                            if (etHourTimeOfLabourOnset.toInt() > etHourTimeOfDelivery.toInt() ) {
+                            if (etHourTimeOfLabourOnset.toInt() > etHourTimeOfDelivery.toInt()) {
                                 tvTimeOfLabourOnsetError.showIf(true)
                                 tvTimeOfDeliveryError.showIf(true)
                             }
@@ -610,9 +622,12 @@ class LabourOrDeliveryFragment : BaseFragment() {
                                 tvTimeOfLabourOnsetError.showIf(true)
                                 tvTimeOfDeliveryError.showIf(true)
                             }
-                            if(viewModel.timeOfLabourOnsetMap[DefinedParams.TimeOfLabourOnset] == getString(
+                            if (viewModel.timeOfLabourOnsetMap[DefinedParams.TimeOfLabourOnset] == getString(
                                     R.string.pm
-                                ) && viewModel.timeOfDeliveryMap[DefinedParams.TimeOfDelivery] == getString(R.string.am)){
+                                ) && viewModel.timeOfDeliveryMap[DefinedParams.TimeOfDelivery] == getString(
+                                    R.string.am
+                                )
+                            ) {
                                 tvTimeOfLabourOnsetError.showIf(true)
                                 tvTimeOfDeliveryError.showIf(true)
                             }
@@ -664,7 +679,8 @@ class LabourOrDeliveryFragment : BaseFragment() {
 
         if (viewModel.dateOfDelivery == viewModel.dateOfLabourOnset && isSamePeriod) {
             if (etHourTimeOfLabourOnset.isNotEmpty() && etHourTimeOfDelivery.isNotEmpty() &&
-                etMinutesTimeOfLabourOnSet.isNotEmpty() && etMinutesTimeOfDelivery.isNotEmpty()) {
+                etMinutesTimeOfLabourOnSet.isNotEmpty() && etMinutesTimeOfDelivery.isNotEmpty()
+            ) {
 
                 val labourOnsetHour = etHourTimeOfLabourOnset.toInt()
                 val deliveryHour = etHourTimeOfDelivery.toInt()
