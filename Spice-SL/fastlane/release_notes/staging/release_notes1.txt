@@ -5,6 +5,7 @@ Death of mother
 Change facility
 ForgotPassword - We have to get the email link from outbound email backend for dev build.
 Peer supervisor
+Consent Form
 
 Medical Review:
 1.PNC Medical Review

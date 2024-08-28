@@ -640,5 +640,9 @@
     <string name="patient_initial">Patient Initial</string>
     <string name="enter_your_initials">Enter your initial</string>
     <string name="reset">Reset</string>
+    <string name="neonateOutcome">Neonate Outcome</string>
+    <string name="stateOfBaby">State of Baby</string>
+
+
 
 </resources>

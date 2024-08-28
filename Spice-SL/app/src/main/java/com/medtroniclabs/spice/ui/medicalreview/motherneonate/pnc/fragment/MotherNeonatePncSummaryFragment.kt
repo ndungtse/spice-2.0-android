@@ -329,7 +329,7 @@ class MotherNeonatePncSummaryFragment : BaseFragment(), View.OnClickListener {
                 ) {
                     val selectedItem = adapter.getData(position = pos)
                     selectedItem?.let {
-                        val selectedName = it[DefinedParams.NAME] as String?
+                        val selectedName = it[DefinedParams.value] as String?
                         selectedName?.let { name ->
                             pncMotherPatientStatus[0].type?.let { type ->
                                 viewModel.patientStatusMother = name

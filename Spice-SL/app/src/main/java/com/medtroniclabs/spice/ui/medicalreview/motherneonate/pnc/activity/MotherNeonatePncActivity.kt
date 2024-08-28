@@ -736,7 +736,7 @@ class MotherNeonatePncActivity : BaseActivity(), View.OnClickListener, AncVisitC
             }
         supportFragmentManager
             .setFragmentResultListener(MedicalReviewDefinedParams.NOT_ALIVE, this) { _, _ ->
-                startActivityWithoutSplashScreen()
+                summarySuccessDialog()
             }
     }
     private fun backMenuFlow() {

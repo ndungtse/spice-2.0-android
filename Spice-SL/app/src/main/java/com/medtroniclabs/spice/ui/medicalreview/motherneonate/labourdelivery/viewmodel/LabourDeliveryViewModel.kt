@@ -333,7 +333,7 @@ class LabourDeliveryViewModel @Inject constructor(
             villageId = villageId?.toInt(),
             motherPatientId = patientId,
             dateOfBirth = getTimeOfDelivery(),
-            patientId = patientDetailModel?.pregnancyDetails?.neonatePatientId,
+            patientId = null,
             isChild = true,
             gender = genderFlow[DefinedParams.Gender].toString(),
             provenance = provanceDto,

@@ -15,7 +15,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.changePatientStatus
-import com.medtroniclabs.spice.appextensions.getPatientStatus
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
@@ -24,6 +23,8 @@ import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.Above5MedicalReview
 import com.medtroniclabs.spice.common.DefinedParams.ICCM_ABOVE_2M_5Y
+import com.medtroniclabs.spice.common.DefinedParams.MotherDeliveryReview
+import com.medtroniclabs.spice.common.DefinedParams.Neonate_Birth_Review
 import com.medtroniclabs.spice.common.DefinedParams.OtherNotes
 import com.medtroniclabs.spice.common.DefinedParams.PregnancyAncMedicalReview
 import com.medtroniclabs.spice.data.history.MedicalReviewHistory
@@ -36,6 +37,8 @@ import com.medtroniclabs.spice.ui.mypatients.adapter.DateListAdapter
 import com.medtroniclabs.spice.ui.referralhistory.adapter.ReferralHistoryAdapter
 import com.medtroniclabs.spice.ui.referralhistory.viewmodel.ReferralHistoryViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 
 @AndroidEntryPoint
 class MedicalReviewHistoryFragment : BaseFragment(), View.OnClickListener {
@@ -348,6 +351,16 @@ class MedicalReviewHistoryFragment : BaseFragment(), View.OnClickListener {
             }
         }
     }
+    private fun calculateDateTime(dateTime: String, isDate: Boolean): String? {
+        val inputFormatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME
+        val dateTime1 = ZonedDateTime.parse(dateTime, inputFormatter)
+        val timeFormatter: DateTimeFormatter = if (isDate) {
+            DateTimeFormatter.ofPattern(DateUtils.DATE_ddMMyyyy)
+        } else {
+            DateTimeFormatter.ofPattern(DateUtils.TIME_FORMAT_hhmma)
+        }
+        return dateTime1.format(timeFormatter)
+    }
 
 
     private fun createMedicalReview(medicalReviewHistory: MedicalReviewHistory): List<Map<String, String?>> {
@@ -391,6 +404,103 @@ class MedicalReviewHistoryFragment : BaseFragment(), View.OnClickListener {
                     ?: getString(R.string.separator_double_hyphen))
             )
         )
+        val labourDeliveryNeonate= when (medicalReviewHistory.type?.lowercase()) {
+            MotherDeliveryReview.lowercase() -> {
+                listOf(
+                    mapOf(
+                        DefinedParams.label to requireContext().getString(R.string.patient_status),
+                        DefinedParams.value to (medicalReviewHistory.reviewDetails?.patientStatus?.takeIf { it.isNotBlank() }
+                            ?.let { requireContext().changePatientStatus(it) }
+                            ?: getString(R.string.separator_double_hyphen))
+                    ),
+                    mapOf(
+                        DefinedParams.label to requireContext().getString(R.string.date_of_review),
+                        DefinedParams.value to medicalReviewHistory.dateOfReview?.let {
+                            DateUtils.convertDateFormat(
+                                it,
+                                DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+                                DateUtils.DATE_ddMMyyyy
+                            )
+                        }
+                    ),
+                    mapOf(
+                        DefinedParams.label to requireContext().getString(R.string.date_of_delivery),
+                        DefinedParams.value to (medicalReviewHistory.reviewDetails?.labourDTO?.dateAndTimeOfDelivery?.let {
+                            calculateDateTime(
+                                it,
+                                true
+                            )}?: getString(R.string.separator_double_hyphen))
+
+                    ), mapOf(
+                        DefinedParams.label to requireContext().getString(R.string.date_of_labour_onset),
+                        DefinedParams.value to (medicalReviewHistory.reviewDetails?.labourDTO?.dateAndTimeOfLabourOnset?.let {
+                            calculateDateTime(
+                                it,
+                                true
+                            )}?: getString(R.string.separator_double_hyphen))
+                    ),
+                    mapOf(
+                        DefinedParams.label to requireContext().getString(R.string.delivery_by),
+                        DefinedParams.value to (medicalReviewHistory.reviewDetails?.labourDTO?.deliveryBy
+                            ?.takeIf { it.isNotBlank() }?: getString(R.string.separator_double_hyphen))
+                    ),
+                    mapOf(
+                        DefinedParams.label to requireContext().getString(R.string.delivery_type),
+                        DefinedParams.value to (medicalReviewHistory.reviewDetails?.labourDTO?.deliveryType
+                            ?.takeIf { it.isNotBlank() }?: getString(R.string.separator_double_hyphen))
+                    ),
+                    mapOf(
+                        DefinedParams.label to requireContext().getString(R.string.delivery_at),
+                        DefinedParams.value to (medicalReviewHistory.reviewDetails?.labourDTO?.deliveryAt
+                            ?.takeIf { it.isNotBlank() }?: getString(R.string.separator_double_hyphen))
+                    ),
+                    mapOf(
+                        DefinedParams.label to requireContext().getString(R.string.delivery_status),
+                        DefinedParams.value to (medicalReviewHistory.reviewDetails?.labourDTO?.deliveryStatus
+                            ?.takeIf { it.isNotBlank() }?: getString(R.string.separator_double_hyphen))
+                    )
+                )
+            }
+            Neonate_Birth_Review.lowercase()->{
+                listOf(
+                    mapOf(
+                        DefinedParams.label to requireContext().getString(R.string.patient_status),
+                        DefinedParams.value to (medicalReviewHistory.reviewDetails?.patientStatus?.takeIf { it.isNotBlank() }
+                            ?.let { requireContext().changePatientStatus(it) }
+                            ?: getString(R.string.separator_double_hyphen))
+                    ),
+                    mapOf(
+                        DefinedParams.label to requireContext().getString(R.string.date_of_review),
+                        DefinedParams.value to medicalReviewHistory.dateOfReview?.let {
+                            DateUtils.convertDateFormat(
+                                it,
+                                DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+                                DateUtils.DATE_ddMMyyyy
+                            )
+                        }
+                    ),mapOf(
+                        DefinedParams.label to requireContext().getString(R.string.neonateOutcome),
+                        DefinedParams.value to (medicalReviewHistory.reviewDetails?.neonateOutcome
+                            ?.takeIf { it.isNotBlank() }?: getString(R.string.separator_double_hyphen))
+                    )
+                    ,mapOf(
+                        DefinedParams.label to requireContext().getString(R.string.stateOfBaby),
+                        DefinedParams.value to (medicalReviewHistory.reviewDetails?.stateOfBaby  ?.takeIf { it.isNotBlank() }?: getString(R.string.separator_double_hyphen))
+
+                    )
+                    ,mapOf(
+                        DefinedParams.label to requireContext().getString(R.string.signs_Symptoms_observed),
+                        DefinedParams.value to combineText(medicalReviewHistory.reviewDetails?.signs,
+                            null,getString(R.string.separator_double_hyphen))
+                    )
+                )
+            }
+            else -> {
+                commonFields
+            }
+        }
+
+
         // TODO Please note: Change the spelling of 'systemicExaminations'
         //  consistently throughout the project. This may require effort
         //  and could affect past data fetching, as it currently varies in some requests and responses
@@ -425,6 +535,6 @@ class MedicalReviewHistoryFragment : BaseFragment(), View.OnClickListener {
             )
             else -> null
         }
-        return commonFields + listOfNotNull(additionalFields)
+        return labourDeliveryNeonate + listOfNotNull(additionalFields)
     }
 }

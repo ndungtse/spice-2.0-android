@@ -31,6 +31,11 @@ data class ReviewDetails(
     val systemicExaminationNotes: String? = null,
     val obstetricExaminationNotes: String? = null,
     val clinicalNotes: String? = null,
+    val labourDTO:LabourDTO? = null,
+    val neonateOutcome:String?=null,
+    val stateOfBaby:String? = null,
+    val birthWeight:String? = null,
+    val signs:List<String?>? = null,
 )
 
 data class DiseaseInfo(
@@ -40,6 +45,15 @@ data class DiseaseInfo(
     val notes: String? = null,
     val diseaseCondition: String? = null,
     val type: String? = null
+)
+
+data class LabourDTO(
+    val dateAndTimeOfDelivery: String? = null,
+    val dateAndTimeOfLabourOnset: String? = null,
+    val deliveryType: String? = null,
+    val deliveryBy: String? = null,
+    val deliveryAt: String? = null,
+    val deliveryStatus: String? = null,
 )
 
 
