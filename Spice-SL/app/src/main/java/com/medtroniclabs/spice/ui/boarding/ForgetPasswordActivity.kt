@@ -4,17 +4,19 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.viewModels
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.appextensions.cancelAllWorker
+import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.databinding.ActivityForgetPasswordBinding
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.boarding.fragment.ConfirmPasswordFragment
 import com.medtroniclabs.spice.ui.boarding.fragment.ResetPasswordFragment
 import com.medtroniclabs.spice.ui.boarding.viewmodel.ForgotPasswordViewModel
-import com.medtroniclabs.spice.ui.landing.OnDialogDismissListener
+import com.medtroniclabs.spice.ui.landing.LandingActivity
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class ForgetPasswordActivity : BaseActivity(), OnDialogDismissListener {
+class ForgetPasswordActivity : BaseActivity() {
 
     private lateinit var binding: ActivityForgetPasswordBinding
     private val viewModel: ForgotPasswordViewModel by viewModels()
@@ -131,11 +133,12 @@ class ForgetPasswordActivity : BaseActivity(), OnDialogDismissListener {
     }
 
     fun redirectToLogin() {
-        finish()
-        startAsNewActivity(Intent(this, LoginActivity::class.java))
-    }
-
-    override fun onDialogDismissListener(isFinish: Boolean) {
-        redirectToLogin()
+        if (SecuredPreference.logout()) {
+            cancelAllWorker()
+            val intent = Intent(this, LandingActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
+            finish()
+        }
     }
 }
