@@ -242,7 +242,7 @@ interface RoomHelper {
 
     suspend fun insertConsentForm(form: ConsentForm): Long
 
-    suspend fun getConsentFormByType(type: String): ConsentForm
+    suspend fun getConsentFormByType(type: String): ConsentForm?
 
     suspend fun deleteAllConsentForm()
 

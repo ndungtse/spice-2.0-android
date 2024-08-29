@@ -212,7 +212,7 @@ class HouseHoldRepository @Inject constructor(
         }
     }
 
-    suspend fun getConsentForm() : ConsentForm {
+    suspend fun getConsentForm() : ConsentForm? {
         return roomHelper.getConsentFormByType(ConsentFormType.Household)
     }
 }

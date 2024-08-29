@@ -675,7 +675,7 @@ class RoomHelperImpl @Inject constructor(
     override suspend fun insertConsentForm(form: ConsentForm): Long {
         return consentFormDao.insert(form)
     }
-    override suspend fun getConsentFormByType(type: String): ConsentForm {
+    override suspend fun getConsentFormByType(type: String): ConsentForm? {
         return consentFormDao.getConsentFormByType(type)
     }
 

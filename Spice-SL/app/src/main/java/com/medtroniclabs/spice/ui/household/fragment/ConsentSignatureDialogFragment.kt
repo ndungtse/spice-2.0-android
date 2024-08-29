@@ -47,6 +47,7 @@ class ConsentSignatureDialogFragment : DialogFragment() {
         initializeView()
         setListeners()
         initObserver()
+        viewModel.disableConfirm()
     }
 
     override fun onStart() {

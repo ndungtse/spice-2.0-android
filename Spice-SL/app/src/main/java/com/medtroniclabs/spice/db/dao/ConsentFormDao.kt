@@ -16,6 +16,6 @@ interface ConsentFormDao {
     suspend fun delete()
 
     @Query("SELECT * FROM ConsentForm WHERE type = :type")
-    suspend fun getConsentFormByType(type: String): ConsentForm
+    suspend fun getConsentFormByType(type: String): ConsentForm?
 
 }

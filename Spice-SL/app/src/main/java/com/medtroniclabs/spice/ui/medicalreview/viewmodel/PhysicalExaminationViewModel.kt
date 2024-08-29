@@ -20,7 +20,7 @@ class PhysicalExaminationViewModel @Inject constructor(
     var exclusiveBreastFeeding: Boolean?=null
     var breastFeeding: Boolean?=null
     var selectedSystemicExaminations = ArrayList<ChipViewItemModel>()
-    val cordExaminationMap = HashMap<String, Any>()
+    var cordExaminationMap = HashMap<String, Any>()
     val congenitalDefectMap = HashMap<String, Any>()
     val breastCondition = HashMap<String, Any>()
     val exclusiveBreastCondition = HashMap<String, Any>()

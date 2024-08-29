@@ -118,6 +118,7 @@
     <string name="male_prefix">M</string>
     <string name="female_prefix">F</string>
     <string name="iccm">ICCM</string>
+    <string name="rmnch">RMNCH</string>
     <string name="tb">TB</string>
     <string name="national_id">National ID</string>
     <string name="bio_data">Bio Data</string>
@@ -643,5 +644,17 @@
     <string name="neonateOutcome">Neonate Outcome</string>
     <string name="stateOfBaby">State of Baby</string>
     <string name="loading" translatable="false">loading...</string>
+
+    <string name="chw_name">Chw Name</string>
+    <string name="no_of_hh">No of HH</string>
+    <string name="no_of_member">No Of Member</string>
+    <string name="os">OS</string>
+    <string name="referrals">Referrals</string>
+    <string name="treatment_started">Treatment started</string>
+    <string name="follow_up_due">Follow up Due</string>
+    <string name="visit">Visit</string>
+    <string name="follow_up_conducted">Follow up Conducted</string>
+    <string name="recovered_improved">Recovered / Improved</string>
+    <string name="worsened">Worsened</string>
 
 </resources>

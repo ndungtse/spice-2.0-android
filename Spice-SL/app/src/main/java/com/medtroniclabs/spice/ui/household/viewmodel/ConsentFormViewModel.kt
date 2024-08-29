@@ -22,10 +22,12 @@ class ConsentFormViewModel @Inject constructor(
 
     init {
         viewModelScope.launch(dispatcherIO) {
-            val content = houseHoldRepository.getConsentForm().content
+            val content = houseHoldRepository.getConsentForm()?.content ?: ""
             termsAndConditionStringLiveData.postValue(CommonUtils.formatConsent(content))
         }
+    }
 
+    fun disableConfirm() {
         enableConfirmLiveData.postValue(Pair(false, false))
     }
 

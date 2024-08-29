@@ -235,6 +235,10 @@ class PhysicalExaminationFragment : BaseFragment() {
     fun refreshFragment() {
         examinationsTagView.clearSelection()
         examinationsTagView.clearOtherChip()
+        viewModel.breastFeeding=null
+        viewModel.exclusiveBreastFeeding=null
+        viewModel.congenitalDefect=null
+        viewModel.cordExaminationMap= hashMapOf()
         resetSelectionViews(DefinedParams.CongenitalDetect)
         resetSelectionViews(DefinedParams.CordExamination)
         resetSelectionViews(DefinedParams.ExclusiveBreastCondition)
