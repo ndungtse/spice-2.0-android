@@ -644,6 +644,7 @@
     <string name="neonateOutcome">Neonate Outcome</string>
     <string name="stateOfBaby">State of Baby</string>
     <string name="loading" translatable="false">loading...</string>
+    <string name="patient_status_append">%1$s, %2$s</string>
 
     <string name="chw_name">Chw Name</string>
     <string name="no_of_hh">No of HH</string>

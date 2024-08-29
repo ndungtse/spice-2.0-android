@@ -40,6 +40,7 @@ import com.medtroniclabs.spice.ui.medicalreview.undertwomonths.viewmodel.UnderTw
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import com.medtroniclabs.spice.ui.mypatients.adapter.ExaminationSummaryAdapter
+import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 
 
 class UnderTwoMonthsTreatmentSummaryFragment : BaseFragment(), View.OnClickListener {
@@ -47,6 +48,7 @@ class UnderTwoMonthsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
     private lateinit var binding: FragmentUnderTwoMonthsTreatmentSummaryBinding
     private var datePickerDialog: DatePickerDialog? = null
     private val summaryViewModel: UnderTwoMonthsTreatmentSummaryViewModel by activityViewModels()
+    private val patientDetailViewModel: PatientDetailViewModel by activityViewModels()
     private lateinit var examinationSummaryAdapter: ExaminationSummaryAdapter
 
     override fun onCreateView(
@@ -267,7 +269,11 @@ class UnderTwoMonthsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
         for (item in patientStatusList) {
             dropDownList.add(
                 hashMapOf<String, Any>(
-                    DefinedParams.NAME to item.name,
+                    DefinedParams.NAME to CommonUtils.composeLabelName(
+                        item.name,
+                        patientDetailViewModel.patientDetailsLiveData.value?.data?.pregnancyStatus,
+                        requireContext()
+                    ),
                     DefinedParams.id to item.id.toString(),
                     DefinedParams.value to (item.value ?: item.name)
                 )

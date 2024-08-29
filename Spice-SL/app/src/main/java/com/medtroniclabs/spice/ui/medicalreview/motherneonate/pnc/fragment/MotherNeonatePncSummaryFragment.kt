@@ -297,7 +297,11 @@ class MotherNeonatePncSummaryFragment : BaseFragment(), View.OnClickListener {
         for (item in pncMotherPatientStatus) {
             dropDownList.add(
                 hashMapOf<String, Any>(
-                    DefinedParams.NAME to item.name,
+                    DefinedParams.NAME to CommonUtils.composeLabelName(
+                        item.name,
+                        patientDetailViewModel.patientDetailsLiveData.value?.data?.pregnancyStatus,
+                        requireContext()
+                    ),
                     DefinedParams.id to item.id.toString(),
                     DefinedParams.value to (item.value ?: item.name)
                 )

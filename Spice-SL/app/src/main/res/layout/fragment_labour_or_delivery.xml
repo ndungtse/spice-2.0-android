@@ -487,7 +487,7 @@
             android:background="@drawable/edittext_background"
             android:gravity="start|center"
             android:hint="@string/type_notes"
-            android:inputType="text"
+            android:inputType="textCapWords"
             android:paddingStart="@dimen/_10sdp"
             android:textAlignment="textStart"
             android:textColorHint="@color/btn_disable_grey"

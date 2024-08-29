@@ -532,4 +532,12 @@ object CommonUtils {
         return consent.replace("\\\"", "\"").replace("contenteditable=\"true\"", "")
     }
 
+    fun composeLabelName(name: String, status: String?, context: Context): String {
+        return if (!(status.isNullOrEmpty())) {
+            context.getString(R.string.patient_status_append, name, status.trim())
+        } else {
+            name
+        }
+    }
+
 }

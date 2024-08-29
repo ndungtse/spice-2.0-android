@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
+import androidx.activity.viewModels
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.fragment.app.activityViewModels
@@ -13,6 +14,7 @@ import androidx.fragment.app.setFragmentResult
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.CommonUtils.combineText
+import com.medtroniclabs.spice.common.CommonUtils.composeLabelName
 import com.medtroniclabs.spice.common.CommonUtils.convertListToString
 import com.medtroniclabs.spice.common.CommonUtils.createInvestigation
 import com.medtroniclabs.spice.common.CommonUtils.createPrescription
@@ -34,6 +36,7 @@ import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
+import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 
 class AboveFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListener {
     companion object {
@@ -47,6 +50,7 @@ class AboveFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
     private val viewModel: AboveFiveYearsViewModel by activityViewModels()
     private val chipItemViewModel: ClinicalNotesViewModel by activityViewModels()
     private val presentingComplaintsViewModel: PresentingComplaintsViewModel by activityViewModels()
+    private val patientDetailViewModel: PatientDetailViewModel by activityViewModels()
     private var datePickerDialog: DatePickerDialog? = null
 
     override fun onCreateView(
@@ -177,7 +181,7 @@ class AboveFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
         for (item in patientStatusList) {
             dropDownList.add(
                 hashMapOf<String, Any>(
-                    DefinedParams.NAME to item.name,
+                    DefinedParams.NAME to composeLabelName(item.name, patientDetailViewModel.patientDetailsLiveData.value?.data?.pregnancyStatus, requireContext()),
                     DefinedParams.id to item.id.toString(),
                     DefinedParams.value to (item.value ?: item.name)
                 )

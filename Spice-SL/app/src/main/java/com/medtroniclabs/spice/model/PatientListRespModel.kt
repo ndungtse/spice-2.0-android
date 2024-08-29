@@ -27,7 +27,8 @@ data class PatientListRespModel(
     val villageId:String? = null,
     val relationship:String? = null,
     val phoneNumberCategory:String? = null,
-    val diagnosis: List<DiseaseInfo>? = null
+    val diagnosis: List<DiseaseInfo>? = null,
+    val pregnancyStatus: String? = null
 )
 
 data class PregnancyDetails(

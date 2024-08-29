@@ -38,12 +38,14 @@ import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import com.medtroniclabs.spice.ui.mypatients.adapter.ExaminationSummaryAdapter
+import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 
 class UnderFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListener {
 
     private lateinit var binding: FragmentUnderFiveYearsTreatmentSummarryBinding
     private var datePickerDialog: DatePickerDialog? = null
     private val summaryViewModel: UnderFiveYearTreatmentSummaryViewModel by activityViewModels()
+    private val patientDetailViewModel: PatientDetailViewModel by activityViewModels()
     private lateinit var examinationSummaryAdapter: ExaminationSummaryAdapter
 
     override fun onCreateView(
@@ -98,7 +100,11 @@ class UnderFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
             for (item in it) {
                 statusList.add(
                     hashMapOf<String, Any>(
-                        DefinedParams.NAME to item.name,
+                        DefinedParams.NAME to CommonUtils.composeLabelName(
+                            item.name,
+                            patientDetailViewModel.patientDetailsLiveData.value?.data?.pregnancyStatus,
+                            requireContext()
+                        ),
                         DefinedParams.id to item.id.toString(),
                         DefinedParams.value to (item.value ?: item.name)
                     )

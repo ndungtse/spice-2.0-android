@@ -91,10 +91,8 @@ class MotherNeonateANCRepo @Inject constructor(
                 category = MedicalReviewTypeEnums.BloodGroup.name
             }
         })
-        // TODO: remove Hard code Pregnancy after backend done
         chipItemList.addAll(patientStatus.map {
             it.apply {
-                name = Pregnancy + it.name
                 type = MedicalReviewTypeEnums.ANC_REVIEW.name
                 category = MedicalReviewTypeEnums.patient_status.name
             }

@@ -13,6 +13,7 @@ import com.medtroniclabs.spice.appextensions.setExpandableText
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.CommonUtils.combineText
+import com.medtroniclabs.spice.common.CommonUtils.composeLabelName
 import com.medtroniclabs.spice.common.CommonUtils.createInvestigation
 import com.medtroniclabs.spice.common.CommonUtils.getBMI
 import com.medtroniclabs.spice.common.DateUtils
@@ -113,7 +114,7 @@ class MotherNeonateAncSummary : BaseFragment(),View.OnClickListener {
             for (item in it) {
                 statusList.add(
                     hashMapOf<String, Any>(
-                        DefinedParams.NAME to item.name,
+                        DefinedParams.NAME to composeLabelName(item.name, patientViewModel.patientDetailsLiveData.value?.data?.pregnancyStatus, requireContext()),
                         DefinedParams.id to item.id.toString(),
                         DefinedParams.value to (item.value ?: item.name)
                     )
