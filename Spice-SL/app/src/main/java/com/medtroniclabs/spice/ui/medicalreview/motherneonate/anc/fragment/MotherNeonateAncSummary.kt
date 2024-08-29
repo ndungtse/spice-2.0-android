@@ -140,6 +140,22 @@ class MotherNeonateAncSummary : BaseFragment(),View.OnClickListener {
                 }
             }
         }
+        patientViewModel.patientDetailsLiveData.observe(viewLifecycleOwner) { resourceState ->
+            when (resourceState.state) {
+                ResourceState.LOADING -> {
+                    showProgress()
+                }
+
+                ResourceState.SUCCESS -> {
+                    hideProgress()
+                    viewModel.setAncReqToGetMetaForPatientStatus(MedicalReviewTypeEnums.patient_status.name)
+                }
+
+                ResourceState.ERROR -> {
+                    hideProgress()
+                }
+            }
+        }
     }
 
     private fun populate(motherNeonateSummaryModel: MotherNeonateAncSummaryModel) {
@@ -220,7 +236,6 @@ class MotherNeonateAncSummary : BaseFragment(),View.OnClickListener {
             DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
             DateUtils.DATE_ddMMyyyy
         )
-        viewModel.setAncReqToGetMetaForPatientStatus(MedicalReviewTypeEnums.patient_status.name)
         adapter = CustomSpinnerAdapter(requireContext())
         binding.tvNextMedicalReviewLabelText.safeClickListener(this)
     }
