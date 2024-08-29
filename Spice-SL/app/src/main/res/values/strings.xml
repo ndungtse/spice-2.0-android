@@ -609,7 +609,7 @@
     <string name="toDate_colon">To :</string>
     <string name="_36_weeks"><![CDATA[" (<36 weeks)"]]></string>
 
-    <string name="change_facility">CHANGE FACILITY\n</string>
+    <string name="change_facility">CHANGE HEALTH FACILITY\n</string>
     <string name="choose_site">Change Health Facility</string>
     <string name="display_range">Display Range</string>
     <string name="tested_value">Test Value</string>

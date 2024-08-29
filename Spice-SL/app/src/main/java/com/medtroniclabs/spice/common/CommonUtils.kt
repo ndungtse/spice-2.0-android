@@ -440,12 +440,16 @@ object CommonUtils {
 
     fun getMaxDateLimit(menstrualPeriod: Boolean, minDays: Int?): Long? {
         return if (menstrualPeriod) {
-            DateUtils.calculateGestationPastMonths(System.currentTimeMillis(), 11)
+            DateUtils.calculateGestationPastMonths(System.currentTimeMillis(), 287)
         } else {
-            if (minDays != null) {
-                val calendar = Calendar.getInstance()
-                calendar.add(Calendar.DAY_OF_MONTH, -minDays)
-                return calendar.timeInMillis
+            if (minDays != null ) {
+                if (minDays > 0){
+                    val calendar = Calendar.getInstance()
+                    calendar.add(Calendar.DAY_OF_MONTH, -minDays)
+                    return calendar.timeInMillis
+                }else {
+                    return null
+                }
             } else {
                 return minDays
             }
@@ -454,9 +458,13 @@ object CommonUtils {
 
     fun getMaxDateLimit(maxDays: Int?): Long? {
         if (maxDays != null) {
-            val calendar = Calendar.getInstance()
-            calendar.add(Calendar.DAY_OF_MONTH, maxDays)
-            return calendar.timeInMillis
+            if (maxDays > 0) {
+                val calendar = Calendar.getInstance()
+                calendar.add(Calendar.DAY_OF_MONTH, maxDays)
+                return calendar.timeInMillis
+            } else {
+                return null
+            }
         } else {
             return maxDays
         }
@@ -464,9 +472,13 @@ object CommonUtils {
 
     fun getMaxDateLimit(menstrualPeriod: Boolean, minDays: Long?): Long? {
         return if (menstrualPeriod) {
-            DateUtils.calculateGestationPastMonths(System.currentTimeMillis(), 11)
+            DateUtils.calculateGestationPastMonths(System.currentTimeMillis(), 287)
         } else {
-            return minDays
+            if (minDays !=null && minDays > 0){
+                return minDays
+            }else{
+                return null
+            }
         }
     }
 
