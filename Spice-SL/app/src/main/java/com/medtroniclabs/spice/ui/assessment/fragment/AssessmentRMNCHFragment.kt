@@ -9,6 +9,8 @@ import android.widget.TextView
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
+import com.medtroniclabs.spice.app.analytics.utils.UserDetail
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DateUtils.formatGestationalAge
@@ -71,6 +73,7 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
         viewModel.getNearestHealthFacility()
         attachObservers()
         setListener()
+        viewModel.setUserJourney(AnalyticsDefinedParams.RMNCHAssessment)
     }
 
     private fun setListener() {
@@ -84,6 +87,11 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
                     hideProgress()
                     resourceState.data?.let { data ->
                         formGenerator.populateViews(data.formLayout)
+                        viewModel.setAnalyticsData(
+                            UserDetail.startDateTime,
+                            eventType = AnalyticsDefinedParams.RMNCHAssessment,
+                            eventName = AnalyticsDefinedParams.AssessmentCreation
+                        )
                     }
                 }
 

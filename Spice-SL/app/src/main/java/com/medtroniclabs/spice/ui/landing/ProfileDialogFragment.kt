@@ -53,6 +53,7 @@ class ProfileDialogFragment : DialogFragment(), View.OnClickListener {
         initView()
         attachObservers()
         getData()
+        viewModel.setUserJourney(getString(R.string.profile))
     }
 
     private fun getData() {

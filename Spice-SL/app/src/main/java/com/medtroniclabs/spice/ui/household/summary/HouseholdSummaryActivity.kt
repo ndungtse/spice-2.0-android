@@ -8,6 +8,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.widget.PopupMenu
 import androidx.recyclerview.widget.GridLayoutManager
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.isMemberRegistration
 import com.medtroniclabs.spice.databinding.ActivityHouseholdSummaryBinding
@@ -39,6 +40,7 @@ class HouseholdSummaryActivity : BaseActivity(), MemberSelectionListener, View.O
         initializeView()
         setListener()
         attachObserver()
+        householdSummaryViewModel.setUserJourney(AnalyticsDefinedParams.HouseHoldSummary)
     }
 
     private fun attachObserver() {

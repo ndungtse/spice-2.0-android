@@ -5,7 +5,7 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 
-@Database(entities = [Analytics::class], version = 1)
+@Database(entities = [Analytics::class,UserJourneyAnalytics::class], version = 1)
 abstract class AnalyticsDatabase: RoomDatabase() {
 
     abstract fun analyticsDao(): AnalyticsDao

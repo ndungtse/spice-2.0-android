@@ -10,6 +10,8 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
+import com.medtroniclabs.spice.app.analytics.utils.UserDetail
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
@@ -95,6 +97,7 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
         getFormDataForWorkflow()
         setListeners()
         attachObservers()
+        viewModel.setUserJourney(AnalyticsDefinedParams.ICCMAssessment)
     }
 
     private fun setListeners() {
@@ -117,6 +120,11 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
                     hideProgress()
                     resourceState.data?.let { data ->
                         formGenerator.populateViews(data.formLayout)
+                        viewModel.setAnalyticsData(
+                            UserDetail.startDateTime,
+                            eventType = AnalyticsDefinedParams.ICCMAssessment,
+                            eventName = AnalyticsDefinedParams.AssessmentCreation
+                        )
                     }
                 }
 
@@ -362,8 +370,9 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
     override fun onUpdateInstruction(id: String, selectedId: Any?) {
         when (id) {
             muacCode -> {
-                if (selectedId is String && selectedId != DefaultID) {
-                    formGenerator.getViewByTag(muacStatus + rootSuffix)?.apply {
+                if (selectedId is String && selectedId != DefaultID)
+                {
+                    formGenerator.getViewByTag(muacStatus + rootSuffix )?.apply {
                         visibility = View.VISIBLE
                     }
                     formGenerator.getViewByTag(muacStatus + summaryKey)?.let {

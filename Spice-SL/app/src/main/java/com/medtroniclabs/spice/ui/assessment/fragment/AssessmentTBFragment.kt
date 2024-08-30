@@ -5,6 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
+import com.medtroniclabs.spice.app.analytics.utils.UserDetail
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.TB
 import com.medtroniclabs.spice.data.model.RecommendedDosageListModel
@@ -40,6 +42,7 @@ class AssessmentTBFragment : BaseFragment(), FormEventListener, View.OnClickList
         setListeners()
         viewModel.getFormData(DefinedParams.TB)
         attachObservers()
+        viewModel.setUserJourney(AnalyticsDefinedParams.TBAssessement)
     }
 
     private fun setListeners() {
@@ -58,6 +61,11 @@ class AssessmentTBFragment : BaseFragment(), FormEventListener, View.OnClickList
                     hideProgress()
                     resourceState.data?.let { data ->
                         formGenerator.populateViews(data.formLayout)
+                        viewModel.setAnalyticsData(
+                            UserDetail.startDateTime,
+                            eventType = AnalyticsDefinedParams.TBAssessement,
+                            eventName = AnalyticsDefinedParams.AssessmentCreation
+                        )
                     }
                 }
 

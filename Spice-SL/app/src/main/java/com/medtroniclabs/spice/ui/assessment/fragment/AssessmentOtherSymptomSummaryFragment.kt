@@ -12,6 +12,8 @@ import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
+import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.isGone
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils.getDaysValue
@@ -66,6 +68,7 @@ class AssessmentOtherSymptomSummaryFragment : BaseFragment(), View.OnClickListen
         super.onViewCreated(view, savedInstanceState)
         setListeners()
         attachObservers()
+        viewModel.setUserJourney(AnalyticsDefinedParams.OtherSymptomsSummary)
     }
 
     private fun setListeners() {

@@ -23,6 +23,11 @@ import com.medtroniclabs.spice.BuildConfig
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.loadAsGif
 import com.medtroniclabs.spice.appextensions.resetImageView
+import com.medtroniclabs.spice.app.analytics.utils.CommonUtils
+import com.medtroniclabs.spice.app.analytics.utils.UserDetail
+import com.medtroniclabs.spice.common.DefinedParams
+import com.medtroniclabs.spice.common.GeneralErrorDialog
+import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.DefinedParams.REFRESH_FRAGMENT
 import com.medtroniclabs.spice.databinding.ActivityBaseBinding
 import com.medtroniclabs.spice.databinding.ErrorLayoutBinding
@@ -48,6 +53,8 @@ open class BaseActivity : SpiceRootActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityBaseBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        UserDetail.startDateTime =
+            CommonUtils.getCurrentDateTimeInLocalTime()
         setListener()
     }
 

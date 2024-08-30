@@ -8,6 +8,8 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
+import com.medtroniclabs.spice.app.analytics.utils.UserDetail
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.MemberID
 import com.medtroniclabs.spice.common.DefinedParams.isMemberRegistration
@@ -50,6 +52,10 @@ class HouseholdActivity : BaseActivity(), OnDialogDismissListener {
             householdRegistrationViewModel.initialValue = it
         }
 
+        UserDetail.eventName=AnalyticsDefinedParams.HouseholdCreation
+        householdRegistrationViewModel.setUserJourney(
+            getString(R.string.household_registration)
+        )
         initializeView()
         attachObserver()
         getCurrentLocation()
@@ -62,6 +68,12 @@ class HouseholdActivity : BaseActivity(), OnDialogDismissListener {
             isNegativeButtonNeed = true
         ) { isPositive ->
             if (isPositive) {
+                householdRegistrationViewModel.setAnalyticsData(
+                    UserDetail.startDateTime,
+                    eventName = AnalyticsDefinedParams.HouseholdCreation,
+                    exitReason = AnalyticsDefinedParams.BackButtonClicked,
+                    isCompleted = false
+                )
                 this@HouseholdActivity.finish()
             }
         }

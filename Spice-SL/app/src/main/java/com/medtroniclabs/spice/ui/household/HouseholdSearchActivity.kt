@@ -46,6 +46,7 @@ class HouseholdSearchActivity : BaseActivity(), View.OnClickListener {
         initViews()
         setListeners()
         attachObserver()
+        householdListViewModel.setUserJourney(getString(R.string.households))
     }
 
 

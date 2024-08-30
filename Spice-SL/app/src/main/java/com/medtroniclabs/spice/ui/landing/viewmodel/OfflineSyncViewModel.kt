@@ -7,10 +7,11 @@ import com.medtroniclabs.spice.common.DateUtils.DATE_TIME_DISPLAY_FORMAT
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.model.landing.OfflineSyncEntityDetail
-import com.medtroniclabs.spice.network.utils.ConnectivityManager
 import com.medtroniclabs.spice.repo.AssessmentRepository
-import com.medtroniclabs.spice.repo.FollowUpRepository
 import com.medtroniclabs.spice.repo.HouseHoldRepository
+import com.medtroniclabs.spice.ui.BaseViewModel
+import com.medtroniclabs.spice.network.utils.ConnectivityManager
+import com.medtroniclabs.spice.repo.FollowUpRepository
 import com.medtroniclabs.spice.repo.OfflineSyncRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
@@ -28,8 +29,8 @@ class OfflineSyncViewModel @Inject constructor(
     private val assessmentRepository: AssessmentRepository,
     private val followUpRepository: FollowUpRepository,
     private val offlineSyncRepository: OfflineSyncRepository,
-    @IoDispatcher private val dispatcherIO: CoroutineDispatcher
-) : ViewModel() {
+    @IoDispatcher override var dispatcherIO: CoroutineDispatcher
+) :  BaseViewModel(dispatcherIO) {
 
     private val entityList = mutableListOf(
         OfflineSyncEntityDetail("Households", 0),

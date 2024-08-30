@@ -57,6 +57,9 @@ object DefinedParams {
     const val CallResult = "CallResult"
     const val PatientStatus = "PatientStatus"
     const val UnSuccessful = "UnSuccessful"
+    const val SUCCESSFUL = "successful"
+    const val UNSUCCESSFUL = "unSuccessful"
+    const val BaseUrl="base_url"
 
     const val OnTreatment = "On Treatment"
     const val OnHold = "on-hold"

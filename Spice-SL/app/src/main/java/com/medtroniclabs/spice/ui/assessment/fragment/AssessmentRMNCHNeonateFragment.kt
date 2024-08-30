@@ -7,6 +7,8 @@ import android.view.ViewGroup
 import androidx.appcompat.widget.AppCompatSpinner
 import androidx.fragment.app.activityViewModels
 import com.google.gson.Gson
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
+import com.medtroniclabs.spice.app.analytics.utils.UserDetail
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.setSuccess
 import com.medtroniclabs.spice.appextensions.visible
@@ -62,6 +64,7 @@ class AssessmentRMNCHNeonateFragment : BaseFragment(), View.OnClickListener,
         loadJson()
         attachObservers()
         setListener()
+        viewModel.setUserJourney(AnalyticsDefinedParams.RMNCHNeonateAssessment)
     }
 
     private fun setListener() {
@@ -108,6 +111,11 @@ class AssessmentRMNCHNeonateFragment : BaseFragment(), View.OnClickListener,
                     hideProgress()
                     resourceState.data?.let { data ->
                         formGenerator.populateViews(data.formLayout)
+                        viewModel.setAnalyticsData(
+                            UserDetail.startDateTime,
+                            AnalyticsDefinedParams.RMNCHNeonateAssessment,
+                            AnalyticsDefinedParams.AssessmentCreation
+                        )
                     }
                 }
 

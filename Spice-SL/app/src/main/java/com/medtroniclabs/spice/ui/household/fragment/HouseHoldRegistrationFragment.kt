@@ -11,6 +11,8 @@ import androidx.fragment.app.activityViewModels
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
+import com.medtroniclabs.spice.app.analytics.utils.UserDetail
 import com.medtroniclabs.spice.common.CommonUtils.getBooleanAsString
 import com.medtroniclabs.spice.common.EntityMapper.getResultSpinnerMapList
 import com.medtroniclabs.spice.data.model.RecommendedDosageListModel
@@ -238,6 +240,12 @@ class HouseHoldRegistrationFragment : Fragment(), View.OnClickListener, FormEven
                 }*/
             }
             R.id.btnCancel -> {
+                householdRegistrationViewModel.setAnalyticsData(
+                    UserDetail.startDateTime,
+                    eventName = AnalyticsDefinedParams.HouseholdCreation,
+                    exitReason = AnalyticsDefinedParams.CancelButtonClicked,
+                    isCompleted = false
+                )
                 onDismissListener?.onDialogDismissListener()
             }
         }

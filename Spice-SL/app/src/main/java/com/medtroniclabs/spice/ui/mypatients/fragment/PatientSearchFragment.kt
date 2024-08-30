@@ -13,6 +13,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.paging.LoadState
 import androidx.recyclerview.widget.GridLayoutManager
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.hideKeyboard
 import com.medtroniclabs.spice.appextensions.visible
@@ -57,6 +58,7 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
         setAdapterViews()
         attachObservers()
         getPatientList()
+        patientListViewModel.setUserJourney(AnalyticsDefinedParams.PatientSearch)
         binding.refreshLayout.setOnRefreshListener {
             swipeRefresh()
         }

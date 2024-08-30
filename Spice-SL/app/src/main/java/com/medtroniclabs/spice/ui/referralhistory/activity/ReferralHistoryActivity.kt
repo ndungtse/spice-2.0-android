@@ -8,6 +8,7 @@ import androidx.activity.viewModels
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.appextensions.isFineAndCoarseLocationPermissionGranted
 import com.medtroniclabs.spice.appextensions.isGpsEnabled
 import com.medtroniclabs.spice.common.DateUtils
@@ -45,6 +46,7 @@ class ReferralHistoryActivity : BaseActivity(), AncVisitCallBack {
             getString(R.string.patient_medical_review)
         )
         initView()
+        viewModel.setUserJourney(AnalyticsDefinedParams.ReferralTicket)
         initializeListener()
         attachObserver()
     }

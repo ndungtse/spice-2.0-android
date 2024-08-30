@@ -2,7 +2,6 @@ package com.medtroniclabs.spice.ui.medicalreview.abovefiveyears
 
 import android.location.Location
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.common.DateUtils
@@ -15,6 +14,7 @@ import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.network.utils.ConnectivityManager
 import com.medtroniclabs.spice.repo.AboveFiveYearsRepository
+import com.medtroniclabs.spice.ui.BaseViewModel
 import com.medtroniclabs.spice.repo.MedicalReviewSummaryRepository
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -24,10 +24,10 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AboveFiveYearsViewModel @Inject constructor(
-    @IoDispatcher private val dispatcherIO: CoroutineDispatcher,
+    @IoDispatcher override var dispatcherIO: CoroutineDispatcher,
     private var repository: AboveFiveYearsRepository,
     private var summaryRepository: MedicalReviewSummaryRepository
-) : ViewModel() {
+) : BaseViewModel(dispatcherIO) {
 
     @Inject
     lateinit var connectivityManager: ConnectivityManager

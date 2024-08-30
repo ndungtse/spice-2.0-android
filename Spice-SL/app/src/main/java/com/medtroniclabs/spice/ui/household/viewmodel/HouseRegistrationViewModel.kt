@@ -2,7 +2,6 @@ package com.medtroniclabs.spice.ui.household.viewmodel
 
 import android.location.Location
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.appextensions.postLoading
@@ -13,6 +12,7 @@ import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.villageId
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.repo.HouseHoldRepository
+import com.medtroniclabs.spice.ui.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
@@ -20,9 +20,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HouseRegistrationViewModel @Inject constructor(
-    @IoDispatcher private val dispatcherIO: CoroutineDispatcher,
-    private val houseHoldRepository: HouseHoldRepository
-) : ViewModel() {
+    @IoDispatcher override var dispatcherIO: CoroutineDispatcher,
+    private val houseHoldRepository: HouseHoldRepository,
+) : BaseViewModel(dispatcherIO) {
 
     var houseHoldRegistrationLiveData = MutableLiveData<Resource<Long>>()
     var isMemberRegistration: Boolean = false
@@ -34,6 +34,8 @@ class HouseRegistrationViewModel @Inject constructor(
     var villageListResponse = MutableLiveData<Resource<LocalSpinnerResponse>>()
     var memberID: Long = -1L
     private var lastLocation: Location? = null
+    var addNewMember: Boolean = false
+
 
     var signatureFilename: String? = null
     var initialValue: String? = null
@@ -73,7 +75,8 @@ class HouseRegistrationViewModel @Inject constructor(
         viewModelScope.launch(dispatcherIO) {
             try {
                 houseHoldUpdateLiveData.postLoading()
-                val householdEntity = houseHoldRepository.createOrUpdateHouseHoldEntity(map, householdEntityDetail)
+                val householdEntity =
+                    houseHoldRepository.createOrUpdateHouseHoldEntity(map, householdEntityDetail)
                 houseHoldRepository.updateHouseHoldEntity(householdEntity)
                 houseHoldUpdateLiveData.postSuccess()
             } catch (e: Exception) {
@@ -101,4 +104,5 @@ class HouseRegistrationViewModel @Inject constructor(
     fun getCurrentLocation(): Location? {
         return this.lastLocation
     }
+
 }

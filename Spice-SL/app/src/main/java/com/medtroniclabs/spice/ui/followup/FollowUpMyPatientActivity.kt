@@ -10,6 +10,8 @@ import androidx.core.widget.addTextChangedListener
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
+import com.medtroniclabs.spice.app.analytics.utils.UserDetail
 import com.medtroniclabs.spice.databinding.ActivityFollowUpMyPatientBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.ui.BaseActivity
@@ -30,6 +32,7 @@ class FollowUpMyPatientActivity : BaseActivity() {
         initView()
         initObserver()
         setTabLayout()
+        viewModel.setUserJourney(getString(R.string.my_patients))
     }
 
 

@@ -1,0 +1,13 @@
+package com.medtroniclabs.spice.app.analytics.db
+
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
+@Entity(tableName = "userJourneyAnalytics")
+data class UserJourneyAnalytics(
+    @PrimaryKey(autoGenerate = true)
+    var id: Long = 0,
+    val userId:String,
+    val sessionId: String,
+    val userJourney: String
+)

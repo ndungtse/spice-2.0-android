@@ -17,4 +17,13 @@ interface AnalyticsDao {
     @Query("SELECT parameter FROM analytics WHERE referenceId=:referenceId AND eventType=:eventType")
     suspend fun getParameterByRefIdAndEvent(referenceId: String, eventType: String): String?
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertUserJourneyAnalytics(userJourneyAnalytics: UserJourneyAnalytics): Long
+
+    @Query("SELECT * FROM userJourneyAnalytics")
+    suspend fun getUserJourney(): List<UserJourneyAnalytics>
+
+    @Query("DELETE FROM userJourneyAnalytics")
+    suspend fun deleteAllUserJourneys()
+
 }

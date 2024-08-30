@@ -10,6 +10,8 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
+import com.medtroniclabs.spice.app.analytics.utils.UserDetail
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.data.model.RecommendedDosageListModel
 import com.medtroniclabs.spice.databinding.FragmentAssessmentOtherSymptomsBinding
@@ -53,6 +55,7 @@ class AssessmentOtherSymptomsFragment : BaseFragment(), FormEventListener, View.
         initializeFormGenerator()
         setListeners()
         attachObservers()
+        viewModel.setUserJourney(AnalyticsDefinedParams.OtherSymptoms)
     }
 
     private fun initViews() {
@@ -78,6 +81,11 @@ class AssessmentOtherSymptomsFragment : BaseFragment(), FormEventListener, View.
                     hideProgress()
                     resourceState.data?.let { data ->
                         formGenerator.populateViews(data.formLayout)
+                        viewModel.setAnalyticsData(
+                            UserDetail.startDateTime,
+                            eventType = AnalyticsDefinedParams.OtherSymptoms,
+                            eventName = AnalyticsDefinedParams.AssessmentCreation
+                        )
                     }
                 }
 

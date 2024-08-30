@@ -4,6 +4,8 @@ import android.location.Location
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.medtroniclabs.spice.app.analytics.db.AnalyticsRepository
+import com.medtroniclabs.spice.app.analytics.utils.CommonUtils
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DateUtils.calculateGestationalAge
@@ -23,6 +25,7 @@ import com.medtroniclabs.spice.model.assessment.AssessmentMemberDetails
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.repo.AssessmentRepository
 import com.medtroniclabs.spice.repo.HouseholdMemberRepository
+import com.medtroniclabs.spice.ui.BaseViewModel
 import com.medtroniclabs.spice.ui.MenuConstants.ICCM_MENU_ID
 import com.medtroniclabs.spice.ui.MenuConstants.OTHER_SYMPTOMS
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
@@ -59,10 +62,10 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AssessmentViewModel @Inject constructor(
-    @IoDispatcher private val dispatcherIO: CoroutineDispatcher,
+    @IoDispatcher override var dispatcherIO: CoroutineDispatcher,
     private var memberRegistrationRepository: HouseholdMemberRepository,
-    private var assessmentRepository: AssessmentRepository
-) : ViewModel() {
+    private var assessmentRepository: AssessmentRepository,
+) : BaseViewModel(dispatcherIO) {
 
     var selectedHouseholdMemberId = -1L
     var followUpId: Long? = null

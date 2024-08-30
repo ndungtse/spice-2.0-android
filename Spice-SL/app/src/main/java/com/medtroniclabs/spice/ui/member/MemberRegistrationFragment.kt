@@ -16,6 +16,9 @@ import com.google.gson.reflect.TypeToken
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.visible
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
+import com.medtroniclabs.spice.app.analytics.utils.CommonUtils
+import com.medtroniclabs.spice.app.analytics.utils.UserDetail
 import com.medtroniclabs.spice.common.CommonUtils.getBooleanAsString
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
@@ -58,6 +61,7 @@ import com.medtroniclabs.spice.ui.household.summary.HouseholdSummaryActivity
 import com.medtroniclabs.spice.ui.household.viewmodel.HouseRegistrationViewModel
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
 import dagger.hilt.android.AndroidEntryPoint
+import timber.log.Timber
 
 @AndroidEntryPoint
 class MemberRegistrationFragment : Fragment(), FormEventListener, View.OnClickListener {
@@ -80,6 +84,7 @@ class MemberRegistrationFragment : Fragment(), FormEventListener, View.OnClickLi
         setListener()
         initializeFlow()
         attachObserver()
+        memberRegistrationViewModel.setUserJourney(AnalyticsDefinedParams.MemberRegistration)
     }
 
     private fun initializeFlow() {
@@ -131,6 +136,13 @@ class MemberRegistrationFragment : Fragment(), FormEventListener, View.OnClickLi
                 }
 
                 ResourceState.SUCCESS -> {
+                    val (title, startDate) = if (memberRegistrationViewModel.addNewMember) {
+                        AnalyticsDefinedParams.AddNewMember to (UserDetail.startDateTime ?: "")
+                    } else {
+                        AnalyticsDefinedParams.HouseholdCreation to (arguments?.getString(AnalyticsDefinedParams.StartDate) ?: "")
+                    }
+                    memberRegistrationViewModel.setAnalyticsData(startDate, eventName = title, isCompleted = true)
+
                     (activity as BaseActivity?)?.hideLoading()
                     resourceState.data?.let {
                         launchSummaryOrAssessmentPage()
@@ -361,6 +373,15 @@ class MemberRegistrationFragment : Fragment(), FormEventListener, View.OnClickLi
             if (householdRegistrationViewModel.memberID == -1L) {
                 (view.adapter as CustomSpinnerAdapter).removeItemById(HouseholdHead)
             }
+        }
+    }
+
+    private fun handleAddNewMember() {
+        memberRegistrationViewModel.addNewMember =
+            arguments?.getBoolean(AnalyticsDefinedParams.AddNewMember, false) ?: false
+        if (memberRegistrationViewModel.addNewMember) {
+            UserDetail.startDateTime = CommonUtils.getCurrentDateTimeInLocalTime()
+            UserDetail.eventName=AnalyticsDefinedParams.AddNewMember
         }
     }
 

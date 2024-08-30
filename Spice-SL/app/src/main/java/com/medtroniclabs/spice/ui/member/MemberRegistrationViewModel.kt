@@ -4,6 +4,8 @@ import android.location.Location
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.medtroniclabs.spice.app.analytics.db.AnalyticsRepository
+import com.medtroniclabs.spice.app.analytics.utils.CommonUtils
 import com.medtroniclabs.spice.appextensions.isVisible
 import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.appextensions.postLoading
@@ -23,6 +25,7 @@ import com.medtroniclabs.spice.model.medicalreview.AddMemberRegRequest
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.repo.HouseHoldRepository
 import com.medtroniclabs.spice.repo.HouseholdMemberRepository
+import com.medtroniclabs.spice.ui.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
@@ -30,10 +33,10 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MemberRegistrationViewModel @Inject constructor(
-    @IoDispatcher private val dispatcherIO: CoroutineDispatcher,
+    @IoDispatcher override var dispatcherIO: CoroutineDispatcher,
     private val memberRegistrationRepository: HouseholdMemberRepository,
-    private val houseHoldRepository: HouseHoldRepository
-) : ViewModel() {
+    private val houseHoldRepository: HouseHoldRepository,
+) : BaseViewModel(dispatcherIO) {
 
     var selectedHouseholdId: Long = -1L
     var memberRegistrationLiveData = MutableLiveData<Resource<Long>>()
@@ -43,6 +46,7 @@ class MemberRegistrationViewModel @Inject constructor(
     var medicalReviewFlow=false
     val addnewMemberReq=MutableLiveData<Resource<String>>()
     var villageDetails:List<VillageEntity>?= null
+    var addNewMember: Boolean = false
 
     fun getFormData(formType: String) {
         viewModelScope.launch(dispatcherIO) {

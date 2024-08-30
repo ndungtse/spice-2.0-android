@@ -9,6 +9,12 @@ import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
+import com.medtroniclabs.spice.app.analytics.utils.UserDetail
+import com.medtroniclabs.spice.common.DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
+import com.medtroniclabs.spice.common.DateUtils.DATE_ddMMyyyy
+import com.medtroniclabs.spice.common.DateUtils.convertDateTimeToDate
+import com.medtroniclabs.spice.common.DateUtils.getCurrentDateAndTime
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.SpiceLocationManager
@@ -70,7 +76,8 @@ class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
         initializeViews()
         initializeListeners()
         attachObserver()
-        getCurrentLocation()
+        UserDetail.eventName=AnalyticsDefinedParams.MedicalReviewCreation
+        viewModel.setUserJourney(AnalyticsDefinedParams.AboveFiveYears)
     }
 
     private fun backNavigation() {
@@ -81,6 +88,12 @@ class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
         ) { isPositive ->
             if (isPositive) {
                 onBackPressPopStack()
+                viewModel.setAnalyticsData(
+                    UserDetail.startDateTime,
+                    exitReason = AnalyticsDefinedParams.BackButtonClicked,
+                    eventName = UserDetail.eventName,
+                    isCompleted = false
+                )
             }
         }
     }

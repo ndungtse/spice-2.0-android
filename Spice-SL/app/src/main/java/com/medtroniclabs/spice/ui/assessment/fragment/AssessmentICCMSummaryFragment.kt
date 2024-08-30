@@ -11,6 +11,10 @@ import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
+import com.medtroniclabs.spice.appextensions.gone
+import com.medtroniclabs.spice.appextensions.isGone
+import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.CommonUtils.convertStringToIntString
 import com.medtroniclabs.spice.common.CommonUtils.getOptionMap
@@ -91,6 +95,7 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
         initViews()
         setListeners()
         attachObservers()
+        viewModel.setUserJourney(AnalyticsDefinedParams.ICCMSummaryAssessment)
     }
 
     private fun initViews() {

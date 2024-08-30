@@ -7,22 +7,27 @@ import androidx.paging.PagingConfig
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.Active
 import com.medtroniclabs.spice.common.DefinedParams.LIST_LIMIT
+import com.medtroniclabs.spice.db.response.VillageBasicDetails
+import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.common.DefinedParams.OnHold
 import com.medtroniclabs.spice.common.DefinedParams.OnTreatment
 import com.medtroniclabs.spice.common.DefinedParams.REFERRED
 import com.medtroniclabs.spice.data.model.ChipViewItemModel
 import com.medtroniclabs.spice.model.MedicalReviewFilterModel
 import com.medtroniclabs.spice.network.ApiHelper
+import com.medtroniclabs.spice.ui.BaseViewModel
 import com.medtroniclabs.spice.ui.mypatients.PatientsDataSource
 import com.medtroniclabs.spice.ui.mypatients.repo.PatientRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineDispatcher
 import javax.inject.Inject
 
 @HiltViewModel
 class PatientListViewModel @Inject constructor(
     private val patientRepository: PatientRepository,
-    private val apiHelper: ApiHelper
-) : ViewModel() {
+    private val apiHelper: ApiHelper,
+    @IoDispatcher override var dispatcherIO: CoroutineDispatcher
+    ) : BaseViewModel(dispatcherIO) {
 
     //Patient list - Grid count
     var spanCount: Int = DefinedParams.span_count_1

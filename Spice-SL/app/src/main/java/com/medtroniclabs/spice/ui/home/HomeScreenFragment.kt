@@ -52,6 +52,7 @@ class HomeScreenFragment : BaseFragment(), MenuSelectionListener {
         super.onViewCreated(view, savedInstanceState)
         attachObservers()
         viewModel.getMenus()
+        viewModel.setUserJourney(getString(R.string.home))
     }
 
     private fun attachObservers() {

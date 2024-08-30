@@ -43,6 +43,7 @@ class OfflineSyncActivity : SpiceRootActivity() {
         setListener()
         initObserver()
         checkBGSyncStatus()
+        viewModel.setUserJourney(getString(R.string.offline_sync))
     }
 
     private fun checkBGSyncStatus() {

@@ -2,9 +2,9 @@ package com.medtroniclabs.spice.ui.followup.viewmodel
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.FollowUpPatientModel
@@ -14,6 +14,7 @@ import com.medtroniclabs.spice.db.entity.VillageEntity
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.model.followup.FollowUpFilter
 import com.medtroniclabs.spice.repo.FollowUpRepository
+import com.medtroniclabs.spice.ui.BaseViewModel
 import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
 import com.medtroniclabs.spice.ui.followup.FollowUpDefinedParams
 import com.medtroniclabs.spice.ui.followup.FollowUpDefinedParams.FU_TYPE_HH_VISIT
@@ -26,9 +27,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class FollowUpViewModel @Inject constructor(
-    @IoDispatcher private val dispatcherIO: CoroutineDispatcher,
+    @IoDispatcher override var dispatcherIO: CoroutineDispatcher,
     private val followUpRepository: FollowUpRepository
-) : ViewModel() {
+) : BaseViewModel(dispatcherIO) {
 
     val callResultHashMap = HashMap<String, Any>()
     val patientStatusHashMap = HashMap<String, Any>()
@@ -144,14 +145,18 @@ class FollowUpViewModel @Inject constructor(
             selectedFollowUpDetail?.let {
                 val callStatus =
                     getCallStatus(callResultHashMap[DefinedParams.CallResult] as String)
+                val patientStatus=getPatientStatus(callStatus)
+                val unSuccessfulReason= getUnSuccessfulReason(callStatus)
                 followUpRepository.addCallHistory(
                     maxSuccessfulCallLimit,
                     maxUnSuccessfulCallLimit,
                     it.id,
                     callStatus,
-                    getPatientStatus(callStatus),
-                    getUnSuccessfulReason(callStatus)
+                    patientStatus,
+                    unSuccessfulReason
                 )
+                setAnalyticsFollowUpData(it.id,it.patientId,callStatus,patientStatus,
+                    unSuccessfulReason,)
             }
         }
     }
