@@ -20,6 +20,7 @@ class PatientsDataSource(
     private val patientRepository: PatientRepository,
     private val searchText: String,
     private val filter:MedicalReviewFilterModel?,
+    private val isPatientListRequired: Boolean,
     private val getPatientsCount: (String) -> Unit
 ) : PagingSource<Int, PatientListRespModel>() {
 
@@ -54,9 +55,9 @@ class PatientsDataSource(
                 filter = filter,
             )
 
-            val response: APIResponse<SearchAndListResponse> = if (searchText.isEmpty()) {
+            val response: APIResponse<SearchAndListResponse>? = if (isPatientListRequired && searchText.isBlank()) {
                 apiHelper.getPatients(patientsDataModel)
-            } else {
+            } else if(searchText.isNotBlank()) {
                 val searchRequest = patientsDataModel.copy(
                     villageIds = null,
                     searchText = searchText.ifEmpty { null },
@@ -66,16 +67,17 @@ class PatientsDataSource(
                     apiHelper.patientSearch(searchRequest)
                 else
                     apiHelper.ncdPatientSearch(searchRequest)
-            }
+            } else
+                null
 
             /* Request construction - Ends */
 
 
-            val patientList: List<PatientListRespModel> = response.entity?.patientList ?: emptyList()
-            referencePatientId = response.entity?.referencePatientId
+            val patientList: List<PatientListRespModel> = response?.entity?.patientList ?: emptyList()
+            referencePatientId = response?.entity?.referencePatientId
             if (!isInitialData) {
                 if (searchText.isEmpty()) {
-                    totalCount = response.entity?.totalCount ?: 0
+                    totalCount = response?.entity?.totalCount ?: 0
                     isInitialData = true
                 } else {
                     totalCount += patientList.size

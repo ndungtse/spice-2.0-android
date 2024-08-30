@@ -26,6 +26,11 @@ android {
 
     flavorDimensions += "version"
     productFlavors {
+        create("africa") {
+            dimension = "version"
+            versionName = "2.1.0"
+            commonPrefix = "SPICE 2.1.0"
+        }
         create("sl") {
             dimension = "version"
             applicationIdSuffix = ".sl"

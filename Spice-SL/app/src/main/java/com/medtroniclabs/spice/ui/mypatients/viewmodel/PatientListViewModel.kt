@@ -4,6 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
+import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.Active
 import com.medtroniclabs.spice.common.DefinedParams.LIST_LIMIT
@@ -45,7 +46,8 @@ class PatientListViewModel @Inject constructor(
                 apiHelper = apiHelper,
                 patientRepository = patientRepository,
                 searchText = searchText,
-                filter = getFilter()
+                filter = getFilter(),
+                isPatientListRequired = CommonUtils.isPatientListRequired(origin)
             ) { getPatientsCount ->
                 totalPatientCount.postValue(getPatientsCount)
             }

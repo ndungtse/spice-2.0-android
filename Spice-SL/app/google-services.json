@@ -7,6 +7,44 @@
   "client": [
     {
       "client_info": {
+        "mobilesdk_app_id": "1:791794371431:android:2a253529d0039668247dc2",
+        "android_client_info": {
+          "package_name": "com.medtroniclabs.spice"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBC673emo8LJ1W02uein-0y4ZB9A4gi7W8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:791794371431:android:aabac04cb743a1ac247dc2",
+        "android_client_info": {
+          "package_name": "com.medtroniclabs.spice.dev"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBC673emo8LJ1W02uein-0y4ZB9A4gi7W8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:791794371431:android:b8b2e145b0cee3f6247dc2",
         "android_client_info": {
           "package_name": "com.medtroniclabs.spice.sl.dev"
@@ -48,6 +86,25 @@
         "mobilesdk_app_id": "1:791794371431:android:9db292b193f43838247dc2",
         "android_client_info": {
           "package_name": "com.medtroniclabs.spice.sl.training"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBC673emo8LJ1W02uein-0y4ZB9A4gi7W8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:791794371431:android:ce1a606d9fd209d4247dc2",
+        "android_client_info": {
+          "package_name": "com.medtroniclabs.spice.training"
         }
       },
       "oauth_client": [],

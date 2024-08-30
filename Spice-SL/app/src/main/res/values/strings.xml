@@ -701,6 +701,7 @@
     <string name="please_check_if_play_store_available">Please check if Google Play Store is installed in the device</string>
 
     <!-- Registration -->
+    <string name="register">Register</string>
     <string name="registration">Registration</string>
     <string name="terms_and_conditions">Terms &amp; Conditions</string>
     <string name="terms_and_conditions_info_enrollment">The healthcare worker will be accepting the terms &amp; conditions on behalf of the enrollment participant.</string>

@@ -44,6 +44,7 @@
                 android:textColor="@color/navy_blue"
                 android:textSize="@dimen/_18ssp"
                 android:textStyle="bold"
+                android:visibility="gone"
                 app:layout_constraintEnd_toStartOf="@id/llFilter"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="@id/llFilter"
@@ -56,6 +57,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/_10sdp"
                 android:layout_marginEnd="@dimen/_16sdp"
+                android:visibility="invisible"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/view" />
 
@@ -85,6 +87,13 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/rvPatientsList" />
 
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/centerGuideline"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:orientation="horizontal"
+                app:layout_constraintGuide_percent="0.50" />
+
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvNoPatientsFound"
                 android:layout_width="wrap_content"
@@ -98,6 +107,20 @@
                 app:layout_constraintEnd_toEndOf="@id/rvPatientsList"
                 app:layout_constraintStart_toStartOf="@id/rvPatientsList"
                 app:layout_constraintTop_toTopOf="@id/rvPatientsList" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btnRegister"
+                style="@style/Button_Style"
+                android:layout_width="wrap_content"
+                android:layout_marginTop="15dp"
+                android:background="@drawable/button_selector_cobalt"
+                android:text="@string/register"
+                android:textAllCaps="false"
+                android:textStyle="bold"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvNoPatientsFound" />
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/bottomCardView"

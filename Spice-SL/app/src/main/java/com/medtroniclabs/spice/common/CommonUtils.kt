@@ -1360,4 +1360,11 @@ object CommonUtils {
             else -> context.getColor(R.color.high_risk_color)
         }
     }
+
+    fun isPatientListRequired(origin: String?): Boolean {
+        return when (origin) {
+            MenuConstants.MY_PATIENTS_MENU_ID -> true
+            else -> false
+        }
+    }
 }

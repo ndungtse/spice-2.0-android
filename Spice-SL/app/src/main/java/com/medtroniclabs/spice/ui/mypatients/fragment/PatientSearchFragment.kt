@@ -16,6 +16,7 @@ import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.hideKeyboard
+import com.medtroniclabs.spice.appextensions.invisible
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DefinedParams
@@ -24,11 +25,13 @@ import com.medtroniclabs.spice.databinding.FragmentPatientSearchBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.ui.BaseFragment
+import com.medtroniclabs.spice.ui.MenuConstants
 import com.medtroniclabs.spice.ui.medicalreview.addnewmember.AddNewMemberActivity
 import com.medtroniclabs.spice.ui.mypatients.PatientSelectionListener
 import com.medtroniclabs.spice.ui.mypatients.PatientsListAdapter
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientListViewModel
 import com.medtroniclabs.spice.ui.referralhistory.activity.ReferralHistoryActivity
+import com.medtroniclabs.spice.ui.registration.RegistrationActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -79,18 +82,36 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
     private fun attachObservers() {
         patientListViewModel.totalPatientCount.observe(viewLifecycleOwner) { count ->
             if (!count.isNullOrBlank()) {
-                binding.tvPatientCount.text =
-                    if (count.toLong() > 1) getString(R.string.patients_found, count.toLong()) else
-                        getString(R.string.zero_patients_found, count.toLong())
-//                binding.llFilter.btnFilter.visibility = if (count.toLong() != 0L) View.VISIBLE else View.INVISIBLE
-                if (patientListViewModel.filterCount() > 0) {
-                    binding.llFilter.btnFilter.text =
-                        getString(R.string.filter_count, patientListViewModel.filterCount())
+                if (count.toLong() > 1) {
+                    binding.tvPatientCount.apply {
+                        text = getString(R.string.patients_found, count.toLong())
+                        visibility = View.VISIBLE
+                    }
+                    binding.tvNoPatientsFound.gone()
+                    binding.btnRegister.gone()
                 } else {
-                    binding.llFilter.btnFilter.text = getString(R.string.filter)
+                    binding.tvPatientCount.gone()
+                    if (patientListViewModel.searchText.isBlank()) {
+                        binding.tvNoPatientsFound.gone()
+                        binding.btnRegister.gone()
+                    } else {
+                        binding.tvNoPatientsFound.visible()
+                        binding.btnRegister.visibility =
+                            if (patientListViewModel.origin.equals(MenuConstants.REGISTRATION, true)) View.VISIBLE else View.GONE
+                    }
                 }
-                binding.tvNoPatientsFound.visibility =
-                    if (count.toLong() != 0L) View.GONE else View.VISIBLE
+                binding.llFilter.apply {
+                    if (patientListViewModel.origin.equals(MenuConstants.MY_PATIENTS_MENU_ID, true)) {
+                        root.visible()
+                        if (patientListViewModel.filterCount() > 0) {
+                            binding.llFilter.btnFilter.text =
+                                getString(R.string.filter_count, patientListViewModel.filterCount())
+                        } else
+                            binding.llFilter.btnFilter.text = getString(R.string.filter)
+
+                    } else
+                        root.invisible()
+                }
             }
             if (binding.refreshLayout.isRefreshing) {
                 binding.refreshLayout.isRefreshing = false
@@ -123,6 +144,7 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
         }
         binding.llExactSearch.etPatientSearch.addTextChangedListener(searchListener)
         binding.llExactSearch.btnSearch.safeClickListener(this)
+        binding.btnRegister.safeClickListener(this)
         binding.llFilter.btnFilter.safeClickListener(this)
         binding.loadingProgress.safeClickListener(this)
         binding.btnAddNewMember.safeClickListener(this)
@@ -214,6 +236,10 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
 
             binding.btnAddNewMember.id ->{
                 val intent = Intent(requireContext(), AddNewMemberActivity::class.java)
+                startActivity(intent)
+            }
+            binding.btnRegister.id -> {
+                val intent = Intent(requireContext(), RegistrationActivity::class.java)
                 startActivity(intent)
             }
         }
