@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.app.analytics.db.AnalyticsRepository
 import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.common.EncryptionUtil
@@ -28,7 +29,8 @@ class LoginViewModel @Inject constructor(
     private val houseHoldRepository: HouseHoldRepository,
     private val assessmentRepository: AssessmentRepository,
     private val followUpRepository: FollowUpRepository,
-    @IoDispatcher private val dispatcherIO: CoroutineDispatcher
+    private val analyticsRepository: AnalyticsRepository,
+    @IoDispatcher private val dispatcherIO: CoroutineDispatcher,
 ) : ViewModel() {
 
 
@@ -49,6 +51,23 @@ class LoginViewModel @Inject constructor(
         viewModelScope.launch(dispatcherIO) {
             loginResponseLiveData.postLoading()
             loginResponseLiveData.postValue(loginRepository.doLogin(username,password))
+
+            val eventName = "login"
+            val parameter = mapOf(
+                "startTime" to "2024-04-23 19:28:00",
+                "endTime" to "2024-04-23 19:29:20",
+                "isCompleted" to true,
+                "apiId" to 12
+            )
+
+            analyticsRepository.logEvent(eventName, parameter)
+
+        }
+    }
+
+    fun generateReport() {
+        viewModelScope.launch(dispatcherIO) {
+            analyticsRepository.generateAnalyticsReport()
         }
     }
 

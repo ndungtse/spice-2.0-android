@@ -8,6 +8,7 @@ import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.app.analytics.utils.UserDetail
 import com.medtroniclabs.spice.appextensions.hideKeyboard
 import com.medtroniclabs.spice.appextensions.invisible
 import com.medtroniclabs.spice.common.CommonUtils
@@ -41,6 +42,12 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
         attachObservers()
         createAndSaveDeviceId()
         checkNotificationPermission()
+
+        UserDetail.userId = "43"
+
+        //3. Set app version name
+        val packageInfo = applicationContext.packageManager.getPackageInfo(packageName, 0)
+        UserDetail.appVersion = packageInfo.versionName
     }
 
     private fun createAndSaveDeviceId() {
@@ -107,6 +114,10 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
     private fun setListeners() {
         binding.btnLogin.safeClickListener(this)
         binding.tvForgotPassword.safeClickListener(this)
+
+        binding.ivPrevious.setOnClickListener {
+            viewModel.generateReport()
+        }
     }
 
     private fun initView() {
