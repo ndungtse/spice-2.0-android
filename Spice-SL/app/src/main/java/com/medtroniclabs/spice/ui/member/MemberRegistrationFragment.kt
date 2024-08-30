@@ -17,6 +17,8 @@ import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams.AddNewMember
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams.EditNewMember
 import com.medtroniclabs.spice.app.analytics.utils.CommonUtils
 import com.medtroniclabs.spice.app.analytics.utils.UserDetail
 import com.medtroniclabs.spice.common.CommonUtils.getBooleanAsString
@@ -61,7 +63,6 @@ import com.medtroniclabs.spice.ui.household.summary.HouseholdSummaryActivity
 import com.medtroniclabs.spice.ui.household.viewmodel.HouseRegistrationViewModel
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
 import dagger.hilt.android.AndroidEntryPoint
-import timber.log.Timber
 
 @AndroidEntryPoint
 class MemberRegistrationFragment : Fragment(), FormEventListener, View.OnClickListener {
@@ -84,7 +85,13 @@ class MemberRegistrationFragment : Fragment(), FormEventListener, View.OnClickLi
         setListener()
         initializeFlow()
         attachObserver()
-        memberRegistrationViewModel.setUserJourney(AnalyticsDefinedParams.MemberRegistration)
+        handleAddNewMember()
+        val eventType = if (householdRegistrationViewModel.isMemberRegistration || householdRegistrationViewModel.memberID != -1L)
+            EditNewMember
+        else
+            AnalyticsDefinedParams.MemberRegistration
+        householdRegistrationViewModel.eventName = eventType
+        memberRegistrationViewModel.setUserJourney(eventType)
     }
 
     private fun initializeFlow() {
@@ -137,7 +144,12 @@ class MemberRegistrationFragment : Fragment(), FormEventListener, View.OnClickLi
 
                 ResourceState.SUCCESS -> {
                     val (title, startDate) = if (memberRegistrationViewModel.addNewMember) {
-                        AnalyticsDefinedParams.AddNewMember to (UserDetail.startDateTime ?: "")
+                        val type = if (householdRegistrationViewModel.isMemberRegistration || householdRegistrationViewModel.memberID != -1L) {
+                            EditNewMember
+                        } else {
+                            AddNewMember
+                        }
+                        type to (UserDetail.startDateTime ?: "")
                     } else {
                         AnalyticsDefinedParams.HouseholdCreation to (arguments?.getString(AnalyticsDefinedParams.StartDate) ?: "")
                     }
@@ -378,10 +390,13 @@ class MemberRegistrationFragment : Fragment(), FormEventListener, View.OnClickLi
 
     private fun handleAddNewMember() {
         memberRegistrationViewModel.addNewMember =
-            arguments?.getBoolean(AnalyticsDefinedParams.AddNewMember, false) ?: false
+            arguments?.getBoolean(AddNewMember, false) ?: false
         if (memberRegistrationViewModel.addNewMember) {
             UserDetail.startDateTime = CommonUtils.getCurrentDateTimeInLocalTime()
-            UserDetail.eventName=AnalyticsDefinedParams.AddNewMember
+            UserDetail.eventName= AddNewMember
+        } else {
+            UserDetail.startDateTime = CommonUtils.getCurrentDateTimeInLocalTime()
+            UserDetail.eventName=EditNewMember
         }
     }
 

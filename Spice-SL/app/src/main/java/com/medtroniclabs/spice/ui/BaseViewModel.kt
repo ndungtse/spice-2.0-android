@@ -2,10 +2,13 @@ package com.medtroniclabs.spice.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.crashlytics.internal.common.SystemCurrentTimeProvider
 import com.medtroniclabs.spice.app.analytics.db.AnalyticsRepository
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.app.analytics.utils.CommonUtils
 import com.medtroniclabs.spice.app.analytics.utils.UserDetail
+import com.medtroniclabs.spice.appextensions.convertToLocalDateTime
+import com.medtroniclabs.spice.appextensions.convertToUtcDateTime
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.offlinesync.model.FollowUpCallStatus
 import com.medtroniclabs.spice.di.IoDispatcher
@@ -27,7 +30,7 @@ open class BaseViewModel @Inject constructor(
 
     fun setUserJourney(userJourney: String) =
         viewModelScope.launch(dispatcherIO) {
-            setUserId()
+            setUserDetails()
             analyticsRepository.insertUserJourney(userJourney)
         }
 
@@ -39,7 +42,7 @@ open class BaseViewModel @Inject constructor(
         isCompleted: Boolean = true
     ) {
         viewModelScope.launch(dispatcherIO) {
-            setUserId()
+            setUserDetails()
             Timber.d("userId: ${UserDetail.userId}")
             val parameter = CommonUtils.createEventParameter(
                 startDate,
@@ -47,7 +50,7 @@ open class BaseViewModel @Inject constructor(
                 exitReason = exitReason,
                 isCompleted = isCompleted.toString()
             )
-            analyticsRepository.logEvent(eventName, parameter)
+            analyticsRepository.logEvent(eventName, parameter,lastSyncDate())
         }
     }
 
@@ -56,21 +59,30 @@ open class BaseViewModel @Inject constructor(
         patientId: String?,
         callStatus: FollowUpCallStatus,
         patientStatus: String?,
-        unSuccessfulReason: String?
+        unSuccessfulReason: String?,
+        startTiming: String?
     ) {
-        setUserId()
+        setUserDetails()
         val parameter = CommonUtils.createFollowUpEventParameter(
             id,
             patientId,
             callStatus.name,
             patientStatus,
-            unSuccessfulReason
+            unSuccessfulReason,
+            startTiming
         )
-        analyticsRepository.logEvent(AnalyticsDefinedParams.MyPatient, parameter)
+        analyticsRepository.logEvent(AnalyticsDefinedParams.MyPatient, parameter,lastSyncDate())
 
     }
 
-    private fun setUserId() {
+    private fun setUserDetails() {
         UserDetail.userId = SecuredPreference.getUserId().toString()
+        UserDetail.role = SecuredPreference.getRole().toString()
+        UserDetail.startDateTime = CommonUtils.getCurrentDateTimeInLocalTime()
+    }
+    private fun lastSyncDate(): String {
+        val longSyncedAt =
+            SecuredPreference.getLong(SecuredPreference.EnvironmentKey.SERVER_LAST_SYNCED.name)
+        return if (longSyncedAt != 0L) longSyncedAt.convertToLocalDateTime() else "--"
     }
 }

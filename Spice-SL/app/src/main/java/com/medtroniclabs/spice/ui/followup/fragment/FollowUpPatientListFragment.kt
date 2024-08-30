@@ -10,9 +10,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.activityViewModels
+import com.medtroniclabs.spice.app.analytics.utils.CommonUtils
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.DefinedParams
+import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.databinding.FragmentFollowUpMyPatientListBinding
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.followup.adapter.PatientListAdapter
@@ -92,6 +94,7 @@ class FollowUpPatientListFragment: BaseFragment(), FollowUpDialogFragment.Follow
     }
 
     override fun onCallClicked() {
+        SecuredPreference.putString(DefinedParams.FollowUpStartTiming, CommonUtils.getCurrentDateTimeInLocalTime())
         viewModel.selectedFollowUpDetail?.let { data ->
             data.phoneNumber?.let { phoneNumber ->
                 val dialIntent = Intent(Intent.ACTION_DIAL)

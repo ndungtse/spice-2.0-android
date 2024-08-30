@@ -8,6 +8,8 @@ import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
+import com.medtroniclabs.spice.app.analytics.utils.UserDetail
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.isNotTabletAndPortrait
 import com.medtroniclabs.spice.appextensions.setPercentWidth
@@ -98,6 +100,13 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
         initStaticDataCall()
         setButtonClickListener()
         binding.loadingProgress.safeClickListener(this)
+        UserDetail.eventName= AnalyticsDefinedParams.MedicalReviewCreation
+        viewModel.setUserJourney(AnalyticsDefinedParams.MotherNeonateAnc)
+        viewModel.setAnalyticsData(
+            UserDetail.startDateTime,
+            eventType = AnalyticsDefinedParams.MotherNeonateAnc,
+            eventName = UserDetail.eventName,
+        )
     }
 
     private fun getCurrentLocation() {
@@ -673,6 +682,12 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
         if (viewModel.ancVisit == 1 && pregnancyDetailsFragment is PregnancyDetailsFragment) {
             // Show the dialog here
             showErrorDialog()
+            viewModel.setAnalyticsData(
+                UserDetail.startDateTime,
+                exitReason = AnalyticsDefinedParams.BackButtonClicked,
+                eventName = UserDetail.eventName,
+                isCompleted = false
+            )
         } else if (viewModel.ancVisit == 1 && pregnancyDetailsFragment is MedicalReviewPatientDiagnosisFragment) {
             binding.loadingProgress.visible()
             initializePregnancyDetailsFragment()
@@ -684,6 +699,12 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
             showErrorDialog()
         } else if (viewModel.ancVisit > 1 && pregnancyDetailsFragment is MedicalReviewPatientDiagnosisFragment) {
             showErrorDialog()
+            viewModel.setAnalyticsData(
+                UserDetail.startDateTime,
+                exitReason = AnalyticsDefinedParams.BackButtonClicked,
+                eventName = UserDetail.eventName,
+                isCompleted = false
+            )
         }
     }
 

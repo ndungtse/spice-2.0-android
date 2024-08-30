@@ -35,6 +35,7 @@ class HouseRegistrationViewModel @Inject constructor(
     var memberID: Long = -1L
     private var lastLocation: Location? = null
     var addNewMember: Boolean = false
+    var eventName: String = ""
 
 
     var signatureFilename: String? = null

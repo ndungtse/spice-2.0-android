@@ -5,6 +5,7 @@ import com.google.gson.JsonElement
 import com.google.gson.JsonParser
 import com.google.gson.reflect.TypeToken
 import com.medtroniclabs.spice.app.analytics.db.AnalyticsRepository
+import com.medtroniclabs.spice.app.analytics.db.ScreenDetails
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -36,14 +37,14 @@ object CommonUtils {
         return dateFormat.format(currentTime)
     }
 
-    fun getAnalyticsFileName(): String {
+    fun getAnalyticsFileName(ids: String): String {
         val strBuilder = StringBuilder()
         val currentTime = System.currentTimeMillis()
         val dateFormat = SimpleDateFormat("yyyy_MM_dd", Locale.getDefault())
         dateFormat.timeZone = TimeZone.getTimeZone("UTC")
         strBuilder.append(dateFormat.format(currentTime))
         strBuilder.append("_")
-        strBuilder.append(UserDetail.userId)
+        strBuilder.append(ids)
         strBuilder.append("_")
         strBuilder.append("analytics.json")
         return strBuilder.toString()
@@ -52,8 +53,8 @@ object CommonUtils {
     fun getFileUploadTime(): Long {
         val currentTime = Calendar.getInstance()
         val nextUploadTime = Calendar.getInstance().apply {
-            set(Calendar.HOUR_OF_DAY, 12)
-            set(Calendar.MINUTE, 46)
+            set(Calendar.HOUR_OF_DAY, 23)
+            set(Calendar.MINUTE, 0)
             set(Calendar.SECOND, 0)
             set(Calendar.MILLISECOND, 0)
             if (currentTime.after(this)) {
@@ -70,7 +71,7 @@ object CommonUtils {
         isCompleted: String? = null,
         apiId: Int? = null,
         referenceId: String? = null,
-        userJourney: List<String>? = null,
+        userJourney: List<ScreenDetails>? = null,
         endTime: String? = getCurrentDateTimeInLocalTime()
     ): Map<String, Any?> = mutableMapOf(
         AnalyticsDefinedParams.StartTime to startTime,
@@ -87,14 +88,16 @@ object CommonUtils {
         patientId: String?,
         callStatus: String,
         patientStatus: String?,
-        unSuccessfulReason: String?
+        unSuccessfulReason: String?,
+        startTiming: String?
     ): Map<String, Any?> = mutableMapOf(
         AnalyticsDefinedParams.FollowUpId to id,
         AnalyticsDefinedParams.PatientId to patientId,
         AnalyticsDefinedParams.CallStatus to callStatus,
         AnalyticsDefinedParams.PatientStatus to patientStatus,
         AnalyticsDefinedParams.UnSuccessFullReason to unSuccessfulReason,
-        AnalyticsDefinedParams.CreatedAt to getCurrentDateTimeInLocalTime()
+        AnalyticsDefinedParams.StartTime to startTiming,
+        AnalyticsDefinedParams.EndTime  to getCurrentDateTimeInLocalTime()
     )
 
 
@@ -121,7 +124,7 @@ object CommonUtils {
     suspend fun setUserJourneyData(
         eventName: String,
         referenceId: String?,
-        userJourney: List<String>?,
+        userJourney: List<ScreenDetails>?,
         analyticsRepository: AnalyticsRepository,
         userId: String
     ) {
@@ -131,7 +134,7 @@ object CommonUtils {
             userJourney = userJourney
         )
         UserDetail.userId=userId
-        analyticsRepository.logEvent(eventName, parameter)
+        analyticsRepository.logEvent(eventName, parameter,null)
     }
 
 }

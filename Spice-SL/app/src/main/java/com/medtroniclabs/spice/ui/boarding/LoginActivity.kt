@@ -115,9 +115,6 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
         binding.btnLogin.safeClickListener(this)
         binding.tvForgotPassword.safeClickListener(this)
 
-        binding.ivPrevious.setOnClickListener {
-            viewModel.generateReport()
-        }
     }
 
     private fun initView() {

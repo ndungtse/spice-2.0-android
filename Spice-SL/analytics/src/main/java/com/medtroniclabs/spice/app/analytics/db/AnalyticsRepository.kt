@@ -12,21 +12,15 @@ class AnalyticsRepository(private val ctx: Context) {
 
 
     suspend fun logEvent(
-        eventType: String, parameter: Map<String, Any?>): Long = dao.insertAnalytics(
+        eventType: String, parameter: Map<String, Any?>,lastSyncDate:String?): Long = dao.insertAnalytics(
         Analytics(
             userId = UserDetail.userId,
+            role = UserDetail.role,
             eventType = eventType,
             parameter = CommonUtils.mapToString(parameter),
+            lastSyncDate = lastSyncDate
         )
     )
-
-
-    suspend fun getParameterByRefIdAndEvent(
-        eventType: String, referenceId: String
-    ): Map<String, Any> = dao.getParameterByRefIdAndEvent(referenceId, eventType)?.let {
-        CommonUtils.stringToMap(it)
-    } ?: mapOf()
-
 
     suspend fun getAllAnalytics(): List<Analytics> = dao.getAllAnalytics()
 
@@ -34,7 +28,8 @@ class AnalyticsRepository(private val ctx: Context) {
         UserJourneyAnalytics(
             userId=UserDetail.userId,
             sessionId = UserDetail.referenceId,
-            userJourney = userJourney
+            userJourney = userJourney,
+            startTime = UserDetail.startDateTime
         )
     )
     suspend fun getUserJourneyAnalytics(): List<UserJourneyAnalytics> = dao.getUserJourney()

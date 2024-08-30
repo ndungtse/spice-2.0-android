@@ -70,7 +70,7 @@ class HouseholdActivity : BaseActivity(), OnDialogDismissListener {
             if (isPositive) {
                 householdRegistrationViewModel.setAnalyticsData(
                     UserDetail.startDateTime,
-                    eventName = AnalyticsDefinedParams.HouseholdCreation,
+                    eventName = householdRegistrationViewModel.eventName,
                     exitReason = AnalyticsDefinedParams.BackButtonClicked,
                     isCompleted = false
                 )
@@ -96,7 +96,7 @@ class HouseholdActivity : BaseActivity(), OnDialogDismissListener {
     }
 
 
-    fun loadFragment(status: Int) {
+    private fun loadFragment(status: Int) {
         when (status) {
             1 -> {
                 setTitle(getString(R.string.household_registration))
@@ -107,9 +107,17 @@ class HouseholdActivity : BaseActivity(), OnDialogDismissListener {
             }
 
             2 -> {
+                val arguments = Bundle().apply {
+                    putBoolean(AnalyticsDefinedParams.AddNewMember, householdRegistrationViewModel.addNewMember)
+                    putString(
+                        AnalyticsDefinedParams.StartDate,
+                        UserDetail.startDateTime
+                    )
+                }
                 setTitle(getString(R.string.member_registration))
                 replaceFragmentInId<MemberRegistrationFragment>(
                     binding.fragmentContainer.id,
+                    bundle = arguments,
                     tag = MemberRegistrationFragment::class.simpleName
                 )
             }

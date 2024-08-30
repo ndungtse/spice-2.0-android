@@ -9,5 +9,12 @@ data class UserJourneyAnalytics(
     var id: Long = 0,
     val userId:String,
     val sessionId: String,
-    val userJourney: String
+    val userJourney: String,
+    val startTime: String? = null
+)
+
+
+data class ScreenDetails(
+    val userJourney: String,
+    val startTime: String
 )

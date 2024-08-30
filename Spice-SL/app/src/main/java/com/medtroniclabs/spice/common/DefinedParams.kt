@@ -137,4 +137,5 @@ object DefinedParams {
     const val KeyInitial = "KeyInitial"
 
     const val LastSyncDate = "lastSyncDate"
+    const val FollowUpStartTiming= "followUpStartTiming"
 }

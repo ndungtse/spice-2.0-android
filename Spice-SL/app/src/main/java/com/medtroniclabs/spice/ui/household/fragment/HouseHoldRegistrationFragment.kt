@@ -12,6 +12,8 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams.HouseholdCreation
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams.HouseholdEdit
 import com.medtroniclabs.spice.app.analytics.utils.UserDetail
 import com.medtroniclabs.spice.common.CommonUtils.getBooleanAsString
 import com.medtroniclabs.spice.common.EntityMapper.getResultSpinnerMapList
@@ -218,6 +220,11 @@ class HouseHoldRegistrationFragment : Fragment(), View.OnClickListener, FormEven
     private fun initializeFormGenerator() {
         if (householdRegistrationViewModel.householdId != -1L) {
             binding.btnNext.text = getString(R.string.submit)
+            householdRegistrationViewModel.eventName = HouseholdEdit
+            householdRegistrationViewModel.setUserJourney(HouseholdEdit)
+        } else {
+            householdRegistrationViewModel.eventName = HouseholdCreation
+            householdRegistrationViewModel.setUserJourney(HouseholdCreation)
         }
         formGenerator = FormGenerator(
             requireContext(), binding.llForm, null, this, binding.scrollView,
@@ -242,7 +249,7 @@ class HouseHoldRegistrationFragment : Fragment(), View.OnClickListener, FormEven
             R.id.btnCancel -> {
                 householdRegistrationViewModel.setAnalyticsData(
                     UserDetail.startDateTime,
-                    eventName = AnalyticsDefinedParams.HouseholdCreation,
+                    eventName = if (householdRegistrationViewModel.householdId != -1L) HouseholdEdit else HouseholdCreation,
                     exitReason = AnalyticsDefinedParams.CancelButtonClicked,
                     isCompleted = false
                 )
@@ -279,9 +286,15 @@ class HouseHoldRegistrationFragment : Fragment(), View.OnClickListener, FormEven
     override fun onFormSubmit(resultMap: HashMap<String, Any>?, serverData: List<FormLayout?>?) {
         resultMap?.let { map ->
             if (householdRegistrationViewModel.householdId != -1L) {
+                householdRegistrationViewModel.setAnalyticsData(
+                    UserDetail.startDateTime,
+                    eventName = HouseholdEdit,
+                    isCompleted = true
+                )
                 householdRegistrationViewModel.updateHousehold(map)
-            } else
+            } else {
                 householdRegistrationViewModel.registerHousehold(map)
+            }
         }
     }
 

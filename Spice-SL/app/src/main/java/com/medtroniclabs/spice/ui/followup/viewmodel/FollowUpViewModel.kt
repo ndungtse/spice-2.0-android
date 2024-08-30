@@ -4,7 +4,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
-import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.FollowUpPatientModel
@@ -156,7 +155,8 @@ class FollowUpViewModel @Inject constructor(
                     unSuccessfulReason
                 )
                 setAnalyticsFollowUpData(it.id,it.patientId,callStatus,patientStatus,
-                    unSuccessfulReason,)
+                    unSuccessfulReason,SecuredPreference.getString(DefinedParams.FollowUpStartTiming)
+                )
             }
         }
     }

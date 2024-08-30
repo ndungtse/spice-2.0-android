@@ -13,6 +13,7 @@ import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.repo.MedicalReviewSummaryRepository
+import com.medtroniclabs.spice.ui.BaseViewModel
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.repo.MotherNeonateANCRepo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
@@ -23,8 +24,8 @@ import javax.inject.Inject
 class MotherNeonateANCViewModel @Inject constructor(
     private val motherNeonateANCRepo: MotherNeonateANCRepo,
     private val summaryRepository: MedicalReviewSummaryRepository,
-    @IoDispatcher private val dispatcherIO: CoroutineDispatcher
-) : ViewModel() {
+    @IoDispatcher override var dispatcherIO: CoroutineDispatcher,
+) : BaseViewModel(dispatcherIO) {
     val motherNeonateMetaResponse = MutableLiveData<Resource<Boolean>>()
     val motherNeonateCreateResponse = MutableLiveData<Resource<PatientEncounterResponse>>()
     var motherNeonateAncRequest: MotherNeonateAncRequest = MotherNeonateAncRequest()

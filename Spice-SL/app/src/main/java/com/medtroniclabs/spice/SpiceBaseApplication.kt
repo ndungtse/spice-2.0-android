@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
 import com.medtroniclabs.spice.app.analytics.db.AnalyticsRepository
+import com.medtroniclabs.spice.app.analytics.db.ScreenDetails
 import com.medtroniclabs.spice.app.analytics.db.UserJourneyAnalytics
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.app.analytics.utils.CommonUtils
@@ -64,6 +65,7 @@ class SpiceBaseApplication : Application(), Configuration.Provider {
             getUserJourneyList()
         } ?: run {
             UserDetail.referenceId = UUID.randomUUID().toString()
+//            UserDetail.role = SecuredPreference.getRole().toString()
             SecuredPreference.putString(AnalyticsDefinedParams.SessionId, UserDetail.referenceId)
         }
     }
@@ -74,6 +76,7 @@ class SpiceBaseApplication : Application(), Configuration.Provider {
             val list = analyticsRepository.getUserJourneyAnalytics()
             val userAnalytics = groupingBySessionId(list)
             UserDetail.referenceId = UUID.randomUUID().toString()
+            UserDetail.role = SecuredPreference.getRole().toString()
             SecuredPreference.putString(
                 AnalyticsDefinedParams.SessionId,
                 UserDetail.referenceId
@@ -91,15 +94,19 @@ class SpiceBaseApplication : Application(), Configuration.Provider {
         }
     }
 
-    private fun groupingBySessionId(list: List<UserJourneyAnalytics>): Pair<String, MutableMap<String, List<String>>>? {
+    private fun groupingBySessionId(list: List<UserJourneyAnalytics>): Pair<String, MutableMap<String, List<ScreenDetails>>>? {
         return when {
             list.isNotEmpty() -> {
-                Pair(list[0].userId,list.groupBy(UserJourneyAnalytics::sessionId)
+                Pair(list[0].userId, list.groupBy(UserJourneyAnalytics::sessionId)
                     .mapValues { (_, analyticsList) ->
-                        analyticsList.map { it.userJourney }
-                    }.toMutableMap())}
+                        analyticsList.map { ScreenDetails(it.userJourney, it.startTime ?: "") }
+                    }.toMutableMap()
+                )
+            }
 
-            else -> {return null}
+            else -> {
+                return null
+            }
         }
     }
 

@@ -9,9 +9,11 @@ data class Analytics(
     @PrimaryKey(autoGenerate = true)
     var id: Long = 0,
     val userId: String,
+    val role:String,
     val eventType: String,
     val parameter: String,
     val referenceId: String? = null,
+    val lastSyncDate:String? = null,
     val createdAt: String = getCurrentDateTimeInUTC(),
     var updateAt: String = getCurrentDateTimeInUTC()
 )

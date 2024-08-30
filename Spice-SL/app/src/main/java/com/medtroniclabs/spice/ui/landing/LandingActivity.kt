@@ -18,29 +18,27 @@ import androidx.work.Constraints
 import androidx.work.Data
 import androidx.work.NetworkType
 import androidx.work.PeriodicWorkRequest
-import androidx.work.WorkManager
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import com.google.android.material.navigation.NavigationView
 import com.medtroniclabs.spice.BuildConfig
 import com.medtroniclabs.spice.R
-import com.medtroniclabs.spice.appextensions.cancelAllWorker
-import com.medtroniclabs.spice.appextensions.gone
-import com.medtroniclabs.spice.appextensions.isVisible
-import com.medtroniclabs.spice.appextensions.scheduleSyncWorker
-import com.medtroniclabs.spice.appextensions.syncWorkerName
-import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.app.analytics.upload.UploadWorker
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.app.analytics.utils.CommonUtils.getAppVersion
 import com.medtroniclabs.spice.app.analytics.utils.CommonUtils.getFileUploadTime
 import com.medtroniclabs.spice.app.analytics.utils.CommonUtils.updateUserIdIfEmpty
 import com.medtroniclabs.spice.app.analytics.utils.UserDetail
-import com.medtroniclabs.spice.appextensions.convertToLocalDateTime
+import com.medtroniclabs.spice.appextensions.cancelAllWorker
+import com.medtroniclabs.spice.appextensions.gone
+import com.medtroniclabs.spice.appextensions.isVisible
+import com.medtroniclabs.spice.appextensions.scheduleSyncWorker
+import com.medtroniclabs.spice.appextensions.syncWorkerName
+import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
+import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.REFRESH_FRAGMENT
 import com.medtroniclabs.spice.common.RoleConstant
-import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.databinding.ActivityLandingBinding
 import com.medtroniclabs.spice.network.NetworkConstants
@@ -353,16 +351,7 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
                     )
                 )
             )
-            putString(
-                DefinedParams.LastSyncDate,
-                lastSyncDate()
-            )
         }.build()
     }
 
-    private fun lastSyncDate(): String {
-        val longSyncedAt =
-            SecuredPreference.getLong(SecuredPreference.EnvironmentKey.LAST_SYNCED_AT.name)
-        return if (longSyncedAt != 0L) longSyncedAt.convertToLocalDateTime() else "--"
-    }
 }

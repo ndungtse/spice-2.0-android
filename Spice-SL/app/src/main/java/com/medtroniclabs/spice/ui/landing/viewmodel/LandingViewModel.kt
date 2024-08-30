@@ -22,8 +22,8 @@ import javax.inject.Inject
 @HiltViewModel
 class LandingViewModel @Inject constructor(
     private val metaRepository: MetaRepository,
-    @IoDispatcher private val dispatcherIO: CoroutineDispatcher
-) : ViewModel() {
+    @IoDispatcher override var dispatcherIO: CoroutineDispatcher
+) : BaseViewModel(dispatcherIO) {
 
     var villageListResponse = MutableLiveData<Resource<List<VillageEntity>>>()
     val menuListLiveData = MutableLiveData<Resource<List<MenuEntity>>>()

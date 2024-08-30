@@ -5,7 +5,6 @@ import com.medtroniclabs.spice.app.analytics.utils.UserDetail
 
 data class AnalyticsData(
     val deviceDetails: DeviceDetail = DeviceDetail(),
-//    val userAnalytics: Map<String, MutableMap<String, MutableList<JsonElement>>>,
     val userAnalytics: List<AnalyticsDetail>
 
 )
@@ -13,7 +12,9 @@ data class AnalyticsData(
 data class AnalyticsDetail(
     val id: String,
     val lastSyncDate: String,
-    val analytics: MutableMap<String, MutableList<JsonElement>>
+    val role:String,
+    val analytics: MutableMap<String, MutableList<JsonElement>>,
+    val sessionTracking:MutableList<JsonElement>
 )
 
 data class DeviceDetail(
