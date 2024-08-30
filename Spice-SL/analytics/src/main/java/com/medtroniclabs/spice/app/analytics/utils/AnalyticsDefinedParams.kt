@@ -45,4 +45,5 @@ object AnalyticsDefinedParams {
     const val UnSuccessFullReason="unSuccessFullReason"
     const val PatientId="patientID"
     const val CreatedAt="createdAt"
+    const val LastSyncDate="lastSyncDate"
 }

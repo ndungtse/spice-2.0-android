@@ -73,7 +73,7 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
         viewModel.getNearestHealthFacility()
         attachObservers()
         setListener()
-        viewModel.setUserJourney(AnalyticsDefinedParams.RMNCHAssessment)
+        UserDetail.startDateTime = com.medtroniclabs.spice.app.analytics.utils.CommonUtils.getCurrentDateTimeInLocalTime()
     }
 
     private fun setListener() {
@@ -89,7 +89,7 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
                         formGenerator.populateViews(data.formLayout)
                         viewModel.setAnalyticsData(
                             UserDetail.startDateTime,
-                            eventType = AnalyticsDefinedParams.RMNCHAssessment,
+                            eventType = viewModel.workflowName.plus(AnalyticsDefinedParams.RMNCHAssessment),
                             eventName = AnalyticsDefinedParams.AssessmentCreation
                         )
                     }

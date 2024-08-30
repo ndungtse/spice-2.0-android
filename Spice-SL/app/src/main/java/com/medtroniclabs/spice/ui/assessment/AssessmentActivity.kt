@@ -59,12 +59,10 @@ class AssessmentActivity : BaseActivity() {
             }
 
         )
-        UserDetail.startDateTime = CommonUtils.getCurrentDateTimeInLocalTime()
         getIntentValue()
         loadFragment()
         attachObservers()
         getCurrentLocation()
-        viewModel.setUserJourney(getString(R.string.assessment))
     }
 
     private fun getCurrentLocation() {
@@ -268,6 +266,8 @@ class AssessmentActivity : BaseActivity() {
             viewModel.followUpId = followUpId
         else
             viewModel.followUpId = null
+
+        viewModel.setUserJourney(viewModel.workflowName?.plus(getString(R.string.assessment)) ?:getString(R.string.assessment))
     }
 
     fun replaceAssessmentRMNCHNeonateFragment() {

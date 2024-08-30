@@ -36,6 +36,7 @@ import com.medtroniclabs.spice.app.analytics.utils.CommonUtils.getAppVersion
 import com.medtroniclabs.spice.app.analytics.utils.CommonUtils.getFileUploadTime
 import com.medtroniclabs.spice.app.analytics.utils.CommonUtils.updateUserIdIfEmpty
 import com.medtroniclabs.spice.app.analytics.utils.UserDetail
+import com.medtroniclabs.spice.appextensions.convertToLocalDateTime
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DefinedParams.REFRESH_FRAGMENT
 import com.medtroniclabs.spice.common.RoleConstant
@@ -352,6 +353,16 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
                     )
                 )
             )
+            putString(
+                DefinedParams.LastSyncDate,
+                lastSyncDate()
+            )
         }.build()
+    }
+
+    private fun lastSyncDate(): String {
+        val longSyncedAt =
+            SecuredPreference.getLong(SecuredPreference.EnvironmentKey.LAST_SYNCED_AT.name)
+        return if (longSyncedAt != 0L) longSyncedAt.convertToLocalDateTime() else "--"
     }
 }

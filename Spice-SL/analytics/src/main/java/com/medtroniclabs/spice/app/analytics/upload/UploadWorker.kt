@@ -8,6 +8,7 @@ import com.google.gson.JsonParser
 import com.medtroniclabs.spice.app.analytics.db.Analytics
 import com.medtroniclabs.spice.app.analytics.db.AnalyticsRepository
 import com.medtroniclabs.spice.app.analytics.model.AnalyticsData
+import com.medtroniclabs.spice.app.analytics.model.AnalyticsDetail
 import com.medtroniclabs.spice.app.analytics.network.ApiService
 import com.medtroniclabs.spice.app.analytics.network.RetrofitHelper
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
@@ -19,25 +20,26 @@ import okhttp3.RequestBody.Companion.asRequestBody
 import java.io.File
 
 class UploadWorker(context: Context, params: WorkerParameters) : CoroutineWorker(context, params) {
-    private val repository: AnalyticsRepository
+    private val repository: AnalyticsRepository = AnalyticsRepository(context)
 
     private var stopIteration = false
-
-    init {
-        repository = AnalyticsRepository(context)
-    }
 
     override suspend fun doWork(): Result {
         val headers = inputData.keyValueMap
         val baseUrl = inputData.getString(AnalyticsDefinedParams.BaseUrl)
-        generateAnalyticsReport(baseUrl, headers[AnalyticsDefinedParams.Authorization].toString())
+        val lastSyncDate = inputData.getString(AnalyticsDefinedParams.LastSyncDate)
+        generateAnalyticsReport(
+            baseUrl,
+            headers[AnalyticsDefinedParams.Authorization].toString(),
+            lastSyncDate ?: "--"
+        )
         return Result.success()
     }
 
-    // Grouping based on the UserId and EventType
-    private suspend fun getAllAnalyticsData(): AnalyticsData {
+    private suspend fun getAllAnalyticsData(lastSyncDate: String): AnalyticsData {
         val list = repository.getAllAnalytics()
-        val userAnalytics = list.groupBy(Analytics::userId)
+        // Group by userId and then by eventType, converting parameter to Json by UserID
+        val userAnalyticsMap = list.groupBy(Analytics::userId)
             .mapValues { (_, analyticsList) ->
                 analyticsList.groupBy(Analytics::eventType)
                     .mapValues { (_, eventList) ->
@@ -45,13 +47,22 @@ class UploadWorker(context: Context, params: WorkerParameters) : CoroutineWorker
                     }.toMutableMap()
             }
 
-        return AnalyticsData(userAnalytics = userAnalytics)
+        // Convert the map to a list of AnalyticsDetail
+        val userAnalyticsList = userAnalyticsMap.map { (userId, analyticsMap) ->
+            AnalyticsDetail(id = userId, lastSyncDate, analytics = analyticsMap)
+        }
+
+        return AnalyticsData(userAnalytics = userAnalyticsList)
     }
 
 
     // Generating & Saving the json file of analytics data in local
-    private suspend fun generateAnalyticsReport(baseUrl: String?, headers: Any?) {
-        val analyticsData = getAllAnalyticsData()
+    private suspend fun generateAnalyticsReport(
+        baseUrl: String?,
+        headers: Any?,
+        lastSyncDate: String
+    ) {
+        val analyticsData = getAllAnalyticsData(lastSyncDate)
 
         try {
             applicationContext.openFileOutput(
@@ -93,7 +104,7 @@ class UploadWorker(context: Context, params: WorkerParameters) : CoroutineWorker
                 apiCall = {
                     val response = apiService.uploadFile(filePart)
                     if (response.isSuccessful) {
-                        deleteUploadedFiles(file.name)
+//                        deleteUploadedFiles(file.name)
                         true
                     } else {
                         false

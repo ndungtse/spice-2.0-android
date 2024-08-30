@@ -64,7 +64,6 @@ class AssessmentRMNCHNeonateFragment : BaseFragment(), View.OnClickListener,
         loadJson()
         attachObservers()
         setListener()
-        viewModel.setUserJourney(AnalyticsDefinedParams.RMNCHNeonateAssessment)
     }
 
     private fun setListener() {

@@ -5,12 +5,14 @@ import androidx.lifecycle.viewModelScope
 import com.medtroniclabs.spice.app.analytics.db.AnalyticsRepository
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.app.analytics.utils.CommonUtils
-import com.medtroniclabs.spice.app.analytics.utils.UserDetail.eventName
+import com.medtroniclabs.spice.app.analytics.utils.UserDetail
+import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.offlinesync.model.FollowUpCallStatus
 import com.medtroniclabs.spice.di.IoDispatcher
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 
@@ -24,7 +26,10 @@ open class BaseViewModel @Inject constructor(
 
 
     fun setUserJourney(userJourney: String) =
-        viewModelScope.launch(dispatcherIO) { analyticsRepository.insertUserJourney(userJourney) }
+        viewModelScope.launch(dispatcherIO) {
+            setUserId()
+            analyticsRepository.insertUserJourney(userJourney)
+        }
 
     fun setAnalyticsData(
         startDate: String,
@@ -34,6 +39,8 @@ open class BaseViewModel @Inject constructor(
         isCompleted: Boolean = true
     ) {
         viewModelScope.launch(dispatcherIO) {
+            setUserId()
+            Timber.d("userId: ${UserDetail.userId}")
             val parameter = CommonUtils.createEventParameter(
                 startDate,
                 eventType = eventType,
@@ -51,6 +58,7 @@ open class BaseViewModel @Inject constructor(
         patientStatus: String?,
         unSuccessfulReason: String?
     ) {
+        setUserId()
         val parameter = CommonUtils.createFollowUpEventParameter(
             id,
             patientId,
@@ -60,5 +68,9 @@ open class BaseViewModel @Inject constructor(
         )
         analyticsRepository.logEvent(AnalyticsDefinedParams.MyPatient, parameter)
 
+    }
+
+    private fun setUserId() {
+        UserDetail.userId = SecuredPreference.getUserId().toString()
     }
 }

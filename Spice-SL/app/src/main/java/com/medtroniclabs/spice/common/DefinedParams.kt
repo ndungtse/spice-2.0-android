@@ -135,4 +135,6 @@ object DefinedParams {
 
     const val KeySignature = "KeySignature"
     const val KeyInitial = "KeyInitial"
+
+    const val LastSyncDate = "lastSyncDate"
 }
