@@ -238,7 +238,7 @@ class PhysicalExaminationFragment : BaseFragment() {
         viewModel.breastFeeding=null
         viewModel.exclusiveBreastFeeding=null
         viewModel.congenitalDefect=null
-        viewModel.cordExaminationMap= hashMapOf()
+        viewModel.cordExaminationMap.clear()
         resetSelectionViews(DefinedParams.CongenitalDetect)
         resetSelectionViews(DefinedParams.CordExamination)
         resetSelectionViews(DefinedParams.ExclusiveBreastCondition)

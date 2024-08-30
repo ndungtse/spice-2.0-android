@@ -108,47 +108,59 @@ class BioDataFragment : BaseFragment() {
     }
 
     private fun showPncRelatedInformation(entity: MemberClinicalEntity?, visitCount: Long) {
-        entity?.apply {
-
-            if (visitCount == 1L) {
-                binding.llPatientInfo.addView(
-                    AssessmentCommonUtils.addViewSummaryLayout(
-                        title = getString(R.string.delivery_at),
-                        value = getString(R.string.home_title),
-                        context = binding.llPatientInfo.context
-                    )
-                )
-            } else {
-                isDeliveryAtHome?.let {
-                    val value = if (it) getString(R.string.home_title) else getString(R.string.phu)
+        if (entity != null) {
+            entity.apply {
+                if (visitCount == 1L) {
                     binding.llPatientInfo.addView(
                         AssessmentCommonUtils.addViewSummaryLayout(
                             title = getString(R.string.delivery_at),
-                            value = value,
+                            value = getString(R.string.home_title),
+                            context = binding.llPatientInfo.context
+                        )
+                    )
+                } else {
+                    isDeliveryAtHome?.let {
+                        val value =
+                            if (it) getString(R.string.home_title) else getString(R.string.phu)
+                        binding.llPatientInfo.addView(
+                            AssessmentCommonUtils.addViewSummaryLayout(
+                                title = getString(R.string.delivery_at),
+                                value = value,
+                                context = binding.llPatientInfo.context
+                            )
+                        )
+                    }
+                }
+
+                clinicalDate?.let {
+                    binding.llPatientInfo.addView(
+                        AssessmentCommonUtils.addViewSummaryLayout(
+                            title = getString(R.string.date_of_delivery),
+                            value = DateUtils.convertDateFormat(
+                                clinicalDate,
+                                DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+                                DATE_ddMMyyyy
+                            ),
+                            context = binding.llPatientInfo.context
+                        )
+                    )
+                }
+                if (numberOfNeonate != null) {
+                    binding.llPatientInfo.addView(
+                        AssessmentCommonUtils.addViewSummaryLayout(
+                            title = getString(R.string.no_of_neonates),
+                            value = DecimalFormat("##.#").format(numberOfNeonate),
                             context = binding.llPatientInfo.context
                         )
                     )
                 }
             }
-
-            clinicalDate?.let {
+        } else {
+            if (visitCount == 1L) {
                 binding.llPatientInfo.addView(
                     AssessmentCommonUtils.addViewSummaryLayout(
-                        title = getString(R.string.date_of_delivery),
-                        value = DateUtils.convertDateFormat(
-                            clinicalDate,
-                            DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-                            DATE_ddMMyyyy
-                        ),
-                        context = binding.llPatientInfo.context
-                    )
-                )
-            }
-            if (numberOfNeonate != null) {
-                binding.llPatientInfo.addView(
-                    AssessmentCommonUtils.addViewSummaryLayout(
-                        title = getString(R.string.no_of_neonates),
-                        value = DecimalFormat("##.#").format(numberOfNeonate),
+                        title = getString(R.string.delivery_at),
+                        value = getString(R.string.home_title),
                         context = binding.llPatientInfo.context
                     )
                 )

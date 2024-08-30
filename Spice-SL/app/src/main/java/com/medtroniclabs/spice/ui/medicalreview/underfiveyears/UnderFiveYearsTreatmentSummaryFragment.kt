@@ -100,11 +100,7 @@ class UnderFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
             for (item in it) {
                 statusList.add(
                     hashMapOf<String, Any>(
-                        DefinedParams.NAME to CommonUtils.composeLabelName(
-                            item.name,
-                            patientDetailViewModel.patientDetailsLiveData.value?.data?.pregnancyStatus,
-                            requireContext()
-                        ),
+                        DefinedParams.NAME to item.name,
                         DefinedParams.id to item.id.toString(),
                         DefinedParams.value to (item.value ?: item.name)
                     )
