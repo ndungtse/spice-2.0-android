@@ -1,5 +1,6 @@
 package com.medtroniclabs.spice.db.dao
 
+import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -52,5 +53,7 @@ interface AssessmentDAO {
     @Query("UPDATE Assessment SET sync_status =:syncStatus, updated_at =:updatedAt WHERE id IN (:ids)")
     suspend fun updateInProgress(ids: List<String>, syncStatus: String, updatedAt: Long = System.currentTimeMillis())
 
+    @Query("SELECT * FROM SymptomEntity WHERE LOWER(type) = LOWER(:type) ORDER BY display_order")
+    fun getSymptomListByTypeForNCD(type: String): LiveData<List<SignsAndSymptomsEntity>>
 
 }

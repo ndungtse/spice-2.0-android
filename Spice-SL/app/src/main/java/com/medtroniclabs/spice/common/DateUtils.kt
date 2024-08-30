@@ -719,4 +719,9 @@ object DateUtils {
         calendar.set(Calendar.MILLISECOND, 0)
         return calendar.timeInMillis
     }
+
+    fun getCurrentYearAsDouble(): Double {
+        return Calendar.getInstance().get(Calendar.YEAR).toDouble()
+    }
+
 }

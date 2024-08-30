@@ -127,6 +127,16 @@ fun DialogFragment.setDialogWidthAndHeightAsWrapPercent(widthPercent: Int) {
     dialog?.window?.setLayout(percentWidth.toInt(), WindowManager.LayoutParams.WRAP_CONTENT)
 }
 
+fun DialogFragment.setDialogPercent(width: Int, height: Int = 80) {
+    val widthPercentage = width.toFloat() / 100
+    val heightPercentage = height.toFloat() / 100
+    val dm = Resources.getSystem().displayMetrics
+    val rect = dm.run { Rect(0, 0, widthPixels, heightPixels) }
+    val percentWidth = rect.width() * widthPercentage
+    val percentHeight = rect.height() * heightPercentage
+    dialog?.window?.setLayout(percentWidth.toInt(), percentHeight.toInt())
+}
+
 fun TextView.setExpandableText(
     fullText: String,
     maxLength: Int = 100,

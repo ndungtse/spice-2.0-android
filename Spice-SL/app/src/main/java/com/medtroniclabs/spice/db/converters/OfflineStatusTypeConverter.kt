@@ -7,6 +7,7 @@ import com.medtroniclabs.spice.data.DiseaseConditionItems
 import com.medtroniclabs.spice.data.HealthFacility
 import com.medtroniclabs.spice.data.offlinesync.model.FollowUpCallStatus
 import com.medtroniclabs.spice.data.offlinesync.utils.OfflineSyncStatus
+import com.medtroniclabs.spice.db.entity.LifeStyleAnswer
 import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
 import java.lang.reflect.Type
 
@@ -74,6 +75,18 @@ class OfflineStatusTypeConverter {
     @TypeConverter
     fun fromStringToHealthFacilityList(value: String): ArrayList<HealthFacility> {
         val listType = object : TypeToken<ArrayList<HealthFacility?>?>() {}.type
+        return Gson().fromJson(value, listType)
+    }
+
+    @TypeConverter
+    fun fromLifestyleAnswersList(list: ArrayList<LifeStyleAnswer>): String {
+        val gson = Gson()
+        return gson.toJson(list)
+    }
+
+    @TypeConverter
+    fun toLifestyleAnswersList(value: String): ArrayList<LifeStyleAnswer> {
+        val listType = object : TypeToken<ArrayList<LifeStyleAnswer?>?>() {}.type
         return Gson().fromJson(value, listType)
     }
 }

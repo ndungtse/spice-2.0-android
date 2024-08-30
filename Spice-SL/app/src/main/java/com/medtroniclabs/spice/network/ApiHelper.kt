@@ -78,6 +78,7 @@ import com.medtroniclabs.spice.data.model.LabourDeliverySummaryDetails
 import com.medtroniclabs.spice.data.model.RequestChangePassword
 import com.medtroniclabs.spice.data.model.ResponseChangePassword
 import com.medtroniclabs.spice.data.offlinesync.model.ResponseSignatureUpload
+import com.medtroniclabs.spice.model.NcdMRStaticDataModel
 import com.medtroniclabs.spice.model.medicalreview.SearchLabTestResponse
 import com.medtroniclabs.spice.model.medicalreview.SearchRequestLabTest
 import com.medtroniclabs.spice.model.medicalreview.SummaryDetails
@@ -170,4 +171,5 @@ interface ApiHelper {
     suspend fun ncdPatientSearch(request: PatientsDataModel): APIResponse<SearchAndListResponse>
     suspend fun getNcdPatient(request: PatientDetailRequest): Response<APIResponse<PatientListRespModel>>
     suspend fun createScreening(createRequest: JsonObject): Response<ScreeningPatientResponse>
+    suspend fun getNcdMRStaticData(): Response<APIResponse<NcdMRStaticDataModel>>
 }

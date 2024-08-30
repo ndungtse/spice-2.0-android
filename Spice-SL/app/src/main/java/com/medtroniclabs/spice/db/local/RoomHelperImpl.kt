@@ -31,6 +31,7 @@ import com.medtroniclabs.spice.db.dao.LabourDeliveryDAO
 import com.medtroniclabs.spice.db.dao.LinkHouseholdMemberDao
 import com.medtroniclabs.spice.db.dao.MemberDAO
 import com.medtroniclabs.spice.db.dao.MetaDataDAO
+import com.medtroniclabs.spice.db.dao.NcdMedicalReviewDao
 import com.medtroniclabs.spice.db.dao.PregnancyDetailDao
 import com.medtroniclabs.spice.db.dao.RiskFactorDAO
 import com.medtroniclabs.spice.db.dao.ScreeningDAO
@@ -40,8 +41,12 @@ import com.medtroniclabs.spice.db.entity.ChiefDomEntity
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowConditionEntity
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowEntity
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowEntityWithSubmodule
+import com.medtroniclabs.spice.db.entity.ComorbidityEntity
+import com.medtroniclabs.spice.db.entity.ComplaintsEntity
+import com.medtroniclabs.spice.db.entity.ComplicationsEntity
 import com.medtroniclabs.spice.db.entity.ConsentEntity
 import com.medtroniclabs.spice.db.entity.ConsentForm
+import com.medtroniclabs.spice.db.entity.CurrentMedicationEntity
 import com.medtroniclabs.spice.db.entity.FollowUp
 import com.medtroniclabs.spice.db.entity.FollowUpCall
 import com.medtroniclabs.spice.db.entity.FormEntity
@@ -58,7 +63,11 @@ import com.medtroniclabs.spice.db.entity.PregnancyDetail
 import com.medtroniclabs.spice.db.entity.ScreeningEntity
 import com.medtroniclabs.spice.db.entity.SignsAndSymptomsEntity
 import com.medtroniclabs.spice.db.entity.DistrictEntity
+import com.medtroniclabs.spice.db.entity.LifestyleEntity
+import com.medtroniclabs.spice.db.entity.PhysicalExaminationEntity
 import com.medtroniclabs.spice.db.entity.RiskFactorEntity
+import com.medtroniclabs.spice.db.entity.TreatmentPlanEntity
+import com.medtroniclabs.spice.db.entity.TreatmentPlanFrequencyEntity
 import com.medtroniclabs.spice.db.entity.UserProfileEntity
 import com.medtroniclabs.spice.db.entity.VillageEntity
 import com.medtroniclabs.spice.db.response.HouseHoldEntityWithMemberCount
@@ -91,6 +100,7 @@ class RoomHelperImpl @Inject constructor(
     private val callHistoryDao: CallHistoryDao
     private val screeningDAO: ScreeningDAO,
     private val riskFactorDAO: RiskFactorDAO
+    private val ncdMedicalReviewDao: NcdMedicalReviewDao
 ) : RoomHelper {
     override suspend fun saveHouseHoldEntry(householdEntity: HouseholdEntity): Long {
         return householdDAO.insertHouseHold(householdEntity)
@@ -894,5 +904,73 @@ class RoomHelperImpl @Inject constructor(
 
     override suspend fun deleteRiskFactor() {
         return riskFactorDAO.deleteRiskFactor()
+    }
+
+    override fun getSymptomListByTypeForNCD(type: String): LiveData<List<SignsAndSymptomsEntity>> {
+        return assessmentDAO.getSymptomListByTypeForNCD(type)
+    }
+
+    override suspend fun deleteComorbidities() {
+        return ncdMedicalReviewDao.deleteComorbidities()
+    }
+
+    override suspend fun insertComorbidities(items: List<ComorbidityEntity>) {
+        return ncdMedicalReviewDao.insertComorbidities(items)
+    }
+
+    override suspend fun deleteComplications() {
+        return ncdMedicalReviewDao.deleteComplications()
+    }
+
+    override suspend fun insertComplications(items: List<ComplicationsEntity>) {
+        return ncdMedicalReviewDao.insertComplications(items)
+    }
+
+    override suspend fun deleteLifestyle() {
+        return ncdMedicalReviewDao.deleteLifestyle()
+    }
+
+    override suspend fun insertLifestyle(items: List<LifestyleEntity>) {
+        return ncdMedicalReviewDao.insertLifestyle(items)
+    }
+
+    override suspend fun deleteComplaints() {
+        return ncdMedicalReviewDao.deleteComplaints()
+    }
+
+    override suspend fun insertComplaints(items: List<ComplaintsEntity>) {
+        return ncdMedicalReviewDao.insertComplaints(items)
+    }
+
+    override suspend fun deletePhysicalExamination() {
+        return ncdMedicalReviewDao.deletePhysicalExamination()
+    }
+
+    override suspend fun insertPhysicalExamination(items: List<PhysicalExaminationEntity>) {
+        return ncdMedicalReviewDao.insertPhysicalExamination(items)
+    }
+
+    override suspend fun deleteCurrentMedications() {
+        return ncdMedicalReviewDao.deleteCurrentMedications()
+    }
+
+    override suspend fun insertCurrentMedications(items: List<CurrentMedicationEntity>) {
+        return ncdMedicalReviewDao.insertCurrentMedications(items)
+    }
+
+    override suspend fun deleteTreatmentPlan() {
+        return ncdMedicalReviewDao.deleteTreatmentPlan()
+    }
+
+    override suspend fun insertTreatmentPlan(items: List<TreatmentPlanEntity>) {
+        return ncdMedicalReviewDao.insertTreatmentPlan(items)
+    }
+
+    override suspend fun deleteTreatmentPlanFrequencies() {
+        return ncdMedicalReviewDao.deleteTreatmentPlanFrequencies()
+    }
+
+    override suspend fun insertTreatmentPlanFrequencies(items: List<TreatmentPlanFrequencyEntity>) {
+        return ncdMedicalReviewDao.insertTreatmentPlanFrequencies(items)
     }
 }

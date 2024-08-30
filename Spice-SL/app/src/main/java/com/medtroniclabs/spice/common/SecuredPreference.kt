@@ -48,7 +48,8 @@ object SecuredPreference {
         REMAINING_ATTEMPTS_COUNT,
         CURRENT_LATITUDE,
         CURRENT_LONGITUDE,
-        MEASUREMENT_TYPE_KEY
+        MEASUREMENT_TYPE_KEY,
+        IS_NCD_MEDICAL_REVIEW_LOADED
     }
 
 
@@ -491,6 +492,7 @@ object SecuredPreference {
         remove(EnvironmentKey.IS_UNDER_TWO_MONTHS_LOADED.name)
         remove(EnvironmentKey.IS_LABOUR_DELIVERY_LOADED.name)
         remove(EnvironmentKey.IS_UNDER_FIVE_YEARS_LOADED.name)
+        remove(EnvironmentKey.IS_NCD_MEDICAL_REVIEW_LOADED.name)
         return true
     }
 

@@ -1367,4 +1367,8 @@ object CommonUtils {
             else -> false
         }
     }
+
+    fun isSL(context: Context): Boolean {
+        return context.packageName.contains(".sl", true)
+    }
 }

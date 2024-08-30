@@ -78,6 +78,7 @@ import com.medtroniclabs.spice.data.model.LabourDeliverySummaryDetails
 import com.medtroniclabs.spice.data.model.RequestChangePassword
 import com.medtroniclabs.spice.data.model.ResponseChangePassword
 import com.medtroniclabs.spice.data.offlinesync.model.ResponseSignatureUpload
+import com.medtroniclabs.spice.model.NcdMRStaticDataModel
 import com.medtroniclabs.spice.model.medicalreview.SearchLabTestResponse
 import com.medtroniclabs.spice.model.medicalreview.SearchRequestLabTest
 import com.medtroniclabs.spice.model.medicalreview.SummaryDetails
@@ -366,5 +367,9 @@ class ApiHelperImpl @Inject constructor(private val apiService: ApiService) : Ap
 
     override suspend fun createScreening(createRequest: JsonObject): Response<ScreeningPatientResponse> {
         return apiService.createScreening(createRequest)
+    }
+
+    override suspend fun getNcdMRStaticData(): Response<APIResponse<NcdMRStaticDataModel>> {
+        return apiService.getNcdMRStaticData()
     }
 }

@@ -758,4 +758,11 @@
     <string name="phq4_severe">%1$d - Severe</string>
     <string name="terms_condition_info_screening"><![CDATA[The healthcare worker will be accepting the terms & conditions on behalf of the screening participant.]]></string>
     <string name="terms_condition_info_enrollment"><![CDATA[The healthcare worker will be accepting the terms & conditions on behalf of the enrollment participant.]]></string>
+    <string name="diabetes">Diabetes</string>
+    <string name="hypertension">Hypertension</string>
+    <string name="year_of_diagnosis">Year of Diagnosis</string>
+    <string name="new_patient">New Patient</string>
+    <string name="known_patient">Known Patient</string>
+    <string name="diabetes_controlled_type">Diabetes Controlled Type</string>
+    <string name="patient_history">Patient History</string>
 </resources>

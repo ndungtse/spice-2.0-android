@@ -26,6 +26,7 @@ import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.MenuConstants
+import com.medtroniclabs.spice.ui.home.AssessmentToolsActivity
 import com.medtroniclabs.spice.ui.medicalreview.addnewmember.AddNewMemberActivity
 import com.medtroniclabs.spice.ui.mypatients.PatientSelectionListener
 import com.medtroniclabs.spice.ui.mypatients.PatientsListAdapter
@@ -203,13 +204,18 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
 
     override fun onSelectedPatient(item: PatientListRespModel) {
         withNetworkAvailability(online = {
-            val intent = Intent(requireActivity(), ReferralHistoryActivity::class.java)
-            intent.putExtra(DefinedParams.PatientId, item.patientId)
-            intent.putExtra(DefinedParams.Gender, item.gender)
-            intent.putExtra(DefinedParams.DOB, item.birthDate)
-            intent.putExtra(DefinedParams.FhirId, item.id)
-            intent.putExtra(DefinedParams.ORIGIN, patientListViewModel.origin)
-            startActivity(intent)
+            if (CommonUtils.isSL(requireContext())) {
+                val intent = Intent(requireActivity(), ReferralHistoryActivity::class.java)
+                intent.putExtra(DefinedParams.PatientId, item.patientId)
+                intent.putExtra(DefinedParams.Gender, item.gender)
+                intent.putExtra(DefinedParams.DOB, item.birthDate)
+                intent.putExtra(DefinedParams.FhirId, item.id)
+                intent.putExtra(DefinedParams.ORIGIN, patientListViewModel.origin)
+                startActivity(intent)
+            } else {
+                val intent = Intent(requireActivity(), AssessmentToolsActivity::class.java)
+                startActivity(intent)
+            }
         })
     }
 

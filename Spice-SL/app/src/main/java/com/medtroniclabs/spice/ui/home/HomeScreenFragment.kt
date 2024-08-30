@@ -100,8 +100,14 @@ class HomeScreenFragment : BaseFragment(), MenuSelectionListener {
             }
 
             MenuConstants.MY_PATIENTS_MENU_ID -> {
-                val intent = Intent(requireContext(), FollowUpMyPatientActivity::class.java)
-                intent.putExtra(MenuConstants.MY_PATIENTS_MENU_ID,MenuConstants.MY_PATIENTS_MENU_ID)
+                val intent = if (CommonUtils.isSL(requireContext())) Intent(
+                    requireContext(),
+                    FollowUpMyPatientActivity::class.java
+                ) else Intent(requireContext(), PatientSearchActivity ::class.java)
+                intent.putExtra(
+                    MenuConstants.MY_PATIENTS_MENU_ID,
+                    MenuConstants.MY_PATIENTS_MENU_ID
+                )
                 startActivity(intent)
             }
 
