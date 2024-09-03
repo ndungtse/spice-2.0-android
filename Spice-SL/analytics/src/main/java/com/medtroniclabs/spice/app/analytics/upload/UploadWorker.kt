@@ -5,7 +5,7 @@ import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.google.gson.Gson
 import com.google.gson.JsonParser
-import com.medtroniclabs.spice.app.analytics.db.Analytics
+import com.medtroniclabs.spice.app.analytics.model.Analytics
 import com.medtroniclabs.spice.app.analytics.db.AnalyticsRepository
 import com.medtroniclabs.spice.app.analytics.model.AnalyticsData
 import com.medtroniclabs.spice.app.analytics.model.AnalyticsDetail
@@ -13,7 +13,7 @@ import com.medtroniclabs.spice.app.analytics.network.ApiService
 import com.medtroniclabs.spice.app.analytics.network.RetrofitHelper
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.app.analytics.utils.CommonUtils
-import com.medtroniclabs.spice.app.analytics.utils.UserDetail
+import com.medtroniclabs.spice.app.analytics.model.UserDetail
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
@@ -28,9 +28,11 @@ class UploadWorker(context: Context, params: WorkerParameters) : CoroutineWorker
         val headers = inputData.keyValueMap
         val baseUrl = inputData.getString(AnalyticsDefinedParams.BaseUrl)
         val lastSyncDate = inputData.getString(AnalyticsDefinedParams.LastSyncDate)
+        val buildConfig= inputData.getString(AnalyticsDefinedParams.BuildConfig)
         generateAnalyticsReport(
             baseUrl,
-            headers[AnalyticsDefinedParams.Authorization].toString()
+            headers[AnalyticsDefinedParams.Authorization].toString(),
+            buildConfig
         )
         return Result.success()
     }
@@ -72,6 +74,7 @@ class UploadWorker(context: Context, params: WorkerParameters) : CoroutineWorker
     private suspend fun generateAnalyticsReport(
         baseUrl: String?,
         headers: Any?,
+        buildConfig: String?,
     ) {
         val analyticsData = getAllAnalyticsData()
         try {
@@ -84,7 +87,7 @@ class UploadWorker(context: Context, params: WorkerParameters) : CoroutineWorker
             }
 
             baseUrl?.let {
-                uploadFileFilter(it, headers.toString())
+                uploadFileFilter(it, headers.toString(),buildConfig)
             }
 
         } catch (e: Exception) {
@@ -94,11 +97,11 @@ class UploadWorker(context: Context, params: WorkerParameters) : CoroutineWorker
 
 
     // While extracting file from local Directory filtering based on userid
-    private suspend fun uploadFileFilter(baseUrl: String, headers: String) {
+    private suspend fun uploadFileFilter(baseUrl: String, headers: String, buildConfig: String?) {
         val filteredList = listFilesInDirectoryWithFilter(UserDetail.userId)
         filteredList.forEach {
             if (!stopIteration) {
-                uploadFileApiCall(baseUrl, headers, it)
+                uploadFileApiCall(baseUrl, headers, it,buildConfig)
             }
         }
 
@@ -106,19 +109,27 @@ class UploadWorker(context: Context, params: WorkerParameters) : CoroutineWorker
 
 
     private suspend fun uploadFileApiCall(
-        baseUrl: String, header: String, file: File
+        baseUrl: String, header: String, file: File, buildConfig: String?
     ) {
         val filePart = prepareFilePart(file)
-        val apiService = initializeApiService(baseUrl, header)
+        val apiService =  when (buildConfig) {
+            "debug" -> null
+            else -> initializeApiService(baseUrl, header)
+        }
+//            initializeApiService(baseUrl, header)
         try {
             retryApiCall(3,
                 apiCall = {
-                    val response = apiService.uploadFile(filePart)
-                    if (response.isSuccessful) {
-                        deleteUploadedFiles(file.name)
+                    if (apiService!=null) {
+                        val response = apiService.uploadFile(filePart)
+                        if (response.isSuccessful) {
+                         deleteUploadedFiles(file.name)
+                            true
+                        } else {
+                            false
+                        }
+                    }else {
                         true
-                    } else {
-                        false
                     }
                 },
                 onRetry = {

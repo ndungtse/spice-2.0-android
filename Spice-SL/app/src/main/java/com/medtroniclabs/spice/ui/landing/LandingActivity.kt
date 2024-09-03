@@ -23,12 +23,12 @@ import androidx.work.WorkManager
 import com.google.android.material.navigation.NavigationView
 import com.medtroniclabs.spice.BuildConfig
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.app.analytics.model.UserDetail
 import com.medtroniclabs.spice.app.analytics.upload.UploadWorker
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.app.analytics.utils.CommonUtils.getAppVersion
 import com.medtroniclabs.spice.app.analytics.utils.CommonUtils.getFileUploadTime
 import com.medtroniclabs.spice.app.analytics.utils.CommonUtils.updateUserIdIfEmpty
-import com.medtroniclabs.spice.app.analytics.utils.UserDetail
 import com.medtroniclabs.spice.appextensions.cancelAllWorker
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.isVisible
@@ -343,6 +343,10 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
             putString(
                 DefinedParams.BaseUrl,
                 NetworkConstants.BASE_URL
+            )
+            putString(
+                DefinedParams.BuildConfigs,
+                BuildConfig.BUILD_TYPE
             )
             putAll(
                 mapOf(

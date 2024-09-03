@@ -1,7 +1,6 @@
 package com.medtroniclabs.spice.app.analytics.model
 
 import com.google.gson.JsonElement
-import com.medtroniclabs.spice.app.analytics.utils.UserDetail
 
 data class AnalyticsData(
     val deviceDetails: DeviceDetail = DeviceDetail(),

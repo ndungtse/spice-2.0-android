@@ -4,8 +4,10 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import com.medtroniclabs.spice.app.analytics.model.Analytics
+import com.medtroniclabs.spice.app.analytics.model.UserJourneyAnalytics
 
-@Database(entities = [Analytics::class,UserJourneyAnalytics::class], version = 1)
+@Database(entities = [Analytics::class, UserJourneyAnalytics::class], version = 1)
 abstract class AnalyticsDatabase: RoomDatabase() {
 
     abstract fun analyticsDao(): AnalyticsDao

@@ -5,7 +5,8 @@ import com.google.gson.JsonElement
 import com.google.gson.JsonParser
 import com.google.gson.reflect.TypeToken
 import com.medtroniclabs.spice.app.analytics.db.AnalyticsRepository
-import com.medtroniclabs.spice.app.analytics.db.ScreenDetails
+import com.medtroniclabs.spice.app.analytics.model.ScreenDetails
+import com.medtroniclabs.spice.app.analytics.model.UserDetail
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale

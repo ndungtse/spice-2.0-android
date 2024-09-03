@@ -138,4 +138,6 @@ object DefinedParams {
 
     const val LastSyncDate = "lastSyncDate"
     const val FollowUpStartTiming= "followUpStartTiming"
+
+    const val BuildConfigs="BuildConfiguration"
 }

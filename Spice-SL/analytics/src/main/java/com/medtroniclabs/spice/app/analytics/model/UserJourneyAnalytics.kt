@@ -1,4 +1,4 @@
-package com.medtroniclabs.spice.app.analytics.db
+package com.medtroniclabs.spice.app.analytics.model
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

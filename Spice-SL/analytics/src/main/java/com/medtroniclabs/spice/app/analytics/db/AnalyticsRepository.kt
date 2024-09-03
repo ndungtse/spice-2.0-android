@@ -1,8 +1,10 @@
 package com.medtroniclabs.spice.app.analytics.db
 
 import android.content.Context
+import com.medtroniclabs.spice.app.analytics.model.Analytics
+import com.medtroniclabs.spice.app.analytics.model.UserJourneyAnalytics
 import com.medtroniclabs.spice.app.analytics.utils.CommonUtils
-import com.medtroniclabs.spice.app.analytics.utils.UserDetail
+import com.medtroniclabs.spice.app.analytics.model.UserDetail
 
 class AnalyticsRepository(private val ctx: Context) {
 
@@ -26,7 +28,7 @@ class AnalyticsRepository(private val ctx: Context) {
 
     suspend fun insertUserJourney(userJourney: String) = dao.insertUserJourneyAnalytics(
         UserJourneyAnalytics(
-            userId=UserDetail.userId,
+            userId= UserDetail.userId,
             sessionId = UserDetail.referenceId,
             userJourney = userJourney,
             startTime = UserDetail.startDateTime

@@ -4,11 +4,8 @@ import android.app.Application
 import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
 import com.medtroniclabs.spice.app.analytics.db.AnalyticsRepository
-import com.medtroniclabs.spice.app.analytics.db.ScreenDetails
-import com.medtroniclabs.spice.app.analytics.db.UserJourneyAnalytics
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.app.analytics.utils.CommonUtils
-import com.medtroniclabs.spice.app.analytics.utils.UserDetail
 import com.medtroniclabs.spice.appextensions.isDebug
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.log.CrashReportingTree
@@ -19,7 +16,9 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.util.UUID
 import javax.inject.Inject
-import com.medtroniclabs.spice.BuildConfig
+import com.medtroniclabs.spice.app.analytics.model.ScreenDetails
+import com.medtroniclabs.spice.app.analytics.model.UserDetail
+import com.medtroniclabs.spice.app.analytics.model.UserJourneyAnalytics
 
 
 @HiltAndroidApp

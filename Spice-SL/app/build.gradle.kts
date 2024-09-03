@@ -94,7 +94,7 @@ android {
         create("staging") {
             initWith(getByName("release"))
             applicationIdSuffix = ".staging"
-            versionNameSuffix = "-(20240828_01)"
+            versionNameSuffix = "-(20240830_01)"
             isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
@@ -159,7 +159,6 @@ android {
 dependencies {
 
     implementation(project(":analytics"))
-
     implementation("androidx.core:core-ktx:1.13.1")
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.google.android.material:material:1.12.0")

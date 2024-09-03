@@ -49,4 +49,5 @@ object AnalyticsDefinedParams {
     const val PatientId="patientID"
     const val CreatedAt="createdAt"
     const val LastSyncDate="lastSyncDate"
+    const val BuildConfig="BuildConfiguration"
 }

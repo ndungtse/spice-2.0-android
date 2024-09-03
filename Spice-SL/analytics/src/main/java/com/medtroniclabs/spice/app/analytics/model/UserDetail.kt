@@ -1,6 +1,4 @@
-package com.medtroniclabs.spice.app.analytics.utils
-
-import java.util.UUID
+package com.medtroniclabs.spice.app.analytics.model
 
 object UserDetail {
     var role: String=""

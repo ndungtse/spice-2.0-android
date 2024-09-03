@@ -7,8 +7,8 @@ import android.view.ViewGroup
 import androidx.appcompat.widget.AppCompatSpinner
 import androidx.fragment.app.activityViewModels
 import com.google.gson.Gson
+import com.medtroniclabs.spice.app.analytics.model.UserDetail
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
-import com.medtroniclabs.spice.app.analytics.utils.UserDetail
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.setSuccess
 import com.medtroniclabs.spice.appextensions.visible
