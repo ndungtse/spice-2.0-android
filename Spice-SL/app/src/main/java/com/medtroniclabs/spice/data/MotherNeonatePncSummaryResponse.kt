@@ -1,6 +1,7 @@
 package com.medtroniclabs.spice.data
 
 import com.medtroniclabs.spice.data.history.Investigation
+import com.medtroniclabs.spice.data.history.PatientStatus
 
 data class MotherNeonatePncSummaryResponse(
     val pncChild: PncChild?,
@@ -44,4 +45,6 @@ data class PncMother(
     val diagnosis: ArrayList<DiagnosisDiseaseModel>? = null,
     val prescriptions: List<Prescription>? = null,
     val investigations: List<Investigation>? = null,
-    )
+    val summaryStatus:List<PatientStatus>?=null
+
+)

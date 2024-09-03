@@ -599,7 +599,7 @@
     <string name="breast_condition">Breast Condition</string>
     <string name="five_minutes">" (Five minutes)"</string>
     <string name="tested_on">Tested On</string>
-    <string name="birth_weight_in_kgs">Birth Weight(in kgs)</string>
+    <string name="birth_weight_in_kgs">Birth Weight (in kgs)</string>
     <string name="kgs">kgs</string>
     <string name="performance_monitoring">Performance Monitoring</string>
     <string name="year_colon">Year :</string>

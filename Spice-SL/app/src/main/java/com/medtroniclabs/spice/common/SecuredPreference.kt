@@ -424,10 +424,14 @@ object SecuredPreference {
         putString(EnvironmentKey.USER_RESPONSE.name, loginResponseString)
     }
 
-    fun getUserDetails(): LoginResponse {
+    fun getUserDetails(): LoginResponse? {
         val userResponseString = getString(EnvironmentKey.USER_RESPONSE.name)
         val type: Type = object : TypeToken<LoginResponse>() {}.type
-        return Gson().fromJson(userResponseString, type)
+        return try {
+            Gson().fromJson(userResponseString, type)
+        } catch (e: Exception) {
+            null
+        }
     }
 
     fun putFollowUpCriteria(followUpCriteria: FollowUpCriteria) {
@@ -450,11 +454,11 @@ object SecuredPreference {
     }
 
     fun getPhoneNumberCode(): String? {
-        return getUserDetails().country.phoneNumberCode
+        return getUserDetails()?.country?.phoneNumberCode
     }
 
     fun getRole(): String {
-        return getUserDetails().roles.first().name
+        return getUserDetails()?.roles?.first()?.name?: ""
     }
 
     fun logout(): Boolean {

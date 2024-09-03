@@ -79,7 +79,7 @@ class InvestigationViewModel @Inject constructor(
                         InvestigationModel(
                             investigationResponse.testName,
                             getInvestigationModelWithResult(investigationResponse),
-                            SecuredPreference.getUserDetails().firstName ?: "",
+                            SecuredPreference.getUserDetails()?.firstName ?: "",
                             SecuredPreference.getUserFhirId(),
                             DateUtils.getTodayDateDDMMYYYY(),
                             null,

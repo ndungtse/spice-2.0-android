@@ -9,6 +9,7 @@ import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.data.MedicalReviewMetaItems
 import com.medtroniclabs.spice.data.MotherNeonatePncSummaryRequest
 import com.medtroniclabs.spice.data.MotherNeonatePncSummaryResponse
+import com.medtroniclabs.spice.data.history.PatientStatus
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.pnc.repo.MotherNeonatePNCRepo
@@ -29,7 +30,7 @@ class MotherNeonatePncSummaryViewModel @Inject constructor(
     private val getPncMetaForPatientStatus = MutableLiveData<String?>(null)
     var motherNeonatePncSummaryRequest = MotherNeonatePncSummaryRequest()
     val pncSummaryResponse = MutableLiveData<Resource<MotherNeonatePncSummaryResponse>>()
-    var pncMotherPatientStatus:List<MedicalReviewMetaItems>?=null
+    var pncMotherPatientStatus:List<PatientStatus>?=null
     var pncChildPatientStatus:List<MedicalReviewMetaItems>?=null
     var motherNeonateAlive=true
 

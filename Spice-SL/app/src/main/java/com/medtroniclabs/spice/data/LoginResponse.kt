@@ -5,7 +5,7 @@ data class LoginResponse(
     val lastName: String?,
     val username: String?,
     val isActive: Boolean,
-    val roles: List<UserRole>,
+    val roles: List<UserRole>?,
     val id: Long,
     val authorization: String?,
     var deviceInfoId: Long?,

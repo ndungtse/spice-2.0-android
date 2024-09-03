@@ -24,7 +24,7 @@ import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.OtherNotes
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.ViewUtils
-import com.medtroniclabs.spice.data.MedicalReviewMetaItems
+import com.medtroniclabs.spice.data.history.PatientStatus
 import com.medtroniclabs.spice.data.resource.ExaminationResult
 import com.medtroniclabs.spice.databinding.FragmentUnderTwoMonthsTreatmentSummaryBinding
 import com.medtroniclabs.spice.formgeneration.extension.markMandatory
@@ -98,21 +98,6 @@ class UnderTwoMonthsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
     }
 
     fun attachObserver() {
-        summaryViewModel.summaryMetaListItems.observe(viewLifecycleOwner) { resourceState ->
-            when (resourceState.state) {
-                ResourceState.LOADING -> {
-                    showProgress()
-                }
-                ResourceState.SUCCESS -> {
-                    resourceState.data?.let { list ->
-                        initializePatientStatus(list)
-                    }
-                }
-                ResourceState.ERROR -> {
-                    hideProgress()
-                }
-            }
-        }
         summaryViewModel.summaryDetailsLiveData.observe(viewLifecycleOwner) { resourceState ->
             when (resourceState.state) {
                 ResourceState.LOADING -> {
@@ -135,6 +120,8 @@ class UnderTwoMonthsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
     }
 
     private fun renderSummaryDetails(details: SummaryDetails) {
+        initializePatientStatus(details.summaryStatus)
+
         binding.apply {
             tvPresentingComplaints.text = details.presentingComplaints.takeIf { it != null }?.toString() ?: getString(R.string.empty__)
             tvClinicalNotes.text = details.clinicalNotes.toString()
@@ -150,8 +137,8 @@ class UnderTwoMonthsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
 
             tvClinicalName.text = requireContext().getString(
                 R.string.firstname_lastname,
-                SecuredPreference.getUserDetails().firstName,
-                SecuredPreference.getUserDetails().lastName
+                SecuredPreference.getUserDetails()?.firstName,
+                SecuredPreference.getUserDetails()?.lastName
             )
             tvDateOfReviewValue.text = DateUtils.convertDateTimeToDate(
                 DateUtils.getTodayDateDDMMYYYY(),
@@ -264,16 +251,17 @@ class UnderTwoMonthsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
         }
     }
 
-    private fun initializePatientStatus(patientStatusList: List<MedicalReviewMetaItems>) {
+    private fun initializePatientStatus(patientStatusList: List<PatientStatus>?) {
         val dropDownList = ArrayList<Map<String, Any>>()
-        for (item in patientStatusList) {
-            dropDownList.add(
-                hashMapOf<String, Any>(
-                    DefinedParams.NAME to item.name,
-                    DefinedParams.id to item.id.toString(),
-                    DefinedParams.value to (item.value ?: item.name)
+        if (patientStatusList != null) {
+            for (item in patientStatusList) {
+                dropDownList.add(
+                    hashMapOf<String, Any>(
+                        DefinedParams.NAME to item.name,
+                        DefinedParams.value to item.value
+                    )
                 )
-            )
+            }
         }
         val adapter = CustomSpinnerAdapter(requireContext())
         adapter.setData(dropDownList)

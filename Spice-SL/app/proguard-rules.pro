@@ -20,6 +20,9 @@
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
 
+-keepclassmembers class com.medtroniclabs.spice.app.analytics.** {*;}
+
+
 -keepclassmembers class com.medtroniclabs.spice.data.** {*;}
 -keepclassmembers class com.medtroniclabs.spice.model.** {*;}
 -keepclassmembers class com.medtroniclabs.spice.db.** {*;}

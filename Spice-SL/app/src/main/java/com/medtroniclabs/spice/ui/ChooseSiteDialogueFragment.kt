@@ -68,13 +68,13 @@ class ChooseSiteDialogueFragment : DialogFragment(),
             DividerNCDItemDecoration(activity, R.drawable.divider)
         )*/
         binding.rvSiteList.adapter = SiteAdapter(healthFacilityEntities,defaultSiteId) {
-            enableConfirm(it)
+            enableConfirm(it,healthFacilityEntities.size!=1)
         }
     }
 
-    private fun enableConfirm(siteEntity: HealthFacilityEntity) {
+    private fun enableConfirm(siteEntity: HealthFacilityEntity, listCount: Boolean) {
         viewModel.selectedSiteEntity = siteEntity
-        binding.btnConfirm.isEnabled = true
+        binding.btnConfirm.isEnabled = listCount
     }
 
     private fun attachObserver() {

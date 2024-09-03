@@ -23,6 +23,7 @@ import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.ViewUtils
 import com.medtroniclabs.spice.data.MotherNeonateAncSummaryModel
+import com.medtroniclabs.spice.data.history.PatientStatus
 import com.medtroniclabs.spice.databinding.FragmentMotherNeonateAncSummaryBinding
 import com.medtroniclabs.spice.formgeneration.extension.markMandatory
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
@@ -109,19 +110,6 @@ class MotherNeonateAncSummary : BaseFragment(),View.OnClickListener {
     }
 
     private fun attachObservers() {
-        viewModel.ancMetaLiveDataForPatientStatus.observe(viewLifecycleOwner) {
-            val statusList = ArrayList<Map<String, Any>>()
-            for (item in it) {
-                statusList.add(
-                    hashMapOf<String, Any>(
-                        DefinedParams.NAME to composeLabelName(item.name, patientViewModel.patientDetailsLiveData.value?.data?.pregnancyStatus, requireContext()),
-                        DefinedParams.id to item.id.toString(),
-                        DefinedParams.value to (item.value ?: item.name)
-                    )
-                )
-            }
-            setSpinner(statusList)
-        }
         viewModel.motherNeonateAncSummary.observe(viewLifecycleOwner) { resourceState ->
             when (resourceState.state) {
                 ResourceState.LOADING -> {
@@ -158,7 +146,22 @@ class MotherNeonateAncSummary : BaseFragment(),View.OnClickListener {
         }
     }
 
+    private fun setPatientStatus(summaryStatus: List<PatientStatus>?) {
+        val statusList = ArrayList<Map<String, Any>>()
+        if (summaryStatus != null) {
+            for (item in summaryStatus) {
+                statusList.add(
+                    hashMapOf<String, Any>(
+                        DefinedParams.NAME to item.name,
+                        DefinedParams.value to (item.value ?: item.name)
+                    )
+                )
+            }
+        }
+        setSpinner(statusList)
+    }
     private fun populate(motherNeonateSummaryModel: MotherNeonateAncSummaryModel) {
+        setPatientStatus(motherNeonateSummaryModel.summaryStatus)
         with(binding) {
             tvAncVisitText.text = motherNeonateSummaryModel.visitNumber
                 ?: requireContext().getString(R.string.hyphen_symbol)
@@ -228,8 +231,8 @@ class MotherNeonateAncSummary : BaseFragment(),View.OnClickListener {
         binding.tvPatientStatus.markMandatory()
         binding.tvClinicalName.text = requireContext().getString(
             R.string.firstname_lastname,
-            SecuredPreference.getUserDetails().firstName,
-            SecuredPreference.getUserDetails().lastName
+            SecuredPreference.getUserDetails()?.firstName,
+            SecuredPreference.getUserDetails()?.lastName
         )
         binding.tvDateOfReviewValue.text = DateUtils.convertDateTimeToDate(
             DateUtils.getTodayDateDDMMYYYY(),

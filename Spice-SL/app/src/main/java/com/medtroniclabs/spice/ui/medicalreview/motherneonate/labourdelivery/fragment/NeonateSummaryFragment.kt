@@ -61,8 +61,8 @@ class NeonateSummaryFragment : BaseFragment() {
     private fun setDetails(neonateDTO: NeonateDTO?) {
         binding.tvClinicalName.text = requireContext().getString(
             R.string.firstname_lastname,
-            SecuredPreference.getUserDetails().firstName,
-            SecuredPreference.getUserDetails().lastName
+            SecuredPreference.getUserDetails()?.firstName,
+            SecuredPreference.getUserDetails()?.lastName
         )
         binding.tvDateOfReviewValue.text = DateUtils.convertDateTimeToDate(
             DateUtils.getTodayDateDDMMYYYY(),

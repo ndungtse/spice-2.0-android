@@ -126,10 +126,12 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
     }
 
     private fun startSyncWorker() {
-        val userRole = SecuredPreference.getUserDetails().roles.joinToString { it.name }
-        if (userRole.contains(RoleConstant.COMMUNITY_HEALTH_WORKER)) {
-            scheduleSyncWorker()
-            checkBGSyncStatus()
+        val userRole = SecuredPreference.getUserDetails()?.roles?.joinToString { it.name }
+        if (userRole != null) {
+            if (userRole.contains(RoleConstant.COMMUNITY_HEALTH_WORKER)) {
+                scheduleSyncWorker()
+                checkBGSyncStatus()
+            }
         }
     }
 

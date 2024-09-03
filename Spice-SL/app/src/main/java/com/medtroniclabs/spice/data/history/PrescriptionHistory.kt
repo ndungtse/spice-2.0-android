@@ -28,3 +28,7 @@ data class Investigation(
     val testName: String,
     val patientId: String
 )
+data class PatientStatus(
+    val name:String,
+    val value:String
+)

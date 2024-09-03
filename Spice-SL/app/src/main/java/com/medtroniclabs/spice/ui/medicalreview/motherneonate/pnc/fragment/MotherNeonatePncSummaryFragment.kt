@@ -24,6 +24,7 @@ import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.ViewUtils
 import com.medtroniclabs.spice.data.MedicalReviewMetaItems
 import com.medtroniclabs.spice.data.MotherNeonatePncSummaryResponse
+import com.medtroniclabs.spice.data.history.PatientStatus
 import com.medtroniclabs.spice.databinding.FragmentMotherNeonarePncSummaryBinding
 import com.medtroniclabs.spice.databinding.MotherNeonatePncSummaryLayoutBinding
 import com.medtroniclabs.spice.formgeneration.extension.capitalizeFirstChar
@@ -83,9 +84,7 @@ class MotherNeonatePncSummaryFragment : BaseFragment(), View.OnClickListener {
     }
 
     private fun attachObservers() {
-        viewModel.pncMetaLiveDataForPatientStatus.observe(viewLifecycleOwner) { resource ->
-            patientStatusBasedOnType(resource)
-        }
+
         viewModel.pncSummaryResponse.observe(viewLifecycleOwner) { resource ->
             handleResourceState(resource) {
                 initializeMotherSummaryDetails(resource.data)
@@ -94,11 +93,11 @@ class MotherNeonatePncSummaryFragment : BaseFragment(), View.OnClickListener {
         }
     }
 
-    private fun patientStatusBasedOnType(resource: List<MedicalReviewMetaItems>) {
+    private fun patientStatusBasedOnType(resource: List<PatientStatus>?) {
         binding.tvClinicalName.text = requireContext().getString(
             R.string.firstname_lastname,
-            SecuredPreference.getUserDetails().firstName,
-            SecuredPreference.getUserDetails().lastName
+            SecuredPreference.getUserDetails()?.firstName,
+            SecuredPreference.getUserDetails()?.lastName
         )
         binding.tvDateOfReviewValue.text = DateUtils.convertDateTimeToDate(
             DateUtils.getTodayDateDDMMYYYY(),
@@ -106,20 +105,12 @@ class MotherNeonatePncSummaryFragment : BaseFragment(), View.OnClickListener {
             DateUtils.DATE_ddMMyyyy
         )
         if (viewModel.motherNeonateAlive) {
-            if (resource[0].type == MedicalReviewTypeEnums.PNC_MOTHER_REVIEW.name) {
                 viewModel.pncMotherPatientStatus = resource
                 viewModel.pncMotherPatientStatus?.let {
                     initializePatientStatus(it, binding.motherSummary)
                 }
                 getPncPatientStatus(MedicalReviewTypeEnums.PNC_CHILD_REVIEW.name)
-            } else {
-                viewModel.pncChildPatientStatus = resource
-                viewModel.pncChildPatientStatus?.let {
-                    initializePatientStatus(it, binding.neonateSummary)
-                }
-                binding.neonateSummary.nextVisitDateGroup.gone()
-            }
-        } else {
+                    } else {
             binding.motherSummary.tvNextMedicalReviewLabel.gone()
             binding.motherSummary.tvNextMedicalReviewSeparator.gone()
             binding.motherSummary.tvNextMedicalReviewLabelText.gone()
@@ -132,6 +123,8 @@ class MotherNeonatePncSummaryFragment : BaseFragment(), View.OnClickListener {
 
 
     private fun initializeMotherSummaryDetails(data: MotherNeonatePncSummaryResponse?) {
+        patientStatusBasedOnType(data?.pncMother?.summaryStatus)
+
         binding.motherSummary.apply {
             tvTitle.text = getString(R.string.pnc_visit_summary_mother)
             tvPncVisitNoText.text =
@@ -289,7 +282,7 @@ class MotherNeonatePncSummaryFragment : BaseFragment(), View.OnClickListener {
     }
 
     private fun initializePatientStatus(
-        pncMotherPatientStatus: List<MedicalReviewMetaItems>,
+        pncMotherPatientStatus: List<PatientStatus>,
         patientStatusBinding: MotherNeonatePncSummaryLayoutBinding
     ) {
         val dropDownList = ArrayList<Map<String, Any>>()
@@ -297,13 +290,9 @@ class MotherNeonatePncSummaryFragment : BaseFragment(), View.OnClickListener {
         for (item in pncMotherPatientStatus) {
             dropDownList.add(
                 hashMapOf<String, Any>(
-                    DefinedParams.NAME to CommonUtils.composeLabelName(
+                    DefinedParams.NAME to
                         item.name,
-                        patientDetailViewModel.patientDetailsLiveData.value?.data?.pregnancyStatus,
-                        requireContext()
-                    ),
-                    DefinedParams.id to item.id.toString(),
-                    DefinedParams.value to (item.value ?: item.name)
+                    DefinedParams.value to item.value
                 )
             )
         }
@@ -335,7 +324,7 @@ class MotherNeonatePncSummaryFragment : BaseFragment(), View.OnClickListener {
                     selectedItem?.let {
                         val selectedName = it[DefinedParams.value] as String?
                         selectedName?.let { name ->
-                            pncMotherPatientStatus[0].type?.let { type ->
+                            pncMotherPatientStatus.let { type ->
                                 viewModel.patientStatusMother = name
                             }
                         }

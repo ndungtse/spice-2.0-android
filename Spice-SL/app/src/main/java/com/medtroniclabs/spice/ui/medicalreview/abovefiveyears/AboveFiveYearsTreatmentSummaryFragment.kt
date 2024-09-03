@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
-import androidx.activity.viewModels
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.fragment.app.activityViewModels
@@ -25,6 +24,7 @@ import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.ViewUtils.showDatePicker
 import com.medtroniclabs.spice.data.AboveFiveYearsSummaryDetails
 import com.medtroniclabs.spice.data.MedicalReviewMetaItems
+import com.medtroniclabs.spice.data.history.PatientStatus
 import com.medtroniclabs.spice.data.model.MultiSelectDropDownModel
 import com.medtroniclabs.spice.databinding.FragmentMedicalReviewTreatmentPlanSummaryBinding
 import com.medtroniclabs.spice.formgeneration.extension.markMandatory
@@ -83,9 +83,7 @@ class AboveFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
                 ResourceState.SUCCESS -> {
                     hideProgress()
                     resourceState.data?.let { list ->
-                        initializePatientStatus(list.filter { item -> item.category == MedicalReviewTypeEnums.patient_status.name }
-                            .sortedBy { it.displayOrder })
-                        initializeCostItem(list.filter { item -> item.category == MedicalReviewTypeEnums.cost.name }
+                     initializeCostItem(list.filter { item -> item.category == MedicalReviewTypeEnums.cost.name }
                             .sortedBy { it.displayOrder })
                         initializeMedicalSupplies(list.filter { item -> item.category == MedicalReviewTypeEnums.medical_supplies.name }
                             .sortedBy { it.displayOrder })
@@ -124,6 +122,7 @@ class AboveFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
     }
 
     private fun renderSummaryDetails(details: AboveFiveYearsSummaryDetails) {
+        initializePatientStatus(details.summaryStatus)
         binding.tvDiagnosisText.text =
             details.diagnosis?.let {list ->
                 if (list.isNotEmpty()){
@@ -155,8 +154,8 @@ class AboveFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
         binding.tvClinicalNotesText.text = chipItemViewModel.enteredClinicalNotes
         binding.tvClinicalName.text = requireContext().getString(
             R.string.firstname_lastname,
-            SecuredPreference.getUserDetails().firstName,
-            SecuredPreference.getUserDetails().lastName
+            SecuredPreference.getUserDetails()?.firstName,
+            SecuredPreference.getUserDetails()?.lastName
         )
         binding.tvDateOfReviewValue.text = DateUtils.convertDateTimeToDate(
             DateUtils.getTodayDateDDMMYYYY(),
@@ -176,16 +175,17 @@ class AboveFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
         viewModel.getSummaryListMetaItems(MedicalReviewTypeEnums.ABOVE_FIVE_YEARS.name)
     }
 
-    private fun initializePatientStatus(patientStatusList: List<MedicalReviewMetaItems>) {
+    private fun initializePatientStatus(patientStatusList: List<PatientStatus>?) {
         val dropDownList = ArrayList<Map<String, Any>>()
-        for (item in patientStatusList) {
-            dropDownList.add(
-                hashMapOf<String, Any>(
-                    DefinedParams.NAME to composeLabelName(item.name, patientDetailViewModel.patientDetailsLiveData.value?.data?.pregnancyStatus, requireContext()),
-                    DefinedParams.id to item.id.toString(),
-                    DefinedParams.value to (item.value ?: item.name)
+        if (patientStatusList != null) {
+            for (item in patientStatusList) {
+                dropDownList.add(
+                    hashMapOf<String, Any>(
+                        DefinedParams.NAME to item.name,
+                        DefinedParams.value to item.value
+                    )
                 )
-            )
+            }
         }
         val adapter = CustomSpinnerAdapter(requireContext())
         adapter.setData(dropDownList)

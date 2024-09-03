@@ -1,6 +1,7 @@
 package com.medtroniclabs.spice.data
 
 import com.medtroniclabs.spice.data.history.Investigation
+import com.medtroniclabs.spice.data.history.PatientStatus
 
 data class MotherNeonateAncSummaryModel(
     val id: String? = null,
@@ -21,4 +22,6 @@ data class MotherNeonateAncSummaryModel(
     val visitNumber:String? = null,
     val prescriptions: List<Prescription>? = null,
     val investigations: List<Investigation>? = null,
+    val summaryStatus:List<PatientStatus>?=null
+
 )

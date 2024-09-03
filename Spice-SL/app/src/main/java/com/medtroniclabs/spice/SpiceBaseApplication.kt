@@ -75,7 +75,7 @@ class SpiceBaseApplication : Application(), Configuration.Provider {
             val list = analyticsRepository.getUserJourneyAnalytics()
             val userAnalytics = groupingBySessionId(list)
             UserDetail.referenceId = UUID.randomUUID().toString()
-            UserDetail.role = SecuredPreference.getRole().toString()
+            UserDetail.role = SecuredPreference.getRole()?:""
             SecuredPreference.putString(
                 AnalyticsDefinedParams.SessionId,
                 UserDetail.referenceId

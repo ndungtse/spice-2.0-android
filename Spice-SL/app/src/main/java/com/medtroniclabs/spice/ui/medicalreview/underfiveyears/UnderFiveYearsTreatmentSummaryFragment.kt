@@ -24,6 +24,7 @@ import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.OtherNotes
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.ViewUtils
+import com.medtroniclabs.spice.data.history.PatientStatus
 import com.medtroniclabs.spice.data.resource.ExaminationResult
 import com.medtroniclabs.spice.databinding.FragmentUnderFiveYearsTreatmentSummarryBinding
 import com.medtroniclabs.spice.formgeneration.extension.markMandatory
@@ -95,19 +96,6 @@ class UnderFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
     }
 
     fun attachObserver() {
-        summaryViewModel.metaLiveDataPatientStatus.observe(viewLifecycleOwner) {
-            val statusList = ArrayList<Map<String, Any>>()
-            for (item in it) {
-                statusList.add(
-                    hashMapOf<String, Any>(
-                        DefinedParams.NAME to item.name,
-                        DefinedParams.id to item.id.toString(),
-                        DefinedParams.value to (item.value ?: item.name)
-                    )
-                )
-            }
-            setListenerToDeliveryStatus(statusList)
-        }
 
         summaryViewModel.summaryDetailsLiveData.observe(viewLifecycleOwner) { resourceState ->
             when (resourceState.state) {
@@ -138,13 +126,29 @@ class UnderFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
         }
     }
 
+    private fun setPatientStatus(details: List<PatientStatus>?) {
+        val statusList = ArrayList<Map<String, Any>>()
+        if (details != null) {
+            for (item in details) {
+                statusList.add(
+                    hashMapOf<String, Any>(
+                        DefinedParams.NAME to item.name,
+                        DefinedParams.value to item.value
+                    )
+                )
+            }
+        }
+        setListenerToDeliveryStatus(statusList)
+    }
+
     private fun renderSummaryDetails(details: SummaryDetails) {
+        setPatientStatus(details.summaryStatus)
         binding.tvPresentingComplaints.text = details.presentingComplaints.takeIf { it != null }?.toString() ?: getString(R.string.empty__)
         binding.tvClinicalNotes.text = details.clinicalNotes.toString()
         binding.tvClinicalName.text = requireContext().getString(
             R.string.firstname_lastname,
-            SecuredPreference.getUserDetails().firstName,
-            SecuredPreference.getUserDetails().lastName
+            SecuredPreference.getUserDetails()?.firstName,
+            SecuredPreference.getUserDetails()?.lastName
         )
         binding.tvDateOfReviewValue.text = DateUtils.convertDateTimeToDate(
             DateUtils.getTodayDateDDMMYYYY(),

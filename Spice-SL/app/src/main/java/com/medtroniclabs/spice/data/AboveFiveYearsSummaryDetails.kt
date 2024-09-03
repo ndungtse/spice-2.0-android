@@ -1,6 +1,7 @@
 package com.medtroniclabs.spice.data
 
 import com.medtroniclabs.spice.data.history.Investigation
+import com.medtroniclabs.spice.data.history.PatientStatus
 
 data class AboveFiveYearsSummaryDetails(
     val id: String,
@@ -14,4 +15,5 @@ data class AboveFiveYearsSummaryDetails(
     val patientReference: String? = null,
     val prescriptions: List<Prescription>? = null,
     val investigations: List<Investigation>? = null,
+    val summaryStatus:List<PatientStatus>?=null
 )

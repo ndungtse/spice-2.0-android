@@ -44,11 +44,13 @@ class ResourceLoadingScreen : BaseActivity() {
                 }
 
                 ResourceState.SUCCESS -> {
-                    val userRole = SecuredPreference.getUserDetails().roles.joinToString { it.name }
-                    if (userRole.contains(RoleConstant.COMMUNITY_HEALTH_WORKER)) {
-                        viewModel.downloadInitialDetails()
-                    } else {
-                       launchLandingScreen()
+                    val userRole = SecuredPreference.getUserDetails()?.roles?.joinToString { it.name }
+                    if (userRole != null) {
+                        if (userRole.contains(RoleConstant.COMMUNITY_HEALTH_WORKER)) {
+                            viewModel.downloadInitialDetails()
+                        } else {
+                            launchLandingScreen()
+                        }
                     }
                 }
                 ResourceState.ERROR -> {

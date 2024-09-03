@@ -19,6 +19,7 @@ import com.medtroniclabs.spice.common.DateUtils.DATE_FORMAT_ddMMyyyy
 import com.medtroniclabs.spice.common.DateUtils.DATE_FORMAT_yyyyMMdd
 import com.medtroniclabs.spice.common.DateUtils.DATE_ddMMyyyy
 import com.medtroniclabs.spice.common.DateUtils.calculateGestationalAge
+import com.medtroniclabs.spice.common.DateUtils.calculateGestationalAgeWeeks
 import com.medtroniclabs.spice.common.DateUtils.formatGestationalAge
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.LMB
@@ -132,14 +133,16 @@ class PregnancyDetailsFragment : BaseFragment(), View.OnClickListener {
             binding.tvParityFirstError,
             0,
             getString(R.string.error_label),
-            context = requireContext()
+            context = requireContext(),
+            isParity = true
         )
         val isParitySecondValid = isBasicValid(
             binding.etParitySecond.text.toString(),
             binding.tvParitySecondError,
             0,
             getString(R.string.error_label),
-            context = requireContext()
+            context = requireContext(),
+            isParity = true
         )
         val isLmbValid = binding.tvLastMenstrualPeriodDate.text?.toString()?.trim()?.isBlank() == true
         binding.tvLastMenstrualPeriodError.apply { if (isLmbValid) visible() else gone() }

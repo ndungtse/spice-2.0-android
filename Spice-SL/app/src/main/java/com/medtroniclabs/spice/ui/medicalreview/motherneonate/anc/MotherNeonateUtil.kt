@@ -125,7 +125,8 @@ object MotherNeonateUtil {
         maxValue: Int? = null,
         maxValueError: String? = null,
         context: Context,
-        isMandatory: Boolean = false
+        isMandatory: Boolean = false,
+        isParity: Boolean = false
     ): Boolean {
         val value = valueText?.toIntOrNull()
         if (value == null) {
@@ -138,7 +139,9 @@ object MotherNeonateUtil {
             errorTextView.gone()
             return true
         }
-        if (value == minValue) {
+
+
+        if (!isParity && value == minValue) {
             // Value is less than minimum allowed value, display error message
             errorTextView.text = errorMessage
             errorTextView.visible()

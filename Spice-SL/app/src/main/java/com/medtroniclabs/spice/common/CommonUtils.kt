@@ -167,8 +167,11 @@ object CommonUtils {
     }
 
     fun isChw(): Boolean {
-        val userRole = SecuredPreference.getUserDetails().roles.joinToString { it.name }
-        return userRole.contains(RoleConstant.COMMUNITY_HEALTH_WORKER)
+        val userRole = SecuredPreference.getUserDetails()?.roles?.joinToString { it.name }
+        if (userRole != null) {
+            return userRole.contains(RoleConstant.COMMUNITY_HEALTH_WORKER)
+        }
+        return false
     }
 
     fun isProvider(): Boolean {
