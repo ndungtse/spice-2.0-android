@@ -540,4 +540,8 @@ object CommonUtils {
         }
     }
 
+    fun extractNumber(input: String): Int {
+        return input.split(" ").getOrNull(0)?.toIntOrNull() ?: 0
+    }
+
 }

@@ -61,10 +61,12 @@ android {
                     manifestPlaceholders["appNameSuffix"] = commonPrefix
                     if (productFlavors[0].name == "sl") {
                         buildConfigField("String", "API_BASE_URL", "\"https://localhost.com/\"")
+                        buildConfigField("String", "ADMIN_BASE_URL", "\"https://localhost.com/\"")
                         buildConfigField("String", "SALT", "\"\"")
                     } else if (productFlavors[0].name == "africa") {
                         manifestPlaceholders["appNameSuffix"] = commonPrefix
                         buildConfigField("String", "API_BASE_URL", "\"https://localhost.com/\"")
+                        buildConfigField("String", "ADMIN_BASE_URL", "\"https://localhost.com/\"")
                         buildConfigField("String", "SALT", "\" \"")
                     }
                 }
@@ -80,9 +82,11 @@ android {
                     manifestPlaceholders["appNameSuffix"] = "$commonPrefix Dev"
                     if (productFlavors[0].name == "sl") {
                         buildConfigField("String", "API_BASE_URL", "\"https://spice-dev-backend.sl.labsplatform.com/\"")
+                        buildConfigField("String", "ADMIN_BASE_URL", "\"https://localhost.com/\"")
                         buildConfigField("String", "SALT", "\"spice_uat\"")
                     } else if (productFlavors[0].name == "africa") {
                         buildConfigField("String", "API_BASE_URL", "\"https://localhost.com/\"")
+                        buildConfigField("String", "ADMIN_BASE_URL", "\"https://localhost.com/\"")
                         buildConfigField("String", "SALT", "\" \"")
                     }
                 }
@@ -105,9 +109,11 @@ android {
                     manifestPlaceholders["appNameSuffix"] = "$commonPrefix Staging"
                     if (productFlavors[0].name == "sl") {
                         buildConfigField("String", "API_BASE_URL", "\"https://spice-dev-backend.sl.labsplatform.com/\"")
+                        buildConfigField("String", "ADMIN_BASE_URL", "\"https://localhost.com/\"")
                         buildConfigField("String", "SALT", "\"spice_uat\"")
                     } else if (productFlavors[0].name == "africa") {
                         buildConfigField("String", "API_BASE_URL", "\"https://localhost.com/\"")
+                        buildConfigField("String", "ADMIN_BASE_URL", "\"https://localhost.com/\"")
                         buildConfigField("String", "SALT", "\" \"")
                     }
                 }
@@ -128,9 +134,11 @@ android {
                     manifestPlaceholders["appNameSuffix"] = "$commonPrefix Training"
                     if (productFlavors[0].name == "sl") {
                         buildConfigField("String", "API_BASE_URL", "\"https://spice-training-backend.sl.labsplatform.com/\"")
+                        buildConfigField("String", "ADMIN_BASE_URL", "\"https://localhost.com/\"")
                         buildConfigField("String", "SALT", "\"spice_uat\"")
                     } else if (productFlavors[0].name == "africa") {
                         buildConfigField("String", "API_BASE_URL", "\"https://localhost.com/\"")
+                        buildConfigField("String", "ADMIN_BASE_URL", "\"https://localhost.com/\"")
                         buildConfigField("String", "SALT", "\" \"")
                     }
                 }

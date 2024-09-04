@@ -13,7 +13,7 @@ import com.medtroniclabs.spice.common.AppConstants
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.GeneralErrorDialog
 import com.medtroniclabs.spice.common.SecuredPreference
-import com.medtroniclabs.spice.ui.landing.LandingActivity
+import com.medtroniclabs.spice.ui.boarding.LoginActivity
 
 open class SpiceRootActivity : AppCompatActivity() {
 
@@ -56,7 +56,7 @@ open class SpiceRootActivity : AppCompatActivity() {
                     if (status) {
                         cancelAllWorker()
                         SecuredPreference.clear(this@SpiceRootActivity)
-                        val i = Intent(context, LandingActivity::class.java)
+                        val i = Intent(context, LoginActivity::class.java)
                         i.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                         context.startActivity(i)
                     }

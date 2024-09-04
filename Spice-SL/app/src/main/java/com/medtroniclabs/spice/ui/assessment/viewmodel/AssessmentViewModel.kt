@@ -506,13 +506,13 @@ class AssessmentViewModel @Inject constructor(
 
                 details[RMNCH.visitNo] = pregnancyDetail.pncVisitNo ?: 0L
                 details[RMNCH.DateOfDelivery] = pregnancyDetail.dateOfDelivery ?: ""
-                details[RMNCH.NoOfNeonate] = pregnancyDetail.noOfNeonates ?: 0L
+                details[RMNCH.NoOfNeonate] = pregnancyDetail.noOfNeonates ?: 0
                 pregnancyDetail.lastMenstrualPeriod?.let { lmp ->
                     childDetailsMap?.let {
                         childDetailsMap[lastMenstrualPeriod] = lmp
                         val lastMenstrualDate = DateUtils.getLastMenstrualDate(lmp)
                         val gestationWeek = calculateGestationalAge(lastMenstrualDate).first
-                        childDetailsMap[gestationalAge] = gestationWeek
+                        childDetailsMap[gestationalAge] = gestationWeek.toInt()
                     }
                 }
                 pregnancyDetail.ancVisitNo = 0
@@ -536,9 +536,9 @@ class AssessmentViewModel @Inject constructor(
         existingDate?.let { return it } ?: return date?.let { it as String }
     }
 
-    private fun getNumberOfNeonates(existingCount: Long?, noOfNeonate: Any?): Long? {
+    private fun getNumberOfNeonates(existingCount: Int?, noOfNeonate: Any?): Int? {
         existingCount?.let { return it }
-            ?: return noOfNeonate?.let { (it as String).toLongOrNull() }
+            ?: return noOfNeonate?.let { (it as String).toIntOrNull() }
     }
 
 

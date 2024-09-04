@@ -22,6 +22,7 @@ import com.medtroniclabs.spice.formgeneration.extension.markMandatory
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
 import com.medtroniclabs.spice.network.resource.ResourceState
+import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.BaseDialogFragment
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
@@ -299,16 +300,26 @@ class ReferPatientFragment : BaseDialogFragment(), View.OnClickListener {
                 ""
             }
         }
-        patientViewModel.patientDetailsLiveData.value?.data?.let { patientDetails ->
-            viewModel.createReferPatientResult(
-                patientReference,
-                encounterId,
-                Pair(assessmentName, referralTicketType),
-                patientDetails.patientId,
-                patientDetails.houseHoldId,
-                patientDetails.villageId,
-                patientDetails.memberId
-            )
+        if (connectivityManager.isNetworkAvailable()){
+            patientViewModel.patientDetailsLiveData.value?.data?.let { patientDetails ->
+                viewModel.createReferPatientResult(
+                    patientReference,
+                    encounterId,
+                    Pair(assessmentName, referralTicketType),
+                    patientDetails.patientId,
+                    patientDetails.houseHoldId,
+                    patientDetails.villageId,
+                    patientDetails.memberId
+                )
+            }
+        } else {
+            (activity as BaseActivity?)?.showErrorDialogue(
+                getString(R.string.error),
+                getString(R.string.no_internet_error),
+                isNegativeButtonNeed = false
+            ) {
+
+            }
         }
     }
     private fun isEnableRefer() {

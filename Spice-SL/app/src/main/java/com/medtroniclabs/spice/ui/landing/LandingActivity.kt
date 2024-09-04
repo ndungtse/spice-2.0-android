@@ -14,6 +14,7 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.GravityCompat
 import androidx.core.view.forEach
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.fragment.app.Fragment
 import androidx.work.Constraints
 import androidx.work.Data
 import androidx.work.NetworkType
@@ -44,6 +45,7 @@ import com.medtroniclabs.spice.databinding.ActivityLandingBinding
 import com.medtroniclabs.spice.network.NetworkConstants
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.ChooseSiteDialogueFragment
+import com.medtroniclabs.spice.ui.PrivacyPolicyFragment
 import com.medtroniclabs.spice.ui.boarding.LoginActivity
 import com.medtroniclabs.spice.ui.home.HomeScreenFragment
 import com.medtroniclabs.spice.ui.landing.viewmodel.LandingViewModel
@@ -109,7 +111,17 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
         if (binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
             binding.drawerLayout.closeDrawer(GravityCompat.START)
         } else {
-            finish()
+            val currentFragment: Fragment? =
+                supportFragmentManager.findFragmentById(R.id.fragmentContainerView)
+            if (currentFragment is PrivacyPolicyFragment) {
+                if (currentFragment.canGoBack()) {
+                    currentFragment.goBack()
+                } else {
+                    onNavigationItemSelected(binding.navView.menu.findItem(R.id.home))
+                }
+            } else {
+                finish()
+            }
         }
     }
 
@@ -206,9 +218,21 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
 
             R.id.privacy_policy -> {
                 binding.drawerLayout.closeDrawer(GravityCompat.START)
-                val homeMenuItem = binding.navView.menu.findItem(R.id.home)
-                selectNavigationMenu(homeMenuItem)
-                return true
+                if (connectivityManager.isNetworkAvailable()) {
+                    binding.appBarMain.tvTitle.text = getString(R.string.privacy_policy)
+                    supportFragmentManager.beginTransaction()
+                        .replace(
+                            R.id.fragmentContainerView,
+                            PrivacyPolicyFragment(),
+                            PrivacyPolicyFragment::class.simpleName
+                        )
+                        .commit()
+                } else {
+                    showErrorDialogue(
+                        getString(R.string.error), getString(R.string.no_internet_error),
+                        false
+                    ) {}
+                }
             }
 
             R.id.changeFacility -> {

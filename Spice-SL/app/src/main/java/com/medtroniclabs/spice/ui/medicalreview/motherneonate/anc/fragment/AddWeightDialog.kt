@@ -151,8 +151,18 @@ class AddWeightDialog : DialogFragment(), View.OnClickListener {
     }
 
     private fun handleOkayClick() {
-        if (isWeightValid() && connectivityManager.isNetworkAvailable()) {
-            viewModel.saveWeight(createBpAndWeightRequestModel())
+        if (connectivityManager.isNetworkAvailable()) {
+            if (isWeightValid()) {
+                viewModel.saveWeight(createBpAndWeightRequestModel())
+            }
+        } else {
+            (activity as BaseActivity?)?.showErrorDialogue(
+                getString(R.string.error),
+                getString(R.string.no_internet_error),
+                isNegativeButtonNeed = false
+            ) {
+
+            }
         }
     }
 

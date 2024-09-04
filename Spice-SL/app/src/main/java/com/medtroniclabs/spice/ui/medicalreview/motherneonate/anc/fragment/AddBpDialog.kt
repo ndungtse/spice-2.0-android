@@ -247,8 +247,18 @@ class AddBpDialog : DialogFragment(), View.OnClickListener {
     }
 
     private fun handleOkayClick() {
-        if (inputValidate() && connectivityManager.isNetworkAvailable()) {
-            viewModel.saveBloodPressure(createBpAndWeightRequestModel())
+        if (connectivityManager.isNetworkAvailable()) {
+            if (inputValidate()) {
+                viewModel.saveBloodPressure(createBpAndWeightRequestModel())
+            }
+        } else {
+            (activity as BaseActivity?)?.showErrorDialogue(
+                getString(R.string.error),
+                getString(R.string.no_internet_error),
+                isNegativeButtonNeed = false
+            ) {
+
+            }
         }
     }
 

@@ -113,7 +113,7 @@ class PatientMenuFragment : BaseFragment(), MenuSelectionListener {
             }
         }
         binding.rvActivitiesList.adapter =
-            DashboardMenuItemsAdapter(menuItemsList, this)
+            DashboardMenuItemsAdapter(menuItemsList.filter { !it.isDisabled }, this)
     }
 
     companion object {

@@ -28,11 +28,14 @@ import com.medtroniclabs.spice.formgeneration.DiagnosisListener
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.model.medicalreview.CreateUnderTwoMonthsResponse
 import com.medtroniclabs.spice.network.resource.ResourceState
+import com.medtroniclabs.spice.network.utils.ConnectivityManager
+import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.TagListCustomView
 import com.medtroniclabs.spice.ui.medicalreview.diagnosis.viewmodel.DiagnosisViewModel
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class DiagnosisDialogFragment : DialogFragment(), View.OnClickListener, DiagnosisListener {
@@ -42,6 +45,9 @@ class DiagnosisDialogFragment : DialogFragment(), View.OnClickListener, Diagnosi
     private lateinit var diseaseCategoryTagView: TagListCustomView
     private val patientViewModel: PatientDetailViewModel by activityViewModels()
     private val diagnosisViewModel: DiagnosisViewModel by activityViewModels()
+
+    @Inject
+    lateinit var connectivityManager: ConnectivityManager
 
     companion object {
         const val TAG: String = "DiagnosisDialogueFragment"
@@ -314,17 +320,27 @@ class DiagnosisDialogFragment : DialogFragment(), View.OnClickListener, Diagnosi
             }
 
             binding.btnOkay.id -> {
-                patientViewModel.patientDetailsLiveData.value?.data?.let { details ->
-                    details.patientId?.let { patientId ->
-                        val request = DiagnosisSaveUpdateRequest(
-                            patientId = patientId,
-                            patientReference = details.id,
-                            diseases = getDiagnosisDiseaseList(),
-                            provenance = ProvanceDto(),
-                            otherNotes = binding.etOtherDiagnosisNotes.text?.trim()?.takeIf { it.isNotEmpty() }?.toString(),
-                            type = diagnosisViewModel.diagnosisType
-                        )
-                        diagnosisViewModel.diagnosisCreate(request)
+                if (connectivityManager.isNetworkAvailable()){
+                    patientViewModel.patientDetailsLiveData.value?.data?.let { details ->
+                        details.patientId?.let { patientId ->
+                            val request = DiagnosisSaveUpdateRequest(
+                                patientId = patientId,
+                                patientReference = details.id,
+                                diseases = getDiagnosisDiseaseList(),
+                                provenance = ProvanceDto(),
+                                otherNotes = binding.etOtherDiagnosisNotes.text?.trim()?.takeIf { it.isNotEmpty() }?.toString(),
+                                type = diagnosisViewModel.diagnosisType
+                            )
+                            diagnosisViewModel.diagnosisCreate(request)
+                        }
+                    }
+                } else {
+                    (activity as? BaseActivity)?.showErrorDialogue(
+                        getString(R.string.error),
+                        getString(R.string.no_internet_error),
+                        isNegativeButtonNeed = false
+                    ) {
+
                     }
                 }
             }

@@ -26,6 +26,7 @@ import com.medtroniclabs.spice.formgeneration.extension.capitalizeFirstChar
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.model.medicalreview.CreateUnderTwoMonthsResponse
 import com.medtroniclabs.spice.network.resource.ResourceState
+import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.medicalreview.diagnosis.DiagnosisDialogFragment
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.DialogDismissListener
@@ -300,7 +301,17 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
 
 
     private fun showDiagnosisDialog() {
-        DiagnosisDialogFragment().show(childFragmentManager, DiagnosisDialogFragment.TAG)
+        if (connectivityManager.isNetworkAvailable()){
+            DiagnosisDialogFragment().show(childFragmentManager, DiagnosisDialogFragment.TAG)
+        } else {
+            (activity as BaseActivity?)?.showErrorDialogue(
+                getString(R.string.error),
+                getString(R.string.no_internet_error),
+                isNegativeButtonNeed = false
+            ) {
+
+            }
+        }
     }
 
     private fun retryFetchingData(isBp: Boolean) {
