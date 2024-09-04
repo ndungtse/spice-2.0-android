@@ -174,6 +174,7 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
                     } else {
                         handleSubmit()
                     }
+                    saveBloodPressureIfNeeded(pregnancyDetailsViewModel, bpViewModel, viewModel)
                 }
 
                 ResourceState.ERROR -> {
@@ -663,7 +664,6 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
     ) {
         if (connectivityManager.isNetworkAvailable()) {
             saveWeightIfNeeded(pregnancyDetailsViewModel, weightViewModel, viewModel)
-            saveBloodPressureIfNeeded(pregnancyDetailsViewModel, bpViewModel, viewModel)
         } else {
             showErrorDialogue(
                 getString(R.string.error), getString(R.string.no_internet_error),
