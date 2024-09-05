@@ -198,6 +198,19 @@
             app:layout_constraintTop_toTopOf="@+id/seperatorColon3" />
 
         <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvBirthWeightCal"
+            android:layout_width="0dp"
+            android:layout_marginStart="@dimen/_15sdp"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/inter_bold"
+            android:textColor="@color/table_title"
+            android:textSize="@dimen/_16ssp"
+            app:layout_constraintBottom_toBottomOf="@+id/etBirthWeight"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/endGuideline"
+            app:layout_constraintTop_toTopOf="@+id/etBirthWeight" />
+
+        <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tvBirthWeightError"
             android:layout_width="0dp"
             android:layout_height="wrap_content"

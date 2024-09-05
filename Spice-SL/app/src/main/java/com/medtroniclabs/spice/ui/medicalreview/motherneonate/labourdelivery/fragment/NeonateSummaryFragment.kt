@@ -78,9 +78,15 @@ class NeonateSummaryFragment : BaseFragment() {
             binding.tvBirthWeight.text = if (weight.toDouble()== 0.0){
                 (getString(R.string.na))
             }else if (weight.toDouble() < DefinedParams.LowBirthWeight){
-                weight.plus(" ").plus(getString(R.string.kg))
+                weight.plus(" ").plus(getString(R.string.kg)).plus(" ").plus("(${CommonUtils.birthWeight(
+                    weight.toDouble(),
+                    requireContext()
+                )})")
             } else{
-                weight.plus(" ").plus(getString(R.string.kgs))
+                weight.plus(" ").plus(getString(R.string.kgs)).plus(" ").plus("(${CommonUtils.birthWeight(
+                    weight.toDouble(),
+                    requireContext()
+                )})")
             }
         }else{
             binding.tvBirthWeight.text= (getString(R.string.na))

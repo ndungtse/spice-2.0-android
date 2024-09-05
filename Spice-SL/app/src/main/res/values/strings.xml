@@ -315,7 +315,7 @@
     <string name="general_condition_of_mother">General Condition of Mother</string>
     <string name="risk_factor">Risk Factors</string>
     <string name="state_of_the_perineum">State of the Perineum</string>
-    <string name="episotomy">Episotomy</string>
+    <string name="episotomy">Episiotomy</string>
     <string name="tear">Tear</string>
     <string name="TT_does_taken_so_far">TT Dose taken so far</string>
     <string name="status">Status</string>
@@ -657,5 +657,11 @@
     <string name="follow_up_conducted">Follow up Conducted</string>
     <string name="recovered_improved">Recovered / Improved</string>
     <string name="worsened">Worsened</string>
+
+    <string name="lbw">"Low Birth Weight"</string>
+    <string name="vlbw">"Very Low Birth Weight"</string>
+    <string name="elbw">"Extremely Low Birth Weight"</string>
+    <string name="nbw">"Normal Birth Weight"</string>
+    <string name="hbw">"High Birth Weight"</string>
 
 </resources>

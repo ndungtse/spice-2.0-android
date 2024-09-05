@@ -546,5 +546,18 @@ object CommonUtils {
     fun extractNumber(input: String): Int {
         return input.split(" ").getOrNull(0)?.toIntOrNull() ?: 0
     }
+    fun birthWeight(kg: Double, context: Context): String{
+        val grams = (kg * 1000).toInt()
+        return when {
+            grams < 1000 -> context.getString(R.string.elbw)
+            grams < 1500 -> context.getString(R.string.vlbw)
+            grams < 2500 -> context.getString(R.string.lbw)
+            grams in 2500..4000 ->  context.getString(R.string.nbw)
+            grams > 4000 ->  context.getString(R.string.hbw)
+            else -> ""
+        }
+    }
+
+
 
 }

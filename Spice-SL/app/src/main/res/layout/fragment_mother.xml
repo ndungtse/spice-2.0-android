@@ -371,13 +371,16 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/_32sdp"
+            android:layout_marginBottom="@dimen/_16sdp"
             android:text="@string/status"
             android:textColor="@color/table_title"
             android:textSize="@dimen/_16ssp"
             app:fontFamily="@font/inter_regular"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@+id/leftGuideline"
             app:layout_constraintStart_toStartOf="@+id/tvTTDoesTakenLabel"
-            app:layout_constraintTop_toBottomOf="@+id/tvTTDoesTakenSoFarError" />
+            app:layout_constraintTop_toBottomOf="@+id/tvTTDoesTakenSoFarError"
+            app:layout_constraintVertical_bias="0.0" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/seperatorColon6"
@@ -394,10 +397,10 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/_16sdp"
-            app:layout_constraintBottom_toBottomOf="@+id/tvStatusLabel"
+            android:layout_marginTop="@dimen/_19sdp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/rightGuideline"
-            app:layout_constraintTop_toTopOf="@+id/tvStatusLabel" />
+            app:layout_constraintTop_toBottomOf="@+id/tvNumber" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/cgStatusError"

@@ -241,9 +241,11 @@ class NeonateFragment : BaseFragment() {
             val birthWeight = it?.trim().toString()
             if (birthWeight.isNotEmpty()) {
                 viewModel.neonateBirthWeight = birthWeight
+                binding.tvBirthWeightCal.text= CommonUtils.birthWeight(birthWeight.toDouble(),requireContext())
                 viewModel.validateSubmitButtonState()
             } else {
                 viewModel.neonateBirthWeight = null
+                binding.tvBirthWeightCal.text=""
                 viewModel.validateSubmitButtonState()
             }
         }
