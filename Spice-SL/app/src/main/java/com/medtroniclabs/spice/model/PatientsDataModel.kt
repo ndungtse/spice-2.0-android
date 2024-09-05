@@ -1,5 +1,7 @@
 package com.medtroniclabs.spice.model
 
+import com.medtroniclabs.spice.common.CommonUtils
+
 data class PatientsDataModel(
     var skip: Long? = null,
     var limit: Int? = null,
@@ -7,7 +9,8 @@ data class PatientsDataModel(
     val searchText: String? = null,
     val districtId: Long? = null,
     val referencePatientId: String? = null,
-    val filter: MedicalReviewFilterModel? = null
+    val filter: MedicalReviewFilterModel? = null,
+    val ncdType: String? = CommonUtils.ncdType()
 )
 
 data class MedicalReviewFilterModel(

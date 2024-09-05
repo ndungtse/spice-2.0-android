@@ -168,8 +168,6 @@ interface ApiHelper {
 
     suspend fun  checkAppVersion() : Response<APIResponse<Boolean>>
     suspend fun  registerPatient(hashMap: HashMap<String, Any>) : Response<APIResponse<RegistrationResponse>>
-    suspend fun ncdPatientSearch(request: PatientsDataModel): APIResponse<SearchAndListResponse>
-    suspend fun getNcdPatient(request: PatientDetailRequest): Response<APIResponse<PatientListRespModel>>
     suspend fun createScreening(createRequest: JsonObject): Response<ScreeningPatientResponse>
     suspend fun getNcdMRStaticData(): Response<APIResponse<NcdMRStaticDataModel>>
 }

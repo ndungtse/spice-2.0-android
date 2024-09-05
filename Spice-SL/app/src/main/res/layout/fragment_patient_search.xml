@@ -103,10 +103,9 @@
                 android:textColor="@color/medium_risk_color"
                 android:textSize="@dimen/_16ssp"
                 android:visibility="gone"
-                app:layout_constraintBottom_toBottomOf="@id/rvPatientsList"
-                app:layout_constraintEnd_toEndOf="@id/rvPatientsList"
-                app:layout_constraintStart_toStartOf="@id/rvPatientsList"
-                app:layout_constraintTop_toTopOf="@id/rvPatientsList" />
+                app:layout_constraintBottom_toTopOf="@id/centerGuideline"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btnRegister"
@@ -118,9 +117,9 @@
                 android:textAllCaps="false"
                 android:textStyle="bold"
                 android:visibility="gone"
+                app:layout_constraintTop_toBottomOf="@id/centerGuideline"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tvNoPatientsFound" />
+                app:layout_constraintStart_toStartOf="parent" />
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/bottomCardView"

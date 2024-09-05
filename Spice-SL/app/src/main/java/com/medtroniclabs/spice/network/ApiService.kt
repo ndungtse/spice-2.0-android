@@ -303,12 +303,6 @@ interface ApiService {
     @POST("spice-service/patient/register")
     suspend fun registerPatient(@Body request: HashMap<String, Any>): Response<APIResponse<RegistrationResponse>>
 
-    @POST("spice-service/patient/ncd-search")
-    suspend fun ncdPatientSearch(@Body request: PatientsDataModel): APIResponse<SearchAndListResponse>
-
-    @POST("spice-service/patient/ncd-patientDetails")
-    suspend fun getNcdPatient(@Body request: PatientDetailRequest): Response<APIResponse<PatientListRespModel>>
-
     @POST("spice-service/static-data/ncd-medical-review")
     suspend fun getNcdMRStaticData(): Response<APIResponse<NcdMRStaticDataModel>>
 }

@@ -33,14 +33,10 @@ class PatientDetailViewModel @Inject constructor(
 
     var origin: String? = null
 
-    fun getPatients(id: String, assessmentType: String? = null, type: String? = null) {
+    fun getPatients(id: String, assessmentType: String? = null, origin: String? = null) {
         viewModelScope.launch(dispatcherIO) {
             patientDetailsLiveData.postLoading()
-            val patientDetailRequest: PatientDetailRequest = if (CommonUtils.isNonNcdWorkflow())
-                PatientDetailRequest(patientId = id, assessmentType = assessmentType, type = type)
-            else
-                PatientDetailRequest(id = id, assessmentType = assessmentType, type = type)
-            patientDetailsLiveData.postValue(patientRepository.getPatients(patientDetailRequest))
+            patientDetailsLiveData.postValue(patientRepository.getPatients(PatientDetailRequest(patientId = id, assessmentType = assessmentType, id = id, type = origin)))
         }
     }
 

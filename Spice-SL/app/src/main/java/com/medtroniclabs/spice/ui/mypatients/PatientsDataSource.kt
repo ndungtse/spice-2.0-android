@@ -58,15 +58,13 @@ class PatientsDataSource(
             val response: APIResponse<SearchAndListResponse>? = if (isPatientListRequired && searchText.isBlank()) {
                 apiHelper.getPatients(patientsDataModel)
             } else if(searchText.isNotBlank()) {
-                val searchRequest = patientsDataModel.copy(
-                    villageIds = null,
-                    searchText = searchText.ifEmpty { null },
-                    districtId = districtId
+                apiHelper.patientSearch(
+                    patientsDataModel.copy(
+                        villageIds = null,
+                        searchText = searchText.ifEmpty { null },
+                        districtId = districtId
+                    )
                 )
-                if (CommonUtils.isNonNcdWorkflow())
-                    apiHelper.patientSearch(searchRequest)
-                else
-                    apiHelper.ncdPatientSearch(searchRequest)
             } else
                 null
 

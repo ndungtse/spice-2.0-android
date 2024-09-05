@@ -262,25 +262,28 @@ class ReferralHistoryActivity : BaseActivity(), AncVisitCallBack {
 
     private fun swipeRefresh() {
         patientDetailViewModel.patientDetailsLiveData.value?.data?.let { details ->
-            if (CommonUtils.isNonNcdWorkflow())
+            if(CommonUtils.isSL()) {
                 details.patientId?.let { id ->
-                    patientDetailViewModel.getPatients(id, type = patientDetailViewModel.origin)
+                    patientDetailViewModel.getPatients(id)
                 }
-            else
+            } else {
                 details.id?.let { id ->
-                    patientDetailViewModel.getPatients(id, type = patientDetailViewModel.origin)
+                    patientDetailViewModel.getPatients(id, origin = patientDetailViewModel.origin)
                 }
+            }
         }
     }
 
     override fun onResume() {
         super.onResume()
-        val patientId = if (CommonUtils.isNonNcdWorkflow())
-            intent.getStringExtra(DefinedParams.PatientId)
-        else
-            intent.getStringExtra(DefinedParams.FhirId)
-        if (patientId != null) {
-            patientDetailViewModel.getPatients(patientId, type = patientDetailViewModel.origin)
+        if (CommonUtils.isSL()) {
+            intent.getStringExtra(DefinedParams.PatientId)?.let {
+                patientDetailViewModel.getPatients(it)
+            }
+        } else {
+            intent.getStringExtra(DefinedParams.FhirId)?.let {
+                patientDetailViewModel.getPatients(it, origin = patientDetailViewModel.origin)
+            }
         }
     }
 }

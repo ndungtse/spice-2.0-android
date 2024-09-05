@@ -204,7 +204,7 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
 
     override fun onSelectedPatient(item: PatientListRespModel) {
         withNetworkAvailability(online = {
-            if (CommonUtils.isSL(requireContext())) {
+            if (CommonUtils.isSL()) {
                 val intent = Intent(requireActivity(), ReferralHistoryActivity::class.java)
                 intent.putExtra(DefinedParams.PatientId, item.patientId)
                 intent.putExtra(DefinedParams.Gender, item.gender)
@@ -213,8 +213,17 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
                 intent.putExtra(DefinedParams.ORIGIN, patientListViewModel.origin)
                 startActivity(intent)
             } else {
-                val intent = Intent(requireActivity(), AssessmentToolsActivity::class.java)
-                startActivity(intent)
+                val destinationIntent = when (patientListViewModel.origin) {
+                    MenuConstants.REGISTRATION -> RegistrationActivity::class.java
+                    MenuConstants.ASSESSMENT -> AssessmentToolsActivity::class.java
+                    else -> null
+                }
+                destinationIntent?.let { destIntent ->
+                    val intent = Intent(requireContext(), destIntent)
+                    intent.putExtra(DefinedParams.FhirId, item.id)
+                    intent.putExtra(DefinedParams.ORIGIN, patientListViewModel.origin)
+                    startActivity(intent)
+                }
             }
         })
     }

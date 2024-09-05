@@ -49,7 +49,8 @@ object SecuredPreference {
         CURRENT_LATITUDE,
         CURRENT_LONGITUDE,
         MEASUREMENT_TYPE_KEY,
-        IS_NCD_MEDICAL_REVIEW_LOADED
+        IS_NCD_MEDICAL_REVIEW_LOADED,
+        APPLICATION
     }
 
 

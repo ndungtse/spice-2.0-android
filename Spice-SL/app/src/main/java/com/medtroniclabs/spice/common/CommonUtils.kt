@@ -1368,7 +1368,22 @@ object CommonUtils {
         }
     }
 
-    fun isSL(context: Context): Boolean {
-        return context.packageName.contains(".sl", true)
+    fun isSL(): Boolean {
+        return SecuredPreference.getString(SecuredPreference.EnvironmentKey.APPLICATION.name) == SPICE.SIERRA_LEONE.name
+    }
+
+    fun isBD(): Boolean {
+        return SecuredPreference.getString(SecuredPreference.EnvironmentKey.APPLICATION.name) == SPICE.BANGLADESH.name
+    }
+
+    fun isAfrica(): Boolean {
+        return SecuredPreference.getString(SecuredPreference.EnvironmentKey.APPLICATION.name) == SPICE.AFRICA.name
+    }
+
+    fun ncdType(): String {
+        return when {
+            isSL() -> DefinedParams.NCD_REGISTER
+            else -> DefinedParams.EMPOWER_HEALTH_NCD
+        }
     }
 }

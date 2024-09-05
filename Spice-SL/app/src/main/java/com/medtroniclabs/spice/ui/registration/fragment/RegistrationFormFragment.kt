@@ -8,6 +8,7 @@ import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.EntityMapper
+import com.medtroniclabs.spice.common.FormAutofill
 import com.medtroniclabs.spice.data.model.RecommendedDosageListModel
 import com.medtroniclabs.spice.databinding.FragmentRegistrationFormBinding
 import com.medtroniclabs.spice.formgeneration.FormGenerator
@@ -18,12 +19,14 @@ import com.medtroniclabs.spice.formgeneration.ui.FormResultComposer
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.BaseFragment
+import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 import com.medtroniclabs.spice.ui.registration.RegistrationActivity
 import com.medtroniclabs.spice.ui.registration.viewmodel.RegistrationFormViewModel
 
 class RegistrationFormFragment : BaseFragment(), View.OnClickListener, FormEventListener {
     private lateinit var binding: FragmentRegistrationFormBinding
     private val viewModel: RegistrationFormViewModel by activityViewModels()
+    private val patientViewModel: PatientDetailViewModel by activityViewModels()
     private lateinit var formGenerator: FormGenerator
 
     override fun onCreateView(
@@ -66,6 +69,7 @@ class RegistrationFormFragment : BaseFragment(), View.OnClickListener, FormEvent
                     hideProgress()
                     resources.data?.let { data ->
                         formGenerator.populateViews(data.formLayout)
+                        prePopulate()
                     }
                 }
 
@@ -203,6 +207,12 @@ class RegistrationFormFragment : BaseFragment(), View.OnClickListener, FormEvent
                     }
                 }
             }
+        }
+    }
+
+    private fun prePopulate() {
+        patientViewModel.patientDetailsLiveData.value?.data.let {
+            FormAutofill.start(formGenerator, it)
         }
     }
 

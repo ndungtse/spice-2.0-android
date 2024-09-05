@@ -122,7 +122,7 @@ class SingleSelectionCustomView : LinearLayout {
     fun singleSelectionChildViewsOption(string: String) {
         forEach {
             if (it is TextView) {
-               if( it.text==string) {
+               if( it.text.toString().equals(string, ignoreCase = true)) {
                    it.isSelected = true
                    it.performClick()
                }
@@ -130,5 +130,12 @@ class SingleSelectionCustomView : LinearLayout {
         }
     }
 
-
+    fun singleSelectionChildViewsOption(boolean: Boolean, id: String) {
+        forEach {
+            if (it is TextView && it.tag.toString() == id) {
+                it.isSelected = boolean
+                it.performClick()
+            }
+        }
+    }
 }

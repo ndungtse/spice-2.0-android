@@ -2,16 +2,20 @@ package com.medtroniclabs.spice.ui.registration
 
 import android.os.Bundle
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.viewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.databinding.ActivityRegistrationBinding
 import com.medtroniclabs.spice.ui.BaseActivity
+import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 import com.medtroniclabs.spice.ui.registration.fragment.RegistrationFormFragment
 import com.medtroniclabs.spice.ui.registration.fragment.RegistrationSummaryFragment
 import com.medtroniclabs.spice.ui.registration.fragment.TermsAndConditionsFragment
 
 class RegistrationActivity : BaseActivity() {
+
     private lateinit var binding: ActivityRegistrationBinding
+    private val patientDetailViewModel: PatientDetailViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,7 +33,17 @@ class RegistrationActivity : BaseActivity() {
                 backNavigation()
             }
         )
+        getPatientDetails()
         loadTermsAndConditionsFragment()
+    }
+
+    private fun getPatientDetails() {
+        intent?.let {
+            patientDetailViewModel.origin = it.getStringExtra(DefinedParams.ORIGIN)
+            it.getStringExtra(DefinedParams.FhirId)?.let { id ->
+                patientDetailViewModel.getPatients(id, origin = patientDetailViewModel.origin?.lowercase())
+            }
+        }
     }
 
     private fun loadTermsAndConditionsFragment() {

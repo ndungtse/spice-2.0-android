@@ -1,6 +1,5 @@
 package com.medtroniclabs.spice.ui.mypatients.repo
 
-import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.data.Prescription
 import com.medtroniclabs.spice.data.PrescriptionListRequest
 import com.medtroniclabs.spice.db.local.RoomHelper
@@ -25,10 +24,7 @@ class PatientRepository @Inject constructor(
         request: PatientDetailRequest
     ): Resource<PatientListRespModel> {
         return try {
-            val response =
-                if (CommonUtils.isNonNcdWorkflow()) apiHelper.getPatient(request) else apiHelper.getNcdPatient(
-                    request
-                )
+            val response = apiHelper.getPatient(request)
             if (response.isSuccessful) {
                 Resource(state = ResourceState.SUCCESS, data = response.body()?.entity)
             } else {
