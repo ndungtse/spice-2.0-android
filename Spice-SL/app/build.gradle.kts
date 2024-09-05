@@ -35,10 +35,10 @@ android {
 
     signingConfigs {
         create("release") {
-            keyAlias = "spice"
-            keyPassword = "spice@123"
-            storePassword = "spice@123"
-            storeFile = file("spice")
+            keyAlias = "medtronic"
+            keyPassword = "Med@Tr0ni#Lab$"
+            storePassword = "Med@Tr0ni#Lab$"
+            storeFile = file("spice_sl.jks")
         }
         create("staging") {
             keyAlias = "spice"
@@ -60,14 +60,16 @@ android {
                 if (buildType.name == "release") {
                     manifestPlaceholders["appNameSuffix"] = commonPrefix
                     if (productFlavors[0].name == "sl") {
-                        buildConfigField("String", "API_BASE_URL", "\"https://localhost.com/\"")
-                        buildConfigField("String", "ADMIN_BASE_URL", "\"https://localhost.com/\"")
-                        buildConfigField("String", "SALT", "\"\"")
+                        buildConfigField("String", "API_BASE_URL", "\"https://spice-backend.sl.medtroniclabs.org/\"")
+                        buildConfigField("String", "ADMIN_BASE_URL", "\"https://spiceadmin.sl.medtroniclabs.org/\"")
+                        buildConfigField("String", "SALT", "\"Sp!(e_PrOD_II\"")
+                        buildConfigField("String", "DB_PASSWORD", "\"Med@Tr0ni#Lab$\"")
                     } else if (productFlavors[0].name == "africa") {
                         manifestPlaceholders["appNameSuffix"] = commonPrefix
                         buildConfigField("String", "API_BASE_URL", "\"https://localhost.com/\"")
                         buildConfigField("String", "ADMIN_BASE_URL", "\"https://localhost.com/\"")
                         buildConfigField("String", "SALT", "\" \"")
+                        buildConfigField("String", "DB_PASSWORD", "\"Med@Tr0ni#Lab$\"")
                     }
                 }
             }
@@ -82,17 +84,18 @@ android {
                     manifestPlaceholders["appNameSuffix"] = "$commonPrefix Dev"
                     if (productFlavors[0].name == "sl") {
                         buildConfigField("String", "API_BASE_URL", "\"https://spice-dev-backend.sl.labsplatform.com/\"")
-                        buildConfigField("String", "ADMIN_BASE_URL", "\"https://localhost.com/\"")
+                        buildConfigField("String", "ADMIN_BASE_URL", "\"https://spice-dev.sl.labsplatform.com/\"")
                         buildConfigField("String", "SALT", "\"spice_uat\"")
+                        buildConfigField("String", "DB_PASSWORD", "\"Med@Tr0ni#Lab$\"")
                     } else if (productFlavors[0].name == "africa") {
                         buildConfigField("String", "API_BASE_URL", "\"https://localhost.com/\"")
                         buildConfigField("String", "ADMIN_BASE_URL", "\"https://localhost.com/\"")
                         buildConfigField("String", "SALT", "\" \"")
+                        buildConfigField("String", "DB_PASSWORD", "\"Med@Tr0ni#Lab$\"")
                     }
                 }
             }
-            // below line for test the forgot password in mobile
-           // signingConfig = signingConfigs.getByName("release")
+            signingConfig = signingConfigs.getByName("staging")
         }
 
         create("staging") {
@@ -109,12 +112,14 @@ android {
                     manifestPlaceholders["appNameSuffix"] = "$commonPrefix Staging"
                     if (productFlavors[0].name == "sl") {
                         buildConfigField("String", "API_BASE_URL", "\"https://spice-dev-backend.sl.labsplatform.com/\"")
-                        buildConfigField("String", "ADMIN_BASE_URL", "\"https://localhost.com/\"")
+                        buildConfigField("String", "ADMIN_BASE_URL", "\"https://spice-dev.sl.labsplatform.com/\"")
                         buildConfigField("String", "SALT", "\"spice_uat\"")
+                        buildConfigField("String", "DB_PASSWORD", "\"Med@Tr0ni#Lab$\"")
                     } else if (productFlavors[0].name == "africa") {
                         buildConfigField("String", "API_BASE_URL", "\"https://localhost.com/\"")
                         buildConfigField("String", "ADMIN_BASE_URL", "\"https://localhost.com/\"")
                         buildConfigField("String", "SALT", "\" \"")
+                        buildConfigField("String", "DB_PASSWORD", "\"Med@Tr0ni#Lab$\"")
                     }
                 }
             }
@@ -124,6 +129,7 @@ android {
         create("training") {
             initWith(getByName("release"))
             applicationIdSuffix = ".training"
+            versionNameSuffix = "-(20240829_01)"
             isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
@@ -134,12 +140,14 @@ android {
                     manifestPlaceholders["appNameSuffix"] = "$commonPrefix Training"
                     if (productFlavors[0].name == "sl") {
                         buildConfigField("String", "API_BASE_URL", "\"https://spice-training-backend.sl.labsplatform.com/\"")
-                        buildConfigField("String", "ADMIN_BASE_URL", "\"https://localhost.com/\"")
+                        buildConfigField("String", "ADMIN_BASE_URL", "\"https://spice-training.sl.labsplatform.com/\"")
                         buildConfigField("String", "SALT", "\"spice_uat\"")
+                        buildConfigField("String", "DB_PASSWORD", "\"Med@Tr0ni#Lab$\"")
                     } else if (productFlavors[0].name == "africa") {
                         buildConfigField("String", "API_BASE_URL", "\"https://localhost.com/\"")
                         buildConfigField("String", "ADMIN_BASE_URL", "\"https://localhost.com/\"")
                         buildConfigField("String", "SALT", "\" \"")
+                        buildConfigField("String", "DB_PASSWORD", "\"Med@Tr0ni#Lab$\"")
                     }
                 }
             }
@@ -240,4 +248,8 @@ dependencies {
 
     // Pagination
     implementation("androidx.paging:paging-runtime-ktx:3.2.1")
+
+    implementation("net.zetetic:sqlcipher-android:4.6.0@aar")
+    implementation("androidx.sqlite:sqlite-ktx:2.4.0")
+
 }

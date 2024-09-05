@@ -42,10 +42,13 @@
                 <data android:scheme="https"/>
                 <data android:scheme="http"/>
 
-                <data android:host="spice-dev.sl.labsplatform.com"/>
+                <!--<data android:host="spice-dev.sl.labsplatform.com"/>
                 <data android:pathPrefix="/reset-password"/>
 
                 <data android:host="spice-training.sl.labsplatform.com"/>
+                <data android:pathPrefix="/reset-password"/>-->
+
+                <data android:host="spiceadmin.sl.medtroniclabs.org"/>
                 <data android:pathPrefix="/reset-password"/>
 
             </intent-filter>

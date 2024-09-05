@@ -5,6 +5,7 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import com.medtroniclabs.spice.BuildConfig
 import com.medtroniclabs.spice.data.DiseaseCategoryItems
 import com.medtroniclabs.spice.data.ExaminationListItems
 import com.medtroniclabs.spice.data.LabourDeliveryMetaEntity
@@ -40,11 +41,12 @@ import com.medtroniclabs.spice.db.entity.PregnancyDetail
 import com.medtroniclabs.spice.db.entity.SignsAndSymptomsEntity
 import com.medtroniclabs.spice.db.entity.UserProfileEntity
 import com.medtroniclabs.spice.db.entity.VillageEntity
+import net.zetetic.database.sqlcipher.SupportOpenHelperFactory
 
 @Database(
     entities = [HouseholdEntity::class, HouseholdMemberEntity::class, SignsAndSymptomsEntity::class, AssessmentEntity::class, MenuEntity::class, UserProfileEntity::class,
         VillageEntity::class, HealthFacilityEntity::class, ClinicalWorkflowEntity::class, FormEntity::class, ClinicalWorkflowConditionEntity::class,
-        MedicalReviewMetaItems::class, DiseaseCategoryItems::class, ExaminationListItems::class, LabourDeliveryMetaEntity::class, FollowUp::class, FollowUpCall::class, PregnancyDetail::class,FrequencyEntity::class, ConsentForm::class],
+        MedicalReviewMetaItems::class, DiseaseCategoryItems::class, ExaminationListItems::class, LabourDeliveryMetaEntity::class, FollowUp::class, FollowUpCall::class, PregnancyDetail::class, FrequencyEntity::class, ConsentForm::class],
     version = 1
 )
 @TypeConverters(OfflineStatusTypeConverter::class)
@@ -64,7 +66,7 @@ abstract class SpiceDataBase : RoomDatabase() {
 
     abstract fun pregnancyDetailDao(): PregnancyDetailDao
 
-    abstract fun frequencyDao():FrequencyDAO
+    abstract fun frequencyDao(): FrequencyDAO
 
     abstract fun consentFormDao(): ConsentFormDao
 
@@ -81,13 +83,17 @@ abstract class SpiceDataBase : RoomDatabase() {
 
 
         private fun buildDatabase(context: Context): SpiceDataBase {
+            System.loadLibrary("sqlcipher")
+            val factory = SupportOpenHelperFactory(BuildConfig.DB_PASSWORD.toByteArray(Charsets.UTF_8))
             val db = Room.databaseBuilder(
                 context.applicationContext,
                 SpiceDataBase::class.java,
                 DATABASE_NAME
             )
+            if (!BuildConfig.DEBUG)
+                db.openHelperFactory(factory)
+
             return db.build()
         }
     }
-
 }

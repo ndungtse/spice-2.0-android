@@ -43,8 +43,6 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
         createAndSaveDeviceId()
         checkNotificationPermission()
 
-        UserDetail.userId = "43"
-
         //3. Set app version name
         val packageInfo = applicationContext.packageManager.getPackageInfo(packageName, 0)
         UserDetail.appVersion = packageInfo.versionName
