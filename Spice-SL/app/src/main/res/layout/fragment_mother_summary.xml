@@ -433,8 +433,9 @@
             android:fontFamily="@font/inter_medium"
             android:textSize="@dimen/_16ssp"
             android:layout_marginBottom="@dimen/_16sdp"
+            android:layout_marginEnd="@dimen/_16sdp"
             app:layout_constraintBottom_toBottomOf="@+id/tvNextVisitDateLabel"
-            app:layout_constraintEnd_toEndOf="@+id/centerGuideline"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/endGuideline"
             app:layout_constraintTop_toTopOf="@+id/tvNextVisitDateLabel" />
 

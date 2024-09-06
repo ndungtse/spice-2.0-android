@@ -79,6 +79,8 @@ class MotherNeonatePncSummaryFragment : BaseFragment(), View.OnClickListener {
         viewModel.setPncReqToGetMetaForPatientStatus(category = category)
 
     private fun clickListener() {
+        binding.motherSummary.tvPatientStatus.markMandatory()
+        binding.neonateSummary.tvPatientStatus.markMandatory()
         binding.motherSummary.tvNextMedicalReviewLabel.markMandatory()
         binding.motherSummary.tvNextMedicalReviewLabelText.safeClickListener(this)
     }
@@ -200,7 +202,7 @@ class MotherNeonatePncSummaryFragment : BaseFragment(), View.OnClickListener {
                         )
                     }
                     convertListToString(
-                        ArrayList(list.map { it.diseaseCategory }.distinct())
+                        ArrayList(list.filter { it.diseaseCategory.lowercase() != DefinedParams.OtherNotes.lowercase() }.map { it.diseaseCategory }.distinct())
                     )
                 } ?: requireContext().getString(R.string.empty__)
 
