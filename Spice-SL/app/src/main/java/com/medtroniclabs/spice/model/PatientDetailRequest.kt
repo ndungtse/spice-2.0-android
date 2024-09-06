@@ -8,7 +8,7 @@ data class PatientDetailRequest(
     val ticketId:String? = null,
     val type: String? = null,
     val assessmentType:String? = null,
-    val ncdType: String? = CommonUtils.ncdType()
+    val requestFrom: String? = CommonUtils.requestFrom()
 )
 
 data class ReferralDetailRequest(

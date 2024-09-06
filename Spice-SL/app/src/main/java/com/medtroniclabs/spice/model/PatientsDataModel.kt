@@ -10,7 +10,8 @@ data class PatientsDataModel(
     val districtId: Long? = null,
     val referencePatientId: String? = null,
     val filter: MedicalReviewFilterModel? = null,
-    val ncdType: String? = CommonUtils.ncdType()
+    val type: String? = null,
+    val requestFrom: String? = CommonUtils.requestFrom()
 )
 
 data class MedicalReviewFilterModel(

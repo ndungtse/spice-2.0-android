@@ -8,7 +8,7 @@ data class VillageEntity(
     @PrimaryKey
     val id: Long,
     val name: String,
-    val villagecode: String,
+    val villagecode: String? = null,
     val chiefdomId: Long? = null,
     val countryId: Long,
     val districtId: Long? = null,

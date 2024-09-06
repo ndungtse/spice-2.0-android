@@ -77,7 +77,7 @@ import net.zetetic.database.sqlcipher.SupportOpenHelperFactory
         MedicalReviewMetaItems::class, DiseaseCategoryItems::class, ExaminationListItems::class, LabourDeliveryMetaEntity::class, FollowUp::class, FollowUpCall::class, PregnancyDetail::class, FrequencyEntity::class,
         ProgramEntity::class, CulturesEntity::class, ConsentForm::class, ConsentEntity::class, MentalHealthEntity::class, MedicalComplianceEntity::class, ChiefDomEntity::class, DistrictEntity::class, ScreeningEntity::class, RiskFactorEntity::class,
         MedicalReviewMetaItems::class, DiseaseCategoryItems::class, ExaminationListItems::class, LabourDeliveryMetaEntity::class, FollowUp::class, FollowUpCall::class, PregnancyDetail::class, FrequencyEntity::class, ConsentForm::class,
-        ProgramEntity::class, CulturesEntity::class, ConsentForm::class, ConsentEntity::class, MentalHealthEntity::class, MedicalComplianceEntity::class, ChiefDomEntity::class, DistrictEntity::class, ScreeningEntity::class, RiskFactorEntity::class,
+        ProgramEntity::class, CulturesEntity::class, ConsentEntity::class, MentalHealthEntity::class, MedicalComplianceEntity::class, ChiefDomEntity::class, DistrictEntity::class, ScreeningEntity::class, RiskFactorEntity::class,
         ComorbidityEntity::class, ComplicationsEntity::class, LifestyleEntity::class, ComplaintsEntity::class, PhysicalExaminationEntity::class, CurrentMedicationEntity::class, TreatmentPlanEntity::class, TreatmentPlanFrequencyEntity::class],
     version = 1
 )

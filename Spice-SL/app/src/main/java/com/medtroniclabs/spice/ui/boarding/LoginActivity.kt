@@ -207,7 +207,7 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
             ) == SecuredPreference.getString(
                 SecuredPreference.EnvironmentKey.PASSWORD.name
             ))))
-            if (isToShowAlert && CommonUtils.isChw()) {
+            if (isToShowAlert && CommonUtils.offlineUsers()) {
                 showErrorDialogue(
                     getString(R.string.alert),
                     message = getString(R.string.offline_login_message),

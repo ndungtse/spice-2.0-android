@@ -10,4 +10,5 @@ object RoleConstant {
     val MID_WIFE = "MID_WIFE"
     val LAB_ASSISTANT = "LAB_ASSISTANT"
     val SRN = "SRN"
+    val COMMUNITY_HEALTH_PROVIDER = "CHP"
 }

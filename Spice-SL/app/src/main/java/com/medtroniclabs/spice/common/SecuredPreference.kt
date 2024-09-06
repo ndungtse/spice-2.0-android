@@ -539,6 +539,6 @@ object SecuredPreference {
     }
 
     fun getDeviceID(): Long? {
-        return getUserDetails().deviceInfoId
+        return getUserDetails()?.deviceInfoId
     }
 }

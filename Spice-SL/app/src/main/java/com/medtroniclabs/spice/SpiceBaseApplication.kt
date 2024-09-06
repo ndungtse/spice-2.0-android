@@ -19,8 +19,6 @@ import javax.inject.Inject
 import com.medtroniclabs.spice.app.analytics.model.ScreenDetails
 import com.medtroniclabs.spice.app.analytics.model.UserDetail
 import com.medtroniclabs.spice.app.analytics.model.UserJourneyAnalytics
-import com.medtroniclabs.spice.common.DefinedParams
-import com.medtroniclabs.spice.common.SPICE
 
 
 @HiltAndroidApp
@@ -42,12 +40,7 @@ class SpiceBaseApplication : Application(), Configuration.Provider {
     }
 
     private fun saveApplicationType() {
-        val application = when {
-            packageName.contains(".sl") -> SPICE.SIERRA_LEONE.name
-            packageName.contains(".bd") -> SPICE.BANGLADESH.name
-            else -> SPICE.AFRICA.name
-        }
-        SecuredPreference.putString(SecuredPreference.EnvironmentKey.APPLICATION.name, application)
+        SecuredPreference.putString(SecuredPreference.EnvironmentKey.APPLICATION.name, com.medtroniclabs.spice.common.CommonUtils.requestFrom())
     }
 
 

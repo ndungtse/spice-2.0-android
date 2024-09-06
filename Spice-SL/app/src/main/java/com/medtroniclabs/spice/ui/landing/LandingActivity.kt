@@ -20,7 +20,6 @@ import androidx.work.Data
 import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequest
 import androidx.work.PeriodicWorkRequest
-import androidx.fragment.app.Fragment
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import com.google.android.material.navigation.NavigationView
@@ -159,7 +158,7 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
     private fun initializeDrawerView() {
         val menu: Menu = binding.navView.menu
         val menuItemToRemove: MenuItem? = menu.findItem(R.id.offline_sync)
-        if ((!CommonUtils.isChw()) && menuItemToRemove != null) {
+        if ((!CommonUtils.offlineUsers()) && menuItemToRemove != null) {
             menu.removeItem(menuItemToRemove.itemId)
         }
 
@@ -301,7 +300,7 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
     }
 
     private fun handleNavigation() {
-        if (CommonUtils.isNonNcdWorkflow() && CommonUtils.isRolePresent()) {
+        if (CommonUtils.isSL() && CommonUtils.isRolePresent()) {
             binding.appBarMain.tvTitle.text = getString(R.string.search_patient)
             requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
             replaceFragmentIfExists<PatientSearchFragment>(
@@ -311,7 +310,7 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
             )
         } else {
             binding.appBarMain.tvTitle.text = getString(R.string.home_title)
-            if (CommonUtils.isNonNcdWorkflow() && CommonUtils.isChw())
+            if (CommonUtils.isChwChp())
                 requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
             replaceFragmentInId<HomeScreenFragment>(
                 R.id.fragmentContainerView,

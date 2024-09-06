@@ -21,6 +21,7 @@ class PatientsDataSource(
     private val searchText: String,
     private val filter:MedicalReviewFilterModel?,
     private val isPatientListRequired: Boolean,
+    private val origin: String?,
     private val getPatientsCount: (String) -> Unit
 ) : PagingSource<Int, PatientListRespModel>() {
 
@@ -62,6 +63,7 @@ class PatientsDataSource(
                     patientsDataModel.copy(
                         villageIds = null,
                         searchText = searchText.ifEmpty { null },
+                        type = origin,
                         districtId = districtId
                     )
                 )

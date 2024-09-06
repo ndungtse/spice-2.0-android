@@ -55,7 +55,6 @@ import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.MenuConstants
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.rootSuffix
 import com.medtroniclabs.spice.ui.common.GeneralInfoDialog
-import dagger.hilt.android.AndroidEntryPoint
 import kotlin.math.roundToInt
 import java.lang.reflect.Type
 

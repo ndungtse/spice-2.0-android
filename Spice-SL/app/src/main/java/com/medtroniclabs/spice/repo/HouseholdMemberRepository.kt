@@ -145,6 +145,9 @@ class HouseholdMemberRepository @Inject constructor(
         if (villageDetail.chiefdomCode.isNullOrBlank()) {
            return null
         }
+        if (villageDetail.villagecode.isNullOrBlank()) {
+            return null
+        }
         val chiefDomCode = villageDetail.chiefdomCode.padStart(CHIEF_DOM_CODE_LENGTH, '0')
         val villageCode = villageDetail.villagecode.padStart(VILLAGE_CODE_LENGTH, '0')
         val chwUserId = SecuredPreference.getUserId().toString()

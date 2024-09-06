@@ -40,8 +40,12 @@ class RegistrationRepository @Inject constructor(
     ): Resource<LocalSpinnerResponse> {
         return try {
             val countryList = ArrayList<CountryModel>()
-            countryList.add(SecuredPreference.getUserDetails().country)
-            Resource(state = ResourceState.SUCCESS, LocalSpinnerResponse(tag, countryList))
+            SecuredPreference.getUserDetails()?.country?.let { country ->
+                countryList.add(country)
+                Resource(state = ResourceState.SUCCESS, LocalSpinnerResponse(tag, countryList))
+            } ?: run {
+                Resource(state = ResourceState.ERROR)
+            }
         } catch (_: Exception) {
             Resource(state = ResourceState.ERROR)
         }

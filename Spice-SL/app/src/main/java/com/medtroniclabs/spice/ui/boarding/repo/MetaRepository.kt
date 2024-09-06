@@ -114,7 +114,6 @@ class MetaRepository @Inject constructor(
                             }
                         }
 
-//                        if (CommonUtils.isChw()) {
                         val formsResponse = async {
                             apiHelper.getForms(
                                 FormRequest(
@@ -123,31 +122,30 @@ class MetaRepository @Inject constructor(
                                 )
                             )
                         }.await()
-                            if (formsResponse.isSuccessful && formsResponse.body()?.status == true) {
-                                if (formsResponse.body()?.entity == null) {
-                                    return@with Resource(state = ResourceState.ERROR)
-                                }
-                                formsResponse.body()?.entity?.apply {
-                                    roomHelper.deleteAllForms()
-                                    if (CommonUtils.isNonNcdWorkflow()) {
-                                        if (formData == null && clinicalTools == null) {
-                                            return@with Resource(state = ResourceState.ERROR)
-                                        }
-                                        formData?.let {
-                                            saveFormsInDb(it)
-                                        }
-                                    } else {
-                                        saveNcdFormsInDb(this)
-                                        saveNcdModelQuestions(modelQuestions)
-                                    }
-                                    clinicalTools?.let {
-                                        saveClinicalWorkflowsInDb(it)
-                                    }
-                                }
-                            } else {
+                        if (formsResponse.isSuccessful && formsResponse.body()?.status == true) {
+                            if (formsResponse.body()?.entity == null) {
                                 return@with Resource(state = ResourceState.ERROR)
                             }
-//                        }
+                            formsResponse.body()?.entity?.apply {
+                                if (CommonUtils.isNonNcdWorkflow()) {
+                                    formData?.let {
+                                        saveFormsInDb(it)
+                                    } ?: run {
+                                        return@with Resource(state = ResourceState.ERROR)
+                                    }
+                                } else {
+                                    saveNcdFormsInDb(this)
+                                    saveNcdModelQuestions(modelQuestions)
+                                }
+                                clinicalTools?.let {
+                                    saveClinicalWorkflowsInDb(it)
+                                } ?: run {
+                                    return@with Resource(state = ResourceState.ERROR)
+                                }
+                            }
+                        } else {
+                            return@with Resource(state = ResourceState.ERROR)
+                        }
                         if (meta.isNotEmpty()) {
                             val metadataResponse =
                                 async { apiHelper.getFormMetadata(FormMetaRequest(meta)) }.await()
@@ -368,6 +366,7 @@ class MetaRepository @Inject constructor(
     }
 
     private suspend fun saveFormsInDb(formData: List<FormData>) {
+        roomHelper.deleteAllForms()
         roomHelper.saveForms(formData.map { data ->
             FormEntity(
                 id = data.id,
@@ -380,6 +379,7 @@ class MetaRepository @Inject constructor(
     }
 
     private suspend fun saveNcdFormsInDb(formResponse: FormResponse) {
+        roomHelper.deleteAllForms()
         roomHelper.deleteConsent()
         formResponse.screening?.let { scr ->
             roomHelper.saveForm(

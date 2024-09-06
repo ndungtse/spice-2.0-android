@@ -196,6 +196,15 @@ object CommonUtils {
         return false
     }
 
+    fun offlineUsers(): Boolean {
+        return isAfrica() && (isSL() && isChw())
+    }
+
+    fun isChwChp(): Boolean {
+        val userRole = SecuredPreference.getUserDetails()?.roles?.joinToString { it.name }
+        return userRole?.contains(RoleConstant.COMMUNITY_HEALTH_WORKER) == true || userRole?.contains(RoleConstant.COMMUNITY_HEALTH_PROVIDER) == true
+    }
+
     fun isProvider(): Boolean {
         return SecuredPreference.getRole() == RoleConstant.PROVIDER
     }
@@ -1388,6 +1397,14 @@ object CommonUtils {
         return when {
             isSL() -> DefinedParams.NCD_REGISTER
             else -> DefinedParams.EMPOWER_HEALTH_NCD
+        }
+    }
+
+    fun requestFrom(): String {
+        return when {
+            isSL() -> SPICE.SIERRA_LEONE.name
+            isBD() -> SPICE.BANGLADESH.name
+            else -> SPICE.AFRICA.name
         }
     }
 }
