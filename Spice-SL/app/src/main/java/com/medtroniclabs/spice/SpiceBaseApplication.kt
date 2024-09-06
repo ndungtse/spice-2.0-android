@@ -38,6 +38,16 @@ class SpiceBaseApplication : Application(), Configuration.Provider {
         initTimber()
         initPreference()
         getUserJourneyAnalytics()
+        saveApplicationType()
+    }
+
+    private fun saveApplicationType() {
+        val application = when {
+            packageName.contains(".sl") -> SPICE.SIERRA_LEONE.name
+            packageName.contains(".bd") -> SPICE.BANGLADESH.name
+            else -> SPICE.AFRICA.name
+        }
+        SecuredPreference.putString(SecuredPreference.EnvironmentKey.APPLICATION.name, application)
     }
 
 
@@ -91,13 +101,6 @@ class SpiceBaseApplication : Application(), Configuration.Provider {
                     )
             }
             analyticsRepository.deleteAllUserJourneys()
-
-            val application = when {
-                packageName.contains(".sl") -> SPICE.SIERRA_LEONE.name
-                packageName.contains(".bd") -> SPICE.BANGLADESH.name
-                else -> SPICE.AFRICA.name
-            }
-            SecuredPreference.putString(DefinedParams.APPLICATION, application)
         }
     }
 

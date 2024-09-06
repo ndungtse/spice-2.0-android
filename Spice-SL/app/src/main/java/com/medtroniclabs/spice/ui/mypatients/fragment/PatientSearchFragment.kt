@@ -83,7 +83,7 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
     private fun attachObservers() {
         patientListViewModel.totalPatientCount.observe(viewLifecycleOwner) { count ->
             if (!count.isNullOrBlank()) {
-                if (count.toLong() > 1) {
+                if (count.toLong() > 0) {
                     binding.tvPatientCount.apply {
                         text = getString(R.string.patients_found, count.toLong())
                         visibility = View.VISIBLE

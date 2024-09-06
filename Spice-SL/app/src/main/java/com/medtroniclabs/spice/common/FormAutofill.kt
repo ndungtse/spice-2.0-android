@@ -2,16 +2,20 @@ package com.medtroniclabs.spice.common
 
 import android.widget.EditText
 import android.widget.Spinner
+import android.widget.TextView
 import com.google.gson.Gson
+import com.medtroniclabs.spice.common.DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
+import com.medtroniclabs.spice.common.DateUtils.DATE_ddMMyyyy
+import com.medtroniclabs.spice.common.DateUtils.convertDateFormat
 import com.medtroniclabs.spice.formgeneration.FormGenerator
 import com.medtroniclabs.spice.formgeneration.ui.SingleSelectionCustomView
 import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
+import com.medtroniclabs.spice.mappingkey.Screening
 
 object FormAutofill {
     fun start(formGenerator: FormGenerator, values: Any?) {
         values?.let {
             val resultMap = objectToMap(it)
-            println("cheen tapak $resultMap")
             resultMap.forEach { map ->
                 (map.key as? String?)?.let { key ->
                     formGenerator.getViewByTag(key)?.let { view ->
@@ -27,10 +31,36 @@ object FormAutofill {
                             is SingleSelectionCustomView -> {
                                 setSingleSelectionCustomView(view, key, map.value)
                             }
+
+                            is TextView -> {
+                                setTextView(view, key, map.value, formGenerator)
+                            }
                         }
                     }
                 }
             }
+        }
+    }
+
+    private fun setTextView(
+        view: TextView,
+        key: String,
+        value: Any?,
+        formGenerator: FormGenerator
+    ) {
+        if (value is String) {
+            if (key.equals(Screening.DateOfBirth, true)) {
+                val dobString =
+                    convertDateFormat(value, DATE_FORMAT_yyyyMMddHHmmssZZZZZ, DATE_ddMMyyyy)
+                val dobDate = DateUtils.convertStringToDate(value, DATE_FORMAT_yyyyMMddHHmmssZZZZZ)
+
+                if (dobString.isNotBlank())
+                    view.text = dobString
+
+                if (dobDate != null)
+                    formGenerator.fillDetailsOnDatePickerSet(dobDate, false, id = key)
+            } else
+                view.text = value
         }
     }
 

@@ -1154,10 +1154,14 @@ object CommonUtils {
     }
 
     fun canAddNewMember(origin: String?): Boolean {
-        return when (origin) {
+        return !isAfricaProvider(origin) && when (origin) {
             MenuConstants.REGISTRATION, MenuConstants.ASSESSMENT -> false
             else -> true
         }
+    }
+
+    private fun isAfricaProvider(origin: String?): Boolean {
+        return isAfrica() && origin.equals(MenuConstants.MY_PATIENTS_MENU_ID, true)
     }
 
     fun calculateCVDRiskFactor(

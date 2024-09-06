@@ -260,7 +260,13 @@ class RegistrationFormFragment : BaseFragment(), View.OnClickListener, FormEvent
                     )
                 }
                 result?.second?.let {
-                    viewModel.registerPatient(it)
+                    var id: Long? = null
+                    var patientId: Long? = null
+                    patientViewModel.patientDetailsLiveData.value?.data?.let { patientDetails ->
+                        id = patientDetails.id?.toLongOrNull()
+                        patientId = patientDetails.patientId?.toLongOrNull()
+                    }
+                    viewModel.registerPatient(it, id, patientId)
                 }
             }
         })

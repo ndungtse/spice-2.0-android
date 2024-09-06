@@ -167,7 +167,7 @@ object DefinedParams {
     const val HealthFacilityFhirId = "healthFacilityFhirId"
     const val Provenance = "provenance"
     const val ORIGIN = "origin"
-    const val APPLICATION = "application"
     const val EMPOWER_HEALTH_NCD = "Empower Health NCD"
     const val NCD_REGISTER = "NCD Register"
+    const val PATIENT_ID = "patientId"
 }

@@ -23,7 +23,6 @@
             android:exported="false" />
         <activity
             android:name=".ui.common.PatientSearchActivity"
-            android:configChanges="orientation|screenSize"
             android:exported="false" />
         <activity
             android:name=".ui.medicalreview.investigation.InvestigationActivity"

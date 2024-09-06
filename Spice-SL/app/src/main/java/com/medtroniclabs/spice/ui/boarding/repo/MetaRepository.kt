@@ -136,12 +136,12 @@ class MetaRepository @Inject constructor(
                                         formData?.let {
                                             saveFormsInDb(it)
                                         }
-                                        clinicalTools?.let {
-                                            saveClinicalWorkflowsInDb(it)
-                                        }
                                     } else {
                                         saveNcdFormsInDb(this)
                                         saveNcdModelQuestions(modelQuestions)
+                                    }
+                                    clinicalTools?.let {
+                                        saveClinicalWorkflowsInDb(it)
                                     }
                                 }
                             } else {

@@ -205,7 +205,7 @@
     <string name="zero_patients_found">%1d Patient</string>
     <string name="no_patients_found">No Patients found.</string>
     <string name="no_records_found">No Records found.</string>
-    <string name="search_by_national_id">Enter Patient ID/Name</string>
+    <string name="search_by_national_id">Enter Name / ID / Mobile Number</string>
     <string name="referral_ticket">Referral Ticket</string>
     <string name="cost">Cost</string>
     <string name="next_medical_review">Next Medical Review</string>

@@ -84,8 +84,14 @@ class RegistrationFormViewModel @Inject constructor(
         }
     }
 
-    fun registerPatient(hashMap: HashMap<String, Any>) {
+    fun registerPatient(hashMap: HashMap<String, Any>, id: Long?, patientId: Long?) {
         hashMap.apply {
+            id?.let { requestId ->
+                put(DefinedParams.ID, requestId)
+            }
+            patientId?.let { requestPatientId ->
+                put(DefinedParams.PATIENT_ID, requestPatientId)
+            }
             put(DefinedParams.TenantId, SecuredPreference.getTenantId())
             put(DefinedParams.HealthFacilityId, SecuredPreference.getOrganizationId())
             put(DefinedParams.HealthFacilityFhirId, SecuredPreference.getOrganizationFhirId())
