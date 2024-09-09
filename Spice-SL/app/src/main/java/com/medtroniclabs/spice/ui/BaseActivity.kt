@@ -22,9 +22,9 @@ import com.google.android.material.snackbar.Snackbar
 import com.medtroniclabs.spice.BuildConfig
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.app.analytics.model.UserDetail
+import com.medtroniclabs.spice.app.analytics.utils.CommonUtils
 import com.medtroniclabs.spice.appextensions.loadAsGif
 import com.medtroniclabs.spice.appextensions.resetImageView
-import com.medtroniclabs.spice.app.analytics.utils.CommonUtils
 import com.medtroniclabs.spice.common.DefinedParams.REFRESH_FRAGMENT
 import com.medtroniclabs.spice.databinding.ActivityBaseBinding
 import com.medtroniclabs.spice.databinding.ErrorLayoutBinding
@@ -34,16 +34,11 @@ import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.network.utils.ConnectivityManager
 import com.medtroniclabs.spice.ui.landing.LandingActivity
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 import kotlin.math.abs
 
 @AndroidEntryPoint
 open class BaseActivity : SpiceRootActivity() {
     private lateinit var binding: ActivityBaseBinding
-
-    @Inject
-    lateinit var connectivityManager: ConnectivityManager
-
 
     private var downX: Int = 0
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -54,8 +49,6 @@ open class BaseActivity : SpiceRootActivity() {
             CommonUtils.getCurrentDateTimeInLocalTime()
         setListener()
     }
-
-
 
     fun setMainContentView(
         view: View,

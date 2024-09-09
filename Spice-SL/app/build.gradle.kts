@@ -252,4 +252,8 @@ dependencies {
     implementation("net.zetetic:sqlcipher-android:4.6.0@aar")
     implementation("androidx.sqlite:sqlite-ktx:2.4.0")
 
+    //in-app update
+    implementation("com.google.android.play:app-update:2.1.0")
+    implementation("com.google.android.play:app-update-ktx:2.1.0")
+
 }

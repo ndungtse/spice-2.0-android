@@ -114,7 +114,11 @@ object RMNCH {
 
                         is Double -> {
                             val df = DecimalFormat("#.#")
-                            return df.format(value)
+                            return if (id.equals(gestationalAge, true)) {
+                                "${df.format(value)} ${getWeekPeriod(value, context)}"
+                            } else {
+                                df.format(value)
+                            }
                         }
                     }
                 }
@@ -122,6 +126,14 @@ object RMNCH {
             }
         }
         return triple.third
+    }
+
+    private fun getWeekPeriod(gestationWeek: Double, context: Context): String {
+        return if (gestationWeek == 1.0){
+            context.getString(R.string.week)
+        } else{
+            context.getString(R.string.weeks)
+        }
     }
 
     private fun getDangerSignValue(
