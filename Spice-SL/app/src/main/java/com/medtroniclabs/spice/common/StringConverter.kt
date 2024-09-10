@@ -76,4 +76,19 @@ object StringConverter {
     fun getJsonObject(inputJson: String): JsonObject {
         return Gson().fromJson(inputJson, JsonObject::class.java)
     }
+
+    fun appendTexts(firstText: String, vararg input: String?, separator: String? = null): String {
+        val strBuilder = StringBuilder(firstText)
+        for (text in input) {
+            text?.let {
+                if(text.isNotBlank()) {
+                    if (separator.isNullOrBlank())
+                        strBuilder.append(" $it")
+                    else
+                        strBuilder.append(" $separator $it")
+                }
+            }
+        }
+        return strBuilder.trim().toString()
+    }
 }

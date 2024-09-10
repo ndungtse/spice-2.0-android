@@ -227,18 +227,18 @@ fun ImageView.resetImageView() {
     this.setImageDrawable(null)
 }
 
-fun Int?.takeIfNotNull(): String {
-    return this.takeIf { it != null }?.toString() ?: ""
+fun Int?.takeIfNotNull(default: String = ""): String {
+    return this.takeIf { it != null }?.toString() ?: default
 }
 
-fun Double?.takeIfNotNull(): String {
-    return this.takeIf { it != null }?.toString() ?: ""
+fun Double?.takeIfNotNull(default: String = ""): String {
+    return this.takeIf { it != null }?.toString() ?: default
 }
 
-fun Float?.takeIfNotNull(): String {
-    return this.takeIf { it != null }?.toString() ?: ""
+fun Float?.takeIfNotNull(default: String = ""): String {
+    return this.takeIf { it != null }?.toString() ?: default
 }
 
-fun String?.takeIfNotNull(): String {
-    return this.takeIf { it != null }?.toString() ?: ""
+fun String?.takeIfNotNull(default: String = ""): String {
+    return this.takeIf { it != null }?.toString() ?: default
 }

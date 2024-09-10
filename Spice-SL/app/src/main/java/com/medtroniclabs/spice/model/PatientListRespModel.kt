@@ -1,15 +1,23 @@
 package com.medtroniclabs.spice.model
 
+import com.google.gson.annotations.SerializedName
 import com.medtroniclabs.spice.data.history.DiseaseInfo
 
 data class PatientListRespModel(
     val id: String? = null,
+    val enrolmentId: String? = null,
     val name: String? = null,
+    val firstName: String? = null,
+    val lastName: String? = null,
+    val middleName: String? = null,
+    val programId: String? = null,
+    val cvdRiskLevel: String? = null,
+    val cvdRiskScore: Double? = null,
+    val bmi: Double? = null,
     val gender: String? = null,
     val age: Int? = null,
     val birthDate: String? = null,
     val patientId: String? = null,
-    val programId: String? = null,
     val village: String? = null,
     val nationalID: Long? = null,
     val phoneNumber: String? = null,
@@ -24,24 +32,26 @@ data class PatientListRespModel(
     val houseHoldNumber: Long? = null,
     val dateOfOnset:String? = null,
     var isPregnant: Boolean? = null,
+    var isPregnancyRisk: Boolean? = null,
+    var riskPatient: Boolean = false,
+    @SerializedName("redRiskPatient")
+    var isRedRiskPatient: Boolean = false,
+    var riskColor: String? = null,
     val pregnancyDetails: PregnancyDetails? = null,
     val villageId:String? = null,
     val relationship:String? = null,
     val phoneNumberCategory:String? = null,
     val diagnosis: List<DiseaseInfo>? = null,
     val pregnancyStatus: String? = null,
-    val firstName: String? = null,
-    val middleName: String? = null,
-    val lastName: String? = null,
     val isRegularSmoker: Boolean? = null,
     val identityValue: String? = null,
-    val dateOfBirth: String? = null,
     val isConfirmDiagnosis: Boolean = false,
     val height: Double? = null,
     val weight: Double? = null,
     val identityType: String? = null,
     val isPhq9: Boolean? = false,
     val isGad7: Boolean? = false,
+    val dateOfBirth: String? = null
 )
 
 data class PregnancyDetails(

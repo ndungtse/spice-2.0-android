@@ -2,7 +2,6 @@ package com.medtroniclabs.spice.ui.common
 
 import android.os.Bundle
 import com.medtroniclabs.spice.R
-import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.databinding.ActivityPatientSearchBinding
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.mypatients.fragment.PatientSearchFragment

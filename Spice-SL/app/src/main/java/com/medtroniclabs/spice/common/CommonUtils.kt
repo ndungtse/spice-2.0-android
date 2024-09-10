@@ -34,6 +34,7 @@ import com.medtroniclabs.spice.mappingkey.Screening.PHQ4
 import com.medtroniclabs.spice.mappingkey.Screening.CategoryDisplayName
 import com.medtroniclabs.spice.mappingkey.Screening.CategoryDisplayType
 import com.medtroniclabs.spice.mappingkey.Screening.CategoryType
+import com.medtroniclabs.spice.mappingkey.Screening.Female
 import com.medtroniclabs.spice.mappingkey.Screening.SiteName
 import com.medtroniclabs.spice.mappingkey.Screening.Type
 import com.medtroniclabs.spice.mappingkey.Screening.lastMealTime
@@ -1396,6 +1397,11 @@ object CommonUtils {
             MenuConstants.MY_PATIENTS_MENU_ID -> true
             else -> false
         }
+    }
+
+    fun canShowToggle(gender: String?, pregnancyRisk: Boolean?): Boolean {
+        val role = SecuredPreference.getRole()
+        return role == PROVIDER && gender.equals(Female, true) && pregnancyRisk != null
     }
 
     fun isSL(): Boolean {

@@ -28,6 +28,7 @@ import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.MenuConstants
 import com.medtroniclabs.spice.ui.home.AssessmentToolsActivity
 import com.medtroniclabs.spice.ui.medicalreview.addnewmember.AddNewMemberActivity
+import com.medtroniclabs.spice.ui.mypatients.NCDMedicalReviewActivity
 import com.medtroniclabs.spice.ui.mypatients.PatientSelectionListener
 import com.medtroniclabs.spice.ui.mypatients.PatientsListAdapter
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientListViewModel
@@ -215,6 +216,7 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
                 val destinationIntent = when (patientListViewModel.origin) {
                     MenuConstants.REGISTRATION -> RegistrationActivity::class.java
                     MenuConstants.ASSESSMENT -> AssessmentToolsActivity::class.java
+                    MenuConstants.MY_PATIENTS_MENU_ID -> NCDMedicalReviewActivity::class.java
                     else -> null
                 }
                 destinationIntent?.let { destIntent ->

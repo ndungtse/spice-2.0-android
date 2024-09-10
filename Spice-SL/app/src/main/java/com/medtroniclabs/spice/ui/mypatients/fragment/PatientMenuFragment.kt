@@ -36,7 +36,7 @@ import com.medtroniclabs.spice.ui.medicalreview.abovefiveyears.AboveFiveYearsBas
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.fragment.SelectFlowDialog
 import com.medtroniclabs.spice.ui.medicalreview.underfiveyears.UnderFiveYearsBaseActivity
 import com.medtroniclabs.spice.ui.medicalreview.undertwomonths.activity.UnderTwoMonthsBaseActivity
-import com.medtroniclabs.spice.ui.mypatients.MedicalReviewBaseActivity
+import com.medtroniclabs.spice.ui.mypatients.NCDMedicalReviewActivity
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -203,7 +203,7 @@ class PatientMenuFragment : BaseFragment(), MenuSelectionListener {
 
     private fun startAssessmentActivity() {
         if (connectivityManager.isNetworkAvailable()) {
-            val intent = Intent(requireContext(), MedicalReviewBaseActivity::class.java)
+            val intent = Intent(requireContext(), NCDMedicalReviewActivity::class.java)
             val patientId = arguments?.getString(PatientId, "")
             if (patientId?.isNotBlank() == true) {
                 intent.putExtra(PatientId, patientId)

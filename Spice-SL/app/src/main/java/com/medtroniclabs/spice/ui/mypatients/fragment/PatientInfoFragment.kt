@@ -17,6 +17,7 @@ import com.medtroniclabs.spice.common.DateUtils.DATE_ddMMyyyy
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.IsReferredScreen
 import com.medtroniclabs.spice.common.DefinedParams.OtherNotes
+import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.databinding.FragmentPatientInfoBinding
 import com.medtroniclabs.spice.formgeneration.extension.capitalizeFirstChar
 import com.medtroniclabs.spice.model.PatientListRespModel
@@ -62,6 +63,18 @@ class PatientInfoFragment : BaseFragment() {
             fragment.arguments = bundle
             return fragment
         }
+
+        fun newInstanceForNCD(
+            patientId: String?,
+            origin: String
+        ): PatientInfoFragment {
+            val fragment = PatientInfoFragment()
+            val bundle = Bundle()
+            bundle.putString(DefinedParams.PatientId, patientId)
+            bundle.putString(DefinedParams.ORIGIN, origin)
+            fragment.arguments = bundle
+            return fragment
+        }
     }
 
     override fun onCreateView(
@@ -76,7 +89,15 @@ class PatientInfoFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
         val patientId = arguments?.getString(DefinedParams.PatientId, "")
         if (patientId?.isNotBlank() == true) {
-            viewModel.getPatients(patientId, if (isAnc() == true) ANC.uppercase() else null)
+            if (CommonUtils.isNonNcdWorkflow()) {
+                viewModel.getPatients(patientId, if (isAnc() == true) ANC.uppercase() else null)
+            } else {
+                val origin = arguments?.getString(DefinedParams.ORIGIN, "")
+                viewModel.getPatients(
+                    patientId,
+                    origin = origin
+                )
+            }
         }
         attachObservers()
     }
@@ -90,7 +111,11 @@ class PatientInfoFragment : BaseFragment() {
 
                 ResourceState.SUCCESS -> {
                     resource.data?.let {
-                        setDataInInfo(it)
+                        if (CommonUtils.isNonNcdWorkflow()) {
+                            setDataInInfo(it)
+                        } else {
+                            setNCDData(it)
+                        }
                         dataCallback?.onDataLoaded(it)
                     }
                 }
@@ -203,19 +228,91 @@ class PatientInfoFragment : BaseFragment() {
                     )
                 )
             }
-            val adapter = PatientInfoAdapter(dataList,R.color.fragment_bg, (requireActivity() as BaseActivity))
-            val isLandscape =
-                resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
-
-            val spanCount = if (isLandscape) 2 else 1
-            if (CommonUtils.checkIsTablet(requireContext())) {
-                rvPatientInfo.layoutManager = GridLayoutManager(requireContext(), spanCount)
-            } else {
-                rvPatientInfo.layoutManager = GridLayoutManager(requireContext(), 1)
-            }
-            rvPatientInfo.adapter = adapter
-            hideProgress()
+            commonAdapter(dataList as MutableList<Map<String, Any>>)
         }
     }
 
+    private fun commonAdapter(dataList: MutableList<Map<String, Any>>) {
+        val adapter =
+            PatientInfoAdapter(dataList, R.color.fragment_bg, (requireActivity() as BaseActivity))
+        val isLandscape =
+            resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+
+        val spanCount = if (isLandscape) 2 else 1
+        if (CommonUtils.checkIsTablet(requireContext())) {
+            binding.rvPatientInfo.layoutManager = GridLayoutManager(requireContext(), spanCount)
+        } else {
+            binding.rvPatientInfo.layoutManager = GridLayoutManager(requireContext(), 1)
+        }
+        binding.rvPatientInfo.adapter = adapter
+        hideProgress()
+    }
+
+    private fun setNCDData(data: PatientListRespModel) {
+        showProgress()
+        data.name?.let { name ->
+            setTitle(
+                setTitleBasedOnRole(data, name)
+            )
+        }
+
+        val cvdRiskLevel = data.cvdRiskScore?.let {
+            Pair(
+                StringConverter.appendTexts(
+                    "${it}%",
+                    data.cvdRiskLevel, separator = "-"
+                ), CommonUtils.cvdRiskColorCode(it, requireContext())
+            )
+        }
+
+        val dataList = mutableListOf(
+            mapOf(
+                DefinedParams.label to requireContext().getString(R.string.enrolment_id),
+                DefinedParams.value to (data.enrolmentId
+                    ?: requireContext().getString(R.string.hyphen_symbol)).toString().trim()
+            ),
+            mapOf(
+                DefinedParams.label to requireContext().getString(R.string.cvd_risk),
+                DefinedParams.value to (cvdRiskLevel?.first
+                    ?: requireContext().getString(R.string.hyphen_symbol)).toString().trim(),
+                DefinedParams.color to cvdRiskLevel?.second
+            ),
+            mapOf(
+                DefinedParams.label to requireContext().getString(R.string.program_id),
+                DefinedParams.value to (data.programId
+                    ?: requireContext().getString(R.string.hyphen_symbol)).toString().trim()
+            ),
+            mapOf(
+                DefinedParams.label to requireContext().getString(R.string.bmi),
+                DefinedParams.value to (data.bmi
+                    ?: requireContext().getString(R.string.hyphen_symbol)).toString().trim()
+            ),
+            mapOf(
+                DefinedParams.label to requireContext().getString(R.string.national_id),
+                DefinedParams.value to (data.identityValue
+                    ?: requireContext().getString(R.string.hyphen_symbol)).toString().trim()
+            ),
+            mapOf(
+                DefinedParams.label to requireContext().getString(R.string.high_risk),
+                DefinedParams.value to (data.isPregnancyRisk ?: false),
+                DefinedParams.Gender to (data.gender)
+            ),
+            mapOf(
+                DefinedParams.label to requireContext().getString(R.string.contact_number),
+                DefinedParams.value to (getContactNumber(data.phoneNumber.takeIf { it?.isNotBlank() == true }
+                    ?.trim())
+                    ?: requireContext().getString(R.string.hyphen_symbol))
+            )
+        )
+        commonAdapter(dataList as MutableList<Map<String, Any>>)
+    }
+
+    private fun setTitleBasedOnRole(response: PatientListRespModel, text: String): String {
+        return StringConverter.appendTexts(
+            firstText = text,
+            response.age.toString(),
+            response.gender,
+            separator = getString(R.string.hyphen_symbol)
+        ).capitalizeFirstChar()
+    }
 }

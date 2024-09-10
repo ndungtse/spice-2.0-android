@@ -823,4 +823,19 @@
     <string name="neo_natal_death">Neo Natal Death</string>
     <string name="alive_well">Alive &amp; Well</string>
     <string name="maternal_death">Maternal Death</string>
+
+    // Medical review
+    <string name="nutrition_caps">NUTRITION</string>
+    <string name="lifestyle_caps">LIFESTYLE</string>
+    <string name="treatment_plan_caps">TREATMENT PLAN</string>
+    <string name="psychological" translatable="false">Psychological</string>
+    <string name="psychological_caps" translatable="false">PSYCHOLOGICAL</string>
+    <string name="pregnancy">Pregnancy</string>
+    <string name="Pregnant">Pregnant</string>
+    <string name="edit_details">Edit Details</string>
+    <string name="view_details">View Details</string>
+    <string name="pregnancy_risk_criteria">Pregnancy Risk Criteria</string>
+    <string name="enrolment_id">Enrolment ID</string>
+    <string name="cvd_risk">CVD Risk</string>
+    <string name="high_risk">High Risk</string>
 </resources>

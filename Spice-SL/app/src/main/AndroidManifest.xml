@@ -181,7 +181,7 @@
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".ui.mypatients.MedicalReviewBaseActivity"
+            android:name=".ui.mypatients.NCDMedicalReviewActivity"
             android:exported="false"
             android:screenOrientation="sensorLandscape" />
         <activity
