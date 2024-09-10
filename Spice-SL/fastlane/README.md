@@ -39,6 +39,22 @@ Submit a new dev Build to firebase
 
 Submit a new dev Build to firebase
 
+### android fireTrainingInternal
+
+```sh
+[bundle exec] fastlane android fireTrainingInternal
+```
+
+Submit a new training Build to firebase
+
+### android fireTraining
+
+```sh
+[bundle exec] fastlane android fireTraining
+```
+
+Submit a new training Build to firebase
+
 ### android beta
 
 ```sh

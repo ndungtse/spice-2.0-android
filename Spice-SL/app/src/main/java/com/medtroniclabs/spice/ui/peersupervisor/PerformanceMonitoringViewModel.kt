@@ -30,6 +30,7 @@ import com.medtroniclabs.spice.network.ApiHelper
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.network.utils.ConnectivityManager
 import com.medtroniclabs.spice.repo.PerformanceMonitoringRepository
+import com.medtroniclabs.spice.ui.BaseViewModel
 import com.medtroniclabs.spice.ui.peersupervisor.adapter.PerformanceReportDataSource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
@@ -44,10 +45,10 @@ private const val STRING_SENTINEL: String = "STRING_SENTINEL"
 
 @HiltViewModel
 class PerformanceMonitoringViewModel @Inject constructor(
-    @IoDispatcher private val dispatcherIO: CoroutineDispatcher,
+    @IoDispatcher override var dispatcherIO: CoroutineDispatcher,
     private val performanceMonitoringRepo: PerformanceMonitoringRepository,
     private val apiHelper: ApiHelper
-) : ViewModel() {
+) : BaseViewModel(dispatcherIO) {
 
     @Inject
     lateinit var connectivityManager: ConnectivityManager

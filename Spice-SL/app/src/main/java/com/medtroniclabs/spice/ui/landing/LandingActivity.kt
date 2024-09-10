@@ -18,6 +18,7 @@ import androidx.fragment.app.Fragment
 import androidx.work.Constraints
 import androidx.work.Data
 import androidx.work.NetworkType
+import androidx.work.OneTimeWorkRequest
 import androidx.work.PeriodicWorkRequest
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
@@ -90,8 +91,27 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
         initializeDrawerView()
         updateSideBarFooter()
         schedulePeriodicUploadWork(this)
+        onClickUploadLog()
         UserDetail.updateUserIdIfEmpty(SecuredPreference.getUserId().toString())
         UserDetail.getAppVersion(BuildConfig.VERSION_NAME)
+    }
+
+    private fun onClickUploadLog(){
+        if (BuildConfig.BUILD_TYPE=="staging"){
+        binding.uploadLog.setOnClickListener {
+            val uploadWorkRequest = OneTimeWorkRequest.Builder(UploadWorker::class.java)
+                .setInputData(periodicUploaderInputData())
+                .setConstraints(
+                    Constraints.Builder()
+                        .setRequiredNetworkType(NetworkType.CONNECTED)
+                        .build()
+                ).build()
+                WorkManager.getInstance(this).enqueue(uploadWorkRequest)
+        }
+            }else{
+                binding.uploadLog.gone()
+        }
+
     }
 
     private val onBackPressedCallback: OnBackPressedCallback =

@@ -88,11 +88,6 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
                     hideProgress()
                     resourceState.data?.let { data ->
                         formGenerator.populateViews(data.formLayout)
-                        viewModel.setAnalyticsData(
-                            UserDetail.startDateTime,
-                            eventType = viewModel.workflowName.plus(AnalyticsDefinedParams.RMNCHAssessment),
-                            eventName = AnalyticsDefinedParams.AssessmentCreation
-                        )
                     }
                 }
 
@@ -228,6 +223,11 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
                 handleNextPregnancyFlow(second)
             }
         }
+        viewModel.setAnalyticsData(
+            UserDetail.startDateTime,
+            eventType = viewModel.workflowName.plus(AnalyticsDefinedParams.RMNCHAssessment),
+            eventName = AnalyticsDefinedParams.AssessmentCreation
+        )
     }
 
     private fun handleNextPregnancyFlow(second: HashMap<String, Any>) {

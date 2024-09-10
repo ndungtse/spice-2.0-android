@@ -10,6 +10,8 @@ import androidx.activity.viewModels
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.app.analytics.model.UserDetail
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
@@ -114,6 +116,7 @@ class MotherNeonatePncActivity : BaseActivity(), View.OnClickListener, AncVisitC
         initializeViewModel()
         initializeClickListener()
         setupRefreshLayout()
+        setAnalytics()
     }
 
     private fun initializeViewModel() {
@@ -128,6 +131,10 @@ class MotherNeonatePncActivity : BaseActivity(), View.OnClickListener, AncVisitC
         viewModel.isSwipe = true
         showLoading()
         withNetworkCheck(connectivityManager, ::refreshPatientDetails, ::isRefreshStatus)
+    }
+    private fun setAnalytics(){
+        UserDetail.eventName= AnalyticsDefinedParams.MedicalReviewCreation
+        viewModel.setUserJourney(AnalyticsDefinedParams.MotherNeonatePnc)
     }
 
     private fun refreshPatientDetails() {
@@ -510,6 +517,18 @@ class MotherNeonatePncActivity : BaseActivity(), View.OnClickListener, AncVisitC
             isNegativeButtonNeed = true
         ) { isPositive ->
             if (isPositive) {
+                val summaryFragment =
+                    getFragmentById(supportFragmentManager, (R.id.diagnosisFragment))
+                if (summaryFragment !is MotherNeonatePncSummaryFragment) {
+                    viewModel.setAnalyticsData(
+                        UserDetail.startDateTime,
+                        eventType = AnalyticsDefinedParams.MotherNeonatePnc,
+                        eventName = UserDetail.eventName,
+                        exitReason = AnalyticsDefinedParams.HomeButtonClicked,
+                        isCompleted = false
+                    )
+                }
+
                 startActivityWithoutSplashScreen()
             }
         }
@@ -715,6 +734,11 @@ class MotherNeonatePncActivity : BaseActivity(), View.OnClickListener, AncVisitC
         val motherNeonatePncSummaryFragment =
             MotherNeonatePncSummaryFragment.newInstance()
         addReplaceFragment(R.id.diagnosisFragment, motherNeonatePncSummaryFragment)
+        viewModel.setAnalyticsData(
+            UserDetail.startDateTime,
+            eventType = AnalyticsDefinedParams.MotherNeonatePnc,
+            eventName = UserDetail.eventName
+        )
     }
 
     // Is baby alive flow
@@ -746,6 +770,17 @@ class MotherNeonatePncActivity : BaseActivity(), View.OnClickListener, AncVisitC
             isNegativeButtonNeed = true
         ) { isPositive ->
             if (isPositive){
+                val summaryFragment =
+                    getFragmentById(supportFragmentManager, (R.id.diagnosisFragment))
+                if (summaryFragment !is MotherNeonatePncSummaryFragment) {
+                    viewModel.setAnalyticsData(
+                        UserDetail.startDateTime,
+                        eventType = AnalyticsDefinedParams.MotherNeonatePnc,
+                        eventName = UserDetail.eventName,
+                        exitReason = AnalyticsDefinedParams.BackButtonClicked,
+                        isCompleted = false
+                    )
+                }
                 onBackPressPopStack()
             }
         }

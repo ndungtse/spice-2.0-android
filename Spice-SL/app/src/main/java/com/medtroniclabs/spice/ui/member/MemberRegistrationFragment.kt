@@ -144,7 +144,7 @@ class MemberRegistrationFragment : Fragment(), FormEventListener, View.OnClickLi
 
                 ResourceState.SUCCESS -> {
                     val (title, startDate) = if (memberRegistrationViewModel.addNewMember) {
-                        val type = if (householdRegistrationViewModel.isMemberRegistration || householdRegistrationViewModel.memberID != -1L) {
+                        val type = if (householdRegistrationViewModel.isMemberRegistration && householdRegistrationViewModel.memberID != -1L) {
                             EditNewMember
                         } else {
                             AddNewMember

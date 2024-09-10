@@ -32,6 +32,7 @@
             app:itemTextColor="@color/navigation_selection_text_color"
             app:menu="@menu/activity_landing_menu">
 
+
             <View
                 android:id="@+id/divider"
                 android:layout_width="match_parent"
@@ -48,4 +49,18 @@
         </com.google.android.material.navigation.NavigationView>
     </androidx.drawerlayout.widget.DrawerLayout>
 
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/uploadLog"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_18sdp"
+        android:textColor="@color/white"
+        android:textSize="@dimen/_14ssp"
+        android:fontFamily="@font/inter_regular"
+        android:layout_marginEnd="@dimen/_16sdp"
+        android:text="@string/upload_log"
+        app:layout_constraintBottom_toBottomOf="@+id/drawer_layout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0" />
 </androidx.constraintlayout.widget.ConstraintLayout>

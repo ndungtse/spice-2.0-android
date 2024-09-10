@@ -102,11 +102,6 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
         binding.loadingProgress.safeClickListener(this)
         UserDetail.eventName= AnalyticsDefinedParams.MedicalReviewCreation
         viewModel.setUserJourney(AnalyticsDefinedParams.MotherNeonateAnc)
-        viewModel.setAnalyticsData(
-            UserDetail.startDateTime,
-            eventType = AnalyticsDefinedParams.MotherNeonateAnc,
-            eventName = UserDetail.eventName,
-        )
     }
 
     private fun getCurrentLocation() {
@@ -123,6 +118,16 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
             isNegativeButtonNeed = true
         ) { isPositive ->
             if (isPositive) {
+                val patientDetails = supportFragmentManager.findFragmentById(R.id.pregnancyDetailsConatiner)
+                if (patientDetails !is MotherNeonateAncSummary ) {
+                    viewModel.setAnalyticsData(
+                        UserDetail.startDateTime,
+                        eventType = AnalyticsDefinedParams.MotherNeonateAnc,
+                        exitReason = AnalyticsDefinedParams.HomeButtonClicked,
+                        eventName = UserDetail.eventName,
+                        isCompleted = false
+                    )
+                }
                 startActivityWithoutSplashScreen()
             }
         }
@@ -283,6 +288,11 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
                     resource.data?.let {
                         binding.loadingProgress.visible()
                         handleSummary()
+                        viewModel.setAnalyticsData(
+                            UserDetail.startDateTime,
+                            eventType = AnalyticsDefinedParams.MotherNeonateAnc,
+                            eventName = UserDetail.eventName,
+                        )
                     }
                 }
 
@@ -684,6 +694,7 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
             showErrorDialog()
             viewModel.setAnalyticsData(
                 UserDetail.startDateTime,
+                eventType = AnalyticsDefinedParams.MotherNeonateAnc,
                 exitReason = AnalyticsDefinedParams.BackButtonClicked,
                 eventName = UserDetail.eventName,
                 isCompleted = false
@@ -701,6 +712,7 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
             showErrorDialog()
             viewModel.setAnalyticsData(
                 UserDetail.startDateTime,
+                eventType = AnalyticsDefinedParams.MotherNeonateAnc,
                 exitReason = AnalyticsDefinedParams.BackButtonClicked,
                 eventName = UserDetail.eventName,
                 isCompleted = false

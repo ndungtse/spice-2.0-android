@@ -3,13 +3,10 @@ package com.medtroniclabs.spice.ui.assessment
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.OnBackPressedCallback
-import android.util.Log
 import androidx.activity.viewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.app.analytics.model.UserDetail
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
-import com.medtroniclabs.spice.app.analytics.utils.CommonUtils
-import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.SpiceLocationManager
 import com.medtroniclabs.spice.databinding.ActivityAssessmentBinding
@@ -34,7 +31,6 @@ import com.medtroniclabs.spice.ui.followup.FollowUpMyPatientActivity
 import com.medtroniclabs.spice.ui.household.HouseholdSearchActivity
 import com.medtroniclabs.spice.ui.landing.LandingActivity
 import dagger.hilt.android.AndroidEntryPoint
-import timber.log.Timber
 
 @AndroidEntryPoint
 class AssessmentActivity : BaseActivity() {
@@ -80,12 +76,6 @@ class AssessmentActivity : BaseActivity() {
                 isNegativeButtonNeed = true
             ) { isPositive ->
                 if (isPositive) {
-                    viewModel.setAnalyticsData(
-                        UserDetail.startDateTime,
-                        exitReason = AnalyticsDefinedParams.BackButtonClicked,
-                        eventName = AnalyticsDefinedParams.AssessmentCreation,
-                        isCompleted = false
-                    )
                     navigationHandling(isHome)
                 }
             }
@@ -118,11 +108,13 @@ class AssessmentActivity : BaseActivity() {
 
     private fun navigationHandling(isHome: Boolean) {
         if (isHome) {
+            setupAnalytic(AnalyticsDefinedParams.HomeButtonClicked)
             val intent = Intent(this, LandingActivity::class.java)
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
             startActivity(intent)
             finish()
         } else {
+            setupAnalytic(AnalyticsDefinedParams.BackButtonClicked)
             when (supportFragmentManager.findFragmentById(R.id.fragmentContainer)) {
                 is AssessmentICCMSummaryFragment,
                 is AssessmentRMNCHSummaryFragment,
@@ -135,6 +127,23 @@ class AssessmentActivity : BaseActivity() {
                 }
             }
         }
+    }
+
+    private fun setupAnalytic(btnClickType: String) {
+        var type= when (supportFragmentManager.findFragmentById(R.id.formsFragmentContainer)) {
+            is AssessmentICCMFragment->{AnalyticsDefinedParams.ICCMAssessment}
+            is AssessmentRMNCHFragment->{viewModel.workflowName.plus(AnalyticsDefinedParams.RMNCHAssessment)}
+            is AssessmentRMNCHNeonateFragment->{AnalyticsDefinedParams.RMNCHNeonateAssessment}
+            is AssessmentOtherSymptomsFragment->{AnalyticsDefinedParams.OtherSymptoms}
+            else -> {""}
+        }
+        viewModel.setAnalyticsData(
+            UserDetail.startDateTime,
+            eventType = type,
+            exitReason = btnClickType,
+            eventName = AnalyticsDefinedParams.AssessmentCreation,
+            isCompleted = false
+        )
     }
 
     private fun loadSummaryFragment() {

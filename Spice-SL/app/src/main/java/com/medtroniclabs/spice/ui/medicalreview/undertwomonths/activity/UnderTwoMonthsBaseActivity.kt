@@ -10,6 +10,8 @@ import androidx.activity.viewModels
 import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.Fragment
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.app.analytics.model.UserDetail
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.DefinedParams
@@ -34,6 +36,7 @@ import com.medtroniclabs.spice.ui.medicalreview.examinations.ExaminationCardView
 import com.medtroniclabs.spice.ui.medicalreview.investigation.InvestigationActivity
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.AncVisitCallBack
 import com.medtroniclabs.spice.ui.medicalreview.prescription.PrescriptionActivity
+import com.medtroniclabs.spice.ui.medicalreview.underfiveyears.UnderFiveYearsTreatmentSummaryFragment
 import com.medtroniclabs.spice.ui.medicalreview.undertwomonths.fragment.BirthHistoryFragment
 import com.medtroniclabs.spice.ui.medicalreview.undertwomonths.fragment.ClinicalSummaryFragment
 import com.medtroniclabs.spice.ui.medicalreview.undertwomonths.fragment.UnderTwoMonthsTreatmentSummaryFragment
@@ -83,6 +86,11 @@ class UnderTwoMonthsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
         withNetworkCheck(connectivityManager,::initializeViews,::onBackPressPopStack)
         attachObserver()
         initializeListeners()
+        setAnalytics()
+    }
+    private fun setAnalytics(){
+        UserDetail.eventName= AnalyticsDefinedParams.MedicalReviewCreation
+        viewModel.setUserJourney(AnalyticsDefinedParams.UnderTwoMonths)
     }
 
     private val onBackPressedCallback: OnBackPressedCallback =
@@ -186,6 +194,11 @@ private fun successSummaryDialog() {
         initializeUnderTwoMonthSummaryFragment()
         binding.bottomNavigationView.gone()
         binding.underTwoSummaryBottomView.root.visibility = View.VISIBLE
+        viewModel.setAnalyticsData(
+            UserDetail.startDateTime,
+            eventType = AnalyticsDefinedParams.UnderTwoMonths,
+            eventName = UserDetail.eventName,
+        )
     }
 
     private fun initializeUnderTwoMonthSummaryFragment() {
@@ -426,6 +439,18 @@ private fun successSummaryDialog() {
             isNegativeButtonNeed = true
         ) { isPositive ->
             if (isPositive) {
+                supportFragmentManager.findFragmentById(R.id.clinicalSummaryContainer)
+                    .let { currentFragment ->
+                        if (currentFragment !is UnderTwoMonthsTreatmentSummaryFragment) {
+                            viewModel.setAnalyticsData(
+                                UserDetail.startDateTime,
+                                eventType = AnalyticsDefinedParams.UnderTwoMonths,
+                                eventName = UserDetail.eventName,
+                                exitReason = AnalyticsDefinedParams.BackButtonClicked,
+                                isCompleted = false
+                            )
+                        }
+                    }
                 onBackPressPopStack()
             }
         }
@@ -497,6 +522,18 @@ private fun successSummaryDialog() {
             isNegativeButtonNeed = true
         ) { isPositive ->
             if (isPositive) {
+                supportFragmentManager.findFragmentById(R.id.clinicalSummaryContainer)
+                    .let { currentFragment ->
+                        if (currentFragment !is UnderTwoMonthsTreatmentSummaryFragment) {
+                            viewModel.setAnalyticsData(
+                                UserDetail.startDateTime,
+                                eventType = AnalyticsDefinedParams.UnderTwoMonths,
+                                eventName = UserDetail.eventName,
+                                exitReason = AnalyticsDefinedParams.HomeButtonClicked,
+                                isCompleted = false
+                            )
+                        }
+                    }
                 startActivityWithoutSplashScreen()
             }
         }

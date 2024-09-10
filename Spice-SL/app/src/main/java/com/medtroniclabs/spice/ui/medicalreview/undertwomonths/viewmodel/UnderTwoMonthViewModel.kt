@@ -27,6 +27,7 @@ import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.network.utils.ConnectivityManager
 import com.medtroniclabs.spice.repo.MedicalReviewSummaryRepository
 import com.medtroniclabs.spice.repo.UnderTwoMonthsRepository
+import com.medtroniclabs.spice.ui.BaseViewModel
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
@@ -35,10 +36,10 @@ import javax.inject.Inject
 
 @HiltViewModel
 class UnderTwoMonthViewModel @Inject constructor(
-    @IoDispatcher private val dispatcherIO: CoroutineDispatcher,
+    @IoDispatcher override var dispatcherIO: CoroutineDispatcher,
     private var repository: UnderTwoMonthsRepository,
     private var summaryRepository: MedicalReviewSummaryRepository
-) : ViewModel() {
+) : BaseViewModel(dispatcherIO){
     @Inject
     lateinit var connectivityManager: ConnectivityManager
     var memberId: String? = null

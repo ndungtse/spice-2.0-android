@@ -32,6 +32,7 @@ import com.medtroniclabs.spice.model.assessment.AgparScoreHeader
 import com.medtroniclabs.spice.model.assessment.AgparScoreRow
 import com.medtroniclabs.spice.model.assessment.ApgarScore
 import com.medtroniclabs.spice.network.resource.Resource
+import com.medtroniclabs.spice.ui.BaseViewModel
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.labourdelivery.repo.LabourDeliveryRepository
 import com.medtroniclabs.spice.ui.mypatients.enumType.AgparColumnIdentifierType
 import com.medtroniclabs.spice.ui.mypatients.enumType.AgparItemViewType
@@ -48,9 +49,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LabourDeliveryViewModel @Inject constructor(
-    @IoDispatcher private val dispatcherIO: CoroutineDispatcher,
+    @IoDispatcher override var dispatcherIO: CoroutineDispatcher,
     private var repository: LabourDeliveryRepository
-) : ViewModel() {
+) :  BaseViewModel(dispatcherIO) {
 
 
     var context: Context? = null

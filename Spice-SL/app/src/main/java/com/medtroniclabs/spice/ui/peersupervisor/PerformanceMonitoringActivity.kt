@@ -11,6 +11,7 @@ import androidx.activity.viewModels
 import androidx.core.content.ContextCompat
 import androidx.paging.LoadState
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.hideView
 import com.medtroniclabs.spice.appextensions.isVisible
@@ -61,6 +62,7 @@ class PerformanceMonitoringActivity : BaseActivity() {
         initView()
         setViewListener()
         initObserver()
+        viewModel.setUserJourney(AnalyticsDefinedParams.ICCMAssessment)
     }
 
     private fun updateLockButtonStatus(isUnlocked: Boolean) {

@@ -70,6 +70,7 @@ class HouseholdActivity : BaseActivity(), OnDialogDismissListener {
             if (isPositive) {
                 householdRegistrationViewModel.setAnalyticsData(
                     UserDetail.startDateTime,
+                    eventType = AnalyticsDefinedParams.HouseholdCreation,
                     eventName = householdRegistrationViewModel.eventName,
                     exitReason = AnalyticsDefinedParams.BackButtonClicked,
                     isCompleted = false
@@ -108,7 +109,7 @@ class HouseholdActivity : BaseActivity(), OnDialogDismissListener {
 
             2 -> {
                 val arguments = Bundle().apply {
-                    putBoolean(AnalyticsDefinedParams.AddNewMember, householdRegistrationViewModel.addNewMember)
+                    putBoolean(AnalyticsDefinedParams.AddNewMember, true)
                     putString(
                         AnalyticsDefinedParams.StartDate,
                         UserDetail.startDateTime

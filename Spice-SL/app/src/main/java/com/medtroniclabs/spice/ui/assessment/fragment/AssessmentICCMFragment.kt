@@ -120,11 +120,6 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
                     hideProgress()
                     resourceState.data?.let { data ->
                         formGenerator.populateViews(data.formLayout)
-                        viewModel.setAnalyticsData(
-                            UserDetail.startDateTime,
-                            eventType = AnalyticsDefinedParams.ICCMAssessment,
-                            eventName = AnalyticsDefinedParams.AssessmentCreation
-                        )
                     }
                 }
 
@@ -318,6 +313,11 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
                 viewModel.saveAssessment(it, referralResult,viewModel.menuId)
             }
         }
+        viewModel.setAnalyticsData(
+            UserDetail.startDateTime,
+            eventType = AnalyticsDefinedParams.ICCMAssessment,
+            eventName = AnalyticsDefinedParams.AssessmentCreation
+        )
     }
 
     private fun composeICCMOtherMetrics(resultMap: HashMap<String, Any>) {

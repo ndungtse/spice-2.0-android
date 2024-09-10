@@ -81,11 +81,6 @@ class AssessmentOtherSymptomsFragment : BaseFragment(), FormEventListener, View.
                     hideProgress()
                     resourceState.data?.let { data ->
                         formGenerator.populateViews(data.formLayout)
-                        viewModel.setAnalyticsData(
-                            UserDetail.startDateTime,
-                            eventType = AnalyticsDefinedParams.OtherSymptoms,
-                            eventName = AnalyticsDefinedParams.AssessmentCreation
-                        )
                     }
                 }
 
@@ -163,6 +158,11 @@ class AssessmentOtherSymptomsFragment : BaseFragment(), FormEventListener, View.
                 viewModel.saveAssessment(it, referralResult,viewModel.menuId)
             }
         }
+        viewModel.setAnalyticsData(
+            UserDetail.startDateTime,
+            eventType = AnalyticsDefinedParams.OtherSymptoms,
+            eventName = AnalyticsDefinedParams.AssessmentCreation
+        )
     }
 
     override fun onRenderingComplete() {

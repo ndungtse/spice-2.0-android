@@ -87,13 +87,20 @@ class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
             isNegativeButtonNeed = true
         ) { isPositive ->
             if (isPositive) {
+                supportFragmentManager.findFragmentById(R.id.presentingComplaintsContainer)
+                    .let { currentFragment ->
+                        if (currentFragment !is AboveFiveYearsTreatmentSummaryFragment) {
+                            viewModel.setAnalyticsData(
+                                UserDetail.startDateTime,
+                                eventType = AnalyticsDefinedParams.AboveFiveYears,
+                                exitReason = AnalyticsDefinedParams.BackButtonClicked,
+                                eventName = UserDetail.eventName,
+                                isCompleted = false
+                            )
+                        }
+                    }
                 onBackPressPopStack()
-                viewModel.setAnalyticsData(
-                    UserDetail.startDateTime,
-                    exitReason = AnalyticsDefinedParams.BackButtonClicked,
-                    eventName = UserDetail.eventName,
-                    isCompleted = false
-                )
+
             }
         }
     }
@@ -105,6 +112,18 @@ class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
             isNegativeButtonNeed = true
         ) { isPositive ->
             if (isPositive) {
+                supportFragmentManager.findFragmentById(R.id.presentingComplaintsContainer)
+                .let { currentFragment ->
+                    if (currentFragment !is AboveFiveYearsTreatmentSummaryFragment) {
+                        viewModel.setAnalyticsData(
+                            UserDetail.startDateTime,
+                            eventType = AnalyticsDefinedParams.AboveFiveYears,
+                            exitReason = AnalyticsDefinedParams.HomeButtonClicked,
+                            eventName = UserDetail.eventName,
+                            isCompleted = false
+                        )
+                    }
+                }
                 startActivityWithoutSplashScreen()
             }
         }
@@ -270,6 +289,11 @@ class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
                                     patientViewModel.getPatients(id)
                                 }
                             }
+                            viewModel.setAnalyticsData(
+                                UserDetail.startDateTime,
+                                eventType = AnalyticsDefinedParams.AboveFiveYears,
+                                eventName = UserDetail.eventName,
+                            )
                         } else {
                             showErrorDialogue(
                                 getString(R.string.error), getString(R.string.no_internet_error),

@@ -663,4 +663,5 @@
     <string name="elbw">"Extremely Low Birth Weight"</string>
     <string name="nbw">"Normal Birth Weight"</string>
     <string name="hbw">"High Birth Weight"</string>
+    <string name="upload_log">Upload Log</string>
 </resources>

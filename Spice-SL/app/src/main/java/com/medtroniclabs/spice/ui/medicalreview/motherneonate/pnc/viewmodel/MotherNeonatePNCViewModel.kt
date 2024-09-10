@@ -19,6 +19,7 @@ import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.model.PatientDetailRequest
 import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.network.resource.Resource
+import com.medtroniclabs.spice.ui.BaseViewModel
 import com.medtroniclabs.spice.ui.medicalreview.abovefiveyears.ClinicalNotesViewModel
 import com.medtroniclabs.spice.ui.medicalreview.abovefiveyears.PresentingComplaintsViewModel
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.pnc.repo.MotherNeonatePNCRepo
@@ -36,8 +37,8 @@ import javax.inject.Inject
 class MotherNeonatePNCViewModel @Inject constructor(
     private val motherNeonatePNCRepo: MotherNeonatePNCRepo,
     private val patientRepository: PatientRepository,
-    @IoDispatcher private val dispatcherIO: CoroutineDispatcher
-) : ViewModel() {
+    @IoDispatcher override var dispatcherIO: CoroutineDispatcher,
+) :  BaseViewModel(dispatcherIO){
     var motherLiveStatus: String? = null
     var aliveStatus: Boolean? = null
     val resultFlowHashMap = HashMap<String, Any>()

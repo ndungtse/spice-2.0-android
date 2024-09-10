@@ -9,6 +9,8 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.core.view.isVisible
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.app.analytics.model.UserDetail
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.SecuredPreference
@@ -74,6 +76,12 @@ class LabourDeliveryBaseActivity : BaseActivity(), View.OnClickListener, AncVisi
         getCurrentLocation()
         viewModel.patientId = intent.getStringExtra(DefinedParams.PatientId)
         viewModel.set(this)
+        setAnalytics()
+    }
+
+    private fun setAnalytics(){
+        UserDetail.eventName= AnalyticsDefinedParams.MedicalReviewCreation
+        viewModel.setUserJourney(AnalyticsDefinedParams.MotherNeonateLabourDelivery)
     }
 
     private fun backNavigation() {
@@ -89,6 +97,13 @@ class LabourDeliveryBaseActivity : BaseActivity(), View.OnClickListener, AncVisi
                 if (labourDeliveryContainer is MotherSummaryFragment) {
                    startActivityWithoutSplashScreen()
                 } else {
+                    viewModel.setAnalyticsData(
+                        UserDetail.startDateTime,
+                        eventType = AnalyticsDefinedParams.MotherNeonateLabourDelivery,
+                        eventName = UserDetail.eventName,
+                        exitReason = AnalyticsDefinedParams.BackButtonClicked,
+                        isCompleted = false
+                    )
                    onBackPressPopStack()
                 }
             }
@@ -101,6 +116,13 @@ class LabourDeliveryBaseActivity : BaseActivity(), View.OnClickListener, AncVisi
             isNegativeButtonNeed = true
         ) { isPositive ->
             if (isPositive) {
+                viewModel.setAnalyticsData(
+                    UserDetail.startDateTime,
+                    eventType = AnalyticsDefinedParams.MotherNeonateLabourDelivery,
+                    eventName = UserDetail.eventName,
+                    exitReason = AnalyticsDefinedParams.HomeButtonClicked,
+                    isCompleted = false
+                )
                 startActivityWithoutSplashScreen()
             }
         }
@@ -236,6 +258,11 @@ private fun attachObserver() {
                     )
                 }
                 showLabourDeliverySummary()
+                viewModel.setAnalyticsData(
+                    UserDetail.startDateTime,
+                    eventType = AnalyticsDefinedParams.MotherNeonateLabourDelivery,
+                    eventName = UserDetail.eventName,
+                )
             }
         }
     }

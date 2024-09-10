@@ -110,11 +110,7 @@ class AssessmentRMNCHNeonateFragment : BaseFragment(), View.OnClickListener,
                     hideProgress()
                     resourceState.data?.let { data ->
                         formGenerator.populateViews(data.formLayout)
-                        viewModel.setAnalyticsData(
-                            UserDetail.startDateTime,
-                            AnalyticsDefinedParams.RMNCHNeonateAssessment,
-                            AnalyticsDefinedParams.AssessmentCreation
-                        )
+
                     }
                 }
 
@@ -278,6 +274,11 @@ class AssessmentRMNCHNeonateFragment : BaseFragment(), View.OnClickListener,
             }
 
         }
+        viewModel.setAnalyticsData(
+            UserDetail.startDateTime,
+            AnalyticsDefinedParams.RMNCHNeonateAssessment,
+            AnalyticsDefinedParams.AssessmentCreation
+        )
     }
 
     override fun onRenderingComplete() {

@@ -10,6 +10,8 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.core.widget.NestedScrollView
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.app.analytics.model.UserDetail
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.SecuredPreference
@@ -33,6 +35,7 @@ import com.medtroniclabs.spice.ui.medicalreview.examinations.ExaminationCardView
 import com.medtroniclabs.spice.ui.medicalreview.investigation.InvestigationActivity
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.AncVisitCallBack
 import com.medtroniclabs.spice.ui.medicalreview.prescription.PrescriptionActivity
+import com.medtroniclabs.spice.ui.medicalreview.undertwomonths.fragment.UnderTwoMonthsTreatmentSummaryFragment
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import com.medtroniclabs.spice.ui.mypatients.fragment.MedicalReviewPatientDiagnosisFragment
@@ -74,6 +77,11 @@ class UnderFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
         withNetworkCheck(connectivityManager,::initializeViews,::onBackPressPopStack)
         attachObserver()
         initializeListeners()
+        setAnalytics()
+    }
+    private fun setAnalytics(){
+        UserDetail.eventName= AnalyticsDefinedParams.MedicalReviewCreation
+        viewModel.setUserJourney(AnalyticsDefinedParams.UnderFiveYears)
     }
 
     private fun backNavigationToHome() {
@@ -83,6 +91,18 @@ class UnderFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
             isNegativeButtonNeed = true
         ) { isPositive ->
             if (isPositive) {
+                supportFragmentManager.findFragmentById(R.id.clinicalSummaryContainer)
+                    .let { currentFragment ->
+                        if (currentFragment !is UnderFiveYearsTreatmentSummaryFragment) {
+                            viewModel.setAnalyticsData(
+                                UserDetail.startDateTime,
+                                eventType = AnalyticsDefinedParams.UnderFiveYears,
+                                eventName = UserDetail.eventName,
+                                exitReason = AnalyticsDefinedParams.HomeButtonClicked,
+                                isCompleted = false
+                            )
+                        }
+                    }
                 startActivityWithoutSplashScreen()
             }
         }
@@ -229,6 +249,11 @@ class UnderFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
                         viewModel.patientReference = it.patientReference.toString()
                         showReviewSummary(it.encounterId, it.patientReference)
                     }
+                    viewModel.setAnalyticsData(
+                        UserDetail.startDateTime,
+                        eventType = AnalyticsDefinedParams.UnderFiveYears,
+                        eventName = UserDetail.eventName
+                    )
                 }
             }
         }
@@ -515,6 +540,18 @@ class UnderFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
             getString(R.string.alert), getString(R.string.exit_reason), isNegativeButtonNeed = true
         ) { isPositive ->
             if (isPositive) {
+                supportFragmentManager.findFragmentById(R.id.clinicalSummaryContainer)
+                    .let { currentFragment ->
+                        if (currentFragment !is UnderTwoMonthsTreatmentSummaryFragment) {
+                            viewModel.setAnalyticsData(
+                                UserDetail.startDateTime,
+                                eventType = AnalyticsDefinedParams.UnderFiveYears,
+                                eventName = UserDetail.eventName,
+                                exitReason = AnalyticsDefinedParams.BackButtonClicked,
+                                isCompleted = false
+                            )
+                        }
+                    }
                 onBackPressPopStack()
             }
         }
