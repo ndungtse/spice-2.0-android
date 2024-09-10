@@ -34,9 +34,9 @@ import com.medtroniclabs.spice.app.analytics.utils.CommonUtils.updateUserIdIfEmp
 import com.medtroniclabs.spice.appextensions.cancelAllWorker
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.isVisible
-import com.medtroniclabs.spice.appextensions.scheduleSyncWorker
-import com.medtroniclabs.spice.appextensions.syncWorkerName
+import com.medtroniclabs.spice.appextensions.startBackgroundOfflineSync
 import com.medtroniclabs.spice.appextensions.visible
+import com.medtroniclabs.spice.appextensions.workerUniqueName
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.REFRESH_FRAGMENT
@@ -149,7 +149,7 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
         val userRole = SecuredPreference.getUserDetails()?.roles?.joinToString { it.name }
         if (userRole != null) {
             if (userRole.contains(RoleConstant.COMMUNITY_HEALTH_WORKER)) {
-                scheduleSyncWorker()
+                startBackgroundOfflineSync()
                 checkBGSyncStatus()
             }
         }
@@ -361,7 +361,7 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
 
     private fun checkBGSyncStatus() {
         val workManager = WorkManager.getInstance(this)
-        workManager.getWorkInfosForUniqueWorkLiveData(syncWorkerName).observe(this) {
+        workManager.getWorkInfosForUniqueWorkLiveData(workerUniqueName).observe(this) {
             if (!it.isNullOrEmpty() && it[0].state == WorkInfo.State.RUNNING) {
                 binding.appBarMain.includeMainContent.syncingHolder.visible()
             } else {

@@ -7,6 +7,9 @@ import androidx.activity.viewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.app.analytics.model.UserDetail
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
+import com.medtroniclabs.spice.app.analytics.utils.CommonUtils
+import com.medtroniclabs.spice.appextensions.startBackgroundOfflineSync
+import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.SpiceLocationManager
 import com.medtroniclabs.spice.databinding.ActivityAssessmentBinding
@@ -69,44 +72,52 @@ class AssessmentActivity : BaseActivity() {
     }
 
     private fun backNavigation(isHome: Boolean) {
-        if (getBackButtonStatus()) {
+        val backButtonStatus = getBackButtonStatus()
+        if (backButtonStatus.first) {
             showErrorDialogue(
                 getString(R.string.alert),
                 getString(R.string.exit_reason),
                 isNegativeButtonNeed = true
             ) { isPositive ->
                 if (isPositive) {
-                    navigationHandling(isHome)
+                    navigationHandling(isHome, backButtonStatus.second)
                 }
             }
         } else {
-            navigationHandling(isHome)
+            navigationHandling(isHome, backButtonStatus.second)
         }
     }
 
-    private fun getBackButtonStatus(): Boolean {
+    /**
+     * First boolean - Changes in page
+     * Second boolean - Summary page or not
+     */
+    private fun getBackButtonStatus(): Pair<Boolean,Boolean> {
         val fragment = supportFragmentManager.findFragmentById(R.id.formsFragmentContainer)
         if (fragment is AssessmentRMNCHFragment) {
-            return fragment.getCurrentAnsweredStatus()
+            return Pair(fragment.getCurrentAnsweredStatus(), false)
         } else if (fragment is AssessmentICCMFragment) {
-            return fragment.getCurrentAnsweredStatus()
+            return Pair(fragment.getCurrentAnsweredStatus(), false)
         }else if (fragment is AssessmentOtherSymptomsFragment) {
-            return fragment.getCurrentAnsweredStatus()
+            return Pair(fragment.getCurrentAnsweredStatus(), false)
         }else if (fragment is AssessmentRMNCHNeonateFragment) {
-            return fragment.getCurrentAnsweredStatus()
+            return Pair(fragment.getCurrentAnsweredStatus(), false)
         }else if (fragment is AssessmentICCMSummaryFragment){
-            return fragment.getCurrentAnsweredStatus()
+            return Pair(fragment.getCurrentAnsweredStatus(), true)
         }else if (fragment is AssessmentOtherSymptomSummaryFragment) {
-            return fragment.getCurrentAnsweredStatus()
+            return Pair(fragment.getCurrentAnsweredStatus(), true)
         }else if (fragment is AssessmentRMNCHSummaryFragment) {
-            return fragment.getCurrentAnsweredStatus()
+            return Pair(fragment.getCurrentAnsweredStatus(), true)
         }else if (fragment is AssessmentRMNCHNeonateSummaryFragment) {
-            return fragment.getCurrentAnsweredStatus()
+            return Pair(fragment.getCurrentAnsweredStatus(), true)
         }
-        return false
+        return Pair(false, false)
     }
 
-    private fun navigationHandling(isHome: Boolean) {
+    private fun navigationHandling(isHome: Boolean, isFromSummary: Boolean) {
+        if (isFromSummary)
+            startBackgroundOfflineSync()
+
         if (isHome) {
             setupAnalytic(AnalyticsDefinedParams.HomeButtonClicked)
             val intent = Intent(this, LandingActivity::class.java)
@@ -248,6 +259,7 @@ class AssessmentActivity : BaseActivity() {
                 ResourceState.SUCCESS -> {
                     hideLoading()
                     finishSuccessFlow()
+                    startBackgroundOfflineSync()
                 }
 
                 else -> {}

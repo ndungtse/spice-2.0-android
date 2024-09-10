@@ -74,7 +74,7 @@ class ResourceLoadingViewModel @Inject constructor(
             // Existing village changed remove all data and fresh download for all villages
             if (changedVillage.isNotEmpty()) {
                 // Village changed post local changes
-                val requestIds = offlineSyncRepository.postOfflineUnSyncedChanges()
+                val requestIds = offlineSyncRepository.postOfflineUnSyncedChangesWithMutex()
                 if (requestIds == null) {
                     householdsLiveData.postError()
                     return false

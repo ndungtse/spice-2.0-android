@@ -11,8 +11,8 @@ import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
-import com.medtroniclabs.spice.appextensions.syncWorkerName
 import com.medtroniclabs.spice.appextensions.visible
+import com.medtroniclabs.spice.appextensions.workerUniqueName
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.offlinesync.utils.OfflineConstant.KEY_REQUESTS_ID
 import com.medtroniclabs.spice.databinding.FragmentOfflineSyncBinding
@@ -48,7 +48,7 @@ class OfflineSyncActivity : SpiceRootActivity() {
 
     private fun checkBGSyncStatus() {
         val workManager = WorkManager.getInstance(this)
-        workManager.getWorkInfosForUniqueWorkLiveData(syncWorkerName).observe(this) {
+        workManager.getWorkInfosForUniqueWorkLiveData(workerUniqueName).observe(this) {
             isBackgroundSyncRunning = !it.isNullOrEmpty() && it[0].state == WorkInfo.State.RUNNING
         }
     }
@@ -87,6 +87,8 @@ class OfflineSyncActivity : SpiceRootActivity() {
                 finish()
         }
     }
+
+
 
     private fun initiateUpload() {
         if (viewModel.connectivityManager.isNetworkAvailable()) {
@@ -158,6 +160,7 @@ class OfflineSyncActivity : SpiceRootActivity() {
             .build()
 
         workManager.enqueue(getSyncStatusWorker)
+
 
         workManager.getWorkInfoByIdLiveData(getSyncStatusWorker.id).observe(this) { workerInfo ->
             if (workerInfo.state == WorkInfo.State.SUCCEEDED) {

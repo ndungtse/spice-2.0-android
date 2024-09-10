@@ -13,11 +13,14 @@ import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import androidx.work.Constraints
 import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.ExistingWorkPolicy
 import androidx.work.NetworkType
+import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.offlinesync.PostDataWorker
 import com.medtroniclabs.spice.offlinesync.ScheduledSyncWork
 import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
 import java.io.File
@@ -31,6 +34,7 @@ private const val notificationId = 99 // Unique ID for the notification
 const val signatureFolder = "signatures"
 const val imgFileNameExtension = "JPEG"
 
+const val workerUniqueName = "spicePostWorker"
 fun Context.isGpsEnabled(): Boolean {
     val locationManager = this.getSystemService(Context.LOCATION_SERVICE) as LocationManager
     return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
@@ -98,6 +102,7 @@ fun Context.scheduleSyncWorker() {
 private fun observerStatus(workManager: WorkManager) {
     workManager.getWorkInfosForUniqueWorkLiveData(syncWorkerName).observeForever {
         for (woker in it) {
+            Log.e("WORKER_TEST","Id "+woker.id)
             Log.e("WORKER_TEST","Status "+woker.state.name)
         }
     }
@@ -114,7 +119,8 @@ fun Context.isBackgroundWorkerRunning(): Boolean {
 
 fun Context.cancelAllWorker() {
     val workManager = WorkManager.getInstance(this)
-    workManager.cancelUniqueWork(syncWorkerName)
+    workManager.cancelUniqueWork(syncWorkerName) // For old Worker
+    workManager.cancelUniqueWork(workerUniqueName) // For Automatic sync worker
 }
 
 fun Context.showNotification(title: String = "Background Task", message: String = "Syncing Offline data") {
@@ -168,4 +174,27 @@ fun Context.saveBitmapAsJpeg(bitmap: Bitmap, fileName: String): Boolean {
             e.printStackTrace()
         }
     }
+}
+
+fun Context.startBackgroundOfflineSync() {
+    val workManager = WorkManager.getInstance(this)
+    //Only work that is in a terminal state (SUCCEEDED, FAILED, or CANCELLED) and has no unfinished dependent work will be pruned.
+    workManager.pruneWork()
+
+    val constraint = Constraints.Builder()
+        .setRequiredNetworkType(NetworkType.CONNECTED)
+        .build()
+
+    val postWorker = OneTimeWorkRequestBuilder<ScheduledSyncWork>()
+        .setInitialDelay(0, TimeUnit.SECONDS)
+        .setConstraints(constraint)
+        .build()
+
+    val workerInfos = workManager.getWorkInfosForUniqueWork(workerUniqueName).get()
+    val noPendingWorker = workerInfos?.filter { it.state == WorkInfo.State.ENQUEUED || it.state == WorkInfo.State.BLOCKED }.isNullOrEmpty()
+
+    val existingWorkPolicy =
+        if (noPendingWorker) ExistingWorkPolicy.APPEND else ExistingWorkPolicy.KEEP
+
+    workManager.enqueueUniqueWork(workerUniqueName, existingWorkPolicy, postWorker)
 }

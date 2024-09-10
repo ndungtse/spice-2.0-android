@@ -11,12 +11,16 @@ import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
+import com.medtroniclabs.spice.appextensions.startBackgroundOfflineSync
 import com.medtroniclabs.spice.databinding.ActivityFollowUpMyPatientBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
+import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.MenuConstants
 import com.medtroniclabs.spice.ui.followup.adapter.FollowUpPatientListAdapter
 import com.medtroniclabs.spice.ui.followup.viewmodel.FollowUpViewModel
+import timber.log.Timber
+import java.util.logging.Logger
 
 class FollowUpMyPatientActivity : BaseActivity() {
     private lateinit var binding: ActivityFollowUpMyPatientBinding
@@ -118,6 +122,24 @@ class FollowUpMyPatientActivity : BaseActivity() {
                 binding.llFilter.btnFilter.text = this.getString(R.string.filter_count, count)
             } else {
                 binding.llFilter.btnFilter.text = getString(R.string.filter)
+            }
+        }
+
+        viewModel.addCallHistoryLiveData.observe(this) {
+            when (it.state) {
+                ResourceState.LOADING -> {
+                    Timber.i("Saving followup call history in progress")
+                }
+
+                ResourceState.SUCCESS -> {
+                    if (it.data == true)
+                        startBackgroundOfflineSync()
+
+                }
+
+                ResourceState.ERROR -> {
+                    Timber.w("Something went wrong while saving followup call history")
+                }
             }
         }
     }

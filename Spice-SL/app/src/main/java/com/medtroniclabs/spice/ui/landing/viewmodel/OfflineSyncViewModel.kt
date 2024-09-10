@@ -1,18 +1,17 @@
 package com.medtroniclabs.spice.ui.landing.viewmodel
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.medtroniclabs.spice.common.DateUtils.DATE_TIME_DISPLAY_FORMAT
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.model.landing.OfflineSyncEntityDetail
-import com.medtroniclabs.spice.repo.AssessmentRepository
-import com.medtroniclabs.spice.repo.HouseHoldRepository
-import com.medtroniclabs.spice.ui.BaseViewModel
 import com.medtroniclabs.spice.network.utils.ConnectivityManager
+import com.medtroniclabs.spice.repo.AssessmentRepository
 import com.medtroniclabs.spice.repo.FollowUpRepository
+import com.medtroniclabs.spice.repo.HouseHoldRepository
 import com.medtroniclabs.spice.repo.OfflineSyncRepository
+import com.medtroniclabs.spice.ui.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Job
@@ -98,7 +97,7 @@ class OfflineSyncViewModel @Inject constructor(
     fun startUploadingData(minutes: Long = 3) {
         viewModelScope.launch(dispatcherIO) {
             startProgress(minutes)
-            val requestIds = offlineSyncRepository.postOfflineUnSyncedChanges()
+            val requestIds = offlineSyncRepository.postOfflineUnSyncedChangesWithMutex()
             if (requestIds != null) {
                 if (requestIds.isNotEmpty()) { // Has some changes in local
                     SecuredPreference.saveStringArray(
@@ -137,5 +136,4 @@ class OfflineSyncViewModel @Inject constructor(
         progressJob?.cancel()
         statusLiveData.postValue(Pair(isSuccess, message))
     }
-
 }

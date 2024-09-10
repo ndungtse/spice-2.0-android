@@ -38,6 +38,8 @@ import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.NeonatePatientId
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.PNC
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.PNCNeonatal
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.visitNo
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
@@ -52,6 +54,8 @@ class OfflineSyncRepository @Inject constructor(
     private var apiHelper: ApiHelper,
     private var roomHelper: RoomHelper
 ) {
+
+    private val mutex = Mutex()
 
     private suspend fun getUnSyncedAssessmentByPatientId(patientId: String): List<Assessment> {
         return convertEntityToRequest(roomHelper.getUnSyncedAssessmentByPatientId(patientId))
@@ -452,7 +456,7 @@ class OfflineSyncRepository @Inject constructor(
     * 2. List size == 0 -> There are no local changes to post
     * 3. List is null -> Post un-synced local changes and API is failed
     * */
-    suspend fun postOfflineUnSyncedChanges(): List<String>? {
+    private suspend fun postOfflineUnSyncedChanges(): List<String>? {
         val householdIds = mutableListOf<String>()
         val householdMemberIds = mutableListOf<String>()
         val assessmentIds = mutableListOf<String>()
@@ -576,6 +580,13 @@ class OfflineSyncRepository @Inject constructor(
             }
         } catch (e: Exception) {
             return false
+        }
+    }
+
+
+    suspend fun postOfflineUnSyncedChangesWithMutex(): List<String>? {
+        mutex.withLock {
+            return postOfflineUnSyncedChanges()
         }
     }
 }

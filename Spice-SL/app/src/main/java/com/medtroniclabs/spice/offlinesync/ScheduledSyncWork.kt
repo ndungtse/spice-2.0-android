@@ -21,7 +21,11 @@ class ScheduledSyncWork @AssistedInject constructor(
     val offlineSyncRepository: OfflineSyncRepository
 ) : CoroutineWorker(context, userParameter) {
 
-    private val syncDelay = 40 * 1000L // 40 Sec
+    //For schedule
+    //private val syncDelay = 40 * 1000L // 40 Sec
+
+    //For automatic
+    private val syncDelay = 10 * 1000L // 40 Sec
 
     override suspend fun doWork(): Result {
         val context = applicationContext
@@ -69,7 +73,7 @@ class ScheduledSyncWork @AssistedInject constructor(
     }
 
     private suspend fun postLocalChanges(): Boolean {
-        val requestIds = offlineSyncRepository.postOfflineUnSyncedChanges() ?: return false
+        val requestIds = offlineSyncRepository.postOfflineUnSyncedChangesWithMutex() ?: return false
 
         //Save request id in Preference
         if (requestIds.isNotEmpty()) {

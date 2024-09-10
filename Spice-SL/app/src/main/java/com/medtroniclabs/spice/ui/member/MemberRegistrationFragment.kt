@@ -21,6 +21,7 @@ import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams.AddNewMember
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams.EditNewMember
 import com.medtroniclabs.spice.app.analytics.utils.CommonUtils
+import com.medtroniclabs.spice.appextensions.startBackgroundOfflineSync
 import com.medtroniclabs.spice.common.CommonUtils.getBooleanAsString
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
@@ -226,6 +227,7 @@ class MemberRegistrationFragment : Fragment(), FormEventListener, View.OnClickLi
     }
 
     private fun launchSummaryOrAssessmentPage() {
+        requireActivity().startBackgroundOfflineSync()
         if (memberRegistrationViewModel.startAssessment != null && memberRegistrationViewModel.startAssessment!!) {
             val intent = Intent(requireActivity(), AssessmentToolsActivity::class.java)
             memberRegistrationViewModel.memberRegistrationLiveData.value?.data.let {

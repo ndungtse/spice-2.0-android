@@ -10,6 +10,7 @@ import androidx.fragment.app.replace
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.app.analytics.model.UserDetail
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
+import com.medtroniclabs.spice.appextensions.startBackgroundOfflineSync
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.MemberID
 import com.medtroniclabs.spice.common.DefinedParams.isMemberRegistration
@@ -182,6 +183,7 @@ class HouseholdActivity : BaseActivity(), OnDialogDismissListener {
 
                 ResourceState.SUCCESS -> {
                     hideLoading()
+                    startBackgroundOfflineSync()
                     loadFragment(3)
                 }
 

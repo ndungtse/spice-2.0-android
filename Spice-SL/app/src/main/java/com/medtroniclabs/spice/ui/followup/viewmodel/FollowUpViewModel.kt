@@ -4,6 +4,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
+import com.medtroniclabs.spice.appextensions.postLoading
+import com.medtroniclabs.spice.appextensions.postSuccess
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.FollowUpPatientModel
@@ -12,6 +14,7 @@ import com.medtroniclabs.spice.data.offlinesync.model.FollowUpCallStatus
 import com.medtroniclabs.spice.db.entity.VillageEntity
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.model.followup.FollowUpFilter
+import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.repo.FollowUpRepository
 import com.medtroniclabs.spice.ui.BaseViewModel
 import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
@@ -46,6 +49,7 @@ class FollowUpViewModel @Inject constructor(
     val referralDayLimitLiveData = MutableLiveData<Int>()
     var maxSuccessfulCallLimit: Int = 5
     private var maxUnSuccessfulCallLimit: Int = 5
+    val addCallHistoryLiveData = MutableLiveData<Resource<Boolean>>()
 
     init {
         SecuredPreference.getFollowUpCriteria()?.let { followUpCriteria ->
@@ -142,6 +146,7 @@ class FollowUpViewModel @Inject constructor(
     fun addCallHistory() {
         viewModelScope.launch(dispatcherIO) {
             selectedFollowUpDetail?.let {
+                addCallHistoryLiveData.postLoading()
                 val callStatus =
                     getCallStatus(callResultHashMap[DefinedParams.CallResult] as String)
                 val patientStatus=getPatientStatus(callStatus)
@@ -157,6 +162,7 @@ class FollowUpViewModel @Inject constructor(
                 setAnalyticsFollowUpData(it.id,it.patientId,callStatus,patientStatus,
                     unSuccessfulReason,SecuredPreference.getString(DefinedParams.FollowUpStartTiming)
                 )
+                addCallHistoryLiveData.postSuccess(true)
             }
         }
     }
