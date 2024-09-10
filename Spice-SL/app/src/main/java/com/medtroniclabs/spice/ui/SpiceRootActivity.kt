@@ -37,6 +37,7 @@ open class SpiceRootActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         sessionExpiredBroadcastReceiver = SessionExpiredBroadcastReceiver()
+        checkInAppUpdate()
     }
 
     override fun onResume() {

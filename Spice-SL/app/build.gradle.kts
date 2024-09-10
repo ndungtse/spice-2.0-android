@@ -19,7 +19,7 @@ android {
         applicationId = "com.medtroniclabs.spice"
         minSdk = 23
         targetSdk = 34
-        versionCode = 1
+        versionCode = 5
         versionName = "2.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
