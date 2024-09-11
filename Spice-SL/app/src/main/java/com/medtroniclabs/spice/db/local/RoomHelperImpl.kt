@@ -76,6 +76,7 @@ import com.medtroniclabs.spice.db.response.VillageBasicDetails
 import com.medtroniclabs.spice.model.MemberDobGenderModel
 import com.medtroniclabs.spice.model.assessment.AssessmentDetails
 import com.medtroniclabs.spice.model.assessment.AssessmentMemberDetails
+import com.medtroniclabs.spice.ui.assessment.AssessmentNCDEntity
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
 import com.medtroniclabs.spice.ui.boarding.MenuTypeEnums
 import com.medtroniclabs.spice.ui.followup.FollowUpDefinedParams
@@ -973,4 +974,28 @@ class RoomHelperImpl @Inject constructor(
     override suspend fun insertTreatmentPlanFrequencies(items: List<TreatmentPlanFrequencyEntity>) {
         return ncdMedicalReviewDao.insertTreatmentPlanFrequencies(items)
     }
+
+    override fun getAssessmentFormData(formType: String, workFlow: String): LiveData<String> {
+        return metaDataDAO.getAssessmentFormData(formType, workFlow)
+    }
+
+    override suspend fun getSymptomList(): List<SignsAndSymptomsEntity> {
+        return assessmentDAO.getSymptomList()
+    }
+
+    override suspend fun saveAssessmentInformation(assessmentOfflineEntity: AssessmentNCDEntity):
+            AssessmentNCDEntity {
+        val id = assessmentDAO.saveAssessmentInformation(assessmentOfflineEntity)
+        return assessmentDAO.getAssessmentById(id)
+    }
+
+    override suspend fun getAllAssessmentRecords(uploadStatus: Boolean): List<AssessmentNCDEntity> {
+        return assessmentDAO.getAllAssessmentRecords(uploadStatus)
+    }
+
+    override suspend fun updateAssessmentUploadStatus(id: Long, uploadStatus: Boolean) {
+        return assessmentDAO.updateAssessmentUploadStatus(id, uploadStatus)
+    }
+
+    override suspend fun deleteAssessmentList(isUploaded: Boolean) = assessmentDAO.deleteAssessmentList()
 }

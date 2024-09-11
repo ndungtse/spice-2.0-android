@@ -175,4 +175,5 @@ interface ApiHelper {
     suspend fun glucoseLogCreate(request: HashMap<String, Any>): Response<APIResponse<HashMap<String, Any>>>
     suspend fun bpLogList(request: BPBGListModel): Response<APIResponse<BPBGListModel>>
     suspend fun glucoseLogList(request: BPBGListModel): Response<APIResponse<BPBGListModel>>
+    suspend fun createAssessmentNCD(request: JsonObject): Response<HashMap<String, Any>>
 }

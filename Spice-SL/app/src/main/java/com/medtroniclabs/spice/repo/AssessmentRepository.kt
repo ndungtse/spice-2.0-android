@@ -1,18 +1,23 @@
 package com.medtroniclabs.spice.repo
 
 import android.location.Location
+import androidx.lifecycle.LiveData
 import com.google.gson.Gson
+import com.google.gson.JsonObject
 import com.google.gson.reflect.TypeToken
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.data.LocalSpinnerResponse
 import com.medtroniclabs.spice.db.entity.AssessmentEntity
+import com.medtroniclabs.spice.db.entity.MedicalComplianceEntity
 import com.medtroniclabs.spice.db.entity.SignsAndSymptomsEntity
 import com.medtroniclabs.spice.db.local.RoomHelper
 import com.medtroniclabs.spice.formgeneration.model.FormResponse
 import com.medtroniclabs.spice.model.assessment.AssessmentMemberDetails
+import com.medtroniclabs.spice.network.ApiHelper
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.network.resource.ResourceState
+import com.medtroniclabs.spice.ui.assessment.AssessmentNCDEntity
 import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
 import kotlinx.coroutines.Dispatchers
@@ -21,7 +26,8 @@ import java.util.Locale
 import javax.inject.Inject
 
 class AssessmentRepository @Inject constructor(
-    private var roomHelper: RoomHelper
+    private var roomHelper: RoomHelper,
+    private var apiHelper: ApiHelper
 ) {
 
     suspend fun savePNCAssessment(
@@ -292,5 +298,35 @@ class AssessmentRepository @Inject constructor(
     suspend fun getChildPatientId(parentId: Long): Long? {
         return roomHelper.getChildPatientId(parentId)
     }
+    fun getAssessmentFormData(
+        formType: String,
+        workFlow: String
+    ): LiveData<String> {
+        return roomHelper.getAssessmentFormData(formType, workFlow)
+    }
 
+    suspend fun getSymptomList(): List<SignsAndSymptomsEntity> {
+        return roomHelper.getSymptomList()
+    }
+
+    suspend fun getMedicationParentComplianceList(): List<MedicalComplianceEntity> {
+        return roomHelper.getMedicalParentComplianceList()
+    }
+
+    suspend fun getMedicationChildComplianceList(parentId: Long): List<MedicalComplianceEntity> {
+        return roomHelper.getMedicalChildComplianceList(parentId)
+    }
+
+    suspend fun saveAssessmentInformation(createRequest: AssessmentNCDEntity) =
+        roomHelper.saveAssessmentInformation(createRequest)
+
+    suspend fun getAllAssessmentRecords(uploadStatus: Boolean) = roomHelper.getAllAssessmentRecords(uploadStatus)
+
+    suspend fun deleteAssessmentList(isUploaded: Boolean) =
+        roomHelper.deleteAssessmentList(isUploaded)
+    suspend fun updateAssessmentUploadStatus(id: Long, uploadStatus: Boolean) =
+        roomHelper.updateAssessmentUploadStatus(id, uploadStatus)
+
+    suspend fun getAssessmentOfflineList(uploadStatus: Boolean) = roomHelper.getAllAssessmentRecords(uploadStatus)
+    suspend fun createAssessmentNCD(request: JsonObject) = apiHelper.createAssessmentNCD(request)
 }

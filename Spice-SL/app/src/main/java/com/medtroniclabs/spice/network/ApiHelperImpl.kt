@@ -381,4 +381,7 @@ class ApiHelperImpl @Inject constructor(private val apiService: ApiService) : Ap
     override suspend fun glucoseLogList(request: BPBGListModel): Response<APIResponse<BPBGListModel>> {
         return apiService.glucoseLogList(request)
     }
+    override suspend fun createAssessmentNCD(request: JsonObject): Response<HashMap<String, Any>> {
+        return apiService.createAssessmentNCD(request)
+    }
 }

@@ -2245,7 +2245,7 @@ class FormGenerator(
      * @param scrollViewParent Parent ScrollView
      * @param view View to which we need to scroll.
      */
-    private fun scrollToView(scrollViewParent: NestedScrollView, view: View) {
+    fun scrollToView(scrollViewParent: NestedScrollView, view: View) {
         // Get deepChild Offset
         val childOffset = Point()
         getDeepChildOffset(scrollViewParent, view.parent, view, childOffset)
@@ -3220,4 +3220,21 @@ class FormGenerator(
         }
         return status
     }
+
+    fun showHideCardFamily(status: Boolean, family: String) {
+        serverData?.let { serverDataList ->
+            val familyList = serverDataList.filter { it.id == family }
+            familyList.forEach { formLayout ->
+                val view = getViewByTag(formLayout.id + rootSuffix)
+                view?.let { familyView ->
+                    if (status) {
+                        setViewVisibility(VISIBLE, familyView, true)
+                    } else {
+                        setViewVisibility(GONE, familyView, true)
+                    }
+                }
+            }
+        }
+    }
+
 }

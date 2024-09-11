@@ -15,6 +15,8 @@ data class MedicalComplianceEntity(
     val displayValue: String? = null,
     @ColumnInfo(name = "parent_compliance_id")
     val parentComplianceId: Long? = null,
-    @ColumnInfo(name = "is_child_exists")
-    var isChildExists: Boolean = false,
+    @ColumnInfo(name = "child_exists")
+    var childExists: Boolean = false,
+    @ColumnInfo(name = "culture_value")
+    val cultureValue: String ?= null
 )

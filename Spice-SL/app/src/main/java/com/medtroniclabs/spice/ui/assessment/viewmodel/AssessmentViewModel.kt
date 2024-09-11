@@ -1,12 +1,13 @@
 package com.medtroniclabs.spice.ui.assessment.viewmodel
 
 import android.location.Location
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
-import com.medtroniclabs.spice.app.analytics.db.AnalyticsRepository
-import com.medtroniclabs.spice.app.analytics.utils.CommonUtils
+import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.appextensions.postLoading
+import com.medtroniclabs.spice.appextensions.postSuccess
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DateUtils.calculateGestationalAge
 import com.medtroniclabs.spice.common.DefinedParams
@@ -14,14 +15,19 @@ import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.data.LocalSpinnerResponse
 import com.medtroniclabs.spice.data.model.RecommendedDosageListModel
+import com.medtroniclabs.spice.data.model.SymptomModel
 import com.medtroniclabs.spice.db.entity.AssessmentEntity
+import com.medtroniclabs.spice.db.entity.MedicalComplianceEntity
 import com.medtroniclabs.spice.db.entity.MemberClinicalEntity
 import com.medtroniclabs.spice.db.entity.PregnancyDetail
+import com.medtroniclabs.spice.db.entity.RiskClassificationModel
+import com.medtroniclabs.spice.db.entity.RiskFactorEntity
 import com.medtroniclabs.spice.db.entity.SignsAndSymptomsEntity
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.model.FormResponse
 import com.medtroniclabs.spice.model.assessment.AssessmentMemberDetails
+import com.medtroniclabs.spice.ncd.screening.repo.ScreeningRepository
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.repo.AssessmentRepository
 import com.medtroniclabs.spice.repo.HouseholdMemberRepository
@@ -33,6 +39,7 @@ import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.IsClinicTak
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.otherSymptoms
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.signsAndSymptoms
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.symptoms
+import com.medtroniclabs.spice.ui.assessment.AssessmentNCDEntity
 import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefinedParams.Diarrhoea
 import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefinedParams.DiarrhoeaSigns
 import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralReasons
@@ -64,7 +71,7 @@ import javax.inject.Inject
 class AssessmentViewModel @Inject constructor(
     @IoDispatcher override var dispatcherIO: CoroutineDispatcher,
     private var memberRegistrationRepository: HouseholdMemberRepository,
-    private var assessmentRepository: AssessmentRepository,
+    private var assessmentRepository: AssessmentRepository
 ) : BaseViewModel(dispatcherIO) {
 
     var selectedHouseholdMemberId = -1L
@@ -77,6 +84,7 @@ class AssessmentViewModel @Inject constructor(
     var workflowName: String? = null
     var formLayout: List<FormLayout>? = null
     var symptomTypeListResponse = MutableLiveData<List<SignsAndSymptomsEntity>>()
+    var symptomListResponse = MutableLiveData<List<SignsAndSymptomsEntity>>()
     var otherAssessmentDetails = HashMap<String, Any>()
     val formLayoutsLiveData = MutableLiveData<Resource<FormResponse>>()
     val nearestFacilityLiveData = MutableLiveData<Resource<ArrayList<Map<String, Any>>>>()
@@ -91,6 +99,22 @@ class AssessmentViewModel @Inject constructor(
     var referralReason: ArrayList<String>? = null
     var pregnancyDetail: PregnancyDetail? = null
     var selectedMemberDob: String? = null
+    var selectedSymptoms = MutableLiveData<List<SymptomModel>>()
+    var medicationParentComplianceResponse = MutableLiveData<List<MedicalComplianceEntity>>()
+    var selectedMedication = MutableLiveData<MedicalComplianceEntity?>()
+    var medicationChildComplianceResponse = MutableLiveData<List<MedicalComplianceEntity>>()
+    var complianceMap: ArrayList<HashMap<String, Any>>? = null
+    var bioDataMap: HashMap<String, Any>? = null
+    var bioMetric: HashMap<String, Any>? = null
+    var list = ArrayList<RiskClassificationModel>()
+    private var fbsBloodGlucose: Double? = null
+    private var rbsBloodGlucose: Double? = null
+    var assessmentType: String? = null
+    private val getNcdFormData = MutableLiveData<Pair<String, String>>()
+    val formLayoutsNcdLiveData: LiveData<String> = getNcdFormData.switchMap {
+        assessmentRepository.getAssessmentFormData(it.first, it.second)
+    }
+    val assessmentSaveResponse = MutableLiveData<Resource<AssessmentNCDEntity>>()
 
     init {
         SecuredPreference.getFollowUpCriteria()?.let { followUpCriteria ->
@@ -159,7 +183,8 @@ class AssessmentViewModel @Inject constructor(
                 SecuredPreference.getString(SecuredPreference.EnvironmentKey.DEFAULT_SITE_ID.name)
                     ?: "-1"
         } else if (referralStatus != null && referralStatus == ReferralStatus.OnTreatment.name) {
-            otherDetails[AssessmentDefinedParams.NextFollowupDate] = DateUtils.convertDateTimeToDate(
+            otherDetails[AssessmentDefinedParams.NextFollowupDate] =
+                DateUtils.convertDateTimeToDate(
                     DateUtils.getDateAfterDays(referralReason?.mapNotNull { treatmentDays[it] }
                         ?.minOrNull() ?: 3),
                     DateUtils.DATE_ddMMyyyy,
@@ -503,7 +528,8 @@ class AssessmentViewModel @Inject constructor(
                     getClinicalDate(pregnancyDetail.dateOfDelivery, details[RMNCH.DateOfDelivery])
                 pregnancyDetail.noOfNeonates =
                     getNumberOfNeonates(pregnancyDetail.noOfNeonates, details[RMNCH.NoOfNeonate])
-                pregnancyDetail.isDeliveryAtHome = if (visitNo == 1L) true else pregnancyDetail.isDeliveryAtHome
+                pregnancyDetail.isDeliveryAtHome =
+                    if (visitNo == 1L) true else pregnancyDetail.isDeliveryAtHome
 
                 details[RMNCH.visitNo] = pregnancyDetail.pncVisitNo ?: 0L
                 details[RMNCH.DateOfDelivery] = pregnancyDetail.dateOfDelivery ?: ""
@@ -566,5 +592,67 @@ class AssessmentViewModel @Inject constructor(
         }
     }
 
+    fun getNcdFormData(formType: String, workFlow: String) {
+        getNcdFormData.value = Pair(formType, workFlow)
+    }
+
+    fun getSymptomList() {
+        viewModelScope.launch(dispatcherIO) {
+            symptomListResponse.postValue(assessmentRepository.getSymptomList())
+        }
+    }
+
+    fun getMedicationParentComplianceList() {
+        viewModelScope.launch(dispatcherIO) {
+            medicationParentComplianceResponse.postValue(assessmentRepository.getMedicationParentComplianceList())
+        }
+    }
+
+    fun getMedicationChildComplianceList(parentId: Long) {
+        viewModelScope.launch(dispatcherIO) {
+            try {
+                medicationChildComplianceResponse.postValue(
+                    assessmentRepository.getMedicationChildComplianceList(
+                        parentId
+                    )
+                )
+            } catch (_: Exception) {
+                //Exception - Catch block
+            }
+        }
+    }
+
+    fun saveAssessmentInformation(request: String) {
+        viewModelScope.launch(dispatcherIO)
+        {
+            assessmentSaveResponse.postLoading()
+            try {
+                val assessmentEntity = AssessmentNCDEntity(
+                    assessmentDetails = request,
+                    userId = SecuredPreference.getUserId()
+                )
+                val rowId = assessmentRepository.saveAssessmentInformation(assessmentEntity)
+                assessmentSaveResponse.postSuccess(rowId)
+            } catch (e: Exception) {
+                assessmentSaveResponse.postError()
+            }
+        }
+    }
+
+    fun setFbsBloodGlucose(glucose: Double) {
+        fbsBloodGlucose = glucose
+    }
+
+    fun setRbsBloodGlucose(glucose: Double) {
+        rbsBloodGlucose = glucose
+    }
+
+    fun getFbsBloodGlucose(): Double {
+        return fbsBloodGlucose ?: 0.0
+    }
+
+    fun getRbsBloodGlucose(): Double {
+        return rbsBloodGlucose ?: 0.0
+    }
 
 }

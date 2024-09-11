@@ -79,7 +79,6 @@ class ScreeningSummaryFragment : BaseFragment(), View.OnClickListener {
         viewModel.formLayoutsLiveData.value.let { form ->
             viewModel.screeningSaveResponse.value?.data?.let {
                 StringConverter.convertStringToMap(it.screeningDetails)?.let { map ->
-                    viewModel.summaryMap = map
                     val formFieldsType = object : TypeToken<FormResponse>() {}.type
                     val formFields: FormResponse = Gson().fromJson(form, formFieldsType)
                     formSummaryReporter.populateSummary(

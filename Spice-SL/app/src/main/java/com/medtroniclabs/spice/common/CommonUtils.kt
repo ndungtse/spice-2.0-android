@@ -45,6 +45,7 @@ import com.medtroniclabs.spice.mappingkey.Screening.substanceAbuse
 import com.medtroniclabs.spice.mappingkey.Screening.userSiteId
 import com.medtroniclabs.spice.ncd.screening.ReferredReason
 import com.medtroniclabs.spice.ui.MenuConstants
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import java.io.File
 import java.math.RoundingMode
@@ -1406,5 +1407,47 @@ object CommonUtils {
             isBD() -> SPICE.BANGLADESH.name
             else -> SPICE.AFRICA.name
         }
+    }
+
+    fun calculateProvisionalDiagnosis(
+        map: HashMap<String, Any>,
+        isConfirmDiagnosis: Boolean? = null,
+        avgSystolic: Int? = null,
+        avgDiastolic: Int? = null,
+        fbsValue: Double = 0.0,
+        rbsValue: Double = 0.0,
+        unitType: String
+    ) {
+        if (isConfirmDiagnosis == false) {
+            val diagnosisMap = ArrayList<String>()
+
+            checkAvg(avgSystolic, avgDiastolic)?.let {
+                diagnosisMap.add(it)
+            }
+
+            when (unitType) {
+                Screening.mgdl -> {
+                    if (fbsValue > Screening.FBSMaximumMGDlValue || rbsValue >= Screening.RBSMaximumMGDlValue) {
+                        diagnosisMap.add(AssessmentDefinedParams.DM_Diagnosis)
+                    }
+                }
+
+                else -> {
+                    if (fbsValue > Screening.FBSMaximumValue || rbsValue >= Screening.RBSMaximumValue) {
+                        diagnosisMap.add(AssessmentDefinedParams.DM_Diagnosis)
+                    }
+                }
+            }
+            if (diagnosisMap.size > 0)
+                map[AssessmentDefinedParams.Provisional_Diagnosis] = diagnosisMap
+        }
+    }
+
+    private fun checkAvg(avgSystolic: Int?, avgDiastolic: Int?): String? {
+        if ((avgSystolic ?: 0) > AssessmentDefinedParams.UpperLimitSystolic || (avgDiastolic
+                ?: 0) > AssessmentDefinedParams.UpperLimitDiastolic
+        )
+            return AssessmentDefinedParams.HTN_Diagnosis
+        return null
     }
 }

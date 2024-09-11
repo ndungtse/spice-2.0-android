@@ -36,6 +36,7 @@ import com.medtroniclabs.spice.db.local.RoomHelper
 import com.medtroniclabs.spice.network.ApiHelper
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.network.resource.ResourceState
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -414,13 +415,41 @@ class MetaRepository @Inject constructor(
             )
         }
         formResponse.assessment?.let { ass ->
-            roomHelper.saveForm(
-                FormEntity(
-                    id = ass.id,
-                    formType = DefinedParams.Assessment,
-                    formInput = ass.inputForm
-                )
-            )
+            val gson = Gson()
+            val formFieldsType = object :
+                TypeToken<com.medtroniclabs.spice.formgeneration.model.FormResponse>() {}.type
+            val formFields: com.medtroniclabs.spice.formgeneration.model.FormResponse =
+                gson.fromJson(ass.inputForm, formFieldsType)
+            val categories =
+                listOf(AssessmentDefinedParams.NCD, AssessmentDefinedParams.MaternalHealth, AssessmentDefinedParams.MentalHealth)
+            categories.forEach { category ->
+                val cardIdList = formFields.formLayout
+                    .filter {
+                        it.viewType.equals(
+                            AssessmentDefinedParams.CardView,
+                            true
+                        ) && it.category.equals(category, true)
+                    }
+                    .map { it.id }
+                if (cardIdList.isNotEmpty()) {
+                    val formLayoutList = formFields.formLayout.filter { formLayout ->
+                        cardIdList.any { id -> formLayout.family == id || formLayout.id == id }
+                    }
+                    roomHelper.saveForm(
+                        FormEntity(
+                            id = ass.id,
+                            formType = DefinedParams.Assessment,
+                            formInput = gson.toJson(
+                                com.medtroniclabs.spice.formgeneration.model.FormResponse(
+                                    formLayout = formLayoutList,
+                                    time = formFields.time
+                                )
+                            ),
+                            workflowName = category
+                        )
+                    )
+                }
+            }
             roomHelper.saveConsent(
                 ConsentEntity(
                     id = ass.id,

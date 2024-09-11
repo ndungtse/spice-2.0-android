@@ -772,4 +772,25 @@
     <string name="fbs">FBS</string>
     <string name="hba1c">HbA1c</string>
     <string name="systolic_diastolic_mmHg">Systolic / Diastolic (mmHg)</string>
+
+    //Assessment
+    <string name="medical_adherence">Medical Adherence</string>
+    <string name="since_the_last_assessment_symptom_info">Since the last assessment, has the patient had any new or worsening symptoms?</string>
+    <string name="complaince_title">During the last week, how many doses of patient\'s medication were taken?</string>
+    <string name="other_hypertension_symptom">Other Hypertension Symptoms</string>
+    <string name="other_diabetes_symptom">Other Diabetes Symptoms</string>
+    <string name="other_hint">Type other reason for not taking medication</string>
+    <string name="new_or_worsening_symptoms">Any new or worsening symptoms</string>
+    <string name="new_or_worsening_diabetes">New or Worsening Diabetes Symptoms</string>
+    <string name="new_or_worsening_hypertension">New or Worsening Hypertension Symptoms</string>
+    <string name="empty_space">" "</string>
+    <string name="other_selected">Symptoms and Other</string>
+    <string name="error_message_spinner">Please select a valid option</string>
+    <string name="comma_symbol">,&#160;</string>
+    <string name="average_bp_text">Average Blood Pressure</string>
+    <string name="bg_with_type">Blood Glucose (%1$s)</string>
+    <string name="pregnancy_signs">Pregnancy Danger Signs</string>
+    <string name="gestational_period">Gestational Age</string>
+    <string name="red_risk">Red Risk</string>
+    <string name="find_help">Find Help?</string>
 </resources>

@@ -39,11 +39,15 @@ class AssessmentToolsActivity : BaseActivity() {
         toolsViewModel.selectedHouseholdMemberID = intent.getLongExtra(DefinedParams.MemberID, -1)
         toolsViewModel.selectedMemberDob = intent.getStringExtra(DefinedParams.DOB)
         toolsViewModel.followUpId = intent.getLongExtra(DefinedParams.FollowUpId, -1)
+        val bundle = Bundle()
+        bundle.putString(DefinedParams.FhirId, intent.getStringExtra(DefinedParams.FhirId))
+        bundle.putString(DefinedParams.ORIGIN, intent.getStringExtra(DefinedParams.ORIGIN))
         val fragmentTag =
             ToolsMenuFragment.TAG
         var fragment = supportFragmentManager.findFragmentByTag(fragmentTag)
         if (fragment == null) {
             fragment = ToolsMenuFragment.newInstance()
+            fragment.arguments = bundle
             supportFragmentManager.beginTransaction()
                 .add(R.id.menuItemsFragment, fragment, fragmentTag)
                 .commit()

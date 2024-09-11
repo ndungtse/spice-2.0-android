@@ -62,6 +62,15 @@ class FormSummaryReporter(
         }
     }
 
+    fun populateAssessmentSummary(
+        serverData: List<FormLayout>,
+        resultMap: Map<String, Any>,
+        translate: Boolean = false
+    ) {
+        parentLayout.removeAllViews()
+        parentLayout.addView(initialCardLayout(getString(R.string.result), resultRootSuffix))
+    }
+
     private fun getFamilyView(family: String?): LinearLayout? {
         family ?: return null
         return parentLayout.findViewWithTag(family)

@@ -55,6 +55,7 @@ import com.medtroniclabs.spice.db.response.VillageBasicDetails
 import com.medtroniclabs.spice.model.MemberDobGenderModel
 import com.medtroniclabs.spice.model.assessment.AssessmentDetails
 import com.medtroniclabs.spice.model.assessment.AssessmentMemberDetails
+import com.medtroniclabs.spice.ui.assessment.AssessmentNCDEntity
 
 interface RoomHelper {
     suspend fun saveHouseHoldEntry(householdEntity: HouseholdEntity): Long
@@ -366,4 +367,16 @@ interface RoomHelper {
 
     suspend fun deleteTreatmentPlanFrequencies()
     suspend fun insertTreatmentPlanFrequencies(items: List<TreatmentPlanFrequencyEntity>)
+
+    fun getAssessmentFormData(formType: String, workFlow: String): LiveData<String>
+
+    suspend fun getSymptomList(): List<SignsAndSymptomsEntity>
+
+    suspend fun saveAssessmentInformation(request: AssessmentNCDEntity): AssessmentNCDEntity
+
+    suspend fun getAllAssessmentRecords(uploadStatus: Boolean):List<AssessmentNCDEntity>
+
+    suspend fun updateAssessmentUploadStatus(id: Long, uploadStatus: Boolean)
+
+    suspend fun deleteAssessmentList(isUploaded: Boolean)
 }

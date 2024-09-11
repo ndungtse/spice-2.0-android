@@ -110,7 +110,7 @@ class DashboardMenuItemsAdapter(
                 R.drawable.ic_ncd_tool
             )
 
-            MenuConstants.RMNCH_MENU_ID -> return ContextCompat.getDrawable(
+            MenuConstants.RMNCH_MENU_ID, MenuConstants.MATERNAL_HEALTH -> return ContextCompat.getDrawable(
                 context,
                 R.drawable.ic_rmnch_tool
             )
@@ -167,6 +167,11 @@ class DashboardMenuItemsAdapter(
             MenuConstants.DASHBOARD -> return ContextCompat.getDrawable(
                 context,
                 R.drawable.ic_dashboard
+            )
+
+            MenuConstants.MENTAL_HEALTH -> return ContextCompat.getDrawable(
+                context,
+                R.drawable.ic_mental_health
             )
             else -> null
         }

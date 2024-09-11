@@ -65,6 +65,7 @@ import com.medtroniclabs.spice.db.entity.TreatmentPlanEntity
 import com.medtroniclabs.spice.db.entity.TreatmentPlanFrequencyEntity
 import com.medtroniclabs.spice.db.entity.UserProfileEntity
 import com.medtroniclabs.spice.db.entity.VillageEntity
+import com.medtroniclabs.spice.ui.assessment.AssessmentNCDEntity
 import net.zetetic.database.sqlcipher.SupportOpenHelperFactory
 
 @Database(
@@ -78,7 +79,7 @@ import net.zetetic.database.sqlcipher.SupportOpenHelperFactory
         ProgramEntity::class, CulturesEntity::class, ConsentForm::class, ConsentEntity::class, MentalHealthEntity::class, MedicalComplianceEntity::class, ChiefDomEntity::class, DistrictEntity::class, ScreeningEntity::class, RiskFactorEntity::class,
         MedicalReviewMetaItems::class, DiseaseCategoryItems::class, ExaminationListItems::class, LabourDeliveryMetaEntity::class, FollowUp::class, FollowUpCall::class, PregnancyDetail::class, FrequencyEntity::class, ConsentForm::class,
         ProgramEntity::class, CulturesEntity::class, ConsentEntity::class, MentalHealthEntity::class, MedicalComplianceEntity::class, ChiefDomEntity::class, DistrictEntity::class, ScreeningEntity::class, RiskFactorEntity::class,
-        ComorbidityEntity::class, ComplicationsEntity::class, LifestyleEntity::class, ComplaintsEntity::class, PhysicalExaminationEntity::class, CurrentMedicationEntity::class, TreatmentPlanEntity::class, TreatmentPlanFrequencyEntity::class],
+        ComorbidityEntity::class, ComplicationsEntity::class, LifestyleEntity::class, ComplaintsEntity::class, PhysicalExaminationEntity::class, CurrentMedicationEntity::class, TreatmentPlanEntity::class, TreatmentPlanFrequencyEntity::class, AssessmentNCDEntity::class],
     version = 1
 )
 @TypeConverters(OfflineStatusTypeConverter::class)

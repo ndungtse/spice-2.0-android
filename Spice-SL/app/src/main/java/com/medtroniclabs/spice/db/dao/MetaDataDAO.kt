@@ -208,4 +208,10 @@ interface MetaDataDAO {
     fun getFormDataForNcd(
         formType: String
     ): LiveData<String>
+
+    @Query("SELECT formInput FROM FormEntity where formType =:formType AND workflowName =:workFlow")
+    fun getAssessmentFormData(
+        formType: String,
+        workFlow: String
+    ): LiveData<String>
 }

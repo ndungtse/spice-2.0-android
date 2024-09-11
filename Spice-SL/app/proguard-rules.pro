@@ -24,6 +24,7 @@
 
 
 -keepclassmembers class com.medtroniclabs.spice.data.** {*;}
+-keepclassmembers class com.medtroniclabs.spice.ncd.data.** {*;}
 -keepclassmembers class com.medtroniclabs.spice.model.** {*;}
 -keepclassmembers class com.medtroniclabs.spice.db.** {*;}
 -keepclassmembers class com.medtroniclabs.spice.formgeneration.** {*;}

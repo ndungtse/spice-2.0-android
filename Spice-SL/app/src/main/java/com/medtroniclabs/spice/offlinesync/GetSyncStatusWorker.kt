@@ -14,6 +14,7 @@ import com.medtroniclabs.spice.data.offlinesync.utils.OfflineConstant.KEY_REQUES
 import com.medtroniclabs.spice.db.local.RoomHelper
 import com.medtroniclabs.spice.ncd.screening.repo.ScreeningRepository
 import com.medtroniclabs.spice.network.utils.ConnectivityManager
+import com.medtroniclabs.spice.repo.AssessmentRepository
 import com.medtroniclabs.spice.repo.OfflineSyncRepository
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
@@ -26,7 +27,8 @@ class GetSyncStatusWorker @AssistedInject constructor(
     @Assisted userParameter: WorkerParameters,
     val roomHelper: RoomHelper,
     val offlineSyncRepository: OfflineSyncRepository,
-    private val screeningRepository: ScreeningRepository
+    private val screeningRepository: ScreeningRepository,
+    private val assessmentRepository: AssessmentRepository
 ) : CoroutineWorker(context, userParameter) {
 
     @Inject
@@ -71,42 +73,74 @@ class GetSyncStatusWorker @AssistedInject constructor(
             }
         } else {
             repeat(ncdRetry) {
+                var screeningSuccess = true
+                var assessmentSuccess = true
+
                 try {
                     if (!connectivityManager.isNetworkAvailable()) {
-                        // If the network is not available, no need to continue
                         return Result.failure()
                     }
 
                     val screeningUploadList = screeningRepository.getAllScreeningRecords(false)
-                    screeningUploadList?.forEach { data ->
-                        val dataId = data.id
-                        // Make API call
-                        val response = screeningRepository.createScreeningLog(
-                            StringConverter.getJsonObject(
-                                Gson().toJson(
-                                    CommonUtils.parseRequest(
-                                        data.generalDetails,
-                                        data.screeningDetails,
-                                        data.userId
+                    if(screeningUploadList?.isNotEmpty() == true) {
+                        screeningUploadList.forEach { data ->
+                            val dataId = data.id
+                            // Make API call
+                            val response = screeningRepository.createScreeningLog(
+                                StringConverter.getJsonObject(
+                                    Gson().toJson(
+                                        CommonUtils.parseRequest(
+                                            data.generalDetails,
+                                            data.screeningDetails,
+                                            data.userId
+                                        )
                                     )
                                 )
                             )
-                        )
-                        // Check if the API call was successful
-                        if (response.isSuccessful) {
-                            // If the API call is successful, update the record
-                            screeningRepository.updateScreeningRecordById(dataId, true)
-                        } else {
-                            // If one of the API calls fails, retry
-                            return@repeat
+                            if (response.isSuccessful) {
+                                // If the API call is successful, update the record
+                                screeningRepository.updateScreeningRecordById(dataId, true)
+                            } else {
+                                // Set screening success flag to false if any call fails
+                                screeningSuccess = false
+                            }
                         }
                     }
 
-                    // Delete uploaded records only after all uploads are successful
-                    screeningRepository.deleteUploadedScreeningRecords(DateUtils.getTodayDateInMilliseconds())
+                    // Delete uploaded screening records after all uploads are successful
+                    if (screeningSuccess) {
+                        screeningRepository.deleteUploadedScreeningRecords(DateUtils.getTodayDateInMilliseconds())
+                    }
 
-                    // If everything is successful, return success
-                    return Result.success()
+                    // Proceed with assessment regardless of screening result
+                    val assessmentOfflineList = assessmentRepository.getAssessmentOfflineList(false)
+                    if (assessmentOfflineList.isNotEmpty()) {
+                        assessmentOfflineList.forEach {
+                            val dataId = it.id
+                            val reqMap = StringConverter.convertStringToMap(it.assessmentDetails)
+                            val response = assessmentRepository.createAssessmentNCD(
+                                StringConverter.getJsonObject(Gson().toJson(reqMap))
+                            )
+
+                            if (response.isSuccessful) {
+                                // If API is successful, update the assessment record
+                                assessmentRepository.updateAssessmentUploadStatus(dataId, true)
+                            } else {
+                                // Set assessment success flag to false if any call fails
+                                assessmentSuccess = false
+                            }
+                        }
+                    }
+
+                    // Delete uploaded assessment records if successful
+                    if (assessmentSuccess) {
+                        assessmentRepository.deleteAssessmentList(true)
+                    }
+
+                    // Return success if both screening and assessment were successful
+                    if (screeningSuccess && assessmentSuccess) {
+                        return Result.success()
+                    }
                 } catch (e: Exception) {
                     e.printStackTrace()
                     // Continue to next attempt

@@ -11,6 +11,7 @@ import com.google.android.flexbox.FlexDirection
 import com.google.android.flexbox.FlexboxLayoutManager
 import com.google.android.flexbox.JustifyContent
 import com.medtroniclabs.spice.common.CommonUtils
+import com.medtroniclabs.spice.common.CommonUtils.isNonNcdWorkflow
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.databinding.FragmentToolsMenuBinding
 import com.medtroniclabs.spice.db.entity.MenuEntity
@@ -78,6 +79,18 @@ class ToolsMenuFragment : BaseFragment(), MenuSelectionListener {
                 }
             }
         }
+        val menu = listOf(
+            MenuEntity(
+                id = 1,
+                menuId = "ncd",
+                roleName = "CHW",
+                name = "NCD",
+                displayOrder = 1,
+            )
+        )
+        if (!isNonNcdWorkflow()) {
+            setAdapterViews(menu)
+        }
     }
 
     private fun setAdapterViews(menus: List<MenuEntity>) {
@@ -120,6 +133,8 @@ class ToolsMenuFragment : BaseFragment(), MenuSelectionListener {
         intent.putExtra(DefinedParams.DOB, viewModel.selectedMemberDob)
         intent.putExtra(DefinedParams.FollowUpId, viewModel.followUpId)
         intent.putExtra(DefinedParams.MenuId, menuId)
+        intent.putExtra(DefinedParams.FhirId, requireArguments().getString(DefinedParams.FhirId))
+        intent.putExtra(DefinedParams.ORIGIN, requireArguments().getString(DefinedParams.ORIGIN))
         workFlowName?.let { name ->
             intent.putExtra(WorkFlowName, name)
         }

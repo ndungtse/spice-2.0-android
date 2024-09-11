@@ -10,6 +10,7 @@ import com.medtroniclabs.spice.data.offlinesync.utils.OfflineSyncStatus
 import com.medtroniclabs.spice.db.entity.AssessmentEntity
 import com.medtroniclabs.spice.db.entity.SignsAndSymptomsEntity
 import com.medtroniclabs.spice.model.assessment.AssessmentDetails
+import com.medtroniclabs.spice.ui.assessment.AssessmentNCDEntity
 
 @Dao
 interface AssessmentDAO {
@@ -55,5 +56,23 @@ interface AssessmentDAO {
 
     @Query("SELECT * FROM SymptomEntity WHERE LOWER(type) = LOWER(:type) ORDER BY display_order")
     fun getSymptomListByTypeForNCD(type: String): LiveData<List<SignsAndSymptomsEntity>>
+
+    @Query("SELECT * FROM SymptomEntity ORDER BY display_order")
+    suspend fun getSymptomList(): List<SignsAndSymptomsEntity>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun saveAssessmentInformation(assessmentOfflineEntity: AssessmentNCDEntity): Long
+
+    @Query("SELECT * FROM AssessmentNCDEntity WHERE id = :id")
+    suspend fun getAssessmentById(id: Long): AssessmentNCDEntity
+
+    @Query("SELECT * FROM AssessmentNCDEntity WHERE uploadStatus = :uploadStatus ORDER BY createdAt DESC")
+    suspend fun getAllAssessmentRecords(uploadStatus: Boolean): List<AssessmentNCDEntity>
+
+    @Query("DELETE FROM AssessmentNCDEntity WHERE uploadStatus = 1")
+    suspend fun deleteAssessmentList()
+
+    @Query("UPDATE AssessmentNCDEntity SET uploadStatus = :uploadStatus WHERE id = :id")
+    suspend fun updateAssessmentUploadStatus(id: Long, uploadStatus: Boolean)
 
 }

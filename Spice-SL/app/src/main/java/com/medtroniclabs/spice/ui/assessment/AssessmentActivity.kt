@@ -14,6 +14,7 @@ import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.SpiceLocationManager
 import com.medtroniclabs.spice.databinding.ActivityAssessmentBinding
 import com.medtroniclabs.spice.formgeneration.extension.capitalizeFirstChar
+import com.medtroniclabs.spice.mappingkey.Screening
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.MenuConstants
@@ -21,6 +22,8 @@ import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.OtherSympto
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.Summary
 import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentICCMFragment
 import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentICCMSummaryFragment
+import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentNCDFragment
+import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentNCDSummaryFragment
 import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentOtherSymptomSummaryFragment
 import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentOtherSymptomsFragment
 import com.medtroniclabs.spice.ui.assessment.fragment.AssessmentRMNCHFragment
@@ -110,6 +113,10 @@ class AssessmentActivity : BaseActivity() {
             return Pair(fragment.getCurrentAnsweredStatus(), true)
         }else if (fragment is AssessmentRMNCHNeonateSummaryFragment) {
             return Pair(fragment.getCurrentAnsweredStatus(), true)
+        } else if(fragment is AssessmentNCDFragment) {
+            return Pair(fragment.getCurrentAnsweredStatus(), true)
+        } else if(fragment is AssessmentNCDSummaryFragment) {
+            return Pair(false, false)
         }
         return Pair(false, false)
     }
@@ -132,6 +139,12 @@ class AssessmentActivity : BaseActivity() {
                 is AssessmentRMNCHNeonateSummaryFragment,
                 is AssessmentOtherSymptomSummaryFragment -> {
                     finishSuccessFlow()
+                }
+                is AssessmentNCDSummaryFragment -> {
+                    val intent = Intent(this, LandingActivity::class.java)
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+                    startActivity(intent)
+                    finish()
                 }
                 else -> {
                     this@AssessmentActivity.finish()
@@ -194,10 +207,22 @@ class AssessmentActivity : BaseActivity() {
                     tag = AssessmentRMNCHSummaryFragment.TAG
                 )
             }
+
+            MenuConstants.NCD_MENU_ID -> {
+                setTitle(Summary.capitalizeFirstChar())
+                showBackButton()
+                replaceFragmentInId<AssessmentNCDSummaryFragment>(
+                    binding.formsFragmentContainer.id,
+                    tag = AssessmentNCDSummaryFragment.TAG
+                )
+            }
         }
     }
 
     private fun loadFragment() {
+        val bundle = Bundle()
+        bundle.putString(DefinedParams.FhirId, intent.getStringExtra(DefinedParams.FhirId))
+        bundle.putString(DefinedParams.ORIGIN, intent.getStringExtra(DefinedParams.ORIGIN))
         when (viewModel.menuId) {
             MenuConstants.ICCM_MENU_ID -> {
                 setTitle(MenuConstants.ICCM_MENU_ID.uppercase())
@@ -230,6 +255,18 @@ class AssessmentActivity : BaseActivity() {
                     tag = AssessmentOtherSymptomsFragment::class.simpleName
                 )
             }
+
+            MenuConstants.NCD_MENU_ID -> {
+                setTitle(AssessmentDefinedParams.ncd_UpperCase)
+                bundle.putString(Screening.type, MenuConstants.NCD_MENU_ID)
+                showLoading()
+                replaceFragmentInId<AssessmentNCDFragment>(
+                    binding.formsFragmentContainer.id,
+                    bundle = bundle,
+                    tag = AssessmentNCDFragment.TAG
+                )
+            }
+
         }
     }
 
@@ -263,6 +300,28 @@ class AssessmentActivity : BaseActivity() {
                 }
 
                 else -> {}
+            }
+        }
+
+        viewModel.assessmentSaveResponse.observe(this) { resourceState ->
+            when (resourceState.state) {
+                ResourceState.LOADING -> {
+                    showLoading()
+                }
+                ResourceState.ERROR -> {
+                    hideLoading()
+                    resourceState.message?.let {
+                        showErrorDialogue(
+                            getString(R.string.error),
+                            it,
+                            isNegativeButtonNeed = false
+                        ) {}
+                    }
+                }
+                ResourceState.SUCCESS -> {
+                    hideLoading()
+                    loadSummaryFragment()
+                }
             }
         }
     }

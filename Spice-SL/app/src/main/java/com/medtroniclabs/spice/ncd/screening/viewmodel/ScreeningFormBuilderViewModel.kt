@@ -34,7 +34,6 @@ class ScreeningFormBuilderViewModel @Inject constructor(
             screeningRepository.getMentalQuestion(it.second)
         }
     private var lastLocation: Location? = null
-    var summaryMap: Map<String, Any>? = null
     val getFormData = MutableLiveData<String>()
     val formLayoutsLiveData: LiveData<String> = getFormData.switchMap {
         screeningRepository.getFormData(it)
