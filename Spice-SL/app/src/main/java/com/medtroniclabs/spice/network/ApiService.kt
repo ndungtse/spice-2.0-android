@@ -82,17 +82,15 @@ import com.medtroniclabs.spice.model.NcdMRStaticDataModel
 import com.medtroniclabs.spice.model.medicalreview.SearchLabTestResponse
 import com.medtroniclabs.spice.model.medicalreview.SearchRequestLabTest
 import com.medtroniclabs.spice.model.medicalreview.SummaryDetails
-import okhttp3.MultipartBody
+import com.medtroniclabs.spice.ncd.data.BPBGListModel
 import com.medtroniclabs.spice.ncd.data.ScreeningPatientResponse
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
-import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.Path
-import retrofit2.http.Part
 
 interface ApiService {
     @POST("/auth-service/session")
@@ -305,4 +303,16 @@ interface ApiService {
 
     @POST("spice-service/static-data/ncd-medical-review")
     suspend fun getNcdMRStaticData(): Response<APIResponse<NcdMRStaticDataModel>>
+
+    @POST("spice-service/bplog/create")
+    suspend fun bpLogCreate(@Body request: HashMap<String, Any>): Response<APIResponse<HashMap<String, Any>>>
+
+    @POST("spice-service/glucoselog/create")
+    suspend fun glucoseLogCreate(@Body request: HashMap<String, Any>): Response<APIResponse<HashMap<String, Any>>>
+
+    @POST("spice-service/bplog/list")
+    suspend fun bpLogList(@Body request: BPBGListModel): Response<APIResponse<BPBGListModel>>
+
+    @POST("spice-service/glucoselog/list")
+    suspend fun glucoseLogList(@Body request: BPBGListModel): Response<APIResponse<BPBGListModel>>
 }

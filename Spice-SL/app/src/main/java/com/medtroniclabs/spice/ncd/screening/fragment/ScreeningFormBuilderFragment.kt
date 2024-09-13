@@ -1,13 +1,10 @@
 package com.medtroniclabs.spice.ncd.screening.fragment
 
 import android.os.Bundle
-import android.text.SpannableStringBuilder
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.AppCompatEditText
-import androidx.appcompat.widget.AppCompatTextView
-import androidx.core.text.color
 import androidx.fragment.app.activityViewModels
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -41,12 +38,12 @@ import com.medtroniclabs.spice.formgeneration.config.DefinedParams.Year
 import com.medtroniclabs.spice.formgeneration.config.ViewType
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.listener.FormEventListener
-import com.medtroniclabs.spice.formgeneration.model.BPModel
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.model.FormResponse
 import com.medtroniclabs.spice.formgeneration.ui.FormResultComposer
 import com.medtroniclabs.spice.formgeneration.utility.CheckBoxDialog
 import com.medtroniclabs.spice.mappingkey.Screening
+import com.medtroniclabs.spice.ncd.assessment.viewmodel.BloodPressureViewModel
 import com.medtroniclabs.spice.ncd.screening.viewmodel.GeneralDetailsViewModel
 import com.medtroniclabs.spice.ncd.screening.viewmodel.ScreeningFormBuilderViewModel
 import com.medtroniclabs.spice.network.resource.ResourceState
@@ -55,7 +52,6 @@ import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.MenuConstants
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.rootSuffix
 import com.medtroniclabs.spice.ui.common.GeneralInfoDialog
-import kotlin.math.roundToInt
 import java.lang.reflect.Type
 
 class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener, View.OnClickListener {
@@ -63,6 +59,7 @@ class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener, View.OnC
     private lateinit var binding: FragmentScreeningFormBuilderBinding
     private lateinit var formGenerator: FormGenerator
     private val viewModel: ScreeningFormBuilderViewModel by activityViewModels()
+    private val bpViewModel: BloodPressureViewModel by activityViewModels()
     private val generalDetailsViewModel: GeneralDetailsViewModel by activityViewModels()
 
 
@@ -117,7 +114,7 @@ class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener, View.OnC
             ) { map, id ->
                 when (id) {
                     Screening.Weight, Screening.Height -> {
-                        renderBMIValue(map)
+                        bpViewModel.renderBMIValue(requireContext(), formGenerator, map)
                         showBGCardOrNot(map)
                     }
 
@@ -129,7 +126,7 @@ class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener, View.OnC
             }
 
         viewModel.getFormData(MenuConstants.SCREENING.lowercase())
-        viewModel.getRiskEntityList()
+        bpViewModel.getRiskEntityList()
     }
 
     private var screeningJSON: List<FormLayout>? = null
@@ -178,7 +175,7 @@ class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener, View.OnC
                 }
             }
         }
-        viewModel.getRiskEntityListLiveData.observe(viewLifecycleOwner){
+        bpViewModel.getRiskEntityListLiveData.observe(viewLifecycleOwner){
 
         }
     }
@@ -265,14 +262,14 @@ class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener, View.OnC
         calculateSuicidalIdeation(map)
         calculateCAGEAIDSCore(map, serverData)
         calculateFurtherAssessment(map, getMeasurementTypeValues(map))
-        val resultOne = viewModel.getRiskEntityListLiveData.value
+        val resultOne = bpViewModel.getRiskEntityListLiveData.value
         val baseType: Type = object : TypeToken<ArrayList<RiskClassificationModel>>() {}.type
         if (resultOne?.isNotEmpty() == true) {
             val resultList = Gson().fromJson<ArrayList<RiskClassificationModel>>(
                 resultOne[0].nonLabEntity,
                 baseType
             )
-            calculateCVDRiskFactor(map, ArrayList(resultList), viewModel.getSystolicAverage())
+            calculateCVDRiskFactor(map, ArrayList(resultList), bpViewModel.getSystolicAverage())
         }
         var isReferred = false
         if (map.containsKey(Screening.ReferAssessment)) {
@@ -333,12 +330,12 @@ class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener, View.OnC
 
     private fun calculateFurtherAssessment(map: HashMap<String, Any>, unitGenericType: String) {
         screeningJSON?.first { it.viewType == ViewType.VIEW_TYPE_FORM_BP }?.let {
-            calculateBPValues(it, map)
+            bpViewModel.calculateBPValues(it, map)
         }
 
         val assessmentConditionResult = checkAssessmentCondition(
-            viewModel.getSystolicAverage(),
-            viewModel.getDiastolicAverage(),
+            bpViewModel.getSystolicAverage(),
+            bpViewModel.getDiastolicAverage(),
             viewModel.getPhQ4Score(),
             Pair(viewModel.getFbsBloodGlucose(), viewModel.getRbsBloodGlucose()),
             unitGenericType,
@@ -357,98 +354,6 @@ class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener, View.OnC
             return CommonUtils.calculatePregnancySymptomCount(resultHashMap[Screening.PregnancySymptoms] as java.util.ArrayList<Map<*, *>>)
         }
         return 0
-    }
-    private fun calculateBPValues(formLayout: FormLayout, resultMap: Map<String, Any>) {
-        formLayout.apply {
-            var systolic = 0.0
-            var diastolic = 0.0
-            if (resultMap.containsKey(id)) {
-                val actualMapList = resultMap[id]
-                if (actualMapList is java.util.ArrayList<*>) {
-                    var systolicEntries = 0
-                    var diastolicEntries = 0
-                    actualMapList.forEach { map ->
-                        if (map is BPModel) {
-                            map.systolic?.let {
-                                systolic += it
-                                systolicEntries++
-                            }
-                            map.diastolic?.let {
-                                diastolic += it
-                                diastolicEntries++
-                            }
-                        } else {
-                            validateMap(map, Screening.Systolic)?.let {
-                                systolic += it
-                                systolicEntries++
-                            }
-                            validateMap(map, Screening.Diastolic)?.let {
-                                diastolic += it
-                                diastolicEntries++
-                            }
-                        }
-                    }
-                    updateAverage(
-                        actualMapList, systolicEntries, diastolicEntries, systolic, diastolic
-                    )
-                }
-            }
-        }
-    }
-
-    private fun updateAverage(
-        actualMapList: java.util.ArrayList<*>,
-        systolicEntries: Int,
-        diastolicEntries: Int,
-        systolic: Double,
-        diastolic: Double
-    ) {
-        if (actualMapList.size > 0 && systolicEntries > 0 && diastolicEntries > 0) {
-            viewModel.systolicAverageSummary = (systolic / systolicEntries).roundToInt()
-            viewModel.diastolicAverageSummary = (diastolic / diastolicEntries).roundToInt()
-        }
-    }
-
-    private fun validateMap(map: Any?, value: String): Double? {
-        return if (map is Map<*, *> && map.containsKey(value)) ( map[value] as String).toDoubleOrNull() else null
-    }
-
-    private fun renderBMIValue(resultHashMap: HashMap<String, Any>) {
-        val bmiView = formGenerator.getViewByTag(Screening.BMI) as? AppCompatTextView
-        bmiView?.let { view ->
-            if (!resultHashMap.containsKey(Screening.Weight) || !resultHashMap.containsKey(Screening.Height)) {
-                view.text = getString(R.string.hyphen_symbol)
-                formGenerator.removeIfContains(Screening.BMI)
-            } else {
-                if (resultHashMap.containsKey(Screening.Weight) && resultHashMap.containsKey(
-                        Screening.Height
-                    )
-                ) {
-                    val weight = resultHashMap[Screening.Weight] as? Double
-                    val height = resultHashMap[Screening.Height] as? Double
-
-                    if (weight == null || height == null) {
-                        view.text = getString(R.string.hyphen_symbol)
-                    } else {
-                        val bmi = CommonUtils.getBMIForNcd(height, weight)
-                        CommonUtils.getBMIInformation(requireContext(), bmi?.toDoubleOrNull())
-                            ?.let { info ->
-                                resultHashMap[Screening.BMI_CATEGORY] = info.first
-
-                                val bmiWithInfoSpannableStringBuilder = if (bmi == null) {
-                                    requireContext().getString(R.string.hyphen_symbol)
-                                } else {
-                                    SpannableStringBuilder().append(bmi)
-                                        .color(requireContext().getColor(info.second)) {
-                                            append(" (${info.first})")
-                                        }
-                                }
-                                view.text = bmiWithInfoSpannableStringBuilder
-                            }
-                    }
-                }
-            }
-        }
     }
 
     private fun showBGCardOrNot(resultHashMap: HashMap<String, Any>) {

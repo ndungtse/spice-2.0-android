@@ -22,6 +22,7 @@ import com.medtroniclabs.spice.common.GeneralErrorDialog
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.network.utils.ConnectivityManager
 import com.medtroniclabs.spice.ui.boarding.LoginActivity
+import com.medtroniclabs.spice.ui.dialog.GeneralSuccessDialog
 import javax.inject.Inject
 import kotlin.system.exitProcess
 
@@ -97,6 +98,24 @@ open class SpiceRootActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    fun showSuccessDialogue(
+        title: String,
+        message: String,
+        positiveButtonName: String? = null,
+        callback: () -> Unit
+    ) {
+        val generalSuccessDialog =
+            GeneralSuccessDialog.newInstance(
+                title,
+                message = message,
+                okayButton = positiveButtonName ?: getString(R.string.done),
+                callback
+            )
+        val successFragment = supportFragmentManager.findFragmentByTag(GeneralSuccessDialog.TAG)
+        if (successFragment == null)
+            generalSuccessDialog.show(supportFragmentManager, GeneralSuccessDialog.TAG)
     }
 
     fun showErrorDialogue(

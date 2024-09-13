@@ -82,6 +82,7 @@ import com.medtroniclabs.spice.model.NcdMRStaticDataModel
 import com.medtroniclabs.spice.model.medicalreview.SearchLabTestResponse
 import com.medtroniclabs.spice.model.medicalreview.SearchRequestLabTest
 import com.medtroniclabs.spice.model.medicalreview.SummaryDetails
+import com.medtroniclabs.spice.ncd.data.BPBGListModel
 import com.medtroniclabs.spice.ncd.data.ScreeningPatientResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -363,5 +364,21 @@ class ApiHelperImpl @Inject constructor(private val apiService: ApiService) : Ap
 
     override suspend fun getNcdMRStaticData(): Response<APIResponse<NcdMRStaticDataModel>> {
         return apiService.getNcdMRStaticData()
+    }
+
+    override suspend fun bpLogCreate(request: HashMap<String, Any>): Response<APIResponse<HashMap<String, Any>>> {
+        return apiService.bpLogCreate(request)
+    }
+
+    override suspend fun glucoseLogCreate(request: HashMap<String, Any>): Response<APIResponse<HashMap<String, Any>>> {
+        return apiService.glucoseLogCreate(request)
+    }
+
+    override suspend fun bpLogList(request: BPBGListModel): Response<APIResponse<BPBGListModel>> {
+        return apiService.bpLogList(request)
+    }
+
+    override suspend fun glucoseLogList(request: BPBGListModel): Response<APIResponse<BPBGListModel>> {
+        return apiService.glucoseLogList(request)
     }
 }

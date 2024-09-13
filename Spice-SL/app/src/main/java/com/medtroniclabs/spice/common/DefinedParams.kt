@@ -170,4 +170,9 @@ object DefinedParams {
     const val EMPOWER_HEALTH_NCD = "Empower Health NCD"
     const val NCD_REGISTER = "NCD Register"
     const val PATIENT_ID = "patientId"
+    const val RelatedPersonFhirId = "relatedPersonFhirId"
+    const val AssessmentOrganizationId = "assessmentOrganizationId"
+    const val FORM_TYPE_ID = "formTypeId"
+    const val BP_LOG = "bpLog"
+    const val GLUCOSE_LOG = "glucoseLog"
 }

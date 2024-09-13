@@ -2,6 +2,7 @@
 <resources>
         <dimen name="_0dp">0dp</dimen>
         <dimen name="point_five_dp">0.5dp</dimen>
+        <dimen name="point_eight_dp">0.8dp</dimen>
         <dimen name="_1sdp">1.00dp</dimen>
         <dimen name="_2sdp">2.00dp</dimen>
         <dimen name="_3sdp">3.00dp</dimen>

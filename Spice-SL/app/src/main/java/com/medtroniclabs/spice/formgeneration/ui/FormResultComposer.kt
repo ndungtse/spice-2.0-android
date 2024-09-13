@@ -123,7 +123,7 @@ class FormResultComposer {
         fun findGroupIdForNCD(serverData: List<FormLayout?>, id: String): String? {
             val baseId = when (id) {
                 Screening.BMI -> Screening.Height
-                Screening.Glucose_Value, Screening.Glucose_Type, Screening.HbA1c_Date_Time, Screening.Glucose_Date_Time, Screening.GlucoseId, Screening.BloodGlucoseUnit, Screening.GlucoseLogId, Screening.BGTakenOn -> Screening.BloodGlucoseID
+                Screening.Glucose_Value, Screening.Glucose_Type, Screening.HbA1c_Date_Time, Screening.Glucose_Date_Time, Screening.GlucoseId, Screening.GlucoseUnit, Screening.GlucoseLogId, Screening.BGTakenOn -> Screening.BloodGlucoseID
                 Screening.PHQ4_Result, Screening.PHQ4_Score, Screening.PHQ4_Risk_Level -> Screening.PHQ4_Mental_Health
                 Screening.PHQ9_Result, Screening.PHQ9_Score, Screening.PHQ9_Risk_Level -> Screening.PHQ9_Mental_Health
                 Screening.GAD7_Score, Screening.GAD7_Risk_Level -> Screening.GAD7_Mental_Health

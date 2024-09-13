@@ -11,7 +11,6 @@ import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.appextensions.postSuccess
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.db.entity.MentalHealthEntity
-import com.medtroniclabs.spice.db.entity.RiskFactorEntity
 import com.medtroniclabs.spice.db.entity.ScreeningEntity
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.ncd.screening.repo.ScreeningRepository
@@ -43,8 +42,6 @@ class ScreeningFormBuilderViewModel @Inject constructor(
     private var phQ4Score: Int? = null
     private var fbsBloodGlucose: Double? = null
     private var rbsBloodGlucose: Double? = null
-    var systolicAverageSummary: Int? = null
-    var diastolicAverageSummary: Int? = null
 
     fun getMentalQuestion(id: String, type: String) {
         getMentalQuestion.value = Pair(id, type)
@@ -85,14 +82,6 @@ class ScreeningFormBuilderViewModel @Inject constructor(
 
     fun getRbsBloodGlucose(): Double {
         return rbsBloodGlucose ?: 0.0
-    }
-
-    fun getSystolicAverage(): Int? {
-        return systolicAverageSummary
-    }
-
-    fun getDiastolicAverage(): Int? {
-        return diastolicAverageSummary
     }
 
     fun savePatientScreeningInformation(
@@ -137,13 +126,5 @@ class ScreeningFormBuilderViewModel @Inject constructor(
                 screeningUpdateResponse.postError()
             }
         }
-    }
-    private val getRiskEntityList = MutableLiveData<Boolean>()
-    val getRiskEntityListLiveData: LiveData<List<RiskFactorEntity>> = getRiskEntityList.switchMap {
-        screeningRepository.riskFactorListing()
-    }
-
-    fun getRiskEntityList() {
-        getRiskEntityList.value = true
     }
 }

@@ -5,7 +5,7 @@ object AppConstants {
     @JvmStatic
     val SHA_MAC = "HmacSHA512"
 
-    val CLIENT_CONSTANT = "spice mobile"
+    val CLIENT_CONSTANT = "mob"
 
     val exemptionList = listOf("HouseholdActivity", "AssessmentActivity", "FollowUpMyPatientActivity")
 }

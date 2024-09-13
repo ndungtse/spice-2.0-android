@@ -744,6 +744,7 @@
     <string name="facility_referred_to">Nearest Facility Referred to</string>
     <string name="average_blood_pressure">Average Blood Pressure</string>
     <string name="average_mmhg_string" translatable="false">%1$s/%2$s mmHg</string>
+    <string name="blood_glucose">Blood Glucose</string>
     <string name="blood_glucose_rbs">Blood Glucose (RBS)</string>
     <string name="blood_glucose_fbs">Blood Glucose (FBS)</string>
     <string name="phq4_score">PHQ4 Score</string>
@@ -765,4 +766,10 @@
     <string name="known_patient">Known Patient</string>
     <string name="diabetes_controlled_type">Diabetes Controlled Type</string>
     <string name="patient_history">Patient History</string>
+    <string name="add_new_reading">Add New Reading</string>
+    <string name="assessment_date">Assessment Date</string>
+    <string name="rbs">RBS</string>
+    <string name="fbs">FBS</string>
+    <string name="hba1c">HbA1c</string>
+    <string name="systolic_diastolic_mmHg">Systolic / Diastolic (mmHg)</string>
 </resources>

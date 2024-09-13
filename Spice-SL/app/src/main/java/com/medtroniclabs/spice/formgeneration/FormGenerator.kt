@@ -328,7 +328,7 @@ class FormGenerator(
                 binding.etUserInput.filters = arrayOf<InputFilter>(DecimalDigitsInputFilter(it))
             }
             unitMeasurement?.let {
-                it.also { resultHashMap[Screening.GlucoseUnit] = it }
+                it.also { resultHashMap[id + Screening.unitMeasurement_KEY] = it }
             }
             hint?.let {
                 if (translate) {

@@ -101,7 +101,6 @@ object Screening {
     const val BMI_CATEGORY = "bmiCategory"
     const val HbA1c_Date_Time = "hba1cDateTime"
     const val GlucoseId = "glucoseId"
-    const val BloodGlucoseUnit = "glucoseUnit"
     const val GlucoseLogId = "glucoseLogId"
     const val PHQ4_Result = "phq4_result"
     const val PHQ9_Result = "phq9_result"

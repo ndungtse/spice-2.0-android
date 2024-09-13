@@ -48,6 +48,4 @@ class ScreeningRepository @Inject constructor(
 
     suspend fun updateScreeningRecordById(id: Long, uploadStatus: Boolean) =
         roomHelper.updateScreeningRecordById(id, uploadStatus)
-
-    fun riskFactorListing() = roomHelper.getRiskFactorEntity()
 }

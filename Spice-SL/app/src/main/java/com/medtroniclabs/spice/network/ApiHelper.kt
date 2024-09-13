@@ -82,6 +82,7 @@ import com.medtroniclabs.spice.model.NcdMRStaticDataModel
 import com.medtroniclabs.spice.model.medicalreview.SearchLabTestResponse
 import com.medtroniclabs.spice.model.medicalreview.SearchRequestLabTest
 import com.medtroniclabs.spice.model.medicalreview.SummaryDetails
+import com.medtroniclabs.spice.ncd.data.BPBGListModel
 import com.medtroniclabs.spice.ncd.data.ScreeningPatientResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -170,4 +171,8 @@ interface ApiHelper {
     suspend fun  registerPatient(hashMap: HashMap<String, Any>) : Response<APIResponse<RegistrationResponse>>
     suspend fun createScreening(createRequest: JsonObject): Response<ScreeningPatientResponse>
     suspend fun getNcdMRStaticData(): Response<APIResponse<NcdMRStaticDataModel>>
+    suspend fun bpLogCreate(request: HashMap<String, Any>): Response<APIResponse<HashMap<String, Any>>>
+    suspend fun glucoseLogCreate(request: HashMap<String, Any>): Response<APIResponse<HashMap<String, Any>>>
+    suspend fun bpLogList(request: BPBGListModel): Response<APIResponse<BPBGListModel>>
+    suspend fun glucoseLogList(request: BPBGListModel): Response<APIResponse<BPBGListModel>>
 }
