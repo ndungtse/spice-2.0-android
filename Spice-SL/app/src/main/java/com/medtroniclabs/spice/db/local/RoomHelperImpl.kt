@@ -998,4 +998,10 @@ class RoomHelperImpl @Inject constructor(
     }
 
     override suspend fun deleteAssessmentList(isUploaded: Boolean) = assessmentDAO.deleteAssessmentList()
+    override suspend fun getAssessmentClinicalWorkflowId(
+        gender: String,
+        name: String
+    ): List<ClinicalWorkflowEntityWithSubmodule> {
+        return metaDataDAO.getAssessmentClinicalWorkflowId(gender, name)
+    }
 }

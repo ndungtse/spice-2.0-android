@@ -56,7 +56,15 @@ class ToolsMenuFragment : BaseFragment(), MenuSelectionListener {
             val result = bundle.getString(WorkFlowName)
             startAssessmentActivity(MenuConstants.RMNCH_MENU_ID, result)
         }
-        viewModel.getMenuForClinicalWorkflows()
+        if (CommonUtils.isSL()) {
+            viewModel.getMenuForClinicalWorkflows()
+        } else {
+            requireArguments().getString(DefinedParams.Gender)?.let { gender ->
+                viewModel.getMenuClinicalWorkflows(
+                   gender
+                )
+            }
+        }
         attachObservers()
     }
 
@@ -78,18 +86,6 @@ class ToolsMenuFragment : BaseFragment(), MenuSelectionListener {
                     (activity as BaseActivity).hideLoading()
                 }
             }
-        }
-        val menu = listOf(
-            MenuEntity(
-                id = 1,
-                menuId = "ncd",
-                roleName = "CHW",
-                name = "NCD",
-                displayOrder = 1,
-            )
-        )
-        if (!isNonNcdWorkflow()) {
-            setAdapterViews(menu)
         }
     }
 

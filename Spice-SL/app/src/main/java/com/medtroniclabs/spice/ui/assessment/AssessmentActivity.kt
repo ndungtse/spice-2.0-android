@@ -216,6 +216,24 @@ class AssessmentActivity : BaseActivity() {
                     tag = AssessmentNCDSummaryFragment.TAG
                 )
             }
+
+            MenuConstants.MATERNAL_HEALTH -> {
+                setTitle(Summary.capitalizeFirstChar())
+                showBackButton()
+                replaceFragmentInId<AssessmentNCDSummaryFragment>(
+                    binding.formsFragmentContainer.id,
+                    tag = AssessmentNCDSummaryFragment.TAG
+                )
+            }
+
+            MenuConstants.MENTAL_HEALTH -> {
+                setTitle(Summary.capitalizeFirstChar())
+                showBackButton()
+                replaceFragmentInId<AssessmentNCDSummaryFragment>(
+                    binding.formsFragmentContainer.id,
+                    tag = AssessmentNCDSummaryFragment.TAG
+                )
+            }
         }
     }
 
@@ -259,6 +277,28 @@ class AssessmentActivity : BaseActivity() {
             MenuConstants.NCD_MENU_ID -> {
                 setTitle(AssessmentDefinedParams.ncd_UpperCase)
                 bundle.putString(Screening.type, MenuConstants.NCD_MENU_ID)
+                showLoading()
+                replaceFragmentInId<AssessmentNCDFragment>(
+                    binding.formsFragmentContainer.id,
+                    bundle = bundle,
+                    tag = AssessmentNCDFragment.TAG
+                )
+            }
+
+            MenuConstants.MATERNAL_HEALTH -> {
+                setTitle(AssessmentDefinedParams.MaternalHealth)
+                bundle.putString(Screening.type, MenuConstants.MATERNAL_HEALTH)
+                showLoading()
+                replaceFragmentInId<AssessmentNCDFragment>(
+                    binding.formsFragmentContainer.id,
+                    bundle = bundle,
+                    tag = AssessmentNCDFragment.TAG
+                )
+            }
+
+            MenuConstants.MENTAL_HEALTH -> {
+                setTitle(AssessmentDefinedParams.MentalHealth)
+                bundle.putString(Screening.type, MenuConstants.MENTAL_HEALTH)
                 showLoading()
                 replaceFragmentInId<AssessmentNCDFragment>(
                     binding.formsFragmentContainer.id,

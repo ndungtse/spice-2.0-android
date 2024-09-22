@@ -222,6 +222,7 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
                     val intent = Intent(requireContext(), destIntent)
                     intent.putExtra(DefinedParams.FhirId, item.id)
                     intent.putExtra(DefinedParams.ORIGIN, patientListViewModel.origin)
+                    intent.putExtra(DefinedParams.Gender,item.gender)
                     startActivity(intent)
                 }
             }

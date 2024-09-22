@@ -89,21 +89,14 @@ object AssessmentDefinedParams {
     const val is_child_exists: String = "isChildExist"
     const val SSP16 = 16
     const val Middle_Name = "middleName"
-    const val FBSMaximumMGDlValue = 110
-    const val RBSMaximumMGDlValue = 140
     const val DM_Diagnosis = "DM"
-    const val FBSMaximumValue = 6.1
-    const val RBSMaximumValue = 7.8
     const val Provisional_Diagnosis = "provisionalDiagnosis"
     const val HTN_Diagnosis = "HTN"
     const val UpperLimitSystolic = 140
     const val UpperLimitDiastolic = 90
-    const val PHQ4 = "PHQ4"
     const val PHQ9 = "PHQ9"
     const val GAD7 = "GAD7"
     const val Fetch_MH_Questions = "Fetch_MH_Questions"
-
-    const val PHQ4_Mental_Health = "phq4MentalHealth"
     const val PHQ9_Mental_Health = "phq9MentalHealth"
     const val GAD7_Mental_Health = "gad7MentalHealth"
     const val pregnancyAnc = "pregnancyAnc"
@@ -113,14 +106,25 @@ object AssessmentDefinedParams {
     const val relatedPersonFhirId = "relatedPersonFhirId"
     const val ncd = "ncd"
     const val assessmentType = "assessmentType"
-    const val assessmentProcessType = "assessmentProcessType"
+    const val assessmentProcessType = "requestFrom"
     const val assessmentTakenOn = "assessmentTakenOn"
     const val Temperature = "temperature"
     const val organizationId = "organizationId"
     const val compliance = "compliance"
-    const val symptomsDTO = "symptomDTOS"
+    const val symptomsDTO = "ncdSymptoms"
     const val ncd_UpperCase = "NCD"
     const val encounter = "encounter"
     const val userId = "userId"
-
+    const val PHQ9_Score = "phq9Score"
+    const val PHQ9_Risk_Level = "phq9RiskLevel"
+    const val GAD7_Score = "gad7Score"
+    const val GAD7_Risk_Level = "gad7RiskLevel"
+    const val PregnancyStatus = "pregnancyStatus"
+    const val PregnancySymptoms = "pregnancySymptoms"
+    const val GestationalPeriod = "gestationalPeriod"
+    const val PregnancyANCMaxValue = 40
+    const val pregnancyOtherSymptoms = "pregnancyOtherSymptoms"
+    const val africa_uppercase = "AFRICA"
+    const val modifiedDate = "modifiedDate"
+    const val spiceUserId= "spiceUserId"
 }

@@ -22,7 +22,7 @@ data class PatientListRespModel(
     val houseHoldId: String? = null,
     val houseHoldNumber: Long? = null,
     val dateOfOnset:String? = null,
-    val isPregnant: Boolean? = null,
+    var isPregnant: Boolean? = null,
     val pregnancyDetails: PregnancyDetails? = null,
     val villageId:String? = null,
     val relationship:String? = null,
@@ -38,7 +38,9 @@ data class PatientListRespModel(
     val isConfirmDiagnosis: Boolean = false,
     val height: Double? = null,
     val weight: Double? = null,
-    val identityType: String? = null
+    val identityType: String? = null,
+    val isPhq9: Boolean? = false,
+    val isGad7: Boolean? = false,
 )
 
 data class PregnancyDetails(

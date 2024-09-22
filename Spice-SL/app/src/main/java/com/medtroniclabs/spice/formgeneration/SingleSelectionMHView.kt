@@ -11,6 +11,7 @@ import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.mappingkey.Screening
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
 
 class SingleSelectionMHView : LinearLayout {
     private lateinit var viewContext: Context
@@ -175,6 +176,8 @@ class SingleSelectionMHView : LinearLayout {
     fun getResultMapType(type: String?): String? {
         return when(type){
             Screening.PHQ4 -> Screening.PHQ4_Mental_Health
+            AssessmentDefinedParams.GAD7 -> AssessmentDefinedParams.GAD7_Mental_Health
+            AssessmentDefinedParams.PHQ9 -> AssessmentDefinedParams.PHQ9_Mental_Health
             else -> null
         }
     }

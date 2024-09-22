@@ -55,7 +55,7 @@
                             android:layout_height="wrap_content"
                             android:background="@color/card_background">
 
-                            <TextView
+                            <androidx.appcompat.widget.AppCompatTextView
                                 android:id="@+id/bioDataCardTitle"
                                 style="@style/Form_Header_Style"
                                 android:layout_width="@dimen/_0dp"

@@ -720,6 +720,10 @@ object CommonUtils {
 
     fun mentalHealthKey(type: String): String {
         var key = Screening.PHQ4_Mental_Health
+        if (type.equals(AssessmentDefinedParams.PHQ9, true))
+            key = AssessmentDefinedParams.PHQ9_Mental_Health
+        else if (type.equals(AssessmentDefinedParams.GAD7,true))
+            key = AssessmentDefinedParams.GAD7_Mental_Health
         return key
     }
     fun calculatePHQScore(
@@ -770,6 +774,21 @@ object CommonUtils {
                 map[Screening.PHQ4_Score] = phqScore
                 map[Screening.PHQ4_Risk_Level] = getPhQ4RiskLevel(phqScore)
                 map[Screening.PHQ4_Mental_Health] = phqMap
+            }
+            AssessmentDefinedParams.PHQ9 -> {
+                map[AssessmentDefinedParams.PHQ9_Score] = phqScore
+                map[AssessmentDefinedParams.PHQ9_Risk_Level] = getPhQ4RiskLevel(phqScore)
+                map[AssessmentDefinedParams.PHQ9_Mental_Health] = phqMap
+                if (map.containsKey(Screening.PHQ4_Mental_Health))
+                    map.remove(Screening.PHQ4_Mental_Health)
+            }
+
+            AssessmentDefinedParams.GAD7 -> {
+                map[AssessmentDefinedParams.GAD7_Score] = phqScore
+                map[AssessmentDefinedParams.GAD7_Risk_Level] = getPhQ4RiskLevel(phqScore)
+                map[AssessmentDefinedParams.GAD7_Mental_Health] = phqMap
+                if (map.containsKey(Screening.PHQ4_Mental_Health))
+                    map.remove(Screening.PHQ4_Mental_Health)
             }
 
         }

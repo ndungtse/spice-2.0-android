@@ -42,6 +42,7 @@ class AssessmentToolsActivity : BaseActivity() {
         val bundle = Bundle()
         bundle.putString(DefinedParams.FhirId, intent.getStringExtra(DefinedParams.FhirId))
         bundle.putString(DefinedParams.ORIGIN, intent.getStringExtra(DefinedParams.ORIGIN))
+        bundle.putString(DefinedParams.Gender, intent.getStringExtra(DefinedParams.Gender))
         val fragmentTag =
             ToolsMenuFragment.TAG
         var fragment = supportFragmentManager.findFragmentByTag(fragmentTag)

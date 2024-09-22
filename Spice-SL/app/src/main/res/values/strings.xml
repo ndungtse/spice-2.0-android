@@ -748,6 +748,8 @@
     <string name="blood_glucose_rbs">Blood Glucose (RBS)</string>
     <string name="blood_glucose_fbs">Blood Glucose (FBS)</string>
     <string name="phq4_score">PHQ4 Score</string>
+    <string name="phq9_score">PHQ9 Score</string>
+    <string name="gad7_score">GAD7 Score</string>
     <string name="referred_for_nfurther_assessment">Referred for\nFurther Assessment</string>
     <string name="no_assessment_required">No Assessment required</string>
     <string name="cage_aid">CAGE-AID</string>
@@ -793,4 +795,10 @@
     <string name="gestational_period">Gestational Age</string>
     <string name="red_risk">Red Risk</string>
     <string name="find_help">Find Help?</string>
+    <string name="positive">Positive</string>
+    <string name="negative">Negative</string>
+    <string name="gestational_weeks" >%1$d weeks</string>
+    <string name="pregnancy_status">Pregnancy Status</string>
+    <string name="other_lowercase">other</string>
+    <string name="separator_hyphen_space"> - </string>
 </resources>

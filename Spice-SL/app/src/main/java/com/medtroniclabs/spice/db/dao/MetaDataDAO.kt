@@ -214,4 +214,10 @@ interface MetaDataDAO {
         formType: String,
         workFlow: String
     ): LiveData<String>
+
+    @Query("SELECT cwf.name, cwf.displayOrder, cwf.id,cwf.countryId,cwf.workflowName ,cwf.moduleType FROM clinicalworkflowentity as cwf WHERE id in (SELECT distinct clinicalWorkflowId FROM clinicalworkflowconditionentity WHERE gender =:gender AND moduleType =:moduleType) GROUP BY cwf.name ORDER BY displayOrder ASC")
+    suspend fun getAssessmentClinicalWorkflowId(
+        gender: String,
+        moduleType: String
+    ): List<ClinicalWorkflowEntityWithSubmodule>
 }

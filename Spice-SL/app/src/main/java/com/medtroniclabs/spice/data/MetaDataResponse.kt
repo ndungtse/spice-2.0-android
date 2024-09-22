@@ -69,7 +69,8 @@ data class ClinicalWorkflowCondition(
     val maxAge: Int? = null,
     val minAge: Int? = null,
     val subModule: String? = null,
-    val moduleType: String
+    val moduleType: String,
+    val category: String
 )
 
 data class Village(

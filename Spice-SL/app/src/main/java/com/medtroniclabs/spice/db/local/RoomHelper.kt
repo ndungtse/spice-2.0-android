@@ -379,4 +379,9 @@ interface RoomHelper {
     suspend fun updateAssessmentUploadStatus(id: Long, uploadStatus: Boolean)
 
     suspend fun deleteAssessmentList(isUploaded: Boolean)
+
+    suspend fun getAssessmentClinicalWorkflowId(
+        gender: String,
+        name: String
+    ): List<ClinicalWorkflowEntityWithSubmodule>
 }

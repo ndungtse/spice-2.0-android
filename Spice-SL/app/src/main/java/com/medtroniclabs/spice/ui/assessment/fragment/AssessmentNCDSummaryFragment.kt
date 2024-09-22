@@ -15,6 +15,7 @@ import com.google.gson.reflect.TypeToken
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.triggerOneTimeWorker
 import com.medtroniclabs.spice.common.CommonUtils
+import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.databinding.FragmentAssessmentNCDSummaryBinding
@@ -114,24 +115,157 @@ class AssessmentNCDSummaryFragment : BaseFragment(), View.OnClickListener {
         showCVDRiskValue(map)
         showSymptoms(map)
         showMedicalCompliance(map)
+        showPHQ4Score(serverData, map)
+        showPHQ9Score(serverData, map)
+        showGAD7Score(serverData, map)
+        showPregnancyANC(map)
+    }
+
+    private fun showPregnancyANC(map: Map<String, Any>) {
+        if (map.containsKey(AssessmentDefinedParams.pregnancyAnc)) {
+            patientDetailViewModel.patientDetailsLiveData.value?.data?.let { screeningDetailsModel ->
+                screeningDetailsModel.isPregnant?.let { isPregnant ->
+                    showBindingValue(
+                        getString(R.string.pregnancy_status),
+                        isPregnantOrNot(isPregnant)
+                    )
+                }
+                screeningDetailsModel.pregnancyDetails?.lastMenstrualPeriod?.let { lastMenstrualPeriod ->
+                    showBindingValue(
+                        getString(R.string.gestational_period),
+                        gestationalWeeks(lastMenstrualPeriod)
+                    )
+                }
+            }
+            showBindingValue(
+                getString(R.string.pregnancy_signs),
+                getPregnancySymptoms(map)
+            )
+        }
+    }
+
+    private fun getPregnancySymptoms(map: Map<String, Any>): String {
+        if (map.containsKey(AssessmentDefinedParams.pregnancyAnc)) {
+            val subMap = map[AssessmentDefinedParams.pregnancyAnc] as Map<String, Any>
+            if (subMap.containsKey(AssessmentDefinedParams.PregnancySymptoms)) {
+                val list = subMap[AssessmentDefinedParams.PregnancySymptoms] as ArrayList<*>
+                if (subMap.containsKey(AssessmentDefinedParams.pregnancyOtherSymptoms)) {
+                    val otherSymptom = subMap[AssessmentDefinedParams.pregnancyOtherSymptoms] as String?
+                    return getDialogValue(list, otherSymptom)
+                }
+                return getDialogValue(list)
+            }
+        }
+        return getString(R.string.separator_hyphen)
+    }
+
+    fun getListActual(map: Any?): String? {
+        if (map is Map<*, *> && map.containsKey(DefinedParams.NAME)) {
+            val actual = map[DefinedParams.NAME]
+            if (actual is String)
+                return actual
+        }
+        return null
+    }
+
+    private fun getDialogValue(value: Any?, otherSymptoms: String? = null): String {
+        val result = StringBuilder()
+        if (value is ArrayList<*>) {
+            value.forEach { map ->
+                getListActual(map)?.let {
+                    result.append(it)
+                    result.append(getString(R.string.comma_symbol))
+                }
+            }
+        }
+        if (result.isNotEmpty()) {
+            otherSymptoms?.let {
+                return result.delete(result.length - 2, result.length).append(getString(R.string.separator_hyphen_space)).append(it)
+                    .toString()
+            }
+            return result.delete(result.length - 2, result.length).toString()
+        }
+        return getString(R.string.empty_space)
+    }
+
+    private fun gestationalWeeks(date: String?): String {
+        val lastMenstrualDate = date?.let { DateUtils.getLastMenstrualDate(it) }
+        val gestationWeek = lastMenstrualDate?.let { DateUtils.calculateGestationalAge(it).first.toInt() }
+        gestationWeek?.let { weeks ->
+            return if (weeks < AssessmentDefinedParams.PregnancyANCMaxValue) {
+                getString(R.string.gestational_weeks, weeks)
+            } else {
+                getString(R.string.gestational_weeks, AssessmentDefinedParams.PregnancyANCMaxValue)
+            }
+        } ?: kotlin.run {
+            return getString(R.string.hyphen_symbol)
+        }
+    }
+
+    private fun isPregnantOrNot(isPregnant: Boolean?): String {
+        return if (isPregnant == true) {
+            getString(R.string.positive)
+        } else {
+            getString(R.string.negative)
+        }
+    }
+
+    private fun showPHQ9Score(serverData: List<FormLayout>, map: Map<String, Any>) {
+        if (map.containsKey(AssessmentDefinedParams.PHQ9.lowercase())) {
+            val subMap = map[AssessmentDefinedParams.PHQ9.lowercase()] as Map<String, Any>
+            if (subMap.isNotEmpty()) {
+                if (subMap.containsKey(Screening.PHQ4_Score)) {
+                    val phq9Score = subMap[Screening.PHQ4_Score]
+                    if (phq9Score is Double) {
+                        showBindingValue(
+                            getString(R.string.phq9_score),
+                            StringConverter.getPHQ4ReadableName(
+                                score = phq9Score.toInt(),
+                                requireContext()
+                            )
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    private fun showGAD7Score(serverData: List<FormLayout>, map: Map<String, Any>) {
+        if (map.containsKey(AssessmentDefinedParams.GAD7.lowercase())) {
+            val subMap = map[AssessmentDefinedParams.GAD7.lowercase()] as Map<String, Any>
+            if (subMap.isNotEmpty()) {
+                if (subMap.containsKey(Screening.PHQ4_Score)) {
+                    val gad7Score = subMap[Screening.PHQ4_Score]
+                    if (gad7Score is Double) {
+                        showBindingValue(
+                            getString(R.string.gad7_score),
+                            StringConverter.getPHQ4ReadableName(
+                                score = gad7Score.toInt(),
+                                requireContext()
+                            )
+                        )
+                    }
+                }
+            }
+        }
     }
 
     private fun showMedicalCompliance(map: Map<String, Any>) {
-        val linkedTreeMapList: List<ArrayList<LinkedTreeMap<String, String>>> = map.filter {
-            it.key == AssessmentDefinedParams.compliance
-        }.map { it.value as ArrayList<LinkedTreeMap<String, String>> }
-        val symptomResponseList: ArrayList<MedicalComplianceResponse> = arrayListOf()
-        linkedTreeMapList.flatten().forEach { linkedTreeMap ->
-            val name = linkedTreeMap[DefinedParams.NAME] as? String ?: ""
-            val otherCompliance = linkedTreeMap[AssessmentDefinedParams.other_compliance] as? String
+        if (map.containsKey(AssessmentDefinedParams.compliance)) {
+            val linkedTreeMapList: List<ArrayList<LinkedTreeMap<String, String>>> = map.filter {
+                it.key.equals(AssessmentDefinedParams.compliance, true)
+            }.map { it.value as ArrayList<LinkedTreeMap<String, String>> }
+            val symptomResponseList: ArrayList<MedicalComplianceResponse> = arrayListOf()
+            linkedTreeMapList.flatten().forEach { linkedTreeMap ->
+                val name = linkedTreeMap[DefinedParams.NAME] as? String ?: getString(R.string.empty_space)
+                val otherCompliance = linkedTreeMap[AssessmentDefinedParams.other_compliance] as? String
 
-            val complianceResponse = MedicalComplianceResponse(
-                name = name,
-                otherCompliance = otherCompliance
-            )
-            symptomResponseList.add(complianceResponse)
-        }
-        if (getSelectedMedicalComplianceText(symptomResponseList).isNotEmpty()) {
+                val complianceResponse = MedicalComplianceResponse(
+                    name = name,
+                    otherCompliance = otherCompliance
+                )
+                symptomResponseList.add(complianceResponse)
+            }
             showBindingValue(
                 getString(R.string.medical_adherence),
                 getSelectedMedicalComplianceText(symptomResponseList)
@@ -141,12 +275,12 @@ class AssessmentNCDSummaryFragment : BaseFragment(), View.OnClickListener {
 
     private fun showSymptoms(map: Map<String, Any>) {
         val linkedTreeMapList: List<ArrayList<LinkedTreeMap<String, String>>> = map.filter {
-            it.key == AssessmentDefinedParams.symptomsDTO
+            it.key.equals(AssessmentDefinedParams.symptomsDTO, true)
         }.map { it.value as ArrayList<LinkedTreeMap<String, String>> }
         val symptomResponseList: ArrayList<SymptomResponse> = arrayListOf()
 
         linkedTreeMapList.flatten().forEach { linkedTreeMap ->
-            val name = linkedTreeMap[DefinedParams.NAME] as? String ?: ""
+            val name = linkedTreeMap[DefinedParams.NAME] as? String ?: getString(R.string.empty_space)
             val type = linkedTreeMap[Screening.type] as? String
             val otherSymptom = linkedTreeMap[AssessmentDefinedParams.other_symptom] as? String
 
@@ -258,7 +392,6 @@ class AssessmentNCDSummaryFragment : BaseFragment(), View.OnClickListener {
     }
 
     private fun showBMIValue(serverData: List<FormLayout>, map: Map<String, Any>) {
-        //In future backend may take bio metrics
         val subMap = map[Screening.BioMetrics] as Map<String, Any>
         if (subMap.containsKey(Screening.BMI)) {
             val bmiValue = subMap[Screening.BMI]
@@ -301,7 +434,7 @@ class AssessmentNCDSummaryFragment : BaseFragment(), View.OnClickListener {
                         unitType = unitTypeKey
                     }
                 }
-                if (type.lowercase() == Screening.rbs) {
+                if (type.lowercase().equals(Screening.rbs, true)) {
                     showBindingValue(
                         getString(R.string.blood_glucose_rbs),
                         "${CommonUtils.getDecimalFormatted(glucoseValue)} ${
@@ -311,7 +444,7 @@ class AssessmentNCDSummaryFragment : BaseFragment(), View.OnClickListener {
                             )
                         }"
                     )
-                } else if (type.lowercase() == Screening.fbs) {
+                } else if (type.lowercase().equals(Screening.fbs, true)) {
                     showBindingValue(
                         getString(R.string.blood_glucose_fbs),
                         "${CommonUtils.getDecimalFormatted(glucoseValue)} ${
@@ -339,6 +472,26 @@ class AssessmentNCDSummaryFragment : BaseFragment(), View.OnClickListener {
         }
         binding.root.findViewWithTag<LinearLayout>(formSummaryReporter.getFormResultView())
             ?.addView(summaryBinding.root)
+    }
+
+    private fun showPHQ4Score(serverData: List<FormLayout>, map: Map<String, Any>) {
+        if (map.containsKey(Screening.PHQ4.lowercase())) {
+            FormResultComposer.findGroupIdForNCD(serverData, Screening.PHQ4_Score)?.let {
+                val subMap = map[it] as Map<String, Any>
+                if (subMap.containsKey(Screening.PHQ4_Score)) {
+                    val phq4Score = subMap[Screening.PHQ4_Score]
+                    if (phq4Score is Double) {
+                        showBindingValue(
+                            getString(R.string.phq4_score),
+                            StringConverter.getPHQ4ReadableName(
+                                score = phq4Score.toInt(),
+                                requireContext()
+                            )
+                        )
+                    }
+                }
+            }
+        }
     }
 
     private fun showBindingValue(title: String, value: String, valueTextColor: Int? = null) {

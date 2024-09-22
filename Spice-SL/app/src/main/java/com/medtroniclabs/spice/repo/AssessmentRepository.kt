@@ -10,6 +10,7 @@ import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.data.LocalSpinnerResponse
 import com.medtroniclabs.spice.db.entity.AssessmentEntity
 import com.medtroniclabs.spice.db.entity.MedicalComplianceEntity
+import com.medtroniclabs.spice.db.entity.MentalHealthEntity
 import com.medtroniclabs.spice.db.entity.SignsAndSymptomsEntity
 import com.medtroniclabs.spice.db.local.RoomHelper
 import com.medtroniclabs.spice.formgeneration.model.FormResponse
@@ -329,4 +330,6 @@ class AssessmentRepository @Inject constructor(
 
     suspend fun getAssessmentOfflineList(uploadStatus: Boolean) = roomHelper.getAllAssessmentRecords(uploadStatus)
     suspend fun createAssessmentNCD(request: JsonObject) = apiHelper.createAssessmentNCD(request)
+    suspend fun getMentalQuestion(type: String): MentalHealthEntity =
+        roomHelper.getModelQuestions(type)
 }

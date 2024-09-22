@@ -40,7 +40,7 @@
                         android:layout_height="wrap_content"
                         android:background="@color/card_background">
 
-                        <TextView
+                        <androidx.appcompat.widget.AppCompatTextView
                             android:id="@+id/bioDataCardTitle"
                             style="@style/Form_Header_Style"
                             android:layout_width="@dimen/_0dp"
@@ -70,7 +70,7 @@
                             android:orientation="vertical"
                             android:paddingHorizontal="@dimen/_16sdp">
 
-                            <TextView
+                            <androidx.appcompat.widget.AppCompatTextView
                                 android:id="@+id/tvNationIdTitle"
                                 style="@style/Form_Label_Style"
                                 android:paddingEnd="@dimen/_10sdp"
@@ -105,7 +105,7 @@
 
                             </LinearLayout>
 
-                            <TextView
+                            <androidx.appcompat.widget.AppCompatTextView
                                 android:id="@+id/tvNationalIdErrorMessage"
                                 style="@style/TextStyle_Error_14"
                                 android:layout_width="match_parent"

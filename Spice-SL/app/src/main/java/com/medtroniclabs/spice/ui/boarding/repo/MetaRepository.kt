@@ -330,7 +330,8 @@ class MetaRepository @Inject constructor(
                     minAge = condition.minAge,
                     clinicalWorkflowId = clinicalWorkflow.id,
                     subModule = condition.subModule,
-                    moduleType = condition.moduleType
+                    moduleType = condition.moduleType,
+                    category = condition.category
                 )
 
             }?.toList() ?: listOf())
@@ -533,6 +534,36 @@ class MetaRepository @Inject constructor(
             }
         } catch (e: Exception) {
             Resource(state = ResourceState.ERROR)
+        }
+    }
+    suspend fun getMenuClinicalWorkflows(
+        gender: String,
+        name: String
+    ): Resource<List<MenuEntity>> {
+        return try {
+            if (!CommonUtils.isSL()) {
+                val list = roomHelper.getAssessmentClinicalWorkflowId(gender, name)
+                Resource(
+                    state = ResourceState.SUCCESS,
+                    data = convertorAssessmentClinicalWorkflowsToMenuEntity(list)
+                )
+            } else {
+                Resource(state = ResourceState.ERROR)
+            }
+        } catch (e: Exception) {
+            Resource(state = ResourceState.ERROR)
+        }
+    }
+
+    private fun convertorAssessmentClinicalWorkflowsToMenuEntity(clinicalWorkflows: List<ClinicalWorkflowEntityWithSubmodule>): List<MenuEntity> {
+        return clinicalWorkflows.sortedBy { it.displayOrder }.map { clinicalWorkflow ->
+            MenuEntity(
+                id = clinicalWorkflow.id,
+                menuId = clinicalWorkflow.name,
+                name = clinicalWorkflow.name,
+                displayOrder = clinicalWorkflow.displayOrder ?: 0,
+                subModule = clinicalWorkflow.subModule
+            )
         }
     }
 

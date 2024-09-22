@@ -7,6 +7,7 @@ import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.db.entity.MenuEntity
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.network.resource.Resource
+import com.medtroniclabs.spice.ui.boarding.MenuTypeEnums
 import com.medtroniclabs.spice.ui.boarding.repo.MetaRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
@@ -32,6 +33,17 @@ class ToolsViewModel @Inject constructor(
             menuListLiveData.postValue(
                 metaRepository.getMenuForClinicalWorkflows(
                     selectedHouseholdMemberID
+                )
+            )
+        }
+    }
+
+    fun getMenuClinicalWorkflows(gender: String) {
+        viewModelScope.launch(dispatcherIO) {
+            menuListLiveData.postLoading()
+            menuListLiveData.postValue(
+                metaRepository.getMenuClinicalWorkflows(
+                    gender, MenuTypeEnums.assessment.name
                 )
             )
         }

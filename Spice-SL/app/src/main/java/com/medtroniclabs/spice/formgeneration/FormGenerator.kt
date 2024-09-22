@@ -126,6 +126,7 @@ import com.medtroniclabs.spice.mappingkey.Screening
 import com.medtroniclabs.spice.mappingkey.Screening.DateOfBirth
 import com.medtroniclabs.spice.mappingkey.Screening.Hour
 import com.medtroniclabs.spice.mappingkey.Screening.Minute
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.PREGNANCY_MAX_AGE
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.PREGNANCY_MIN_AGE
 import java.util.Calendar
@@ -3234,6 +3235,28 @@ class FormGenerator(
                     }
                 }
             }
+        }
+    }
+
+    fun showMHView(showView: Boolean, type: String) {
+
+        val mhType = when (type) {
+            AssessmentDefinedParams.PHQ9 -> Pair(
+                AssessmentDefinedParams.PHQ9.lowercase(), AssessmentDefinedParams.PHQ9_Mental_Health
+            )
+
+            AssessmentDefinedParams.GAD7 -> Pair(
+                AssessmentDefinedParams.GAD7.lowercase(), AssessmentDefinedParams.GAD7_Mental_Health
+            )
+
+            else -> Pair(Screening.PHQ4.lowercase(), Screening.PHQ4_Mental_Health)
+        }
+
+        getViewByTag(mhType.first + rootSuffix)?.let {
+            if (showView) {
+                it.visible()
+            }
+            else parentLayout.removeView(it)
         }
     }
 
