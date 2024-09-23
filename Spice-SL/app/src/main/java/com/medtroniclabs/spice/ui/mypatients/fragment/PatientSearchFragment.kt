@@ -103,7 +103,7 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
                 }
                 binding.llFilter.apply {
                     if (patientListViewModel.origin.equals(MenuConstants.MY_PATIENTS_MENU_ID, true)) {
-                        root.visible()
+                        root.invisible() //TODO: filter needs to be implemented later
                         if (patientListViewModel.filterCount() > 0) {
                             binding.llFilter.btnFilter.text =
                                 getString(R.string.filter_count, patientListViewModel.filterCount())
@@ -149,7 +149,6 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
         binding.llFilter.btnFilter.safeClickListener(this)
         binding.loadingProgress.safeClickListener(this)
         binding.btnAddNewMember.safeClickListener(this)
-        binding.btnAddNewMember.visibility = if(CommonUtils.canAddNewMember(patientListViewModel.origin)) View.VISIBLE else View.GONE
     }
 
     private val searchListener = object : TextWatcher {

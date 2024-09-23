@@ -6,6 +6,6 @@
         android:color="@color/edittext_stroke" />
 
     <corners
-        android:bottomLeftRadius="@dimen/_8sdp"
-        android:topLeftRadius="@dimen/_8sdp" />
+        android:bottomLeftRadius="@dimen/single_selection_radius"
+        android:topLeftRadius="@dimen/single_selection_radius" />
 </shape>

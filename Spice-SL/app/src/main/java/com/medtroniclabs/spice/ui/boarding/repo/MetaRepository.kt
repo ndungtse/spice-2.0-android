@@ -338,6 +338,16 @@ class MetaRepository @Inject constructor(
         }
         roomHelper.deleteAllClinicalWorkflow()
         roomHelper.deleteClinicalWorkflowConditions()
+        val isPregnancyAncEnabledSite = clinicalWorkFlowList.filter {
+            it.workflowName.equals(
+                DefinedParams.PregnancyANC,
+                false
+            )
+        }
+        SecuredPreference.putBoolean(
+            SecuredPreference.EnvironmentKey.PREGNANCY_ANC_ENABLED_SITE.name,
+            isPregnancyAncEnabledSite.isNotEmpty()
+        )
         roomHelper.saveClinicalWorkflows(clinicalWorkFlowList)
         roomHelper.insertClinicalWorkflowConditions(clinicalWorkFlowConditions)
     }

@@ -50,7 +50,8 @@ object SecuredPreference {
         CURRENT_LONGITUDE,
         MEASUREMENT_TYPE_KEY,
         IS_NCD_MEDICAL_REVIEW_LOADED,
-        APPLICATION
+        APPLICATION,
+        PREGNANCY_ANC_ENABLED_SITE
     }
 
 

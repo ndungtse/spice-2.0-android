@@ -9,6 +9,7 @@ data class PatientListRespModel(
     val age: Int? = null,
     val birthDate: String? = null,
     val patientId: String? = null,
+    val programId: String? = null,
     val village: String? = null,
     val nationalID: Long? = null,
     val phoneNumber: String? = null,

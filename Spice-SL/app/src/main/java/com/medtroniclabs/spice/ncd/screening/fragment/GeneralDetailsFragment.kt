@@ -167,7 +167,6 @@ class GeneralDetailsFragment : BaseFragment(), View.OnClickListener,
             siteName = map[DefinedParams.NAME] as? String ?: ""
             siteId = map[DefinedParams.ID]?.toString()?.toLongOrNull() ?: -1L
             tenantId = map[DefinedParams.TenantId]?.toString()?.toLongOrNull() ?: -1L
-            // TODO: ask backend for it
             referredSiteId = map[DefinedParams.FhirId]?.toString()?.toLongOrNull() ?: -1L
         }
     }

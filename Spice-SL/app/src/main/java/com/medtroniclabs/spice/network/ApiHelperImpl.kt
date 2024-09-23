@@ -52,6 +52,7 @@ import com.medtroniclabs.spice.data.PncChildMedicalReview
 import com.medtroniclabs.spice.data.resource.LabourDeliverySummaryRequest
 import com.medtroniclabs.spice.data.MotherNeonatePncSummaryRequest
 import com.medtroniclabs.spice.data.MotherNeonatePncSummaryResponse
+import com.medtroniclabs.spice.data.PregnancyDetailsModel
 import com.medtroniclabs.spice.data.SummaryCreateRequest
 import com.medtroniclabs.spice.data.performance.CHWPerformanceMonitoring
 import com.medtroniclabs.spice.data.performance.ChwVillageFilterModel
@@ -383,5 +384,13 @@ class ApiHelperImpl @Inject constructor(private val apiService: ApiService) : Ap
     }
     override suspend fun createAssessmentNCD(request: JsonObject): Response<HashMap<String, Any>> {
         return apiService.createAssessmentNCD(request)
+    }
+
+    override suspend fun ncdPregnancyCreate(request: PregnancyDetailsModel): Response<APIResponse<HashMap<String, Any>>> {
+        return apiService.ncdPregnancyCreate(request)
+    }
+
+    override suspend fun ncdPregnancyDetails(request: HashMap<String, Any>): Response<APIResponse<PregnancyDetailsModel>> {
+        return apiService.ncdPregnancyDetails(request)
     }
 }

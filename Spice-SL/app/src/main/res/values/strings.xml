@@ -801,4 +801,26 @@
     <string name="pregnancy_status">Pregnancy Status</string>
     <string name="other_lowercase">other</string>
     <string name="separator_hyphen_space"> - </string>
+    <string name="empty"/>
+    <string name="n_a">N/A</string>
+    <string name="pregnant">Pregnant</string>
+    <string name="not_pregnant">Not Pregnant</string>
+    <string name="neonatal_outcomes">Neonatal Outcomes</string>
+    <string name="no_of_fetuses_pregnancy">No of fetuses in Pregnancy</string>
+    <string name="enter_number">Enter Number</string>
+    <string name="maternal_outcomes">Maternal Outcomes</string>
+    <string name="ncd">NCD</string>
+    <string name="pregnancy_diagnosis">Have you ever been diagnosed with any of the following?</string>
+    <string name="eclampsia">Eclampsia</string>
+    <string name="pre_eclampsia">Pre-Eclampsia</string>
+    <string name="gestational_diabetes_id">gestationalDiabetes</string>
+    <string name="gestational_diabetes">Gestational Diabetes</string>
+    <string name="time_of_diagnoses">Time of Diagnoses</string>
+    <string name="is_the_patient_on_treatment">Is the patient on treatment?</string>
+    <string name="actual_delivery_date">Actual Delivery Date</string>
+    <string name="still_birth">Still Birth</string>
+    <string name="live_birth">Live Birth</string>
+    <string name="neo_natal_death">Neo Natal Death</string>
+    <string name="alive_well">Alive &amp; Well</string>
+    <string name="maternal_death">Maternal Death</string>
 </resources>

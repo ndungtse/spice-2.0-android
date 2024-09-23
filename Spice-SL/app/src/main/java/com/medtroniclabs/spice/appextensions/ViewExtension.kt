@@ -226,3 +226,19 @@ fun ImageView.loadAsGif(drawable: Int) {
 fun ImageView.resetImageView() {
     this.setImageDrawable(null)
 }
+
+fun Int?.takeIfNotNull(): String {
+    return this.takeIf { it != null }?.toString() ?: ""
+}
+
+fun Double?.takeIfNotNull(): String {
+    return this.takeIf { it != null }?.toString() ?: ""
+}
+
+fun Float?.takeIfNotNull(): String {
+    return this.takeIf { it != null }?.toString() ?: ""
+}
+
+fun String?.takeIfNotNull(): String {
+    return this.takeIf { it != null }?.toString() ?: ""
+}

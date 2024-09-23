@@ -382,6 +382,24 @@ open class BaseActivity : SpiceRootActivity() {
         }
     }
 
+    fun withNetworkAvailability(
+        online: () -> Unit,
+        offline: () -> Unit = {}
+    ) {
+        connectivityManager.isNullableNetworkAvailable()?.let { isNetworkAvailable ->
+            if (isNetworkAvailable) {
+                online()
+            } else {
+                showErrorDialogue(
+                    getString(R.string.error),
+                    getString(R.string.no_internet_error),
+                    isNegativeButtonNeed = false
+                ) {}
+                offline()
+            }
+        }
+    }
+
     fun <T> handleResourceState(
         resourceState: Resource<T>,
         onSuccess: () -> Unit,

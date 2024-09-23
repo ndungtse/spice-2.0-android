@@ -54,6 +54,7 @@ class PatientsDataSource(
                 villageIds = villages,
                 referencePatientId = referencePatientId?.ifBlank { null },
                 filter = filter,
+                siteId = SecuredPreference.getOrganizationFhirId()
             )
 
             val response: APIResponse<SearchAndListResponse>? = if (isPatientListRequired && searchText.isBlank()) {

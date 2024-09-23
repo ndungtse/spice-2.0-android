@@ -2,22 +2,28 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content">
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/startGuideline"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_begin="@dimen/_16sdp" />
+        app:layout_constraintGuide_begin="@dimen/_15sdp" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/centerGuideLine"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.6" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/endGuideline"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_end="@dimen/_16sdp" />
-
+        app:layout_constraintGuide_end="@dimen/_15sdp" />
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/tvDiabetes"
@@ -26,8 +32,8 @@
         android:fontFamily="@font/inter_regular"
         android:paddingVertical="@dimen/_10sdp"
         android:text="@string/diabetes"
-        android:textColor="@color/table_title"
-        android:textSize="@dimen/_16ssp"
+        android:textColor="@color/b_w_black"
+        android:textSize="@dimen/_15ssp"
         app:layout_constraintBottom_toTopOf="@id/llDiabetes"
         app:layout_constraintEnd_toEndOf="@id/endGuideline"
         app:layout_constraintStart_toStartOf="@id/startGuideline"
@@ -38,7 +44,7 @@
         android:layout_width="@dimen/_0dp"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintEnd_toEndOf="@id/endGuideline"
+        app:layout_constraintEnd_toStartOf="@id/centerGuideLine"
         app:layout_constraintStart_toStartOf="@id/startGuideline"
         app:layout_constraintTop_toBottomOf="@id/tvDiabetes" />
 
@@ -60,11 +66,12 @@
         android:id="@+id/tvYearOfDiagnosis"
         android:layout_width="@dimen/_0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_12sdp"
         android:fontFamily="@font/inter_regular"
         android:paddingVertical="@dimen/_10sdp"
         android:text="@string/year_of_diagnosis"
-        android:textColor="@color/table_title"
-        android:textSize="@dimen/_16ssp"
+        android:textColor="@color/b_w_black"
+        android:textSize="@dimen/_15ssp"
         app:layout_constraintEnd_toEndOf="@id/endGuideline"
         app:layout_constraintStart_toStartOf="@id/startGuideline"
         app:layout_constraintTop_toBottomOf="@id/tvDiabetesError" />
@@ -78,7 +85,7 @@
         android:maxLength="4"
         android:paddingHorizontal="@dimen/_8sdp"
         android:paddingVertical="@dimen/_10sdp"
-        app:layout_constraintEnd_toEndOf="@id/endGuideline"
+        app:layout_constraintEnd_toStartOf="@id/centerGuideLine"
         app:layout_constraintStart_toStartOf="@id/startGuideline"
         app:layout_constraintTop_toBottomOf="@id/tvYearOfDiagnosis" />
 
@@ -100,11 +107,12 @@
         android:id="@+id/tvDiabetesControlledTypeLabel"
         android:layout_width="@dimen/_0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_12sdp"
         android:fontFamily="@font/inter_regular"
         android:paddingVertical="@dimen/_10sdp"
         android:text="@string/diabetes_controlled_type"
-        android:textColor="@color/table_title"
-        android:textSize="@dimen/_16ssp"
+        android:textColor="@color/b_w_black"
+        android:textSize="@dimen/_15ssp"
         app:layout_constraintEnd_toEndOf="@id/endGuideline"
         app:layout_constraintStart_toStartOf="@id/startGuideline"
         app:layout_constraintTop_toBottomOf="@id/tvYearOfDiagnosisError" />
@@ -115,6 +123,7 @@
         android:layout_width="@dimen/_0dp"
         android:paddingBottom="@dimen/_6sdp"
         app:layout_constraintEnd_toEndOf="@id/endGuideline"
+        app:layout_constraintEnd_toStartOf="@id/centerGuideLine"
         app:layout_constraintStart_toStartOf="@id/startGuideline"
         app:layout_constraintTop_toBottomOf="@id/tvDiabetesControlledTypeLabel" />
 
@@ -132,15 +141,23 @@
         app:layout_constraintStart_toStartOf="@id/startGuideline"
         app:layout_constraintTop_toBottomOf="@id/tvDiabetesControlledSpinner" />
 
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/groupYearOfDiagnosis"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:constraint_referenced_ids="tvYearOfDiagnosis, etYearOfDiagnosis, tvDiabetesControlledTypeLabel, tvDiabetesControlledSpinner" />
+
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/tvHypertension"
         android:layout_width="@dimen/_0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_12sdp"
         android:fontFamily="@font/inter_regular"
         android:paddingVertical="@dimen/_10sdp"
         android:text="@string/hypertension"
-        android:textColor="@color/table_title"
-        android:textSize="@dimen/_16ssp"
+        android:textColor="@color/b_w_black"
+        android:textSize="@dimen/_15ssp"
         app:layout_constraintEnd_toEndOf="@id/endGuideline"
         app:layout_constraintStart_toStartOf="@id/startGuideline"
         app:layout_constraintTop_toBottomOf="@id/tvDiabetesControlledError" />
@@ -150,7 +167,7 @@
         android:layout_width="@dimen/_0dp"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintEnd_toEndOf="@id/endGuideline"
+        app:layout_constraintEnd_toStartOf="@id/centerGuideLine"
         app:layout_constraintStart_toStartOf="@id/startGuideline"
         app:layout_constraintTop_toBottomOf="@id/tvHypertension" />
 
@@ -168,22 +185,22 @@
         app:layout_constraintStart_toStartOf="@id/startGuideline"
         app:layout_constraintTop_toBottomOf="@id/llHypertension" />
 
-
     <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/tvYearOfDiagnosis2"
+        android:id="@+id/tvYearOfDiagnosisHtn"
         android:layout_width="@dimen/_0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_12sdp"
         android:fontFamily="@font/inter_regular"
         android:paddingVertical="@dimen/_10sdp"
         android:text="@string/year_of_diagnosis"
-        android:textColor="@color/table_title"
-        android:textSize="@dimen/_16ssp"
+        android:textColor="@color/b_w_black"
+        android:textSize="@dimen/_15ssp"
         app:layout_constraintEnd_toEndOf="@id/endGuideline"
         app:layout_constraintStart_toStartOf="@id/startGuideline"
         app:layout_constraintTop_toBottomOf="@id/tvHypertensionError" />
 
     <androidx.appcompat.widget.AppCompatEditText
-        android:id="@+id/etYearOfDiagnosis2"
+        android:id="@+id/etYearOfDiagnosisHtn"
         style="@style/Form_Input_Style_BG"
         android:layout_width="0dp"
         android:layout_marginTop="@dimen/_2sdp"
@@ -191,12 +208,12 @@
         android:maxLength="4"
         android:paddingHorizontal="@dimen/_8sdp"
         android:paddingVertical="@dimen/_10sdp"
-        app:layout_constraintEnd_toEndOf="@id/endGuideline"
+        app:layout_constraintEnd_toStartOf="@id/centerGuideLine"
         app:layout_constraintStart_toStartOf="@id/startGuideline"
-        app:layout_constraintTop_toBottomOf="@id/tvYearOfDiagnosis2" />
+        app:layout_constraintTop_toBottomOf="@id/tvYearOfDiagnosisHtn" />
 
     <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/tvYearOfDiagnosisError2"
+        android:id="@+id/tvYearOfDiagnosisErrorHtn"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:fontFamily="@font/inter_regular"
@@ -207,19 +224,13 @@
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="@id/endGuideline"
         app:layout_constraintStart_toStartOf="@id/startGuideline"
-        app:layout_constraintTop_toBottomOf="@id/etYearOfDiagnosis2" />
-
-    <androidx.constraintlayout.widget.Group
-        android:id="@+id/groupYearOfDiagnosis"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
-        app:constraint_referenced_ids="tvYearOfDiagnosis, etYearOfDiagnosis" />
+        app:layout_constraintTop_toBottomOf="@id/etYearOfDiagnosisHtn" />
 
     <androidx.constraintlayout.widget.Group
         android:id="@+id/groupYearOfDiagnosis2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="gone"
-        app:constraint_referenced_ids="tvYearOfDiagnosis2, etYearOfDiagnosis2" />
+        app:constraint_referenced_ids="tvYearOfDiagnosisHtn, etYearOfDiagnosisHtn" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

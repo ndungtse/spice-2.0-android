@@ -191,7 +191,9 @@ class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener, View.OnC
     }
 
     override fun onPopulate(targetId: String) {
-        // TODO("Not yet implemented")
+        /*
+        Never used
+         */
     }
 
     override fun onCheckBoxDialogueClicked(
@@ -308,11 +310,15 @@ class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener, View.OnC
         }
     }
     override fun onRenderingComplete() {
-        // TODO("Not yet implemented")
+        /*
+        Never used
+         */
     }
 
     override fun onUpdateInstruction(id: String, selectedId: Any?) {
-        // TODO("Not yet implemented")
+        /*
+        Never used
+         */
     }
 
     override fun onInformationHandling(
@@ -321,11 +327,15 @@ class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener, View.OnC
         enteredDays: Int?,
         resultMap: HashMap<String, Any>?
     ) {
-        // TODO("Not yet implemented")
+        /*
+        Never used
+         */
     }
 
     override fun onAgeCheckForPregnancy() {
-        // TODO("Not yet implemented")
+        /*
+        Never used
+         */
     }
 
     private fun calculateFurtherAssessment(map: HashMap<String, Any>, unitGenericType: String) {

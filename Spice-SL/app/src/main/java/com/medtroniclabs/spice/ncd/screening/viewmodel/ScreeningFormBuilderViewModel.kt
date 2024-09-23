@@ -96,7 +96,7 @@ class ScreeningFormBuilderViewModel @Inject constructor(
                 val screeningEntity = ScreeningEntity(
                     screeningDetails = screeningEntityRawString,
                     generalDetails = generalDetail,
-                    userId = SecuredPreference.getUserId(),
+                    userId = SecuredPreference.getUserFhirId(),
                     isReferred = isReferred
                 )
                 val rowId = screeningRepository.savePatientScreeningInformation(screeningEntity)

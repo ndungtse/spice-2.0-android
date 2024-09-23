@@ -7,6 +7,7 @@ import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.databinding.ListItemPatientsBinding
 import com.medtroniclabs.spice.formgeneration.extension.capitalizeFirstChar
@@ -31,18 +32,38 @@ class PatientsListAdapter(
 
             val formattedAge = item.birthDate?.let { DateUtils.getAgeDescription(it,context) }
                 ?: context.getString(R.string.separator_hyphen)
+            val age = item.age ?: formattedAge
             val patientInfo = context.getString(
                 R.string.household_summary_member_info,
                 name,
-                formattedAge,
+                age,
                 gender
             )
+            var leftLbl = context.getString(R.string.empty)
+            var rightLbl = context.getString(R.string.empty)
+            var leftValue = context.getString(R.string.empty)
+            var rightValue = context.getString(R.string.empty)
+
+            if (CommonUtils.isSL()) {
+                leftLbl = context.getString(R.string.patient_id)
+                leftValue = item.patientId ?: context.getString(R.string.separator_hyphen)
+
+                rightLbl = context.getString(R.string.village)
+                rightValue = item.village ?: context.getString(R.string.separator_hyphen)
+            } else if (CommonUtils.isAfrica()) {
+                leftLbl = context.getString(R.string.national_id)
+                leftValue = item.identityValue ?: context.getString(R.string.separator_hyphen)
+
+                rightLbl = context.getString(R.string.patient_id)
+                rightValue = item.programId ?: context.getString(R.string.separator_hyphen)
+            }
 
             with(binding) {
                 tvCardPatientName.text = patientInfo
-                tvCardPatientId.text =
-                    item.patientId ?: context.getString(R.string.separator_hyphen)
-                tvCardVillage.text = item.village ?: context.getString(R.string.separator_hyphen)
+                tvLeftLbl.text = leftLbl
+                tvRightLbl.text = rightLbl
+                tvLeftValue.text = leftValue
+                tvRightValue.text = rightValue
             }
         }
     }

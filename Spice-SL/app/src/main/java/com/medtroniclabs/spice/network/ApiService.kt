@@ -52,6 +52,7 @@ import com.medtroniclabs.spice.data.MotherNeonatePncSummaryRequest
 import com.medtroniclabs.spice.data.MotherNeonatePncSummaryResponse
 import com.medtroniclabs.spice.data.SummaryCreateRequest
 import com.medtroniclabs.spice.data.PncChildMedicalReview
+import com.medtroniclabs.spice.data.PregnancyDetailsModel
 import com.medtroniclabs.spice.data.model.RegistrationResponse
 import com.medtroniclabs.spice.data.resource.LabourDeliverySummaryRequest
 import com.medtroniclabs.spice.data.performance.CHWPerformanceMonitoring
@@ -320,4 +321,10 @@ interface ApiService {
 
     @POST("spice-service/assessment/create")
     suspend fun createAssessmentNCD(@Body request: JsonObject): Response<HashMap<String, Any>>
+
+    @POST("spice-service/patient/pregnancy/create")
+    suspend fun ncdPregnancyCreate(@Body request: PregnancyDetailsModel): Response<APIResponse<HashMap<String, Any>>>
+
+    @POST("spice-service/patient/pregnancy/details")
+    suspend fun ncdPregnancyDetails(@Body request: HashMap<String, Any>): Response<APIResponse<PregnancyDetailsModel>>
 }

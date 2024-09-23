@@ -29,6 +29,7 @@ import com.medtroniclabs.spice.data.NeonatePncResponse
 import com.medtroniclabs.spice.data.PatientStatusRequest
 import com.medtroniclabs.spice.data.PatientStatusResponse
 import com.medtroniclabs.spice.data.PncChildMedicalReview
+import com.medtroniclabs.spice.data.PregnancyDetailsModel
 import com.medtroniclabs.spice.data.Prescription
 import com.medtroniclabs.spice.data.PrescriptionListRequest
 import com.medtroniclabs.spice.data.ReferPatientAPIRequest
@@ -176,4 +177,6 @@ interface ApiHelper {
     suspend fun bpLogList(request: BPBGListModel): Response<APIResponse<BPBGListModel>>
     suspend fun glucoseLogList(request: BPBGListModel): Response<APIResponse<BPBGListModel>>
     suspend fun createAssessmentNCD(request: JsonObject): Response<HashMap<String, Any>>
+    suspend fun ncdPregnancyCreate(request: PregnancyDetailsModel): Response<APIResponse<HashMap<String, Any>>>
+    suspend fun ncdPregnancyDetails(request: HashMap<String, Any>): Response<APIResponse<PregnancyDetailsModel>>
 }

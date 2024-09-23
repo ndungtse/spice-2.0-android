@@ -133,7 +133,7 @@ class HomeScreenFragment : BaseFragment(), MenuSelectionListener {
 
             MenuConstants.REGISTRATION -> {
                 val bundle = Bundle().apply {
-                    putString(DefinedParams.ORIGIN, MenuConstants.REGISTRATION)
+                    putString(DefinedParams.ORIGIN, MenuConstants.REGISTRATION.lowercase())
                 }
                 val intent = Intent(requireContext(), PatientSearchActivity::class.java)
                 intent.putExtras(bundle)
@@ -142,7 +142,7 @@ class HomeScreenFragment : BaseFragment(), MenuSelectionListener {
 
             MenuConstants.ASSESSMENT -> {
                 val bundle = Bundle().apply {
-                    putString(DefinedParams.ORIGIN, MenuConstants.ASSESSMENT)
+                    putString(DefinedParams.ORIGIN, MenuConstants.ASSESSMENT.lowercase())
                 }
                 val intent = Intent(requireContext(), PatientSearchActivity::class.java)
                 intent.putExtras(bundle)

@@ -138,13 +138,13 @@ class NCDPatientHistoryDialog : DialogFragment(), View.OnClickListener {
             ncdDiabetesHypertension.apply {
                 tvDiabetes.markMandatory()
                 tvYearOfDiagnosis.markMandatory()
-                tvYearOfDiagnosis2.markMandatory()
+                tvYearOfDiagnosisHtn.markMandatory()
                 tvDiabetesControlledTypeLabel.markMandatory()
                 tvHypertension.markMandatory()
                 MotherNeonateUtil.initTextWatcherForString(etYearOfDiagnosis) {
 
                 }
-                MotherNeonateUtil.initTextWatcherForString(etYearOfDiagnosis2) {
+                MotherNeonateUtil.initTextWatcherForString(etYearOfDiagnosisHtn) {
 
                 }
             }
@@ -205,8 +205,8 @@ class NCDPatientHistoryDialog : DialogFragment(), View.OnClickListener {
             showViews(
                 binding.ncdDiabetesHypertension.groupYearOfDiagnosis2,
                 selectedID,
-                binding.ncdDiabetesHypertension.tvYearOfDiagnosisError2,
-                binding.ncdDiabetesHypertension.etYearOfDiagnosis2
+                binding.ncdDiabetesHypertension.tvYearOfDiagnosisErrorHtn,
+                binding.ncdDiabetesHypertension.etYearOfDiagnosisHtn
             )
         }
 
@@ -304,9 +304,9 @@ class NCDPatientHistoryDialog : DialogFragment(), View.OnClickListener {
 
     private fun isValidDiagnosisTwo(): Boolean {
         return MotherNeonateUtil.isValidInput(
-            binding.ncdDiabetesHypertension.etYearOfDiagnosis2.text.toString(),
-            binding.ncdDiabetesHypertension.etYearOfDiagnosis2,
-            binding.ncdDiabetesHypertension.tvYearOfDiagnosisError2,
+            binding.ncdDiabetesHypertension.etYearOfDiagnosisHtn.text.toString(),
+            binding.ncdDiabetesHypertension.etYearOfDiagnosisHtn,
+            binding.ncdDiabetesHypertension.tvYearOfDiagnosisErrorHtn,
             1900.0..getCurrentYearAsDouble(),
             R.string.error_label,
             true,

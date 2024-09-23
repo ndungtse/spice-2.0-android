@@ -225,6 +225,13 @@ object CommonUtils {
         return map
     }
 
+    fun getOptions(value: String, name: String): Map<String, Any> {
+        val map = HashMap<String, Any>()
+        map[DefinedParams.value] = value
+        map[DefinedParams.NAME] = name
+        return map
+    }
+
     fun getAgeFromDOB(dateOfBirth: String?, context: Context): String {
         if (dateOfBirth != null) {
             val yearMonthWeek = DateUtils.getV2YearMonthAndWeek(dateOfBirth)
@@ -707,6 +714,7 @@ object CommonUtils {
             }
         return returnValue
     }
+
     private fun getDiastolicValue(map: Any?): Double {
         var returnValue = 0.0
         if (map is Map<*, *> && map.containsKey(Screening.Diastolic))
@@ -726,6 +734,7 @@ object CommonUtils {
             key = AssessmentDefinedParams.GAD7_Mental_Health
         return key
     }
+
     fun calculatePHQScore(
         map: HashMap<String, Any>,
         type: String = PHQ4
@@ -1079,11 +1088,10 @@ object CommonUtils {
         }
     }
 
-
     fun parseRequest(
         generalDetails: String,
         screeningDetails: String,
-        userId: Long?
+        userId: String?
     ): HashMap<String, Any>? {
         val generalData: Map<String, Any>? =
             StringConverter.convertStringToMap(generalDetails)
@@ -1182,17 +1190,6 @@ object CommonUtils {
         return getDecimalFormatted(bmi)
     }
 
-    fun canAddNewMember(origin: String?): Boolean {
-        return !isAfricaProvider(origin) && when (origin) {
-            MenuConstants.REGISTRATION, MenuConstants.ASSESSMENT -> false
-            else -> true
-        }
-    }
-
-    private fun isAfricaProvider(origin: String?): Boolean {
-        return isAfrica() && origin.equals(MenuConstants.MY_PATIENTS_MENU_ID, true)
-    }
-
     fun calculateCVDRiskFactor(
         map: HashMap<String, Any>,
         list: ArrayList<RiskClassificationModel>,
@@ -1217,7 +1214,7 @@ object CommonUtils {
         }
     }
 
-    fun calculateRiskFactor(
+    private fun calculateRiskFactor(
         map: Map<String, Any>,
         list: ArrayList<RiskClassificationModel>,
         bmiValue: Double?,

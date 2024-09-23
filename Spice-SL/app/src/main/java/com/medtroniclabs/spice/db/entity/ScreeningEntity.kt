@@ -11,6 +11,6 @@ data class ScreeningEntity(
     var generalDetails: String,
     var uploadStatus: Boolean = false,
     var createdAt: Long = System.currentTimeMillis(),
-    var userId: Long? = null,
+    var userId: String? = null,
     var isReferred: Boolean = false
 )

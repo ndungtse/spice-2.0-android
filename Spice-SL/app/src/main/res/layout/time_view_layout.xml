@@ -35,6 +35,7 @@
             android:layout_weight="0.25"
             android:digits="0123456789"
             android:hint="@string/hr"
+            android:imeOptions="actionNext"
             android:maxLength="2"
             android:paddingVertical="@dimen/_12sdp" />
 

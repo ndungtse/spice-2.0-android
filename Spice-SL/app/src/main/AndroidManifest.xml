@@ -28,7 +28,10 @@
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".ui.common.PatientSearchActivity"
-            android:exported="false" />
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:exported="false"
+            android:screenOrientation="landscape"
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".ui.medicalreview.investigation.InvestigationActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"

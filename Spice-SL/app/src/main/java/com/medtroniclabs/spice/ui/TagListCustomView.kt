@@ -124,6 +124,19 @@ class TagListCustomView(
         }
     }
 
+    fun populateChipByName(
+        chipGroup: ChipGroup,
+        chipList: List<ChipViewItemModel>,
+        data: String,
+        callBack: () -> Unit
+    ) {
+        val tag = chipList.firstOrNull { it.name.equals(data, true) }
+        chipGroup.findViewWithTag<Chip>(tag)?.let {
+            it.isChecked = true
+            callBack.invoke()
+        }
+    }
+
     private fun onNoneSelected() {
         for (chipId in chipGroup.checkedChipIds) {
             chipGroup.findViewById<Chip>(chipId)?.let { chip ->

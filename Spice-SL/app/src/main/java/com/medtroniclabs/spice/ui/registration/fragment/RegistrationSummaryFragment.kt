@@ -9,6 +9,8 @@ import android.widget.LinearLayout
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.common.DateUtils
+import com.medtroniclabs.spice.common.DateUtils.DATE_FORMAT_ddMMMyyyy
 import com.medtroniclabs.spice.data.model.RegistrationResponse
 import com.medtroniclabs.spice.databinding.CardLayoutBinding
 import com.medtroniclabs.spice.databinding.FragmentRegistrationSummaryBinding
@@ -61,7 +63,11 @@ class RegistrationSummaryFragment : BaseFragment(), View.OnClickListener {
                 response.dateOfEnrollment?.let {
                     addView(
                         inflateChildView(
-                            getString(R.string.date_of_enrollment), it
+                            getString(R.string.date_of_enrollment), DateUtils.convertDateFormat(
+                                it,
+                                DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+                                DateUtils.DATE_ddMMyyyy
+                            )
                         )
                     )
                 }

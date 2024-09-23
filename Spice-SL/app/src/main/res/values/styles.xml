@@ -7,8 +7,8 @@
         <item name="android:textSize">@dimen/_14ssp</item>
         <item name="android:paddingStart">@dimen/_6sdp</item>
         <item name="android:paddingEnd">@dimen/_6sdp</item>
-        <item name="android:paddingTop">@dimen/_10sdp</item>
-        <item name="android:paddingBottom">@dimen/_10sdp</item>
+        <item name="android:paddingTop">@dimen/_12sdp</item>
+        <item name="android:paddingBottom">@dimen/_12sdp</item>
         <item name="android:background">@drawable/mental_health_button_bg</item>
         <item name="android:textColor">@color/mental_health_text_selector</item>
         <item name="android:gravity">center</item>
