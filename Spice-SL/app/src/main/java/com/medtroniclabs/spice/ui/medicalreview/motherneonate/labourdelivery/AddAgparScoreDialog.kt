@@ -9,7 +9,9 @@ import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.setWidth
+import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.databinding.FragmentAddAgparScoreBinding
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.labourdelivery.viewmodel.LabourDeliveryViewModel
@@ -69,12 +71,23 @@ class AddAgparScoreDialog : DialogFragment() {
 
     private fun initListeners() {
 
-        binding.etAgparScore.doAfterTextChanged {editable ->
-            editable?.let {
-                binding.btnOkay.isEnabled = it.isNotEmpty() && it.isNotBlank()
+        binding.etAgparScore.doAfterTextChanged { editable ->
+            editable?.toString()?.toIntOrNull()?.let { score ->
+                binding.apply {
+                    if (score <= 2) {
+                        btnOkay.isEnabled = true
+                        tvAgparErrorLabel.gone()
+                    } else {
+                        btnOkay.isEnabled = false
+                        tvAgparErrorLabel.visible()
+                    }
+                }
+            } ?: kotlin.run {
+                binding.btnOkay.isEnabled = false
+                binding.tvAgparErrorLabel.gone()
             }
-
         }
+
 
         binding.btnOkay.setOnClickListener {
             viewModel.updateAgparScore(binding.etAgparScore.text.toString())

@@ -15,6 +15,7 @@ enum class ReferralReasons {
     PNCMotherSigns,
     childhoodVisitSigns,
     PNCNeonateSigns,
+    Cough,
     Miscarriage;
 
     companion object {

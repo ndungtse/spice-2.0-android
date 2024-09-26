@@ -329,14 +329,14 @@ class ReferralResultGenerator {
                         addResultMap(
                             ReferralReasons.Pneumonia.name.lowercase(), ReferralStatus.Referred.name
                         )
-                        addReferralReason(referralReason, ReferralReasons.Pneumonia.name)
+                        addReferralReason(referralReason, ReferralReasons.Cough.name)
                     } else {
                         if (map.containsKey(ChestInDrawing) && ((map[ChestInDrawing] is String && map[ChestInDrawing] == Yes) || (map[ChestInDrawing] is Boolean && map[ChestInDrawing] == true))) {
                             addResultMap(
                                 ReferralReasons.Pneumonia.name.lowercase(),
                                 ReferralStatus.Referred.name
                             )
-                            addReferralReason(referralReason, ReferralReasons.Pneumonia.name)
+                            addReferralReason(referralReason, ReferralReasons.Cough.name)
                         } else if (map.containsKey(BreathPerMinute) && map[BreathPerMinute] is Int) {
                             val bpmValue = map[BreathPerMinute] as Int
                             memberDetails?.let { details ->

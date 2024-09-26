@@ -664,4 +664,5 @@
     <string name="nbw">"Normal Birth Weight"</string>
     <string name="hbw">"High Birth Weight"</string>
     <string name="upload_log">Upload Log</string>
+    <string name="enter_less_than_2">Please enter a value less than or equal to 2</string>
 </resources>
