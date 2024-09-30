@@ -19,43 +19,49 @@ interface PregnancyDetailDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertPregnancyDetails(list: List<PregnancyDetail>)
 
-    @Query("SELECT * FROM PregnancyDetail WHERE patientId=:patientId Limit 1")
-    suspend fun getPregnancyDetailByPatientId(patientId: String): PregnancyDetail?
+    @Query("UPDATE PregnancyDetail SET ancVisitNo = :visitCount, lastMenstrualPeriod = :clinicalDate WHERE householdMemberLocalId = :hhmLocalId")
+    suspend fun updatePregnancyAnc(visitCount: Long, clinicalDate: String?, hhmLocalId: Long )
 
-    @Query("SELECT patientId, ancVisitNo as visitCount, lastMenstrualPeriod as clinicalDate FROM PregnancyDetail WHERE patientId=:patientId Limit 1")
-    suspend fun getAncDetail(patientId: String): MemberClinicalEntity?
+    @Query("SELECT patientId, ancVisitNo as visitCount, lastMenstrualPeriod as clinicalDate FROM PregnancyDetail WHERE householdMemberLocalId=:hhmLocalId Limit 1")
+    suspend fun getAncDetail(hhmLocalId: Long): MemberClinicalEntity?
 
-    @Query("SELECT patientId, pncVisitNo as visitCount, dateOfDelivery as clinicalDate, noOfNeonates as numberOfNeonate, isDeliveryAtHome FROM PregnancyDetail WHERE patientId=:patientId Limit 1")
-    suspend fun getPncDetail(patientId: String): MemberClinicalEntity?
+    @Query("SELECT patientId, pncVisitNo as visitCount, dateOfDelivery as clinicalDate, noOfNeonates as numberOfNeonate, isDeliveryAtHome FROM PregnancyDetail WHERE householdMemberLocalId=:hhmLocalId Limit 1")
+    suspend fun getPncDetail(hhmLocalId: Long): MemberClinicalEntity?
 
-    @Query("SELECT patientId, childVisitNo as visitCount FROM PregnancyDetail WHERE patientId=:patientId Limit 1")
-    suspend fun getChildhoodVisitDetail(patientId: String): MemberClinicalEntity?
+    @Query("SELECT patientId, childVisitNo as visitCount FROM PregnancyDetail WHERE householdMemberLocalId=:hhmLocalId Limit 1")
+    suspend fun getChildhoodVisitDetail(hhmLocalId: Long): MemberClinicalEntity?
 
-    @Query("UPDATE PregnancyDetail SET ancVisitNo = :visitCount, lastMenstrualPeriod = :clinicalDate WHERE patientId = :patientId")
-    suspend fun updatePregnancyAnc(visitCount: Long, clinicalDate: String?, patientId: String, )
+    @Query("SELECT * FROM PregnancyDetail WHERE householdMemberLocalId=:hhmLocalId Limit 1")
+    suspend fun getPregnancyDetailByPatientId(hhmLocalId: Long): PregnancyDetail?
 
-    @Query("UPDATE PregnancyDetail SET neonatePatientId = :neonatePatientId WHERE patientId = :parentPatientId")
-    suspend fun updateNeonatePatientId( parentPatientId: String, neonatePatientId: String)
+    @Query("SELECT id from HouseholdMember where fhir_id =:memberId")
+    suspend fun getHHMLocalID(memberId: String): Long
 
-    @Query("SELECT pd.* FROM PregnancyDetail AS pd JOIN HouseholdMember AS hh ON pd.patientId = hh.patient_id WHERE hh.fhir_id=:memberId Limit 1")
-    suspend fun getPregnancyDetailByMemberId(memberId: String): PregnancyDetail?
-
-    @Query("SELECT patient_id from HouseholdMember where fhir_id =:memberId")
-    suspend fun getPatientId(memberId: String): String
-
-    @Query("SELECT neonatePatientId FROM PregnancyDetail where patientId =:patientId")
-    suspend fun getChildPatientId(patientId: String): String?
+    @Query("UPDATE PregnancyDetail SET neonateHouseholdMemberLocalId = :neonateId WHERE householdMemberLocalId = :hhmLocalId")
+    suspend fun updateNeonatePatientId(hhmLocalId: Long, neonateId: Long)
 
     @Transaction
     suspend fun insertOrUpdateFromBE(entity: PregnancyDetail): Long {
-        val patientId = getPatientId(entity.householdMemberId!!)
-        val existingEntity = getPregnancyDetailByPatientId(patientId)
+        val hhmLocalId = getHHMLocalID(entity.householdMemberId!!)
+        val existingEntity = getPregnancyDetailByPatientId(hhmLocalId)
         val entityToInsert = existingEntity?.let { entity.copy(id = it.id) } ?: entity
-        entityToInsert.patientId = patientId
+        entityToInsert.householdMemberLocalId = hhmLocalId
 
         return savePregnancyDetail(entityToInsert)
     }
 
     @Query("DELETE from PregnancyDetail")
     suspend fun deleteAllPregnancyDetails()
+
+    /*###################################################################*/
+
+
+
+
+
+
+    @Query("SELECT neonateHouseholdMemberLocalId FROM PregnancyDetail where householdMemberLocalId =:parentId")
+    suspend fun getChildPatientId(parentId: Long): Long?
+
+
 }

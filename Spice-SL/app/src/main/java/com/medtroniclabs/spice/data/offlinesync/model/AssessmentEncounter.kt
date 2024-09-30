@@ -6,7 +6,7 @@ data class AssessmentEncounter(
     val householdId: String?,
     val memberId: String?,
     val referred: Boolean,
-    val patientId: String,
+    val patientId: String?,
     val provenance: ProvanceDto,
     val latitude: Double,
     val longitude: Double,

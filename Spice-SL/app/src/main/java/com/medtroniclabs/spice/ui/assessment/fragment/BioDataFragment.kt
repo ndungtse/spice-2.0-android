@@ -235,7 +235,7 @@ class BioDataFragment : BaseFragment() {
             binding.patientName.tvKey.text = getString(R.string.name)
             binding.patientName.tvValue.text = name.capitalizeFirstChar()
             binding.patientId.tvKey.text = getString(R.string.patient_id)
-            binding.patientId.tvValue.text = patientId
+            binding.patientId.tvValue.text = patientId ?: getString(R.string.separator_double_hyphen)
             binding.gender.tvKey.text = getString(R.string.gender)
             binding.gender.tvValue.text = gender.capitalizeFirstChar()
             binding.dobAge.tvKey.text = getString(R.string.age)
@@ -246,9 +246,7 @@ class BioDataFragment : BaseFragment() {
                 )
             )
             viewModel.workflowName?.let { workFlowName ->
-                patientId.let { patientId ->
-                    viewModel.getPatientVisitCountByType(workFlowName, patientId)
-                }
+                viewModel.getPatientVisitCountByType(workFlowName, id)
             }
         }
     }

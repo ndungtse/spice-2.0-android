@@ -35,7 +35,7 @@ class HouseholdListAdapter(
     ) {
         val item = houseHoldList[position]
         holder.binding.tvCardHouseholdName.text = item.name
-        holder.binding.tvHouseholdNo.text = item.householdNo.toString()
+        holder.binding.tvHouseholdNo.text = item.householdNo?.toString() ?: holder.context.getString(R.string.separator_double_hyphen)
         holder.binding.tvVillageName.text = item.villageName
         val membersText = holder.context.getString(
             R.string.people_registered,

@@ -36,7 +36,7 @@ class BioDataChildFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         attachObserver()
-        viewModel.memberDetailsLiveData.value?.data?.patientId?.let {
+        viewModel.memberDetailsLiveData.value?.data?.id?.let {
             assessmentRMNCHNeonateViewModel.getMemberDetailsByParentId(it)
         }
     }

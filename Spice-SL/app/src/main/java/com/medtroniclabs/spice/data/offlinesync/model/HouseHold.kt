@@ -33,7 +33,7 @@ data class HouseHold(
     val noOfPeople: Int,
 
     @ColumnInfo(name = "household_no")
-    val householdNo: Long,
+    val householdNo: Long? = null,
 
     @ColumnInfo(name = "is_owned_hand_washing_facility_with_soap")
     val ownedHandWashingFacilityWithSoap: Boolean,

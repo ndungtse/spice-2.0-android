@@ -107,7 +107,7 @@ class HouseHoldRepository @Inject constructor(
             val noOfPeople = map[HouseHoldRegistration.noOfPeople]
             householdEntity.noOfPeople = checkHeadCountOfHouseHold(CommonUtils.getIntegerOrNull(noOfPeople) ?: 0, getMemberCountPerHouseHold(entity.id))
         } else {
-            householdEntity.householdNo = lastHouseHoldNo + 1
+            //householdEntity.householdNo = lastHouseHoldNo + 1
             val noOfPeople = map[HouseHoldRegistration.noOfPeople]
             householdEntity.noOfPeople = CommonUtils.getIntegerOrNull(noOfPeople) ?: 0
         }

@@ -159,7 +159,7 @@ class HouseholdSummaryActivity : BaseActivity(), MemberSelectionListener, View.O
                         supportFragmentManager.findFragmentByTag(SuccessDialogFragment.TAG)
                     if (existingFragment == null) {
                         SuccessDialogFragment.newInstance(
-                            householdNo = it.householdNo,
+                            -1L,
                             DefinedParams.DefaultID
                         ).show(supportFragmentManager, SuccessDialogFragment.TAG)
                     }

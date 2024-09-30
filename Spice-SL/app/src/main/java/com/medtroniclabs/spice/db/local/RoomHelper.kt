@@ -109,7 +109,7 @@ interface RoomHelper {
     suspend fun getUnSyncedHouseholdCount(): Int
     suspend fun getUnSyncedHouseholdMemberCount(): Int
     suspend fun getVillageIdName(): List<VillageBasicDetails>
-    suspend fun getPatientVisitCountByType(type: String, patientId: String): MemberClinicalEntity?
+    suspend fun getPatientVisitCountByType(type: String, hhmLocalId: Long): MemberClinicalEntity?
     suspend fun savePatientVisitCountByType(memberClinicalEntity: MemberClinicalEntity)
     suspend fun deleteExaminationsComplaints(menuType: String)
     suspend fun insertExaminationsComplaint(symptomEntity: List<MedicalReviewMetaItems>)
@@ -119,13 +119,13 @@ interface RoomHelper {
     suspend fun getHouseholdMemberIdByFhirId(fhirId: String?): Long?
     suspend fun getExaminationsComplaintByType(type: String): List<MedicalReviewMetaItems>
     suspend fun getAssessmentMemberDetails(id: Long): AssessmentMemberDetails
-    suspend fun getUnSyncedAssessmentByPatientId(patientId: String): List<AssessmentDetails>
+    suspend fun getUnSyncedAssessmentByHHMId(hhmId: Long): List<AssessmentDetails>
     suspend fun getOtherUnSyncedAssessments(addedAssessmentIds: List<String>): List<AssessmentDetails>
     suspend fun getUnSyncedAssessmentCount(): Int
 
     suspend fun deleteAllAssessments()
     suspend fun updatePregnancyAncDetail(
-        patientId: String,
+        hhmLocalId: Long,
         visitCount: Long,
         clinicalDate: String?
     )
@@ -213,7 +213,7 @@ interface RoomHelper {
 
     suspend fun insertOrUpdateHHMFromBE(entity: HouseholdMemberEntity): Long
 
-    suspend fun getPregnancyDetailByPatientId(patientId: String): PregnancyDetail?
+    suspend fun getPregnancyDetailByPatientId(hhmLocalId: Long): PregnancyDetail?
 
     suspend fun savePregnancyDetail(detail: PregnancyDetail): Long
 
@@ -229,14 +229,14 @@ interface RoomHelper {
 
     suspend fun deleteCompletedFollowUp()
 
-    suspend fun updateNeonatePatientId( parentPatientId: String, neonatePatientId: String)
+    suspend fun updateNeonatePatientId( hhmLocalId: Long, neonateId: Long)
 
     suspend fun getMemberDetailsByPatientId(patientId: String): HouseholdMemberEntity?
 
-    suspend fun getChildPatientId(patientId: String): String?
+    suspend fun getChildPatientId(parentId: Long): Long?
 
     suspend fun getUserHealthFacility(isUserSite: Boolean): ArrayList<HealthFacilityEntity>
-    suspend fun updateMemberDeceasedStatus(patientId: String, status: Boolean)
+    suspend fun updateMemberDeceasedStatus(id: Long, status: Boolean)
 
     suspend fun getPatientIdById(id: Long): String
 

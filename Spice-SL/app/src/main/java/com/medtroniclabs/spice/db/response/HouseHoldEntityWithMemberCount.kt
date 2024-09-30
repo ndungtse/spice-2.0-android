@@ -5,7 +5,7 @@ import androidx.room.ColumnInfo
 data class HouseHoldEntityWithMemberCount(
     val id: Long,
     @ColumnInfo("household_no")
-    val householdNo: Long,
+    val householdNo: Long? = null,
     val name: String,
     @ColumnInfo("village_id")
     val villageId: Long,

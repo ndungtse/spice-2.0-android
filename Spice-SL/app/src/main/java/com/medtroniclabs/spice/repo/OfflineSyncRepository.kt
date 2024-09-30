@@ -1,7 +1,6 @@
 package com.medtroniclabs.spice.repo
 
 import androidx.lifecycle.MutableLiveData
-import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.gson.Gson
 import com.google.gson.JsonElement
 import com.google.gson.JsonParser
@@ -58,8 +57,8 @@ class OfflineSyncRepository @Inject constructor(
 
     private val mutex = Mutex()
 
-    private suspend fun getUnSyncedAssessmentByPatientId(patientId: String): List<Assessment> {
-        return convertEntityToRequest(roomHelper.getUnSyncedAssessmentByPatientId(patientId))
+    private suspend fun getUnSyncedAssessmentByPatientId(hhmId: Long): List<Assessment> {
+        return convertEntityToRequest(roomHelper.getUnSyncedAssessmentByHHMId(hhmId))
     }
 
     private suspend fun getOtherUnSyncedAssessments(addedAssessmentIds: List<String>): List<Assessment> {
@@ -476,7 +475,7 @@ class OfflineSyncRepository @Inject constructor(
             //Assessment
             memberList.forEach { hhm ->
                 hhm.motherPatientId?.let { hhm.isChild = true }
-                hhm.assessments = getUnSyncedAssessmentByPatientId(hhm.patientId) /*Hot Fix Change - Need to check*/
+                hhm.assessments = getUnSyncedAssessmentByPatientId(hhm.referenceId!!.toLong())
                 assessmentIds.addAll(hhm.assessments.map { it.referenceId.toString() })
             }
 
@@ -488,7 +487,7 @@ class OfflineSyncRepository @Inject constructor(
         otherHouseholdMembers.forEach { hhm ->
             householdMemberIds.add(hhm.referenceId!!)
             hhm.motherPatientId?.let { hhm.isChild = true }
-            hhm.assessments = getUnSyncedAssessmentByPatientId(hhm.patientId) /*Hot Fix Change - Need to check*/
+            hhm.assessments = getUnSyncedAssessmentByPatientId(hhm.referenceId.toLong())
             assessmentIds.addAll(hhm.assessments.map { it.referenceId.toString() })
         }
 

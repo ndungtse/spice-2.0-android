@@ -34,7 +34,7 @@ data class HouseHoldMember(
     val phoneNumberCategory: String,
 
     @ColumnInfo("patient_id")
-    val patientId: String,
+    val patientId: String? = null,
 
     @ColumnInfo("gender")
     val gender: String,

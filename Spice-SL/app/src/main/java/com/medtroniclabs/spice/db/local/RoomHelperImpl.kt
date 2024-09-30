@@ -325,12 +325,12 @@ class RoomHelperImpl @Inject constructor(
 
     override suspend fun getPatientVisitCountByType(
         type: String,
-        patientId: String
+        hhmLocalId: Long,
     ): MemberClinicalEntity? {
         return when (type) {
-            RMNCH.ANC -> pregnancyDetailDao.getAncDetail(patientId)
-            RMNCH.PNC -> pregnancyDetailDao.getPncDetail(patientId)
-            else -> pregnancyDetailDao.getChildhoodVisitDetail(patientId)
+            RMNCH.ANC -> pregnancyDetailDao.getAncDetail(hhmLocalId)
+            RMNCH.PNC -> pregnancyDetailDao.getPncDetail(hhmLocalId)
+            else -> pregnancyDetailDao.getChildhoodVisitDetail(hhmLocalId)
         }
     }
 
@@ -383,8 +383,8 @@ class RoomHelperImpl @Inject constructor(
         return assessmentDAO.getOtherUnSyncedAssessments(addedAssessmentIds)
     }
 
-    override suspend fun getUnSyncedAssessmentByPatientId(patientId: String): List<AssessmentDetails> {
-        return assessmentDAO.getUnSyncedAssessmentByPatientId(patientId)
+    override suspend fun getUnSyncedAssessmentByHHMId(hhmId: Long): List<AssessmentDetails> {
+        return assessmentDAO.getUnSyncedAssessmentByHHMId(hhmId)
     }
 
     override suspend fun getUnSyncedAssessmentCount(): Int {
@@ -392,11 +392,11 @@ class RoomHelperImpl @Inject constructor(
     }
 
     override suspend fun updatePregnancyAncDetail(
-        patientId: String,
+        hhmLocalId: Long,
         visitCount: Long,
         clinicalDate: String?
     ) {
-        pregnancyDetailDao.updatePregnancyAnc(visitCount, clinicalDate, patientId)
+        pregnancyDetailDao.updatePregnancyAnc(visitCount, clinicalDate, hhmLocalId)
     }
 
     override suspend fun getSummaryDetailMetaItems(type: String): List<MedicalReviewMetaItems> {
@@ -610,8 +610,8 @@ class RoomHelperImpl @Inject constructor(
         followUpDao.updateInProgress(idList, syncStatus)
     }
 
-    override suspend fun getPregnancyDetailByPatientId(patientId: String): PregnancyDetail? {
-        return pregnancyDetailDao.getPregnancyDetailByPatientId(patientId)
+    override suspend fun getPregnancyDetailByPatientId(hhmLocalId: Long): PregnancyDetail? {
+        return pregnancyDetailDao.getPregnancyDetailByPatientId(hhmLocalId)
     }
 
     override suspend fun savePregnancyDetail(detail: PregnancyDetail): Long {
@@ -653,24 +653,24 @@ class RoomHelperImpl @Inject constructor(
         return ArrayList(metaDataDAO.getUserHealthFacility(isUserSite))
     }
 
-    override suspend fun updateMemberDeceasedStatus(patientId: String, status: Boolean) {
-        memberDAO.updateMemberDeceasedStatus(patientId,status, OfflineSyncStatus.NotSynced)
+    override suspend fun updateMemberDeceasedStatus(id: Long, status: Boolean) {
+        memberDAO.updateMemberDeceasedStatus(id, status, OfflineSyncStatus.NotSynced)
     }
 
     override suspend fun changeFollowUpCallStatus(idList: List<Long>) {
         followUpCallsDao.updateSyncSuccess(idList)
     }
 
-    override suspend fun updateNeonatePatientId(parentPatientId: String, neonatePatientId: String) {
-        pregnancyDetailDao.updateNeonatePatientId(parentPatientId, neonatePatientId)
+    override suspend fun updateNeonatePatientId(hhmLocalId: Long, neonateId: Long) {
+        pregnancyDetailDao.updateNeonatePatientId(hhmLocalId, neonateId)
     }
 
     override suspend fun getMemberDetailsByPatientId(patientId: String): HouseholdMemberEntity? {
        return memberDAO.getMemberDetailsByPatientId(patientId)
     }
 
-    override suspend fun getChildPatientId(patientId: String): String? {
-        return pregnancyDetailDao.getChildPatientId(patientId)
+    override suspend fun getChildPatientId(parentId: Long): Long? {
+        return pregnancyDetailDao.getChildPatientId(parentId)
     }
 
     override suspend fun getPatientIdById(id: Long): String {

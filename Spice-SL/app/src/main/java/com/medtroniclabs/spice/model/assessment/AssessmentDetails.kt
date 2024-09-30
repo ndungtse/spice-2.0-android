@@ -7,7 +7,7 @@ data class AssessmentDetails(
     val villageId: String, // Village Id of household
     val assessmentType: String,
     val assessmentDetails:String,
-    val patientId: String, // member - patient Id
+    val patientId: String?, // member - patient Id
     val referralStatus: String,
     val referredReason: ArrayList<String>?= null,
     var otherDetails: String? = null,

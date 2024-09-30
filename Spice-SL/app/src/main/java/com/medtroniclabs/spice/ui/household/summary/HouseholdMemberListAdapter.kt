@@ -28,14 +28,15 @@ class HouseholdMemberListAdapter(
         holder: HouseholdListViewHolder,
         position: Int
     ) {
+        val context = holder.context
         val item = houseHoldMembersList[position]
         if (item.isActive) {
             disableAllChildren(holder.binding.root, 1f, true)
         } else {
             disableAllChildren(holder.binding.root, 0.5f, false)
         }
-        holder.binding.tvMemberName.text = getMemberInfoText(holder.context, item)
-        holder.binding.tvPatientId.text = item.patientId
+        holder.binding.tvMemberName.text = getMemberInfoText(context, item)
+        holder.binding.tvPatientId.text = item.patientId ?: context.getString(R.string.separator_double_hyphen)
         holder.binding.cardPatient.safeClickListener {
             if (item.isActive) {
                 listener.onMemberSelected(item.id, false, item.dateOfBirth)

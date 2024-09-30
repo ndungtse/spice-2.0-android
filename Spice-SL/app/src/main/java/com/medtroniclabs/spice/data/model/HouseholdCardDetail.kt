@@ -3,7 +3,7 @@ package com.medtroniclabs.spice.data.model
 data class HouseholdCardDetail(
     val id: Long,
     val name: String,
-    val householdNo: Long,
+    val householdNo: Long? = null,
     val villageName: String,
     val landmark: String?,
     val householdHeadPhoneNumber: String?,

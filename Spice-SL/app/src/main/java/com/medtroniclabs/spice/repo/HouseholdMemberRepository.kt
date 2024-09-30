@@ -32,9 +32,9 @@ class HouseholdMemberRepository @Inject constructor(
         signature: String? = null
     ): Long? {
         val memberEntity = createOrUpdateHouseHoldMemberEntity(map, householdId, entity, parentId, initial, signature)
-        if (memberEntity.patientId == null) {
+       /* if (memberEntity.patientId == null) {
             return  null
-        }
+        }*/
         val memberId = roomHelper.registerMember(memberEntity)
         //Update Member count in household only in insert case
         if (entity == null) {
@@ -107,7 +107,7 @@ class HouseholdMemberRepository @Inject constructor(
             val householdDetails = roomHelper.getHouseHoldDetailsById(householdId)
             householdMemberEntity.householdId = householdId
             householdMemberEntity.villageId = householdDetails.villageId
-            householdMemberEntity.patientId = getNextPatientId(householdDetails.villageId)
+          //  householdMemberEntity.patientId = getNextPatientId(householdDetails.villageId)
             householdMemberEntity.initial = initial
             householdMemberEntity.localSignatureFile = signature
         } else {
@@ -204,25 +204,25 @@ class HouseholdMemberRepository @Inject constructor(
 
     suspend fun getPatientVisitCountByType(
         type: String,
-        patientId: String
+        hhmLocalId: Long
     ): MemberClinicalEntity? {
-        return roomHelper.getPatientVisitCountByType(type, patientId)
+        return roomHelper.getPatientVisitCountByType(type, hhmLocalId)
     }
 
     suspend fun savePatientVisitCountByType(memberClinicalEntity: MemberClinicalEntity) {
         roomHelper.savePatientVisitCountByType(memberClinicalEntity)
     }
 
-    suspend fun getPregnancyDetailByPatientId(patientId: String): PregnancyDetail? {
-        return roomHelper.getPregnancyDetailByPatientId(patientId)
+    suspend fun getPregnancyDetailByPatientId(hhmLocalId: Long): PregnancyDetail? {
+        return roomHelper.getPregnancyDetailByPatientId(hhmLocalId)
     }
 
     suspend fun savePregnancyDetail(pregnancyDetail: PregnancyDetail): Long {
         return roomHelper.savePregnancyDetail(pregnancyDetail)
     }
 
-   suspend fun updateMemberDeceasedStatus(patientId: String, status: Boolean) {
-        return roomHelper.updateMemberDeceasedStatus(patientId, status)
+   suspend fun updateMemberDeceasedStatus(id: Long, status: Boolean) {
+        return roomHelper.updateMemberDeceasedStatus(id, status)
     }
 
     suspend fun getPatientIdById(id: Long): String {

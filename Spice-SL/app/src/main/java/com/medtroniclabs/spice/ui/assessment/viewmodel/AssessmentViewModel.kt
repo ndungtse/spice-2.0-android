@@ -386,12 +386,12 @@ class AssessmentViewModel @Inject constructor(
         }
     }
 
-    fun getPatientVisitCountByType(type: String, patientId: String) {
+    fun getPatientVisitCountByType(type: String, hhmLocalId: Long) {
         viewModelScope.launch(dispatcherIO) {
             memberClinicalLiveData.postValue(
                 memberRegistrationRepository.getPatientVisitCountByType(
                     type,
-                    patientId
+                    hhmLocalId
                 )
             )
         }
@@ -409,17 +409,16 @@ class AssessmentViewModel @Inject constructor(
         memberDetail.apply {
             if (details.containsKey(workflowName) && details[workflowName] is Map<*, *>) {
                 val map = details[workflowName] as HashMap<String, Any>
-                patientId.let { id ->
-                    val pregnancyDetail = pregnancyDetail
-                        ?: PregnancyDetail(patientId = id)
-                    getClinicalDateAndVisitCount(
-                        map,
-                        workflowName,
-                        pregnancyDetail,
-                        childDetailsMap
-                    )
-                    savePatientClinicalInformation(pregnancyDetail)
-                }
+                val pregnancyDetail = pregnancyDetail
+                    ?: PregnancyDetail(householdMemberLocalId = householdLocalId)
+                getClinicalDateAndVisitCount(
+                    map,
+                    workflowName,
+                    pregnancyDetail,
+                    childDetailsMap
+                )
+                savePatientClinicalInformation(pregnancyDetail)
+
                 /*memberClinicalEntity?.let { memberClinicalEntity ->
                     *//*map[RMNCH.visitNo] = memberClinicalEntity.visitCount + 1
                     memberClinicalEntity.clinicalDate?.let { date ->
@@ -467,7 +466,7 @@ class AssessmentViewModel @Inject constructor(
         viewModelScope.launch(dispatcherIO) {
             memberDetailsLiveData.value?.data?.let { detail ->
                 pregnancyDetail =
-                    memberRegistrationRepository.getPregnancyDetailByPatientId(detail.patientId)
+                    memberRegistrationRepository.getPregnancyDetailByPatientId(detail.id)
             }
         }
     }
@@ -544,23 +543,23 @@ class AssessmentViewModel @Inject constructor(
 
 
     fun updateMemberClinicalData(
-        patientId: String,
+        hhmLocalId: Long,
         visitCount: Long,
         clinicalDate: String?
     ) {
         viewModelScope.launch(dispatcherIO) {
             assessmentRepository.updatePregnancyAncDetail(
-                patientId,
+                hhmLocalId,
                 visitCount,
                 clinicalDate
             )
         }
     }
 
-    fun updateMemberDeceasedStatus(patientId: String, status: Boolean) {
+    fun updateMemberDeceasedStatus(id: Long, status: Boolean) {
         viewModelScope.launch(dispatcherIO) {
             memberRegistrationRepository.updateMemberDeceasedStatus(
-                patientId,
+                id,
                 status
             )
         }

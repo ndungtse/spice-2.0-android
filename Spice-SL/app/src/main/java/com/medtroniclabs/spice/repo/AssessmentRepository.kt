@@ -61,12 +61,12 @@ class AssessmentRepository @Inject constructor(
 
             childMemberIdFollowupIDAndDeathOfNewBorn.third?.let { deathOfNewborn ->
                 if (deathOfNewborn){
-                    roomHelper.updateMemberDeceasedStatus(childMemberDetail.patientId, false)
+                    roomHelper.updateMemberDeceasedStatus(childMemberDetail.id, false)
                 }
             }
 
             /**/
-            roomHelper.updateNeonatePatientId(memberDetail.patientId, childMemberDetail.patientId)
+            roomHelper.updateNeonatePatientId(memberDetail.id, childMemberDetail.id)
             /**/
 
             Resource(
@@ -90,6 +90,7 @@ class AssessmentRepository @Inject constructor(
     ): AssessmentEntity {
 
         val assessmentEntity = AssessmentEntity(
+            householdMemberLocalId = memberDetail.id,
             memberId = memberDetail.memberId,
             householdId = memberDetail.householdId,
             patientId = memberDetail.patientId,
@@ -123,6 +124,7 @@ class AssessmentRepository @Inject constructor(
         return try {
             val assessmentEntity = menuId?.let { menu ->
                 AssessmentEntity(
+                    householdMemberLocalId = memberDetails.id,
                     memberId = memberDetails.memberId,
                     householdId = memberDetails.householdId,
                     patientId = memberDetails.patientId,
@@ -280,15 +282,15 @@ class AssessmentRepository @Inject constructor(
     }
 
     suspend fun updatePregnancyAncDetail(
-        patientId: String,
+        hhmLocalId: Long,
         visitCount: Long,
         clinicalDate: String?
     ) {
-        roomHelper.updatePregnancyAncDetail(patientId, visitCount, clinicalDate)
+        roomHelper.updatePregnancyAncDetail(hhmLocalId, visitCount, clinicalDate)
     }
 
-    suspend fun getChildPatientId(patientId: String): String? {
-        return roomHelper.getChildPatientId(patientId)
+    suspend fun getChildPatientId(parentId: Long): Long? {
+        return roomHelper.getChildPatientId(parentId)
     }
 
 }

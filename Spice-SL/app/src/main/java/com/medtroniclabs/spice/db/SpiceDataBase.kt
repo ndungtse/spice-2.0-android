@@ -47,7 +47,7 @@ import net.zetetic.database.sqlcipher.SupportOpenHelperFactory
     entities = [HouseholdEntity::class, HouseholdMemberEntity::class, SignsAndSymptomsEntity::class, AssessmentEntity::class, MenuEntity::class, UserProfileEntity::class,
         VillageEntity::class, HealthFacilityEntity::class, ClinicalWorkflowEntity::class, FormEntity::class, ClinicalWorkflowConditionEntity::class,
         MedicalReviewMetaItems::class, DiseaseCategoryItems::class, ExaminationListItems::class, LabourDeliveryMetaEntity::class, FollowUp::class, FollowUpCall::class, PregnancyDetail::class, FrequencyEntity::class, ConsentForm::class],
-    version = 1
+    version = 2
 )
 @TypeConverters(OfflineStatusTypeConverter::class)
 abstract class SpiceDataBase : RoomDatabase() {
@@ -92,6 +92,9 @@ abstract class SpiceDataBase : RoomDatabase() {
             )
             if (!BuildConfig.DEBUG)
                 db.openHelperFactory(factory)
+
+            /*Migration Scripts*/
+            db.addMigrations(SpiceSLMigration.MIGRATION_1_2)
 
             return db.build()
         }

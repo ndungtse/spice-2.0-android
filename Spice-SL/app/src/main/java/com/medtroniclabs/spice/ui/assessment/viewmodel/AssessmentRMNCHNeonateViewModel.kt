@@ -244,12 +244,12 @@ class AssessmentRMNCHNeonateViewModel @Inject constructor(
         return Triple(assessmentDetail, motherMapString ?: "", childMapString ?: "")
     }
 
-    fun getMemberDetailsByParentId(patientId: String) {
+    fun getMemberDetailsByParentId(parentId: Long) {
         viewModelScope.launch(dispatcherIO) {
             childMemberDetailsLiveData.postLoading()
-            assessmentRepository.getChildPatientId(patientId)?.let { childPatientId ->
+            assessmentRepository.getChildPatientId(parentId)?.let { childLocalId ->
                 childMemberDetailsLiveData.postValue(
-                    householdMemberRepository.getMemberDetailsByPatientId(childPatientId)
+                    householdMemberRepository.getMemberDetailsByID(childLocalId)
                 )
             }
         }

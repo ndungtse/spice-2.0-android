@@ -11,7 +11,7 @@ data class HouseholdEntity(
     val id: Long = 0,
 
     @ColumnInfo(name = "household_no")
-    var householdNo: Long = 0,
+    var householdNo: Long? = null,
 
     @ColumnInfo(name = "name")
     var name: String = "",

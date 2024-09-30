@@ -43,17 +43,17 @@ class HouseholdDetailsFragment : Fragment() {
     private fun renderHouseholdDetailsSummary(houseHoldDetail: HouseholdCardDetail) {
         binding.llDetails.removeAllViews()
 
-        addHouseholdNoView(houseHoldDetail.householdNo)
+        addHouseholdNoView(houseHoldDetail.householdNo?.toString() ?: getString(R.string.separator_double_hyphen))
         addVillageNameView(houseHoldDetail.villageName)
         addLandmarkView(houseHoldDetail.landmark)
         addHouseholdHeadNumberView(houseHoldDetail.householdHeadPhoneNumber)
         addMemberRegisteredView(houseHoldDetail.memberRegistered, houseHoldDetail.memberAdded)
     }
 
-    private fun addHouseholdNoView(householdNo: Long) {
+    private fun addHouseholdNoView(householdNo: String) {
         val view = SummaryListItemBinding.inflate(LayoutInflater.from(context))
         view.tvLabel.text = getString(R.string.household_no)
-        view.tvValue.text = householdNo.toString()
+        view.tvValue.text = householdNo
         binding.llDetails.addView(view.root)
     }
 
