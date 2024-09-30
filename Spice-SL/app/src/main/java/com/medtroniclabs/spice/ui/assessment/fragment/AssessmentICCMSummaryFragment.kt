@@ -14,6 +14,7 @@ import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.isGone
+import com.medtroniclabs.spice.appextensions.startBackgroundOfflineSync
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.CommonUtils.convertStringToIntString
@@ -574,6 +575,7 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
                     startActivity(intent)
                     requireActivity().finish()
+                    requireActivity().startBackgroundOfflineSync()
                 } else {
                     viewModel.updateOtherAssessmentDetails()
                 }

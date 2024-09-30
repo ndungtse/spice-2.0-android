@@ -60,8 +60,8 @@ class FollowUpMyPatientActivity : BaseActivity() {
             TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab?) {
                 tab?.let {
-                    viewModel.createNewFollowUpFilter(it.position)
-                    binding.llExactSearch.etSearchTerm.setText("")
+                    viewModel.updateFollowUpFilter(pageType = it.position)
+                   // binding.llExactSearch.etSearchTerm.setText("")
                     binding.viewPager.currentItem = it.position
 
                     setTabTypeface(it, ResourcesCompat.getFont(applicationContext, R.font.inter_bold))

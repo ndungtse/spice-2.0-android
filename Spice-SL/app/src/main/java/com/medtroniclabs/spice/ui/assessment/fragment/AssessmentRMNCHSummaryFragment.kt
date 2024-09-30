@@ -13,6 +13,7 @@ import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.appextensions.gone
+import com.medtroniclabs.spice.appextensions.startBackgroundOfflineSync
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DateUtils.calculateAgeInMonths
@@ -325,6 +326,7 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
                     startActivity(intent)
                     requireActivity().finish()
+                    requireActivity().startBackgroundOfflineSync()
                 } else {
                     viewModel.updateOtherAssessmentDetails()
                 }

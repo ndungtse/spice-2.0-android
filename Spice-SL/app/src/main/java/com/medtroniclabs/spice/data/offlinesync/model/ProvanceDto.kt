@@ -1,6 +1,5 @@
 package com.medtroniclabs.spice.data.offlinesync.model
 
-import com.google.gson.annotations.SerializedName
 import com.medtroniclabs.spice.appextensions.convertToUtcDateTime
 import com.medtroniclabs.spice.common.SecuredPreference
 
