@@ -215,13 +215,13 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
             } else {
                 val destinationIntent = when (patientListViewModel.origin) {
                     MenuConstants.REGISTRATION -> RegistrationActivity::class.java
-                    MenuConstants.ASSESSMENT -> AssessmentToolsActivity::class.java
-                    MenuConstants.MY_PATIENTS_MENU_ID -> NCDMedicalReviewActivity::class.java
+                    MenuConstants.MY_PATIENTS_MENU_ID, MenuConstants.ASSESSMENT -> AssessmentToolsActivity::class.java
                     else -> null
                 }
                 destinationIntent?.let { destIntent ->
                     val intent = Intent(requireContext(), destIntent)
                     intent.putExtra(DefinedParams.FhirId, item.id)
+                    intent.putExtra(DefinedParams.PatientId, item.patientId)
                     intent.putExtra(DefinedParams.ORIGIN, patientListViewModel.origin)
                     intent.putExtra(DefinedParams.Gender,item.gender)
                     startActivity(intent)

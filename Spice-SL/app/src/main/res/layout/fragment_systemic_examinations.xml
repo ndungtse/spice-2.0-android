@@ -72,8 +72,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="@dimen/_16sdp"
                 android:layout_marginVertical="@dimen/_10sdp"
-                android:text="@string/fundal_height"
                 android:fontFamily="@font/inter_regular"
+                android:text="@string/fundal_height"
                 android:textSize="@dimen/_16ssp"
                 app:layout_constraintEnd_toStartOf="@id/centerGuideline"
                 app:layout_constraintStart_toStartOf="parent"
@@ -113,9 +113,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="@dimen/_16sdp"
                 android:layout_marginVertical="@dimen/_10sdp"
+                android:fontFamily="@font/inter_regular"
                 android:text="@string/fetal_heart_rate_bpm"
                 android:textAlignment="textStart"
-                android:fontFamily="@font/inter_regular"
                 android:textSize="@dimen/_16ssp"
                 app:layout_constraintStart_toStartOf="@id/centerGuideline"
                 app:layout_constraintTop_toBottomOf="@id/tagPhysicalExamination" />
@@ -156,6 +156,19 @@
                 app:barrierDirection="bottom"
                 app:constraint_referenced_ids="tvFetalHeartRateError, tvFundalHeightError" />
 
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvCommentsTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/_16sdp"
+                android:fontFamily="@font/inter_regular"
+                android:textAlignment="textStart"
+                android:textSize="@dimen/_14ssp"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/barrier" />
+
             <androidx.appcompat.widget.AppCompatEditText
                 android:id="@+id/etPhysicalExaminationComments"
                 style="@style/Form_Input_Style_BG"
@@ -163,27 +176,29 @@
                 android:layout_marginStart="@dimen/_16sdp"
                 android:layout_marginTop="@dimen/_10sdp"
                 android:layout_marginEnd="@dimen/_16sdp"
-                android:layout_marginBottom="@dimen/_16sdp"
+                android:layout_marginBottom="@dimen/_8sdp"
                 android:gravity="start|top"
                 android:hint="@string/type_notes"
                 android:inputType="textCapWords|textMultiLine"
                 android:padding="@dimen/_8sdp"
-                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/tvErrorMessage"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/barrier" />
+                app:layout_constraintTop_toBottomOf="@id/tvCommentsTitle" />
 
             <TextView
                 android:id="@+id/tvErrorMessage"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/_24sdp"
-                android:layout_marginTop="@dimen/_8sdp"
+                android:layout_marginBottom="@dimen/_8sdp"
                 android:fontFamily="@font/inter_regular"
                 android:text="@string/default_user_input_error"
                 android:textColor="@color/a_red_error"
                 android:textSize="@dimen/_12ssp"
                 android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/etPhysicalExaminationComments" />
 

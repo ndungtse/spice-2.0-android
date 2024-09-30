@@ -83,6 +83,8 @@ import com.medtroniclabs.spice.model.NcdMRStaticDataModel
 import com.medtroniclabs.spice.model.medicalreview.SearchLabTestResponse
 import com.medtroniclabs.spice.model.medicalreview.SearchRequestLabTest
 import com.medtroniclabs.spice.model.medicalreview.SummaryDetails
+import com.medtroniclabs.spice.ncd.data.PatientVisitRequest
+import com.medtroniclabs.spice.ncd.data.PatientVisitResponse
 import com.medtroniclabs.spice.ncd.data.BPBGListModel
 import com.medtroniclabs.spice.ncd.data.ScreeningPatientResponse
 import okhttp3.RequestBody
@@ -90,10 +92,8 @@ import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
-import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.Path
-import retrofit2.http.Part
 
 interface ApiService {
     @POST("/auth-service/session")
@@ -327,4 +327,7 @@ interface ApiService {
 
     @POST("spice-service/patient/pregnancy/details")
     suspend fun ncdPregnancyDetails(@Body request: HashMap<String, Any>): Response<APIResponse<PregnancyDetailsModel>>
+
+    @POST("/spice-service/patientvisit/create")
+    suspend fun createPatientVisit(@Body request: PatientVisitRequest): Response<APIResponse<PatientVisitResponse>>
 }

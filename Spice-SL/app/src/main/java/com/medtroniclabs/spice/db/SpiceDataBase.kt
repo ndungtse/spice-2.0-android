@@ -37,12 +37,9 @@ import com.medtroniclabs.spice.db.entity.CallHistory
 import com.medtroniclabs.spice.db.entity.ChiefDomEntity
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowConditionEntity
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowEntity
-import com.medtroniclabs.spice.db.entity.ComorbidityEntity
-import com.medtroniclabs.spice.db.entity.ComplaintsEntity
-import com.medtroniclabs.spice.db.entity.ComplicationsEntity
+import com.medtroniclabs.spice.db.entity.NCDMedicalReviewMetaEntity
 import com.medtroniclabs.spice.db.entity.ConsentEntity
 import com.medtroniclabs.spice.db.entity.ConsentForm
-import com.medtroniclabs.spice.db.entity.CurrentMedicationEntity
 import com.medtroniclabs.spice.db.entity.DistrictEntity
 import com.medtroniclabs.spice.db.entity.FollowUp
 import com.medtroniclabs.spice.db.entity.FollowUpCall
@@ -56,13 +53,10 @@ import com.medtroniclabs.spice.db.entity.LifestyleEntity
 import com.medtroniclabs.spice.db.entity.MedicalComplianceEntity
 import com.medtroniclabs.spice.db.entity.MentalHealthEntity
 import com.medtroniclabs.spice.db.entity.MenuEntity
-import com.medtroniclabs.spice.db.entity.PhysicalExaminationEntity
 import com.medtroniclabs.spice.db.entity.PregnancyDetail
 import com.medtroniclabs.spice.db.entity.RiskFactorEntity
 import com.medtroniclabs.spice.db.entity.ScreeningEntity
 import com.medtroniclabs.spice.db.entity.SignsAndSymptomsEntity
-import com.medtroniclabs.spice.db.entity.TreatmentPlanEntity
-import com.medtroniclabs.spice.db.entity.TreatmentPlanFrequencyEntity
 import com.medtroniclabs.spice.db.entity.UserProfileEntity
 import com.medtroniclabs.spice.db.entity.VillageEntity
 import com.medtroniclabs.spice.ui.assessment.AssessmentNCDEntity
@@ -79,7 +73,7 @@ import net.zetetic.database.sqlcipher.SupportOpenHelperFactory
         ProgramEntity::class, CulturesEntity::class, ConsentForm::class, ConsentEntity::class, MentalHealthEntity::class, MedicalComplianceEntity::class, ChiefDomEntity::class, DistrictEntity::class, ScreeningEntity::class, RiskFactorEntity::class,
         MedicalReviewMetaItems::class, DiseaseCategoryItems::class, ExaminationListItems::class, LabourDeliveryMetaEntity::class, FollowUp::class, FollowUpCall::class, PregnancyDetail::class, FrequencyEntity::class, ConsentForm::class,
         ProgramEntity::class, CulturesEntity::class, ConsentEntity::class, MentalHealthEntity::class, MedicalComplianceEntity::class, ChiefDomEntity::class, DistrictEntity::class, ScreeningEntity::class, RiskFactorEntity::class,
-        ComorbidityEntity::class, ComplicationsEntity::class, LifestyleEntity::class, ComplaintsEntity::class, PhysicalExaminationEntity::class, CurrentMedicationEntity::class, TreatmentPlanEntity::class, TreatmentPlanFrequencyEntity::class, AssessmentNCDEntity::class],
+        LifestyleEntity::class, NCDMedicalReviewMetaEntity::class, AssessmentNCDEntity::class],
     version = 1
 )
 @TypeConverters(OfflineStatusTypeConverter::class)

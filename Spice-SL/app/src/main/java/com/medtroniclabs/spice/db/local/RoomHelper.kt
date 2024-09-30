@@ -22,10 +22,7 @@ import com.medtroniclabs.spice.db.entity.ClinicalWorkflowEntityWithSubmodule
 import com.medtroniclabs.spice.db.entity.ConsentEntity
 import com.medtroniclabs.spice.db.entity.ConsentForm
 import com.medtroniclabs.spice.db.entity.ChiefDomEntity
-import com.medtroniclabs.spice.db.entity.ComorbidityEntity
-import com.medtroniclabs.spice.db.entity.ComplaintsEntity
-import com.medtroniclabs.spice.db.entity.ComplicationsEntity
-import com.medtroniclabs.spice.db.entity.CurrentMedicationEntity
+import com.medtroniclabs.spice.db.entity.NCDMedicalReviewMetaEntity
 import com.medtroniclabs.spice.db.entity.FollowUp
 import com.medtroniclabs.spice.db.entity.FollowUpCall
 import com.medtroniclabs.spice.db.entity.FormEntity
@@ -43,10 +40,7 @@ import com.medtroniclabs.spice.db.entity.ScreeningEntity
 import com.medtroniclabs.spice.db.entity.SignsAndSymptomsEntity
 import com.medtroniclabs.spice.db.entity.DistrictEntity
 import com.medtroniclabs.spice.db.entity.LifestyleEntity
-import com.medtroniclabs.spice.db.entity.PhysicalExaminationEntity
 import com.medtroniclabs.spice.db.entity.RiskFactorEntity
-import com.medtroniclabs.spice.db.entity.TreatmentPlanEntity
-import com.medtroniclabs.spice.db.entity.TreatmentPlanFrequencyEntity
 import com.medtroniclabs.spice.db.entity.UserProfileEntity
 import com.medtroniclabs.spice.db.entity.VillageEntity
 import com.medtroniclabs.spice.db.response.HouseHoldEntityWithMemberCount
@@ -344,30 +338,14 @@ interface RoomHelper {
 
     fun getSymptomListByTypeForNCD(type: String): LiveData<List<SignsAndSymptomsEntity>>
 
-    suspend fun deleteComorbidities()
-    suspend fun insertComorbidities(items: List<ComorbidityEntity>)
-
-    suspend fun deleteComplications()
-    suspend fun insertComplications(items: List<ComplicationsEntity>)
+    suspend fun deleteNCDMedicalReviewMeta()
+    suspend fun insertNCDMedicalReviewMeta(items: List<NCDMedicalReviewMetaEntity>)
 
     suspend fun deleteLifestyle()
     suspend fun insertLifestyle(items: List<LifestyleEntity>)
+    fun getComorbidities(type: String?,category: String): LiveData<List<NCDMedicalReviewMetaEntity>>
 
-    suspend fun deleteComplaints()
-    suspend fun insertComplaints(items: List<ComplaintsEntity>)
-
-    suspend fun deletePhysicalExamination()
-    suspend fun insertPhysicalExamination(items: List<PhysicalExaminationEntity>)
-
-    suspend fun deleteCurrentMedications()
-    suspend fun insertCurrentMedications(items: List<CurrentMedicationEntity>)
-
-    suspend fun deleteTreatmentPlan()
-    suspend fun insertTreatmentPlan(items: List<TreatmentPlanEntity>)
-
-    suspend fun deleteTreatmentPlanFrequencies()
-    suspend fun insertTreatmentPlanFrequencies(items: List<TreatmentPlanFrequencyEntity>)
-
+    fun getLifeStyle(): LiveData<List<LifestyleEntity>>
     fun getAssessmentFormData(formType: String, workFlow: String): LiveData<String>
 
     suspend fun getSymptomList(): List<SignsAndSymptomsEntity>

@@ -11,10 +11,13 @@ import com.google.android.flexbox.FlexDirection
 import com.google.android.flexbox.FlexboxLayoutManager
 import com.google.android.flexbox.JustifyContent
 import com.medtroniclabs.spice.common.CommonUtils
-import com.medtroniclabs.spice.common.CommonUtils.isNonNcdWorkflow
 import com.medtroniclabs.spice.common.DefinedParams
+import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.databinding.FragmentToolsMenuBinding
 import com.medtroniclabs.spice.db.entity.MenuEntity
+import com.medtroniclabs.spice.ncd.data.PatientVisitRequest
+import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.EncounterReference
+import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.MENU_ID
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.BaseFragment
@@ -25,6 +28,7 @@ import com.medtroniclabs.spice.ui.assessment.AssessmentActivity
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
 import com.medtroniclabs.spice.ui.dialog.RMNCHFlowSelectionDialog
 import com.medtroniclabs.spice.ui.home.adapter.DashboardMenuItemsAdapter
+import com.medtroniclabs.spice.ui.mypatients.NCDMedicalReviewActivity
 
 class ToolsMenuFragment : BaseFragment(), MenuSelectionListener {
 
@@ -56,15 +60,7 @@ class ToolsMenuFragment : BaseFragment(), MenuSelectionListener {
             val result = bundle.getString(WorkFlowName)
             startAssessmentActivity(MenuConstants.RMNCH_MENU_ID, result)
         }
-        if (CommonUtils.isSL()) {
-            viewModel.getMenuForClinicalWorkflows()
-        } else {
-            requireArguments().getString(DefinedParams.Gender)?.let { gender ->
-                viewModel.getMenuClinicalWorkflows(
-                   gender
-                )
-            }
-        }
+        viewModel.getMenuForClinicalWorkflows()
         attachObservers()
     }
 
@@ -79,6 +75,32 @@ class ToolsMenuFragment : BaseFragment(), MenuSelectionListener {
                     (activity as BaseActivity).hideLoading()
                     resourceState.data?.let {
                         setAdapterViews(it)
+                    }
+                }
+
+                ResourceState.ERROR -> {
+                    (activity as BaseActivity).hideLoading()
+                }
+            }
+        }
+
+        viewModel.patientVisitLiveData.observe(viewLifecycleOwner) { resourceState ->
+            when (resourceState.state) {
+                ResourceState.LOADING -> {
+                    (activity as BaseActivity).showLoading()
+                }
+
+                ResourceState.SUCCESS -> {
+                    (activity as BaseActivity).hideLoading()
+                    resourceState.data?.let {
+                        val intent =
+                            Intent(requireContext(), NCDMedicalReviewActivity::class.java).apply {
+                                putExtra(EncounterReference, it.encounterReference)
+                                putExtra(MENU_ID, viewModel.menuId)
+                                putExtra(DefinedParams.FhirId, getMemberReference())
+                                putExtra(DefinedParams.PatientId, getPatientReference())
+                            }
+                        startActivity(intent)
                     }
                 }
 
@@ -106,7 +128,7 @@ class ToolsMenuFragment : BaseFragment(), MenuSelectionListener {
         startAssessmentToolsActivity(menuId, subModule)
     }
 
-    private fun startAssessmentToolsActivity(menuId: String, subModule: String?) {
+    private fun startAssessmentToolsActivity(menuId: String, subModule: String? = null) {
         when (menuId) {
             MenuConstants.RMNCH_MENU_ID -> {
                 if (subModule == null) {
@@ -118,7 +140,19 @@ class ToolsMenuFragment : BaseFragment(), MenuSelectionListener {
             }
 
             else -> {
-                startAssessmentActivity(menuId, null)
+                if (getOrigin().equals(MenuConstants.MY_PATIENTS_MENU_ID, true)) {
+                    withNetworkAvailability(online = {
+                        viewModel.menuId = menuId
+                        viewModel.createPatientVisit(
+                            PatientVisitRequest(
+                                patientReference = getPatientReference(), provenance = ProvanceDto(
+                                ), memberReference = getMemberReference()
+                            )
+                        )
+                    })
+                } else {
+                    startAssessmentActivity(menuId, null)
+                }
             }
         }
     }
@@ -129,11 +163,23 @@ class ToolsMenuFragment : BaseFragment(), MenuSelectionListener {
         intent.putExtra(DefinedParams.DOB, viewModel.selectedMemberDob)
         intent.putExtra(DefinedParams.FollowUpId, viewModel.followUpId)
         intent.putExtra(DefinedParams.MenuId, menuId)
-        intent.putExtra(DefinedParams.FhirId, requireArguments().getString(DefinedParams.FhirId))
-        intent.putExtra(DefinedParams.ORIGIN, requireArguments().getString(DefinedParams.ORIGIN))
+        intent.putExtra(DefinedParams.FhirId, getMemberReference())
+        intent.putExtra(DefinedParams.ORIGIN, getOrigin())
         workFlowName?.let { name ->
             intent.putExtra(WorkFlowName, name)
         }
         startActivity(intent)
+    }
+
+    private fun getPatientReference(): String {
+        return requireArguments().getString(DefinedParams.PatientId) ?: ""
+    }
+
+    private fun getMemberReference(): String {
+        return requireArguments().getString(DefinedParams.FhirId) ?: ""
+    }
+
+    private fun getOrigin(): String {
+        return requireArguments().getString(DefinedParams.ORIGIN) ?: ""
     }
 }

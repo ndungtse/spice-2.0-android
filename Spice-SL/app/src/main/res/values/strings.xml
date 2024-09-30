@@ -838,4 +838,17 @@
     <string name="enrolment_id">Enrolment ID</string>
     <string name="cvd_risk">CVD Risk</string>
     <string name="high_risk">High Risk</string>
+    <string name="comorbidities">Comorbidities</string>
+    <string name="lifestyle_assessment">Lifestyle Assessment</string>
+    <string name="tobacoo_question_child_one">Quantity of tobacco products being taken</string>
+    <string name="tobacoo_question_child_one_smoke">Please enter the date stopped</string>
+    <string name="tobacoo_question_comment">Comments on Tobacco Usage</string>
+    <string name="alcohol_question_comment">Comments on Alcohol Usage</string>
+    <string name="drinks_per_week">Drinks per week</string>
+    <string name="comments_diet_nutrition">Comments on diet and nutrition</string>
+    <string name="write_comments">Write Comments</string>
+    <string name="subjective_validation">Please answer the question</string>
+    <string name="validation_message_lifestyle">Please answer all the questions</string>
+    <string name="please_specify_the_complication">Please specify the complication</string>
+    <string name="complications">Complications</string>
 </resources>

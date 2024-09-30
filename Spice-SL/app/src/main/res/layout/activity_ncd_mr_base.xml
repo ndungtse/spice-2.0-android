@@ -50,6 +50,7 @@
                     android:layout_width="@dimen/_0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/_8sdp"
+                    android:layout_marginHorizontal="@dimen/_32sdp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/medicalDiagnosisContainer" />
@@ -59,7 +60,8 @@
                     android:layout_width="@dimen/_0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/_8sdp"
-                    android:visibility="gone"
+                    android:visibility="visible"
+                    android:layout_marginHorizontal="@dimen/_32sdp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/comorbiditiesContainer" />
@@ -69,7 +71,8 @@
                     android:layout_width="@dimen/_0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/_8sdp"
-                    android:visibility="gone"
+                    android:visibility="visible"
+                    android:layout_marginHorizontal="@dimen/_32sdp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/complicationsContainer" />
@@ -79,7 +82,8 @@
                     android:layout_width="@dimen/_0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/_8sdp"
-                    android:visibility="gone"
+                    android:visibility="visible"
+                    android:layout_marginHorizontal="@dimen/_32sdp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"

@@ -1,21 +1,15 @@
 package com.medtroniclabs.spice.model
 
-import com.medtroniclabs.spice.db.entity.ComorbidityEntity
-import com.medtroniclabs.spice.db.entity.ComplaintsEntity
-import com.medtroniclabs.spice.db.entity.ComplicationsEntity
-import com.medtroniclabs.spice.db.entity.CurrentMedicationEntity
 import com.medtroniclabs.spice.db.entity.LifestyleEntity
-import com.medtroniclabs.spice.db.entity.PhysicalExaminationEntity
-import com.medtroniclabs.spice.db.entity.TreatmentPlanEntity
-import com.medtroniclabs.spice.db.entity.TreatmentPlanFrequencyEntity
+import com.medtroniclabs.spice.db.entity.NCDMedicalReviewMetaEntity
 
 data class NcdMRStaticDataModel(
-    val comorbidity: List<ComorbidityEntity>,
-    val complications: List<ComplicationsEntity>,
+    val comorbidity: List<NCDMedicalReviewMetaEntity>,
+    val complications: List<NCDMedicalReviewMetaEntity>,
     val lifestyle: List<LifestyleEntity>,
-    val complaints: List<ComplaintsEntity>,
-    val physicalExamination: List<PhysicalExaminationEntity>,
-    val currentMedication: List<CurrentMedicationEntity>,
-    val frequencies: List<TreatmentPlanFrequencyEntity>,
-    val frequencyTypes: List<TreatmentPlanEntity>
+    val complaints: List<NCDMedicalReviewMetaEntity>,
+    val physicalExamination: List<NCDMedicalReviewMetaEntity>,
+    val currentMedication: List<NCDMedicalReviewMetaEntity>,
+    val frequencies: List<NCDMedicalReviewMetaEntity>,
+    val frequencyTypes: List<NCDMedicalReviewMetaEntity>
 )
