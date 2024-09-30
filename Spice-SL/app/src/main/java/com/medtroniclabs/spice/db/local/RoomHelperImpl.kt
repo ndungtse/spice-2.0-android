@@ -866,7 +866,7 @@ class RoomHelperImpl @Inject constructor(
     override fun getScreenedPatientCount(
         startDate: Long,
         endDate: Long,
-        userId: Long
+        userId: String
     ): LiveData<Long> {
         return screeningDAO.getScreenedPatientCount(startDate, endDate, userId)
     }
@@ -874,7 +874,7 @@ class RoomHelperImpl @Inject constructor(
     override fun getScreenedPatientReferredCount(
         startDate: Long,
         endDate: Long,
-        userId: Long,
+        userId: String,
         isReferred: Boolean
     ): LiveData<Long> {
         return screeningDAO.getScreenedPatientReferredCount(startDate, endDate,userId, isReferred)

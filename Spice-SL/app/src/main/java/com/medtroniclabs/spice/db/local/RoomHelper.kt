@@ -320,11 +320,11 @@ interface RoomHelper {
     fun getSites(): LiveData<List<HealthFacilityEntity>>
     suspend fun savePatientScreeningInformation(screeningEntity: ScreeningEntity) : ScreeningEntity
 
-    fun getScreenedPatientCount(startDate: Long, endDate: Long, userId: Long): LiveData<Long>
+    fun getScreenedPatientCount(startDate: Long, endDate: Long, userId: String): LiveData<Long>
     fun getScreenedPatientReferredCount(
         startDate: Long,
         endDate: Long,
-        userId: Long,
+        userId: String,
         isReferred: Boolean
     ): LiveData<Long>
 

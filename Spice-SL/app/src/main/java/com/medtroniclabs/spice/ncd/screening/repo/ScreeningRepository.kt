@@ -31,10 +31,10 @@ class ScreeningRepository @Inject constructor(
     suspend fun savePatientScreeningInformation(screeningEntity: ScreeningEntity) =
         roomHelper.savePatientScreeningInformation(screeningEntity)
 
-    fun getScreenedPatientCount(startDate: Long, endDate: Long, userId: Long) =
+    fun getScreenedPatientCount(startDate: Long, endDate: Long, userId: String) =
         roomHelper.getScreenedPatientCount(startDate, endDate, userId)
 
-    fun getScreenedPatientReferredCount(startDate: Long, endDate: Long, userId: Long, isReferred: Boolean) =
+    fun getScreenedPatientReferredCount(startDate: Long, endDate: Long, userId: String, isReferred: Boolean) =
         roomHelper.getScreenedPatientReferredCount(startDate, endDate, userId,isReferred)
 
     suspend fun getAllScreeningRecords(uploadStatus: Boolean): List<ScreeningEntity>? =

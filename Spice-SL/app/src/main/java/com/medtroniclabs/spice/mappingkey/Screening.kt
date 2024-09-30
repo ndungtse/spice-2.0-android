@@ -166,6 +166,10 @@ object Screening {
     const val otherType = "otherType"
     const val siteId = "siteId"
     const val userSiteId = "userSiteId"
+    const val pregnancyAnc = "pregnancyAnc"
+    const val lastMenstrualPeriodDate = "lastMenstrualPeriodDate"
+    const val GestationalPeriod = "gestationalPeriod"
+    const val isPregnant = "isPregnant"
     fun getEmptyBPReading(size: Int): ArrayList<BPModel> {
         val list = ArrayList<BPModel>()
         for (i in 1..size) {

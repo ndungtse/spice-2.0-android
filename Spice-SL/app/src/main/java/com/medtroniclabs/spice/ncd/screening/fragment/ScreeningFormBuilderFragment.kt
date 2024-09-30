@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.fragment.app.activityViewModels
 import com.google.gson.Gson
@@ -22,6 +23,7 @@ import com.medtroniclabs.spice.common.CommonUtils.calculateSuicidalIdeation
 import com.medtroniclabs.spice.common.CommonUtils.checkAssessmentCondition
 import com.medtroniclabs.spice.common.CommonUtils.getMeasurementTypeValues
 import com.medtroniclabs.spice.common.DateUtils
+import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.SecuredPreference.getUnitMeasurementType
 import com.medtroniclabs.spice.common.SpiceLocationManager
@@ -121,12 +123,55 @@ class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener, View.OnC
                     Screening.DateOfBirth, Screening.BloodGlucoseID,Screening.diabetes -> {
                         showBGCardOrNot(map)
                     }
+                    DefinedParams.Gender -> {
+                        showHidePregnancyCard(map)
+                    }
+                    Screening.lastMenstrualPeriodDate ->{
+                        getGestationalPeriod(map,id)
+                    }
 
                 }
             }
 
         viewModel.getFormData(MenuConstants.SCREENING.lowercase())
         bpViewModel.getRiskEntityList()
+    }
+
+    private fun getGestationalPeriod(resultHashMap: HashMap<String, Any>, id: String) {
+        if (!resultHashMap.containsKey(id)) {
+            return
+        }
+        val gesDate = resultHashMap[id] as? String ?: return
+
+        formGenerator.getViewByTag(Screening.GestationalPeriod)?.let { view ->
+            try {
+                val lastMenstrualDate = DateUtils.getLastMenstrualDate(gesDate)
+                val gestationWeek =
+                    lastMenstrualDate.let { DateUtils.calculateGestationalAge(it).first.toInt() }
+                val totalWeeks = gestationWeek.coerceAtMost(Screening.PregnancyANCMaxValue)
+                if (view is TextView) {
+                    view.text = when {
+                        totalWeeks > 1 -> "$totalWeeks ${getString(R.string.weeks)}"
+                        else -> "$totalWeeks ${getString(R.string.week)}"
+                    }
+                    resultHashMap[Screening.GestationalPeriod] = totalWeeks
+                }
+
+            } catch (e: Exception) {
+                if (view is TextView) {
+                    view.text = getString(R.string.hyphen_symbol)
+                }
+                e.printStackTrace()
+            }
+        }
+    }
+    private fun showHidePregnancyCard(resultHashMap: HashMap<String, Any>) {
+        val gender = resultHashMap[DefinedParams.Gender]
+        if (gender != null && gender is String && gender.equals(Screening.Female, true)) {
+            formGenerator.showHideCardFamily(true, Screening.pregnancyAnc)
+        } else {
+            formGenerator.showHideCardFamily(false, Screening.pregnancyAnc)
+        }
     }
 
     private var screeningJSON: List<FormLayout>? = null
@@ -261,6 +306,7 @@ class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener, View.OnC
                 viewModel.setRbsBloodGlucose(rbs)
             }
         }
+        getPregnancySymptomCount(resultMap)
         calculateSuicidalIdeation(map)
         calculateCAGEAIDSCore(map, serverData)
         calculateFurtherAssessment(map, getMeasurementTypeValues(map))

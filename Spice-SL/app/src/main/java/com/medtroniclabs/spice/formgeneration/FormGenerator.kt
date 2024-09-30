@@ -1038,9 +1038,10 @@ class FormGenerator(
     private var singleSelectionCallback: ((selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit)? =
         { selectedId, elementID, serverViewModel, name ->
             saveSelectedOptionValue(elementID, selectedId, serverViewModel, name)
-            if (selectedId == female) {
+            if ((selectedId as? String).equals(female, true)) {
                 listener.onAgeCheckForPregnancy()
             }
+            callback?.invoke(resultHashMap,elementID.first)
             listener.onUpdateInstruction(elementID.first, selectedId)
         }
 
@@ -1417,6 +1418,7 @@ class FormGenerator(
                             outputFormat = DATE_FORMAT_yyyyMMddHHmmssZZZZZ
                         )
                     }
+                    callback?.invoke(resultHashMap,id)
                 }
             }
 
@@ -1427,7 +1429,8 @@ class FormGenerator(
             getFamilyView(family)?.addView(binding.root) ?: kotlin.run {
                 parentLayout.addView(binding.root)
             }
-
+            setViewVisibility(visibility, binding.root)
+            setViewEnableDisable(isEnabled, binding.root)
         }
     }
 

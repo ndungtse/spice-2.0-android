@@ -17,6 +17,7 @@ import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.appextensions.triggerOneTimeWorker
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.CommonUtils.getGlucoseUnit
+import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.common.StringConverter.getPHQ4ReadableName
@@ -176,8 +177,64 @@ class ScreeningSummaryFragment : BaseFragment(), View.OnClickListener {
         showFurtherAssessment(map)
         showMentalHealthRelatedMetrics(map)
         showCVDRiskValue(map)
+        showPregnancyOrNot(serverData, map)
     }
 
+    private fun showPregnancyOrNot(serverData: List<FormLayout>, map: Map<String, Any>) {
+        FormResultComposer.findGroupIdForNCD(serverData, Screening.isPregnant)?.let {
+            if (map[it] is Map<*, *>) {
+                val subMap = map[it] as? Map<*, *>
+                subMap?.let {
+                    if (subMap.containsKey(Screening.isPregnant)) {
+                        val isPregnant = subMap[Screening.isPregnant] as Boolean
+                        showBindingValue(
+                            getString(R.string.pregnancy_status),
+                            getValueOfType(isPregnant)
+                        )
+                        if (isPregnant) {
+                            showLastMensturalDate(map)
+                            showGestationalAge(map)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun showLastMensturalDate(map: Map<String, Any>) {
+        (map[Screening.pregnancyAnc] as? Map<*, *>)?.let { pregnancyAnc ->
+            if (pregnancyAnc.containsKey(Screening.lastMenstrualPeriodDate)) {
+                val lmb = (pregnancyAnc[Screening.lastMenstrualPeriodDate] as? String)
+                    ?.takeIf { it.isNotBlank() }
+                    ?.let { date ->
+                        DateUtils.convertDateFormat(
+                            date, DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ, DateUtils.DATE_ddMMyyyy
+                        )
+                    } ?: getString(R.string.hyphen_symbol)
+                showBindingValue(getString(R.string.last_menstrual_period), lmb)
+            }
+        }
+    }
+
+    private fun showGestationalAge(map: Map<String, Any>) {
+        (map[Screening.pregnancyAnc] as? Map<*, *>)?.let { pregnancyAnc ->
+            if (pregnancyAnc.containsKey(Screening.GestationalPeriod)) {
+                val weeks = (pregnancyAnc[Screening.GestationalPeriod] as? Double)?.toInt()
+                val value = weeks?.let {
+                    if (it > 1) "$it ${getString(R.string.weeks)}" else "$it ${getString(R.string.week)}"
+                } ?: getString(R.string.hyphen_symbol)
+                showBindingValue(getString(R.string.gestational_period), value)
+            }
+        }
+    }
+
+    private fun getValueOfType(pregnant: Boolean): String {
+        return if (pregnant) {
+            getString(R.string.positive)
+        } else {
+            getString(R.string.negative)
+        }
+    }
     private fun showMentalHealthRelatedMetrics(
         map: Map<String, Any>
     ) {

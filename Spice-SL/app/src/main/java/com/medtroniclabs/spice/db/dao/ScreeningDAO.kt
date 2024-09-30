@@ -20,14 +20,14 @@ interface ScreeningDAO {
     fun getScreenedPatientCount(
         startDate: Long,
         endDate: Long,
-        userId: Long
+        userId: String
     ): LiveData<Long>
 
     @Query("SELECT count(id) FROM ScreeningEntity WHERE userId=:userId AND isReferred = :isReferred AND createdAt BETWEEN :startDate AND :endDate")
     fun getScreenedPatientReferredCount(
         startDate: Long,
         endDate: Long,
-        userId: Long,
+        userId: String,
         isReferred: Boolean
     ): LiveData<Long>
 

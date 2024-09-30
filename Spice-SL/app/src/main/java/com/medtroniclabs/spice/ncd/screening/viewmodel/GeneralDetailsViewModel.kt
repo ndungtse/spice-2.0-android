@@ -29,7 +29,7 @@ class GeneralDetailsViewModel @Inject constructor(
             screeningRepository.getScreenedPatientCount(
                 DateUtils.getStartDate(),
                 DateUtils.getEndDate(),
-                SecuredPreference.getUserId()
+                SecuredPreference.getUserFhirId()
             )
         }
     val referredPatientCount: LiveData<Long> =
@@ -37,7 +37,7 @@ class GeneralDetailsViewModel @Inject constructor(
             screeningRepository.getScreenedPatientReferredCount(
                 DateUtils.getStartDate(),
                 DateUtils.getEndDate(),
-                SecuredPreference.getUserId(), true
+                SecuredPreference.getUserFhirId(), true
             )
         }
     fun getSites(isTrigger: Boolean) {
