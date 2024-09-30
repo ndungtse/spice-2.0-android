@@ -18,6 +18,7 @@
         android:layout_marginVertical="@dimen/_8sdp"
         android:drawableEnd="@drawable/ic_spinner_arrow_down"
         android:hint="@string/please_select"
+        android:textColorHint="@color/secondary_black"
         android:padding="@dimen/_8sdp"/>
 
     <TextView

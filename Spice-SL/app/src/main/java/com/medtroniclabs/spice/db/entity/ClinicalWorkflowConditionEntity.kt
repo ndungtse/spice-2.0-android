@@ -13,5 +13,6 @@ data class ClinicalWorkflowConditionEntity(
     val clinicalWorkflowId: Long,
     val subModule: String? = null,
     val moduleType: String,
-    val category: String
+    val groupName: String? = null,
+    val category: String? = null
 )

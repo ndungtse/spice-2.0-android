@@ -18,7 +18,7 @@ import com.medtroniclabs.spice.db.entity.AssessmentEntity
 import com.medtroniclabs.spice.db.entity.CallHistory
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowConditionEntity
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowEntity
-import com.medtroniclabs.spice.db.entity.ClinicalWorkflowEntityWithSubmodule
+import com.medtroniclabs.spice.db.entity.NCDAssessmentClinicalWorkflow
 import com.medtroniclabs.spice.db.entity.ConsentEntity
 import com.medtroniclabs.spice.db.entity.ConsentForm
 import com.medtroniclabs.spice.db.entity.ChiefDomEntity
@@ -103,7 +103,7 @@ interface RoomHelper {
     suspend fun getClinicalWorkflowId(
         gender: String,
         age: Int
-    ): List<ClinicalWorkflowEntityWithSubmodule>
+    ): List<NCDAssessmentClinicalWorkflow>
 
     suspend fun getDobAndGenderById(memberId: Long): MemberDobGenderModel
     suspend fun getAllUnSyncedHouseHolds(): List<HouseHold>
@@ -358,8 +358,8 @@ interface RoomHelper {
 
     suspend fun deleteAssessmentList(isUploaded: Boolean)
 
-    suspend fun getAssessmentClinicalWorkflowId(
+    suspend fun getAssessmentClinicalWorkflow(
         gender: String,
         name: String
-    ): List<ClinicalWorkflowEntityWithSubmodule>
+    ): List<NCDAssessmentClinicalWorkflow>
 }

@@ -2,7 +2,6 @@ package com.medtroniclabs.spice.ui.assessment.fragment
 
 import android.content.res.ColorStateList
 import android.os.Bundle
-import android.text.SpannableStringBuilder
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,10 +10,8 @@ import android.widget.RadioButton
 import android.widget.RadioGroup
 import android.widget.TextView
 import androidx.appcompat.widget.AppCompatEditText
-import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
-import androidx.core.text.color
 import androidx.fragment.app.activityViewModels
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -44,7 +41,6 @@ import com.medtroniclabs.spice.formgeneration.extension.markMandatory
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.extension.textSizeSsp
 import com.medtroniclabs.spice.formgeneration.listener.FormEventListener
-import com.medtroniclabs.spice.formgeneration.model.BPModel
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.model.FormResponse
 import com.medtroniclabs.spice.formgeneration.ui.FormResultComposer
@@ -60,7 +56,6 @@ import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
 import com.medtroniclabs.spice.ui.common.GeneralInfoDialog
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 import java.lang.reflect.Type
-import kotlin.math.roundToInt
 
 class AssessmentNCDFragment : BaseFragment(), FormEventListener, View.OnClickListener {
 
@@ -183,13 +178,12 @@ class AssessmentNCDFragment : BaseFragment(), FormEventListener, View.OnClickLis
                 hideComplianceOptions()
                 viewModel.complianceMap?.clear()
             }
-            binding.symptomCard.otherComplianceReason.setText("")
+            binding.symptomCard.otherComplianceReason.setText(getString(R.string.empty))
             binding.symptomCard.otherComplianceReason.gone()
         }
         viewModel.medicationChildComplianceResponse.observe(viewLifecycleOwner) { list ->
             loadData(list)
         }
-
         viewModel.selectedSymptoms.observe(viewLifecycleOwner) { selectedSymptoms ->
             loadSymptomsData(selectedSymptoms)
         }
@@ -256,12 +250,15 @@ class AssessmentNCDFragment : BaseFragment(), FormEventListener, View.OnClickLis
     }
 
     private fun parseDiagnosisData(data: PatientListRespModel?) {
-        data?.isPhq9.let { formGenerator.showMHView(it ?: false, AssessmentDefinedParams.PHQ9) }
-        data?.isGad7.let { formGenerator.showMHView(it ?: false, AssessmentDefinedParams.GAD7) }
-        formGenerator.showMHView(
-            !(data?.isGad7?: false) && !(data?.isPhq9 ?: false),
-            Screening.PHQ4
-        )
+        data?.mentalHealthLevels?.let { types ->
+            val (showMH, hideMH) = listOf(
+                Screening.PHQ4,
+                AssessmentDefinedParams.PHQ9,
+                AssessmentDefinedParams.GAD7
+            ).partition { it in types }
+            formGenerator.showMHView(true, showMH)
+            formGenerator.showMHView(false, hideMH)
+        }
     }
 
     private fun showPatientInfoCard(screeningDetailsModel: PatientListRespModel?) {
@@ -334,7 +331,7 @@ class AssessmentNCDFragment : BaseFragment(), FormEventListener, View.OnClickLis
             }
         }
         screeningDetailsModel?.weight?.let { weight ->
-            screeningDetailsModel?.height?.let { height ->
+            screeningDetailsModel.height?.let { height ->
                 viewModel.bioMetric?.apply {
                     this[Screening.Weight] = weight.toString()
                     this[Screening.BMI] = CommonUtils.getBMIForNcd(
@@ -348,7 +345,7 @@ class AssessmentNCDFragment : BaseFragment(), FormEventListener, View.OnClickLis
     }
 
     private fun autoPopulatePregnancyAnc(screeningDetailsModel: PatientListRespModel) {
-        screeningDetailsModel?.let { details ->
+        screeningDetailsModel.let { details ->
             details.isPregnant?.let { isPregnantOrNot ->
                 formGenerator.getViewByTag(AssessmentDefinedParams.PregnancyStatus)?.let { view ->
                     if (view is TextView) {
@@ -367,9 +364,10 @@ class AssessmentNCDFragment : BaseFragment(), FormEventListener, View.OnClickLis
 
     private fun calculateGestationalPeriod(mensrualDate: String) {
         formGenerator.getViewByTag(AssessmentDefinedParams.GestationalPeriod)?.let { view ->
-            val lastMenstrualDate = mensrualDate?.let { DateUtils.getLastMenstrualDate(it) }
-            val gestationWeek = lastMenstrualDate?.let { DateUtils.calculateGestationalAge(it).first.toInt() }
-            gestationWeek?.let { weeks ->
+            val lastMenstrualDate = mensrualDate.let { DateUtils.getLastMenstrualDate(it) }
+            val gestationWeek =
+                lastMenstrualDate.let { DateUtils.calculateGestationalAge(it).first.toInt() }
+            gestationWeek.let { weeks ->
                 val totalWeeks = if (weeks < AssessmentDefinedParams.PregnancyANCMaxValue) {
                     weeks
                 } else {
@@ -377,10 +375,6 @@ class AssessmentNCDFragment : BaseFragment(), FormEventListener, View.OnClickLis
                 }
                 if (view is TextView) {
                     view.text = getString(R.string.gestational_weeks, totalWeeks)
-                }
-            } ?: kotlin.run {
-                if (view is TextView) {
-                    view.text = getString(R.string.hyphen_symbol)
                 }
             }
         }
@@ -400,15 +394,15 @@ class AssessmentNCDFragment : BaseFragment(), FormEventListener, View.OnClickLis
 
     private fun loadSymptomsData(selectedSymptoms: List<SymptomModel>?) {
         if (selectedSymptoms.isNullOrEmpty()) {
-            binding.symptomCard.symptomsSpinner.etUserInput.text = ""
+            binding.symptomCard.symptomsSpinner.etUserInput.text = getString(R.string.empty)
             binding.symptomCard.otherHypertensionSymptom.llRoot.gone()
-            binding.symptomCard.otherHypertensionSymptom.etUserInput.setText("")
+            binding.symptomCard.otherHypertensionSymptom.etUserInput.text?.clear()
             binding.symptomCard.otherDiabetesSymptom.llRoot.gone()
-            binding.symptomCard.otherDiabetesSymptom.etUserInput.setText("")
+            binding.symptomCard.otherDiabetesSymptom.etUserInput.text?.clear()
             binding.symptomCard.newWorseningHypertensionSymptom.llRoot.gone()
-            binding.symptomCard.newWorseningHypertensionSymptom.etUserInput.setText("")
+            binding.symptomCard.newWorseningHypertensionSymptom.etUserInput.text?.clear()
             binding.symptomCard.newWorseningDiabetesSymptom.llRoot.gone()
-            binding.symptomCard.newWorseningDiabetesSymptom.etUserInput.setText("")
+            binding.symptomCard.newWorseningDiabetesSymptom.etUserInput.text?.clear()
         } else
             binding.symptomCard.symptomsSpinner.etUserInput.text =
                 getSelectedSymptomsText(selectedSymptoms)
@@ -418,7 +412,12 @@ class AssessmentNCDFragment : BaseFragment(), FormEventListener, View.OnClickLis
         val otherSelected =
             selectedSymptoms.filter { it.symptom.startsWith(DefinedParams.Other, true) }
         val noSymptomsCount =
-            selectedSymptoms.filter { it.symptom.startsWith(AssessmentDefinedParams.NoSymptoms, true) }.size
+            selectedSymptoms.filter {
+                it.symptom.startsWith(
+                    AssessmentDefinedParams.NoSymptoms,
+                    true
+                )
+            }.size
         val newWorseningSymptoms =
             selectedSymptoms.filter {
                 it.symptom.startsWith(
@@ -430,7 +429,7 @@ class AssessmentNCDFragment : BaseFragment(), FormEventListener, View.OnClickLis
         if (noSymptomsCount == selectedSymptoms.size) {
             stringBuilder.append(getString(R.string.no))
         } else {
-            if (otherSelected.isNullOrEmpty()) {
+            if (otherSelected.isEmpty()) {
                 stringBuilder.append((selectedSymptoms.size - noSymptomsCount))
             } else {
                 stringBuilder.append((selectedSymptoms.size - noSymptomsCount) - otherSelected.size)
@@ -440,48 +439,68 @@ class AssessmentNCDFragment : BaseFragment(), FormEventListener, View.OnClickLis
             newWorseningSymptomsType(newWorseningSymptoms)
         } else {
             binding.symptomCard.newWorseningHypertensionSymptom.llRoot.gone()
-            binding.symptomCard.newWorseningHypertensionSymptom.etUserInput.setText("")
+            binding.symptomCard.newWorseningHypertensionSymptom.etUserInput.setText(getString(R.string.empty))
             binding.symptomCard.newWorseningDiabetesSymptom.llRoot.gone()
-            binding.symptomCard.newWorseningDiabetesSymptom.etUserInput.setText("")
+            binding.symptomCard.newWorseningDiabetesSymptom.etUserInput.setText(getString(R.string.empty))
         }
         stringBuilder.append(getString(R.string.empty_space))
 
-        if (!otherSelected.isNullOrEmpty()) {
+        if (otherSelected.isNotEmpty()) {
             stringBuilder.append(getString(R.string.other_selected))
-            if (otherSelected.any { it.type.equals(AssessmentDefinedParams.Compliance_Type_Diabetes,true) }) {
+            if (otherSelected.any {
+                    it.type.equals(
+                        AssessmentDefinedParams.Compliance_Type_Diabetes,
+                        true
+                    )
+                }) {
                 binding.symptomCard.otherDiabetesSymptom.llRoot.visible()
             } else {
                 binding.symptomCard.otherDiabetesSymptom.llRoot.gone()
-                binding.symptomCard.otherDiabetesSymptom.etUserInput.setText("")
+                binding.symptomCard.otherDiabetesSymptom.etUserInput.setText(getString(R.string.empty))
             }
-            if (otherSelected.any { it.type.equals(AssessmentDefinedParams.Compliance_Type_Hypertension,true)  }) {
+            if (otherSelected.any {
+                    it.type.equals(
+                        AssessmentDefinedParams.Compliance_Type_Hypertension,
+                        true
+                    )
+                }) {
                 binding.symptomCard.otherHypertensionSymptom.llRoot.visible()
             } else {
                 binding.symptomCard.otherHypertensionSymptom.llRoot.gone()
-                binding.symptomCard.otherHypertensionSymptom.etUserInput.setText("")
+                binding.symptomCard.otherHypertensionSymptom.etUserInput.setText(getString(R.string.empty))
             }
         } else {
             stringBuilder.append(getString(R.string.symptoms_selected))
             binding.symptomCard.otherDiabetesSymptom.llRoot.gone()
-            binding.symptomCard.otherDiabetesSymptom.etUserInput.setText("")
+            binding.symptomCard.otherDiabetesSymptom.etUserInput.setText(getString(R.string.empty))
             binding.symptomCard.otherHypertensionSymptom.llRoot.gone()
-            binding.symptomCard.otherHypertensionSymptom.etUserInput.setText("")
+            binding.symptomCard.otherHypertensionSymptom.etUserInput.setText(getString(R.string.empty))
         }
         return stringBuilder.toString()
     }
 
     private fun newWorseningSymptomsType(newWorseningSymptoms: List<SymptomModel>) {
-        if (newWorseningSymptoms.any { it.type.equals(AssessmentDefinedParams.Compliance_Type_Diabetes, true)}) {
+        if (newWorseningSymptoms.any {
+                it.type.equals(
+                    AssessmentDefinedParams.Compliance_Type_Diabetes,
+                    true
+                )
+            }) {
             binding.symptomCard.newWorseningDiabetesSymptom.llRoot.visible()
         } else {
             binding.symptomCard.newWorseningDiabetesSymptom.llRoot.gone()
-            binding.symptomCard.newWorseningDiabetesSymptom.etUserInput.setText("")
+            binding.symptomCard.newWorseningDiabetesSymptom.etUserInput.setText(getString(R.string.empty))
         }
-        if (newWorseningSymptoms.any { it.type.equals(AssessmentDefinedParams.Compliance_Type_Hypertension, true) }) {
+        if (newWorseningSymptoms.any {
+                it.type.equals(
+                    AssessmentDefinedParams.Compliance_Type_Hypertension,
+                    true
+                )
+            }) {
             binding.symptomCard.newWorseningHypertensionSymptom.llRoot.visible()
         } else {
             binding.symptomCard.newWorseningHypertensionSymptom.llRoot.gone()
-            binding.symptomCard.newWorseningHypertensionSymptom.etUserInput.setText("")
+            binding.symptomCard.newWorseningHypertensionSymptom.etUserInput.setText(getString(R.string.empty))
         }
     }
 
@@ -547,13 +566,13 @@ class AssessmentNCDFragment : BaseFragment(), FormEventListener, View.OnClickLis
                 val selectedModel = list[id]
                 if (parent == 1) {
                     showOrHideCompliances(selectedModel)
-                    binding.symptomCard.otherComplianceReason.setText("")
+                    binding.symptomCard.otherComplianceReason.setText(getString(R.string.empty))
                     binding.symptomCard.otherComplianceReason.gone()
                 } else if (parent == 2) {
                     if (selectedModel.name.startsWith(getString(R.string.other_lowercase), true)) {
                         binding.symptomCard.otherComplianceReason.visible()
                     } else {
-                        binding.symptomCard.otherComplianceReason.setText("")
+                        binding.symptomCard.otherComplianceReason.setText(getString(R.string.empty))
                         binding.symptomCard.otherComplianceReason.gone()
                     }
                 }
@@ -580,14 +599,14 @@ class AssessmentNCDFragment : BaseFragment(), FormEventListener, View.OnClickLis
     ) {
         val map: HashMap<String, Any>
         if (viewModel.complianceMap != null) {
-            map = HashMap<String, Any>()
+            map = HashMap()
             if (selectedModel.parentComplianceId == null) {
                 viewModel.complianceMap?.clear()
             } else {
                 val newList = ArrayList<HashMap<String, Any>>()
-                viewModel.complianceMap?.forEach { map ->
-                    if (map.containsKey(AssessmentDefinedParams.complianceId) && map[AssessmentDefinedParams.complianceId] == selectedModel.parentComplianceId) {
-                        newList.add(map)
+                viewModel.complianceMap?.forEach { compMap ->
+                    if (compMap.containsKey(AssessmentDefinedParams.complianceId) && map[AssessmentDefinedParams.complianceId] == selectedModel.parentComplianceId) {
+                        newList.add(compMap)
                     }
                 }
                 viewModel.complianceMap?.clear()
@@ -650,7 +669,12 @@ class AssessmentNCDFragment : BaseFragment(), FormEventListener, View.OnClickLis
 
     private fun checkComplianceHypertension(other: List<SymptomModel>): Boolean? {
         var isValid: Boolean? = null
-        if (other.any { it.type.equals(AssessmentDefinedParams.Compliance_Type_Hypertension, true) }) {
+        if (other.any {
+                it.type.equals(
+                    AssessmentDefinedParams.Compliance_Type_Hypertension,
+                    true
+                )
+            }) {
             hideErrorMessage(binding.symptomCard.symptomsSpinner.tvErrorMessage)
             val otherHyperTensionText =
                 binding.symptomCard.otherHypertensionSymptom.etUserInput.text
@@ -662,7 +686,10 @@ class AssessmentNCDFragment : BaseFragment(), FormEventListener, View.OnClickLis
                 )
             } else {
                 val filteredOther = other.first { symptomOther ->
-                    symptomOther.type.equals(AssessmentDefinedParams.Compliance_Type_Hypertension, true)
+                    symptomOther.type.equals(
+                        AssessmentDefinedParams.Compliance_Type_Hypertension,
+                        true
+                    )
                 }
                 filteredOther.otherSymptom = otherHyperTensionText.toString()
                 hideErrorMessage(binding.symptomCard.otherHypertensionSymptom.tvErrorMessage)
@@ -675,7 +702,12 @@ class AssessmentNCDFragment : BaseFragment(), FormEventListener, View.OnClickLis
 
     private fun checkNewWorseningDiabetes(newWorsening: List<SymptomModel>): Boolean? {
         var isValid: Boolean? = null
-        if (newWorsening.any { it.type.equals(AssessmentDefinedParams.Compliance_Type_Diabetes, true) }) {
+        if (newWorsening.any {
+                it.type.equals(
+                    AssessmentDefinedParams.Compliance_Type_Diabetes,
+                    true
+                )
+            }) {
             hideErrorMessage(binding.symptomCard.symptomsSpinner.tvErrorMessage)
             val newWorseningDiabetesText =
                 binding.symptomCard.newWorseningDiabetesSymptom.etUserInput.text
@@ -687,7 +719,10 @@ class AssessmentNCDFragment : BaseFragment(), FormEventListener, View.OnClickLis
                 )
             } else {
                 val filteredNewWorsening = newWorsening.first { symptomNewWorsening ->
-                    symptomNewWorsening.type.equals(AssessmentDefinedParams.Compliance_Type_Diabetes, true)
+                    symptomNewWorsening.type.equals(
+                        AssessmentDefinedParams.Compliance_Type_Diabetes,
+                        true
+                    )
                 }
                 filteredNewWorsening.otherSymptom = newWorseningDiabetesText.toString()
                 hideErrorMessage(binding.symptomCard.newWorseningDiabetesSymptom.tvErrorMessage)
@@ -768,7 +803,12 @@ class AssessmentNCDFragment : BaseFragment(), FormEventListener, View.OnClickLis
 
     private fun checkNewWorseningHypertension(newWorsening: List<SymptomModel>): Boolean? {
         var isValid: Boolean? = null
-        if (newWorsening.any { it.type.equals(AssessmentDefinedParams.Compliance_Type_Hypertension, true) }) {
+        if (newWorsening.any {
+                it.type.equals(
+                    AssessmentDefinedParams.Compliance_Type_Hypertension,
+                    true
+                )
+            }) {
             hideErrorMessage(binding.symptomCard.symptomsSpinner.tvErrorMessage)
             val newWorseningHyperTensionText =
                 binding.symptomCard.newWorseningHypertensionSymptom.etUserInput.text
@@ -780,7 +820,10 @@ class AssessmentNCDFragment : BaseFragment(), FormEventListener, View.OnClickLis
                 )
             } else {
                 val filteredNewWorsening = newWorsening.first { symptomNewWorsening ->
-                    symptomNewWorsening.type.equals(AssessmentDefinedParams.Compliance_Type_Hypertension, true)
+                    symptomNewWorsening.type.equals(
+                        AssessmentDefinedParams.Compliance_Type_Hypertension,
+                        true
+                    )
                 }
                 filteredNewWorsening.otherSymptom = newWorseningHyperTensionText.toString()
                 hideErrorMessage(binding.symptomCard.newWorseningHypertensionSymptom.tvErrorMessage)
@@ -838,12 +881,12 @@ class AssessmentNCDFragment : BaseFragment(), FormEventListener, View.OnClickLis
         unitGenericType: String
     ) {
         viewModel.bioDataMap?.let { bioData ->
-            if(bioData.isNotEmpty()){
+            if (bioData.isNotEmpty()) {
                 resultHashMap[DefinedParams.BioData] = bioData
             }
         }
         viewModel.bioMetric?.let { bioMetric ->
-            if(bioMetric.isNotEmpty()) {
+            if (bioMetric.isNotEmpty()) {
                 resultHashMap[Screening.BioMetrics] = bioMetric
             }
         }
@@ -912,7 +955,8 @@ class AssessmentNCDFragment : BaseFragment(), FormEventListener, View.OnClickLis
             }
         }
         map[AssessmentDefinedParams.assessmentType] = DefinedParams.Assessment
-        map[AssessmentDefinedParams.assessmentProcessType] = AssessmentDefinedParams.africa_uppercase
+        map[AssessmentDefinedParams.assessmentProcessType] =
+            AssessmentDefinedParams.africa_uppercase
         map[AssessmentDefinedParams.assessmentTakenOn] = DateUtils.getTodayDateDDMMYYYY()
         map[AssessmentDefinedParams.assessmentOrganizationId] =
             SecuredPreference.getOrganizationFhirId()
@@ -960,7 +1004,8 @@ class AssessmentNCDFragment : BaseFragment(), FormEventListener, View.OnClickLis
             val organizationId = hashMapOf<String, Any>(
                 AssessmentDefinedParams.organizationId to SecuredPreference.getOrganizationFhirId(),
                 AssessmentDefinedParams.userId to SecuredPreference.getUserFhirId(),
-                AssessmentDefinedParams.modifiedDate to System.currentTimeMillis().convertToUtcDateTime(),
+                AssessmentDefinedParams.modifiedDate to System.currentTimeMillis()
+                    .convertToUtcDateTime(),
                 AssessmentDefinedParams.spiceUserId to SecuredPreference.getUserId()
             )
             val provenance = hashMapOf<String, Any>(
@@ -982,7 +1027,8 @@ class AssessmentNCDFragment : BaseFragment(), FormEventListener, View.OnClickLis
                 }
             }
             if (result?.second?.containsKey(AssessmentDefinedParams.PHQ9.lowercase()) == true) {
-                val phq9 = result?.second?.get(AssessmentDefinedParams.PHQ9.lowercase()) as HashMap<String, Any>
+                val phq9 =
+                    result?.second?.get(AssessmentDefinedParams.PHQ9.lowercase()) as HashMap<String, Any>
                 if (phq9.isEmpty()) {
                     result?.second?.apply {
                         remove(AssessmentDefinedParams.PHQ9.lowercase())
@@ -996,7 +1042,8 @@ class AssessmentNCDFragment : BaseFragment(), FormEventListener, View.OnClickLis
                     phq9[Screening.PHQ4_Risk_Level] = riskLevel
                     phq9.remove(AssessmentDefinedParams.PHQ9_Risk_Level)
 
-                    val mentalHealth = phq9[AssessmentDefinedParams.PHQ9_Mental_Health] as ArrayList<*>
+                    val mentalHealth =
+                        phq9[AssessmentDefinedParams.PHQ9_Mental_Health] as ArrayList<*>
                     phq9[Screening.PHQ4_Mental_Health] = mentalHealth
                     phq9.remove(AssessmentDefinedParams.PHQ9_Mental_Health)
                 }
@@ -1010,7 +1057,8 @@ class AssessmentNCDFragment : BaseFragment(), FormEventListener, View.OnClickLis
                 }
             }
             if (result?.second?.containsKey(AssessmentDefinedParams.GAD7.lowercase()) == true) {
-                val gad7 = result?.second?.get(AssessmentDefinedParams.GAD7.lowercase()) as HashMap<String, Any>
+                val gad7 =
+                    result?.second?.get(AssessmentDefinedParams.GAD7.lowercase()) as HashMap<String, Any>
                 if (gad7.isEmpty()) {
                     result?.second?.apply {
                         remove(AssessmentDefinedParams.GAD7.lowercase())
@@ -1024,7 +1072,8 @@ class AssessmentNCDFragment : BaseFragment(), FormEventListener, View.OnClickLis
                     gad7[Screening.PHQ4_Risk_Level] = riskLevel
                     gad7.remove(AssessmentDefinedParams.GAD7_Risk_Level)
 
-                    val mentalHealth = gad7[AssessmentDefinedParams.GAD7_Mental_Health] as ArrayList<*>
+                    val mentalHealth =
+                        gad7[AssessmentDefinedParams.GAD7_Mental_Health] as ArrayList<*>
                     gad7[Screening.PHQ4_Mental_Health] = mentalHealth
                     gad7.remove(AssessmentDefinedParams.GAD7_Mental_Health)
                 }
@@ -1037,10 +1086,8 @@ class AssessmentNCDFragment : BaseFragment(), FormEventListener, View.OnClickLis
                 remove(Screening.referredReasons)
             }
             result = Pair(StringConverter.convertGivenMapToString(result.second), result.second)
-            if (result != null) {
-                result.first?.let {
-                    viewModel.saveAssessmentInformation(it)
-                }
+            result.first?.let {
+                viewModel.saveAssessmentInformation(it)
             }
         } catch (_: Exception) {
             //Exception - Catch block
@@ -1103,7 +1150,7 @@ class AssessmentNCDFragment : BaseFragment(), FormEventListener, View.OnClickLis
         if (localDataCache is String) {
             when (localDataCache) {
                 Screening.PHQ4, AssessmentDefinedParams.PHQ9, AssessmentDefinedParams.GAD7 -> {
-                    viewModel.fetchMentalHealthQuestions(id, localDataCache)
+                    viewModel.fetchMentalHealthQuestions(localDataCache)
                 }
 
                 AssessmentDefinedParams.Fetch_MH_Questions -> {

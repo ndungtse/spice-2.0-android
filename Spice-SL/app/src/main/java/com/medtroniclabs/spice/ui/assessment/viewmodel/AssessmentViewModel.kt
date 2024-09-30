@@ -19,17 +19,14 @@ import com.medtroniclabs.spice.data.model.SymptomModel
 import com.medtroniclabs.spice.db.entity.AssessmentEntity
 import com.medtroniclabs.spice.db.entity.MedicalComplianceEntity
 import com.medtroniclabs.spice.db.entity.MemberClinicalEntity
-import com.medtroniclabs.spice.db.entity.MentalHealthEntity
 import com.medtroniclabs.spice.db.entity.PregnancyDetail
 import com.medtroniclabs.spice.db.entity.RiskClassificationModel
-import com.medtroniclabs.spice.db.entity.RiskFactorEntity
 import com.medtroniclabs.spice.db.entity.SignsAndSymptomsEntity
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.model.FormResponse
 import com.medtroniclabs.spice.mappingkey.Screening
 import com.medtroniclabs.spice.model.assessment.AssessmentMemberDetails
-import com.medtroniclabs.spice.ncd.screening.repo.ScreeningRepository
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.repo.AssessmentRepository
@@ -660,20 +657,18 @@ class AssessmentViewModel @Inject constructor(
         return rbsBloodGlucose ?: 0.0
     }
 
-    fun fetchMentalHealthQuestions(id: String, type: String) {
+    fun fetchMentalHealthQuestions(type: String) {
         viewModelScope.launch(dispatcherIO) {
             var mhResponse = mentalHealthQuestions.value?.data
             mentalHealthQuestions.postLoading()
             try {
-                val phq4Questions =
-                    assessmentRepository.getMentalQuestion(type = Screening.PHQ4)
+                val phq4Questions = assessmentRepository.getMentalQuestion(type = Screening.PHQ4)
                 val phq9Questions =
                     assessmentRepository.getMentalQuestion(type = AssessmentDefinedParams.PHQ9)
                 val gad7Questions =
                     assessmentRepository.getMentalQuestion(type = AssessmentDefinedParams.GAD7)
                 if (mhResponse == null)
                     mhResponse = HashMap()
-
                 mhResponse[Screening.PHQ4] =
                     LocalSpinnerResponse(
                         tag = Screening.PHQ4_Mental_Health,

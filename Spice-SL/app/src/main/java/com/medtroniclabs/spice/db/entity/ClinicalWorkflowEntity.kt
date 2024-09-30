@@ -14,12 +14,12 @@ data class ClinicalWorkflowEntity(
     val displayOrder:Int? = null,
 )
 
-data class ClinicalWorkflowEntityWithSubmodule(
+data class NCDAssessmentClinicalWorkflow(
     val id: Long,
     val name: String,
-    val moduleType: String?=null,
     val workflowName: String,
-    val countryId: Long,
-    val displayOrder:Int? = null,
-    val subModule: String? = null
+    val category: String? = null,
+    val groupName: String? = null,
+    val subModule: String? = null,
+    val displayOrder: Int? = null
 )

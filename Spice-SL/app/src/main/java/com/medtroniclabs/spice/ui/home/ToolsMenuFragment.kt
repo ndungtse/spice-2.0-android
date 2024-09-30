@@ -60,7 +60,7 @@ class ToolsMenuFragment : BaseFragment(), MenuSelectionListener {
             val result = bundle.getString(WorkFlowName)
             startAssessmentActivity(MenuConstants.RMNCH_MENU_ID, result)
         }
-        viewModel.getMenuForClinicalWorkflows()
+        viewModel.getMenuForClinicalWorkflows(requireArguments().getString(DefinedParams.Gender))
         attachObservers()
     }
 

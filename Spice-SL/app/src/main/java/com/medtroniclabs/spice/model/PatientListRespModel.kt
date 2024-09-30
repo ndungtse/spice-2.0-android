@@ -52,6 +52,7 @@ data class PatientListRespModel(
     val identityType: String? = null,
     val isPhq9: Boolean? = false,
     val isGad7: Boolean? = false,
+    val mentalHealthLevels: List<String>? = listOf("PHQ4","GAD7","PHQ9"),
     val dateOfBirth: String? = null
 )
 

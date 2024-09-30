@@ -300,7 +300,7 @@ class FormGenerator(
             }
             binding.tvTitle.text = updateTitle(title, translate, titleCulture, unitMeasurement)
 
-            if (serverViewModel.id.contains(phoneNumber) || serverViewModel.id.contains(
+            if (serverViewModel.id.contains(Screening.phoneNumber) || serverViewModel.id.contains(phoneNumber) || serverViewModel.id.contains(
                     headPhoneNumber
                 )
             ) {
@@ -2298,7 +2298,7 @@ class FormGenerator(
                 ) {
                     isValid = false
                     requestFocusView(data)
-                } else if ((id == headPhoneNumber || id == phoneNumber) && isMandatory && resultHashMap.containsKey(
+                } else if ((id == Screening.phoneNumber || id == headPhoneNumber || id == phoneNumber) && isMandatory && resultHashMap.containsKey(
                         id
                     )
                 ) {
@@ -2318,7 +2318,7 @@ class FormGenerator(
                                 )
                             )
                         } else if (!phoneNumberConatinMaxLength(
-                                maxLength,
+                                contentLength ?: maxLength,
                                 it
                             )
                         ) {
@@ -3241,25 +3241,27 @@ class FormGenerator(
         }
     }
 
-    fun showMHView(showView: Boolean, type: String) {
+    fun showMHView(showView: Boolean, types: List<String>) {
+        types.forEach { type ->
+            val mhType = when (type) {
+                AssessmentDefinedParams.PHQ9 -> Pair(
+                    AssessmentDefinedParams.PHQ9.lowercase(),
+                    AssessmentDefinedParams.PHQ9_Mental_Health
+                )
 
-        val mhType = when (type) {
-            AssessmentDefinedParams.PHQ9 -> Pair(
-                AssessmentDefinedParams.PHQ9.lowercase(), AssessmentDefinedParams.PHQ9_Mental_Health
-            )
+                AssessmentDefinedParams.GAD7 -> Pair(
+                    AssessmentDefinedParams.GAD7.lowercase(),
+                    AssessmentDefinedParams.GAD7_Mental_Health
+                )
 
-            AssessmentDefinedParams.GAD7 -> Pair(
-                AssessmentDefinedParams.GAD7.lowercase(), AssessmentDefinedParams.GAD7_Mental_Health
-            )
-
-            else -> Pair(Screening.PHQ4.lowercase(), Screening.PHQ4_Mental_Health)
-        }
-
-        getViewByTag(mhType.first + rootSuffix)?.let {
-            if (showView) {
-                it.visible()
+                else -> Pair(Screening.PHQ4.lowercase(), Screening.PHQ4_Mental_Health)
             }
-            else parentLayout.removeView(it)
+
+            getViewByTag(mhType.first + rootSuffix)?.let {
+                if (showView) {
+                    it.visible()
+                } else parentLayout.removeView(it)
+            }
         }
     }
 

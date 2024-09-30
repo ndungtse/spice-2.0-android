@@ -21,7 +21,7 @@ import com.medtroniclabs.spice.data.ModelQuestion
 import com.medtroniclabs.spice.data.UserProfile
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowConditionEntity
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowEntity
-import com.medtroniclabs.spice.db.entity.ClinicalWorkflowEntityWithSubmodule
+import com.medtroniclabs.spice.db.entity.NCDAssessmentClinicalWorkflow
 import com.medtroniclabs.spice.db.entity.ConsentEntity
 import com.medtroniclabs.spice.db.entity.ConsentForm
 import com.medtroniclabs.spice.db.entity.FormEntity
@@ -331,6 +331,7 @@ class MetaRepository @Inject constructor(
                     clinicalWorkflowId = clinicalWorkflow.id,
                     subModule = condition.subModule,
                     moduleType = condition.moduleType,
+                    groupName = condition.groupName,
                     category = condition.category
                 )
 
@@ -432,7 +433,7 @@ class MetaRepository @Inject constructor(
             val formFields: com.medtroniclabs.spice.formgeneration.model.FormResponse =
                 gson.fromJson(ass.inputForm, formFieldsType)
             val categories =
-                listOf(AssessmentDefinedParams.NCD, AssessmentDefinedParams.MaternalHealth, AssessmentDefinedParams.MentalHealth)
+                listOf(AssessmentDefinedParams.ncd, AssessmentDefinedParams.MaternalHealth, AssessmentDefinedParams.MentalHealth)
             categories.forEach { category ->
                 val cardIdList = formFields.formLayout
                     .filter {
@@ -514,7 +515,7 @@ class MetaRepository @Inject constructor(
     }
 
 
-    suspend fun getMenuForClinicalWorkflows(selectedHouseholdMemberID: Long): Resource<List<MenuEntity>> {
+    suspend fun getMenuForClinicalWorkflows(selectedHouseholdMemberID: Long, gender: String?): Resource<List<MenuEntity>> {
         return try {
             if (selectedHouseholdMemberID != -1L) {
                 val memberData = roomHelper.getDobAndGenderById(selectedHouseholdMemberID)
@@ -539,23 +540,12 @@ class MetaRepository @Inject constructor(
                     state = ResourceState.SUCCESS,
                     data = convertorClinicalWorkflowsToMenuEntity(list)
                 )
-            } else {
-                Resource(state = ResourceState.ERROR)
-            }
-        } catch (e: Exception) {
-            Resource(state = ResourceState.ERROR)
-        }
-    }
-    suspend fun getMenuClinicalWorkflows(
-        gender: String,
-        name: String
-    ): Resource<List<MenuEntity>> {
-        return try {
-            if (!CommonUtils.isSL()) {
-                val list = roomHelper.getAssessmentClinicalWorkflowId(gender, name)
+            } else if(!gender.isNullOrBlank()) {
+                val list = roomHelper.getAssessmentClinicalWorkflow(gender, DefinedParams.Assessment)
+
                 Resource(
                     state = ResourceState.SUCCESS,
-                    data = convertorAssessmentClinicalWorkflowsToMenuEntity(list)
+                    data = convertorClinicalWorkflowsToMenuEntity(list)
                 )
             } else {
                 Resource(state = ResourceState.ERROR)
@@ -565,26 +555,15 @@ class MetaRepository @Inject constructor(
         }
     }
 
-    private fun convertorAssessmentClinicalWorkflowsToMenuEntity(clinicalWorkflows: List<ClinicalWorkflowEntityWithSubmodule>): List<MenuEntity> {
-        return clinicalWorkflows.sortedBy { it.displayOrder }.map { clinicalWorkflow ->
+    private fun convertorClinicalWorkflowsToMenuEntity(clinicalWorkflows: List<NCDAssessmentClinicalWorkflow>): List<MenuEntity> {
+        val (individualWorkflows, groupWorkflows) = clinicalWorkflows.partition { it.category.isNullOrBlank() }
+        return (individualWorkflows + groupWorkflows.distinctBy { it.category }).map { workflow ->
             MenuEntity(
-                id = clinicalWorkflow.id,
-                menuId = clinicalWorkflow.name,
-                name = clinicalWorkflow.name,
-                displayOrder = clinicalWorkflow.displayOrder ?: 0,
-                subModule = clinicalWorkflow.subModule
-            )
-        }
-    }
-
-    private fun convertorClinicalWorkflowsToMenuEntity(clinicalWorkflows: List<ClinicalWorkflowEntityWithSubmodule>): List<MenuEntity> {
-        return clinicalWorkflows.sortedBy { it.displayOrder }.map { clinicalWorkflow ->
-            MenuEntity(
-                id = clinicalWorkflow.id,
-                menuId = clinicalWorkflow.workflowName,
-                name = clinicalWorkflow.name,
-                displayOrder = clinicalWorkflow.displayOrder ?: 0,
-                subModule = clinicalWorkflow.subModule
+                id = workflow.id,
+                menuId = workflow.category ?: workflow.workflowName,
+                name = workflow.groupName ?: workflow.name,
+                displayOrder = workflow.displayOrder ?: 0,
+                subModule = workflow.subModule
             )
         }
     }

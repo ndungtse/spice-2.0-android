@@ -275,7 +275,7 @@ class AssessmentActivity : BaseActivity() {
             }
 
             MenuConstants.NCD_MENU_ID -> {
-                setTitle(AssessmentDefinedParams.ncd_UpperCase)
+                setTitle(AssessmentDefinedParams.ncd.uppercase())
                 bundle.putString(Screening.type, MenuConstants.NCD_MENU_ID)
                 showLoading()
                 replaceFragmentInId<AssessmentNCDFragment>(

@@ -201,7 +201,8 @@
     <string name="first_name">First Name</string>
     <string name="last_name">Last Name</string>
     <string name="mobile_number">Mobile Number</string>
-    <string name="patients_found">%1d Patients</string>
+    <string name="patient_found">1 Patient Found</string>
+    <string name="patients_found">%1d Patients Found</string>
     <string name="zero_patients_found">%1d Patient</string>
     <string name="no_patients_found">No Patients found.</string>
     <string name="no_records_found">No Records found.</string>

@@ -33,23 +33,12 @@ class ToolsViewModel @Inject constructor(
     val resultANCFlowHashMap = HashMap<String, Any>()
     val patientVisitLiveData = MutableLiveData<Resource<PatientVisitResponse>>()
 
-    fun getMenuForClinicalWorkflows() {
+    fun getMenuForClinicalWorkflows(gender: String?) {
         viewModelScope.launch(dispatcherIO) {
             menuListLiveData.postLoading()
             menuListLiveData.postValue(
                 metaRepository.getMenuForClinicalWorkflows(
-                    selectedHouseholdMemberID
-                )
-            )
-        }
-    }
-
-    fun getMenuClinicalWorkflows(gender: String) {
-        viewModelScope.launch(dispatcherIO) {
-            menuListLiveData.postLoading()
-            menuListLiveData.postValue(
-                metaRepository.getMenuClinicalWorkflows(
-                    gender, MenuTypeEnums.assessment.name
+                    selectedHouseholdMemberID, gender
                 )
             )
         }

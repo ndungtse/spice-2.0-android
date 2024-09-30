@@ -40,7 +40,7 @@ import com.medtroniclabs.spice.db.entity.CallHistory
 import com.medtroniclabs.spice.db.entity.ChiefDomEntity
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowConditionEntity
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowEntity
-import com.medtroniclabs.spice.db.entity.ClinicalWorkflowEntityWithSubmodule
+import com.medtroniclabs.spice.db.entity.NCDAssessmentClinicalWorkflow
 import com.medtroniclabs.spice.db.entity.NCDMedicalReviewMetaEntity
 import com.medtroniclabs.spice.db.entity.ConsentEntity
 import com.medtroniclabs.spice.db.entity.ConsentForm
@@ -205,7 +205,7 @@ class RoomHelperImpl @Inject constructor(
     override suspend fun getClinicalWorkflowId(
         gender: String,
         age: Int
-    ): List<ClinicalWorkflowEntityWithSubmodule> {
+    ): List<NCDAssessmentClinicalWorkflow> {
         return metaDataDAO.getClinicalWorkflowId(gender, age, MenuTypeEnums.assessment.name)
     }
 
@@ -952,10 +952,10 @@ class RoomHelperImpl @Inject constructor(
     }
 
     override suspend fun deleteAssessmentList(isUploaded: Boolean) = assessmentDAO.deleteAssessmentList()
-    override suspend fun getAssessmentClinicalWorkflowId(
+    override suspend fun getAssessmentClinicalWorkflow(
         gender: String,
         name: String
-    ): List<ClinicalWorkflowEntityWithSubmodule> {
-        return metaDataDAO.getAssessmentClinicalWorkflowId(gender, name)
+    ): List<NCDAssessmentClinicalWorkflow> {
+        return metaDataDAO.getAssessmentClinicalWorkflow(gender, name)
     }
 }

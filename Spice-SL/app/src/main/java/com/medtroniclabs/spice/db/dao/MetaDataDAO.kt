@@ -10,7 +10,7 @@ import com.medtroniclabs.spice.data.ProgramEntity
 import com.medtroniclabs.spice.data.VillageInfo
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowConditionEntity
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowEntity
-import com.medtroniclabs.spice.db.entity.ClinicalWorkflowEntityWithSubmodule
+import com.medtroniclabs.spice.db.entity.NCDAssessmentClinicalWorkflow
 import com.medtroniclabs.spice.db.entity.ConsentEntity
 import com.medtroniclabs.spice.db.entity.ChiefDomEntity
 import com.medtroniclabs.spice.db.entity.FormEntity
@@ -114,7 +114,7 @@ interface MetaDataDAO {
         gender: String,
         age: Int,
         moduleType: String
-    ): List<ClinicalWorkflowEntityWithSubmodule>
+    ): List<NCDAssessmentClinicalWorkflow>
 
     @Query("SELECT * FROM HealthFacilityEntity Order by isDefault DESC")
     suspend fun getNearestHealthFacility(): List<HealthFacilityEntity>
@@ -215,9 +215,9 @@ interface MetaDataDAO {
         workFlow: String
     ): LiveData<String>
 
-    @Query("SELECT cwf.name, cwf.displayOrder, cwf.id,cwf.countryId,cwf.workflowName ,cwf.moduleType FROM clinicalworkflowentity as cwf WHERE id in (SELECT distinct clinicalWorkflowId FROM clinicalworkflowconditionentity WHERE gender =:gender AND moduleType =:moduleType) GROUP BY cwf.name ORDER BY displayOrder ASC")
-    suspend fun getAssessmentClinicalWorkflowId(
+    @Query("SELECT cwe.id, cwe.name, cwe.workflowName, cwce.category, cwce.groupName, cwce.subModule, cwe.displayOrder FROM ClinicalWorkflowEntity AS cwe JOIN ClinicalWorkflowConditionEntity AS cwce ON cwe.id = cwce.clinicalWorkflowId WHERE cwce.gender = :gender AND cwce.moduleType = :moduleType ORDER BY cwe.displayOrder")
+    suspend fun getAssessmentClinicalWorkflow(
         gender: String,
         moduleType: String
-    ): List<ClinicalWorkflowEntityWithSubmodule>
+    ): List<NCDAssessmentClinicalWorkflow>
 }
