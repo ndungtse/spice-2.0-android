@@ -8,21 +8,29 @@ import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.visible
-import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.data.model.ChipViewItemModel
 import com.medtroniclabs.spice.databinding.FragmentSystemicExaminationsBinding
-import com.medtroniclabs.spice.formgeneration.extension.markMandatory
+import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.MENU_ID
 import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDObstetricExaminationViewModel
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.TagListCustomView
+import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil
 
 class NCDObstetricExaminationFragment : BaseFragment() {
 
     companion object {
         const val TAG = "NCDObstetricExaminationFragment"
-        fun newInstance(): NCDObstetricExaminationFragment {
-            return NCDObstetricExaminationFragment()
+        fun newInstance(menuId: String?): NCDObstetricExaminationFragment {
+            return NCDObstetricExaminationFragment().apply {
+                arguments = Bundle().apply {
+                    putString(MENU_ID, menuId)
+                }
+            }
         }
+    }
+
+    fun getType(): String? {
+        return arguments?.getString(MENU_ID)
     }
 
     private val viewModel: NCDObstetricExaminationViewModel by activityViewModels()
@@ -39,9 +47,12 @@ class NCDObstetricExaminationFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.getChips(DefinedParams.PregnancyANC)
+        viewModel.getChips(getType())
         setObserver()
         attachObserver()
+        MotherNeonateUtil.initTextWatcherForString(binding.etPhysicalExaminationComments) {
+            viewModel.comments = it
+        }
     }
 
     private fun attachObserver() {
@@ -68,11 +79,9 @@ class NCDObstetricExaminationFragment : BaseFragment() {
         complaintList: ArrayList<ChipViewItemModel>
     ) {
         with(binding) {
-            binding.tvSystemicExaminationTitle.text = getString(R.string.physical_examinations)
-            binding.tvCommentsTitle.markMandatory()
-            binding.etPhysicalExaminationComments.gone()
+            binding.etPhysicalExaminationComments.visible()
             binding.tvCommentsTitle.gone()
-            tvSystemicExaminationTitle.text = getString(R.string.comorbidities)
+            tvSystemicExaminationTitle.text = getString(R.string.obstetric_examination)
             tagPhysicalExamination.isSingleSelection = true
             tagView =
                 TagListCustomView(
@@ -82,26 +91,9 @@ class NCDObstetricExaminationFragment : BaseFragment() {
                         viewModel.chips.clear()
                         viewModel.chips =
                             ArrayList(tagView.getSelectedTags())
-                        showNotes()
                     }
                 )
             tagView.addChipItemList(complaintList, viewModel.chips)
-        }
-    }
-
-    private fun showNotes() {
-        if (viewModel.chips.firstOrNull {
-                it.name.equals(
-                    DefinedParams.Other,
-                    ignoreCase = true
-                )
-            } != null) {
-            binding.etPhysicalExaminationComments.visible()
-            binding.tvCommentsTitle.visible()
-        } else {
-            binding.etPhysicalExaminationComments.gone()
-            binding.tvCommentsTitle.gone()
-            binding.tvErrorMessage.gone()
         }
     }
 
@@ -112,7 +104,6 @@ class NCDObstetricExaminationFragment : BaseFragment() {
 
         // If input is mandatory, additional validation is required
         if (isMandatory) {
-            binding.tvSystemicExaminationTitle.markMandatory()
             // If there are chips, we need to check further
             if (hasChips || commentsNotBlank) {
                 // If no 'Other' chip is selected, input is valid

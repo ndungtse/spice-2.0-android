@@ -213,7 +213,7 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
                 intent.putExtra(DefinedParams.ORIGIN, patientListViewModel.origin)
                 startActivity(intent)
             } else {
-                val destinationIntent = when (patientListViewModel.origin) {
+                val destinationIntent = when (patientListViewModel.origin?.lowercase()) {
                     MenuConstants.REGISTRATION.lowercase() -> RegistrationActivity::class.java
                     MenuConstants.MY_PATIENTS_MENU_ID.lowercase(), MenuConstants.ASSESSMENT.lowercase() -> AssessmentToolsActivity::class.java
                     else -> null

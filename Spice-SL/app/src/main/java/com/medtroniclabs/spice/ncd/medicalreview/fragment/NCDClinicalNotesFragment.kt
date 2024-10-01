@@ -13,7 +13,6 @@ import com.medtroniclabs.spice.formgeneration.extension.markMandatory
 import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDClinicalNotesViewModel
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil
-
 class NCDClinicalNotesFragment : BaseFragment() {
 
     private val viewModel: NCDClinicalNotesViewModel by activityViewModels()

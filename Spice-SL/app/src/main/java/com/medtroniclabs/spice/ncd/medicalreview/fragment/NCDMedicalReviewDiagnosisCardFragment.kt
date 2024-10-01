@@ -25,6 +25,7 @@ class NCDMedicalReviewDiagnosisCardFragment : BaseFragment() {
     }
 
     companion object {
+        const val TAG = "NCDMedicalReviewDiagnosisCardFragment"
         fun newInstance() =
             NCDMedicalReviewDiagnosisCardFragment()
     }

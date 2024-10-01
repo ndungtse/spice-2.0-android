@@ -99,6 +99,7 @@ class ToolsMenuFragment : BaseFragment(), MenuSelectionListener {
                                 putExtra(MENU_ID, viewModel.menuId)
                                 putExtra(DefinedParams.FhirId, getMemberReference())
                                 putExtra(DefinedParams.PatientId, getPatientReference())
+                                putExtra(DefinedParams.ORIGIN, getOrigin())
                             }
                         startActivity(intent)
                     }
@@ -171,12 +172,12 @@ class ToolsMenuFragment : BaseFragment(), MenuSelectionListener {
         startActivity(intent)
     }
 
-    private fun getPatientReference(): String {
-        return requireArguments().getString(DefinedParams.PatientId) ?: ""
+    private fun getPatientReference(): String? {
+        return requireArguments().getString(DefinedParams.PatientId)
     }
 
-    private fun getMemberReference(): String {
-        return requireArguments().getString(DefinedParams.FhirId) ?: ""
+    private fun getMemberReference(): String? {
+        return requireArguments().getString(DefinedParams.FhirId)
     }
 
     private fun getOrigin(): String {

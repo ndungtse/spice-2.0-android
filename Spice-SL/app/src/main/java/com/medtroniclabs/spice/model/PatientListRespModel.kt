@@ -44,6 +44,7 @@ data class PatientListRespModel(
     val diagnosis: List<DiseaseInfo>? = null,
     val pregnancyStatus: String? = null,
     val isRegularSmoker: Boolean? = null,
+    val initialReviewed: Boolean? = false,
     val identityValue: String? = null,
     val isConfirmDiagnosis: Boolean = false,
     val height: Double? = null,

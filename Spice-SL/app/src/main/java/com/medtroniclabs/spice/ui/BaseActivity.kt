@@ -456,4 +456,17 @@ open class BaseActivity : SpiceRootActivity() {
     fun hiddenBackButton() {
         binding.ivBack.visibility = checkVisibility(false)
     }
+
+    fun addOrReuseFragment(containerId: Int, fragmentTag: String, fragmentInstance: Fragment, bundle: Bundle? = null) {
+        val existingFragment = supportFragmentManager.findFragmentByTag(fragmentTag)
+        if (existingFragment == null) {
+            // Add bundle if provided
+            if (bundle != null) {
+                fragmentInstance.arguments = bundle
+            }
+            supportFragmentManager.beginTransaction()
+                .add(containerId, fragmentInstance, fragmentTag)
+                .commit()
+        }
+    }
 }

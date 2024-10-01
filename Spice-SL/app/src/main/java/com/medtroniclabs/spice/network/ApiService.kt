@@ -83,6 +83,8 @@ import com.medtroniclabs.spice.model.NcdMRStaticDataModel
 import com.medtroniclabs.spice.model.medicalreview.SearchLabTestResponse
 import com.medtroniclabs.spice.model.medicalreview.SearchRequestLabTest
 import com.medtroniclabs.spice.model.medicalreview.SummaryDetails
+import com.medtroniclabs.spice.ncd.data.MedicalReviewRequestResponse
+import com.medtroniclabs.spice.ncd.data.MedicalReviewResponse
 import com.medtroniclabs.spice.ncd.data.PatientVisitRequest
 import com.medtroniclabs.spice.ncd.data.PatientVisitResponse
 import com.medtroniclabs.spice.ncd.data.BPBGListModel
@@ -330,4 +332,8 @@ interface ApiService {
 
     @POST("/spice-service/patientvisit/create")
     suspend fun createPatientVisit(@Body request: PatientVisitRequest): Response<APIResponse<PatientVisitResponse>>
+
+    @POST("/spice-service/medical-review/ncd/create")
+    suspend fun createNCDMedicalReview(@Body request: MedicalReviewRequestResponse): Response<APIResponse<MedicalReviewResponse>>
+
 }

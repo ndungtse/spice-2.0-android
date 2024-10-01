@@ -1,5 +1,7 @@
 package com.medtroniclabs.spice.ncd.medicalreview
 
+import com.medtroniclabs.spice.common.DefinedParams
+
 object NCDMRUtil {
     const val MENU_ID = "MENU_ID"
     const val Complaints = "Complaints"
@@ -12,4 +14,7 @@ object NCDMRUtil {
     const val Yes_Past = "Yes, In the past"
     const val EncounterReference = "EncounterReference"
     const val PhysicalExamination = "PhysicalExamination"
+    const val NCD = "NCD"
+    const val MATERNAL_HEALTH = "MATERNALHEALTH"
+    const val MENTAL_HEALTH = "MENTALHEALTH"
 }
