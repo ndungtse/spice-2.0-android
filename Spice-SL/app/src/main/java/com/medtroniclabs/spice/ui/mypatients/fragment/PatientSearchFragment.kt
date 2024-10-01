@@ -214,8 +214,8 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
                 startActivity(intent)
             } else {
                 val destinationIntent = when (patientListViewModel.origin) {
-                    MenuConstants.REGISTRATION -> RegistrationActivity::class.java
-                    MenuConstants.MY_PATIENTS_MENU_ID, MenuConstants.ASSESSMENT -> AssessmentToolsActivity::class.java
+                    MenuConstants.REGISTRATION.lowercase() -> RegistrationActivity::class.java
+                    MenuConstants.MY_PATIENTS_MENU_ID.lowercase(), MenuConstants.ASSESSMENT.lowercase() -> AssessmentToolsActivity::class.java
                     else -> null
                 }
                 destinationIntent?.let { destIntent ->

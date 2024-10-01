@@ -11,4 +11,5 @@ object NCDMRUtil {
     const val Yes_Currently = "Yes, currently"
     const val Yes_Past = "Yes, In the past"
     const val EncounterReference = "EncounterReference"
+    const val PhysicalExamination = "PhysicalExamination"
 }
