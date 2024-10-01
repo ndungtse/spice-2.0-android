@@ -199,7 +199,7 @@ interface MetaDataDAO {
     suspend fun deleteChiefDoms()
 
     @Query("SELECT * FROM MentalHealthEntity where formType=:formType")
-    fun getMentalQuestion(formType: String): LiveData<MentalHealthEntity>
+    fun getMentalQuestion(formType: String): LiveData<MentalHealthEntity?>
 
     @Query("SELECT * FROM HealthFacilityEntity Order by isDefault DESC")
     fun getSites(): LiveData<List<HealthFacilityEntity>>

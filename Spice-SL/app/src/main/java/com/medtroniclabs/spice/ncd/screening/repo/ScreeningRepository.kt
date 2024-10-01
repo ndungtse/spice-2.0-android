@@ -24,7 +24,7 @@ class ScreeningRepository @Inject constructor(
         return roomHelper.getFormDataForNcd(formType)
     }
 
-    fun getMentalQuestion(type:String) :  LiveData<MentalHealthEntity>{
+    fun getMentalQuestion(type:String) :  LiveData<MentalHealthEntity?>{
         return  roomHelper.getMentalQuestion(type)
     }
 

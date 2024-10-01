@@ -844,7 +844,7 @@ class RoomHelperImpl @Inject constructor(
         metaDataDAO.deletePrograms()
     }
 
-    override fun getMentalQuestion(formType: String): LiveData<MentalHealthEntity> {
+    override fun getMentalQuestion(formType: String): LiveData<MentalHealthEntity?> {
         return metaDataDAO.getMentalQuestion(formType)
     }
 

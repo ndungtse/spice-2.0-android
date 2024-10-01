@@ -29,7 +29,7 @@ class ScreeningFormBuilderViewModel @Inject constructor(
     private var getMentalQuestion = MutableLiveData<Pair<String, String>>()
     var screeningSaveResponse = MutableLiveData<Resource<ScreeningEntity>>()
     var screeningUpdateResponse = MutableLiveData<Resource<ScreeningEntity>>()
-    val getMentalQuestions: LiveData<MentalHealthEntity> =
+    val getMentalQuestions: LiveData<MentalHealthEntity?> =
         getMentalQuestion.switchMap {
             screeningRepository.getMentalQuestion(it.second)
         }

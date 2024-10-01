@@ -310,7 +310,7 @@ interface RoomHelper {
     suspend fun savePrograms(programs: List<ProgramEntity>)
     suspend fun getPrograms(): List<ProgramEntity>
     suspend fun deletePrograms()
-     fun getMentalQuestion(formType: String): LiveData<MentalHealthEntity>
+     fun getMentalQuestion(formType: String): LiveData<MentalHealthEntity?>
     fun getSites(): LiveData<List<HealthFacilityEntity>>
     suspend fun savePatientScreeningInformation(screeningEntity: ScreeningEntity) : ScreeningEntity
 

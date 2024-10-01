@@ -186,14 +186,17 @@ class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener, View.OnC
         }
 
         viewModel.getMentalQuestions.observe(viewLifecycleOwner) { mentalQuestions ->
-            val mhResponse: HashMap<String, LocalSpinnerResponse> = HashMap()
-            viewModel.getIdOfMentalHealth()?.first?.let {
-                viewModel.getIdOfMentalHealth()?.second?.let { second ->
-                    mhResponse[second] = LocalSpinnerResponse(tag = it, response = mentalQuestions)
+            mentalQuestions?.let {
+                val mhResponse: HashMap<String, LocalSpinnerResponse> = HashMap()
+                viewModel.getIdOfMentalHealth()?.first?.let {
+                    viewModel.getIdOfMentalHealth()?.second?.let { second ->
+                        mhResponse[second] =
+                            LocalSpinnerResponse(tag = it, response = mentalQuestions)
+                    }
                 }
-            }
-            mhResponse.forEach {
-                formGenerator.loadMentalHealthQuestions(it.value)
+                mhResponse.forEach {
+                    formGenerator.loadMentalHealthQuestions(it.value)
+                }
             }
         }
 
