@@ -410,4 +410,8 @@ class ApiHelperImpl @Inject constructor(private val apiService: ApiService) : Ap
     override suspend fun fetchNCDMRSummary(request: MedicalReviewResponse): Response<APIResponse<MRSummaryResponse>> {
         return apiService.fetchNCDMRSummary(request)
     }
+
+    override suspend fun isPatientAlreadyRegistered(request: HashMap<String, Any>): Response<APIResponse<HashMap<String, Any>>> {
+        return apiService.isPatientAlreadyRegistered(request)
+    }
 }

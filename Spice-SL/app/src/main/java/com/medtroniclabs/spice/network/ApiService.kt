@@ -339,4 +339,6 @@ interface ApiService {
 
     @POST("/spice-service/medical-review/ncd/details")
     suspend fun fetchNCDMRSummary(@Body request: MedicalReviewResponse): Response<APIResponse<MRSummaryResponse>>
+    @POST("spice-service/patient/validate")
+    suspend fun isPatientAlreadyRegistered(@Body request: HashMap<String, Any>): Response<APIResponse<HashMap<String, Any>>>
 }

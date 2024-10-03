@@ -59,6 +59,30 @@ class RegistrationFormFragment : BaseFragment(), View.OnClickListener, FormEvent
     }
 
     private fun attachObservers() {
+        viewModel.validatePatientResponseLiveDate.observe(viewLifecycleOwner) { resources ->
+            when (resources.state) {
+                ResourceState.LOADING -> {
+                    showProgress()
+                }
+
+                ResourceState.SUCCESS -> {
+                    hideProgress()
+                    resources.data?.let { data ->
+                        proceedRegistration(data.first, data.second)
+                    }
+                }
+
+                ResourceState.ERROR -> {
+                    hideProgress()
+                    (activity as? BaseActivity?)?.showErrorDialogue(
+                        title = getString(R.string.error),
+                        message = resources.message
+                            ?: getString(R.string.something_went_wrong_try_later),
+                        positiveButtonName = getString(R.string.ok),
+                    ) {}
+                }
+            }
+        }
         viewModel.registrationFormLayoutsLiveData.observe(viewLifecycleOwner) { resources ->
             when (resources.state) {
                 ResourceState.LOADING -> {
@@ -250,6 +274,17 @@ class RegistrationFormFragment : BaseFragment(), View.OnClickListener, FormEvent
     }
 
     override fun onFormSubmit(resultMap: HashMap<String, Any>?, serverData: List<FormLayout?>?) {
+        withNetworkAvailability(online = {
+            resultMap?.let {
+                viewModel.isPatientAlreadyRegistered(it, serverData)
+            }
+        })
+    }
+
+    private fun proceedRegistration(
+        resultMap: HashMap<String, Any>?,
+        serverData: List<FormLayout?>?
+    ) {
         withNetworkAvailability(online = {
             resultMap?.let { map ->
                 val result = serverData?.let {

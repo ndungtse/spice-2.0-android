@@ -5,13 +5,16 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.CountryModel
+import com.medtroniclabs.spice.data.ErrorResponse
 import com.medtroniclabs.spice.data.LocalSpinnerResponse
 import com.medtroniclabs.spice.data.model.RegistrationResponse
 import com.medtroniclabs.spice.db.local.RoomHelper
+import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.model.FormResponse
 import com.medtroniclabs.spice.network.ApiHelper
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.network.resource.ResourceState
+import okhttp3.ResponseBody
 import javax.inject.Inject
 
 class RegistrationRepository @Inject constructor(
@@ -107,6 +110,36 @@ class RegistrationRepository @Inject constructor(
             }
         } catch (_: Exception) {
             Resource(state = ResourceState.ERROR)
+        }
+    }
+
+    suspend fun isPatientAlreadyRegistered(
+        requestMap: HashMap<String, Any>,
+        patientCreateReq: Pair<HashMap<String, Any>, List<FormLayout?>?>
+    ): Resource<Pair<HashMap<String, Any>, List<FormLayout?>?>> {
+        return try {
+            val response = apiHelper.isPatientAlreadyRegistered(requestMap)
+            if (response.isSuccessful && response.body()?.status == true) {
+                Resource(state = ResourceState.SUCCESS, data = patientCreateReq)
+            } else {
+                Resource(
+                    state = ResourceState.ERROR,
+                    message = getErrorMessage(response.errorBody())
+                )
+            }
+        } catch (_: Exception) {
+            Resource(state = ResourceState.ERROR)
+        }
+    }
+
+    private fun getErrorMessage(errorBody: ResponseBody?): String? {
+        if (errorBody == null)
+            return null
+        return try {
+            val errorResponse = Gson().fromJson(errorBody.string(), ErrorResponse::class.java)
+            return errorResponse.message
+        } catch (e: Exception) {
+            null
         }
     }
 }

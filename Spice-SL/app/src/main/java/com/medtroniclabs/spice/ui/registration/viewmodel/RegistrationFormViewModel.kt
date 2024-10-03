@@ -10,7 +10,9 @@ import com.medtroniclabs.spice.data.LocalSpinnerResponse
 import com.medtroniclabs.spice.data.model.RegistrationResponse
 import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.di.IoDispatcher
+import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.model.FormResponse
+import com.medtroniclabs.spice.mappingkey.Screening
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.ui.registration.repo.RegistrationRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -25,6 +27,8 @@ class RegistrationFormViewModel @Inject constructor(
 ) : ViewModel() {
     val registrationFormLayoutsLiveData = MutableLiveData<Resource<FormResponse>>()
     var registrationResponseLiveData = MutableLiveData<Resource<RegistrationResponse>>()
+    var validatePatientResponseLiveDate =
+        MutableLiveData<Resource<Pair<HashMap<String, Any>, List<FormLayout?>?>>>()
 
     val countrySpinnerLiveData = MutableLiveData<Resource<LocalSpinnerResponse>>()
     val districtSpinnerLiveData = MutableLiveData<Resource<LocalSpinnerResponse>>()
@@ -100,6 +104,24 @@ class RegistrationFormViewModel @Inject constructor(
         viewModelScope.launch(dispatcherIO) {
             registrationResponseLiveData.postLoading()
             registrationResponseLiveData.postValue(registrationRepository.registerPatient(hashMap))
+        }
+    }
+
+    fun isPatientAlreadyRegistered(hashMap: HashMap<String, Any>, serverData: List<FormLayout?>?) {
+        if (hashMap.contains(Screening.identityValue)) {
+            hashMap[Screening.identityValue]?.let {
+                val reqMap = HashMap<String, Any>()
+                reqMap[Screening.identityValue] = it
+
+                viewModelScope.launch(dispatcherIO) {
+                    validatePatientResponseLiveDate.postLoading()
+                    validatePatientResponseLiveDate.postValue(
+                        registrationRepository.isPatientAlreadyRegistered(
+                            reqMap, Pair(hashMap, serverData)
+                        )
+                    )
+                }
+            }
         }
     }
 }

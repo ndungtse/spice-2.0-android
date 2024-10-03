@@ -187,4 +187,5 @@ interface ApiHelper {
     suspend fun createPatientVisit(request: PatientVisitRequest): Response<APIResponse<PatientVisitResponse>>
     suspend fun createNCDMedicalReview(request: MedicalReviewRequestResponse): Response<APIResponse<MedicalReviewResponse>>
     suspend fun fetchNCDMRSummary(request: MedicalReviewResponse): Response<APIResponse<MRSummaryResponse>>
+    suspend fun isPatientAlreadyRegistered(request: HashMap<String, Any>): Response<APIResponse<HashMap<String, Any>>>
 }
