@@ -1,11 +1,8 @@
 package com.medtroniclabs.spice.repo
 
-import androidx.lifecycle.MutableLiveData
-import com.medtroniclabs.spice.appextensions.postError
-import com.medtroniclabs.spice.appextensions.postLoading
-import com.medtroniclabs.spice.appextensions.postSuccess
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.CommonUtils.getStringOrEmptyString
+import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.CHIEF_DOM_CODE_LENGTH
 import com.medtroniclabs.spice.common.DefinedParams.PATIENT_NUMBER_LENGTH
 import com.medtroniclabs.spice.common.DefinedParams.VILLAGE_CODE_LENGTH
@@ -20,7 +17,6 @@ import com.medtroniclabs.spice.mappingkey.MemberRegistration.otherFamilyMember
 import com.medtroniclabs.spice.model.assessment.AssessmentMemberDetails
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.network.resource.ResourceState
-import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.isDeceased
 import javax.inject.Inject
 
@@ -52,6 +48,16 @@ class HouseholdMemberRepository @Inject constructor(
 
         return memberId
     }
+
+    suspend fun updateHeadPhoneNumber(householdId: Long, map: HashMap<String, Any>) {
+         if (map[MemberRegistration.householdHeadRelationship]==DefinedParams.HouseholdHead) {
+            //Updating in HouseHoldMEMBER
+            roomHelper.updateHeadPhoneNumber(householdId,
+                map[MemberRegistration.phoneNumber].toString()
+            )
+        }
+    }
+
 
     private suspend fun createOrUpdateHouseHoldMemberEntity(
         map: HashMap<String, Any>,

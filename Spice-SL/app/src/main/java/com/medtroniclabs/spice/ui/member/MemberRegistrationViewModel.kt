@@ -2,10 +2,7 @@ package com.medtroniclabs.spice.ui.member
 
 import android.location.Location
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.medtroniclabs.spice.app.analytics.db.AnalyticsRepository
-import com.medtroniclabs.spice.appextensions.isVisible
 import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.appextensions.postSuccess
@@ -16,9 +13,6 @@ import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
 import com.medtroniclabs.spice.db.entity.VillageEntity
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.formgeneration.FormGenerator
-import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration
-import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.isOwnedATreatedBedNet
-import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.isPregnant
 import com.medtroniclabs.spice.mappingkey.MemberRegistration
 import com.medtroniclabs.spice.model.medicalreview.AddMemberRegRequest
 import com.medtroniclabs.spice.network.resource.Resource
@@ -97,6 +91,7 @@ class MemberRegistrationViewModel @Inject constructor(
                     initial = initial,
                     signature = signature
                 )
+                memberRegistrationRepository.updateHeadPhoneNumber(householdId, map)
                 if (memberId == null) {
                     memberRegistrationLiveData.postError()
                 } else {
@@ -129,5 +124,7 @@ class MemberRegistrationViewModel @Inject constructor(
             addnewMemberReq.postValue(houseHoldRepository.addNewMember(addMemberRegRequest))
         }
     }
+
+
 
 }

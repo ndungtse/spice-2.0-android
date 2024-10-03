@@ -79,6 +79,7 @@ class HouseRegistrationViewModel @Inject constructor(
                 val householdEntity =
                     houseHoldRepository.createOrUpdateHouseHoldEntity(map, householdEntityDetail)
                 houseHoldRepository.updateHouseHoldEntity(householdEntity)
+                houseHoldRepository.updateHouseholdHeadPhoneNumber(householdEntity.id, householdEntity.headPhoneNumber)
                 houseHoldUpdateLiveData.postSuccess()
             } catch (e: Exception) {
                 houseHoldUpdateLiveData.postError()

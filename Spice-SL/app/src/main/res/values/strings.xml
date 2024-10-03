@@ -113,7 +113,7 @@
     <string name="age">Age</string>
     <string name="seperator_hyphen">-</string>
     <string name="household_empty_text">No Household found.</string>
-    <string name="household_name_or_no">Household Name / No</string>
+    <string name="household_name_or_no">Name / No / Phone</string>
     <string name="member_deceased">Member Deceased</string>
     <string name="male_prefix">M</string>
     <string name="female_prefix">F</string>

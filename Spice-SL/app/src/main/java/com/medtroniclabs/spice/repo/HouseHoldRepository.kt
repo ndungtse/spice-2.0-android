@@ -111,12 +111,15 @@ class HouseHoldRepository @Inject constructor(
             val noOfPeople = map[HouseHoldRegistration.noOfPeople]
             householdEntity.noOfPeople = CommonUtils.getIntegerOrNull(noOfPeople) ?: 0
         }
-
         return householdEntity
     }
 
     suspend fun insertHouseHoldEntity(householdEntity: HouseholdEntity): Long {
         return roomHelper.saveHouseHoldEntry(householdEntity)
+    }
+
+    suspend fun updateHouseholdHeadPhoneNumber(id: Long, phoneNumber: String?) {
+        roomHelper.updatePhoneNumberForHouseholdHead(id, phoneNumber)
     }
 
     suspend fun updateHouseHoldEntity(householdEntity: HouseholdEntity) {

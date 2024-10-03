@@ -248,4 +248,9 @@ interface RoomHelper {
 
     suspend fun getHHSignatureDetails(): List<HHSignatureDetail>
 
+    //UpdateHouseHoldNumber
+    suspend fun updateHeadPhoneNumber(id: Long, phoneNumber: String)
+
+    suspend fun updatePhoneNumberForHouseholdHead(id: Long, phoneNumber: String?)
+
 }
