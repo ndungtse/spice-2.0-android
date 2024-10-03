@@ -3,6 +3,7 @@ package com.medtroniclabs.spice.ui.mypatients.repo
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.db.entity.NCDMedicalReviewMetaEntity
 import com.medtroniclabs.spice.db.local.RoomHelper
+import com.medtroniclabs.spice.ncd.data.MRSummaryResponse
 import com.medtroniclabs.spice.ncd.data.MedicalReviewRequestResponse
 import com.medtroniclabs.spice.ncd.data.MedicalReviewResponse
 import com.medtroniclabs.spice.ncd.data.PatientVisitRequest
@@ -109,4 +110,22 @@ class NCDMedicalReviewRepo @Inject constructor(
             Resource(state = ResourceState.ERROR)
         }
     }
+
+    suspend fun fetchNCDMRSummary(request: MedicalReviewResponse): Resource<MRSummaryResponse> {
+        return try {
+            val response = apiHelper.fetchNCDMRSummary(request)
+            if (response.isSuccessful) {
+                response.body()?.entity?.let {
+                    Resource(state = ResourceState.SUCCESS, it)
+                } ?: Resource(state = ResourceState.ERROR)
+
+            } else {
+                Resource(state = ResourceState.ERROR)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Resource(state = ResourceState.ERROR)
+        }
+    }
+
 }

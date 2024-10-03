@@ -40,4 +40,25 @@ data class Answer(
     val value: String? = null
 )
 
-data class MedicalReviewResponse(val message: String)
+data class MedicalReviewResponse(
+    val encounterReference: String? = null,
+    val patientReference: String? = null
+)
+
+data class MRSummaryResponse(
+    val isSigned: Boolean? = null,
+    val medicalReviewFrequency: String? = null,
+    val isPregnant: Boolean? = null,
+    val isInitialPregnancyReview: Boolean? = null,
+    val lastMenstrualPeriodDate: String? = null,
+    val estimatedDeliveryDate: String? = null,
+    val physicalExams: List<String?>? = emptyList(),
+    val complaints: List<String?>? = emptyList(),
+    val physicalExamComments: String? = null,
+    val compliantComments: String? = null,
+    val reviewedAt: String? = null,
+    val clinicalNote: String? = null,
+    val comorbities: List<String?>? = emptyList(),
+    val complications: List<String?>? = emptyList()
+)
+

@@ -30,6 +30,7 @@ import com.medtroniclabs.spice.ncd.medicalreview.fragment.NCDComorbiditiesFragme
 import com.medtroniclabs.spice.ncd.medicalreview.fragment.NCDComplicationsFragment
 import com.medtroniclabs.spice.ncd.medicalreview.fragment.NCDLifestyleAssessmentFragment
 import com.medtroniclabs.spice.ncd.medicalreview.fragment.NCDMedicalReviewDiagnosisCardFragment
+import com.medtroniclabs.spice.ncd.medicalreview.fragment.NCDMedicalReviewSummaryFragment
 import com.medtroniclabs.spice.ncd.medicalreview.fragment.NCDObstetricExaminationFragment
 import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDChiefComplaintsViewModel
 import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDClinicalNotesViewModel
@@ -108,6 +109,9 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
                 ResourceState.SUCCESS -> {
                     hideLoading()
                     // navigate to summary
+                    resourceState.data?.let {
+                        loadSummary()
+                    }
                 }
 
                 ResourceState.ERROR -> {
@@ -161,6 +165,11 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
             btnLayout.btnNext.text = getString(R.string.submit)
             btnLayout.btnNext.isAllCaps = true
         }
+        addOrReuseFragment(
+            R.id.obstetricExaminationContainer,
+            NCDMedicalReviewSummaryFragment.TAG,
+            NCDMedicalReviewSummaryFragment.newInstance()
+        )
     }
 
     private fun onBackPressPopStack() {
@@ -409,18 +418,14 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
             supportFragmentManager.findFragmentById(R.id.comorbiditiesContainer) as? NCDComorbiditiesFragment
         val chiefComplaintsFragment =
             supportFragmentManager.findFragmentById(R.id.chiefComplaintsContainer) as? NCDChiefComplaintsFragment
-
+        val summaryFragment =
+            supportFragmentManager.findFragmentById(R.id.obstetricExaminationContainer) as? NCDMedicalReviewSummaryFragment
         when {
             details.initialReviewed == false -> {
                 when {
-                    comorbiditiesFragment != null && !binding.chiefComplaintsContainer.isVisible -> loadFragment(
-                        true
-                    )
-
-                    chiefComplaintsFragment != null && !binding.comorbiditiesContainer.isVisible -> loadFragment(
-                        false
-                    )
-
+                    summaryFragment != null &&(!binding.chiefComplaintsContainer.isVisible && !binding.comorbiditiesContainer.isVisible) -> loadSummary()
+                    comorbiditiesFragment != null && !binding.chiefComplaintsContainer.isVisible -> loadFragment(true)
+                    chiefComplaintsFragment != null && !binding.comorbiditiesContainer.isVisible -> loadFragment(false)
                     else -> {
                         loadFragment(true)
                     }
@@ -428,7 +433,12 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
             }
 
             details.initialReviewed == true -> {
-                loadFragment(false)
+                if (summaryFragment != null &&(!binding.chiefComplaintsContainer.isVisible && !binding.comorbiditiesContainer.isVisible)) {
+                    // Summary logic can go here if needed
+                    loadSummary()
+                } else {
+                    loadFragment(false)
+                }
             }
         }
         initializeFragments()

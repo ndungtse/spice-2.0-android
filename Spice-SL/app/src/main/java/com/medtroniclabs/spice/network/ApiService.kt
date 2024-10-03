@@ -83,6 +83,7 @@ import com.medtroniclabs.spice.model.NcdMRStaticDataModel
 import com.medtroniclabs.spice.model.medicalreview.SearchLabTestResponse
 import com.medtroniclabs.spice.model.medicalreview.SearchRequestLabTest
 import com.medtroniclabs.spice.model.medicalreview.SummaryDetails
+import com.medtroniclabs.spice.ncd.data.MRSummaryResponse
 import com.medtroniclabs.spice.ncd.data.MedicalReviewRequestResponse
 import com.medtroniclabs.spice.ncd.data.MedicalReviewResponse
 import com.medtroniclabs.spice.ncd.data.PatientVisitRequest
@@ -336,4 +337,6 @@ interface ApiService {
     @POST("/spice-service/medical-review/ncd/create")
     suspend fun createNCDMedicalReview(@Body request: MedicalReviewRequestResponse): Response<APIResponse<MedicalReviewResponse>>
 
+    @POST("/spice-service/medical-review/ncd/details")
+    suspend fun fetchNCDMRSummary(@Body request: MedicalReviewResponse): Response<APIResponse<MRSummaryResponse>>
 }
