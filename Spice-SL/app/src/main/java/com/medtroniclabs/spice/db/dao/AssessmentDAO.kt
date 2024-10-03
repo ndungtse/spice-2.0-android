@@ -75,4 +75,7 @@ interface AssessmentDAO {
     @Query("UPDATE AssessmentNCDEntity SET uploadStatus = :uploadStatus WHERE id = :id")
     suspend fun updateAssessmentUploadStatus(id: Long, uploadStatus: Boolean)
 
+    @Query("SELECT COUNT(assessmentDetails) FROM AssessmentNCDEntity WHERE uploadStatus=0")
+    fun getUnSyncedNCDAssessmentCount(): LiveData<Long>
+
 }

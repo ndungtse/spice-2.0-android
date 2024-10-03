@@ -35,6 +35,9 @@ import com.medtroniclabs.spice.appextensions.cancelAllWorker
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.isVisible
 import com.medtroniclabs.spice.appextensions.startBackgroundOfflineSync
+import com.medtroniclabs.spice.appextensions.scheduleSyncWorker
+import com.medtroniclabs.spice.appextensions.syncWorkerName
+import com.medtroniclabs.spice.appextensions.triggerOneTimeWorker
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.appextensions.workerUniqueName
 import com.medtroniclabs.spice.common.CommonUtils
@@ -43,6 +46,7 @@ import com.medtroniclabs.spice.common.DefinedParams.REFRESH_FRAGMENT
 import com.medtroniclabs.spice.common.RoleConstant
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.databinding.ActivityLandingBinding
+import com.medtroniclabs.spice.ncd.landing.dialog.NCDOfflineDataDialog
 import com.medtroniclabs.spice.network.NetworkConstants
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.ChooseSiteDialogueFragment
@@ -158,7 +162,7 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
     private fun initializeDrawerView() {
         val menu: Menu = binding.navView.menu
         val menuItemToRemove: MenuItem? = menu.findItem(R.id.offline_sync)
-        if ((!CommonUtils.offlineUsers()) && menuItemToRemove != null) {
+        if (CommonUtils.isSL() && !CommonUtils.isChw() && menuItemToRemove != null) {
             menu.removeItem(menuItemToRemove.itemId)
         }
 
@@ -234,7 +238,17 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
             }
 
             R.id.offline_sync -> {
-                goToOfflineSyncPage()
+                if (CommonUtils.isSL()) {
+                    goToOfflineSyncPage()
+                } else {
+                    binding.drawerLayout.closeDrawer(GravityCompat.START)
+                    val ncdOfflineDataDialog =
+                        supportFragmentManager.findFragmentByTag(NCDOfflineDataDialog.TAG)
+                    ncdOfflineDataDialog ?: NCDOfflineDataDialog.newInstance().show(
+                        supportFragmentManager,
+                        NCDOfflineDataDialog.TAG
+                    )
+                }
                 return true
             }
 
@@ -342,9 +356,14 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
     override fun onClick(v: View) {
     }
 
-    override fun onDialogDismissListener(isFinish: Boolean) {
+    override fun onDialogDismissListener(isAfrica: Boolean) {
         val homeMenuItem = binding.navView.menu.findItem(R.id.home)
         onNavigationItemSelected(homeMenuItem)
+        if (isAfrica) {
+            withNetworkAvailability(online = {
+                this.triggerOneTimeWorker()
+            })
+        }
     }
 
     override fun onNewIntent(intent: Intent) {

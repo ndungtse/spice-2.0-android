@@ -798,11 +798,11 @@
     <string name="find_help">Find Help?</string>
     <string name="positive">Positive</string>
     <string name="negative">Negative</string>
-    <string name="gestational_weeks" >%1$d weeks</string>
+    <string name="gestational_weeks">%1$d weeks</string>
     <string name="pregnancy_status">Pregnancy Status</string>
     <string name="other_lowercase">other</string>
     <string name="separator_hyphen_space"> - </string>
-    <string name="empty"/>
+    <string name="empty" />
     <string name="n_a">N/A</string>
     <string name="pregnant">Pregnant</string>
     <string name="not_pregnant">Not Pregnant</string>
@@ -852,4 +852,19 @@
     <string name="validation_message_lifestyle">Please answer all the questions</string>
     <string name="please_specify_the_complication">Please specify the complication</string>
     <string name="complications">Complications</string>
+
+    // Side menu
+    <string name="offline_data">OFFLINE DATA</string>
+    <string name="language_preference">LANGUAGE PREFERENCE</string>
+    <string name="assessment_label" translatable="false">Assessment</string>
+    <string name="upload">Upload</string>
+    <string name="offline_screened_data">Offline Screened Data</string>
+    <string name="no_screened_patients">No screened patients to upload.</string>
+    <string name="screened_patient">1 screened patient is waiting to upload.</string>
+    <string name="screened_patients">%1$s screened patients are waiting to upload.</string>
+    <string name="assessed_patients" translatable="false">%1$s assessed patients are waiting to upload.</string>
+    <string name="assessed_patient" translatable="false">1 assessed patient is waiting to upload.</string>
+    <string name="no_assessed_patients" translatable="false">No assessed patients found to upload.</string>
+    <string name="switch_language">Switch Language</string>
+    <string name="screening_caps">Screening</string>
 </resources>

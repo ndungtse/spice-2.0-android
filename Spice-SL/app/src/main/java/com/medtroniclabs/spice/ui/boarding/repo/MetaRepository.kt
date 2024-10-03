@@ -619,4 +619,11 @@ class MetaRepository @Inject constructor(
         }
     }
 
+    fun getUnSyncedDataCountForNCDScreening() =
+        roomHelper.getUnSyncedDataCountForNCDScreening()
+
+    fun getUnSyncedNCDAssessmentCount() =
+        roomHelper.getUnSyncedNCDAssessmentCount()
+
+
 }

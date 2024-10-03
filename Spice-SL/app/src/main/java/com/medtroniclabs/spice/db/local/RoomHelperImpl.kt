@@ -958,4 +958,12 @@ class RoomHelperImpl @Inject constructor(
     ): List<NCDAssessmentClinicalWorkflow> {
         return metaDataDAO.getAssessmentClinicalWorkflow(gender, name)
     }
+
+    override fun getUnSyncedDataCountForNCDScreening(): LiveData<Long> {
+        return screeningDAO.getUnSyncedDataCountForNCDScreening()
+    }
+
+    override fun getUnSyncedNCDAssessmentCount(): LiveData<Long> {
+        return assessmentDAO.getUnSyncedNCDAssessmentCount()
+    }
 }

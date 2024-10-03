@@ -362,4 +362,7 @@ interface RoomHelper {
         gender: String,
         name: String
     ): List<NCDAssessmentClinicalWorkflow>
+
+    fun getUnSyncedDataCountForNCDScreening(): LiveData<Long>
+    fun getUnSyncedNCDAssessmentCount(): LiveData<Long>
 }

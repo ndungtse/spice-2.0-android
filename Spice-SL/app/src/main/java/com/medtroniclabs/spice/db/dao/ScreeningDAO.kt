@@ -39,4 +39,7 @@ interface ScreeningDAO {
 
     @Query("UPDATE ScreeningEntity SET uploadStatus = :uploadStatus WHERE id = :id")
     suspend fun updateScreeningRecordById(id: Long, uploadStatus: Boolean)
+
+    @Query("SELECT COUNT(screeningDetails) FROM screeningentity WHERE uploadStatus=0")
+    fun getUnSyncedDataCountForNCDScreening(): LiveData<Long>
 }
