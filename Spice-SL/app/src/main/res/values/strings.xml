@@ -867,4 +867,6 @@
     <string name="no_assessed_patients" translatable="false">No assessed patients found to upload.</string>
     <string name="switch_language">Switch Language</string>
     <string name="screening_caps">Screening</string>
+    <string name="comments_on_diagnosis">Comments on confirming the diagnoses</string>
+    <string name="select_diagnosis_found">Select diagnoses found on the patient</string>
 </resources>

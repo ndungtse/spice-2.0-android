@@ -1,0 +1,14 @@
+package com.medtroniclabs.spice.db.entity
+
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
+@Entity(tableName = "NCDDiagnosisEntity")
+data class NCDDiagnosisEntity(
+    @PrimaryKey
+    val id: Long,
+    val name: String,
+    val displayOrder: Int,
+    val value: String? = null,
+    var type: String? = null
+)

@@ -40,6 +40,7 @@ import com.medtroniclabs.spice.db.entity.ScreeningEntity
 import com.medtroniclabs.spice.db.entity.SignsAndSymptomsEntity
 import com.medtroniclabs.spice.db.entity.DistrictEntity
 import com.medtroniclabs.spice.db.entity.LifestyleEntity
+import com.medtroniclabs.spice.db.entity.NCDDiagnosisEntity
 import com.medtroniclabs.spice.db.entity.RiskFactorEntity
 import com.medtroniclabs.spice.db.entity.UserProfileEntity
 import com.medtroniclabs.spice.db.entity.VillageEntity
@@ -365,4 +366,9 @@ interface RoomHelper {
 
     fun getUnSyncedDataCountForNCDScreening(): LiveData<Long>
     fun getUnSyncedNCDAssessmentCount(): LiveData<Long>
+
+    suspend fun saveNCDDiagnosisList(diseaseEntityList: ArrayList<NCDDiagnosisEntity>)
+
+    suspend fun deleteNCDDiagnosisList()
+    fun getNCDDiagnosisList(types: List<String>): LiveData<List<NCDDiagnosisEntity>>
 }

@@ -15,4 +15,5 @@ class NCDMedicalReviewRepository@Inject constructor(
         roomHelper.getComorbidities(type, category)
 
     fun getLifeStyle() = roomHelper.getLifeStyle()
+    fun getNCDDiagnosisList(types: List<String>) = roomHelper.getNCDDiagnosisList(types)
 }

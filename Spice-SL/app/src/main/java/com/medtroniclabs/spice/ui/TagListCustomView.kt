@@ -17,6 +17,7 @@ import com.medtroniclabs.spice.data.model.ChipViewItemModel
 import com.medtroniclabs.spice.databinding.CustomLayoutTagviewComponentBinding
 import com.medtroniclabs.spice.databinding.OtherChipLayoutBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
+import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil
 
 class TagListCustomView(
     val context: Context,
@@ -78,7 +79,14 @@ class TagListCustomView(
                         singleSelectionTypeMap,
                         chipGroup,
                         chipData.second,
-                        arrayListOf()
+                        arrayListOf(
+                            NCDMRUtil.SUBSTANCE_DISORDER,
+                            NCDMRUtil.MENTALHEALTH,
+                            NCDMRUtil.HYPERTENSION,
+                            NCDMRUtil.DIABETES,
+                            NCDMRUtil.HIV,
+                            NCDMRUtil.PREGNANCY
+                        )
                     )
                 }
                 chip.typeface = ResourcesCompat.getFont(context, R.font.inter_bold)
@@ -190,7 +198,7 @@ class TagListCustomView(
     ) {
         var groupKey: String? = null
         singleSelectionTypeMap.forEach { (key, value) ->
-            val filteredValue = value.any { it.name == selectedChip }
+            val filteredValue = value.find { it.name.equals(selectedChip, true) }
             if (filteredValue != null) {
                 groupKey = key
                 return@forEach

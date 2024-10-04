@@ -28,6 +28,7 @@ import com.medtroniclabs.spice.db.entity.FormEntity
 import com.medtroniclabs.spice.db.entity.HealthFacilityEntity
 import com.medtroniclabs.spice.db.entity.MentalHealthEntity
 import com.medtroniclabs.spice.db.entity.MenuEntity
+import com.medtroniclabs.spice.db.entity.NCDDiagnosisEntity
 import com.medtroniclabs.spice.db.entity.RiskClassificationModel
 import com.medtroniclabs.spice.db.entity.RiskFactorEntity
 import com.medtroniclabs.spice.db.entity.UserProfileEntity
@@ -162,6 +163,10 @@ class MetaRepository @Inject constructor(
                                     res.medicalCompliances?.let {
                                         roomHelper.deleteMedicalCompliance()
                                         roomHelper.saveMedicalCompliance(it)
+                                    }
+                                    res.diagnosis?.let {
+                                        roomHelper.deleteNCDDiagnosisList()
+                                        roomHelper.saveNCDDiagnosisList(it)
                                     }
                                     res.cvdRiskAlgorithms?.nonLab?.let { nonLab ->
                                         val baseType: Type =

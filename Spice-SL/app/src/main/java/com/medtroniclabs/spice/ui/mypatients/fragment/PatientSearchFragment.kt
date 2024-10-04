@@ -172,7 +172,7 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
 
                 ResourceState.ERROR -> {
                     (activity as BaseActivity).hideLoading()
-                    showErrorDialog(getString(R.string.error), getString(R.string.no_internet_error))
+                    showErrorDialog(getString(R.string.error), getString(R.string.something_went_wrong_try_later))
                 }
             }
         }

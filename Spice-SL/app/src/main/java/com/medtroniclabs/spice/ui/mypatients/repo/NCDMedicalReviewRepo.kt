@@ -6,6 +6,9 @@ import com.medtroniclabs.spice.db.local.RoomHelper
 import com.medtroniclabs.spice.ncd.data.MRSummaryResponse
 import com.medtroniclabs.spice.ncd.data.MedicalReviewRequestResponse
 import com.medtroniclabs.spice.ncd.data.MedicalReviewResponse
+import com.medtroniclabs.spice.ncd.data.NCDDiagnosisGetRequest
+import com.medtroniclabs.spice.ncd.data.NCDDiagnosisGetResponse
+import com.medtroniclabs.spice.ncd.data.NCDDiagnosisRequestResponse
 import com.medtroniclabs.spice.ncd.data.PatientVisitRequest
 import com.medtroniclabs.spice.ncd.data.PatientVisitResponse
 import com.medtroniclabs.spice.network.ApiHelper
@@ -111,4 +114,34 @@ class NCDMedicalReviewRepo @Inject constructor(
         }
     }
 
+    suspend fun createConfirmDiagonsis(request: NCDDiagnosisRequestResponse): Resource<HashMap<String, Any>> {
+        return try {
+            val response = apiHelper.createConfirmDiagonsis(request)
+            if (response.isSuccessful) {
+                Resource(state = ResourceState.SUCCESS)
+            } else {
+                Resource(state = ResourceState.ERROR)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Resource(state = ResourceState.ERROR)
+        }
+    }
+
+    suspend fun getConfirmDiagonsis(request: NCDDiagnosisGetRequest): Resource<NCDDiagnosisGetResponse> {
+        return try {
+            val response = apiHelper.getConfirmDiagonsis(request)
+            if (response.isSuccessful) {
+                response.body()?.entity?.let {
+                    Resource(state = ResourceState.SUCCESS, it)
+                } ?: Resource(state = ResourceState.ERROR)
+
+            } else {
+                Resource(state = ResourceState.ERROR)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Resource(state = ResourceState.ERROR)
+        }
+    }
 }

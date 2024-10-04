@@ -7,6 +7,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.medtroniclabs.spice.db.entity.NCDMedicalReviewMetaEntity
 import com.medtroniclabs.spice.db.entity.LifestyleEntity
+import com.medtroniclabs.spice.db.entity.NCDDiagnosisEntity
 
 @Dao
 interface NcdMedicalReviewDao {
@@ -27,4 +28,13 @@ interface NcdMedicalReviewDao {
 
     @Query("SELECT * FROM lifestyleentity ORDER BY displayOrder ASC")
     fun getLifeStyle(): LiveData<List<LifestyleEntity>>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun saveNCDDiagnosisList(diseaseEntityList: ArrayList<NCDDiagnosisEntity>)
+
+    @Query("DELETE FROM NCDDiagnosisEntity")
+    suspend fun deleteNCDDiagnosisList()
+
+    @Query("SELECT * FROM NCDDiagnosisEntity WHERE (LOWER(type) IN (:types) OR type IS NULL) ORDER BY displayOrder ASC")
+    fun getNCDDiagnosisList(types: List<String>): LiveData<List<NCDDiagnosisEntity>>
 }

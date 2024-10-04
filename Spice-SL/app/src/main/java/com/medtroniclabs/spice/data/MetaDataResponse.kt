@@ -7,6 +7,7 @@ import com.medtroniclabs.spice.db.entity.FrequencyEntity
 import com.medtroniclabs.spice.db.entity.MedicalComplianceEntity
 import com.medtroniclabs.spice.db.entity.SignsAndSymptomsEntity
 import com.medtroniclabs.spice.db.entity.DistrictEntity
+import com.medtroniclabs.spice.db.entity.NCDDiagnosisEntity
 import com.medtroniclabs.spice.db.entity.RiskClassificationModel
 import com.medtroniclabs.spice.db.entity.VillageEntity
 
@@ -189,7 +190,8 @@ data class FormMetaRequest(
 data class UserSymptomsEntity(
     val symptoms: ArrayList<SignsAndSymptomsEntity>,
     var medicalCompliances: ArrayList<MedicalComplianceEntity>? = null,
-    val cvdRiskAlgorithms: RiskFactorResponse? = null
+    val cvdRiskAlgorithms: RiskFactorResponse? = null,
+    val diagnosis : ArrayList<NCDDiagnosisEntity>? = null
 )
 
 data class VillageInfo(

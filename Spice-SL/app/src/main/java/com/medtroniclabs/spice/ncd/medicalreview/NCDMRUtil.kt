@@ -19,4 +19,11 @@ object NCDMRUtil {
     const val MENTAL_HEALTH = "MENTALHEALTH"
     const val IS_INITIAL_MR = "ISINITIALMR"
     const val IS_FEMALE = "ISFEMALE"
+    const val CONFIRM_DIAGNOSIS_TYPE = "CONFIRM_DIAGNOSIS_TYPE"
+    const val SUBSTANCE_DISORDER = "Substance Disorder"
+    const val MENTALHEALTH = "Mental Health"
+    const val HYPERTENSION = "Hypertension"
+    const val DIABETES = "Diabetes"
+    const val HIV = "HIV"
+    const val PREGNANCY = "Pregnancy"
 }

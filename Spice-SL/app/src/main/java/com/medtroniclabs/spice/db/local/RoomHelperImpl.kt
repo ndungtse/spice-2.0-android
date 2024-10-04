@@ -61,6 +61,7 @@ import com.medtroniclabs.spice.db.entity.ScreeningEntity
 import com.medtroniclabs.spice.db.entity.SignsAndSymptomsEntity
 import com.medtroniclabs.spice.db.entity.DistrictEntity
 import com.medtroniclabs.spice.db.entity.LifestyleEntity
+import com.medtroniclabs.spice.db.entity.NCDDiagnosisEntity
 import com.medtroniclabs.spice.db.entity.RiskFactorEntity
 import com.medtroniclabs.spice.db.entity.UserProfileEntity
 import com.medtroniclabs.spice.db.entity.VillageEntity
@@ -965,5 +966,17 @@ class RoomHelperImpl @Inject constructor(
 
     override fun getUnSyncedNCDAssessmentCount(): LiveData<Long> {
         return assessmentDAO.getUnSyncedNCDAssessmentCount()
+    }
+
+    override suspend fun saveNCDDiagnosisList(diseaseEntityList: ArrayList<NCDDiagnosisEntity>) {
+        return ncdMedicalReviewDao.saveNCDDiagnosisList(diseaseEntityList)
+    }
+
+    override suspend fun deleteNCDDiagnosisList() {
+        return ncdMedicalReviewDao.deleteNCDDiagnosisList()
+    }
+
+    override fun getNCDDiagnosisList(types: List<String>): LiveData<List<NCDDiagnosisEntity>> {
+        return ncdMedicalReviewDao.getNCDDiagnosisList(types)
     }
 }

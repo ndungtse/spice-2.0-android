@@ -247,10 +247,9 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
             NCDMedicalReviewDiagnosisCardFragment.TAG,
             NCDMedicalReviewDiagnosisCardFragment.newInstance(
                 patientDetailViewModel.getNCDInitialMedicalReview(),
-                patientDetailViewModel.getGenderIsFemale() && getMenuId().equals(
-                    DefinedParams.PregnancyANC.lowercase(),
-                    true
-                )
+                patientDetailViewModel.getGenderIsFemale()
+                        && getMenuId().equals(DefinedParams.PregnancyANC.lowercase(), true),
+                getMenuId()
             )
         )
         binding.btnLayout.btnNext.safeClickListener(this)

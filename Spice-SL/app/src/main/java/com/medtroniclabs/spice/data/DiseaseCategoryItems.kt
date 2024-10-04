@@ -12,4 +12,5 @@ data class DiseaseCategoryItems(
     val value: String,
     var type: String? = null,
     val diseaseCondition: ArrayList<DiseaseConditionItems>,
+    val cultureValue: String? = null
 )
