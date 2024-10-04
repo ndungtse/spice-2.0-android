@@ -77,23 +77,6 @@ class NCDMedicalReviewRepo @Inject constructor(
         }
     }
 
-    suspend fun createPatientVisit(request: PatientVisitRequest): Resource<PatientVisitResponse> {
-        return try {
-            val response = apiHelper.createPatientVisit(request)
-            if (response.isSuccessful) {
-                response.body()?.entity?.let {
-                    Resource(state = ResourceState.SUCCESS, it)
-                } ?: Resource(state = ResourceState.ERROR)
-
-            } else {
-                Resource(state = ResourceState.ERROR)
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-            Resource(state = ResourceState.ERROR)
-        }
-    }
-
     suspend fun createNCDMedicalReview(request: MedicalReviewRequestResponse): Resource<MedicalReviewResponse> {
         return try {
             val response = apiHelper.createNCDMedicalReview(request)

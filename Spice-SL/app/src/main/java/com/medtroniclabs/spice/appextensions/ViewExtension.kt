@@ -242,3 +242,10 @@ fun Float?.takeIfNotNull(default: String = ""): String {
 fun String?.takeIfNotNull(default: String = ""): String {
     return this.takeIf { it != null }?.toString() ?: default
 }
+fun View.setVisible(isVisible: Boolean) {
+    if (isVisible) {
+        this.visible() // Assuming `visible()` shows the view
+    } else {
+        this.gone() // Assuming `gone()` hides the view
+    }
+}

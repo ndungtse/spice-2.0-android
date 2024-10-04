@@ -6,6 +6,8 @@ import com.medtroniclabs.spice.db.local.RoomHelper
 import com.medtroniclabs.spice.db.response.VillageBasicDetails
 import com.medtroniclabs.spice.model.PatientDetailRequest
 import com.medtroniclabs.spice.model.PatientListRespModel
+import com.medtroniclabs.spice.ncd.data.PatientVisitRequest
+import com.medtroniclabs.spice.ncd.data.PatientVisitResponse
 import com.medtroniclabs.spice.network.ApiHelper
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.network.resource.ResourceState
@@ -31,6 +33,23 @@ class PatientRepository @Inject constructor(
                 Resource(state = ResourceState.ERROR)
             }
         } catch (e: Exception) {
+            Resource(state = ResourceState.ERROR)
+        }
+    }
+
+    suspend fun createPatientVisit(request: PatientVisitRequest): Resource<PatientVisitResponse> {
+        return try {
+            val response = apiHelper.createPatientVisit(request)
+            if (response.isSuccessful) {
+                response.body()?.entity?.let {
+                    Resource(state = ResourceState.SUCCESS, it)
+                } ?: Resource(state = ResourceState.ERROR)
+
+            } else {
+                Resource(state = ResourceState.ERROR)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
             Resource(state = ResourceState.ERROR)
         }
     }

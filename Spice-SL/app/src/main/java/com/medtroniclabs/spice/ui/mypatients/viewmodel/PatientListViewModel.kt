@@ -1,26 +1,31 @@
 package com.medtroniclabs.spice.ui.mypatients.viewmodel
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
+import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.Active
 import com.medtroniclabs.spice.common.DefinedParams.LIST_LIMIT
-import com.medtroniclabs.spice.db.response.VillageBasicDetails
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.common.DefinedParams.OnHold
 import com.medtroniclabs.spice.common.DefinedParams.OnTreatment
 import com.medtroniclabs.spice.common.DefinedParams.REFERRED
 import com.medtroniclabs.spice.data.model.ChipViewItemModel
 import com.medtroniclabs.spice.model.MedicalReviewFilterModel
+import com.medtroniclabs.spice.model.PatientListRespModel
+import com.medtroniclabs.spice.ncd.data.PatientVisitRequest
+import com.medtroniclabs.spice.ncd.data.PatientVisitResponse
 import com.medtroniclabs.spice.network.ApiHelper
+import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.ui.BaseViewModel
 import com.medtroniclabs.spice.ui.mypatients.PatientsDataSource
 import com.medtroniclabs.spice.ui.mypatients.repo.PatientRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -37,8 +42,9 @@ class PatientListViewModel @Inject constructor(
     var medicalReviewDueTag: List<ChipViewItemModel>? = null
     var patientStatusTag: List<ChipViewItemModel>? = null
     var filterLiveData = MutableLiveData<Boolean>()
-
     var origin: String? = null
+    var selectedPatientDetails: PatientListRespModel? = null
+    val patientVisitLiveData = MutableLiveData<Resource<PatientVisitResponse>>()
 
     val patientsDataSource =
         Pager(config = PagingConfig(pageSize = LIST_LIMIT), pagingSourceFactory = {
@@ -81,5 +87,13 @@ class PatientListViewModel @Inject constructor(
         return listOf(patientStatusTag, medicalReviewDueTag).count { !it.isNullOrEmpty() }
     }
 
+    fun createPatientVisit(request: PatientVisitRequest) {
+        viewModelScope.launch(dispatcherIO) {
+            patientVisitLiveData.postLoading()
+            patientVisitLiveData.postValue(
+                patientRepository.createPatientVisit(request)
+            )
+        }
+    }
 }
 

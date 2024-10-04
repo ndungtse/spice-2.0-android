@@ -1394,7 +1394,7 @@ object CommonUtils {
 
     fun isPatientListRequired(origin: String?): Boolean {
         return when (origin) {
-            MenuConstants.MY_PATIENTS_MENU_ID -> true
+            null, MenuConstants.MY_PATIENTS_MENU_ID -> true
             else -> false
         }
     }
@@ -1405,15 +1405,15 @@ object CommonUtils {
     }
 
     fun isSL(): Boolean {
-        return SecuredPreference.getString(SecuredPreference.EnvironmentKey.APPLICATION.name) == SPICE.SIERRA_LEONE.name
+        return SecuredPreference.getString(SecuredPreference.EnvironmentKey.APPLICATION.name).equals(SPICE.SIERRA_LEONE.name, true)
     }
 
     fun isBD(): Boolean {
-        return SecuredPreference.getString(SecuredPreference.EnvironmentKey.APPLICATION.name) == SPICE.BANGLADESH.name
+        return SecuredPreference.getString(SecuredPreference.EnvironmentKey.APPLICATION.name).equals(SPICE.BANGLADESH.name, true)
     }
 
     fun isAfrica(): Boolean {
-        return SecuredPreference.getString(SecuredPreference.EnvironmentKey.APPLICATION.name) == SPICE.AFRICA.name
+        return SecuredPreference.getString(SecuredPreference.EnvironmentKey.APPLICATION.name).equals(SPICE.AFRICA.name, true)
     }
 
     fun ncdType(): String {

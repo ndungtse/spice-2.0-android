@@ -214,11 +214,11 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
                 return NCD.lowercase()
             }
 
-            MATERNAL_HEALTH -> {
+            MATERNAL_HEALTH.lowercase() -> {
                 return DefinedParams.PregnancyANC.lowercase()
             }
 
-            MENTAL_HEALTH -> {
+            MENTAL_HEALTH.lowercase() -> {
                 return MENTAL_HEALTH.lowercase()
             }
 
@@ -245,7 +245,13 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
         addOrReuseFragment(
             R.id.medicalDiagnosisContainer,
             NCDMedicalReviewDiagnosisCardFragment.TAG,
-            NCDMedicalReviewDiagnosisCardFragment.newInstance()
+            NCDMedicalReviewDiagnosisCardFragment.newInstance(
+                patientDetailViewModel.getNCDInitialMedicalReview(),
+                patientDetailViewModel.getGenderIsFemale() && getMenuId().equals(
+                    DefinedParams.PregnancyANC.lowercase(),
+                    true
+                )
+            )
         )
         binding.btnLayout.btnNext.safeClickListener(this)
         hideLoading()

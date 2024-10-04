@@ -4,6 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.medtroniclabs.spice.appextensions.postLoading
+import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.model.PatientDetailRequest
 import com.medtroniclabs.spice.model.PatientListRespModel
@@ -78,5 +79,9 @@ class PatientDetailViewModel @Inject constructor(
 
     fun getNCDInitialMedicalReview():Boolean {
         return patientDetailsLiveData.value?.data?.initialReviewed ?: false
+    }
+
+    fun getGenderIsFemale():Boolean {
+        return patientDetailsLiveData.value?.data?.gender?.equals(DefinedParams.female, ignoreCase = true) == true
     }
 }

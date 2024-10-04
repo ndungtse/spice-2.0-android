@@ -13,7 +13,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <include
-            android:id="@+id/diagnosis_card"
+            android:id="@+id/diagnosisCard"
             layout="@layout/diagnosis_card_layout"
             android:layout_width="@dimen/_0dp"
             android:layout_height="wrap_content"
@@ -21,7 +21,7 @@
             android:layout_weight="1" />
 
         <include
-            android:id="@+id/weight_card"
+            android:id="@+id/bpCard"
             layout="@layout/diagnosis_card_layout"
             android:layout_width="@dimen/_0dp"
             android:layout_height="wrap_content"
@@ -29,7 +29,7 @@
             android:layout_weight="1" />
 
         <include
-            android:id="@+id/estimated_delivery_date_card"
+            android:id="@+id/bgCard"
             layout="@layout/diagnosis_card_layout"
             android:layout_width="@dimen/_0dp"
             android:layout_height="wrap_content"
@@ -46,25 +46,28 @@
         app:layout_constraintTop_toBottomOf="@id/firstRow">
 
         <include
-            android:id="@+id/pregnancy_details_card"
+            android:id="@+id/pregnancyCard"
             layout="@layout/diagnosis_card_layout"
             android:layout_width="@dimen/_0dp"
+            android:visibility="gone"
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/_8sdp"
             android:layout_weight="1" />
 
         <include
-            android:id="@+id/blood_pressure_card"
+            android:id="@+id/weightCard"
             layout="@layout/diagnosis_card_layout"
             android:layout_width="@dimen/_0dp"
+            android:visibility="gone"
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/_8sdp"
             android:layout_weight="1" />
 
         <include
-            android:id="@+id/blood_glucose_card"
+            android:id="@+id/eddCard"
             layout="@layout/diagnosis_card_layout"
             android:layout_width="@dimen/_0dp"
+            android:visibility="gone"
             android:layout_height="wrap_content"
             android:layout_weight="1" />
     </LinearLayout>

@@ -85,7 +85,6 @@ class NCDComorbiditiesFragment : BaseFragment() {
             binding.etPhysicalExaminationComments.gone()
             binding.tvCommentsTitle.gone()
             tvSystemicExaminationTitle.text = getString(R.string.comorbidities)
-            tagPhysicalExamination.isSingleSelection = true
             tagView =
                 TagListCustomView(
                     root.context,

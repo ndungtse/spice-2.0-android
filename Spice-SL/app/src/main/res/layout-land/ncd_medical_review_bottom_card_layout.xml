@@ -274,11 +274,11 @@
             android:background="@color/medium_blue" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/clBtn"
             android:layout_width="@dimen/_0dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_weight="0.4"
-            android:visibility="visible">
+            android:layout_weight="0.4">
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btnNext"

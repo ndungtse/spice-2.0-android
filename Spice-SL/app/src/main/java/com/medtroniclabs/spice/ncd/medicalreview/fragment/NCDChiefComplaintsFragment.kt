@@ -83,7 +83,6 @@ class NCDChiefComplaintsFragment : BaseFragment() {
             binding.etPhysicalExaminationComments.visible()
             binding.tvCommentsTitle.gone()
             tvSystemicExaminationTitle.text = getString(R.string.chief_complaints)
-            tagPhysicalExamination.isSingleSelection = true
             tagView =
                 TagListCustomView(
                     root.context,

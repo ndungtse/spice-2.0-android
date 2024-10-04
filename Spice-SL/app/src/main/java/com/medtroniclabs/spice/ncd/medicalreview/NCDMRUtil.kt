@@ -17,4 +17,6 @@ object NCDMRUtil {
     const val NCD = "NCD"
     const val MATERNAL_HEALTH = "MATERNALHEALTH"
     const val MENTAL_HEALTH = "MENTALHEALTH"
+    const val IS_INITIAL_MR = "ISINITIALMR"
+    const val IS_FEMALE = "ISFEMALE"
 }

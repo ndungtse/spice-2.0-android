@@ -21,14 +21,19 @@ import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.SearchLength
+import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.databinding.FragmentPatientSearchBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.model.PatientListRespModel
+import com.medtroniclabs.spice.ncd.data.PatientVisitRequest
+import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil
+import com.medtroniclabs.spice.ncd.medicalreview.NCDMedicalReviewCMRActivity
+import com.medtroniclabs.spice.network.resource.ResourceState
+import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.MenuConstants
 import com.medtroniclabs.spice.ui.home.AssessmentToolsActivity
 import com.medtroniclabs.spice.ui.medicalreview.addnewmember.AddNewMemberActivity
-import com.medtroniclabs.spice.ui.mypatients.NCDMedicalReviewActivity
 import com.medtroniclabs.spice.ui.mypatients.PatientSelectionListener
 import com.medtroniclabs.spice.ui.mypatients.PatientsListAdapter
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientListViewModel
@@ -129,6 +134,48 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
                 }
             })
         }
+        patientListViewModel.patientVisitLiveData.observe(viewLifecycleOwner) { resourceState ->
+            when (resourceState.state) {
+                ResourceState.LOADING -> {
+                    (activity as BaseActivity).showLoading()
+                }
+
+                ResourceState.SUCCESS -> {
+                    (activity as BaseActivity).hideLoading()
+                    resourceState.data?.let {
+                        val destinationIntent =
+                            if (patientListViewModel.selectedPatientDetails?.initialReviewed == true) {
+                                NCDMedicalReviewCMRActivity::class.java
+                            } else {
+                                AssessmentToolsActivity::class.java
+                            }
+                        val intent =
+                            Intent(requireContext(), destinationIntent).apply {
+                                putExtra(NCDMRUtil.EncounterReference, it.encounterReference)
+                                putExtra(
+                                    DefinedParams.FhirId,
+                                    patientListViewModel.selectedPatientDetails?.id
+                                )
+                                putExtra(
+                                    DefinedParams.PatientId,
+                                    patientListViewModel.selectedPatientDetails?.id
+                                )
+                                putExtra(DefinedParams.ORIGIN, patientListViewModel.origin)
+                                putExtra(
+                                    DefinedParams.Gender,
+                                    patientListViewModel.selectedPatientDetails?.gender
+                                )
+                            }
+                        startActivity(intent)
+                    }
+                }
+
+                ResourceState.ERROR -> {
+                    (activity as BaseActivity).hideLoading()
+                    showErrorDialog(getString(R.string.error), getString(R.string.no_internet_error))
+                }
+            }
+        }
     }
 
 
@@ -151,6 +198,7 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
         binding.llFilter.btnFilter.safeClickListener(this)
         binding.loadingProgress.safeClickListener(this)
         binding.btnAddNewMember.safeClickListener(this)
+        binding.btnAddNewMember.visibility = if (CommonUtils.isSL()) View.VISIBLE else View.GONE
     }
 
     private val searchListener = object : TextWatcher {
@@ -216,7 +264,22 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
             } else {
                 val destinationIntent = when (patientListViewModel.origin?.lowercase()) {
                     MenuConstants.REGISTRATION.lowercase() -> RegistrationActivity::class.java
-                    MenuConstants.MY_PATIENTS_MENU_ID.lowercase(), MenuConstants.ASSESSMENT.lowercase() -> AssessmentToolsActivity::class.java
+                    MenuConstants.ASSESSMENT.lowercase() -> AssessmentToolsActivity::class.java
+                    MenuConstants.MY_PATIENTS_MENU_ID.lowercase() -> {
+                        patientListViewModel.selectedPatientDetails = item
+                        withNetworkAvailability(online = {
+                            patientListViewModel.createPatientVisit(
+                                PatientVisitRequest(
+                                    patientReference = item.patientId,
+                                    provenance = ProvanceDto(
+                                    ),
+                                    memberReference = item.id
+                                )
+                            )
+                        })
+                        null
+                    }
+
                     else -> null
                 }
                 destinationIntent?.let { destIntent ->

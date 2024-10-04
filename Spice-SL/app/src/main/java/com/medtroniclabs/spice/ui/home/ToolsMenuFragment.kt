@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.google.android.flexbox.FlexDirection
 import com.google.android.flexbox.FlexboxLayoutManager
 import com.google.android.flexbox.JustifyContent
+import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
@@ -62,6 +63,9 @@ class ToolsMenuFragment : BaseFragment(), MenuSelectionListener {
         }
         viewModel.getMenuForClinicalWorkflows(requireArguments().getString(DefinedParams.Gender))
         attachObservers()
+        if (getEncounterReference().isNotBlank()) {
+            setTitle(requireContext().getString(R.string.home_title))
+        }
     }
 
     private fun attachObservers() {
@@ -75,33 +79,6 @@ class ToolsMenuFragment : BaseFragment(), MenuSelectionListener {
                     (activity as BaseActivity).hideLoading()
                     resourceState.data?.let {
                         setAdapterViews(it)
-                    }
-                }
-
-                ResourceState.ERROR -> {
-                    (activity as BaseActivity).hideLoading()
-                }
-            }
-        }
-
-        viewModel.patientVisitLiveData.observe(viewLifecycleOwner) { resourceState ->
-            when (resourceState.state) {
-                ResourceState.LOADING -> {
-                    (activity as BaseActivity).showLoading()
-                }
-
-                ResourceState.SUCCESS -> {
-                    (activity as BaseActivity).hideLoading()
-                    resourceState.data?.let {
-                        val intent =
-                            Intent(requireContext(), NCDMedicalReviewActivity::class.java).apply {
-                                putExtra(EncounterReference, it.encounterReference)
-                                putExtra(MENU_ID, viewModel.menuId)
-                                putExtra(DefinedParams.FhirId, getMemberReference())
-                                putExtra(DefinedParams.PatientId, getPatientReference())
-                                putExtra(DefinedParams.ORIGIN, getOrigin())
-                            }
-                        startActivity(intent)
                     }
                 }
 
@@ -142,15 +119,15 @@ class ToolsMenuFragment : BaseFragment(), MenuSelectionListener {
 
             else -> {
                 if (getOrigin().equals(MenuConstants.MY_PATIENTS_MENU_ID, true)) {
-                    withNetworkAvailability(online = {
-                        viewModel.menuId = menuId
-                        viewModel.createPatientVisit(
-                            PatientVisitRequest(
-                                patientReference = getPatientReference(), provenance = ProvanceDto(
-                                ), memberReference = getMemberReference()
-                            )
-                        )
-                    })
+                    val intent =
+                        Intent(requireContext(), NCDMedicalReviewActivity::class.java).apply {
+                            putExtra(EncounterReference, getEncounterReference())
+                            putExtra(MENU_ID, menuId)
+                            putExtra(DefinedParams.FhirId, getMemberReference())
+                            putExtra(DefinedParams.PatientId, getPatientReference())
+                            putExtra(DefinedParams.ORIGIN, getOrigin())
+                        }
+                    startActivity(intent)
                 } else {
                     startAssessmentActivity(menuId, null)
                 }
@@ -182,5 +159,9 @@ class ToolsMenuFragment : BaseFragment(), MenuSelectionListener {
 
     private fun getOrigin(): String {
         return requireArguments().getString(DefinedParams.ORIGIN) ?: ""
+    }
+
+    private fun getEncounterReference(): String {
+        return requireArguments().getString(EncounterReference) ?: ""
     }
 }

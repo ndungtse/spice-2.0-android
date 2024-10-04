@@ -6,6 +6,7 @@ import androidx.activity.viewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.databinding.ActivityToolsBinding
+import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.EncounterReference
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.landing.LandingActivity
 import dagger.hilt.android.AndroidEntryPoint
@@ -43,6 +44,7 @@ class AssessmentToolsActivity : BaseActivity() {
         bundle.putString(DefinedParams.FhirId, intent.getStringExtra(DefinedParams.FhirId))
         bundle.putString(DefinedParams.ORIGIN, intent.getStringExtra(DefinedParams.ORIGIN))
         bundle.putString(DefinedParams.Gender, intent.getStringExtra(DefinedParams.Gender))
+        bundle.putString(EncounterReference, intent.getStringExtra(EncounterReference))
         val fragmentTag =
             ToolsMenuFragment.TAG
         var fragment = supportFragmentManager.findFragmentByTag(fragmentTag)

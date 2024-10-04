@@ -8,7 +8,10 @@ import androidx.core.content.ContextCompat.getColor
 import androidx.core.content.res.ResourcesCompat
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.invisible
+import com.medtroniclabs.spice.appextensions.setVisible
 import com.medtroniclabs.spice.databinding.FragmentNcdMedicalReviewDiagnosisCardBinding
+import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.IS_FEMALE
+import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.IS_INITIAL_MR
 import com.medtroniclabs.spice.ui.BaseFragment
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -26,8 +29,13 @@ class NCDMedicalReviewDiagnosisCardFragment : BaseFragment() {
 
     companion object {
         const val TAG = "NCDMedicalReviewDiagnosisCardFragment"
-        fun newInstance() =
-            NCDMedicalReviewDiagnosisCardFragment()
+        fun newInstance(isInitial: Boolean, isFemale:Boolean) =
+            NCDMedicalReviewDiagnosisCardFragment().apply {
+                arguments = Bundle().apply {
+                    putBoolean(IS_INITIAL_MR, isInitial)
+                    putBoolean(IS_FEMALE, isFemale)
+                }
+            }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -35,38 +43,50 @@ class NCDMedicalReviewDiagnosisCardFragment : BaseFragment() {
         initView()
     }
 
+    private fun getInitialMr(): Boolean {
+        return arguments?.getBoolean(IS_INITIAL_MR) ?: false
+    }
+
+    private fun getIsFemale(): Boolean {
+        return arguments?.getBoolean(IS_FEMALE) ?: false
+    }
+
     private fun initView() {
-        // TODO REMOVE THE HARD CODE STRING
+        val hyphen = getString(R.string.hyphen_symbol)
         binding.apply {
+            val isVisible = !getInitialMr() && getIsFemale()
+            pregnancyCard.root.setVisible(isVisible)
+            weightCard.root.setVisible(isVisible)
+            eddCard.root.setVisible(isVisible)
+
             diagnosisCard.tvDiagnosisLbl.text = getString(R.string.diagnosis)
-            diagnosisCard.tvDiagnosis.text = "HTN, DM (Provisional)"
+            diagnosisCard.tvDiagnosis.text = hyphen
             diagnosisCard.tvDiagnosisConfirm.text = getString(R.string.confirm_diagnoses)
 
-            weightCard.tvDiagnosisLbl.text = getString(R.string.weight)
-            weightCard.tvDiagnosis.text = "75 Kg"
-            weightCard.tvDiagnosisConfirm.invisible()
+            bpCard.tvDiagnosisLbl.text = getString(R.string.blood_pressure)
+            bpCard.tvDiagnosis.text = hyphen
+            bpCard.tvDiagnosisConfirm.text = getString(R.string.view_details)
 
-            estimatedDeliveryDateCard.tvDiagnosisLbl.text =
-                getString(R.string.estimated_delivery_date)
-            estimatedDeliveryDateCard.tvDiagnosis.text = "75 Kg"
-            estimatedDeliveryDateCard.tvDiagnosisConfirm.text = "6 weeks pregnant"
+            bgCard.tvDiagnosisLbl.text = getString(R.string.blood_glucose)
+            bgCard.tvDiagnosis.text = hyphen
+            bgCard.tvDiagnosisConfirm.text = getString(R.string.view_details)
 
-            pregnancyDetailsCard.tvDiagnosisLbl.text = getString(R.string.pregnancy_details)
-            pregnancyDetailsCard.tvDiagnosis.apply {
+            pregnancyCard.tvDiagnosisLbl.text = getString(R.string.pregnancy_details)
+            pregnancyCard.tvDiagnosis.apply {
                 text = getString(R.string.edit_details)
                 setTextColor(getColor(requireContext(), R.color.medium_blue))
                 typeface = ResourcesCompat.getFont(requireContext(), R.font.inter_regular)
             }
-            pregnancyDetailsCard.tvDiagnosisConfirm.invisible()
+            pregnancyCard.tvDiagnosisConfirm.invisible()
 
-            bloodGlucoseCard.tvDiagnosisLbl.text = getString(R.string.pregnancy_details)
-            bloodGlucoseCard.tvDiagnosis.text = "120/80 mmHg"
-            bloodGlucoseCard.tvDiagnosisConfirm.text = getString(R.string.view_details)
+            weightCard.tvDiagnosisLbl.text = getString(R.string.weight)
+            weightCard.tvDiagnosis.text = hyphen
+            weightCard.tvDiagnosisConfirm.invisible()
 
-            bloodPressureCard.tvDiagnosisLbl.text = getString(R.string.pregnancy_details)
-            bloodPressureCard.tvDiagnosis.text = "8 (mmol/L)"
-            bloodPressureCard.tvDiagnosisConfirm.text = getString(R.string.view_details)
-
+            eddCard.tvDiagnosisLbl.text =
+                getString(R.string.estimated_delivery_date)
+            eddCard.tvDiagnosis.text = hyphen
+            eddCard.tvDiagnosisConfirm.text = hyphen
         }
     }
 }

@@ -82,7 +82,6 @@ class NCDObstetricExaminationFragment : BaseFragment() {
             binding.etPhysicalExaminationComments.visible()
             binding.tvCommentsTitle.gone()
             tvSystemicExaminationTitle.text = getString(R.string.obstetric_examination)
-            tagPhysicalExamination.isSingleSelection = true
             tagView =
                 TagListCustomView(
                     root.context,

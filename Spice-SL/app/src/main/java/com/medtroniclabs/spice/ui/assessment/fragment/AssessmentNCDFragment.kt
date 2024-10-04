@@ -161,10 +161,12 @@ class AssessmentNCDFragment : BaseFragment(), FormEventListener, View.OnClickLis
 
     private fun attachObserver() {
         viewModel.formLayoutsNcdLiveData.observe(viewLifecycleOwner) { data ->
-            val formFieldsType = object : TypeToken<FormResponse>() {}.type
-            val formFields: FormResponse = Gson().fromJson(data, formFieldsType)
-            formGenerator.populateViews(formFields.formLayout)
-            assessmentJSON = formFields.formLayout
+            if (data != null) {
+                val formFieldsType = object : TypeToken<FormResponse>() {}.type
+                val formFields: FormResponse = Gson().fromJson(data, formFieldsType)
+                formGenerator.populateViews(formFields.formLayout)
+                assessmentJSON = formFields.formLayout
+            }
             getPatientDetails()
         }
 
