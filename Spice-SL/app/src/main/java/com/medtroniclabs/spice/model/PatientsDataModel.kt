@@ -12,6 +12,8 @@ data class PatientsDataModel(
     val referencePatientId: String? = null,
     val filter: MedicalReviewFilterModel? = null,
     val type: String? = null,
+    var countryId: Long? = null,
+    var tenantId: Long? = null,
     val requestFrom: String? = CommonUtils.requestFrom()
 )
 

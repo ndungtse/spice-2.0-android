@@ -1,5 +1,6 @@
 package com.medtroniclabs.spice.ncd.medicalreview.fragment
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -15,6 +16,12 @@ import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.databinding.FragmentNcdMedicalReviewDiagnosisCardBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.ncd.data.NCDDiagnosisGetRequest
+import com.medtroniclabs.spice.mappingkey.Screening
+import com.medtroniclabs.spice.ncd.assessment.dialog.BPLogListDialog
+import com.medtroniclabs.spice.ncd.assessment.dialog.GlucoseLogListDialog
+import com.medtroniclabs.spice.ncd.assessment.ui.AssessmentReadingActivity
+import com.medtroniclabs.spice.ncd.assessment.viewmodel.BloodPressureViewModel
+import com.medtroniclabs.spice.ncd.assessment.viewmodel.GlucoseViewModel
 import com.medtroniclabs.spice.ncd.medicalreview.NCDDialogDismissListener
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.IS_FEMALE
@@ -24,6 +31,7 @@ import com.medtroniclabs.spice.ncd.medicalreview.dialog.NCDDiagnosisDialogFragme
 import com.medtroniclabs.spice.ncd.medicalreview.dialog.NCDPatientHistoryDialog
 import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDMedicalReviewDiagnosisCardViewModel
 import com.medtroniclabs.spice.network.resource.ResourceState
+import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -35,6 +43,8 @@ class NCDMedicalReviewDiagnosisCardFragment : BaseFragment(), View.OnClickListen
     private val patientDetailViewModel: PatientDetailViewModel by activityViewModels()
     private val medicalReviewDiagnosisCardViewModel: NCDMedicalReviewDiagnosisCardViewModel by activityViewModels()
     private lateinit var binding: FragmentNcdMedicalReviewDiagnosisCardBinding
+    private val bpViewModel: BloodPressureViewModel by activityViewModels()
+    private val glucoseViewModel: GlucoseViewModel by activityViewModels()
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -79,6 +89,46 @@ class NCDMedicalReviewDiagnosisCardFragment : BaseFragment(), View.OnClickListen
 
                 ResourceState.ERROR -> {
 
+                }
+            }
+        }
+        bpViewModel.bpLogListResponseLiveData.observe(viewLifecycleOwner) { resourceState ->
+            when (resourceState.state) {
+                ResourceState.LOADING -> {
+                    (activity as? BaseActivity?)?.showLoading()
+                }
+
+                ResourceState.SUCCESS -> {
+                    (activity as? BaseActivity?)?.hideLoading()
+                    val bpLogListDialog = BPLogListDialog.newInstance { addNewReading(true) }
+                    bpLogListDialog.show(childFragmentManager, BPLogListDialog.TAG)
+                }
+
+                ResourceState.ERROR -> {
+                    (activity as? BaseActivity?)?.hideLoading()
+                    resourceState.message?.let { message ->
+                        (activity as? BaseActivity?)?.showErrorDialogue(message = message) {}
+                    }
+                }
+            }
+        }
+        glucoseViewModel.glucoseLogListResponseLiveData.observe(viewLifecycleOwner) { resourceState ->
+            when (resourceState.state) {
+                ResourceState.LOADING -> {
+                    (activity as? BaseActivity?)?.showLoading()
+                }
+
+                ResourceState.SUCCESS -> {
+                    (activity as? BaseActivity?)?.hideLoading()
+                    val glucoseLogDialog = GlucoseLogListDialog.newInstance { addNewReading(false) }
+                    glucoseLogDialog.show(childFragmentManager, GlucoseLogListDialog.TAG)
+                }
+
+                ResourceState.ERROR -> {
+                    (activity as? BaseActivity?)?.hideLoading()
+                    resourceState.message?.let { message ->
+                        (activity as? BaseActivity?)?.showErrorDialogue(message = message) {}
+                    }
                 }
             }
         }
@@ -131,13 +181,19 @@ class NCDMedicalReviewDiagnosisCardFragment : BaseFragment(), View.OnClickListen
             diagnosisCard.tvDiagnosis.text = hyphen
             diagnosisCard.tvDiagnosisConfirm.text = getString(R.string.confirm_diagnoses)
 
+            val latestBP = patientDetailViewModel.recentBP()
             bpCard.tvDiagnosisLbl.text = getString(R.string.blood_pressure)
-            bpCard.tvDiagnosis.text = hyphen
-            bpCard.tvDiagnosisConfirm.text = getString(R.string.view_details)
+            bpCard.tvDiagnosis.text = latestBP.ifBlank { hyphen }
+            bpCard.tvDiagnosisConfirm.text =
+                if (latestBP.isBlank()) getString(R.string.add_new_reading) else getString(R.string.view_details)
+            bpCard.tvDiagnosisConfirm.safeClickListener(this@NCDMedicalReviewDiagnosisCardFragment)
 
+            val latestGlucose = patientDetailViewModel.recentGlucose()
             bgCard.tvDiagnosisLbl.text = getString(R.string.blood_glucose)
-            bgCard.tvDiagnosis.text = hyphen
-            bgCard.tvDiagnosisConfirm.text = getString(R.string.view_details)
+            bgCard.tvDiagnosis.text = latestGlucose.ifBlank { hyphen }
+            bgCard.tvDiagnosisConfirm.text =
+                if (latestGlucose.isBlank()) getString(R.string.add_new_reading) else getString(R.string.view_details)
+            bgCard.tvDiagnosisConfirm.safeClickListener(this@NCDMedicalReviewDiagnosisCardFragment)
 
             pregnancyCard.tvDiagnosisLbl.text = getString(R.string.pregnancy_details)
             pregnancyCard.tvDiagnosis.apply {
@@ -171,13 +227,31 @@ class NCDMedicalReviewDiagnosisCardFragment : BaseFragment(), View.OnClickListen
     }
 
     override fun onClick(v: View?) {
-        when (v?.id) {
-            binding.diagnosisCard.tvDiagnosisConfirm.id -> {
+        when (v) {
+            binding.diagnosisCard.tvDiagnosisConfirm -> {
                 showDiagnosisDialog()
             }
-            binding.patientStatusCard.tvDiagnosis.id ->{
+            binding.patientStatusCard.tvDiagnosis ->{
                 showPatientHistoryDialog()
             }
+            binding.bpCard.tvDiagnosisConfirm -> {
+                if (patientDetailViewModel.recentBP().isBlank())
+                    addNewReading(true)
+                else
+                    patientDetailViewModel.getPatientFHIRId()?.let { id ->
+                        bpViewModel.bpLogList(patientId = id)
+                    }
+            }
+
+            binding.bgCard.tvDiagnosisConfirm -> {
+                if (patientDetailViewModel.recentGlucose().isBlank())
+                    addNewReading(false)
+                else
+                    patientDetailViewModel.getPatientFHIRId()?.let { id ->
+                        glucoseViewModel.glucoseLogList(patientId = id)
+                    }
+            }
+
         }
     }
 
@@ -225,6 +299,27 @@ class NCDMedicalReviewDiagnosisCardFragment : BaseFragment(), View.OnClickListen
                     diagnosisType = NCDMRUtil.getTypeForDiagnoses(getMenu())
                 )
             )
+        }
+    }
+
+    private fun addNewReading(isBP: Boolean) {
+        patientDetailViewModel.patientDetailsLiveData.value?.data?.let { detail ->
+            val intent = Intent(requireActivity(), AssessmentReadingActivity::class.java)
+            val bundle = Bundle().apply {
+                if (isBP)
+                    putString(DefinedParams.FORM_TYPE_ID, DefinedParams.BP_LOG)
+                else
+                    putString(DefinedParams.FORM_TYPE_ID, DefinedParams.GLUCOSE_LOG)
+
+                putString(DefinedParams.RelatedPersonFhirId, detail.id)
+                putString(DefinedParams.PATIENT_ID, detail.patientId)
+
+                putBoolean(Screening.is_regular_smoker, detail.isRegularSmoker ?: false)
+                putString(Screening.DateOfBirth, detail.dateOfBirth)
+                putString(DefinedParams.Gender, detail.gender)
+            }
+            intent.putExtras(bundle)
+            startActivity(intent)
         }
     }
 }

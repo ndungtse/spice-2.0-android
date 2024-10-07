@@ -64,6 +64,6 @@ class GlucoseLogListDialog(private val addNewReading: () -> Unit) : DialogFragme
 
     override fun onStart() {
         super.onStart()
-        setDialogPercent(45,55)
+        setDialogPercent(55,65)
     }
 }

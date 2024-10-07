@@ -8,6 +8,7 @@ import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.model.PatientDetailRequest
 import com.medtroniclabs.spice.model.PatientListRespModel
+import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.ui.mypatients.repo.PatientRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -83,5 +84,24 @@ class PatientDetailViewModel @Inject constructor(
 
     fun getGenderIsFemale():Boolean {
         return patientDetailsLiveData.value?.data?.gender?.equals(DefinedParams.female, ignoreCase = true) == true
+    }
+
+    fun recentBP(): String {
+        val avgBP = patientDetailsLiveData.value?.data?.avgBloodPressure
+        return if (avgBP.isNullOrEmpty()) {
+            ""
+        } else {
+            "$avgBP ${NCDMRUtil.mmHg}"
+        }
+    }
+
+    fun recentGlucose(): String {
+        val glucoseValue = patientDetailsLiveData.value?.data?.glucoseValue
+        val glucoseUnit = patientDetailsLiveData.value?.data?.glucoseUnit
+        return if (glucoseValue.isNullOrEmpty() || glucoseUnit.isNullOrEmpty()) {
+            ""
+        } else {
+            "$glucoseValue ($glucoseUnit)"
+        }
     }
 }

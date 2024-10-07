@@ -542,4 +542,8 @@ object SecuredPreference {
     fun getDeviceID(): Long? {
         return getUserDetails()?.deviceInfoId
     }
+
+    fun getCountryId(): Long? {
+        return getUserDetails()?.country?.id
+    }
 }

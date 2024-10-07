@@ -157,6 +157,7 @@ object DefinedParams {
     const val Screening = "screening"
     const val Registration = "registration"
     const val Assessment = "assessment"
+    const val MyPatients = "my_patients"
     const val Workflow = "workflow"
     const val BioData = "bioData"
     const val Country = "country"

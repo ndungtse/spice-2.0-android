@@ -64,6 +64,6 @@ class BPLogListDialog(private val addNewReading: () -> Unit) : DialogFragment(),
 
     override fun onStart() {
         super.onStart()
-        setDialogPercent(45,55)
+        setDialogPercent(55,65)
     }
 }

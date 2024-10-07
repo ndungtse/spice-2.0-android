@@ -21,6 +21,7 @@ import com.medtroniclabs.spice.ncd.data.PatientVisitResponse
 import com.medtroniclabs.spice.network.ApiHelper
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.ui.BaseViewModel
+import com.medtroniclabs.spice.ui.MenuConstants
 import com.medtroniclabs.spice.ui.mypatients.PatientsDataSource
 import com.medtroniclabs.spice.ui.mypatients.repo.PatientRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -53,12 +54,22 @@ class PatientListViewModel @Inject constructor(
                 patientRepository = patientRepository,
                 searchText = searchText,
                 filter = getFilter(),
-                origin = origin,
+                origin = getFormattedOrigin(origin),
                 isPatientListRequired = CommonUtils.isPatientListRequired(origin)
             ) { getPatientsCount ->
                 totalPatientCount.postValue(getPatientsCount)
             }
         }).flow
+
+    private fun getFormattedOrigin(origin: String?): String? {
+        return when (origin) {
+            MenuConstants.SCREENING -> DefinedParams.Screening
+            MenuConstants.REGISTRATION -> DefinedParams.Registration
+            MenuConstants.ASSESSMENT -> DefinedParams.Assessment
+            MenuConstants.MY_PATIENTS_MENU_ID -> DefinedParams.MyPatients
+            else -> null
+        }
+    }
 
     fun setFilter(trigger: Boolean) {
         filterLiveData.value = trigger

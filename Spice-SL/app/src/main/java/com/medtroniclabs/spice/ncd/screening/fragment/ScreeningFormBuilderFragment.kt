@@ -335,6 +335,10 @@ class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener, View.OnC
         }
 
         map[Screening.UnitMeasurement] = getUnitMeasurementType()
+        SecuredPreference.getCountryId()?.let { countryId ->
+            map[Screening.CountryId] = countryId
+        }
+        map[Screening.UnitMeasurement] = getUnitMeasurementType()
         val unwantedKeys = setOf(Week, Year, Month, Days)
         map.keys.removeAll(unwantedKeys)
         var result = screeningJSON?.let {

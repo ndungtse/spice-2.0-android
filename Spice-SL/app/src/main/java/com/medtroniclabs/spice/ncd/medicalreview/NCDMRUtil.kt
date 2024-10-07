@@ -37,6 +37,7 @@ object NCDMRUtil {
     const val CurrentMedication = "CurrentMedication"
     const val FrequencyTypes = "FrequencyTypes"
     const val DEFAULT = "default"
+    const val mmHg = "mmHg"
 
 
     fun validateInput(
