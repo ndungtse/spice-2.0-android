@@ -58,6 +58,7 @@ import com.medtroniclabs.spice.db.entity.PregnancyDetail
 import com.medtroniclabs.spice.db.entity.RiskFactorEntity
 import com.medtroniclabs.spice.db.entity.ScreeningEntity
 import com.medtroniclabs.spice.db.entity.SignsAndSymptomsEntity
+import com.medtroniclabs.spice.db.entity.TreatmentPlanEntity
 import com.medtroniclabs.spice.db.entity.UserProfileEntity
 import com.medtroniclabs.spice.db.entity.VillageEntity
 import com.medtroniclabs.spice.ui.assessment.AssessmentNCDEntity
@@ -74,7 +75,7 @@ import net.zetetic.database.sqlcipher.SupportOpenHelperFactory
         ProgramEntity::class, CulturesEntity::class, ConsentForm::class, ConsentEntity::class, MentalHealthEntity::class, MedicalComplianceEntity::class, ChiefDomEntity::class, DistrictEntity::class, ScreeningEntity::class, RiskFactorEntity::class,
         MedicalReviewMetaItems::class, DiseaseCategoryItems::class, ExaminationListItems::class, LabourDeliveryMetaEntity::class, FollowUp::class, FollowUpCall::class, PregnancyDetail::class, FrequencyEntity::class, ConsentForm::class,
         ProgramEntity::class, CulturesEntity::class, ConsentEntity::class, MentalHealthEntity::class, MedicalComplianceEntity::class, ChiefDomEntity::class, DistrictEntity::class, ScreeningEntity::class, RiskFactorEntity::class,
-        LifestyleEntity::class, NCDMedicalReviewMetaEntity::class, AssessmentNCDEntity::class, NCDDiagnosisEntity::class],
+        LifestyleEntity::class, NCDMedicalReviewMetaEntity::class, AssessmentNCDEntity::class, NCDDiagnosisEntity::class, TreatmentPlanEntity::class],
     version = 1
 )
 @TypeConverters(OfflineStatusTypeConverter::class)

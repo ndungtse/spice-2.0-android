@@ -1,0 +1,17 @@
+package com.medtroniclabs.spice.db.entity
+
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
+@Entity(tableName = "TreatmentPlanEntity")
+data class TreatmentPlanEntity(
+    @PrimaryKey
+    var id: Long,
+    val name: String,
+    val displayValue: String? = null,
+    val displayOrder: Int,
+    val duration: String,
+    val period: String,
+    val riskLevel: String? = null,
+    val type: String? = null
+)

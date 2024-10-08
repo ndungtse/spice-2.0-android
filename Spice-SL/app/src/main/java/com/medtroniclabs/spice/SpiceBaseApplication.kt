@@ -53,7 +53,6 @@ class SpiceBaseApplication : Application(), Configuration.Provider {
         }
     }
 
-
     /**
      * method to initialize preference
      */

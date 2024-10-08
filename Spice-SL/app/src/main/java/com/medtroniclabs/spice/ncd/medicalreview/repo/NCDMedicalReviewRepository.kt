@@ -10,11 +10,11 @@ import com.medtroniclabs.spice.ncd.data.NCDDiagnosisGetRequest
 import com.medtroniclabs.spice.ncd.data.NCDDiagnosisGetResponse
 import com.medtroniclabs.spice.ncd.data.NCDDiagnosisRequestResponse
 import com.medtroniclabs.spice.ncd.data.NCDPatientStatusRequest
+import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.Comorbidity
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.Complaints
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.Complications
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.CurrentMedication
-import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.Frequencies
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.FrequencyTypes
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.PhysicalExamination
 import com.medtroniclabs.spice.network.ApiHelper
@@ -58,15 +58,20 @@ class NCDMedicalReviewRepository @Inject constructor(
                     allData.addAll(it.frequencyTypes.map { frequencyTypes ->
                         frequencyTypes.apply { category = FrequencyTypes }
                     })
-                    allData.addAll(it.frequencies.map { frequencies ->
-                        frequencies.apply { category = Frequencies }
-                    })
 
                     // Insert everything at once into the table
                     roomHelper.insertNCDMedicalReviewMeta(allData.map { item ->
                         item.apply {
                             id = 0
                         }
+                    })
+
+                    //Handle Treatment Plan Separately
+                    roomHelper.deleteTreatmentPlan()
+                    roomHelper.insertTreatmentPlan(it.frequencies.filter { freq ->
+                        freq.type.equals(
+                            NCDMRUtil.DEFAULT
+                        )
                     })
 
                     // Handle lifestyle separately

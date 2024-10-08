@@ -252,14 +252,17 @@ class AssessmentNCDFragment : BaseFragment(), FormEventListener, View.OnClickLis
     }
 
     private fun parseDiagnosisData(data: PatientListRespModel?) {
+        val allMentalHealthForms = listOf(
+            Screening.PHQ4,
+            AssessmentDefinedParams.PHQ9,
+            AssessmentDefinedParams.GAD7
+        )
         data?.mentalHealthLevels?.let { types ->
-            val (showMH, hideMH) = listOf(
-                Screening.PHQ4,
-                AssessmentDefinedParams.PHQ9,
-                AssessmentDefinedParams.GAD7
-            ).partition { it in types }
+            val (showMH, hideMH) = allMentalHealthForms.partition { it in types }
             formGenerator.showMHView(true, showMH)
             formGenerator.showMHView(false, hideMH)
+        } ?: run {
+            formGenerator.showMHView(false, allMentalHealthForms)
         }
     }
 

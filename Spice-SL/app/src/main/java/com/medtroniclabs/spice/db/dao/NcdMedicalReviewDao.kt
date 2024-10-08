@@ -8,6 +8,7 @@ import androidx.room.Query
 import com.medtroniclabs.spice.db.entity.NCDMedicalReviewMetaEntity
 import com.medtroniclabs.spice.db.entity.LifestyleEntity
 import com.medtroniclabs.spice.db.entity.NCDDiagnosisEntity
+import com.medtroniclabs.spice.db.entity.TreatmentPlanEntity
 
 @Dao
 interface NcdMedicalReviewDao {
@@ -37,4 +38,13 @@ interface NcdMedicalReviewDao {
 
     @Query("SELECT * FROM NCDDiagnosisEntity WHERE (LOWER(type) IN (:types) OR type IS NULL) AND (LOWER(gender) = LOWER(:gender) OR gender = LOWER('Both')) ORDER BY displayOrder ASC")
     fun getNCDDiagnosisList(types: List<String>, gender: String): LiveData<List<NCDDiagnosisEntity>>
+
+    @Query("DELETE FROM TreatmentPlanEntity")
+    suspend fun deleteTreatmentPlan()
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertTreatmentPlan(items: List<TreatmentPlanEntity>)
+
+    @Query("SELECT * FROM TreatmentPlanEntity ORDER BY displayOrder ASC")
+    fun getFrequencies(): LiveData<List<TreatmentPlanEntity>>
 }

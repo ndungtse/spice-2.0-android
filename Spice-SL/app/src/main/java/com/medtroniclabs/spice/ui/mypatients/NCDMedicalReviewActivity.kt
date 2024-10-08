@@ -26,6 +26,7 @@ import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.MENTAL_HEALTH
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.MENU_ID
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.NCD
 import com.medtroniclabs.spice.ncd.medicalreview.dialog.NCDPatientHistoryDialog
+import com.medtroniclabs.spice.ncd.medicalreview.dialog.NCDTreatmentPlanDialog
 import com.medtroniclabs.spice.ncd.medicalreview.fragment.NCDChiefComplaintsFragment
 import com.medtroniclabs.spice.ncd.medicalreview.fragment.NCDClinicalNotesFragment
 import com.medtroniclabs.spice.ncd.medicalreview.fragment.NCDComorbiditiesFragment
@@ -200,6 +201,7 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
 
     private fun setListeners() {
         binding.btnLayout.btnNext.safeClickListener(this)
+        binding.btnLayout.ivTreatmentPlan.safeClickListener(this)
     }
 
     private fun getPatientId(): String? {
@@ -344,6 +346,33 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
                             getInitialMedicalReviewData()
                         }
                     }
+                }
+            }
+
+            binding.btnLayout.ivTreatmentPlan.id -> {
+                val patientId = patientDetailViewModel.getPatientId()
+                val fhirId = patientDetailViewModel.getPatientFHIRId()
+                if (patientId.isNullOrBlank() || fhirId.isNullOrBlank())
+                    return
+                else {
+                    val dialog =
+                        NCDTreatmentPlanDialog.newInstance(
+                            patientId,
+                            fhirId
+                        ) { isPositiveResult, message ->
+                            if (isPositiveResult)
+                                showSuccessDialogue(
+                                    title = getString(R.string.treatment_plan),
+                                    message = message
+                                ) {}
+                            else
+                                showErrorDialogue(
+                                    title = getString(R.string.error),
+                                    message = message,
+                                    positiveButtonName = getString(R.string.ok),
+                                ) {}
+                        }
+                    dialog.show(supportFragmentManager, NCDTreatmentPlanDialog.TAG)
                 }
             }
         }

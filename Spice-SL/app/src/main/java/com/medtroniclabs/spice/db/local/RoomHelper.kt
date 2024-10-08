@@ -42,6 +42,7 @@ import com.medtroniclabs.spice.db.entity.DistrictEntity
 import com.medtroniclabs.spice.db.entity.LifestyleEntity
 import com.medtroniclabs.spice.db.entity.NCDDiagnosisEntity
 import com.medtroniclabs.spice.db.entity.RiskFactorEntity
+import com.medtroniclabs.spice.db.entity.TreatmentPlanEntity
 import com.medtroniclabs.spice.db.entity.UserProfileEntity
 import com.medtroniclabs.spice.db.entity.VillageEntity
 import com.medtroniclabs.spice.db.response.HouseHoldEntityWithMemberCount
@@ -339,6 +340,8 @@ interface RoomHelper {
 
     fun getSymptomListByTypeForNCD(type: String): LiveData<List<SignsAndSymptomsEntity>>
 
+    suspend fun deleteTreatmentPlan()
+    suspend fun insertTreatmentPlan(items: List<TreatmentPlanEntity>)
     suspend fun deleteNCDMedicalReviewMeta()
     suspend fun insertNCDMedicalReviewMeta(items: List<NCDMedicalReviewMetaEntity>)
 
@@ -371,4 +374,5 @@ interface RoomHelper {
 
     suspend fun deleteNCDDiagnosisList()
     fun getNCDDiagnosisList(types: List<String>,gender: String): LiveData<List<NCDDiagnosisEntity>>
+    fun getFrequencies() : LiveData<List<TreatmentPlanEntity>>
 }

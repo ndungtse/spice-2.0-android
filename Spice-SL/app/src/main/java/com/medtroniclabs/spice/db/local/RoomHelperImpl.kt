@@ -63,6 +63,7 @@ import com.medtroniclabs.spice.db.entity.DistrictEntity
 import com.medtroniclabs.spice.db.entity.LifestyleEntity
 import com.medtroniclabs.spice.db.entity.NCDDiagnosisEntity
 import com.medtroniclabs.spice.db.entity.RiskFactorEntity
+import com.medtroniclabs.spice.db.entity.TreatmentPlanEntity
 import com.medtroniclabs.spice.db.entity.UserProfileEntity
 import com.medtroniclabs.spice.db.entity.VillageEntity
 import com.medtroniclabs.spice.db.response.HouseHoldEntityWithMemberCount
@@ -906,6 +907,14 @@ class RoomHelperImpl @Inject constructor(
         return assessmentDAO.getSymptomListByTypeForNCD(type)
     }
 
+    override suspend fun deleteTreatmentPlan() {
+        return ncdMedicalReviewDao.deleteTreatmentPlan()
+    }
+
+    override suspend fun insertTreatmentPlan(items: List<TreatmentPlanEntity>) {
+        return ncdMedicalReviewDao.insertTreatmentPlan(items)
+    }
+
     override suspend fun deleteNCDMedicalReviewMeta() {
         return ncdMedicalReviewDao.deleteNCDMedicalReviewMeta()
     }
@@ -981,5 +990,9 @@ class RoomHelperImpl @Inject constructor(
         gender: String
     ): LiveData<List<NCDDiagnosisEntity>> {
         return ncdMedicalReviewDao.getNCDDiagnosisList(types, gender)
+    }
+
+    override fun getFrequencies(): LiveData<List<TreatmentPlanEntity>> {
+        return ncdMedicalReviewDao.getFrequencies()
     }
 }

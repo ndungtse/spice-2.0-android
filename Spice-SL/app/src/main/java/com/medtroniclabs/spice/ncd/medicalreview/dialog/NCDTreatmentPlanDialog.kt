@@ -1,0 +1,320 @@
+package com.medtroniclabs.spice.ncd.medicalreview.dialog
+
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.AdapterView
+import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.viewModels
+import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.appextensions.gone
+import com.medtroniclabs.spice.appextensions.invisible
+import com.medtroniclabs.spice.appextensions.loadAsGif
+import com.medtroniclabs.spice.appextensions.resetImageView
+import com.medtroniclabs.spice.appextensions.setDialogPercent
+import com.medtroniclabs.spice.appextensions.visible
+import com.medtroniclabs.spice.common.DefinedParams
+import com.medtroniclabs.spice.common.DefinedParams.DefaultID
+import com.medtroniclabs.spice.common.DefinedParams.DefaultIDLabel
+import com.medtroniclabs.spice.common.DefinedParams.ID
+import com.medtroniclabs.spice.common.DefinedParams.NAME
+import com.medtroniclabs.spice.common.DefinedParams.value
+import com.medtroniclabs.spice.databinding.DialogNcdTreatmentPlanBinding
+import com.medtroniclabs.spice.db.entity.TreatmentPlanEntity
+import com.medtroniclabs.spice.formgeneration.extension.markMandatory
+import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
+import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
+import com.medtroniclabs.spice.ncd.data.NCDTreatmentPlanModel
+import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDTreatmentPlanViewModel
+import com.medtroniclabs.spice.network.resource.ResourceState
+import dagger.hilt.android.AndroidEntryPoint
+
+@AndroidEntryPoint
+class NCDTreatmentPlanDialog(private val callback: ((isPositiveResult: Boolean, message: String) -> Unit)) :
+    DialogFragment(), View.OnClickListener {
+    private lateinit var binding: DialogNcdTreatmentPlanBinding
+    private val viewModel: NCDTreatmentPlanViewModel by viewModels()
+
+    private val medicalReviewAdapter by lazy { CustomSpinnerAdapter(requireContext()) }
+    private val bPCheckAdapter by lazy { CustomSpinnerAdapter(requireContext()) }
+    private val bGCheckAdapter by lazy { CustomSpinnerAdapter(requireContext()) }
+    private val hbA1cAdapter by lazy { CustomSpinnerAdapter(requireContext()) }
+
+    companion object {
+        const val TAG = "NCDTreatmentPlanDialog"
+        fun newInstance(
+            patientId: String,
+            fhirId: String,
+            callback: ((isPositiveResult: Boolean, message: String) -> Unit)
+        ): NCDTreatmentPlanDialog {
+            val dialog = NCDTreatmentPlanDialog(callback)
+            val bundle = Bundle()
+            bundle.putString(DefinedParams.PatientId, patientId)
+            bundle.putString(DefinedParams.FhirId, fhirId)
+            dialog.arguments = bundle
+            return dialog
+        }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        initView()
+        attachObserver()
+        setListeners()
+
+        viewModel.getFrequencies()
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+    ): View {
+        binding = DialogNcdTreatmentPlanBinding.inflate(inflater, container, false)
+        dialog?.window?.setBackgroundDrawableResource(android.R.color.transparent)
+        isCancelable = false
+        return binding.root
+    }
+
+    private fun initView() {
+        arguments?.let {
+            viewModel.apply {
+                patientReference = it.getString(DefinedParams.PatientId)
+                memberReference = it.getString(DefinedParams.FhirId)
+            }
+        }
+        with(binding) {
+            tvMedicalReviewFrequencyLbl.markMandatory()
+            tvBPCheckFrequencyLbl.markMandatory()
+            tvBGCheckFrequencyLbl.markMandatory()
+            tvHbA1cFrequencyLbl.markMandatory()
+            ivClose.safeClickListener(this@NCDTreatmentPlanDialog)
+            btnCancel.safeClickListener(this@NCDTreatmentPlanDialog)
+            btnSubmit.safeClickListener(this@NCDTreatmentPlanDialog)
+            loadingProgress.safeClickListener {}
+        }
+    }
+
+    private fun attachObserver() {
+        viewModel.allFrequencies.observe(viewLifecycleOwner) { data ->
+            handleFrequencies(data)
+        }
+        viewModel.getNCDTreatmentPlanLiveData.observe(viewLifecycleOwner) { resourceState ->
+            when (resourceState.state) {
+                ResourceState.LOADING -> {
+                    showLoading()
+                }
+
+                ResourceState.SUCCESS -> {
+                    hideLoading()
+                    resourceState.data?.entity?.let {
+                        autoPopulateData(it)
+                    }
+                }
+
+                ResourceState.ERROR -> {
+                    hideLoading()
+                }
+            }
+        }
+        viewModel.updateNCDTreatmentPlanLiveData.observe(viewLifecycleOwner) { resourceState ->
+            when (resourceState.state) {
+                ResourceState.LOADING -> {
+                    showLoading()
+                }
+
+                ResourceState.SUCCESS -> {
+                    hideLoading()
+                    callback.invoke(
+                        true, resourceState.data?.message ?: ""
+                    )
+                    dismiss()
+                }
+
+                ResourceState.ERROR -> {
+                    hideLoading()
+                    callback.invoke(
+                        false,
+                        resourceState.message ?: getString(R.string.something_went_wrong_try_later)
+                    )
+                    dismiss()
+                }
+            }
+        }
+    }
+
+    private fun autoPopulateData(data: NCDTreatmentPlanModel) {
+        data.medicalReviewFrequency?.let { medicalReview ->
+            medicalReviewAdapter.getIndexOfItemByName(medicalReview.name).let {
+                binding.etMedicalReviewFrequency.setSelection(it)
+            }
+        }
+        data.bpCheckFrequency?.let { medicalReview ->
+            bPCheckAdapter.getIndexOfItemByName(medicalReview.name).let {
+                binding.etBPCheckFrequency.setSelection(it)
+            }
+        }
+        data.bgCheckFrequency?.let { medicalReview ->
+            bGCheckAdapter.getIndexOfItemByName(medicalReview.name).let {
+                binding.etBGCheckFrequency.setSelection(it)
+            }
+        }
+        data.hba1cCheckFrequency?.let { medicalReview ->
+            hbA1cAdapter.getIndexOfItemByName(medicalReview.name).let {
+                binding.etHbA1cFrequency.setSelection(it)
+            }
+        }
+    }
+
+    private fun handleFrequencies(data: List<TreatmentPlanEntity>?) {
+        data?.let { list ->
+            val dropDownList = ArrayList<Map<String, Any>>()
+            dropDownList.add(
+                hashMapOf<String, Any>(
+                    NAME to DefaultIDLabel, ID to DefaultID
+                )
+            )
+            for (item in list) {
+                dropDownList.add(
+                    hashMapOf(
+                        NAME to item.name, value to item
+                    )
+                )
+            }
+
+            medicalReviewAdapter.setData(dropDownList)
+            bPCheckAdapter.setData(dropDownList)
+            bGCheckAdapter.setData(dropDownList)
+            hbA1cAdapter.setData(dropDownList)
+
+            with(binding) {
+                etMedicalReviewFrequency.adapter = medicalReviewAdapter
+                etBPCheckFrequency.adapter = bPCheckAdapter
+                etBGCheckFrequency.adapter = bGCheckAdapter
+                etHbA1cFrequency.adapter = hbA1cAdapter
+            }
+
+            getTreatmentPlan()
+        }
+    }
+
+    private fun getTreatmentPlan() {
+        with(viewModel) {
+            getNCDTreatmentPlan(
+                NCDTreatmentPlanModel(
+                    patientReference = patientReference, memberReference = memberReference
+                )
+            )
+        }
+    }
+
+    private fun setListeners() {
+        binding.etMedicalReviewFrequency.onItemSelectedListener =
+            object : AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(
+                    adapterView: AdapterView<*>?, view: View?, pos: Int, itemId: Long
+                ) {
+                    medicalReviewAdapter.getData(pos)?.let { selectedItem ->
+                        viewModel.medicalReviewFrequency =
+                            selectedItem[value] as? TreatmentPlanEntity?
+                        validateInputs()
+                    }
+                }
+
+                override fun onNothingSelected(parent: AdapterView<*>?) {}
+            }
+        binding.etBPCheckFrequency.onItemSelectedListener =
+            object : AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(
+                    adapterView: AdapterView<*>?, view: View?, pos: Int, itemId: Long
+                ) {
+                    bPCheckAdapter.getData(pos)?.let { selectedItem ->
+                        viewModel.bpCheckFrequency = selectedItem[value] as? TreatmentPlanEntity?
+                        validateInputs()
+                    }
+                }
+
+                override fun onNothingSelected(parent: AdapterView<*>?) {}
+            }
+        binding.etBGCheckFrequency.onItemSelectedListener =
+            object : AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(
+                    adapterView: AdapterView<*>?, view: View?, pos: Int, itemId: Long
+                ) {
+                    bGCheckAdapter.getData(pos)?.let { selectedItem ->
+                        viewModel.bgCheckFrequency = selectedItem[value] as? TreatmentPlanEntity?
+                        validateInputs()
+                    }
+                }
+
+                override fun onNothingSelected(parent: AdapterView<*>?) {}
+            }
+        binding.etHbA1cFrequency.onItemSelectedListener =
+            object : AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(
+                    adapterView: AdapterView<*>?, view: View?, pos: Int, itemId: Long
+                ) {
+                    hbA1cAdapter.getData(pos)?.let { selectedItem ->
+                        viewModel.hba1cCheckFrequency = selectedItem[value] as? TreatmentPlanEntity?
+                        validateInputs()
+                    }
+                }
+
+                override fun onNothingSelected(parent: AdapterView<*>?) {}
+            }
+    }
+
+    private fun validateInputs() {
+        val haveValidInputs =
+            viewModel.medicalReviewFrequency != null && viewModel.bpCheckFrequency != null && viewModel.bgCheckFrequency != null && viewModel.hba1cCheckFrequency != null
+        binding.btnSubmit.isEnabled = haveValidInputs
+    }
+
+    override fun onClick(v: View?) {
+        when (v?.id) {
+            binding.btnCancel.id, binding.ivClose.id -> dismiss()
+            binding.btnSubmit.id -> updateTreatmentPlan()
+        }
+    }
+
+    private fun updateTreatmentPlan() {
+        with(viewModel) {
+            updateNCDTreatmentPlan(
+                NCDTreatmentPlanModel(
+                    patientReference = patientReference,
+                    memberReference = memberReference,
+                    medicalReviewFrequency = medicalReviewFrequency,
+                    bpCheckFrequency = bpCheckFrequency,
+                    bgCheckFrequency = bgCheckFrequency,
+                    hba1cCheckFrequency = hba1cCheckFrequency
+                )
+            )
+        }
+    }
+
+    fun showLoading() {
+        binding.apply {
+            btnSubmit.invisible()
+            btnCancel.invisible()
+            loadingProgress.visible()
+            loaderImage.apply {
+                loadAsGif(R.drawable.loader_spice)
+            }
+        }
+    }
+
+    fun hideLoading() {
+        binding.apply {
+            btnSubmit.visible()
+            btnCancel.visible()
+            loadingProgress.gone()
+            loaderImage.apply {
+                resetImageView()
+            }
+        }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        setDialogPercent(75, 75)
+    }
+}

@@ -2,6 +2,7 @@ package com.medtroniclabs.spice.model
 
 import com.medtroniclabs.spice.db.entity.LifestyleEntity
 import com.medtroniclabs.spice.db.entity.NCDMedicalReviewMetaEntity
+import com.medtroniclabs.spice.db.entity.TreatmentPlanEntity
 
 data class NcdMRStaticDataModel(
     val comorbidity: List<NCDMedicalReviewMetaEntity>,
@@ -10,6 +11,6 @@ data class NcdMRStaticDataModel(
     val complaints: List<NCDMedicalReviewMetaEntity>,
     val physicalExamination: List<NCDMedicalReviewMetaEntity>,
     val currentMedication: List<NCDMedicalReviewMetaEntity>,
-    val frequencies: List<NCDMedicalReviewMetaEntity>,
+    val frequencies: List<TreatmentPlanEntity>,
     val frequencyTypes: List<NCDMedicalReviewMetaEntity>
 )

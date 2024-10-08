@@ -93,6 +93,7 @@ import com.medtroniclabs.spice.ncd.data.PatientVisitRequest
 import com.medtroniclabs.spice.ncd.data.PatientVisitResponse
 import com.medtroniclabs.spice.ncd.data.BPBGListModel
 import com.medtroniclabs.spice.ncd.data.NCDPatientStatusRequest
+import com.medtroniclabs.spice.ncd.data.NCDTreatmentPlanModel
 import com.medtroniclabs.spice.ncd.data.ScreeningPatientResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -429,5 +430,13 @@ class ApiHelperImpl @Inject constructor(private val apiService: ApiService) : Ap
 
     override suspend fun createNCDPatientStatus(request: NCDPatientStatusRequest): Response<APIResponse<HashMap<String, Any>>> {
         return apiService.createNCDPatientStatus(request)
+    }
+
+    override suspend fun updateNCDTreatmentPlan(request: NCDTreatmentPlanModel): Response<APIResponse<NCDTreatmentPlanModel>> {
+        return apiService.updateNCDTreatmentPlan(request)
+    }
+
+    override suspend fun getNCDTreatmentPlan(request: NCDTreatmentPlanModel): Response<APIResponse<NCDTreatmentPlanModel>> {
+        return apiService.getNCDTreatmentPlan(request)
     }
 }
