@@ -2084,13 +2084,27 @@ class FormGenerator(
                 )
                 VIEW_TYPE_FORM_AGE -> resetAgeView(this, model)
                 VIEW_TYPE_DIALOG_CHECKBOX -> resetCheckBoxDialogView(this, model)
+                VIEW_INFORMATION_LABEL -> {
+                    resetInformationLabel(this, model)
+                }
                 else -> {
-                    val specialChildView = listOf(VIEW_TYPE_TIME)
-                    val model = serverData?.find { specialChildView.contains(it.viewType) }
-                    if (VIEW_TYPE_TIME == model?.viewType) {
-                        resetTimeView(model)
+                    if (view.tag.toString().lowercase().let { it.contains(VIEW_TYPE_TIME) || view.tag in listOf(R.id.etMinute, R.id.etHour) }) {
+                        val specialChildView = listOf(VIEW_TYPE_TIME)
+                        val model = serverData?.find { specialChildView.contains(it.viewType) }
+                        if (VIEW_TYPE_TIME == model?.viewType) {
+                            resetTimeView(model)
+                        }
                     }
                 }
+            }
+        }
+    }
+
+    private fun resetInformationLabel(view: View, model: FormLayout) {
+        getViewByTag(model.id + tvKey)?.let {
+            if ((view is TextView)) {
+                view.text = model.defaultValue ?: getString(R.string.empty)
+                resultHashMap.remove(model.id)
             }
         }
     }

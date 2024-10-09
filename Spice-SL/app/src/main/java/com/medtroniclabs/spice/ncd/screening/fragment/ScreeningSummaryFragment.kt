@@ -16,6 +16,7 @@ import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.appextensions.triggerOneTimeWorker
 import com.medtroniclabs.spice.common.CommonUtils
+import com.medtroniclabs.spice.common.CommonUtils.convertListToString
 import com.medtroniclabs.spice.common.CommonUtils.getGlucoseUnit
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
@@ -34,7 +35,6 @@ import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
 import com.medtroniclabs.spice.mappingkey.Screening
 import com.medtroniclabs.spice.mappingkey.Screening.ReferAssessment
 import com.medtroniclabs.spice.mappingkey.Screening.SuicidalIdeation
-import com.medtroniclabs.spice.ncd.screening.ScreeningActivity
 import com.medtroniclabs.spice.ncd.screening.viewmodel.GeneralDetailsViewModel
 import com.medtroniclabs.spice.ncd.screening.viewmodel.ScreeningFormBuilderViewModel
 import com.medtroniclabs.spice.network.resource.ResourceState
@@ -173,11 +173,23 @@ class ScreeningSummaryFragment : BaseFragment(), View.OnClickListener {
     ) {
         showBloodGlucoseValue(serverData, map)
         showBMIValue(serverData, map)
+        showDiabetesSymptoms(serverData, map)
         showPHQ4Score(serverData, map)
         showFurtherAssessment(map)
         showMentalHealthRelatedMetrics(map)
         showCVDRiskValue(map)
         showPregnancyOrNot(serverData, map)
+    }
+
+    private fun showDiabetesSymptoms(serverData: List<FormLayout>, map: Map<String, Any>) {
+        val groupId = FormResultComposer.findGroupIdForNCD(serverData, Screening.diabetes) ?: return
+        val subMap = map[groupId] as? Map<*, *> ?: return
+
+        val diabetesData = (subMap[Screening.diabetes] as? ArrayList<Map<String, String>>)?.mapNotNull { it[DefinedParams.NAME] } ?: return
+        if (diabetesData.isEmpty()) return
+
+        val formLayout = serverData.firstOrNull { it.id.equals(Screening.diabetes, true) } ?: return
+        showBindingValue(formLayout.title, convertListToString(ArrayList(diabetesData)))
     }
 
     private fun showPregnancyOrNot(serverData: List<FormLayout>, map: Map<String, Any>) {

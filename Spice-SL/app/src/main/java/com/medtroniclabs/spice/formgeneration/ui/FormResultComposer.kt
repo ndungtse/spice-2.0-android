@@ -130,6 +130,7 @@ class FormResultComposer {
                 Screening.Avg_Blood_pressure, Screening.Avg_Pulse, Screening.Avg_Systolic, Screening.Avg_Diastolic, Screening.bp_log_id, Screening.BPTakenOn -> Screening.BPLog_Details
                 Screening.Initial -> Screening.First_Name
                 Screening.isDiabetesDiagnosis -> Screening.DiabetesPatientType
+                Screening.diabetes -> Screening.diabetes
                 else -> {
                     if (id.endsWith(Screening.unitMeasurement_KEY)) {
                         val parts = id.split(Screening.unitMeasurement_KEY)

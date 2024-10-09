@@ -824,6 +824,9 @@ object CommonUtils {
 
     fun calculateCAGEAIDSCore(map: HashMap<String, Any>, serverData: List<FormLayout?>?) {
         var cageAid = 0
+        if (serverData?.any { it?.id == substanceAbuse } != true) {
+            return
+        }
         serverData?.let { dataList ->
             val substanceAbuseList = dataList.filter { it != null && it.family == substanceAbuse }
             substanceAbuseList.forEach { formData ->
@@ -920,7 +923,7 @@ object CommonUtils {
             if (bloodGlucoseValue != null) {
                 map[Screening.Glucose_Value] = bloodGlucoseValue
                 formatLastMealTime(map)
-                if (map.containsKey(Screening.lastMealTime) && map[Screening.lastMealTime] is String) {
+                if (map.containsKey(lastMealTime) && map[lastMealTime] is String) {
                     setFBSAndRBSValues(map, bloodGlucoseValue, 1) {
                         getRbsFbs.invoke(it)
                     }

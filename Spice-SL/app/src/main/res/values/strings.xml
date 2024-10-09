@@ -752,7 +752,7 @@
     <string name="phq9_score">PHQ9 Score</string>
     <string name="gad7_score">GAD7 Score</string>
     <string name="referred_for_nfurther_assessment">Referred for\nFurther Assessment</string>
-    <string name="no_assessment_required">No Assessment required</string>
+    <string name="no_assessment_required">No Assessment Required</string>
     <string name="cage_aid">CAGE-AID</string>
     <string name="suicidcal_ideation">Suicidal Ideation</string>
     <string name="cvd_risk_level">CVD Risk Level</string>

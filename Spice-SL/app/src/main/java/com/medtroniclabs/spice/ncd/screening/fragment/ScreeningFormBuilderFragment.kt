@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.appcompat.widget.AppCompatEditText
+import androidx.core.view.forEach
 import androidx.fragment.app.activityViewModels
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -455,9 +456,37 @@ class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener, View.OnC
                         editText.setText("")
                     }
                 }
-                formGenerator.removeIfContains(Screening.lastMealTime)
+                (formGenerator.getViewByTag(Screening.lastMealTime + formGenerator.lastMealTypeDateSuffix) as? ViewGroup)?.let { parentLayout ->
+                    parentLayout.forEach { view ->
+                        if (view is TextView) {
+                            view.isSelected = false
+                        }
+                        if (view is ViewGroup) {
+                            view.forEach { child ->
+                                if (child is TextView) {
+                                    child.isSelected = false
+                                }
+                            }
+                        }
+                    }
+                    formGenerator.removeIfContains(Screening.lastMealTime + formGenerator.lastMealTypeDateSuffix)
+                }
+                (formGenerator.getViewByTag(Screening.lastMealTime + formGenerator.lastMealTypeMeridiem) as? ViewGroup)?.let { parentLayout ->
+                    parentLayout.forEach { view ->
+                        if (view is TextView) {
+                            view.isSelected = false
+                        }
+                        if (view is ViewGroup) {
+                            view.forEach { child ->
+                                if (child is TextView) {
+                                    child.isSelected = false
+                                }
+                            }
+                        }
+                    }
+                    formGenerator.removeIfContains(Screening.lastMealTime + formGenerator.lastMealTypeMeridiem)
+                }
                 formGenerator.removeIfContains(Screening.lastMealTime + formGenerator.lastMealTypeMeridiem)
-                formGenerator.removeIfContains(Screening.lastMealTime + formGenerator.lastMealTypeDateSuffix)
                 View.GONE
             }
         }
