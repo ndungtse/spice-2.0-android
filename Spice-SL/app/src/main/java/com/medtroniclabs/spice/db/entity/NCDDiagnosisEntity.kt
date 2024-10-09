@@ -10,5 +10,6 @@ data class NCDDiagnosisEntity(
     val name: String,
     val displayOrder: Int,
     val value: String? = null,
-    var type: String? = null
+    var type: String? = null,
+    var gender: String? = null
 )

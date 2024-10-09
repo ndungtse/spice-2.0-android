@@ -976,7 +976,10 @@ class RoomHelperImpl @Inject constructor(
         return ncdMedicalReviewDao.deleteNCDDiagnosisList()
     }
 
-    override fun getNCDDiagnosisList(types: List<String>): LiveData<List<NCDDiagnosisEntity>> {
-        return ncdMedicalReviewDao.getNCDDiagnosisList(types)
+    override fun getNCDDiagnosisList(
+        types: List<String>,
+        gender: String
+    ): LiveData<List<NCDDiagnosisEntity>> {
+        return ncdMedicalReviewDao.getNCDDiagnosisList(types, gender)
     }
 }

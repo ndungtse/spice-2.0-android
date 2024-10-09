@@ -14,7 +14,6 @@ import com.medtroniclabs.spice.ncd.data.NCDDiagnosisGetResponse
 import com.medtroniclabs.spice.ncd.data.NCDDiagnosisRequestResponse
 import com.medtroniclabs.spice.ncd.medicalreview.repo.NCDMedicalReviewRepository
 import com.medtroniclabs.spice.network.resource.Resource
-import com.medtroniclabs.spice.ui.mypatients.repo.NCDMedicalReviewRepo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
@@ -24,19 +23,18 @@ import javax.inject.Inject
 class NCDDiagnosisViewModel @Inject constructor(
     @IoDispatcher private val dispatcherIO: CoroutineDispatcher,
     private val ncdMedicalReviewRepository: NCDMedicalReviewRepository,
-    private val ncdDiagnosisRepository: NCDMedicalReviewRepo
 ) : ViewModel() {
 
     var comments: String = ""
-    private val getChips = MutableLiveData<List<String>>()
+    private val getChips = MutableLiveData<Pair<List<String>,String>>()
     var selectedChips: ArrayList<ChipViewItemModel> = ArrayList()
     val getChipLiveData: LiveData<List<NCDDiagnosisEntity>> =
         getChips.switchMap {
-            ncdMedicalReviewRepository.getNCDDiagnosisList(it)
+            ncdMedicalReviewRepository.getNCDDiagnosisList(it.first,it.second)
         }
 
-    fun getChip(types: List<String>) {
-        getChips.value = types
+    fun getChip(types: List<String>, gender:String) {
+        getChips.value = Pair(types,gender)
     }
 
     val createConfirmDiagonsis = MutableLiveData<Resource<HashMap<String, Any>>>()
@@ -45,14 +43,14 @@ class NCDDiagnosisViewModel @Inject constructor(
     fun createConfirmDiagonsis(request: NCDDiagnosisRequestResponse) {
         viewModelScope.launch(dispatcherIO) {
             createConfirmDiagonsis.postLoading()
-            createConfirmDiagonsis.postValue(ncdDiagnosisRepository.createConfirmDiagonsis(request))
+            createConfirmDiagonsis.postValue(ncdMedicalReviewRepository.createConfirmDiagonsis(request))
         }
     }
 
     fun getConfirmDiagonsis(request: NCDDiagnosisGetRequest) {
         viewModelScope.launch(dispatcherIO) {
             getConfirmDiagonsis.postLoading()
-            getConfirmDiagonsis.postValue(ncdDiagnosisRepository.getConfirmDiagonsis(request))
+            getConfirmDiagonsis.postValue(ncdMedicalReviewRepository.getConfirmDiagonsis(request))
         }
     }
 

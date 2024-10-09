@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
@@ -261,7 +262,7 @@ class NCDLifestyleAssessmentFragment : BaseFragment() {
         view.gone()
     }
 
-    fun validateInput(): Boolean {
+    fun validateInput(): Pair<Boolean, AppCompatTextView> {
         viewModel.lifeStyleListUIModel?.let {
             viewModel.lifestyle = getSelectedLifeStyleList(it)
         }
@@ -295,6 +296,6 @@ class NCDLifestyleAssessmentFragment : BaseFragment() {
                 binding.tvErrorLifeStyle
             )
         }
-        return isValid
+        return Pair(isValid, binding.tvErrorLifeStyle)
     }
 }

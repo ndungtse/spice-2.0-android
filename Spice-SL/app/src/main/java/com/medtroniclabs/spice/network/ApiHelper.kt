@@ -92,6 +92,7 @@ import com.medtroniclabs.spice.ncd.data.NCDDiagnosisRequestResponse
 import com.medtroniclabs.spice.ncd.data.PatientVisitRequest
 import com.medtroniclabs.spice.ncd.data.PatientVisitResponse
 import com.medtroniclabs.spice.ncd.data.BPBGListModel
+import com.medtroniclabs.spice.ncd.data.NCDPatientStatusRequest
 import com.medtroniclabs.spice.ncd.data.ScreeningPatientResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -193,4 +194,6 @@ interface ApiHelper {
     suspend fun isPatientAlreadyRegistered(request: HashMap<String, Any>): Response<APIResponse<HashMap<String, Any>>>
     suspend fun createConfirmDiagonsis(request: NCDDiagnosisRequestResponse): Response<APIResponse<HashMap<String, Any>>>
     suspend fun getConfirmDiagonsis(request: NCDDiagnosisGetRequest): Response<APIResponse<NCDDiagnosisGetResponse>>
+
+    suspend fun createNCDPatientStatus(request: NCDPatientStatusRequest): Response<APIResponse<HashMap<String, Any>>>
 }

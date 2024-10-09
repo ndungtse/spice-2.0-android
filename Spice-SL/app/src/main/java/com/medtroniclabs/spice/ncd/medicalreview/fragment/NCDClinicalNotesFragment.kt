@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.widget.AppCompatEditText
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
@@ -13,6 +14,7 @@ import com.medtroniclabs.spice.formgeneration.extension.markMandatory
 import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDClinicalNotesViewModel
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil
+
 class NCDClinicalNotesFragment : BaseFragment() {
 
     private val viewModel: NCDClinicalNotesViewModel by activityViewModels()
@@ -61,7 +63,7 @@ class NCDClinicalNotesFragment : BaseFragment() {
         }
     }
 
-    fun validateInput(isMandatory: Boolean = true): Boolean {
+    fun validateInput(isMandatory: Boolean = true): Pair<Boolean, AppCompatEditText> {
         val commentsNotBlank =
             binding.etPhysicalExaminationComments.text?.isNotBlank() == true // Check if the comments are not blank
 
@@ -69,17 +71,20 @@ class NCDClinicalNotesFragment : BaseFragment() {
         if (isMandatory) {
             if (commentsNotBlank) {
                 binding.tvErrorMessage.gone()
-                return true
+                return Pair(true, binding.etPhysicalExaminationComments)
             } else {
                 binding.tvErrorMessage.visible()
-                return false
+                return Pair(false, binding.etPhysicalExaminationComments)
             }
         }
 
         if (!commentsNotBlank) {
-            return true
+            return Pair(true, binding.etPhysicalExaminationComments)
         }
 
-        return true // If no other conditions matched, input is considered valid
+        return Pair(
+            true,
+            binding.etPhysicalExaminationComments
+        ) // If no other conditions matched, input is considered valid
     }
 }

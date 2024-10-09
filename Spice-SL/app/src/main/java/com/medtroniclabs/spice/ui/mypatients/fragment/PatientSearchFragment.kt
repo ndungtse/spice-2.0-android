@@ -144,7 +144,7 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
                     (activity as BaseActivity).hideLoading()
                     resourceState.data?.let {
                         val destinationIntent =
-                            if (patientListViewModel.selectedPatientDetails?.initialReviewed == true) {
+                            if (it.initialReviewed == true) {
                                 NCDMedicalReviewCMRActivity::class.java
                             } else {
                                 AssessmentToolsActivity::class.java
@@ -152,19 +152,10 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
                         val intent =
                             Intent(requireContext(), destinationIntent).apply {
                                 putExtra(NCDMRUtil.EncounterReference, it.encounterReference)
-                                putExtra(
-                                    DefinedParams.FhirId,
-                                    patientListViewModel.selectedPatientDetails?.id
-                                )
-                                putExtra(
-                                    DefinedParams.PatientId,
-                                    patientListViewModel.selectedPatientDetails?.id
-                                )
+                                putExtra(DefinedParams.FhirId,patientListViewModel.selectedPatientDetails?.id)
+                                putExtra(DefinedParams.PatientId, patientListViewModel.selectedPatientDetails?.id)
                                 putExtra(DefinedParams.ORIGIN, patientListViewModel.origin)
-                                putExtra(
-                                    DefinedParams.Gender,
-                                    patientListViewModel.selectedPatientDetails?.gender
-                                )
+                                putExtra(DefinedParams.Gender, patientListViewModel.selectedPatientDetails?.gender)
                             }
                         startActivity(intent)
                     }

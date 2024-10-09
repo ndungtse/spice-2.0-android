@@ -6,21 +6,17 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.switchMap
 import com.medtroniclabs.spice.data.model.ChipViewItemModel
 import com.medtroniclabs.spice.db.entity.NCDMedicalReviewMetaEntity
-import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.Complications
 import com.medtroniclabs.spice.ncd.medicalreview.repo.NCDMedicalReviewRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineDispatcher
 import javax.inject.Inject
 
 @HiltViewModel
-class NCDComplicationsViewModel  @Inject constructor(
-    @IoDispatcher private val dispatcherIO: CoroutineDispatcher,
+class NCDComplicationsViewModel @Inject constructor(
     private val ncdMedicalReviewRepository: NCDMedicalReviewRepository
-) :
-    ViewModel() {
+) : ViewModel() {
 
-    var chips:ArrayList<ChipViewItemModel> = ArrayList()
+    var chips: ArrayList<ChipViewItemModel> = ArrayList()
     private val getChip = MutableLiveData<Boolean>()
     val getChipItems: LiveData<List<NCDMedicalReviewMetaEntity>> = getChip.switchMap {
         ncdMedicalReviewRepository.getComorbiditiesBasedOnType(category = Complications)

@@ -19,11 +19,13 @@ import com.medtroniclabs.spice.ncd.data.Chip
 import com.medtroniclabs.spice.ncd.data.ContinuousMedicalReview
 import com.medtroniclabs.spice.ncd.data.InitialMedicalReview
 import com.medtroniclabs.spice.ncd.data.MedicalReviewRequestResponse
+import com.medtroniclabs.spice.ncd.medicalreview.NCDDialogDismissListener
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.EncounterReference
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.MATERNAL_HEALTH
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.MENTAL_HEALTH
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.MENU_ID
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.NCD
+import com.medtroniclabs.spice.ncd.medicalreview.dialog.NCDPatientHistoryDialog
 import com.medtroniclabs.spice.ncd.medicalreview.fragment.NCDChiefComplaintsFragment
 import com.medtroniclabs.spice.ncd.medicalreview.fragment.NCDClinicalNotesFragment
 import com.medtroniclabs.spice.ncd.medicalreview.fragment.NCDComorbiditiesFragment
@@ -47,7 +49,8 @@ import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitCallBack {
+class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitCallBack ,
+    NCDDialogDismissListener {
 
     private val viewModel: NCDMedicalReviewViewModel by viewModels()
     private val patientDetailViewModel: PatientDetailViewModel by viewModels()
@@ -138,22 +141,25 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
                     if (binding.refreshLayout.isRefreshing) {
                         binding.refreshLayout.isRefreshing = false
                     }
-                    showErrorDialog()
+                    showError(true)
                 }
             }
         }
     }
 
-    private fun showError() {
+    private fun showError(isActivityClosed: Boolean = false) {
         showErrorDialogue(
             title = getString(R.string.alert),
             message = getString(R.string.something_went_wrong_try_later),
             positiveButtonName = getString(R.string.ok),
-        ) {
+        ) { isPositiveResult ->
+            if (isPositiveResult && isActivityClosed) {
+                onBackPressPopStack()
+            }
         }
     }
 
-    fun loadSummary() {
+    private fun loadSummary() {
         binding.apply {
             comorbiditiesContainer.gone()
             medicalDiagnosisContainer.gone()
@@ -247,9 +253,8 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
             NCDMedicalReviewDiagnosisCardFragment.TAG,
             NCDMedicalReviewDiagnosisCardFragment.newInstance(
                 patientDetailViewModel.getNCDInitialMedicalReview(),
-                patientDetailViewModel.getGenderIsFemale()
-                        && getMenuId().equals(DefinedParams.PregnancyANC.lowercase(), true),
-                getMenuId()
+                patientDetailViewModel.getGenderIsFemale(),
+                        getMenuId ()
             )
         )
         binding.btnLayout.btnNext.safeClickListener(this)
@@ -433,6 +438,7 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
                     chiefComplaintsFragment != null && !binding.comorbiditiesContainer.isVisible -> loadFragment(false)
                     else -> {
                         loadFragment(true)
+                        showNcdPatientStatus()
                     }
                 }
             }
@@ -449,6 +455,21 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
         initializeFragments()
     }
 
+    private fun showNcdPatientStatus() {
+        if (getMenuId().equals(NCD.lowercase(), true)) {
+            patientDetailViewModel.getPatientId()?.let {
+                NCDPatientHistoryDialog.newInstance(
+                    it,
+                    patientDetailViewModel.getPatientFHIRId(),
+                    true,
+                    isFemale = patientDetailViewModel.getGenderIsFemale()
+                ).apply {
+                    listener = this@NCDMedicalReviewActivity
+                }.show(supportFragmentManager, NCDPatientHistoryDialog.TAG)
+            }
+        }
+    }
+
     fun validateInput(): Boolean {
         val fragmentOne =
             supportFragmentManager.findFragmentById(R.id.comorbiditiesContainer) as? NCDComorbiditiesFragment
@@ -457,9 +478,18 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
         val fragmentThree =
             supportFragmentManager.findFragmentById(R.id.lifestyleAssessmentContainer) as? NCDLifestyleAssessmentFragment
         // Execute all validations
-        val isValidComorbidities = fragmentOne?.validateInput() == true
-        val isValidComplications = fragmentTwo?.validateInput() == true
-        val isValidLifestyle = fragmentThree?.validateInput() == true
+        val isValidComorbidities = fragmentOne?.validateInput()?.first == true
+        val isValidComplications = fragmentTwo?.validateInput()?.first == true
+        val isValidLifestyle = fragmentThree?.validateInput()?.first == true
+
+        val firstInvalidView = when {
+            !isValidComorbidities -> fragmentOne?.validateInput()?.second
+            !isValidComplications -> fragmentTwo?.validateInput()?.second
+            !isValidLifestyle -> fragmentThree?.validateInput()?.second
+            else -> null
+        }
+        // Request focus on the first invalid view, if it exists, and return validation result
+        firstInvalidView?.requestFocus()
         // Return true only if all validations are true
         return isValidComorbidities && isValidComplications && isValidLifestyle
     }
@@ -471,9 +501,18 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
             supportFragmentManager.findFragmentById(R.id.clinicalNotesContainer) as? NCDClinicalNotesFragment
         val fragmentThree =
             supportFragmentManager.findFragmentById(R.id.obstetricExaminationContainer) as? NCDObstetricExaminationFragment
-        val isValidChiefComplaints = fragmentOne?.validateInput() == true
-        val isValidClinicalNotes = fragmentTwo?.validateInput() == true
-        val isValidObstetricExamination = fragmentThree?.validateInput() == true
+        val isValidChiefComplaints = fragmentOne?.validateInput()?.first == true
+        val isValidClinicalNotes = fragmentTwo?.validateInput()?.first == true
+        val isValidObstetricExamination = fragmentThree?.validateInput()?.first == true
+
+        val firstInvalidView = when {
+            !isValidChiefComplaints -> fragmentOne?.validateInput()?.second
+            !isValidClinicalNotes -> fragmentTwo?.validateInput()?.second
+            !isValidObstetricExamination -> fragmentThree?.validateInput()?.second
+            else -> null
+        }
+        // Request focus on the first invalid view, if it exists, and return validation result
+        firstInvalidView?.requestFocus()
         return isValidChiefComplaints && isValidClinicalNotes && isValidObstetricExamination
     }
 
@@ -532,5 +571,9 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
                 binding.refreshLayout.isRefreshing = false
             }
         }
+    }
+
+    override fun onDialogDismissed() {
+        // do it
     }
 }

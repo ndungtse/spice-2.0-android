@@ -9,5 +9,6 @@ data class PatientVisitRequest(
 )
 
 data class PatientVisitResponse(
-    val encounterReference: String? = null
+    val encounterReference: String? = null,
+    val initialReviewed:Boolean? = false
 )

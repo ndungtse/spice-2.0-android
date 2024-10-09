@@ -19,19 +19,28 @@ import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DateUtils.getCurrentYearAsDouble
 import com.medtroniclabs.spice.common.DefinedParams
+import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.databinding.FragmentNcdPatientHistoryDialogBinding
-import com.medtroniclabs.spice.db.entity.SignsAndSymptomsEntity
+import com.medtroniclabs.spice.db.entity.NCDDiagnosisEntity
 import com.medtroniclabs.spice.formgeneration.extension.markMandatory
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.ui.SingleSelectionCustomView
 import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
+import com.medtroniclabs.spice.mappingkey.Screening.Female
+import com.medtroniclabs.spice.mappingkey.Screening.Male
+import com.medtroniclabs.spice.ncd.data.NCDPatientStatusRequest
+import com.medtroniclabs.spice.ncd.data.NcdPatientStatus
+import com.medtroniclabs.spice.ncd.medicalreview.NCDDialogDismissListener
+import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil
 import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDPatientHistoryViewModel
+import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class NCDPatientHistoryDialog : DialogFragment(), View.OnClickListener {
+    var listener: NCDDialogDismissListener? = null
     private lateinit var binding: FragmentNcdPatientHistoryDialogBinding
     private val viewModel: NCDPatientHistoryViewModel by viewModels()
     val adapter by lazy { CustomSpinnerAdapter(requireContext()) }
@@ -68,12 +77,45 @@ class NCDPatientHistoryDialog : DialogFragment(), View.OnClickListener {
     }
 
     companion object {
-        const val TAG = "PatientHistoryDialog"
+        const val TAG = "NCDPatientHistoryDialog"
         const val Diabetes = "Diabetes"
         const val Hypertension = "Hypertension"
         const val Known_patient = "Known Patient"
-        fun newInstance(): NCDPatientHistoryDialog {
-            return NCDPatientHistoryDialog()
+        const val IS_CLOSED = "Is Closed"
+        fun newInstance(
+            patientReference: String?,
+            memberReference: String?,
+            isCloseNeeded: Boolean = false,
+            isFemale: Boolean
+        ): NCDPatientHistoryDialog {
+            return NCDPatientHistoryDialog().apply {
+                arguments = Bundle().apply {
+                    putString(NCDMRUtil.PATIENT_REFERENCE, patientReference)
+                    putString(NCDMRUtil.MEMBER_REFERENCE, memberReference)
+                    putBoolean(IS_CLOSED, isCloseNeeded)
+                    putBoolean(NCDMRUtil.IS_FEMALE, isFemale)
+                }
+            }
+        }
+    }
+
+    private fun getPatientReference(): String? {
+        return arguments?.getString(NCDMRUtil.PATIENT_REFERENCE)
+    }
+
+    private fun getMemberReference(): String? {
+        return arguments?.getString(NCDMRUtil.MEMBER_REFERENCE)
+    }
+
+    private fun getCloseNeeded(): Boolean {
+        return arguments?.getBoolean(IS_CLOSED) ?: false
+    }
+
+    private fun getGender(): String {
+        return if (arguments?.getBoolean(NCDMRUtil.IS_FEMALE) == true) {
+            Female.lowercase()
+        } else {
+            Male.lowercase()
         }
     }
 
@@ -88,6 +130,21 @@ class NCDPatientHistoryDialog : DialogFragment(), View.OnClickListener {
         viewModel.getSymptomListByTypeForNCDLiveData.observe(viewLifecycleOwner) {
             loadSiteDetails(ArrayList(it))
         }
+        viewModel.createNCDPatientStatus.observe(viewLifecycleOwner) { resourceState ->
+            when (resourceState.state) {
+                ResourceState.LOADING -> {
+                }
+
+                ResourceState.SUCCESS -> {
+                    listener?.onDialogDismissed()
+                    dismiss()
+                }
+
+                ResourceState.ERROR -> {
+
+                }
+            }
+        }
     }
 
     private fun setListeners() {
@@ -98,9 +155,10 @@ class NCDPatientHistoryDialog : DialogFragment(), View.OnClickListener {
                 ) {
                     adapter.getData(pos)?.let {
                         val selectedId = (it[DefinedParams.id] as? Long) ?: -1L
-                        val selectedValue = it[DefinedParams.NAME] as String?
+                        val selectedName = it[DefinedParams.NAME] as String?
+                        val value = it[DefinedParams.value] as String?
                         if (selectedId != -1L) {
-                            viewModel.value = selectedValue
+                            viewModel.value = value
                         } else {
                             viewModel.value = null
                         }
@@ -111,7 +169,7 @@ class NCDPatientHistoryDialog : DialogFragment(), View.OnClickListener {
             }
     }
 
-    private fun loadSiteDetails(data: ArrayList<SignsAndSymptomsEntity>) {
+    private fun loadSiteDetails(data: ArrayList<NCDDiagnosisEntity>) {
         val list = arrayListOf<Map<String, Any>>(
             hashMapOf(
                 DefinedParams.NAME to DefinedParams.DefaultIDLabel,
@@ -121,8 +179,8 @@ class NCDPatientHistoryDialog : DialogFragment(), View.OnClickListener {
 
         data.mapNotNullTo(list) { symptoms ->
             hashMapOf<String, Any>().apply {
-                symptoms._id?.let { put(DefinedParams.ID, it) }
-                symptoms.symptom?.let { put(DefinedParams.NAME, it) }
+                symptoms.id?.let { put(DefinedParams.ID, it) }
+                symptoms.name?.let { put(DefinedParams.NAME, it) }
                 symptoms.value?.let { put(DefinedParams.value, it) }
             }.takeIf { it.isNotEmpty() }
         }
@@ -136,16 +194,19 @@ class NCDPatientHistoryDialog : DialogFragment(), View.OnClickListener {
     private fun initView() {
         binding.apply {
             ncdDiabetesHypertension.apply {
+                if (getCloseNeeded()) {
+                    ivClose.gone()
+                }
                 tvDiabetes.markMandatory()
                 tvYearOfDiagnosis.markMandatory()
                 tvYearOfDiagnosisHtn.markMandatory()
                 tvDiabetesControlledTypeLabel.markMandatory()
                 tvHypertension.markMandatory()
                 MotherNeonateUtil.initTextWatcherForString(etYearOfDiagnosis) {
-
+                    viewModel.yearForDiabetes = it
                 }
                 MotherNeonateUtil.initTextWatcherForString(etYearOfDiagnosisHtn) {
-
+                    viewModel.yearForHypertension = it
                 }
             }
             btnLayout.btnCancel.gone()
@@ -156,7 +217,7 @@ class NCDPatientHistoryDialog : DialogFragment(), View.OnClickListener {
             ivClose.safeClickListener(this@NCDPatientHistoryDialog)
 
         }
-        viewModel.getSymptoms(Diabetes)
+        viewModel.getSymptoms(Diabetes, getGender())
 
         getSingleSelectionOptions().let {
             val view = SingleSelectionCustomView(requireContext())
@@ -196,6 +257,7 @@ class NCDPatientHistoryDialog : DialogFragment(), View.OnClickListener {
                 binding.ncdDiabetesHypertension.tvYearOfDiagnosisError,
                 binding.ncdDiabetesHypertension.etYearOfDiagnosis
             )
+            showSpinnerView(selectedID)
         }
 
     private var singleSelectionCallbackForHypertension: ((selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit)? =
@@ -224,6 +286,12 @@ class NCDPatientHistoryDialog : DialogFragment(), View.OnClickListener {
             etYearOfDiagnosis.text = null
         }
         tvYearOfDiagnosis.gone()
+    }
+
+    private fun showSpinnerView(selectedValue: String) {
+        binding.ncdDiabetesHypertension.groupDiabetesSpinner.isVisible =
+            selectedValue.equals(Known_patient, true)
+        binding.ncdDiabetesHypertension.tvDiabetesControlledError.gone()
     }
 
     private fun getSingleSelectionOptions(): ArrayList<Map<String, Any>> {
@@ -266,26 +334,32 @@ class NCDPatientHistoryDialog : DialogFragment(), View.OnClickListener {
             binding.ncdDiabetesHypertension.tvHypertensionError.visible()
         }
 
-        if (isValueValid) {
-            binding.ncdDiabetesHypertension.tvDiabetesControlledError.gone()
-        } else {
-            binding.ncdDiabetesHypertension.tvDiabetesControlledError.visible()
-        }
-
         val isKnownDiabetesPatient =
             (viewModel.resultDiabetesHashMap[Diabetes] as? String)?.equals(
                 Known_patient,
                 true
             ) == true
+
+        if (isKnownDiabetesPatient && isValueValid) {
+            binding.ncdDiabetesHypertension.tvDiabetesControlledError.gone()
+        } else {
+            if (isKnownDiabetesPatient) {
+                binding.ncdDiabetesHypertension.tvDiabetesControlledError.visible()
+            }
+        }
+
+
         val isKnownHypertensionPatient =
             (viewModel.resultHypertensionHashMap[Hypertension] as? String)?.equals(
                 Known_patient,
                 true
             ) == true
-        val knownPatientValidForDiabetes = (!isKnownDiabetesPatient || isValidDiagnosis())
+
+        val knownPatientValidForDiabetes =
+            (!isKnownDiabetesPatient || (isValidDiagnosis() && isValueValid))
         val knownPatientValidForHypertension =
             (!isKnownHypertensionPatient || isValidDiagnosisTwo())
-        return isDiabetesValid && isHypertensionValid && isValueValid && knownPatientValidForDiabetes
+        return isDiabetesValid && isHypertensionValid && knownPatientValidForDiabetes
                 && knownPatientValidForHypertension
 
     }
@@ -319,6 +393,20 @@ class NCDPatientHistoryDialog : DialogFragment(), View.OnClickListener {
             binding.btnLayout.btnConfirm.id -> {
                 if (validateInput()) {
                     // Do the API call
+                    val request = NCDPatientStatusRequest(
+                        provenance = ProvanceDto(),
+                        patientId = getPatientReference(),
+                        relatedPersonId = getMemberReference(),
+                        ncdPatientStatus = NcdPatientStatus(
+                            diabetesStatus = viewModel.resultDiabetesHashMap[Diabetes] as? String,
+                            hypertensionStatus = viewModel.resultHypertensionHashMap[Hypertension] as? String,
+                            hypertensionYearOfDiagnosis = viewModel.yearForHypertension.takeIf { !it.isNullOrBlank() },
+                            diabetesYearOfDiagnosis = viewModel.yearForDiabetes.takeIf { !it.isNullOrBlank() },
+                            diabetesControlledType = null,
+                            diabetesDiagnosis = viewModel.value
+                        )
+                    )
+                    viewModel.createNCDPatientStatus(request)
                 }
             }
 

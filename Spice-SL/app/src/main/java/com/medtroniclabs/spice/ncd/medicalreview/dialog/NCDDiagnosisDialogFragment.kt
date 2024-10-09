@@ -13,20 +13,22 @@ import com.medtroniclabs.spice.data.model.ChipViewItemModel
 import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.databinding.FragmentNcdDiagnosisBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
+import com.medtroniclabs.spice.mappingkey.Screening
 import com.medtroniclabs.spice.ncd.data.NCDDiagnosisGetRequest
 import com.medtroniclabs.spice.ncd.data.NCDDiagnosisItem
 import com.medtroniclabs.spice.ncd.data.NCDDiagnosisRequestResponse
+import com.medtroniclabs.spice.ncd.medicalreview.NCDDialogDismissListener
+import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.CONFIRM_DIAGNOSIS_TYPE
 import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDDiagnosisViewModel
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.TagListCustomView
-import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.DialogDismissListener
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class NCDDiagnosisDialogFragment : DialogFragment(), View.OnClickListener {
-    var listener: DialogDismissListener? = null
+    var listener: NCDDialogDismissListener? = null
     private lateinit var binding: FragmentNcdDiagnosisBinding
     private val viewModel: NCDDiagnosisViewModel by viewModels()
     private lateinit var tagListCustomView: TagListCustomView
@@ -43,17 +45,26 @@ class NCDDiagnosisDialogFragment : DialogFragment(), View.OnClickListener {
 
     companion object {
         const val TAG = "NCDDiagnosisDialogFragment"
-        fun newInstance(patientId: String, types: ArrayList<String>) =
+        fun newInstance(patientId: String, types: ArrayList<String>,isFemale: Boolean) =
             NCDDiagnosisDialogFragment().apply {
                 arguments = Bundle().apply {
                     putString(DefinedParams.PatientId, patientId)
                     putStringArrayList(CONFIRM_DIAGNOSIS_TYPE, types)
+                    putBoolean(NCDMRUtil.IS_FEMALE, isFemale)
                 }
             }
     }
 
     private fun getTypes(): ArrayList<String> {
         return arguments?.getStringArrayList(CONFIRM_DIAGNOSIS_TYPE) ?: arrayListOf()
+    }
+
+    private fun getGender(): String {
+        return if (arguments?.getBoolean(NCDMRUtil.IS_FEMALE) == true) {
+            Screening.Female.lowercase()
+        } else {
+            Screening.Male.lowercase()
+        }
     }
 
     fun getPatientId(): String? {
@@ -88,7 +99,7 @@ class NCDDiagnosisDialogFragment : DialogFragment(), View.OnClickListener {
 
                 ResourceState.SUCCESS -> {
                     dismiss()
-                    listener?.onDialogDismissed(true)
+                    listener?.onDialogDismissed()
                 }
 
                 ResourceState.ERROR -> {
@@ -170,7 +181,7 @@ class NCDDiagnosisDialogFragment : DialogFragment(), View.OnClickListener {
     }
 
     private fun initView() {
-        viewModel.getChip(getTypes().map { it.lowercase() })
+        viewModel.getChip(getTypes().map { it.lowercase() }, getGender())
         binding.ivClose.safeClickListener(this)
         binding.btnCancel.safeClickListener(this)
         binding.btnConfirm.safeClickListener(this)

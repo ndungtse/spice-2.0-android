@@ -92,6 +92,7 @@ import com.medtroniclabs.spice.ncd.data.NCDDiagnosisRequestResponse
 import com.medtroniclabs.spice.ncd.data.PatientVisitRequest
 import com.medtroniclabs.spice.ncd.data.PatientVisitResponse
 import com.medtroniclabs.spice.ncd.data.BPBGListModel
+import com.medtroniclabs.spice.ncd.data.NCDPatientStatusRequest
 import com.medtroniclabs.spice.ncd.data.ScreeningPatientResponse
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
@@ -351,4 +352,6 @@ interface ApiService {
     @POST("/spice-service/patient/get-diagnosis-details")
     suspend fun getConfirmDiagonsis(@Body request: NCDDiagnosisGetRequest): Response<APIResponse<NCDDiagnosisGetResponse>>
 
+    @POST("/spice-service/medical-review/patient-status/create")
+    suspend fun createNCDPatientStatus(@Body request: NCDPatientStatusRequest): Response<APIResponse<HashMap<String, Any>>>
 }

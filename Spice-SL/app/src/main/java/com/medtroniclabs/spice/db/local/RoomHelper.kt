@@ -370,5 +370,5 @@ interface RoomHelper {
     suspend fun saveNCDDiagnosisList(diseaseEntityList: ArrayList<NCDDiagnosisEntity>)
 
     suspend fun deleteNCDDiagnosisList()
-    fun getNCDDiagnosisList(types: List<String>): LiveData<List<NCDDiagnosisEntity>>
+    fun getNCDDiagnosisList(types: List<String>,gender: String): LiveData<List<NCDDiagnosisEntity>>
 }

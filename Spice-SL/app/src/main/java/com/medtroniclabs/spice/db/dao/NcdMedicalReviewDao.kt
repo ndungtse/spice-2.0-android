@@ -35,6 +35,6 @@ interface NcdMedicalReviewDao {
     @Query("DELETE FROM NCDDiagnosisEntity")
     suspend fun deleteNCDDiagnosisList()
 
-    @Query("SELECT * FROM NCDDiagnosisEntity WHERE (LOWER(type) IN (:types) OR type IS NULL) ORDER BY displayOrder ASC")
-    fun getNCDDiagnosisList(types: List<String>): LiveData<List<NCDDiagnosisEntity>>
+    @Query("SELECT * FROM NCDDiagnosisEntity WHERE (LOWER(type) IN (:types) OR type IS NULL) AND (LOWER(gender) = LOWER(:gender) OR gender = LOWER('Both')) ORDER BY displayOrder ASC")
+    fun getNCDDiagnosisList(types: List<String>, gender: String): LiveData<List<NCDDiagnosisEntity>>
 }
