@@ -457,16 +457,46 @@ open class BaseActivity : SpiceRootActivity() {
         binding.ivBack.visibility = checkVisibility(false)
     }
 
-    fun addOrReuseFragment(containerId: Int, fragmentTag: String, fragmentInstance: Fragment, bundle: Bundle? = null) {
+    fun addOrReuseFragment(
+        containerId: Int,
+        fragmentTag: String,
+        fragmentInstance: Fragment,
+        bundle: Bundle? = null
+    ) {
         val existingFragment = supportFragmentManager.findFragmentByTag(fragmentTag)
+        val transaction = supportFragmentManager.beginTransaction()
         if (existingFragment == null) {
             // Add bundle if provided
             if (bundle != null) {
                 fragmentInstance.arguments = bundle
             }
-            supportFragmentManager.beginTransaction()
+            transaction
                 .add(containerId, fragmentInstance, fragmentTag)
-                .commit()
         }
+        transaction.commit()
     }
+
+    fun replaceFragment(
+        containerId: Int,
+        fragmentTag: String,
+        fragment: Fragment
+    ) {
+        val fragmentManager = supportFragmentManager
+        val transaction = fragmentManager.beginTransaction()
+
+        // Check if the fragment with the given tag already exists
+        val existingFragment = fragmentManager.findFragmentByTag(fragmentTag)
+
+        // If the fragment exists, remove it
+        if (existingFragment != null) {
+            transaction.remove(existingFragment)
+        }
+
+        // Add a new instance of the fragment
+        transaction.replace(containerId, fragment, fragmentTag)
+
+        // Commit the transaction
+        transaction.commit()
+    }
+
 }

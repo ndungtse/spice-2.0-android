@@ -142,4 +142,19 @@ object NCDMRUtil {
 
         return true // If no other conditions matched, input is considered valid
     }
+
+    fun getTypeForDiagnoses(menu: String?): ArrayList<String> {
+        val baseList = arrayListOf(
+            SUBSTANCE_DISORDER,
+            MENTALHEALTH,
+            HYPERTENSION,
+            DIABETES,
+            HIV
+        )
+        return when (menu) {
+            NCD.lowercase(), MENTAL_HEALTH.lowercase() -> baseList
+            DefinedParams.PregnancyANC.lowercase() -> baseList.apply { add(PREGNANCY) }
+            else -> arrayListOf()
+        }
+    }
 }

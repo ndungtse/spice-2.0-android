@@ -19,9 +19,8 @@ import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.ncd.data.MRSummaryResponse
 import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDMedicalReviewSummaryViewModel
 import com.medtroniclabs.spice.network.resource.ResourceState
-import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.BaseFragment
-import com.medtroniclabs.spice.ui.mypatients.viewmodel.NCDMedicalReviewViewModel
+import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDMedicalReviewViewModel
 
 class NCDMedicalReviewSummaryFragment : BaseFragment(),View.OnClickListener {
 
@@ -69,12 +68,10 @@ class NCDMedicalReviewSummaryFragment : BaseFragment(),View.OnClickListener {
 
                 ResourceState.ERROR -> {
                     hideProgress()
-                    (activity as? BaseActivity)?.showErrorDialogue(
+                    showErrorDialog(
                         title = getString(R.string.alert),
                         message = getString(R.string.something_went_wrong_try_later),
-                        positiveButtonName = getString(R.string.ok),
-                    ) {
-                    }
+                    )
                 }
             }
         }
@@ -116,6 +113,9 @@ class NCDMedicalReviewSummaryFragment : BaseFragment(),View.OnClickListener {
             )
             tvClinicalNotesText.text =
                 data.clinicalNote?.takeIf { it.isNotBlank() } ?: getString(R.string.hyphen_symbol)
+            if (!viewModel.nextFollowupDate.isNullOrBlank()) {
+                binding.tvNextMedicalReviewLabelText.text = viewModel.nextFollowupDate
+            }
         }
     }
 
@@ -138,6 +138,7 @@ class NCDMedicalReviewSummaryFragment : BaseFragment(),View.OnClickListener {
                     DateUtils.DATE_FORMAT_ddMMyyyy,
                     DateUtils.DATE_ddMMyyyy
                 )
+                viewModel.nextFollowupDate = binding.tvNextMedicalReviewLabelText.text.toString()
                 datePickerDialog = null
             }
         }

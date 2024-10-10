@@ -1,5 +1,5 @@
 package com.medtroniclabs.spice.ncd.medicalreview
 
 interface NCDDialogDismissListener {
-    fun onDialogDismissed()
+    fun onDialogDismissed(isConfirmed: Boolean = false)
 }

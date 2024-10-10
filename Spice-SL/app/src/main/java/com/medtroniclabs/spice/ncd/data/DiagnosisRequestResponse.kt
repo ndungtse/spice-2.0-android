@@ -11,7 +11,8 @@ data class NCDDiagnosisRequestResponse(
 
 data class NCDDiagnosisItem(
     val type: String? = null,
-    val value: String? = null
+    val value: String? = null,
+    val name: String? = null
 )
 
 data class NCDDiagnosisGetRequest(
@@ -20,6 +21,6 @@ data class NCDDiagnosisGetRequest(
 )
 
 data class NCDDiagnosisGetResponse(
-    val confirmDiagnosis: List<NCDDiagnosisItem>? = null,
+    val diagnosis: List<NCDDiagnosisItem>? = null,
     val diagnosisNotes: String? = null,
 )

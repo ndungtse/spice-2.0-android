@@ -11,6 +11,7 @@ import androidx.appcompat.widget.AppCompatTextView
 import androidx.constraintlayout.widget.Group
 import androidx.core.view.isVisible
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
@@ -36,6 +37,7 @@ import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil
 import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDPatientHistoryViewModel
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil
+import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDMedicalReviewViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -43,6 +45,7 @@ class NCDPatientHistoryDialog : DialogFragment(), View.OnClickListener {
     var listener: NCDDialogDismissListener? = null
     private lateinit var binding: FragmentNcdPatientHistoryDialogBinding
     private val viewModel: NCDPatientHistoryViewModel by viewModels()
+    private val medicalReviewViewModel : NCDMedicalReviewViewModel by activityViewModels()
     val adapter by lazy { CustomSpinnerAdapter(requireContext()) }
 
     override fun onStart() {
@@ -128,6 +131,7 @@ class NCDPatientHistoryDialog : DialogFragment(), View.OnClickListener {
 
     private fun attachObserver() {
         viewModel.getSymptomListByTypeForNCDLiveData.observe(viewLifecycleOwner) {
+            medicalReviewViewModel.validationForStatus = it
             loadSiteDetails(ArrayList(it))
         }
         viewModel.createNCDPatientStatus.observe(viewLifecycleOwner) { resourceState ->
@@ -162,6 +166,7 @@ class NCDPatientHistoryDialog : DialogFragment(), View.OnClickListener {
                         } else {
                             viewModel.value = null
                         }
+                        medicalReviewViewModel.statusDiabetesValue = viewModel.value
                     }
                 }
 
@@ -217,7 +222,7 @@ class NCDPatientHistoryDialog : DialogFragment(), View.OnClickListener {
             ivClose.safeClickListener(this@NCDPatientHistoryDialog)
 
         }
-        viewModel.getSymptoms(Diabetes, getGender())
+        viewModel.getSymptoms(Diabetes.lowercase(), getGender())
 
         getSingleSelectionOptions().let {
             val view = SingleSelectionCustomView(requireContext())

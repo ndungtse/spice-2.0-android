@@ -92,6 +92,7 @@ import com.medtroniclabs.spice.ncd.data.NCDDiagnosisRequestResponse
 import com.medtroniclabs.spice.ncd.data.PatientVisitRequest
 import com.medtroniclabs.spice.ncd.data.PatientVisitResponse
 import com.medtroniclabs.spice.ncd.data.BPBGListModel
+import com.medtroniclabs.spice.ncd.data.NCDMRSummaryRequestResponse
 import com.medtroniclabs.spice.ncd.data.NCDPatientStatusRequest
 import com.medtroniclabs.spice.ncd.data.NCDTreatmentPlanModel
 import com.medtroniclabs.spice.ncd.data.ScreeningPatientResponse
@@ -199,4 +200,5 @@ interface ApiHelper {
     suspend fun createNCDPatientStatus(request: NCDPatientStatusRequest): Response<APIResponse<HashMap<String, Any>>>
     suspend fun updateNCDTreatmentPlan(request: NCDTreatmentPlanModel): Response<APIResponse<NCDTreatmentPlanModel>>
     suspend fun getNCDTreatmentPlan(request: NCDTreatmentPlanModel): Response<APIResponse<NCDTreatmentPlanModel>>
+    suspend fun createNCDMRSummaryCreate(request: NCDMRSummaryRequestResponse): Response<APIResponse<HashMap<String, Any>>>
 }

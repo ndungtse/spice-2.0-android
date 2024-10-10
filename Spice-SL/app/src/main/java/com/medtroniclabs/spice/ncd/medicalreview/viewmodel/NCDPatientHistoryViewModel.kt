@@ -6,6 +6,7 @@ import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.di.IoDispatcher
+import com.medtroniclabs.spice.ncd.data.NCDMRSummaryRequestResponse
 import com.medtroniclabs.spice.ncd.data.NCDPatientStatusRequest
 import com.medtroniclabs.spice.ncd.medicalreview.repo.NCDMedicalReviewRepository
 import com.medtroniclabs.spice.network.resource.Resource
@@ -32,8 +33,8 @@ class NCDPatientHistoryViewModel @Inject constructor(
         ncdMedicalReviewRepository.getNCDDiagnosisList(listOf(it.first), it.second)
     }
 
-    fun getSymptoms(type: String,gender: String) {
-        getSymptomListByTypeForNCD.value = Pair(type,gender)
+    fun getSymptoms(type: String, gender: String) {
+        getSymptomListByTypeForNCD.value = Pair(type, gender)
     }
 
     fun createNCDPatientStatus(request: NCDPatientStatusRequest) {

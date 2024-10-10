@@ -9,6 +9,7 @@ import com.medtroniclabs.spice.ncd.data.MedicalReviewResponse
 import com.medtroniclabs.spice.ncd.data.NCDDiagnosisGetRequest
 import com.medtroniclabs.spice.ncd.data.NCDDiagnosisGetResponse
 import com.medtroniclabs.spice.ncd.data.NCDDiagnosisRequestResponse
+import com.medtroniclabs.spice.ncd.data.NCDMRSummaryRequestResponse
 import com.medtroniclabs.spice.ncd.data.NCDPatientStatusRequest
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.Comorbidity
@@ -165,6 +166,20 @@ class NCDMedicalReviewRepository @Inject constructor(
     suspend fun createNCDPatientStatus(request: NCDPatientStatusRequest): Resource<HashMap<String, Any>> {
         return try {
             val response = apiHelper.createNCDPatientStatus(request)
+            if (response.isSuccessful) {
+                Resource(state = ResourceState.SUCCESS, response.body()?.entity)
+            } else {
+                Resource(state = ResourceState.ERROR)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Resource(state = ResourceState.ERROR)
+        }
+    }
+
+    suspend fun createNCDMRSummaryCreate(request: NCDMRSummaryRequestResponse): Resource<HashMap<String, Any>> {
+        return try {
+            val response = apiHelper.createNCDMRSummaryCreate(request)
             if (response.isSuccessful) {
                 Resource(state = ResourceState.SUCCESS, response.body()?.entity)
             } else {

@@ -10,9 +10,11 @@ import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.invisible
 import com.medtroniclabs.spice.appextensions.setVisible
+import com.medtroniclabs.spice.common.CommonUtils.convertListToString
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.databinding.FragmentNcdMedicalReviewDiagnosisCardBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
+import com.medtroniclabs.spice.ncd.data.NCDDiagnosisGetRequest
 import com.medtroniclabs.spice.ncd.medicalreview.NCDDialogDismissListener
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.IS_FEMALE
@@ -20,6 +22,8 @@ import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.IS_INITIAL_MR
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.MENU_ID
 import com.medtroniclabs.spice.ncd.medicalreview.dialog.NCDDiagnosisDialogFragment
 import com.medtroniclabs.spice.ncd.medicalreview.dialog.NCDPatientHistoryDialog
+import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDMedicalReviewDiagnosisCardViewModel
+import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -29,6 +33,7 @@ import kotlin.collections.ArrayList
 class NCDMedicalReviewDiagnosisCardFragment : BaseFragment(), View.OnClickListener,
     NCDDialogDismissListener {
     private val patientDetailViewModel: PatientDetailViewModel by activityViewModels()
+    private val medicalReviewDiagnosisCardViewModel: NCDMedicalReviewDiagnosisCardViewModel by activityViewModels()
     private lateinit var binding: FragmentNcdMedicalReviewDiagnosisCardBinding
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -53,6 +58,30 @@ class NCDMedicalReviewDiagnosisCardFragment : BaseFragment(), View.OnClickListen
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initView()
+        attachObservers()
+    }
+
+    private fun attachObservers() {
+        medicalReviewDiagnosisCardViewModel.getConfirmDiagonsis.observe(viewLifecycleOwner) { resourceState ->
+            when (resourceState.state) {
+                ResourceState.LOADING -> {
+
+                }
+
+                ResourceState.SUCCESS -> {
+                    resourceState.data?.let { data ->
+                        binding.diagnosisCard.tvDiagnosis.text = data.diagnosis
+                            ?.mapNotNull { it.name }
+                            ?.let { convertListToString(ArrayList(it)) }
+                            ?: getString(R.string.hyphen_symbol)
+                    }
+                }
+
+                ResourceState.ERROR -> {
+
+                }
+            }
+        }
     }
 
     private fun getInitialMr(): Boolean {
@@ -63,27 +92,12 @@ class NCDMedicalReviewDiagnosisCardFragment : BaseFragment(), View.OnClickListen
         return arguments?.getBoolean(IS_FEMALE) ?: false
     }
 
-    private fun getTypeForDiagnoses(): ArrayList<String> {
-        val type = getMenu()
-        val baseList = arrayListOf(
-            NCDMRUtil.SUBSTANCE_DISORDER,
-            NCDMRUtil.MENTALHEALTH,
-            NCDMRUtil.HYPERTENSION,
-            NCDMRUtil.DIABETES,
-            NCDMRUtil.HIV
-        )
-        return when (type) {
-            NCDMRUtil.NCD.lowercase(), NCDMRUtil.MENTAL_HEALTH.lowercase() -> baseList
-            DefinedParams.PregnancyANC.lowercase() -> baseList.apply { add(NCDMRUtil.PREGNANCY) }
-            else -> arrayListOf()
-        }
-    }
-
     private fun getMenu(): String? {
         return arguments?.getString(MENU_ID)?.lowercase()
     }
 
     private fun initView() {
+        getDiagonsis()
         val hyphen = getString(R.string.hyphen_symbol)
         binding.apply {
             val isContinuous = getInitialMr()
@@ -159,27 +173,58 @@ class NCDMedicalReviewDiagnosisCardFragment : BaseFragment(), View.OnClickListen
     override fun onClick(v: View?) {
         when (v?.id) {
             binding.diagnosisCard.tvDiagnosisConfirm.id -> {
-                patientDetailViewModel.getPatientId()?.let {
-                    NCDDiagnosisDialogFragment.newInstance(it, getTypeForDiagnoses(),patientDetailViewModel.getGenderIsFemale()).apply {
-                        listener = this@NCDMedicalReviewDiagnosisCardFragment
-                    }.show(childFragmentManager, NCDDiagnosisDialogFragment.TAG)
-                }
+                showDiagnosisDialog()
             }
             binding.patientStatusCard.tvDiagnosis.id ->{
-                patientDetailViewModel.getPatientId()?.let {
-                    NCDPatientHistoryDialog.newInstance(
-                        it,
-                        patientDetailViewModel.getPatientFHIRId(),
-                        isFemale = patientDetailViewModel.getGenderIsFemale()
-                    ).apply {
-                        listener = this@NCDMedicalReviewDiagnosisCardFragment
-                    }.show(childFragmentManager, NCDPatientHistoryDialog.TAG)
-                }
+                showPatientHistoryDialog()
             }
         }
     }
 
-    override fun onDialogDismissed() {
+    private fun showDiagnosisDialog() {
+        val dialog = childFragmentManager.findFragmentByTag(NCDDiagnosisDialogFragment.TAG)
+        if (dialog == null) {
+            patientDetailViewModel.getPatientId()?.let {
+                NCDDiagnosisDialogFragment.newInstance(
+                    it,
+                    NCDMRUtil.getTypeForDiagnoses(getMenu()),
+                    patientDetailViewModel.getGenderIsFemale()
+                ).apply {
+                    listener = this@NCDMedicalReviewDiagnosisCardFragment
+                }.show(childFragmentManager, NCDDiagnosisDialogFragment.TAG)
+            }
+        }
+    }
+
+    private fun showPatientHistoryDialog() {
+        val dialog = childFragmentManager.findFragmentByTag(NCDPatientHistoryDialog.TAG)
+        if (dialog == null) {
+            patientDetailViewModel.getPatientId()?.let {
+                NCDPatientHistoryDialog.newInstance(
+                    it,
+                    patientDetailViewModel.getPatientFHIRId(),
+                    isFemale = patientDetailViewModel.getGenderIsFemale()
+                ).apply {
+                    listener = this@NCDMedicalReviewDiagnosisCardFragment
+                }.show(childFragmentManager, NCDPatientHistoryDialog.TAG)
+            }
+        }
+    }
+    override fun onDialogDismissed(isConfirmed: Boolean) {
         // call the get method
+        if (isConfirmed) {
+            getDiagonsis()
+        }
+    }
+
+    private fun getDiagonsis() {
+        patientDetailViewModel.getPatientId()?.let { patientId ->
+            medicalReviewDiagnosisCardViewModel.getConfirmDiagonsis(
+                NCDDiagnosisGetRequest(
+                    patientReference = patientId,
+                    diagnosisType = NCDMRUtil.getTypeForDiagnoses(getMenu())
+                )
+            )
+        }
     }
 }

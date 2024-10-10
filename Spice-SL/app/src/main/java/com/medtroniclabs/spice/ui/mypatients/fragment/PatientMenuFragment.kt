@@ -36,7 +36,7 @@ import com.medtroniclabs.spice.ui.medicalreview.abovefiveyears.AboveFiveYearsBas
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.fragment.SelectFlowDialog
 import com.medtroniclabs.spice.ui.medicalreview.underfiveyears.UnderFiveYearsBaseActivity
 import com.medtroniclabs.spice.ui.medicalreview.undertwomonths.activity.UnderTwoMonthsBaseActivity
-import com.medtroniclabs.spice.ui.mypatients.NCDMedicalReviewActivity
+import com.medtroniclabs.spice.ncd.medicalreview.NCDMedicalReviewActivity
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

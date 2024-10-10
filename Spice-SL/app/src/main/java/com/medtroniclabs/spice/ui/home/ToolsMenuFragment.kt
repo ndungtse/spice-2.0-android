@@ -13,10 +13,8 @@ import com.google.android.flexbox.JustifyContent
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DefinedParams
-import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.databinding.FragmentToolsMenuBinding
 import com.medtroniclabs.spice.db.entity.MenuEntity
-import com.medtroniclabs.spice.ncd.data.PatientVisitRequest
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.EncounterReference
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.MENU_ID
 import com.medtroniclabs.spice.network.resource.ResourceState
@@ -29,7 +27,7 @@ import com.medtroniclabs.spice.ui.assessment.AssessmentActivity
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
 import com.medtroniclabs.spice.ui.dialog.RMNCHFlowSelectionDialog
 import com.medtroniclabs.spice.ui.home.adapter.DashboardMenuItemsAdapter
-import com.medtroniclabs.spice.ui.mypatients.NCDMedicalReviewActivity
+import com.medtroniclabs.spice.ncd.medicalreview.NCDMedicalReviewActivity
 
 class ToolsMenuFragment : BaseFragment(), MenuSelectionListener {
 

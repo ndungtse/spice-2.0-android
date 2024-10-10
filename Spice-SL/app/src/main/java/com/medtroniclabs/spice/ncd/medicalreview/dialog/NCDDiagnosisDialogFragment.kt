@@ -12,6 +12,7 @@ import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.data.model.ChipViewItemModel
 import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.databinding.FragmentNcdDiagnosisBinding
+import com.medtroniclabs.spice.db.entity.NCDDiagnosisEntity
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.mappingkey.Screening
 import com.medtroniclabs.spice.ncd.data.NCDDiagnosisGetRequest
@@ -79,15 +80,7 @@ class NCDDiagnosisDialogFragment : DialogFragment(), View.OnClickListener {
 
     private fun attachObservers() {
         viewModel.getChipLiveData.observe(viewLifecycleOwner) {
-            val complaintList = it.map { item ->
-                ChipViewItemModel(
-                    id = item.id,
-                    name = item.name,
-                    type = item.type,
-                    value = item.value
-                )
-            } as ArrayList<ChipViewItemModel>
-            setChipItems(complaintList)
+            setChipItems(it)
             getDiagonsis()
         }
 
@@ -99,7 +92,7 @@ class NCDDiagnosisDialogFragment : DialogFragment(), View.OnClickListener {
 
                 ResourceState.SUCCESS -> {
                     dismiss()
-                    listener?.onDialogDismissed()
+                    listener?.onDialogDismissed(true)
                 }
 
                 ResourceState.ERROR -> {
@@ -117,7 +110,7 @@ class NCDDiagnosisDialogFragment : DialogFragment(), View.OnClickListener {
                 ResourceState.SUCCESS -> {
                     resourceState.data?.let { data ->
                         viewModel.getChipLiveData.value?.let { liveData ->
-                            data.confirmDiagnosis?.mapNotNull { it.value }?.let { values ->
+                            data.diagnosis?.mapNotNull { it.value }?.let { values ->
                                 val filteredChips = liveData.filter { db ->
                                     values.any { db.value.equals(it, true) }
                                 }.map { item ->
@@ -128,12 +121,16 @@ class NCDDiagnosisDialogFragment : DialogFragment(), View.OnClickListener {
                                         value = item.value
                                     )
                                 }
+                                if (!data.diagnosisNotes.isNullOrBlank()) {
+                                    binding.etCommentDiagnosis.setText(data.diagnosisNotes.takeIf { it.isNotBlank() })
+                                }
 
                                 if (filteredChips.isNotEmpty()) {
                                     viewModel.selectedChips.apply {
                                         clear()
                                         addAll(filteredChips)
                                     }
+                                    setChipItems(liveData)
                                 }
                             }
                         }
@@ -158,17 +155,19 @@ class NCDDiagnosisDialogFragment : DialogFragment(), View.OnClickListener {
         }
     }
 
-    private fun setChipItems(complaintList: ArrayList<ChipViewItemModel>) {
-        tagListCustomView =
-            TagListCustomView(
-                binding.root.context,
-                binding.cgDiagnosis,
-                callBack = { _, _, _ ->
-                    viewModel.selectedChips =
-                        ArrayList(tagListCustomView.getSelectedTags())
-                }
+    private fun setChipItems(ncdDiagnosisEntities: List<NCDDiagnosisEntity>) {
+        val complaintList = ncdDiagnosisEntities.map { item ->
+            ChipViewItemModel(
+                id = item.id,
+                name = item.name,
+                type = item.type,
+                value = item.value
             )
+        } as ArrayList<ChipViewItemModel>
+        addChip(complaintList)
+    }
 
+    private fun addChip(complaintList: ArrayList<ChipViewItemModel>) {
         tagListCustomView.addChipItemList(
             complaintList,
             viewModel.selectedChips,
@@ -182,6 +181,15 @@ class NCDDiagnosisDialogFragment : DialogFragment(), View.OnClickListener {
 
     private fun initView() {
         viewModel.getChip(getTypes().map { it.lowercase() }, getGender())
+        tagListCustomView =
+            TagListCustomView(
+                binding.root.context,
+                binding.cgDiagnosis,
+                callBack = { _, _, _ ->
+                    viewModel.selectedChips =
+                        ArrayList(tagListCustomView.getSelectedTags())
+                }
+            )
         binding.ivClose.safeClickListener(this)
         binding.btnCancel.safeClickListener(this)
         binding.btnConfirm.safeClickListener(this)
@@ -207,7 +215,7 @@ class NCDDiagnosisDialogFragment : DialogFragment(), View.OnClickListener {
                 ProvanceDto(),
                 diagnosisNotes = viewModel.comments.takeIf { it.isNotBlank() },
                 confirmDiagnosis = viewModel.selectedChips.map { chip ->
-                    NCDDiagnosisItem(chip.type, chip.value)
+                    NCDDiagnosisItem(type = chip.type, value = chip.value)
                 },
                 patientReference = patientId
             )
