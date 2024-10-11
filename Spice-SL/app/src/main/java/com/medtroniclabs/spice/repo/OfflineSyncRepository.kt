@@ -1,6 +1,7 @@
 package com.medtroniclabs.spice.repo
 
 import androidx.lifecycle.MutableLiveData
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.gson.Gson
 import com.google.gson.JsonElement
 import com.google.gson.JsonParser
@@ -465,33 +466,33 @@ class OfflineSyncRepository @Inject constructor(
 
         //uploadAllSignatures()
 
-        val houseHoldList = roomHelper.getAllUnSyncedHouseHolds()
+        val houseHoldList = roomHelper.getAllUnSyncedHouseHolds() /*Hot Fix change - Done*/
         householdIds.addAll(houseHoldList.map { it.referenceId!! })
         houseHoldList.forEach { householdEntity ->
             val memberList =
-                roomHelper.getAllUnSyncedHouseHoldMembers((householdEntity.referenceId!!.toLong()))
+                roomHelper.getAllUnSyncedHouseHoldMembers((householdEntity.referenceId!!.toLong())) /*Hot Fix Change - Need to check*/
             householdMemberIds.addAll(memberList.map { it.referenceId!! })
 
             //Assessment
             memberList.forEach { hhm ->
                 hhm.motherPatientId?.let { hhm.isChild = true }
-                hhm.assessments = getUnSyncedAssessmentByPatientId(hhm.patientId)
+                hhm.assessments = getUnSyncedAssessmentByPatientId(hhm.patientId) /*Hot Fix Change - Need to check*/
                 assessmentIds.addAll(hhm.assessments.map { it.referenceId.toString() })
             }
 
             householdEntity.householdMembers.addAll(memberList)
         }
 
-        val otherHouseholdMembers = roomHelper.getOtherHouseholdMembers(householdMemberIds)
+        val otherHouseholdMembers = roomHelper.getOtherHouseholdMembers(householdMemberIds) /*Hot Fix Change - Need to check*/
         //Assessment
         otherHouseholdMembers.forEach { hhm ->
             householdMemberIds.add(hhm.referenceId!!)
             hhm.motherPatientId?.let { hhm.isChild = true }
-            hhm.assessments = getUnSyncedAssessmentByPatientId(hhm.patientId)
+            hhm.assessments = getUnSyncedAssessmentByPatientId(hhm.patientId) /*Hot Fix Change - Need to check*/
             assessmentIds.addAll(hhm.assessments.map { it.referenceId.toString() })
         }
 
-        val otherAssessments = getOtherUnSyncedAssessments(assessmentIds)
+        val otherAssessments = getOtherUnSyncedAssessments(assessmentIds) /*Hot Fix change - Done*/
         assessmentIds.addAll(otherAssessments.map { it.referenceId.toString() })
 
         //Followup
@@ -523,18 +524,22 @@ class OfflineSyncRepository @Inject constructor(
         try {
             val apiResponse = apiHelper.postOfflineSync(request)
             if (apiResponse.isSuccessful) {
-                roomHelper.changeHouseholdStatus(householdIds) // Change Status to InProgress
-                roomHelper.changeHouseholdMemberStatus(householdMemberIds) // Change Status to InProgress
-                roomHelper.changeAssessmentStatus(assessmentIds) // Change status to InProgress
-                roomHelper.changeFollowUpStatus(followUpIds) // Change status to InProgress
+                roomHelper.changeHouseholdStatus(householdIds, OfflineSyncStatus.InProgress.name) // Change Status to InProgress
+                roomHelper.changeHouseholdMemberStatus(householdMemberIds, OfflineSyncStatus.InProgress.name) // Change Status to InProgress
+                roomHelper.changeAssessmentStatus(assessmentIds, OfflineSyncStatus.InProgress.name) // Change status to InProgress
+                roomHelper.changeFollowUpStatus(followUpIds, OfflineSyncStatus.InProgress.name) // Change status to InProgress
                 roomHelper.changeFollowUpCallStatus(followUpCallIds) // Change isSynced Status to True
                 return listOf(request[OfflineConstant.REQUEST_ID] as String)
             }
         } catch (e: Exception) {
-            return null
+            roomHelper.changeHouseholdStatus(householdIds, OfflineSyncStatus.NetworkError.name) // Change Status to InProgress
+            roomHelper.changeHouseholdMemberStatus(householdMemberIds, OfflineSyncStatus.NetworkError.name) // Change Status to InProgress
+            roomHelper.changeAssessmentStatus(assessmentIds, OfflineSyncStatus.NetworkError.name) // Change status to InProgress
+            roomHelper.changeFollowUpStatus(followUpIds, OfflineSyncStatus.NetworkError.name) // Change status to InProgress
+            return listOf(request[OfflineConstant.REQUEST_ID] as String)
         }
 
-        return null
+        return listOf(request[OfflineConstant.REQUEST_ID] as String)
     }
 
     suspend fun getSyncStatusForOffline(id: String): Boolean {

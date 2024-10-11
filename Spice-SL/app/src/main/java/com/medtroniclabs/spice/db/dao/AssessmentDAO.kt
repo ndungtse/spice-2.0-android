@@ -29,28 +29,28 @@ interface AssessmentDAO {
 
     @Query("SELECT a.id, a.villageId, a.assessmentType, a.assessmentDetails, a.patientId, a.referralStatus, a.referredReason, a.otherDetails, a.memberId, a.householdId, a.isReferred, a.created_at AS createdAt, a.followUpId, a.latitude, a.longitude, pd.neonatePatientId as neonatePatientId " +
                 "FROM Assessment AS a LEFT JOIN PregnancyDetail AS pd ON a.patientId = pd.patientId " +
-                "WHERE a.sync_status=:status AND a.patientId =:patientId AND a.memberId IS NULL")
+                "WHERE a.sync_status IN (:status) AND a.patientId =:patientId AND a.memberId IS NULL")
     suspend fun getUnSyncedAssessmentByPatientId(
         patientId: String,
-        status: String = OfflineSyncStatus.NotSynced.name
+        status: List<String> = listOf(OfflineSyncStatus.NotSynced.name, OfflineSyncStatus.NetworkError.name)
     ): List<AssessmentDetails>
 
     @Query("SELECT a.id, a.villageId, a.assessmentType, a.assessmentDetails, a.patientId, a.referralStatus, a.referredReason, a.otherDetails, hhm.fhir_id as memberId, hh.fhir_id as householdId, a.isReferred, a.created_at AS createdAt, a.followUpId, a.latitude, a.longitude, pd.neonatePatientId as neonatePatientId " +
                 "FROM Assessment AS a LEFT JOIN PregnancyDetail AS pd ON a.patientId = pd.patientId INNER JOIN HouseholdMember AS hhm ON a.patientId = hhm.patient_id INNER JOIN Household AS hh ON hhm.household_id = hh.id " +
-                "WHERE a.id NOT IN (:addedAssessmentIds) AND hhm.fhir_id IS NOT NULL AND hhm.fhir_id IS NOT NULL AND a.sync_status=:status")
+                "WHERE a.id NOT IN (:addedAssessmentIds) AND hhm.fhir_id IS NOT NULL AND hhm.fhir_id IS NOT NULL AND a.sync_status IN (:status)")
     suspend fun getOtherUnSyncedAssessments(
         addedAssessmentIds: List<String>,
-        status: String = OfflineSyncStatus.NotSynced.name
+        status: List<String> = listOf(OfflineSyncStatus.NotSynced.name, OfflineSyncStatus.NetworkError.name)
     ): List<AssessmentDetails>
 
-    @Query("SELECT COUNT(id) FROM Assessment where sync_status =:syncStatus")
-    suspend fun getUnSyncedCount(syncStatus: String = OfflineSyncStatus.NotSynced.name): Int
+    @Query("SELECT COUNT(id) FROM Assessment where sync_status IN (:syncStatus)")
+    suspend fun getUnSyncedCount(syncStatus: List<String> = listOf(OfflineSyncStatus.NotSynced.name, OfflineSyncStatus.NetworkError.name)): Int
 
     @Query("DELETE FROM Assessment")
     suspend fun deleteAllAssessments()
 
     @Query("UPDATE Assessment SET sync_status =:syncStatus, updated_at =:updatedAt WHERE id IN (:ids)")
-    suspend fun updateInProgress(ids: List<String>, syncStatus: String = OfflineSyncStatus.InProgress.name, updatedAt: Long = System.currentTimeMillis())
+    suspend fun updateInProgress(ids: List<String>, syncStatus: String, updatedAt: Long = System.currentTimeMillis())
 
 
 }

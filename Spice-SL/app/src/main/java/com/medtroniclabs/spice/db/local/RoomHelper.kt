@@ -199,13 +199,13 @@ interface RoomHelper {
 
     suspend fun updateOnTreatmentStatus(id: Long, followUp: FollowUp, updatedAt: Long)
 
-    suspend fun changeHouseholdStatus(idList: List<String>)
+    suspend fun changeHouseholdStatus(idList: List<String>, syncStatus: String)
 
-    suspend fun changeHouseholdMemberStatus(idList: List<String>)
+    suspend fun changeHouseholdMemberStatus(idList: List<String>, syncStatus: String)
 
-    suspend fun changeAssessmentStatus(idList: List<String>)
+    suspend fun changeAssessmentStatus(idList: List<String>, syncStatus: String)
 
-    suspend fun changeFollowUpStatus(idList: List<Long>)
+    suspend fun changeFollowUpStatus(idList: List<Long>, syncStatus: String)
 
     suspend fun changeFollowUpCallStatus(idList: List<Long>)
 

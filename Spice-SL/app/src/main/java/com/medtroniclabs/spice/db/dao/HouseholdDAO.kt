@@ -67,13 +67,13 @@ interface HouseholdDAO {
 
     @Query("UPDATE HouseHold SET no_of_people =:newNoOfPeople, sync_status =:syncStatus, updated_at =:updatedAt WHERE id =:householdId")
     suspend fun updateHeadCount(householdId: Long, newNoOfPeople: Int, syncStatus: String = OfflineSyncStatus.NotSynced.name, updatedAt: Long = System.currentTimeMillis())
-    @Query("SELECT hh.*, ve.name as villageName FROM HouseHold as hh INNER JOIN VillageEntity AS ve ON hh.village_id = ve.id WHERE hh.sync_status =:status")
-    suspend fun getAllUnSyncedHouseHolds(status: String = OfflineSyncStatus.NotSynced.name): List<HouseHold>
+    @Query("SELECT hh.*, ve.name as villageName FROM HouseHold as hh INNER JOIN VillageEntity AS ve ON hh.village_id = ve.id WHERE hh.sync_status IN (:status)")
+    suspend fun getAllUnSyncedHouseHolds(status: List<String> = listOf(OfflineSyncStatus.NotSynced.name, OfflineSyncStatus.NetworkError.name)): List<HouseHold>
     @RawQuery
     suspend fun updateFhirId(query: SimpleSQLiteQuery) : Long
 
-    @Query("SELECT COUNT(id) FROM Household WHERE sync_status =:syncStatus")
-    suspend fun getUnSyncedCount(syncStatus: String = OfflineSyncStatus.NotSynced.name): Int
+    @Query("SELECT COUNT(id) FROM Household WHERE sync_status IN (:syncStatus)")
+    suspend fun getUnSyncedCount(syncStatus: List<String> = listOf(OfflineSyncStatus.NotSynced.name, OfflineSyncStatus.NetworkError.name)): Int
 
     @Query("SELECT id FROM Household WHERE fhir_id =:fhirId")
     suspend fun getHouseholdIdByFhirId(fhirId: String): Long?
@@ -87,7 +87,7 @@ interface HouseholdDAO {
 
 
     @Query("UPDATE HouseHold SET sync_status =:syncStatus, updated_at =:updatedAt WHERE id IN (:householdIds)")
-    suspend fun updateInProgress(householdIds: List<String>, syncStatus: String = OfflineSyncStatus.InProgress.name, updatedAt: Long = System.currentTimeMillis())
+    suspend fun updateInProgress(householdIds: List<String>, syncStatus: String, updatedAt: Long = System.currentTimeMillis())
 
     @Query("UPDATE Household SET head_phone_number = :phoneNumber , sync_status =:syncStatus, updated_at =:updatedAt WHERE id = :id")
     fun updateHeadPhoneNumber(id: Long, phoneNumber: String, syncStatus: String = OfflineSyncStatus.NotSynced.name, updatedAt: Long = System.currentTimeMillis())

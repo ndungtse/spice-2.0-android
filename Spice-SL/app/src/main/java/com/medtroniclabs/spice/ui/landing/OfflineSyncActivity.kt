@@ -114,15 +114,35 @@ class OfflineSyncActivity : SpiceRootActivity() {
 
         viewModel.oldRequestIdsLiveData.observe(this) {
             it?.let {
-                initiateGetStatus(it)
+                if (viewModel.connectivityManager.isNetworkAvailable()) {
+                    initiateGetStatus(it)
+                } else {
+                    showErrorDialogue(
+                        getString(R.string.title_no_network),
+                        getString(R.string.message_no_network),
+                        isNegativeButtonNeed = false
+                    ) { _ ->
+                        finish()
+                    }
+                }
             }
         }
 
         viewModel.postRequestIdsLiveData.observe(this) { requestIds ->
-            if (requestIds.isNotEmpty()) {
-                startGetSyncStatusWorkManager(requestIds.toTypedArray(), getStatusStartTimer)
+            if (viewModel.connectivityManager.isNetworkAvailable()) {
+                if (requestIds.isNotEmpty()) {
+                    startGetSyncStatusWorkManager(requestIds.toTypedArray(), getStatusStartTimer)
+                } else {
+                    startGetSyncStatusWorkManager(arrayOf(), 0)
+                }
             } else {
-                startGetSyncStatusWorkManager(arrayOf(), 0)
+                showErrorDialogue(
+                    getString(R.string.title_no_network),
+                    getString(R.string.message_no_network),
+                    isNegativeButtonNeed = false
+                ) { _ ->
+                    finish()
+                }
             }
         }
 

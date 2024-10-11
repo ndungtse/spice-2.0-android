@@ -286,8 +286,8 @@ class RoomHelperImpl @Inject constructor(
     ) {
         val updatedAt = System.currentTimeMillis()
         val query =
-            "UPDATE $tableName SET fhir_id = ?, updated_at = ?, sync_status = CASE WHEN sync_status = 'InProgress' THEN ? ELSE sync_status END WHERE id = ?"
-        householdDAO.updateFhirId(SimpleSQLiteQuery(query, arrayOf(fhirId, updatedAt, status, id)))
+            "UPDATE $tableName SET fhir_id = ?, updated_at = ?, sync_status = CASE WHEN sync_status = 'InProgress' THEN ? WHEN sync_status = 'NetworkError' THEN ? ELSE sync_status END WHERE id = ?"
+        householdDAO.updateFhirId(SimpleSQLiteQuery(query, arrayOf(fhirId, updatedAt, status, status, id)))
     }
 
     override fun getFilteredHouseholdsLiveData(
@@ -594,20 +594,20 @@ class RoomHelperImpl @Inject constructor(
         return memberDAO.insertOrUpdateFromBE(entity)
     }
 
-    override suspend fun changeHouseholdStatus(idList: List<String>) {
-        householdDAO.updateInProgress(idList)
+    override suspend fun changeHouseholdStatus(idList: List<String>,  syncStatus: String) {
+        householdDAO.updateInProgress(idList, syncStatus)
     }
 
-    override suspend fun changeHouseholdMemberStatus(idList: List<String>) {
-        memberDAO.updateInProgress(idList)
+    override suspend fun changeHouseholdMemberStatus(idList: List<String>, syncStatus: String) {
+        memberDAO.updateInProgress(idList, syncStatus)
     }
 
-    override suspend fun changeAssessmentStatus(idList: List<String>) {
-        assessmentDAO.updateInProgress(idList)
+    override suspend fun changeAssessmentStatus(idList: List<String>, syncStatus: String) {
+        assessmentDAO.updateInProgress(idList, syncStatus)
     }
 
-    override suspend fun changeFollowUpStatus(idList: List<Long>) {
-        followUpDao.updateInProgress(idList)
+    override suspend fun changeFollowUpStatus(idList: List<Long>, syncStatus: String) {
+        followUpDao.updateInProgress(idList, syncStatus)
     }
 
     override suspend fun getPregnancyDetailByPatientId(patientId: String): PregnancyDetail? {

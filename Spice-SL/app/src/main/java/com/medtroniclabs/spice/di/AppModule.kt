@@ -1,7 +1,11 @@
 package com.medtroniclabs.spice.di
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
+import android.os.Build
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.medtroniclabs.spice.BuildConfig
 import com.medtroniclabs.spice.app.analytics.db.AnalyticsRepository
@@ -48,6 +52,7 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import timber.log.Timber
+import java.lang.Exception
 import java.util.concurrent.TimeUnit
 import javax.inject.Qualifier
 import javax.inject.Singleton
@@ -56,7 +61,7 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object AppModule {
 
-    private const val TIMEOUT_SECONDS = 180L // 3 Minutes
+    private const val TIMEOUT_SECONDS = 60L // 3 Minutes to 1 Minutes
 
     @Singleton
     @Provides
@@ -84,6 +89,10 @@ object AppModule {
 
     class AppInterceptor(val context: Context) : Interceptor {
         override fun intercept(chain: Interceptor.Chain): Response {
+            if (!isNetworkAvailable()) {
+                throw Exception("No internet connection")
+            }
+
             var request: Request = chain.request()
             val requestBuilder = request.newBuilder()
                 .header(
@@ -105,6 +114,19 @@ object AppModule {
                 redirectLogin(context)
             }
             return response
+        }
+        private fun isNetworkAvailable(): Boolean {
+            val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+
+            val network = connectivityManager.activeNetwork ?: return false
+            val activeNetwork = connectivityManager.getNetworkCapabilities(network) ?: return false
+
+            return when {
+                activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
+                activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> true
+                activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> true
+                else -> false
+            }
         }
     }
 

@@ -53,11 +53,11 @@ interface FollowUpDao {
         toDate: String = ""
     ): LiveData<List<FollowUpPatientModel>>
 
-    @Query("SELECT * FROM FollowUp WHERE syncStatus =:syncStatus")
-    suspend fun getAllFollowUps(syncStatus: String = OfflineSyncStatus.NotSynced.name): List<FollowUp>
+    @Query("SELECT * FROM FollowUp WHERE syncStatus IN (:syncStatus)")
+    suspend fun getAllFollowUps(syncStatus: List<String> = listOf(OfflineSyncStatus.NotSynced.name, OfflineSyncStatus.NetworkError.name)): List<FollowUp>
 
-    @Query("SELECT COUNT(referenceId) FROM FollowUp where syncStatus =:syncStatus")
-    suspend fun getUnSyncedCount(syncStatus: String = OfflineSyncStatus.NotSynced.name): Int
+    @Query("SELECT COUNT(referenceId) FROM FollowUp where syncStatus IN (:syncStatus)")
+    suspend fun getUnSyncedCount(syncStatus: List<String> = listOf(OfflineSyncStatus.NotSynced.name, OfflineSyncStatus.NetworkError.name)): Int
 
     @Query("UPDATE FollowUp SET isCompleted = 1, updatedAt = :updateAt WHERE memberId = :fhirId AND id != :id AND type = :type AND " +
             "CASE WHEN :type = 'HH_VISIT' THEN (encounterType = :encounterType AND reason= :reason) ELSE encounterType= :encounterType END")
@@ -71,7 +71,7 @@ interface FollowUpDao {
     suspend fun updateOtherFollowUpForWrongNumber(id: Long, fhirId: String, syncStatus: String = OfflineSyncStatus.NotSynced.name)
 
     @Query("UPDATE FollowUp SET syncStatus =:syncStatus WHERE referenceId IN (:ids)")
-    suspend fun updateInProgress(ids: List<Long>, syncStatus: String = OfflineSyncStatus.InProgress.name)
+    suspend fun updateInProgress(ids: List<Long>, syncStatus: String)
 
 
     @Transaction
