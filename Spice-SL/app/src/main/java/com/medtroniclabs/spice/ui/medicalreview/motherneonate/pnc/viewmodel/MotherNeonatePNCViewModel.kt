@@ -210,6 +210,8 @@ class MotherNeonatePNCViewModel @Inject constructor(
     ) {
         patientViewModel.patientDetailsLiveData.value?.data?.let { details ->
             motherNeonatePncRequest.apply {
+                pncMother?.encounter?.id=patientViewModel.encounterId
+                pncMother?.id=patientViewModel.encounterId
                 pncChild = PncChild(
                     isChildAlive = aliveStatus,
                     breastFeeding = physicalExaminationViewModel.breastFeeding,
