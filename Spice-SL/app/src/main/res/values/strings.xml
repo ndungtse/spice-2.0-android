@@ -796,6 +796,25 @@
     <string name="gestational_period">Gestational Age</string>
     <string name="red_risk">Red Risk</string>
     <string name="find_help">Find Help?</string>
+
+    //Prescription
+    <string name="prescribe">Prescribe</string>
+    <string name="back_to_medical_review">Back to Medical Review</string>
+    <string name="medication_search_hint">Search medication and add</string>
+    <string name="add_medicine">Add Medicine</string>
+    <string name="dosage">Dosage</string>
+    <string name="form">Form</string>
+    <string name="instruction_to_take">Instruction to take</string>
+    <string name="started_from">Started From</string>
+    <string name="days_prescribed">Days Prescribed</string>
+    <string name="enter_instruction">Enter instruction</string>
+    <string name="please_check_your_inputs">Please check your inputs</string>
+    <string name="Instructions">Instructions</string>
+    <string name="close_dialog">close dialog</string>
+    <string name="delete_alert">Are you sure want to delete ?</string>
+    <string name="no_medication_history">No Medication History</string>
+    <string name="medication_history">Medication History</string>
+    <string name="prescribed_date">Prescribed Date</string>
     <string name="positive">Positive</string>
     <string name="negative">Negative</string>
     <string name="gestational_weeks">%1$d weeks</string>

@@ -190,7 +190,6 @@
             android:name=".ui.followup.FollowUpMyPatientActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
-
         <activity
             android:name=".ncd.medicalreview.NCDMedicalReviewActivity"
             android:exported="false"
@@ -214,7 +213,14 @@
         <activity
             android:name=".ui.medicalreview.pharmacist.NCDPharmacistActivity"
             android:exported="false"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"/>
+
+        <activity
+            android:name=".ncd.medicalreview.prescription.activity.NCDPrescriptionActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:screenOrientation="landscape"
+            android:exported="false" />
+
     </application>
 
 </manifest>
