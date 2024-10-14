@@ -86,6 +86,14 @@ class PatientDetailViewModel @Inject constructor(
         return patientDetailsLiveData.value?.data?.gender?.equals(DefinedParams.female, ignoreCase = true) == true
     }
 
+    fun getGender(): String? {
+        return patientDetailsLiveData.value?.data?.gender
+    }
+
+    fun isPatientEnrolled(): Boolean {
+        return !patientDetailsLiveData.value?.data?.patientId.isNullOrBlank()
+    }
+
     fun recentBP(): String {
         val avgBP = patientDetailsLiveData.value?.data?.avgBloodPressure
         return if (avgBP.isNullOrEmpty()) {

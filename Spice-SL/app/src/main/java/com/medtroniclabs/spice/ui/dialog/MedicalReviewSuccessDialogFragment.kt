@@ -9,7 +9,9 @@ import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
+import com.medtroniclabs.spice.appextensions.setVisible
 import com.medtroniclabs.spice.appextensions.setWidth
+import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.databinding.FragmentMedicalReviewSucessDialogBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
@@ -36,7 +38,12 @@ class MedicalReviewSuccessDialogFragment : DialogFragment(), View.OnClickListene
 
     companion object {
         const val TAG = "MedicalReviewSuccessDialogFragment"
-        fun newInstance() = MedicalReviewSuccessDialogFragment()
+        const val ISENROLLED = "ISENROLLED"
+        fun newInstance(isEnroll:Boolean = false) = MedicalReviewSuccessDialogFragment().apply {
+            arguments = Bundle().apply {
+                putBoolean(ISENROLLED, isEnroll)
+            }
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -44,15 +51,25 @@ class MedicalReviewSuccessDialogFragment : DialogFragment(), View.OnClickListene
         initializeListeners()
     }
 
+    private fun getIsEnroll(): Boolean {
+        return arguments?.getBoolean(ISENROLLED) ?: false
+    }
+
     private fun initializeListeners() {
+        binding.btnEnroll.setVisible(!getIsEnroll())
         binding.btnDone.safeClickListener(this)
         binding.ivClose.safeClickListener(this)
+        binding.btnEnroll.safeClickListener(this)
     }
 
     override fun onClick(view: View) {
         when (view.id) {
             binding.btnDone.id, binding.ivClose.id -> {
                 onDismissListener?.onDialogDismissListener()
+                dismiss()
+            }
+            binding.btnEnroll.id -> {
+                onDismissListener?.onDialogDismissListener(true)
                 dismiss()
             }
         }

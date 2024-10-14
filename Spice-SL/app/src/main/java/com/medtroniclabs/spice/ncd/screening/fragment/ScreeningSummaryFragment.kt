@@ -104,7 +104,9 @@ class ScreeningSummaryFragment : BaseFragment(), View.OnClickListener {
 
                 ResourceState.SUCCESS -> {
                     (activity as? BaseActivity)?.hideLoading()
-                    requireContext().triggerOneTimeWorker()
+                    if (connectivityManager.isNetworkAvailable()) {
+                        requireContext().triggerOneTimeWorker()
+                    }
                     replaceFragmentIfExists<StatsFragment>(
                         R.id.screeningParentLayout,
                         bundle = null,

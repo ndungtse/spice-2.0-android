@@ -62,7 +62,7 @@ class NCDObstetricExaminationFragment : BaseFragment() {
             val complaintList = it.map { item ->
                 ChipViewItemModel(
                     id = item.id,
-                    name = item.name,
+                    name = item.displayValue,
                     type = item.type,
                     value = item.value
                 )

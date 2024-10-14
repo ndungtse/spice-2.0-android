@@ -90,6 +90,17 @@
             app:layout_constraintTop_toBottomOf="@+id/successMessage" />
 
         <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnEnroll"
+            style="@style/Button_Style_Border"
+            android:paddingHorizontal="@dimen/_12sdp"
+            android:layout_marginEnd="@dimen/_20sdp"
+            android:text="@string/enroll"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@id/btnDone"
+            app:layout_constraintEnd_toStartOf="@id/btnDone"
+            app:layout_constraintTop_toTopOf="@id/btnDone" />
+
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btnDone"
             style="@style/Button_Style"
             android:layout_marginTop="@dimen/_10sdp"

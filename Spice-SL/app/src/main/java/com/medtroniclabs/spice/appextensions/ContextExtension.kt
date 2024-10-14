@@ -103,7 +103,6 @@ fun Context.scheduleSyncWorker() {
 
 fun Context.triggerOneTimeWorker() {
     val constraints = Constraints.Builder()
-        .setRequiredNetworkType(NetworkType.CONNECTED) // Requires internet connection
         .setRequiresBatteryNotLow(false)                // Requires battery to not be low
         .build()
 

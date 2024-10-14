@@ -883,4 +883,11 @@
     <string name="no_confirm_diagnosis_prescribed_medication_warning">Are you sure want to continue submitting the report without confirming diagnoses and prescribing medicine for the patient?</string>
     <string name="no_confirm_diagnosis_mandatory_warning">Please confirm diagnoses since known patient has been selected</string>
     <string name="edit_confirm_diagnosis_mandatory_warning">Patient Diagnoses and Confirmed Diagnoses are mismatched</string>
+    <string name="current_medication_details">Current Medication Details</string>
+    <string name="adhering_to_current_medications">Adhering to current medications?</string>
+    <string name="allergies_to_drugs">Any known allergies to drugs?</string>
+    <string name="other_allergies">Comments on allergies</string>
+    <string name="other_medication">Other Medication</string>
+    <string name="comment_current_medication">Comments on current medication</string>
+    <string name="enroll">Enroll</string>
 </resources>

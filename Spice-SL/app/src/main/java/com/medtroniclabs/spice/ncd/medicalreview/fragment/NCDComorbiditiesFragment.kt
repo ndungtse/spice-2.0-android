@@ -61,7 +61,7 @@ class NCDComorbiditiesFragment : BaseFragment() {
             val complaintList = it.map { item ->
                 ChipViewItemModel(
                     id = item.id,
-                    name = item.name,
+                    name = item.displayValue,
                     type = item.type,
                     value = item.value
                 )
@@ -113,6 +113,8 @@ class NCDComorbiditiesFragment : BaseFragment() {
         } else {
             binding.etPhysicalExaminationComments.gone()
             binding.tvCommentsTitle.gone()
+            viewModel.comments = ""
+            binding.etPhysicalExaminationComments.setText(getText(R.string.empty))
             binding.tvErrorMessage.gone()
         }
     }

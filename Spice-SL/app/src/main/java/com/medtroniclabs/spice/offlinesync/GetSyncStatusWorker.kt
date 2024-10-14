@@ -44,10 +44,7 @@ class GetSyncStatusWorker @AssistedInject constructor(
 
             repeat(retryCount) {
                 if (!connectivityManager.isNetworkAvailable()) {
-                    val errorData = Data.Builder()
-                        .putString("failureReason", "Network Not available")
-                        .build()
-                    return Result.failure(errorData)
+                    return Result.failure(getFailure())
                 }
 
                 var isAllEntitiesSynced = true
@@ -78,7 +75,7 @@ class GetSyncStatusWorker @AssistedInject constructor(
 
                 try {
                     if (!connectivityManager.isNetworkAvailable()) {
-                        return Result.failure()
+                        return Result.failure(getFailure())
                     }
 
                     val screeningUploadList = screeningRepository.getAllScreeningRecords(false)
@@ -148,5 +145,12 @@ class GetSyncStatusWorker @AssistedInject constructor(
             }
         }
         return Result.failure()
+    }
+
+
+    private fun getFailure(): Data {
+        return Data.Builder()
+            .putString("failureReason", "Network Not available")
+            .build()
     }
 }

@@ -27,6 +27,7 @@ import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.IS_FEMALE
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.IS_INITIAL_MR
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.MENU_ID
+import com.medtroniclabs.spice.ncd.medicalreview.NCDMedicalReviewActivity
 import com.medtroniclabs.spice.ncd.medicalreview.dialog.NCDDiagnosisDialogFragment
 import com.medtroniclabs.spice.ncd.medicalreview.dialog.NCDPatientHistoryDialog
 import com.medtroniclabs.spice.ncd.medicalreview.dialog.NCDPregnancyDialog
@@ -173,7 +174,8 @@ class NCDMedicalReviewDiagnosisCardFragment : BaseFragment(), View.OnClickListen
 
                 isNCDAndMentalHealth -> {
                     if (getMenu().equals(NCDMRUtil.NCD, true)) {
-                        patientStatusCard.root.setVisible(true)
+                        // restrict the patient status hide
+                        patientStatusCard.root.setVisible(false)
                     }
                 }
             }
@@ -307,6 +309,12 @@ class NCDMedicalReviewDiagnosisCardFragment : BaseFragment(), View.OnClickListen
         // call the get method
         if (isConfirmed) {
             getDiagonsis()
+        } else {
+            //patient status for NCD
+            val dialogFragment =
+                childFragmentManager.findFragmentByTag(NCDPatientHistoryDialog.TAG) as? NCDPatientHistoryDialog
+            dialogFragment?.dismiss()
+            (requireActivity() as? NCDMedicalReviewActivity)?.showCurrentMedication()
         }
     }
 

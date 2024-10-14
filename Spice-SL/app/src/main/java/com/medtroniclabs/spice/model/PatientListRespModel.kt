@@ -6,6 +6,7 @@ import com.medtroniclabs.spice.data.history.DiseaseInfo
 data class PatientListRespModel(
     val id: String? = null,
     val enrolmentId: String? = null,
+    val enrollmentAt: String? = null,
     val name: String? = null,
     val firstName: String? = null,
     val lastName: String? = null,

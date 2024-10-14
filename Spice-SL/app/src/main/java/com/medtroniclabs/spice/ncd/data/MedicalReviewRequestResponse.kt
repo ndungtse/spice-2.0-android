@@ -13,10 +13,20 @@ data class MedicalReviewRequestResponse(
 )
 
 data class InitialMedicalReview(
+    var currentMedications : CurrentMedications? = null,
     var comorbidities: List<Chip>? = null,
     var complications: List<Chip>? = null,
     var lifestyle: List<Chip>? = null
 )
+
+data class CurrentMedications(
+    val medications: List<String>? = null,
+    val drugAllergies: Boolean? = null,
+    val adheringCurrentMed: Boolean? = null,
+    val adheringMedComment: String? = null,
+    val allergiesComment: String? = null
+)
+
 
 data class ContinuousMedicalReview(
     val physicalExams: List<Chip>? = null,

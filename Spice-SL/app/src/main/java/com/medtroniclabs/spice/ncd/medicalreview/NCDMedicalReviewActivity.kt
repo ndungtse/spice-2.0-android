@@ -10,6 +10,7 @@ import androidx.activity.viewModels
 import androidx.core.view.isVisible
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
+import com.medtroniclabs.spice.appextensions.isVisible
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
@@ -23,6 +24,7 @@ import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.ncd.data.Answer
 import com.medtroniclabs.spice.ncd.data.Chip
 import com.medtroniclabs.spice.ncd.data.ContinuousMedicalReview
+import com.medtroniclabs.spice.ncd.data.CurrentMedications
 import com.medtroniclabs.spice.ncd.data.InitialMedicalReview
 import com.medtroniclabs.spice.ncd.data.MedicalReviewRequestResponse
 import com.medtroniclabs.spice.ncd.data.NCDMRSummaryRequestResponse
@@ -41,6 +43,7 @@ import com.medtroniclabs.spice.ncd.medicalreview.fragment.NCDChiefComplaintsFrag
 import com.medtroniclabs.spice.ncd.medicalreview.fragment.NCDClinicalNotesFragment
 import com.medtroniclabs.spice.ncd.medicalreview.fragment.NCDComorbiditiesFragment
 import com.medtroniclabs.spice.ncd.medicalreview.fragment.NCDComplicationsFragment
+import com.medtroniclabs.spice.ncd.medicalreview.fragment.NCDCurrentMedicationFragment
 import com.medtroniclabs.spice.ncd.medicalreview.fragment.NCDLifestyleAssessmentFragment
 import com.medtroniclabs.spice.ncd.medicalreview.fragment.NCDMedicalReviewDiagnosisCardFragment
 import com.medtroniclabs.spice.ncd.medicalreview.fragment.NCDMedicalReviewSummaryFragment
@@ -49,6 +52,7 @@ import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDChiefComplaintsVie
 import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDClinicalNotesViewModel
 import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDComorbiditiesViewModel
 import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDComplicationsViewModel
+import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDCurrentMedicationViewModel
 import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDLifestyleAssessmentViewModel
 import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDMedicalReviewDiagnosisCardViewModel
 import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDMedicalReviewSummaryViewModel
@@ -60,8 +64,10 @@ import com.medtroniclabs.spice.ui.landing.OnDialogDismissListener
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.AncVisitCallBack
 import com.medtroniclabs.spice.ui.mypatients.fragment.PatientInfoFragment
 import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDMedicalReviewViewModel
+import com.medtroniclabs.spice.ui.MenuConstants
 import com.medtroniclabs.spice.ui.medicalreview.investigation.InvestigationActivity
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
+import com.medtroniclabs.spice.ui.registration.RegistrationActivity
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -71,6 +77,7 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
     private val viewModel: NCDMedicalReviewViewModel by viewModels()
     private val patientDetailViewModel: PatientDetailViewModel by viewModels()
     private val comorbiditiesViewModel: NCDComorbiditiesViewModel by viewModels()
+    private val currentMedicationViewModel: NCDCurrentMedicationViewModel by viewModels()
     private val complicationsViewModel: NCDComplicationsViewModel by viewModels()
     private val lifestyleAssessmentViewModel: NCDLifestyleAssessmentViewModel by viewModels()
     private val obstetricExaminationViewModel: NCDObstetricExaminationViewModel by viewModels()
@@ -172,7 +179,6 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
                 ResourceState.SUCCESS -> {
                     hideLoading()
                     summarySuccessDialog()
-                    onBackPressPopStack()
                 }
 
                 ResourceState.ERROR -> {
@@ -190,7 +196,7 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
         val dialog =
             supportFragmentManager.findFragmentByTag(MedicalReviewSuccessDialogFragment.TAG)
         if (dialog == null) {
-            MedicalReviewSuccessDialogFragment.newInstance().show(
+            MedicalReviewSuccessDialogFragment.newInstance(patientDetailViewModel.isPatientEnrolled()).show(
                 supportFragmentManager,
                 MedicalReviewSuccessDialogFragment.TAG
             )
@@ -198,9 +204,24 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
     }
 
     override fun onDialogDismissListener(isFinish: Boolean) {
-        startActivityWithoutSplashScreen()
+        if (isFinish) {
+            // enrolled click in success dialog
+            navigateToEnrolled()
+        } else {
+            startActivityWithoutSplashScreen()
+        }
     }
 
+    private fun navigateToEnrolled() {
+        val intent = Intent(this, RegistrationActivity::class.java).apply {
+            putExtra(DefinedParams.FhirId, patientDetailViewModel.getPatientFHIRId())
+            putExtra(DefinedParams.PatientId, patientDetailViewModel.getPatientId())
+            putExtra(ORIGIN, MenuConstants.REGISTRATION.lowercase())
+            putExtra(DefinedParams.Gender, patientDetailViewModel.getGender())
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        }
+        startActivity(intent)
+    }
     private fun showError(isActivityClosed: Boolean = false) {
         showErrorDialogue(
             title = getString(R.string.alert),
@@ -329,6 +350,7 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
                 btnLayout.btnNext.text = getString(R.string.next)
                 btnLayout.btnNext.isAllCaps = true
             }
+            showCurrentMedication()
             addOrReuseFragment(
                 R.id.comorbiditiesContainer,
                 NCDComorbiditiesFragment.TAG,
@@ -348,6 +370,7 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
             binding.apply {
                 comorbiditiesContainer.gone()
                 complicationsContainer.gone()
+                currentMedicationContainer.gone()
                 lifestyleAssessmentContainer.gone()
                 chiefComplaintsContainer.visible()
                 clinicalNotesContainer.visible()
@@ -372,6 +395,27 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
             )
         }
         hideLoading()
+    }
+
+    fun showCurrentMedication() {
+        val dialogFragment =
+            supportFragmentManager.findFragmentByTag(NCDPatientHistoryDialog.TAG) as? NCDPatientHistoryDialog
+        dialogFragment?.dismiss()
+        val iscomorbiditiesContainer  = supportFragmentManager.findFragmentById(R.id.comorbiditiesContainer) is NCDComorbiditiesFragment
+        binding.apply {
+            currentMedicationContainer.gone()
+            if ((getMenuId().equals(NCD, true)
+                &&( viewModel.statusDiabetesValue != null
+                && !patientDetailViewModel.getNCDInitialMedicalReview()))
+                && (iscomorbiditiesContainer && binding.comorbiditiesContainer.isVisible())) {
+                currentMedicationContainer.visible()
+                addOrReuseFragment(
+                    R.id.currentMedicationContainer,
+                    NCDCurrentMedicationFragment.TAG,
+                    NCDCurrentMedicationFragment.newInstance()
+                )
+            }
+        }
     }
 
     override fun onClick(view: View) {
@@ -549,6 +593,19 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
             encounterReference = getEncounterReference()
         ).apply {
             initialMedicalReview = InitialMedicalReview().apply {
+                //TODO request to make it generically in backend
+                if (getMenuId().equals(NCD, true)
+                    && viewModel.statusDiabetesValue != null
+                    && !patientDetailViewModel.getNCDInitialMedicalReview()
+                ) {
+                    currentMedications = CurrentMedications(
+                        medications = currentMedicationViewModel.chips.mapNotNull { chips -> chips.value },
+                        drugAllergies = currentMedicationViewModel.drugAllergies,
+                        adheringCurrentMed = currentMedicationViewModel.adheringCurrentMed,
+                        adheringMedComment = currentMedicationViewModel.adheringMedComment,
+                        allergiesComment = currentMedicationViewModel.allergiesComment
+                    )
+                }
                 comorbidities = comorbiditiesViewModel.chips.map { chip ->
                     Chip(
                         id = chip.id,
@@ -557,7 +614,7 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
                                 DefinedParams.Other,
                                 true
                             )
-                        ) comorbiditiesViewModel.comments else chip.value,
+                        ) comorbiditiesViewModel.comments.trim().takeIf { it.isNotBlank() } else chip.value,
                         other = chip.name.equals(DefinedParams.Other, true)
                     )
                 }
@@ -570,7 +627,7 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
                                 DefinedParams.Other,
                                 true
                             )
-                        ) complicationsViewModel.comments else chip.value,
+                        ) complicationsViewModel.comments.trim().takeIf { it.isNotBlank() } else chip.value,
                         other = chip.name.equals(DefinedParams.Other, true)
                     )
                 }
@@ -584,7 +641,7 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
                             name = lifeStyle.lifestyleAnswer,
                             value = lifeStyle.answerValue
                         ),
-                        comments = lifeStyle.comments
+                        comments = lifeStyle.comments?.trim().takeIf { it?.isNotBlank() == true }
                     )
                 }
             }
@@ -597,7 +654,7 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
                         other = chip.name.equals(DefinedParams.Other, true)
                     )
                 },
-                clinicalNote = clinicalNotesViewModel.comments,
+                clinicalNote = clinicalNotesViewModel.comments.trim().takeIf { it.isNotBlank() },
                 complaints = chiefComplaintsViewModel.chips.map { chip ->
                     Chip(
                         id = chip.id,
@@ -606,8 +663,8 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
                         other = chip.name.equals(DefinedParams.Other, true)
                     )
                 },
-                physicalExamComments = obstetricExaminationViewModel.comments,
-                complaintComments = chiefComplaintsViewModel.comments
+                physicalExamComments = obstetricExaminationViewModel.comments.trim().takeIf { it.isNotBlank() },
+                complaintComments = chiefComplaintsViewModel.comments.trim().takeIf { it.isNotBlank() }
             )
         }
         withNetworkCheck(connectivityManager, onNetworkAvailable = {
@@ -671,21 +728,36 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
             supportFragmentManager.findFragmentById(R.id.complicationsContainer) as? NCDComplicationsFragment
         val fragmentThree =
             supportFragmentManager.findFragmentById(R.id.lifestyleAssessmentContainer) as? NCDLifestyleAssessmentFragment
+        val fragmentFour =
+            supportFragmentManager.findFragmentById(R.id.currentMedicationContainer) as? NCDCurrentMedicationFragment
         // Execute all validations
-        val isValidComorbidities = fragmentOne?.validateInput()?.first == true
-        val isValidComplications = fragmentTwo?.validateInput()?.first == true
-        val isValidLifestyle = fragmentThree?.validateInput()?.first == true
+
+        val valueCurrentMedication = fragmentFour?.validateInput(true)
+        val valueComorbidities = fragmentOne?.validateInput()
+        val valueComplications = fragmentTwo?.validateInput()
+        val valueLifestyle = fragmentThree?.validateInput()
+
+        val isCurrentMedication =
+            if (getMenuId().equals(NCD, true) && viewModel.statusDiabetesValue != null) {
+                valueCurrentMedication?.first == true
+            } else {
+                true
+            }
+        val isValidComorbidities = valueComorbidities?.first == true
+        val isValidComplications = valueComplications?.first == true
+        val isValidLifestyle = valueLifestyle?.first == true
 
         val firstInvalidView = when {
-            !isValidComorbidities -> fragmentOne?.validateInput()?.second
-            !isValidComplications -> fragmentTwo?.validateInput()?.second
-            !isValidLifestyle -> fragmentThree?.validateInput()?.second
+            !isCurrentMedication -> valueCurrentMedication?.second
+            !isValidComorbidities -> valueComorbidities?.second
+            !isValidComplications -> valueComplications?.second
+            !isValidLifestyle -> valueLifestyle?.second
             else -> null
         }
         // Request focus on the first invalid view, if it exists, and return validation result
         firstInvalidView?.requestFocus()
         // Return true only if all validations are true
-        return isValidComorbidities && isValidComplications && isValidLifestyle
+        return isValidComorbidities && isValidComplications && isValidLifestyle && isCurrentMedication
     }
 
     private fun validateInputCMR(): Boolean {
@@ -784,6 +856,9 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
         if (isConfirmed) {
             // to refresh the card
             initializeFragments()
+        } else {
+            // patient status for ncd
+            showCurrentMedication()
         }
     }
 

@@ -35,8 +35,6 @@ import com.medtroniclabs.spice.appextensions.cancelAllWorker
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.isVisible
 import com.medtroniclabs.spice.appextensions.startBackgroundOfflineSync
-import com.medtroniclabs.spice.appextensions.scheduleSyncWorker
-import com.medtroniclabs.spice.appextensions.syncWorkerName
 import com.medtroniclabs.spice.appextensions.triggerOneTimeWorker
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.appextensions.workerUniqueName

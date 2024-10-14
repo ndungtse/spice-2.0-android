@@ -5,9 +5,8 @@ import android.os.Bundle
 import android.view.View
 import androidx.activity.viewModels
 import com.medtroniclabs.spice.appextensions.gone
-import com.medtroniclabs.spice.appextensions.visible
+import com.medtroniclabs.spice.appextensions.triggerOneTimeWorker
 import com.medtroniclabs.spice.common.DefinedParams
-import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.RoleConstant
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.databinding.ActivityResourceLoadingScreenBinding
@@ -52,6 +51,10 @@ class ResourceLoadingScreen : BaseActivity() {
                         } else {
                             launchLandingScreen()
                         }
+                    }
+                    // TODO Role based trigger the work manager
+                    if (connectivityManager.isNetworkAvailable()) {
+                        this.triggerOneTimeWorker()
                     }
                 }
                 ResourceState.ERROR -> {

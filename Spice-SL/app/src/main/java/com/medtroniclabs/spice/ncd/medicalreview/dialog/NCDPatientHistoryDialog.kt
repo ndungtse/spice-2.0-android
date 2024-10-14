@@ -141,7 +141,6 @@ class NCDPatientHistoryDialog : DialogFragment(), View.OnClickListener {
 
                 ResourceState.SUCCESS -> {
                     listener?.onDialogDismissed()
-                    dismiss()
                 }
 
                 ResourceState.ERROR -> {
