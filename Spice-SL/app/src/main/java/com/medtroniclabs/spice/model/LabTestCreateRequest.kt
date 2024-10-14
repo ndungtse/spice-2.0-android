@@ -5,13 +5,14 @@ import com.medtroniclabs.spice.data.EncounterDetails
 
 data class LabTestCreateRequest(
     val encounter: EncounterDetails,
-    val labTests: ArrayList<LabTestDetails>
+    val labTests: ArrayList<LabTestDetails>,
+    val type: String? = null
 )
 
 data class LabTestDetails(
     val testName: String,
     val recommendedBy: String,
-    val recommendedName: String,
+    val recommendedName: String? = null,
     val recommendedOn: String,
     val codeDetails: CodeDetailsObject? = null,
     val labTestResults: ArrayList<LabTestResultObject>? = null,

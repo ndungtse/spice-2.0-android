@@ -13,6 +13,8 @@ import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.databinding.ActivityInvestigationBinding
 import com.medtroniclabs.spice.model.medicalreview.InvestigationModel
 import com.medtroniclabs.spice.model.medicalreview.SearchLabTestResponse
+import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil
+import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.NCD
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.DeleteReasonDialog
@@ -203,6 +205,8 @@ class InvestigationActivity : BaseActivity(), AdapterView.OnItemClickListener,
     private fun initView() {
         investigationViewModel.patientId = intent.getStringExtra(DefinedParams.PatientId)
         investigationViewModel.encounterId = intent.getStringExtra(DefinedParams.EncounterId)
+        investigationViewModel.visitId = intent.getStringExtra(NCDMRUtil.EncounterReference)
+        investigationViewModel.origin = intent.getStringExtra(DefinedParams.ORIGIN)
         investigationGenerator = InvestigationGenerator(
             this@InvestigationActivity,
             binding.llInvestigationHolder,
@@ -210,8 +214,8 @@ class InvestigationActivity : BaseActivity(), AdapterView.OnItemClickListener,
             false,
             this
         )
-        investigationViewModel.patientId?.let {
-            patientViewModel.getPatients(it)
+        investigationViewModel.patientId?.let { patientId ->
+            patientViewModel.getPatients(patientId, origin = investigationViewModel.origin)
         }
     }
 
@@ -253,7 +257,8 @@ class InvestigationActivity : BaseActivity(), AdapterView.OnItemClickListener,
                     patientViewModel.patientDetailsLiveData.value?.data?.let { data ->
                         investigationViewModel.createLabTest(
                             geyPayloadForLabTest(investigationGenerator.getResultFromInvestigation()),
-                            data
+                            data,
+                            intent.getStringExtra(NCD)
                         )
                     }
                 } else {

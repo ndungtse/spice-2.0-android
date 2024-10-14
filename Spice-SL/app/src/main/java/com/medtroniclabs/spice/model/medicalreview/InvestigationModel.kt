@@ -7,7 +7,7 @@ import com.medtroniclabs.spice.model.LabTestResultObject
 data class InvestigationModel(
     val testName: String,
     val resultList: FormResponse? = null,
-    val recommendedByName: String,
+    val recommendedByName: String? = null,
     val recommendedBy: String,
     val recommendedOn: String,
     var resultHashMap: HashMap<String, Any>? = null,

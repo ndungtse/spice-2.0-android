@@ -8,6 +8,7 @@ import com.google.gson.reflect.TypeToken
 import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.appextensions.postSuccess
+import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.SecuredPreference
@@ -43,6 +44,9 @@ class InvestigationViewModel @Inject constructor(
 
     var patientId: String? = null
     var encounterId: String? = null
+    var visitId: String? = null
+    var origin: String? = null
+
     val investigationSearchResponseListLiveData =
         MutableLiveData<Resource<ArrayList<SearchLabTestResponse>>>()
 
@@ -149,7 +153,8 @@ class InvestigationViewModel @Inject constructor(
 
     fun createLabTest(
         resultFromInvestigation: List<InvestigationModel>?,
-        patientDetail: PatientListRespModel
+        patientDetail: PatientListRespModel,
+        isAfrica: String?
     ) {
         viewModelScope.launch(dispatcherIO) {
             try {
@@ -171,11 +176,15 @@ class InvestigationViewModel @Inject constructor(
                 val request = LabTestCreateRequest(
                     EncounterDetails(
                         id = encounterId,
-                        patientReference = patientDetail.id,
-                        patientId = patientDetail.patientId ?: "",
-                        memberId = patientDetail.memberId ?: "", provenance = ProvanceDto()
+                        patientReference = patientDetail.patientId.takeIf { CommonUtils.isAfrica() }
+                            ?: patientDetail.id,
+                        patientId = if (CommonUtils.isAfrica()) "" else patientDetail.patientId.orEmpty(),
+                        memberId = if (!CommonUtils.isAfrica()) patientDetail.memberId.orEmpty() else patientDetail.id.orEmpty(),
+                        provenance = ProvanceDto(),
+                        visitId = visitId
                     ),
-                    labTestList
+                    labTestList,
+                    type = isAfrica
                 )
                 val response = investigationRepository.createLabTest(request)
                 response.data?.let {
@@ -261,7 +270,8 @@ class InvestigationViewModel @Inject constructor(
 
     fun getLabTestList(data: PatientListRespModel) {
         viewModelScope.launch(dispatcherIO) {
-            data.id?.let { id ->
+            val patientId = if (CommonUtils.isAfrica()) data.patientId else data.id
+            patientId?.let { id ->
                 labTestListLiveData.postLoading()
                 val response = investigationRepository.getLabTestList(LabTestListRequest(id))
                 response.data?.let {

@@ -137,7 +137,7 @@ class ScreeningSummaryFragment : BaseFragment(), View.OnClickListener {
 
     private fun validateToEnableNext() {
         binding.btnNext.isEnabled =
-            generalDetailsViewModel.siteDetail.referredSiteId != -1L
+            generalDetailsViewModel.siteDetail.siteId != -1L
     }
 
     private fun loadSiteDetails(data: ArrayList<HealthFacilityEntity>?) {
@@ -155,7 +155,7 @@ class ScreeningSummaryFragment : BaseFragment(), View.OnClickListener {
                 DefinedParams.TenantId to site.tenantId,
                 DefinedParams.FhirId to (site.fhirId ?: 0)
             ).also {
-                if (generalDetailsViewModel.siteDetail.siteId == site.id) {
+                if (generalDetailsViewModel.siteDetail.siteId == site.fhirId?.toLongOrNull()) {
                     defaultPosition = index + 1
                 }
             }
@@ -423,9 +423,8 @@ class ScreeningSummaryFragment : BaseFragment(), View.OnClickListener {
     private fun processSiteSelection(map: Map<String, Any>) {
         generalDetailsViewModel.siteDetail.apply {
             siteName = map[DefinedParams.NAME] as? String ?: ""
-            siteId = map[DefinedParams.ID]?.toString()?.toLongOrNull() ?: -1L
+            siteId = map[DefinedParams.FhirId]?.toString()?.toLongOrNull() ?: -1L
             tenantId = map[DefinedParams.TenantId]?.toString()?.toLongOrNull() ?: -1L
-            referredSiteId = map[DefinedParams.FhirId]?.toString()?.toLongOrNull() ?: -1L
         }
     }
 

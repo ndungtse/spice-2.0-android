@@ -89,7 +89,10 @@ class InvestigationGenerator(
                 investigationBinding.ivRemoveMedication.visible()
             }
             toggleFacility(investigationBinding,investigation)
-            investigationBinding.tvRecommendedBy.text = investigation.recommendedByName
+            // After backend done we need to remove it
+            investigationBinding.tvRecommendedBy.text =
+                investigation.recommendedByName.takeIf { !it.isNullOrBlank() }
+                    ?: getString(R.string.hyphen_symbol)
             investigationBinding.root.setOnClickListener {
                 investigation.dropdownState = !investigation.dropdownState
                 toggleFacility(investigationBinding,investigation)

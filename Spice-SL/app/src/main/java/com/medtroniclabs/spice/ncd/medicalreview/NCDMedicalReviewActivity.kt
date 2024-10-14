@@ -1,8 +1,11 @@
 package com.medtroniclabs.spice.ncd.medicalreview
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.core.view.isVisible
 import com.medtroniclabs.spice.R
@@ -10,6 +13,8 @@ import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
+import com.medtroniclabs.spice.common.DefinedParams.MemberID
+import com.medtroniclabs.spice.common.DefinedParams.ORIGIN
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.databinding.ActivityNcdMrBaseBinding
@@ -26,6 +31,7 @@ import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.MATERNAL_HEALTH
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.MENTAL_HEALTH
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.MENU_ID
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.NCD
+import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.getConfirmDiagnoses
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.getTypeForDiagnoses
 import com.medtroniclabs.spice.ncd.medicalreview.dialog.NCDDiagnosisDialogFragment
 import com.medtroniclabs.spice.ncd.medicalreview.dialog.NCDMRAlertDialog
@@ -54,6 +60,7 @@ import com.medtroniclabs.spice.ui.landing.OnDialogDismissListener
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.AncVisitCallBack
 import com.medtroniclabs.spice.ui.mypatients.fragment.PatientInfoFragment
 import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDMedicalReviewViewModel
+import com.medtroniclabs.spice.ui.medicalreview.investigation.InvestigationActivity
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -248,6 +255,7 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
     private fun setListeners() {
         binding.btnLayout.btnNext.safeClickListener(this)
         binding.btnLayout.ivTreatmentPlan.safeClickListener(this)
+        binding.btnLayout.ivInvestigation.safeClickListener(this)
     }
 
     private fun getPatientId(): String? {
@@ -259,7 +267,7 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
     }
 
     private fun getMenuOrigin(): String? {
-        return intent.getStringExtra(DefinedParams.ORIGIN)
+        return intent.getStringExtra(ORIGIN)
     }
 
     private fun getMenuId(): String? {
@@ -284,7 +292,7 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
 
 
     private fun initializePatientDetails() {
-        patientDetailViewModel.origin = intent.extras?.getString(DefinedParams.ORIGIN)
+        patientDetailViewModel.origin = intent.extras?.getString(ORIGIN)
         val fragment = PatientInfoFragment.newInstanceForNCD(getPatientId(), getMenuOrigin() ?: "")
         fragment.setDataCallback(this)
         addOrReuseFragment(
@@ -424,8 +432,33 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
                     dialog.show(supportFragmentManager, NCDTreatmentPlanDialog.TAG)
                 }
             }
+            binding.btnLayout.ivInvestigation.id  -> {
+                patientDetailViewModel.patientDetailsLiveData.value?.data?.let { data ->
+                    val intent = Intent(this, InvestigationActivity::class.java)
+                    intent.putExtra(DefinedParams.PatientId, data.id)
+                    // TODO need to get investigation in summary(After confirm with backend)
+                    intent.putExtra(DefinedParams.EncounterId, patientDetailViewModel.encounterId)
+                    intent.putExtra(EncounterReference, getEncounterReference())
+                    intent.putExtra(MemberID, data.id)
+                    intent.putExtra(ORIGIN, getMenuOrigin())
+                    intent.putExtra(NCD,NCD)
+                    getResult.launch(intent)
+                }
+            }
         }
     }
+
+    private val getResult =
+        registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()
+        ) {
+            if (it.resultCode == Activity.RESULT_OK) {
+                val value = it.data?.getStringExtra(DefinedParams.EncounterId)
+                value?.let { valueString ->
+                    patientDetailViewModel.encounterId = valueString
+                }
+            }
+        }
     private fun submitNextVisitCreate() {
         val fragment =
             supportFragmentManager.findFragmentByTag(NCDMedicalReviewSummaryFragment.TAG) as? NCDMedicalReviewSummaryFragment
@@ -767,7 +800,8 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
                 NCDDiagnosisDialogFragment.newInstance(
                     it,
                     getTypeForDiagnoses(getMenuId()),
-                    patientDetailViewModel.getGenderIsFemale()
+                    patientDetailViewModel.getGenderIsFemale(),
+                    getConfirmDiagnoses(getMenuId())
                 ).apply {
                     listener = this@NCDMedicalReviewActivity
                 }.show(supportFragmentManager, NCDDiagnosisDialogFragment.TAG)

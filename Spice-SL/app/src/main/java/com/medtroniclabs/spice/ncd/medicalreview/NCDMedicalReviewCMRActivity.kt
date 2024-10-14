@@ -1,9 +1,11 @@
 package com.medtroniclabs.spice.ncd.medicalreview
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
@@ -15,6 +17,7 @@ import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.EncounterReference
 import com.medtroniclabs.spice.ncd.medicalreview.dialog.NCDTreatmentPlanDialog
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.home.AssessmentToolsActivity
+import com.medtroniclabs.spice.ui.medicalreview.investigation.InvestigationActivity
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.AncVisitCallBack
 import com.medtroniclabs.spice.ui.mypatients.fragment.PatientInfoFragment
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
@@ -39,8 +42,9 @@ class NCDMedicalReviewCMRActivity : BaseActivity(), View.OnClickListener, AncVis
 
     private fun initView() {
         binding.btnLayout.clBtn.gone()
-        binding.btnLayout.ivTreatmentPlan.gone()
         binding.btnMedicalReview.safeClickListener(this)
+        binding.btnLayout.ivTreatmentPlan.safeClickListener(this)
+        binding.btnLayout.ivInvestigation.safeClickListener(this)
         initializePatientDetails()
     }
 
@@ -104,8 +108,37 @@ class NCDMedicalReviewCMRActivity : BaseActivity(), View.OnClickListener, AncVis
                     dialog.show(supportFragmentManager, NCDTreatmentPlanDialog.TAG)
                 }
             }
+            binding.btnLayout.ivInvestigation.id  -> {
+                patientDetailViewModel.patientDetailsLiveData.value?.data?.let { data ->
+                    val intent = Intent(this, InvestigationActivity::class.java)
+                    intent.putExtra(DefinedParams.PatientId, data.id)
+                    // TODO need to get investigation in summary(After confirm with backend)
+                    intent.putExtra(DefinedParams.EncounterId, patientDetailViewModel.encounterId)
+                    intent.putExtra(EncounterReference, getEncounterReference())
+                    intent.putExtra(DefinedParams.MemberID, data.id)
+                    intent.putExtra(DefinedParams.ORIGIN, getMenuOrigin())
+                    intent.putExtra(NCDMRUtil.NCD, NCDMRUtil.NCD)
+                    getResult.launch(intent)
+                }
+            }
         }
     }
+
+    private fun getMenuOrigin(): String? {
+        return intent.getStringExtra(DefinedParams.ORIGIN)
+    }
+
+    private val getResult =
+        registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()
+        ) {
+            if (it.resultCode == Activity.RESULT_OK) {
+                val value = it.data?.getStringExtra(DefinedParams.EncounterId)
+                value?.let { valueString ->
+                    patientDetailViewModel.encounterId = valueString
+                }
+            }
+        }
 
     private fun getFhirId(): String? {
         return intent.getStringExtra(DefinedParams.FhirId)

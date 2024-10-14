@@ -9,7 +9,6 @@ data class SiteDetails(
     var categoryDisplayType: String? = null,
     var categoryDisplayName: String? = null,
     var otherType: String? = null,
-    var referredSiteId: Long? = null,
     var counselorId: Long? = null,
     var userSiteId: Long? = null
 )

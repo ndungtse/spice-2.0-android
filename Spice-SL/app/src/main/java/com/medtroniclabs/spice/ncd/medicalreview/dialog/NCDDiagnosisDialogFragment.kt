@@ -21,6 +21,7 @@ import com.medtroniclabs.spice.ncd.data.NCDDiagnosisRequestResponse
 import com.medtroniclabs.spice.ncd.medicalreview.NCDDialogDismissListener
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.CONFIRM_DIAGNOSIS_TYPE
+import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.CONFIRM_DIAGNOSIS_TYPE_GET
 import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDDiagnosisViewModel
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.TagListCustomView
@@ -46,11 +47,16 @@ class NCDDiagnosisDialogFragment : DialogFragment(), View.OnClickListener {
 
     companion object {
         const val TAG = "NCDDiagnosisDialogFragment"
-        fun newInstance(patientId: String, types: ArrayList<String>,isFemale: Boolean) =
-            NCDDiagnosisDialogFragment().apply {
+        fun newInstance(
+            patientId: String,
+            types: ArrayList<String>,
+            isFemale: Boolean,
+            getTypes: ArrayList<String>
+        ) = NCDDiagnosisDialogFragment().apply {
                 arguments = Bundle().apply {
                     putString(DefinedParams.PatientId, patientId)
                     putStringArrayList(CONFIRM_DIAGNOSIS_TYPE, types)
+                    putStringArrayList(CONFIRM_DIAGNOSIS_TYPE_GET, getTypes)
                     putBoolean(NCDMRUtil.IS_FEMALE, isFemale)
                 }
             }
@@ -58,6 +64,10 @@ class NCDDiagnosisDialogFragment : DialogFragment(), View.OnClickListener {
 
     private fun getTypes(): ArrayList<String> {
         return arguments?.getStringArrayList(CONFIRM_DIAGNOSIS_TYPE) ?: arrayListOf()
+    }
+
+    private fun getConfirmDiagnosisTypes(): ArrayList<String> {
+        return arguments?.getStringArrayList(CONFIRM_DIAGNOSIS_TYPE_GET) ?: arrayListOf()
     }
 
     private fun getGender(): String {
@@ -149,7 +159,7 @@ class NCDDiagnosisDialogFragment : DialogFragment(), View.OnClickListener {
             viewModel.getConfirmDiagonsis(
                 NCDDiagnosisGetRequest(
                     patientReference = patientId,
-                    diagnosisType = getTypes()
+                    diagnosisType = getConfirmDiagnosisTypes()
                 )
             )
         }

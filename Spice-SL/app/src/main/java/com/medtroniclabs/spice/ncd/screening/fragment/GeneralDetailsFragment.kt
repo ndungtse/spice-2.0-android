@@ -165,9 +165,8 @@ class GeneralDetailsFragment : BaseFragment(), View.OnClickListener,
     private fun processSiteSelection(map: Map<String, Any>) {
         viewModel.siteDetail.apply {
             siteName = map[DefinedParams.NAME] as? String ?: ""
-            siteId = map[DefinedParams.ID]?.toString()?.toLongOrNull() ?: -1L
+            siteId = map[DefinedParams.FhirId]?.toString()?.toLongOrNull() ?: -1L
             tenantId = map[DefinedParams.TenantId]?.toString()?.toLongOrNull() ?: -1L
-            referredSiteId = map[DefinedParams.FhirId]?.toString()?.toLongOrNull() ?: -1L
         }
     }
 
@@ -314,6 +313,6 @@ class GeneralDetailsFragment : BaseFragment(), View.OnClickListener,
             typeSelected = !binding.etOthers.text?.trim().isNullOrBlank()
         }
         binding.btnNext.isEnabled =
-            categorySelected && typeSelected && viewModel.siteDetail.referredSiteId != -1L
+            categorySelected && typeSelected && viewModel.siteDetail.siteId != -1L
     }
 }

@@ -262,7 +262,8 @@ class NCDMedicalReviewDiagnosisCardFragment : BaseFragment(), View.OnClickListen
                 NCDDiagnosisDialogFragment.newInstance(
                     it,
                     NCDMRUtil.getTypeForDiagnoses(getMenu()),
-                    patientDetailViewModel.getGenderIsFemale()
+                    patientDetailViewModel.getGenderIsFemale(),
+                    NCDMRUtil.getConfirmDiagnoses(getMenu())
                 ).apply {
                     listener = this@NCDMedicalReviewDiagnosisCardFragment
                 }.show(childFragmentManager, NCDDiagnosisDialogFragment.TAG)
@@ -296,7 +297,7 @@ class NCDMedicalReviewDiagnosisCardFragment : BaseFragment(), View.OnClickListen
             medicalReviewDiagnosisCardViewModel.getConfirmDiagonsis(
                 NCDDiagnosisGetRequest(
                     patientReference = patientId,
-                    diagnosisType = NCDMRUtil.getTypeForDiagnoses(getMenu())
+                    diagnosisType = NCDMRUtil.getConfirmDiagnoses(getMenu())
                 )
             )
         }

@@ -26,6 +26,7 @@ object NCDMRUtil {
     const val IS_INITIAL_MR = "ISINITIALMR"
     const val IS_FEMALE = "ISFEMALE"
     const val CONFIRM_DIAGNOSIS_TYPE = "CONFIRM_DIAGNOSIS_TYPE"
+    const val CONFIRM_DIAGNOSIS_TYPE_GET = "CONFIRM_DIAGNOSIS_TYPE_GET"
     const val SUBSTANCE_DISORDER = "Substance Disorder"
     const val MENTALHEALTH = "Mental Health"
     const val HYPERTENSION = "Hypertension"
@@ -38,6 +39,7 @@ object NCDMRUtil {
     const val FrequencyTypes = "FrequencyTypes"
     const val DEFAULT = "default"
     const val mmHg = "mmHg"
+    const val maternalHealth = "Maternal Health"
 
 
     fun validateInput(
@@ -145,16 +147,19 @@ object NCDMRUtil {
     }
 
     fun getTypeForDiagnoses(menu: String?): ArrayList<String> {
-        val baseList = arrayListOf(
-            SUBSTANCE_DISORDER,
-            MENTALHEALTH,
-            HYPERTENSION,
-            DIABETES,
-            HIV
-        )
-        return when (menu) {
-            NCD.lowercase(), MENTAL_HEALTH.lowercase() -> baseList
-            DefinedParams.PregnancyANC.lowercase() -> baseList.apply { add(PREGNANCY) }
+        return when (menu?.lowercase()) {
+            NCD.lowercase() -> arrayListOf(HYPERTENSION, DIABETES)
+            MENTAL_HEALTH.lowercase() -> arrayListOf(SUBSTANCE_DISORDER, MENTALHEALTH)
+            DefinedParams.PregnancyANC.lowercase() -> arrayListOf(PREGNANCY)
+            else -> arrayListOf()
+        }
+    }
+
+    fun getConfirmDiagnoses(menu: String?): ArrayList<String> {
+        return when (menu?.lowercase()) {
+            NCD.lowercase() -> arrayListOf(NCD)
+            MENTAL_HEALTH.lowercase() -> arrayListOf(MENTALHEALTH)
+            DefinedParams.PregnancyANC.lowercase() -> arrayListOf(maternalHealth)
             else -> arrayListOf()
         }
     }
