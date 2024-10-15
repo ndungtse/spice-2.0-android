@@ -49,7 +49,7 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 @AndroidEntryPoint
-class NCDPregnancyDialog : DialogFragment(), View.OnClickListener {
+class NCDPregnancyDialog(private val callback: ((isPositiveResult: Boolean, message: String) -> Unit)) : DialogFragment(), View.OnClickListener {
 
     private lateinit var binding: DialogNcdPregnancyBinding
     private val viewModel: NCDPregnancyViewModel by viewModels()
@@ -454,20 +454,19 @@ class NCDPregnancyDialog : DialogFragment(), View.OnClickListener {
 
                 ResourceState.SUCCESS -> {
                     hideLoading()
-                    (activity as? BaseActivity?)?.showSuccessDialogue(
-                        title = getString(R.string.pregnancy_details),
-                        message = resourceState.data?.message ?: "",
-                    ) { dismiss() }
+                    callback.invoke(
+                        true, resourceState.data?.message ?: ""
+                    )
+                    dismiss()
                 }
 
                 ResourceState.ERROR -> {
                     hideLoading()
-                    (activity as? BaseActivity?)?.showErrorDialogue(
-                        title = getString(R.string.error),
-                        message = resourceState.message
-                            ?: getString(R.string.something_went_wrong_try_later),
-                        positiveButtonName = getString(R.string.ok),
-                    ) {}
+                    callback.invoke(
+                        false,
+                        resourceState.message ?: getString(R.string.something_went_wrong_try_later)
+                    )
+                    dismiss()
                 }
             }
         }
@@ -556,8 +555,8 @@ class NCDPregnancyDialog : DialogFragment(), View.OnClickListener {
         const val GESTATIONAL_DIABETES = "gestationalDiabetes"
 
         const val TAG = "NCDPregnancyCreateDialog"
-        fun newInstance(patientId: String): NCDPregnancyDialog {
-            val fragment = NCDPregnancyDialog()
+        fun newInstance(patientId: String, callback: ((isPositiveResult: Boolean, message: String) -> Unit)): NCDPregnancyDialog {
+            val fragment = NCDPregnancyDialog(callback)
             val bundle = Bundle()
             bundle.putString(PATIENT_ID, patientId)
             fragment.arguments = bundle

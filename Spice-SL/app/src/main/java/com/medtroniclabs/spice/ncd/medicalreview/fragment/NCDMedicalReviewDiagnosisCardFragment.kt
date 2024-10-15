@@ -29,6 +29,7 @@ import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.IS_INITIAL_MR
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.MENU_ID
 import com.medtroniclabs.spice.ncd.medicalreview.dialog.NCDDiagnosisDialogFragment
 import com.medtroniclabs.spice.ncd.medicalreview.dialog.NCDPatientHistoryDialog
+import com.medtroniclabs.spice.ncd.medicalreview.dialog.NCDPregnancyDialog
 import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDMedicalReviewDiagnosisCardViewModel
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
@@ -201,6 +202,7 @@ class NCDMedicalReviewDiagnosisCardFragment : BaseFragment(), View.OnClickListen
                 setTextColor(getColor(requireContext(), R.color.medium_blue))
                 typeface = ResourcesCompat.getFont(requireContext(), R.font.inter_regular)
             }
+            pregnancyCard.tvDiagnosis.safeClickListener(this@NCDMedicalReviewDiagnosisCardFragment)
             pregnancyCard.tvDiagnosisConfirm.invisible()
 
             weightCard.tvDiagnosisLbl.text = getString(R.string.weight)
@@ -243,6 +245,22 @@ class NCDMedicalReviewDiagnosisCardFragment : BaseFragment(), View.OnClickListen
                     }
             }
 
+            binding.pregnancyCard.tvDiagnosis -> {
+                patientDetailViewModel.getPatientFHIRId()?.let { id ->
+                    val ncdPregnancyDialog =
+                        NCDPregnancyDialog.newInstance(patientId = id) { isPositiveResult, message ->
+                            if (isPositiveResult) showSuccessDialogue(
+                                title = getString(R.string.pregnancy_details),
+                                message = message,
+                            )
+                            else showErrorDialog(
+                                title = getString(R.string.error),
+                                message = message
+                            )
+                        }
+                    ncdPregnancyDialog.show(childFragmentManager, NCDPregnancyDialog.TAG)
+                }
+            }
             binding.bgCard.tvDiagnosisConfirm -> {
                 if (patientDetailViewModel.recentGlucose().isBlank())
                     addNewReading(false)

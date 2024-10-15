@@ -76,7 +76,6 @@ class NCDComplicationsFragment : BaseFragment() {
             binding.tvCommentsTitle.markMandatory()
             binding.etPhysicalExaminationComments.gone()
             binding.tvCommentsTitle.gone()
-            tvSystemicExaminationTitle.text = getString(R.string.comorbidities)
             tagView =
                 TagListCustomView(
                     root.context,

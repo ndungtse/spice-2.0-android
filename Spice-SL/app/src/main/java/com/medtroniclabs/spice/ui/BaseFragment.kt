@@ -51,6 +51,13 @@ open class BaseFragment : Fragment(){
        return (activity as? BaseActivity)?.getString()
     }
 
+    fun showSuccessDialogue(title: String, message: String) {
+        (requireActivity() as BaseActivity).showSuccessDialogue(
+            title = title,
+            message = message,
+        ) {}
+    }
+
 
     fun showErrorDialog(title: String, message: String) {
         (requireActivity() as BaseActivity).showErrorDialogue(
