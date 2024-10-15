@@ -40,6 +40,10 @@ object NCDMRUtil {
     const val DEFAULT = "default"
     const val mmHg = "mmHg"
     const val maternalHealth = "Maternal Health"
+    const val Tablet = "Tablet"
+    const val Liquid_Oral = "Liquid"
+    const val Injection_Injectable_Solution = "Injection"
+    const val Capsule = "Capsule"
 
 
     fun validateInput(

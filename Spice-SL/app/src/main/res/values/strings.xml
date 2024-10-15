@@ -890,4 +890,23 @@
     <string name="other_medication">Other Medication</string>
     <string name="comment_current_medication">Comments on current medication</string>
     <string name="enroll">Enroll</string>
+
+    //NCD Pharmacist
+    <string name="pharmacist_title">Pharmacist</string>
+    <string name="dosage">Dosage</string>
+    <string name="form">Form</string>
+    <string name="freq">Freq.</string>
+    <string name="medication_prescribed_in_days">Medication Prescribed(Days)</string>
+    <string name="days_filled">Days Filled</string>
+    <string name="prescriped_on">Prescribed On :</string>
+    <string name="dosage_form">Dosage form :</string>
+    <string name="brand">Brand :</string>
+    <string name="classification">Classification :</string>
+    <string name="Instructions">Instructions:</string>
+    <string name="reason_for_quantity">Reason for Quantity Difference</string>
+    <string name="filled_qty">Filled Days</string>
+    <string name="details_on_other_reason">Detail on Other Reason</string>
+    <string name="last_refill_date">Last Refill Date</string>
+    <string name="prescriber_number">Prescriber\'s Number</string>
+    <string name="prescriber">Prescriber</string>
 </resources>

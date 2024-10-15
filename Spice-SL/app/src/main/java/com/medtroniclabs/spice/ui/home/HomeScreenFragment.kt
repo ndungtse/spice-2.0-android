@@ -148,6 +148,15 @@ class HomeScreenFragment : BaseFragment(), MenuSelectionListener {
                 intent.putExtras(bundle)
                 startActivity(intent)
             }
+
+            MenuConstants.DISPENSE -> {
+                val bundle = Bundle().apply {
+                    putString(DefinedParams.ORIGIN, MenuConstants.DISPENSE.lowercase())
+                }
+                val intent = Intent(requireContext(), PatientSearchActivity::class.java)
+                intent.putExtras(bundle)
+                startActivity(intent)
+            }
         }
     }
 }

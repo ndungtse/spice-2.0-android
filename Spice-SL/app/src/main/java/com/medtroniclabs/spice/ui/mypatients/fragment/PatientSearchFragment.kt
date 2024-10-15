@@ -36,6 +36,7 @@ import com.medtroniclabs.spice.ui.home.AssessmentToolsActivity
 import com.medtroniclabs.spice.ui.medicalreview.addnewmember.AddNewMemberActivity
 import com.medtroniclabs.spice.ui.mypatients.PatientSelectionListener
 import com.medtroniclabs.spice.ui.mypatients.PatientsListAdapter
+import com.medtroniclabs.spice.ui.medicalreview.pharmacist.NCDPharmacistActivity
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientListViewModel
 import com.medtroniclabs.spice.ui.referralhistory.activity.ReferralHistoryActivity
 import com.medtroniclabs.spice.ui.registration.RegistrationActivity
@@ -270,7 +271,7 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
                         })
                         null
                     }
-
+                    MenuConstants.DISPENSE.lowercase() -> NCDPharmacistActivity::class.java
                     else -> null
                 }
                 destinationIntent?.let { destIntent ->

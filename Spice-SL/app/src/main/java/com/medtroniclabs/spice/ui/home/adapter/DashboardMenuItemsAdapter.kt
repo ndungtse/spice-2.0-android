@@ -173,6 +173,11 @@ class DashboardMenuItemsAdapter(
                 context,
                 R.drawable.ic_mental_health
             )
+
+            MenuConstants.DISPENSE -> return ContextCompat.getDrawable(
+                context,
+                R.drawable.ic_dispense
+            )
             else -> null
         }
     }

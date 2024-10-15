@@ -25,4 +25,5 @@ object MenuConstants {
     const val DASHBOARD = "DASHBOARD"
     const val MATERNAL_HEALTH = "maternalHealth"
     const val MENTAL_HEALTH = "mentalHealth"
+    const val DISPENSE = "DISPENSE"
 }
