@@ -6,12 +6,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
+import androidx.appcompat.widget.AppCompatTextView
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.invisible
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
+import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.DefaultID
 import com.medtroniclabs.spice.common.DefinedParams.DefaultIDLabel
@@ -31,10 +33,12 @@ import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateU
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil.isValidInput
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.MOTHER_VITAMIN_TAG
+import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 
 class ClinicalSummaryUnderFiveYearsFragment : BaseFragment() {
     private lateinit var binding: FragmentUnderFiveYearClinicalSummarryBinding
     private val viewModel: UnderFiveYearsClinicalSummaryViewModel by activityViewModels()
+    private val detailsViewModel: PatientDetailViewModel by activityViewModels()
 
     companion object {
         const val TAG = "ClinicalSummaryUnderFiveYearsFragment"
@@ -158,6 +162,9 @@ class ClinicalSummaryUnderFiveYearsFragment : BaseFragment() {
         binding.tvWeightLabel.markMandatory()
         binding.tvWAZLabel.markMandatory()
         binding.tvWHZLabel.markMandatory()
+        if (isMuacMandatory()){
+            binding.tvMUACLabel.markMandatory()
+        }
         getFlowData().let {
             val view = SingleSelectionCustomView(binding.root.context)
             view.tag = MOTHER_VITAMIN_TAG
@@ -262,7 +269,44 @@ class ClinicalSummaryUnderFiveYearsFragment : BaseFragment() {
         val repeat = repeatValidate()
         val whz = whzValidate()
         val waz = wazValidate()
-        return weight && height && temperature && respirationRate && repeat && whz && waz
+        val muac = muacValidate()
+        return weight && height && temperature && respirationRate && repeat && whz && waz && muac
+    }
+
+    private fun muacValidate(): Boolean {
+        return isValidDropdown(
+            binding.tvMUACError,
+            viewModel.selectedMuacStatus,
+            (R.string.please_select_valid_input),
+            isMuacMandatory()
+        )
+    }
+
+    private fun isValidDropdown(
+        errorTextView: AppCompatTextView,
+        selectedStatus: String?,
+        errorMessageResId: Int,
+        isMandatory: Boolean
+    ): Boolean {
+        if (isMandatory){
+            if (selectedStatus == null || selectedStatus == DefaultIDLabel){
+                errorTextView.visible()
+                errorTextView.text = requireContext().getText(errorMessageResId)
+                return false
+            }
+            errorTextView.gone()
+            return true
+        } else {
+            return true
+        }
+    }
+
+    private fun isMuacMandatory(): Boolean {
+        return detailsViewModel.patientDetailsLiveData.value?.data?.birthDate?.let {
+            DateUtils.calculateAgeInMonths(it)?.let {
+                it.first > 6
+            }
+        } ?: false
     }
 
     private fun whzValidate(): Boolean {

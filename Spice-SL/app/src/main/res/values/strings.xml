@@ -665,4 +665,5 @@
     <string name="hbw">"High Birth Weight"</string>
     <string name="upload_log">Upload Log</string>
     <string name="enter_less_than_2">Please enter a value less than or equal to 2</string>
+    <string name="please_select_valid_input">Please select a valid input</string>
 </resources>

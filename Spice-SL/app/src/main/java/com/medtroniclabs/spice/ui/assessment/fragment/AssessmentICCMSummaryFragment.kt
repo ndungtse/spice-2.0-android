@@ -201,7 +201,6 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
                     loadPhuSitesList(siteList)
                 }
                 binding.phuReferredGroup.visibility = View.VISIBLE
-                binding.diarrhoeaGroup.visibility = View.VISIBLE
                 binding.riskResultLayout.backgroundTintList =
                     ContextCompat.getColorStateList(requireContext(), R.color.attention_color)
                 binding.riskResultLayout.text = getString(R.string.referred_for_further_assessment)
