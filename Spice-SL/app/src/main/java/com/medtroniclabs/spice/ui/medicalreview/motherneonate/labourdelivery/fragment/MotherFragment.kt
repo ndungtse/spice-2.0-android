@@ -10,6 +10,9 @@ import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.CommonUtils
+import com.medtroniclabs.spice.common.DefinedParams
+import com.medtroniclabs.spice.common.DefinedParams.Episiotomy
+import com.medtroniclabs.spice.common.DefinedParams.None
 import com.medtroniclabs.spice.common.DefinedParams.StateOfPerineum
 import com.medtroniclabs.spice.common.DefinedParams.Tear
 import com.medtroniclabs.spice.data.LabourDeliveryMetaEntity
@@ -46,7 +49,6 @@ class MotherFragment : BaseFragment() {
         initListeners()
         initializeChipItem()
         attachObserver()
-        initializeStateOfPerineumLabel()
         initializeTearLabel()
     }
 
@@ -76,6 +78,7 @@ class MotherFragment : BaseFragment() {
                         initializeMotherConditionItems(listItems)
                         initializeRiskFactorsItems(listItems)
                         initializeToMotherStatusItems(listItems)
+                        initializeStateOfPerineumLabel(listItems)
                     }
                     hideProgress()
                 }
@@ -185,8 +188,20 @@ class MotherFragment : BaseFragment() {
         }
     }
 
-    private fun initializeStateOfPerineumLabel() {
-        getMotherFlowData().let {
+
+    private fun initializeStateOfPerineumLabel(listItems: List<LabourDeliveryMetaEntity>) {
+    val chipItemList = ArrayList<ChipViewItemModel>()
+        listItems.filter { it.category == MedicalReviewTypeEnums.StateOfPerineum.name }.forEach {
+            chipItemList.add(
+                ChipViewItemModel(
+                    id = it.id,
+                    name = it.name,
+                    type = it.type,
+                    value = it.value
+                )
+            )
+        }
+        getMotherFlowData(chipItemList).let {
             val view = SingleSelectionCustomView(binding.root.context)
             view.tag = TAG
             view.addViewElements(
@@ -225,9 +240,9 @@ class MotherFragment : BaseFragment() {
 
     private fun saveSelectedOptionValue(selectedID: Any?) {
         viewModel.perineumStateMap[StateOfPerineum] = selectedID as String
-        if (selectedID.toString() == getString(R.string.tear)) {
+        if (selectedID.toString() == DefinedParams.Tear) {
             binding.groupTear.isVisible = true
-        } else if (selectedID.toString() == getString(R.string.episotomy)) {
+        } else if (selectedID.toString() ==Episiotomy || selectedID.toString()== None) {
             binding.groupTear.isVisible = false
         } else {
             viewModel.perineumStateMap[Tear] = selectedID
@@ -243,10 +258,12 @@ class MotherFragment : BaseFragment() {
         return flowList
     }
 
-    private fun getMotherFlowData(): ArrayList<Map<String, Any>> {
+    private fun getMotherFlowData(chipItemList: ArrayList<ChipViewItemModel>): ArrayList<Map<String, Any>> {
         val flowList = ArrayList<Map<String, Any>>()
-        flowList.add(CommonUtils.getOptionMap(getString(R.string.episotomy), getString(R.string.episotomy)))
-        flowList.add(CommonUtils.getOptionMap(getString(R.string.tear), getString(R.string.tear)))
+        chipItemList.forEach {
+            it.value?.let {value -> CommonUtils.getOptionMap(value, it.name) }
+                ?.let { itemList -> flowList.add(itemList) }
+        }
         return flowList
     }
 

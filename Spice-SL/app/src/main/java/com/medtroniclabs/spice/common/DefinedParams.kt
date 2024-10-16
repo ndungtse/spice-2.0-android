@@ -50,6 +50,8 @@ object DefinedParams {
     const val PATIENT_NUMBER_LENGTH = 4
     const val StateOfPerineum = "stateOfPerineum"
     const val Tear = "tear"
+    const val Episiotomy ="episiotomy"
+    const val None ="none"
     const val Gender = "gender"
     const val StateOfBaby = "stateOfBaby"
     const val iccm = "ICCM"

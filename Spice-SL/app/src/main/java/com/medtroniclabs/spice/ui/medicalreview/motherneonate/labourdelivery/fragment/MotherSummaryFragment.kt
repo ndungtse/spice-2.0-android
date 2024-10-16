@@ -13,6 +13,9 @@ import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.CommonUtils.convertListToString
 import com.medtroniclabs.spice.common.CommonUtils.createInvestigation
 import com.medtroniclabs.spice.common.DateUtils
+import com.medtroniclabs.spice.common.DefinedParams
+import com.medtroniclabs.spice.common.DefinedParams.None
+import com.medtroniclabs.spice.common.DefinedParams.Tear
 import com.medtroniclabs.spice.common.ViewUtils
 import com.medtroniclabs.spice.databinding.FragmentMotherSummaryBinding
 import com.medtroniclabs.spice.formgeneration.extension.markMandatory
@@ -112,8 +115,9 @@ class MotherSummaryFragment : BaseFragment() {
         binding.tvGeneralConditionOfMother.text =
             motherDTO?.generalConditions ?: getString(R.string.hyphen_symbol)
         binding.tvStateOfThePerineum.text = when (motherDTO?.stateOfPerineum) {
-            getString(R.string.episotomy) -> getString(R.string.episotomy)
-            getString(R.string.tear) -> getString(R.string.hyphen_symbol)
+           DefinedParams.Episiotomy -> getString(R.string.episotomy)
+            Tear -> getString(R.string.hyphen_symbol)
+            None -> getString(R.string.none)
             null -> getString(R.string.hyphen_symbol)
             else -> "${getString(R.string.tear_hypen)} ${motherDTO.stateOfPerineum}"
         }

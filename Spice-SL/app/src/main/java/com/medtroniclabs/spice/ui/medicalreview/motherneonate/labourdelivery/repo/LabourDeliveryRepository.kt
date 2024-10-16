@@ -33,7 +33,8 @@ class LabourDeliveryRepository @Inject constructor(
                             neonateOutcome,
                             riskFactors,
                             conditionOfMother,
-                            motherDeliveryStatus
+                            motherDeliveryStatus,
+                            stateOfPerineum
                         )
                     )
                 }
@@ -62,7 +63,8 @@ class LabourDeliveryRepository @Inject constructor(
         neonateOutcome: List<LabourDeliveryMetaEntity>,
         riskFactors: List<LabourDeliveryMetaEntity>,
         conditionOfMother: List<LabourDeliveryMetaEntity>,
-        motherDeliveryStatus: List<LabourDeliveryMetaEntity>
+        motherDeliveryStatus: List<LabourDeliveryMetaEntity>,
+        stateOfPerineum:List<LabourDeliveryMetaEntity>
     ): List<LabourDeliveryMetaEntity> {
         val chipItemList = ArrayList<LabourDeliveryMetaEntity>()
         symptoms.forEach { it.category = MedicalReviewTypeEnums.MOTHER_DELIVERY_REVIEW.name }
@@ -84,6 +86,7 @@ class LabourDeliveryRepository @Inject constructor(
         motherDeliveryStatus.forEach {
             it.category = MedicalReviewTypeEnums.MotherDeliveryStatus.name
         }
+        stateOfPerineum.forEach { it.category = MedicalReviewTypeEnums.StateOfPerineum.name }
         chipItemList.addAll(symptoms)
         chipItemList.addAll(deliveryAtDeliveryByPair.first)
         chipItemList.addAll(deliveryAtDeliveryByPair.second)
@@ -93,6 +96,7 @@ class LabourDeliveryRepository @Inject constructor(
         chipItemList.addAll(riskFactors)
         chipItemList.addAll(conditionOfMother)
         chipItemList.addAll(motherDeliveryStatus)
+        chipItemList.addAll(stateOfPerineum)
         return chipItemList
     }
 

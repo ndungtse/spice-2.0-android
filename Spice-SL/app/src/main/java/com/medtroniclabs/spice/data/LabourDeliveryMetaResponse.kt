@@ -10,4 +10,5 @@ data class LabourDeliveryMetaResponse(
     val riskFactors: List<LabourDeliveryMetaEntity>,
     val conditionOfMother: List<LabourDeliveryMetaEntity>,
     val motherDeliveryStatus: List<LabourDeliveryMetaEntity>,
+    val stateOfPerineum:List<LabourDeliveryMetaEntity>
 )
