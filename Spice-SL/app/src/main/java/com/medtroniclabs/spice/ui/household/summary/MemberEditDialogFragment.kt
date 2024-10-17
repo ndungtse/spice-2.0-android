@@ -85,6 +85,7 @@ class MemberEditDialogFragment() : DialogFragment(), View.OnClickListener {
                         if (it.id != -1L) {
                             binding.btnOkay.isEnabled = true
                             householdSummaryViewModel.selectedMemberId = it.id
+                            householdSummaryViewModel.selectedMemberDob = it.dob
                         } else {
                             binding.btnOkay.isEnabled = false
                         }
@@ -108,7 +109,11 @@ class MemberEditDialogFragment() : DialogFragment(), View.OnClickListener {
         when(view.id){
             binding.btnOkay.id -> {
                 //Navigate to Member Edit Fragment
-                listener?.onMemberSelected(householdSummaryViewModel.selectedMemberId, true)
+                listener?.onMemberSelected(
+                    householdSummaryViewModel.selectedMemberId,
+                    true,
+                    householdSummaryViewModel.selectedMemberDob
+                )
                 dismiss()
             }
             binding.imgClose.id -> {

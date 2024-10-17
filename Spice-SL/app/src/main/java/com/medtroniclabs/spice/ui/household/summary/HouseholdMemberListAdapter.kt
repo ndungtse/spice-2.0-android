@@ -38,7 +38,7 @@ class HouseholdMemberListAdapter(
         holder.binding.tvPatientId.text = item.patientId
         holder.binding.cardPatient.safeClickListener {
             if (item.isActive) {
-                listener.onMemberSelected(item.id, false)
+                listener.onMemberSelected(item.id, false, item.dateOfBirth)
             }
         }
     }

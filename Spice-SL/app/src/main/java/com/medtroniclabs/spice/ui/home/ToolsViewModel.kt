@@ -20,6 +20,7 @@ class ToolsViewModel @Inject constructor(
 ) : ViewModel() {
 
     var selectedHouseholdMemberID = -1L
+    var selectedMemberDob: String? = null
     var followUpId = -1L
     val resultRMNCHFlowHashMap = HashMap<String, Any>()
     val menuListLiveData = MutableLiveData<Resource<List<MenuEntity>>>()

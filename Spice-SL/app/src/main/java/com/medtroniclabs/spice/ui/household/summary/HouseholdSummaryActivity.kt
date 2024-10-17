@@ -130,7 +130,7 @@ class HouseholdSummaryActivity : BaseActivity(), MemberSelectionListener, View.O
         popupMenu.show()
     }
 
-    override fun onMemberSelected(item: Long, isEdit: Boolean) {
+    override fun onMemberSelected(item: Long, isEdit: Boolean, dateOfBirth: String?) {
         if (isEdit){
             val intent = Intent(this, HouseholdActivity::class.java)
             intent.putExtra(DefinedParams.MemberID, item)
@@ -138,6 +138,7 @@ class HouseholdSummaryActivity : BaseActivity(), MemberSelectionListener, View.O
         } else {
             val intent = Intent(this, AssessmentToolsActivity::class.java)
             intent.putExtra(DefinedParams.MemberID, item)
+            intent.putExtra(DefinedParams.DOB, dateOfBirth)
             startActivity(intent)
         }
     }

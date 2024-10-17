@@ -150,6 +150,10 @@ class AssessmentTBFragment : BaseFragment(), FormEventListener, View.OnClickList
 
     }
 
+    override fun handleMandatoryCondition(serverData: FormLayout?) {
+
+    }
+
     override fun onClick(view: View) {
         when (view.id) {
             binding.btnSubmit.id -> {

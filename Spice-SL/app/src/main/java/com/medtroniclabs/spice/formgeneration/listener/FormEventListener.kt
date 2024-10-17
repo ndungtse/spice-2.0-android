@@ -29,4 +29,6 @@ interface FormEventListener {
 
     fun onAgeCheckForPregnancy()
 
+    fun handleMandatoryCondition(serverData: FormLayout? = null)
+
 }

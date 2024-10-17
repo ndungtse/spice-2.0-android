@@ -26,6 +26,7 @@ class HouseHoldSummaryViewModel @Inject constructor(
     var selectedMemberId = -1L
     var villageId: Long = -1L
     var previousCount: Int = 0
+    var selectedMemberDob: String? = null
 
     private val houseHoldNoLiveData = MutableLiveData<Long>()
     val householdCardDetailLiveData: LiveData<HouseholdCardDetail> =

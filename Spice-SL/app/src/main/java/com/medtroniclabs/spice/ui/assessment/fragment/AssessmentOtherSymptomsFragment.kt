@@ -247,6 +247,10 @@ class AssessmentOtherSymptomsFragment : BaseFragment(), FormEventListener, View.
         
     }
 
+    override fun handleMandatoryCondition(serverData: FormLayout?) {
+
+    }
+
     private fun updateColorCode(id: String, colorCode: Int) {
         formGenerator.getViewByTag(id + com.medtroniclabs.spice.formgeneration.config.DefinedParams.Information)?.let { view ->
             if (view is TextView){

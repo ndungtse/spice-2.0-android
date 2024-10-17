@@ -26,6 +26,7 @@ import com.medtroniclabs.spice.common.CommonUtils.getBooleanAsString
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
 import com.medtroniclabs.spice.common.DateUtils.DATE_ddMMyyyy
+import com.medtroniclabs.spice.common.DefinedParams.DOB
 import com.medtroniclabs.spice.common.DefinedParams.HOUSEHOLD_MEMBER_REGISTRATION
 import com.medtroniclabs.spice.common.DefinedParams.HouseholdHead
 import com.medtroniclabs.spice.common.DefinedParams.MemberID
@@ -233,6 +234,7 @@ class MemberRegistrationFragment : Fragment(), FormEventListener, View.OnClickLi
             memberRegistrationViewModel.memberRegistrationLiveData.value?.data.let {
                 intent.putExtra(MemberID, it ?: -1)
             }
+            intent.putExtra(DOB, memberRegistrationViewModel.memberDob)
             startActivity(intent)
             (activity as HouseholdActivity).finish()
         } else {
@@ -481,6 +483,10 @@ class MemberRegistrationFragment : Fragment(), FormEventListener, View.OnClickLi
 
     override fun onAgeCheckForPregnancy() {
         formGenerator.handlePregnancyCardBasedOnAgeAndWeeks()
+    }
+
+    override fun handleMandatoryCondition(serverData: FormLayout?) {
+
     }
 
     override fun onClick(v: View?) {

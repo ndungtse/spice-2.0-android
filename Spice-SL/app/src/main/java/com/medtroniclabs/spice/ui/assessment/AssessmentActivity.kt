@@ -282,6 +282,7 @@ class AssessmentActivity : BaseActivity() {
         viewModel.selectedHouseholdMemberId = intent.getLongExtra(DefinedParams.MemberID, -1L)
         viewModel.menuId = intent.getStringExtra(DefinedParams.MenuId)
         viewModel.workflowName = intent.getStringExtra(MenuConstants.WorkFlowName)
+        viewModel.selectedMemberDob = intent.getStringExtra(DefinedParams.DOB)
         val followUpId = intent.getLongExtra(DefinedParams.FollowUpId, -1L)
         if (followUpId != -1L)
             viewModel.followUpId = followUpId

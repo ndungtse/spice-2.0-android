@@ -40,6 +40,7 @@ class MemberRegistrationViewModel @Inject constructor(
     val addnewMemberReq=MutableLiveData<Resource<String>>()
     var villageDetails:List<VillageEntity>?= null
     var addNewMember: Boolean = false
+    var memberDob: String?=null
 
     fun getFormData(formType: String) {
         viewModelScope.launch(dispatcherIO) {
@@ -84,6 +85,11 @@ class MemberRegistrationViewModel @Inject constructor(
         try {
             viewModelScope.launch(dispatcherIO) {
                 selectedHouseholdId = householdId
+                memberDob = if (map.containsKey(MemberRegistration.dateOfBirth)) {
+                    CommonUtils.getStringOrEmptyString(map[MemberRegistration.dateOfBirth])
+                } else {
+                    null
+                }
                 val memberId = memberRegistrationRepository.registerMember(
                     map,
                     householdId,

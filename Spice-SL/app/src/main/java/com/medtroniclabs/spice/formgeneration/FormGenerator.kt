@@ -620,6 +620,7 @@ class FormGenerator(
     private fun createCustomSpinner(serverViewModel: FormLayout) {
         val binding = CustomSpinnerBinding.inflate(LayoutInflater.from(context))
         serverViewModel.apply {
+            listener.handleMandatoryCondition(serverViewModel)
             binding.root.tag = id + rootSuffix
             binding.etUserInput.tag = id
             binding.tvTitle.tag = id + titleSuffix

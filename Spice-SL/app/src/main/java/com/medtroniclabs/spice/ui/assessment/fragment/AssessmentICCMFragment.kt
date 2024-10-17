@@ -13,14 +13,19 @@ import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.app.analytics.model.UserDetail
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.common.CommonUtils
+import com.medtroniclabs.spice.common.CommonUtils.getAgeFromDOB
+import com.medtroniclabs.spice.common.CommonUtils.isMandateOrNot
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
 import com.medtroniclabs.spice.common.DateUtils.getYearMonthAndWeek
 import com.medtroniclabs.spice.common.DefinedParams.DefaultID
+import com.medtroniclabs.spice.common.RegexConstants
 import com.medtroniclabs.spice.data.model.RecommendedDosageListModel
 import com.medtroniclabs.spice.databinding.FragmentAssessmentBinding
 import com.medtroniclabs.spice.formgeneration.FormGenerator
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.Information
+import com.medtroniclabs.spice.formgeneration.config.DefinedParams.YEAR
+import com.medtroniclabs.spice.formgeneration.config.DefinedParams.YEARS
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.listener.FormEventListener
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
@@ -59,7 +64,6 @@ import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.ZincStatus
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.chestInDrawing
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.hasCough
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.hasDiarrhoea
-import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.hasFever
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.hasOedemaOfBothFeet
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.infoSuffixText
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.muacCode
@@ -518,6 +522,20 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
 
     override fun onAgeCheckForPregnancy() {
         
+    }
+
+    override fun handleMandatoryCondition(serverData: FormLayout?) {
+        serverData?.let { formData ->
+            when (formData.id) {
+                muacCode -> {
+                    viewModel.selectedMemberDob?.let { dateOfBirth ->
+                        formData.isMandatory = isMandateOrNot(dateOfBirth, requireContext())
+                    }
+                }
+
+                else -> {}
+            }
+        }
     }
 
     private fun dismissAmoxicillinStatus(resultMap: HashMap<String, Any>?) {

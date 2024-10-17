@@ -13,6 +13,7 @@ import com.medtroniclabs.spice.app.analytics.model.UserDetail
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.common.CommonUtils.extractNumber
+import com.medtroniclabs.spice.common.CommonUtils.isMandateOrNot
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DateUtils.formatGestationalAge
 import com.medtroniclabs.spice.common.DefinedParams
@@ -430,6 +431,20 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
 
 
     override fun onAgeCheckForPregnancy() {
+    }
+
+    override fun handleMandatoryCondition(serverData: FormLayout?) {
+        serverData?.let { formData ->
+            when (formData.id) {
+                MUAC -> {
+                    viewModel.selectedMemberDob?.let { dateOfBirth ->
+                        formData.isMandatory = isMandateOrNot(dateOfBirth, requireContext())
+                    }
+                }
+
+                else -> {}
+            }
+        }
     }
 
     fun getCurrentAnsweredStatus(): Boolean {

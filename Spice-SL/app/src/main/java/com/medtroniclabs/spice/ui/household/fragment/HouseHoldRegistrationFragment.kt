@@ -320,4 +320,8 @@ class HouseHoldRegistrationFragment : Fragment(), View.OnClickListener, FormEven
     override fun onAgeCheckForPregnancy() {
         
     }
+
+    override fun handleMandatoryCondition(serverData: FormLayout?) {
+
+    }
 }

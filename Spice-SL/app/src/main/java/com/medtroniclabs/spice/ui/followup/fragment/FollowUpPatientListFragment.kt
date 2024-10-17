@@ -109,6 +109,7 @@ class FollowUpPatientListFragment: BaseFragment(), FollowUpDialogFragment.Follow
             val intent = Intent(requireContext(), AssessmentToolsActivity::class.java)
             intent.putExtra(DefinedParams.MemberID, data.localPatientId)
             intent.putExtra(DefinedParams.FollowUpId, data.id)
+            intent.putExtra(DefinedParams.DOB, data.dateOfBirth)
             startActivity(intent)
         }
     }

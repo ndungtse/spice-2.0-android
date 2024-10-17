@@ -38,7 +38,6 @@ import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 class ClinicalSummaryUnderFiveYearsFragment : BaseFragment() {
     private lateinit var binding: FragmentUnderFiveYearClinicalSummarryBinding
     private val viewModel: UnderFiveYearsClinicalSummaryViewModel by activityViewModels()
-    private val detailsViewModel: PatientDetailViewModel by activityViewModels()
 
     companion object {
         const val TAG = "ClinicalSummaryUnderFiveYearsFragment"
@@ -162,9 +161,6 @@ class ClinicalSummaryUnderFiveYearsFragment : BaseFragment() {
         binding.tvWeightLabel.markMandatory()
         binding.tvWAZLabel.markMandatory()
         binding.tvWHZLabel.markMandatory()
-        if (isMuacMandatory()){
-            binding.tvMUACLabel.markMandatory()
-        }
         getFlowData().let {
             val view = SingleSelectionCustomView(binding.root.context)
             view.tag = MOTHER_VITAMIN_TAG
@@ -269,44 +265,7 @@ class ClinicalSummaryUnderFiveYearsFragment : BaseFragment() {
         val repeat = repeatValidate()
         val whz = whzValidate()
         val waz = wazValidate()
-        val muac = muacValidate()
-        return weight && height && temperature && respirationRate && repeat && whz && waz && muac
-    }
-
-    private fun muacValidate(): Boolean {
-        return isValidDropdown(
-            binding.tvMUACError,
-            viewModel.selectedMuacStatus,
-            (R.string.please_select_valid_input),
-            isMuacMandatory()
-        )
-    }
-
-    private fun isValidDropdown(
-        errorTextView: AppCompatTextView,
-        selectedStatus: String?,
-        errorMessageResId: Int,
-        isMandatory: Boolean
-    ): Boolean {
-        if (isMandatory){
-            if (selectedStatus == null || selectedStatus == DefaultIDLabel){
-                errorTextView.visible()
-                errorTextView.text = requireContext().getText(errorMessageResId)
-                return false
-            }
-            errorTextView.gone()
-            return true
-        } else {
-            return true
-        }
-    }
-
-    private fun isMuacMandatory(): Boolean {
-        return detailsViewModel.patientDetailsLiveData.value?.data?.birthDate?.let {
-            DateUtils.calculateAgeInMonths(it)?.let {
-                it.first > 6
-            }
-        } ?: false
+        return weight && height && temperature && respirationRate && repeat && whz && waz
     }
 
     private fun whzValidate(): Boolean {

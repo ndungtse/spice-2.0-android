@@ -90,6 +90,7 @@ class AssessmentViewModel @Inject constructor(
     val treatmentDays = HashMap<String, Int>()
     var referralReason: ArrayList<String>? = null
     var pregnancyDetail: PregnancyDetail? = null
+    var selectedMemberDob: String? = null
 
     init {
         SecuredPreference.getFollowUpCriteria()?.let { followUpCriteria ->
