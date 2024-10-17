@@ -28,15 +28,16 @@ import com.medtroniclabs.spice.db.entity.FormEntity
 import com.medtroniclabs.spice.db.entity.HealthFacilityEntity
 import com.medtroniclabs.spice.db.entity.MentalHealthEntity
 import com.medtroniclabs.spice.db.entity.MenuEntity
-import com.medtroniclabs.spice.db.entity.NCDDiagnosisEntity
 import com.medtroniclabs.spice.db.entity.RiskClassificationModel
 import com.medtroniclabs.spice.db.entity.RiskFactorEntity
 import com.medtroniclabs.spice.db.entity.UserProfileEntity
 import com.medtroniclabs.spice.db.entity.VillageEntity
 import com.medtroniclabs.spice.db.local.RoomHelper
+import com.medtroniclabs.spice.mappingkey.Screening
 import com.medtroniclabs.spice.network.ApiHelper
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.network.resource.ResourceState
+import com.medtroniclabs.spice.ui.MenuConstants
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import kotlinx.coroutines.Dispatchers
@@ -88,7 +89,7 @@ class MetaRepository @Inject constructor(
                             } else {
                                 handleMeta(menu, meta)
                             }
-                            workflowNames.addAll(clinicalIds)
+                            workflowNames.addAll(workflowIds)
                             identityTypes?.let { types ->
                                 SecuredPreference.putIdentityTypes(types)
                             }
@@ -347,7 +348,7 @@ class MetaRepository @Inject constructor(
         val isPregnancyAncEnabledSite = clinicalWorkFlowList.filter {
             it.workflowName.equals(
                 DefinedParams.PregnancyANC,
-                false
+                true
             )
         }
         SecuredPreference.putBoolean(
@@ -356,6 +357,15 @@ class MetaRepository @Inject constructor(
         )
         roomHelper.saveClinicalWorkflows(clinicalWorkFlowList)
         roomHelper.insertClinicalWorkflowConditions(clinicalWorkFlowConditions)
+        val psychologicalFlow = clinicalWorkFlowList.firstOrNull {
+            it.workflowName?.contains(Screening.PHQ4) == true ||
+                    it.workflowName?.contains(Screening.suicideScreener) == true ||
+                    it.workflowName?.contains(Screening.substanceAbuse) == true
+        }
+        SecuredPreference.putBoolean(
+            SecuredPreference.EnvironmentKey.IS_PSYCHOLOGICAL_FLOW_ENABLED.name,
+            psychologicalFlow != null
+        )
     }
 
     private suspend fun saveUserProfileDetailsInDb(userProfile: UserProfile) {
@@ -438,7 +448,7 @@ class MetaRepository @Inject constructor(
             val formFields: com.medtroniclabs.spice.formgeneration.model.FormResponse =
                 gson.fromJson(ass.inputForm, formFieldsType)
             val categories =
-                listOf(AssessmentDefinedParams.ncd, AssessmentDefinedParams.MaternalHealth, AssessmentDefinedParams.MentalHealth)
+                listOf(AssessmentDefinedParams.ncd, MenuConstants.MATERNAL_HEALTH, MenuConstants.MENTAL_HEALTH)
             categories.forEach { category ->
                 val cardIdList = formFields.formLayout
                     .filter {

@@ -61,6 +61,7 @@ object Screening {
     const val Moderate = "Moderate"
     const val Severe = "Severe"
     const val CAGEAID = "cageAid"
+    const val suicideScreener = "suicideScreener"
     const val substanceAbuse = "substanceAbuse"
     const val SuicidalIdeation = "suicidalIdeation"
     const val SuicidalIdeationQuestion =

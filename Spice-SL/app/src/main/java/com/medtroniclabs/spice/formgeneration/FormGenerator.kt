@@ -2131,6 +2131,11 @@ class FormGenerator(
             val model = serverData?.find { it.id == tag }
             model?.let {
                 when (model.viewType) {
+                    VIEW_TYPE_FORM_DATEPICKER,
+                    VIEW_TYPE_FORM_EDITTEXT, VIEW_TYPE_NO_OF_DAYS -> resetEditTextDatePicker(
+                        this,
+                        model
+                    )
                     VIEW_TYPE_FORM_SPINNER -> resetSpinner(this)
                     VIEW_TYPE_FORM_RADIOGROUP -> resetRadioGroup(this, model)
                     VIEW_TYPE_SINGLE_SELECTION -> {

@@ -380,8 +380,10 @@ class NCDPregnancyDialog(private val callback: ((isPositiveResult: Boolean, mess
             }
         }
         binding.cgNeonatalOutcomes.setOnCheckedStateChangeListener { _, checkedIds ->
-            viewModel.ncdPregnancyCreateModel.neonatalOutcomes =
-                neonatalOutcomesView.getSelectedTags()[0].name.ifBlank { null }
+            val selected = neonatalOutcomesView.getSelectedTags()
+            if (selected.isNotEmpty())
+                viewModel.ncdPregnancyCreateModel.neonatalOutcomes =
+                    selected[0].name.ifBlank { null }
             if (checkedIds.size > 0) {
                 binding.actualDeliveryDateGroup.visible()
             } else {
@@ -390,8 +392,10 @@ class NCDPregnancyDialog(private val callback: ((isPositiveResult: Boolean, mess
             }
         }
         binding.cgMaternalOutcomes.setOnCheckedStateChangeListener { _, _ ->
-            viewModel.ncdPregnancyCreateModel.maternalOutcomes =
-                maternalOutcomesView.getSelectedTags()[0].name.ifBlank { null }
+            val selected = maternalOutcomesView.getSelectedTags()
+            if (selected.isNotEmpty())
+                viewModel.ncdPregnancyCreateModel.maternalOutcomes =
+                    selected[0].name.ifBlank { null }
         }
     }
 

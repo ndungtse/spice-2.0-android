@@ -6,8 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.appextensions.setDialogPercent
 import com.medtroniclabs.spice.databinding.DialogBpLogListBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
@@ -61,7 +61,6 @@ class BPLogListDialog(private val addNewReading: () -> Unit) : DialogFragment(),
             binding.btnAddNewReading.id -> {
                 dismiss()
                 addNewReading.invoke()
-                viewModel.bpLogListResponseLiveData.postError()
             }
         }
     }

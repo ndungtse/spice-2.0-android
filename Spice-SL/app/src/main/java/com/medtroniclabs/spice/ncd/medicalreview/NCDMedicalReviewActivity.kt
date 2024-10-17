@@ -11,7 +11,9 @@ import androidx.core.view.isVisible
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.isVisible
+import com.medtroniclabs.spice.appextensions.setVisible
 import com.medtroniclabs.spice.appextensions.visible
+import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.MemberID
@@ -67,6 +69,8 @@ import com.medtroniclabs.spice.ui.mypatients.fragment.PatientInfoFragment
 import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDMedicalReviewViewModel
 import com.medtroniclabs.spice.ui.MenuConstants
 import com.medtroniclabs.spice.ui.medicalreview.investigation.InvestigationActivity
+import com.medtroniclabs.spice.ncd.counseling.activity.NCDCounselingActivity
+import com.medtroniclabs.spice.ncd.counseling.activity.NCDLifestyleActivity
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 import com.medtroniclabs.spice.ui.registration.RegistrationActivity
 import dagger.hilt.android.AndroidEntryPoint
@@ -271,6 +275,7 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
     }
 
     fun initView() {
+        binding.btnLayout.clPsycMenu.setVisible(CommonUtils.isPsychologicalFlowEnabled())
         initializePatientDetails()
     }
 
@@ -278,6 +283,8 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
         binding.btnLayout.btnNext.safeClickListener(this)
         binding.btnLayout.ivTreatmentPlan.safeClickListener(this)
         binding.btnLayout.ivInvestigation.safeClickListener(this)
+        binding.btnLayout.ivLifestyle.safeClickListener(this)
+        binding.btnLayout.clPsycMenu.safeClickListener(this)
     }
 
     private fun getPatientId(): String? {
@@ -490,7 +497,29 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
                     getResult.launch(intent)
                 }
             }
+            binding.btnLayout.ivLifestyle.id -> navigateUser(
+                Intent(
+                    this,
+                    NCDLifestyleActivity::class.java
+                )
+            )
+
+            binding.btnLayout.clPsycMenu.id -> navigateUser(
+                Intent(
+                    this,
+                    NCDCounselingActivity::class.java
+                )
+            )
         }
+    }
+
+    private fun navigateUser(intent: Intent) {
+        val bundle = Bundle()
+        bundle.putString(NCDMRUtil.PATIENT_REFERENCE, patientDetailViewModel.getPatientId())
+        bundle.putString(NCDMRUtil.MEMBER_REFERENCE, patientDetailViewModel.getPatientFHIRId())
+        bundle.putString(NCDMRUtil.VISIT_ID, getEncounterReference())
+        intent.putExtras(bundle)
+        startActivity(intent)
     }
 
     private val getResult =

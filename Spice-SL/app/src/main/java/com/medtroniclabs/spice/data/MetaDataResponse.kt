@@ -17,7 +17,7 @@ data class MetaDataResponse(
     val defaultHealthFacility: HealthFacility,
     val menu: Menu,
     val userProfile: UserProfile,
-    val clinicalIds: ArrayList<Long>,
+    val workflowIds: ArrayList<Long>,
     val frequency: List<FrequencyEntity> ? = null,
     val userHealthFacilities: List<HealthFacility>? = null,
     val identityTypes: ArrayList<IdentityType>? = null,

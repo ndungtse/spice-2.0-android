@@ -39,24 +39,16 @@ class PatientsListAdapter(
                 age,
                 gender
             )
-            var leftLbl = context.getString(R.string.empty)
-            var rightLbl = context.getString(R.string.empty)
-            var leftValue = context.getString(R.string.empty)
-            var rightValue = context.getString(R.string.empty)
+            val leftLbl = context.getString(R.string.national_id)
+            val rightLbl = context.getString(R.string.patient_id)
+            val leftValue = item.identityValue ?: context.getString(R.string.separator_hyphen)
+            val rightValue = item.programId ?: context.getString(R.string.separator_hyphen)
 
-            if (CommonUtils.isSL()) {
-                leftLbl = context.getString(R.string.patient_id)
-                leftValue = item.patientId ?: context.getString(R.string.separator_hyphen)
-
-                rightLbl = context.getString(R.string.village)
-                rightValue = item.village ?: context.getString(R.string.separator_hyphen)
-            } else if (CommonUtils.isAfrica()) {
-                leftLbl = context.getString(R.string.national_id)
-                leftValue = item.identityValue ?: context.getString(R.string.separator_hyphen)
-
-                rightLbl = context.getString(R.string.patient_id)
-                rightValue = item.programId ?: context.getString(R.string.separator_hyphen)
-            }
+            //SL
+//            val leftLbl = context.getString(R.string.patient_id)
+//            val rightLbl = context.getString(R.string.village)
+//            val leftValue = item.patientId ?: context.getString(R.string.separator_hyphen)
+//            val rightValue = item.village ?: context.getString(R.string.separator_hyphen)
 
             with(binding) {
                 tvCardPatientName.text = patientInfo

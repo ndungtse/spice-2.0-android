@@ -1,0 +1,266 @@
+package com.medtroniclabs.spice.ncd.counseling.activity
+
+import android.os.Bundle
+import android.view.View
+import androidx.activity.OnBackPressedCallback
+import androidx.activity.viewModels
+import androidx.core.widget.addTextChangedListener
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.common.DateUtils
+import com.medtroniclabs.spice.common.SecuredPreference
+import com.medtroniclabs.spice.databinding.ActivityNcdCounselingBinding
+import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
+import com.medtroniclabs.spice.ncd.counseling.adapter.NCDCounselingAdapter
+import com.medtroniclabs.spice.ncd.counseling.model.NCDCounselingModel
+import com.medtroniclabs.spice.ncd.counseling.utils.CounselingInterface
+import com.medtroniclabs.spice.ncd.counseling.viewmodel.CounselingViewModel
+import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil
+import com.medtroniclabs.spice.network.resource.ResourceState
+import com.medtroniclabs.spice.ui.BaseActivity
+
+class NCDCounselingActivity : BaseActivity(), View.OnClickListener, CounselingInterface {
+
+    private lateinit var binding: ActivityNcdCounselingBinding
+
+    private val viewModel: CounselingViewModel by viewModels()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
+        binding = ActivityNcdCounselingBinding.inflate(layoutInflater)
+        setMainContentView(
+            binding.root,
+            isToolbarVisible = true,
+            title = getString(R.string.psychological_assessment)
+        )
+        saveIntentValues()
+        initializeView()
+        setListeners()
+        attachObserver()
+        getCounselingList()
+    }
+
+    private val onBackPressedCallback: OnBackPressedCallback =
+        object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                backHandelFlow()
+            }
+        }
+
+    private fun saveIntentValues() {
+        intent?.extras?.let { bundle ->
+            viewModel.apply {
+                patientReference = bundle.getString(NCDMRUtil.PATIENT_REFERENCE)
+                memberReference = bundle.getString(NCDMRUtil.MEMBER_REFERENCE)
+                encounterReference = bundle.getString(NCDMRUtil.VISIT_ID)
+            }
+        }
+    }
+
+    private fun initializeView() {
+        binding.bottomSheet.btnNext.text = getString(R.string.submit)
+        hideRecyclerView()
+    }
+
+    private fun setListeners() {
+        binding.btnAdd.safeClickListener(this)
+        binding.bottomSheet.apply {
+            btnNext.safeClickListener(this@NCDCounselingActivity)
+            btnBack.safeClickListener(this@NCDCounselingActivity)
+        }
+        binding.etClinicalNotes.addTextChangedListener {
+            binding.btnAdd.isEnabled = !binding.etClinicalNotes.text.isNullOrBlank()
+        }
+    }
+
+    private fun attachObserver() {
+        viewModel.createAssessmentLiveData.observe(this) { resourceState ->
+            when (resourceState.state) {
+                ResourceState.LOADING -> {
+                    showLoading()
+                }
+
+                ResourceState.SUCCESS -> {
+                    hideLoading()
+                    finish()
+                }
+
+                ResourceState.ERROR -> {
+                    hideLoading()
+                    resourceState.message?.let { message ->
+                        showErrorDialogue(message = message) {}
+                    }
+                }
+            }
+        }
+        viewModel.assessmentListLiveData.observe(this) { resourceState ->
+            when (resourceState.state) {
+                ResourceState.LOADING -> {
+                    showLoading()
+                }
+
+                ResourceState.SUCCESS -> {
+                    hideLoading()
+                    loadCounselingList()
+                }
+
+                ResourceState.ERROR -> {
+                    hideLoading()
+                    resourceState.message?.let { message ->
+                        showErrorDialogue(message = message) {}
+                    }
+                }
+            }
+        }
+        viewModel.removeAssessmentLiveData.observe(this) { resourceState ->
+            when (resourceState.state) {
+                ResourceState.LOADING -> {
+                    showLoading()
+                }
+
+                ResourceState.SUCCESS -> {
+                    hideLoading()
+                    resourceState.data?.entity?.id?.let { removedElementID ->
+                        removeCounseling(removedElementID)
+                    }
+                }
+
+                ResourceState.ERROR -> {
+                    hideLoading()
+                    resourceState.message?.let { message ->
+                        showErrorDialogue(message = message) {}
+                    }
+                }
+            }
+        }
+    }
+
+    private fun removeCounseling(removedID: String) {
+        viewModel.assessmentListLiveData.value?.data?.entity?.let { list ->
+            list.removeIf { it.id == removedID }
+            loadCounselingList()
+        }
+    }
+
+    private fun loadCounselingList() {
+        val counselingList = viewModel.assessmentListLiveData.value?.data?.entity
+        if (counselingList.isNullOrEmpty()) hideRecyclerView()
+        else {
+            val adapter = NCDCounselingAdapter(this)
+            binding.rvList.layoutManager = LinearLayoutManager(binding.rvList.context ?: this)
+            binding.rvList.adapter = adapter
+            adapter.submitData(counselingList)
+            showRecyclerView()
+        }
+    }
+
+    private fun backHandelFlow() {
+        if (viewModel.clinicianNotes.isNullOrEmpty()) finish()
+        else
+            showErrorDialogue(
+                getString(R.string.alert),
+                getString(R.string.exit_reason_message),
+                isNegativeButtonNeed = true
+            ) {
+                if (it) finish()
+            }
+    }
+
+    private fun showRecyclerView() {
+        binding.rvList.visibility = View.VISIBLE
+        binding.tvNoData.visibility = View.GONE
+    }
+
+    private fun hideRecyclerView() {
+        binding.rvList.visibility = View.GONE
+        binding.tvNoData.visibility = View.VISIBLE
+    }
+
+    override fun onClick(mView: View?) {
+        when (mView?.id) {
+            binding.btnAdd.id -> addClinicianNotes()
+
+            binding.bottomSheet.btnNext.id -> {
+                if (connectivityManager.isNetworkAvailable()) viewModel.createAssessment(
+                    getCreateRequest()
+                )
+                else showErrorDialogue(
+                    getString(R.string.error), getString(R.string.no_internet_error), false
+                ) {}
+            }
+
+            binding.bottomSheet.btnBack.id -> backHandelFlow()
+        }
+    }
+
+    private fun addClinicianNotes() {
+        if (viewModel.clinicianNotes.isNullOrEmpty())
+            viewModel.clinicianNotes = arrayListOf()
+
+        binding.etClinicalNotes.text?.let {
+            if (it.isNotEmpty())
+                viewModel.clinicianNotes?.add(it.toString())
+        }
+
+        binding.etClinicalNotes.text?.clear()
+
+        refreshList()
+    }
+
+    private fun removeClinicianNotes(model: NCDCounselingModel) {
+        viewModel.clinicianNotes?.removeIf { it == model.clinicianNotes?.get(0) }
+
+        refreshList()
+    }
+
+    private fun refreshList() {
+        viewModel.assessmentListLiveData.value?.data?.entity?.apply {
+            removeIf { it.id == null }
+
+            viewModel.clinicianNotes?.forEach {
+                add(
+                    0, NCDCounselingModel(
+                        clinicianNotes = arrayListOf(it),
+                        referredBy = SecuredPreference.getUserFhirId(),
+                        referredDate = DateUtils.getTodayDateDDMMYYYY(),
+                    )
+                )
+            }
+        }
+        binding.bottomSheet.btnNext.isEnabled = !viewModel.clinicianNotes.isNullOrEmpty()
+        loadCounselingList()
+    }
+
+    override fun removeElement(model: NCDCounselingModel) {
+        if (model.id == null) {
+            removeClinicianNotes(model)
+        } else {
+            viewModel.removeAssessment(NCDCounselingModel(id = model.id))
+        }
+    }
+
+    private fun getCreateRequest(): NCDCounselingModel {
+        return with(viewModel) {
+            NCDCounselingModel(
+                patientReference = patientReference,
+                memberReference = memberReference,
+                visitId = encounterReference,
+                clinicianNotes = clinicianNotes,
+                referredBy = SecuredPreference.getUserFhirId(),
+                referredDate = DateUtils.getTodayDateDDMMYYYY(),
+                counselor = counselor,
+                roleName = getRoleName()
+            )
+        }
+    }
+
+    private fun getCounselingList() {
+        val request = NCDCounselingModel(
+            patientReference = viewModel.patientReference,
+            memberReference = viewModel.memberReference,
+            visitId = viewModel.encounterReference
+        )
+        viewModel.getAssessmentList(request)
+    }
+}

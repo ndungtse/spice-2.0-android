@@ -95,7 +95,9 @@ import com.medtroniclabs.spice.ncd.data.BPBGListModel
 import com.medtroniclabs.spice.ncd.data.NCDMRSummaryRequestResponse
 import com.medtroniclabs.spice.ncd.data.NCDPatientStatusRequest
 import com.medtroniclabs.spice.ncd.data.NCDTreatmentPlanModel
+import com.medtroniclabs.spice.ncd.data.NCDTreatmentPlanModelDetails
 import com.medtroniclabs.spice.ncd.data.ScreeningPatientResponse
+import com.medtroniclabs.spice.ncd.counseling.model.NCDCounselingModel
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
@@ -199,6 +201,14 @@ interface ApiHelper {
 
     suspend fun createNCDPatientStatus(request: NCDPatientStatusRequest): Response<APIResponse<HashMap<String, Any>>>
     suspend fun updateNCDTreatmentPlan(request: NCDTreatmentPlanModel): Response<APIResponse<NCDTreatmentPlanModel>>
-    suspend fun getNCDTreatmentPlan(request: NCDTreatmentPlanModel): Response<APIResponse<NCDTreatmentPlanModel>>
+    suspend fun getNCDTreatmentPlan(request: NCDTreatmentPlanModelDetails): Response<APIResponse<NCDTreatmentPlanModelDetails>>
     suspend fun createNCDMRSummaryCreate(request: NCDMRSummaryRequestResponse): Response<APIResponse<HashMap<String, Any>>>
+    suspend fun createLifestyle(request: NCDCounselingModel): Response<APIResponse<NCDCounselingModel>>
+    suspend fun updateLifestyle(request: NCDCounselingModel): Response<APIResponse<NCDCounselingModel>>
+    suspend fun getLifestyleList(request: NCDCounselingModel): Response<APIResponse<ArrayList<NCDCounselingModel>>>
+    suspend fun removeLifestyle(request: NCDCounselingModel): Response<APIResponse<NCDCounselingModel>>
+    suspend fun createPsychological(request: NCDCounselingModel): Response<APIResponse<NCDCounselingModel>>
+    suspend fun updatePsychological(request: NCDCounselingModel): Response<APIResponse<NCDCounselingModel>>
+    suspend fun getPsychological(request: NCDCounselingModel): Response<APIResponse<ArrayList<NCDCounselingModel>>>
+    suspend fun removePsychological(request: NCDCounselingModel): Response<APIResponse<NCDCounselingModel>>
 }

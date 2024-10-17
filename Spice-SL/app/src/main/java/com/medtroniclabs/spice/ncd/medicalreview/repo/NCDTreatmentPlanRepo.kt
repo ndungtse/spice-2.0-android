@@ -3,6 +3,7 @@ package com.medtroniclabs.spice.ncd.medicalreview.repo
 import com.medtroniclabs.spice.data.APIResponse
 import com.medtroniclabs.spice.db.local.RoomHelper
 import com.medtroniclabs.spice.ncd.data.NCDTreatmentPlanModel
+import com.medtroniclabs.spice.ncd.data.NCDTreatmentPlanModelDetails
 import com.medtroniclabs.spice.network.ApiHelper
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.network.resource.ResourceState
@@ -27,7 +28,7 @@ class NCDTreatmentPlanRepo @Inject constructor(
         }
     }
 
-    suspend fun getNCDTreatmentPlan(request: NCDTreatmentPlanModel): Resource<APIResponse<NCDTreatmentPlanModel>> {
+    suspend fun getNCDTreatmentPlan(request: NCDTreatmentPlanModelDetails): Resource<APIResponse<NCDTreatmentPlanModelDetails>> {
         return try {
             val response = apiHelper.getNCDTreatmentPlan(request)
             if (response.isSuccessful && response.body()?.status == true) {

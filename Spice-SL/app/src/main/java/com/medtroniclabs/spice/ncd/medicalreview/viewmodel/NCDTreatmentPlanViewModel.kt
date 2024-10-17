@@ -10,6 +10,7 @@ import com.medtroniclabs.spice.data.APIResponse
 import com.medtroniclabs.spice.db.entity.TreatmentPlanEntity
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.ncd.data.NCDTreatmentPlanModel
+import com.medtroniclabs.spice.ncd.data.NCDTreatmentPlanModelDetails
 import com.medtroniclabs.spice.ncd.medicalreview.repo.NCDTreatmentPlanRepo
 import com.medtroniclabs.spice.network.resource.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -24,11 +25,12 @@ class NCDTreatmentPlanViewModel @Inject constructor(
 ) : ViewModel() {
     var patientReference: String? = null
     var memberReference: String? = null
+    var carePlanId: String? = null
 
     var updateNCDTreatmentPlanLiveData =
         MutableLiveData<Resource<APIResponse<NCDTreatmentPlanModel>>>()
     var getNCDTreatmentPlanLiveData =
-        MutableLiveData<Resource<APIResponse<NCDTreatmentPlanModel>>>()
+        MutableLiveData<Resource<APIResponse<NCDTreatmentPlanModelDetails>>>()
 
     var medicalReviewFrequency: TreatmentPlanEntity? = null
     var bpCheckFrequency: TreatmentPlanEntity? = null
@@ -43,7 +45,7 @@ class NCDTreatmentPlanViewModel @Inject constructor(
         frequencies.value = true
     }
 
-    fun getNCDTreatmentPlan(request: NCDTreatmentPlanModel) {
+    fun getNCDTreatmentPlan(request: NCDTreatmentPlanModelDetails) {
         viewModelScope.launch(dispatcherIO) {
             getNCDTreatmentPlanLiveData.postLoading()
             getNCDTreatmentPlanLiveData.postValue(

@@ -13,6 +13,7 @@ import com.google.gson.Gson
 import com.google.gson.internal.LinkedTreeMap
 import com.google.gson.reflect.TypeToken
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.appextensions.setVisible
 import com.medtroniclabs.spice.appextensions.triggerOneTimeWorker
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DateUtils
@@ -383,7 +384,7 @@ class AssessmentNCDSummaryFragment : BaseFragment(), View.OnClickListener {
         } else {
             binding.riskResultLayout.text = getString(R.string.no_assessment_required)
         }
-        binding.riskResultLayout.visibility = View.VISIBLE
+        binding.riskResultLayout.setVisible(assessmentCondition)
     }
 
     private fun setReferForFurtherAssessment() {

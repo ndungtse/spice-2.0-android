@@ -104,6 +104,7 @@
     <string name="cancel">Cancel</string>
     <string name="member_registration">Member Registration</string>
     <string name="submit">Submit</string>
+    <string name="start_screening">Start Screening</string>
     <string name="start_assessment">Start Assessment</string>
     <string name="date_of_birth">Date of Birth</string>
     <string name="years">Years</string>
@@ -205,6 +206,7 @@
     <string name="patients_found">%1d Patients Found</string>
     <string name="zero_patients_found">%1d Patient</string>
     <string name="no_patients_found">No Patients found.</string>
+    <string name="no_patients_found_perform_screening">No Patients found. Please perform screening to proceed.</string>
     <string name="no_records_found">No Records found.</string>
     <string name="search_by_national_id">Enter Name / ID / Mobile Number</string>
     <string name="referral_ticket">Referral Ticket</string>
@@ -438,7 +440,7 @@
     <string name="tablet">Tablet</string>
     <string name="tablets">Tablets</string>
     <string name="no_recommended_dosages">No Dosage Recommended for this age group</string>
-    <string name="logout_alert">Are you sure want to logout ?</string>
+    <string name="logout_alert">Are you sure you want to logout?</string>
     <string name="only_alphabets_validation">Entered value should contain only alphabets</string>
     <string name="immunisation_status_up_to_date">Up to Date</string>
     <string name="immunisation_status_not_up_to_date">Not Up to Date</string>
@@ -709,7 +711,7 @@
     <string name="patient_initial">Patient’s Initial</string>
     <string name="enter_your_initials">Enter Your Initial</string>
     <string name="accept_terms_condition">Accept Terms &amp; Conditions</string>
-    <string name="date_of_enrollment">Date of Enrollment</string>
+    <string name="date_of_registration">Date of Registration</string>
     <string name="program_id">Program ID</string>
     <string name="facility_name">Facility Name</string>
 
@@ -855,7 +857,7 @@
     <string name="edit_details">Edit Details</string>
     <string name="view_details">View Details</string>
     <string name="pregnancy_risk_criteria">Pregnancy Risk Criteria</string>
-    <string name="enrollment_date">Enrollment Date</string>
+    <string name="registration_date">Registration Date</string>
     <string name="pending_enrollment">Pending Enrollment</string>
     <string name="cvd_risk">CVD Risk</string>
     <string name="high_risk">High Risk</string>
@@ -929,4 +931,33 @@
     <string name="last_refill_date">Last Refill Date</string>
     <string name="prescriber_number">Prescriber\'s Number</string>
     <string name="prescriber">Prescriber</string>
+
+    <string name="lifestyle_management">Lifestyle Management</string>
+    <string name="clinician_notes_seperator">Clinician Notes:&#160;</string>
+    <string name="back_to_medical_review">Back to Medical Review</string>
+    <string name="referred_for">Referred For</string>
+    <string name="referredBy">Referred By</string>
+    <string name="assessed_date">Assessed Date</string>
+    <string name="assessed_by">Assessed By</string>
+    <string name="no_lifestyle_management_referred">No Lifestyle Management Referred</string>
+    <string name="not_assessed">Not Assessed</string>
+    <string name="lifestyle_assessment_label">Lifestyle Assessment</string>
+    <string name="other_notes">Other Notes</string>
+    <string name="not_available">Not Available</string>
+    <string name="clinician_notes">Clinician Notes</string>
+    <string name="exit_reason_message">Are you sure you want to leave this page? Changes made may not be saved.</string>
+    <string name="add">Add</string>
+    <string name="plus_add">&#43; Add</string>
+    <string name="psychological_assessment">Psychological Assessment</string>
+    <string name="counselor_notes">Counselor Notes</string>
+    <string name="no_psychological_assessment_referred">No Psychological Assessment Referred</string>
+    <string name="smoking_status">Smoking Status</string>
+    <string name="alcohol_status">Alcohol Status</string>
+    <string name="diet_and_nutrition">Diet &amp; Nutrition</string>
+    <string name="physical_activity">Physical Activity</string>
+    <string name="view_history">View History</string>
+    <string name="hide_history">Hide History</string>
+    <string name="suicidal_ideation">Suicidal Ideation</string>
+    <string name="session_date">Session Date</string>
+    <string name="add_lifestyle">Add Lifestyle</string>
 </resources>

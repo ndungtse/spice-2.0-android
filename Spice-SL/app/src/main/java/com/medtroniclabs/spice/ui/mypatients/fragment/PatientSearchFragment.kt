@@ -17,10 +17,10 @@ import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.hideKeyboard
 import com.medtroniclabs.spice.appextensions.invisible
+import com.medtroniclabs.spice.appextensions.setVisible
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DefinedParams
-import com.medtroniclabs.spice.common.DefinedParams.SearchLength
 import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.databinding.FragmentPatientSearchBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
@@ -28,6 +28,7 @@ import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.ncd.data.PatientVisitRequest
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMedicalReviewCMRActivity
+import com.medtroniclabs.spice.ncd.screening.ScreeningActivity
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.BaseFragment
@@ -104,9 +105,12 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
                         binding.tvNoPatientsFound.gone()
                         binding.btnRegister.gone()
                     } else {
+                        val isFromAssessment = patientListViewModel.origin.equals(MenuConstants.ASSESSMENT,true)
+                        val message = if(isFromAssessment) getString(R.string.no_patients_found_perform_screening) else getString(R.string.no_patients_found)
+                        binding.tvNoPatientsFound.text = message
                         binding.tvNoPatientsFound.visible()
-                        binding.btnRegister.visibility =
-                            if (patientListViewModel.origin.equals(MenuConstants.REGISTRATION, true)) View.VISIBLE else View.GONE
+                        binding.btnScreening.setVisible(isFromAssessment)
+                        binding.btnRegister.setVisible(patientListViewModel.origin.equals(MenuConstants.REGISTRATION,true))
                     }
                 }
                 binding.llFilter.apply {
@@ -154,7 +158,7 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
                             Intent(requireContext(), destinationIntent).apply {
                                 putExtra(NCDMRUtil.EncounterReference, it.encounterReference)
                                 putExtra(DefinedParams.FhirId,patientListViewModel.selectedPatientDetails?.id)
-                                putExtra(DefinedParams.PatientId, patientListViewModel.selectedPatientDetails?.id)
+                                putExtra(DefinedParams.PatientId, patientListViewModel.selectedPatientDetails?.patientId)
                                 putExtra(DefinedParams.ORIGIN, patientListViewModel.origin)
                                 putExtra(DefinedParams.Gender, patientListViewModel.selectedPatientDetails?.gender)
                             }
@@ -187,6 +191,7 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
         binding.llExactSearch.etPatientSearch.addTextChangedListener(searchListener)
         binding.llExactSearch.btnSearch.safeClickListener(this)
         binding.btnRegister.safeClickListener(this)
+        binding.btnScreening.safeClickListener(this)
         binding.llFilter.btnFilter.safeClickListener(this)
         binding.loadingProgress.safeClickListener(this)
         binding.btnAddNewMember.safeClickListener(this)
@@ -209,7 +214,7 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
         override fun afterTextChanged(s: Editable?) {
             val enteredChar = s?.toString() ?: ""
             val trimmedChar = enteredChar?.trim()
-            val hasString = !trimmedChar.isNullOrBlank() && trimmedChar.length > SearchLength
+            val hasString = !trimmedChar.isNullOrBlank()
             binding.llExactSearch.btnSearch.isEnabled = hasString
             if (enteredChar.isEmpty() && !hasString) {
                 handleSearchBarAfterTextRemove()
@@ -313,6 +318,10 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
             }
             binding.btnRegister.id -> {
                 val intent = Intent(requireContext(), RegistrationActivity::class.java)
+                startActivity(intent)
+            }
+            binding.btnScreening.id -> {
+                val intent = Intent(requireContext(), ScreeningActivity::class.java)
                 startActivity(intent)
             }
         }

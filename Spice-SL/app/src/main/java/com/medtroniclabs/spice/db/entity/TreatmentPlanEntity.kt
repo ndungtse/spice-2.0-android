@@ -1,6 +1,7 @@
 package com.medtroniclabs.spice.db.entity
 
 import androidx.room.Entity
+import androidx.room.Ignore
 import androidx.room.PrimaryKey
 
 @Entity(tableName = "TreatmentPlanEntity")
@@ -14,4 +15,7 @@ data class TreatmentPlanEntity(
     val period: String,
     val riskLevel: String? = null,
     val type: String? = null
-)
+) {
+    @Ignore
+    val carePlanId: String? = null
+}

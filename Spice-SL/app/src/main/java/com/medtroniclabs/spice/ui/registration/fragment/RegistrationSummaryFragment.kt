@@ -63,7 +63,7 @@ class RegistrationSummaryFragment : BaseFragment(), View.OnClickListener {
                 response.dateOfEnrollment?.let {
                     addView(
                         inflateChildView(
-                            getString(R.string.date_of_enrollment), DateUtils.convertDateFormat(
+                            getString(R.string.date_of_registration), DateUtils.convertDateFormat(
                                 it,
                                 DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
                                 DateUtils.DATE_ddMMyyyy
@@ -95,7 +95,7 @@ class RegistrationSummaryFragment : BaseFragment(), View.OnClickListener {
                 response.programId?.let {
                     addView(
                         inflateChildView(
-                            getString(R.string.program_id), it
+                            getString(R.string.patient_id), it
                         )
                     )
                 }

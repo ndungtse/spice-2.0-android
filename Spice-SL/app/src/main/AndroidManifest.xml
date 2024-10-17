@@ -190,6 +190,7 @@
             android:name=".ui.followup.FollowUpMyPatientActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
+
         <activity
             android:name=".ncd.medicalreview.NCDMedicalReviewActivity"
             android:exported="false"
@@ -221,6 +222,26 @@
             android:screenOrientation="landscape"
             android:exported="false" />
 
+        <activity
+            android:name=".ncd.counseling.activity.NCDLifestyleActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".ncd.counseling.activity.NCDNutritionistActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".ncd.counseling.activity.NCDCounselingActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".ncd.counseling.activity.NCDCounselorActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
     </application>
 
 </manifest>

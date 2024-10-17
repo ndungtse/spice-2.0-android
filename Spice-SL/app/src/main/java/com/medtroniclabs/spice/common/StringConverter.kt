@@ -2,7 +2,9 @@ package com.medtroniclabs.spice.common
 
 import android.content.Context
 import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import com.google.gson.JsonObject
+import com.google.gson.ToNumberPolicy
 import com.google.gson.reflect.TypeToken
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.data.ErrorResponse
@@ -46,7 +48,9 @@ object StringConverter {
 
     fun convertStringToMap(data: String): Map<String, Any>? {
         return try {
-            val gson = Gson()
+            val gson : Gson = GsonBuilder()
+                .setObjectToNumberStrategy(ToNumberPolicy.LONG_OR_DOUBLE)
+                .create()
             val type: Type = object : TypeToken<Map<String, Any>>() {}.type
             val map: Map<String, Any>? = gson.fromJson(data, type)
             map

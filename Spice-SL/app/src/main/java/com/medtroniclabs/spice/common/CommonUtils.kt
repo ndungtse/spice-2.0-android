@@ -1117,10 +1117,10 @@ object CommonUtils {
     private fun setType(hashMap: HashMap<String, Any>, generalData: Map<String, Any>?) {
         generalData?.forEach { (key, value) ->
             when (key) {
-                CategoryDisplayName, CategoryDisplayType, SiteName, siteId -> Unit // Skip these keys
+                CategoryDisplayName, CategoryDisplayType, SiteName, userSiteId -> Unit // Skip these keys
                 CategoryType -> hashMap[Type] = value // Change key from "categoryType" to "type"
                 otherType -> hashMap[key] = value
-                userSiteId -> hashMap[siteId] = value
+                siteId -> hashMap[siteId] = value
                 else -> hashMap[key] = value
             }
         }
@@ -1513,5 +1513,9 @@ object CommonUtils {
                 context.getColor(bioCategoryInfo.second)
             )
         }
+    }
+
+    fun isPsychologicalFlowEnabled(): Boolean {
+        return SecuredPreference.getBoolean(SecuredPreference.EnvironmentKey.IS_PSYCHOLOGICAL_FLOW_ENABLED.name)
     }
 }

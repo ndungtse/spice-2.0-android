@@ -25,6 +25,7 @@ import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.mappingkey.Screening
 import com.medtroniclabs.spice.ncd.data.BPBGListModel
 import com.medtroniclabs.spice.ncd.assessment.repo.BloodPressureRepo
+import com.medtroniclabs.spice.network.SingleLiveEvent
 import com.medtroniclabs.spice.network.resource.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
@@ -38,7 +39,7 @@ class BloodPressureViewModel @Inject constructor(
     private val bloodPressureRepo: BloodPressureRepo
 ) : ViewModel() {
     var bpLogCreateResponseLiveData = MutableLiveData<Resource<APIResponse<HashMap<String, Any>>>>()
-    var bpLogListResponseLiveData = MutableLiveData<Resource<BPBGListModel>>()
+    var bpLogListResponseLiveData = SingleLiveEvent<Resource<BPBGListModel>>()
 
     var isRegularSmoker: Boolean? = null
     var dateOfBirth: String? = null

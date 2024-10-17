@@ -17,6 +17,8 @@ import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.Complaints
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.Complications
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.CurrentMedication
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.FrequencyTypes
+import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.Lifestyle
+import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.PatientLifestyle
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.PhysicalExamination
 import com.medtroniclabs.spice.network.ApiHelper
 import com.medtroniclabs.spice.network.resource.Resource
@@ -58,6 +60,12 @@ class NCDMedicalReviewRepository @Inject constructor(
                     })
                     allData.addAll(it.frequencyTypes.map { frequencyTypes ->
                         frequencyTypes.apply { category = FrequencyTypes }
+                    })
+                    allData.addAll(it.frequencyTypes.map { lifestyle ->
+                        lifestyle.apply { category = Lifestyle }
+                    })
+                    allData.addAll(it.nutritionLifestyles.map { frequencyTypes ->
+                        frequencyTypes.apply { category = PatientLifestyle }
                     })
 
                     // Insert everything at once into the table

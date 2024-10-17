@@ -625,7 +625,7 @@ class AssessmentNCDFragment : BaseFragment(), FormEventListener, View.OnClickLis
             viewModel.complianceMap?.add(map)
         } else {
             viewModel.complianceMap = ArrayList()
-            map = HashMap<String, Any>()
+            map = HashMap()
             map[AssessmentDefinedParams.complianceId] = selectedModel.id
             map[DefinedParams.NAME] = selectedModel.name
             if (selectedModel.childExists) {
@@ -1240,6 +1240,8 @@ class AssessmentNCDFragment : BaseFragment(), FormEventListener, View.OnClickLis
     }
 
     fun getCurrentAnsweredStatus(): Boolean {
-        return formGenerator.getResultMap().isNotEmpty()
+        return (viewModel.selectedSymptoms.value?.size ?: 0) > 0 ||
+                !viewModel.complianceMap.isNullOrEmpty() ||
+                formGenerator.getResultMap().isNotEmpty()
     }
 }

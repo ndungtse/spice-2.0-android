@@ -95,7 +95,9 @@ import com.medtroniclabs.spice.ncd.data.BPBGListModel
 import com.medtroniclabs.spice.ncd.data.NCDMRSummaryRequestResponse
 import com.medtroniclabs.spice.ncd.data.NCDPatientStatusRequest
 import com.medtroniclabs.spice.ncd.data.NCDTreatmentPlanModel
+import com.medtroniclabs.spice.ncd.data.NCDTreatmentPlanModelDetails
 import com.medtroniclabs.spice.ncd.data.ScreeningPatientResponse
+import com.medtroniclabs.spice.ncd.counseling.model.NCDCounselingModel
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
@@ -437,11 +439,43 @@ class ApiHelperImpl @Inject constructor(private val apiService: ApiService) : Ap
         return apiService.updateNCDTreatmentPlan(request)
     }
 
-    override suspend fun getNCDTreatmentPlan(request: NCDTreatmentPlanModel): Response<APIResponse<NCDTreatmentPlanModel>> {
+    override suspend fun getNCDTreatmentPlan(request: NCDTreatmentPlanModelDetails): Response<APIResponse<NCDTreatmentPlanModelDetails>> {
         return apiService.getNCDTreatmentPlan(request)
     }
 
     override suspend fun createNCDMRSummaryCreate(request: NCDMRSummaryRequestResponse): Response<APIResponse<HashMap<String, Any>>> {
         return apiService.createNCDMRSummaryCreate(request)
+    }
+
+    override suspend fun createLifestyle(request: NCDCounselingModel): Response<APIResponse<NCDCounselingModel>> {
+        return apiService.createLifestyle(request)
+    }
+
+    override suspend fun updateLifestyle(request: NCDCounselingModel): Response<APIResponse<NCDCounselingModel>> {
+        return apiService.updateLifestyle(request)
+    }
+
+    override suspend fun getLifestyleList(request: NCDCounselingModel): Response<APIResponse<ArrayList<NCDCounselingModel>>> {
+        return apiService.getLifestyleList(request)
+    }
+
+    override suspend fun removeLifestyle(request: NCDCounselingModel): Response<APIResponse<NCDCounselingModel>> {
+        return apiService.removeLifestyle(request)
+    }
+
+    override suspend fun createPsychological(request: NCDCounselingModel): Response<APIResponse<NCDCounselingModel>> {
+        return apiService.createPsychological(request)
+    }
+
+    override suspend fun updatePsychological(request: NCDCounselingModel): Response<APIResponse<NCDCounselingModel>> {
+        return apiService.updatePsychological(request)
+    }
+
+    override suspend fun getPsychological(request: NCDCounselingModel): Response<APIResponse<ArrayList<NCDCounselingModel>>> {
+        return apiService.getPsychological(request)
+    }
+
+    override suspend fun removePsychological(request: NCDCounselingModel): Response<APIResponse<NCDCounselingModel>> {
+        return apiService.removePsychological(request)
     }
 }

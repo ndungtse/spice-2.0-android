@@ -54,10 +54,10 @@ class ScreeningActivity : BaseActivity() {
         val fragmentManager = supportFragmentManager
 
         when (fragmentManager.findFragmentById(R.id.screeningParentLayout)) {
-            is GeneralDetailsFragment, is ScreeningSummaryFragment -> finish()
+            is GeneralDetailsFragment, is ScreeningSummaryFragment -> startActivityWithoutSplashScreen()
             is StatsFragment -> {
                 if (viewModel.screeningSaveResponse.value?.data != null) {
-                    finish()
+                    startActivityWithoutSplashScreen()
                 } else {
                     replaceFragment<GeneralDetailsFragment>(GeneralDetailsFragment.TAG)
                 }

@@ -62,11 +62,11 @@ class PatientListViewModel @Inject constructor(
         }).flow
 
     private fun getFormattedOrigin(origin: String?): String? {
-        return when (origin) {
-            MenuConstants.SCREENING -> DefinedParams.Screening
-            MenuConstants.REGISTRATION -> DefinedParams.Registration
-            MenuConstants.ASSESSMENT -> DefinedParams.Assessment
-            MenuConstants.MY_PATIENTS_MENU_ID -> DefinedParams.MyPatients
+        return when (origin?.lowercase()) {
+            MenuConstants.SCREENING.lowercase() -> DefinedParams.Screening
+            MenuConstants.REGISTRATION.lowercase() -> DefinedParams.Registration
+            MenuConstants.ASSESSMENT.lowercase() -> DefinedParams.Assessment
+            MenuConstants.MY_PATIENTS_MENU_ID.lowercase() -> DefinedParams.MyPatients
             else -> null
         }
     }

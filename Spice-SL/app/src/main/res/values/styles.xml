@@ -508,4 +508,11 @@
         <item name="android:fontFamily">@font/inter_regular</item>
     </style>
 
+    <style name="MR_Header_Style">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/charcoal_grey</item>
+        <item name="android:textSize">@dimen/_16ssp</item>
+        <item name="android:fontFamily">@font/inter_regular</item>
+    </style>
 </resources>

@@ -12,5 +12,6 @@ data class NcdMRStaticDataModel(
     val physicalExamination: List<NCDMedicalReviewMetaEntity>,
     val currentMedication: List<NCDMedicalReviewMetaEntity>,
     val frequencies: List<TreatmentPlanEntity>,
-    val frequencyTypes: List<NCDMedicalReviewMetaEntity>
+    val frequencyTypes: List<NCDMedicalReviewMetaEntity>,
+    val nutritionLifestyles: List<NCDMedicalReviewMetaEntity>
 )

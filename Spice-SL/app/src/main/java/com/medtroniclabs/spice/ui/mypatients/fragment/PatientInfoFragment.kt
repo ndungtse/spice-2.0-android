@@ -271,7 +271,7 @@ class PatientInfoFragment : BaseFragment() {
 
         val dataList = mutableListOf(
             mapOf(
-                DefinedParams.label to requireContext().getString(R.string.enrollment_date),
+                DefinedParams.label to requireContext().getString(R.string.registration_date),
                 DefinedParams.value to (data.enrollmentAt?.let {
                     DateUtils.convertDateFormat(
                         it,

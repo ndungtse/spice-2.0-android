@@ -95,7 +95,9 @@ import com.medtroniclabs.spice.ncd.data.BPBGListModel
 import com.medtroniclabs.spice.ncd.data.NCDMRSummaryRequestResponse
 import com.medtroniclabs.spice.ncd.data.NCDPatientStatusRequest
 import com.medtroniclabs.spice.ncd.data.NCDTreatmentPlanModel
+import com.medtroniclabs.spice.ncd.data.NCDTreatmentPlanModelDetails
 import com.medtroniclabs.spice.ncd.data.ScreeningPatientResponse
+import com.medtroniclabs.spice.ncd.counseling.model.NCDCounselingModel
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
 import retrofit2.Response
@@ -360,8 +362,32 @@ interface ApiService {
     suspend fun updateNCDTreatmentPlan(@Body request: NCDTreatmentPlanModel): Response<APIResponse<NCDTreatmentPlanModel>>
 
     @POST("/spice-service/patient-treatment-plan/details")
-    suspend fun getNCDTreatmentPlan(@Body request: NCDTreatmentPlanModel): Response<APIResponse<NCDTreatmentPlanModel>>
+    suspend fun getNCDTreatmentPlan(@Body request: NCDTreatmentPlanModelDetails): Response<APIResponse<NCDTreatmentPlanModelDetails>>
 
     @POST("/spice-service/medical-review/ncd/summary-create")
     suspend fun createNCDMRSummaryCreate(@Body request: NCDMRSummaryRequestResponse): Response<APIResponse<HashMap<String, Any>>>
+
+    @POST("spice-service/patient-nutrition-lifestyle/create")
+    suspend fun createLifestyle(@Body request: NCDCounselingModel): Response<APIResponse<NCDCounselingModel>>
+
+    @POST("spice-service/patient-nutrition-lifestyle/update")
+    suspend fun updateLifestyle(@Body request: NCDCounselingModel): Response<APIResponse<NCDCounselingModel>>
+
+    @POST("spice-service/patient-nutrition-lifestyle/list")
+    suspend fun getLifestyleList(@Body request: NCDCounselingModel): Response<APIResponse<ArrayList<NCDCounselingModel>>>
+
+    @POST("spice-service/patient-nutrition-lifestyle/remove")
+    suspend fun removeLifestyle(@Body request: NCDCounselingModel): Response<APIResponse<NCDCounselingModel>>
+
+    @POST("spice-service/patient-nutrition-lifestyle/create")
+    suspend fun createPsychological(@Body request: NCDCounselingModel): Response<APIResponse<NCDCounselingModel>>
+
+    @POST("spice-service/patient-nutrition-lifestyle/update")
+    suspend fun updatePsychological(@Body request: NCDCounselingModel): Response<APIResponse<NCDCounselingModel>>
+
+    @POST("spice-service/patient-nutrition-lifestyle/list")
+    suspend fun getPsychological(@Body request: NCDCounselingModel): Response<APIResponse<ArrayList<NCDCounselingModel>>>
+
+    @POST("spice-service/patient-nutrition-lifestyle/remove")
+    suspend fun removePsychological(@Body request: NCDCounselingModel): Response<APIResponse<NCDCounselingModel>>
 }

@@ -26,6 +26,7 @@ import com.medtroniclabs.spice.formgeneration.extension.markMandatory
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
 import com.medtroniclabs.spice.ncd.data.NCDTreatmentPlanModel
+import com.medtroniclabs.spice.ncd.data.NCDTreatmentPlanModelDetails
 import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDTreatmentPlanViewModel
 import com.medtroniclabs.spice.network.resource.ResourceState
 import dagger.hilt.android.AndroidEntryPoint
@@ -142,24 +143,25 @@ class NCDTreatmentPlanDialog(private val callback: ((isPositiveResult: Boolean, 
         }
     }
 
-    private fun autoPopulateData(data: NCDTreatmentPlanModel) {
+    private fun autoPopulateData(data: NCDTreatmentPlanModelDetails) {
+        viewModel.carePlanId = data.carePlanId
         data.medicalReviewFrequency?.let { medicalReview ->
-            medicalReviewAdapter.getIndexOfItemByName(medicalReview.name).let {
+            medicalReviewAdapter.getIndexOfItemByName(medicalReview).let {
                 binding.etMedicalReviewFrequency.setSelection(it)
             }
         }
-        data.bpCheckFrequency?.let { medicalReview ->
-            bPCheckAdapter.getIndexOfItemByName(medicalReview.name).let {
+        data.bpCheckFrequency?.let { bpCheck ->
+            bPCheckAdapter.getIndexOfItemByName(bpCheck).let {
                 binding.etBPCheckFrequency.setSelection(it)
             }
         }
-        data.bgCheckFrequency?.let { medicalReview ->
-            bGCheckAdapter.getIndexOfItemByName(medicalReview.name).let {
+        data.bgCheckFrequency?.let { bgCheck ->
+            bGCheckAdapter.getIndexOfItemByName(bgCheck).let {
                 binding.etBGCheckFrequency.setSelection(it)
             }
         }
-        data.hba1cCheckFrequency?.let { medicalReview ->
-            hbA1cAdapter.getIndexOfItemByName(medicalReview.name).let {
+        data.hba1cCheckFrequency?.let { hba1cCheck ->
+            hbA1cAdapter.getIndexOfItemByName(hba1cCheck).let {
                 binding.etHbA1cFrequency.setSelection(it)
             }
         }
@@ -200,8 +202,9 @@ class NCDTreatmentPlanDialog(private val callback: ((isPositiveResult: Boolean, 
     private fun getTreatmentPlan() {
         with(viewModel) {
             getNCDTreatmentPlan(
-                NCDTreatmentPlanModel(
-                    patientReference = patientReference, memberReference = memberReference
+                NCDTreatmentPlanModelDetails(
+                    patientReference = patientReference,
+                    memberReference = memberReference
                 )
             )
         }
@@ -285,7 +288,8 @@ class NCDTreatmentPlanDialog(private val callback: ((isPositiveResult: Boolean, 
                     medicalReviewFrequency = medicalReviewFrequency,
                     bpCheckFrequency = bpCheckFrequency,
                     bgCheckFrequency = bgCheckFrequency,
-                    hba1cCheckFrequency = hba1cCheckFrequency
+                    hba1cCheckFrequency = hba1cCheckFrequency,
+                    carePlanId = carePlanId
                 )
             )
         }
