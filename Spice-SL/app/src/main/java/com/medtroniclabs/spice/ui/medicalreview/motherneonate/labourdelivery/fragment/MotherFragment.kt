@@ -49,7 +49,6 @@ class MotherFragment : BaseFragment() {
         initListeners()
         initializeChipItem()
         attachObserver()
-        initializeTearLabel()
     }
 
     private fun initListeners() {
@@ -228,6 +227,7 @@ class MotherFragment : BaseFragment() {
                 FormLayout(viewType = "", id = "", title = "", visibility = "", optionsList = null),
                 singleSelectionCallback
             )
+            binding.tearlayout.removeAllViews()
             binding.tearlayout.addView(view)
         }
     }
@@ -242,8 +242,10 @@ class MotherFragment : BaseFragment() {
         viewModel.perineumStateMap[StateOfPerineum] = selectedID as String
         if (selectedID.toString() == DefinedParams.Tear) {
             binding.groupTear.isVisible = true
+            initializeTearLabel()
         } else if (selectedID.toString() ==Episiotomy || selectedID.toString()== None) {
             binding.groupTear.isVisible = false
+            viewModel.perineumStateMap[Tear]=""
         } else {
             viewModel.perineumStateMap[Tear] = selectedID
         }

@@ -59,7 +59,7 @@ class LabourDeliveryViewModel @Inject constructor(
     var lastMensurationDate: String? = null
     val timeOfDeliveryMap = HashMap<String, Any>()
     val timeOfLabourOnsetMap = HashMap<String, Any>()
-    val perineumStateMap = HashMap<String, Any>()
+    var perineumStateMap = HashMap<String, Any>()
     var motherSignsAndSymptoms = listOf<ChipViewItemModel>()
     var motherGeneralCondition: String? = null
     var motherRiskFactors = listOf<ChipViewItemModel>()
@@ -204,14 +204,14 @@ class LabourDeliveryViewModel @Inject constructor(
                 }
             }
 
-            var oneMinuteTotal = 0
-            var fiveMinuteTotal = 0
-            var tenMinuteTotal = 0
+            var oneMinuteTotal = ""
+            var fiveMinuteTotal = ""
+            var tenMinuteTotal = ""
             agparScores.filter { it.viewType == AgparItemViewType.ROW }.forEach {
                 it.row?.let { row ->
-                    oneMinuteTotal += row.oneMinute?.toInt() ?: 0
-                    fiveMinuteTotal += row.fiveMinute?.toInt() ?: 0
-                    tenMinuteTotal += row.tenMinute?.toInt() ?: 0
+                    oneMinuteTotal += row.oneMinute?.toInt() ?: ""
+                    fiveMinuteTotal += row.fiveMinute?.toInt() ?: ""
+                    tenMinuteTotal += row.tenMinute?.toInt() ?: ""
                 }
             }
 
@@ -219,18 +219,18 @@ class LabourDeliveryViewModel @Inject constructor(
                 agparScores.indexOfFirst { it.viewType == AgparItemViewType.FOOTER }
 
             val newFooter = agparScores[footerPosition].footer?.copy(
-                oneMinuteTotal = if (oneMinuteTotal == 0) {
+                oneMinuteTotal = (if (oneMinuteTotal =="") {
                     null
                 } else {
-                    oneMinuteTotal.toString()
-                }, fiveMinuteTotal = if (fiveMinuteTotal == 0) {
+                    oneMinuteTotal.map { it.toString().toInt() }.sum().toString()
+                }), fiveMinuteTotal =( if (fiveMinuteTotal == "" ) {
                     null
                 } else {
-                    fiveMinuteTotal.toString()
-                }, tenMinuteTotal = if (tenMinuteTotal == 0) {
+                    fiveMinuteTotal.map { it.toString().toInt() }.sum().toString()}),
+                 tenMinuteTotal = if (tenMinuteTotal == "") {
                     null
                 } else {
-                    tenMinuteTotal.toString()
+                    tenMinuteTotal.map { it.toString().toInt() }.sum().toString()
                 }
             )
             agparScores[footerPosition] = agparScores[footerPosition].copy(footer = newFooter)

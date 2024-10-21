@@ -617,6 +617,14 @@ class LabourOrDeliveryFragment : BaseFragment() {
                                 tvTimeOfLabourOnsetError.showIf(true)
                                 tvTimeOfDeliveryError.showIf(true)
                             }
+                            if(etHourTimeOfDelivery.toInt()==12 && etHourTimeOfLabourOnset.toInt() < etHourTimeOfDelivery.toInt()){
+                                tvTimeOfLabourOnsetError.showIf(true)
+                                tvTimeOfDeliveryError.showIf(true)
+                            }
+                            if(etHourTimeOfLabourOnset.toInt()==12 && etHourTimeOfLabourOnset.toInt() > etHourTimeOfDelivery.toInt()){
+                                tvTimeOfLabourOnsetError.showIf(false)
+                                tvTimeOfDeliveryError.showIf(false)
+                            }
                             if (etHourTimeOfLabourOnset.toInt() == etHourTimeOfDelivery.toInt() && etMinutesTimeOfLabourOnSet.toInt() > etMinutesTimeOfDelivery.toInt()) {
                                 tvTimeOfLabourOnsetError.showIf(true)
                                 tvTimeOfDeliveryError.showIf(true)
