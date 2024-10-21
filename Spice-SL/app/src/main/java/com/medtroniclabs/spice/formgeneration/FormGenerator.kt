@@ -2385,9 +2385,9 @@ class FormGenerator(
         val dateOfBirthView =
             getViewByTag(MemberRegistration.dateOfBirth) as? AppCompatTextView ?: return
         val dateOfBirth = dateOfBirthView.text?.toString()?.trim() ?: return
-        val ageAndWeek = DateUtils.calculateAgeAndWeek(dateOfBirth, DATE_ddMMyyyy)
-        val ageYears = ageAndWeek.first
-        val ageWeeks = ageAndWeek.second
+        val ageAndWeek = DateUtils.getV2YearMonthAndWeek(dateOfBirth, DATE_ddMMyyyy)
+        val ageYears = ageAndWeek.years
+        val ageWeeks = ageAndWeek.weeks
 
         if ((ageYears !in PREGNANCY_MIN_AGE..PREGNANCY_MAX_AGE) || (ageYears == PREGNANCY_MAX_AGE && ageWeeks != 0)) {
             handleAgeBelowThreshold()
