@@ -438,7 +438,7 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
             when (formData.id) {
                 MUAC -> {
                     viewModel.selectedMemberDob?.let { dateOfBirth ->
-                        formData.isMandatory = isMandateOrNot(dateOfBirth, requireContext())
+                        formData.isMandatory = isMandateOrNot(dateOfBirth)
                     }
                 }
 

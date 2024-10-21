@@ -529,7 +529,7 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
             when (formData.id) {
                 muacCode -> {
                     viewModel.selectedMemberDob?.let { dateOfBirth ->
-                        formData.isMandatory = isMandateOrNot(dateOfBirth, requireContext())
+                        formData.isMandatory = isMandateOrNot(dateOfBirth)
                     }
                 }
 

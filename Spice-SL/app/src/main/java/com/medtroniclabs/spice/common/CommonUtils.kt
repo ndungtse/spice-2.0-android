@@ -558,22 +558,11 @@ object CommonUtils {
         }
     }
 
-    fun isMandateOrNot(dateOfBirth: String, context: Context): Boolean {
-        getAgeFromDOB(dateOfBirth, context).let { input ->
-            if (input.contains(com.medtroniclabs.spice.formgeneration.config.DefinedParams.YEAR, true) || input.contains(YEARS, true)) {
-                return true
-            }
+    fun isMandateOrNot(dateOfBirth: String): Boolean {
+        val yearMonthWeek = DateUtils.getV2YearMonthAndWeek(dateOfBirth)
+        val months = (yearMonthWeek.years * 12) + yearMonthWeek.months
 
-            val monthRegex = Regex(RegexConstants.Month_Value)
-            val dayRegex = Regex(RegexConstants.Days_Value)
-
-            val monthValue = monthRegex.find(input)?.groupValues?.get(1)?.toIntOrNull() ?: 0
-            val dayValue = dayRegex.find(input)?.groupValues?.get(1)?.toIntOrNull() ?: 0
-
-            if (monthValue < 6) {
-                return false
-            } else return !(monthValue == 6 && dayValue == 0)
-        }
+        return months >=6
     }
 
 }
