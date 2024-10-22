@@ -2384,15 +2384,19 @@ class FormGenerator(
     fun handlePregnancyCardBasedOnAgeAndWeeks() {
         val dateOfBirthView =
             getViewByTag(MemberRegistration.dateOfBirth) as? AppCompatTextView ?: return
-        val dateOfBirth = dateOfBirthView.text?.toString()?.trim() ?: return
-        val ageAndWeek = DateUtils.getV2YearMonthAndWeek(dateOfBirth, DATE_ddMMyyyy)
-        val ageYears = ageAndWeek.years
-        val ageWeeks = ageAndWeek.weeks
+        val dateOfBirth = dateOfBirthView.text?.toString()?.trim()
+        if (!dateOfBirth.isNullOrEmpty()) {
+            val ageAndWeek = DateUtils.getV2YearMonthAndWeek(dateOfBirth, DATE_ddMMyyyy)
+            val ageYears = ageAndWeek.years
+            val ageWeeks = ageAndWeek.weeks
 
-        if ((ageYears !in PREGNANCY_MIN_AGE..PREGNANCY_MAX_AGE) || (ageYears == PREGNANCY_MAX_AGE && ageWeeks != 0)) {
-            handleAgeBelowThreshold()
+            if ((ageYears !in PREGNANCY_MIN_AGE..PREGNANCY_MAX_AGE) || (ageYears == PREGNANCY_MAX_AGE && ageWeeks != 0)) {
+                handleAgeBelowThreshold()
+            } else {
+                handleAgeAboveThreshold()
+            }
         } else {
-            handleAgeAboveThreshold()
+            handleAgeBelowThreshold()
         }
     }
 
