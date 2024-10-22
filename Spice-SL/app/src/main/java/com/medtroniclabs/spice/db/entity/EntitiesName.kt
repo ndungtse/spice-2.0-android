@@ -8,4 +8,6 @@ object EntitiesName {
     const val PREGNANCY_DETAIL = "PregnancyDetail"
     const val FrequencyEntity = "FrequencyEntity"
     const val CONSENT_FORM = "ConsentForm"
+    const val LINK_HOUSEHOLD_MEMBER = "LinkHouseholdMember"
+    const val CALL_HISTORY = "CallHistory"
 }

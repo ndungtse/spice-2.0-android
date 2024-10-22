@@ -144,4 +144,7 @@ object DefinedParams {
     const val BuildConfigs="BuildConfiguration"
     const val HosueHoldHead="HouseholdHead"
 
+    const val Assigned = "Assigned"
+    const val UnAssigned = "Unassigned"
+
 }

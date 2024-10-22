@@ -11,7 +11,10 @@ import com.medtroniclabs.spice.data.model.HouseholdCardDetail
 import com.medtroniclabs.spice.data.offlinesync.model.HHSignatureDetail
 import com.medtroniclabs.spice.data.offlinesync.model.HouseHold
 import com.medtroniclabs.spice.data.offlinesync.model.HouseHoldMember
+import com.medtroniclabs.spice.data.offlinesync.model.HouseholdMemberCallRegisterDto
+import com.medtroniclabs.spice.data.offlinesync.model.UnAssignedHouseholdMemberDetail
 import com.medtroniclabs.spice.db.entity.AssessmentEntity
+import com.medtroniclabs.spice.db.entity.CallHistory
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowConditionEntity
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowEntity
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowEntityWithSubmodule
@@ -23,6 +26,7 @@ import com.medtroniclabs.spice.db.entity.FrequencyEntity
 import com.medtroniclabs.spice.db.entity.HealthFacilityEntity
 import com.medtroniclabs.spice.db.entity.HouseholdEntity
 import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
+import com.medtroniclabs.spice.db.entity.LinkHouseholdMember
 import com.medtroniclabs.spice.db.entity.MemberClinicalEntity
 import com.medtroniclabs.spice.db.entity.MenuEntity
 import com.medtroniclabs.spice.db.entity.PregnancyDetail
@@ -152,6 +156,10 @@ interface RoomHelper {
 
     suspend fun deleteAllFollowUps()
 
+    suspend fun deleteAllUnAssignedMember()
+
+    suspend fun deleteAllCallHistory()
+
     fun getFollowUpPatientListLiveData(
         type: String,
         search: String? = null,
@@ -209,6 +217,8 @@ interface RoomHelper {
 
     suspend fun changeFollowUpCallStatus(idList: List<Long>)
 
+    suspend fun changeHHMLinkCallStatus(idList: List<String>, syncStatus: String)
+
     suspend fun insertOrUpdateHHFromBE(entity: HouseholdEntity): Long
 
     suspend fun insertOrUpdateHHMFromBE(entity: HouseholdMemberEntity): Long
@@ -252,5 +262,15 @@ interface RoomHelper {
     suspend fun updateHeadPhoneNumber(id: Long, phoneNumber: String)
 
     suspend fun updatePhoneNumberForHouseholdHead(id: Long, phoneNumber: String?)
+
+    suspend fun insertLinkHouseholdMembers(insertList: List<LinkHouseholdMember>)
+
+    suspend fun deleteLinkHouseholdMembersById(deleteListIds: List<String>)
+
+    fun getUnAssignedHouseholdMembersLiveData(): LiveData<List<UnAssignedHouseholdMemberDetail>>
+
+    suspend fun addLinkMemberCall(callHistory: CallHistory): Long
+
+    suspend fun getUnSyncedCallHistoryForHHMLink(): List<HouseholdMemberCallRegisterDto>
 
 }

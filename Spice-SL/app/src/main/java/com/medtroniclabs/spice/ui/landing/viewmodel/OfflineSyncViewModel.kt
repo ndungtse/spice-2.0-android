@@ -1,15 +1,18 @@
 package com.medtroniclabs.spice.ui.landing.viewmodel
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.medtroniclabs.spice.common.DateUtils.DATE_TIME_DISPLAY_FORMAT
 import com.medtroniclabs.spice.common.SecuredPreference
+import com.medtroniclabs.spice.data.offlinesync.model.UnAssignedHouseholdMemberDetail
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.model.landing.OfflineSyncEntityDetail
 import com.medtroniclabs.spice.network.utils.ConnectivityManager
 import com.medtroniclabs.spice.repo.AssessmentRepository
 import com.medtroniclabs.spice.repo.FollowUpRepository
 import com.medtroniclabs.spice.repo.HouseHoldRepository
+import com.medtroniclabs.spice.repo.HouseholdMemberRepository
 import com.medtroniclabs.spice.repo.OfflineSyncRepository
 import com.medtroniclabs.spice.ui.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -27,6 +30,7 @@ class OfflineSyncViewModel @Inject constructor(
     private val houseHoldRepository: HouseHoldRepository,
     private val assessmentRepository: AssessmentRepository,
     private val followUpRepository: FollowUpRepository,
+    private val householdMemberRepository: HouseholdMemberRepository,
     private val offlineSyncRepository: OfflineSyncRepository,
     @IoDispatcher override var dispatcherIO: CoroutineDispatcher
 ) :  BaseViewModel(dispatcherIO) {
@@ -48,10 +52,14 @@ class OfflineSyncViewModel @Inject constructor(
     val postRequestIdsLiveData = MutableLiveData<List<String>>()
     val statusLiveData = MutableLiveData<Pair<Boolean, String?>>()
 
+    val unAssignedMembers: LiveData<List<UnAssignedHouseholdMemberDetail>>
+
     private var progressJob: Job? = null
 
     init {
         getLastSyncedAt()
+
+        unAssignedMembers = householdMemberRepository.getUnAssignedHouseholdMember()
 
         unSyncedCountLiveData.value = entityList
         getUnSyncedCount()
@@ -61,6 +69,18 @@ class OfflineSyncViewModel @Inject constructor(
                 SecuredPreference.getStringArray(SecuredPreference.EnvironmentKey.OFFLINE_SYNC_REQUEST_ID.name)
             requestIds?.let {
                 oldRequestIdsLiveData.postValue(it)
+            }
+        }
+    }
+
+    fun insertDummyCallHistory(ids: List<String>) {
+        viewModelScope.launch(dispatcherIO) {
+            ids.forEach { memberId ->
+                householdMemberRepository.addLinkMemberCall(
+                    memberId,
+                    callStartTime = System.currentTimeMillis(),
+                    callEndTime = System.currentTimeMillis()
+                )
             }
         }
     }

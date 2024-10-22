@@ -1,5 +1,6 @@
 package com.medtroniclabs.spice.repo
 
+import androidx.lifecycle.LiveData
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.CommonUtils.getStringOrEmptyString
 import com.medtroniclabs.spice.common.DefinedParams
@@ -7,7 +8,10 @@ import com.medtroniclabs.spice.common.DefinedParams.CHIEF_DOM_CODE_LENGTH
 import com.medtroniclabs.spice.common.DefinedParams.PATIENT_NUMBER_LENGTH
 import com.medtroniclabs.spice.common.DefinedParams.VILLAGE_CODE_LENGTH
 import com.medtroniclabs.spice.common.SecuredPreference
+import com.medtroniclabs.spice.data.offlinesync.model.UnAssignedHouseholdMemberDetail
+import com.medtroniclabs.spice.data.offlinesync.utils.OfflineConstant.CALL_TYPE_LINK_HHM
 import com.medtroniclabs.spice.data.offlinesync.utils.OfflineSyncStatus
+import com.medtroniclabs.spice.db.entity.CallHistory
 import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
 import com.medtroniclabs.spice.db.entity.MemberClinicalEntity
 import com.medtroniclabs.spice.db.entity.PregnancyDetail
@@ -227,5 +231,19 @@ class HouseholdMemberRepository @Inject constructor(
 
     suspend fun getPatientIdById(id: Long): String {
         return roomHelper.getPatientIdById(id)
+    }
+
+    fun getUnAssignedHouseholdMember(): LiveData<List<UnAssignedHouseholdMemberDetail>> {
+        return roomHelper.getUnAssignedHouseholdMembersLiveData()
+    }
+
+    suspend fun addLinkMemberCall(memberId: String, callStartTime: Long, callEndTime: Long): Long {
+        val callHistory = CallHistory(
+            type = CALL_TYPE_LINK_HHM,
+            referenceId = memberId,
+            callStartTime = callStartTime,
+            callEndTime = callEndTime
+        )
+        return roomHelper.addLinkMemberCall(callHistory)
     }
 }

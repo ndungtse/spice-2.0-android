@@ -11,7 +11,8 @@ object SpiceSLMigration {
             /* 1. Household Entity Migration
             *   1.1. Changing household_no from NOT Null field to Nullable Field
             * */
-            database.execSQL("""
+            database.execSQL(
+                """
             CREATE TABLE Household_temp (
                 id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
                 household_no INTEGER,
@@ -34,9 +35,11 @@ object SpiceSLMigration {
                 updated_at INTEGER NOT NULL,
                 created_at INTEGER NOT NULL
             )
-        """)
+        """
+            )
 
-            database.execSQL("""
+            database.execSQL(
+                """
             INSERT INTO Household_temp (id, household_no, name, village_id, landmark,
                                                 head_phone_number, no_of_people, is_owned_an_improved_latrine,
                                                 is_owned_hand_washing_facility_with_soap, is_owned_a_treated_bed_net,
@@ -48,7 +51,8 @@ object SpiceSLMigration {
                    bed_net_count, latitude, longitude, version, lastUpdated, fhir_id,
                    sync_status, created_by, updated_at, created_at
             FROM Household
-            """)
+            """
+            )
 
             database.execSQL("DROP TABLE Household")
             database.execSQL("ALTER TABLE Household_temp RENAME TO Household")
@@ -143,6 +147,30 @@ object SpiceSLMigration {
             WHERE neonatePatientId IS NOT NULL
             """.trimIndent()
             )
+
+            // Create newly added table LinkHouseholdMember
+            database.execSQL("""
+                CREATE TABLE IF NOT EXISTS LinkHouseholdMember (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                    memberId TEXT NOT NULL,
+                    currentStatus TEXT NOT NULL,
+                    syncStatus TEXT
+                )
+                """.trimIndent()
+            )
+
+            // Create newly added table CallHistory
+            database.execSQL("""
+                CREATE TABLE IF NOT EXISTS CallHistory (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                    type TEXT NOT NULL,
+                    referenceId TEXT NOT NULL,
+                    callStartTime INTEGER NOT NULL,
+                    callEndTime INTEGER NOT NULL,
+                    syncStatus TEXT NOT NULL
+                )
+                """.trimIndent())
+
         }
     }
 }

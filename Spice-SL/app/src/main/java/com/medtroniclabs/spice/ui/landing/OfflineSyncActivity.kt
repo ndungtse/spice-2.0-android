@@ -1,6 +1,7 @@
 package com.medtroniclabs.spice.ui.landing
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -104,6 +105,11 @@ class OfflineSyncActivity : SpiceRootActivity() {
     }
 
     private fun initObserver() {
+        viewModel.unAssignedMembers.observe(this) {
+            val ids = it.map { item -> item.memberId }
+            viewModel.insertDummyCallHistory(ids)
+        }
+
         viewModel.unSyncedCountLiveData.observe(this) {
             unSyncedCountAdapter.updateList(it)
         }

@@ -12,9 +12,12 @@ import com.medtroniclabs.spice.data.model.HouseholdCardDetail
 import com.medtroniclabs.spice.data.offlinesync.model.HHSignatureDetail
 import com.medtroniclabs.spice.data.offlinesync.model.HouseHold
 import com.medtroniclabs.spice.data.offlinesync.model.HouseHoldMember
+import com.medtroniclabs.spice.data.offlinesync.model.HouseholdMemberCallRegisterDto
+import com.medtroniclabs.spice.data.offlinesync.model.UnAssignedHouseholdMemberDetail
 import com.medtroniclabs.spice.data.offlinesync.utils.OfflineSyncStatus
 import com.medtroniclabs.spice.db.dao.AboveFiveYearsDAO
 import com.medtroniclabs.spice.db.dao.AssessmentDAO
+import com.medtroniclabs.spice.db.dao.CallHistoryDao
 import com.medtroniclabs.spice.db.dao.ConsentFormDao
 import com.medtroniclabs.spice.db.dao.DiagnosisDAO
 import com.medtroniclabs.spice.db.dao.ExaminationsComplaintsDAO
@@ -24,10 +27,12 @@ import com.medtroniclabs.spice.db.dao.FollowUpDao
 import com.medtroniclabs.spice.db.dao.FrequencyDAO
 import com.medtroniclabs.spice.db.dao.HouseholdDAO
 import com.medtroniclabs.spice.db.dao.LabourDeliveryDAO
+import com.medtroniclabs.spice.db.dao.LinkHouseholdMemberDao
 import com.medtroniclabs.spice.db.dao.MemberDAO
 import com.medtroniclabs.spice.db.dao.MetaDataDAO
 import com.medtroniclabs.spice.db.dao.PregnancyDetailDao
 import com.medtroniclabs.spice.db.entity.AssessmentEntity
+import com.medtroniclabs.spice.db.entity.CallHistory
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowConditionEntity
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowEntity
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowEntityWithSubmodule
@@ -39,6 +44,7 @@ import com.medtroniclabs.spice.db.entity.FrequencyEntity
 import com.medtroniclabs.spice.db.entity.HealthFacilityEntity
 import com.medtroniclabs.spice.db.entity.HouseholdEntity
 import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
+import com.medtroniclabs.spice.db.entity.LinkHouseholdMember
 import com.medtroniclabs.spice.db.entity.MemberClinicalEntity
 import com.medtroniclabs.spice.db.entity.MenuEntity
 import com.medtroniclabs.spice.db.entity.PregnancyDetail
@@ -70,7 +76,9 @@ class RoomHelperImpl @Inject constructor(
     private val followUpCallsDao: FollowUpCallsDao,
     private val pregnancyDetailDao: PregnancyDetailDao,
     private val frequencyDAO: FrequencyDAO,
-    private val consentFormDao: ConsentFormDao
+    private val consentFormDao: ConsentFormDao,
+    private val linkHouseholdMemberDao: LinkHouseholdMemberDao,
+    private val callHistoryDao: CallHistoryDao
 ) : RoomHelper {
     override suspend fun saveHouseHoldEntry(householdEntity: HouseholdEntity): Long {
         return householdDAO.insertHouseHold(householdEntity)
@@ -446,6 +454,14 @@ class RoomHelperImpl @Inject constructor(
         followUpDao.deleteAllFollowUps()
     }
 
+    override suspend fun deleteAllUnAssignedMember() {
+        linkHouseholdMemberDao.deleteAllLinkHouseholdMember()
+    }
+
+    override suspend fun deleteAllCallHistory() {
+        callHistoryDao.deleteAllCallHistory()
+    }
+
     override fun getFollowUpPatientListLiveData(
         type: String,
         search: String?,
@@ -665,6 +681,10 @@ class RoomHelperImpl @Inject constructor(
         pregnancyDetailDao.updateNeonatePatientId(hhmLocalId, neonateId)
     }
 
+    override suspend fun changeHHMLinkCallStatus(idList: List<String>, syncStatus: String) {
+        callHistoryDao.updateInProgress(idList, syncStatus)
+    }
+
     override suspend fun getMemberDetailsByPatientId(patientId: String): HouseholdMemberEntity? {
        return memberDAO.getMemberDetailsByPatientId(patientId)
     }
@@ -693,5 +713,25 @@ class RoomHelperImpl @Inject constructor(
     }
     override suspend fun updatePhoneNumberForHouseholdHead(id: Long, phoneNumber: String?) {
         return memberDAO.updatePhoneNumberForHouseholdHead(id,phoneNumber)
+    }
+
+    override suspend fun insertLinkHouseholdMembers(insertList: List<LinkHouseholdMember>) {
+        linkHouseholdMemberDao.insert(insertList)
+    }
+
+    override suspend fun deleteLinkHouseholdMembersById(deleteListIds: List<String>) {
+        linkHouseholdMemberDao.delete(deleteListIds)
+    }
+
+    override fun getUnAssignedHouseholdMembersLiveData(): LiveData<List<UnAssignedHouseholdMemberDetail>> {
+        return linkHouseholdMemberDao.getUnAssignedHouseholdMembersLiveData()
+    }
+
+    override suspend fun addLinkMemberCall(callHistory: CallHistory): Long {
+        return callHistoryDao.insert(callHistory)
+    }
+
+    override suspend fun getUnSyncedCallHistoryForHHMLink(): List<HouseholdMemberCallRegisterDto> {
+        return callHistoryDao.getUnSyncedCallHistoryForHHMLink()
     }
 }

@@ -11,12 +11,16 @@ import com.medtroniclabs.spice.appextensions.imgFileNameExtension
 import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.appextensions.postSuccess
 import com.medtroniclabs.spice.appextensions.signatureFolder
+import com.medtroniclabs.spice.common.DefinedParams.UnAssigned
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.offlinesync.model.Assessment
 import com.medtroniclabs.spice.data.offlinesync.model.AssessmentEncounter
+import com.medtroniclabs.spice.data.offlinesync.model.CallRegisterDetail
 import com.medtroniclabs.spice.data.offlinesync.model.FollowUpCriteria
 import com.medtroniclabs.spice.data.offlinesync.model.HouseHold
 import com.medtroniclabs.spice.data.offlinesync.model.HouseHoldMember
+import com.medtroniclabs.spice.data.offlinesync.model.HouseholdMemberCallRegisterDto
+import com.medtroniclabs.spice.data.offlinesync.model.HouseholdMemberLinkCallDetails
 import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.data.offlinesync.model.RequestGetSyncStatus
 import com.medtroniclabs.spice.data.offlinesync.model.ResponseInitialDownload
@@ -27,6 +31,7 @@ import com.medtroniclabs.spice.data.offlinesync.utils.OfflineSyncStatus
 import com.medtroniclabs.spice.data.offlinesync.utils.OfflineUtils
 import com.medtroniclabs.spice.data.resource.RequestAllEntities
 import com.medtroniclabs.spice.db.entity.EntitiesName
+import com.medtroniclabs.spice.db.entity.LinkHouseholdMember
 import com.medtroniclabs.spice.db.local.RoomHelper
 import com.medtroniclabs.spice.model.assessment.AssessmentDetails
 import com.medtroniclabs.spice.network.ApiHelper
@@ -134,6 +139,8 @@ class OfflineSyncRepository @Inject constructor(
             roomHelper.deleteAllAssessments()
             roomHelper.deleteAllFollowUpCalls()
             roomHelper.deleteAllFollowUps()
+            roomHelper.deleteAllUnAssignedMember()
+            roomHelper.deleteAllCallHistory()
 
             val villageIds = roomHelper.getAllVillageIds()
             // Fetch Synced Data
@@ -195,6 +202,23 @@ class OfflineSyncRepository @Inject constructor(
             roomHelper.insertOrUpdateFollowUp(followUp)
         }
         roomHelper.deleteCompletedFollowUp()
+
+        /*Insert Link household member details*/
+        requestInitialDownload.householdMemberLinks?.let {
+            val insertList = mutableListOf<LinkHouseholdMember>()
+            val deleteListIds = mutableListOf<String>()
+            it.forEach { linkHouseholdMember ->
+                if (linkHouseholdMember.status == UnAssigned) { // Insert
+                    linkHouseholdMember.syncStatus = OfflineSyncStatus.Success
+                    insertList.add(linkHouseholdMember)
+                } else { // Delete
+                    deleteListIds.add(linkHouseholdMember.memberId)
+                }
+            }
+            roomHelper.insertLinkHouseholdMembers(insertList)
+            roomHelper.deleteLinkHouseholdMembersById(deleteListIds)
+        }
+
 
         // Insert Pregnancy Information
         requestInitialDownload.pregnancyInfos?.forEach {
@@ -450,6 +474,24 @@ class OfflineSyncRepository @Inject constructor(
         return directory.delete()
     }
 
+    private suspend fun getCallRegisterEntityAsRequest(householdLinkCallsMemberIds : MutableList<String>): List<HouseholdMemberLinkCallDetails> {
+        val list = roomHelper.getUnSyncedCallHistoryForHHMLink()
+        val callDetails = mutableListOf<HouseholdMemberLinkCallDetails>()
+        list.groupBy { it.memberId }.forEach { (key, value) ->
+            householdLinkCallsMemberIds.add(key)
+            val callRegisters = value.map { CallRegisterDetail(it.callDate.convertToUtcDateTime()) }
+            callDetails.add(
+                HouseholdMemberLinkCallDetails(
+                    memberId = key,
+                    patientId = value.first().patientId,
+                    villageId = value.first().villageId,
+                    callRegisterDetails = callRegisters
+                )
+            )
+        }
+        return callDetails
+    }
+
     /*
     * It will post all un-synced changes from local database and returns List<String>?
     * 1. list size > 0 -> Posted un-synced local changes and API is success
@@ -462,6 +504,7 @@ class OfflineSyncRepository @Inject constructor(
         val assessmentIds = mutableListOf<String>()
         val followUpIds = mutableListOf<Long>()
         val followUpCallIds = mutableListOf<Long>()
+        val householdLinkCallsMemberIds = mutableListOf<String>()
 
         //uploadAllSignatures()
 
@@ -505,11 +548,14 @@ class OfflineSyncRepository @Inject constructor(
             }
         }
 
+        val householdMemberLink = getCallRegisterEntityAsRequest(householdLinkCallsMemberIds)
+
         // Nothing to Post anything
         if (houseHoldList.isEmpty()
             && otherHouseholdMembers.isEmpty()
             && otherAssessments.isEmpty()
             && allFollowUps.isEmpty()
+            && householdMemberLink.isEmpty()
         ) {
             return listOf()
         }
@@ -519,6 +565,7 @@ class OfflineSyncRepository @Inject constructor(
         request[OfflineConstant.HOUSE_HOLD_MEMBERS] = otherHouseholdMembers
         request[OfflineConstant.ASSESSMENTS] = otherAssessments
         request[OfflineConstant.FOLLOWUPS] = allFollowUps
+        request[OfflineConstant.HOUSEHOLD_MEMBER_LINK] = householdMemberLink
 
         try {
             val apiResponse = apiHelper.postOfflineSync(request)
@@ -528,6 +575,7 @@ class OfflineSyncRepository @Inject constructor(
                 roomHelper.changeAssessmentStatus(assessmentIds, OfflineSyncStatus.InProgress.name) // Change status to InProgress
                 roomHelper.changeFollowUpStatus(followUpIds, OfflineSyncStatus.InProgress.name) // Change status to InProgress
                 roomHelper.changeFollowUpCallStatus(followUpCallIds) // Change isSynced Status to True
+                roomHelper.changeHHMLinkCallStatus(householdLinkCallsMemberIds, OfflineSyncStatus.InProgress.name)
                 return listOf(request[OfflineConstant.REQUEST_ID] as String)
             }
         } catch (e: Exception) {
@@ -535,6 +583,7 @@ class OfflineSyncRepository @Inject constructor(
             roomHelper.changeHouseholdMemberStatus(householdMemberIds, OfflineSyncStatus.NetworkError.name) // Change Status to InProgress
             roomHelper.changeAssessmentStatus(assessmentIds, OfflineSyncStatus.NetworkError.name) // Change status to InProgress
             roomHelper.changeFollowUpStatus(followUpIds, OfflineSyncStatus.NetworkError.name) // Change status to InProgress
+            roomHelper.changeHHMLinkCallStatus(householdLinkCallsMemberIds, OfflineSyncStatus.NetworkError.name)
             return listOf(request[OfflineConstant.REQUEST_ID] as String)
         }
 

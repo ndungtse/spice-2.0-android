@@ -16,6 +16,7 @@ import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.db.SpiceDataBase
 import com.medtroniclabs.spice.db.dao.AboveFiveYearsDAO
 import com.medtroniclabs.spice.db.dao.AssessmentDAO
+import com.medtroniclabs.spice.db.dao.CallHistoryDao
 import com.medtroniclabs.spice.db.dao.ConsentFormDao
 import com.medtroniclabs.spice.db.dao.DiagnosisDAO
 import com.medtroniclabs.spice.db.dao.ExaminationsComplaintsDAO
@@ -25,6 +26,7 @@ import com.medtroniclabs.spice.db.dao.FollowUpDao
 import com.medtroniclabs.spice.db.dao.FrequencyDAO
 import com.medtroniclabs.spice.db.dao.HouseholdDAO
 import com.medtroniclabs.spice.db.dao.LabourDeliveryDAO
+import com.medtroniclabs.spice.db.dao.LinkHouseholdMemberDao
 import com.medtroniclabs.spice.db.dao.MemberDAO
 import com.medtroniclabs.spice.db.dao.MetaDataDAO
 import com.medtroniclabs.spice.db.dao.PregnancyDetailDao
@@ -89,9 +91,6 @@ object AppModule {
 
     class AppInterceptor(val context: Context) : Interceptor {
         override fun intercept(chain: Interceptor.Chain): Response {
-            if (!isNetworkAvailable()) {
-                throw Exception("No internet connection")
-            }
 
             var request: Request = chain.request()
             val requestBuilder = request.newBuilder()
@@ -268,6 +267,18 @@ object AppModule {
     @Provides
     fun providePregnancyDetailDAO(db: SpiceDataBase): PregnancyDetailDao {
         return db.pregnancyDetailDao()
+    }
+
+    @Singleton
+    @Provides
+    fun provideLinkHouseholdMemberDao(db: SpiceDataBase): LinkHouseholdMemberDao {
+        return db.linkHouseholdMemberDao()
+    }
+
+    @Singleton
+    @Provides
+    fun provideCallHistoryDao(db: SpiceDataBase): CallHistoryDao {
+        return db.callHistoryDao()
     }
 
     @Singleton
