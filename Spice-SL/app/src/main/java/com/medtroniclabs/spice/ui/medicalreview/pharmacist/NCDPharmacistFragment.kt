@@ -38,7 +38,7 @@ class NCDPharmacistFragment : BaseFragment() {
         //Here list contains the list of FillPrescriptionListResponse
         prescriptionRefillAdapter = PrescriptionRefillAdapter()
         binding.rvPrescriptionRefillList.adapter = prescriptionRefillAdapter
-        prescriptionRefillAdapter.setData(list)
+        prescriptionRefillAdapter.setData(arrayListOf())
     }
 
     companion object {

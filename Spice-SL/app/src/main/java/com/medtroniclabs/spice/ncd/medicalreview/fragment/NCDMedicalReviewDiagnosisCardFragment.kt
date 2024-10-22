@@ -1,10 +1,12 @@
 package com.medtroniclabs.spice.ncd.medicalreview.fragment
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat.getColor
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.activityViewModels
@@ -12,6 +14,7 @@ import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.invisible
 import com.medtroniclabs.spice.appextensions.setVisible
 import com.medtroniclabs.spice.common.CommonUtils.convertListToString
+import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.databinding.FragmentNcdMedicalReviewDiagnosisCardBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
@@ -35,6 +38,7 @@ import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDMedicalReviewDiagn
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.BaseFragment
+import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlin.collections.ArrayList
@@ -189,14 +193,12 @@ class NCDMedicalReviewDiagnosisCardFragment : BaseFragment(), View.OnClickListen
             bpCard.tvDiagnosis.text = latestBP.ifBlank { hyphen }
             bpCard.tvDiagnosisConfirm.text =
                 if (latestBP.isBlank()) getString(R.string.add_new_reading) else getString(R.string.view_details)
-            bpCard.tvDiagnosisConfirm.safeClickListener(this@NCDMedicalReviewDiagnosisCardFragment)
 
             val latestGlucose = patientDetailViewModel.recentGlucose()
             bgCard.tvDiagnosisLbl.text = getString(R.string.blood_glucose)
             bgCard.tvDiagnosis.text = latestGlucose.ifBlank { hyphen }
             bgCard.tvDiagnosisConfirm.text =
                 if (latestGlucose.isBlank()) getString(R.string.add_new_reading) else getString(R.string.view_details)
-            bgCard.tvDiagnosisConfirm.safeClickListener(this@NCDMedicalReviewDiagnosisCardFragment)
 
             pregnancyCard.tvDiagnosisLbl.text = getString(R.string.pregnancy_details)
             pregnancyCard.tvDiagnosis.apply {
@@ -204,18 +206,34 @@ class NCDMedicalReviewDiagnosisCardFragment : BaseFragment(), View.OnClickListen
                 setTextColor(getColor(requireContext(), R.color.medium_blue))
                 typeface = ResourcesCompat.getFont(requireContext(), R.font.inter_regular)
             }
-            pregnancyCard.tvDiagnosis.safeClickListener(this@NCDMedicalReviewDiagnosisCardFragment)
             pregnancyCard.tvDiagnosisConfirm.invisible()
 
             weightCard.tvDiagnosisLbl.text = getString(R.string.weight)
-            weightCard.tvDiagnosis.text = hyphen
+            weightCard.tvDiagnosis.text = MotherNeonateUtil.convertWeight(
+                patientDetailViewModel.getWeightInKG(),
+                requireContext()
+            )
             weightCard.tvDiagnosisConfirm.invisible()
 
+            val pregnantDetails = patientDetailViewModel.getPregnantDetails()
             eddCard.tvDiagnosisLbl.text =
                 getString(R.string.estimated_delivery_date)
-            eddCard.tvDiagnosis.text = hyphen
-            eddCard.tvDiagnosisConfirm.text = hyphen
-
+            eddCard.tvDiagnosis.text =
+                pregnantDetails?.estimatedDeliveryDate?.let {
+                    DateUtils.convertDateFormat(
+                        it,
+                        DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+                        DateUtils.DATE_ddMMyyyy
+                    ).takeIf { it.isNotBlank() } ?: hyphen
+                } ?: hyphen
+            eddCard.tvDiagnosisConfirm.text =
+                pregnantDetails?.gestationalAge?.toLongOrNull()?.let { gestationalAge ->
+                    DateUtils.formatGestationalAge(gestationalAge, requireContext())
+                } ?: hyphen
+            eddCard.tvDiagnosisConfirm.apply {
+                setTextColor(getColor(requireContext(), R.color.text_label_color))
+                typeface = ResourcesCompat.getFont(requireContext(), R.font.inter_regular)
+            }
             patientStatusCard.tvDiagnosisLbl.text = getString(R.string.patient_status)
             patientStatusCard.tvDiagnosis.apply {
                 text = getString(R.string.edit_details)
@@ -223,21 +241,28 @@ class NCDMedicalReviewDiagnosisCardFragment : BaseFragment(), View.OnClickListen
                 typeface = ResourcesCompat.getFont(requireContext(), R.font.inter_regular)
             }
             patientStatusCard.tvDiagnosisConfirm.invisible()
-            withNetworkAvailability(online = {
-                diagnosisCard.tvDiagnosisConfirm.safeClickListener(this@NCDMedicalReviewDiagnosisCardFragment)
-                patientStatusCard.tvDiagnosis.safeClickListener(this@NCDMedicalReviewDiagnosisCardFragment)
-            })
+            bpCard.tvDiagnosisConfirm.safeClickListener(this@NCDMedicalReviewDiagnosisCardFragment)
+            bgCard.tvDiagnosisConfirm.safeClickListener(this@NCDMedicalReviewDiagnosisCardFragment)
+            pregnancyCard.tvDiagnosis.safeClickListener(this@NCDMedicalReviewDiagnosisCardFragment)
+            diagnosisCard.tvDiagnosisConfirm.safeClickListener(this@NCDMedicalReviewDiagnosisCardFragment)
+            patientStatusCard.tvDiagnosis.safeClickListener(this@NCDMedicalReviewDiagnosisCardFragment)
         }
     }
 
     override fun onClick(v: View?) {
         when (v) {
             binding.diagnosisCard.tvDiagnosisConfirm -> {
-                showDiagnosisDialog()
+                withNetworkAvailability(online = {
+                    showDiagnosisDialog()
+                })
             }
-            binding.patientStatusCard.tvDiagnosis ->{
-                showPatientHistoryDialog()
+
+            binding.patientStatusCard.tvDiagnosis -> {
+                withNetworkAvailability(online = {
+                    showPatientHistoryDialog()
+                })
             }
+
             binding.bpCard.tvDiagnosisConfirm -> {
                 if (patientDetailViewModel.recentBP().isBlank())
                     addNewReading(true)
@@ -248,28 +273,39 @@ class NCDMedicalReviewDiagnosisCardFragment : BaseFragment(), View.OnClickListen
             }
 
             binding.pregnancyCard.tvDiagnosis -> {
-                patientDetailViewModel.getPatientFHIRId()?.let { id ->
-                    val ncdPregnancyDialog =
-                        NCDPregnancyDialog.newInstance(patientId = id) { isPositiveResult, message ->
-                            if (isPositiveResult) showSuccessDialogue(
-                                title = getString(R.string.pregnancy_details),
-                                message = message,
-                            )
-                            else showErrorDialog(
-                                title = getString(R.string.error),
-                                message = message
-                            )
-                        }
-                    ncdPregnancyDialog.show(childFragmentManager, NCDPregnancyDialog.TAG)
-                }
-            }
-            binding.bgCard.tvDiagnosisConfirm -> {
-                if (patientDetailViewModel.recentGlucose().isBlank())
-                    addNewReading(false)
-                else
+                withNetworkAvailability(online = {
                     patientDetailViewModel.getPatientFHIRId()?.let { id ->
-                        glucoseViewModel.glucoseLogList(patientId = id)
+                        val dialog = childFragmentManager.findFragmentByTag(NCDPregnancyDialog.TAG)
+                        if (dialog == null) {
+                            val ncdPregnancyDialog =
+                                NCDPregnancyDialog.newInstance(patientId = id) { isPositiveResult, message ->
+                                    if (isPositiveResult) {
+                                        showSuccessDialogue(
+                                            title = getString(R.string.pregnancy_details),
+                                            message = message,
+                                        )
+                                        (requireActivity() as? NCDMedicalReviewActivity)?.swipeRefresh()
+                                    }
+                                    else showErrorDialog(
+                                        title = getString(R.string.error),
+                                        message = message
+                                    )
+                                }
+                            ncdPregnancyDialog.show(childFragmentManager, NCDPregnancyDialog.TAG)
+                        }
                     }
+                })
+            }
+
+            binding.bgCard.tvDiagnosisConfirm -> {
+                withNetworkAvailability(online = {
+                    if (patientDetailViewModel.recentGlucose().isBlank())
+                        addNewReading(false)
+                    else
+                        patientDetailViewModel.getPatientFHIRId()?.let { id ->
+                            glucoseViewModel.glucoseLogList(patientId = id)
+                        }
+                })
             }
 
         }
@@ -308,9 +344,12 @@ class NCDMedicalReviewDiagnosisCardFragment : BaseFragment(), View.OnClickListen
     override fun onDialogDismissed(isConfirmed: Boolean) {
         // call the get method
         if (isConfirmed) {
-            getDiagonsis()
+            withNetworkAvailability(online = {
+                getDiagonsis()
+            })
         } else {
             //patient status for NCD
+            // now it is hide so it is not used now
             val dialogFragment =
                 childFragmentManager.findFragmentByTag(NCDPatientHistoryDialog.TAG) as? NCDPatientHistoryDialog
             dialogFragment?.dismiss()
@@ -346,7 +385,15 @@ class NCDMedicalReviewDiagnosisCardFragment : BaseFragment(), View.OnClickListen
                 putString(DefinedParams.Gender, detail.gender)
             }
             intent.putExtras(bundle)
-            startActivity(intent)
+            getResult.launch(intent)
         }
     }
+    private val getResult =
+        registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()
+        ) {
+            if (it.resultCode == Activity.RESULT_OK) {
+                (requireActivity() as? NCDMedicalReviewActivity)?.swipeRefresh()
+            }
+        }
 }

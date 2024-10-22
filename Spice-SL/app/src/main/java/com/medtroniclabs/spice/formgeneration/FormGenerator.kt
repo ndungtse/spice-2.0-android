@@ -553,15 +553,15 @@ class FormGenerator(
         var nId = nationalId
         var errorVisibility: Int? = null
         var errorMessage: String = getString(R.string.error_label)
-        getViewByTag("lastName")?.let { editText ->
+        getViewByTag(Screening.lastName)?.let { editText ->
             if (editText is AppCompatEditText && ((!editText.text.isNullOrBlank()) && checkMinLength(
-                    "lastName", editText.text?.trim()?.length
+                    Screening.lastName, editText.text?.trim()?.length
                 ))
             ) {
                 errorVisibility = View.GONE
                 if (nId.isNotEmpty()) {
                     val input = editText.text!!.trim().replace("\\s".toRegex(), "")
-                    if (onlyAlphabet("lastName", input)) {
+                    if (onlyAlphabet(Screening.lastName, input)) {
                         nId = validateNationalId(input, nId)
                     } else {
                         nId = ""

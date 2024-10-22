@@ -5,6 +5,7 @@ import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 data class NCDDiagnosisRequestResponse(
     val provenanceDTO: ProvanceDto? = null,
     val confirmDiagnosis: List<NCDDiagnosisItem>? = null,
+    val diagnosis: List<NCDDiagnosisItem>? = null,
     val diagnosisNotes: String? = null,
     val patientReference: String? = null
 )

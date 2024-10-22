@@ -81,7 +81,7 @@ object AssessmentDefinedParams {
     const val other_compliance: String = "otherCompliance"
     const val Compliance_Type_Diabetes = "Diabetes"
     const val Compliance_Type_Hypertension = "Hypertension"
-    const val symptom_id = "symptomId"
+    const val id = "id"
     const val other_symptom = "otherSymptom"
     const val NoSymptoms = "No symptoms"
     const val complianceId: String = "complianceId"
@@ -125,4 +125,6 @@ object AssessmentDefinedParams {
     const val africa_uppercase = "AFRICA"
     const val modifiedDate = "modifiedDate"
     const val spiceUserId= "spiceUserId"
+    const val memberReference = "memberReference"
+    const val patientReference = "patientReference"
 }

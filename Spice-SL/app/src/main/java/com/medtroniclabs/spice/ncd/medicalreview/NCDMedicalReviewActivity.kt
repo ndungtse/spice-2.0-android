@@ -38,6 +38,7 @@ import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.getTypeForDiagnoses
 import com.medtroniclabs.spice.ncd.medicalreview.dialog.NCDDiagnosisDialogFragment
 import com.medtroniclabs.spice.ncd.medicalreview.dialog.NCDMRAlertDialog
 import com.medtroniclabs.spice.ncd.medicalreview.dialog.NCDPatientHistoryDialog
+import com.medtroniclabs.spice.ncd.medicalreview.dialog.NCDPregnancyDialog
 import com.medtroniclabs.spice.ncd.medicalreview.dialog.NCDTreatmentPlanDialog
 import com.medtroniclabs.spice.ncd.medicalreview.fragment.NCDChiefComplaintsFragment
 import com.medtroniclabs.spice.ncd.medicalreview.fragment.NCDClinicalNotesFragment
@@ -249,7 +250,7 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
         replaceFragment(
             R.id.obstetricExaminationContainer,
             NCDMedicalReviewSummaryFragment.TAG,
-            NCDMedicalReviewSummaryFragment.newInstance()
+            NCDMedicalReviewSummaryFragment.newInstance(getEncounterReference(),getMenuId())
         )
     }
 
@@ -404,6 +405,7 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
         val iscomorbiditiesContainer  = supportFragmentManager.findFragmentById(R.id.comorbiditiesContainer) is NCDComorbiditiesFragment
         binding.apply {
             currentMedicationContainer.gone()
+            // current only visible on ncd and after patient history submit diabetes known patient(also visible state of NCDComorbiditiesFragment(it show only on initial medical review))
             if ((getMenuId().equals(NCD, true)
                 &&( viewModel.statusDiabetesValue != null
                 && !patientDetailViewModel.getNCDInitialMedicalReview()))
@@ -481,7 +483,6 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
                     val intent = Intent(this, InvestigationActivity::class.java)
                     intent.putExtra(DefinedParams.PatientId, data.id)
                     // TODO need to get investigation in summary(After confirm with backend)
-                    intent.putExtra(DefinedParams.EncounterId, patientDetailViewModel.encounterId)
                     intent.putExtra(EncounterReference, getEncounterReference())
                     intent.putExtra(MemberID, data.id)
                     intent.putExtra(ORIGIN, getMenuOrigin())
@@ -497,16 +498,13 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
             ActivityResultContracts.StartActivityForResult()
         ) {
             if (it.resultCode == Activity.RESULT_OK) {
-                val value = it.data?.getStringExtra(DefinedParams.EncounterId)
-                value?.let { valueString ->
-                    patientDetailViewModel.encounterId = valueString
-                }
+                swipeRefresh()
             }
         }
     private fun submitNextVisitCreate() {
         val fragment =
             supportFragmentManager.findFragmentByTag(NCDMedicalReviewSummaryFragment.TAG) as? NCDMedicalReviewSummaryFragment
-        if (fragment?.validateInput() == true) {
+        if (fragment?.validateInput() == true && fragment.handleConfirmDiagnoses()) {
             withNetworkAvailability(online = {
                 val request = NCDMRSummaryRequestResponse(
                     memberReference = patientDetailViewModel.getPatientFHIRId(),
@@ -565,15 +563,22 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
                 return false
             }
 
-            // Check for matching diagnosis in the validation list
+            /*
+             * 1. Check for matching diagnosis in the validation list.
+             * 2. After submitting the patient history for NCD, retrieve the data from the ViewModel.
+             * 3. Extract all diabetes types from the confirm diagnoses.
+             * 4. Compare these types with list (e.g., gestational diabetes, diabetes type 1, type 2, pre-diabetes).
+             * 5. For each comparison, obtain the confirmation value for patient history ncd.
+             * 6. For example, if compare get confirm diagnoses against the list(contain only diabetes),then  it filter diabetes only then match the diabetes of patient history NCD.
+             */
             val mismatchedItems = diagnosisList?.any { diagnosisItem ->
-                viewModel.validationForStatus?.none { validationItem ->
+                viewModel.validationForStatus?.any { validationItem ->
                     validationItem.value == diagnosisItem.value && viewModel.statusDiabetesValue == validationItem.value
                 } == true
             }
 
             // Show error if there are any mismatched diagnoses
-            if (mismatchedItems == true) {
+            if (mismatchedItems == false) {
                 showErrorDialog(
                     getString(R.string.edit_confirm_diagnosis_mandatory_warning),
                     showConfirm = true,
@@ -599,7 +604,19 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
                     && !patientDetailViewModel.getNCDInitialMedicalReview()
                 ) {
                     currentMedications = CurrentMedications(
-                        medications = currentMedicationViewModel.chips.mapNotNull { chips -> chips.value },
+                        medications = currentMedicationViewModel.chips.mapNotNull { chip ->
+                            Chip(
+                                id = chip.id,
+                                name = chip.name,
+                                value = if (chip.name.equals(
+                                        DefinedParams.Other,
+                                        true
+                                    )
+                                ) currentMedicationViewModel.comments.trim()
+                                    .takeIf { it.isNotBlank() } else chip.value,
+                                other = chip.name.equals(DefinedParams.Other, true)
+                            )
+                        },
                         drugAllergies = currentMedicationViewModel.drugAllergies,
                         adheringCurrentMed = currentMedicationViewModel.adheringCurrentMed,
                         adheringMedComment = currentMedicationViewModel.adheringMedComment,
@@ -686,8 +703,9 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
                     comorbiditiesFragment != null && !binding.chiefComplaintsContainer.isVisible -> loadFragment(true)
                     chiefComplaintsFragment != null && !binding.comorbiditiesContainer.isVisible -> loadFragment(false)
                     else -> {
-                        loadFragment(true)
                         showNcdPatientStatus()
+                        showMaternalStatus()
+                        loadFragment(true)
                     }
                 }
             }
@@ -718,6 +736,36 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
                     listener = this@NCDMedicalReviewActivity
                 }.show(supportFragmentManager, NCDPatientHistoryDialog.TAG)
             }
+        }
+    }
+
+    private fun showMaternalStatus() {
+        if (getMenuId().equals(DefinedParams.PregnancyANC.lowercase(), true)) {
+            withNetworkAvailability(online = {
+                patientDetailViewModel.getPatientFHIRId()?.let { id ->
+                    val dialog = supportFragmentManager.findFragmentByTag(NCDPregnancyDialog.TAG)
+                    if (dialog == null) {
+                        val ncdPregnancyDialog =
+                            NCDPregnancyDialog.newInstance(patientId = id) { isPositiveResult, message ->
+                                if (isPositiveResult) showErrorDialogue(
+                                    title = getString(R.string.pregnancy_details),
+                                    message = message,
+                                    isNegativeButtonNeed = false
+                                ) {
+                                    swipeRefresh()
+                                }
+                                else showErrorDialogue(
+                                    title = getString(R.string.error),
+                                    message = message,
+                                    isNegativeButtonNeed = false
+                                ) {
+
+                                }
+                            }
+                        ncdPregnancyDialog.show(supportFragmentManager, NCDPregnancyDialog.TAG)
+                    }
+                }
+            })
         }
     }
 
@@ -834,7 +882,7 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
         hideLoading()
     }
 
-    private fun swipeRefresh() {
+    fun swipeRefresh() {
         withNetworkCheck(connectivityManager, onNetworkAvailable = {
             supportFragmentManager.findFragmentById(R.id.patientDetailFragment)
                 .let {
@@ -856,9 +904,8 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
         if (isConfirmed) {
             // to refresh the card
             initializeFragments()
-        } else {
-            // patient status for ncd
             showCurrentMedication()
+            swipeRefresh()
         }
     }
 
@@ -869,6 +916,12 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
     }
 
     override fun onConfirmDiagnosisClicked() {
+        withNetworkAvailability(online = {
+            showConfirmDiagnoses()
+        })
+    }
+
+    fun showConfirmDiagnoses() {
         val dialog = supportFragmentManager.findFragmentByTag(NCDDiagnosisDialogFragment.TAG)
         if (dialog == null) {
             patientDetailViewModel.getPatientId()?.let {

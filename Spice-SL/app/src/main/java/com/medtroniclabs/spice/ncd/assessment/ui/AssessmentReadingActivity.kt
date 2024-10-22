@@ -7,6 +7,7 @@ import com.google.gson.Gson
 import com.google.gson.internal.LinkedTreeMap
 import com.google.gson.reflect.TypeToken
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.common.CommonUtils.calculateAverageBloodPressure
 import com.medtroniclabs.spice.common.CommonUtils.calculateBMI
 import com.medtroniclabs.spice.common.CommonUtils.calculateBloodGlucose
@@ -109,7 +110,11 @@ class AssessmentReadingActivity : BaseActivity(), FormEventListener, View.OnClic
                     showSuccessDialogue(
                         title = getString(R.string.blood_pressure),
                         message = resourceState.data?.message ?: "",
-                    ) { finish() }
+                    ) {
+                        bpViewModel.bpLogListResponseLiveData.postError()
+                        setResult(RESULT_OK, intent)
+                        finish()
+                    }
                 }
 
                 ResourceState.ERROR -> {
@@ -134,7 +139,11 @@ class AssessmentReadingActivity : BaseActivity(), FormEventListener, View.OnClic
                     showSuccessDialogue(
                         title = getString(R.string.blood_glucose),
                         message = resourceState.data?.message ?: "",
-                    ) { finish() }
+                    ) {
+                        glucoseViewModel.glucoseLogListResponseLiveData.postError()
+                        setResult(RESULT_OK, intent)
+                        finish()
+                    }
                 }
 
                 ResourceState.ERROR -> {

@@ -109,7 +109,13 @@ class HomeScreenFragment : BaseFragment(), MenuSelectionListener {
                 ) else Intent(requireContext(), PatientSearchActivity ::class.java)
 
                 intent.putExtras(bundle)
-                startActivity(intent)
+                if (CommonUtils.isSL()) {
+                    startActivity(intent)
+                } else {
+                    withNetworkAvailability(online = {
+                        startActivity(intent)
+                    })
+                }
             }
 
             MenuConstants.PerformanceMonitoring_ID -> {
@@ -132,12 +138,14 @@ class HomeScreenFragment : BaseFragment(), MenuSelectionListener {
             }
 
             MenuConstants.REGISTRATION -> {
-                val bundle = Bundle().apply {
-                    putString(DefinedParams.ORIGIN, MenuConstants.REGISTRATION.lowercase())
-                }
-                val intent = Intent(requireContext(), PatientSearchActivity::class.java)
-                intent.putExtras(bundle)
-                startActivity(intent)
+                withNetworkAvailability(online = {
+                    val bundle = Bundle().apply {
+                        putString(DefinedParams.ORIGIN, MenuConstants.REGISTRATION.lowercase())
+                    }
+                    val intent = Intent(requireContext(), PatientSearchActivity::class.java)
+                    intent.putExtras(bundle)
+                    startActivity(intent)
+                })
             }
 
             MenuConstants.ASSESSMENT -> {

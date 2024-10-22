@@ -1,6 +1,7 @@
 package com.medtroniclabs.spice.ui.home
 
 import android.content.Intent
+import android.content.pm.ActivityInfo
 import android.os.Bundle
 import androidx.activity.viewModels
 import com.medtroniclabs.spice.R
@@ -44,7 +45,17 @@ class AssessmentToolsActivity : BaseActivity() {
         bundle.putString(DefinedParams.FhirId, intent.getStringExtra(DefinedParams.FhirId))
         bundle.putString(DefinedParams.ORIGIN, intent.getStringExtra(DefinedParams.ORIGIN))
         bundle.putString(DefinedParams.Gender, intent.getStringExtra(DefinedParams.Gender))
-        bundle.putString(EncounterReference, intent.getStringExtra(EncounterReference))
+        // only for Africa encounterReference is visit id(Support landscape )
+        intent.getStringExtra(EncounterReference)?.let { encounterReference ->
+            bundle.putString(EncounterReference, encounterReference)
+            requestedOrientation = if (encounterReference.isNotBlank()) {
+                ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+            } else {
+                ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+            }
+        } ?: run {
+            requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+        }
         val fragmentTag =
             ToolsMenuFragment.TAG
         var fragment = supportFragmentManager.findFragmentByTag(fragmentTag)

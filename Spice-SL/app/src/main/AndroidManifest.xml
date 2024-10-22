@@ -23,7 +23,10 @@
             android:exported="false" />
         <activity
             android:name=".ncd.medicalreview.NCDMedicalReviewCMRActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:screenOrientation="landscape"
+            android:windowSoftInputMode="adjustPan"/>
         <activity
             android:name=".ncd.dashboard.DashboardActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
@@ -130,8 +133,7 @@
         <activity
             android:name=".ui.home.AssessmentToolsActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
-            android:exported="false"
-            android:screenOrientation="portrait" /> <!-- Medical Review Activities -->
+            android:exported="false" /> <!-- Medical Review Activities -->
         <activity
             android:name=".ui.home.MedicalReviewToolsActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
@@ -188,10 +190,13 @@
             android:name=".ui.followup.FollowUpMyPatientActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
+
         <activity
             android:name=".ncd.medicalreview.NCDMedicalReviewActivity"
             android:exported="false"
-            android:screenOrientation="sensorLandscape" />
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:screenOrientation="landscape"
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".ui.medicalreview.motherneonate.pnc.activity.MotherNeonatePncActivity"
             android:exported="false"

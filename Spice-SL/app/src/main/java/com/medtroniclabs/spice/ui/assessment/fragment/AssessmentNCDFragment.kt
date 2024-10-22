@@ -793,7 +793,7 @@ class AssessmentNCDFragment : BaseFragment(), FormEventListener, View.OnClickLis
         list.forEach {
             val map = HashMap<String, Any>()
             map[DefinedParams.NAME] = it.symptom
-            map[AssessmentDefinedParams.symptom_id] = it.id
+            map[AssessmentDefinedParams.id] = it.id
             it.otherSymptom?.let { other ->
                 map[AssessmentDefinedParams.other_symptom] = other
             }
@@ -947,7 +947,10 @@ class AssessmentNCDFragment : BaseFragment(), FormEventListener, View.OnClickLis
         patientDetailViewModel.patientDetailsLiveData.value?.data?.let { searchResponse ->
             isConfirmDiagnosis = searchResponse.isConfirmDiagnosis
             searchResponse.id?.let { id ->
-                map[AssessmentDefinedParams.relatedPersonFhirId] = id
+                map[AssessmentDefinedParams.memberReference] = id
+            }
+            searchResponse.patientId?.let { id ->
+                map[AssessmentDefinedParams.patientReference] = id
             }
             searchResponse.dateOfBirth?.let { dateOfBirth ->
                 map[Screening.DateOfBirth] = dateOfBirth

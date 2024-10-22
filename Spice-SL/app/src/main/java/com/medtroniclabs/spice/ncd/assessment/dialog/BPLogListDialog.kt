@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.appextensions.setDialogPercent
 import com.medtroniclabs.spice.databinding.DialogBpLogListBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
@@ -54,10 +55,13 @@ class BPLogListDialog(private val addNewReading: () -> Unit) : DialogFragment(),
 
     override fun onClick(v: View?) {
         when (v?.id) {
-            binding.ivClose.id -> dismiss()
+            binding.ivClose.id -> {
+                dismiss()
+            }
             binding.btnAddNewReading.id -> {
                 dismiss()
                 addNewReading.invoke()
+                viewModel.bpLogListResponseLiveData.postError()
             }
         }
     }

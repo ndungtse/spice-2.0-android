@@ -140,7 +140,7 @@ class NCDPatientHistoryDialog : DialogFragment(), View.OnClickListener {
                 }
 
                 ResourceState.SUCCESS -> {
-                    listener?.onDialogDismissed()
+                    listener?.onDialogDismissed(true)
                 }
 
                 ResourceState.ERROR -> {
@@ -293,9 +293,18 @@ class NCDPatientHistoryDialog : DialogFragment(), View.OnClickListener {
     }
 
     private fun showSpinnerView(selectedValue: String) {
-        binding.ncdDiabetesHypertension.groupDiabetesSpinner.isVisible =
-            selectedValue.equals(Known_patient, true)
-        binding.ncdDiabetesHypertension.tvDiabetesControlledError.gone()
+        val isKnownPatient = selectedValue.equals(Known_patient, ignoreCase = true)
+        with(binding.ncdDiabetesHypertension) {
+            groupDiabetesSpinner.isVisible = isKnownPatient
+            if (!isKnownPatient) {
+                etYearOfDiagnosis.setText("")
+                viewModel.value = null
+                tvDiabetesControlledSpinner.post {
+                    tvDiabetesControlledSpinner.setSelection(0, false)
+                }
+            }
+            tvDiabetesControlledError.gone()
+        }
     }
 
     private fun getSingleSelectionOptions(): ArrayList<Map<String, Any>> {
@@ -399,8 +408,8 @@ class NCDPatientHistoryDialog : DialogFragment(), View.OnClickListener {
                     // Do the API call
                     val request = NCDPatientStatusRequest(
                         provenance = ProvanceDto(),
-                        patientId = getPatientReference(),
-                        relatedPersonId = getMemberReference(),
+                        patientReference = getPatientReference(),
+                        memberReference = getMemberReference(),
                         ncdPatientStatus = NcdPatientStatus(
                             diabetesStatus = viewModel.resultDiabetesHashMap[Diabetes] as? String,
                             hypertensionStatus = viewModel.resultHypertensionHashMap[Hypertension] as? String,

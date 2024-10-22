@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.appextensions.setDialogPercent
 import com.medtroniclabs.spice.databinding.DialogGlucoseLogListBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
@@ -58,6 +59,7 @@ class GlucoseLogListDialog(private val addNewReading: () -> Unit) : DialogFragme
             binding.btnAddNewReading.id -> {
                 dismiss()
                 addNewReading.invoke()
+                viewModel.glucoseLogListResponseLiveData.postError()
             }
         }
     }

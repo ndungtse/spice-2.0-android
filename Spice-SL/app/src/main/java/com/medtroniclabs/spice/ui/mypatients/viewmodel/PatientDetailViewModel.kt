@@ -8,6 +8,7 @@ import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.model.PatientDetailRequest
 import com.medtroniclabs.spice.model.PatientListRespModel
+import com.medtroniclabs.spice.model.PregnancyDetails
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.ui.mypatients.repo.PatientRepository
@@ -111,5 +112,13 @@ class PatientDetailViewModel @Inject constructor(
         } else {
             "$glucoseValue ($glucoseUnit)"
         }
+    }
+
+    fun getWeightInKG(): Double? {
+        return patientDetailsLiveData.value?.data?.weight
+    }
+
+    fun getPregnantDetails(): PregnancyDetails? {
+        return patientDetailsLiveData.value?.data?.pregnancyDetails
     }
 }

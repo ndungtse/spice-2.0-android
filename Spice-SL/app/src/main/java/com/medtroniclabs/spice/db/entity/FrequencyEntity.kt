@@ -9,6 +9,7 @@ data class FrequencyEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Long,
     val name: String,
+    val displayValue: String? = null,
     val displayOrder: Long,
     @SerializedName("value")
     val frequency: Int = 1,

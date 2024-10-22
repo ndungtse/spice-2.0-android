@@ -20,7 +20,7 @@ data class InitialMedicalReview(
 )
 
 data class CurrentMedications(
-    val medications: List<String>? = null,
+    val medications: List<Chip>? = null,
     val drugAllergies: Boolean? = null,
     val adheringCurrentMed: Boolean? = null,
     val adheringMedComment: String? = null,
@@ -52,7 +52,9 @@ data class Answer(
 
 data class MedicalReviewResponse(
     val encounterReference: String? = null,
-    val patientReference: String? = null
+    val patientReference: String? = null,
+    val patientVisitId: String? = null,
+    val diagnosisType: List<String>? = null
 )
 
 data class MRSummaryResponse(
@@ -62,13 +64,22 @@ data class MRSummaryResponse(
     val isInitialPregnancyReview: Boolean? = null,
     val lastMenstrualPeriodDate: String? = null,
     val estimatedDeliveryDate: String? = null,
-    val physicalExams: List<String?>? = emptyList(),
-    val complaints: List<String?>? = emptyList(),
+    val physicalExams: List<String>? = emptyList(),
+    val complaints: List<String>? = emptyList(),
     val physicalExamComments: String? = null,
     val compliantComments: String? = null,
     val reviewedAt: String? = null,
     val clinicalNote: String? = null,
-    val comorbities: List<String?>? = emptyList(),
-    val complications: List<String?>? = emptyList()
+    val comorbidities: List<String?>? = emptyList(),
+    val complications: List<String?>? = emptyList(),
+    val prescriptions: List<String?>? = emptyList(),
+    val investigations: List<String>? = emptyList(),
+    val confirmDiagnosis: Diagnosis? = null
+)
+data class Diagnosis(
+    val provenanceDTO: ProvanceDto? = null,
+    val diagnosis: List<NCDDiagnosisItem>? = null,
+    val diagnosisNotes: String? = null,
+    val patientReference: String? = null
 )
 

@@ -836,7 +836,8 @@
     <string name="edit_details">Edit Details</string>
     <string name="view_details">View Details</string>
     <string name="pregnancy_risk_criteria">Pregnancy Risk Criteria</string>
-    <string name="enrolment_id">Enrolment ID</string>
+    <string name="enrollment_date">Enrollment Date</string>
+    <string name="pending_enrollment">Pending Enrollment</string>
     <string name="cvd_risk">CVD Risk</string>
     <string name="high_risk">High Risk</string>
     <string name="comorbidities">Comorbidities</string>

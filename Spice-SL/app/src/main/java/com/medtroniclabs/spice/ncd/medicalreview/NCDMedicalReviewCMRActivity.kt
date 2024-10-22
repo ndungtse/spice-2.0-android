@@ -15,6 +15,7 @@ import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.EncounterReference
 import com.medtroniclabs.spice.ncd.medicalreview.dialog.NCDTreatmentPlanDialog
+import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.home.AssessmentToolsActivity
 import com.medtroniclabs.spice.ui.medicalreview.investigation.InvestigationActivity
@@ -38,6 +39,44 @@ class NCDMedicalReviewCMRActivity : BaseActivity(), View.OnClickListener, AncVis
             homeAndBackVisibility = Pair(true, true),
         )
         initView()
+        attachObservers()
+    }
+
+    fun attachObservers() {
+        patientDetailViewModel.patientDetailsLiveData.observe(this) { resourceState ->
+            when (resourceState.state) {
+                ResourceState.LOADING -> {
+                    showLoading()
+                }
+
+                ResourceState.SUCCESS -> {
+                    hideLoading()
+                    if (binding.refreshLayout.isRefreshing) {
+                        binding.refreshLayout.isRefreshing = false
+                    }
+                }
+
+                ResourceState.ERROR -> {
+                    hideLoading()
+                    if (binding.refreshLayout.isRefreshing) {
+                        binding.refreshLayout.isRefreshing = false
+                    }
+                    showError()
+                }
+            }
+        }
+    }
+
+    private fun showError(isActivityClosed: Boolean = false) {
+        showErrorDialogue(
+            title = getString(R.string.alert),
+            message = getString(R.string.something_went_wrong_try_later),
+            positiveButtonName = getString(R.string.ok),
+        ) { isPositiveResult ->
+            if (isPositiveResult && isActivityClosed) {
+                onBackPressPopStack()
+            }
+        }
     }
 
     private fun initView() {
@@ -45,7 +84,26 @@ class NCDMedicalReviewCMRActivity : BaseActivity(), View.OnClickListener, AncVis
         binding.btnMedicalReview.safeClickListener(this)
         binding.btnLayout.ivTreatmentPlan.safeClickListener(this)
         binding.btnLayout.ivInvestigation.safeClickListener(this)
-        initializePatientDetails()
+        withNetworkAvailability(online = {
+            initializePatientDetails()
+        })
+        binding.refreshLayout.setOnRefreshListener {
+            withNetworkAvailability(online = {
+                swipeRefresh()
+            }, offline = {
+                if (binding.refreshLayout.isRefreshing) {
+                    binding.refreshLayout.isRefreshing = false
+                }
+            })
+        }
+    }
+
+    private fun swipeRefresh() {
+        patientDetailViewModel.patientDetailsLiveData.value?.data?.let { details ->
+            details.id?.let { id ->
+                patientDetailViewModel.getPatients(id, origin = patientDetailViewModel.origin)
+            }
+        }
     }
 
     private fun initializePatientDetails() {
@@ -82,6 +140,7 @@ class NCDMedicalReviewCMRActivity : BaseActivity(), View.OnClickListener, AncVis
                 intent.putExtra(EncounterReference, getEncounterReference())
                 startActivity(intent)
             }
+
             binding.btnLayout.ivTreatmentPlan.id -> {
                 val patientId = getPatientId()
                 val fhirId = getFhirId()
@@ -108,12 +167,11 @@ class NCDMedicalReviewCMRActivity : BaseActivity(), View.OnClickListener, AncVis
                     dialog.show(supportFragmentManager, NCDTreatmentPlanDialog.TAG)
                 }
             }
-            binding.btnLayout.ivInvestigation.id  -> {
+
+            binding.btnLayout.ivInvestigation.id -> {
                 patientDetailViewModel.patientDetailsLiveData.value?.data?.let { data ->
                     val intent = Intent(this, InvestigationActivity::class.java)
                     intent.putExtra(DefinedParams.PatientId, data.id)
-                    // TODO need to get investigation in summary(After confirm with backend)
-                    intent.putExtra(DefinedParams.EncounterId, patientDetailViewModel.encounterId)
                     intent.putExtra(EncounterReference, getEncounterReference())
                     intent.putExtra(DefinedParams.MemberID, data.id)
                     intent.putExtra(DefinedParams.ORIGIN, getMenuOrigin())
@@ -133,10 +191,7 @@ class NCDMedicalReviewCMRActivity : BaseActivity(), View.OnClickListener, AncVis
             ActivityResultContracts.StartActivityForResult()
         ) {
             if (it.resultCode == Activity.RESULT_OK) {
-                val value = it.data?.getStringExtra(DefinedParams.EncounterId)
-                value?.let { valueString ->
-                    patientDetailViewModel.encounterId = valueString
-                }
+                swipeRefresh()
             }
         }
 

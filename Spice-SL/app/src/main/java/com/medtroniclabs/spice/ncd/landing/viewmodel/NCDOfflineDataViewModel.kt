@@ -20,7 +20,7 @@ class NCDOfflineDataViewModel @Inject constructor(
 
     val assessmentType: LiveData<Long> =
         toGetCount.switchMap {
-            metaRepository.getUnSyncedDataCountForNCDScreening()
+            metaRepository.getUnSyncedNCDAssessmentCount()
         }
 
     fun getCountOfflineData() {

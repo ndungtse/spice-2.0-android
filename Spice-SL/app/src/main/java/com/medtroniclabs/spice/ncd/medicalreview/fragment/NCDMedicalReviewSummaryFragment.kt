@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.invisible
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
@@ -15,14 +16,19 @@ import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.ViewUtils
 import com.medtroniclabs.spice.databinding.FragmentNcdMedicalReviewSummaryBinding
 import com.medtroniclabs.spice.formgeneration.extension.capitalizeFirstChar
+import com.medtroniclabs.spice.formgeneration.extension.markMandatory
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.ncd.data.MRSummaryResponse
+import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil
+import com.medtroniclabs.spice.ncd.medicalreview.NCDMedicalReviewActivity
+import com.medtroniclabs.spice.ncd.medicalreview.dialog.NCDMRAlertDialog
 import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDMedicalReviewSummaryViewModel
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDMedicalReviewViewModel
 
-class NCDMedicalReviewSummaryFragment : BaseFragment(),View.OnClickListener {
+class NCDMedicalReviewSummaryFragment : BaseFragment(),View.OnClickListener,
+    NCDMRAlertDialog.DialogCallback {
 
     private lateinit var binding: FragmentNcdMedicalReviewSummaryBinding
     private val viewModel: NCDMedicalReviewSummaryViewModel by activityViewModels()
@@ -39,8 +45,13 @@ class NCDMedicalReviewSummaryFragment : BaseFragment(),View.OnClickListener {
 
     companion object {
         const val TAG = "NCDMedicalReviewSummaryFragment"
-        fun newInstance(): NCDMedicalReviewSummaryFragment {
-            return NCDMedicalReviewSummaryFragment()
+        fun newInstance(visitId: String?,menu:String?): NCDMedicalReviewSummaryFragment {
+            return NCDMedicalReviewSummaryFragment().apply {
+                arguments = Bundle().apply {
+                    putString(NCDMRUtil.EncounterReference, visitId)
+                    putString(NCDMRUtil.MENU_ID, menu)
+                }
+            }
         }
 
     }
@@ -49,6 +60,13 @@ class NCDMedicalReviewSummaryFragment : BaseFragment(),View.OnClickListener {
         super.onViewCreated(view, savedInstanceState)
         initView()
         attachObservers()
+    }
+    private fun getVisitId(): String? {
+        return arguments?.getString(NCDMRUtil.EncounterReference)
+    }
+
+    private fun getConfirmDiagnosisType(): List<String> {
+        return NCDMRUtil.getConfirmDiagnoses(arguments?.getString(NCDMRUtil.MENU_ID))
     }
 
     private fun attachObservers() {
@@ -93,10 +111,12 @@ class NCDMedicalReviewSummaryFragment : BaseFragment(),View.OnClickListener {
         )
         medicalReviewViewModel.createMedicalReview.value?.data?.let {
             withNetworkAvailability(online = {
-                viewModel.fetchSummaryResponse(it)
+                viewModel.fetchSummaryResponse(it.copy(patientVisitId = getVisitId(), diagnosisType = getConfirmDiagnosisType()))
             })
         }
+        binding.tvNextMedicalReviewLabel.markMandatory()
         binding.tvNextMedicalReviewLabelText.safeClickListener(this)
+        binding.btnConfirmDiagnosis.safeClickListener(this)
     }
 
     private fun populateData(data: MRSummaryResponse) {
@@ -115,6 +135,25 @@ class NCDMedicalReviewSummaryFragment : BaseFragment(),View.OnClickListener {
                 data.clinicalNote?.takeIf { it.isNotBlank() } ?: getString(R.string.hyphen_symbol)
             if (!viewModel.nextFollowupDate.isNullOrBlank()) {
                 binding.tvNextMedicalReviewLabelText.text = viewModel.nextFollowupDate
+            }
+            tvPrescrptionText.text = CommonUtils.combineText(
+                data.prescriptions,
+                "",
+                getString(R.string.hyphen_symbol)
+            )
+            tvInvestigationText.text = CommonUtils.formatListToString(
+                data.investigations,
+                getString(R.string.hyphen_symbol)
+            )
+            tvDiagnosisText.text = CommonUtils.combineText(
+                data.confirmDiagnosis?.diagnosis?.mapNotNull { it.name },
+                data.confirmDiagnosis?.diagnosisNotes.takeIf { it?.isNotBlank() == true },
+                getString(R.string.hyphen_symbol)
+            )
+            if(!data.confirmDiagnosis?.diagnosis.isNullOrEmpty()) {
+                binding.btnConfirmDiagnosis.gone()
+            } else {
+                binding.btnConfirmDiagnosis.visible()
             }
         }
     }
@@ -149,6 +188,11 @@ class NCDMedicalReviewSummaryFragment : BaseFragment(),View.OnClickListener {
             binding.tvNextMedicalReviewLabelText.id -> {
                 showDatePickerDialog()
             }
+            binding.btnConfirmDiagnosis.id -> {
+                withNetworkAvailability(online = {
+                    (requireActivity() as? NCDMedicalReviewActivity)?.showConfirmDiagnoses()
+                })
+            }
         }
     }
 
@@ -161,5 +205,44 @@ class NCDMedicalReviewSummaryFragment : BaseFragment(),View.OnClickListener {
         }
         binding.tvNextMedicalReviewError.invisible()
         return true
+    }
+
+    fun handleConfirmDiagnoses(): Boolean {
+        return if (viewModel.summaryResponse.value?.data?.confirmDiagnosis?.diagnosis.isNullOrEmpty()) {
+            showErrorDialog(
+                message = getString(R.string.no_confirm_diagnosis_warning), true,
+                Pair(false, false)
+            )
+            false
+        } else {
+            true
+        }
+    }
+
+    fun showErrorDialog(
+        message: String,
+        showConfirm: Boolean = false,
+        showYesNo: Pair<Boolean, Boolean> = Pair(true, true)
+    ) {
+        val existingDialog = childFragmentManager.findFragmentByTag(NCDMRAlertDialog.TAG)
+        if (existingDialog == null) {
+            NCDMRAlertDialog.newInstance(
+                getString(R.string.alert),
+                message = message,
+                showYesNoClose = Triple(showYesNo.first, showYesNo.second, true),
+                showConfirm = showConfirm,
+                callback = this
+            ).show(childFragmentManager, NCDMRAlertDialog.TAG)
+        }
+    }
+
+    override fun onYesClicked() {
+        // not used
+    }
+
+    override fun onConfirmDiagnosisClicked() {
+        withNetworkAvailability(online = {
+            (requireActivity() as? NCDMedicalReviewActivity)?.showConfirmDiagnoses()
+        })
     }
 }

@@ -2,9 +2,11 @@ package com.medtroniclabs.spice.ui.mypatients.fragment
 
 import android.content.res.Configuration
 import android.os.Bundle
+import android.text.SpannableStringBuilder
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.text.color
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import com.medtroniclabs.spice.R
@@ -12,7 +14,9 @@ import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.CommonUtils.combineText
 import com.medtroniclabs.spice.common.CommonUtils.getContactNumber
 import com.medtroniclabs.spice.common.DateUtils
+import com.medtroniclabs.spice.common.DateUtils.DATE_FORMAT_ddMMMyyyy
 import com.medtroniclabs.spice.common.DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
+import com.medtroniclabs.spice.common.DateUtils.DATE_TIME_yyyyMMddTHHmmssSSSXXX
 import com.medtroniclabs.spice.common.DateUtils.DATE_ddMMyyyy
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.IsReferredScreen
@@ -267,9 +271,14 @@ class PatientInfoFragment : BaseFragment() {
 
         val dataList = mutableListOf(
             mapOf(
-                DefinedParams.label to requireContext().getString(R.string.enrolment_id),
-                DefinedParams.value to (data.enrolmentId
-                    ?: requireContext().getString(R.string.hyphen_symbol)).toString().trim()
+                DefinedParams.label to requireContext().getString(R.string.enrollment_date),
+                DefinedParams.value to (data.enrollmentAt?.let {
+                    DateUtils.convertDateFormat(
+                        it,
+                        DATE_TIME_yyyyMMddTHHmmssSSSXXX,
+                        DATE_FORMAT_ddMMMyyyy
+                    ).takeIf { it.isNotBlank() } ?: requireContext().getString(R.string.hyphen_symbol)
+                } ?: requireContext().getString(R.string.pending_enrollment)).toString().trim()
             ),
             mapOf(
                 DefinedParams.label to requireContext().getString(R.string.cvd_risk),
@@ -278,14 +287,15 @@ class PatientInfoFragment : BaseFragment() {
                 DefinedParams.color to cvdRiskLevel?.second
             ),
             mapOf(
-                DefinedParams.label to requireContext().getString(R.string.program_id),
-                DefinedParams.value to (data.programId
+                DefinedParams.label to requireContext().getString(R.string.patient_id),
+                DefinedParams.value to (data.patientId
                     ?: requireContext().getString(R.string.hyphen_symbol)).toString().trim()
             ),
             mapOf(
                 DefinedParams.label to requireContext().getString(R.string.bmi),
-                DefinedParams.value to (data.bmi
-                    ?: requireContext().getString(R.string.hyphen_symbol)).toString().trim()
+                DefinedParams.value to (CommonUtils.getBMIFormattedText(requireContext(), data.bmi).first
+                    ?: requireContext().getString(R.string.hyphen_symbol)).toString().trim(),
+                DefinedParams.color to CommonUtils.getBMIFormattedText(requireContext(), data.bmi).second
             ),
             mapOf(
                 DefinedParams.label to requireContext().getString(R.string.national_id),
@@ -311,7 +321,7 @@ class PatientInfoFragment : BaseFragment() {
         return StringConverter.appendTexts(
             firstText = text,
             response.age.toString(),
-            response.gender,
+            response.gender?.capitalizeFirstChar(),
             separator = getString(R.string.hyphen_symbol)
         ).capitalizeFirstChar()
     }

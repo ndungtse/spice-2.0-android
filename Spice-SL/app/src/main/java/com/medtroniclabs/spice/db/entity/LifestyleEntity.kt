@@ -23,7 +23,7 @@ data class LifeStyleAnswer(
     val value: String? = null
 )
 
-data class  LifeStyleUIModel(
+data class LifeStyleUIModel(
     val _id: Long,
     @SerializedName("display_order")
     val displayOrder: Int,
@@ -33,7 +33,7 @@ data class  LifeStyleUIModel(
     @SerializedName("lifestyle_type")
     val lifestyleType: String,
     @SerializedName("culture_question_value")
-    val cultureQuestionValue:String ? = null,
+    val cultureQuestionValue: String? = null,
     val value: String? = null
 )
 

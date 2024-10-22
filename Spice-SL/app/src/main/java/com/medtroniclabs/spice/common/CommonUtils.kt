@@ -3,6 +3,8 @@ package com.medtroniclabs.spice.common
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.res.AssetManager
+import android.text.SpannableStringBuilder
+import androidx.core.text.color
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.nullIfEmpty
 import com.medtroniclabs.spice.common.DateUtils.calculateAge
@@ -1474,5 +1476,42 @@ object CommonUtils {
         )
             return AssessmentDefinedParams.HTN_Diagnosis
         return null
+    }
+
+    fun formatListToString(list: List<String?>?, default: String): String {
+        return if (list.isNullOrEmpty()) {
+            default
+        } else {
+            list.filter { !it.isNullOrBlank() }
+                .mapIndexed { index, item -> "${index + 1}. $item" }
+                .joinToString("\n")
+        }
+    }
+
+    fun getDialogValue(value: Any?, otherSymptoms: String? = null): String {
+        val result = (value as? List<*>)?.mapNotNull { getListActual(it) }?.joinToString(", ") ?: ""
+        return if (result.isNotEmpty()) {
+            result + otherSymptoms?.let { " - $it" }.orEmpty()
+        } else ""
+    }
+
+    private fun getListActual(map: Any?): String? {
+        return (map as? Map<*, *>)?.get(DefinedParams.NAME) as? String
+    }
+
+    fun getBMIFormattedText(context: Context, bmi: Double?): Pair<CharSequence?, Int?> {
+        if (bmi == null) return Pair(null,null)
+        val bioCategoryInfo = getBMIInformation(context, bmi)
+        val bmiInfo = getDecimalFormatted(bmi)
+
+        return if (bioCategoryInfo == null) {
+            Pair(bmiInfo, null)
+        } else {
+            Pair(
+                SpannableStringBuilder()
+                    .append(bmiInfo).append(" (${bioCategoryInfo.first})"),
+                context.getColor(bioCategoryInfo.second)
+            )
+        }
     }
 }

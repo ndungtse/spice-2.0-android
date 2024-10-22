@@ -3,10 +3,10 @@ package com.medtroniclabs.spice.ncd.data
 import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 
 data class NCDPatientStatusRequest(
-    val relatedPersonId: String? = null,
+    val memberReference: String? = null,
     val provenance: ProvanceDto? = null,
     val ncdPatientStatus: NcdPatientStatus? = null,
-    val patientId: String? = null,
+    val patientReference: String? = null,
 )
 
 data class NcdPatientStatus(

@@ -196,10 +196,10 @@ class NCDLifestyleAssessmentFragment : BaseFragment() {
                 LifeStyleUIModel(
                     model.id,
                     model.displayOrder,
-                    model.name,
+                    model.displayValue ?: "",
                     getAnswerLifeStyle(model.answers),
                     model.type,
-                    model.displayValue,
+                    null,
                     model.value
                 )
             )

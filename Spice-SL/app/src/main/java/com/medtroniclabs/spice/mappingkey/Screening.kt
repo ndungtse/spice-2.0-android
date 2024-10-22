@@ -135,6 +135,7 @@ object Screening {
     const val MHAnswer = "answer"
     const val MHQuestion = "question"
     const val diabetes = "diabetes"
+    const val diabetesOtherSymptoms = "diabetesOtherSymptoms"
     const val national_id = "national-id"
     const val passport = "passport"
     const val birthCertificate = "birth-certificate"

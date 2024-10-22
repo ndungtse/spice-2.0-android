@@ -16,7 +16,7 @@ import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.appextensions.triggerOneTimeWorker
 import com.medtroniclabs.spice.common.CommonUtils
-import com.medtroniclabs.spice.common.CommonUtils.convertListToString
+import com.medtroniclabs.spice.common.CommonUtils.getDialogValue
 import com.medtroniclabs.spice.common.CommonUtils.getGlucoseUnit
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
@@ -181,6 +181,7 @@ class ScreeningSummaryFragment : BaseFragment(), View.OnClickListener {
         showMentalHealthRelatedMetrics(map)
         showCVDRiskValue(map)
         showPregnancyOrNot(serverData, map)
+        showPregnancySymptomsSignsChanges(serverData, map)
     }
 
     private fun showDiabetesSymptoms(serverData: List<FormLayout>, map: Map<String, Any>) {
@@ -191,7 +192,35 @@ class ScreeningSummaryFragment : BaseFragment(), View.OnClickListener {
         if (diabetesData.isEmpty()) return
 
         val formLayout = serverData.firstOrNull { it.id.equals(Screening.diabetes, true) } ?: return
-        showBindingValue(formLayout.title, convertListToString(ArrayList(diabetesData)))
+        showBindingValue(
+            formLayout.title,
+            getDialogValue(
+                subMap[Screening.diabetes],
+                subMap[Screening.diabetesOtherSymptoms] as? String?
+            )
+        )
+    }
+
+    private fun showPregnancySymptomsSignsChanges(
+        serverData: List<FormLayout>,
+        map: Map<String, Any>
+    ) {
+        FormResultComposer.findGroupIdForNCD(serverData, Screening.PregnancySymptoms)?.let {
+            if (map[it] is Map<*, *>) {
+                val subMap = map[it] as? Map<*, *>
+                subMap?.let {
+                    if (subMap.containsKey(Screening.PregnancySymptoms)) {
+                        showBindingValue(
+                            getString(R.string.pregnancy_signs),
+                            getDialogValue(
+                                subMap[Screening.PregnancySymptoms],
+                                subMap[Screening.PregnancyOtherSymptoms] as? String?
+                            )
+                        )
+                    }
+                }
+            }
+        }
     }
 
     private fun showPregnancyOrNot(serverData: List<FormLayout>, map: Map<String, Any>) {

@@ -12,6 +12,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
+import com.medtroniclabs.spice.appextensions.setVisible
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.databinding.FragmentNcdOfflineDataDialogBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
@@ -73,17 +74,11 @@ class NCDOfflineDataDialog : DialogFragment(), View.OnClickListener {
     private fun handleScreening() {
         val screening = viewModel.screeningCount.value ?: 0
         val assessment = viewModel.assessmentType.value ?: 0
-        if (screening > 0 || assessment > 0) {
-            binding.btnUpload.visible()
-            binding.screeningTitle.gone()
-            binding.btnOkay.gone()
-            binding.assessmentGroup.gone()
-        } else {
-            binding.screeningTitle.gone()
-            binding.btnUpload.gone()
-            binding.btnOkay.visible()
-            binding.assessmentGroup.gone()
-            binding.tvMessage.text = getString(R.string.no_patients_found)
+        binding.apply {
+            btnUpload.setVisible(screening > 0 || assessment > 0)
+            btnOkay.setVisible(screening <= 0 && assessment <= 0)
+            screeningTitle.visible()
+            assessmentGroup.visible()
         }
         offlineDataHandling(screening, assessment)
     }
@@ -118,7 +113,6 @@ class NCDOfflineDataDialog : DialogFragment(), View.OnClickListener {
         binding.btnUpload.gone()
         binding.btnOkay.visible()
         binding.assessmentGroup.gone()
-        binding.tvMessage.text = getString(R.string.no_patients_found)
         binding.labelHeader.ivClose.safeClickListener(this)
         binding.btnCancel.safeClickListener(this)
         binding.btnOkay.safeClickListener(this)
