@@ -238,10 +238,10 @@ class NeonateFragment : BaseFragment() {
 
         binding.etBirthWeight.filters = arrayOf(DecimalInputFilter())
         binding.etBirthWeight.doAfterTextChanged {
-            val birthWeight = it?.trim().toString()
-            if (birthWeight.isNotEmpty()) {
-                viewModel.neonateBirthWeight = birthWeight
-                binding.tvBirthWeightCal.text= CommonUtils.birthWeight(birthWeight.toDouble(),requireContext())
+            val birthWeight = it?.trim().toString().toDoubleOrNull()
+            if (birthWeight != null) {
+                viewModel.neonateBirthWeight = birthWeight.toString()
+                binding.tvBirthWeightCal.text= CommonUtils.birthWeight(birthWeight,requireContext())
                 viewModel.validateSubmitButtonState()
             } else {
                 viewModel.neonateBirthWeight = null
