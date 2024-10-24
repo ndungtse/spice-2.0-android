@@ -35,18 +35,45 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
+                <LinearLayout
+                    android:id="@+id/graphHolder"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:weightSum="1"
+                    android:visibility="gone"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/patientDetailFragment">
+
+                    <androidx.fragment.app.FragmentContainerView
+                        android:id="@+id/patientBPHistory"
+                        android:layout_width="@dimen/_0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.5"
+                        android:visibility="gone" />
+
+                    <androidx.fragment.app.FragmentContainerView
+                        android:id="@+id/patientBGHistory"
+                        android:layout_width="@dimen/_0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.5"
+                        android:visibility="gone" />
+
+                </LinearLayout>
+
                 <androidx.fragment.app.FragmentContainerView
-                    android:id="@+id/medicalDiagnosisContainer"
+                    android:id="@+id/medicalReviewHistory"
                     android:layout_width="@dimen/_0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="@dimen/_32sdp"
                     android:layout_marginTop="@dimen/_8sdp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/patientDetailFragment" />
+                    app:layout_constraintTop_toBottomOf="@+id/graphHolder" />
 
                 <androidx.fragment.app.FragmentContainerView
-                    android:id="@+id/comorbiditiesContainer"
+                    android:id="@+id/investigationHistory"
                     android:layout_width="@dimen/_0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="@dimen/_32sdp"
@@ -54,10 +81,10 @@
                     android:visibility="gone"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/medicalDiagnosisContainer" />
+                    app:layout_constraintTop_toBottomOf="@+id/medicalReviewHistory" />
 
                 <androidx.fragment.app.FragmentContainerView
-                    android:id="@+id/complicationsContainer"
+                    android:id="@+id/lifestyleStatusHistory"
                     android:layout_width="@dimen/_0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="@dimen/_32sdp"
@@ -65,7 +92,7 @@
                     android:visibility="gone"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/comorbiditiesContainer" />
+                    app:layout_constraintTop_toBottomOf="@+id/investigationHistory" />
 
                 <androidx.fragment.app.FragmentContainerView
                     android:id="@+id/lifestyleAssessmentContainer"
@@ -76,7 +103,7 @@
                     android:visibility="gone"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/complicationsContainer" />
+                    app:layout_constraintTop_toBottomOf="@+id/lifestyleStatusHistory" />
 
                 <androidx.fragment.app.FragmentContainerView
                     android:id="@+id/chiefComplaintsContainer"
@@ -107,6 +134,7 @@
                     android:layout_marginHorizontal="@dimen/_32sdp"
                     android:layout_marginTop="@dimen/_8sdp"
                     android:visibility="gone"
+                    android:layout_marginBottom="@dimen/_150sdp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"

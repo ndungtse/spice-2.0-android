@@ -21,6 +21,7 @@ import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.EncounterReference
 import com.medtroniclabs.spice.ncd.medicalreview.dialog.NCDTreatmentPlanDialog
+import com.medtroniclabs.spice.ncd.medicalreview.fragment.NCDMedicalReviewHistoryFragment
 import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDMedicalReviewViewModel
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
@@ -308,6 +309,11 @@ class NCDMedicalReviewCMRActivity : BaseActivity(), View.OnClickListener, AncVis
     }
 
     override fun onDataLoaded(details: PatientListRespModel) {
-        // after patient details loaded
+        val medicalReview = NCDMedicalReviewHistoryFragment.newInstance(details.patientId)
+        replaceFragment(
+            R.id.medicalReviewHistory,
+            NCDMedicalReviewHistoryFragment.TAG,
+            medicalReview
+        )
     }
 }

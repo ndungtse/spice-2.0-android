@@ -11,6 +11,21 @@ data class MedicalReviewHistory(
     val type: String? = null
 )
 
+data class NCDMedicalReviewHistory(
+    val patientVisitId: String? = null,
+    val history: List<ReferredDate>? = null,
+    val medicalReview: MedicalReview? = null,
+    val dateOfReview: String? = null
+)
+
+data class MedicalReview(
+    val physicalExams: List<String>? = null,
+    val complaints: List<String>? = null,
+    val notes: List<String>? = null,
+    val prescriptions: List<String>? = null,
+    val investigations: List<String>? = null
+)
+
 data class ReviewDetails(
     val id: String? = null,
     val visitNumber: Int? = null,

@@ -1,8 +1,10 @@
 package com.medtroniclabs.spice.ncd.medicalreview.repo
 
 import com.medtroniclabs.spice.common.SecuredPreference
+import com.medtroniclabs.spice.data.history.NCDMedicalReviewHistory
 import com.medtroniclabs.spice.db.entity.NCDMedicalReviewMetaEntity
 import com.medtroniclabs.spice.db.local.RoomHelper
+import com.medtroniclabs.spice.model.ReferralDetailRequest
 import com.medtroniclabs.spice.ncd.data.MRSummaryResponse
 import com.medtroniclabs.spice.ncd.data.MedicalReviewRequestResponse
 import com.medtroniclabs.spice.ncd.data.MedicalReviewResponse
@@ -196,6 +198,21 @@ class NCDMedicalReviewRepository @Inject constructor(
             }
         } catch (e: Exception) {
             e.printStackTrace()
+            Resource(state = ResourceState.ERROR)
+        }
+    }
+
+    suspend fun getNCDMedicalReviewHistory(
+        request: ReferralDetailRequest
+    ): Resource<NCDMedicalReviewHistory> {
+        return try {
+            val response = apiHelper.getNCDMedicalReviewHistory(request)
+            if (response.isSuccessful) {
+                Resource(state = ResourceState.SUCCESS, data = response.body()?.entity)
+            } else {
+                Resource(state = ResourceState.ERROR)
+            }
+        } catch (e: Exception) {
             Resource(state = ResourceState.ERROR)
         }
     }

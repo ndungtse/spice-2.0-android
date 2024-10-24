@@ -287,8 +287,8 @@ class PatientInfoFragment : BaseFragment() {
                 DefinedParams.color to cvdRiskLevel?.second
             ),
             mapOf(
-                DefinedParams.label to requireContext().getString(R.string.patient_id),
-                DefinedParams.value to (data.patientId
+                DefinedParams.label to requireContext().getString(R.string.program_id),
+                DefinedParams.value to (data.programId
                     ?: requireContext().getString(R.string.hyphen_symbol)).toString().trim()
             ),
             mapOf(
