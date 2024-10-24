@@ -2388,9 +2388,11 @@ class FormGenerator(
         if (!dateOfBirth.isNullOrEmpty()) {
             val ageAndWeek = DateUtils.getV2YearMonthAndWeek(dateOfBirth, DATE_ddMMyyyy)
             val ageYears = ageAndWeek.years
+            val ageMonths = ageAndWeek.months
             val ageWeeks = ageAndWeek.weeks
+            val ageDays = ageAndWeek.days
 
-            if ((ageYears !in PREGNANCY_MIN_AGE..PREGNANCY_MAX_AGE) || (ageYears == PREGNANCY_MAX_AGE && ageWeeks != 0)) {
+            if ((ageYears !in PREGNANCY_MIN_AGE..PREGNANCY_MAX_AGE) || (ageYears == PREGNANCY_MAX_AGE && (ageMonths + ageWeeks + ageDays) != 0)) {
                 handleAgeBelowThreshold()
             } else {
                 handleAgeAboveThreshold()

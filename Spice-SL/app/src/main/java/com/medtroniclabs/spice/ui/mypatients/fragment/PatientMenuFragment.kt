@@ -99,9 +99,15 @@ class PatientMenuFragment : BaseFragment(), MenuSelectionListener {
             if (menuItem.name == MenuConstants.MOTHER_AND_NEONATE_ID) {
                 menuItem.isDisabled = when {
                     gender.equals(male, true) -> true
-                    gender.equals(female, true) && !dob.isNullOrBlank() && DateUtils.calculateAge(
-                        dob
-                    ) !in (PREGNANCY_MIN_AGE..PREGNANCY_MAX_AGE) -> true
+                    gender.equals(female, true) && !dob.isNullOrBlank() -> {
+                        val ageAndWeek = DateUtils.getV2YearMonthAndWeek(dob)
+                        val ageYears = ageAndWeek.years
+                        val ageMonths = ageAndWeek.months
+                        val ageWeeks = ageAndWeek.weeks
+                        val ageDays = ageAndWeek.days
+
+                        (ageYears !in PREGNANCY_MIN_AGE..PREGNANCY_MAX_AGE) || (ageYears == PREGNANCY_MAX_AGE && (ageMonths + ageWeeks + ageDays) != 0)
+                    }
 
                     (gender.equals(female, true) || gender.equals(
                         male,

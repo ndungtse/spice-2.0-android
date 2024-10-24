@@ -313,12 +313,22 @@ class MetaRepository @Inject constructor(
         return try {
             if (selectedHouseholdMemberID != -1L) {
                 val memberData = roomHelper.getDobAndGenderById(selectedHouseholdMemberID)
-                val (months, weeks) = DateUtils.dateToMonthsAndWeeks(memberData.dateOfBirth) ?: Pair(0, 0)
+                val calenderPeriod = DateUtils.getV2YearMonthAndWeek(memberData.dateOfBirth)
+                var months = (calenderPeriod.years * 12) + calenderPeriod.months
+
+                if ((months == 15 || months == 588) && calenderPeriod.weeks == 0 && calenderPeriod.days == 0) {
+                    months -= 1
+                }
+
+                val list = roomHelper.getClinicalWorkflowId(memberData.gender, months)
+
+
+                /*val (months, weeks) = DateUtils.dateToMonthsAndWeeks(memberData.dateOfBirth) ?: Pair(0, 0)
                 val list = if (months == 15 && weeks == 0) {
                     roomHelper.getClinicalWorkflowId(memberData.gender, months.minus(1))
                 } else {
                     roomHelper.getClinicalWorkflowId(memberData.gender, months)
-                }
+                }*/
 
                 Resource(
                     state = ResourceState.SUCCESS,
