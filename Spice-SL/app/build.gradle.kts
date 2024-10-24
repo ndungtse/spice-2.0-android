@@ -20,7 +20,7 @@ android {
         minSdk = 23
         targetSdk = 34
         versionCode = 6
-        versionName = "2.0"
+        versionName = "2.0.1"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -29,7 +29,7 @@ android {
         create("sl") {
             dimension = "version"
             applicationIdSuffix = ".sl"
-            commonPrefix = "SPICE 2.0"
+            commonPrefix = "SPICE 2.0.1"
         }
     }
 
