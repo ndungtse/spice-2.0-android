@@ -34,6 +34,12 @@
             android:screenOrientation="landscape"
             android:windowSoftInputMode="adjustPan" />
         <activity
+            android:name=".ui.patientEdit.NCDPatientEditActivity"
+            android:exported="false"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:screenOrientation="landscape"
+            android:windowSoftInputMode="adjustPan"/>
+        <activity
             android:name=".ncd.dashboard.DashboardActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:exported="false"

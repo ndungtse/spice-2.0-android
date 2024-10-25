@@ -1042,4 +1042,7 @@
     <string name="patient_delete_confirmation">Are you sure you want to Archive %1$s %2$s?</string>
     <string name="valid_reason">Reason is required</string>
     <string name="patient_delete_message">Patient deleted successfully</string>
+    <string name="patient_details">Patient Details</string>
+    <string name="patient_detail_updated_successfully">Patient details updated successfully</string>
+
 </resources>

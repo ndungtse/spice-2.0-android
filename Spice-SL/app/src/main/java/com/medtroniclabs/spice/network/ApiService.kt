@@ -453,4 +453,6 @@ interface ApiService {
     @POST("/spice-service/assessment/glucose-log-create")
     suspend fun glucoseLogCreateForNurse(@Body request: HashMap<String, Any>): Response<APIResponse<HashMap<String, Any>>>
 
+    @POST("/spice-service/patient/update")
+    suspend fun ncdUpdatePatientDetail(@Body request: HashMap<String, Any>): Response<APIResponse<HashMap<String, Any>>>
 }

@@ -91,6 +91,7 @@ import com.medtroniclabs.spice.formgeneration.config.ViewType.VIEW_TYPE_DIALOG_C
 import com.medtroniclabs.spice.formgeneration.config.ViewType.VIEW_TYPE_FORM_AGE
 import com.medtroniclabs.spice.formgeneration.config.ViewType.VIEW_TYPE_FORM_BP
 import com.medtroniclabs.spice.formgeneration.config.ViewType.VIEW_TYPE_FORM_CARD_FAMILY
+import com.medtroniclabs.spice.formgeneration.config.ViewType.VIEW_TYPE_FORM_CHEKBOX
 import com.medtroniclabs.spice.formgeneration.config.ViewType.VIEW_TYPE_FORM_DATEPICKER
 import com.medtroniclabs.spice.formgeneration.config.ViewType.VIEW_TYPE_FORM_EDITTEXT
 import com.medtroniclabs.spice.formgeneration.config.ViewType.VIEW_TYPE_FORM_RADIOGROUP
@@ -99,6 +100,7 @@ import com.medtroniclabs.spice.formgeneration.config.ViewType.VIEW_TYPE_FORM_TEX
 import com.medtroniclabs.spice.formgeneration.config.ViewType.VIEW_TYPE_INSTRUCTION
 import com.medtroniclabs.spice.formgeneration.config.ViewType.VIEW_TYPE_METAL_HEALTH
 import com.medtroniclabs.spice.formgeneration.config.ViewType.VIEW_TYPE_NO_OF_DAYS
+import com.medtroniclabs.spice.formgeneration.config.ViewType.VIEW_TYPE_SCALE_INDICATOR
 import com.medtroniclabs.spice.formgeneration.config.ViewType.VIEW_TYPE_SINGLE_SELECTION
 import com.medtroniclabs.spice.formgeneration.config.ViewType.VIEW_TYPE_TIME
 import com.medtroniclabs.spice.formgeneration.extension.DecimalDigitsInputFilter
@@ -162,6 +164,7 @@ class FormGenerator(
     val lastMealTypeDateSuffix  = "Date"
     private var mentalHealthQuestions: HashMap<String, ArrayList<MentalHealthOption>>? = null
     private var mentalHealthEditList: ArrayList<Map<String, Any>>? = null
+    private var EDITSCREEN: Boolean? = null
 
     fun populateViews(
         serverData: List<FormLayout>,
@@ -3281,6 +3284,49 @@ class FormGenerator(
                 if (showView) {
                     it.visible()
                 } else parentLayout.removeView(it)
+            }
+        }
+    }
+
+    fun populateEditableViews(
+        serverData: List<FormLayout>, mentalHealthEditList: java.util.ArrayList<Map<String, Any>>? = null
+    ) {
+        this.serverData =
+            serverData.filter { it.viewType != VIEW_TYPE_FORM_CARD_FAMILY && it.isEditable }
+        this.mentalHealthEditList = mentalHealthEditList?.let {
+            java.util.ArrayList(mentalHealthEditList)
+        }
+        EDITSCREEN = true
+        parentLayout.removeAllViews()
+        addEditableCards(serverData)
+        this.serverData?.forEach { serverViewModel ->
+            when (serverViewModel.viewType) {
+                VIEW_TYPE_FORM_CARD_FAMILY -> createCardViewFamily(serverViewModel)
+                VIEW_TYPE_FORM_EDITTEXT -> createEditText(serverViewModel)
+                VIEW_TYPE_FORM_RADIOGROUP -> createRadioGroup(serverViewModel)
+                VIEW_TYPE_SINGLE_SELECTION -> createSingleSelectionView(serverViewModel)
+                VIEW_TYPE_FORM_SPINNER -> createCustomSpinner(serverViewModel)
+                VIEW_TYPE_DIALOG_CHECKBOX -> createCheckboxDialogView(serverViewModel)
+                VIEW_INFORMATION_LABEL -> createInformationLabel(serverViewModel)
+                VIEW_TYPE_INSTRUCTION -> createInstructionView(serverViewModel)
+                VIEW_TYPE_FORM_TEXTLABEL -> createTextLabel(serverViewModel)
+                VIEW_TYPE_METAL_HEALTH -> createMentalHealthView(serverViewModel)
+                VIEW_TYPE_FORM_AGE -> createAgeView(serverViewModel)
+                VIEW_TYPE_NO_OF_DAYS -> createNoOfDaysView(serverViewModel)
+                VIEW_TYPE_FORM_DATEPICKER -> createDatePicker(serverViewModel)
+                VIEW_TYPE_FORM_BP -> createBPView(serverViewModel)
+                VIEW_TYPE_TIME -> createTimeView(serverViewModel)
+            }
+        }
+    }
+
+    private fun addEditableCards(serverData: List<FormLayout>) {
+        serverData.forEach { data ->
+            if (data.isEditable) {
+                val list = serverData.find { it.id == data.family }
+                if (list != null) {
+                    createCardViewFamily(list)
+                }
             }
         }
     }

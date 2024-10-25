@@ -33,7 +33,6 @@ import com.medtroniclabs.spice.ncd.data.CurrentMedications
 import com.medtroniclabs.spice.ncd.data.InitialMedicalReview
 import com.medtroniclabs.spice.ncd.data.MedicalReviewRequestResponse
 import com.medtroniclabs.spice.ncd.data.NCDMRSummaryRequestResponse
-import com.medtroniclabs.spice.ncd.data.NCDPatientRemoveRequest
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.EncounterReference
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.MATERNAL_HEALTH
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.MENTAL_HEALTH
@@ -77,11 +76,13 @@ import com.medtroniclabs.spice.ui.medicalreview.investigation.InvestigationActiv
 import com.medtroniclabs.spice.ncd.counseling.activity.NCDCounselingActivity
 import com.medtroniclabs.spice.ncd.counseling.activity.NCDLifestyleActivity
 import com.medtroniclabs.spice.ncd.data.BadgeNotificationModel
+import com.medtroniclabs.spice.ncd.data.NCDPatientRemoveRequest
 import com.medtroniclabs.spice.ncd.medicalreview.prescription.activity.NCDPrescriptionActivity
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 import com.medtroniclabs.spice.ncd.registration.ui.RegistrationActivity
 import com.medtroniclabs.spice.ui.patientDelete.NCDDeleteConfirmationDialog
 import com.medtroniclabs.spice.ui.patientDelete.viewModel.NCDPatientDeleteViewModel
+import com.medtroniclabs.spice.ui.patientEdit.NCDPatientEditActivity
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -151,6 +152,18 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
         when (itemId) {
             R.id.patient_delete -> {
                 patientDeleteCreate()
+            }
+
+            R.id.patient_edit -> {
+                val intent =
+                    Intent(this@NCDMedicalReviewActivity, NCDPatientEditActivity::class.java)
+                intent.putExtra(NCDMRUtil.PATIENT_REFERENCE, patientDetailViewModel.getPatientId())
+                intent.putExtra(
+                    NCDMRUtil.MEMBER_REFERENCE,
+                    patientDetailViewModel.getPatientFHIRId()
+                )
+                intent.putExtra(DefinedParams.ORIGIN, patientDetailViewModel.origin)
+                startActivity(intent)
             }
         }
     }
@@ -393,6 +406,7 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
     }
 
     private fun loadSummary() {
+        showHideVerticalIcon(false)
         binding.apply {
             comorbiditiesContainer.gone()
             medicalDiagnosisContainer.gone()

@@ -554,4 +554,8 @@ class ApiHelperImpl @Inject constructor(private val apiService: ApiService) : Ap
     override suspend fun glucoseLogCreateForNurse(request: HashMap<String, Any>): Response<APIResponse<HashMap<String, Any>>> {
         return apiService.glucoseLogCreateForNurse(request)
     }
+
+    override suspend fun ncdUpdatePatientDetail(request: HashMap<String, Any>): Response<APIResponse<HashMap<String, Any>>> {
+        return  apiService.ncdUpdatePatientDetail(request)
+    }
 }
