@@ -20,6 +20,8 @@ import com.medtroniclabs.spice.data.MenuDetail
 import com.medtroniclabs.spice.data.ModelQuestion
 import com.medtroniclabs.spice.data.ProgramEntity
 import com.medtroniclabs.spice.data.UserProfile
+import com.medtroniclabs.spice.ncd.data.NCDPatientTransferNotificationCountRequest
+import com.medtroniclabs.spice.ncd.data.NCDPatientTransferNotificationCountResponse
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowConditionEntity
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowEntity
 import com.medtroniclabs.spice.db.entity.ConsentEntity
@@ -42,6 +44,8 @@ import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.MenuConstants
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
+import com.medtroniclabs.spice.ncd.data.PatientTransferListResponse
+import com.medtroniclabs.spice.ncd.data.NCDPatientTransferUpdateRequest
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
@@ -702,6 +706,33 @@ class MetaRepository @Inject constructor(
 
     fun getUnSyncedNCDAssessmentCount() =
         roomHelper.getUnSyncedNCDAssessmentCount()
+
+    suspend fun getPatientListTransfer(request: NCDPatientTransferNotificationCountRequest): Resource<PatientTransferListResponse> {
+        return try {
+            val response = apiHelper.getPatientListTransfer(request)
+            Resource(state = ResourceState.SUCCESS, data = response.body()?.entity)
+        } catch (e: Exception) {
+            Resource(state = ResourceState.ERROR)
+        }
+    }
+
+    suspend fun patientTransferNotificationCount(request: NCDPatientTransferNotificationCountRequest): Resource<NCDPatientTransferNotificationCountResponse> {
+        return try {
+            val response = apiHelper.patientTransferNotificationCount(request)
+            Resource(state = ResourceState.SUCCESS, data = response.body()?.entity)
+        } catch (e: Exception) {
+            Resource(state = ResourceState.ERROR)
+        }
+    }
+
+    suspend fun patientTransferUpdate(request: NCDPatientTransferUpdateRequest): Resource<String> {
+        return try {
+            val response = apiHelper.patientTransferUpdate(request)
+            Resource(state = ResourceState.SUCCESS, data = response.body()?.message)
+        } catch (e: Exception) {
+            Resource(state = ResourceState.ERROR)
+        }
+    }
 
 
 }

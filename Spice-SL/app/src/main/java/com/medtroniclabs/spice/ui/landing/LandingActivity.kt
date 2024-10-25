@@ -15,6 +15,8 @@ import androidx.core.view.GravityCompat
 import androidx.core.view.forEach
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.work.Constraints
 import androidx.work.Data
 import androidx.work.NetworkType
@@ -34,6 +36,7 @@ import com.medtroniclabs.spice.app.analytics.utils.CommonUtils.updateUserIdIfEmp
 import com.medtroniclabs.spice.appextensions.cancelAllWorker
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.isVisible
+import com.medtroniclabs.spice.appextensions.setError
 import com.medtroniclabs.spice.appextensions.startBackgroundOfflineSync
 import com.medtroniclabs.spice.appextensions.triggerOneTimeWorker
 import com.medtroniclabs.spice.appextensions.visible
@@ -43,26 +46,40 @@ import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.REFRESH_FRAGMENT
 import com.medtroniclabs.spice.common.RoleConstant
 import com.medtroniclabs.spice.common.SecuredPreference
+import com.medtroniclabs.spice.ncd.data.NCDPatientTransferNotificationCountRequest
 import com.medtroniclabs.spice.databinding.ActivityLandingBinding
+import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.ncd.landing.dialog.NCDOfflineDataDialog
 import com.medtroniclabs.spice.ncd.landing.ui.UserTermsConditionsActivity
 import com.medtroniclabs.spice.network.NetworkConstants
+import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.ChooseSiteDialogueFragment
 import com.medtroniclabs.spice.ui.PrivacyPolicyFragment
 import com.medtroniclabs.spice.ui.boarding.LoginActivity
+import com.medtroniclabs.spice.ui.dialog.GeneralSuccessDialog
 import com.medtroniclabs.spice.ui.home.HomeScreenFragment
 import com.medtroniclabs.spice.ui.landing.viewmodel.LandingViewModel
 import com.medtroniclabs.spice.ui.mypatients.fragment.PatientSearchFragment
+import com.medtroniclabs.spice.ui.patientTransfer.NCDApproveRejectListener
+import com.medtroniclabs.spice.ui.patientTransfer.adapter.NCDIncomingRequestAdapter
+import com.medtroniclabs.spice.ui.patientTransfer.adapter.NCDInformationMessageAdapter
+import com.medtroniclabs.spice.ui.patientTransfer.dialog.NCDPatientDetailDialogue
+import com.medtroniclabs.spice.ncd.data.PatientTransferListResponse
+import com.medtroniclabs.spice.ncd.data.NCDPatientTransferUpdateRequest
+import com.medtroniclabs.spice.common.TransferStatusEnum
+import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 import java.util.concurrent.TimeUnit
 
 
 class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedListener,
-    DrawerLayout.DrawerListener, View.OnClickListener, OnDialogDismissListener {
+    DrawerLayout.DrawerListener, View.OnClickListener, OnDialogDismissListener,
+    NCDApproveRejectListener {
 
     lateinit var binding: ActivityLandingBinding
 
     private val viewModel: LandingViewModel by viewModels()
+    private val patientViewModel: PatientDetailViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         val splashScreen = installSplashScreen()
         splashScreen.setKeepOnScreenCondition { true }
@@ -100,13 +117,147 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
         splashScreen.setKeepOnScreenCondition { false }
         setContentView(binding.root)
         initializeDrawerView()
+        initializeHomeViews()
         updateSideBarFooter()
         schedulePeriodicUploadWork(this)
         onClickUploadLog()
         UserDetail.updateUserIdIfEmpty(SecuredPreference.getUserId().toString())
         UserDetail.getAppVersion(BuildConfig.VERSION_NAME)
+        attachObserver()
     }
 
+    private fun attachObserver() {
+        viewModel.patientListResponse.observe(this) { resoruceState ->
+            when (resoruceState.state) {
+                ResourceState.LOADING -> {
+                    showHideList(false)
+                }
+
+                ResourceState.ERROR -> {
+                    showHideList(true)
+                }
+
+                ResourceState.SUCCESS -> {
+                    showHideList(true)
+                    resoruceState.data?.let { data ->
+                        loadAdapterData(data)
+                    }
+                }
+            }
+        }
+        viewModel.patientUpdateResponse.observe(this) { resorceState ->
+            when (resorceState.state) {
+                ResourceState.LOADING -> {
+                    showHideList(false)
+                }
+
+                ResourceState.ERROR -> {
+                    showHideList(true)
+                }
+
+                ResourceState.SUCCESS -> {
+                    showHideList(true)
+                    viewModel.patientUpdateResponse.setError()
+                    binding.drawerLayout.closeDrawer(binding.navNotificationView)
+                    resorceState.data?.let {
+                        GeneralSuccessDialog.newInstance(
+                            getString(R.string.transfer),
+                            it,
+                            okayButton = getString(R.string.done)
+                        ) { redirectToHome() }.show(supportFragmentManager, GeneralSuccessDialog.TAG)
+                    }
+                }
+            }
+        }
+        viewModel.patientTransferNotificationCountResponse.observe(this) { resourceState ->
+            when (resourceState.state) {
+                ResourceState.LOADING -> {
+                    showLoading()
+                }
+
+                ResourceState.ERROR -> {
+                    hideLoading()
+                    binding.appBarMain.tvNotificationCount.visible()
+                }
+
+                ResourceState.SUCCESS -> {
+                    hideLoading()
+                    resourceState.data?.let { dataResponse ->
+                        val transferCount = dataResponse.patientTransferCount
+                        binding.appBarMain.tvNotificationCount.visibility =
+                            setTransferCount(transferCount)
+                        binding.appBarMain.tvNotificationCount.text =
+                            setNotificationCount(transferCount)
+                    } ?: kotlin.run {
+                        binding.appBarMain.tvNotificationCount.visibility = View.GONE
+                    }
+                }
+            }
+        }
+    }
+
+    private fun setTransferCount(transferCount: Long): Int {
+        if (transferCount > 0)
+            return View.VISIBLE
+        return View.GONE
+    }
+
+    private fun setNotificationCount(transferCount: Long): CharSequence {
+        if (transferCount > 99) {
+            return getString(R.string.notification_plus)
+        }
+        return transferCount.toString()
+    }
+    private fun loadAdapterData(data: PatientTransferListResponse) {
+        if (data.incomingPatientList.size > 0) {
+            binding.rvOutgoingList.visible()
+            binding.rvOutgoingList.addItemDecoration(
+                DividerItemDecoration(
+                    baseContext,
+                    LinearLayoutManager.VERTICAL
+                )
+            )
+            binding.rvOutgoingList.layoutManager = LinearLayoutManager(this@LandingActivity)
+            binding.rvOutgoingList.adapter = NCDIncomingRequestAdapter(data.incomingPatientList, this)
+        } else {
+            binding.rvOutgoingList.gone()
+        }
+        if (data.outgoingPatientList.size > 0) {
+            binding.rvInformationList.visible()
+            binding.rvInformationList.layoutManager = LinearLayoutManager(this@LandingActivity)
+            binding.rvInformationList.addItemDecoration(
+                DividerItemDecoration(
+                    baseContext,
+                    LinearLayoutManager.VERTICAL
+                )
+            )
+            binding.rvInformationList.adapter =
+                NCDInformationMessageAdapter(data.outgoingPatientList, this)
+        } else {
+            binding.rvInformationList.gone()
+        }
+        val totalCount = data.incomingPatientList.size + data.outgoingPatientList.size
+        if (totalCount > 0) {
+            binding.tvNoNotificationsFound.gone()
+            binding.tvDialogTitle.text =
+                getString(R.string.notification_count, totalCount.toString())
+        } else {
+            binding.tvNoNotificationsFound.visible()
+            binding.tvDialogTitle.text = getString(R.string.notification)
+        }
+    }
+
+    private fun showHideList(status: Boolean) {
+        if (status) {
+            binding.CenterProgress.gone()
+            binding.rvOutgoingList.visible()
+            binding.rvOutgoingList.visible()
+        } else {
+            binding.CenterProgress.visible()
+            binding.rvOutgoingList.visible()
+            binding.rvInformationList.visible()
+        }
+    }
     private fun onClickUploadLog(){
         if (BuildConfig.BUILD_TYPE=="staging"){
         binding.uploadLog.setOnClickListener {
@@ -154,6 +305,25 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
                 finish()
             }
         }
+    }
+
+    /**
+     * method to initialize home view toolbar and views
+     */
+    private fun initializeHomeViews() {
+        binding.appBarMain.ivNotification.safeClickListener(this)
+        binding.appBarMain.tvNotificationCount.safeClickListener(this)
+        val role = SecuredPreference.getRole()
+        if (role == RoleConstant.PROVIDER || role == RoleConstant.PHYSICIAN_PRESCRIBER) {
+            binding.appBarMain.ivNotification.visible()
+        } else {
+            binding.drawerLayout.setDrawerLockMode(
+                DrawerLayout.LOCK_MODE_LOCKED_CLOSED,
+                GravityCompat.END
+            )
+            binding.appBarMain.ivNotification.gone()
+        }
+        binding.ivClose.safeClickListener(this)
     }
 
     private fun startSyncWorker() {
@@ -352,15 +522,45 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
     }
 
     override fun onDrawerOpened(drawerView: View) {
+        when (drawerView.id) {
+            R.id.nav_notification_view -> {
+                    viewModel.getPatientListTransfer(NCDPatientTransferNotificationCountRequest(SecuredPreference.getOrganizationId().toString()))
+            }
+        }
+    }
+
+    private fun doRefreshForDataUpdate() {
+        val role = SecuredPreference.getRole()
+        if (role == RoleConstant.PHYSICIAN_PRESCRIBER || role == RoleConstant.PROVIDER) {
+            viewModel.patientTransferNotificationCount(
+                NCDPatientTransferNotificationCountRequest(
+                    SecuredPreference.getOrganizationId().toString()
+                )
+            )
+        }
     }
 
     override fun onDrawerClosed(drawerView: View) {
+        when (drawerView.id) {
+            R.id.nav_notification_view -> {
+                doRefreshForDataUpdate()
+            }
+        }
     }
 
     override fun onDrawerStateChanged(newState: Int) {
     }
 
     override fun onClick(v: View) {
+        when (v.id) {
+            R.id.ivNotification, R.id.tvNotificationCount -> {
+                binding.drawerLayout.openDrawer(binding.navNotificationView)
+            }
+
+            R.id.ivClose -> {
+                binding.drawerLayout.closeDrawer(binding.navNotificationView)
+            }
+        }
     }
 
     override fun onDialogDismissListener(isAfrica: Boolean) {
@@ -429,6 +629,54 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
                 )
             )
         }.build()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        doRefreshForDataUpdate()
+    }
+
+    override fun onTransferStatusUpdate(status: String, id: Long, tenantId: Long, reason: String) {
+        when (status) {
+            TransferStatusEnum.REJECTED.name -> {
+                showAlertDialogWithComments(
+                    getString(R.string.reject),
+                    message = getString(R.string.reject_confirmation),
+                    true,
+                    errorMessage = getString(R.string.valid_reason),
+                    buttonName = Pair(
+                        getString(R.string.ok),
+                        getString(R.string.cancel)
+                    )
+                ) { isPositiveResult, rejectionReason ->
+                    if (isPositiveResult) {
+                            viewModel.patientTransferUpdate(
+                                NCDPatientTransferUpdateRequest(
+                                    id,
+                                    transferStatus = status,
+                                    rejectReason = rejectionReason,
+                                    memberId = patientViewModel.getPatientMemberId().toString()
+                                )
+                            )
+                    }
+                }
+            }
+
+            else -> {
+                viewModel.patientTransferUpdate(
+                    NCDPatientTransferUpdateRequest(
+                        id,
+                        transferStatus = status,
+                        memberId = patientViewModel.getPatientMemberId().toString()
+                    )
+                )
+            }
+        }
+    }
+
+    override fun onViewDetail(patientID: Long) {
+        NCDPatientDetailDialogue.newInstance(patientID)
+            .show(supportFragmentManager, NCDPatientDetailDialogue.TAG)
     }
 
 }

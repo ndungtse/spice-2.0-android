@@ -10,9 +10,8 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
-import com.medtroniclabs.spice.appextensions.isGone
-import com.medtroniclabs.spice.appextensions.isVisible
 import com.medtroniclabs.spice.appextensions.setVisible
+import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.data.ShortageReasonEntity
 import com.medtroniclabs.spice.data.model.ChipViewItemModel
@@ -104,8 +103,8 @@ class NCDDeleteConfirmationDialog() : DialogFragment(), View.OnClickListener {
                     )
                 ) {
                     if (isChecked) {
-                        binding.etOtherReason.setVisible(true)
-                        binding.tvReasonErrorMessage.isGone()
+                        binding.etOtherReason.visible()
+                        binding.tvReasonErrorMessage.gone()
                     } else {
                         binding.etOtherReason.gone()
                         binding.tvReasonErrorMessage.gone()
@@ -155,8 +154,8 @@ class NCDDeleteConfirmationDialog() : DialogFragment(), View.OnClickListener {
         binding.tvDeleteMessage.markMandatory()
         binding.btnOkay.text = requireArguments().getString(KEY_OKAY_BUTTON)
         binding.btnCancel.text = requireArguments().getString(KEY_CANCEL_BUTTON)
-        binding.labelHeader.ivClose.gone()
         binding.btnCancel.setVisible(isNegativeButtonNeed)
+        binding.labelHeader.ivClose.safeClickListener(this)
     }
 
     private fun setupClickListeners() {
@@ -189,14 +188,14 @@ class NCDDeleteConfirmationDialog() : DialogFragment(), View.OnClickListener {
                 if (binding.etOtherReason.text.isNullOrBlank()) {
                     isValid = false
                     binding.tvReasonErrorMessage.text = getString(R.string.valid_reason)
-                    binding.tvReasonErrorMessage.setVisible(true)
+                    binding.tvReasonErrorMessage.visible()
                 } else {
                     binding.tvReasonErrorMessage.gone()
                 }
             }
         } else {
             binding.tvReasonErrorMessage.text = getString(R.string.reason_error)
-            binding.tvReasonErrorMessage.isVisible()
+            binding.tvReasonErrorMessage.visible()
             isValid = false
         }
 
@@ -220,6 +219,10 @@ class NCDDeleteConfirmationDialog() : DialogFragment(), View.OnClickListener {
             }
 
             binding.btnCancel.id -> {
+                dismiss()
+            }
+
+            binding.labelHeader.ivClose.id -> {
                 dismiss()
             }
         }

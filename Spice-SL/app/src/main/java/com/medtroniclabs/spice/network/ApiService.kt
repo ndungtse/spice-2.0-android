@@ -65,6 +65,8 @@ import com.medtroniclabs.spice.data.SummaryCreateRequest
 import com.medtroniclabs.spice.data.PncChildMedicalReview
 import com.medtroniclabs.spice.data.PregnancyDetailsModel
 import com.medtroniclabs.spice.data.history.NCDMedicalReviewHistory
+import com.medtroniclabs.spice.ncd.data.NCDPatientTransferNotificationCountRequest
+import com.medtroniclabs.spice.ncd.data.NCDPatientTransferNotificationCountResponse
 import com.medtroniclabs.spice.data.model.RegistrationResponse
 import com.medtroniclabs.spice.data.resource.LabourDeliverySummaryRequest
 import com.medtroniclabs.spice.data.performance.CHWPerformanceMonitoring
@@ -113,6 +115,14 @@ import com.medtroniclabs.spice.ncd.data.PatientVisitRequest
 import com.medtroniclabs.spice.ncd.data.PatientVisitResponse
 import com.medtroniclabs.spice.ncd.data.TermsAndConditionsModel
 import com.medtroniclabs.spice.ncd.data.NCDPatientRemoveRequest
+import com.medtroniclabs.spice.ncd.data.NCDPatientTransferValidate
+import com.medtroniclabs.spice.ncd.data.NCDTransferCreateRequest
+import com.medtroniclabs.spice.ncd.data.PatientTransferListResponse
+import com.medtroniclabs.spice.ncd.data.NCDPatientTransferUpdateRequest
+import com.medtroniclabs.spice.ncd.data.NCDRegionSiteModel
+import com.medtroniclabs.spice.ncd.data.RegionSiteResponse
+import com.medtroniclabs.spice.ncd.data.NCDSiteRoleModel
+import com.medtroniclabs.spice.ncd.data.NCDSiteRoleResponse
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
 import retrofit2.Response
@@ -464,4 +474,25 @@ interface ApiService {
 
     @POST("/spice-service/medical-review/ncd/date/update")
     suspend fun ncdUpdateNextVisitDate(@Body request: NCDMedicalReviewUpdateModel): Response<APIResponse<HashMap<String, Any>>>
+
+    @POST("/spice-service/patient-transfer/validate")
+    suspend fun validatePatientTransfer(@Body request: NCDPatientTransferValidate): Response<HashMap<String, Any>>
+
+    @POST("/spice-service/patient-transfer/create")
+    suspend fun createPatientTransfer(@Body request: NCDTransferCreateRequest): Response<APIResponse<HashMap<String, Any>>>
+
+    @POST("/admin-service/country/healthfacility-list")
+    suspend fun searchSite(@Body request: NCDRegionSiteModel): Response<APIResponse<ArrayList<RegionSiteResponse>>>
+
+    @POST("/user-service/user/role-user-list")
+    suspend fun searchRoleUser(@Body request: NCDSiteRoleModel): Response<APIResponse<ArrayList<NCDSiteRoleResponse>>>
+
+    @POST("/spice-service/patient-transfer/list")
+    suspend fun getPatientListTransfer(@Body request: NCDPatientTransferNotificationCountRequest): Response<APIResponse<PatientTransferListResponse>>
+
+    @POST("/spice-service/patient-transfer/notification-count")
+    suspend fun patientTransferNotificationCount(@Body request: NCDPatientTransferNotificationCountRequest): Response<APIResponse<NCDPatientTransferNotificationCountResponse>>
+
+    @POST("/spice-service/patient-transfer/update")
+    suspend fun patientTransferUpdate(@Body request: NCDPatientTransferUpdateRequest): Response<APIResponse<String>>
 }

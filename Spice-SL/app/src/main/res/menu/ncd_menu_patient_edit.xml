@@ -16,4 +16,9 @@
         android:icon="@drawable/baseline_schedule_24"
         android:title="@string/schedule" />
 
+    <item
+        android:id="@+id/transfer_patient"
+        android:icon="@drawable/ic_patient_transfer"
+        android:title="@string/transfer" />
+
 </menu>

@@ -46,6 +46,9 @@ import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 import com.medtroniclabs.spice.ui.patientDelete.NCDDeleteConfirmationDialog
 import com.medtroniclabs.spice.ui.patientDelete.viewModel.NCDPatientDeleteViewModel
 import com.medtroniclabs.spice.ui.patientEdit.NCDPatientEditActivity
+import com.medtroniclabs.spice.ncd.data.NCDPatientTransferValidate
+import com.medtroniclabs.spice.ui.patientTransfer.dialog.NCDTransferArchiveDialog
+import com.medtroniclabs.spice.ui.patientTransfer.viewModel.NCDPatientTransferViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -55,6 +58,7 @@ class NCDMedicalReviewCMRActivity : BaseActivity(), View.OnClickListener, AncVis
     private val cmrViewModel: NCDMedicalReviewCMRViewModel by viewModels()
     private val patientDetailViewModel: PatientDetailViewModel by viewModels()
     private val patientDeleteViewModel: NCDPatientDeleteViewModel by viewModels()
+    private val patientTransferViewModel: NCDPatientTransferViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
@@ -107,6 +111,20 @@ class NCDMedicalReviewCMRActivity : BaseActivity(), View.OnClickListener, AncVis
                 )
                 intent.putExtra(DefinedParams.ORIGIN, patientDetailViewModel.origin)
                 startActivity(intent)
+            }
+
+            R.id.transfer_patient -> {
+                if (patientTransferViewModel.validateTransferResponse.value?.state != ResourceState.LOADING
+                ) {
+                    patientDetailViewModel.patientDetailsLiveData.value?.data?.let { data ->
+                        data.patientId?.let {
+                            val request = NCDPatientTransferValidate(
+                                patientReference = it
+                            )
+                            patientTransferViewModel.validatePatientTransfer(request)
+                        }
+                    }
+                }
             }
         }
     }
@@ -236,6 +254,34 @@ class NCDMedicalReviewCMRActivity : BaseActivity(), View.OnClickListener, AncVis
                     resourceState.message?.let {
                         showErrorDialogue(getString(R.string.error), it, false) {}
                     }
+                }
+            }
+        }
+
+        patientTransferViewModel.validateTransferResponse.observe(this) { resourceState ->
+            when (resourceState.state) {
+                ResourceState.LOADING -> {
+                    showLoading()
+                }
+
+                ResourceState.ERROR -> {
+                    hideLoading()
+                    resourceState?.message?.let { message ->
+                        val title = if (message.equals(
+                                getString(R.string.no_internet_error),
+                                true
+                            )
+                        ) getString(R.string.error) else getString(R.string.patient_transfer)
+                        showErrorDialogue(title, message, isNegativeButtonNeed = false) {}
+                    }
+                }
+
+                ResourceState.SUCCESS -> {
+                    hideLoading()
+                    NCDTransferArchiveDialog.newInstance().show(
+                        supportFragmentManager,
+                        NCDTransferArchiveDialog.TAG
+                    )
                 }
             }
         }

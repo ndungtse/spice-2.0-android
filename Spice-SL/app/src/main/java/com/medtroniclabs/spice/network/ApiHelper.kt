@@ -58,6 +58,8 @@ import com.medtroniclabs.spice.data.model.LabourDeliverySummaryDetails
 import com.medtroniclabs.spice.data.model.MotherNeonateAncRequest
 import com.medtroniclabs.spice.data.model.MotherNeonatePncRequest
 import com.medtroniclabs.spice.data.model.PatientEncounterResponse
+import com.medtroniclabs.spice.ncd.data.NCDPatientTransferNotificationCountRequest
+import com.medtroniclabs.spice.ncd.data.NCDPatientTransferNotificationCountResponse
 import com.medtroniclabs.spice.data.model.PncSubmitResponse
 import com.medtroniclabs.spice.data.model.RegistrationResponse
 import com.medtroniclabs.spice.data.model.RequestChangePassword
@@ -113,6 +115,14 @@ import com.medtroniclabs.spice.ncd.data.PatientVisitRequest
 import com.medtroniclabs.spice.ncd.data.PatientVisitResponse
 import com.medtroniclabs.spice.ncd.data.NCDPatientRemoveRequest
 import com.medtroniclabs.spice.ncd.data.TermsAndConditionsModel
+import com.medtroniclabs.spice.ncd.data.NCDPatientTransferValidate
+import com.medtroniclabs.spice.ncd.data.NCDTransferCreateRequest
+import com.medtroniclabs.spice.ncd.data.PatientTransferListResponse
+import com.medtroniclabs.spice.ncd.data.NCDPatientTransferUpdateRequest
+import com.medtroniclabs.spice.ncd.data.NCDRegionSiteModel
+import com.medtroniclabs.spice.ncd.data.RegionSiteResponse
+import com.medtroniclabs.spice.ncd.data.NCDSiteRoleModel
+import com.medtroniclabs.spice.ncd.data.NCDSiteRoleResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
@@ -245,4 +255,11 @@ interface ApiHelper {
     suspend fun getUserTermsAndConditions(request: TermsAndConditionsModel): Response<APIResponse<TermsAndConditionsModel>>
     suspend fun updateTermsAndConditionsStatus(request: TermsAndConditionsModel): Response<APIResponse<TermsAndConditionsModel>>
     suspend fun ncdUpdateNextVisitDate(request: NCDMedicalReviewUpdateModel): Response<APIResponse<HashMap<String, Any>>>
+    suspend fun validatePatientTransfer(request: NCDPatientTransferValidate): Response<HashMap<String, Any>>
+    suspend fun createPatientTransfer(request: NCDTransferCreateRequest): Response<APIResponse<HashMap<String, Any>>>
+    suspend fun searchSite(request: NCDRegionSiteModel): Response<APIResponse<ArrayList<RegionSiteResponse>>>
+    suspend fun searchRoleUser(request: NCDSiteRoleModel): Response<APIResponse<ArrayList<NCDSiteRoleResponse>>>
+    suspend fun getPatientListTransfer(request: NCDPatientTransferNotificationCountRequest): Response<APIResponse<PatientTransferListResponse>>
+    suspend fun patientTransferNotificationCount(request: NCDPatientTransferNotificationCountRequest): Response<APIResponse<NCDPatientTransferNotificationCountResponse>>
+    suspend fun patientTransferUpdate(request: NCDPatientTransferUpdateRequest): Response<APIResponse<String>>
 }

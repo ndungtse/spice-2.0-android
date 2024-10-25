@@ -1659,4 +1659,16 @@ object CommonUtils {
     fun canShowScheduleMenu(): Boolean {
         return isAfrica() && isHRIO()
     }
+
+    fun capitalize(str: String): String {
+        val words = str.lowercase().split(" ")
+        val sb = StringBuilder()
+        words.forEach {
+            if (it != "") {
+                sb.append(it[0].uppercase()).append(it.substring(1))
+            }
+            sb.append(" ")
+        }
+        return sb.toString().trim { it <= ' ' }
+    }
 }

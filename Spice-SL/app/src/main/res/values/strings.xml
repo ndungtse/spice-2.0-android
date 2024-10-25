@@ -1057,4 +1057,27 @@
     <string name="health_insurance_type">Health Insurance Type</string>
     <string name="health_insurance_Id">Health Insurance Id</string>
     <string name="next_medical_review_date">Next Medical Review Date</string>
+
+    //Patient Transfer
+    <string name="transfer">Transfer</string>
+    <string name="facility">Facility</string>
+    <string name="search_facility">Enter Facility Name</string>
+    <string name="physician">Physician</string>
+    <string name="search_physician">Enter Physician Name</string>
+    <string name="reason_to_transfer">Reason to Transfer</string>
+    <string name="type_reason">Enter the Reason for transfer</string>
+    <string name="patient_transfer">Patient Transfer</string>
+    <string name="notification">Notification</string>
+    <string name="no_notifications_found">No Notifications Found</string>
+    <string name="notification_count">Notification(%1$s)</string>
+    <string name="reject">Reject</string>
+    <string name="reason_with_colon">Reason:</string>
+    <string name="pending_message_format">%1$s\'s transfer request to %2$s is awaiting approval.</string>
+    <string name="rejected_message_format">%1$s\'s transfer request to %2$s is rejected.</string>
+    <string name="accepted_message_format">%1$s\'s transfer request to %2$s is accepted.</string>
+    <string name="information_message_template">%1$s\'s transfer request to %2$s is %3$s.</string>
+    <string name="reject_confirmation">Are you sure you want to reject it?</string>
+    <string name="notification_plus">99+</string>
+    <string name="enrollment_date">Enrollment Date</string>
+    <string name="provisional_text">(Provisional)</string>
 </resources>
