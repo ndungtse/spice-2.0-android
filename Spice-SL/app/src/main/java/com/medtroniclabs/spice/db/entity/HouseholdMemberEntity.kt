@@ -52,6 +52,8 @@ data class HouseholdMemberEntity(
 
     val lastUpdated: String? = null,
 
-    var localSignatureFile: String? = null
+    var localSignatureFile: String? = null,
+
+    var motherReferenceId: Long? = null
 
     ) : BaseEntity()

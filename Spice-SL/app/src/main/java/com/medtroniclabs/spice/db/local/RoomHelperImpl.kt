@@ -685,6 +685,10 @@ class RoomHelperImpl @Inject constructor(
         callHistoryDao.updateInProgress(idList, syncStatus)
     }
 
+    override suspend fun changeAssignHHMStatus(idList: List<String>, syncStatus: String) {
+        linkHouseholdMemberDao.updateInProgress(idList, syncStatus)
+    }
+
     override suspend fun getMemberDetailsByPatientId(patientId: String): HouseholdMemberEntity? {
        return memberDAO.getMemberDetailsByPatientId(patientId)
     }
@@ -733,5 +737,13 @@ class RoomHelperImpl @Inject constructor(
 
     override suspend fun getUnSyncedCallHistoryForHHMLink(): List<HouseholdMemberCallRegisterDto> {
         return callHistoryDao.getUnSyncedCallHistoryForHHMLink()
+    }
+
+    override suspend fun changeMemberDetailsToNotSynced(id: Long) {
+        memberDAO.changeMemberDetailsToNotSynced(id)
+    }
+
+    override suspend fun updateMemberAsAssigned(memberId: String) {
+        linkHouseholdMemberDao.updateMemberAsAssigned(memberId)
     }
 }

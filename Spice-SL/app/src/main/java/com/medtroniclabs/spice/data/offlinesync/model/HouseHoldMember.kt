@@ -60,6 +60,8 @@ data class HouseHoldMember(
     @ColumnInfo(name = "isPregnant")
     val isPregnant: Boolean? = null,
 
+    val motherReferenceId: String? = null,
+
     val isActive: Boolean = true,
 
     val signature: String? = null,
@@ -68,7 +70,9 @@ data class HouseHoldMember(
 
     val version: String? = null,
 
-    val lastUpdated: String? = null
+    val lastUpdated: String? = null,
+
+    val assignHousehold: Boolean? = null,
 ) {
 
     @Ignore
@@ -79,6 +83,9 @@ data class HouseHoldMember(
 
     @Ignore
     var assessments = listOf<Assessment>()
+
+    @Ignore
+    var child: List<HouseHoldMember>? = null
 
     fun toHouseholdMemberEntity(hhId: Long?, status: OfflineSyncStatus, id: Long = 0): HouseholdMemberEntity {
         return HouseholdMemberEntity(

@@ -31,11 +31,11 @@ class HouseholdMemberRepository @Inject constructor(
         map: HashMap<String, Any>,
         householdId: Long,
         entity: HouseholdMemberEntity? = null,
-        parentId: String? = null,
+        parentReferenceId: Long? = null,
         initial: String? = null,
         signature: String? = null
     ): Long? {
-        val memberEntity = createOrUpdateHouseHoldMemberEntity(map, householdId, entity, parentId, initial, signature)
+        val memberEntity = createOrUpdateHouseHoldMemberEntity(map, householdId, entity, parentReferenceId, initial, signature)
        /* if (memberEntity.patientId == null) {
             return  null
         }*/
@@ -67,7 +67,7 @@ class HouseholdMemberRepository @Inject constructor(
         map: HashMap<String, Any>,
         householdId: Long,
         entity: HouseholdMemberEntity? = null,
-        parentId: String?,
+        parentReferenceId: Long?,
         initial: String? = null,
         signature: String? = null
     ): HouseholdMemberEntity {
@@ -76,8 +76,8 @@ class HouseholdMemberRepository @Inject constructor(
         val name = map[MemberRegistration.name]
         householdMemberEntity.name = getStringOrEmptyString(name)
 
-        parentId?.let {
-            householdMemberEntity.parentId = it
+        parentReferenceId?.let {
+            householdMemberEntity.motherReferenceId = it
         }
 
         val phoneNumber = map[MemberRegistration.phoneNumber]
@@ -233,6 +233,10 @@ class HouseholdMemberRepository @Inject constructor(
         return roomHelper.getPatientIdById(id)
     }
 
+    suspend fun changeMemberDetailsToNotSynced(id: Long) {
+        roomHelper.changeMemberDetailsToNotSynced(id)
+    }
+
     fun getUnAssignedHouseholdMember(): LiveData<List<UnAssignedHouseholdMemberDetail>> {
         return roomHelper.getUnAssignedHouseholdMembersLiveData()
     }
@@ -245,5 +249,9 @@ class HouseholdMemberRepository @Inject constructor(
             callEndTime = callEndTime
         )
         return roomHelper.addLinkMemberCall(callHistory)
+    }
+
+    suspend fun updateMemberAsAssigned(memberId: String) {
+        roomHelper.updateMemberAsAssigned(memberId)
     }
 }

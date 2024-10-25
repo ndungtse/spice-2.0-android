@@ -1,5 +1,6 @@
 package com.medtroniclabs.spice.repo
 
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.google.gson.Gson
 import com.google.gson.JsonElement
@@ -492,6 +493,34 @@ class OfflineSyncRepository @Inject constructor(
         return callDetails
     }
 
+    private suspend fun formatMemberForPnc(
+        input: List<HouseHoldMember>,
+        memberIds: MutableList<String>,
+        assessmentIds: MutableList<String>
+    ): List<HouseHoldMember> {
+        val motherIds = mutableSetOf<String>()
+
+        input.forEach { hhm ->
+            memberIds.add(hhm.referenceId!!)
+            hhm.motherReferenceId?.let {
+                hhm.isChild = true
+                motherIds.add(it)
+            }
+            hhm.assessments = getUnSyncedAssessmentByPatientId(hhm.referenceId!!.toLong())
+            assessmentIds.addAll(hhm.assessments.map { it.referenceId.toString() })
+        }
+
+        motherIds.forEach { motherId ->
+            val child = input.filter { it.motherReferenceId == motherId && it.id == null }
+            val mother = input.find { it.referenceId == motherId }
+            if (!child.isNullOrEmpty()) {
+                mother?.child = child
+            }
+        }
+
+        return input.filter { it.motherReferenceId == null || it.id == null}
+    }
+
     /*
     * It will post all un-synced changes from local database and returns List<String>?
     * 1. list size > 0 -> Posted un-synced local changes and API is success
@@ -513,27 +542,16 @@ class OfflineSyncRepository @Inject constructor(
         houseHoldList.forEach { householdEntity ->
             val memberList =
                 roomHelper.getAllUnSyncedHouseHoldMembers((householdEntity.referenceId!!.toLong())) /*Hot Fix Change - Need to check*/
-            householdMemberIds.addAll(memberList.map { it.referenceId!! })
 
-            //Assessment
-            memberList.forEach { hhm ->
-                hhm.motherPatientId?.let { hhm.isChild = true }
-                hhm.assessments = getUnSyncedAssessmentByPatientId(hhm.referenceId!!.toLong())
-                assessmentIds.addAll(hhm.assessments.map { it.referenceId.toString() })
-            }
-
-            householdEntity.householdMembers.addAll(memberList)
+            householdEntity.householdMembers.addAll(formatMemberForPnc(memberList, householdMemberIds, assessmentIds))
         }
 
-        val otherHouseholdMembers = roomHelper.getOtherHouseholdMembers(householdMemberIds) /*Hot Fix Change - Need to check*/
+        val members = roomHelper.getOtherHouseholdMembers(householdMemberIds) /*Hot Fix Change - Need to check*/
+        val otherMembers = formatMemberForPnc(members, householdMemberIds, assessmentIds)
+
+        val assignedMemberIds = otherMembers.filter { it.assignHousehold == true && it.id != null }.map { it.id!! }
+
         //Assessment
-        otherHouseholdMembers.forEach { hhm ->
-            householdMemberIds.add(hhm.referenceId!!)
-            hhm.motherPatientId?.let { hhm.isChild = true }
-            hhm.assessments = getUnSyncedAssessmentByPatientId(hhm.referenceId.toLong())
-            assessmentIds.addAll(hhm.assessments.map { it.referenceId.toString() })
-        }
-
         val otherAssessments = getOtherUnSyncedAssessments(assessmentIds) /*Hot Fix change - Done*/
         assessmentIds.addAll(otherAssessments.map { it.referenceId.toString() })
 
@@ -552,7 +570,7 @@ class OfflineSyncRepository @Inject constructor(
 
         // Nothing to Post anything
         if (houseHoldList.isEmpty()
-            && otherHouseholdMembers.isEmpty()
+            && otherMembers.isEmpty()
             && otherAssessments.isEmpty()
             && allFollowUps.isEmpty()
             && householdMemberLink.isEmpty()
@@ -562,7 +580,7 @@ class OfflineSyncRepository @Inject constructor(
 
         val request = OfflineUtils.getRequestObject()
         request[OfflineConstant.HOUSE_HOLDS] = houseHoldList
-        request[OfflineConstant.HOUSE_HOLD_MEMBERS] = otherHouseholdMembers
+        request[OfflineConstant.HOUSE_HOLD_MEMBERS] = otherMembers
         request[OfflineConstant.ASSESSMENTS] = otherAssessments
         request[OfflineConstant.FOLLOWUPS] = allFollowUps
         request[OfflineConstant.HOUSEHOLD_MEMBER_LINK] = householdMemberLink
@@ -575,6 +593,7 @@ class OfflineSyncRepository @Inject constructor(
                 roomHelper.changeAssessmentStatus(assessmentIds, OfflineSyncStatus.InProgress.name) // Change status to InProgress
                 roomHelper.changeFollowUpStatus(followUpIds, OfflineSyncStatus.InProgress.name) // Change status to InProgress
                 roomHelper.changeFollowUpCallStatus(followUpCallIds) // Change isSynced Status to True
+                roomHelper.changeAssignHHMStatus(assignedMemberIds, OfflineSyncStatus.InProgress.name)
                 roomHelper.changeHHMLinkCallStatus(householdLinkCallsMemberIds, OfflineSyncStatus.InProgress.name)
                 return listOf(request[OfflineConstant.REQUEST_ID] as String)
             }
@@ -583,6 +602,7 @@ class OfflineSyncRepository @Inject constructor(
             roomHelper.changeHouseholdMemberStatus(householdMemberIds, OfflineSyncStatus.NetworkError.name) // Change Status to InProgress
             roomHelper.changeAssessmentStatus(assessmentIds, OfflineSyncStatus.NetworkError.name) // Change status to InProgress
             roomHelper.changeFollowUpStatus(followUpIds, OfflineSyncStatus.NetworkError.name) // Change status to InProgress
+            roomHelper.changeAssignHHMStatus(assignedMemberIds, OfflineSyncStatus.NetworkError.name)
             roomHelper.changeHHMLinkCallStatus(householdLinkCallsMemberIds, OfflineSyncStatus.NetworkError.name)
             return listOf(request[OfflineConstant.REQUEST_ID] as String)
         }

@@ -107,7 +107,7 @@ class OfflineSyncActivity : SpiceRootActivity() {
     private fun initObserver() {
         viewModel.unAssignedMembers.observe(this) {
             val ids = it.map { item -> item.memberId }
-            viewModel.insertDummyCallHistory(ids)
+            //viewModel.insertDummyCallHistory(ids)
         }
 
         viewModel.unSyncedCountLiveData.observe(this) {

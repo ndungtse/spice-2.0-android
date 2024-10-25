@@ -5,7 +5,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 data class MemberClinicalEntity(
-    val patientId: String,
+    val patientId: String?,
     val visitCount: Long,
     val clinicalDate: String?,
     val numberOfNeonate: Long? = null,

@@ -49,10 +49,7 @@ class AddNewMemberActivity : BaseActivity(), View.OnClickListener, OnDialogDismi
             MedicalReviewDefinedParams.MEMBER_REG,
             this
         ) { _, _ ->
-            SuccessDialogFragment.newInstance(
-                householdNo = -1L,
-                patientId = ""
-            ).show(supportFragmentManager, SuccessDialogFragment.TAG)
+            SuccessDialogFragment.newInstance(isMember = true).show(supportFragmentManager, SuccessDialogFragment.TAG)
         }
     }
 

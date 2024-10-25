@@ -9,11 +9,14 @@ import android.view.WindowManager
 import androidx.fragment.app.DialogFragment
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
+import com.medtroniclabs.spice.appextensions.invisible
 import com.medtroniclabs.spice.common.DefinedParams.DefaultID
 import com.medtroniclabs.spice.common.DefinedParams.PatientId
 import com.medtroniclabs.spice.databinding.FragmentSuccessDialogBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.ui.household.HouseholdDefinedParams.HouseholdNo
+import com.medtroniclabs.spice.ui.household.HouseholdDefinedParams.IsHousehold
+import com.medtroniclabs.spice.ui.household.HouseholdDefinedParams.IsHouseholdMember
 import com.medtroniclabs.spice.ui.landing.OnDialogDismissListener
 
 class SuccessDialogFragment : DialogFragment(), View.OnClickListener {
@@ -39,10 +42,10 @@ class SuccessDialogFragment : DialogFragment(), View.OnClickListener {
     companion object {
         const val TAG = "SuccessDialogFragment"
 
-        fun newInstance(householdNo : Long, patientId : String): SuccessDialogFragment {
+        fun newInstance(isHousehold : Boolean = false, isMember : Boolean = false): SuccessDialogFragment {
             val bundle = Bundle()
-            bundle.putLong(HouseholdNo, householdNo)
-            bundle.putString(PatientId, patientId)
+            bundle.putBoolean(IsHousehold, isHousehold)
+            bundle.putBoolean(IsHouseholdMember, isMember)
             val fragment =  SuccessDialogFragment()
             fragment.arguments = bundle
             return fragment
@@ -68,23 +71,14 @@ class SuccessDialogFragment : DialogFragment(), View.OnClickListener {
     }
 
     private fun attachObserver() {
-        arguments?.getLong(HouseholdNo, -1)?.let { householdNo ->
-            if (householdNo != -1L) {
-                binding.successMessage.text = getString(R.string.household_successfully)
-                binding.householdNo.text =
-                    requireContext().getString(R.string.household_with_no, householdNo.toString())
-            }
+        binding.householdNo.invisible()
+
+        if (arguments?.getBoolean(IsHousehold) == true) {
+            binding.successMessage.text = getString(R.string.household_successfully)
         }
-        arguments?.getString(PatientId, DefaultID)?.let { patientId ->
-            if (patientId != DefaultID) {
-                binding.successMessage.text = getString(R.string.member_registered_successfully)
-                if (patientId.isNotEmpty()) {
-                    binding.householdNo.text =
-                        requireContext().getString(R.string.patient_with_id, patientId)
-                }else{
-                    binding.householdNo.gone()
-                }
-            }
+
+        if (arguments?.getBoolean(IsHouseholdMember) == true) {
+            binding.successMessage.text = getString(R.string.member_registered_successfully)
         }
     }
 
@@ -92,10 +86,7 @@ class SuccessDialogFragment : DialogFragment(), View.OnClickListener {
         when(view.id){
             binding.btnDone.id -> {
                 onDismissListener?.onDialogDismissListener(
-                    arguments?.getLong(
-                        HouseholdNo,
-                        -1
-                    ) != -1L
+                    arguments?.getBoolean(IsHousehold) == true
                 )
                 dismiss()
             }

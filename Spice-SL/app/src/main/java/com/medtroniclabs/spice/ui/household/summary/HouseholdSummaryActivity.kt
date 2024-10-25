@@ -51,14 +51,11 @@ class HouseholdSummaryActivity : BaseActivity(), MemberSelectionListener, View.O
         householdSummaryViewModel.householdMembersLiveData.observe(this) { data ->
             initializeAdapter(data)
             if (householdSummaryViewModel.previousCount != 0 && (householdSummaryViewModel.previousCount < data.size)) {
-                data.last().patientId?.let {
+                data.last().id?.let {
                     val existingFragment =
                         supportFragmentManager.findFragmentByTag(SuccessDialogFragment.TAG)
                     if (existingFragment == null) {
-                        SuccessDialogFragment.newInstance(
-                            householdNo = -1L,
-                            patientId = it
-                        ).show(supportFragmentManager, SuccessDialogFragment.TAG)
+                        SuccessDialogFragment.newInstance(isMember = true).show(supportFragmentManager, SuccessDialogFragment.TAG)
                     }
                 }
             }
@@ -158,10 +155,7 @@ class HouseholdSummaryActivity : BaseActivity(), MemberSelectionListener, View.O
                     val existingFragment =
                         supportFragmentManager.findFragmentByTag(SuccessDialogFragment.TAG)
                     if (existingFragment == null) {
-                        SuccessDialogFragment.newInstance(
-                            -1L,
-                            DefinedParams.DefaultID
-                        ).show(supportFragmentManager, SuccessDialogFragment.TAG)
+                        SuccessDialogFragment.newInstance(isHousehold = true).show(supportFragmentManager, SuccessDialogFragment.TAG)
                     }
                 }
             }

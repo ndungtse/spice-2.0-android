@@ -410,7 +410,7 @@ class AssessmentViewModel @Inject constructor(
             if (details.containsKey(workflowName) && details[workflowName] is Map<*, *>) {
                 val map = details[workflowName] as HashMap<String, Any>
                 val pregnancyDetail = pregnancyDetail
-                    ?: PregnancyDetail(householdMemberLocalId = householdLocalId)
+                    ?: PregnancyDetail(householdMemberLocalId = id)
                 getClinicalDateAndVisitCount(
                     map,
                     workflowName,

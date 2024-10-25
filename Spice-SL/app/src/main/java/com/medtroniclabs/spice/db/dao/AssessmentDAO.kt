@@ -28,16 +28,16 @@ interface AssessmentDAO {
     suspend fun getSymptomListByType(type: String): List<SignsAndSymptomsEntity>
 
     @Query("SELECT a.id, a.villageId, a.assessmentType, a.assessmentDetails, a.patientId, a.referralStatus, a.referredReason, a.otherDetails, a.memberId, a.householdId, a.isReferred, a.created_at AS createdAt, a.followUpId, a.latitude, a.longitude, pd.neonatePatientId as neonatePatientId " +
-                "FROM Assessment AS a LEFT JOIN PregnancyDetail AS pd ON a.patientId = pd.patientId " +
+                "FROM Assessment AS a LEFT JOIN PregnancyDetail AS pd ON a.householdMemberLocalId = pd.householdMemberLocalId " +
                 "WHERE a.sync_status IN (:status) AND a.householdMemberLocalId =:hhmId AND a.memberId IS NULL")
     suspend fun getUnSyncedAssessmentByHHMId(
         hhmId: Long,
         status: List<String> = listOf(OfflineSyncStatus.NotSynced.name, OfflineSyncStatus.NetworkError.name)
     ): List<AssessmentDetails>
 
-    @Query("SELECT a.id, a.villageId, a.assessmentType, a.assessmentDetails, a.patientId, a.referralStatus, a.referredReason, a.otherDetails, hhm.fhir_id as memberId, hh.fhir_id as householdId, a.isReferred, a.created_at AS createdAt, a.followUpId, a.latitude, a.longitude, pd.neonatePatientId as neonatePatientId " +
-                "FROM Assessment AS a LEFT JOIN PregnancyDetail AS pd ON a.patientId = pd.patientId INNER JOIN HouseholdMember AS hhm ON a.patientId = hhm.patient_id INNER JOIN Household AS hh ON hhm.household_id = hh.id " +
-                "WHERE a.id NOT IN (:addedAssessmentIds) AND hhm.fhir_id IS NOT NULL AND hhm.fhir_id IS NOT NULL AND a.sync_status IN (:status)")
+    @Query("SELECT a.id, a.villageId, a.assessmentType, a.assessmentDetails, hhm.patient_id as patientId, a.referralStatus, a.referredReason, a.otherDetails, hhm.fhir_id as memberId, hh.fhir_id as householdId, a.isReferred, a.created_at AS createdAt, a.followUpId, a.latitude, a.longitude, pd.neonatePatientId as neonatePatientId " +
+                "FROM Assessment AS a LEFT JOIN PregnancyDetail AS pd ON a.householdMemberLocalId = pd.householdMemberLocalId INNER JOIN HouseholdMember AS hhm ON a.householdMemberLocalId = hhm.id INNER JOIN Household AS hh ON hhm.household_id = hh.id " +
+                "WHERE a.id NOT IN (:addedAssessmentIds) AND hhm.fhir_id IS NOT NULL AND a.sync_status IN (:status)")
     suspend fun getOtherUnSyncedAssessments(
         addedAssessmentIds: List<String>,
         status: List<String> = listOf(OfflineSyncStatus.NotSynced.name, OfflineSyncStatus.NetworkError.name)

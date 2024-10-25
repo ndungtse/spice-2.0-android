@@ -114,6 +114,25 @@ object SpiceSLMigration {
             database.execSQL("DROP TABLE Assessment")
             database.execSQL("ALTER TABLE Assessment_new RENAME TO Assessment")
 
+            /*
+            * Mother Reference Id for kid
+            * */
+
+            database.execSQL("ALTER TABLE HouseholdMember ADD COLUMN motherReferenceId INTEGER")
+
+            database.execSQL(
+                """
+                UPDATE HouseholdMember
+                    SET motherReferenceId = (
+                    SELECT member.id
+                    FROM HouseholdMember AS member
+                    WHERE member.patient_id = HouseholdMember.parentId
+                )
+                WHERE parentId IS NOT NULL
+                """.trimIndent()
+                )
+
+
             /* 3. PregnancyDetail Entity Migration
             *   3.1. Added householdMemberLocalId - for keeping local id as foreign key for PregnancyDetail
             *   3.2. Added neonateHouseholdMemberLocalId - for keeping neonate local id  as foreign key for PregnancyDetail
@@ -153,7 +172,7 @@ object SpiceSLMigration {
                 CREATE TABLE IF NOT EXISTS LinkHouseholdMember (
                     id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
                     memberId TEXT NOT NULL,
-                    currentStatus TEXT NOT NULL,
+                    status TEXT NOT NULL,
                     syncStatus TEXT
                 )
                 """.trimIndent()

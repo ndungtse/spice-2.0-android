@@ -86,7 +86,7 @@ class AssessmentRMNCHNeonateViewModel @Inject constructor(
                     memberMap!!,
                     householdId,
                     null,
-                    memberDetail.patientId
+                    memberDetail.id
                 )
                 if (childMemberId != null) {
                     savePNCDetails(
@@ -94,6 +94,7 @@ class AssessmentRMNCHNeonateViewModel @Inject constructor(
                         childDetailMap,
                         memberDetail,
                         childMemberId,
+                        childFhirId = null,
                         followUpId = followUpId,
                         null
                     )
@@ -105,6 +106,7 @@ class AssessmentRMNCHNeonateViewModel @Inject constructor(
                         childDetailMap,
                         memberDetail,
                         childDetail.id,
+                        childDetail.fhirId,
                         followUpId = followUpId,
                         deathOfNewBorn
                     )
@@ -118,9 +120,16 @@ class AssessmentRMNCHNeonateViewModel @Inject constructor(
         childDetailMap: HashMap<String, Any>,
         memberDetail: AssessmentMemberDetails,
         childMemberId: Long,
+        childFhirId: String? = null,
         followUpId: Long? = null,
         deathOfNewborn: Boolean?
     ) {
+
+        //Update Mother member details to NotSynced for PNC Flow
+        if(childFhirId == null) {
+            householdMemberRepository.changeMemberDetailsToNotSynced(memberDetail.id)
+        }
+
         val groupMap = HashMap<String, Any>()
         groupMap[RMNCH.PNC] = motherDetailMap[RMNCH.PNC] as Any
         if (groupMap.containsKey(RMNCH.PNC)) {

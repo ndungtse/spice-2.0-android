@@ -219,6 +219,8 @@ interface RoomHelper {
 
     suspend fun changeHHMLinkCallStatus(idList: List<String>, syncStatus: String)
 
+    suspend fun changeAssignHHMStatus(idList: List<String>, syncStatus: String)
+
     suspend fun insertOrUpdateHHFromBE(entity: HouseholdEntity): Long
 
     suspend fun insertOrUpdateHHMFromBE(entity: HouseholdMemberEntity): Long
@@ -272,5 +274,9 @@ interface RoomHelper {
     suspend fun addLinkMemberCall(callHistory: CallHistory): Long
 
     suspend fun getUnSyncedCallHistoryForHHMLink(): List<HouseholdMemberCallRegisterDto>
+
+    suspend fun changeMemberDetailsToNotSynced(id: Long)
+
+    suspend fun updateMemberAsAssigned(memberId: String)
 
 }
