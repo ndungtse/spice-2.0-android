@@ -3,10 +3,12 @@ package com.medtroniclabs.spice.ncd.medicalreview
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.view.MenuItem
 import android.view.View
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.appcompat.widget.PopupMenu
 import androidx.core.view.isVisible
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
@@ -23,6 +25,7 @@ import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.databinding.ActivityNcdMrBaseBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
+import com.medtroniclabs.spice.formgeneration.extension.safePopupMenuClickListener
 import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.ncd.data.Answer
 import com.medtroniclabs.spice.ncd.data.Chip
@@ -31,6 +34,7 @@ import com.medtroniclabs.spice.ncd.data.CurrentMedications
 import com.medtroniclabs.spice.ncd.data.InitialMedicalReview
 import com.medtroniclabs.spice.ncd.data.MedicalReviewRequestResponse
 import com.medtroniclabs.spice.ncd.data.NCDMRSummaryRequestResponse
+import com.medtroniclabs.spice.ncd.data.NCDPatientRemoveRequest
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.EncounterReference
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.MATERNAL_HEALTH
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.MENTAL_HEALTH
@@ -63,6 +67,7 @@ import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDMedicalReviewSumma
 import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDObstetricExaminationViewModel
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
+import com.medtroniclabs.spice.ui.dialog.GeneralSuccessDialog
 import com.medtroniclabs.spice.ui.dialog.MedicalReviewSuccessDialogFragment
 import com.medtroniclabs.spice.ui.landing.OnDialogDismissListener
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.AncVisitCallBack
@@ -76,6 +81,8 @@ import com.medtroniclabs.spice.ncd.data.BadgeNotificationModel
 import com.medtroniclabs.spice.ncd.medicalreview.prescription.activity.NCDPrescriptionActivity
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 import com.medtroniclabs.spice.ncd.registration.ui.RegistrationActivity
+import com.medtroniclabs.spice.ui.patientDelete.NCDDeleteConfirmationDialog
+import com.medtroniclabs.spice.ui.patientDelete.viewModel.NCDPatientDeleteViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -93,6 +100,7 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
     private val chiefComplaintsViewModel: NCDChiefComplaintsViewModel by viewModels()
     private val summaryViewModel: NCDMedicalReviewSummaryViewModel by viewModels()
     private val medicalReviewDiagnosisCardViewModel :NCDMedicalReviewDiagnosisCardViewModel by viewModels()
+    private val patientDeleteViewModel: NCDPatientDeleteViewModel by viewModels()
     private lateinit var binding: ActivityNcdMrBaseBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -131,6 +139,73 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
                     }
                 }
         })
+    }
+
+    private fun showHideVerticalIcon(visibility: Boolean) {
+        showVerticalMoreIcon(visibility) {
+            onMoreIconClicked(it)
+        }
+    }
+
+    private fun onMoreIconClicked(view: View) {
+        val popupMenu = PopupMenu(this@NCDMedicalReviewActivity, view)
+        popupMenu.menuInflater.inflate(R.menu.ncd_menu_patient_edit, popupMenu.menu)
+        popupMenu.menu.findItem(R.id.patient_delete).isVisible = true
+        popupMenu.safePopupMenuClickListener(object :
+            android.widget.PopupMenu.OnMenuItemClickListener,
+            PopupMenu.OnMenuItemClickListener {
+            override fun onMenuItemClick(menuItem: MenuItem): Boolean {
+                onPatientEditMenuItemClick(menuItem.itemId)
+                return true
+            }
+        })
+        popupMenu.setForceShowIcon(true)
+        popupMenu.show()
+    }
+
+    private fun onPatientEditMenuItemClick(itemId: Int) {
+        when (itemId) {
+            R.id.patient_delete -> {
+                patientDeleteCreate()
+            }
+        }
+    }
+
+    private fun patientDeleteCreate() {
+        patientDetailViewModel.patientDetailsLiveData.value?.data?.let { model ->
+            val deleteConfirmationDialog = NCDDeleteConfirmationDialog.newInstance(
+                getString(R.string.alert),
+                getString(
+                    R.string.patient_delete_confirmation,
+                    model.firstName,
+                    model.lastName
+                ),
+                { status, reason, otherReason ->
+                    if (status) {
+                        reason?.let {
+                            NCDPatientRemoveRequest(
+                                patientId = model.patientId.toString(),
+                                reason = it,
+                                provenance = ProvanceDto(),
+                                otherReason = otherReason
+                            )
+                        }?.let {
+                            patientDeleteViewModel.ncdPatientRemove(
+                                it
+                            )
+                        }
+                    }
+                },
+                this,
+                true,
+                okayButton = getString(R.string.yes),
+                cancelButton = getString(R.string.no)
+            )
+            deleteConfirmationDialog.show(
+                supportFragmentManager,
+                NCDDeleteConfirmationDialog.TAG
+            )
+        }
     }
 
     fun attachObservers() {
@@ -183,6 +258,13 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
                         binding.refreshLayout.isRefreshing = false
                     }
                     badgeNotifications()
+                    if (CommonUtils.isAfrica()) {
+                        if (resourceState.data?.programId.isNullOrBlank()) {
+                            showHideVerticalIcon(false)
+                        } else {
+                            showHideVerticalIcon(true)
+                        }
+                    }
                 }
 
                 ResourceState.ERROR -> {
@@ -229,6 +311,29 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
 
                 ResourceState.ERROR -> {
                     hideLoading()
+                }
+            }
+        }
+        patientDeleteViewModel.patientRemoveResponse.observe(this) { resourceState ->
+            when (resourceState.state) {
+                ResourceState.SUCCESS -> {
+                    hideLoading()
+                    GeneralSuccessDialog.newInstance(
+                        title = getString(R.string.delete),
+                        message = getString(R.string.patient_delete_message),
+                        okayButton = getString(R.string.done)
+                    ) {  redirectToHome() }.show(supportFragmentManager, GeneralSuccessDialog.TAG)
+                }
+
+                ResourceState.LOADING -> {
+                    showLoading()
+                }
+
+                ResourceState.ERROR -> {
+                    hideLoading()
+                    resourceState.message?.let {
+                        showErrorDialogue(getString(R.string.error), it, false) {}
+                    }
                 }
             }
         }

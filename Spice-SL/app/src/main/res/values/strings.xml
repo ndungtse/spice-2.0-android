@@ -1023,4 +1023,10 @@
     <string name="nutrition_comment_title">Nutrition Comments</string>
     <string name="smoking_comments">"Smoking Comments "</string>
     <string name="alcohol_comments">Alcohol Comments</string>
+
+    //Patient Edit
+    <string name="delete">Archive</string>
+    <string name="patient_delete_confirmation">Are you sure you want to Archive %1$s %2$s?</string>
+    <string name="valid_reason">Reason is required</string>
+    <string name="patient_delete_message">Patient deleted successfully</string>
 </resources>

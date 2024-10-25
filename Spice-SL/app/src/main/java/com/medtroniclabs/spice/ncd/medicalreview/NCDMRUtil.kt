@@ -83,6 +83,9 @@ object NCDMRUtil {
     const val ALCOHOL = "ALCOHOL"
     const val DIET_NUTRITION = "NUT"
     const val PHYSICAL_ACTIVITY = "OTHER"
+    const val TYPE_DELETE = "PATIENT_DELETE"
+    const val message = "message"
+
 
     fun validateInput(
         isMandatory: Boolean = false,

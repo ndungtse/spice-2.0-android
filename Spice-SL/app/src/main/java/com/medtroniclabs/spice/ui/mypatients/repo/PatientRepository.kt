@@ -9,6 +9,7 @@ import com.medtroniclabs.spice.ncd.data.PatientVisitResponse
 import com.medtroniclabs.spice.network.ApiHelper
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.network.resource.ResourceState
+import com.medtroniclabs.spice.ncd.data.NCDPatientRemoveRequest
 import javax.inject.Inject
 
 class PatientRepository @Inject constructor(
@@ -43,6 +44,20 @@ class PatientRepository @Inject constructor(
                     Resource(state = ResourceState.SUCCESS, it)
                 } ?: Resource(state = ResourceState.ERROR)
 
+            } else {
+                Resource(state = ResourceState.ERROR)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Resource(state = ResourceState.ERROR)
+        }
+    }
+
+    suspend fun ncdPatientRemove(request: NCDPatientRemoveRequest): Resource<Boolean> {
+        return try {
+            val response = apiHelper.ncdPatientRemove(request)
+            if (response.isSuccessful) {
+                Resource(state = ResourceState.SUCCESS, response.body()?.entity)
             } else {
                 Resource(state = ResourceState.ERROR)
             }

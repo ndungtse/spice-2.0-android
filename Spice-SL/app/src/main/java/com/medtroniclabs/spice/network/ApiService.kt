@@ -110,6 +110,7 @@ import com.medtroniclabs.spice.ncd.data.LifeStyleResponse
 import com.medtroniclabs.spice.ncd.data.LifeStyleRequest
 import com.medtroniclabs.spice.ncd.data.PatientVisitRequest
 import com.medtroniclabs.spice.ncd.data.PatientVisitResponse
+import com.medtroniclabs.spice.ncd.data.NCDPatientRemoveRequest
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
 import retrofit2.Response
@@ -442,4 +443,7 @@ interface ApiService {
     @POST("/spice-service/medical-review/patient-lifestyle-details")
     suspend fun getNcdLifeStyleDetails(@Body request: LifeStyleRequest): Response<APIResponse<ArrayList<LifeStyleResponse>>>
 
+
+    @POST("/spice-service/patient/delete")
+    suspend fun ncdPatientRemove(@Body request: NCDPatientRemoveRequest): Response<APIResponse<Boolean>>
 }

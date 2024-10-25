@@ -321,4 +321,6 @@ class NCDMedicalReviewRepository @Inject constructor(
             Resource(state = ResourceState.ERROR)
         }
     }
+
+    suspend fun getNCDShortageReason(type: String) = roomHelper.getNCDShortageReason(type)
 }

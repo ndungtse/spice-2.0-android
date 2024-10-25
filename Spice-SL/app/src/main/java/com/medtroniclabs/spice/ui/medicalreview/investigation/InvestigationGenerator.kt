@@ -84,11 +84,9 @@ class InvestigationGenerator(
                 investigationBinding.ivDropDown.setImageDrawable(getDrawable(R.drawable.ic_arrow_up))
             }
 
-            if (investigation.id != null && investigation.labTestResultList != null && investigation.labTestResultList!!.size > 0) {
+            if ((investigation.id != null && investigation.labTestResultList != null && investigation.labTestResultList!!.size > 0) || isNCDFlow) {
                 investigationBinding.ivRemoveMedication.invisible()
-            } else if (isNCDFlow){
-                investigationBinding.ivRemoveMedication.invisible()
-            } else {
+            }  else {
                 investigationBinding.ivRemoveMedication.visible()
             }
             toggleFacility(investigationBinding,investigation)
