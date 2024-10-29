@@ -9,6 +9,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
+import com.google.gson.Gson
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.app.analytics.model.UserDetail
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
@@ -18,6 +19,7 @@ import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.SpiceLocationManager
+import com.medtroniclabs.spice.data.model.CreateLabourDeliveryRequest
 import com.medtroniclabs.spice.data.model.MotherNeonateAncRequest
 import com.medtroniclabs.spice.data.model.PncSubmitResponse
 import com.medtroniclabs.spice.databinding.ActivityMedicalReviewPncBinding
@@ -71,7 +73,6 @@ class MotherNeonatePncActivity : BaseActivity(), View.OnClickListener, AncVisitC
     private val motherNeonatePncSummaryViewModel: MotherNeonatePncSummaryViewModel by viewModels()
     private val referPatientViewModel: ReferPatientViewModel by viewModels()
 
-
     // Fragments
     private lateinit var presentingComplaintsFragment: PresentingComplaintsFragment
     private lateinit var systemicExaminationsFragment: GeneralExaminationFragment
@@ -117,10 +118,12 @@ class MotherNeonatePncActivity : BaseActivity(), View.OnClickListener, AncVisitC
         initializeClickListener()
         setupRefreshLayout()
         setAnalytics()
+        setLabourDeliveryData(intent?.getStringExtra(DefinedParams.LabourDeliveryData))
     }
 
     private fun initializeViewModel() {
         viewModel.patientId = intent.getStringExtra(DefinedParams.PatientId)
+        patientViewModel.encounterId=intent.getStringExtra(DefinedParams.EncounterId)
     }
 
     private fun setupRefreshLayout() = binding.refreshLayout.setOnRefreshListener { swipeRefresh() }
@@ -361,6 +364,9 @@ class MotherNeonatePncActivity : BaseActivity(), View.OnClickListener, AncVisitC
 
 
     override fun onDataLoaded(details: PatientListRespModel) {
+        if (intent?.getBooleanExtra(DefinedParams.DirectPNCFlow,false) != true){
+            viewModel.neonateOutCome=details.pregnancyDetails?.neonatalOutcomes
+        }
             viewModel.pncVisit = details.pregnancyDetails?.pncVisitMedicalReview?.takeIf { true }?.plus(1) ?: 1
         //        viewModel.getChildMemberId(details.childPatientId)
 
@@ -670,8 +676,13 @@ class MotherNeonatePncActivity : BaseActivity(), View.OnClickListener, AncVisitC
         binding.btnSubmit.isEnabled = false
         updatePrescriptionInvestigationVisible(false)
         resetSelectionViews(TAG)
+        if(viewModel.neonateOutCome==MedicalReviewDefinedParams.FreshStillBirth || viewModel.neonateOutCome==MedicalReviewDefinedParams.MaceratedStillBirth){
+            motherSubmit()
+           viewModel.saveMotherNeonatePncData()
+        }else {
         neonateFlow()
-        motherSubmit()
+            motherSubmit()
+        }
     }
 
     private fun neoNateSubmit() {
@@ -693,7 +704,8 @@ class MotherNeonatePncActivity : BaseActivity(), View.OnClickListener, AncVisitC
             systemicExaminationViewModel,
             clinicalNotesViewModel,
             presentingComplaintsViewModel,
-            patientViewModel
+            patientViewModel,
+
         )
         setBackMotherData()
     }
@@ -895,6 +907,15 @@ class MotherNeonatePncActivity : BaseActivity(), View.OnClickListener, AncVisitC
     private fun areMotherAndChildNotAlive(): Boolean {
         return viewModel.motherNeonatePncRequest.pncMother?.isMotherAlive == false &&
                 viewModel.motherNeonatePncRequest.pncChild?.isChildAlive == false
+    }
+
+    private fun setLabourDeliveryData(labourRequest: String?) {
+        if (intent.getBooleanExtra(DefinedParams.DirectPNCFlow,false)) {
+        val gson = Gson()
+        val json = labourRequest
+        viewModel.labourDeliveryDetails = gson.fromJson(json, CreateLabourDeliveryRequest::class.java)
+            viewModel.neonateOutCome = viewModel.labourDeliveryDetails?.neonateDTO?.neonateOutcome
+        }
     }
 }
 

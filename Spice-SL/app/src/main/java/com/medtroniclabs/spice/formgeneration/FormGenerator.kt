@@ -93,7 +93,6 @@ import com.medtroniclabs.spice.formgeneration.config.ViewType.VIEW_TYPE_DIALOG_C
 import com.medtroniclabs.spice.formgeneration.config.ViewType.VIEW_TYPE_FORM_AGE
 import com.medtroniclabs.spice.formgeneration.config.ViewType.VIEW_TYPE_FORM_BP
 import com.medtroniclabs.spice.formgeneration.config.ViewType.VIEW_TYPE_FORM_CARD_FAMILY
-import com.medtroniclabs.spice.formgeneration.config.ViewType.VIEW_TYPE_FORM_CHEKBOX
 import com.medtroniclabs.spice.formgeneration.config.ViewType.VIEW_TYPE_FORM_DATEPICKER
 import com.medtroniclabs.spice.formgeneration.config.ViewType.VIEW_TYPE_FORM_EDITTEXT
 import com.medtroniclabs.spice.formgeneration.config.ViewType.VIEW_TYPE_FORM_EDITTEXT_AREA
@@ -103,7 +102,6 @@ import com.medtroniclabs.spice.formgeneration.config.ViewType.VIEW_TYPE_FORM_TEX
 import com.medtroniclabs.spice.formgeneration.config.ViewType.VIEW_TYPE_INSTRUCTION
 import com.medtroniclabs.spice.formgeneration.config.ViewType.VIEW_TYPE_METAL_HEALTH
 import com.medtroniclabs.spice.formgeneration.config.ViewType.VIEW_TYPE_NO_OF_DAYS
-import com.medtroniclabs.spice.formgeneration.config.ViewType.VIEW_TYPE_SCALE_INDICATOR
 import com.medtroniclabs.spice.formgeneration.config.ViewType.VIEW_TYPE_SINGLE_SELECTION
 import com.medtroniclabs.spice.formgeneration.config.ViewType.VIEW_TYPE_TIME
 import com.medtroniclabs.spice.formgeneration.extension.DecimalDigitsInputFilter
@@ -119,6 +117,7 @@ import com.medtroniclabs.spice.formgeneration.model.ConditionalModel
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.model.MentalHealthOption
 import com.medtroniclabs.spice.formgeneration.ui.SingleSelectionCustomView
+import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapterCustomLayout
 import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
 import com.medtroniclabs.spice.formgeneration.utility.DigitsInputFilter
 import com.medtroniclabs.spice.formgeneration.utility.FormFieldValidator
@@ -131,8 +130,8 @@ import com.medtroniclabs.spice.mappingkey.Screening
 import com.medtroniclabs.spice.mappingkey.Screening.DateOfBirth
 import com.medtroniclabs.spice.mappingkey.Screening.Hour
 import com.medtroniclabs.spice.mappingkey.Screening.Minute
-import com.medtroniclabs.spice.ui.assessment.AssessmentCommonUtils.getMuacColorCode
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.muacCode
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.PREGNANCY_MAX_AGE
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.PREGNANCY_MIN_AGE
 import java.util.Calendar
@@ -1272,36 +1271,72 @@ class FormGenerator(
                     dosageListModel = serverViewModel.dosageListItems
                 )
             }
-            val adapter = CustomSpinnerAdapter(context, translate)
-            optionsList?.let { list ->
-                addDropDownList(list, dropDownList)
+            if (id==muacCode){
+                binding.etUserInput.background= ContextCompat.getDrawable(context,R.drawable.edittext_background)
+                val adapter =  CustomSpinnerAdapterCustomLayout(context, translate)
+                optionsList?.let { list ->
+                    addDropDownList(list, dropDownList)
+                }
+
+                adapter.setData(dropDownList)
+                binding.etUserInput.adapter = adapter
+                binding.etUserInput.onItemSelectedListener =
+                    object : AdapterView.OnItemSelectedListener {
+                        override fun onItemSelected(
+                            adapterView: AdapterView<*>?,
+                            view: View?,
+                            pos: Int,
+                            itemId: Long
+                        ) {
+                            handleSelectedItem(
+                                adapter.getData(position = pos),
+                                id,
+                                dependentID,
+                                serverViewModel
+                            )
+                            onPopulateCondition(condition)
+                        }
+
+                        override fun onNothingSelected(p0: AdapterView<*>?) {
+                            /**
+                             * usage of this method is not required
+                             */
+                        }
+                    }
+            } else {
+                val adapter=CustomSpinnerAdapter(context, translate)
+                optionsList?.let { list ->
+                    addDropDownList(list, dropDownList)
+                }
+
+                adapter.setData(dropDownList)
+                binding.etUserInput.adapter = adapter
+                binding.etUserInput.onItemSelectedListener =
+                    object : AdapterView.OnItemSelectedListener {
+                        override fun onItemSelected(
+                            adapterView: AdapterView<*>?,
+                            view: View?,
+                            pos: Int,
+                            itemId: Long
+                        ) {
+                            handleSelectedItem(
+                                adapter.getData(position = pos),
+                                id,
+                                dependentID,
+                                serverViewModel
+                            )
+                            onPopulateCondition(condition)
+                        }
+
+                        override fun onNothingSelected(p0: AdapterView<*>?) {
+                            /**
+                             * usage of this method is not required
+                             */
+                        }
+                    }
             }
 
-            adapter.setData(dropDownList)
-            binding.etUserInput.adapter = adapter
-            binding.etUserInput.onItemSelectedListener =
-                object : AdapterView.OnItemSelectedListener {
-                    override fun onItemSelected(
-                        adapterView: AdapterView<*>?,
-                        view: View?,
-                        pos: Int,
-                        itemId: Long
-                    ) {
-                        handleSelectedItem(
-                            adapter.getData(position = pos),
-                            id,
-                            dependentID,
-                            serverViewModel
-                        )
-                        onPopulateCondition(condition)
-                    }
 
-                    override fun onNothingSelected(p0: AdapterView<*>?) {
-                        /**
-                         * usage of this method is not required
-                         */
-                    }
-                }
 
             defaultValue?.let { value ->
                 val selectedMapIndex =

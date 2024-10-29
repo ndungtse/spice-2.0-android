@@ -225,6 +225,11 @@ object DefinedParams {
     const val DialogWidth = 720f
     const val COMMUNITY = "COMMUNITY"
     const val NON_COMMUNITY = "NON_COMMUNITY"
+    const val DirectPNCFlow = "DirectPNCFlow"
+    const val LabourDeliveryData="LabourDeliveryData"
+    const val NeonateOutcome = "NeonateOutcome"
+
+
     const val Others = "Others"
 
     const val RED_MAX_MUAC = 11.5

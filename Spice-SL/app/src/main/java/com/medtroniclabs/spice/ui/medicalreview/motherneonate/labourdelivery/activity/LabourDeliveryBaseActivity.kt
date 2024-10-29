@@ -8,14 +8,18 @@ import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.core.view.isVisible
+import com.google.gson.Gson
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.app.analytics.model.UserDetail
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
+import com.medtroniclabs.spice.appextensions.gone
+import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.SpiceLocationManager
 import com.medtroniclabs.spice.data.MedicalReviewSummarySubmitRequest
+import com.medtroniclabs.spice.data.model.CreateLabourDeliveryRequest
 import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.databinding.ActivityMedicalReviewLabourDeliveryactivityBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
@@ -33,6 +37,7 @@ import com.medtroniclabs.spice.ui.medicalreview.motherneonate.labourdelivery.fra
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.labourdelivery.fragment.NeonateSummaryFragment
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.labourdelivery.viewmodel.LabourDeliverySummaryViewModel
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.labourdelivery.viewmodel.LabourDeliveryViewModel
+import com.medtroniclabs.spice.ui.medicalreview.motherneonate.pnc.activity.MotherNeonatePncActivity
 import com.medtroniclabs.spice.ui.medicalreview.prescription.PrescriptionActivity
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
@@ -75,6 +80,7 @@ class LabourDeliveryBaseActivity : BaseActivity(), View.OnClickListener, AncVisi
         initializeListener()
         getCurrentLocation()
         viewModel.patientId = intent.getStringExtra(DefinedParams.PatientId)
+        viewModel.isDirectPnc = intent.getBooleanExtra(DefinedParams.DirectPNCFlow,false)
         viewModel.set(this)
         setAnalytics()
     }
@@ -159,6 +165,25 @@ private fun attachObserver() {
                 hideLoading()
             }
         }
+    }
+    viewModel.neonateOutComeStateLiveData.observe(this) {
+        binding.neonateContainer.apply {
+            if (it != null && it.isNotEmpty()) {
+                if (it[0].value == MedicalReviewDefinedParams.MaceratedStillBirth || it[0].value == MedicalReviewDefinedParams.FreshStillBirth) {gone() }
+                else {
+                    visible()
+                    replaceFragmentInId<NeonateFragment>(
+                        id,
+                        tag = NeonateFragment.TAG
+                    )
+                }
+            }else{
+                gone()
+            }
+        }
+    }
+    viewModel.neonateDataForPncLiveData.observe(this) {
+            handleDirectPncNavigation(it)
     }
     viewModel.summaryCreateResponse.observe(this) { resourceState ->
         when (resourceState.state) {
@@ -267,6 +292,18 @@ private fun attachObserver() {
         }
     }
 }
+    private fun handleDirectPncNavigation(createLabourDeliveryRequest: CreateLabourDeliveryRequest) {
+        val gson = Gson()
+        val createLabourDeliveryRequestJson = gson.toJson(createLabourDeliveryRequest)
+            val intent = Intent(this, MotherNeonatePncActivity::class.java).apply {
+                putExtra(DefinedParams.EncounterId, viewModel.encounterID)
+                putExtra(DefinedParams.PatientId, viewModel.patientId)
+                putExtra(DefinedParams.ID, getStringExtra(DefinedParams.ID))
+                putExtra(DefinedParams.LabourDeliveryData, createLabourDeliveryRequestJson)
+                putExtra(DefinedParams.DirectPNCFlow, true)
+            }
+            startActivity(intent)
+    }
 
 private fun initializeView() {
     if (!(SecuredPreference.getBoolean(SecuredPreference.EnvironmentKey.IS_LABOUR_DELIVERY_LOADED.name))) {
@@ -330,14 +367,19 @@ private fun initializeFragment() {
         binding.labourDeliveryContainer.id,
         tag = LabourOrDeliveryFragment.TAG
     )
-    replaceFragmentInId<MotherFragment>(
-        binding.motherContainer.id,
-        tag = MotherFragment.TAG
-    )
-    replaceFragmentInId<NeonateFragment>(
-        binding.neonateContainer.id,
-        tag = NeonateFragment.TAG
-    )
+    if (!viewModel.isDirectPnc) {
+        replaceFragmentInId<MotherFragment>(
+            binding.motherContainer.id,
+            tag = MotherFragment.TAG
+        )
+        replaceFragmentInId<NeonateFragment>(
+            binding.neonateContainer.id,
+            tag = NeonateFragment.TAG
+        )
+    }else{
+        binding.btnSubmit.text=getString(R.string.next)
+    }
+
 }
 
 override fun onClick(view: View) {
@@ -359,11 +401,24 @@ private fun handleInvestigationClick() {
     }
 }
 
-private fun handleSubmitClick() {
-    if (labourValidation()) {
-        withNetworkCheck(connectivityManager, ::submitDetails)
+    private fun handleSubmitClick() {
+        if (viewModel.isDirectPnc) {
+            if (viewModel.neonateOutComeStateLiveData.value?.get(0)?.value == MedicalReviewDefinedParams.FreshStillBirth) {
+                handleDirectPncNavigation(viewModel.setLabourDeliveryRequest(patientViewModel.encounterId))
+            }else if (viewModel.neonateOutComeStateLiveData.value?.get(0)?.value == MedicalReviewDefinedParams.MaceratedStillBirth &&validateLabourOrDelivery()){
+                    withNetworkCheck(connectivityManager, ::submitDetails)
+            }
+            else {
+                if (labourValidation()) {
+                    withNetworkCheck(connectivityManager, ::submitDetails)
+                }
+            }
+        } else {
+            if (labourValidation()) {
+                withNetworkCheck(connectivityManager, ::submitDetails)
+            }
+        }
     }
-}
 
 private fun submitDetails() {
     viewModel.createLabourDeliveryRequest(patientViewModel.encounterId)

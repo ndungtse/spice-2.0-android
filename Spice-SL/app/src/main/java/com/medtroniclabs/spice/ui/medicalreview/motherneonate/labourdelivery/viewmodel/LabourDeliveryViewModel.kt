@@ -4,7 +4,6 @@ import android.content.Context
 import android.location.Location
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.postLoading
@@ -57,8 +56,8 @@ class LabourDeliveryViewModel @Inject constructor(
     var context: Context? = null
     var motherPatientStatus: String? = null
     var lastMensurationDate: String? = null
-    val timeOfDeliveryMap = HashMap<String, Any>()
-    val timeOfLabourOnsetMap = HashMap<String, Any>()
+    var timeOfDeliveryMap = HashMap<String, Any>()
+    var timeOfLabourOnsetMap = HashMap<String, Any>()
     var perineumStateMap = HashMap<String, Any>()
     var motherSignsAndSymptoms = listOf<ChipViewItemModel>()
     var motherGeneralCondition: String? = null
@@ -86,8 +85,10 @@ class LabourDeliveryViewModel @Inject constructor(
     var noOfNeonates: String? = null
     var neonateOutcome: String? = null
     var neonateBirthWeight: String? = null
+    var name:String?=null
     var neonateSignsAndSymptoms = listOf<ChipViewItemModel>()
     var gestationalAge:String?=null
+    var encounterID:String? = null
     private val _apgarScoresLiveData = MutableLiveData<List<ApgarScore>>()
     val apgarScoreLiveData: LiveData<List<ApgarScore>>
         get() = _apgarScoresLiveData
@@ -111,6 +112,11 @@ class LabourDeliveryViewModel @Inject constructor(
     private val _gestationalDate = MutableLiveData<String>()
     val gestationalDate: LiveData<String> get() = _gestationalDate
     private var summaryCreateRequest: LabourDeliverySummaryRequest? = null
+
+    var isDirectPnc:Boolean=false
+    var neonateOutComeStateLiveData= MutableLiveData<List<ChipViewItemModel>>()
+    var neonateDataForPncLiveData= MutableLiveData<CreateLabourDeliveryRequest>()
+
 
     fun set(context: Context) {
         this.context = context
@@ -272,59 +278,73 @@ class LabourDeliveryViewModel @Inject constructor(
     fun createLabourDeliveryRequest(prescriptionEncounterId: String?) {
         if (timeOfDeliveryInHour?.toInt()!! <=12 && timeOfDeliveryInMinute?.toInt()!! <=59 && timeOfLabourOnSetInHour?.toInt()!!<=12 &&
             timeOfLabourOnSetInMinutes?.toInt()!!<=59){
-            val encounter = MedicalReviewEncounter(
-                latitude = lastLocation?.latitude ?: 0.0,
-                longitude = lastLocation?.longitude ?: 0.0,
-                referred = true,
-                startTime = DateUtils.getCurrentDateAndTime(
-                    DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
-                ),
-                endTime = DateUtils.getCurrentDateAndTime(
-                    DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
-                ),
-                householdId = patientDetailModel?.houseHoldId,
-                patientId = patientId,
-                provenance = ProvanceDto(),
-                memberId = patientDetailModel?.memberId.toString()
-            )
-            val encounterChild = MedicalReviewEncounter(
-                latitude = lastLocation?.latitude ?: 0.0,
-                longitude = lastLocation?.longitude ?: 0.0,
-                referred = true,
-                startTime = DateUtils.getCurrentDateAndTime(
-                    DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
-                ),
-                endTime = DateUtils.getCurrentDateAndTime(
-                    DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
-                ),
-                householdId = patientDetailModel?.houseHoldId,
-                provenance = ProvanceDto()
-            )
-            val motherModel = createMotherModel(encounter, prescriptionEncounterId)
-            val neonateModel = createNeonateModel(encounterChild)
-            val childModel = createChildModel(ProvanceDto())
-            val createLabourMedicalReviewRequest = CreateLabourDeliveryRequest(
-                motherDTO = motherModel,
-                neonateDTO = neonateModel,
-                child = childModel
-            )
-            viewModelScope.launch(dispatcherIO) {
-                createLabourDeliveryMedicalReviewResponse.postLoading()
-                createLabourDeliveryMedicalReviewResponse.postValue(
-                    repository.createLabourDeliveryMedicalReview(
-                        request = createLabourMedicalReviewRequest
+           val createLabourMedicalReviewRequest = setLabourDeliveryRequest(prescriptionEncounterId)
+            if (isDirectPnc){
+                neonateDataForPncLiveData.postValue(createLabourMedicalReviewRequest)
+            }else {
+                viewModelScope.launch(dispatcherIO) {
+                    createLabourDeliveryMedicalReviewResponse.postLoading()
+                    createLabourDeliveryMedicalReviewResponse.postValue(
+                        repository.createLabourDeliveryMedicalReview(
+                            request = createLabourMedicalReviewRequest
+                        )
                     )
-                )
+                }
             }
         }
 
     }
 
+    fun setLabourDeliveryRequest(prescriptionEncounterId: String?):CreateLabourDeliveryRequest{
+        val encounter = MedicalReviewEncounter(
+            latitude = lastLocation?.latitude ?: 0.0,
+            longitude = lastLocation?.longitude ?: 0.0,
+            referred = true,
+            startTime = DateUtils.getCurrentDateAndTime(
+                DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
+            ),
+            endTime = DateUtils.getCurrentDateAndTime(
+                DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
+            ),
+            householdId = patientDetailModel?.houseHoldId,
+            patientId = patientId,
+            provenance = ProvanceDto(),
+            memberId = patientDetailModel?.memberId.toString()
+        )
+        val encounterChild = MedicalReviewEncounter(
+            latitude = lastLocation?.latitude ?: 0.0,
+            longitude = lastLocation?.longitude ?: 0.0,
+            referred = true,
+            startTime = DateUtils.getCurrentDateAndTime(
+                DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
+            ),
+            endTime = DateUtils.getCurrentDateAndTime(
+                DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
+            ),
+            householdId = patientDetailModel?.houseHoldId,
+            provenance = ProvanceDto()
+        )
+        val motherModel = createMotherModel(encounter, prescriptionEncounterId)
+        val neonateModel = createNeonateModel(encounterChild)
+        val childModel = createChildModel(ProvanceDto())
+        val createLabourMedicalReviewRequest = CreateLabourDeliveryRequest(
+            motherDTO = motherModel,
+            neonateDTO = neonateModel,
+            child = childModel
+        )
+        return createLabourMedicalReviewRequest
+    }
+
     private fun createChildModel(provanceDto: ProvanceDto): Child {
         val motherName = patientDetailModel?.name
-        val childName = if (motherName != null) {
-            "${DefinedParams.NeonateBabyNamePrefix} ${motherName}"
-        } else null
+        val childName =
+        if (name != null) {
+            name
+            } else {
+                if (motherName != null) {
+                    "${DefinedParams.NeonateBabyNamePrefix} ${motherName}"
+                } else null
+            }
         val village = patientDetailModel?.village.takeIf { it != null }
         val villageId = patientDetailModel?.villageId.takeIf { it != null }
 
@@ -429,6 +449,7 @@ class LabourDeliveryViewModel @Inject constructor(
         encounter: MedicalReviewEncounter,
         prescriptionEncounterId: String?
     ): MotherDTO {
+        encounterID=prescriptionEncounterId
         encounter.id = prescriptionEncounterId
         val motherTTDosage = motherTTDosageSoFar
         val labourDTO = createLabourDeliveryModel()
@@ -540,6 +561,7 @@ class LabourDeliveryViewModel @Inject constructor(
         _submitButtonState.value = (timeOfDeliveryMap.isNotEmpty()
                 || timeOfLabourOnsetMap.isNotEmpty()
                 || dateOfDelivery != null
+                || name!=null
                 || dateOfLabourOnset != null
                 || timeOfDeliveryInHour != null
                 || timeOfDeliveryInMinute != null

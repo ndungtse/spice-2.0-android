@@ -7,10 +7,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.AppCompatTextView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.appextensions.gone
+import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
@@ -226,46 +229,70 @@ class NeonateFragment : BaseFragment() {
 
     private fun initUI() {
         binding.tvGenderLabel.markMandatory()
-        agparScoreAdapter = AgparScoreAdapter { rowType, columnType, selectedScore ->
-            viewModel.agparRowIdentifier = rowType
-            viewModel.agparColumnIdentifier = columnType
-            viewModel.agparSelectedScore = selectedScore
-            showAgparScoreDialog()
-
+        if (viewModel.isDirectPnc){
+            val constraintLayout =binding.tvGenderLabel // Replace with your actual ConstraintLayout ID
+            val params = constraintLayout.layoutParams as ConstraintLayout.LayoutParams
+            params.topToBottom =binding.etName.id
+            constraintLayout.layoutParams = params
+            constraintLayout.requestLayout()
+            binding.tvNeonateOutcomeLabel.text=getString(R.string.name)
+            binding.etName.visible()
+            binding.directPncGroup.gone()
+        }else {
+            binding.directPncGroup.visible()
+            binding.etName.gone()
         }
-        binding.rvAgparScores.adapter = agparScoreAdapter
-        viewModel.getAgparScoreData()
+            agparScoreAdapter = AgparScoreAdapter { rowType, columnType, selectedScore ->
+                viewModel.agparRowIdentifier = rowType
+                viewModel.agparColumnIdentifier = columnType
+                viewModel.agparSelectedScore = selectedScore
+                showAgparScoreDialog()
 
-        binding.etBirthWeight.filters = arrayOf(DecimalInputFilter())
-        binding.etBirthWeight.doAfterTextChanged {
-            val birthWeight = it?.trim().toString().toDoubleOrNull()
-            if (birthWeight != null) {
-                viewModel.neonateBirthWeight = birthWeight.toString()
-                binding.tvBirthWeightCal.text= CommonUtils.birthWeight(birthWeight,requireContext())
-                viewModel.validateSubmitButtonState()
-            } else {
-                viewModel.neonateBirthWeight = null
-                binding.tvBirthWeightCal.text=""
-                viewModel.validateSubmitButtonState()
             }
-        }
+            binding.rvAgparScores.adapter = agparScoreAdapter
+            viewModel.getAgparScoreData()
 
-        cgNeonateOutcome =
-            TagListCustomView(binding.root.context, binding.cgNeonateOutcome) { _, _, _ ->
-                cgNeonateOutcome.getSelectedTags().let {
-                    if (it.isNotEmpty()) {
-                        viewModel.neonateOutcome = it[0].value
-                    } else {
-                        viewModel.neonateOutcome = null
-                    }
+            binding.etBirthWeight.filters = arrayOf(DecimalInputFilter())
+            binding.etBirthWeight.doAfterTextChanged {
+                val birthWeight = it?.trim().toString().toDoubleOrNull()
+                if (birthWeight != null) {
+                    viewModel.neonateBirthWeight = birthWeight.toString()
+                    binding.tvBirthWeightCal.text =
+                        CommonUtils.birthWeight(birthWeight, requireContext())
+                    viewModel.validateSubmitButtonState()
+                } else {
+                    viewModel.neonateBirthWeight = null
+                    binding.tvBirthWeightCal.text = ""
+                    viewModel.validateSubmitButtonState()
                 }
-                viewModel.validateSubmitButtonState()
             }
-        cgSignSymptomsObserved =
-            TagListCustomView(binding.root.context, binding.cgSignsSymptomsObserved) { _, _, _ ->
-                viewModel.neonateSignsAndSymptoms = cgSignSymptomsObserved.getSelectedTags()
+        binding.etName.doAfterTextChanged {
+            val name = it?.trim().toString()
+                viewModel.name = name
                 viewModel.validateSubmitButtonState()
-            }
+
+        }
+
+            cgNeonateOutcome =
+                TagListCustomView(binding.root.context, binding.cgNeonateOutcome) { _, _, _ ->
+                    cgNeonateOutcome.getSelectedTags().let {
+                        if (it.isNotEmpty()) {
+                            viewModel.neonateOutcome = it[0].value
+                        } else {
+                            viewModel.neonateOutcome = null
+                        }
+                    }
+                    viewModel.validateSubmitButtonState()
+                }
+            cgSignSymptomsObserved =
+                TagListCustomView(
+                    binding.root.context,
+                    binding.cgSignsSymptomsObserved
+                ) { _, _, _ ->
+                    viewModel.neonateSignsAndSymptoms = cgSignSymptomsObserved.getSelectedTags()
+                    viewModel.validateSubmitButtonState()
+                }
+
     }
 
     private fun showAgparScoreDialog() {

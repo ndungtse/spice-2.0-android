@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.common.DefinedParams
+import com.medtroniclabs.spice.data.model.CreateLabourDeliveryRequest
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.model.PatientDetailRequest
 import com.medtroniclabs.spice.model.PatientListRespModel
@@ -42,6 +43,8 @@ class PatientDetailViewModel @Inject constructor(
     var origin: String? = null
     var mrMenuId: String? = null
     var isCmr: Boolean = false
+
+    var neonateOutCome: String?=null
 
     fun getPatients(id: String, assessmentType: String? = null, origin: String? = null) {
         viewModelScope.launch(dispatcherIO) {

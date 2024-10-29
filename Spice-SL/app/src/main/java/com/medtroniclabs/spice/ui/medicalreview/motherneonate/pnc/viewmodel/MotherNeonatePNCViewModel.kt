@@ -5,13 +5,13 @@ import com.medtroniclabs.spice.data.model.PncChild
 import com.medtroniclabs.spice.data.model.PncMother
 import android.location.Location
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.data.MedicalReviewSummarySubmitRequest
 import com.medtroniclabs.spice.data.SummaryCreateRequest
 import com.medtroniclabs.spice.data.model.ChipViewItemModel
+import com.medtroniclabs.spice.data.model.CreateLabourDeliveryRequest
 import com.medtroniclabs.spice.data.model.MedicalReviewEncounter
 import com.medtroniclabs.spice.data.model.PncSubmitResponse
 import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
@@ -23,6 +23,7 @@ import com.medtroniclabs.spice.ui.BaseViewModel
 import com.medtroniclabs.spice.ui.medicalreview.abovefiveyears.ClinicalNotesViewModel
 import com.medtroniclabs.spice.ui.medicalreview.abovefiveyears.PresentingComplaintsViewModel
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.pnc.repo.MotherNeonatePNCRepo
+import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import com.medtroniclabs.spice.ui.medicalreview.viewmodel.GeneralExaminationViewModel
 import com.medtroniclabs.spice.ui.medicalreview.viewmodel.PhysicalExaminationViewModel
@@ -59,6 +60,8 @@ class MotherNeonatePNCViewModel @Inject constructor(
     var memberId: String? = null
     var childMemberId: String? = null
     val childDetailsLiveData = MutableLiveData<Resource<PatientListRespModel>>()
+    var labourDeliveryDetails:CreateLabourDeliveryRequest?=null
+    var neonateOutCome:String?=null
 
     fun getMotherPncStaticData() {
         viewModelScope.launch(dispatcherIO) {
@@ -171,7 +174,8 @@ class MotherNeonatePNCViewModel @Inject constructor(
                         patientViewModel.encounterId,
                         details,
                         true
-                    ) }
+                    ) },labourDTO=labourDeliveryDetails?.motherDTO?.labourDTO,
+                    neonateOutcome = labourDeliveryDetails?.neonateDTO?.neonateOutcome
                 ).apply {
                     setCommonFields(
                         clinicalNotesViewModel,
@@ -179,6 +183,10 @@ class MotherNeonatePNCViewModel @Inject constructor(
                         systemicExaminationViewModel
                     )
                 }
+                if (labourDeliveryDetails?.neonateDTO?.neonateOutcome== MedicalReviewDefinedParams.LiveBirth && !labourDeliveryDetails?.neonateDTO?.neonateOutcome.isNullOrEmpty()){
+                    child= labourDeliveryDetails?.child
+                }
+
             }
         }
     }
@@ -209,6 +217,10 @@ class MotherNeonatePNCViewModel @Inject constructor(
         clinicalNotesViewModel: ClinicalNotesViewModel
     ) {
         patientViewModel.patientDetailsLiveData.value?.data?.let { details ->
+            val childPatientEncounter = patientViewModel.getChildPatientName()?.takeIf { it.isNotEmpty() }?.let { name ->
+                createEncounter(name, patientViewModel.childEncounterId, details, false)
+            } ?: labourDeliveryDetails?.neonateDTO?.encounter
+
             motherNeonatePncRequest.apply {
                 pncMother?.encounter?.id=patientViewModel.encounterId
                 pncMother?.id=patientViewModel.encounterId
@@ -217,15 +229,7 @@ class MotherNeonatePNCViewModel @Inject constructor(
                     breastFeeding = physicalExaminationViewModel.breastFeeding,
                     exclusiveBreastFeeding = physicalExaminationViewModel.exclusiveBreastFeeding,
                     congenitalDetect = physicalExaminationViewModel.congenitalDefect,
-                    encounter = patientViewModel.getChildPatientName()?.let {
-                        createEncounter(
-                            it,
-                            patientViewModel.childEncounterId,
-                            details,
-                            false
-                        )
-                    }
-
+                    encounter = childPatientEncounter
                 ).apply {
                     setCommonFields(
                         presentingComplaintsViewModel,

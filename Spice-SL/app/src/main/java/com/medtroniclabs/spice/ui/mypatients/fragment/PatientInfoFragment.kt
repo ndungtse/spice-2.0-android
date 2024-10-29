@@ -187,6 +187,7 @@ class PatientInfoFragment : BaseFragment() {
         viewModel.patientDetailsId = patientListRespModel.id
         viewModel.childPatientDetails=patientListRespModel.pregnancyDetails?.neonatePatientId
         viewModel.dateOfDelivery=patientListRespModel.pregnancyDetails?.dateOfDelivery
+        viewModel.neonateOutCome=patientListRespModel.pregnancyDetails?.neonatalOutcomes
         val isAnc = isAnc()
         val isPnc= isPnc()
         val name =

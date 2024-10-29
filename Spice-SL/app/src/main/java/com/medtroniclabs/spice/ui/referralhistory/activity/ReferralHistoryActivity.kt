@@ -204,6 +204,11 @@ class ReferralHistoryActivity : BaseActivity(), AncVisitCallBack {
             DefinedParams.DateOfDelivery,
             patientDetailViewModel.dateOfDelivery
         )
+        intent.putExtra(
+            DefinedParams.NeonateOutcome,
+           patientDetailViewModel.neonateOutCome
+        )
+
         startActivity(intent)
     }
 

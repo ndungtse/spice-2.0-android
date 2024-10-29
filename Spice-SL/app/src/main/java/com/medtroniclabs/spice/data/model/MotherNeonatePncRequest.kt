@@ -1,9 +1,12 @@
 package com.medtroniclabs.spice.data.model
 
+import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
+
 
 data class MotherNeonatePncRequest(
     var pncMother: PncMother? = null,
-    var pncChild: PncChild? = null
+    var pncChild: PncChild? = null,
+    var child: Child? = null
 )
 
 
@@ -19,7 +22,9 @@ data class PncMother(
     var systemicExaminations: List<String?>? = null,
     var systemicExaminationsNotes: String? = null,
     var clinicalNotes: String? = null,
-    var encounter: MedicalReviewEncounter? = null
+    var encounter: MedicalReviewEncounter? = null,
+    var labourDTO: LabourDTO?=null,
+    var neonateOutcome: String?=null
 )
 
 

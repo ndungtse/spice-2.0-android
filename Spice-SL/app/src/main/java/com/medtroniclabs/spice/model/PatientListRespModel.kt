@@ -97,6 +97,7 @@ data class PregnancyDetails(
     val villageId: String? = null,
     val dateOfDelivery:String?=null,
     val isPregnancyRisk: Boolean? = null,
+    val neonatalOutcomes:String? = null
 ) : Serializable
 data class SearchAndListResponse(
     val patientList: List<PatientListRespModel> = emptyList(),

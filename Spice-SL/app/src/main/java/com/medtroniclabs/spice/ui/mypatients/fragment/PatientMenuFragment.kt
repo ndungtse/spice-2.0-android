@@ -18,6 +18,7 @@ import com.medtroniclabs.spice.common.DefinedParams.DOB
 import com.medtroniclabs.spice.common.DefinedParams.DateOfDelivery
 import com.medtroniclabs.spice.common.DefinedParams.Gender
 import com.medtroniclabs.spice.common.DefinedParams.ID
+import com.medtroniclabs.spice.common.DefinedParams.NeonateOutcome
 import com.medtroniclabs.spice.common.DefinedParams.PatientId
 import com.medtroniclabs.spice.common.DefinedParams.female
 import com.medtroniclabs.spice.common.DefinedParams.male
@@ -133,7 +134,8 @@ class PatientMenuFragment : BaseFragment(), MenuSelectionListener {
             gender: String?,
             dob: String?,
             childPatientId: String?,
-            dateOfDelivery:String?
+            dateOfDelivery:String?,
+            neonateOutcome: String?
         ): PatientMenuFragment {
             val fragment = PatientMenuFragment()
             val bundle = Bundle()
@@ -143,6 +145,7 @@ class PatientMenuFragment : BaseFragment(), MenuSelectionListener {
             bundle.putString(DOB, dob)
             bundle.putString(ChildPatientId, childPatientId)
             bundle.putString(DateOfDelivery, dateOfDelivery)
+            bundle.putString(NeonateOutcome,neonateOutcome)
             fragment.arguments = bundle
             return fragment
         }
@@ -170,8 +173,9 @@ class PatientMenuFragment : BaseFragment(), MenuSelectionListener {
                     val id = arguments?.getString(ID, "")
                     val childPatientId=arguments?.getString(ChildPatientId,"")
                     val dateOfDelivery=arguments?.getString(DateOfDelivery,"")
+                    val neonateOutcome=arguments?.getString(NeonateOutcome,"")
                     if (patientId?.isNotBlank() == true) {
-                        SelectFlowDialog.newInstance(patientId, id,childPatientId,dateOfDelivery)
+                        SelectFlowDialog.newInstance(patientId, id,childPatientId,dateOfDelivery,neonateOutcome)
                             .show(childFragmentManager, SelectFlowDialog.TAG)
                     }
                 })

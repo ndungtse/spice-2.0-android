@@ -56,13 +56,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/_20sdp"
-            android:layout_marginTop="@dimen/_10sdp"
+            android:layout_marginTop="@dimen/_20sdp"
             android:fontFamily="@font/inter_regular"
             android:text="@string/date_of_delivery"
             android:textColor="@color/table_title"
             android:textSize="@dimen/_16ssp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvLabourOrDelivery" />
+            app:layout_constraintTop_toBottomOf="@+id/cgNeonateOutcomeError" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/etDateOfDelivery"
@@ -72,16 +72,17 @@
             android:layout_marginTop="@dimen/_5sdp"
             android:background="@drawable/edittext_background"
             android:drawableEnd="@drawable/calender"
+            android:fontFamily="@font/inter_medium"
             android:gravity="start|center"
             android:hint="@string/select_date"
             android:paddingStart="@dimen/_10sdp"
             android:textColor="@color/grey_black"
-            android:fontFamily="@font/inter_medium"
             android:textColorHint="@color/btn_disable_grey"
             android:textSize="@dimen/_16ssp"
             app:layout_constraintEnd_toEndOf="@+id/centerGuideline"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tvDateOfDelivery" />
+
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tvDateOfDeliveryError"
@@ -114,15 +115,15 @@
             android:id="@+id/etDateOfLabourOnset"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/_5sdp"
             android:layout_marginHorizontal="@dimen/_20sdp"
+            android:layout_marginTop="@dimen/_5sdp"
             android:background="@drawable/edittext_background"
             android:drawableEnd="@drawable/calender"
+            android:fontFamily="@font/inter_medium"
             android:gravity="start|center"
-            android:textColor="@color/grey_black"
             android:hint="@string/select_date"
             android:paddingStart="@dimen/_10sdp"
-            android:fontFamily="@font/inter_medium"
+            android:textColor="@color/grey_black"
             android:textColorHint="@color/btn_disable_grey"
             android:textSize="@dimen/_16ssp"
             app:layout_constraintEnd_toEndOf="@+id/centerGuideline"
@@ -215,6 +216,79 @@
             app:layout_constraintStart_toStartOf="@id/etDeliveryAt"
             app:layout_constraintTop_toBottomOf="@id/etDeliveryAt" />
 
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/leftGuideline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.2" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/rightGuidelinechip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.25" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/endGuideline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.7" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvNeonateOutcomeLabel"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_20sdp"
+            android:layout_marginTop="@dimen/_20sdp"
+            android:fontFamily="@font/inter_regular"
+            android:text="@string/neonate_outcome"
+            android:textColor="@color/table_title"
+            android:textSize="@dimen/_16ssp"
+            app:layout_constraintEnd_toEndOf="@+id/leftGuideline"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvLabourOrDelivery" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/seperatorColon1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/separator_colon"
+            app:layout_constraintBottom_toBottomOf="@+id/tvNeonateOutcomeLabel"
+            app:layout_constraintEnd_toStartOf="@+id/rightGuidelinechip"
+            app:layout_constraintStart_toEndOf="@+id/leftGuideline"
+            app:layout_constraintTop_toTopOf="@+id/tvNeonateOutcomeLabel" />
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/cgNeonateOutcome"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/_16sdp"
+            app:layout_constraintBottom_toBottomOf="@+id/tvNeonateOutcomeLabel"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/seperatorColon1"
+            app:layout_constraintTop_toTopOf="@+id/tvNeonateOutcomeLabel"
+            app:singleSelection="true" />
+
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/cgNeonateOutcomeError"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/inter_regular"
+            android:padding="@dimen/_5sdp"
+            android:text="@string/error_label"
+            android:textColor="@color/a_red_error"
+            android:textSize="@dimen/_12ssp"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="@id/tvNeonateOutcomeLabel"
+            app:layout_constraintStart_toStartOf="@id/tvNeonateOutcomeLabel"
+            app:layout_constraintTop_toBottomOf="@id/tvNeonateOutcomeLabel" />
+
+
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tvNoOfDeonates"
             android:layout_width="wrap_content"
@@ -272,13 +346,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="@dimen/_10sdp"
-            android:layout_marginTop="@dimen/_10sdp"
+            android:layout_marginTop="@dimen/_20sdp"
             android:fontFamily="@font/inter_regular"
             android:text="@string/time_of_delivery"
             android:textColor="@color/table_title"
             android:textSize="@dimen/_16ssp"
             app:layout_constraintStart_toStartOf="@+id/centerGuideline"
-            app:layout_constraintTop_toBottomOf="@+id/tvLabourOrDelivery" />
+            app:layout_constraintTop_toBottomOf="@+id/cgNeonateOutcomeError" />
 
         <androidx.appcompat.widget.AppCompatEditText
             android:id="@+id/etHrsTimeOfDelivery"
@@ -287,12 +361,12 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/_5sdp"
             android:background="@drawable/edittext_background"
+            android:fontFamily="@font/inter_medium"
             android:gravity="start|center"
             android:hint="@string/hour"
             android:inputType="number"
             android:maxLength="2"
             android:paddingStart="@dimen/_10sdp"
-            android:fontFamily="@font/inter_medium"
             android:textColorHint="@color/btn_disable_grey"
             android:textSize="@dimen/_16ssp"
             app:layout_constraintEnd_toStartOf="@+id/etMinutesTimeOfDelivery"
@@ -320,9 +394,9 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="@dimen/_10sdp"
             android:background="@drawable/edittext_background"
+            android:fontFamily="@font/inter_medium"
             android:gravity="start|center"
             android:hint="@string/minutes"
-            android:fontFamily="@font/inter_medium"
             android:inputType="number"
             android:maxLength="2"
             android:paddingStart="@dimen/_10sdp"
@@ -333,7 +407,6 @@
             app:layout_constraintStart_toEndOf="@+id/etHrsTimeOfDelivery"
             app:layout_constraintTop_toBottomOf="@+id/etHrsTimeOfDelivery"
             app:layout_constraintTop_toTopOf="@+id/etHrsTimeOfDelivery" />
-
 
         <LinearLayout
             android:id="@+id/timeOfDeliveryGroup"
@@ -364,19 +437,19 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:background="@drawable/edittext_background"
+            android:fontFamily="@font/inter_medium"
             android:gravity="start|center"
             android:hint="@string/hour"
             android:inputType="number"
             android:maxLength="2"
-            android:fontFamily="@font/inter_medium"
             android:paddingStart="@dimen/_10sdp"
             android:textColorHint="@color/btn_disable_grey"
             android:textSize="@dimen/_16ssp"
             app:layout_constraintBottom_toBottomOf="@id/etDateOfLabourOnset"
-            app:layout_constraintTop_toTopOf="@id/etDateOfLabourOnset"
             app:layout_constraintEnd_toStartOf="@+id/etMinutesTimeOfLabourOnset"
             app:layout_constraintStart_toStartOf="@+id/tvTimeOfLabourOnset"
-            app:layout_constraintTop_toBottomOf="@+id/tvTimeOfLabourOnset" />
+            app:layout_constraintTop_toBottomOf="@+id/tvTimeOfLabourOnset"
+            app:layout_constraintTop_toTopOf="@id/etDateOfLabourOnset" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tvTimeOfLabourOnsetError"
@@ -399,11 +472,11 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="@dimen/_10sdp"
             android:background="@drawable/edittext_background"
+            android:fontFamily="@font/inter_medium"
             android:gravity="start|center"
             android:hint="@string/minutes"
             android:inputType="number"
             android:maxLength="2"
-            android:fontFamily="@font/inter_medium"
             android:paddingStart="@dimen/_10sdp"
             android:textColorHint="@color/btn_disable_grey"
             android:textSize="@dimen/_16ssp"
@@ -422,6 +495,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/rightGuideline"
             app:layout_constraintTop_toTopOf="@+id/etMinutesTimeOfLabourOnset" />
+
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tvDeliveryBy"
@@ -458,6 +532,7 @@
             app:layout_constraintEnd_toEndOf="@id/etDeliveryBy"
             app:layout_constraintStart_toStartOf="@id/etDeliveryBy"
             app:layout_constraintTop_toBottomOf="@id/etDeliveryBy" />
+
         <androidx.constraintlayout.widget.Group
             android:id="@+id/deliveryOthersGroup"
             android:layout_width="wrap_content"
@@ -485,17 +560,18 @@
             android:layout_marginTop="@dimen/_5sdp"
             android:layout_marginEnd="@dimen/_25sdp"
             android:background="@drawable/edittext_background"
+            android:fontFamily="@font/inter_medium"
             android:gravity="start|center"
             android:hint="@string/type_notes"
             android:inputType="textCapWords"
             android:paddingStart="@dimen/_10sdp"
             android:textAlignment="textStart"
             android:textColorHint="@color/btn_disable_grey"
-            android:fontFamily="@font/inter_medium"
             android:textSize="@dimen/_16ssp"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/tvDeliveryByOthers"
-            app:layout_constraintTop_toBottomOf="@+id/tvDeliveryByOthers"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintTop_toBottomOf="@+id/tvDeliveryByOthers" />
+
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tvDeliveryByOthersError"
             android:layout_width="0dp"
@@ -509,6 +585,13 @@
             app:layout_constraintEnd_toEndOf="@id/etDeliveryByOthers"
             app:layout_constraintStart_toStartOf="@id/etDeliveryByOthers"
             app:layout_constraintTop_toBottomOf="@id/etDeliveryByOthers" />
+
+        <androidx.constraintlayout.widget.Group
+            android:id="@+id/hideAllGroup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="visible"
+            app:constraint_referenced_ids="etDeliveryStatus,tvDeliveryStatus,etDeliveryBy,tvDeliveryBy,timeOfLabourOnsetGroup,timeOfLabourOnsetGroup,etMinutesTimeOfLabourOnset,etHrsTimeOfLabourOnset,tvTimeOfLabourOnset,timeOfDeliveryGroup,etMinutesTimeOfDelivery,etHrsTimeOfDelivery,tvTimeOfDelivery,etNoOfDeonates,tvNoOfDeonates,etDeliveryAt,tvDeliveryAt,etDeliveryType,tvDeliveryType,etDateOfLabourOnset,tvDateOfLabourOnset,etDateOfDelivery,tvDateOfDelivery" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tvDeliveryStatus"
@@ -534,6 +617,13 @@
             app:layout_constraintTop_toBottomOf="@+id/tvDeliveryStatus"
             app:layout_constraintVertical_bias="0.0" />
 
+        <androidx.constraintlayout.widget.Group
+            android:id="@+id/hideAllErrorGroup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:constraint_referenced_ids="tvNoOfDeonatesError,tvDeliveryStatusError,tvDeliveryByError,tvDeliveryAtError,tvDeliveryTypeError,tvTimeOfLabourOnsetError,tvDateOfLabourOnsetError,tvTimeOfDeliveryError,tvDateOfDeliveryError" />
+
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tvDeliveryStatusError"
             android:layout_width="0dp"
@@ -553,14 +643,16 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:barrierDirection="bottom"
-            app:constraint_referenced_ids="tvTimeOfDeliveryError, tvDateOfDeliveryError "/>
+            app:constraint_referenced_ids="tvTimeOfDeliveryError, tvDateOfDeliveryError " />
 
         <androidx.constraintlayout.widget.Barrier
             android:id="@+id/barrierTwo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:constraint_referenced_ids="tvTimeOfLabourOnsetError,tvDateOfLabourOnsetError "
-            app:barrierDirection="bottom"/>
+            app:barrierDirection="bottom"
+            app:constraint_referenced_ids="tvTimeOfLabourOnsetError,tvDateOfLabourOnsetError " />
+
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </com.google.android.material.card.MaterialCardView>

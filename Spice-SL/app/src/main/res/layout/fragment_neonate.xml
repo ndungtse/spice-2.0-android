@@ -95,6 +95,22 @@
             app:layout_constraintTop_toTopOf="@+id/tvNeonateOutcomeLabel"
             app:layout_constraintBottom_toBottomOf="@+id/tvNeonateOutcomeLabel"/>
 
+        <androidx.appcompat.widget.AppCompatEditText
+            android:id="@+id/etName"
+            style="@style/Form_MH_Style_with_padding"
+            android:layout_width="0dp"
+            android:visibility="gone"
+            android:layout_height="wrap_content"
+            android:background="@drawable/edittext_background"
+            android:textAlignment="textStart"
+            android:hint="@string/name"
+            android:maxLines="1"
+            android:textSize="@dimen/_16ssp"
+            app:layout_constraintEnd_toStartOf="@+id/endGuideline"
+            app:layout_constraintStart_toEndOf="@+id/seperatorColon1"
+            app:layout_constraintTop_toTopOf="@+id/tvNeonateOutcomeLabel"
+            app:layout_constraintBottom_toBottomOf="@+id/tvNeonateOutcomeLabel"/>
+
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/cgNeonateOutcomeError"
             android:layout_width="0dp"
@@ -380,6 +396,12 @@
             app:layout_constraintEnd_toStartOf="@+id/rightGuideline"
             app:layout_constraintStart_toEndOf="@+id/leftGuideline"
             app:layout_constraintTop_toTopOf="@+id/tvGestationalAgeLabel" />
+        <androidx.constraintlayout.widget.Group
+            android:id="@+id/directPncGroup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="visible"
+            app:constraint_referenced_ids="tvGestationalAge,seperatorColon7,tvGestationalAgeLabel,cgSignsSymptomsObserved,seperatorColon6,tvSignsSymptomsObservedLabel,rvAgparScores,seperatorColon5,tvAgparScoreLabel,stateOfBabyGroup,seperatorColon4,tvStateOfBabyLabel,,tvBirthWeightCal,etBirthWeight,seperatorColon3, tvBirthWeightLabel,,cgNeonateOutcome" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tvGestationalAge"

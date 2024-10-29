@@ -2,6 +2,7 @@ package com.medtroniclabs.spice.ui.assessment.fragment
 
 import android.app.DatePickerDialog
 import android.content.Intent
+import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -28,7 +29,7 @@ import com.medtroniclabs.spice.databinding.FragmentAssessmentIccmSummaryBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.ui.SingleSelectionCustomView
-import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
+import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapterCustomLayout
 import com.medtroniclabs.spice.model.AssessmentSummaryModel
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
@@ -130,7 +131,10 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
     }
 
     private fun loadPhuSitesList(healthFacilityList: ArrayList<Map<String, Any>>) {
-        val adapter = CustomSpinnerAdapter(requireContext())
+        binding.etPhuChange.background= ContextCompat.getDrawable(requireContext(),R.drawable.edittext_background)
+        val background = binding.etPhuChange.background as? GradientDrawable
+        background?.setStroke(resources.getDimensionPixelSize(R.dimen._1sdp), ContextCompat.getColor(requireContext(), R.color.edittext_stroke))
+        val adapter = CustomSpinnerAdapterCustomLayout(requireContext())
         adapter.setData(healthFacilityList)
         binding.etPhuChange.adapter = adapter
         binding.etPhuChange.onItemSelectedListener =

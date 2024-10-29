@@ -18,5 +18,8 @@ object MedicalReviewDefinedParams {
     const val Albendazole = "Albendazole"
     const val HH_RELATIONSHIP= "household_head_relationship"
     const val GESTATIONAL_AGE = "gestationalAge"
+    const val FreshStillBirth = "freshStillBirth"
+    const val MaceratedStillBirth="maceratedStillBirth"
+    const val LiveBirth="liveBirth"
 
 }
