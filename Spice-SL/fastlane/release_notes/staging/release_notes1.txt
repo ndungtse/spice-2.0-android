@@ -1,24 +1,13 @@
-Modules
-
-New Changes:
-In App Analytics
-
 CHW:
-Death of mother
-Change facility
-ForgotPassword - We have to get the email link from outbound email backend for dev build.
-Peer supervisor
-Consent Form
-
-Medical Review:
-1.PNC Medical Review
-2.Labour and Delivery
-3.Investigation
-4.Investigation history
-5.Investigation Summary
-
-Feedback points also addressed in this build.
-
-Bug fixing status updated on the sheet.
-
-Crashlytics added and Training and Production Setup with app name changes added.
+    1. Automatic Sync 
+    2. Updated consent form
+    3. Bed nets count question changes
+    4. Removal of child taken to clinic or not question integration for ICCM
+    5. The malnutrition field should be as an optional field before 6 months of age and can be a mandatory field after 6 months of age.
+    6. Pregnant validation 10 to 49 years
+CHO:
+    1. Add completed as a status in the Immunization Status drop-down (Under 5 - upto 2 years)
+    2. Allow 0 to 2 values in the APGAR Score.
+    3. Add “ear” and “skin” in systematic examination
+    4. Add “none” under “state of the perineum”
+Bug Fixes

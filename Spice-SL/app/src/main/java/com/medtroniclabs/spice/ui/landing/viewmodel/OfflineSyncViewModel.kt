@@ -73,18 +73,6 @@ class OfflineSyncViewModel @Inject constructor(
         }
     }
 
-    fun insertDummyCallHistory(ids: List<String>) {
-        viewModelScope.launch(dispatcherIO) {
-            ids.forEach { memberId ->
-                householdMemberRepository.addLinkMemberCall(
-                    memberId,
-                    callStartTime = System.currentTimeMillis(),
-                    callEndTime = System.currentTimeMillis()
-                )
-            }
-        }
-    }
-
     private fun getLastSyncedAt() {
         val utcLastSyncedAt =
             SecuredPreference.getString(SecuredPreference.EnvironmentKey.SERVER_LAST_SYNCED.name)

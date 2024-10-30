@@ -12,16 +12,19 @@ import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.villageId
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.repo.HouseHoldRepository
+import com.medtroniclabs.spice.repo.HouseholdMemberRepository
 import com.medtroniclabs.spice.ui.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
 class HouseRegistrationViewModel @Inject constructor(
     @IoDispatcher override var dispatcherIO: CoroutineDispatcher,
     private val houseHoldRepository: HouseHoldRepository,
+    private val houseHoldRepositoryMember: HouseholdMemberRepository,
 ) : BaseViewModel(dispatcherIO) {
 
     var houseHoldRegistrationLiveData = MutableLiveData<Resource<Long>>()
@@ -106,5 +109,10 @@ class HouseRegistrationViewModel @Inject constructor(
     fun getCurrentLocation(): Location? {
         return this.lastLocation
     }
-
+    fun updateMemberAsAssigned(memberID: Long?) {
+        viewModelScope.launch(dispatcherIO) {
+            Timber.d("member update $memberID")
+            houseHoldRepositoryMember.updateMemberAsAssigned(memberId = memberID.toString())
+        }
+    }
 }

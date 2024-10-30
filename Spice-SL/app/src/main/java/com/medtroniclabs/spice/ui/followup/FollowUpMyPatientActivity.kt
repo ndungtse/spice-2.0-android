@@ -1,26 +1,30 @@
 package com.medtroniclabs.spice.ui.followup
 
+import android.content.Intent
 import android.graphics.Typeface
 import android.os.Bundle
+import android.view.MenuItem
+import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.activity.viewModels
+import androidx.appcompat.widget.PopupMenu
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.widget.addTextChangedListener
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.medtroniclabs.spice.R
-import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.appextensions.startBackgroundOfflineSync
 import com.medtroniclabs.spice.databinding.ActivityFollowUpMyPatientBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
+import com.medtroniclabs.spice.formgeneration.extension.safePopupMenuClickListener
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.MenuConstants
 import com.medtroniclabs.spice.ui.followup.adapter.FollowUpPatientListAdapter
 import com.medtroniclabs.spice.ui.followup.viewmodel.FollowUpViewModel
+import com.medtroniclabs.spice.ui.phuwalkins.activity.PhuWalkInsActivity
 import timber.log.Timber
-import java.util.logging.Logger
 
 class FollowUpMyPatientActivity : BaseActivity() {
     private lateinit var binding: ActivityFollowUpMyPatientBinding
@@ -36,7 +40,9 @@ class FollowUpMyPatientActivity : BaseActivity() {
         initObserver()
         setTabLayout()
         viewModel.setUserJourney(getString(R.string.my_patients))
+        showHideVerticalIcon(true)
     }
+
 
 
     private fun setTabLayout() {
@@ -153,6 +159,34 @@ class FollowUpMyPatientActivity : BaseActivity() {
             }
         }
     }
+    private fun showHideVerticalIcon(visibility: Boolean) {
+        showVerticalMoreIcon(visibility) {
+            onMoreIconClicked(it)
+        }
+    }
+
+
+    private fun onMoreIconClicked(view: View) {
+        val popupMenu = PopupMenu(this, view)
+        popupMenu.menuInflater.inflate(R.menu.mypatient_menu, popupMenu.menu)
+        popupMenu.safePopupMenuClickListener(object :
+            android.widget.PopupMenu.OnMenuItemClickListener,
+            PopupMenu.OnMenuItemClickListener {
+            override fun onMenuItemClick(menuItem: MenuItem): Boolean {
+                when (menuItem.itemId) {
+                    R.id.et_phuwalkins -> {
+                        val intent =
+                            Intent(this@FollowUpMyPatientActivity, PhuWalkInsActivity::class.java)
+                        startActivity(intent)
+                    }
+                }
+                return true
+            }
+        })
+        popupMenu.setForceShowIcon(true)
+        popupMenu.show()
+    }
+
 }
 
 

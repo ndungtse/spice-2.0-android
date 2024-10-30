@@ -12,6 +12,7 @@ import com.medtroniclabs.spice.app.analytics.model.UserDetail
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.appextensions.startBackgroundOfflineSync
 import com.medtroniclabs.spice.common.DefinedParams
+import com.medtroniclabs.spice.common.DefinedParams.FhirMemberID
 import com.medtroniclabs.spice.common.DefinedParams.MemberID
 import com.medtroniclabs.spice.common.DefinedParams.isMemberRegistration
 import com.medtroniclabs.spice.common.SpiceLocationManager
@@ -24,6 +25,7 @@ import com.medtroniclabs.spice.ui.household.viewmodel.HouseRegistrationViewModel
 import com.medtroniclabs.spice.ui.landing.OnDialogDismissListener
 import com.medtroniclabs.spice.ui.member.MemberRegistrationFragment
 import dagger.hilt.android.AndroidEntryPoint
+import timber.log.Timber
 
 @AndroidEntryPoint
 class HouseholdActivity : BaseActivity(), OnDialogDismissListener {
@@ -60,6 +62,7 @@ class HouseholdActivity : BaseActivity(), OnDialogDismissListener {
         initializeView()
         attachObserver()
         getCurrentLocation()
+        phuMemberRegistration()
     }
 
     private fun backNavigation() {
@@ -93,6 +96,7 @@ class HouseholdActivity : BaseActivity(), OnDialogDismissListener {
             intent.getBooleanExtra(isMemberRegistration, false)
         householdRegistrationViewModel.householdId =
             intent.getLongExtra(HouseholdDefinedParams.ID, -1L)
+        Timber.d("Member id is not showing 4 ${intent.getLongExtra(MemberID, -1L)}")
         householdRegistrationViewModel.memberID = intent.getLongExtra(MemberID, -1L)
         loadFragment(if (householdRegistrationViewModel.isMemberRegistration || (householdRegistrationViewModel.memberID != -1L)) 2 else 1)
     }
@@ -205,4 +209,22 @@ class HouseholdActivity : BaseActivity(), OnDialogDismissListener {
             }
         }
 
+    private fun phuMemberRegistration() {
+        val isPhuWalkInsFlow=intent.getBooleanExtra(HouseholdDefinedParams.isPhuWalkInsFlow,false)
+        if (isPhuWalkInsFlow) {
+            householdRegistrationViewModel.isMemberRegistration =true
+            val arguments = Bundle().apply {
+                putBoolean(AnalyticsDefinedParams.AddNewMember, true)
+                putBoolean(HouseholdDefinedParams.isPhuWalkInsFlow,true)
+                putLong(MemberID,intent.getLongExtra(MemberID,-1L))
+                putLong(FhirMemberID,intent.getLongExtra(FhirMemberID,-1L))
+            }
+            setTitle(getString(R.string.member_registration))
+            replaceFragmentInId<MemberRegistrationFragment>(
+                binding.fragmentContainer.id,
+                bundle = arguments,
+                tag = MemberRegistrationFragment::class.simpleName
+            )
+    }
+    }
 }

@@ -1,11 +1,14 @@
 package com.medtroniclabs.spice.ui.dialog
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
+import androidx.core.content.ContentProviderCompat.requireContext
+import androidx.core.content.ContextCompat.startActivity
 import androidx.fragment.app.DialogFragment
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
@@ -14,10 +17,13 @@ import com.medtroniclabs.spice.common.DefinedParams.DefaultID
 import com.medtroniclabs.spice.common.DefinedParams.PatientId
 import com.medtroniclabs.spice.databinding.FragmentSuccessDialogBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
+import com.medtroniclabs.spice.ui.household.HouseholdDefinedParams
 import com.medtroniclabs.spice.ui.household.HouseholdDefinedParams.HouseholdNo
 import com.medtroniclabs.spice.ui.household.HouseholdDefinedParams.IsHousehold
 import com.medtroniclabs.spice.ui.household.HouseholdDefinedParams.IsHouseholdMember
+import com.medtroniclabs.spice.ui.household.HouseholdDefinedParams.isPhuWalkInsFlow
 import com.medtroniclabs.spice.ui.landing.OnDialogDismissListener
+import com.medtroniclabs.spice.ui.phuwalkins.activity.PhuWalkInsActivity
 
 class SuccessDialogFragment : DialogFragment(), View.OnClickListener {
 
@@ -42,10 +48,11 @@ class SuccessDialogFragment : DialogFragment(), View.OnClickListener {
     companion object {
         const val TAG = "SuccessDialogFragment"
 
-        fun newInstance(isHousehold : Boolean = false, isMember : Boolean = false): SuccessDialogFragment {
+        fun newInstance(isHousehold : Boolean = false, isMember : Boolean = false,isPhuLink:Boolean=false): SuccessDialogFragment {
             val bundle = Bundle()
             bundle.putBoolean(IsHousehold, isHousehold)
             bundle.putBoolean(IsHouseholdMember, isMember)
+            bundle.putBoolean(isPhuWalkInsFlow, isPhuLink)
             val fragment =  SuccessDialogFragment()
             fragment.arguments = bundle
             return fragment
@@ -80,15 +87,27 @@ class SuccessDialogFragment : DialogFragment(), View.OnClickListener {
         if (arguments?.getBoolean(IsHouseholdMember) == true) {
             binding.successMessage.text = getString(R.string.member_registered_successfully)
         }
+
+        if (arguments?.getBoolean(isPhuWalkInsFlow) == true) {
+            binding.successMessage.text = getString(R.string.member_registered_successfully_linked)
+            binding.householdNo.gone()
+        }
+
     }
 
     override fun onClick(view: View) {
         when(view.id){
             binding.btnDone.id -> {
-                onDismissListener?.onDialogDismissListener(
-                    arguments?.getBoolean(IsHousehold) == true
-                )
-                dismiss()
+                if (arguments?.getBoolean(isPhuWalkInsFlow)==true) {
+                    val intent= Intent(requireContext(),PhuWalkInsActivity::class.java)
+                    startActivity(intent)
+                    requireActivity().finish()
+                }else {
+                    onDismissListener?.onDialogDismissListener(
+                        arguments?.getBoolean(IsHousehold) == true
+                    )
+                    dismiss()
+                }
             }
         }
     }

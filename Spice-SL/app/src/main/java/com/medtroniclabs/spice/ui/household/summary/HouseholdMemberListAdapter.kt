@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.common.CommonUtils.getAgeFromDOB
 import com.medtroniclabs.spice.common.CommonUtils.getGenderText
 import com.medtroniclabs.spice.databinding.MembersSummaryListItemBinding
@@ -16,7 +17,8 @@ import com.medtroniclabs.spice.ui.household.MemberSelectionListener
 
 class HouseholdMemberListAdapter(
     private val houseHoldMembersList: List<HouseholdMemberEntity>,
-    private val listener: MemberSelectionListener
+    private val listener: MemberSelectionListener,
+    private val phuWalkInsFlow: Boolean
 ) : RecyclerView.Adapter<HouseholdMemberListAdapter.HouseholdListViewHolder>() {
 
     inner class HouseholdListViewHolder(val binding: MembersSummaryListItemBinding) :
@@ -37,10 +39,15 @@ class HouseholdMemberListAdapter(
         }
         holder.binding.tvMemberName.text = getMemberInfoText(context, item)
         holder.binding.tvPatientId.text = item.patientId ?: context.getString(R.string.separator_double_hyphen)
+        if(!phuWalkInsFlow) {
         holder.binding.cardPatient.safeClickListener {
             if (item.isActive) {
                 listener.onMemberSelected(item.id, false, item.dateOfBirth)
             }
+        }
+        } else {
+            holder.binding.forwardIcon.gone()
+
         }
     }
 

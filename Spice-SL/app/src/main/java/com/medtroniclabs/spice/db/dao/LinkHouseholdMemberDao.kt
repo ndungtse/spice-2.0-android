@@ -26,7 +26,7 @@ interface LinkHouseholdMemberDao {
     @Query("DELETE FROM LinkHouseholdMember")
     suspend fun deleteAllLinkHouseholdMember()
 
-    @Query("SELECT l.memberId, hhm.name, hhm.phone_number as phoneNumber, hhm.date_of_birth as dateOfBirth, hhm.gender, hhm.villageId as villageId, v.name as villageName FROM HouseholdMember as hhm JOIN LinkHouseholdMember as l ON hhm.fhir_id = l.memberId JOIN VillageEntity as v ON v.id = hhm.villageId WHERE l.status = :status")
+    @Query("SELECT l.memberId,hhm.id as lMemberId, hhm.name, hhm.phone_number as phoneNumber, hhm.date_of_birth as dateOfBirth, hhm.gender, hhm.villageId as villageId, v.name as villageName FROM HouseholdMember as hhm JOIN LinkHouseholdMember as l ON hhm.fhir_id = l.memberId JOIN VillageEntity as v ON v.id = hhm.villageId WHERE l.status = :status")
     fun getUnAssignedHouseholdMembersLiveData(status: String = DefinedParams.UnAssigned): LiveData<List<UnAssignedHouseholdMemberDetail>>
 
     @Query("UPDATE LinkHouseholdMember SET syncStatus =:syncStatus WHERE memberId IN (:ids)")

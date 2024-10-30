@@ -19,40 +19,41 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".ui.phuwalkins.activity.PhuWalkInsActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.medicalreview.investigation.InvestigationActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
-            android:screenOrientation="landscape"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="landscape" />
         <activity
             android:name=".ui.peersupervisor.PerformanceMonitoringActivity"
             android:exported="false"
-            android:screenOrientation="landscape"/>
-        <!-- Common Activities -->
+            android:screenOrientation="landscape" /> <!-- Common Activities -->
         <activity
             android:name=".ui.boarding.ForgetPasswordActivity"
             android:configChanges="orientation|screenSize"
             android:exported="true">
-
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
 
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
-                <data android:scheme="https"/>
-                <data android:scheme="http"/>
+                <data android:scheme="https" />
+                <data android:scheme="http" />
 
-                <!--<data android:host="spice-dev.sl.labsplatform.com"/>
+                <!--
+                <data android:host="spice-dev.sl.labsplatform.com"/>
                 <data android:pathPrefix="/reset-password"/>
 
                 <data android:host="spice-training.sl.labsplatform.com"/>
-                <data android:pathPrefix="/reset-password"/>-->
-
-                <data android:host="spiceadmin.sl.medtroniclabs.org"/>
                 <data android:pathPrefix="/reset-password"/>
+                -->
 
+                <data android:host="spiceadmin.sl.medtroniclabs.org" />
+                <data android:pathPrefix="/reset-password" />
             </intent-filter>
-
         </activity>
         <activity
             android:name=".ui.landing.LandingActivity"
@@ -61,32 +62,28 @@
             android:windowSoftInputMode="adjustPan">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
             android:name=".ui.BaseActivity"
             android:exported="false" />
-
         <activity
             android:name=".ui.boarding.LoginActivity"
-            android:exported="false" />
-
-        <!--CHW Activities-->
+            android:exported="false" /> <!-- CHW Activities -->
         <activity
             android:name=".ui.household.summary.HouseholdSummaryActivity"
             android:exported="false"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity" />
-
         <activity
             android:name=".ui.household.HouseholdActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:exported="false"
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity" />
-
         <activity
             android:name=".ui.landing.OfflineSyncActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
@@ -94,46 +91,38 @@
             android:screenOrientation="portrait"
             android:theme="@style/Theme.Transparent"
             tools:ignore="LockedOrientationActivity" />
-
         <activity
             android:name=".ui.household.HouseholdSearchActivity"
             android:exported="false"
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity" />
-
         <activity
             android:name=".ui.assessment.AssessmentActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:exported="false"
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity" />
-
         <activity
             android:name=".ui.household.ConsentFormActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:exported="false"
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity" />
-
         <activity
             android:name=".ui.home.AssessmentToolsActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:exported="false"
-            android:screenOrientation="portrait" />
-
-        <!--Medical Review Activities-->
+            android:screenOrientation="portrait" /> <!-- Medical Review Activities -->
         <activity
             android:name=".ui.home.MedicalReviewToolsActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:exported="false"
             android:screenOrientation="sensorLandscape" />
-
         <activity
             android:name=".ui.medicalreview.prescription.PrescriptionActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
-            android:screenOrientation="sensorLandscape"
-            android:exported="false" />
-
+            android:exported="false"
+            android:screenOrientation="sensorLandscape" />
         <activity
             android:name=".ui.medicalreview.motherneonate.anc.activity.MotherNeonateANCActivity"
             android:exported="false"
@@ -151,8 +140,8 @@
             android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".ui.referralhistory.activity.ReferralHistoryActivity"
-            android:screenOrientation="sensorLandscape"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="sensorLandscape" />
         <activity
             android:name=".ui.medicalreview.abovefiveyears.AboveFiveYearsBaseActivity"
             android:exported="false"
@@ -167,8 +156,7 @@
             android:name=".ui.medicalreview.addnewmember.AddNewMemberActivity"
             android:exported="false"
             android:screenOrientation="sensorLandscape"
-            android:windowSoftInputMode="adjustPan"
-            />
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".ui.boarding.ResourceLoadingScreen"
             android:exported="false" />
@@ -176,16 +164,14 @@
             android:name=".ui.followup.FollowUpMyPatientActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
-
         <activity
             android:name=".ui.mypatients.MedicalReviewBaseActivity"
             android:exported="false"
             android:screenOrientation="sensorLandscape" />
-
         <activity
             android:name=".ui.medicalreview.motherneonate.pnc.activity.MotherNeonatePncActivity"
             android:exported="false"
-            android:screenOrientation="sensorLandscape"/>
+            android:screenOrientation="sensorLandscape" />
 
         <provider
             android:name="androidx.startup.InitializationProvider"

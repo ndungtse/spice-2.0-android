@@ -22,6 +22,7 @@ import com.medtroniclabs.spice.ui.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -41,6 +42,7 @@ class MemberRegistrationViewModel @Inject constructor(
     var villageDetails:List<VillageEntity>?= null
     var addNewMember: Boolean = false
     var memberDob: String?=null
+    var isPhuWalkInsFlow:Boolean? = false
 
     fun getFormData(formType: String) {
         viewModelScope.launch(dispatcherIO) {
@@ -98,9 +100,12 @@ class MemberRegistrationViewModel @Inject constructor(
                     signature = signature
                 )
                 memberRegistrationRepository.updateHeadPhoneNumber(householdId, map)
+                Timber.d("Member registration 2 $memberId")
+
                 if (memberId == null) {
                     memberRegistrationLiveData.postError()
                 } else {
+                    Timber.d("Member registration 1")
                     memberRegistrationLiveData.postSuccess(memberId)
                 }
             }

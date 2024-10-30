@@ -241,7 +241,7 @@ class HouseholdMemberRepository @Inject constructor(
         return roomHelper.getUnAssignedHouseholdMembersLiveData()
     }
 
-    suspend fun addLinkMemberCall(memberId: String, callStartTime: Long, callEndTime: Long): Long {
+    suspend fun addLinkMemberCall(memberId: String, callStartTime: String, callEndTime: String): Long {
         val callHistory = CallHistory(
             type = CALL_TYPE_LINK_HHM,
             referenceId = memberId,

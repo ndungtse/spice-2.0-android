@@ -7,6 +7,7 @@ object HouseholdDefinedParams {
     const val ID = "house_hold_id"
     const val isFromHouseHoldRegistration = "isFromHouseHoldRegistration"
     const val HouseholdNo = "householdID"
+    const val isPhuWalkInsFlow="isPhuWalkInsFlow"
 
     const val IsHousehold = "IsHousehold"
     const val IsHouseholdMember = "IsHouseholdMember"

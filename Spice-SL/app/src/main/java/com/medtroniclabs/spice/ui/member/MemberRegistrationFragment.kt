@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.appcompat.widget.AppCompatSpinner
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -15,13 +16,13 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.app.analytics.model.UserDetail
-import com.medtroniclabs.spice.appextensions.gone
-import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams.AddNewMember
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams.EditNewMember
 import com.medtroniclabs.spice.app.analytics.utils.CommonUtils
+import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.startBackgroundOfflineSync
+import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils.getBooleanAsString
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
@@ -58,6 +59,7 @@ import com.medtroniclabs.spice.mappingkey.MemberRegistration.phoneNumber
 import com.medtroniclabs.spice.mappingkey.MemberRegistration.phoneNumberCategory
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
+import com.medtroniclabs.spice.ui.dialog.SuccessDialogFragment
 import com.medtroniclabs.spice.ui.home.AssessmentToolsActivity
 import com.medtroniclabs.spice.ui.household.HouseholdActivity
 import com.medtroniclabs.spice.ui.household.HouseholdDefinedParams
@@ -88,12 +90,14 @@ class MemberRegistrationFragment : Fragment(), FormEventListener, View.OnClickLi
         initializeFlow()
         attachObserver()
         handleAddNewMember()
-        val eventType = if (householdRegistrationViewModel.isMemberRegistration || householdRegistrationViewModel.memberID != -1L)
-            EditNewMember
-        else
-            AnalyticsDefinedParams.MemberRegistration
+        val eventType =
+            if (householdRegistrationViewModel.isMemberRegistration || householdRegistrationViewModel.memberID != -1L)
+                EditNewMember
+            else
+                AnalyticsDefinedParams.MemberRegistration
         householdRegistrationViewModel.eventName = eventType
         memberRegistrationViewModel.setUserJourney(eventType)
+        onPhuAddMember()
     }
 
     private fun initializeFlow() {
@@ -146,20 +150,39 @@ class MemberRegistrationFragment : Fragment(), FormEventListener, View.OnClickLi
 
                 ResourceState.SUCCESS -> {
                     val (title, startDate) = if (memberRegistrationViewModel.addNewMember) {
-                        val type = if (householdRegistrationViewModel.isMemberRegistration && householdRegistrationViewModel.memberID != -1L) {
-                            EditNewMember
-                        } else {
-                            AddNewMember
-                        }
+                        val type =
+                            if (householdRegistrationViewModel.isMemberRegistration && householdRegistrationViewModel.memberID != -1L) {
+                                EditNewMember
+                            } else {
+                                AddNewMember
+                            }
                         type to (UserDetail.startDateTime ?: "")
                     } else {
-                        AnalyticsDefinedParams.HouseholdCreation to (arguments?.getString(AnalyticsDefinedParams.StartDate) ?: "")
+                        AnalyticsDefinedParams.HouseholdCreation to (arguments?.getString(
+                            AnalyticsDefinedParams.StartDate
+                        ) ?: "")
                     }
-                    memberRegistrationViewModel.setAnalyticsData(startDate, eventName = title, isCompleted = true)
+                    memberRegistrationViewModel.setAnalyticsData(
+                        startDate,
+                        eventName = title,
+                        isCompleted = true
+                    )
 
                     (activity as BaseActivity?)?.hideLoading()
                     resourceState.data?.let {
-                        launchSummaryOrAssessmentPage()
+                        if (arguments?.getBoolean(HouseholdDefinedParams.isPhuWalkInsFlow) == true) {
+                            val existingFragment =
+                                childFragmentManager.findFragmentByTag(
+                                    SuccessDialogFragment.TAG
+                                )
+                            if (existingFragment == null) {
+                                SuccessDialogFragment.newInstance(isPhuLink = true)
+                                    .show(childFragmentManager, SuccessDialogFragment.TAG)
+                            }
+                        } else {
+                            launchSummaryOrAssessmentPage()
+                        }
+
                     }
                 }
             }
@@ -262,19 +285,22 @@ class MemberRegistrationFragment : Fragment(), FormEventListener, View.OnClickLi
     }
 
     private fun autoPopulateDetails(details: HouseholdMemberEntity) {
-        details.householdId?.let {id ->
+        details.householdId?.let { id ->
             householdRegistrationViewModel.householdId = id
         }
         formGenerator.getViewByTag(name)?.let { view ->
             formGenerator.setValueForView(details.name, view)
         }
-        formGenerator.getViewByTag(householdHeadRelationship)?.let { view ->
-            val relationship =
-                if (details.householdHeadRelationship.contains(getString(R.string.separator_hyphen))) {
-                    details.householdHeadRelationship.substringBefore(getString(R.string.separator_hyphen))
-                } else details.householdHeadRelationship
-            view.isEnabled = false
-            formGenerator.setValueForView(relationship, view)
+
+        if (arguments?.getBoolean(HouseholdDefinedParams.isPhuWalkInsFlow) == false) {
+            formGenerator.getViewByTag(householdHeadRelationship)?.let { view ->
+                val relationship =
+                    if (details.householdHeadRelationship.contains(getString(R.string.separator_hyphen))) {
+                        details.householdHeadRelationship.substringBefore(getString(R.string.separator_hyphen))
+                    } else details.householdHeadRelationship
+                view.isEnabled = false
+                formGenerator.setValueForView(relationship, view)
+            }
         }
         formGenerator.getViewByTag(otherFamilyMember)?.let { view ->
             val relationship =
@@ -362,6 +388,7 @@ class MemberRegistrationFragment : Fragment(), FormEventListener, View.OnClickLi
     private fun setListener() {
         binding.btnSubmit.setOnClickListener(this)
         binding.btnStartAssessment.setOnClickListener(this)
+        binding.btnSubmitPhu.setOnClickListener(this)
     }
 
     private fun initializeView() {
@@ -379,7 +406,7 @@ class MemberRegistrationFragment : Fragment(), FormEventListener, View.OnClickLi
                     (view.adapter as CustomSpinnerAdapter).getIndexOfItemById(HouseholdHead)
                 view.setSelection(index, true)
                 view.isEnabled = false
-                householdRegistrationViewModel.householdEntityDetail?.let {details ->
+                householdRegistrationViewModel.householdEntityDetail?.let { details ->
                     formGenerator.getViewByTag(phoneNumber)?.let { view ->
                         formGenerator.setValueForView(details.headPhoneNumber, view)
                     }
@@ -397,10 +424,10 @@ class MemberRegistrationFragment : Fragment(), FormEventListener, View.OnClickLi
             arguments?.getBoolean(AddNewMember, false) ?: false
         if (memberRegistrationViewModel.addNewMember) {
             UserDetail.startDateTime = CommonUtils.getCurrentDateTimeInLocalTime()
-            UserDetail.eventName= AddNewMember
+            UserDetail.eventName = AddNewMember
         } else {
             UserDetail.startDateTime = CommonUtils.getCurrentDateTimeInLocalTime()
-            UserDetail.eventName=EditNewMember
+            UserDetail.eventName = EditNewMember
         }
     }
 
@@ -431,9 +458,12 @@ class MemberRegistrationFragment : Fragment(), FormEventListener, View.OnClickLi
     override fun onFormSubmit(resultMap: HashMap<String, Any>?, serverData: List<FormLayout?>?) {
         resultMap?.let { map ->
             if (memberRegistrationViewModel.medicalReviewFlow) {
-                memberRegistrationViewModel.addNewMember(map,formGenerator)
+                memberRegistrationViewModel.addNewMember(map, formGenerator)
             } else {
                 if (householdRegistrationViewModel.isMemberRegistration || householdRegistrationViewModel.memberID != -1L) {
+                    if (memberRegistrationViewModel.isPhuWalkInsFlow == true) {
+                        householdRegistrationViewModel.updateMemberAsAssigned(arguments?.getLong(com.medtroniclabs.spice.common.DefinedParams.FhirMemberID))
+                    }
                     memberRegistrationViewModel.registerMember(
                         map,
                         householdRegistrationViewModel.householdId
@@ -455,7 +485,8 @@ class MemberRegistrationFragment : Fragment(), FormEventListener, View.OnClickLi
 
     override fun onRenderingComplete() {
         val view = formGenerator.getViewByTag(villageId + formGenerator.rootSuffix)
-        val relationSipView=formGenerator.getViewByTag( MedicalReviewDefinedParams.HH_RELATIONSHIP+ formGenerator.rootSuffix)
+        val relationSipView =
+            formGenerator.getViewByTag(MedicalReviewDefinedParams.HH_RELATIONSHIP + formGenerator.rootSuffix)
         if (memberRegistrationViewModel.medicalReviewFlow) {
             view?.visible()
             relationSipView?.gone()
@@ -500,12 +531,42 @@ class MemberRegistrationFragment : Fragment(), FormEventListener, View.OnClickLi
                 memberRegistrationViewModel.startAssessment = false
                 formGenerator.formSubmitAction(v)
             }
+
+            R.id.btnSubmitPhu -> {
+                memberRegistrationViewModel.startAssessment = false
+                formGenerator.formSubmitAction(v)
+            }
         }
     }
+
 
     // on MR add new member submit
     fun medicalReviewAddMember(v: View) {
         formGenerator.formSubmitAction(v)
     }
+
+    private fun onPhuAddMember() {
+        memberRegistrationViewModel.isPhuWalkInsFlow =
+            arguments?.getBoolean(HouseholdDefinedParams.isPhuWalkInsFlow, false)
+        if (memberRegistrationViewModel.isPhuWalkInsFlow == true) {
+            binding.bottomNavigationView.gone()
+            binding.bottomNavigationViewPhuSubmit.visible()
+        }
+        val scrollView = binding.scrollView
+        val bottomNavigationView = binding.bottomNavigationView
+        val bottomNavigationViewPhuSubmit = binding.bottomNavigationViewPhuSubmit
+
+        bottomNavigationView.viewTreeObserver.addOnGlobalLayoutListener {
+            val layoutParams = scrollView.layoutParams as ConstraintLayout.LayoutParams
+
+            if (bottomNavigationView.visibility == View.GONE) {
+                layoutParams.bottomToTop = bottomNavigationViewPhuSubmit.id
+            } else {
+                layoutParams.bottomToTop = bottomNavigationView.id
+            }
+            scrollView.layoutParams = layoutParams
+        }
+    }
+
 
 }

@@ -141,10 +141,14 @@ object DefinedParams {
     const val LastSyncDate = "lastSyncDate"
     const val FollowUpStartTiming= "followUpStartTiming"
 
+    const val houseHoldLinkStartTiming = "houseHoldLinkStartTiming"
+
     const val BuildConfigs="BuildConfiguration"
     const val HosueHoldHead="HouseholdHead"
 
     const val Assigned = "Assigned"
     const val UnAssigned = "Unassigned"
+
+    const val FhirMemberID = "FhirmemberID"
 
 }
