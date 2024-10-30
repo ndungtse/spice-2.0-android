@@ -20,6 +20,7 @@ import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.MenuConstants
+import com.medtroniclabs.spice.ui.dashboard.ncd.NCDDashboardViewActivity
 import com.medtroniclabs.spice.ui.common.PatientSearchActivity
 import com.medtroniclabs.spice.ui.followup.FollowUpMyPatientActivity
 import com.medtroniclabs.spice.ui.home.adapter.DashboardMenuItemsAdapter
@@ -163,6 +164,11 @@ class HomeScreenFragment : BaseFragment(), MenuSelectionListener {
                 }
                 val intent = Intent(requireContext(), PatientSearchActivity::class.java)
                 intent.putExtras(bundle)
+                startActivity(intent)
+            }
+
+            MenuConstants.DASHBOARD -> {
+                val intent = Intent(requireContext(), NCDDashboardViewActivity::class.java)
                 startActivity(intent)
             }
         }

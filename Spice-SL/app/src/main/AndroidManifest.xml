@@ -38,6 +38,12 @@
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
         <activity
+            android:name=".ui.dashboard.ncd.NCDDashboardViewActivity"
+            android:exported="false"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:windowSoftInputMode="adjustResize"
+            android:screenOrientation="landscape"/>
+        <activity
             android:name=".ui.common.PatientSearchActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:exported="false"

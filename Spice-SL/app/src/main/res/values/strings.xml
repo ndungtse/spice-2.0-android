@@ -961,4 +961,8 @@
     <string name="suicidal_ideation">Suicidal Ideation</string>
     <string name="session_date">Session Date</string>
     <string name="add_lifestyle">Add Lifestyle</string>
+
+    //Dashboard ui
+    <string name="dashboard">Dashboard</string>
+    <string name="customize">Customize</string>
 </resources>
