@@ -7,6 +7,7 @@ import com.medtroniclabs.spice.appextensions.invisible
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.Other
+import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.model.ChipViewItemModel
 
 object NCDMRUtil {
@@ -171,5 +172,9 @@ object NCDMRUtil {
             DefinedParams.PregnancyANC.lowercase() -> arrayListOf(maternalHealth)
             else -> arrayListOf()
         }
+    }
+
+    fun isNCDMRMetaLoaded(): Boolean {
+        return SecuredPreference.getBoolean(SecuredPreference.EnvironmentKey.IS_NCD_MEDICAL_REVIEW_LOADED.name)
     }
 }

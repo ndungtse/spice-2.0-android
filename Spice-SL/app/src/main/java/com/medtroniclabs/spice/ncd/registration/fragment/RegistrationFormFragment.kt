@@ -1,4 +1,4 @@
-package com.medtroniclabs.spice.ui.registration.fragment
+package com.medtroniclabs.spice.ncd.registration.fragment
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -16,12 +16,14 @@ import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.listener.FormEventListener
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.ui.FormResultComposer
+import com.medtroniclabs.spice.mappingkey.Screening
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
-import com.medtroniclabs.spice.ui.registration.RegistrationActivity
-import com.medtroniclabs.spice.ui.registration.viewmodel.RegistrationFormViewModel
+import com.medtroniclabs.spice.ncd.registration.ui.RegistrationActivity
+import com.medtroniclabs.spice.ncd.registration.viewmodel.RegistrationFormViewModel
+import com.medtroniclabs.spice.ncd.screening.ui.DuplicationNudgeDialog
 
 class RegistrationFormFragment : BaseFragment(), View.OnClickListener, FormEventListener {
     private lateinit var binding: FragmentRegistrationFormBinding
@@ -276,7 +278,7 @@ class RegistrationFormFragment : BaseFragment(), View.OnClickListener, FormEvent
     override fun onFormSubmit(resultMap: HashMap<String, Any>?, serverData: List<FormLayout?>?) {
         withNetworkAvailability(online = {
             resultMap?.let {
-                viewModel.isPatientAlreadyRegistered(it, serverData)
+                viewModel.validatePatient(it, serverData)
             }
         })
     }
@@ -301,7 +303,19 @@ class RegistrationFormFragment : BaseFragment(), View.OnClickListener, FormEvent
                         id = patientDetails.id?.toLongOrNull()
                         patientId = patientDetails.patientId?.toLongOrNull()
                     }
-                    viewModel.registerPatient(it, id, patientId)
+
+                    val bioDataMap = it[Screening.bioData] as HashMap<String, Any>
+                    arguments?.getString(Screening.Initial)?.let { initial ->
+                        bioDataMap[Screening.Initial] = initial
+                    }
+
+                    viewModel.registerPatient(
+                        requireContext(),
+                        it,
+                        id,
+                        patientId,
+                        arguments?.getByteArray(Screening.Signature)
+                    )
                 }
             }
         })

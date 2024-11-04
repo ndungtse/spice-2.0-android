@@ -137,7 +137,7 @@ class NCDCounselingActivity : BaseActivity(), View.OnClickListener, CounselingIn
     }
 
     private fun removeCounseling(removedID: String) {
-        viewModel.assessmentListLiveData.value?.data?.entity?.let { list ->
+        viewModel.assessmentListLiveData.value?.data?.entityList?.let { list ->
             list.removeIf { it.id == removedID }
             loadCounselingList()
         }
@@ -183,7 +183,8 @@ class NCDCounselingActivity : BaseActivity(), View.OnClickListener, CounselingIn
 
             binding.bottomSheet.btnNext.id -> {
                 if (connectivityManager.isNetworkAvailable()) viewModel.createAssessment(
-                    getCreateRequest()
+                    getCreateRequest(),
+                    false
                 )
                 else showErrorDialogue(
                     getString(R.string.error), getString(R.string.no_internet_error), false
@@ -215,7 +216,7 @@ class NCDCounselingActivity : BaseActivity(), View.OnClickListener, CounselingIn
     }
 
     private fun refreshList() {
-        viewModel.assessmentListLiveData.value?.data?.entity?.apply {
+        viewModel.assessmentListLiveData.value?.data?.entityList?.apply {
             removeIf { it.id == null }
 
             viewModel.clinicianNotes?.forEach {
@@ -236,7 +237,7 @@ class NCDCounselingActivity : BaseActivity(), View.OnClickListener, CounselingIn
         if (model.id == null) {
             removeClinicianNotes(model)
         } else {
-            viewModel.removeAssessment(NCDCounselingModel(id = model.id))
+            viewModel.removeAssessment(NCDCounselingModel(id = model.id), false)
         }
     }
 
@@ -246,11 +247,11 @@ class NCDCounselingActivity : BaseActivity(), View.OnClickListener, CounselingIn
                 patientReference = patientReference,
                 memberReference = memberReference,
                 visitId = encounterReference,
+                patientVisitId = encounterReference,
                 clinicianNotes = clinicianNotes,
                 referredBy = SecuredPreference.getUserFhirId(),
                 referredDate = DateUtils.getTodayDateDDMMYYYY(),
-                counselor = counselor,
-                roleName = getRoleName()
+                isCounselor = counselor
             )
         }
     }
@@ -259,8 +260,9 @@ class NCDCounselingActivity : BaseActivity(), View.OnClickListener, CounselingIn
         val request = NCDCounselingModel(
             patientReference = viewModel.patientReference,
             memberReference = viewModel.memberReference,
-            visitId = viewModel.encounterReference
+            visitId = viewModel.encounterReference,
+            patientVisitId = viewModel.encounterReference
         )
-        viewModel.getAssessmentList(request)
+        viewModel.getAssessmentList(request, false)
     }
 }

@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ncd.screening.ScreeningActivity">
+    tools:context=".ncd.screening.ui.ScreeningActivity">
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/screeningParentLayout"

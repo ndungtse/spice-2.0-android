@@ -11,7 +11,7 @@ import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.ncd.screening.viewmodel.GeneralDetailsViewModel
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.BaseFragment
-import com.medtroniclabs.spice.ui.registration.fragment.TermsAndConditionsFragment
+import com.medtroniclabs.spice.ncd.registration.fragment.TermsAndConditionsFragment
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

@@ -773,6 +773,7 @@
     <string name="patient_history">Patient History</string>
     <string name="add_new_reading">Add New Reading</string>
     <string name="assessment_date">Assessment Date</string>
+    <string name="assessment_summary">Assessment Summary</string>
     <string name="rbs">RBS</string>
     <string name="fbs">FBS</string>
     <string name="hba1c">HbA1c</string>
@@ -867,6 +868,7 @@
     <string name="high_risk">High Risk</string>
     <string name="comorbidities">Comorbidities</string>
     <string name="lifestyle_assessment">Lifestyle Assessment</string>
+    <string name="lifestyle_assessment_mandatory">Lifestyle Assessment<font fgcolor='#FFFF0000'> *</font></string>
     <string name="tobacoo_question_child_one">Quantity of tobacco products being taken</string>
     <string name="tobacoo_question_child_one_smoke">Please enter the date stopped</string>
     <string name="tobacoo_question_comment">Comments on Tobacco Usage</string>
@@ -953,6 +955,7 @@
     <string name="not_assessed">Not Assessed</string>
     <string name="lifestyle_assessment_label">Lifestyle Assessment</string>
     <string name="other_notes">Other Notes</string>
+    <string name="other_notes_mandatory">Other Notes<font fgcolor='#FFFF0000'> *</font></string>
     <string name="not_available">Not Available</string>
     <string name="clinician_notes">Clinician Notes</string>
     <string name="exit_reason_message">Are you sure you want to leave this page? Changes made may not be saved.</string>
@@ -971,11 +974,11 @@
     <string name="session_date">Session Date</string>
     <string name="add_lifestyle">Add Lifestyle</string>
 
-    //Dashboard ui
+    //User Dashboard
     <string name="dashboard">Dashboard</string>
     <string name="customize">Customize</string>
 
-    //NCD lab tech ui
+    //Lab Technician
     <string name="phq9_score_display">PHQ9 Score</string>
     <string name="enter_value">Enter Value</string>
     <string name="required">Required</string>
@@ -984,4 +987,10 @@
     <string name="dd_mmm_yyyy">dd_mm_yyyy</string>
     <string name="test_comments">Test Comments</string>
     <string name="screening_after_search">No Patient found. Please perform screening to proceed.</string>
+
+    <string name="duplicate_record_found">Duplicate Record Found</string>
+    <string name="proceed">Proceed</string>
+
+    //E-Signature
+    <string name="or_label"> (OR) </string>
 </resources>

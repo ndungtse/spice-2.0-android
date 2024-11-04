@@ -1,4 +1,4 @@
-package com.medtroniclabs.spice.ui.registration.repo
+package com.medtroniclabs.spice.ncd.registration.repo
 
 import androidx.lifecycle.LiveData
 import com.google.gson.Gson
@@ -11,9 +11,11 @@ import com.medtroniclabs.spice.data.model.RegistrationResponse
 import com.medtroniclabs.spice.db.local.RoomHelper
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.model.FormResponse
+import com.medtroniclabs.spice.ncd.data.ValidatePatientModel
 import com.medtroniclabs.spice.network.ApiHelper
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.network.resource.ResourceState
+import okhttp3.RequestBody
 import okhttp3.ResponseBody
 import javax.inject.Inject
 
@@ -79,10 +81,11 @@ class RegistrationRepository @Inject constructor(
     }
 
     suspend fun getAllVillages(
-        tag: String
+        tag: String,
+        selectedParent: Long
     ): Resource<LocalSpinnerResponse> {
         return try {
-            val response = roomHelper.getAllVillageEntity()
+            val response = roomHelper.getVillagesByChiefDom(selectedParent)
             Resource(state = ResourceState.SUCCESS, LocalSpinnerResponse(tag, response))
         } catch (_: Exception) {
             Resource(state = ResourceState.ERROR)
@@ -100,7 +103,7 @@ class RegistrationRepository @Inject constructor(
         }
     }
 
-    suspend fun registerPatient(hashMap: HashMap<String, Any>): Resource<RegistrationResponse> {
+    suspend fun registerPatient(hashMap: RequestBody): Resource<RegistrationResponse> {
         return try {
             val response = apiHelper.registerPatient(hashMap)
             if (response.isSuccessful && response.body()?.status == true) {
@@ -113,12 +116,12 @@ class RegistrationRepository @Inject constructor(
         }
     }
 
-    suspend fun isPatientAlreadyRegistered(
-        requestMap: HashMap<String, Any>,
+    suspend fun validatePatient(
+        requestMap: ValidatePatientModel,
         patientCreateReq: Pair<HashMap<String, Any>, List<FormLayout?>?>
     ): Resource<Pair<HashMap<String, Any>, List<FormLayout?>?>> {
         return try {
-            val response = apiHelper.isPatientAlreadyRegistered(requestMap)
+            val response = apiHelper.validatePatient(requestMap)
             if (response.isSuccessful && response.body()?.status == true) {
                 Resource(state = ResourceState.SUCCESS, data = patientCreateReq)
             } else {

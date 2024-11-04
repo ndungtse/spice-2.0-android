@@ -3,8 +3,9 @@ package com.medtroniclabs.spice.common
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.res.AssetManager
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.text.SpannableStringBuilder
-import androidx.core.text.color
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.nullIfEmpty
 import com.medtroniclabs.spice.common.DateUtils.calculateAge
@@ -46,10 +47,11 @@ import com.medtroniclabs.spice.mappingkey.Screening.otherType
 import com.medtroniclabs.spice.mappingkey.Screening.siteId
 import com.medtroniclabs.spice.mappingkey.Screening.substanceAbuse
 import com.medtroniclabs.spice.mappingkey.Screening.userSiteId
-import com.medtroniclabs.spice.ncd.screening.ReferredReason
+import com.medtroniclabs.spice.ncd.screening.utils.ReferredReason
 import com.medtroniclabs.spice.ui.MenuConstants
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
+import java.io.ByteArrayOutputStream
 import java.io.File
 import java.math.RoundingMode
 import java.text.DecimalFormat
@@ -1406,7 +1408,10 @@ object CommonUtils {
 
     fun isPatientListRequired(origin: String?): Boolean {
         return when (origin) {
-            null, MenuConstants.MY_PATIENTS_MENU_ID -> true
+            null,
+            MenuConstants.LIFESTYLE.lowercase(),
+            MenuConstants.PSYCHOLOGICAL.lowercase(),
+            MenuConstants.MY_PATIENTS_MENU_ID.lowercase() -> true
             else -> false
         }
     }
@@ -1524,5 +1529,28 @@ object CommonUtils {
 
     fun isPsychologicalFlowEnabled(): Boolean {
         return SecuredPreference.getBoolean(SecuredPreference.EnvironmentKey.IS_PSYCHOLOGICAL_FLOW_ENABLED.name)
+    }
+
+    fun convertBitmapToByteArray(bitmap: Bitmap): ByteArray {
+        val byteArrayOutputStream = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 20, byteArrayOutputStream)
+        return byteArrayOutputStream.toByteArray()
+    }
+
+    fun convertByteArrayToBitmap(byteArray: ByteArray?) : Bitmap?{
+        return byteArray?.let { BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size) }
+    }
+
+    fun getIdentityValue(requestJson: Map<String, Any>?): String {
+        requestJson?.let {
+            if (requestJson.containsKey(Screening.bioData)) {
+                (requestJson[Screening.bioData] as? HashMap<*, *>)?.let {
+                    if (it.containsKey(Screening.identityValue)) {
+                        return it[Screening.identityValue] as? String ?: ""
+                    }
+                }
+            }
+        }
+        return ""
     }
 }

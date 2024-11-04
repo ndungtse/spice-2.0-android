@@ -15,7 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
-import com.medtroniclabs.spice.appextensions.validatedString
+import com.medtroniclabs.spice.appextensions.textOrHyphen
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
@@ -29,7 +29,6 @@ import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.mypatients.adapter.DateListAdapter
 import com.medtroniclabs.spice.ui.referralhistory.adapter.ReferralHistoryAdapter
-import com.medtroniclabs.spice.ui.referralhistory.fragment.PrescriptionHistoryFragment
 
 
 class NCDPrescriptionHistoryFragment : BaseFragment(), View.OnClickListener {
@@ -227,14 +226,14 @@ class NCDPrescriptionHistoryFragment : BaseFragment(), View.OnClickListener {
     private fun createPrescription(prescriptions: List<Prescription>?): List<String>? {
         return prescriptions?.map { prescription ->
             buildString {
-                append(prescription.medicationName.validatedString())
+                append(prescription.medicationName.textOrHyphen())
                 append(" - ")
-                append("${prescription.dosageFormName.validatedString()}/")
+                append("${prescription.dosageFormName.textOrHyphen()}/")
                 val dosageValue = prescription.dosageUnitValue?.toDoubleOrNull()?.toInt() ?: "-"
-                append(" ${dosageValue}${prescription.dosageUnitName.validatedString()}/")
-                append(" ${prescription.dosageFrequencyName.validatedString()}/")
+                append(" ${dosageValue}${prescription.dosageUnitName.textOrHyphen()}/")
+                append(" ${prescription.dosageFrequencyName.textOrHyphen()}/")
                 append(" ${prescription.prescriptionRemainingDays ?: "-"} ${dayPeriod(prescription.prescriptionRemainingDays)}/")
-                append(" " +prescription.instructionNote.validatedString())
+                append(" " +prescription.instructionNote.textOrHyphen())
             }
         }
     }

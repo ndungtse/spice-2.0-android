@@ -88,6 +88,7 @@ import com.medtroniclabs.spice.model.medicalreview.CreateUnderTwoMonthsResponse
 import com.medtroniclabs.spice.model.medicalreview.SearchLabTestResponse
 import com.medtroniclabs.spice.model.medicalreview.SearchRequestLabTest
 import com.medtroniclabs.spice.model.medicalreview.SummaryDetails
+import com.medtroniclabs.spice.ncd.counseling.model.AssessmentResultModel
 import com.medtroniclabs.spice.ncd.counseling.model.NCDCounselingModel
 import com.medtroniclabs.spice.ncd.data.BPBGListModel
 import com.medtroniclabs.spice.ncd.data.MRSummaryResponse
@@ -103,6 +104,7 @@ import com.medtroniclabs.spice.ncd.data.NCDTreatmentPlanModelDetails
 import com.medtroniclabs.spice.ncd.data.PatientVisitRequest
 import com.medtroniclabs.spice.ncd.data.PatientVisitResponse
 import com.medtroniclabs.spice.ncd.data.ScreeningPatientResponse
+import com.medtroniclabs.spice.ncd.data.ValidatePatientModel
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
@@ -187,8 +189,8 @@ interface ApiHelper {
     suspend fun uploadAllConsentSignatures(request: RequestBody): Response<APIResponse<List<ResponseSignatureUpload>>>
 
     suspend fun  checkAppVersion() : Response<APIResponse<Boolean>>
-    suspend fun  registerPatient(hashMap: HashMap<String, Any>) : Response<APIResponse<RegistrationResponse>>
-    suspend fun createScreening(createRequest: JsonObject): Response<APIResponse<HashMap<String, Any>>>
+    suspend fun registerPatient(hashMap: RequestBody) : Response<APIResponse<RegistrationResponse>>
+    suspend fun createScreening(createRequest: RequestBody): Response<APIResponse<HashMap<String, Any>>>
     suspend fun getNcdMRStaticData(): Response<APIResponse<NcdMRStaticDataModel>>
     suspend fun bpLogCreate(request: HashMap<String, Any>): Response<APIResponse<HashMap<String, Any>>>
     suspend fun glucoseLogCreate(request: HashMap<String, Any>): Response<APIResponse<HashMap<String, Any>>>
@@ -200,7 +202,6 @@ interface ApiHelper {
     suspend fun createPatientVisit(request: PatientVisitRequest): Response<APIResponse<PatientVisitResponse>>
     suspend fun createNCDMedicalReview(request: MedicalReviewRequestResponse): Response<APIResponse<MedicalReviewResponse>>
     suspend fun fetchNCDMRSummary(request: MedicalReviewResponse): Response<APIResponse<MRSummaryResponse>>
-    suspend fun isPatientAlreadyRegistered(request: HashMap<String, Any>): Response<APIResponse<HashMap<String, Any>>>
     suspend fun createConfirmDiagonsis(request: NCDDiagnosisRequestResponse): Response<APIResponse<HashMap<String, Any>>>
     suspend fun getConfirmDiagonsis(request: NCDDiagnosisGetRequest): Response<APIResponse<NCDDiagnosisGetResponse>>
 
@@ -212,14 +213,15 @@ interface ApiHelper {
     suspend fun updateDispensePrescription(request: DispensePrescriptionRequest): Response<APIResponse<DispenseUpdateResponse>>
     suspend fun getDispensePrescriptionHistory(request: DispenseUpdateRequest): Response<APIResponse<ArrayList<DispensePrescriptionResponse>>>
     suspend fun createLifestyle(request: NCDCounselingModel): Response<APIResponse<NCDCounselingModel>>
-    suspend fun updateLifestyle(request: NCDCounselingModel): Response<APIResponse<NCDCounselingModel>>
+    suspend fun updateLifestyle(request: AssessmentResultModel): Response<APIResponse<NCDCounselingModel>>
     suspend fun getLifestyleList(request: NCDCounselingModel): Response<APIResponse<ArrayList<NCDCounselingModel>>>
     suspend fun removeLifestyle(request: NCDCounselingModel): Response<APIResponse<NCDCounselingModel>>
     suspend fun createPsychological(request: NCDCounselingModel): Response<APIResponse<NCDCounselingModel>>
-    suspend fun updatePsychological(request: NCDCounselingModel): Response<APIResponse<NCDCounselingModel>>
+    suspend fun updatePsychological(request: AssessmentResultModel): Response<APIResponse<NCDCounselingModel>>
     suspend fun getPsychological(request: NCDCounselingModel): Response<APIResponse<ArrayList<NCDCounselingModel>>>
     suspend fun removePsychological(request: NCDCounselingModel): Response<APIResponse<NCDCounselingModel>>
     suspend fun getPatientPrescriptionHistoryList(request: RemovePrescriptionRequest): Response<APIResponse<ArrayList<Prescription>>>
     suspend fun getPatientLabTests(request: LabTestListRequest): Response<APIResponse<ArrayList<LabTestListResponse>>>
     suspend fun getNCDMedicalReviewHistory(request: ReferralDetailRequest): Response<APIResponse<NCDMedicalReviewHistory>>
+    suspend fun validatePatient(request: ValidatePatientModel): Response<APIResponse<ValidatePatientModel>>
 }

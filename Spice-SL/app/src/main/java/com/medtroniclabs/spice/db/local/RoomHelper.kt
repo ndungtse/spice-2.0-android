@@ -76,6 +76,7 @@ interface RoomHelper {
     suspend fun deleteAllHealthFacility()
     suspend fun saveVillage(villageEntityList: List<VillageEntity>)
     suspend fun getAllVillageEntity(): List<VillageEntity>
+    suspend fun getVillagesByChiefDom(chiefdomId: Long): List<VillageEntity>
     suspend fun deleteAllVillages()
     suspend fun deleteAllHouseholds()
     suspend fun deleteAllHouseholdMembers()

@@ -114,6 +114,7 @@ object Screening {
     const val Avg_Pulse = "avg_pulse"
     const val bp_log_id = "bpLogId"
     const val Initial = "initial"
+    const val Signature = "signature"
     const val First_Name = "firstName"
     const val isDiabetesDiagnosis = "isDiabetesDiagnosis"
     const val DiabetesPatientType = "diabetesPatientType"
@@ -173,6 +174,8 @@ object Screening {
     const val GestationalPeriod = "gestationalPeriod"
     const val isPregnant = "isPregnant"
     const val CountryId = "countryId"
+    const val RegistrationSignSuffix = "_registration_signature"
+    const val ScreeningSignSuffix = "_screening_signature"
     fun getEmptyBPReading(size: Int): ArrayList<BPModel> {
         val list = ArrayList<BPModel>()
         for (i in 1..size) {

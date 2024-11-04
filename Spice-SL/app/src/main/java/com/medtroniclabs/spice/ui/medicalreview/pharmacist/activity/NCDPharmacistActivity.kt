@@ -7,7 +7,7 @@ import android.view.View
 import androidx.activity.viewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
-import com.medtroniclabs.spice.appextensions.validatedString
+import com.medtroniclabs.spice.appextensions.textOrHyphen
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
@@ -153,8 +153,8 @@ class NCDPharmacistActivity : BaseActivity(), View.OnClickListener {
 
     private fun loadPatientInfo(data: PatientListRespModel?) {
         data?.let {
-            binding.tvProgramId.text = it.programId.validatedString()
-            binding.tvNationalId.text = it.identityValue.validatedString()
+            binding.tvProgramId.text = it.programId.textOrHyphen()
+            binding.tvNationalId.text = it.identityValue.textOrHyphen()
             data.firstName?.let {
                 val text = StringConverter.appendTexts(firstText = it, data.lastName)
                 setTitle(
@@ -176,7 +176,7 @@ class NCDPharmacistActivity : BaseActivity(), View.OnClickListener {
                 }
                 binding.tvPrescriberName.text =
                     name.ifBlank { getString(R.string.separator_hyphen) }
-                binding.tvPrescriberNumber.text = prescriberDetails.phoneNumber.validatedString()
+                binding.tvPrescriberNumber.text = prescriberDetails.phoneNumber.textOrHyphen()
 
                 prescriberDetails.lastRefillDate?.let { lastRefillDate ->
                     DateUtils.convertDateTimeToDate(

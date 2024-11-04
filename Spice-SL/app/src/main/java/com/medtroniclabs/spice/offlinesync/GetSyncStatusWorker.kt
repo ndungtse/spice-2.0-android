@@ -1,17 +1,20 @@
 package com.medtroniclabs.spice.offlinesync
 
 import android.content.Context
+import android.graphics.Bitmap
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.Data
 import androidx.work.WorkerParameters
 import com.google.gson.Gson
+import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.data.offlinesync.utils.OfflineConstant.KEY_REQUESTS_ID
 import com.medtroniclabs.spice.db.local.RoomHelper
+import com.medtroniclabs.spice.mappingkey.Screening
 import com.medtroniclabs.spice.ncd.screening.repo.ScreeningRepository
 import com.medtroniclabs.spice.network.utils.ConnectivityManager
 import com.medtroniclabs.spice.repo.AssessmentRepository
@@ -19,6 +22,11 @@ import com.medtroniclabs.spice.repo.OfflineSyncRepository
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.delay
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
+import java.io.File
+import java.io.FileOutputStream
 import javax.inject.Inject
 
 @HiltWorker
@@ -83,17 +91,46 @@ class GetSyncStatusWorker @AssistedInject constructor(
                         screeningUploadList.forEach { data ->
                             val dataId = data.id
                             // Make API call
-                            val response = screeningRepository.createScreeningLog(
-                                StringConverter.getJsonObject(
-                                    Gson().toJson(
-                                        CommonUtils.parseRequest(
-                                            data.generalDetails,
-                                            data.screeningDetails,
-                                            data.userId
-                                        )
-                                    )
-                                )
+                            val builder = MultipartBody.Builder()
+                            builder.setType(MultipartBody.FORM)
+
+                            val hashMap = CommonUtils.parseRequest(
+                                data.generalDetails,
+                                data.screeningDetails,
+                                data.userId
                             )
+                            val request = Gson().toJson(hashMap)
+                            builder.addFormDataPart("screeningRequest", request)
+
+                            data.signature?.let { sign ->
+                                val signMap = CommonUtils.convertByteArrayToBitmap(sign)
+
+                                val identityValue = CommonUtils.getIdentityValue(hashMap)
+                                val fileName = "${identityValue}${Screening.ScreeningSignSuffix}.jpeg"
+
+                                val filePath = CommonUtils.getFilePath(identityValue, applicationContext)
+                                filePath.mkdirs()
+
+                                val file = File(filePath, fileName)
+
+                                val clearedExistingFile: Boolean = if (file.exists()) file.delete() else true
+
+                                if (clearedExistingFile && signMap != null) {
+                                    val out = FileOutputStream(file)
+                                    signMap.compress(Bitmap.CompressFormat.JPEG, 20, out)
+                                    out.flush()
+                                    out.close()
+                                    file.let {
+                                        builder.addFormDataPart(
+                                            "signatureFile",
+                                            file.name,
+                                            file.asRequestBody("multipart/form-data".toMediaTypeOrNull())
+                                        )
+                                    }
+                                }
+                            }
+
+                            val response = screeningRepository.createScreeningLog(builder.build())
                             if (response.isSuccessful) {
                                 // If the API call is successful, update the record
                                 screeningRepository.updateScreeningRecordById(dataId, true)

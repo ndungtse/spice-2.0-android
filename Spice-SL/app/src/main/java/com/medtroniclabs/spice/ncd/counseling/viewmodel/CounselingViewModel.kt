@@ -14,8 +14,8 @@ import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.PatientLifestyle
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.ncd.counseling.model.NCDCounselingModel
+import com.medtroniclabs.spice.ncd.counseling.model.AssessmentResultModel
 import com.medtroniclabs.spice.ncd.counseling.repo.CounselingRepo
-import com.medtroniclabs.spice.ncd.counseling.utils.AssessmentsReferredBy
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
@@ -60,31 +60,31 @@ class CounselingViewModel @Inject constructor(
     var removeAssessmentLiveData =
         MutableLiveData<Resource<APIResponse<NCDCounselingModel>>>()
 
-    fun createAssessment(request: NCDCounselingModel) {
+    fun createAssessment(request: NCDCounselingModel, lifestyle: Boolean) {
         viewModelScope.launch(dispatcherIO) {
             createAssessmentLiveData.postLoading()
-            createAssessmentLiveData.postValue(counselingRepo.createAssessment(request))
+            createAssessmentLiveData.postValue(counselingRepo.createAssessment(request, lifestyle))
         }
     }
 
-    fun updateAssessment(request: NCDCounselingModel) {
+    fun updateAssessment(request: AssessmentResultModel, lifestyle: Boolean) {
         viewModelScope.launch(dispatcherIO) {
             updateAssessmentLiveData.postLoading()
-            updateAssessmentLiveData.postValue(counselingRepo.updateAssessment(request))
+            updateAssessmentLiveData.postValue(counselingRepo.updateAssessment(request, lifestyle))
         }
     }
 
-    fun getAssessmentList(request: NCDCounselingModel) {
+    fun getAssessmentList(request: NCDCounselingModel, lifestyle: Boolean) {
         viewModelScope.launch(dispatcherIO) {
             assessmentListLiveData.postLoading()
-            assessmentListLiveData.postValue(counselingRepo.getAssessmentList(request))
+            assessmentListLiveData.postValue(counselingRepo.getAssessmentList(request, lifestyle))
         }
     }
 
-    fun removeAssessment(request: NCDCounselingModel) {
+    fun removeAssessment(request: NCDCounselingModel, lifestyle: Boolean) {
         viewModelScope.launch(dispatcherIO) {
             removeAssessmentLiveData.postLoading()
-            removeAssessmentLiveData.postValue(counselingRepo.removeAssessment(request))
+            removeAssessmentLiveData.postValue(counselingRepo.removeAssessment(request, lifestyle))
         }
     }
 
@@ -95,17 +95,5 @@ class CounselingViewModel @Inject constructor(
 
     val getChipItems: LiveData<List<NCDMedicalReviewMetaEntity>> = getChip.switchMap {
         counselingRepo.getLifestyleAssessments(category = PatientLifestyle)
-    }
-
-    fun getRoleName(): String? {
-        return SecuredPreference.getUserDetails()?.roles?.joinToString { it.name }
-            ?.let { userRoles ->
-                if (userRoles.contains(RoleConstant.NUTRITIONIST)) AssessmentsReferredBy.NUTRITIONIST.name
-                else if (userRoles.contains(RoleConstant.PSYCHOLOGIST)) AssessmentsReferredBy.PSYCHOLOGIST.name
-                else if (userRoles.contains(RoleConstant.PHYSICIAN_PRESCRIBER)) AssessmentsReferredBy.PHYSICIAN_PRESCRIBER.name
-                else AssessmentsReferredBy.PROVIDER.name
-            } ?: run {
-            null
-        }
     }
 }

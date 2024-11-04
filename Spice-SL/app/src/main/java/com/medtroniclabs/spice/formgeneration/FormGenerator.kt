@@ -2942,18 +2942,13 @@ class FormGenerator(
     }
 
     fun spinnerDataInjection(data: LocalSpinnerResponse, mapList: ArrayList<Map<String, Any>>) {
-        val view = getViewByTag(data.tag) as? AppCompatSpinner ?: return
-
-        if (view.adapter is CustomSpinnerAdapter) {
+        val spinner = getViewByTag(data.tag) as? AppCompatSpinner ?: return
+        if (spinner.adapter is CustomSpinnerAdapter) {
             if (mapList.size > 1) {
                 mapList.add(0, createDefaultMap())
             }
-            (view.adapter as CustomSpinnerAdapter).setData(mapList)
-
-            if (mapList.size == 1) {
-                mapList.add(0, createDefaultMap())
-                view.post { view.setSelection(1, true) }
-            }
+            (spinner.adapter as CustomSpinnerAdapter).setData(mapList)
+            spinner.onItemSelectedListener?.onItemSelected(spinner, spinner.selectedView, 0, spinner.selectedItemId)
         }
     }
 

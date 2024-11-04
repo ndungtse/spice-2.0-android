@@ -1,4 +1,4 @@
-package com.medtroniclabs.spice.ncd.screening
+package com.medtroniclabs.spice.ncd.screening.ui
 
 import android.os.Bundle
 import androidx.activity.OnBackPressedCallback
@@ -12,7 +12,7 @@ import com.medtroniclabs.spice.ncd.screening.fragment.ScreeningSummaryFragment
 import com.medtroniclabs.spice.ncd.screening.fragment.StatsFragment
 import com.medtroniclabs.spice.ncd.screening.viewmodel.ScreeningFormBuilderViewModel
 import com.medtroniclabs.spice.ui.BaseActivity
-import com.medtroniclabs.spice.ui.registration.fragment.TermsAndConditionsFragment
+import com.medtroniclabs.spice.ncd.registration.fragment.TermsAndConditionsFragment
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

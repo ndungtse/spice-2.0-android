@@ -1,5 +1,6 @@
 package com.medtroniclabs.spice.ncd.screening.viewmodel
 
+import android.content.Context
 import android.location.Location
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -13,8 +14,10 @@ import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.db.entity.MentalHealthEntity
 import com.medtroniclabs.spice.db.entity.ScreeningEntity
 import com.medtroniclabs.spice.di.IoDispatcher
+import com.medtroniclabs.spice.ncd.data.ValidatePatientModel
 import com.medtroniclabs.spice.ncd.screening.repo.ScreeningRepository
 import com.medtroniclabs.spice.network.resource.Resource
+import com.medtroniclabs.spice.network.utils.ConnectivityManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
@@ -28,6 +31,7 @@ class ScreeningFormBuilderViewModel @Inject constructor(
 
     private var getMentalQuestion = MutableLiveData<Pair<String, String>>()
     var screeningSaveResponse = MutableLiveData<Resource<ScreeningEntity>>()
+    var duplicateNudgeLiveData = MutableLiveData<ValidatePatientModel>()
     var screeningUpdateResponse = MutableLiveData<Resource<ScreeningEntity>>()
     val getMentalQuestions: LiveData<MentalHealthEntity?> =
         getMentalQuestion.switchMap {
@@ -41,6 +45,9 @@ class ScreeningFormBuilderViewModel @Inject constructor(
     private var phQ4Score: Int? = null
     private var fbsBloodGlucose: Double? = null
     private var rbsBloodGlucose: Double? = null
+
+    @Inject
+    lateinit var connectivityManager: ConnectivityManager
 
     fun getMentalQuestion(id: String, type: String) {
         getMentalQuestion.value = Pair(id, type)
@@ -84,9 +91,13 @@ class ScreeningFormBuilderViewModel @Inject constructor(
     }
 
     fun savePatientScreeningInformation(
+        context: Context,
         screeningEntityRawString: String,
         generalDetail: String,
-        isReferred: Boolean
+        byteArray: ByteArray?,
+        isReferred: Boolean,
+        uploadStatus: Boolean,
+        isRecursion: Boolean
     ) {
 
         viewModelScope.launch(dispatcherIO)
@@ -97,6 +108,8 @@ class ScreeningFormBuilderViewModel @Inject constructor(
                     screeningDetails = screeningEntityRawString,
                     generalDetails = generalDetail,
                     userId = SecuredPreference.getUserFhirId(),
+                    uploadStatus = uploadStatus,
+                    signature = byteArray,
                     isReferred = isReferred
                 )
                 val rowId = screeningRepository.savePatientScreeningInformation(screeningEntity)

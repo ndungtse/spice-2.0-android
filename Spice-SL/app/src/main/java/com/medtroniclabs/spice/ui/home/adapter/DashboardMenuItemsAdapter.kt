@@ -169,6 +169,16 @@ class DashboardMenuItemsAdapter(
                 R.drawable.ic_dashboard
             )
 
+            MenuConstants.LIFESTYLE -> return ContextCompat.getDrawable(
+                context,
+                R.drawable.ic_lifestyle
+            )
+
+            MenuConstants.PSYCHOLOGICAL -> return ContextCompat.getDrawable(
+                context,
+                R.drawable.ic_psycological_menu
+            )
+
             MenuConstants.MENTAL_HEALTH -> return ContextCompat.getDrawable(
                 context,
                 R.drawable.ic_mental_health

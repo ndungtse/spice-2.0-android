@@ -2,6 +2,7 @@ package com.medtroniclabs.spice.ncd.counseling.repo
 
 import com.medtroniclabs.spice.data.APIResponse
 import com.medtroniclabs.spice.db.local.RoomHelper
+import com.medtroniclabs.spice.ncd.counseling.model.AssessmentResultModel
 import com.medtroniclabs.spice.network.ApiHelper
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.network.resource.ResourceState
@@ -14,9 +15,9 @@ class CounselingRepo @Inject constructor(
     fun getLifestyleAssessments(type: String? = null, category: String) =
         roomHelper.getComorbidities(type, category)
 
-    suspend fun createAssessment(request: NCDCounselingModel): Resource<APIResponse<NCDCounselingModel>> {
+    suspend fun createAssessment(request: NCDCounselingModel, lifestyle: Boolean): Resource<APIResponse<NCDCounselingModel>> {
         return try {
-            val response = apiHelper.createLifestyle(request)
+            val response = if (lifestyle) apiHelper.createLifestyle(request) else apiHelper.createPsychological(request)
             if (response.isSuccessful && response.body()?.status == true) {
                 Resource(state = ResourceState.SUCCESS, data = response.body())
             } else {
@@ -27,9 +28,9 @@ class CounselingRepo @Inject constructor(
         }
     }
 
-    suspend fun updateAssessment(request: NCDCounselingModel): Resource<APIResponse<NCDCounselingModel>> {
+    suspend fun updateAssessment(request: AssessmentResultModel, lifestyle: Boolean): Resource<APIResponse<NCDCounselingModel>> {
         return try {
-            val response = apiHelper.updateLifestyle(request)
+            val response = if (lifestyle) apiHelper.updateLifestyle(request) else apiHelper.updatePsychological(request)
             if (response.isSuccessful && response.body()?.status == true) {
                 Resource(state = ResourceState.SUCCESS, data = response.body())
             } else {
@@ -40,9 +41,9 @@ class CounselingRepo @Inject constructor(
         }
     }
 
-    suspend fun getAssessmentList(request: NCDCounselingModel): Resource<APIResponse<ArrayList<NCDCounselingModel>>> {
+    suspend fun getAssessmentList(request: NCDCounselingModel, lifestyle: Boolean): Resource<APIResponse<ArrayList<NCDCounselingModel>>> {
         return try {
-            val response = apiHelper.getLifestyleList(request)
+            val response = if (lifestyle) apiHelper.getLifestyleList(request) else apiHelper.getPsychological(request)
             if (response.isSuccessful && response.body()?.status == true) {
                 Resource(state = ResourceState.SUCCESS, data = response.body())
             } else {
@@ -53,9 +54,9 @@ class CounselingRepo @Inject constructor(
         }
     }
 
-    suspend fun removeAssessment(request: NCDCounselingModel): Resource<APIResponse<NCDCounselingModel>> {
+    suspend fun removeAssessment(request: NCDCounselingModel, lifestyle: Boolean): Resource<APIResponse<NCDCounselingModel>> {
         return try {
-            val response = apiHelper.removeLifestyle(request)
+            val response = if (lifestyle) apiHelper.removeLifestyle(request) else apiHelper.removePsychological(request)
             if (response.isSuccessful && response.body()?.status == true) {
                 Resource(
                     state = ResourceState.SUCCESS,

@@ -7,6 +7,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.appextensions.gone
+import com.medtroniclabs.spice.appextensions.invisible
+import com.medtroniclabs.spice.appextensions.setVisible
+import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.databinding.AdapterNcdLifestyleBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
@@ -26,10 +30,10 @@ class NCDLifestyleAdapter(private val lifeStyleInterface: CounselingInterface) :
             with(item) {
                 binding.apply {
                     if (isExpanded) {
-                        resultsLayout.visibility = View.VISIBLE
+                        resultsLayout.visible()
                         rotateArrow180f(ivDropDown)
                     } else {
-                        resultsLayout.visibility = View.GONE
+                        resultsLayout.gone()
                         rotateArrow0f(ivDropDown)
                     }
 
@@ -39,17 +43,17 @@ class NCDLifestyleAdapter(private val lifeStyleInterface: CounselingInterface) :
                     }
 
                     if (assessedBy.isNullOrBlank()) {
-                        assessmentNotesLayout.root.visibility = View.GONE
-                        otherNotesLayout.root.visibility = View.GONE
+                        assessmentNotesLayout.root.gone()
+                        otherNotesLayout.root.gone()
                     } else {
                         assessmentNotesLayout.apply {
-                            root.visibility = View.VISIBLE
+                            root.visible()
                             tvKey.text = context.getString(R.string.lifestyle_assessment)
                             tvValue.text = lifestyleAssessment ?: run { displayHyphen(context) }
                         }
 
                         otherNotesLayout.apply {
-                            root.visibility = View.VISIBLE
+                            root.visible()
                             tvKey.text = context.getString(R.string.other_notes)
                             tvValue.text = otherNote ?: run { displayHyphen(context) }
                         }
@@ -89,15 +93,13 @@ class NCDLifestyleAdapter(private val lifeStyleInterface: CounselingInterface) :
                     }
 
                     if (id.isNullOrBlank()) {
-                        ivDropDown.visibility = View.INVISIBLE
-                        ivRemove.visibility =
-                            if (assessedBy.isNullOrBlank()) View.VISIBLE else View.GONE
-                        ivDelete.visibility =
-                            if (assessedBy.isNullOrBlank()) View.GONE else View.VISIBLE
+                        ivDropDown.invisible()
+                        ivRemove.visible()
+                        ivDelete.gone()
                     } else {
-                        ivDropDown.visibility = View.VISIBLE
-                        ivRemove.visibility = View.GONE
-                        ivDelete.visibility = View.GONE
+                        ivDropDown.visible()
+                        ivRemove.gone()
+                        ivDelete.setVisible(assessedBy.isNullOrBlank())
                     }
 
                     ivRemove.safeClickListener(this@ViewHolder)

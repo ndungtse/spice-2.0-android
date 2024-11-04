@@ -88,6 +88,7 @@ import com.medtroniclabs.spice.model.medicalreview.CreateUnderTwoMonthsResponse
 import com.medtroniclabs.spice.model.medicalreview.SearchLabTestResponse
 import com.medtroniclabs.spice.model.medicalreview.SearchRequestLabTest
 import com.medtroniclabs.spice.model.medicalreview.SummaryDetails
+import com.medtroniclabs.spice.ncd.counseling.model.AssessmentResultModel
 import com.medtroniclabs.spice.ncd.counseling.model.NCDCounselingModel
 import com.medtroniclabs.spice.ncd.data.BPBGListModel
 import com.medtroniclabs.spice.ncd.data.MRSummaryResponse
@@ -102,6 +103,8 @@ import com.medtroniclabs.spice.ncd.data.NCDTreatmentPlanModel
 import com.medtroniclabs.spice.ncd.data.NCDTreatmentPlanModelDetails
 import com.medtroniclabs.spice.ncd.data.PatientVisitRequest
 import com.medtroniclabs.spice.ncd.data.PatientVisitResponse
+import com.medtroniclabs.spice.ncd.data.ScreeningPatientResponse
+import com.medtroniclabs.spice.ncd.data.ValidatePatientModel
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
 import retrofit2.Response
@@ -314,10 +317,10 @@ interface ApiService {
     suspend fun checkAppVersion(): Response<APIResponse<Boolean>>
 
     @POST("/spice-service/screening/create")
-    suspend fun createScreening(@Body createRequest: JsonObject): Response<APIResponse<HashMap<String, Any>>>
+    suspend fun createScreening(@Body createRequest: RequestBody): Response<APIResponse<HashMap<String, Any>>>
 
     @POST("spice-service/patient/register")
-    suspend fun registerPatient(@Body request: HashMap<String, Any>): Response<APIResponse<RegistrationResponse>>
+    suspend fun registerPatient(@Body request: RequestBody): Response<APIResponse<RegistrationResponse>>
 
     @POST("spice-service/static-data/ncd-medical-review")
     suspend fun getNcdMRStaticData(): Response<APIResponse<NcdMRStaticDataModel>>
@@ -351,8 +354,6 @@ interface ApiService {
 
     @POST("/spice-service/medical-review/ncd/details")
     suspend fun fetchNCDMRSummary(@Body request: MedicalReviewResponse): Response<APIResponse<MRSummaryResponse>>
-    @POST("spice-service/patient/validate")
-    suspend fun isPatientAlreadyRegistered(@Body request: HashMap<String, Any>): Response<APIResponse<HashMap<String, Any>>>
 
     @POST("spice-service/prescription-request/history-list")
     suspend fun getPatientPrescriptionHistoryList(@Body request: RemovePrescriptionRequest) : Response<APIResponse<ArrayList<Prescription>>>
@@ -378,7 +379,7 @@ interface ApiService {
     suspend fun createLifestyle(@Body request: NCDCounselingModel): Response<APIResponse<NCDCounselingModel>>
 
     @POST("spice-service/patient-nutrition-lifestyle/update")
-    suspend fun updateLifestyle(@Body request: NCDCounselingModel): Response<APIResponse<NCDCounselingModel>>
+    suspend fun updateLifestyle(@Body request: AssessmentResultModel): Response<APIResponse<NCDCounselingModel>>
 
     @POST("spice-service/patient-nutrition-lifestyle/list")
     suspend fun getLifestyleList(@Body request: NCDCounselingModel): Response<APIResponse<ArrayList<NCDCounselingModel>>>
@@ -386,16 +387,16 @@ interface ApiService {
     @POST("spice-service/patient-nutrition-lifestyle/remove")
     suspend fun removeLifestyle(@Body request: NCDCounselingModel): Response<APIResponse<NCDCounselingModel>>
 
-    @POST("spice-service/patient-nutrition-lifestyle/create")
+    @POST("spice-service/medical-review/patient-psychology/create")
     suspend fun createPsychological(@Body request: NCDCounselingModel): Response<APIResponse<NCDCounselingModel>>
 
-    @POST("spice-service/patient-nutrition-lifestyle/update")
-    suspend fun updatePsychological(@Body request: NCDCounselingModel): Response<APIResponse<NCDCounselingModel>>
+    @POST("spice-service/medical-review/patient-psychology/update")
+    suspend fun updatePsychological(@Body request: AssessmentResultModel): Response<APIResponse<NCDCounselingModel>>
 
-    @POST("spice-service/patient-nutrition-lifestyle/list")
+    @POST("spice-service/medical-review/patient-psychology/list")
     suspend fun getPsychological(@Body request: NCDCounselingModel): Response<APIResponse<ArrayList<NCDCounselingModel>>>
 
-    @POST("spice-service/patient-nutrition-lifestyle/remove")
+    @POST("spice-service/medical-review/patient-psychology/remove")
     suspend fun removePsychological(@Body request: NCDCounselingModel): Response<APIResponse<NCDCounselingModel>>
 
     @POST("spice-service/investigation/list")
@@ -414,4 +415,6 @@ interface ApiService {
     @POST("/spice-service/medical-review/ncd/history-list")
     suspend fun getNCDMedicalReviewHistory(@Body request: ReferralDetailRequest): Response<APIResponse<NCDMedicalReviewHistory>>
 
+    @POST("spice-service/patient/validate")
+    suspend fun validatePatient(@Body request: ValidatePatientModel): Response<APIResponse<ValidatePatientModel>>
 }

@@ -73,7 +73,7 @@ import com.medtroniclabs.spice.ncd.counseling.activity.NCDCounselingActivity
 import com.medtroniclabs.spice.ncd.counseling.activity.NCDLifestyleActivity
 import com.medtroniclabs.spice.ncd.medicalreview.prescription.activity.NCDPrescriptionActivity
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
-import com.medtroniclabs.spice.ui.registration.RegistrationActivity
+import com.medtroniclabs.spice.ncd.registration.ui.RegistrationActivity
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -279,14 +279,13 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
     }
 
     private fun initializeStaticDataSave() {
-        if (!(SecuredPreference.getBoolean(SecuredPreference.EnvironmentKey.IS_NCD_MEDICAL_REVIEW_LOADED.name))) {
+        if (NCDMRUtil.isNCDMRMetaLoaded())
+            initView() else {
             withNetworkAvailability(online = {
                 viewModel.getStaticMetaData()
             }, offline = {
                 onBackPressPopStack()
             })
-        } else {
-            initView()
         }
     }
 

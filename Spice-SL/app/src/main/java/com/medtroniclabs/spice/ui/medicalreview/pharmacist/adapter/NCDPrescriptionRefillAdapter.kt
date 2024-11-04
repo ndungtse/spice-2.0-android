@@ -10,13 +10,13 @@ import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.RecyclerView
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
+import com.medtroniclabs.spice.appextensions.textOrHyphen
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.data.DispensePrescriptionResponse
 import com.medtroniclabs.spice.databinding.LayoutPrescriptionRefillAdapterBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil
-import com.medtroniclabs.spice.appextensions.validatedString
 
 class NCDPrescriptionRefillAdapter :
     RecyclerView.Adapter<NCDPrescriptionRefillAdapter.PrescriptionRefillViewHolder>() {
@@ -27,9 +27,9 @@ class NCDPrescriptionRefillAdapter :
         RecyclerView.ViewHolder(binding.root) {
             private val rootContext: Context = binding.root.context
         fun bind(pos: Int, model: DispensePrescriptionResponse) {
-            binding.tvMedicationName.text = model.medicationName.validatedString()
+            binding.tvMedicationName.text = model.medicationName.textOrHyphen()
             binding.tvDosage.text = model.dosageUnitValue?.let { getDosageValue(it, model.dosageUnitName) }
-            binding.tvFrequency.text = model.dosageFrequencyName.validatedString()
+            binding.tvFrequency.text = model.dosageFrequencyName.textOrHyphen()
             binding.tvMedicationPrescribedDays.text = model.dispenseRemainingDays.toString()
             binding.ivFormType.setImageDrawable(
                 model.dosageFormName?.let {
@@ -107,9 +107,9 @@ class NCDPrescriptionRefillAdapter :
                 DateUtils.DATE_FORMAT_ddMMMyyyy
             )
 
-            binding.tvDosageForm.text = model.dosageFormName.validatedString()
-            binding.tvBrand.text = model.brandName.validatedString()
-            binding.tvClassification.text = model.classificationName.validatedString()
+            binding.tvDosageForm.text = model.dosageFormName.textOrHyphen()
+            binding.tvBrand.text = model.brandName.textOrHyphen()
+            binding.tvClassification.text = model.classificationName.textOrHyphen()
             binding.etInstruction.setText(model.instructionNote)
         }
     }

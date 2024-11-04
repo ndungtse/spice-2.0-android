@@ -193,7 +193,7 @@
             android:name=".ui.boarding.ResourceLoadingScreen"
             android:exported="false" />
         <activity
-            android:name=".ui.registration.RegistrationActivity"
+            android:name=".ncd.registration.ui.RegistrationActivity"
             android:exported="false"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize" />
@@ -219,7 +219,7 @@
             android:exported="false"
             tools:node="remove" /> <!-- NCD WorkFlow -->
         <activity
-            android:name=".ncd.screening.ScreeningActivity"
+            android:name=".ncd.screening.ui.ScreeningActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
@@ -238,22 +238,26 @@
             android:name=".ncd.counseling.activity.NCDLifestyleActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:exported="false"
-            android:windowSoftInputMode="adjustResize" />
+            android:screenOrientation="landscape"
+            android:windowSoftInputMode="stateHidden|adjustPan" />
         <activity
             android:name=".ncd.counseling.activity.NCDNutritionistActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
             android:exported="false"
             android:screenOrientation="portrait"
-            tools:ignore="LockedOrientationActivity" />
+            android:windowSoftInputMode="stateHidden|adjustPan" />
         <activity
             android:name=".ncd.counseling.activity.NCDCounselingActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:exported="false"
-            android:windowSoftInputMode="adjustResize" />
+            android:screenOrientation="landscape"
+            android:windowSoftInputMode="stateHidden|adjustPan" />
         <activity
             android:name=".ncd.counseling.activity.NCDCounselorActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
             android:exported="false"
             android:screenOrientation="portrait"
-            tools:ignore="LockedOrientationActivity" />
+            android:windowSoftInputMode="stateHidden|adjustPan" />
     </application>
 
 </manifest>

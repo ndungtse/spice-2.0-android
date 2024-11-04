@@ -1,6 +1,5 @@
-package com.medtroniclabs.spice.ui.registration.fragment
+package com.medtroniclabs.spice.ncd.registration.fragment
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -18,7 +17,7 @@ import com.medtroniclabs.spice.formgeneration.extension.capitalizeFirstChar
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.BaseFragment
-import com.medtroniclabs.spice.ui.registration.viewmodel.RegistrationFormViewModel
+import com.medtroniclabs.spice.ncd.registration.viewmodel.RegistrationFormViewModel
 
 class RegistrationSummaryFragment : BaseFragment(), View.OnClickListener {
     private lateinit var binding: FragmentRegistrationSummaryBinding

@@ -25,10 +25,12 @@ import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.databinding.FragmentPatientSearchBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.model.PatientListRespModel
+import com.medtroniclabs.spice.ncd.counseling.activity.NCDCounselorActivity
+import com.medtroniclabs.spice.ncd.counseling.activity.NCDNutritionistActivity
 import com.medtroniclabs.spice.ncd.data.PatientVisitRequest
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMedicalReviewCMRActivity
-import com.medtroniclabs.spice.ncd.screening.ScreeningActivity
+import com.medtroniclabs.spice.ncd.screening.ui.ScreeningActivity
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.BaseFragment
@@ -41,7 +43,7 @@ import com.medtroniclabs.spice.ui.mypatients.PatientSelectionListener
 import com.medtroniclabs.spice.ui.mypatients.PatientsListAdapter
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientListViewModel
 import com.medtroniclabs.spice.ui.referralhistory.activity.ReferralHistoryActivity
-import com.medtroniclabs.spice.ui.registration.RegistrationActivity
+import com.medtroniclabs.spice.ncd.registration.ui.RegistrationActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -172,26 +174,33 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
                 ResourceState.SUCCESS -> {
                     (activity as BaseActivity).hideLoading()
                     resourceState.data?.let {
-                        val destinationIntent =
-                            if (patientListViewModel.origin.equals(MenuConstants.DISPENSE, true)
-                                &&
-                                (CommonUtils.isAfrica() && CommonUtils.isPharmist())
-                            ) {
-                                NCDPharmacistActivity::class.java
-                            } else if (it.initialReviewed == true) {
-                                NCDMedicalReviewCMRActivity::class.java
-                            } else {
-                                AssessmentToolsActivity::class.java
-                            }
-                        val intent =
-                            Intent(requireContext(), destinationIntent).apply {
-                                putExtra(NCDMRUtil.EncounterReference, it.encounterReference)
-                                putExtra(DefinedParams.FhirId,patientListViewModel.selectedPatientDetails?.id)
-                                putExtra(DefinedParams.PatientId, patientListViewModel.selectedPatientDetails?.patientId)
-                                putExtra(DefinedParams.ORIGIN, patientListViewModel.origin)
-                                putExtra(DefinedParams.Gender, patientListViewModel.selectedPatientDetails?.gender)
-                            }
-                        startActivity(intent)
+                        val destinationIntent = when (patientListViewModel.origin?.lowercase()) {
+                            MenuConstants.DISPENSE.lowercase() -> NCDPharmacistActivity::class.java
+                            MenuConstants.LIFESTYLE.lowercase() -> NCDNutritionistActivity::class.java
+                            MenuConstants.PSYCHOLOGICAL.lowercase() -> NCDCounselorActivity::class.java
+                            MenuConstants.MY_PATIENTS_MENU_ID.lowercase() -> if (it.initialReviewed == true) NCDMedicalReviewCMRActivity::class.java else AssessmentToolsActivity::class.java
+                            else -> null
+                        }
+                        destinationIntent?.let { destIntent ->
+                            val intent =
+                                Intent(requireContext(), destIntent).apply {
+                                    putExtra(NCDMRUtil.EncounterReference, it.encounterReference)
+                                    putExtra(
+                                        DefinedParams.FhirId,
+                                        patientListViewModel.selectedPatientDetails?.id
+                                    )
+                                    putExtra(
+                                        DefinedParams.PatientId,
+                                        patientListViewModel.selectedPatientDetails?.patientId
+                                    )
+                                    putExtra(DefinedParams.ORIGIN, patientListViewModel.origin)
+                                    putExtra(
+                                        DefinedParams.Gender,
+                                        patientListViewModel.selectedPatientDetails?.gender
+                                    )
+                                }
+                            startActivity(intent)
+                        }
                     }
                 }
 
@@ -292,7 +301,10 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
                     MenuConstants.REGISTRATION.lowercase() -> RegistrationActivity::class.java
                     MenuConstants.ASSESSMENT.lowercase() -> AssessmentToolsActivity::class.java
                     MenuConstants.INVESTIGATION.lowercase() -> NCDLabTestListActivity::class.java
-                    MenuConstants.MY_PATIENTS_MENU_ID.lowercase(), MenuConstants.DISPENSE.lowercase() -> {
+                    MenuConstants.LIFESTYLE.lowercase(),
+                    MenuConstants.PSYCHOLOGICAL.lowercase(),
+                    MenuConstants.MY_PATIENTS_MENU_ID.lowercase(),
+                    MenuConstants.DISPENSE.lowercase() -> {
                         patientListViewModel.selectedPatientDetails = item
                         withNetworkAvailability(online = {
                             patientListViewModel.createPatientVisit(

@@ -55,7 +55,7 @@ class PatientListViewModel @Inject constructor(
                 searchText = searchText,
                 filter = getFilter(),
                 origin = getFormattedOrigin(origin),
-                isPatientListRequired = CommonUtils.isPatientListRequired(origin)
+                isPatientListRequired = CommonUtils.isPatientListRequired(origin?.lowercase())
             ) { getPatientsCount ->
                 totalPatientCount.postValue(getPatientsCount)
             }

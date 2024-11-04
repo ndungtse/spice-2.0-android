@@ -44,8 +44,8 @@ interface MetaDataDAO {
     @Query("DELETE FROM VillageEntity")
     suspend fun deleteAllVillages()
 
-    @Query("SELECT * FROM VillageEntity")
-    suspend fun getAllVillageName(): List<VillageEntity>
+    @Query("SELECT * FROM VillageEntity WHERE chiefdomId =:chiefdomId ORDER BY name ASC")
+    suspend fun getVillagesByChiefDom(chiefdomId: Long): List<VillageEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertMenus(menuEntity: MenuEntity)
@@ -186,7 +186,7 @@ interface MetaDataDAO {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertDistricts(counties: List<DistrictEntity>)
 
-    @Query("SELECT * FROM DistrictEntity where countryId=:countryId")
+    @Query("SELECT * FROM DistrictEntity where countryId=:countryId ORDER BY name ASC")
     suspend fun getDistricts(countryId: Long): List<DistrictEntity>
 
     @Query("DELETE FROM DistrictEntity")
@@ -195,7 +195,7 @@ interface MetaDataDAO {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertChiefDoms(counties: List<ChiefDomEntity>)
 
-    @Query("SELECT * FROM ChiefDomEntity where districtId=:districtId")
+    @Query("SELECT * FROM ChiefDomEntity where districtId=:districtId ORDER BY name ASC")
     suspend fun getChiefDoms(districtId: Long): List<ChiefDomEntity>
 
     @Query("DELETE FROM ChiefDomEntity")

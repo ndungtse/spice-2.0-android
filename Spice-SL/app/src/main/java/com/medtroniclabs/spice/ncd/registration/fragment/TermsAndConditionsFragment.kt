@@ -1,5 +1,6 @@
-package com.medtroniclabs.spice.ui.registration.fragment
+package com.medtroniclabs.spice.ncd.registration.fragment
 
+import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,13 +10,17 @@ import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.visible
+import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.databinding.FragmentTermsAndConditionsBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
+import com.medtroniclabs.spice.mappingkey.Screening
 import com.medtroniclabs.spice.ncd.screening.fragment.ScreeningFormBuilderFragment
 import com.medtroniclabs.spice.ui.BaseFragment
-import com.medtroniclabs.spice.ui.registration.RegistrationActivity
-import com.medtroniclabs.spice.ui.registration.viewmodel.TermsAndConditionsViewModel
+import com.medtroniclabs.spice.ncd.registration.ui.RegistrationActivity
+import com.medtroniclabs.spice.ncd.registration.viewmodel.TermsAndConditionsViewModel
+import com.medtroniclabs.spice.ncd.screening.ui.ESignatureDialog
+import com.medtroniclabs.spice.ncd.screening.utils.SignatureInterface
 
 class TermsAndConditionsFragment : BaseFragment(), View.OnClickListener {
     private lateinit var binding: FragmentTermsAndConditionsBinding
@@ -38,16 +43,10 @@ class TermsAndConditionsFragment : BaseFragment(), View.OnClickListener {
 
     private fun initViews() {
         if (isRegistration()) {
-            binding.btnAccept.isEnabled = false
-            binding.tvTitle.visible()
-            binding.etUserInitial.visible()
             binding.tvTermsAndConditionInfo.text =
                 getString(R.string.terms_condition_info_enrollment)
             viewModel.getConsentForm(DefinedParams.Registration)
         } else {
-            binding.btnAccept.isEnabled = true
-            binding.tvTitle.gone()
-            binding.etUserInitial.gone()
             binding.tvTermsAndConditionInfo.text =
                 getString(R.string.terms_condition_info_screening)
             viewModel.getConsentForm(DefinedParams.Screening)
@@ -76,15 +75,31 @@ class TermsAndConditionsFragment : BaseFragment(), View.OnClickListener {
     override fun onClick(view: View?) {
         when (view?.id) {
             R.id.btnAccept -> {
-                if (isRegistration()) {
-                    (activity as RegistrationActivity?)?.loadRegistrationFormFragment()
-                } else {
-                    replaceFragmentIfExists<ScreeningFormBuilderFragment>(
-                        R.id.screeningParentLayout,
-                        bundle = null,
-                        tag = ScreeningFormBuilderFragment.TAG
+                val eSignDialog = ESignatureDialog.newInstance(signatureInterface)
+                eSignDialog.show(childFragmentManager, ESignatureDialog.TAG)
+            }
+        }
+    }
+
+    private val signatureInterface = object : SignatureInterface {
+        override fun applySignature(signature: Bitmap?, initial: String?) {
+            val bundle = Bundle().apply {
+                signature?.let { sign ->
+                    putByteArray(
+                        Screening.Signature,
+                        CommonUtils.convertBitmapToByteArray(bitmap = sign)
                     )
                 }
+                putString(Screening.Initial, initial)
+            }
+            if (isRegistration()) {
+                (activity as RegistrationActivity?)?.loadRegistrationFormFragment(bundle)
+            } else {
+                replaceFragmentIfExists<ScreeningFormBuilderFragment>(
+                    R.id.screeningParentLayout,
+                    bundle = bundle,
+                    tag = ScreeningFormBuilderFragment.TAG
+                )
             }
         }
     }

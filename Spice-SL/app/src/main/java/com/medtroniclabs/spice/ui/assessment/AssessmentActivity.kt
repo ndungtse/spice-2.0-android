@@ -209,7 +209,7 @@ class AssessmentActivity : BaseActivity() {
             }
 
             MenuConstants.NCD_MENU_ID -> {
-                setTitle(Summary.capitalizeFirstChar())
+                setTitle(getString(R.string.assessment_summary))
                 showBackButton()
                 replaceFragmentInId<AssessmentNCDSummaryFragment>(
                     binding.formsFragmentContainer.id,
@@ -218,7 +218,7 @@ class AssessmentActivity : BaseActivity() {
             }
 
             MenuConstants.MATERNAL_HEALTH -> {
-                setTitle(Summary.capitalizeFirstChar())
+                setTitle(getString(R.string.assessment_summary))
                 showBackButton()
                 replaceFragmentInId<AssessmentNCDSummaryFragment>(
                     binding.formsFragmentContainer.id,
@@ -227,7 +227,7 @@ class AssessmentActivity : BaseActivity() {
             }
 
             MenuConstants.MENTAL_HEALTH -> {
-                setTitle(Summary.capitalizeFirstChar())
+                setTitle(getString(R.string.assessment_summary))
                 showBackButton()
                 replaceFragmentInId<AssessmentNCDSummaryFragment>(
                     binding.formsFragmentContainer.id,

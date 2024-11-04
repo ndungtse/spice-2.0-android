@@ -7,6 +7,7 @@ import com.medtroniclabs.spice.db.entity.MentalHealthEntity
 import com.medtroniclabs.spice.db.entity.ScreeningEntity
 import com.medtroniclabs.spice.db.local.RoomHelper
 import com.medtroniclabs.spice.network.ApiHelper
+import okhttp3.RequestBody
 import javax.inject.Inject
 
 class ScreeningRepository @Inject constructor(
@@ -40,7 +41,7 @@ class ScreeningRepository @Inject constructor(
     suspend fun getAllScreeningRecords(uploadStatus: Boolean): List<ScreeningEntity>? =
         roomHelper.getAllScreeningRecords(uploadStatus)
 
-    suspend fun createScreeningLog(createPatientRequest: JsonObject) =
+    suspend fun createScreeningLog(createPatientRequest: RequestBody) =
         apiHelper.createScreening(createPatientRequest)
 
     suspend fun deleteUploadedScreeningRecords(todayDateTimeInMilliSeconds: Long) =

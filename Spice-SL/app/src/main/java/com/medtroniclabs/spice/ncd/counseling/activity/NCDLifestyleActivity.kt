@@ -77,7 +77,7 @@ class NCDLifestyleActivity : BaseActivity(), View.OnClickListener, CounselingInt
     }
 
     private fun updateView(isEmpty: Boolean) {
-        viewModel.assessmentListLiveData.value?.data?.entity?.apply {
+        viewModel.assessmentListLiveData.value?.data?.entityList?.apply {
             removeIf { it.id == null }
             if (!isEmpty) add(0, getCreateRequest())
         }
@@ -166,14 +166,14 @@ class NCDLifestyleActivity : BaseActivity(), View.OnClickListener, CounselingInt
     }
 
     private fun removeLifestyle(removedID: String) {
-        viewModel.assessmentListLiveData.value?.data?.entity?.let { list ->
+        viewModel.assessmentListLiveData.value?.data?.entityList?.let { list ->
             list.removeIf { it.id == removedID }
             loadLifestyleList()
         }
     }
 
     private fun loadLifestyleList() {
-        val lifestyleList = viewModel.assessmentListLiveData.value?.data?.entity
+        val lifestyleList = viewModel.assessmentListLiveData.value?.data?.entityList
         if (lifestyleList.isNullOrEmpty()) hideRecyclerView()
         else {
             val adapter = NCDLifestyleAdapter(this)
@@ -186,14 +186,13 @@ class NCDLifestyleActivity : BaseActivity(), View.OnClickListener, CounselingInt
 
     private fun backHandelFlow() {
         if (viewModel.lifestyles.isNullOrEmpty()) finish()
-        else
-            showErrorDialogue(
-                getString(R.string.alert),
-                getString(R.string.exit_reason_message),
-                isNegativeButtonNeed = true
-            ) {
-                if (it) finish()
-            }
+        else showErrorDialogue(
+            getString(R.string.alert),
+            getString(R.string.exit_reason_message),
+            isNegativeButtonNeed = true
+        ) {
+            if (it) finish()
+        }
     }
 
     private fun showRecyclerView() {
@@ -210,7 +209,8 @@ class NCDLifestyleActivity : BaseActivity(), View.OnClickListener, CounselingInt
         when (mView?.id) {
             binding.bottomSheet.btnNext.id -> {
                 if (connectivityManager.isNetworkAvailable()) viewModel.createAssessment(
-                    getCreateRequest()
+                    getCreateRequest(),
+                    true
                 )
                 else showErrorDialogue(
                     getString(R.string.error), getString(R.string.no_internet_error), false
@@ -226,7 +226,7 @@ class NCDLifestyleActivity : BaseActivity(), View.OnClickListener, CounselingInt
             tagListCustomView.clearSelection()
             binding.etClinicalNotes.text?.clear()
         } else {
-            viewModel.removeAssessment(NCDCounselingModel(id = model.id))
+            viewModel.removeAssessment(NCDCounselingModel(id = model.id), true)
         }
     }
 
@@ -240,8 +240,7 @@ class NCDLifestyleActivity : BaseActivity(), View.OnClickListener, CounselingInt
                 clinicianNote = clinicianNote,
                 referredBy = SecuredPreference.getUserFhirId(),
                 referredDate = DateUtils.getTodayDateDDMMYYYY(),
-                nutritionist = nutritionist,
-                roleName = getRoleName()
+                isNutritionist = nutritionist
             )
         }
     }
@@ -252,6 +251,6 @@ class NCDLifestyleActivity : BaseActivity(), View.OnClickListener, CounselingInt
             memberReference = viewModel.memberReference,
             visitId = viewModel.encounterReference
         )
-        viewModel.getAssessmentList(request)
+        viewModel.getAssessmentList(request, true)
     }
 }

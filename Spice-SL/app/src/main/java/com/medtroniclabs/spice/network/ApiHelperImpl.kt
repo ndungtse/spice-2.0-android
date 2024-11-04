@@ -88,6 +88,7 @@ import com.medtroniclabs.spice.model.medicalreview.CreateUnderTwoMonthsResponse
 import com.medtroniclabs.spice.model.medicalreview.SearchLabTestResponse
 import com.medtroniclabs.spice.model.medicalreview.SearchRequestLabTest
 import com.medtroniclabs.spice.model.medicalreview.SummaryDetails
+import com.medtroniclabs.spice.ncd.counseling.model.AssessmentResultModel
 import com.medtroniclabs.spice.ncd.counseling.model.NCDCounselingModel
 import com.medtroniclabs.spice.ncd.data.BPBGListModel
 import com.medtroniclabs.spice.ncd.data.MRSummaryResponse
@@ -102,6 +103,8 @@ import com.medtroniclabs.spice.ncd.data.NCDTreatmentPlanModel
 import com.medtroniclabs.spice.ncd.data.NCDTreatmentPlanModelDetails
 import com.medtroniclabs.spice.ncd.data.PatientVisitRequest
 import com.medtroniclabs.spice.ncd.data.PatientVisitResponse
+import com.medtroniclabs.spice.ncd.data.ScreeningPatientResponse
+import com.medtroniclabs.spice.ncd.data.ValidatePatientModel
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
@@ -375,11 +378,11 @@ class ApiHelperImpl @Inject constructor(private val apiService: ApiService) : Ap
         return apiService.checkAppVersion()
     }
 
-    override suspend fun registerPatient(hashMap: HashMap<String, Any>): Response<APIResponse<RegistrationResponse>> {
+    override suspend fun registerPatient(hashMap: RequestBody): Response<APIResponse<RegistrationResponse>> {
         return apiService.registerPatient(hashMap)
     }
 
-    override suspend fun createScreening(createRequest: JsonObject): Response<APIResponse<HashMap<String, Any>>> {
+    override suspend fun createScreening(createRequest: RequestBody): Response<APIResponse<HashMap<String, Any>>> {
         return apiService.createScreening(createRequest)
     }
 
@@ -426,10 +429,6 @@ class ApiHelperImpl @Inject constructor(private val apiService: ApiService) : Ap
         return apiService.fetchNCDMRSummary(request)
     }
 
-    override suspend fun isPatientAlreadyRegistered(request: HashMap<String, Any>): Response<APIResponse<HashMap<String, Any>>> {
-        return apiService.isPatientAlreadyRegistered(request)
-    }
-
     override suspend fun getPatientPrescriptionHistoryList(request: RemovePrescriptionRequest): Response<APIResponse<ArrayList<Prescription>>> {
         return apiService.getPatientPrescriptionHistoryList(request)
     }
@@ -474,7 +473,7 @@ class ApiHelperImpl @Inject constructor(private val apiService: ApiService) : Ap
         return apiService.createLifestyle(request)
     }
 
-    override suspend fun updateLifestyle(request: NCDCounselingModel): Response<APIResponse<NCDCounselingModel>> {
+    override suspend fun updateLifestyle(request: AssessmentResultModel): Response<APIResponse<NCDCounselingModel>> {
         return apiService.updateLifestyle(request)
     }
 
@@ -490,7 +489,7 @@ class ApiHelperImpl @Inject constructor(private val apiService: ApiService) : Ap
         return apiService.createPsychological(request)
     }
 
-    override suspend fun updatePsychological(request: NCDCounselingModel): Response<APIResponse<NCDCounselingModel>> {
+    override suspend fun updatePsychological(request: AssessmentResultModel): Response<APIResponse<NCDCounselingModel>> {
         return apiService.updatePsychological(request)
     }
 
@@ -508,5 +507,9 @@ class ApiHelperImpl @Inject constructor(private val apiService: ApiService) : Ap
 
     override suspend fun getNCDMedicalReviewHistory(request: ReferralDetailRequest): Response<APIResponse<NCDMedicalReviewHistory>> {
         return apiService.getNCDMedicalReviewHistory(request)
+    }
+
+    override suspend fun validatePatient(request: ValidatePatientModel): Response<APIResponse<ValidatePatientModel>> {
+        return apiService.validatePatient(request)
     }
 }

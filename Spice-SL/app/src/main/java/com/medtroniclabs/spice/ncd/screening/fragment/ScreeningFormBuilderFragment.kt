@@ -1,5 +1,7 @@
 package com.medtroniclabs.spice.ncd.screening.fragment
 
+import android.graphics.Bitmap
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -47,6 +49,8 @@ import com.medtroniclabs.spice.formgeneration.ui.FormResultComposer
 import com.medtroniclabs.spice.formgeneration.utility.CheckBoxDialog
 import com.medtroniclabs.spice.mappingkey.Screening
 import com.medtroniclabs.spice.ncd.assessment.viewmodel.BloodPressureViewModel
+import com.medtroniclabs.spice.ncd.screening.ui.DuplicationNudgeDialog
+import com.medtroniclabs.spice.ncd.screening.utils.DuplicationNudgeInterface
 import com.medtroniclabs.spice.ncd.screening.viewmodel.GeneralDetailsViewModel
 import com.medtroniclabs.spice.ncd.screening.viewmodel.ScreeningFormBuilderViewModel
 import com.medtroniclabs.spice.network.resource.ResourceState
@@ -177,6 +181,11 @@ class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener, View.OnC
 
     private var screeningJSON: List<FormLayout>? = null
     private fun attachObservers() {
+        viewModel.duplicateNudgeLiveData.observe(viewLifecycleOwner) { data ->
+            hideProgress()
+            val dialog = DuplicationNudgeDialog.newInstance(data, duplicateInterface)
+            dialog.show(childFragmentManager, DuplicationNudgeDialog.TAG)
+        }
         viewModel.formLayoutsLiveData.observe(viewLifecycleOwner) { data ->
             showProgress()
             val formFieldsType = object : TypeToken<FormResponse>() {}.type
@@ -226,6 +235,16 @@ class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener, View.OnC
         }
         bpViewModel.getRiskEntityListLiveData.observe(viewLifecycleOwner){
 
+        }
+    }
+
+    private val duplicateInterface = object : DuplicationNudgeInterface {
+        override fun proceedEnrollment(patientTrackerId: Long?) {
+            TODO("Not yet implemented")
+        }
+
+        override fun proceedAssessment(patientTrackerId: Long?) {
+            TODO("Not yet implemented")
         }
     }
 
@@ -351,18 +370,26 @@ class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener, View.OnC
         }
         val bioDataMap = result?.second?.get(Screening.bioData) as HashMap<String, Any>
         bioDataMap[Screening.identityType] = Screening.nationalId
+        arguments?.getString(Screening.Initial)?.let { initial ->
+            bioDataMap[Screening.Initial] = initial
+        }
         result = Pair(StringConverter.convertGivenMapToString(result.second), result.second)
         val siteDetail = Gson().toJson(generalDetailsViewModel.siteDetail)
         if (result != null) {
             result.first?.let {
                 viewModel.savePatientScreeningInformation(
+                    requireContext(),
                     it,
                     siteDetail,
-                    isReferred = isReferred
+                    byteArray = arguments?.getByteArray(Screening.Signature),
+                    isReferred = isReferred,
+                    uploadStatus = false,
+                    isRecursion = false
                 )
             }
         }
     }
+
     override fun onRenderingComplete() {
         /*
         Never used

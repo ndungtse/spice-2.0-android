@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
-import com.google.android.material.internal.ViewUtils.hideKeyboard
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.loadAsGif
 import com.medtroniclabs.spice.appextensions.resetImageView
@@ -64,6 +63,7 @@ class NCDLifestyleDialog(private val callback: (isPositiveResult: Boolean) -> Un
     private fun initView() {
         binding.apply {
             tvLifestyleAssessmentLbl.markMandatory()
+            tvOtherNotesLbl.markMandatory()
             btnSave.safeClickListener(this@NCDLifestyleDialog)
             ivClose.safeClickListener(this@NCDLifestyleDialog)
             btnCancel.safeClickListener(this@NCDLifestyleDialog)
@@ -131,9 +131,8 @@ class NCDLifestyleDialog(private val callback: (isPositiveResult: Boolean) -> Un
 
             binding.btnSave.id -> {
                 requireContext().hideKeyboard(v)
-                if (connectivityManager.isNetworkAvailable()) viewModel.createAssessment(
-                    getCreateRequest()
-                )
+                if (connectivityManager.isNetworkAvailable())
+                    viewModel.createAssessment(getCreateRequest(), true)
             }
         }
     }
@@ -151,8 +150,7 @@ class NCDLifestyleDialog(private val callback: (isPositiveResult: Boolean) -> Un
                 referredDate = DateUtils.getTodayDateDDMMYYYY(),
                 assessedBy = SecuredPreference.getUserFhirId(),
                 assessedDate = DateUtils.getTodayDateDDMMYYYY(),
-                nutritionist = nutritionist,
-                roleName = getRoleName()
+                isNutritionist = nutritionist
             )
         }
     }

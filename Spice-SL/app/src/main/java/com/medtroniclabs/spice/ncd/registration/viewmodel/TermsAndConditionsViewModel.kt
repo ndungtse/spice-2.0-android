@@ -1,4 +1,4 @@
-package com.medtroniclabs.spice.ui.registration.viewmodel
+package com.medtroniclabs.spice.ncd.registration.viewmodel
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.switchMap
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.di.IoDispatcher
-import com.medtroniclabs.spice.ui.registration.repo.RegistrationRepository
+import com.medtroniclabs.spice.ncd.registration.repo.RegistrationRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import javax.inject.Inject

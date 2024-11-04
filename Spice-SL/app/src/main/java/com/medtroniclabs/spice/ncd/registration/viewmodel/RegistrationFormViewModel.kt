@@ -1,11 +1,17 @@
-package com.medtroniclabs.spice.ui.registration.viewmodel
+package com.medtroniclabs.spice.ncd.registration.viewmodel
 
+import android.content.Context
+import android.graphics.Bitmap
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.gson.internal.LinkedTreeMap
+import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.appextensions.postLoading
+import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.SecuredPreference
+import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.data.LocalSpinnerResponse
 import com.medtroniclabs.spice.data.model.RegistrationResponse
 import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
@@ -13,11 +19,17 @@ import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.model.FormResponse
 import com.medtroniclabs.spice.mappingkey.Screening
+import com.medtroniclabs.spice.ncd.registration.repo.RegistrationRepository
+import com.medtroniclabs.spice.ncd.screening.utils.ReferredReason
 import com.medtroniclabs.spice.network.resource.Resource
-import com.medtroniclabs.spice.ui.registration.repo.RegistrationRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
+import java.io.File
+import java.io.FileOutputStream
 import javax.inject.Inject
 
 @HiltViewModel
@@ -54,28 +66,30 @@ class RegistrationFormViewModel @Inject constructor(
                 }
 
                 DefinedParams.District -> {
-                    selectedParent?.let {
+                    selectedParent?.let { parent ->
                         districtSpinnerLiveData.postLoading()
                         districtSpinnerLiveData.postValue(
-                            registrationRepository.getCounties(tag, selectedParent)
+                            registrationRepository.getCounties(tag, parent)
                         )
                     }
                 }
 
                 DefinedParams.Chiefdom -> {
-                    selectedParent?.let {
+                    selectedParent?.let { parent ->
                         chiefdomSpinnerLiveData.postLoading()
                         chiefdomSpinnerLiveData.postValue(
-                            registrationRepository.getSubCounties(tag, it)
+                            registrationRepository.getSubCounties(tag, parent)
                         )
                     }
                 }
 
                 DefinedParams.Village -> {
-                    villageSpinnerLiveData.postLoading()
-                    villageSpinnerLiveData.postValue(
-                        registrationRepository.getAllVillages(tag)
-                    )
+                    selectedParent?.let { parent ->
+                        villageSpinnerLiveData.postLoading()
+                        villageSpinnerLiveData.postValue(
+                            registrationRepository.getAllVillages(tag, parent)
+                        )
+                    }
                 }
 
                 DefinedParams.Program -> {
@@ -88,7 +102,16 @@ class RegistrationFormViewModel @Inject constructor(
         }
     }
 
-    fun registerPatient(hashMap: HashMap<String, Any>, id: Long?, patientId: Long?) {
+    fun registerPatient(
+        context: Context,
+        hashMap: HashMap<String, Any>,
+        id: Long?,
+        patientId: Long?,
+        signature: ByteArray?
+    ) {
+        val builder = MultipartBody.Builder()
+        builder.setType(MultipartBody.FORM)
+
         hashMap.apply {
             id?.let { requestId ->
                 put(DefinedParams.ID, requestId)
@@ -101,27 +124,54 @@ class RegistrationFormViewModel @Inject constructor(
             put(DefinedParams.HealthFacilityFhirId, SecuredPreference.getOrganizationFhirId())
             put(DefinedParams.Provenance, ProvanceDto())
         }
+        StringConverter.convertGivenMapToString(hashMap)?.let { req ->
+            builder.addFormDataPart("enrollmentRequest", req)
+        }
+
+        signature?.let { sign ->
+            val signMap = CommonUtils.convertByteArrayToBitmap(sign)
+
+            val identityValue = CommonUtils.getIdentityValue(hashMap)
+            val fileName = "${identityValue}${Screening.RegistrationSignSuffix}.jpeg"
+
+            val filePath = CommonUtils.getFilePath(identityValue, context)
+            filePath.mkdirs()
+
+            val file = File(filePath, fileName)
+
+            val clearedExistingFile: Boolean = if (file.exists()) file.delete() else true
+
+            if (clearedExistingFile && signMap != null) {
+                val out = FileOutputStream(file)
+                signMap.compress(Bitmap.CompressFormat.JPEG, 20, out)
+                out.flush()
+                out.close()
+                file.let {
+                    builder.addFormDataPart(
+                        "signatureFile",
+                        file.name,
+                        file.asRequestBody("multipart/form-data".toMediaTypeOrNull())
+                    )
+                }
+            } else
+                registrationResponseLiveData.postError()
+        }
+
         viewModelScope.launch(dispatcherIO) {
             registrationResponseLiveData.postLoading()
-            registrationResponseLiveData.postValue(registrationRepository.registerPatient(hashMap))
+            registrationResponseLiveData.postValue(registrationRepository.registerPatient(builder.build()))
         }
     }
 
-    fun isPatientAlreadyRegistered(hashMap: HashMap<String, Any>, serverData: List<FormLayout?>?) {
-        if (hashMap.contains(Screening.identityValue)) {
-            hashMap[Screening.identityValue]?.let {
-                val reqMap = HashMap<String, Any>()
-                reqMap[Screening.identityValue] = it
-
-                viewModelScope.launch(dispatcherIO) {
-                    validatePatientResponseLiveDate.postLoading()
-                    validatePatientResponseLiveDate.postValue(
-                        registrationRepository.isPatientAlreadyRegistered(
-                            reqMap, Pair(hashMap, serverData)
-                        )
-                    )
-                }
-            }
+    fun validatePatient(resp: HashMap<String, Any>, serverData: List<FormLayout?>?) {
+        viewModelScope.launch(dispatcherIO) {
+            validatePatientResponseLiveDate.postLoading()
+            validatePatientResponseLiveDate.postValue(
+                registrationRepository.validatePatient(
+                    ReferredReason.validateRequest(resp),
+                    Pair(resp, serverData)
+                )
+            )
         }
     }
 }

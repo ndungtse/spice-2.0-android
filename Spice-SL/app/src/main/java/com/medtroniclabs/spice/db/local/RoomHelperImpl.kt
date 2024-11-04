@@ -200,7 +200,11 @@ class RoomHelperImpl @Inject constructor(
     }
 
     override suspend fun getAllVillageEntity(): List<VillageEntity> {
-        return metaDataDAO.getAllVillageName()
+        return metaDataDAO.getVillages()
+    }
+
+    override suspend fun getVillagesByChiefDom(chiefdomId: Long): List<VillageEntity> {
+        return metaDataDAO.getVillagesByChiefDom(chiefdomId)
     }
 
     override suspend fun getDefaultHealthFacility(): HealthFacilityEntity? {

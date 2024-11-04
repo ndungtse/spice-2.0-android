@@ -106,9 +106,8 @@ class NCDCounselingDialog(private val callback: (isPositiveResult: Boolean) -> U
 
             binding.btnSave.id -> {
                 requireContext().hideKeyboard(v)
-                if (connectivityManager.isNetworkAvailable()) viewModel.createAssessment(
-                    getCreateRequest()
-                )
+                if (connectivityManager.isNetworkAvailable())
+                    viewModel.createAssessment(getCreateRequest(), false)
             }
         }
     }
@@ -124,8 +123,7 @@ class NCDCounselingDialog(private val callback: (isPositiveResult: Boolean) -> U
                 referredDate = DateUtils.getTodayDateDDMMYYYY(),
                 assessedBy = SecuredPreference.getUserFhirId(),
                 assessedDate = DateUtils.getTodayDateDDMMYYYY(),
-                counselor = counselor,
-                roleName = getRoleName()
+                isCounselor = counselor
             )
         }
     }

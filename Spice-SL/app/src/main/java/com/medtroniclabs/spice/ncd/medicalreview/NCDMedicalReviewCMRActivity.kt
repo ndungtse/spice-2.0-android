@@ -54,14 +54,14 @@ class NCDMedicalReviewCMRActivity : BaseActivity(), View.OnClickListener, AncVis
     }
 
     private fun initializeStaticDataSave() {
-        if (!(SecuredPreference.getBoolean(SecuredPreference.EnvironmentKey.IS_NCD_MEDICAL_REVIEW_LOADED.name))) {
+        if (NCDMRUtil.isNCDMRMetaLoaded())
+            initView()
+        else {
             withNetworkAvailability(online = {
                 viewModel.getStaticMetaData()
             }, offline = {
                 onBackPressPopStack()
             })
-        } else {
-            initView()
         }
     }
 
