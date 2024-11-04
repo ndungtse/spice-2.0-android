@@ -8,10 +8,12 @@ import androidx.room.TypeConverters
 import com.medtroniclabs.spice.data.CulturesEntity
 import com.medtroniclabs.spice.BuildConfig
 import com.medtroniclabs.spice.data.DiseaseCategoryItems
+import com.medtroniclabs.spice.data.DosageFrequency
 import com.medtroniclabs.spice.data.ExaminationListItems
 import com.medtroniclabs.spice.data.LabourDeliveryMetaEntity
 import com.medtroniclabs.spice.data.MedicalReviewMetaItems
 import com.medtroniclabs.spice.data.ProgramEntity
+import com.medtroniclabs.spice.data.UnitMetricEntity
 import com.medtroniclabs.spice.db.converters.OfflineStatusTypeConverter
 import com.medtroniclabs.spice.db.dao.AboveFiveYearsDAO
 import com.medtroniclabs.spice.db.dao.AssessmentDAO
@@ -75,7 +77,7 @@ import net.zetetic.database.sqlcipher.SupportOpenHelperFactory
         ProgramEntity::class, CulturesEntity::class, ConsentForm::class, ConsentEntity::class, MentalHealthEntity::class, MedicalComplianceEntity::class, ChiefDomEntity::class, DistrictEntity::class, ScreeningEntity::class, RiskFactorEntity::class,
         MedicalReviewMetaItems::class, DiseaseCategoryItems::class, ExaminationListItems::class, LabourDeliveryMetaEntity::class, FollowUp::class, FollowUpCall::class, PregnancyDetail::class, FrequencyEntity::class, ConsentForm::class,
         ProgramEntity::class, CulturesEntity::class, ConsentEntity::class, MentalHealthEntity::class, MedicalComplianceEntity::class, ChiefDomEntity::class, DistrictEntity::class, ScreeningEntity::class, RiskFactorEntity::class,
-        LifestyleEntity::class, NCDMedicalReviewMetaEntity::class, AssessmentNCDEntity::class, NCDDiagnosisEntity::class, TreatmentPlanEntity::class],
+        LifestyleEntity::class, NCDMedicalReviewMetaEntity::class, AssessmentNCDEntity::class, UnitMetricEntity::class, DosageFrequency::class, NCDDiagnosisEntity::class,TreatmentPlanEntity::class],
     version = 1
 )
 @TypeConverters(OfflineStatusTypeConverter::class)

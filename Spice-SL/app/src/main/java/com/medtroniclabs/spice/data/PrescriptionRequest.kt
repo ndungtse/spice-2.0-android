@@ -6,7 +6,7 @@ data class PrescriptionRequest(
     val prescriptions: List<Prescription>
 )
 
-data class Prescription(
+data class  Prescription(
     val prescribedDays: Long,
     val medicationName: String,
     val medicationId: String,
@@ -16,5 +16,19 @@ data class Prescription(
     val endDate: String? = null,
     val discontinuedDate: String? = null,
     var codeDetails: CodeDetailsObject? = null,
-    var frequencyName: String
+    var frequencyName: String,
+    val discontinuedReason: String? = null,
+    val encounterId: String? = null,
+    val isActive: Boolean = true,
+    val isDeleted: Boolean = false,
+    val classificationName: String? = null,
+    val brandName: String? = null,
+    val dosageFrequencyName: String? = null,
+    val dosageUnitName: String? = null,
+    val dosageUnitValue: String? = null,
+    val instructionNote: String? = null,
+    val dosageFormName: String? = null,
+    val prescriptionRemainingDays: Int? = null,
+    val prescriptionFilledDays: Any? = null,
+    val discontinuedOn : String? =null
 )

@@ -1,24 +1,38 @@
 package com.medtroniclabs.spice.ncd.medicalreview.prescription.dialog
 
-import android.content.res.Configuration
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.medtroniclabs.spice.appextensions.gone
+import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.setWidth
-import com.medtroniclabs.spice.appextensions.visible
-import com.medtroniclabs.spice.common.CommonUtils
+import com.medtroniclabs.spice.data.PatientPrescriptionHistoryResponse
 import com.medtroniclabs.spice.databinding.FragmentNcdMedicationHistoryDialogBinding
+import com.medtroniclabs.spice.formgeneration.extension.parcelableArrayList
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
+import com.medtroniclabs.spice.ncd.medicalreview.prescription.adapter.NCDMedicationHistoryAdapter
 
 
 class NCDMedicationHistoryDialog : DialogFragment(),
     View.OnClickListener {
 
     private lateinit var binding: FragmentNcdMedicationHistoryDialogBinding
+    private lateinit var medicationHistoryAdapter: NCDMedicationHistoryAdapter
+    private lateinit var prescriptionLists: ArrayList<PatientPrescriptionHistoryResponse>
+
+    companion object {
+        const val TAG = "NCDMedicationHistoryDialog"
+        const val KEY_LIST = "KEY_LIST"
+        fun newInstance(prescriptionList: ArrayList<PatientPrescriptionHistoryResponse>): NCDMedicationHistoryDialog {
+            val fragment = NCDMedicationHistoryDialog()
+            fragment.arguments = Bundle().apply {
+                putParcelableArrayList(KEY_LIST, prescriptionList)
+            }
+            return fragment
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -33,6 +47,7 @@ class NCDMedicationHistoryDialog : DialogFragment(),
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         isCancelable = false
+        readArguments()
         initializeView()
         setListeners()
     }
@@ -47,16 +62,31 @@ class NCDMedicationHistoryDialog : DialogFragment(),
     }
 
     private fun initializeView() {
-        binding.rvMedicationHistory.layoutManager = LinearLayoutManager(requireContext())
-        binding.tvNoRecord.gone()
-        binding.rvMedicationHistory.visible()
-        binding.tvNoRecord.visible()
-        binding.rvMedicationHistory.visible()
+        isCancelable = false
+        if (prescriptionLists.size > 0) {
+            medicationHistoryAdapter = NCDMedicationHistoryAdapter(prescriptionLists)
+            binding.rvMedicationHistory.layoutManager = LinearLayoutManager(requireContext())
+            binding.rvMedicationHistory.adapter = medicationHistoryAdapter
+            binding.tvNoRecord.visibility = View.GONE
+            binding.rvMedicationHistory.visibility = View.VISIBLE
+            val titleCard = getString(R.string.medication_history) + " - " + prescriptionLists[0].medicationName
+            binding.tvTitle.text = titleCard
+        } else {
+            binding.tvNoRecord.visibility = View.VISIBLE
+            binding.rvMedicationHistory.visibility = View.GONE
+        }
     }
 
     private fun setListeners() {
         binding.tvTitle.safeClickListener(this)
         binding.btnClose.safeClickListener(this)
+    }
+
+    private fun readArguments() {
+        arguments?.let { args ->
+            if (args.containsKey(KEY_LIST))
+                prescriptionLists = args.parcelableArrayList(KEY_LIST) ?: ArrayList()
+        }
     }
 
     override fun onClick(view: View) {

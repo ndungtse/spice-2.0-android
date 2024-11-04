@@ -52,6 +52,7 @@ import com.medtroniclabs.spice.data.MotherNeonatePncSummaryRequest
 import com.medtroniclabs.spice.data.MotherNeonatePncSummaryResponse
 import com.medtroniclabs.spice.data.SummaryCreateRequest
 import com.medtroniclabs.spice.data.PncChildMedicalReview
+import com.medtroniclabs.spice.data.ResponseDataModel
 import com.medtroniclabs.spice.data.PregnancyDetailsModel
 import com.medtroniclabs.spice.data.model.RegistrationResponse
 import com.medtroniclabs.spice.data.resource.LabourDeliverySummaryRequest
@@ -349,6 +350,9 @@ interface ApiService {
     suspend fun fetchNCDMRSummary(@Body request: MedicalReviewResponse): Response<APIResponse<MRSummaryResponse>>
     @POST("spice-service/patient/validate")
     suspend fun isPatientAlreadyRegistered(@Body request: HashMap<String, Any>): Response<APIResponse<HashMap<String, Any>>>
+
+    @POST("spice-service/prescription-request/history-list")
+    suspend fun getPatientPrescriptionHistoryList(@Body request: RemovePrescriptionRequest) : Response<APIResponse<ArrayList<Prescription>>>
 
     @POST("/spice-service/medical-review/confirm-diagnosis/update")
     suspend fun createConfirmDiagonsis(@Body request: NCDDiagnosisRequestResponse): Response<APIResponse<HashMap<String, Any>>>

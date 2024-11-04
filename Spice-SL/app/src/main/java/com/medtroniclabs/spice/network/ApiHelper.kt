@@ -211,4 +211,5 @@ interface ApiHelper {
     suspend fun updatePsychological(request: NCDCounselingModel): Response<APIResponse<NCDCounselingModel>>
     suspend fun getPsychological(request: NCDCounselingModel): Response<APIResponse<ArrayList<NCDCounselingModel>>>
     suspend fun removePsychological(request: NCDCounselingModel): Response<APIResponse<NCDCounselingModel>>
+    suspend fun getPatientPrescriptionHistoryList(request: RemovePrescriptionRequest): Response<APIResponse<ArrayList<Prescription>>>
 }

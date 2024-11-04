@@ -1,12 +1,15 @@
 package com.medtroniclabs.spice.db.local
 
 import androidx.lifecycle.LiveData
+import androidx.room.Query
 import com.medtroniclabs.spice.data.DiseaseCategoryItems
+import com.medtroniclabs.spice.data.DosageFrequency
 import com.medtroniclabs.spice.data.ExaminationListItems
 import com.medtroniclabs.spice.data.FollowUpPatientModel
 import com.medtroniclabs.spice.data.LabourDeliveryMetaEntity
 import com.medtroniclabs.spice.data.MedicalReviewMetaItems
 import com.medtroniclabs.spice.data.ProgramEntity
+import com.medtroniclabs.spice.data.UnitMetricEntity
 import com.medtroniclabs.spice.data.VillageInfo
 import com.medtroniclabs.spice.data.model.HouseholdCardDetail
 import com.medtroniclabs.spice.data.offlinesync.model.HHSignatureDetail
@@ -246,7 +249,12 @@ interface RoomHelper {
     ): LiveData<List<MedicalReviewMetaItems>>
     suspend fun deleteAllFrequencyList()
     suspend fun saveFrequencyList(villageEntityList: List<FrequencyEntity>): List<Long>
+
+    suspend fun saveUnitMetric(list: ArrayList<UnitMetricEntity>)
+
     suspend fun getFrequencyList(): List<FrequencyEntity>
+
+    suspend fun getDosageFrequencyList(): List<DosageFrequency>
 
     suspend fun insertOrUpdateFollowUp(entity: FollowUp)
 
@@ -366,7 +374,13 @@ interface RoomHelper {
         gender: String,
         name: String
     ): List<NCDAssessmentClinicalWorkflow>
+    suspend fun getUnitList(type: String): List<UnitMetricEntity>
 
+    suspend fun deleteUnitMetric()
+
+    suspend fun saveDosageFrequencyList(list: ArrayList<DosageFrequency>)
+
+    suspend fun deleteDosageFrequencyList()
     fun getUnSyncedDataCountForNCDScreening(): LiveData<Long>
     fun getUnSyncedNCDAssessmentCount(): LiveData<Long>
 

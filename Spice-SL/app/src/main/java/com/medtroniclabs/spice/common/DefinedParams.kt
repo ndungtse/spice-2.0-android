@@ -158,6 +158,7 @@ object DefinedParams {
     const val Registration = "registration"
     const val Assessment = "assessment"
     const val MyPatients = "my_patients"
+    const val MedicalReview = "medicalReview"
     const val Workflow = "workflow"
     const val BioData = "bioData"
     const val Country = "country"
@@ -177,4 +178,13 @@ object DefinedParams {
     const val FORM_TYPE_ID = "formTypeId"
     const val BP_LOG = "bpLog"
     const val GLUCOSE_LOG = "glucoseLog"
+    const val DESCRIPTION = "description"
+    const val PRESCRIPTION = "PRESCRIPTION"
+    const val Tablet = "Tablet"
+    const val Liquid_Oral = "Liquid"
+    const val Injection_Injectable_Solution = "Injection"
+    const val Capsule = "Capsule"
+    const val Africa = "AFRICA"
+    const val PatientVisitId = "PatientVisitId"
+
 }

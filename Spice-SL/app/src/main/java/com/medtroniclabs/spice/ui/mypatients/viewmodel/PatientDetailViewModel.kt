@@ -53,6 +53,7 @@ class PatientDetailViewModel @Inject constructor(
     fun getPatientId(): String? {
         return patientDetailsLiveData.value?.data?.patientId
     }
+
     fun getChildPatientName(): String? {
         return patientDetailsLiveData.value?.data?.pregnancyDetails?.neonatePatientId
     }

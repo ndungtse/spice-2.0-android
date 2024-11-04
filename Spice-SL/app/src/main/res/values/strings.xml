@@ -817,6 +817,10 @@
     <string name="no_medication_history">No Medication History</string>
     <string name="medication_history">Medication History</string>
     <string name="prescribed_date">Prescribed Date</string>
+    <string name="reset_medication">Reset medication</string>
+    <string name="edit_medication">Edit Medication</string>
+    <string name="delete_medication">Delete Medication</string>
+    <string name="please_enter_details">"Please enter a valid value for"</string>
     <string name="positive">Positive</string>
     <string name="negative">Negative</string>
     <string name="gestational_weeks">%1$d weeks</string>
@@ -915,8 +919,6 @@
 
     //NCD Pharmacist
     <string name="pharmacist_title">Pharmacist</string>
-    <string name="dosage">Dosage</string>
-    <string name="form">Form</string>
     <string name="freq">Freq.</string>
     <string name="medication_prescribed_in_days">Medication Prescribed(Days)</string>
     <string name="days_filled">Days Filled</string>
@@ -924,7 +926,7 @@
     <string name="dosage_form">Dosage form :</string>
     <string name="brand">Brand :</string>
     <string name="classification">Classification :</string>
-    <string name="Instructions">Instructions:</string>
+    <string name="Instructions_colon">Instructions:</string>
     <string name="reason_for_quantity">Reason for Quantity Difference</string>
     <string name="filled_qty">Filled Days</string>
     <string name="details_on_other_reason">Detail on Other Reason</string>
@@ -934,7 +936,6 @@
 
     <string name="lifestyle_management">Lifestyle Management</string>
     <string name="clinician_notes_seperator">Clinician Notes:&#160;</string>
-    <string name="back_to_medical_review">Back to Medical Review</string>
     <string name="referred_for">Referred For</string>
     <string name="referredBy">Referred By</string>
     <string name="assessed_date">Assessed Date</string>

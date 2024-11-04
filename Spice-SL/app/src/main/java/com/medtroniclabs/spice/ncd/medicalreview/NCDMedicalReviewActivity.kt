@@ -71,6 +71,7 @@ import com.medtroniclabs.spice.ui.MenuConstants
 import com.medtroniclabs.spice.ui.medicalreview.investigation.InvestigationActivity
 import com.medtroniclabs.spice.ncd.counseling.activity.NCDCounselingActivity
 import com.medtroniclabs.spice.ncd.counseling.activity.NCDLifestyleActivity
+import com.medtroniclabs.spice.ncd.medicalreview.prescription.activity.NCDPrescriptionActivity
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 import com.medtroniclabs.spice.ui.registration.RegistrationActivity
 import dagger.hilt.android.AndroidEntryPoint
@@ -113,6 +114,21 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
         binding.refreshLayout.setOnRefreshListener {
             swipeRefresh()
         }
+
+        getPatientDetails()
+    }
+
+    fun getPatientDetails(){
+        withNetworkCheck(connectivityManager, onNetworkAvailable = {
+            supportFragmentManager.findFragmentById(R.id.patientDetailFragment).let {
+                    getPatientId()?.let { id ->
+                        patientDetailViewModel.getPatients(
+                            id,
+                            origin = getMenuOrigin()
+                        )
+                    }
+                }
+        })
     }
 
     fun attachObservers() {
@@ -281,6 +297,7 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
 
     private fun setListeners() {
         binding.btnLayout.btnNext.safeClickListener(this)
+        binding.btnLayout.ivPrescriptionImgView.safeClickListener(this)
         binding.btnLayout.ivTreatmentPlan.safeClickListener(this)
         binding.btnLayout.ivInvestigation.safeClickListener(this)
         binding.btnLayout.ivLifestyle.safeClickListener(this)
@@ -458,6 +475,24 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
                     }
                 }
             }
+
+            binding.btnLayout.ivPrescriptionImgView.id -> {
+                if (connectivityManager.isNetworkAvailable()) {
+                    val intent = Intent(this, NCDPrescriptionActivity::class.java)
+                    intent.putExtra(ORIGIN, DefinedParams.MedicalReview)
+                    intent.putExtra(DefinedParams.PatientId, patientDetailViewModel.getPatientId()  )
+                    intent.putExtra(DefinedParams.id,  patientDetailViewModel.getPatientFHIRId())
+                    intent.putExtra(DefinedParams.PatientVisitId, getEncounterReference())
+                    startActivity(intent)
+                } else {
+                   showErrorDialogue(
+                        getString(R.string.title_no_network),
+                        getString(R.string.message_no_network),
+                        isNegativeButtonNeed = false
+                    ) { _ -> }
+                }
+            }
+
 
             binding.btnLayout.ivTreatmentPlan.id -> {
                 val patientId = patientDetailViewModel.getPatientId()

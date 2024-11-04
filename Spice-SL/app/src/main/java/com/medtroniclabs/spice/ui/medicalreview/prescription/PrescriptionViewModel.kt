@@ -10,6 +10,7 @@ import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.appextensions.postSuccess
 import com.medtroniclabs.spice.common.DefinedParams
+import com.medtroniclabs.spice.data.APIResponse
 import com.medtroniclabs.spice.data.EncounterDetails
 import com.medtroniclabs.spice.data.MedicationRequestObject
 import com.medtroniclabs.spice.data.MedicationResponse
@@ -18,6 +19,7 @@ import com.medtroniclabs.spice.data.Prescription
 import com.medtroniclabs.spice.data.PrescriptionListRequest
 import com.medtroniclabs.spice.data.PrescriptionRequest
 import com.medtroniclabs.spice.data.RemovePrescriptionRequest
+import com.medtroniclabs.spice.data.ResponseDataModel
 import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.db.entity.FrequencyEntity
 import com.medtroniclabs.spice.di.IoDispatcher
@@ -30,6 +32,7 @@ import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
+import retrofit2.Response
 import java.io.File
 import java.io.FileOutputStream
 import javax.inject.Inject
@@ -40,19 +43,15 @@ class PrescriptionViewModel @Inject constructor(
     private val medicationRepository: MedicationRepository
 ) : ViewModel() {
 
-    val medicationListLiveData =
-        MutableLiveData<Resource<java.util.ArrayList<MedicationResponse>>>()
+    val medicationListLiveData = MutableLiveData<Resource<java.util.ArrayList<MedicationResponse>>>()
 
     val selectedMedicationLiveData = MutableLiveData<ArrayList<MedicationRequestObject>>()
 
     val createPrescriptionLiveData = MutableLiveData<Resource<Map<String, Any>>>()
 
-    val prescriptionListLiveData =
-        MutableLiveData<Resource<ArrayList<Prescription>>>()
+    val prescriptionListLiveData = MutableLiveData<Resource<ArrayList<Prescription>>>()
 
-    val discontinuedPrescriptionListLiveData =
-        MutableLiveData<Resource<ArrayList<Prescription>>>()
-
+    val discontinuedPrescriptionListLiveData = MutableLiveData<Resource<ArrayList<Prescription>>>()
 
     val removePrescriptionLiveData = MutableLiveData<Resource<Map<String, Any>>>()
 
@@ -138,18 +137,22 @@ class PrescriptionViewModel @Inject constructor(
                 val prescriptionList = ArrayList<Prescription>()
                 list.forEach {
                     if (it.medicationResponse.prescribedDays != null) {
-                        prescriptionList.add(
+                        it.medicationResponse.name?.let { it1 ->
                             Prescription(
                                 prescribedDays = it.medicationResponse.prescribedDays!!,
-                                medicationName = it.medicationResponse.name,
-                                medicationId = it.medicationResponse.id,
+                                medicationName = it1,
+                                medicationId = it.medicationResponse.id.toString(),
                                 frequency = getMedicationFrequency(it),
                                 prescribedSince = System.currentTimeMillis().convertToUtcDateTime(),
                                 prescriptionId = it.medicationResponse.prescriptionId,
                                 codeDetails = it.medicationResponse.codeDetails,
                                 frequencyName = getMedicationFrequencyName(it)
                             )
-                        )
+                        }?.let { it2 ->
+                            prescriptionList.add(
+                                it2
+                            )
+                        }
                     }
                 }
                 val prescriptionRequest = PrescriptionRequest(
@@ -176,6 +179,11 @@ class PrescriptionViewModel @Inject constructor(
         }
     }
 
+
+
+
+
+
     fun constructMedicationRequestObjectList(
         list: java.util.ArrayList<Prescription>
     ): ArrayList<MedicationRequestObject> {
@@ -192,16 +200,12 @@ class PrescriptionViewModel @Inject constructor(
         val selectedFrequencyMap = getSelectedFrequencyMap(prescription.frequencyName)
 
         return MedicationResponse(
-            id = prescription.medicationId,
+            id = prescription.medicationId.toLongOrNull(),
             name = prescription.medicationName,
-            "",
-            "",
-            "",
-            selectedFrequencyMap,
-            quantity = 0,
+            selectedMap = selectedFrequencyMap,
             prescribedDays = prescription.prescribedDays,
             prescriptionId = prescription.prescriptionId,
-            prescribedSince = prescription.prescribedSince
+            prescribedSince = prescription.prescribedSince,
         )
     }
 

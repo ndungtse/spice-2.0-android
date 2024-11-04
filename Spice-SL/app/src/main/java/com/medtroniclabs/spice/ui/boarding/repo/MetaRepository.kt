@@ -21,13 +21,13 @@ import com.medtroniclabs.spice.data.ModelQuestion
 import com.medtroniclabs.spice.data.UserProfile
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowConditionEntity
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowEntity
-import com.medtroniclabs.spice.db.entity.NCDAssessmentClinicalWorkflow
 import com.medtroniclabs.spice.db.entity.ConsentEntity
 import com.medtroniclabs.spice.db.entity.ConsentForm
 import com.medtroniclabs.spice.db.entity.FormEntity
 import com.medtroniclabs.spice.db.entity.HealthFacilityEntity
 import com.medtroniclabs.spice.db.entity.MentalHealthEntity
 import com.medtroniclabs.spice.db.entity.MenuEntity
+import com.medtroniclabs.spice.db.entity.NCDAssessmentClinicalWorkflow
 import com.medtroniclabs.spice.db.entity.RiskClassificationModel
 import com.medtroniclabs.spice.db.entity.RiskFactorEntity
 import com.medtroniclabs.spice.db.entity.UserProfileEntity
@@ -165,6 +165,18 @@ class MetaRepository @Inject constructor(
                                         roomHelper.deleteMedicalCompliance()
                                         roomHelper.saveMedicalCompliance(it)
                                     }
+
+                                    res.units?.let {
+                                        roomHelper.deleteUnitMetric()
+                                        roomHelper.saveUnitMetric(it)
+                                    }
+
+                                    res.dosageFrequencies?.let {
+                                        roomHelper.deleteDosageFrequencyList()
+                                        roomHelper.saveDosageFrequencyList(it)
+                                    }
+
+
                                     res.diagnosis?.let {
                                         roomHelper.deleteNCDDiagnosisList()
                                         roomHelper.saveNCDDiagnosisList(it)

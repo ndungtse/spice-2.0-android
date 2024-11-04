@@ -32,6 +32,7 @@ import com.medtroniclabs.spice.common.DefinedParams.REFRESH_FRAGMENT
 import com.medtroniclabs.spice.databinding.ActivityBaseBinding
 import com.medtroniclabs.spice.databinding.ErrorLayoutBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
+import com.medtroniclabs.spice.ncd.medicalreview.prescription.dialog.CommentsAlertDialog
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.network.utils.ConnectivityManager
@@ -499,4 +500,27 @@ open class BaseActivity : SpiceRootActivity() {
         transaction.commit()
     }
 
+    fun showAlertDialogWithComments(
+        title: String? = null,
+        message: String,
+        isNegativeButtonNeed: Boolean = false,
+        showComment: Boolean = true,
+        errorMessage: String = getString(R.string.default_user_input_error),
+        buttonName: Pair<String, String> = Pair(
+            getString(R.string.ok),
+            getString(R.string.cancel)
+        ),
+        callback: ((isPositiveResult: Boolean, reason: String?) -> Unit)
+    ) {
+        val dialog = CommentsAlertDialog.newInstance(
+            this,
+            title,
+            isNegativeButtonNeed,
+            Pair(buttonName.first, buttonName.second),
+            callback = callback,
+            showComment = showComment,
+            message = Pair(message, errorMessage)
+        )
+        dialog.show(supportFragmentManager, CommentsAlertDialog.TAG)
+    }
 }

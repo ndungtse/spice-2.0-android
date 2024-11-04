@@ -57,7 +57,9 @@ data class PatientListRespModel(
     val isPhq9: Boolean? = false,
     val isGad7: Boolean? = false,
     val mentalHealthLevels: List<String>? = null,
-    val dateOfBirth: String? = null
+    val dateOfBirth: String? = null,
+    val patientReference : String? =null,
+    val encounterId : String? = null
 )
 
 data class PregnancyDetails(

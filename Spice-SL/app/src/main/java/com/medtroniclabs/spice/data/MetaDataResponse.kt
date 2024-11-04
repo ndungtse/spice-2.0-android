@@ -191,7 +191,9 @@ data class UserSymptomsEntity(
     val symptoms: ArrayList<SignsAndSymptomsEntity>,
     var medicalCompliances: ArrayList<MedicalComplianceEntity>? = null,
     val cvdRiskAlgorithms: RiskFactorResponse? = null,
-    val diagnosis : ArrayList<NCDDiagnosisEntity>? = null
+    val diagnosis : ArrayList<NCDDiagnosisEntity>? = null,
+    val units:  ArrayList<UnitMetricEntity>? = null,
+    val dosageFrequencies:  ArrayList<DosageFrequency>? = null
 )
 
 data class VillageInfo(

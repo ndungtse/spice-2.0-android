@@ -106,7 +106,7 @@
                             android:textColor="@color/table_title"
                             android:textSize="@dimen/_14ssp" />
 
-                        <TextView
+                        <androidx.appcompat.widget.AppCompatTextView
                             android:id="@+id/tvDosage"
                             style="@style/MR_Field_Style"
                             android:layout_width="@dimen/_0dp"
@@ -117,7 +117,7 @@
                             android:textColor="@color/table_title"
                             android:textSize="@dimen/_14ssp" />
 
-                        <TextView
+                        <androidx.appcompat.widget.AppCompatTextView
                             android:id="@+id/tvUnit"
                             style="@style/MR_Field_Style"
                             android:layout_width="@dimen/_0dp"
@@ -128,7 +128,7 @@
                             android:textColor="@color/table_title"
                             android:textSize="@dimen/_14ssp" />
 
-                        <TextView
+                        <androidx.appcompat.widget.AppCompatTextView
                             android:id="@+id/tvForm"
                             style="@style/MR_Field_Style"
                             android:layout_width="@dimen/_0dp"
@@ -139,7 +139,7 @@
                             android:textColor="@color/table_title"
                             android:textSize="@dimen/_14ssp" />
 
-                        <TextView
+                        <androidx.appcompat.widget.AppCompatTextView
                             android:id="@+id/tvFrequency"
                             style="@style/MR_Field_Style"
                             android:layout_width="@dimen/_0dp"
@@ -150,7 +150,7 @@
                             android:textColor="@color/table_title"
                             android:textSize="@dimen/_14ssp" />
 
-                        <TextView
+                        <androidx.appcompat.widget.AppCompatTextView
                             android:id="@+id/tvPrescribedDays"
                             style="@style/MR_Field_Style"
                             android:layout_width="@dimen/_0dp"
@@ -172,7 +172,7 @@
                             android:textColor="@color/table_title"
                             android:textSize="@dimen/_14ssp" />
 
-                        <AppCompatTextView
+                        <androidx.appcompat.widget.AppCompatTextView
                             android:id="@+id/tvPrescribedSince"
                             style="@style/MR_Field_Style"
                             android:layout_width="@dimen/_0dp"
@@ -193,8 +193,8 @@
 
                         <View
                             android:id="@+id/viewRemoveMedication"
-                            android:layout_width="@dimen/_0dp"
-                            android:layout_height="wrap_content"
+                            android:layout_width="21dp"
+                            android:layout_height="3dp"
                             android:layout_gravity="center"
                             android:layout_weight="0.5" />
 
@@ -228,8 +228,6 @@
                 </LinearLayout>
 
             </com.google.android.material.card.MaterialCardView>
-
-
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvDiscontinuedMedication"
@@ -396,7 +394,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/_250sdp"
                     android:visibility="visible"
-                    tools:listitem="@layout/ncd_discontined_medication_list_adapter" />
+                    tools:listitem="@layout/ncd_discontinued_medication_adapter" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/tvDMNoData"

@@ -181,7 +181,7 @@ class InvestigationViewModel @Inject constructor(
                         patientId = if (CommonUtils.isAfrica()) "" else patientDetail.patientId.orEmpty(),
                         memberId = if (!CommonUtils.isAfrica()) patientDetail.memberId.orEmpty() else patientDetail.id.orEmpty(),
                         provenance = ProvanceDto(),
-                        visitId = visitId
+                        patientVisitId = visitId
                     ),
                     labTestList,
                     type = isAfrica

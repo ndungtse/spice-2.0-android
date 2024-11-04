@@ -3,11 +3,13 @@ package com.medtroniclabs.spice.db.local
 import androidx.lifecycle.LiveData
 import androidx.sqlite.db.SimpleSQLiteQuery
 import com.medtroniclabs.spice.data.DiseaseCategoryItems
+import com.medtroniclabs.spice.data.DosageFrequency
 import com.medtroniclabs.spice.data.ExaminationListItems
 import com.medtroniclabs.spice.data.FollowUpPatientModel
 import com.medtroniclabs.spice.data.LabourDeliveryMetaEntity
 import com.medtroniclabs.spice.data.MedicalReviewMetaItems
 import com.medtroniclabs.spice.data.ProgramEntity
+import com.medtroniclabs.spice.data.UnitMetricEntity
 import com.medtroniclabs.spice.data.VillageInfo
 import com.medtroniclabs.spice.data.model.HouseholdCardDetail
 import com.medtroniclabs.spice.data.offlinesync.model.HHSignatureDetail
@@ -994,5 +996,28 @@ class RoomHelperImpl @Inject constructor(
 
     override fun getFrequencies(): LiveData<List<TreatmentPlanEntity>> {
         return ncdMedicalReviewDao.getFrequencies()
+    }
+
+    override suspend fun getUnitList(type: String): List<UnitMetricEntity> {
+        return metaDataDAO.getUnitList(type)
+    }
+    override suspend fun saveUnitMetric(list: ArrayList<UnitMetricEntity>) {
+        metaDataDAO.insertUnitMetricList(list)
+    }
+
+    override suspend fun getDosageFrequencyList(): List<DosageFrequency> {
+        return metaDataDAO.getDosageFrequencyList()
+    }
+
+    override suspend fun deleteUnitMetric() {
+        metaDataDAO.deleteUnitMetric()
+    }
+
+    override suspend fun saveDosageFrequencyList(list: ArrayList<DosageFrequency>) {
+        metaDataDAO.insertDosageFrequencyList(list)
+    }
+
+    override suspend fun deleteDosageFrequencyList() {
+        metaDataDAO.deleteDosageFrequencyList()
     }
 }

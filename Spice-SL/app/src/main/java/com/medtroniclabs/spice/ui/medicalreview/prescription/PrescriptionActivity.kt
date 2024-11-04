@@ -59,9 +59,7 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
         prescriptionViewModel.prescriptionListLiveData.observe(this) { resourceState ->
             when (resourceState.state) {
 
-                ResourceState.LOADING -> {
-
-                }
+                ResourceState.LOADING -> {}
 
                 ResourceState.SUCCESS -> {
                     hideLoading()
@@ -78,10 +76,7 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
                     }
                 }
 
-                ResourceState.ERROR -> {
-                    hideLoading()
-
-                }
+                ResourceState.ERROR -> { hideLoading() }
             }
         }
 
@@ -96,9 +91,7 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
                     }
                 }
 
-                ResourceState.ERROR -> {
-
-                }
+                ResourceState.ERROR -> {}
             }
         }
 

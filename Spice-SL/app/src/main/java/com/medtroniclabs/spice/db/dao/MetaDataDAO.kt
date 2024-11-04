@@ -6,20 +6,23 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.medtroniclabs.spice.data.CulturesEntity
+import com.medtroniclabs.spice.data.DosageFrequency
 import com.medtroniclabs.spice.data.ProgramEntity
+import com.medtroniclabs.spice.data.UnitMetricEntity
 import com.medtroniclabs.spice.data.VillageInfo
+import com.medtroniclabs.spice.db.entity.ChiefDomEntity
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowConditionEntity
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowEntity
-import com.medtroniclabs.spice.db.entity.NCDAssessmentClinicalWorkflow
 import com.medtroniclabs.spice.db.entity.ConsentEntity
-import com.medtroniclabs.spice.db.entity.ChiefDomEntity
+import com.medtroniclabs.spice.db.entity.DistrictEntity
 import com.medtroniclabs.spice.db.entity.FormEntity
+import com.medtroniclabs.spice.db.entity.FrequencyEntity
 import com.medtroniclabs.spice.db.entity.HealthFacilityEntity
 import com.medtroniclabs.spice.db.entity.MedicalComplianceEntity
 import com.medtroniclabs.spice.db.entity.MentalHealthEntity
 import com.medtroniclabs.spice.db.entity.MenuEntity
+import com.medtroniclabs.spice.db.entity.NCDAssessmentClinicalWorkflow
 import com.medtroniclabs.spice.db.entity.SignsAndSymptomsEntity
-import com.medtroniclabs.spice.db.entity.DistrictEntity
 import com.medtroniclabs.spice.db.entity.UserProfileEntity
 import com.medtroniclabs.spice.db.entity.VillageEntity
 import com.medtroniclabs.spice.db.response.VillageBasicDetails
@@ -220,4 +223,23 @@ interface MetaDataDAO {
         gender: String,
         moduleType: String
     ): List<NCDAssessmentClinicalWorkflow>
+
+    @Query("SELECT * FROM unit_metric_entity where type=:type")
+    suspend fun getUnitList(type: String): List<UnitMetricEntity>
+
+    @Query("DELETE FROM unit_metric_entity")
+    suspend fun deleteUnitMetric()
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertDosageFrequencyList(list: ArrayList<DosageFrequency>)
+
+    @Query("SELECT * FROM dosage_frequency_entity ")
+    suspend fun getDosageFrequencyList(): List<DosageFrequency>
+
+    @Query("DELETE FROM dosage_frequency_entity")
+    suspend fun deleteDosageFrequencyList()
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertUnitMetricList(frequencyList: List<UnitMetricEntity>): List<Long>
+
 }

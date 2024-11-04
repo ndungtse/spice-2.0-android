@@ -1,0 +1,27 @@
+package com.medtroniclabs.spice.data
+
+data class PrescriptionCreateRequest(
+    val requestFrom: String,
+    val encounter: EncounterDetails,
+    val prescriptions: ArrayList<PrescriptionDetails>
+)
+
+data class PrescriptionDetails(
+    val prescriptionId: String? = null,
+    val prescribedDays: Int,
+    val medicationName: String,
+    val medicationId: String,
+    val prescribedSince: String? = null,
+    val dosageFormName: String,
+    val dosageFrequencyName: String,
+    val brandName: String,
+    val classificationName: String,
+    val dosageUnitName: String?,
+    val dosageUnitValue: String?,
+    val instructionNote: String?,
+    val codeDetails: CodeDetailsObject? = null,
+    val memberId : String? = null
+)
+
+
+
