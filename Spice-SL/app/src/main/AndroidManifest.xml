@@ -33,6 +33,11 @@
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
         <activity
+            android:name=".ui.medicalreview.labTechnician.NCDLabTestListActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize"/>
+        <activity
             android:name=".ncd.assessment.ui.AssessmentReadingActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:exported="false"

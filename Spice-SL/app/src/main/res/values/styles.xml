@@ -515,4 +515,9 @@
         <item name="android:textSize">@dimen/_16ssp</item>
         <item name="android:fontFamily">@font/inter_regular</item>
     </style>
+
+    <style name="dialogEnterExitAnimation" parent="android:Animation">
+        <item name="android:windowEnterAnimation">@anim/dialog_animation_on</item>
+        <item name="android:windowExitAnimation">@anim/dialog_animation_off</item>
+    </style>
 </resources>

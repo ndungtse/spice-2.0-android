@@ -171,6 +171,15 @@ class HomeScreenFragment : BaseFragment(), MenuSelectionListener {
                 val intent = Intent(requireContext(), NCDDashboardViewActivity::class.java)
                 startActivity(intent)
             }
+
+            MenuConstants.INVESTIGATION -> {
+                val bundle = Bundle().apply {
+                    putString(DefinedParams.ORIGIN, MenuConstants.INVESTIGATION.lowercase())
+                }
+                val intent = Intent(requireContext(), PatientSearchActivity::class.java)
+                intent.putExtras(bundle)
+                startActivity(intent)
+            }
         }
     }
 }

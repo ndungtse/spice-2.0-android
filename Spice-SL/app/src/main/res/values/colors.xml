@@ -111,4 +111,5 @@
     <color name="bmi_extremely_obese">#FB565E</color>
     <color name="bg_grey">#F8F8F8</color>
     <color name="text_background">#BCB5F7</color>
+    <color name="background_ratio">#EB956A</color>
 </resources>

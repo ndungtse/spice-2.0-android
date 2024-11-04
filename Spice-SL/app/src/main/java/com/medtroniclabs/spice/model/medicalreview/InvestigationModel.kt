@@ -13,7 +13,7 @@ data class InvestigationModel(
     var resultHashMap: HashMap<String, Any>? = null,
     val codeDetails: CodeDetailsObject? = null,
     var dataError: Boolean = true,
-    val labTestResultList: ArrayList<LabTestResultObject>? = null,
+    var labTestResultList: ArrayList<LabTestResultObject>? = null,
     val id: String ?= null,
     var dropdownState: Boolean = false
 )

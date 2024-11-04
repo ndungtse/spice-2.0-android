@@ -178,6 +178,11 @@ class DashboardMenuItemsAdapter(
                 context,
                 R.drawable.ic_dispense
             )
+
+            MenuConstants.INVESTIGATION -> return ContextCompat.getDrawable(
+                context,
+                R.drawable.ic_investigation
+            )
             else -> null
         }
     }

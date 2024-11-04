@@ -253,7 +253,7 @@ class InvestigationActivity : BaseActivity(), AdapterView.OnItemClickListener,
     override fun onClick(v: View?) {
         when (v?.id) {
             binding.btnSubmit.id -> {
-                if (investigationGenerator.onValidateInput()) {
+                if (investigationGenerator.onValidateInput(false)) {
                     patientViewModel.patientDetailsLiveData.value?.data?.let { data ->
                         investigationViewModel.createLabTest(
                             geyPayloadForLabTest(investigationGenerator.getResultFromInvestigation()),

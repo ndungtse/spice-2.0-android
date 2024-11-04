@@ -83,7 +83,7 @@ class InvestigationGenerator(
                 investigationBinding.ivDropDown.setImageDrawable(getDrawable(R.drawable.ic_arrow_up))
             }
 
-            if (investigation.id != null && investigation.labTestResultList != null && investigation.labTestResultList.size > 0) {
+            if (investigation.id != null && investigation.labTestResultList != null && investigation.labTestResultList!!.size > 0) {
                 investigationBinding.ivRemoveMedication.invisible()
             } else {
                 investigationBinding.ivRemoveMedication.visible()
@@ -645,9 +645,17 @@ class InvestigationGenerator(
         }
     }
 
-    fun onValidateInput(): Boolean {
+    fun onValidateInput(isLabTech: Boolean): Boolean {
         var isValid = true
         this.serverData?.let { investigationList ->
+            if (isLabTech) {
+                investigationList.forEach {
+                    if ((it.resultHashMap.isNullOrEmpty())) {
+                        it.dataError = false
+                        isValid = false
+                    }
+                }
+            }
             investigationList.filter { it.id == null || (it.resultHashMap != null && it.resultHashMap!!.size > 0) }
                 .forEach { data ->
                     if (data.resultHashMap != null && data.resultHashMap!!.size == 0) {

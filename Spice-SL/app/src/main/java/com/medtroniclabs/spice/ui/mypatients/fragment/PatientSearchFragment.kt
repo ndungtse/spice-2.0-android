@@ -35,6 +35,7 @@ import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.MenuConstants
 import com.medtroniclabs.spice.ui.home.AssessmentToolsActivity
 import com.medtroniclabs.spice.ui.medicalreview.addnewmember.AddNewMemberActivity
+import com.medtroniclabs.spice.ui.medicalreview.labTechnician.NCDLabTestListActivity
 import com.medtroniclabs.spice.ui.mypatients.PatientSelectionListener
 import com.medtroniclabs.spice.ui.mypatients.PatientsListAdapter
 import com.medtroniclabs.spice.ui.medicalreview.pharmacist.NCDPharmacistActivity
@@ -262,6 +263,7 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
                 val destinationIntent = when (patientListViewModel.origin?.lowercase()) {
                     MenuConstants.REGISTRATION.lowercase() -> RegistrationActivity::class.java
                     MenuConstants.ASSESSMENT.lowercase() -> AssessmentToolsActivity::class.java
+                    MenuConstants.INVESTIGATION.lowercase() -> NCDLabTestListActivity::class.java
                     MenuConstants.MY_PATIENTS_MENU_ID.lowercase() -> {
                         patientListViewModel.selectedPatientDetails = item
                         withNetworkAvailability(online = {
@@ -285,6 +287,7 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
                     intent.putExtra(DefinedParams.PatientId, item.patientId)
                     intent.putExtra(DefinedParams.ORIGIN, patientListViewModel.origin)
                     intent.putExtra(DefinedParams.Gender,item.gender)
+                    intent.putExtra(NCDMRUtil.NCD, NCDMRUtil.NCD)
                     startActivity(intent)
                 }
             }
