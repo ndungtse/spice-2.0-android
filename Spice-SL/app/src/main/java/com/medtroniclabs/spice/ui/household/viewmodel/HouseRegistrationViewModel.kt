@@ -111,7 +111,6 @@ class HouseRegistrationViewModel @Inject constructor(
     }
     fun updateMemberAsAssigned(memberID: Long?) {
         viewModelScope.launch(dispatcherIO) {
-            Timber.d("member update $memberID")
             houseHoldRepositoryMember.updateMemberAsAssigned(memberId = memberID.toString())
         }
     }

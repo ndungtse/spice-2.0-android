@@ -42,7 +42,7 @@ class MemberRegistrationViewModel @Inject constructor(
     var villageDetails:List<VillageEntity>?= null
     var addNewMember: Boolean = false
     var memberDob: String?=null
-    var isPhuWalkInsFlow:Boolean? = false
+    var isPhuWalkInsFlow:Boolean? = null
 
     fun getFormData(formType: String) {
         viewModelScope.launch(dispatcherIO) {
@@ -97,7 +97,8 @@ class MemberRegistrationViewModel @Inject constructor(
                     householdId,
                     memberDetailsLiveData.value?.data,
                     initial = initial,
-                    signature = signature
+                    signature = signature,
+                    isPhuWalkInFlow = isPhuWalkInsFlow
                 )
                 memberRegistrationRepository.updateHeadPhoneNumber(householdId, map)
                 Timber.d("Member registration 2 $memberId")

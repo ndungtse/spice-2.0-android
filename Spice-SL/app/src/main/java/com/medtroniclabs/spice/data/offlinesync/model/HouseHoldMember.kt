@@ -85,7 +85,7 @@ data class HouseHoldMember(
     var assessments = listOf<Assessment>()
 
     @Ignore
-    var child: List<HouseHoldMember>? = null
+    var child: HouseHoldMember? = null
 
     fun toHouseholdMemberEntity(hhId: Long?, status: OfflineSyncStatus, id: Long = 0): HouseholdMemberEntity {
         return HouseholdMemberEntity(

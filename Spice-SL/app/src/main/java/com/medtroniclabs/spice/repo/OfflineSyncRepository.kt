@@ -514,7 +514,7 @@ class OfflineSyncRepository @Inject constructor(
             val child = input.filter { it.motherReferenceId == motherId && it.id == null }
             val mother = input.find { it.referenceId == motherId }
             if (!child.isNullOrEmpty()) {
-                mother?.child = child
+                mother?.child = child.first()
             }
         }
 

@@ -33,7 +33,8 @@ class HouseholdMemberRepository @Inject constructor(
         entity: HouseholdMemberEntity? = null,
         parentReferenceId: Long? = null,
         initial: String? = null,
-        signature: String? = null
+        signature: String? = null,
+        isPhuWalkInFlow: Boolean? = null
     ): Long? {
         val memberEntity = createOrUpdateHouseHoldMemberEntity(map, householdId, entity, parentReferenceId, initial, signature)
        /* if (memberEntity.patientId == null) {
@@ -41,7 +42,7 @@ class HouseholdMemberRepository @Inject constructor(
         }*/
         val memberId = roomHelper.registerMember(memberEntity)
         //Update Member count in household only in insert case
-        if (entity == null) {
+        if (entity == null || isPhuWalkInFlow == true) {
             val memberAddedForHouseHold = getMemberCountPerHouseHold(householdId)
             val memberMentionedInHouseHold =
                 roomHelper.getHouseHoldDetailsById(householdId).noOfPeople
@@ -107,9 +108,11 @@ class HouseholdMemberRepository @Inject constructor(
         if (isDeceased != null && isDeceased is Boolean && isDeceased){
              householdMemberEntity.isActive = false
         }
+
+        householdMemberEntity.householdId = householdId
+
         if (entity == null) {
             val householdDetails = roomHelper.getHouseHoldDetailsById(householdId)
-            householdMemberEntity.householdId = householdId
             householdMemberEntity.villageId = householdDetails.villageId
           //  householdMemberEntity.patientId = getNextPatientId(householdDetails.villageId)
             householdMemberEntity.initial = initial
