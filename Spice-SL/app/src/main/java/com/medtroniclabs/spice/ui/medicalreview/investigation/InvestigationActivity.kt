@@ -175,7 +175,7 @@ class InvestigationActivity : BaseActivity(), AdapterView.OnItemClickListener,
         if (investigationList.size > 0) {
             binding.llInvestigationHolder.visible()
             binding.tvNoInvestigationDataFound.gone()
-            investigationGenerator.populateViews(investigationList)
+            investigationGenerator.populateViews(investigationList, false)
         } else {
             binding.llInvestigationHolder.gone()
             binding.tvNoInvestigationDataFound.visible()
@@ -264,7 +264,7 @@ class InvestigationActivity : BaseActivity(), AdapterView.OnItemClickListener,
                 } else {
                     investigationGenerator.getResultFromInvestigation()?.let {
                         binding.llInvestigationHolder.removeAllViews()
-                        investigationGenerator.populateViews(ArrayList(it))
+                        investigationGenerator.populateViews(ArrayList(it), false)
                     }
                 }
             }

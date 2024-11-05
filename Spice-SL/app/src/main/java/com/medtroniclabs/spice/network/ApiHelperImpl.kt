@@ -485,4 +485,8 @@ class ApiHelperImpl @Inject constructor(private val apiService: ApiService) : Ap
     override suspend fun removePsychological(request: NCDCounselingModel): Response<APIResponse<NCDCounselingModel>> {
         return apiService.removePsychological(request)
     }
+
+    override suspend fun getPatientLabTests(request: LabTestListRequest): Response<APIResponse<ArrayList<LabTestListResponse>>> {
+        return apiService.getPatientLabTests(request)
+    }
 }

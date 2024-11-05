@@ -67,6 +67,7 @@ class InvestigationGenerator(
 
     fun populateViews(
         serverData: ArrayList<InvestigationModel>,
+        isNCDFlow: Boolean,
     ) {
         this.serverData = serverData
         this.serverData?.forEach { investigation ->
@@ -84,6 +85,8 @@ class InvestigationGenerator(
             }
 
             if (investigation.id != null && investigation.labTestResultList != null && investigation.labTestResultList!!.size > 0) {
+                investigationBinding.ivRemoveMedication.invisible()
+            } else if (isNCDFlow){
                 investigationBinding.ivRemoveMedication.invisible()
             } else {
                 investigationBinding.ivRemoveMedication.visible()
@@ -647,11 +650,15 @@ class InvestigationGenerator(
 
     fun onValidateInput(isLabTech: Boolean): Boolean {
         var isValid = true
+        val investigationBinding =
+            LayoutInvestigationRowBinding.inflate(LayoutInflater.from(this))
         this.serverData?.let { investigationList ->
             if (isLabTech) {
-                investigationList.forEach {
-                    if ((it.resultHashMap.isNullOrEmpty())) {
-                        it.dataError = false
+                investigationList.forEach { investigation ->
+                    if ((investigation.resultHashMap.isNullOrEmpty())) {
+                        investigation.dropdownState = !investigation.dropdownState
+                        toggleFacility(investigationBinding,investigation)
+                        investigation.dataError = false
                         isValid = false
                     }
                 }

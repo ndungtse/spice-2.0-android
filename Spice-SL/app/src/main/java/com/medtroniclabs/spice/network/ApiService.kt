@@ -394,4 +394,7 @@ interface ApiService {
 
     @POST("spice-service/patient-nutrition-lifestyle/remove")
     suspend fun removePsychological(@Body request: NCDCounselingModel): Response<APIResponse<NCDCounselingModel>>
+
+    @POST("spice-service/investigation/list")
+    suspend fun getPatientLabTests(@Body request: LabTestListRequest): Response<APIResponse<ArrayList<LabTestListResponse>>>
 }
