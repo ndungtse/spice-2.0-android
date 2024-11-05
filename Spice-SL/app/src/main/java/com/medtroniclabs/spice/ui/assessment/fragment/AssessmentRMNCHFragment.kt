@@ -106,10 +106,13 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
                 ResourceState.SUCCESS -> {
                     hideProgress()
                     resourceState.data?.let { data ->
+                        val facilityList =EntityMapper.getResultSpinnerMapList(data)
+                        if (viewModel.workflowName==RMNCH.ANC) {
+                            facilityList.add(mapOf(DefinedParams.name to DefinedParams.Other, DefinedParams.ID to DefinedParams.Other))
+                        }
                         formGenerator.spinnerDataInjection(
                             data,
-                            EntityMapper.getResultSpinnerMapList(data)
-                        )
+                            facilityList                        )
                     }
                 }
 

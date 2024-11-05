@@ -424,4 +424,14 @@ open class BaseActivity : SpiceRootActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return super.onOptionsItemSelected(item)
     }
+
+    fun onHomeClick(callbackHome: (() -> Unit?)? = null) {
+        binding.ivHome.safeClickListener {
+                if (callbackHome == null) {
+                    redirectToHome()
+                } else {
+                    callbackHome.invoke()
+                }
+            }
+        }
 }

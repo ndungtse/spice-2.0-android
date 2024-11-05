@@ -64,6 +64,8 @@ object RMNCH {
     const val deathOfBaby = "deathOfBaby"
     const val isDeceased = "isDeceased"
 
+    const val otherPlaceOfDelivery="otherPlaceOfDelivery"
+
 
 
     fun getValueFromMap(
@@ -99,7 +101,14 @@ object RMNCH {
                                         context
                                     )
                                 )
-                            } else {
+                            }else if(id==PlaceOfDelivery){
+                                return if (actualMap.containsKey(otherPlaceOfDelivery)) {
+                                     ("$value - ${actualMap[otherPlaceOfDelivery]}")
+                                }else{
+                                    value
+                                }
+                            }
+                            else {
                                 value
                             }
                         }

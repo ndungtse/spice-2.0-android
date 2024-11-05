@@ -6,6 +6,7 @@ import android.view.MenuItem
 import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.widget.PopupMenu
+import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
@@ -93,10 +94,24 @@ class HouseholdSummaryActivity : BaseActivity(), MemberSelectionListener, View.O
     private fun initializePhuLinkFlow(){
         householdSummaryViewModel.isPhuWalkInsFlow=intent.getBooleanExtra(isPhuWalkInsFlow, false)
         if ( householdSummaryViewModel.isPhuWalkInsFlow){
+            onHomeClick { onBackNav() }
             hideHomeButton(false)
             setTitle(getString(R.string.link_patient))
         }
     }
+
+    private fun onBackNav(){
+        showErrorDialogue(
+            getString(R.string.alert),
+            getString(R.string.exit_reason),
+            isNegativeButtonNeed = true
+        ) { isPositive ->
+            if (isPositive) {
+                startActivityWithoutSplashScreen()
+            }
+        }
+    }
+
 
     private fun handleBottomNavigation() {
         if (householdSummaryViewModel.isFromHouseHoldRegistration) {

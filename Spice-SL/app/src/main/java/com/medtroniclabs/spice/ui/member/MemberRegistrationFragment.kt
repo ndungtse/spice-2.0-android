@@ -416,6 +416,10 @@ class MemberRegistrationFragment : Fragment(), FormEventListener, View.OnClickLi
             if (householdRegistrationViewModel.memberID == -1L) {
                 (view.adapter as CustomSpinnerAdapter).removeItemById(HouseholdHead)
             }
+            // Phu Walk Ins remove household head
+            if (arguments?.getBoolean(HouseholdDefinedParams.isPhuWalkInsFlow) == true){
+                (view.adapter as CustomSpinnerAdapter).removeItemById(HouseholdHead)
+            }
         }
     }
 

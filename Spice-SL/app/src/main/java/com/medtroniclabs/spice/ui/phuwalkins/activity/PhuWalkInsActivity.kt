@@ -79,6 +79,11 @@ class PhuWalkInsActivity : BaseActivity(), View.OnClickListener, PhuLinkCallback
     }
 
     private fun backNavigationToHome() {
+        val phuFragments =
+            getFragmentById(supportFragmentManager, (R.id.phuListFragment))
+        if (phuFragments is PhuWalkInsListFragment) {
+            startActivityWithoutSplashScreen()
+        }else {
         showErrorDialogue(
             getString(R.string.alert),
             getString(R.string.exit_reason),
@@ -87,6 +92,7 @@ class PhuWalkInsActivity : BaseActivity(), View.OnClickListener, PhuLinkCallback
             if (isPositive) {
                 startActivityWithoutSplashScreen()
             }
+        }
         }
     }
 
@@ -172,6 +178,7 @@ class PhuWalkInsActivity : BaseActivity(), View.OnClickListener, PhuLinkCallback
         val phuFragments =
             getFragmentById(supportFragmentManager, (R.id.phuListFragment))
         if (phuFragments is PhuWalkInsListFragment) {
+            setTitle(getString(R.string.phu_walk_ins_title))
             val intent = Intent(this, FollowUpMyPatientActivity::class.java)
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
             intent.putExtra(MenuConstants.MY_PATIENTS_MENU_ID, MenuConstants.MY_PATIENTS_MENU_ID)

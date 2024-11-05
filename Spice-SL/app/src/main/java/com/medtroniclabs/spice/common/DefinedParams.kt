@@ -151,4 +151,6 @@ object DefinedParams {
 
     const val FhirMemberID = "FhirmemberID"
 
+    const val name = "name"
+
 }
