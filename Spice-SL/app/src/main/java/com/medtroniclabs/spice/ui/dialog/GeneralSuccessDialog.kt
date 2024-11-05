@@ -6,10 +6,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
-import android.view.WindowManager
 import androidx.fragment.app.DialogFragment
 import com.medtroniclabs.spice.appextensions.setDialogPercent
-import com.medtroniclabs.spice.common.CommonUtils
+import com.medtroniclabs.spice.appextensions.setDialogWidthAndHeightAsWrapPercent
 import com.medtroniclabs.spice.databinding.DialogGeneralSuccessBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 
@@ -85,6 +84,10 @@ class GeneralSuccessDialog(private val callback: () -> Unit) : DialogFragment() 
 
     override fun onStart() {
         super.onStart()
-        setDialogPercent(40, 50)
+        if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
+            setDialogWidthAndHeightAsWrapPercent(90)
+        } else {
+            setDialogPercent(40, 50)
+        }
     }
 }

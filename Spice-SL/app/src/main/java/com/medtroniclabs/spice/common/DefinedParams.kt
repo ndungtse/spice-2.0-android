@@ -186,5 +186,7 @@ object DefinedParams {
     const val Capsule = "Capsule"
     const val Africa = "AFRICA"
     const val PatientVisitId = "PatientVisitId"
+    const val TYPE_REFILL = "REFILL"
+    const val displayValue = "displayValue"
 
 }

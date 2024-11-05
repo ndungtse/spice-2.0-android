@@ -477,22 +477,17 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
             }
 
             binding.btnLayout.ivPrescriptionImgView.id -> {
-                if (connectivityManager.isNetworkAvailable()) {
-                    val intent = Intent(this, NCDPrescriptionActivity::class.java)
-                    intent.putExtra(ORIGIN, DefinedParams.MedicalReview)
-                    intent.putExtra(DefinedParams.PatientId, patientDetailViewModel.getPatientId()  )
-                    intent.putExtra(DefinedParams.id,  patientDetailViewModel.getPatientFHIRId())
-                    intent.putExtra(DefinedParams.PatientVisitId, getEncounterReference())
-                    startActivity(intent)
-                } else {
-                   showErrorDialogue(
-                        getString(R.string.title_no_network),
-                        getString(R.string.message_no_network),
-                        isNegativeButtonNeed = false
-                    ) { _ -> }
+                if (!patientDetailViewModel.getPatientId().isNullOrEmpty() && !getEncounterReference().isNullOrEmpty()){
+                    withNetworkAvailability(online ={
+                        val intent = Intent(this, NCDPrescriptionActivity::class.java)
+                        intent.putExtra(ORIGIN, DefinedParams.MedicalReview)
+                        intent.putExtra(DefinedParams.PatientId, patientDetailViewModel.getPatientId()  )
+                        intent.putExtra(DefinedParams.id,  patientDetailViewModel.getPatientFHIRId())
+                        intent.putExtra(DefinedParams.PatientVisitId, getEncounterReference())
+                        startActivity(intent)
+                    } )
                 }
             }
-
 
             binding.btnLayout.ivTreatmentPlan.id -> {
                 val patientId = patientDetailViewModel.getPatientId()

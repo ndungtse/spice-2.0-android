@@ -9,6 +9,8 @@ import com.medtroniclabs.spice.data.BirthHistoryRequest
 import com.medtroniclabs.spice.data.BirthHistoryResponse
 import com.medtroniclabs.spice.data.DiagnosisDiseaseModel
 import com.medtroniclabs.spice.data.DiagnosisSaveUpdateRequest
+import com.medtroniclabs.spice.data.DispensePrescriptionRequest
+import com.medtroniclabs.spice.data.DispensePrescriptionResponse
 import com.medtroniclabs.spice.data.FormMetaRequest
 import com.medtroniclabs.spice.data.FormRequest
 import com.medtroniclabs.spice.data.FormResponse
@@ -30,6 +32,8 @@ import com.medtroniclabs.spice.data.PncChildMedicalReview
 import com.medtroniclabs.spice.data.PregnancyDetailsModel
 import com.medtroniclabs.spice.data.Prescription
 import com.medtroniclabs.spice.data.PrescriptionListRequest
+import com.medtroniclabs.spice.data.DispenseUpdateRequest
+import com.medtroniclabs.spice.data.DispenseUpdateResponse
 import com.medtroniclabs.spice.data.ReferPatientAPIRequest
 import com.medtroniclabs.spice.data.ReferPatientHealthFacilityItem
 import com.medtroniclabs.spice.data.ReferPatientNameNumber
@@ -452,6 +456,18 @@ class ApiHelperImpl @Inject constructor(private val apiService: ApiService) : Ap
 
     override suspend fun createNCDMRSummaryCreate(request: NCDMRSummaryRequestResponse): Response<APIResponse<HashMap<String, Any>>> {
         return apiService.createNCDMRSummaryCreate(request)
+    }
+
+    override suspend fun getPrescriptionDispenseList(request: DispenseUpdateRequest): Response<APIResponse<ArrayList<DispensePrescriptionResponse>>> {
+        return apiService.getPrescriptionDispenseList(request)
+    }
+
+    override suspend fun updateDispensePrescription(request: DispensePrescriptionRequest): Response<APIResponse<DispenseUpdateResponse>> {
+        return apiService.updateDispensePrescription(request)
+    }
+
+    override suspend fun getDispensePrescriptionHistory(request: DispenseUpdateRequest): Response<APIResponse<ArrayList<DispensePrescriptionResponse>>> {
+        return apiService.getDispensePrescriptionHistory(request)
     }
 
     override suspend fun createLifestyle(request: NCDCounselingModel): Response<APIResponse<NCDCounselingModel>> {

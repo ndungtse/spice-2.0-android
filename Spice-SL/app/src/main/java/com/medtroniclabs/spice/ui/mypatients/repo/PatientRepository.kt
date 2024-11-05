@@ -1,7 +1,5 @@
 package com.medtroniclabs.spice.ui.mypatients.repo
 
-import com.medtroniclabs.spice.data.Prescription
-import com.medtroniclabs.spice.data.PrescriptionListRequest
 import com.medtroniclabs.spice.db.local.RoomHelper
 import com.medtroniclabs.spice.db.response.VillageBasicDetails
 import com.medtroniclabs.spice.model.PatientDetailRequest

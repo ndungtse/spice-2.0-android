@@ -933,6 +933,15 @@
     <string name="last_refill_date">Last Refill Date</string>
     <string name="prescriber_number">Prescriber\'s Number</string>
     <string name="prescriber">Prescriber</string>
+    <string name="prescription_history">Prescription History</string>
+    <string name="reason_error">Please select a reason.</string>
+    <string name="fill_prescription">Please enter any values to update.</string>
+    <string name="prescription_dispensed_successfully">Prescription dispensed successfully</string>
+    <string name="reason_for_qualipharm">Qualipharm Response</string>
+    <string name="quantity_success_message" translatable="false">%1$s - Successfully dispensed  for %2$d days</string>
+    <string name="quantity_difference_message" translatable="false">%1$s - Requested for %2$d days and dispensed for %3$d days</string>
+    <string name="out_of_stock_message">%1$s - Out of stock in Qualipharm</string>
+    <string name="days_are_required">Days are required</string>
 
     <string name="lifestyle_management">Lifestyle Management</string>
     <string name="clinician_notes_seperator">Clinician Notes:&#160;</string>

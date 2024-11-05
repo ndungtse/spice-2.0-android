@@ -47,7 +47,6 @@ class NCDPrescriptionViewModel @Inject constructor(
     val unitList = MutableLiveData<List<UnitMetricEntity>>()
     val createPrescriptionLiveData = MutableLiveData<Resource<Map<String, Any>>>()
     var patient_visit_id: String? = null
-    //2895
     var patientId: String? = null
     var selectedMedication: MedicationResponse? = null
     var prescriptionUIModel: ArrayList<MedicationResponse>? = null

@@ -1,14 +1,18 @@
 package com.medtroniclabs.spice.network
 
-import com.medtroniclabs.spice.data.model.MotherNeonatePncRequest
 import com.google.gson.JsonObject
-import com.medtroniclabs.spice.model.medicalreview.CreateUnderTwoMonthsRequest
 import com.medtroniclabs.spice.data.APIResponse
 import com.medtroniclabs.spice.data.AboveFiveYearsMetaResponse
 import com.medtroniclabs.spice.data.AboveFiveYearsSummaryDetails
 import com.medtroniclabs.spice.data.AboveFiveYearsSummaryRequest
+import com.medtroniclabs.spice.data.BirthHistoryRequest
+import com.medtroniclabs.spice.data.BirthHistoryResponse
 import com.medtroniclabs.spice.data.DiagnosisDiseaseModel
 import com.medtroniclabs.spice.data.DiagnosisSaveUpdateRequest
+import com.medtroniclabs.spice.data.DispensePrescriptionRequest
+import com.medtroniclabs.spice.data.DispensePrescriptionResponse
+import com.medtroniclabs.spice.data.DispenseUpdateRequest
+import com.medtroniclabs.spice.data.DispenseUpdateResponse
 import com.medtroniclabs.spice.data.FormMetaRequest
 import com.medtroniclabs.spice.data.FormRequest
 import com.medtroniclabs.spice.data.FormResponse
@@ -20,10 +24,14 @@ import com.medtroniclabs.spice.data.MedicationSearchRequest
 import com.medtroniclabs.spice.data.MetaDataResponse
 import com.medtroniclabs.spice.data.MotherNeonateAncMetaResponse
 import com.medtroniclabs.spice.data.MotherNeonateAncSummaryModel
+import com.medtroniclabs.spice.data.MotherNeonatePncSummaryRequest
+import com.medtroniclabs.spice.data.MotherNeonatePncSummaryResponse
 import com.medtroniclabs.spice.data.MotherPncResponse
 import com.medtroniclabs.spice.data.NeonatePncResponse
 import com.medtroniclabs.spice.data.PatientStatusRequest
 import com.medtroniclabs.spice.data.PatientStatusResponse
+import com.medtroniclabs.spice.data.PncChildMedicalReview
+import com.medtroniclabs.spice.data.PregnancyDetailsModel
 import com.medtroniclabs.spice.data.Prescription
 import com.medtroniclabs.spice.data.PrescriptionListRequest
 import com.medtroniclabs.spice.data.ReferPatientAPIRequest
@@ -32,38 +40,39 @@ import com.medtroniclabs.spice.data.ReferPatientNameNumber
 import com.medtroniclabs.spice.data.ReferPatientRequest
 import com.medtroniclabs.spice.data.ReferPatientResult
 import com.medtroniclabs.spice.data.RemovePrescriptionRequest
+import com.medtroniclabs.spice.data.SummaryCreateRequest
 import com.medtroniclabs.spice.data.UnderFiveYearsMetaResponse
 import com.medtroniclabs.spice.data.UnderTwoMonthsMetaResponse
 import com.medtroniclabs.spice.data.UserSymptomsEntity
-import com.medtroniclabs.spice.data.history.MedicalReviewHistory
 import com.medtroniclabs.spice.data.history.HistoryEntity
+import com.medtroniclabs.spice.data.history.MedicalReviewHistory
 import com.medtroniclabs.spice.data.model.AboveFiveYearsSubmitRequest
 import com.medtroniclabs.spice.data.model.BpAndWeightRequestModel
 import com.medtroniclabs.spice.data.model.BpAndWeightResponse
+import com.medtroniclabs.spice.data.model.CreateLabourDeliveryRequest
+import com.medtroniclabs.spice.data.model.CreateLabourDeliveryResponse
+import com.medtroniclabs.spice.data.model.LabourDeliverySummaryDetails
 import com.medtroniclabs.spice.data.model.MotherNeonateAncRequest
+import com.medtroniclabs.spice.data.model.MotherNeonatePncRequest
 import com.medtroniclabs.spice.data.model.PatientEncounterResponse
 import com.medtroniclabs.spice.data.model.PncSubmitResponse
+import com.medtroniclabs.spice.data.model.RegistrationResponse
+import com.medtroniclabs.spice.data.model.RequestChangePassword
+import com.medtroniclabs.spice.data.model.ResponseChangePassword
 import com.medtroniclabs.spice.data.offlinesync.model.HouseHold
 import com.medtroniclabs.spice.data.offlinesync.model.RequestGetSyncStatus
+import com.medtroniclabs.spice.data.offlinesync.model.ResponseSignatureUpload
 import com.medtroniclabs.spice.data.offlinesync.model.SyncResponse
-import com.medtroniclabs.spice.data.BirthHistoryRequest
-import com.medtroniclabs.spice.data.BirthHistoryResponse
-import com.medtroniclabs.spice.data.MotherNeonatePncSummaryRequest
-import com.medtroniclabs.spice.data.MotherNeonatePncSummaryResponse
-import com.medtroniclabs.spice.data.SummaryCreateRequest
-import com.medtroniclabs.spice.data.PncChildMedicalReview
-import com.medtroniclabs.spice.data.ResponseDataModel
-import com.medtroniclabs.spice.data.PregnancyDetailsModel
-import com.medtroniclabs.spice.data.model.RegistrationResponse
-import com.medtroniclabs.spice.data.resource.LabourDeliverySummaryRequest
 import com.medtroniclabs.spice.data.performance.CHWPerformanceMonitoring
 import com.medtroniclabs.spice.data.performance.ChwVillageFilterModel
 import com.medtroniclabs.spice.data.performance.FilterPreference
 import com.medtroniclabs.spice.data.performance.PerformanceReportRequest
+import com.medtroniclabs.spice.data.resource.LabourDeliverySummaryRequest
 import com.medtroniclabs.spice.data.resource.RequestAllEntities
 import com.medtroniclabs.spice.model.LabTestCreateRequest
 import com.medtroniclabs.spice.model.LabTestListRequest
 import com.medtroniclabs.spice.model.LabTestListResponse
+import com.medtroniclabs.spice.model.NcdMRStaticDataModel
 import com.medtroniclabs.spice.model.PatientDetailRequest
 import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.model.PatientsDataModel
@@ -72,33 +81,27 @@ import com.medtroniclabs.spice.model.ReferralDetailRequest
 import com.medtroniclabs.spice.model.RemoveLabTestRequest
 import com.medtroniclabs.spice.model.SearchAndListResponse
 import com.medtroniclabs.spice.model.medicalreview.AddMemberRegRequest
-import com.medtroniclabs.spice.data.model.CreateLabourDeliveryRequest
-import com.medtroniclabs.spice.data.model.CreateLabourDeliveryResponse
 import com.medtroniclabs.spice.model.medicalreview.CreateUnderFiveYearsRequest
+import com.medtroniclabs.spice.model.medicalreview.CreateUnderTwoMonthsRequest
 import com.medtroniclabs.spice.model.medicalreview.CreateUnderTwoMonthsResponse
-import com.medtroniclabs.spice.data.model.LabourDeliverySummaryDetails
-import com.medtroniclabs.spice.data.model.RequestChangePassword
-import com.medtroniclabs.spice.data.model.ResponseChangePassword
-import com.medtroniclabs.spice.data.offlinesync.model.ResponseSignatureUpload
-import com.medtroniclabs.spice.model.NcdMRStaticDataModel
 import com.medtroniclabs.spice.model.medicalreview.SearchLabTestResponse
 import com.medtroniclabs.spice.model.medicalreview.SearchRequestLabTest
 import com.medtroniclabs.spice.model.medicalreview.SummaryDetails
+import com.medtroniclabs.spice.ncd.counseling.model.NCDCounselingModel
+import com.medtroniclabs.spice.ncd.data.BPBGListModel
 import com.medtroniclabs.spice.ncd.data.MRSummaryResponse
 import com.medtroniclabs.spice.ncd.data.MedicalReviewRequestResponse
 import com.medtroniclabs.spice.ncd.data.MedicalReviewResponse
 import com.medtroniclabs.spice.ncd.data.NCDDiagnosisGetRequest
 import com.medtroniclabs.spice.ncd.data.NCDDiagnosisGetResponse
 import com.medtroniclabs.spice.ncd.data.NCDDiagnosisRequestResponse
-import com.medtroniclabs.spice.ncd.data.PatientVisitRequest
-import com.medtroniclabs.spice.ncd.data.PatientVisitResponse
-import com.medtroniclabs.spice.ncd.data.BPBGListModel
 import com.medtroniclabs.spice.ncd.data.NCDMRSummaryRequestResponse
 import com.medtroniclabs.spice.ncd.data.NCDPatientStatusRequest
 import com.medtroniclabs.spice.ncd.data.NCDTreatmentPlanModel
 import com.medtroniclabs.spice.ncd.data.NCDTreatmentPlanModelDetails
+import com.medtroniclabs.spice.ncd.data.PatientVisitRequest
+import com.medtroniclabs.spice.ncd.data.PatientVisitResponse
 import com.medtroniclabs.spice.ncd.data.ScreeningPatientResponse
-import com.medtroniclabs.spice.ncd.counseling.model.NCDCounselingModel
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
 import retrofit2.Response
@@ -397,4 +400,14 @@ interface ApiService {
 
     @POST("spice-service/investigation/list")
     suspend fun getPatientLabTests(@Body request: LabTestListRequest): Response<APIResponse<ArrayList<LabTestListResponse>>>
+
+    @POST("/spice-service/prescription-request/fill-prescription/list")
+    suspend fun getPrescriptionDispenseList(@Body request: DispenseUpdateRequest): Response<APIResponse<ArrayList<DispensePrescriptionResponse>>>
+
+    @POST("/spice-service/prescription-request/fill-prescription/update")
+    suspend fun updateDispensePrescription(@Body request: DispensePrescriptionRequest):  Response<APIResponse<DispenseUpdateResponse>>
+
+    @POST("/spice-service/prescription-request/refill-prescription/history")
+    suspend fun getDispensePrescriptionHistory(@Body request: DispenseUpdateRequest): Response<APIResponse<ArrayList<DispensePrescriptionResponse>>>
+
 }

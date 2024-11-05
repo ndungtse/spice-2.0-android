@@ -181,6 +181,12 @@ class MetaRepository @Inject constructor(
                                         roomHelper.deleteNCDDiagnosisList()
                                         roomHelper.saveNCDDiagnosisList(it)
                                     }
+
+                                    res.reasons?.let {
+                                        roomHelper.deleteNCDShortageReason()
+                                        roomHelper.saveNCDShortageReason(it)
+                                    }
+
                                     res.cvdRiskAlgorithms?.nonLab?.let { nonLab ->
                                         val baseType: Type =
                                             object :

@@ -39,6 +39,7 @@ data class PatientListRespModel(
     var isRedRiskPatient: Boolean = false,
     var riskColor: String? = null,
     val pregnancyDetails: PregnancyDetails? = null,
+    val prescribedDetails : PrescribedDetails? = null,
     val villageId:String? = null,
     val relationship:String? = null,
     val phoneNumberCategory:String? = null,
@@ -90,4 +91,15 @@ data class SearchAndListResponse(
     val patientList: List<PatientListRespModel> = emptyList(),
     val referencePatientId: String? = null,
     val totalCount: Int? = null
+)
+
+data class PrescribedDetails(
+    var firstName: String? = null,
+    var lastName: String? = null,
+    var phoneNumber: String? = null,
+    var countryCode: String? = null,
+    var createdAt: String? = null,
+    var updatedAt: String? = null,
+    var lastRefillDate: String? = null,
+    var lastRefillVisitId: String? = null
 )

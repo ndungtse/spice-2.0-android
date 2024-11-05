@@ -9,6 +9,7 @@ import com.medtroniclabs.spice.data.FollowUpPatientModel
 import com.medtroniclabs.spice.data.LabourDeliveryMetaEntity
 import com.medtroniclabs.spice.data.MedicalReviewMetaItems
 import com.medtroniclabs.spice.data.ProgramEntity
+import com.medtroniclabs.spice.data.ShortageReasonEntity
 import com.medtroniclabs.spice.data.UnitMetricEntity
 import com.medtroniclabs.spice.data.VillageInfo
 import com.medtroniclabs.spice.data.model.HouseholdCardDetail
@@ -42,10 +43,9 @@ import com.medtroniclabs.spice.db.entity.CallHistory
 import com.medtroniclabs.spice.db.entity.ChiefDomEntity
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowConditionEntity
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowEntity
-import com.medtroniclabs.spice.db.entity.NCDAssessmentClinicalWorkflow
-import com.medtroniclabs.spice.db.entity.NCDMedicalReviewMetaEntity
 import com.medtroniclabs.spice.db.entity.ConsentEntity
 import com.medtroniclabs.spice.db.entity.ConsentForm
+import com.medtroniclabs.spice.db.entity.DistrictEntity
 import com.medtroniclabs.spice.db.entity.FollowUp
 import com.medtroniclabs.spice.db.entity.FollowUpCall
 import com.medtroniclabs.spice.db.entity.FormEntity
@@ -53,18 +53,19 @@ import com.medtroniclabs.spice.db.entity.FrequencyEntity
 import com.medtroniclabs.spice.db.entity.HealthFacilityEntity
 import com.medtroniclabs.spice.db.entity.HouseholdEntity
 import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
+import com.medtroniclabs.spice.db.entity.LifestyleEntity
 import com.medtroniclabs.spice.db.entity.MedicalComplianceEntity
 import com.medtroniclabs.spice.db.entity.LinkHouseholdMember
 import com.medtroniclabs.spice.db.entity.MemberClinicalEntity
 import com.medtroniclabs.spice.db.entity.MentalHealthEntity
 import com.medtroniclabs.spice.db.entity.MenuEntity
+import com.medtroniclabs.spice.db.entity.NCDAssessmentClinicalWorkflow
+import com.medtroniclabs.spice.db.entity.NCDDiagnosisEntity
+import com.medtroniclabs.spice.db.entity.NCDMedicalReviewMetaEntity
 import com.medtroniclabs.spice.db.entity.PregnancyDetail
+import com.medtroniclabs.spice.db.entity.RiskFactorEntity
 import com.medtroniclabs.spice.db.entity.ScreeningEntity
 import com.medtroniclabs.spice.db.entity.SignsAndSymptomsEntity
-import com.medtroniclabs.spice.db.entity.DistrictEntity
-import com.medtroniclabs.spice.db.entity.LifestyleEntity
-import com.medtroniclabs.spice.db.entity.NCDDiagnosisEntity
-import com.medtroniclabs.spice.db.entity.RiskFactorEntity
 import com.medtroniclabs.spice.db.entity.TreatmentPlanEntity
 import com.medtroniclabs.spice.db.entity.UserProfileEntity
 import com.medtroniclabs.spice.db.entity.VillageEntity
@@ -997,6 +998,19 @@ class RoomHelperImpl @Inject constructor(
     override fun getFrequencies(): LiveData<List<TreatmentPlanEntity>> {
         return ncdMedicalReviewDao.getFrequencies()
     }
+
+    override suspend fun getNCDShortageReason(type: String): List<ShortageReasonEntity> {
+        return ncdMedicalReviewDao.getNCDShortageEntries(type)
+    }
+
+    override suspend fun deleteNCDShortageReason() {
+        return ncdMedicalReviewDao.deleteNCDShortageReason()
+    }
+
+    override suspend fun saveNCDShortageReason(shortageReasonEntity: List<ShortageReasonEntity>) {
+         return ncdMedicalReviewDao.saveNCDShortageReason(shortageReasonEntity)
+    }
+
 
     override suspend fun getUnitList(type: String): List<UnitMetricEntity> {
         return metaDataDAO.getUnitList(type)

@@ -99,7 +99,7 @@ class PrescriptionViewModel @Inject constructor(
         val mapList = ArrayList<Map<String, Any>>()
         frequencyListLiveDate.value?.data?.forEach { data ->
             val map = HashMap<String, Any>()
-            map[DefinedParams.NAME] = data.displayValue ?: ""
+            map[DefinedParams.NAME] = data.name
             map[DefinedParams.ID] = data.id
             map[DefinedParams.Frequency] = data.frequency ?: 1
             map[DefinedParams.Description] = data.description ?: ""

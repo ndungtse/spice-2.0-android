@@ -8,11 +8,13 @@ import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContentProviderCompat.requireContext
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.setVisible
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DefinedParams
+import com.medtroniclabs.spice.common.DefinedParams.ORIGIN
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.databinding.ActivityNcdmedicalReviewCmractivityBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
@@ -26,6 +28,7 @@ import com.medtroniclabs.spice.ui.home.AssessmentToolsActivity
 import com.medtroniclabs.spice.ui.medicalreview.investigation.InvestigationActivity
 import com.medtroniclabs.spice.ncd.counseling.activity.NCDCounselingActivity
 import com.medtroniclabs.spice.ncd.counseling.activity.NCDLifestyleActivity
+import com.medtroniclabs.spice.ncd.medicalreview.prescription.activity.NCDPrescriptionActivity
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.AncVisitCallBack
 import com.medtroniclabs.spice.ui.mypatients.fragment.PatientInfoFragment
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
@@ -137,6 +140,7 @@ class NCDMedicalReviewCMRActivity : BaseActivity(), View.OnClickListener, AncVis
         binding.btnLayout.ivInvestigation.safeClickListener(this)
         binding.btnLayout.ivLifestyle.safeClickListener(this)
         binding.btnLayout.clPsycMenu.safeClickListener(this)
+        binding.btnLayout.ivPrescriptionImgView.safeClickListener(this)
         withNetworkAvailability(online = {
             initializePatientDetails()
         })
@@ -245,6 +249,19 @@ class NCDMedicalReviewCMRActivity : BaseActivity(), View.OnClickListener, AncVis
                     NCDCounselingActivity::class.java
                 )
             )
+
+            binding.btnLayout.ivPrescriptionImgView.id -> {
+                if (!patientDetailViewModel.getPatientId().isNullOrEmpty() && !getEncounterReference().isNullOrEmpty()){
+                    withNetworkAvailability(online ={
+                        val intent = Intent(this, NCDPrescriptionActivity::class.java)
+                        intent.putExtra(ORIGIN, DefinedParams.MedicalReview)
+                        intent.putExtra(DefinedParams.PatientId, patientDetailViewModel.getPatientId()  )
+                        intent.putExtra(DefinedParams.id,  patientDetailViewModel.getPatientFHIRId())
+                        intent.putExtra(DefinedParams.PatientVisitId, getEncounterReference())
+                        startActivity(intent)
+                    } )
+                }
+            }
         }
     }
 

@@ -1,7 +1,6 @@
 package com.medtroniclabs.spice.db.local
 
 import androidx.lifecycle.LiveData
-import androidx.room.Query
 import com.medtroniclabs.spice.data.DiseaseCategoryItems
 import com.medtroniclabs.spice.data.DosageFrequency
 import com.medtroniclabs.spice.data.ExaminationListItems
@@ -9,6 +8,7 @@ import com.medtroniclabs.spice.data.FollowUpPatientModel
 import com.medtroniclabs.spice.data.LabourDeliveryMetaEntity
 import com.medtroniclabs.spice.data.MedicalReviewMetaItems
 import com.medtroniclabs.spice.data.ProgramEntity
+import com.medtroniclabs.spice.data.ShortageReasonEntity
 import com.medtroniclabs.spice.data.UnitMetricEntity
 import com.medtroniclabs.spice.data.VillageInfo
 import com.medtroniclabs.spice.data.model.HouseholdCardDetail
@@ -389,4 +389,8 @@ interface RoomHelper {
     suspend fun deleteNCDDiagnosisList()
     fun getNCDDiagnosisList(types: List<String>,gender: String): LiveData<List<NCDDiagnosisEntity>>
     fun getFrequencies() : LiveData<List<TreatmentPlanEntity>>
+
+    suspend fun getNCDShortageReason(type: String): List<ShortageReasonEntity>
+    suspend fun deleteNCDShortageReason()
+    suspend fun saveNCDShortageReason(shortageReasonEntity: List<ShortageReasonEntity>)
 }

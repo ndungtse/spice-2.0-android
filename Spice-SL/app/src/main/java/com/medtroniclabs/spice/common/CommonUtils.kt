@@ -199,6 +199,13 @@ object CommonUtils {
         }
         return false
     }
+    fun isPharmist():Boolean {
+        val userRole = SecuredPreference.getUserDetails()?.roles?.joinToString { it.name }
+        if (userRole != null) {
+            return userRole.contains(RoleConstant.PHARMACIST)
+        }
+        return false
+    }
 
     fun offlineUsers(): Boolean {
         return isAfrica() && (isSL() && isChw())

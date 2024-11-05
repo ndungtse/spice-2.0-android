@@ -1,0 +1,92 @@
+package com.medtroniclabs.spice.ui.medicalreview.pharmacist.fragment
+
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.fragment.app.activityViewModels
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.medtroniclabs.spice.data.DispensePrescriptionResponse
+import com.medtroniclabs.spice.databinding.FragmentNcdPharmacistBinding
+import com.medtroniclabs.spice.network.resource.ResourceState
+import com.medtroniclabs.spice.ui.BaseFragment
+import com.medtroniclabs.spice.ui.medicalreview.pharmacist.adapter.NCDPrescriptionRefillAdapter
+import com.medtroniclabs.spice.ui.medicalreview.pharmacist.viewModel.NCDPharmacistViewModel
+
+class NCDPharmacistFragment : BaseFragment() {
+
+    private lateinit var binding: FragmentNcdPharmacistBinding
+    private lateinit var prescriptionRefillAdapter: NCDPrescriptionRefillAdapter
+    private val ncdPharmacistViewModel: NCDPharmacistViewModel by activityViewModels()
+
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        binding = FragmentNcdPharmacistBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        initView()
+        attachObserver()
+    }
+
+
+    companion object {
+        const val TAG = "NCDPharmacistFragment"
+        fun newInstance(): NCDPharmacistFragment {
+            return NCDPharmacistFragment()
+        }
+    }
+
+    private fun initView() {
+        binding.rvPrescriptionRefillList.layoutManager = LinearLayoutManager(requireContext())
+        binding.rvPrescriptionRefillList.addItemDecoration(
+            DividerItemDecoration(
+                requireContext(),
+                DividerItemDecoration.VERTICAL
+            )
+        )
+
+        prescriptionRefillAdapter = NCDPrescriptionRefillAdapter()
+        binding.rvPrescriptionRefillList.adapter = prescriptionRefillAdapter
+    }
+
+
+    private fun attachObserver() {
+        ncdPharmacistViewModel.prescriptionDispenseLiveData.observe(viewLifecycleOwner) { resourceState ->
+            when (resourceState.state) {
+                ResourceState.LOADING -> {
+                    showProgress()
+                }
+
+                ResourceState.SUCCESS -> {
+                    hideProgress()
+                    loadPrescriptionRefillList(resourceState.data)
+                }
+
+                ResourceState.ERROR -> {
+                    hideProgress()
+                }
+            }
+        }
+    }
+
+    private fun loadPrescriptionRefillList(data: ArrayList<DispensePrescriptionResponse>?) {
+        binding.tvNoRecord.visibility = View.GONE
+        data?.let { list ->
+            if (list.isEmpty()) {
+                binding.rvPrescriptionRefillList.visibility = View.GONE
+                binding.tvNoRecord.visibility = View.VISIBLE
+            } else {
+                binding.rvPrescriptionRefillList.visibility = View.VISIBLE
+                binding.rvPrescriptionRefillList.adapter = prescriptionRefillAdapter
+                prescriptionRefillAdapter.setData(list)
+            }
+        }
+    }
+
+}

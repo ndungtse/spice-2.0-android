@@ -20,7 +20,11 @@ data class PrescriptionDetails(
     val dosageUnitValue: String?,
     val instructionNote: String?,
     val codeDetails: CodeDetailsObject? = null,
-    val memberId : String? = null
+    val memberId : String? = null,
+    val instructionUpdated : Boolean? = null,
+    val prescriptionFilledDays : Long? = null,
+    val reason : String? = null
+
 )
 
 

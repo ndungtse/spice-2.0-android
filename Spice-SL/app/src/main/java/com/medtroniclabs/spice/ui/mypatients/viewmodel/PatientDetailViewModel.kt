@@ -42,6 +42,10 @@ class PatientDetailViewModel @Inject constructor(
         }
     }
 
+    fun getLastRefillVisitId() : String? {
+        return patientDetailsLiveData.value?.data?.prescribedDetails?.lastRefillVisitId
+    }
+
     fun getPatientFHIRId(): String? {
         return patientDetailsLiveData.value?.data?.id
     }

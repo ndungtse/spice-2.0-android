@@ -193,7 +193,8 @@ data class UserSymptomsEntity(
     val cvdRiskAlgorithms: RiskFactorResponse? = null,
     val diagnosis : ArrayList<NCDDiagnosisEntity>? = null,
     val units:  ArrayList<UnitMetricEntity>? = null,
-    val dosageFrequencies:  ArrayList<DosageFrequency>? = null
+    val dosageFrequencies:  ArrayList<DosageFrequency>? = null,
+    val reasons: ArrayList<ShortageReasonEntity>? = null
 )
 
 data class VillageInfo(

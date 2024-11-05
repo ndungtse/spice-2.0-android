@@ -36,9 +36,9 @@ import com.medtroniclabs.spice.ui.MenuConstants
 import com.medtroniclabs.spice.ui.home.AssessmentToolsActivity
 import com.medtroniclabs.spice.ui.medicalreview.addnewmember.AddNewMemberActivity
 import com.medtroniclabs.spice.ui.medicalreview.labTechnician.NCDLabTestListActivity
+import com.medtroniclabs.spice.ui.medicalreview.pharmacist.activity.NCDPharmacistActivity
 import com.medtroniclabs.spice.ui.mypatients.PatientSelectionListener
 import com.medtroniclabs.spice.ui.mypatients.PatientsListAdapter
-import com.medtroniclabs.spice.ui.medicalreview.pharmacist.NCDPharmacistActivity
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientListViewModel
 import com.medtroniclabs.spice.ui.referralhistory.activity.ReferralHistoryActivity
 import com.medtroniclabs.spice.ui.registration.RegistrationActivity
@@ -150,7 +150,12 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
                     (activity as BaseActivity).hideLoading()
                     resourceState.data?.let {
                         val destinationIntent =
-                            if (it.initialReviewed == true) {
+                            if (patientListViewModel.origin.equals(MenuConstants.DISPENSE, true)
+                                &&
+                                (CommonUtils.isAfrica() && CommonUtils.isPharmist())
+                            ) {
+                                NCDPharmacistActivity::class.java
+                            } else if (it.initialReviewed == true) {
                                 NCDMedicalReviewCMRActivity::class.java
                             } else {
                                 AssessmentToolsActivity::class.java
@@ -264,7 +269,7 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
                     MenuConstants.REGISTRATION.lowercase() -> RegistrationActivity::class.java
                     MenuConstants.ASSESSMENT.lowercase() -> AssessmentToolsActivity::class.java
                     MenuConstants.INVESTIGATION.lowercase() -> NCDLabTestListActivity::class.java
-                    MenuConstants.MY_PATIENTS_MENU_ID.lowercase() -> {
+                    MenuConstants.MY_PATIENTS_MENU_ID.lowercase(), MenuConstants.DISPENSE.lowercase() -> {
                         patientListViewModel.selectedPatientDetails = item
                         withNetworkAvailability(online = {
                             patientListViewModel.createPatientVisit(
@@ -278,7 +283,7 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
                         })
                         null
                     }
-                    MenuConstants.DISPENSE.lowercase() -> NCDPharmacistActivity::class.java
+
                     else -> null
                 }
                 destinationIntent?.let { destIntent ->

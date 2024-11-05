@@ -5,6 +5,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import com.medtroniclabs.spice.data.ShortageReasonEntity
 import com.medtroniclabs.spice.db.entity.NCDMedicalReviewMetaEntity
 import com.medtroniclabs.spice.db.entity.LifestyleEntity
 import com.medtroniclabs.spice.db.entity.NCDDiagnosisEntity
@@ -47,4 +48,13 @@ interface NcdMedicalReviewDao {
 
     @Query("SELECT * FROM TreatmentPlanEntity ORDER BY displayOrder ASC")
     fun getFrequencies(): LiveData<List<TreatmentPlanEntity>>
+
+    @Query("SELECT * FROM shortageReason where type=:type")
+    suspend fun getNCDShortageEntries(type: String): List<ShortageReasonEntity>
+
+    @Query("DELETE FROM shortageReason")
+    suspend fun deleteNCDShortageReason()
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun saveNCDShortageReason(diseaseEntityList: List<ShortageReasonEntity>)
 }

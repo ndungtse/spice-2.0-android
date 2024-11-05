@@ -314,7 +314,7 @@
             android:layout_width="@dimen/_0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/_16sdp"
-            android:text="@string/Instructions"
+            android:text="@string/Instructions_colon"
             android:textColor="@color/b_w_black"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tvClassification" />
