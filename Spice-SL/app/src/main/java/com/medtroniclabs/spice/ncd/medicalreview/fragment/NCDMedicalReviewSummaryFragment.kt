@@ -210,8 +210,8 @@ class NCDMedicalReviewSummaryFragment : BaseFragment(),View.OnClickListener,
     fun handleConfirmDiagnoses(): Boolean {
         return if (viewModel.summaryResponse.value?.data?.confirmDiagnosis?.diagnosis.isNullOrEmpty()) {
             showErrorDialog(
-                message = getString(R.string.no_confirm_diagnosis_warning), true,
-                Pair(false, false)
+                message = getString(R.string.no_confirm_diagnosis_warning), false,
+                Pair(true, true)
             )
             false
         } else {
@@ -238,6 +238,7 @@ class NCDMedicalReviewSummaryFragment : BaseFragment(),View.OnClickListener,
 
     override fun onYesClicked() {
         // not used
+        (requireActivity() as? NCDMedicalReviewActivity)?.hitSummary()
     }
 
     override fun onConfirmDiagnosisClicked() {

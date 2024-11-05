@@ -379,7 +379,7 @@ class ApiHelperImpl @Inject constructor(private val apiService: ApiService) : Ap
         return apiService.registerPatient(hashMap)
     }
 
-    override suspend fun createScreening(createRequest: JsonObject): Response<ScreeningPatientResponse> {
+    override suspend fun createScreening(createRequest: JsonObject): Response<APIResponse<HashMap<String, Any>>> {
         return apiService.createScreening(createRequest)
     }
 

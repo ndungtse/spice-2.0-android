@@ -1200,7 +1200,7 @@ object CommonUtils {
         if (bmi.isInfinite() || bmi.isNaN()) {
             return context?.getString(R.string.hyphen_symbol)
         }
-        return getDecimalFormatted(bmi)
+        return String.format(Locale.US, "%.2f", bmi)
     }
 
     fun calculateCVDRiskFactor(

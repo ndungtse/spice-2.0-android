@@ -102,16 +102,39 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
                     binding.btnRegister.gone()
                 } else {
                     binding.tvPatientCount.gone()
+                    binding.tvNoPatientsFound.text = getString(R.string.no_patients_found)
                     if (patientListViewModel.searchText.isBlank()) {
                         binding.tvNoPatientsFound.gone()
                         binding.btnRegister.gone()
                     } else {
-                        val isFromAssessment = patientListViewModel.origin.equals(MenuConstants.ASSESSMENT,true)
-                        val message = if(isFromAssessment) getString(R.string.no_patients_found_perform_screening) else getString(R.string.no_patients_found)
-                        binding.tvNoPatientsFound.text = message
                         binding.tvNoPatientsFound.visible()
-                        binding.btnScreening.setVisible(isFromAssessment)
-                        binding.btnRegister.setVisible(patientListViewModel.origin.equals(MenuConstants.REGISTRATION,true))
+                        binding.btnRegister.text = when (patientListViewModel.origin?.lowercase()) {
+                            MenuConstants.REGISTRATION.lowercase() -> {
+                                getString(R.string.register)
+                            }
+
+                            MenuConstants.ASSESSMENT.lowercase() -> {
+                                binding.tvNoPatientsFound.text =
+                                    getString(R.string.screening_after_search)
+                                getString(R.string.start_screening)
+                            }
+
+                            MenuConstants.MY_PATIENTS_MENU_ID.lowercase() -> {
+                                binding.tvNoPatientsFound.text =
+                                    getString(R.string.no_patients_found)
+                                ""
+                            }
+
+                            else -> {
+                                ""
+                            }
+                        }
+                        binding.btnRegister.setVisible(
+                            patientListViewModel.origin.equals(
+                                MenuConstants.REGISTRATION,
+                                true
+                            ) || patientListViewModel.origin.equals(MenuConstants.ASSESSMENT, true)
+                        )
                     }
                 }
                 binding.llFilter.apply {
@@ -325,12 +348,13 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
                 startActivity(intent)
             }
             binding.btnRegister.id -> {
-                val intent = Intent(requireContext(), RegistrationActivity::class.java)
-                startActivity(intent)
-            }
-            binding.btnScreening.id -> {
-                val intent = Intent(requireContext(), ScreeningActivity::class.java)
-                startActivity(intent)
+                if (patientListViewModel.origin.equals(MenuConstants.REGISTRATION, true)) {
+                    val intent = Intent(requireContext(), RegistrationActivity::class.java)
+                    startActivity(intent)
+                } else if (patientListViewModel.origin.equals(MenuConstants.ASSESSMENT, true)) {
+                    val intent = Intent(requireContext(), ScreeningActivity::class.java)
+                    startActivity(intent)
+                }
             }
         }
     }

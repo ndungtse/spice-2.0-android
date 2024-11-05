@@ -6,6 +6,7 @@ import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.invisible
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.DefinedParams
+import com.medtroniclabs.spice.common.DefinedParams.Other
 import com.medtroniclabs.spice.data.model.ChipViewItemModel
 
 object NCDMRUtil {
@@ -47,6 +48,7 @@ object NCDMRUtil {
     const val Liquid_Oral = "Liquid"
     const val Injection_Injectable_Solution = "Injection"
     const val Capsule = "Capsule"
+    const val IsPregnant = "IsPregnant"
 
 
     fun validateInput(
@@ -155,9 +157,9 @@ object NCDMRUtil {
 
     fun getTypeForDiagnoses(menu: String?): ArrayList<String> {
         return when (menu?.lowercase()) {
-            NCD.lowercase() -> arrayListOf(HYPERTENSION, DIABETES)
-            MENTAL_HEALTH.lowercase() -> arrayListOf(SUBSTANCE_DISORDER, MENTALHEALTH)
-            DefinedParams.PregnancyANC.lowercase() -> arrayListOf(PREGNANCY)
+            NCD.lowercase() -> arrayListOf(HYPERTENSION, DIABETES,Other)
+            MENTAL_HEALTH.lowercase() -> arrayListOf(SUBSTANCE_DISORDER, MENTALHEALTH,Other)
+            DefinedParams.PregnancyANC.lowercase() -> arrayListOf(PREGNANCY,Other)
             else -> arrayListOf()
         }
     }

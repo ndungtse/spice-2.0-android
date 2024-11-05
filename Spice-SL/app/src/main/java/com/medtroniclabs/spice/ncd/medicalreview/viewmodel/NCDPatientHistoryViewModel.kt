@@ -24,17 +24,17 @@ class NCDPatientHistoryViewModel @Inject constructor(
     val resultDiabetesHashMap = HashMap<String, Any>()
     val resultHypertensionHashMap = HashMap<String, Any>()
     var value: String? = null
-    private val getSymptomListByTypeForNCD = MutableLiveData<Pair<String,String>>()
+    private val getSymptomListByTypeForNCD = MutableLiveData<Triple<String,String,Boolean>>()
     val createNCDPatientStatus = MutableLiveData<Resource<HashMap<String, Any>>>()
     var yearForDiabetes :String? = null
     var yearForHypertension :String? = null
 
     val getSymptomListByTypeForNCDLiveData = getSymptomListByTypeForNCD.switchMap {
-        ncdMedicalReviewRepository.getNCDDiagnosisList(listOf(it.first), it.second)
+        ncdMedicalReviewRepository.getNCDDiagnosisList(listOf(it.first), it.second, it.third)
     }
 
-    fun getSymptoms(type: String, gender: String) {
-        getSymptomListByTypeForNCD.value = Pair(type, gender)
+    fun getSymptoms(type: String, gender: String, isPregnant: Boolean) {
+        getSymptomListByTypeForNCD.value = Triple(type, gender, isPregnant)
     }
 
     fun createNCDPatientStatus(request: NCDPatientStatusRequest) {

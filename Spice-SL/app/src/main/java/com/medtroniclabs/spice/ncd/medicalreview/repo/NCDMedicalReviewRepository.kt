@@ -33,7 +33,8 @@ class NCDMedicalReviewRepository @Inject constructor(
         roomHelper.getComorbidities(type, category)
 
     fun getLifeStyle() = roomHelper.getLifeStyle()
-    fun getNCDDiagnosisList(types: List<String>,gender: String) = roomHelper.getNCDDiagnosisList(types,gender)
+    fun getNCDDiagnosisList(types: List<String>, gender: String, isPregnant: Boolean) =
+        roomHelper.getNCDDiagnosisList(types, gender, isPregnant)
 
     suspend fun getNcdMedicalReviewStaticData(): Resource<Boolean> {
         return try {

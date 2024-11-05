@@ -26,15 +26,15 @@ class NCDDiagnosisViewModel @Inject constructor(
 ) : ViewModel() {
 
     var comments: String = ""
-    private val getChips = MutableLiveData<Pair<List<String>,String>>()
+    private val getChips = MutableLiveData<Triple<List<String>,String,Boolean>>()
     var selectedChips: ArrayList<ChipViewItemModel> = ArrayList()
     val getChipLiveData: LiveData<List<NCDDiagnosisEntity>> =
         getChips.switchMap {
-            ncdMedicalReviewRepository.getNCDDiagnosisList(it.first,it.second)
+            ncdMedicalReviewRepository.getNCDDiagnosisList(it.first, it.second, it.third)
         }
 
-    fun getChip(types: List<String>, gender:String) {
-        getChips.value = Pair(types,gender)
+    fun getChip(types: List<String>, gender: String, isPregnant: Boolean) {
+        getChips.value = Triple(types, gender, isPregnant)
     }
 
     val createConfirmDiagonsis = MutableLiveData<Resource<HashMap<String, Any>>>()

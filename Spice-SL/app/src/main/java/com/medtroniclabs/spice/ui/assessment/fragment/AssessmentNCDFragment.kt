@@ -171,6 +171,7 @@ class AssessmentNCDFragment : BaseFragment(), FormEventListener, View.OnClickLis
         }
 
         viewModel.selectedMedication.observe(viewLifecycleOwner) { model ->
+            hideComplianceOptions()
             model?.let { selectedModel ->
                 if (selectedModel.childExists) {
                     viewModel.getMedicationChildComplianceList(selectedModel.id)
@@ -258,9 +259,13 @@ class AssessmentNCDFragment : BaseFragment(), FormEventListener, View.OnClickLis
             AssessmentDefinedParams.GAD7
         )
         data?.mentalHealthLevels?.let { types ->
-            val (showMH, hideMH) = allMentalHealthForms.partition { it in types }
-            formGenerator.showMHView(true, showMH)
-            formGenerator.showMHView(false, hideMH)
+            if (types.isEmpty()) {
+                formGenerator.showMHView(false, allMentalHealthForms)
+            } else {
+                val (showMH, hideMH) = allMentalHealthForms.partition { it in types }
+                formGenerator.showMHView(true, showMH)
+                formGenerator.showMHView(false, hideMH)
+            }
         } ?: run {
             formGenerator.showMHView(false, allMentalHealthForms)
         }
@@ -596,6 +601,8 @@ class AssessmentNCDFragment : BaseFragment(), FormEventListener, View.OnClickLis
         viewModel.complianceMap?.clear()
         binding.symptomCard.childCompliance.clearCheck()
         binding.symptomCard.childCompliance.gone()
+        binding.symptomCard.otherComplianceReason.gone()
+        binding.symptomCard.otherComplianceReason.setText("")
         binding.symptomCard.tvChildErrorMessage.gone()
     }
 
@@ -614,7 +621,13 @@ class AssessmentNCDFragment : BaseFragment(), FormEventListener, View.OnClickLis
                         newList.add(compMap)
                     }
                 }
-                viewModel.complianceMap?.clear()
+                val childList = viewModel.complianceMap?.filter { compMap ->
+                    compMap[AssessmentDefinedParams.complianceId] != selectedModel.parentComplianceId
+                }
+
+                if (!childList.isNullOrEmpty()) {
+                    viewModel.complianceMap?.clear()
+                }
                 viewModel.complianceMap?.addAll(newList)
             }
             if (selectedModel.childExists) {
@@ -846,8 +859,20 @@ class AssessmentNCDFragment : BaseFragment(), FormEventListener, View.OnClickLis
     ) {
         if (validateCompliance() && validateSymptom()) {
             if (viewModel.complianceMap != null) {
-                viewModel.complianceMap?.let {
-                    resultHashMap[AssessmentDefinedParams.compliance] = it
+                viewModel.complianceMap?.let { complianceList ->
+                    // Set compliance list in resultHashMap
+                    // Find compliance item with name "Other" (case-insensitive) and add "other_compliance" if reason is non-empty
+                    binding.symptomCard.otherComplianceReason.text?.trim()?.toString()
+                        ?.takeIf { it.isNotEmpty() }?.let { reason ->
+                            complianceList.find { data ->
+                                (data[DefinedParams.NAME] as? String)?.equals(
+                                    DefinedParams.Other,
+                                    ignoreCase = true
+                                ) == true
+                            }?.put(AssessmentDefinedParams.other_compliance, reason)
+                        }
+
+                    resultHashMap[AssessmentDefinedParams.compliance] = complianceList
                 }
             }
             if (!viewModel.selectedSymptoms.value.isNullOrEmpty()) {
@@ -968,6 +993,11 @@ class AssessmentNCDFragment : BaseFragment(), FormEventListener, View.OnClickLis
         map[AssessmentDefinedParams.assessmentTakenOn] = DateUtils.getTodayDateDDMMYYYY()
         map[AssessmentDefinedParams.assessmentOrganizationId] =
             SecuredPreference.getOrganizationFhirId()
+        if (viewModel.assessmentType.equals(AssessmentDefinedParams.ncd, true)) {
+            assessmentJSON?.first { it.viewType.equals(ViewType.VIEW_TYPE_FORM_BP, true) }?.let {
+                bpViewModel.calculateBPValues(it, map)
+            }
+        }
         calculateProvisionalDiagnosis(
             map, isConfirmDiagnosis,
             bpViewModel.getSystolicAverage(), bpViewModel.getDiastolicAverage(),
@@ -1027,6 +1057,14 @@ class AssessmentNCDFragment : BaseFragment(), FormEventListener, View.OnClickLis
                         bpLog[AssessmentDefinedParams.Temperature] as Double
                 }
                 bioMetric[Screening.BMI] = bpLog[Screening.BMI] as Double
+                // if height weight is change we need to set it
+                bioMetric.let { bioMetric ->
+                    listOf(Screening.Height, Screening.Weight, Screening.BMI).forEach { key ->
+                        bpLog[key]?.let { value ->
+                            bioMetric[key] = value as Double
+                        }
+                    }
+                }
                 bpLog.apply {
                     remove(AssessmentDefinedParams.Temperature)
                     remove(Screening.Weight)
@@ -1103,12 +1141,6 @@ class AssessmentNCDFragment : BaseFragment(), FormEventListener, View.OnClickLis
     }
 
     private fun calculateFurtherAssessment(map: HashMap<String, Any>, unitGenericType: String) {
-        if (viewModel.assessmentType.equals(AssessmentDefinedParams.ncd, true)) {
-            assessmentJSON?.first { it.viewType.equals(ViewType.VIEW_TYPE_FORM_BP, true) }?.let {
-                bpViewModel.calculateBPValues(it, map)
-            }
-        }
-
         val assessmentConditionResult = CommonUtils.checkAssessmentCondition(
             bpViewModel.getSystolicAverage(),
             bpViewModel.getDiastolicAverage(),

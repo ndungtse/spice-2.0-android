@@ -2942,20 +2942,26 @@ class FormGenerator(
     }
 
     fun spinnerDataInjection(data: LocalSpinnerResponse, mapList: ArrayList<Map<String, Any>>) {
-        val view = getViewByTag(data.tag) as AppCompatSpinner
+        val view = getViewByTag(data.tag) as? AppCompatSpinner ?: return
+
         if (view.adapter is CustomSpinnerAdapter) {
             if (mapList.size > 1) {
-                val defaultIdIndex = 0
-                mapList.add(
-                    defaultIdIndex,
-                    hashMapOf<String, Any>(
-                        com.medtroniclabs.spice.common.DefinedParams.NAME to com.medtroniclabs.spice.common.DefinedParams.DefaultIDLabel,
-                        com.medtroniclabs.spice.common.DefinedParams.ID to "-1"
-                    )
-                )
+                mapList.add(0, createDefaultMap())
             }
             (view.adapter as CustomSpinnerAdapter).setData(mapList)
+
+            if (mapList.size == 1) {
+                mapList.add(0, createDefaultMap())
+                view.post { view.setSelection(1, true) }
+            }
         }
+    }
+
+    private fun createDefaultMap(): Map<String, Any> {
+        return hashMapOf(
+            DefinedParams.NAME to DefaultIDLabel,
+            DefinedParams.ID to "-1"
+        )
     }
 
     fun resetSingleSelection(id: String) {

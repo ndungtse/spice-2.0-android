@@ -990,9 +990,10 @@ class RoomHelperImpl @Inject constructor(
 
     override fun getNCDDiagnosisList(
         types: List<String>,
-        gender: String
+        gender: String,
+        isPregnant: Boolean
     ): LiveData<List<NCDDiagnosisEntity>> {
-        return ncdMedicalReviewDao.getNCDDiagnosisList(types, gender)
+        return ncdMedicalReviewDao.getNCDDiagnosisList(types, gender, isPregnant)
     }
 
     override fun getFrequencies(): LiveData<List<TreatmentPlanEntity>> {

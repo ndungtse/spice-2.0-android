@@ -862,7 +862,7 @@
     <string name="view_details">View Details</string>
     <string name="pregnancy_risk_criteria">Pregnancy Risk Criteria</string>
     <string name="registration_date">Registration Date</string>
-    <string name="pending_enrollment">Pending Enrollment</string>
+    <string name="pending_registration">Pending Registration</string>
     <string name="cvd_risk">CVD Risk</string>
     <string name="high_risk">High Risk</string>
     <string name="comorbidities">Comorbidities</string>
@@ -983,4 +983,5 @@
     <string name="please_select_unit">Please select a unit</string>
     <string name="dd_mmm_yyyy">dd_mm_yyyy</string>
     <string name="test_comments">Test Comments</string>
+    <string name="screening_after_search">No Patient found. Please perform screening to proceed.</string>
 </resources>

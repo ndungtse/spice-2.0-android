@@ -564,21 +564,25 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
         val fragment =
             supportFragmentManager.findFragmentByTag(NCDMedicalReviewSummaryFragment.TAG) as? NCDMedicalReviewSummaryFragment
         if (fragment?.validateInput() == true && fragment.handleConfirmDiagnoses()) {
-            withNetworkAvailability(online = {
-                val request = NCDMRSummaryRequestResponse(
-                    memberReference = patientDetailViewModel.getPatientFHIRId(),
-                    patientReference = patientDetailViewModel.getPatientId(),
-                    nextMedicalReviewDate = DateUtils.convertDateTimeToDate(
-                        summaryViewModel.nextFollowupDate,
-                        DateUtils.DATE_ddMMyyyy,
-                        DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-                        inUTC = true
-                    ),
-                    provenance = ProvanceDto()
-                )
-                summaryViewModel.createNCDMRSummaryCreate(request)
-            })
+            hitSummary()
         }
+    }
+
+    fun hitSummary() {
+        withNetworkAvailability(online = {
+            val request = NCDMRSummaryRequestResponse(
+                memberReference = patientDetailViewModel.getPatientFHIRId(),
+                patientReference = patientDetailViewModel.getPatientId(),
+                nextMedicalReviewDate = DateUtils.convertDateTimeToDate(
+                    summaryViewModel.nextFollowupDate,
+                    DateUtils.DATE_ddMMyyyy,
+                    DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+                    inUTC = true
+                ),
+                provenance = ProvanceDto()
+            )
+            summaryViewModel.createNCDMRSummaryCreate(request)
+        })
     }
     private fun handleValidation(): Boolean {
         // Function to show the error dialog with customizable options
@@ -790,7 +794,8 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
                     it,
                     patientDetailViewModel.getPatientFHIRId(),
                     true,
-                    isFemale = patientDetailViewModel.getGenderIsFemale()
+                    isFemale = patientDetailViewModel.getGenderIsFemale(),
+                    patientDetailViewModel.isPregnant()
                 ).apply {
                     listener = this@NCDMedicalReviewActivity
                 }.show(supportFragmentManager, NCDPatientHistoryDialog.TAG)
@@ -988,7 +993,8 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
                     it,
                     getTypeForDiagnoses(getMenuId()),
                     patientDetailViewModel.getGenderIsFemale(),
-                    getConfirmDiagnoses(getMenuId())
+                    getConfirmDiagnoses(getMenuId()),
+                    patientDetailViewModel.isPregnant()
                 ).apply {
                     listener = this@NCDMedicalReviewActivity
                 }.show(supportFragmentManager, NCDDiagnosisDialogFragment.TAG)

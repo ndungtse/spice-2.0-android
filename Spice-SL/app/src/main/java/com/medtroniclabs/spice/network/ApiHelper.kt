@@ -187,7 +187,7 @@ interface ApiHelper {
 
     suspend fun  checkAppVersion() : Response<APIResponse<Boolean>>
     suspend fun  registerPatient(hashMap: HashMap<String, Any>) : Response<APIResponse<RegistrationResponse>>
-    suspend fun createScreening(createRequest: JsonObject): Response<ScreeningPatientResponse>
+    suspend fun createScreening(createRequest: JsonObject): Response<APIResponse<HashMap<String, Any>>>
     suspend fun getNcdMRStaticData(): Response<APIResponse<NcdMRStaticDataModel>>
     suspend fun bpLogCreate(request: HashMap<String, Any>): Response<APIResponse<HashMap<String, Any>>>
     suspend fun glucoseLogCreate(request: HashMap<String, Any>): Response<APIResponse<HashMap<String, Any>>>

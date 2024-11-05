@@ -97,7 +97,7 @@ class PatientDetailViewModel @Inject constructor(
     }
 
     fun isPatientEnrolled(): Boolean {
-        return !patientDetailsLiveData.value?.data?.patientId.isNullOrBlank()
+        return !patientDetailsLiveData.value?.data?.programId.isNullOrBlank()
     }
 
     fun recentBP(): String {
@@ -125,5 +125,9 @@ class PatientDetailViewModel @Inject constructor(
 
     fun getPregnantDetails(): PregnancyDetails? {
         return patientDetailsLiveData.value?.data?.pregnancyDetails
+    }
+
+    fun isPregnant(): Boolean {
+        return getGenderIsFemale() && patientDetailsLiveData.value?.data?.isPregnant == true
     }
 }

@@ -89,7 +89,8 @@ class NCDPatientHistoryDialog : DialogFragment(), View.OnClickListener {
             patientReference: String?,
             memberReference: String?,
             isCloseNeeded: Boolean = false,
-            isFemale: Boolean
+            isFemale: Boolean,
+            isPregnant: Boolean
         ): NCDPatientHistoryDialog {
             return NCDPatientHistoryDialog().apply {
                 arguments = Bundle().apply {
@@ -97,6 +98,7 @@ class NCDPatientHistoryDialog : DialogFragment(), View.OnClickListener {
                     putString(NCDMRUtil.MEMBER_REFERENCE, memberReference)
                     putBoolean(IS_CLOSED, isCloseNeeded)
                     putBoolean(NCDMRUtil.IS_FEMALE, isFemale)
+                    putBoolean(NCDMRUtil.IsPregnant, isPregnant)
                 }
             }
         }
@@ -120,6 +122,9 @@ class NCDPatientHistoryDialog : DialogFragment(), View.OnClickListener {
         } else {
             Male.lowercase()
         }
+    }
+    private fun isPregnant(): Boolean {
+        return arguments?.getBoolean(NCDMRUtil.IsPregnant) ?: false
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -221,7 +226,7 @@ class NCDPatientHistoryDialog : DialogFragment(), View.OnClickListener {
             ivClose.safeClickListener(this@NCDPatientHistoryDialog)
 
         }
-        viewModel.getSymptoms(Diabetes.lowercase(), getGender())
+        viewModel.getSymptoms(Diabetes.lowercase(), getGender(),isPregnant())
 
         getSingleSelectionOptions().let {
             val view = SingleSelectionCustomView(requireContext())

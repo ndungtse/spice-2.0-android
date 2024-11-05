@@ -10,16 +10,14 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.DateUtils
-import com.medtroniclabs.spice.common.DateUtils.DATE_FORMAT_ddMMMyyyy
 import com.medtroniclabs.spice.data.model.RegistrationResponse
 import com.medtroniclabs.spice.databinding.CardLayoutBinding
 import com.medtroniclabs.spice.databinding.FragmentRegistrationSummaryBinding
 import com.medtroniclabs.spice.databinding.SummaryLayoutBinding
+import com.medtroniclabs.spice.formgeneration.extension.capitalizeFirstChar
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.BaseFragment
-import com.medtroniclabs.spice.ui.landing.LandingActivity
-import com.medtroniclabs.spice.ui.registration.RegistrationActivity
 import com.medtroniclabs.spice.ui.registration.viewmodel.RegistrationFormViewModel
 
 class RegistrationSummaryFragment : BaseFragment(), View.OnClickListener {
@@ -81,7 +79,7 @@ class RegistrationSummaryFragment : BaseFragment(), View.OnClickListener {
                 response.gender?.let {
                     addView(
                         inflateChildView(
-                            getString(R.string.gender), it
+                            getString(R.string.gender), it.capitalizeFirstChar()
                         )
                     )
                 }

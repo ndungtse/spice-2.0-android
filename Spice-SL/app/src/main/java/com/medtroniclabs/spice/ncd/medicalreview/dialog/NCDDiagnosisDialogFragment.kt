@@ -22,6 +22,7 @@ import com.medtroniclabs.spice.ncd.medicalreview.NCDDialogDismissListener
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.CONFIRM_DIAGNOSIS_TYPE
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.CONFIRM_DIAGNOSIS_TYPE_GET
+import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.IsPregnant
 import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDDiagnosisViewModel
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.TagListCustomView
@@ -51,13 +52,15 @@ class NCDDiagnosisDialogFragment : DialogFragment(), View.OnClickListener {
             patientId: String,
             types: ArrayList<String>,
             isFemale: Boolean,
-            getTypes: ArrayList<String>
+            getTypes: ArrayList<String>,
+            isPregnant: Boolean
         ) = NCDDiagnosisDialogFragment().apply {
                 arguments = Bundle().apply {
                     putString(DefinedParams.PatientId, patientId)
                     putStringArrayList(CONFIRM_DIAGNOSIS_TYPE, types)
                     putStringArrayList(CONFIRM_DIAGNOSIS_TYPE_GET, getTypes)
                     putBoolean(NCDMRUtil.IS_FEMALE, isFemale)
+                    putBoolean(IsPregnant, isPregnant)
                 }
             }
     }
@@ -68,6 +71,10 @@ class NCDDiagnosisDialogFragment : DialogFragment(), View.OnClickListener {
 
     private fun getConfirmDiagnosisTypes(): ArrayList<String> {
         return arguments?.getStringArrayList(CONFIRM_DIAGNOSIS_TYPE_GET) ?: arrayListOf()
+    }
+
+    private fun isPregnant(): Boolean {
+        return arguments?.getBoolean(IsPregnant) ?: false
     }
 
     private fun getGender(): String {
@@ -190,7 +197,7 @@ class NCDDiagnosisDialogFragment : DialogFragment(), View.OnClickListener {
     }
 
     private fun initView() {
-        viewModel.getChip(getTypes().map { it.lowercase() }, getGender())
+        viewModel.getChip(getTypes().map { it.lowercase() }, getGender(),isPregnant())
         tagListCustomView =
             TagListCustomView(
                 binding.root.context,

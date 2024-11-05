@@ -278,7 +278,7 @@ class PatientInfoFragment : BaseFragment() {
                         DATE_TIME_yyyyMMddTHHmmssSSSXXX,
                         DATE_FORMAT_ddMMMyyyy
                     ).takeIf { it.isNotBlank() } ?: requireContext().getString(R.string.hyphen_symbol)
-                } ?: requireContext().getString(R.string.pending_enrollment)).toString().trim()
+                } ?: requireContext().getString(R.string.pending_registration)).toString().trim()
             ),
             mapOf(
                 DefinedParams.label to requireContext().getString(R.string.cvd_risk),

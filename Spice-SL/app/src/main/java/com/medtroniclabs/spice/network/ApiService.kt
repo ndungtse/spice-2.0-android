@@ -314,7 +314,7 @@ interface ApiService {
     suspend fun checkAppVersion(): Response<APIResponse<Boolean>>
 
     @POST("/spice-service/screening/create")
-    suspend fun createScreening(@Body createRequest: JsonObject): Response<ScreeningPatientResponse>
+    suspend fun createScreening(@Body createRequest: JsonObject): Response<APIResponse<HashMap<String, Any>>>
 
     @POST("spice-service/patient/register")
     suspend fun registerPatient(@Body request: HashMap<String, Any>): Response<APIResponse<RegistrationResponse>>

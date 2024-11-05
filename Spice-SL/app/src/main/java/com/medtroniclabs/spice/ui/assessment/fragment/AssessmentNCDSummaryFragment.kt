@@ -14,7 +14,9 @@ import com.google.gson.internal.LinkedTreeMap
 import com.google.gson.reflect.TypeToken
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.setVisible
+import com.medtroniclabs.spice.appextensions.takeIfNotNull
 import com.medtroniclabs.spice.appextensions.triggerOneTimeWorker
+import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
@@ -28,6 +30,10 @@ import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.model.FormResponse
 import com.medtroniclabs.spice.formgeneration.ui.FormResultComposer
 import com.medtroniclabs.spice.mappingkey.Screening
+import com.medtroniclabs.spice.mappingkey.Screening.Avg_Blood_pressure
+import com.medtroniclabs.spice.mappingkey.Screening.Avg_Diastolic
+import com.medtroniclabs.spice.mappingkey.Screening.Avg_Systolic
+import com.medtroniclabs.spice.mappingkey.Screening.bp_log
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
@@ -86,6 +92,12 @@ class AssessmentNCDSummaryFragment : BaseFragment(), View.OnClickListener {
             screeningDetailsModel?.age?.let { age ->
                 binding.dobAge.tvValue.text = CommonUtils.getDecimalFormatted(age)
             }
+            binding.programId.root.visible()
+            binding.programId.tvKey.text = getString(R.string.program_id)
+            screeningDetailsModel.programId.let { programId ->
+                binding.programId.tvValue.text =
+                    programId.takeIfNotNull(getString(R.string.hyphen_symbol))
+            }
         }
     }
 
@@ -110,6 +122,7 @@ class AssessmentNCDSummaryFragment : BaseFragment(), View.OnClickListener {
         serverData: List<FormLayout>,
         map: Map<String, Any>
     ) {
+        showBloodPressure(map)
         showBloodGlucoseValue(serverData, map)
         showBMIValue(serverData, map)
         showFurtherAssessment(map)
@@ -120,6 +133,23 @@ class AssessmentNCDSummaryFragment : BaseFragment(), View.OnClickListener {
         showPHQ9Score(serverData, map)
         showGAD7Score(serverData, map)
         showPregnancyANC(map)
+    }
+
+    private fun showBloodPressure(map: Map<String, Any>) {
+        val subMap = map[bp_log] as? Map<String, Any> ?: return
+        val systolic = subMap[Avg_Systolic]
+        val diastolic = subMap[Avg_Diastolic]
+
+        if (subMap.containsKey(Avg_Blood_pressure) && systolic != null && diastolic != null) {
+            showBindingValue(
+                getString(R.string.average_bp_text),
+                getString(
+                    R.string.average_mmhg_string,
+                    CommonUtils.getDecimalFormatted(systolic),
+                    CommonUtils.getDecimalFormatted(diastolic)
+                )
+            )
+        }
     }
 
     private fun showPregnancyANC(map: Map<String, Any>) {
@@ -353,7 +383,7 @@ class AssessmentNCDSummaryFragment : BaseFragment(), View.OnClickListener {
     private fun showCVDRiskValue(map: Map<String, Any>) {
         if (map.containsKey(Screening.CVD_Risk_Score_Display)) {
             val cvdRiskScoreDisplay = map[Screening.CVD_Risk_Score_Display]
-            val cvdRiskScore = map[Screening.CVD_Risk_Score] as Double
+            val cvdRiskScore = (map[Screening.CVD_Risk_Score] as? Number)?.toDouble() ?: 0.0
             if (cvdRiskScoreDisplay is String) {
                 showBindingValue(
                     getString(R.string.cvd_risk_level),
