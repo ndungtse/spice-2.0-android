@@ -35,15 +35,20 @@ interface PregnancyDetailDao {
     @Query("SELECT id from HouseholdMember where fhir_id =:memberId")
     suspend fun getHHMLocalID(memberId: String): Long
 
+    @Query("SELECT id from HouseholdMember where patient_id =:patientId")
+    suspend fun getHHMLocalIDByPatientId(patientId: String): Long
+
     @Query("UPDATE PregnancyDetail SET neonateHouseholdMemberLocalId = :neonateId WHERE householdMemberLocalId = :hhmLocalId")
     suspend fun updateNeonatePatientId(hhmLocalId: Long, neonateId: Long)
 
     @Transaction
     suspend fun insertOrUpdateFromBE(entity: PregnancyDetail): Long {
         val hhmLocalId = getHHMLocalID(entity.householdMemberId!!)
+        val neonateLocalId = entity.neonatePatientId?.let { getHHMLocalIDByPatientId(it) }
         val existingEntity = getPregnancyDetailByPatientId(hhmLocalId)
         val entityToInsert = existingEntity?.let { entity.copy(id = it.id) } ?: entity
         entityToInsert.householdMemberLocalId = hhmLocalId
+        entityToInsert.neonateHouseholdMemberLocalId = neonateLocalId
 
         return savePregnancyDetail(entityToInsert)
     }

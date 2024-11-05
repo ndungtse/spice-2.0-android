@@ -510,15 +510,18 @@ class OfflineSyncRepository @Inject constructor(
             assessmentIds.addAll(hhm.assessments.map { it.referenceId.toString() })
         }
 
+
+        val childIds = mutableListOf<String>()
         motherIds.forEach { motherId ->
             val child = input.filter { it.motherReferenceId == motherId && it.id == null }
             val mother = input.find { it.referenceId == motherId }
             if (!child.isNullOrEmpty()) {
                 mother?.child = child.first()
+                childIds.add(child.first().referenceId!!)
             }
         }
 
-        return input.filter { it.motherReferenceId == null || it.id == null}
+        return input.filter { !childIds.contains(it.referenceId) }
     }
 
     /*
