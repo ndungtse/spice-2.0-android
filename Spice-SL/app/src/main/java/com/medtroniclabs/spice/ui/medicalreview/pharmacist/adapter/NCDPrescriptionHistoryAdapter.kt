@@ -2,7 +2,6 @@ package com.medtroniclabs.spice.ui.medicalreview.pharmacist.adapter
 
 import android.content.Context
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.medtroniclabs.spice.R
@@ -15,11 +14,8 @@ class NCDPrescriptionHistoryAdapter(
     RecyclerView.Adapter<NCDPrescriptionHistoryAdapter.ViewHolder>() {
 
     inner class ViewHolder(val binding: PrescriptionHistoryAdapterBinding) :
-        RecyclerView.ViewHolder(binding.root), View.OnClickListener {
+        RecyclerView.ViewHolder(binding.root) {
         val context: Context = binding.root.context
-        override fun onClick(mView: View?) {
-            //View - OnClickListener
-        }
 
         fun bind(position: Int, item: DispensePrescriptionResponse) {
             binding.apply {

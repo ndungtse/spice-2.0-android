@@ -6,6 +6,9 @@ import android.text.style.UnderlineSpan
 import android.view.View
 import androidx.activity.viewModels
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.appextensions.gone
+import com.medtroniclabs.spice.appextensions.validatedString
+import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.StringConverter
@@ -50,7 +53,7 @@ class NCDPharmacistActivity : BaseActivity(), View.OnClickListener {
 
 
     private fun initView() {
-        viewModel.patient_visit_id = intent.getStringExtra(NCDMRUtil.EncounterReference)
+        viewModel.patientVisitId = intent.getStringExtra(NCDMRUtil.EncounterReference)
         binding.bottomView.btnDone.safeClickListener(this)
         binding.bottomView.btnCancel.safeClickListener(this)
         replaceFragmentInId<NCDPharmacistFragment>(binding.prescriptionRefillFragment.id)
@@ -85,12 +88,14 @@ class NCDPharmacistActivity : BaseActivity(), View.OnClickListener {
                 ResourceState.SUCCESS -> {
                     hideLoading()
                     loadPatientInfo(resourceState.data)
-                    viewModel.getPrescriptionDispenseList(
-                        DispenseUpdateRequest(patientReference = patientDetailViewModel.getPatientId())
-                    )
+                    withNetworkAvailability(online = {
+                        viewModel.getPrescriptionDispenseList(
+                            DispenseUpdateRequest(patientReference = patientDetailViewModel.getPatientId())
+                        )
+                    })
                     viewModel.patientReference = patientDetailViewModel.getPatientId()
                     viewModel.memberId = patientDetailViewModel.getPatientFHIRId()
-                    viewModel.last_refill_visit_id = patientDetailViewModel.getLastRefillVisitId()
+                    viewModel.lastRefillVisitId = patientDetailViewModel.getLastRefillVisitId()
                 }
             }
         }
@@ -105,12 +110,12 @@ class NCDPharmacistActivity : BaseActivity(), View.OnClickListener {
                     hideLoading()
                     resourceState.data?.let {
                         if (it.size > 0) {
-                            binding.bottomView.btnDone.visibility = View.VISIBLE
+                            binding.bottomView.btnDone.visible()
                         } else {
-                            binding.bottomView.btnDone.visibility = View.GONE
+                            binding.bottomView.btnDone.visible()
                         }
                     } ?: kotlin.run {
-                        binding.bottomView.btnDone.visibility = View.GONE
+                        binding.bottomView.btnDone.gone()
                     }
                 }
 
@@ -148,8 +153,8 @@ class NCDPharmacistActivity : BaseActivity(), View.OnClickListener {
 
     private fun loadPatientInfo(data: PatientListRespModel?) {
         data?.let {
-            binding.tvProgramId.text = it.programId ?: "-"
-            binding.tvNationalId.text = it.identityValue ?: "-"
+            binding.tvProgramId.text = it.programId.validatedString()
+            binding.tvNationalId.text = it.identityValue.validatedString()
             data.firstName?.let {
                 val text = StringConverter.appendTexts(firstText = it, data.lastName)
                 setTitle(
@@ -169,10 +174,10 @@ class NCDPharmacistActivity : BaseActivity(), View.OnClickListener {
                 prescriberDetails.lastName?.let { lastName ->
                     name.append(" $lastName")
                 }
-                binding.tvPrescriberName.text = name.ifBlank { getString(R.string.separator_hyphen) }
-                prescriberDetails.phoneNumber?.let { prescriberNumber ->
-                    binding.tvPrescriberNumber.text = prescriberNumber
-                }
+                binding.tvPrescriberName.text =
+                    name.ifBlank { getString(R.string.separator_hyphen) }
+                binding.tvPrescriberNumber.text = prescriberDetails.phoneNumber.validatedString()
+
                 prescriberDetails.lastRefillDate?.let { lastRefillDate ->
                     DateUtils.convertDateTimeToDate(
                         lastRefillDate,
@@ -185,13 +190,20 @@ class NCDPharmacistActivity : BaseActivity(), View.OnClickListener {
                         binding.tvLastRefillDate.setTextAppearance(R.style.MR_Field_Style)
                         binding.tvLastRefillDate.setTextColor(this.getColor(R.color.cobalt_blue))
                         binding.tvLastRefillDate.safeClickListener {
-                            viewModel.getDispensePrescriptionHistory(
-                                DispenseUpdateRequest(
-                                    patientVisitId = viewModel.last_refill_visit_id ?: "",
-                                    patientReference = patientDetailViewModel.getPatientId() ?: "",
-                                    requestFrom = MenuConstants.DISPENSE
-                                )
-                            )
+                            if (!viewModel.lastRefillVisitId.isNullOrBlank() && !patientDetailViewModel.getPatientId()
+                                    .isNullOrBlank()
+                            ) {
+                                withNetworkAvailability(online =
+                                {
+                                    viewModel.getDispensePrescriptionHistory(
+                                        DispenseUpdateRequest(
+                                            patientVisitId = viewModel.lastRefillVisitId,
+                                            patientReference = patientDetailViewModel.getPatientId(),
+                                            requestFrom = MenuConstants.DISPENSE
+                                        )
+                                    )
+                                })
+                            }
                         }
                     }
                 }
@@ -235,17 +247,18 @@ class NCDPharmacistActivity : BaseActivity(), View.OnClickListener {
                 val filledValues =
                     list.filter { it.prescriptionFilledDays != null && it.prescriptionFilledDays != 0 }
                 if (filledValues.isNotEmpty()) {
-                    viewModel.patient_visit_id?.let { patientVisitId ->
-                        viewModel.patientReference?.let { patient_refernce ->
-                            viewModel.memberId?.let { memberId ->
-                                viewModel.updateDispensePrescription(
-                                    patientVisitId = viewModel.patient_visit_id ?: "",
-                                    patientReference = viewModel.patientReference ?: "",
-                                    memberId = viewModel.memberId ?: "",
-                                    request = getReqBody()
-                                )
-                            }
-                        }
+                    if ((!viewModel.patientVisitId.isNullOrBlank()
+                                && !viewModel.patientReference.isNullOrBlank())
+                        && !viewModel.memberId.isNullOrBlank()
+                    ) {
+                        withNetworkAvailability(online = {
+                            viewModel.updateDispensePrescription(
+                                patientVisitId = viewModel.patientVisitId,
+                                patientReference = viewModel.patientReference,
+                                memberId = viewModel.memberId,
+                                request = getReqBody()
+                            )
+                        })
                     }
                 } else {
                     showErrorDialogue(

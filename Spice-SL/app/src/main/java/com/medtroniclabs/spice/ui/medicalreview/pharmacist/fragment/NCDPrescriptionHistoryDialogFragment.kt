@@ -8,6 +8,8 @@ import android.view.Window
 import android.view.WindowManager
 import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.medtroniclabs.spice.appextensions.gone
+import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.data.DispensePrescriptionResponse
 import com.medtroniclabs.spice.databinding.NcdPrescriptionHistoryDialogFragmentBinding
 import com.medtroniclabs.spice.formgeneration.extension.parcelableArrayList
@@ -72,11 +74,11 @@ class NCDPrescriptionHistoryDialogFragment :
             prescriptionHistoryAdapter = NCDPrescriptionHistoryAdapter(prescriptionLists)
             binding.rvMedicationHistory.layoutManager = LinearLayoutManager(requireContext())
             binding.rvMedicationHistory.adapter = prescriptionHistoryAdapter
-            binding.tvNoRecord.visibility = View.GONE
-            binding.rvMedicationHistory.visibility = View.VISIBLE
+            binding.tvNoRecord.gone()
+            binding.rvMedicationHistory.visible()
         } else {
-            binding.tvNoRecord.visibility = View.VISIBLE
-            binding.rvMedicationHistory.visibility = View.GONE
+            binding.tvNoRecord.visible()
+            binding.rvMedicationHistory.gone()
         }
     }
 

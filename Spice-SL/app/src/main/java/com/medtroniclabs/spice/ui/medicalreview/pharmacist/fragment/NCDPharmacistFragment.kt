@@ -7,6 +7,8 @@ import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.medtroniclabs.spice.appextensions.gone
+import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.data.DispensePrescriptionResponse
 import com.medtroniclabs.spice.databinding.FragmentNcdPharmacistBinding
 import com.medtroniclabs.spice.network.resource.ResourceState
@@ -76,13 +78,13 @@ class NCDPharmacistFragment : BaseFragment() {
     }
 
     private fun loadPrescriptionRefillList(data: ArrayList<DispensePrescriptionResponse>?) {
-        binding.tvNoRecord.visibility = View.GONE
+        binding.tvNoRecord.gone()
         data?.let { list ->
             if (list.isEmpty()) {
-                binding.rvPrescriptionRefillList.visibility = View.GONE
-                binding.tvNoRecord.visibility = View.VISIBLE
+                binding.rvPrescriptionRefillList.gone()
+                binding.tvNoRecord.visible()
             } else {
-                binding.rvPrescriptionRefillList.visibility = View.VISIBLE
+                binding.rvPrescriptionRefillList.visible()
                 binding.rvPrescriptionRefillList.adapter = prescriptionRefillAdapter
                 prescriptionRefillAdapter.setData(list)
             }

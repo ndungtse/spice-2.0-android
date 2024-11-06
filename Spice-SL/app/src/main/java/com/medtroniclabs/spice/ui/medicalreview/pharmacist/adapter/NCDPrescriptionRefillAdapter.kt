@@ -4,17 +4,19 @@ import android.content.Context
 import android.graphics.drawable.Drawable
 import android.text.Editable
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.RecyclerView
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.appextensions.gone
+import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.data.DispensePrescriptionResponse
 import com.medtroniclabs.spice.databinding.LayoutPrescriptionRefillAdapterBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil
+import com.medtroniclabs.spice.appextensions.validatedString
 
 class NCDPrescriptionRefillAdapter :
     RecyclerView.Adapter<NCDPrescriptionRefillAdapter.PrescriptionRefillViewHolder>() {
@@ -25,11 +27,9 @@ class NCDPrescriptionRefillAdapter :
         RecyclerView.ViewHolder(binding.root) {
             private val rootContext: Context = binding.root.context
         fun bind(pos: Int, model: DispensePrescriptionResponse) {
-            val hypen = rootContext.getString(R.string.hyphen_symbol)
-            binding.tvMedicationName.text = model.medicationName?.ifBlank { hypen }
-            binding.tvDosage.text =
-                model.dosageUnitValue?.let { getDosageValue(it, model.dosageUnitName) }
-            binding.tvFrequency.text = model.dosageFrequencyName
+            binding.tvMedicationName.text = model.medicationName.validatedString()
+            binding.tvDosage.text = model.dosageUnitValue?.let { getDosageValue(it, model.dosageUnitName) }
+            binding.tvFrequency.text = model.dosageFrequencyName.validatedString()
             binding.tvMedicationPrescribedDays.text = model.dispenseRemainingDays.toString()
             binding.ivFormType.setImageDrawable(
                 model.dosageFormName?.let {
@@ -48,8 +48,8 @@ class NCDPrescriptionRefillAdapter :
                 }
             )
 
-            binding.tvDaysFilled.setText("${model.prescriptionFilledDays ?: ""}")
-
+            binding.tvDaysFilled.setText("${model.prescriptionFilledDays ?: rootContext.getString(R.string.hyphen_symbol)}")
+            
             model.prescriptionFilledDays.let {
                 binding.tvDaysFilled.text = Editable.Factory.getInstance().newEditable(it.toString())
             }
@@ -77,7 +77,7 @@ class NCDPrescriptionRefillAdapter :
                         R.drawable.ic_drop_down_medium_blue
                     )
                 )
-                binding.prescriptionDropDown.visibility = View.VISIBLE
+                binding.prescriptionDropDown.visible()
                 binding.tvMedicationName.setTextColor(
                     ContextCompat.getColor(
                         rootContext,
@@ -91,7 +91,7 @@ class NCDPrescriptionRefillAdapter :
                         R.drawable.ic_drop_down_grey
                     )
                 )
-                binding.prescriptionDropDown.visibility = View.GONE
+                binding.prescriptionDropDown.gone()
                 binding.tvMedicationName.setTextColor(
                     ContextCompat.getColor(
                         rootContext,
@@ -107,9 +107,9 @@ class NCDPrescriptionRefillAdapter :
                 DateUtils.DATE_FORMAT_ddMMMyyyy
             )
 
-            binding.tvDosageForm.text = model.dosageFormName?.ifBlank { hypen }
-            binding.tvBrand.text = model.brandName?.ifBlank { hypen }
-            binding.tvClassification.text = model.classificationName?.ifBlank { hypen }
+            binding.tvDosageForm.text = model.dosageFormName.validatedString()
+            binding.tvBrand.text = model.brandName.validatedString()
+            binding.tvClassification.text = model.classificationName.validatedString()
             binding.etInstruction.setText(model.instructionNote)
         }
     }

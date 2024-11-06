@@ -10,7 +10,9 @@ import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.setWidth
+import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.data.DispensePrescriptionResponse
@@ -20,14 +22,21 @@ import com.medtroniclabs.spice.databinding.LayoutQuantityDifferenceBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
 import com.medtroniclabs.spice.network.resource.ResourceState
+import com.medtroniclabs.spice.network.utils.ConnectivityManager
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.MenuConstants
 import com.medtroniclabs.spice.ui.medicalreview.pharmacist.viewModel.NCDPharmacistViewModel
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class NCDQuantityDifferenceDialogueFragment : DialogFragment(), View.OnClickListener {
 
     private lateinit var binding: FragmentNcdQuantityDifferenceDialogueBinding
     private val viewModel: NCDPharmacistViewModel by activityViewModels()
+
+    @Inject
+    lateinit var connectivityManager: ConnectivityManager
 
     companion object {
         const val TAG = "NCDQuantityDifferenceDialogueFragment"
@@ -100,9 +109,10 @@ class NCDQuantityDifferenceDialogueFragment : DialogFragment(), View.OnClickList
             viewModel.prescriptionDispenseLiveData.value?.data?.filter { it.prescriptionRemainingDays != it.prescriptionFilledDays }
         list?.forEach { model ->
             val lifeStyleBinding = LayoutQuantityDifferenceBinding.inflate(layoutInflater)
-            lifeStyleBinding.tvMedicationName.text = model.medicationName
-            lifeStyleBinding.tvPrescribedDays.text = "${model.prescriptionRemainingDays}"
-            lifeStyleBinding.tvfilledDays.text = "${model.prescriptionFilledDays ?: 0}"
+            lifeStyleBinding.tvMedicationName.text =
+                model.medicationName?.ifBlank { getString(R.string.hyphen_symbol) }
+            lifeStyleBinding.tvPrescribedDays.text = model.prescriptionRemainingDays.toString()
+            lifeStyleBinding.tvfilledDays.text = model.prescriptionFilledDays.toString()
             val adapter = CustomSpinnerAdapter(requireContext())
             adapter.setData(getDropDownList())
             lifeStyleBinding.etReasonSpinner.adapter = adapter
@@ -130,10 +140,10 @@ class NCDQuantityDifferenceDialogueFragment : DialogFragment(), View.OnClickList
         model: DispensePrescriptionResponse
     ) {
         if (model.reason.isNullOrBlank() || (!model.reason.equals(MenuConstants.Other_Reason))) {
-            lifeStyleBinding.clOtherHolder.visibility = View.GONE
+            lifeStyleBinding.clOtherHolder.gone()
             lifeStyleBinding.etOther.setText("")
         } else {
-            lifeStyleBinding.clOtherHolder.visibility = View.VISIBLE
+            lifeStyleBinding.clOtherHolder.visible()
         }
         lifeStyleBinding.etOther.addTextChangedListener {
             if (it.isNullOrBlank()) {
@@ -170,19 +180,30 @@ class NCDQuantityDifferenceDialogueFragment : DialogFragment(), View.OnClickList
             R.id.btnDone -> {
                 val filterList =
                     viewModel.prescriptionDispenseLiveData.value?.data?.filter { it.prescriptionRemainingDays != it.prescriptionFilledDays }
-                if (filterList != null && filterList.isNotEmpty()) {
+                if (!filterList.isNullOrEmpty()) {
                     val listWithoutReason = filterList.filter {
                         it.reason != null && it.reason.equals(DefinedParams.DefaultIDLabel)
                     }
                     if (listWithoutReason.isEmpty()) {
                         dialog?.dismiss()
-                        viewModel.patient_visit_id?.let { patientVisitId ->
-                            viewModel.updateDispensePrescription(
-                                patientVisitId = viewModel.patient_visit_id ?: "",
-                                patientReference = viewModel.patientReference ?: "",
-                                memberId = viewModel.memberId ?: "",
-                                request = getReqBody()
-                            )
+                        if ((!viewModel.patientVisitId.isNullOrBlank()
+                                    && !viewModel.patientReference.isNullOrBlank())
+                            && !viewModel.memberId.isNullOrBlank()
+                        ) {
+                            if (connectivityManager.isNetworkAvailable()) {
+                                viewModel.updateDispensePrescription(
+                                    patientVisitId = viewModel.patientVisitId,
+                                    patientReference = viewModel.patientReference,
+                                    memberId = viewModel.memberId,
+                                    request = getReqBody()
+                                )
+                            } else {
+                                (activity as BaseActivity).showErrorDialogue(
+                                    getString(R.string.error),
+                                    getString(R.string.reason_error),
+                                    false
+                                ) {}
+                            }
                         }
                     } else {
                         (activity as BaseActivity).showErrorDialogue(

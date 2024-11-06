@@ -29,9 +29,9 @@ class NCDPharmacistViewModel @Inject constructor(
     @IoDispatcher private val dispatcherIO: CoroutineDispatcher
 ) : ViewModel() {
 
-    var patient_visit_id: String? = null
+    var patientVisitId: String? = null
     var memberId: String? = null
-    var last_refill_visit_id: String? = null
+    var lastRefillVisitId: String? = null
     var patientReference: String? = null
 
 
@@ -74,9 +74,9 @@ class NCDPharmacistViewModel @Inject constructor(
     }
 
     fun updateDispensePrescription(
-        memberId: String,
-        patientReference: String,
-        patientVisitId: String,
+        memberId: String? = null,
+        patientReference: String? = null,
+        patientVisitId: String? =null,
         request: List<DispenseUpdatePrescriptionRequest>
     ) {
         viewModelScope.launch(dispatcherIO) {
