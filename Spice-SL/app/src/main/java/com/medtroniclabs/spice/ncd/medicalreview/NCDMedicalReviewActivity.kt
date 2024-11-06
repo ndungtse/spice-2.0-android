@@ -789,10 +789,10 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
 
     private fun showNcdPatientStatus() {
         if (getMenuId().equals(NCD.lowercase(), true)) {
-            patientDetailViewModel.getPatientId()?.let {
+            patientDetailViewModel.getPatientFHIRId()?.let {
                 NCDPatientHistoryDialog.newInstance(
+                    patientDetailViewModel.getPatientId(),
                     it,
-                    patientDetailViewModel.getPatientFHIRId(),
                     true,
                     isFemale = patientDetailViewModel.getGenderIsFemale(),
                     patientDetailViewModel.isPregnant()

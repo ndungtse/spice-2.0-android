@@ -20,7 +20,24 @@ data class Prescription(
     val prescribedSince: String? = null,
     val endDate: String? = null,
     val prescriptionId: String? = null,
-    val isActive: Boolean? = null
+    val isActive: Boolean? = null,
+    val discontinuedReason: String? = null,
+    val discontinuedDate: String? = null,
+    val encounterId: String? = null,
+    val isDeleted: Boolean? = null,
+    val codeDetails: String? = null,
+    val classificationName: String? = null,
+    val brandName: String? = null,
+    val dosageFrequencyName: String? = null,
+    val dosageUnitName: String? = null,
+    val dosageUnitValue: String? = null,
+    val instructionNote: String? = null,
+    val dosageFormName: String? = null,
+    val prescriptionRemainingDays: Int? = null,
+    val prescriptionFilledDays: Int? = null,
+    val dispenseRemainingDays: Int? = null,
+    val lastReFillDate: String? = null,
+    val reason: String? = null
 )
 
 data class Investigation(

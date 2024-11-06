@@ -73,7 +73,7 @@
                     app:layout_constraintTop_toBottomOf="@+id/graphHolder" />
 
                 <androidx.fragment.app.FragmentContainerView
-                    android:id="@+id/investigationHistory"
+                    android:id="@+id/prescriptionHistory"
                     android:layout_width="@dimen/_0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="@dimen/_32sdp"
@@ -84,51 +84,18 @@
                     app:layout_constraintTop_toBottomOf="@+id/medicalReviewHistory" />
 
                 <androidx.fragment.app.FragmentContainerView
+                    android:id="@+id/investigationHistory"
+                    android:layout_width="@dimen/_0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/_32sdp"
+                    android:layout_marginTop="@dimen/_8sdp"
+                    android:visibility="gone"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/prescriptionHistory" />
+
+                <androidx.fragment.app.FragmentContainerView
                     android:id="@+id/lifestyleStatusHistory"
-                    android:layout_width="@dimen/_0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="@dimen/_32sdp"
-                    android:layout_marginTop="@dimen/_8sdp"
-                    android:visibility="gone"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/investigationHistory" />
-
-                <androidx.fragment.app.FragmentContainerView
-                    android:id="@+id/lifestyleAssessmentContainer"
-                    android:layout_width="@dimen/_0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="@dimen/_32sdp"
-                    android:layout_marginTop="@dimen/_8sdp"
-                    android:visibility="gone"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/lifestyleStatusHistory" />
-
-                <androidx.fragment.app.FragmentContainerView
-                    android:id="@+id/chiefComplaintsContainer"
-                    android:layout_width="@dimen/_0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="@dimen/_32sdp"
-                    android:layout_marginTop="@dimen/_8sdp"
-                    android:visibility="gone"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/lifestyleAssessmentContainer" />
-
-                <androidx.fragment.app.FragmentContainerView
-                    android:id="@+id/clinicalNotesContainer"
-                    android:layout_width="@dimen/_0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="@dimen/_32sdp"
-                    android:layout_marginTop="@dimen/_8sdp"
-                    android:visibility="gone"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/chiefComplaintsContainer" />
-
-                <androidx.fragment.app.FragmentContainerView
-                    android:id="@+id/obstetricExaminationContainer"
                     android:layout_width="@dimen/_0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="@dimen/_32sdp"
@@ -138,9 +105,9 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/clinicalNotesContainer" />
+                    app:layout_constraintTop_toBottomOf="@+id/investigationHistory" />
 
-                <ImageView
+                <androidx.appcompat.widget.AppCompatImageView
                     android:id="@+id/btnMedicalReview"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

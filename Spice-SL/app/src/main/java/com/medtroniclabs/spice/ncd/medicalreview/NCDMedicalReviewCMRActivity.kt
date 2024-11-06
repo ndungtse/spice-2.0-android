@@ -7,8 +7,6 @@ import android.view.View
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContentProviderCompat.requireContext
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.setVisible

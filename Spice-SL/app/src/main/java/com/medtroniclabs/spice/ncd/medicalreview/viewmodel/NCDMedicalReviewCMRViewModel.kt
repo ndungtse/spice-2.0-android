@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.data.history.HistoryEntity
-import com.medtroniclabs.spice.data.history.MedicalReviewHistory
 import com.medtroniclabs.spice.data.history.NCDMedicalReviewHistory
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.model.ReferralDetailRequest
@@ -32,6 +31,20 @@ class NCDMedicalReviewCMRViewModel @Inject constructor(
     var medicalReferralDates = MutableLiveData<List<ReferredDate>>()
     val medicalReviewTicketLiveData = MutableLiveData<Resource<NCDMedicalReviewHistory>>()
     var medicalVisitId: String? = null
+
+    fun getPrescriptionHistory(patientId: String? = null, patientVisitId: String? = null) {
+        viewModelScope.launch(dispatcherIO) {
+            prescriptionTicketLiveData.postLoading()
+            prescriptionTicketLiveData.postValue(
+                ncdMedicalReviewRepo.getPrescription(
+                    ReferralDetailRequest(
+                        patientReference = patientId,
+                        patientVisitId = patientVisitId,
+                    )
+                )
+            )
+        }
+    }
 
     fun getMedicalReviewHistory(patientId: String? = null, medicalVisitId: String? = null) {
         viewModelScope.launch(dispatcherIO) {
