@@ -117,6 +117,7 @@ class NCDMedicalReviewSummaryFragment : BaseFragment(),View.OnClickListener,
         binding.tvNextMedicalReviewLabel.markMandatory()
         binding.tvNextMedicalReviewLabelText.safeClickListener(this)
         binding.btnConfirmDiagnosis.safeClickListener(this)
+        binding.btnMedicationPrescribed.safeClickListener(this)
     }
 
     private fun populateData(data: MRSummaryResponse) {
@@ -150,10 +151,15 @@ class NCDMedicalReviewSummaryFragment : BaseFragment(),View.OnClickListener,
                 data.confirmDiagnosis?.diagnosisNotes.takeIf { it?.isNotBlank() == true },
                 getString(R.string.hyphen_symbol)
             )
-            if(!data.confirmDiagnosis?.diagnosis.isNullOrEmpty()) {
+            if (!data.confirmDiagnosis?.diagnosis.isNullOrEmpty()) {
                 binding.btnConfirmDiagnosis.gone()
             } else {
                 binding.btnConfirmDiagnosis.visible()
+            }
+            if (!data.prescriptions.isNullOrEmpty()) {
+                binding.btnMedicationPrescribed.gone()
+            } else {
+                binding.btnMedicationPrescribed.visible()
             }
         }
     }
@@ -193,6 +199,9 @@ class NCDMedicalReviewSummaryFragment : BaseFragment(),View.OnClickListener,
                     (requireActivity() as? NCDMedicalReviewActivity)?.showConfirmDiagnoses()
                 })
             }
+            binding.btnMedicationPrescribed.id -> {
+                (requireActivity() as? NCDMedicalReviewActivity)?.showPrescription()
+            }
         }
     }
 
@@ -208,15 +217,38 @@ class NCDMedicalReviewSummaryFragment : BaseFragment(),View.OnClickListener,
     }
 
     fun handleConfirmDiagnoses(): Boolean {
-        return if (viewModel.summaryResponse.value?.data?.confirmDiagnosis?.diagnosis.isNullOrEmpty()) {
-            showErrorDialog(
-                message = getString(R.string.no_confirm_diagnosis_warning), false,
-                Pair(true, true)
-            )
-            false
-        } else {
-            true
-        }
+        return viewModel.summaryResponse.value?.data?.let { data ->
+            return when {
+                data.confirmDiagnosis?.diagnosis.isNullOrEmpty() && data.prescriptions.isNullOrEmpty() -> {
+                    showErrorDialog(
+                        message = getString(R.string.no_confirm_diagnosis_prescribed_medication_warning),
+                        false,
+                        Pair(true, true)
+                    )
+                    false
+                }
+
+                data.confirmDiagnosis?.diagnosis.isNullOrEmpty() -> {
+                    showErrorDialog(
+                        message = getString(R.string.no_confirm_diagnosis_warning),
+                        false,
+                        Pair(true, true)
+                    )
+                    false
+                }
+
+                data.prescriptions.isNullOrEmpty() -> {
+                    showErrorDialog(
+                        message = getString(R.string.no_new_medicines_prescribed_warning),
+                        false,
+                        Pair(true, true)
+                    )
+                    false
+                }
+
+                else -> true
+            }
+        } ?: false
     }
 
     fun showErrorDialog(
@@ -237,7 +269,6 @@ class NCDMedicalReviewSummaryFragment : BaseFragment(),View.OnClickListener,
     }
 
     override fun onYesClicked() {
-        // not used
         (requireActivity() as? NCDMedicalReviewActivity)?.hitSummary()
     }
 

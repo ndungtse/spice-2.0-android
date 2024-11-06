@@ -19,7 +19,6 @@ import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.EncounterReference
 import com.medtroniclabs.spice.ncd.medicalreview.dialog.NCDTreatmentPlanDialog
-import com.medtroniclabs.spice.ncd.medicalreview.fragment.NCDMedicalReviewHistoryFragment
 import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDMedicalReviewViewModel
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
@@ -27,7 +26,9 @@ import com.medtroniclabs.spice.ui.home.AssessmentToolsActivity
 import com.medtroniclabs.spice.ui.medicalreview.investigation.InvestigationActivity
 import com.medtroniclabs.spice.ncd.counseling.activity.NCDCounselingActivity
 import com.medtroniclabs.spice.ncd.counseling.activity.NCDLifestyleActivity
+import com.medtroniclabs.spice.ncd.medicalreview.fragment.NCDMedicalReviewHistoryFragment
 import com.medtroniclabs.spice.ncd.medicalreview.prescription.activity.NCDPrescriptionActivity
+import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDMedicalReviewCMRViewModel
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.AncVisitCallBack
 import com.medtroniclabs.spice.ui.mypatients.fragment.PatientInfoFragment
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
@@ -37,6 +38,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class NCDMedicalReviewCMRActivity : BaseActivity(), View.OnClickListener, AncVisitCallBack {
     private lateinit var binding: ActivityNcdmedicalReviewCmractivityBinding
     private val viewModel: NCDMedicalReviewViewModel by viewModels()
+    private val cmrViewModel: NCDMedicalReviewCMRViewModel by viewModels()
     private val patientDetailViewModel: PatientDetailViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,9 +50,6 @@ class NCDMedicalReviewCMRActivity : BaseActivity(), View.OnClickListener, AncVis
             getString(R.string.patient_medical_review),
             homeAndBackVisibility = Pair(true, true),
         )
-        initializeStaticDataSave()
-        initView()
-        attachObservers()
     }
 
     private fun initializeStaticDataSave() {
@@ -132,6 +131,9 @@ class NCDMedicalReviewCMRActivity : BaseActivity(), View.OnClickListener, AncVis
     }
 
     private fun initView() {
+        // FOR Nurse ,Visit id(is always null) for other role always have value
+        binding.btnLayout.root.setVisible(!getEncounterReference().isNullOrBlank())
+        binding.btnMedicalReview.setVisible(!getEncounterReference().isNullOrBlank())
         binding.btnLayout.clPsycMenu.setVisible(CommonUtils.isPsychologicalFlowEnabled())
         binding.btnLayout.clBtn.gone()
         binding.btnMedicalReview.safeClickListener(this)
@@ -167,7 +169,7 @@ class NCDMedicalReviewCMRActivity : BaseActivity(), View.OnClickListener, AncVis
         val fragment = PatientInfoFragment.newInstanceForNCD(getFhirId(), getOrigin() ?: "")
         patientDetailViewModel.isCmr = true
         fragment.setDataCallback(this)
-        addOrReuseFragment(
+        replaceFragment(
             R.id.patientDetailFragment,
             PatientInfoFragment.TAG,
             fragment
@@ -232,7 +234,6 @@ class NCDMedicalReviewCMRActivity : BaseActivity(), View.OnClickListener, AncVis
                     intent.putExtra(EncounterReference, getEncounterReference())
                     intent.putExtra(DefinedParams.MemberID, data.id)
                     intent.putExtra(DefinedParams.ORIGIN, getMenuOrigin())
-                    intent.putExtra(NCDMRUtil.NCD, NCDMRUtil.NCD)
                     getResult.launch(intent)
                 }
             }
@@ -258,7 +259,7 @@ class NCDMedicalReviewCMRActivity : BaseActivity(), View.OnClickListener, AncVis
                         intent.putExtra(DefinedParams.PatientId, patientDetailViewModel.getPatientId()  )
                         intent.putExtra(DefinedParams.id,  patientDetailViewModel.getPatientFHIRId())
                         intent.putExtra(DefinedParams.PatientVisitId, getEncounterReference())
-                        startActivity(intent)
+                        getResult.launch(intent)
                     } )
                 }
             }
@@ -314,5 +315,10 @@ class NCDMedicalReviewCMRActivity : BaseActivity(), View.OnClickListener, AncVis
             NCDMedicalReviewHistoryFragment.TAG,
             medicalReview
         )
+    }
+    override fun onResume() {
+        super.onResume()
+        initializeStaticDataSave()
+        attachObservers()
     }
 }

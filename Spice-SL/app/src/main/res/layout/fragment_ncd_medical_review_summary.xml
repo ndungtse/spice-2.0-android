@@ -86,12 +86,12 @@
                 android:id="@+id/btnConfirmDiagnosis"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_16ssp"
                 android:background="@drawable/button_white_background"
                 android:drawableStart="@drawable/ic_summary_warning"
                 android:drawablePadding="@dimen/_8sdp"
                 android:fontFamily="@font/inter_medium"
                 android:gravity="center"
-                android:layout_marginStart="@dimen/_16ssp"
                 android:paddingHorizontal="@dimen/_21sdp"
                 android:paddingVertical="@dimen/_8sdp"
                 android:text="@string/confirm_diagnoses"
@@ -249,9 +249,9 @@
                 android:layout_height="wrap_content"
                 android:gravity="center_horizontal"
                 android:text="@string/separator_colon"
-                app:layout_constraintEnd_toStartOf="@id/tvPrescrptionText"
+                app:layout_constraintEnd_toEndOf="@id/tvInvestigationSeparator"
                 app:layout_constraintHorizontal_weight="0.05"
-                app:layout_constraintStart_toEndOf="@id/tvPrescrptionlabel"
+                app:layout_constraintStart_toStartOf="@id/tvInvestigationSeparator"
                 app:layout_constraintTop_toTopOf="@id/tvPrescrptionlabel" />
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -260,10 +260,30 @@
                 android:layout_width="@dimen/_0dp"
                 android:lineSpacingExtra="@dimen/_12sdp"
                 android:text="@string/seperator_hyphen"
-                app:layout_constraintEnd_toEndOf="@id/endGuideline"
-                app:layout_constraintHorizontal_weight="0.6"
                 app:layout_constraintStart_toEndOf="@id/tvPrescrptionSeparator"
                 app:layout_constraintTop_toTopOf="@id/tvPrescrptionlabel" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/btnMedicationPrescribed"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_16sdp"
+                android:background="@drawable/button_white_background"
+                android:drawableStart="@drawable/ic_summary_warning"
+                android:drawablePadding="@dimen/_8sdp"
+                android:fontFamily="@font/inter_medium"
+                android:gravity="center"
+                android:paddingHorizontal="@dimen/_21sdp"
+                android:paddingVertical="@dimen/_8sdp"
+                android:text="@string/no_medication_prescribed"
+                android:textColor="@color/cobalt_blue"
+                android:textSize="@dimen/_16ssp"
+                android:visibility="visible"
+                app:layout_constraintBottom_toBottomOf="@id/tvPrescrptionText"
+                app:layout_constraintEnd_toEndOf="@id/endGuideline"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintStart_toEndOf="@id/tvPrescrptionText"
+                app:layout_constraintTop_toTopOf="@id/tvPrescrptionText" />
 
             <androidx.constraintlayout.widget.Barrier
                 android:id="@+id/barrierSix"
@@ -299,6 +319,7 @@
                 android:id="@+id/tvInvestigationText"
                 style="@style/TextStyle_Regular_16_Bold"
                 android:layout_width="@dimen/_0dp"
+                android:lineSpacingExtra="@dimen/_12sdp"
                 android:text="@string/seperator_hyphen"
                 app:layout_constraintEnd_toEndOf="@id/endGuideline"
                 app:layout_constraintHorizontal_weight="0.6"

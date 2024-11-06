@@ -1,12 +1,13 @@
 package com.medtroniclabs.spice.model
 
+import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.data.CodeDetailsObject
 import com.medtroniclabs.spice.data.EncounterDetails
 
 data class LabTestCreateRequest(
     val encounter: EncounterDetails,
     val labTests: ArrayList<LabTestDetails>,
-    val type: String? = null
+    val requestFrom: String = CommonUtils.requestFrom()
 )
 
 data class LabTestDetails(

@@ -97,9 +97,9 @@ class RoomHelperImpl @Inject constructor(
     private val frequencyDAO: FrequencyDAO,
     private val consentFormDao: ConsentFormDao,
     private val linkHouseholdMemberDao: LinkHouseholdMemberDao,
-    private val callHistoryDao: CallHistoryDao
+    private val callHistoryDao: CallHistoryDao,
     private val screeningDAO: ScreeningDAO,
-    private val riskFactorDAO: RiskFactorDAO
+    private val riskFactorDAO: RiskFactorDAO,
     private val ncdMedicalReviewDao: NcdMedicalReviewDao
 ) : RoomHelper {
     override suspend fun saveHouseHoldEntry(householdEntity: HouseholdEntity): Long {

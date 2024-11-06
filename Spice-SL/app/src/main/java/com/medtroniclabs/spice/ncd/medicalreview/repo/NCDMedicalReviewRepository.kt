@@ -261,4 +261,19 @@ class NCDMedicalReviewRepository @Inject constructor(
             Resource(state = ResourceState.ERROR)
         }
     }
+
+    suspend fun getNCDInvestigation(
+        request: ReferralDetailRequest
+    ): Resource<HistoryEntity> {
+        return try {
+            val response = apiHelper.getInvestigation(request)
+            if (response.isSuccessful) {
+                Resource(state = ResourceState.SUCCESS, data = response.body()?.entity)
+            } else {
+                Resource(state = ResourceState.ERROR)
+            }
+        } catch (e: Exception) {
+            Resource(state = ResourceState.ERROR)
+        }
+    }
 }

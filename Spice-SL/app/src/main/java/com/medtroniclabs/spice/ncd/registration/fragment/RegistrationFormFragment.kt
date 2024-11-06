@@ -340,6 +340,10 @@ class RegistrationFormFragment : BaseFragment(), View.OnClickListener, FormEvent
     override fun onAgeCheckForPregnancy() {
     }
 
+    override fun handleMandatoryCondition(serverData: FormLayout?) {
+
+    }
+
     companion object {
         const val TAG = "RegistrationFormFragment"
     }

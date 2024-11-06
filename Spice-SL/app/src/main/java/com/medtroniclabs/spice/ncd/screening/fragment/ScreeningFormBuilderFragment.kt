@@ -423,6 +423,10 @@ class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener, View.OnC
          */
     }
 
+    override fun handleMandatoryCondition(serverData: FormLayout?) {
+
+    }
+
     private fun calculateFurtherAssessment(map: HashMap<String, Any>, unitGenericType: String) {
         screeningJSON?.first { it.viewType == ViewType.VIEW_TYPE_FORM_BP }?.let {
             bpViewModel.calculateBPValues(it, map)

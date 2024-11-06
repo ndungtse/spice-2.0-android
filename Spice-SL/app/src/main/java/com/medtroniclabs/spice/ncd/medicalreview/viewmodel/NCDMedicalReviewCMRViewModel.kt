@@ -32,6 +32,11 @@ class NCDMedicalReviewCMRViewModel @Inject constructor(
     val medicalReviewTicketLiveData = MutableLiveData<Resource<NCDMedicalReviewHistory>>()
     var medicalVisitId: String? = null
 
+    //Investigation
+    var investigationReferralDates = MutableLiveData<List<ReferredDate>>()
+    val investigationTicketLiveData = MutableLiveData<Resource<HistoryEntity>>()
+    var investigationVisitId: String? = null
+
     fun getPrescriptionHistory(patientId: String? = null, patientVisitId: String? = null) {
         viewModelScope.launch(dispatcherIO) {
             prescriptionTicketLiveData.postLoading()
@@ -55,6 +60,21 @@ class NCDMedicalReviewCMRViewModel @Inject constructor(
                         patientReference = patientId,
                         patientVisitId = medicalVisitId,
                         requestFrom = null
+                    )
+                )
+            )
+        }
+    }
+
+
+    fun getInvestigationHistory(patientReference: String? = null, investigationVisitId: String? = null) {
+        viewModelScope.launch(dispatcherIO) {
+            investigationTicketLiveData.postLoading()
+            investigationTicketLiveData.postValue(
+                ncdMedicalReviewRepo.getNCDInvestigation(
+                    ReferralDetailRequest(
+                        patientReference = patientReference,
+                        patientVisitId = investigationVisitId,
                     )
                 )
             )

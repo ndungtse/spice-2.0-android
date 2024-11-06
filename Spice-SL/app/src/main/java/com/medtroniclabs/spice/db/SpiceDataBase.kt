@@ -68,17 +68,14 @@ import com.medtroniclabs.spice.ui.assessment.AssessmentNCDEntity
 import net.zetetic.database.sqlcipher.SupportOpenHelperFactory
 
 @Database(
-    entities = [HouseholdEntity::class, HouseholdMemberEntity::class, SignsAndSymptomsEntity::class, AssessmentEntity::class, MenuEntity::class, UserProfileEntity::class,
-        VillageEntity::class, HealthFacilityEntity::class, ClinicalWorkflowEntity::class, FormEntity::class, ClinicalWorkflowConditionEntity::class,
-        MedicalReviewMetaItems::class, DiseaseCategoryItems::class, ExaminationListItems::class, LabourDeliveryMetaEntity::class, FollowUp::class, FollowUpCall::class,
-        PregnancyDetail::class, FrequencyEntity::class, ConsentForm::class, LinkHouseholdMember::class, CallHistory::class,
-        MedicalReviewMetaItems::class, DiseaseCategoryItems::class, ExaminationListItems::class, LabourDeliveryMetaEntity::class, FollowUp::class, FollowUpCall::class, PregnancyDetail::class, FrequencyEntity::class, ConsentForm::class,
-        ProgramEntity::class, CulturesEntity::class, ConsentForm::class,
-        MedicalReviewMetaItems::class, DiseaseCategoryItems::class, ExaminationListItems::class, LabourDeliveryMetaEntity::class, FollowUp::class, FollowUpCall::class, PregnancyDetail::class, FrequencyEntity::class,
-        ProgramEntity::class, CulturesEntity::class, ConsentForm::class, ConsentEntity::class, MentalHealthEntity::class, MedicalComplianceEntity::class, ChiefDomEntity::class, DistrictEntity::class, ScreeningEntity::class, RiskFactorEntity::class,
-        MedicalReviewMetaItems::class, DiseaseCategoryItems::class, ExaminationListItems::class, LabourDeliveryMetaEntity::class, FollowUp::class, FollowUpCall::class, PregnancyDetail::class, FrequencyEntity::class, ConsentForm::class,
-        ProgramEntity::class, CulturesEntity::class, ConsentEntity::class, MentalHealthEntity::class, MedicalComplianceEntity::class, ChiefDomEntity::class, DistrictEntity::class, ScreeningEntity::class, RiskFactorEntity::class,
-        LifestyleEntity::class, NCDMedicalReviewMetaEntity::class, AssessmentNCDEntity::class, UnitMetricEntity::class, DosageFrequency::class, NCDDiagnosisEntity::class,TreatmentPlanEntity::class, ShortageReasonEntity::class],
+    entities = [HouseholdEntity::class, HouseholdMemberEntity::class, SignsAndSymptomsEntity::class, AssessmentEntity::class, MenuEntity::class,
+        UserProfileEntity::class, VillageEntity::class, HealthFacilityEntity::class, ClinicalWorkflowEntity::class, FormEntity::class,
+        ClinicalWorkflowConditionEntity::class, MedicalReviewMetaItems::class, DiseaseCategoryItems::class, ExaminationListItems::class, LabourDeliveryMetaEntity::class,
+        FollowUp::class, FollowUpCall::class, PregnancyDetail::class, FrequencyEntity::class, ConsentForm::class,
+        LinkHouseholdMember::class, CallHistory::class, ProgramEntity::class, CulturesEntity::class, ConsentEntity::class,
+        MentalHealthEntity::class, MedicalComplianceEntity::class, ChiefDomEntity::class, DistrictEntity::class, ScreeningEntity::class,
+        RiskFactorEntity::class, LifestyleEntity::class, NCDMedicalReviewMetaEntity::class, AssessmentNCDEntity::class, UnitMetricEntity::class,
+        DosageFrequency::class, NCDDiagnosisEntity::class, TreatmentPlanEntity::class, ShortageReasonEntity::class],
     version = 1
 )
 @TypeConverters(OfflineStatusTypeConverter::class)

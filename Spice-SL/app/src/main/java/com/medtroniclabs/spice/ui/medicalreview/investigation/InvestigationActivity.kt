@@ -14,7 +14,6 @@ import com.medtroniclabs.spice.databinding.ActivityInvestigationBinding
 import com.medtroniclabs.spice.model.medicalreview.InvestigationModel
 import com.medtroniclabs.spice.model.medicalreview.SearchLabTestResponse
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil
-import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.NCD
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.DeleteReasonDialog
@@ -257,8 +256,7 @@ class InvestigationActivity : BaseActivity(), AdapterView.OnItemClickListener,
                     patientViewModel.patientDetailsLiveData.value?.data?.let { data ->
                         investigationViewModel.createLabTest(
                             geyPayloadForLabTest(investigationGenerator.getResultFromInvestigation()),
-                            data,
-                            intent.getStringExtra(NCD)
+                            data
                         )
                     }
                 } else {

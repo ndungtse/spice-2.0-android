@@ -297,26 +297,31 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
                 intent.putExtra(DefinedParams.ORIGIN, patientListViewModel.origin)
                 startActivity(intent)
             } else {
-                val destinationIntent = when (patientListViewModel.origin?.lowercase()) {
+                val origin = patientListViewModel.origin?.lowercase()
+                val destinationIntent = when (origin) {
                     MenuConstants.REGISTRATION.lowercase() -> RegistrationActivity::class.java
                     MenuConstants.ASSESSMENT.lowercase() -> AssessmentToolsActivity::class.java
                     MenuConstants.INVESTIGATION.lowercase() -> NCDLabTestListActivity::class.java
-                    MenuConstants.LIFESTYLE.lowercase(),
-                    MenuConstants.PSYCHOLOGICAL.lowercase(),
-                    MenuConstants.MY_PATIENTS_MENU_ID.lowercase(),
-                    MenuConstants.DISPENSE.lowercase() -> {
-                        patientListViewModel.selectedPatientDetails = item
-                        withNetworkAvailability(online = {
-                            patientListViewModel.createPatientVisit(
-                                PatientVisitRequest(
-                                    patientReference = item.patientId,
-                                    provenance = ProvanceDto(
-                                    ),
-                                    memberReference = item.id
+                    MenuConstants.MY_PATIENTS_MENU_ID.lowercase(), MenuConstants.DISPENSE.lowercase() -> {
+                        if (MenuConstants.MY_PATIENTS_MENU_ID.lowercase() == origin && (CommonUtils.isAfrica() && CommonUtils.isNURSE())) {
+                            NCDMedicalReviewCMRActivity::class.java
+                        } else if (MenuConstants.MY_PATIENTS_MENU_ID.lowercase() == origin && (CommonUtils.isAfrica() && CommonUtils.isHRIO())) {
+                            // HRIO
+                            null
+                        } else {
+                            patientListViewModel.selectedPatientDetails = item
+                            withNetworkAvailability(online = {
+                                patientListViewModel.createPatientVisit(
+                                    PatientVisitRequest(
+                                        patientReference = item.patientId,
+                                        provenance = ProvanceDto(
+                                        ),
+                                        memberReference = item.id
+                                    )
                                 )
-                            )
-                        })
-                        null
+                            })
+                            null
+                        }
                     }
 
                     else -> null
@@ -327,7 +332,6 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
                     intent.putExtra(DefinedParams.PatientId, item.patientId)
                     intent.putExtra(DefinedParams.ORIGIN, patientListViewModel.origin)
                     intent.putExtra(DefinedParams.Gender,item.gender)
-                    intent.putExtra(NCDMRUtil.NCD, NCDMRUtil.NCD)
                     startActivity(intent)
                 }
             }

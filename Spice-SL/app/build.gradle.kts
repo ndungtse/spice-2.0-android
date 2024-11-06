@@ -32,7 +32,6 @@ android {
             dimension = "version"
             versionName = "2.0"
             applicationIdSuffix = ".sl"
-            commonPrefix = "SPICE 2.0.1"
         }
     }
 

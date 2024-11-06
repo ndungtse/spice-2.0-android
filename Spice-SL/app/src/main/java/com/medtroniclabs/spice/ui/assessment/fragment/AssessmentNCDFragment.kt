@@ -1274,6 +1274,10 @@ class AssessmentNCDFragment : BaseFragment(), FormEventListener, View.OnClickLis
     override fun onAgeCheckForPregnancy() {
     }
 
+    override fun handleMandatoryCondition(serverData: FormLayout?) {
+
+    }
+
 
     override fun onClick(v: View?) {
         when (v?.id) {

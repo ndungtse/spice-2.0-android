@@ -477,16 +477,7 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
             }
 
             binding.btnLayout.ivPrescriptionImgView.id -> {
-                if (!patientDetailViewModel.getPatientId().isNullOrEmpty() && !getEncounterReference().isNullOrEmpty()){
-                    withNetworkAvailability(online ={
-                        val intent = Intent(this, NCDPrescriptionActivity::class.java)
-                        intent.putExtra(ORIGIN, DefinedParams.MedicalReview)
-                        intent.putExtra(DefinedParams.PatientId, patientDetailViewModel.getPatientId()  )
-                        intent.putExtra(DefinedParams.id,  patientDetailViewModel.getPatientFHIRId())
-                        intent.putExtra(DefinedParams.PatientVisitId, getEncounterReference())
-                        startActivity(intent)
-                    } )
-                }
+                showPrescription()
             }
 
             binding.btnLayout.ivTreatmentPlan.id -> {
@@ -519,11 +510,9 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
                 patientDetailViewModel.patientDetailsLiveData.value?.data?.let { data ->
                     val intent = Intent(this, InvestigationActivity::class.java)
                     intent.putExtra(DefinedParams.PatientId, data.id)
-                    // TODO need to get investigation in summary(After confirm with backend)
                     intent.putExtra(EncounterReference, getEncounterReference())
                     intent.putExtra(MemberID, data.id)
                     intent.putExtra(ORIGIN, getMenuOrigin())
-                    intent.putExtra(NCD,NCD)
                     getResult.launch(intent)
                 }
             }
@@ -540,6 +529,21 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
                     NCDCounselingActivity::class.java
                 )
             )
+        }
+    }
+
+    fun showPrescription() {
+        if (!patientDetailViewModel.getPatientId()
+                .isNullOrEmpty() && !getEncounterReference().isNullOrEmpty()
+        ) {
+            withNetworkAvailability(online = {
+                val intent = Intent(this, NCDPrescriptionActivity::class.java)
+                intent.putExtra(ORIGIN, DefinedParams.MedicalReview)
+                intent.putExtra(DefinedParams.PatientId, patientDetailViewModel.getPatientId())
+                intent.putExtra(DefinedParams.id, patientDetailViewModel.getPatientFHIRId())
+                intent.putExtra(DefinedParams.PatientVisitId, getEncounterReference())
+                getResult.launch(intent)
+            })
         }
     }
 

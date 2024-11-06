@@ -1572,4 +1572,20 @@ object CommonUtils {
             }
         }
     }
+
+    fun isNURSE(): Boolean {
+        val userRole = SecuredPreference.getUserDetails()?.roles?.joinToString { it.name }
+        if (userRole != null) {
+            return userRole.contains(RoleConstant.NURSE)
+        }
+        return false
+    }
+
+    fun isHRIO(): Boolean {
+        val userRole = SecuredPreference.getUserDetails()?.roles?.joinToString { it.name }
+        if (userRole != null) {
+            return userRole.contains(RoleConstant.HRIO)
+        }
+        return false
+    }
 }

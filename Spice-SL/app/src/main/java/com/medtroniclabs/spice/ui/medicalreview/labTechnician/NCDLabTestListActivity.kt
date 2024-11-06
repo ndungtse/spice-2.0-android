@@ -194,8 +194,7 @@ class NCDLabTestListActivity : BaseActivity(), View.OnClickListener, Investigati
                     patientDetailViewModel.patientDetailsLiveData.value?.data?.let { data ->
                         viewModel.createLabTest(
                             geyPayloadForLabTest(investigationGenerator.getResultFromInvestigation()),
-                            data,
-                            intent.getStringExtra(NCDMRUtil.NCD)
+                            data
                         )
                     }
                 } else {

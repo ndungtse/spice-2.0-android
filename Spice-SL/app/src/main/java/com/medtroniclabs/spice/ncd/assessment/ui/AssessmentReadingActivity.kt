@@ -225,6 +225,10 @@ class AssessmentReadingActivity : BaseActivity(), FormEventListener, View.OnClic
          */
     }
 
+    override fun handleMandatoryCondition(serverData: FormLayout?) {
+
+    }
+
     private fun processValuesAndProceed(
         resultMap: HashMap<String, Any>, serverData: List<FormLayout?>?
     ) {

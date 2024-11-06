@@ -8,5 +8,6 @@ data class EncounterDetails(
     val patientId: String? = null,
     val memberId: String? = null,
     val provenance: ProvanceDto,
-    val patientVisitId : String? = null
+    val patientVisitId : String? = null,
+    val visitId : String? = null
 )

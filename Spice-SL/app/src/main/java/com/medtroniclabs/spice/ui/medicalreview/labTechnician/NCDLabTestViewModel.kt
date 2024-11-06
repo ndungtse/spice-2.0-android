@@ -95,8 +95,7 @@ class NCDLabTestViewModel @Inject constructor(
 
     fun createLabTest(
         resultFromInvestigation: List<InvestigationModel>?,
-        patientDetail: PatientListRespModel,
-        isAfrica: String?
+        patientDetail: PatientListRespModel
     ) {
         viewModelScope.launch(dispatcherIO) {
             try {
@@ -118,14 +117,12 @@ class NCDLabTestViewModel @Inject constructor(
                 val request = LabTestCreateRequest(
                     EncounterDetails(
                         id = encounterId,
-                        patientReference = patientDetail.patientId.takeIf { CommonUtils.isAfrica() }
-                            ?: patientDetail.id,
-                        patientId = if (CommonUtils.isAfrica()) "" else patientDetail.patientId.orEmpty(),
+                        patientReference = if (CommonUtils.isAfrica()) patientDetail.patientId.orEmpty() else patientDetail.id.orEmpty(),
+                        patientId = if (CommonUtils.isAfrica()) null else patientDetail.patientId.orEmpty(),
                         memberId = if (!CommonUtils.isAfrica()) patientDetail.memberId.orEmpty() else patientDetail.id.orEmpty(),
                         provenance = ProvanceDto(),
                     ),
-                    labTestList,
-                    type = isAfrica
+                    labTestList
                 )
                 val response = labTestRepository.createLabTest(request)
                 response.data?.let {
