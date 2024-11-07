@@ -132,6 +132,7 @@ object SpiceSLMigration {
                 """.trimIndent()
                 )
 
+            database.execSQL("UPDATE HouseholdMember SET household_head_relationship = \"Wife / Husband\" WHERE household_head_relationship = \"Spouse / Partner\"")
 
             /* 3. PregnancyDetail Entity Migration
             *   3.1. Added householdMemberLocalId - for keeping local id as foreign key for PregnancyDetail

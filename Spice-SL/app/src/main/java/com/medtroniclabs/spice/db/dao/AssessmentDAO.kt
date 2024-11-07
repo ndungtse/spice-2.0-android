@@ -29,7 +29,7 @@ interface AssessmentDAO {
 
     @Query("SELECT a.id, a.villageId, a.assessmentType, a.assessmentDetails, a.patientId, a.referralStatus, a.referredReason, a.otherDetails, a.memberId, a.householdId, a.isReferred, a.created_at AS createdAt, a.followUpId, a.latitude, a.longitude, pd.neonatePatientId as neonatePatientId " +
                 "FROM Assessment AS a LEFT JOIN PregnancyDetail AS pd ON a.householdMemberLocalId = pd.householdMemberLocalId " +
-                "WHERE a.sync_status IN (:status) AND a.householdMemberLocalId =:hhmId AND a.memberId IS NULL")
+                "WHERE a.sync_status IN (:status) AND a.householdMemberLocalId =:hhmId")
     suspend fun getUnSyncedAssessmentByHHMId(
         hhmId: Long,
         status: List<String> = listOf(OfflineSyncStatus.NotSynced.name, OfflineSyncStatus.NetworkError.name)

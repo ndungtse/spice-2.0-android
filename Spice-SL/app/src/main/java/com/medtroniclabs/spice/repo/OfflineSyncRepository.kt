@@ -513,11 +513,11 @@ class OfflineSyncRepository @Inject constructor(
 
         val childIds = mutableListOf<String>()
         motherIds.forEach { motherId ->
-            val child = input.filter { it.motherReferenceId == motherId && it.id == null }
+            val children = input.filter { it.motherReferenceId == motherId && it.id == null }
             val mother = input.find { it.referenceId == motherId }
-            if (!child.isNullOrEmpty()) {
-                mother?.child = child.first()
-                childIds.add(child.first().referenceId!!)
+            if (!children.isNullOrEmpty()) {
+                mother?.children = children
+                childIds.addAll(children.map { it.referenceId!! })
             }
         }
 
