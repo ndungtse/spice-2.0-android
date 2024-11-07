@@ -794,15 +794,18 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
     private fun showNcdPatientStatus() {
         if (getMenuId().equals(NCD.lowercase(), true)) {
             patientDetailViewModel.getPatientFHIRId()?.let {
-                NCDPatientHistoryDialog.newInstance(
-                    patientDetailViewModel.getPatientId(),
-                    it,
-                    true,
-                    isFemale = patientDetailViewModel.getGenderIsFemale(),
-                    patientDetailViewModel.isPregnant()
-                ).apply {
-                    listener = this@NCDMedicalReviewActivity
-                }.show(supportFragmentManager, NCDPatientHistoryDialog.TAG)
+                val fragment = supportFragmentManager.findFragmentByTag(NCDPatientHistoryDialog.TAG)
+                if (fragment == null) {
+                    NCDPatientHistoryDialog.newInstance(
+                        patientDetailViewModel.getPatientId(),
+                        it,
+                        true,
+                        isFemale = patientDetailViewModel.getGenderIsFemale(),
+                        patientDetailViewModel.isPregnant()
+                    ).apply {
+                        listener = this@NCDMedicalReviewActivity
+                    }.show(supportFragmentManager, NCDPatientHistoryDialog.TAG)
+                }
             }
         }
     }

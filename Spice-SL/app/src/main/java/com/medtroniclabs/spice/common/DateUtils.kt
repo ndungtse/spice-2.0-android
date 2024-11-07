@@ -40,6 +40,7 @@ object DateUtils {
     const val TIME_FORMAT_hhmma = "hh:mm a"
     const val CALENDAR_FORMAT = "yyyy-MM-dd'T'HH:mm:ssXXX"
     const val GESTATIONALAGE_CALENDAR = "yyyy-MM-dd"
+    const val DATE_FORMAT_ddMMyy_GRAPH = "dd-MM-yyyy"
     const val DATE_TIME_yyyyMMddTHHmmssSSSXXX = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX"
 
 

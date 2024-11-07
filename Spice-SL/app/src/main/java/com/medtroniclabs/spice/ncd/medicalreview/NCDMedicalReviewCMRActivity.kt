@@ -11,14 +11,15 @@ import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.setVisible
 import com.medtroniclabs.spice.common.CommonUtils
+import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.ORIGIN
-import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.databinding.ActivityNcdmedicalReviewCmractivityBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.EncounterReference
 import com.medtroniclabs.spice.ncd.medicalreview.dialog.NCDTreatmentPlanDialog
+import com.medtroniclabs.spice.ncd.medicalreview.fragment.NCDAssessmentHistoryFragment
 import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDMedicalReviewViewModel
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
@@ -309,6 +310,22 @@ class NCDMedicalReviewCMRActivity : BaseActivity(), View.OnClickListener, AncVis
     }
 
     override fun onDataLoaded(details: PatientListRespModel) {
+        val bpBundle = Bundle().apply {
+            putString(NCDMRUtil.TAG, NCDMRUtil.BP_TAG)
+        }
+
+        val bgBundle = Bundle().apply {
+            putString(NCDMRUtil.TAG, NCDMRUtil.BG_TAG)
+        }
+
+        // After patient details loaded
+        binding.apply {
+            patientBPHistory.visible()
+            patientBGHistory.visible()
+        }
+
+        replaceFragmentInId<NCDAssessmentHistoryFragment>(binding.patientBPHistory.id, bpBundle)
+        replaceFragmentInId<NCDAssessmentHistoryFragment>(binding.patientBGHistory.id, bgBundle)
         val medicalReview = NCDMedicalReviewHistoryFragment.newInstance(details.patientId)
         replaceFragment(
             R.id.medicalReviewHistory,

@@ -262,4 +262,10 @@ dependencies {
     implementation("com.github.jeffreyliu8:FlexBoxRadioGroup:0.0.8") {
         exclude(group = "com.google.android", module = "flexbox")
     }
+
+    // Graph
+    implementation ("com.github.PhilJay:MPAndroidChart:v3.1.0")
+
+    // loading progress
+    implementation ("com.github.ybq:Android-SpinKit:1.4.0")
 }

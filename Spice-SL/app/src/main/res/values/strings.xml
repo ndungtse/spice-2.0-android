@@ -919,6 +919,10 @@
     <string name="comment_current_medication">Comments on current medication</string>
     <string name="enroll">Enroll</string>
 
+    //graph
+    <string name="no_data_dound">No Data Found</string>
+    <string name="previous">previous</string>
+
     //NCD Pharmacist
     <string name="pharmacist_title">Pharmacist</string>
     <string name="freq">Freq.</string>
@@ -935,6 +939,14 @@
     <string name="last_refill_date">Last Refill Date</string>
     <string name="prescriber_number">Prescriber\'s Number</string>
     <string name="prescriber">Prescriber</string>
+    <string name="bp_value">Blood Pressure Value</string>
+    <string name="blood_glucose_value">Blood Glucose Value</string>
+    <string name="last_assessment_date">Last Assessment Date</string>
+    <string name="add_blood_pressure_readings">Add Blood Pressure Readings</string>
+    <string name="add_blood_glucose_readings">Add Blood Glucose Readings</string>
+    <string name="see_more">&#160;..More</string>
+    <string name="diastolic_formatted">%1$s: %2$s %3$s</string>
+    <string name="systolic_formatted">%1$s: %2$s %3$s</string>
     <string name="prescription_history">Prescription History</string>
     <string name="reason_error">Please select a reason.</string>
     <string name="fill_prescription">Please enter any values to update.</string>

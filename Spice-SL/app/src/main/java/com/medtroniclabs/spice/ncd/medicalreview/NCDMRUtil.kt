@@ -49,6 +49,33 @@ object NCDMRUtil {
     const val Liquid_Oral = "Liquid"
     const val Injection_Injectable_Solution = "Injection"
     const val Capsule = "Capsule"
+    const val TAG = "TAG"
+    const val BP_TAG = "BPSummaryFragment"
+    const val BG_TAG = "BGSummaryFragment"
+    const val bg = "BG"
+    const val fbs_code = 1
+    const val HbA1c = "HbA1c"
+    const val rbs_code = 2
+    const val fbs_rbs_code = 3
+    const val hba1c_code = 4
+    const val graphDetails = "history_graph_details"
+    const val bp = "BP"
+    const val mmhg = "mmHg"
+    const val mmoll = "mmol/L"
+    const val mgdl = "mg/dL"
+    const val Systolic = "systolic"
+    const val Diastolic = "diastolic"
+    const val Pulse = "pulse"
+    const val FBS = "FBS"
+    const val RBS = "RBS"
+    const val RBS_FBS = "RBS & FBS"
+    const val rbs = "rbs"
+    const val fbs = "fbs"
+    const val percentage = "%"
+    const val PageLimit = 15
+    const val GraphPageLimit = 20
+    const val BPTakenOn = "bpTakenOn"
+    const val BGTakenOn = "bgTakenOn"
     const val IsPregnant = "IsPregnant"
 
 

@@ -42,7 +42,7 @@ class GlucoseLogListAdapter(private val glucoseLogs: ArrayList<GlucoseLogList>) 
 
 
         val glucoseValue =
-            if ((glucoseLog.glucoseValue ?: 0.0) > 0) glucoseLog.glucoseValue.toString() else ""
+            if ((glucoseLog.glucoseValue ?: 0.0f) > 0f) glucoseLog.glucoseValue.toString() else ""
         val glucoseUnit = if (glucoseLog.glucoseUnit.isNullOrBlank()) "" else glucoseLog.glucoseUnit
         val glucose =
             if (glucoseValue.isNotEmpty() && glucoseUnit.isNotEmpty()) "$glucoseValue ($glucoseUnit)" else ""
@@ -61,7 +61,7 @@ class GlucoseLogListAdapter(private val glucoseLogs: ArrayList<GlucoseLogList>) 
         }
 
         val hbA1cValue =
-            if ((glucoseLog.hba1c ?: 0.0) > 0) glucoseLog.hba1c.toString() else ""
+            if ((glucoseLog.hba1c ?: 0.0f) > 0f) glucoseLog.hba1c.toString() else ""
         val hbA1cUnit = if (glucoseLog.hba1cUnit.isNullOrBlank()) "" else glucoseLog.hba1cUnit
         val hbA1c =
             if (hbA1cValue.isNotEmpty() && hbA1cUnit.isNotEmpty()) "$hbA1cValue ($hbA1cUnit)" else ""
