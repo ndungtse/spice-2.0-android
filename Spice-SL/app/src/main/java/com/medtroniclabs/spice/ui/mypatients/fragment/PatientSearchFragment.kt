@@ -302,7 +302,10 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
                     MenuConstants.REGISTRATION.lowercase() -> RegistrationActivity::class.java
                     MenuConstants.ASSESSMENT.lowercase() -> AssessmentToolsActivity::class.java
                     MenuConstants.INVESTIGATION.lowercase() -> NCDLabTestListActivity::class.java
-                    MenuConstants.MY_PATIENTS_MENU_ID.lowercase(), MenuConstants.DISPENSE.lowercase() -> {
+                    MenuConstants.LIFESTYLE.lowercase(),
+                    MenuConstants.PSYCHOLOGICAL.lowercase(),
+                    MenuConstants.MY_PATIENTS_MENU_ID.lowercase(),
+                    MenuConstants.DISPENSE.lowercase() -> {
                         if (MenuConstants.MY_PATIENTS_MENU_ID.lowercase() == origin && (CommonUtils.isAfrica() && CommonUtils.isNURSE())) {
                             NCDMedicalReviewCMRActivity::class.java
                         } else if (MenuConstants.MY_PATIENTS_MENU_ID.lowercase() == origin && (CommonUtils.isAfrica() && CommonUtils.isHRIO())) {

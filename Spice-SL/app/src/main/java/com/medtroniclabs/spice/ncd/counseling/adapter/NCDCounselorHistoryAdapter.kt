@@ -5,7 +5,6 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.RecyclerView
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
@@ -13,16 +12,14 @@ import com.medtroniclabs.spice.appextensions.textOrEmpty
 import com.medtroniclabs.spice.appextensions.textOrHyphen
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.DateUtils
-import com.medtroniclabs.spice.databinding.ListItemCounselorBinding
+import com.medtroniclabs.spice.databinding.ListItemCounselorHistoryBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.ncd.counseling.model.NCDCounselingModel
-import com.medtroniclabs.spice.ncd.counseling.utils.ValidationListener
 
-class NCDCounselorAdapter(private val listener: ValidationListener) :
-    RecyclerView.Adapter<NCDCounselorAdapter.ViewHolder>() {
+class NCDCounselorHistoryAdapter : RecyclerView.Adapter<NCDCounselorHistoryAdapter.ViewHolder>() {
     private var adapterList = ArrayList<NCDCounselingModel>()
 
-    inner class ViewHolder(val binding: ListItemCounselorBinding) :
+    inner class ViewHolder(val binding: ListItemCounselorHistoryBinding) :
         RecyclerView.ViewHolder(binding.root), View.OnClickListener {
         val context: Context = binding.root.context
 
@@ -50,15 +47,9 @@ class NCDCounselorAdapter(private val listener: ValidationListener) :
 
                     tvRefBy.text = referredBy.textOrHyphen()
 
-                    etOtherNotes.setText(otherNote.textOrEmpty())
-                    etOtherNotes.addTextChangedListener {
-                        otherNote = it?.toString()
-                        listener.validate()
-                    }
+                    tvAssessedDate.text = assessedDate.textOrHyphen()
 
-                    etOtherNotes.addTextChangedListener {
-                        counselorAssessment = it?.toString()
-                    }
+                    tvOtherNotes.text = counselorAssessment.textOrEmpty()
 
                     root.safeClickListener(this@ViewHolder)
                 }
@@ -103,7 +94,7 @@ class NCDCounselorAdapter(private val listener: ValidationListener) :
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder(
-            ListItemCounselorBinding.inflate(
+            ListItemCounselorHistoryBinding.inflate(
                 LayoutInflater.from(parent.context), parent, false
             )
         )

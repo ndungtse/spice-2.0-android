@@ -77,6 +77,8 @@ object NCDMRUtil {
     const val BPTakenOn = "bpTakenOn"
     const val BGTakenOn = "bgTakenOn"
     const val IsPregnant = "IsPregnant"
+    const val LifestyleResults = "lifeStyleReviewStatus"
+    const val PsychologicalResults = "psychologicalReviewStatus"
 
 
     fun validateInput(
@@ -203,5 +205,10 @@ object NCDMRUtil {
 
     fun isNCDMRMetaLoaded(): Boolean {
         return SecuredPreference.getBoolean(SecuredPreference.EnvironmentKey.IS_NCD_MEDICAL_REVIEW_LOADED.name)
+    }
+
+    fun getUserName(): String {
+        val userDetails = SecuredPreference.getUserDetails()
+        return "${userDetails?.firstName} ${userDetails?.lastName}"
     }
 }

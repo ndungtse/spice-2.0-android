@@ -405,7 +405,7 @@
                                 android:layout_height="wrap_content"
                                 android:text="@string/referredBy"
                                 app:layout_constraintBottom_toBottomOf="parent"
-                                app:layout_constraintEnd_toStartOf="@id/btnAdd"
+                                app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintHorizontal_weight="0.25"
                                 app:layout_constraintStart_toEndOf="@+id/tvReferredDate"
                                 app:layout_constraintTop_toTopOf="parent" />
@@ -438,7 +438,7 @@
                         <androidx.recyclerview.widget.RecyclerView
                             android:id="@+id/rvCounselorAssessmentList"
                             android:layout_width="match_parent"
-                            android:layout_height="@dimen/_150sdp"
+                            android:layout_height="wrap_content"
                             android:visibility="visible"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintHeight_max="@dimen/_600sdp"
@@ -478,7 +478,8 @@
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/clPsychologicalHistory"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:visibility="gone">
 
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/mcvNutritionistHistory"
@@ -527,7 +528,7 @@
                                 android:text="@string/clinical_notes"
                                 app:layout_constraintBottom_toBottomOf="parent"
                                 app:layout_constraintEnd_toStartOf="@id/tvReferredDateHistory"
-                                app:layout_constraintHorizontal_weight="0.4"
+                                app:layout_constraintHorizontal_weight="0.35"
                                 app:layout_constraintStart_toEndOf="@+id/ivArrowHistory"
                                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -539,7 +540,7 @@
                                 android:text="@string/referred_date"
                                 app:layout_constraintBottom_toBottomOf="parent"
                                 app:layout_constraintEnd_toStartOf="@+id/tvReferredByHistory"
-                                app:layout_constraintHorizontal_weight="0.2"
+                                app:layout_constraintHorizontal_weight="0.25"
                                 app:layout_constraintStart_toEndOf="@+id/tvReferredForHistory"
                                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -592,7 +593,7 @@
                         <androidx.recyclerview.widget.RecyclerView
                             android:id="@+id/rvHistoryPsychological"
                             android:layout_width="match_parent"
-                            android:layout_height="@dimen/_150sdp"
+                            android:layout_height="wrap_content"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintHeight_max="@dimen/_400sdp"
                             app:layout_constraintTop_toBottomOf="@+id/viewHistory" />

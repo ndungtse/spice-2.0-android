@@ -505,7 +505,7 @@
                                 android:layout_height="wrap_content"
                                 android:text="@string/referredBy"
                                 app:layout_constraintBottom_toBottomOf="parent"
-                                app:layout_constraintEnd_toStartOf="@id/btnAdd"
+                                app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintHorizontal_weight="0.25"
                                 app:layout_constraintStart_toEndOf="@+id/tvReferredDate"
                                 app:layout_constraintTop_toTopOf="parent" />
@@ -578,7 +578,8 @@
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/clLifeStyleHistory"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:visibility="gone">
 
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/mcvNutritionistHistory"
@@ -679,7 +680,7 @@
                         <androidx.recyclerview.widget.RecyclerView
                             android:id="@+id/rvHistoryLifestyleList"
                             android:layout_width="match_parent"
-                            android:layout_height="@dimen/_150sdp"
+                            android:layout_height="wrap_content"
                             android:visibility="visible"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintHeight_max="@dimen/_400sdp"

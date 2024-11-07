@@ -14,9 +14,9 @@ import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.databinding.AdapterNcdLifestyleBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
-import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ncd.counseling.model.NCDCounselingModel
 import com.medtroniclabs.spice.ncd.counseling.utils.CounselingInterface
+import com.medtroniclabs.spice.ui.BaseActivity
 
 class NCDLifestyleAdapter(private val lifeStyleInterface: CounselingInterface) :
     RecyclerView.Adapter<NCDLifestyleAdapter.ViewHolder>() {
@@ -29,6 +29,8 @@ class NCDLifestyleAdapter(private val lifeStyleInterface: CounselingInterface) :
         fun bind(item: NCDCounselingModel) {
             with(item) {
                 binding.apply {
+                    val assessed = !assessedBy.isNullOrBlank()
+
                     if (isExpanded) {
                         resultsLayout.visible()
                         rotateArrow180f(ivDropDown)
@@ -42,10 +44,7 @@ class NCDLifestyleAdapter(private val lifeStyleInterface: CounselingInterface) :
                         tvValue.text = clinicianNote ?: run { displayHyphen(context) }
                     }
 
-                    if (assessedBy.isNullOrBlank()) {
-                        assessmentNotesLayout.root.gone()
-                        otherNotesLayout.root.gone()
-                    } else {
+                    if (assessed) {
                         assessmentNotesLayout.apply {
                             root.visible()
                             tvKey.text = context.getString(R.string.lifestyle_assessment)
@@ -57,6 +56,9 @@ class NCDLifestyleAdapter(private val lifeStyleInterface: CounselingInterface) :
                             tvKey.text = context.getString(R.string.other_notes)
                             tvValue.text = otherNote ?: run { displayHyphen(context) }
                         }
+                    } else {
+                        assessmentNotesLayout.root.gone()
+                        otherNotesLayout.root.gone()
                     }
 
                     tvReferredFor.text =
@@ -99,7 +101,7 @@ class NCDLifestyleAdapter(private val lifeStyleInterface: CounselingInterface) :
                     } else {
                         ivDropDown.visible()
                         ivRemove.gone()
-                        ivDelete.setVisible(assessedBy.isNullOrBlank())
+                        ivDelete.setVisible(!assessed)
                     }
 
                     ivRemove.safeClickListener(this@ViewHolder)

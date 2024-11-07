@@ -8,14 +8,15 @@ import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.DateUtils
-import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.databinding.ActivityNcdCounselingBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.ncd.counseling.adapter.NCDCounselingAdapter
 import com.medtroniclabs.spice.ncd.counseling.model.NCDCounselingModel
 import com.medtroniclabs.spice.ncd.counseling.utils.CounselingInterface
 import com.medtroniclabs.spice.ncd.counseling.viewmodel.CounselingViewModel
+import com.medtroniclabs.spice.ncd.data.BadgeNotificationModel
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil
+import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDMedicalReviewViewModel
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 
@@ -24,6 +25,7 @@ class NCDCounselingActivity : BaseActivity(), View.OnClickListener, CounselingIn
     private lateinit var binding: ActivityNcdCounselingBinding
 
     private val viewModel: CounselingViewModel by viewModels()
+    private val mrViewModel: NCDMedicalReviewViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -102,6 +104,7 @@ class NCDCounselingActivity : BaseActivity(), View.OnClickListener, CounselingIn
 
                 ResourceState.SUCCESS -> {
                     hideLoading()
+                    clearBadgeNotification()
                     loadCounselingList()
                 }
 
@@ -136,6 +139,15 @@ class NCDCounselingActivity : BaseActivity(), View.OnClickListener, CounselingIn
         }
     }
 
+    private fun clearBadgeNotification() {
+        mrViewModel.updateBadgeNotifications(
+            BadgeNotificationModel(
+                patientReference = viewModel.patientReference,
+                menuName = NCDMRUtil.PsychologicalResults
+            )
+        )
+    }
+
     private fun removeCounseling(removedID: String) {
         viewModel.assessmentListLiveData.value?.data?.entityList?.let { list ->
             list.removeIf { it.id == removedID }
@@ -144,7 +156,8 @@ class NCDCounselingActivity : BaseActivity(), View.OnClickListener, CounselingIn
     }
 
     private fun loadCounselingList() {
-        val counselingList = viewModel.assessmentListLiveData.value?.data?.entity
+        val counselingList = viewModel.assessmentListLiveData.value?.data?.entityList
+
         if (counselingList.isNullOrEmpty()) hideRecyclerView()
         else {
             val adapter = NCDCounselingAdapter(this)
@@ -223,7 +236,7 @@ class NCDCounselingActivity : BaseActivity(), View.OnClickListener, CounselingIn
                 add(
                     0, NCDCounselingModel(
                         clinicianNotes = arrayListOf(it),
-                        referredBy = SecuredPreference.getUserFhirId(),
+                        referredBy = NCDMRUtil.getUserName(),
                         referredDate = DateUtils.getTodayDateDDMMYYYY(),
                     )
                 )
@@ -249,7 +262,7 @@ class NCDCounselingActivity : BaseActivity(), View.OnClickListener, CounselingIn
                 visitId = encounterReference,
                 patientVisitId = encounterReference,
                 clinicianNotes = clinicianNotes,
-                referredBy = SecuredPreference.getUserFhirId(),
+                referredBy = NCDMRUtil.getUserName(),
                 referredDate = DateUtils.getTodayDateDDMMYYYY(),
                 isCounselor = counselor
             )

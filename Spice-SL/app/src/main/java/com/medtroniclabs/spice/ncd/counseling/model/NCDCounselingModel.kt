@@ -15,7 +15,7 @@ data class NCDCounselingModel(
     var otherNote: String? = null,
     val isNutritionist: Boolean? = null,
     val clinicianNotes: List<String>? = null,
-    val counselorAssessments: String? = null,
+    var counselorAssessment: String? = null,
     val isCounselor: Boolean? = null,
     val referredDate: String? = null,
     val referredBy: String? = null,
@@ -27,14 +27,18 @@ data class NCDCounselingModel(
 )
 
 data class AssessmentResultModel(
-    val lifestyles: List<ResultModel>?,
+    val lifestyles: List<ResultModel>? = null,
+    val counselorAssessments: List<ResultModel>? = null,
     val patientReference: String? = null,
     val memberReference: String? = null,
     val visitId: String? = null,
+    val patientVisitId: String? = null,
+    val provenance: ProvanceDto = ProvanceDto()
 )
 
 data class ResultModel(
     val id: String? = null,
     val lifestyleAssessment: String? = null,
+    val counselorAssessment: String? = null,
     val otherNote: String? = null
 )

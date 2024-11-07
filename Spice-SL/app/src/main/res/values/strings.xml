@@ -975,6 +975,7 @@
     <string name="plus_add">&#43; Add</string>
     <string name="psychological_assessment">Psychological Assessment</string>
     <string name="counselor_notes">Counselor Notes</string>
+    <string name="counselor_notes_mandatory">Counselor Notes<font fgcolor='#FFFF0000'> *</font></string>
     <string name="no_psychological_assessment_referred">No Psychological Assessment Referred</string>
     <string name="smoking_status">Smoking Status</string>
     <string name="alcohol_status">Alcohol Status</string>

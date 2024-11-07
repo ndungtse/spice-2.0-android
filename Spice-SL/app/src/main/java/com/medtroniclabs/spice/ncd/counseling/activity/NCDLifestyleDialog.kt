@@ -20,6 +20,7 @@ import com.medtroniclabs.spice.formgeneration.extension.markMandatory
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.ncd.counseling.model.NCDCounselingModel
 import com.medtroniclabs.spice.ncd.counseling.viewmodel.CounselingViewModel
+import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.network.utils.ConnectivityManager
 import com.medtroniclabs.spice.ui.TagListCustomView
@@ -146,9 +147,9 @@ class NCDLifestyleDialog(private val callback: (isPositiveResult: Boolean) -> Un
                 lifestyles = lifestyles,
                 lifestyleAssessment = lifestyleAssessment,
                 otherNote = otherNote,
-                referredBy = SecuredPreference.getUserFhirId(),
+                referredBy = NCDMRUtil.getUserName(),
                 referredDate = DateUtils.getTodayDateDDMMYYYY(),
-                assessedBy = SecuredPreference.getUserFhirId(),
+                assessedBy = NCDMRUtil.getUserName(),
                 assessedDate = DateUtils.getTodayDateDDMMYYYY(),
                 isNutritionist = nutritionist
             )

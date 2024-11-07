@@ -12,6 +12,7 @@ import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.isVisible
 import com.medtroniclabs.spice.appextensions.setVisible
+import com.medtroniclabs.spice.appextensions.textOrEmpty
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DateUtils
@@ -71,6 +72,7 @@ import com.medtroniclabs.spice.ui.MenuConstants
 import com.medtroniclabs.spice.ui.medicalreview.investigation.InvestigationActivity
 import com.medtroniclabs.spice.ncd.counseling.activity.NCDCounselingActivity
 import com.medtroniclabs.spice.ncd.counseling.activity.NCDLifestyleActivity
+import com.medtroniclabs.spice.ncd.data.BadgeNotificationModel
 import com.medtroniclabs.spice.ncd.medicalreview.prescription.activity.NCDPrescriptionActivity
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 import com.medtroniclabs.spice.ncd.registration.ui.RegistrationActivity
@@ -180,6 +182,7 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
                     if (binding.refreshLayout.isRefreshing) {
                         binding.refreshLayout.isRefreshing = false
                     }
+                    badgeNotifications()
                 }
 
                 ResourceState.ERROR -> {
@@ -211,6 +214,42 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
                 }
             }
         }
+        viewModel.getBadgeNotificationLiveData.observe(this) { resourceState ->
+            when (resourceState.state) {
+                ResourceState.LOADING -> {
+                    showLoading()
+                }
+
+                ResourceState.SUCCESS -> {
+                    hideLoading()
+                    resourceState.data?.let {
+                        updateCounts(it)
+                    }
+                }
+
+                ResourceState.ERROR -> {
+                    hideLoading()
+                }
+            }
+        }
+    }
+
+    private fun updateCounts(it: BadgeNotificationModel) {
+        binding.btnLayout.apply {
+            ivLSBadgeCount.text = it.nutritionLifestyleReviewedCount.toString()
+            ivIBatchCount.text = it.nonReviewedTestCount.toString()
+            ivPBatchCount.text = it.prescriptionDaysCompletedCount.toString()
+            ivPsycBadgeCount.text = it.psychologicalCount.toString()
+
+            ivLSBadgeCount.setVisible(it.nutritionLifestyleReviewedCount > 0)
+            ivIBatchCount.setVisible(it.nonReviewedTestCount > 0)
+            ivPBatchCount.setVisible(it.prescriptionDaysCompletedCount > 0)
+            ivPsycBadgeCount.setVisible(it.psychologicalCount > 0)
+        }
+    }
+
+    private fun badgeNotifications() {
+        viewModel.getBadgeNotifications(BadgeNotificationModel(patientReference = patientDetailViewModel.getPatientId()))
     }
 
     private fun summarySuccessDialog() {

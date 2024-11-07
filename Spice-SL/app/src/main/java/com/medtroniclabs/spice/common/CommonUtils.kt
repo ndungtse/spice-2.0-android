@@ -1556,11 +1556,11 @@ object CommonUtils {
     }
 
     fun getIdentityValue(requestJson: Map<String, Any>?): String {
-        requestJson?.let {
-            if (requestJson.containsKey(Screening.bioData)) {
-                (requestJson[Screening.bioData] as? HashMap<*, *>)?.let {
-                    if (it.containsKey(Screening.identityValue)) {
-                        return it[Screening.identityValue] as? String ?: ""
+        requestJson?.let { req ->
+            if (req.containsKey(Screening.bioData)) {
+                (req[Screening.bioData] as? Map<*, *>)?.let { bio ->
+                    if (bio.containsKey(Screening.identityValue)) {
+                        return bio[Screening.identityValue] as? String ?: ""
                     }
                 }
             }

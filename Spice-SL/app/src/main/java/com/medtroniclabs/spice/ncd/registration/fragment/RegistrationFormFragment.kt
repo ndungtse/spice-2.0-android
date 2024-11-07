@@ -13,6 +13,10 @@ import com.medtroniclabs.spice.common.FormAutofill
 import com.medtroniclabs.spice.data.model.RecommendedDosageListModel
 import com.medtroniclabs.spice.databinding.FragmentRegistrationFormBinding
 import com.medtroniclabs.spice.formgeneration.FormGenerator
+import com.medtroniclabs.spice.formgeneration.config.DefinedParams.Days
+import com.medtroniclabs.spice.formgeneration.config.DefinedParams.Month
+import com.medtroniclabs.spice.formgeneration.config.DefinedParams.Week
+import com.medtroniclabs.spice.formgeneration.config.DefinedParams.Year
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.listener.FormEventListener
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
@@ -25,6 +29,7 @@ import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 import com.medtroniclabs.spice.ncd.registration.ui.RegistrationActivity
 import com.medtroniclabs.spice.ncd.registration.viewmodel.RegistrationFormViewModel
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
 
 class RegistrationFormFragment : BaseFragment(), View.OnClickListener, FormEventListener {
     private lateinit var binding: FragmentRegistrationFormBinding
@@ -280,6 +285,13 @@ class RegistrationFormFragment : BaseFragment(), View.OnClickListener, FormEvent
         withNetworkAvailability(online = {
             resultMap?.let {
                 CommonUtils.addAncEnableOrNot(it,BioMetrics)
+
+                it.apply {
+                    put(Screening.identityType, Screening.nationalId)
+                    patientViewModel.patientDetailsLiveData.value?.data?.id?.let { memberId ->
+                        put(AssessmentDefinedParams.memberReference, memberId)
+                    }
+                }
                 viewModel.validatePatient(it, serverData)
             }
         })
@@ -291,6 +303,8 @@ class RegistrationFormFragment : BaseFragment(), View.OnClickListener, FormEvent
     ) {
         withNetworkAvailability(online = {
             resultMap?.let { map ->
+                val unwantedKeys = setOf(Week, Year, Month, Days)
+                map.keys.removeAll(unwantedKeys)
                 val result = serverData?.let {
                     FormResultComposer().groupValues(
                         context = requireContext(),
@@ -307,6 +321,7 @@ class RegistrationFormFragment : BaseFragment(), View.OnClickListener, FormEvent
                     }
 
                     val bioDataMap = it[Screening.bioData] as HashMap<String, Any>
+                    bioDataMap[Screening.identityType] = Screening.nationalId
                     arguments?.getString(Screening.Initial)?.let { initial ->
                         bioDataMap[Screening.Initial] = initial
                     }

@@ -125,7 +125,7 @@ class RegistrationFormViewModel @Inject constructor(
             put(DefinedParams.Provenance, ProvanceDto())
         }
         StringConverter.convertGivenMapToString(hashMap)?.let { req ->
-            builder.addFormDataPart("enrollmentRequest", req)
+            builder.addFormDataPart("registrationRequest", req)
         }
 
         signature?.let { sign ->

@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.DialogFragment
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.loadAsGif
 import com.medtroniclabs.spice.appextensions.resetImageView
@@ -19,6 +19,10 @@ import com.medtroniclabs.spice.formgeneration.extension.markMandatory
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.ncd.counseling.model.NCDCounselingModel
 import com.medtroniclabs.spice.ncd.counseling.viewmodel.CounselingViewModel
+import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil
+import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.MEMBER_REFERENCE
+import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.PATIENT_REFERENCE
+import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.VISIT_ID
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.network.utils.ConnectivityManager
 import dagger.hilt.android.AndroidEntryPoint
@@ -30,7 +34,7 @@ class NCDCounselingDialog(private val callback: (isPositiveResult: Boolean) -> U
 
     private lateinit var binding: DialogNcdCounselingBinding
 
-    private val viewModel: CounselingViewModel by viewModels()
+    private val viewModel: CounselingViewModel by activityViewModels()
 
     @Inject
     lateinit var connectivityManager: ConnectivityManager
@@ -66,7 +70,7 @@ class NCDCounselingDialog(private val callback: (isPositiveResult: Boolean) -> U
             loadingProgress.safeClickListener {}
 
             etCounselorNotes.addTextChangedListener {
-                viewModel.counselorAssessments = it?.toString()
+                viewModel.counselorAssessment = it?.toString()
                 updateView()
             }
         }
@@ -74,7 +78,7 @@ class NCDCounselingDialog(private val callback: (isPositiveResult: Boolean) -> U
 
     private fun updateView() {
         with(viewModel) {
-            binding.btnSave.isEnabled = !counselorAssessments.isNullOrBlank()
+            binding.btnSave.isEnabled = !counselorAssessment.isNullOrBlank()
         }
     }
 
@@ -118,10 +122,11 @@ class NCDCounselingDialog(private val callback: (isPositiveResult: Boolean) -> U
                 patientReference = patientReference,
                 memberReference = memberReference,
                 visitId = encounterReference,
-                counselorAssessments = counselorAssessments,
-                referredBy = SecuredPreference.getUserFhirId(),
+                patientVisitId = encounterReference,
+                counselorAssessment = counselorAssessment,
+                referredBy = NCDMRUtil.getUserName(),
                 referredDate = DateUtils.getTodayDateDDMMYYYY(),
-                assessedBy = SecuredPreference.getUserFhirId(),
+                assessedBy = NCDMRUtil.getUserName(),
                 assessedDate = DateUtils.getTodayDateDDMMYYYY(),
                 isCounselor = counselor
             )

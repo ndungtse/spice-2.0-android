@@ -16,7 +16,9 @@ import com.medtroniclabs.spice.ncd.counseling.adapter.NCDLifestyleAdapter
 import com.medtroniclabs.spice.ncd.counseling.model.NCDCounselingModel
 import com.medtroniclabs.spice.ncd.counseling.utils.CounselingInterface
 import com.medtroniclabs.spice.ncd.counseling.viewmodel.CounselingViewModel
+import com.medtroniclabs.spice.ncd.data.BadgeNotificationModel
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil
+import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDMedicalReviewViewModel
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.TagListCustomView
@@ -26,6 +28,7 @@ class NCDLifestyleActivity : BaseActivity(), View.OnClickListener, CounselingInt
     private lateinit var binding: ActivityNcdLifestyleBinding
 
     private val viewModel: CounselingViewModel by viewModels()
+    private val mrViewModel: NCDMedicalReviewViewModel by viewModels()
     private lateinit var tagListCustomView: TagListCustomView
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -131,6 +134,7 @@ class NCDLifestyleActivity : BaseActivity(), View.OnClickListener, CounselingInt
 
                 ResourceState.SUCCESS -> {
                     hideLoading()
+                    clearBadgeNotification()
                     loadLifestyleList()
                 }
 
@@ -163,6 +167,15 @@ class NCDLifestyleActivity : BaseActivity(), View.OnClickListener, CounselingInt
                 }
             }
         }
+    }
+
+    private fun clearBadgeNotification() {
+        mrViewModel.updateBadgeNotifications(
+            BadgeNotificationModel(
+                patientReference = viewModel.patientReference,
+                menuName = NCDMRUtil.LifestyleResults
+            )
+        )
     }
 
     private fun removeLifestyle(removedID: String) {
@@ -238,7 +251,7 @@ class NCDLifestyleActivity : BaseActivity(), View.OnClickListener, CounselingInt
                 visitId = encounterReference,
                 lifestyles = lifestyles,
                 clinicianNote = clinicianNote,
-                referredBy = SecuredPreference.getUserFhirId(),
+                referredBy = NCDMRUtil.getUserName(),
                 referredDate = DateUtils.getTodayDateDDMMYYYY(),
                 isNutritionist = nutritionist
             )

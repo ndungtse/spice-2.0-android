@@ -23,7 +23,7 @@
                 android:background="@color/grey_bg"
                 android:gravity="start"
                 android:padding="@dimen/_16sdp"
-                android:text="@string/add_blood_pressure"
+                android:text="@string/confirm_diagnoses"
                 android:textSize="@dimen/_16ssp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"

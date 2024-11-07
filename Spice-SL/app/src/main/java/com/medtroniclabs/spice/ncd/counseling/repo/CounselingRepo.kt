@@ -58,15 +58,7 @@ class CounselingRepo @Inject constructor(
         return try {
             val response = if (lifestyle) apiHelper.removeLifestyle(request) else apiHelper.removePsychological(request)
             if (response.isSuccessful && response.body()?.status == true) {
-                Resource(
-                    state = ResourceState.SUCCESS,
-                    data = response.body()?.let {
-                        APIResponse(
-                            status = it.status,
-                            entity = request,
-                            responseCode = it.responseCode
-                        )
-                    })
+                Resource(state = ResourceState.SUCCESS, data = response.body())
             } else {
                 Resource(state = ResourceState.ERROR)
             }

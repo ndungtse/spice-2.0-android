@@ -6,6 +6,7 @@ import com.medtroniclabs.spice.data.history.HistoryEntity
 import com.medtroniclabs.spice.db.entity.NCDMedicalReviewMetaEntity
 import com.medtroniclabs.spice.db.local.RoomHelper
 import com.medtroniclabs.spice.model.ReferralDetailRequest
+import com.medtroniclabs.spice.ncd.data.BadgeNotificationModel
 import com.medtroniclabs.spice.ncd.data.MRSummaryResponse
 import com.medtroniclabs.spice.ncd.data.MedicalReviewRequestResponse
 import com.medtroniclabs.spice.ncd.data.MedicalReviewResponse
@@ -28,6 +29,7 @@ import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.PhysicalExamination
 import com.medtroniclabs.spice.network.ApiHelper
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.network.resource.ResourceState
+import okhttp3.ResponseBody
 import javax.inject.Inject
 
 class NCDMedicalReviewRepository @Inject constructor(
@@ -273,6 +275,34 @@ class NCDMedicalReviewRepository @Inject constructor(
                 Resource(state = ResourceState.ERROR)
             }
         } catch (e: Exception) {
+            Resource(state = ResourceState.ERROR)
+        }
+    }
+
+    suspend fun getBadgeNotifications(request: BadgeNotificationModel): Resource<BadgeNotificationModel> {
+        return try {
+            val response = apiHelper.getBadgeNotifications(request)
+            if (response.isSuccessful) {
+                Resource(state = ResourceState.SUCCESS, response.body()?.entity)
+            } else {
+                Resource(state = ResourceState.ERROR)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Resource(state = ResourceState.ERROR)
+        }
+    }
+
+    suspend fun updateBadgeNotifications(request: BadgeNotificationModel): Resource<Boolean> {
+        return try {
+            val response = apiHelper.updateBadgeNotifications(request)
+            if (response.isSuccessful) {
+                Resource(state = ResourceState.SUCCESS, response.body()?.entity)
+            } else {
+                Resource(state = ResourceState.ERROR)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
             Resource(state = ResourceState.ERROR)
         }
     }

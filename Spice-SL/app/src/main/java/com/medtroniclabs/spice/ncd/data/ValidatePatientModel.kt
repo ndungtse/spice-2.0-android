@@ -1,6 +1,7 @@
 package com.medtroniclabs.spice.ncd.data
 
 data class ValidatePatientModel(
+    val memberReference: String? = null,
     val identityType: String? = null,
     val identityValue: String? = null,
     val firstName: String? = null,

@@ -16,6 +16,7 @@ import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.ncd.counseling.model.NCDCounselingModel
 import com.medtroniclabs.spice.ncd.counseling.model.AssessmentResultModel
 import com.medtroniclabs.spice.ncd.counseling.repo.CounselingRepo
+import com.medtroniclabs.spice.network.SingleLiveEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
@@ -39,7 +40,7 @@ class CounselingViewModel @Inject constructor(
 
     //Psychological [Provider & Counselor]
     var clinicianNotes: ArrayList<String>? = null
-    var counselorAssessments: String? = null
+    var counselorAssessment: String? = null
 
     var nutritionist: Boolean? = null
     var counselor: Boolean? = null
@@ -47,12 +48,12 @@ class CounselingViewModel @Inject constructor(
     init {
         SecuredPreference.getUserDetails()?.roles?.joinToString { it.name }?.let { userRole ->
             nutritionist = userRole.contains(RoleConstant.NUTRITIONIST)
-            counselor = userRole.contains(RoleConstant.PSYCHOLOGIST)
+            counselor = userRole.contains(RoleConstant.COUNSELOR)
         }
     }
 
     var createAssessmentLiveData =
-        MutableLiveData<Resource<APIResponse<NCDCounselingModel>>>()
+        SingleLiveEvent<Resource<APIResponse<NCDCounselingModel>>>()
     var updateAssessmentLiveData =
         MutableLiveData<Resource<APIResponse<NCDCounselingModel>>>()
     var assessmentListLiveData =

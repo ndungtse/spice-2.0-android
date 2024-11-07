@@ -93,6 +93,7 @@ import com.medtroniclabs.spice.model.medicalreview.SummaryDetails
 import com.medtroniclabs.spice.ncd.counseling.model.AssessmentResultModel
 import com.medtroniclabs.spice.ncd.counseling.model.NCDCounselingModel
 import com.medtroniclabs.spice.ncd.data.BPBGListModel
+import com.medtroniclabs.spice.ncd.data.BadgeNotificationModel
 import com.medtroniclabs.spice.ncd.data.MRSummaryResponse
 import com.medtroniclabs.spice.ncd.data.MedicalReviewRequestResponse
 import com.medtroniclabs.spice.ncd.data.MedicalReviewResponse
@@ -107,7 +108,6 @@ import com.medtroniclabs.spice.ncd.data.NCDTreatmentPlanModel
 import com.medtroniclabs.spice.ncd.data.NCDTreatmentPlanModelDetails
 import com.medtroniclabs.spice.ncd.data.PatientVisitRequest
 import com.medtroniclabs.spice.ncd.data.PatientVisitResponse
-import com.medtroniclabs.spice.ncd.data.ScreeningPatientResponse
 import com.medtroniclabs.spice.ncd.data.ValidatePatientModel
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
@@ -383,7 +383,7 @@ interface ApiService {
     @POST("spice-service/patient-nutrition-lifestyle/create")
     suspend fun createLifestyle(@Body request: NCDCounselingModel): Response<APIResponse<NCDCounselingModel>>
 
-    @POST("spice-service/patient-nutrition-lifestyle/update")
+    @PUT("spice-service/patient-nutrition-lifestyle/update")
     suspend fun updateLifestyle(@Body request: AssessmentResultModel): Response<APIResponse<NCDCounselingModel>>
 
     @POST("spice-service/patient-nutrition-lifestyle/list")
@@ -395,7 +395,7 @@ interface ApiService {
     @POST("spice-service/medical-review/patient-psychology/create")
     suspend fun createPsychological(@Body request: NCDCounselingModel): Response<APIResponse<NCDCounselingModel>>
 
-    @POST("spice-service/medical-review/patient-psychology/update")
+    @PUT("spice-service/medical-review/patient-psychology/update")
     suspend fun updatePsychological(@Body request: AssessmentResultModel): Response<APIResponse<NCDCounselingModel>>
 
     @POST("spice-service/medical-review/patient-psychology/list")
@@ -428,7 +428,13 @@ interface ApiService {
 
     @PUT("/spice-service/patient/pregnancy-anc-risk/update")
     suspend fun ncdUpdatePregnancyRisk(@Body request: NCDPregnancyRiskUpdate): Response<APIResponse<Boolean>>
+
     @POST("/spice-service/screening/dashboard-count")
     suspend fun getUserDashboardDetails(@Body request: NCDUserDashboardRequest): Response<APIResponse<NCDUserDashboardResponse>>
 
+    @POST("spice-service/medical-review/count")
+    suspend fun getBadgeNotifications(@Body request: BadgeNotificationModel): Response<APIResponse<BadgeNotificationModel>>
+
+    @PUT("spice-service/medical-review/update-view-status")
+    suspend fun updateBadgeNotifications(@Body request: BadgeNotificationModel): Response<APIResponse<Boolean>>
 }

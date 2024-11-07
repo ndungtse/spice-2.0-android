@@ -7,12 +7,15 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.appextensions.gone
+import com.medtroniclabs.spice.appextensions.setVisible
+import com.medtroniclabs.spice.appextensions.textOrHyphen
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.databinding.AdapterNcdCounselingBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
-import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ncd.counseling.model.NCDCounselingModel
 import com.medtroniclabs.spice.ncd.counseling.utils.CounselingInterface
+import com.medtroniclabs.spice.ui.BaseActivity
 
 class NCDCounselingAdapter(private val counselingInterface: CounselingInterface) :
     RecyclerView.Adapter<NCDCounselingAdapter.ViewHolder>() {
@@ -25,6 +28,8 @@ class NCDCounselingAdapter(private val counselingInterface: CounselingInterface)
         fun bind(item: NCDCounselingModel) {
             with(item) {
                 binding.apply {
+                    val assessed = !assessedBy.isNullOrBlank()
+
                     if (isExpanded) {
                         resultsLayout.visibility = View.VISIBLE
                         rotateArrow180f(ivDropDown)
@@ -35,21 +40,20 @@ class NCDCounselingAdapter(private val counselingInterface: CounselingInterface)
 
                     counselorNotes.apply {
                         tvKey.text = context.getString(R.string.clinician_notes)
-                        tvValue.text = clinicianNote ?: run { displayHyphen(context) }
+                        tvValue.text = clinicianNote.textOrHyphen()
                     }
 
-                    if (assessedBy.isNullOrBlank()) {
-                        counselorNotes.root.visibility = View.GONE
-                    } else {
+                    if (assessed) {
                         counselorNotes.apply {
                             root.visibility = View.VISIBLE
                             tvKey.text = context.getString(R.string.counselor_notes)
-                            tvValue.text = counselorAssessments ?: run { displayHyphen(context) }
+                            tvValue.text = counselorAssessment.textOrHyphen()
                         }
-                    }
+                    } else
+                        counselorNotes.root.visibility = View.GONE
 
-                    tvReferredFor.text =
-                        clinicianNotes?.joinToString(separator = ", ") ?: run { displayHyphen(context) }
+                    tvReferredFor.text = clinicianNotes?.joinToString(separator = ", ")
+                        ?: clinicianNote.textOrHyphen()
 
                     tvRefDate.text = referredDate?.let {
                         DateUtils.convertDateTimeToDate(
@@ -57,11 +61,9 @@ class NCDCounselingAdapter(private val counselingInterface: CounselingInterface)
                             DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
                             DateUtils.DATE_FORMAT_ddMMMyyyy
                         )
-                    } ?: run {
-                        displayHyphen(context)
-                    }
+                    }.textOrHyphen()
 
-                    tvRefBy.text = referredBy ?: run { displayHyphen(context) }
+                    tvRefBy.text = referredBy.textOrHyphen()
 
                     tvAssessedDate.apply {
                         text = assessedDate?.let {
@@ -82,17 +84,15 @@ class NCDCounselingAdapter(private val counselingInterface: CounselingInterface)
                     }
 
                     if (id.isNullOrBlank()) {
-                        ivRemove.visibility =
-                            if (assessedBy.isNullOrBlank()) View.VISIBLE else View.GONE
-                        ivDelete.visibility =
-                            if (assessedBy.isNullOrBlank()) View.GONE else View.VISIBLE
+                        ivRemove.setVisible(!assessed)
+                        ivDelete.gone()
                     } else {
-                        ivRemove.visibility = View.GONE
-                        ivDelete.visibility = View.GONE
+                        ivRemove.gone()
+                        ivDelete.setVisible(!assessed)
                     }
 
                     ivDropDown.visibility =
-                        if (assessedBy.isNullOrBlank()) View.INVISIBLE else View.VISIBLE
+                        if (assessed) View.VISIBLE else View.INVISIBLE
 
                     ivRemove.safeClickListener(this@ViewHolder)
                     ivDelete.safeClickListener(this@ViewHolder)
@@ -117,7 +117,7 @@ class NCDCounselingAdapter(private val counselingInterface: CounselingInterface)
                 binding.root.id -> {
                     if (layoutPosition < adapterList.size) {
                         val item = adapterList[layoutPosition]
-                        if (item.id.isNullOrBlank())
+                        if (item.id.isNullOrBlank() || item.counselorAssessment.isNullOrBlank())
                             return
                         else {
                             adapterList[layoutPosition].let {
@@ -129,10 +129,6 @@ class NCDCounselingAdapter(private val counselingInterface: CounselingInterface)
                 }
             }
         }
-    }
-
-    private fun displayHyphen(context: Context): String {
-        return context.getString(R.string.hyphen_symbol)
     }
 
     private fun showMessage(context: Context, item: NCDCounselingModel) {

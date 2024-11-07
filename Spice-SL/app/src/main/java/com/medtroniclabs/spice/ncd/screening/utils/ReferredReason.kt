@@ -4,6 +4,7 @@ import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.mappingkey.Screening
 import com.medtroniclabs.spice.ncd.data.Country
 import com.medtroniclabs.spice.ncd.data.ValidatePatientModel
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
 
 object ReferredReason {
     const val bloodPressure = "High BP"
@@ -15,6 +16,7 @@ object ReferredReason {
 
     fun validateRequest(map: HashMap<String, Any>): ValidatePatientModel {
         return ValidatePatientModel(
+            memberReference = map[AssessmentDefinedParams.memberReference]?.toString(),
             identityType = map[Screening.identityType]?.toString(),
             identityValue = map[Screening.identityValue]?.toString(),
             firstName = map[Screening.firstName]?.toString(),

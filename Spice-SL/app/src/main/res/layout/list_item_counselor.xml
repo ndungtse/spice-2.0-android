@@ -18,7 +18,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/ivArrow"
+            android:id="@+id/ivDropDown"
             android:layout_width="@dimen/_0dp"
             android:layout_height="@dimen/_24sdp"
             android:padding="@dimen/_8sdp"
@@ -37,28 +37,28 @@
             android:layout_height="wrap_content"
             android:padding="@dimen/_10sdp"
             android:textColor="@color/black"
-            app:layout_constraintEnd_toStartOf="@id/tvReferredDate"
+            app:layout_constraintEnd_toStartOf="@id/tvRefDate"
             app:layout_constraintHorizontal_weight="0.4"
-            app:layout_constraintStart_toEndOf="@+id/ivArrow"
+            app:layout_constraintStart_toEndOf="@+id/ivDropDown"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="Nutrition, Hypertension Education, Stress, Management" />
 
         <TextView
-            android:id="@+id/tvReferredDate"
+            android:id="@+id/tvRefDate"
             style="@style/TextStyle_Regular_16"
             android:layout_width="@dimen/_0dp"
             android:layout_height="wrap_content"
             android:padding="@dimen/_10sdp"
             android:textColor="@color/black"
             app:layout_constraintBottom_toBottomOf="@id/tvClinicalNote"
-            app:layout_constraintEnd_toStartOf="@+id/tvReferredBy"
+            app:layout_constraintEnd_toStartOf="@+id/tvRefBy"
             app:layout_constraintHorizontal_weight="0.2"
             app:layout_constraintStart_toEndOf="@+id/tvClinicalNote"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="22 Jun, 2022" />
 
         <TextView
-            android:id="@+id/tvReferredBy"
+            android:id="@+id/tvRefBy"
             style="@style/TextStyle_Regular_16"
             android:layout_width="@dimen/_0dp"
             android:layout_height="wrap_content"
@@ -67,14 +67,14 @@
             app:layout_constraintBottom_toBottomOf="@id/tvClinicalNote"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_weight="0.25"
-            app:layout_constraintStart_toEndOf="@+id/tvReferredDate"
+            app:layout_constraintStart_toEndOf="@+id/tvRefDate"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="Dr. Makena Ruto" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/clBody"
+        android:id="@+id/resultsLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/primary_medium_blue_bg"
@@ -88,7 +88,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/_15sdp"
             android:fontFamily="@font/inter_regular"
-            android:text="@string/counselor_notes"
+            android:text="@string/counselor_notes_mandatory"
             android:textColor="@color/charcoal_grey"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -114,6 +114,6 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/_1sdp"
         android:background="@color/edittext_stroke"
-        app:layout_constraintTop_toBottomOf="@id/clBody" />
+        app:layout_constraintTop_toBottomOf="@id/resultsLayout" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
