@@ -27,6 +27,8 @@ import com.medtroniclabs.spice.data.MotherNeonateAncSummaryModel
 import com.medtroniclabs.spice.data.MotherNeonatePncSummaryRequest
 import com.medtroniclabs.spice.data.MotherNeonatePncSummaryResponse
 import com.medtroniclabs.spice.data.MotherPncResponse
+import com.medtroniclabs.spice.data.NCDUserDashboardRequest
+import com.medtroniclabs.spice.data.NCDUserDashboardResponse
 import com.medtroniclabs.spice.data.NeonatePncResponse
 import com.medtroniclabs.spice.data.PatientStatusRequest
 import com.medtroniclabs.spice.data.PatientStatusResponse
@@ -227,4 +229,5 @@ interface ApiHelper {
     suspend fun validatePatient(request: ValidatePatientModel): Response<APIResponse<ValidatePatientModel>>
     suspend fun ncdGetInstructions(): Response<APIResponse<NCDInstructionModel>>
     suspend fun ncdUpdatePregnancyRisk(request: NCDPregnancyRiskUpdate): Response<APIResponse<Boolean>>
+    suspend fun getUserDashboardDetails(request: NCDUserDashboardRequest): Response<APIResponse<NCDUserDashboardResponse>>
 }

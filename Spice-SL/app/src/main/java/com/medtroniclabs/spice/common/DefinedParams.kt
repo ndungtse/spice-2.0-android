@@ -188,5 +188,12 @@ object DefinedParams {
     const val PatientVisitId = "PatientVisitId"
     const val TYPE_REFILL = "REFILL"
     const val displayValue = "displayValue"
+    const val Activity = "Activity"
+    const val Title = "Title"
+    const val Count = "Count"
+    const val SCREENED = "SCREENED"
+    const val ASSESSED = "ASSESSED"
+    const val REGISTERED = "REGISTERED"
+    const val REFERREDD = "REFERRED"
 
 }

@@ -23,6 +23,8 @@ import com.medtroniclabs.spice.data.MetaDataResponse
 import com.medtroniclabs.spice.data.MotherNeonateAncMetaResponse
 import com.medtroniclabs.spice.data.MotherNeonateAncSummaryModel
 import com.medtroniclabs.spice.data.MotherPncResponse
+import com.medtroniclabs.spice.data.NCDUserDashboardRequest
+import com.medtroniclabs.spice.data.NCDUserDashboardResponse
 import com.medtroniclabs.spice.data.NeonatePncResponse
 import com.medtroniclabs.spice.data.PatientStatusRequest
 import com.medtroniclabs.spice.data.PatientStatusResponse
@@ -426,4 +428,7 @@ interface ApiService {
 
     @PUT("/spice-service/patient/pregnancy-anc-risk/update")
     suspend fun ncdUpdatePregnancyRisk(@Body request: NCDPregnancyRiskUpdate): Response<APIResponse<Boolean>>
+    @POST("/spice-service/screening/dashboard-count")
+    suspend fun getUserDashboardDetails(@Body request: NCDUserDashboardRequest): Response<APIResponse<NCDUserDashboardResponse>>
+
 }

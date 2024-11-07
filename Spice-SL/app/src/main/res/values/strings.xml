@@ -989,6 +989,9 @@
     //User Dashboard
     <string name="dashboard">Dashboard</string>
     <string name="customize">Customize</string>
+    <string name="activity">Activity</string>
+    <string name="this_week">This Week</string>
+    <string name="this_month">This Month</string>
 
     //Lab Technician
     <string name="phq9_score_display">PHQ9 Score</string>

@@ -7,6 +7,7 @@ import com.medtroniclabs.spice.formgeneration.config.DefinedParams
 import com.medtroniclabs.spice.mappingkey.Screening.TODAY
 import com.medtroniclabs.spice.mappingkey.Screening.YESTERDAY
 import org.joda.time.PeriodType
+import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.time.Instant
 import java.time.LocalDate
@@ -724,6 +725,26 @@ object DateUtils {
 
     fun getCurrentYearAsDouble(): Double {
         return Calendar.getInstance().get(Calendar.YEAR).toDouble()
+    }
+
+    fun getEndDate(endDate: Date?, opFormat: String, inUTC: Boolean? = null): String? {
+        endDate?.let { date ->
+            val sdf = SimpleDateFormat(opFormat, Locale.ENGLISH)
+            val calendar = Calendar.getInstance()
+            calendar.time = date
+            if (inUTC == true)
+                getUTCFormat()?.let {
+                    calendar.timeZone = it
+                    sdf.timeZone = it
+                }
+            calendar.set(Calendar.HOUR, calendar.getActualMaximum(Calendar.HOUR))
+            calendar.set(Calendar.HOUR_OF_DAY, calendar.getActualMaximum(Calendar.HOUR_OF_DAY))
+            calendar.set(Calendar.MINUTE, calendar.getActualMaximum(Calendar.MINUTE))
+            calendar.set(Calendar.SECOND, calendar.getActualMaximum(Calendar.SECOND))
+            return sdf.format(calendar.time)
+        }
+
+        return null
     }
 
 }
