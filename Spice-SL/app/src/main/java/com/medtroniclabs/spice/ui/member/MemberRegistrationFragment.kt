@@ -171,6 +171,7 @@ class MemberRegistrationFragment : Fragment(), FormEventListener, View.OnClickLi
                     (activity as BaseActivity?)?.hideLoading()
                     resourceState.data?.let {
                         if (arguments?.getBoolean(HouseholdDefinedParams.isPhuWalkInsFlow) == true) {
+                            requireActivity().startBackgroundOfflineSync()
                             val existingFragment =
                                 childFragmentManager.findFragmentByTag(
                                     SuccessDialogFragment.TAG
@@ -301,14 +302,14 @@ class MemberRegistrationFragment : Fragment(), FormEventListener, View.OnClickLi
                 view.isEnabled = false
                 formGenerator.setValueForView(relationship, view)
             }
-        }
-        formGenerator.getViewByTag(otherFamilyMember)?.let { view ->
-            val relationship =
-                if (details.householdHeadRelationship.contains(getString(R.string.separator_hyphen))) {
-                    details.householdHeadRelationship.substringAfter(getString(R.string.separator_hyphen))
-                } else details.householdHeadRelationship
-            formGenerator.disableView(view, requireContext())
-            formGenerator.setValueForView(relationship, view)
+            formGenerator.getViewByTag(otherFamilyMember)?.let { view ->
+                val relationship =
+                    if (details.householdHeadRelationship.contains(getString(R.string.separator_hyphen))) {
+                        details.householdHeadRelationship.substringAfter(getString(R.string.separator_hyphen))
+                    } else details.householdHeadRelationship
+                formGenerator.disableView(view, requireContext())
+                formGenerator.setValueForView(relationship, view)
+            }
         }
         formGenerator.getViewByTag(phoneNumber)?.let { view ->
             formGenerator.setValueForView(details.phoneNumber, view)

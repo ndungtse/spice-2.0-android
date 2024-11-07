@@ -22,7 +22,6 @@ import com.medtroniclabs.spice.ui.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -101,12 +100,9 @@ class MemberRegistrationViewModel @Inject constructor(
                     isPhuWalkInFlow = isPhuWalkInsFlow
                 )
                 memberRegistrationRepository.updateHeadPhoneNumber(householdId, map)
-                Timber.d("Member registration 2 $memberId")
-
                 if (memberId == null) {
                     memberRegistrationLiveData.postError()
                 } else {
-                    Timber.d("Member registration 1")
                     memberRegistrationLiveData.postSuccess(memberId)
                 }
             }

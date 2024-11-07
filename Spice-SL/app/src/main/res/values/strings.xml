@@ -441,7 +441,7 @@
     <string name="tablet">Tablet</string>
     <string name="tablets">Tablets</string>
     <string name="no_recommended_dosages">No Dosage Recommended for this age group</string>
-    <string name="logout_alert">Are you sure you want to logout?</string>
+    <string name="logout_alert">Are you sure want to logout ?</string>
     <string name="only_alphabets_validation">Entered value should contain only alphabets</string>
     <string name="immunisation_status_up_to_date">Up to Date</string>
     <string name="immunisation_status_not_up_to_date">Not Up to Date</string>
@@ -701,6 +701,8 @@
     <string name="_patients">" Patients"</string>
     <string name="phu_walk_ins_title">PHU Walk-ins</string>
     <string name="households_in">" Households in "</string>
+    <string name="no_household_found">No Household found.</string>
+
     <string name="open_play_store">Open Play Store</string>
     <string name="please_check_if_play_store_available">Please check if Google Play Store is installed in the device</string>
 

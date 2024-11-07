@@ -6,10 +6,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.DefinedParams
+import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.databinding.FragmentPhuWalkInsListBinding
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.phuwalkins.adapter.PhuLinkListAdapter
@@ -60,13 +62,10 @@ class PhuWalkInsListFragment : BaseFragment(), View.OnClickListener {
                 binding.tvHPatientCount.visible()
             }
 
-
+            val phoneNumberCode = SecuredPreference.getPhoneNumberCode()
             binding.tvHPatientCount.text = it.size.toString().plus(getString(R.string._patients))
-            binding.rcLinkPatientList.layoutManager = GridLayoutManager(
-                requireContext(),
-                DefinedParams.span_count_1
-            )
-            binding.rcLinkPatientList.adapter = PhuLinkListAdapter(it, activity as PhuLinkCallback)
+            binding.rcLinkPatientList.layoutManager = LinearLayoutManager(requireContext())
+            binding.rcLinkPatientList.adapter = PhuLinkListAdapter(phoneNumberCode, it, activity as PhuLinkCallback)
         }
     }
 

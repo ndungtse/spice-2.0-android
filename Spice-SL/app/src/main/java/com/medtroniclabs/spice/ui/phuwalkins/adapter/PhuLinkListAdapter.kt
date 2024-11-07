@@ -14,6 +14,7 @@ import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.ui.phuwalkins.listener.PhuLinkCallback
 
 class PhuLinkListAdapter(
+    private val phoneNumberCode: String?,
     private val patients: List<UnAssignedHouseholdMemberDetail>,
     private val listener: PhuLinkCallback
 ) :
@@ -50,7 +51,7 @@ class PhuLinkListAdapter(
         // Set text for Village
         holder.village.text = patient.villageName
         // Set text for Mobile Number
-        holder.mobile.text = patient.phoneNumber
+        holder.mobile.text = "+${phoneNumberCode} ${patient.phoneNumber}"
         // Handle Link Patient button click
         holder.linkPatientBtn.safeClickListener {
             listener.onLinkClicked(patient)

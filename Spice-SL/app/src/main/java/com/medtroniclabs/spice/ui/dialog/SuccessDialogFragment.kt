@@ -89,6 +89,7 @@ class SuccessDialogFragment : DialogFragment(), View.OnClickListener {
         }
 
         if (arguments?.getBoolean(isPhuWalkInsFlow) == true) {
+            binding.successMessage.setPadding(50, 0, 50, 0)
             binding.successMessage.text = getString(R.string.member_registered_successfully_linked)
             binding.householdNo.gone()
         }

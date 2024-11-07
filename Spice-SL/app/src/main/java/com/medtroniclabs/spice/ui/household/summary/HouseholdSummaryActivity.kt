@@ -6,6 +6,8 @@ import android.view.MenuItem
 import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.widget.PopupMenu
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import com.medtroniclabs.spice.R
@@ -26,6 +28,7 @@ import com.medtroniclabs.spice.ui.household.HouseholdDefinedParams.isFromHouseHo
 import com.medtroniclabs.spice.ui.household.HouseholdDefinedParams.isPhuWalkInsFlow
 import com.medtroniclabs.spice.ui.household.MemberSelectionListener
 import com.medtroniclabs.spice.ui.household.viewmodel.HouseHoldSummaryViewModel
+import com.medtroniclabs.spice.ui.landing.LandingActivity
 import com.medtroniclabs.spice.ui.landing.OnDialogDismissListener
 
 class HouseholdSummaryActivity : BaseActivity(), MemberSelectionListener, View.OnClickListener, OnDialogDismissListener {
@@ -94,10 +97,24 @@ class HouseholdSummaryActivity : BaseActivity(), MemberSelectionListener, View.O
     private fun initializePhuLinkFlow(){
         householdSummaryViewModel.isPhuWalkInsFlow=intent.getBooleanExtra(isPhuWalkInsFlow, false)
         if ( householdSummaryViewModel.isPhuWalkInsFlow){
+            changeBottomConstraint()
             onHomeClick { onBackNav() }
             hideHomeButton(false)
             setTitle(getString(R.string.link_patient))
         }
+    }
+    private fun changeBottomConstraint() {
+        val constraintLayout = findViewById<ConstraintLayout>(R.id.constraintLayout)
+        val constraintSet = ConstraintSet()
+        constraintSet.clone(constraintLayout)
+                 constraintSet.connect(
+                R.id.scrollContainer,
+                ConstraintSet.BOTTOM,
+                R.id.bottomNavigationViewLinkPatient,
+                ConstraintSet.TOP,
+                0
+            )
+        constraintSet.applyTo(constraintLayout)
     }
 
     private fun onBackNav(){
@@ -107,8 +124,10 @@ class HouseholdSummaryActivity : BaseActivity(), MemberSelectionListener, View.O
             isNegativeButtonNeed = true
         ) { isPositive ->
             if (isPositive) {
-                startActivityWithoutSplashScreen()
-            }
+                val intent = Intent(this, LandingActivity::class.java)
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+                startActivity(intent)
+                finish()            }
         }
     }
 

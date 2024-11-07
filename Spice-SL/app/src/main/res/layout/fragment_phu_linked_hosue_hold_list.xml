@@ -94,7 +94,7 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:paddingHorizontal="@dimen/_15sdp"
-        android:text="@string/no_patients_found"
+        android:text="@string/no_household_found"
         android:textColor="@color/medium_risk_color"
         android:textSize="@dimen/_16ssp"
         app:layout_constraintBottom_toBottomOf="parent"

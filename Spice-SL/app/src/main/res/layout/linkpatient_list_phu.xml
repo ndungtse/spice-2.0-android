@@ -171,6 +171,7 @@
                 android:paddingHorizontal="@dimen/_24sdp"
                 android:paddingVertical="@dimen/_8sdp"
                 android:text="@string/link_patient"
+                android:textAllCaps="true"
                 android:textAlignment="center"
                 android:textColor="@color/blue"
                 app:layout_constraintBottom_toBottomOf="@id/callPatientBtn"

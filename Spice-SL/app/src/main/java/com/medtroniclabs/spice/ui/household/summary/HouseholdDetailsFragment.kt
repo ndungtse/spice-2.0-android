@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.model.HouseholdCardDetail
 import com.medtroniclabs.spice.databinding.FragmentHouseholdDetailsBinding
 import com.medtroniclabs.spice.databinding.SummaryListItemBinding
@@ -72,9 +73,10 @@ class HouseholdDetailsFragment : Fragment() {
     }
 
     private fun addHouseholdHeadNumberView(householdHeadPhoneNo: String?) {
+        val phoneNumberCode = SecuredPreference.getPhoneNumberCode()
         val view = SummaryListItemBinding.inflate(LayoutInflater.from(context))
         view.tvLabel.text = getString(R.string.hh_mobile_number)
-        view.tvValue.text = householdHeadPhoneNo ?: getString(R.string.hyphen_symbol)
+        view.tvValue.text = "+${phoneNumberCode} $householdHeadPhoneNo"
         binding.llDetails.addView(view.root)
     }
 

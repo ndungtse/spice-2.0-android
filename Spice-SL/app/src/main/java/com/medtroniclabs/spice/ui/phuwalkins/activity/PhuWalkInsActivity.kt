@@ -22,6 +22,7 @@ import com.medtroniclabs.spice.ui.MenuConstants
 import com.medtroniclabs.spice.ui.followup.FollowUpMyPatientActivity
 import com.medtroniclabs.spice.ui.household.HouseholdDefinedParams
 import com.medtroniclabs.spice.ui.household.summary.HouseholdSummaryActivity
+import com.medtroniclabs.spice.ui.landing.LandingActivity
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
 import com.medtroniclabs.spice.ui.member.MemberRegistrationFragment
 import com.medtroniclabs.spice.ui.phuwalkins.fragment.PhuLinkedHouseHoldListFragment
@@ -82,17 +83,17 @@ class PhuWalkInsActivity : BaseActivity(), View.OnClickListener, PhuLinkCallback
         val phuFragments =
             getFragmentById(supportFragmentManager, (R.id.phuListFragment))
         if (phuFragments is PhuWalkInsListFragment) {
-            startActivityWithoutSplashScreen()
-        }else {
-        showErrorDialogue(
-            getString(R.string.alert),
-            getString(R.string.exit_reason),
-            isNegativeButtonNeed = true
-        ) { isPositive ->
-            if (isPositive) {
-                startActivityWithoutSplashScreen()
+            homeScreenClick()
+        } else {
+            showErrorDialogue(
+                getString(R.string.alert),
+                getString(R.string.exit_reason),
+                isNegativeButtonNeed = true
+            ) { isPositive ->
+                if (isPositive) {
+                    homeScreenClick()
+                }
             }
-        }
         }
     }
 
@@ -191,6 +192,11 @@ class PhuWalkInsActivity : BaseActivity(), View.OnClickListener, PhuLinkCallback
             addReplaceFragment(R.id.phuListFragment, phuWalkInsListFragment)
         }
     }
-
+    private  fun homeScreenClick(){
+        val intent = Intent(this, LandingActivity::class.java)
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+        startActivity(intent)
+        finish()
+    }
 
 }

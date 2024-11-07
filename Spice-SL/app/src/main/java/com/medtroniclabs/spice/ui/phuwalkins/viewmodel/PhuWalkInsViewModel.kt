@@ -4,7 +4,6 @@ import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
 import com.medtroniclabs.spice.R
-import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.SecuredPreference
@@ -59,10 +58,12 @@ class PhuWalkInsViewModel @Inject constructor(
         )
     }
 
-    fun getSearchHouseholdsLiveData(search: String): LiveData<List<HouseHoldEntityWithMemberCount>> {
+    fun getSearchHouseholdsLiveData(search: String, villageId: Long): LiveData<List<HouseHoldEntityWithMemberCount>> {
+      val listVillage= ArrayList<Long>()
+        listVillage.add(villageId)
         return houseHoldRepository.getFilteredHouseholdsLiveData(
             search,
-            villageIds = listOf(),
+            villageIds = listVillage,
             ""
         )
     }

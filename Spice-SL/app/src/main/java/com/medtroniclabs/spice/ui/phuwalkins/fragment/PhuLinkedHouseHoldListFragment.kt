@@ -16,6 +16,7 @@ import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.setTextChangeListener
 import com.medtroniclabs.spice.appextensions.visible
+import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.offlinesync.model.UnAssignedHouseholdMemberDetail
 import com.medtroniclabs.spice.databinding.FragmentPhuLinkedHosueHoldListBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
@@ -93,7 +94,7 @@ class PhuLinkedHouseHoldListFragment(private val patientLinkedDetails: UnAssigne
         binding.searchView.safeClickListener(this)
         binding.searchView.setTextChangeListener {
             val input = it?.trim().toString()
-            searchHouseHoldList(input)
+            searchHouseHoldList(input,patientLinkedDetails.villageId)
         }
     }
 
@@ -113,7 +114,8 @@ class PhuLinkedHouseHoldListFragment(private val patientLinkedDetails: UnAssigne
             patientNameAgeGender.text =
                 formatPatientDemographics(requireContext(), patientLinkedDetails)
             patientVillage.text = patientLinkedDetails.villageName
-            patientMobile.text = patientLinkedDetails.phoneNumber
+            val phoneNumberCode=SecuredPreference.getPhoneNumberCode()
+            patientMobile.text = "+$phoneNumberCode ${patientLinkedDetails.phoneNumber}"
         }
     }
 
@@ -127,18 +129,21 @@ class PhuLinkedHouseHoldListFragment(private val patientLinkedDetails: UnAssigne
     override fun onClick(v: View?) {
         when (v?.id) {
             R.id.searchView -> {
-                searchHouseHoldList(binding.searchView.text.trim().toString())
+                searchHouseHoldList(
+                    binding.searchView.text.trim().toString(),
+                    patientLinkedDetails.villageId
+                )
             }
         }
     }
 
-    private fun searchHouseHoldList(input: String) {
+    private fun searchHouseHoldList(input: String, villageId: Long) {
         viewModel.getSearchHouseholdsLiveData(
             if (input.isNotEmpty() && ((input[0].isLetter() && input.length >= 3) || input[0].isDigit())) {
                 input
             } else {
                 ""
-            }
+            },villageId
         ).observe(viewLifecycleOwner) {
             listVisibility(it.isNullOrEmpty() || it.size == 0)
             binding.tvHPatientCount.text =
