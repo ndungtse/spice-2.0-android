@@ -97,13 +97,14 @@ import com.medtroniclabs.spice.ncd.data.MedicalReviewResponse
 import com.medtroniclabs.spice.ncd.data.NCDDiagnosisGetRequest
 import com.medtroniclabs.spice.ncd.data.NCDDiagnosisGetResponse
 import com.medtroniclabs.spice.ncd.data.NCDDiagnosisRequestResponse
+import com.medtroniclabs.spice.ncd.data.NCDInstructionModel
 import com.medtroniclabs.spice.ncd.data.NCDMRSummaryRequestResponse
 import com.medtroniclabs.spice.ncd.data.NCDPatientStatusRequest
+import com.medtroniclabs.spice.ncd.data.NCDPregnancyRiskUpdate
 import com.medtroniclabs.spice.ncd.data.NCDTreatmentPlanModel
 import com.medtroniclabs.spice.ncd.data.NCDTreatmentPlanModelDetails
 import com.medtroniclabs.spice.ncd.data.PatientVisitRequest
 import com.medtroniclabs.spice.ncd.data.PatientVisitResponse
-import com.medtroniclabs.spice.ncd.data.ScreeningPatientResponse
 import com.medtroniclabs.spice.ncd.data.ValidatePatientModel
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -224,4 +225,6 @@ interface ApiHelper {
     suspend fun getPatientLabTests(request: LabTestListRequest): Response<APIResponse<ArrayList<LabTestListResponse>>>
     suspend fun getNCDMedicalReviewHistory(request: ReferralDetailRequest): Response<APIResponse<NCDMedicalReviewHistory>>
     suspend fun validatePatient(request: ValidatePatientModel): Response<APIResponse<ValidatePatientModel>>
+    suspend fun ncdGetInstructions(): Response<APIResponse<NCDInstructionModel>>
+    suspend fun ncdUpdatePregnancyRisk(request: NCDPregnancyRiskUpdate): Response<APIResponse<Boolean>>
 }

@@ -170,10 +170,11 @@ object Screening {
     const val siteId = "siteId"
     const val userSiteId = "userSiteId"
     const val pregnancyAnc = "pregnancyAnc"
-    const val lastMenstrualPeriodDate = "lastMenstrualPeriodDate"
-    const val GestationalPeriod = "gestationalPeriod"
+    const val lastMenstrualPeriod = "lastMenstrualPeriod"
+    const val GestationalAge = "gestationalAge"
     const val isPregnant = "isPregnant"
     const val CountryId = "countryId"
+    const val isPregnancyAnc = "isPregnancyAnc"
     const val RegistrationSignSuffix = "_registration_signature"
     const val ScreeningSignSuffix = "_screening_signature"
     fun getEmptyBPReading(size: Int): ArrayList<BPModel> {

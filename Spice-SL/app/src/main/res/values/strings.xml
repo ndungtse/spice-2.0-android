@@ -993,4 +993,5 @@
 
     //E-Signature
     <string name="or_label"> (OR) </string>
+    <string name="high_risk_confirmation" translatable="false">Are you sure you want to flag this as a High Risk Pregnancy?</string>
 </resources>

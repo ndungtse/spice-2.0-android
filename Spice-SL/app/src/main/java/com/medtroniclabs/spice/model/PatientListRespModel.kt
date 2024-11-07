@@ -2,6 +2,7 @@ package com.medtroniclabs.spice.model
 
 import com.google.gson.annotations.SerializedName
 import com.medtroniclabs.spice.data.history.DiseaseInfo
+import com.medtroniclabs.spice.ncd.data.NCDDiagnosisGetResponse
 
 data class PatientListRespModel(
     val id: String? = null,
@@ -14,6 +15,7 @@ data class PatientListRespModel(
     val programId: String? = null,
     val cvdRiskLevel: String? = null,
     val cvdRiskScore: Double? = null,
+    val cvdRiskScoreDisplay:String? = null,
     val bmi: Double? = null,
     val gender: String? = null,
     val age: Int? = null,
@@ -44,6 +46,7 @@ data class PatientListRespModel(
     val relationship:String? = null,
     val phoneNumberCategory:String? = null,
     val diagnosis: List<DiseaseInfo>? = null,
+    val confirmDiagnosis: NCDDiagnosisGetResponse? = null,
     val pregnancyStatus: String? = null,
     val isRegularSmoker: Boolean? = null,
     val initialReviewed: Boolean? = false,
@@ -85,7 +88,8 @@ data class PregnancyDetails(
     val pregnant: Boolean? = null,
     val ancVisit:String? = null,
     val villageId: String? = null,
-    val dateOfDelivery:String?=null
+    val dateOfDelivery:String?=null,
+    val isPregnancyRisk: Boolean? = null,
 )
 data class SearchAndListResponse(
     val patientList: List<PatientListRespModel> = emptyList(),

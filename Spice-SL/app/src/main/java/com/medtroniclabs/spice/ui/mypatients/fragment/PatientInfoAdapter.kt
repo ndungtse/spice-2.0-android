@@ -1,5 +1,6 @@
 package com.medtroniclabs.spice.ui.mypatients.fragment
 
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,21 +14,27 @@ import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils.canShowToggle
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.databinding.PatientInfoItemBinding
+import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
+import com.medtroniclabs.spice.toggle.OnToggledListener
+import com.medtroniclabs.spice.toggle.ToggleableView
 import com.medtroniclabs.spice.ui.BaseActivity
 
 class PatientInfoAdapter(
     private val data: List<Map<String, Any?>?> = emptyList(),
     private val fragmentBg: Int,
-    private val activity: BaseActivity
+    private val activity: BaseActivity,
+    private val onItemPregnantDialog: () -> Unit,
+    private val onItemToggle: (isChecked: Boolean) -> Unit
 ) :
     RecyclerView.Adapter<PatientInfoAdapter.ViewHolder>() {
 
     inner class ViewHolder(private val binding: PatientInfoItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
+        val context: Context = binding.root.context
         fun bind(label: Map<String, Any?>) {
             with(binding) {
-                val empty = binding.root.context.getString(R.string.hyphen_symbol)
+                val empty = context.getString(R.string.hyphen_symbol)
                 tvLabel.text = (label[DefinedParams.label] as? String).takeIfNotNull(empty)
                 tvValue.setExpandableText(
                     (label[DefinedParams.value] as? String).takeIfNotNull(empty),
@@ -40,34 +47,52 @@ class PatientInfoAdapter(
                         tvValue.setTextColor(label[DefinedParams.color] as Int)
                     }
                 }
-                if (label[DefinedParams.label]?.equals(binding.root.context.getString(R.string.high_risk)) == true) {
-                    // Your logic here
+                if (label[DefinedParams.label]?.equals(context.getString(R.string.high_risk)) == true) {
                     tvValue.gone()
-                    if (canShowToggle(
-                            label[DefinedParams.Gender]?.toString(),
-                            label[DefinedParams.value] as Boolean
-                        )
-                    ) {
-                        smHighRisk.visible()
-                        viewToggle.visible()
-                        tvHighRiskPregnancyCriteria.visible()
-                    } else {
-                        tvValue.visible()
-                        smHighRisk.gone()
-                        viewToggle.gone()
-                        tvHighRiskPregnancyCriteria.gone()
-                    }
+                    viewToggle.visible()
+                    smHighRisk.visible()
+                    tvHighRiskPregnancyCriteria.visible()
                     smHighRisk.isOn = label[DefinedParams.value] as Boolean == true
+                    viewToggle.safeClickListener {
+                        if (!binding.smHighRisk.isOn) {
+                            userConfirms()
+                            smHighRisk.setOnToggledListener(toggledListener)
+                        }
+                    }
+                    tvHighRiskPregnancyCriteria.safeClickListener {
+                        onItemPregnantDialog.invoke()
+                    }
                 } else {
                     tvValue.visible()
                     smHighRisk.gone()
                     viewToggle.gone()
                     tvHighRiskPregnancyCriteria.gone()
                 }
-                root.background = ContextCompat.getDrawable(binding.root.context, fragmentBg)
+                root.background = ContextCompat.getDrawable(context, fragmentBg)
+            }
+        }
+
+        private fun userConfirms() {
+            (activity as? BaseActivity?)?.showErrorDialogue(
+                context.getString(R.string.alert),
+                context.getString(R.string.high_risk_confirmation),
+                positiveButtonName = context.getString(R.string.yes),
+                isNegativeButtonNeed = true,
+                cancelBtnName = context.getString(R.string.no),
+                okayBtnEnable = true
+            ) {
+                if (it)
+                    binding.smHighRisk.performClick()
             }
         }
     }
+
+    private val toggledListener = object : OnToggledListener {
+        override fun onSwitched(toggleableView: ToggleableView?, isOn: Boolean) {
+            onItemToggle.invoke(isOn)
+        }
+    }
+
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder(

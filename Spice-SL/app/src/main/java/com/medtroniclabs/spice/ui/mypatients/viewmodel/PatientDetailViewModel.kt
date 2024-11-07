@@ -9,7 +9,10 @@ import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.model.PatientDetailRequest
 import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.model.PregnancyDetails
+import com.medtroniclabs.spice.ncd.data.NCDInstructionModel
+import com.medtroniclabs.spice.ncd.data.NCDPregnancyRiskUpdate
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil
+import com.medtroniclabs.spice.ncd.medicalreview.repo.NCDMedicalReviewRepository
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.ui.mypatients.repo.PatientRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -20,11 +23,14 @@ import javax.inject.Inject
 @HiltViewModel
 class PatientDetailViewModel @Inject constructor(
     private val patientRepository: PatientRepository,
-    @IoDispatcher private val dispatcherIO: CoroutineDispatcher
+    @IoDispatcher private val dispatcherIO: CoroutineDispatcher,
+    private val ncdMedicalReviewRepository: NCDMedicalReviewRepository
 ): ViewModel() {
 
     var dateOfDelivery: String? =null
     var childPatientDetails: String? = null
+    val updatePregnancyRisk = MutableLiveData<Resource<Boolean>>()
+    val ncdInstructionModelResponse = MutableLiveData<Resource<NCDInstructionModel>>()
     val patientDetailsLiveData = MutableLiveData<Resource<PatientListRespModel>>()
     //the below id is one which get from patient details response
     var patientDetailsId : String? = null
@@ -34,6 +40,8 @@ class PatientDetailViewModel @Inject constructor(
     var childEncounterId: String ?= null
 
     var origin: String? = null
+    var mrMenuId: String? = null
+    var isCmr: Boolean = false
 
     fun getPatients(id: String, assessmentType: String? = null, origin: String? = null) {
         viewModelScope.launch(dispatcherIO) {
@@ -129,5 +137,19 @@ class PatientDetailViewModel @Inject constructor(
 
     fun isPregnant(): Boolean {
         return getGenderIsFemale() && patientDetailsLiveData.value?.data?.isPregnant == true
+    }
+
+    fun ncdGetInstructions() {
+        viewModelScope.launch(dispatcherIO) {
+            ncdInstructionModelResponse.postLoading()
+            ncdInstructionModelResponse.postValue(ncdMedicalReviewRepository.ncdGetInstructions())
+        }
+    }
+
+    fun ncdUpdatePregnancyRisk(request: NCDPregnancyRiskUpdate) {
+        viewModelScope.launch(dispatcherIO) {
+            updatePregnancyRisk.postLoading()
+            updatePregnancyRisk.postValue(ncdMedicalReviewRepository.ncdUpdatePregnancyRisk(request))
+        }
     }
 }

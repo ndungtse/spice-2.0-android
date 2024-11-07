@@ -57,15 +57,6 @@
         app:layout_constraintStart_toStartOf="@id/centreTwoGuideline"
         app:layout_constraintTop_toTopOf="@id/tvSeparator" />
 
-    <View
-        android:id="@+id/viewToggle"
-        android:layout_width="@dimen/_0dp"
-        android:layout_height="@dimen/_0dp"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@id/smHighRisk"
-        app:layout_constraintEnd_toEndOf="@id/smHighRisk"
-        app:layout_constraintStart_toStartOf="@id/smHighRisk"
-        app:layout_constraintTop_toTopOf="@id/smHighRisk" />
 
     <com.medtroniclabs.spice.toggle.LabeledSwitch
         android:id="@+id/smHighRisk"
@@ -79,6 +70,16 @@
         app:layout_constraintEnd_toStartOf="@id/tvHighRiskPregnancyCriteria"
         app:layout_constraintStart_toEndOf="@id/tvValue"
         app:layout_constraintTop_toTopOf="@id/tvSeparator" />
+
+    <View
+        android:id="@+id/viewToggle"
+        android:layout_width="@dimen/_0dp"
+        android:layout_height="@dimen/_0dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/smHighRisk"
+        app:layout_constraintEnd_toEndOf="@id/smHighRisk"
+        app:layout_constraintStart_toStartOf="@id/smHighRisk"
+        app:layout_constraintTop_toTopOf="@id/smHighRisk" />
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/tvHighRiskPregnancyCriteria"

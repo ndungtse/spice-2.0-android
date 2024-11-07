@@ -97,8 +97,10 @@ import com.medtroniclabs.spice.ncd.data.MedicalReviewResponse
 import com.medtroniclabs.spice.ncd.data.NCDDiagnosisGetRequest
 import com.medtroniclabs.spice.ncd.data.NCDDiagnosisGetResponse
 import com.medtroniclabs.spice.ncd.data.NCDDiagnosisRequestResponse
+import com.medtroniclabs.spice.ncd.data.NCDInstructionModel
 import com.medtroniclabs.spice.ncd.data.NCDMRSummaryRequestResponse
 import com.medtroniclabs.spice.ncd.data.NCDPatientStatusRequest
+import com.medtroniclabs.spice.ncd.data.NCDPregnancyRiskUpdate
 import com.medtroniclabs.spice.ncd.data.NCDTreatmentPlanModel
 import com.medtroniclabs.spice.ncd.data.NCDTreatmentPlanModelDetails
 import com.medtroniclabs.spice.ncd.data.PatientVisitRequest
@@ -111,6 +113,7 @@ import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.PUT
 import retrofit2.http.Path
 
 interface ApiService {
@@ -417,4 +420,10 @@ interface ApiService {
 
     @POST("spice-service/patient/validate")
     suspend fun validatePatient(@Body request: ValidatePatientModel): Response<APIResponse<ValidatePatientModel>>
+
+    @GET("/spice-service/medical-review/get-instructions")
+    suspend fun ncdGetInstructions(): Response<APIResponse<NCDInstructionModel>>
+
+    @PUT("/spice-service/patient/pregnancy-anc-risk/update")
+    suspend fun ncdUpdatePregnancyRisk(@Body request: NCDPregnancyRiskUpdate): Response<APIResponse<Boolean>>
 }

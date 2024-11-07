@@ -36,13 +36,46 @@
             android:layout_height="wrap_content"
             android:fontFamily="@font/inter_regular"
             android:gravity="center"
-            android:paddingHorizontal="@dimen/_60sdp"
+            android:paddingStart="@dimen/_30sdp"
+            android:paddingEnd="@dimen/_0dp"
             android:textColor="@color/white"
             android:textSize="@dimen/_16ssp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/ivRedAlert"
+            app:layout_constraintHorizontal_chainStyle="packed"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/ivRedAlert"
+            android:layout_width="@dimen/_24sdp"
+            android:layout_height="@dimen/_24sdp"
+            android:layout_marginStart="@dimen/_10sdp"
+            android:src="@drawable/ic_red_alert"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@id/titleToolbar"
+            app:layout_constraintEnd_toStartOf="@id/tvRedAlert"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintStart_toEndOf="@id/titleToolbar"
+            app:layout_constraintTop_toTopOf="@id/titleToolbar" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvRedAlert"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_5sdp"
+            android:fontFamily="@font/inter_regular"
+            android:gravity="center"
+            android:paddingVertical="@dimen/_11sdp"
+            android:text="@string/red_alert"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_16ssp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@id/titleToolbar"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintStart_toEndOf="@id/ivRedAlert"
+            app:layout_constraintTop_toTopOf="@id/titleToolbar" />
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:id="@+id/ivHomeHolder"

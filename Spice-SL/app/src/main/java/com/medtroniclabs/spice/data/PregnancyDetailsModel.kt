@@ -19,7 +19,7 @@ data class PregnancyDetailsModel(
     var isPregnant: Boolean? = null,
     var isOnTreatment: Boolean? = null,
     var isPregnancyAnc: Boolean? = null,
-    var relatedPersonFhirId: String? = null,
+    var memberReference: String? = null,
     var diagnosis: ArrayList<Map<String, Any>>? = null,
     var actualDeliveryDate: String? = null,
     var diagnosisTime: String? = null,

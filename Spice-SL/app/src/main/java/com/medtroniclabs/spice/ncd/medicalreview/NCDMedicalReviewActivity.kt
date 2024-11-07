@@ -338,6 +338,7 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
 
     private fun initializePatientDetails() {
         patientDetailViewModel.origin = intent.extras?.getString(ORIGIN)
+        patientDetailViewModel.mrMenuId = getMenuId()
         val fragment = PatientInfoFragment.newInstanceForNCD(getPatientId(), getMenuOrigin() ?: "")
         fragment.setDataCallback(this)
         addOrReuseFragment(

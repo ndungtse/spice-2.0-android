@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.EntityMapper
 import com.medtroniclabs.spice.common.FormAutofill
@@ -17,13 +18,13 @@ import com.medtroniclabs.spice.formgeneration.listener.FormEventListener
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.ui.FormResultComposer
 import com.medtroniclabs.spice.mappingkey.Screening
+import com.medtroniclabs.spice.mappingkey.Screening.BioMetrics
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 import com.medtroniclabs.spice.ncd.registration.ui.RegistrationActivity
 import com.medtroniclabs.spice.ncd.registration.viewmodel.RegistrationFormViewModel
-import com.medtroniclabs.spice.ncd.screening.ui.DuplicationNudgeDialog
 
 class RegistrationFormFragment : BaseFragment(), View.OnClickListener, FormEventListener {
     private lateinit var binding: FragmentRegistrationFormBinding
@@ -278,6 +279,7 @@ class RegistrationFormFragment : BaseFragment(), View.OnClickListener, FormEvent
     override fun onFormSubmit(resultMap: HashMap<String, Any>?, serverData: List<FormLayout?>?) {
         withNetworkAvailability(online = {
             resultMap?.let {
+                CommonUtils.addAncEnableOrNot(it,BioMetrics)
                 viewModel.validatePatient(it, serverData)
             }
         })

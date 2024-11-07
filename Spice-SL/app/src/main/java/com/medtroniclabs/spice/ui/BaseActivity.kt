@@ -28,6 +28,7 @@ import com.medtroniclabs.spice.app.analytics.model.UserDetail
 import com.medtroniclabs.spice.app.analytics.utils.CommonUtils
 import com.medtroniclabs.spice.appextensions.loadAsGif
 import com.medtroniclabs.spice.appextensions.resetImageView
+import com.medtroniclabs.spice.appextensions.setVisible
 import com.medtroniclabs.spice.common.DefinedParams.REFRESH_FRAGMENT
 import com.medtroniclabs.spice.databinding.ActivityBaseBinding
 import com.medtroniclabs.spice.databinding.ErrorLayoutBinding
@@ -522,5 +523,10 @@ open class BaseActivity : SpiceRootActivity() {
             message = Pair(message, errorMessage)
         )
         dialog.show(supportFragmentManager, CommentsAlertDialog.TAG)
+    }
+
+    fun setRedRiskPatient(isRedRiskPatient: Boolean?) {
+        binding.ivRedAlert.setVisible(isRedRiskPatient == true)
+        binding.tvRedAlert.setVisible(isRedRiskPatient == true)
     }
 }

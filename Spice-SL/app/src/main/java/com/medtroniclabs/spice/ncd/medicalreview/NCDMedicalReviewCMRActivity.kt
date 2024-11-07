@@ -165,6 +165,7 @@ class NCDMedicalReviewCMRActivity : BaseActivity(), View.OnClickListener, AncVis
     private fun initializePatientDetails() {
         patientDetailViewModel.origin = intent.extras?.getString(DefinedParams.ORIGIN)
         val fragment = PatientInfoFragment.newInstanceForNCD(getFhirId(), getOrigin() ?: "")
+        patientDetailViewModel.isCmr = true
         fragment.setDataCallback(this)
         addOrReuseFragment(
             R.id.patientDetailFragment,

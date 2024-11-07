@@ -16,6 +16,7 @@ import com.medtroniclabs.spice.BuildConfig
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.common.CommonUtils
+import com.medtroniclabs.spice.common.CommonUtils.addAncEnableOrNot
 import com.medtroniclabs.spice.common.CommonUtils.calculateAverageBloodPressure
 import com.medtroniclabs.spice.common.CommonUtils.calculateBMI
 import com.medtroniclabs.spice.common.CommonUtils.calculateBloodGlucose
@@ -131,7 +132,7 @@ class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener, View.OnC
                     DefinedParams.Gender -> {
                         showHidePregnancyCard(map)
                     }
-                    Screening.lastMenstrualPeriodDate ->{
+                    Screening.lastMenstrualPeriod ->{
                         getGestationalPeriod(map,id)
                     }
 
@@ -148,7 +149,7 @@ class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener, View.OnC
         }
         val gesDate = resultHashMap[id] as? String ?: return
 
-        formGenerator.getViewByTag(Screening.GestationalPeriod)?.let { view ->
+        formGenerator.getViewByTag(Screening.GestationalAge)?.let { view ->
             try {
                 val lastMenstrualDate = DateUtils.getLastMenstrualDate(gesDate)
                 val gestationWeek =
@@ -159,7 +160,7 @@ class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener, View.OnC
                         totalWeeks > 1 -> "$totalWeeks ${getString(R.string.weeks)}"
                         else -> "$totalWeeks ${getString(R.string.week)}"
                     }
-                    resultHashMap[Screening.GestationalPeriod] = totalWeeks
+                    resultHashMap[Screening.GestationalAge] = totalWeeks
                 }
 
             } catch (e: Exception) {
@@ -367,6 +368,9 @@ class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener, View.OnC
                 map,
                 bmiCategoryGroupId = Screening.BioMetrics
             )
+        }
+        result?.second?.let {
+            addAncEnableOrNot(it, Screening.pregnancyAnc)
         }
         val bioDataMap = result?.second?.get(Screening.bioData) as HashMap<String, Any>
         bioDataMap[Screening.identityType] = Screening.nationalId

@@ -13,6 +13,7 @@ import com.medtroniclabs.spice.common.RoleConstant.CHA
 import com.medtroniclabs.spice.common.RoleConstant.LAB_ASSISTANT
 import com.medtroniclabs.spice.common.RoleConstant.MCHA
 import com.medtroniclabs.spice.common.RoleConstant.MID_WIFE
+import com.medtroniclabs.spice.common.RoleConstant.PHYSICIAN_PRESCRIBER
 import com.medtroniclabs.spice.common.RoleConstant.PROVIDER
 import com.medtroniclabs.spice.common.RoleConstant.SECHN
 import com.medtroniclabs.spice.common.RoleConstant.SRN
@@ -219,7 +220,7 @@ object CommonUtils {
     }
 
     fun isProvider(): Boolean {
-        return SecuredPreference.getRole() == RoleConstant.PROVIDER
+        return SecuredPreference.getRole() == PROVIDER
     }
 
     fun isRolePresent(): Boolean {
@@ -1418,7 +1419,12 @@ object CommonUtils {
 
     fun canShowToggle(gender: String?, pregnancyRisk: Boolean?): Boolean {
         val role = SecuredPreference.getRole()
-        return role == PROVIDER && gender.equals(Female, true) && pregnancyRisk != null
+        return (role == PROVIDER || role == PHYSICIAN_PRESCRIBER) &&
+                gender.equals(Female, true) &&
+                (pregnancyRisk != null &&
+                        ((!pregnancyRisk && SecuredPreference.getBoolean(
+                            SecuredPreference.EnvironmentKey.PREGNANCY_ANC_ENABLED_SITE.name
+                        )) || pregnancyRisk))
     }
 
     fun isSL(): Boolean {
@@ -1552,5 +1558,18 @@ object CommonUtils {
             }
         }
         return ""
+    }
+
+    fun addAncEnableOrNot(map: HashMap<String, Any>, key: String, isPregnant: Boolean = false) {
+        if (SecuredPreference.getBoolean(SecuredPreference.EnvironmentKey.PREGNANCY_ANC_ENABLED_SITE.name)) {
+            (map[key] as? MutableMap<Any, Any>)?.let { pregnancyAnc ->
+                if (((pregnancyAnc[Screening.isPregnant] as? Boolean) == true) || isPregnant) {
+                    if (isPregnant) {
+                        pregnancyAnc[Screening.isPregnant] = true
+                    }
+                    pregnancyAnc[Screening.isPregnancyAnc] = true
+                }
+            }
+        }
     }
 }

@@ -97,13 +97,14 @@ import com.medtroniclabs.spice.ncd.data.MedicalReviewResponse
 import com.medtroniclabs.spice.ncd.data.NCDDiagnosisGetRequest
 import com.medtroniclabs.spice.ncd.data.NCDDiagnosisGetResponse
 import com.medtroniclabs.spice.ncd.data.NCDDiagnosisRequestResponse
+import com.medtroniclabs.spice.ncd.data.NCDInstructionModel
 import com.medtroniclabs.spice.ncd.data.NCDMRSummaryRequestResponse
 import com.medtroniclabs.spice.ncd.data.NCDPatientStatusRequest
+import com.medtroniclabs.spice.ncd.data.NCDPregnancyRiskUpdate
 import com.medtroniclabs.spice.ncd.data.NCDTreatmentPlanModel
 import com.medtroniclabs.spice.ncd.data.NCDTreatmentPlanModelDetails
 import com.medtroniclabs.spice.ncd.data.PatientVisitRequest
 import com.medtroniclabs.spice.ncd.data.PatientVisitResponse
-import com.medtroniclabs.spice.ncd.data.ScreeningPatientResponse
 import com.medtroniclabs.spice.ncd.data.ValidatePatientModel
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -511,5 +512,13 @@ class ApiHelperImpl @Inject constructor(private val apiService: ApiService) : Ap
 
     override suspend fun validatePatient(request: ValidatePatientModel): Response<APIResponse<ValidatePatientModel>> {
         return apiService.validatePatient(request)
+    }
+
+    override suspend fun ncdGetInstructions(): Response<APIResponse<NCDInstructionModel>> {
+        return apiService.ncdGetInstructions()
+    }
+
+    override suspend fun ncdUpdatePregnancyRisk(request: NCDPregnancyRiskUpdate): Response<APIResponse<Boolean>> {
+        return apiService.ncdUpdatePregnancyRisk(request)
     }
 }

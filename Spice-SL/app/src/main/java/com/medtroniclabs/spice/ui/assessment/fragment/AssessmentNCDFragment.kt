@@ -214,6 +214,7 @@ class AssessmentNCDFragment : BaseFragment(), FormEventListener, View.OnClickLis
 
                 ResourceState.ERROR -> {
                     hideProgress()
+                    // error exit activity
                 }
 
                 ResourceState.SUCCESS -> {
@@ -1130,6 +1131,17 @@ class AssessmentNCDFragment : BaseFragment(), FormEventListener, View.OnClickLis
                 remove(Screening.is_regular_smoker)
                 remove(Screening.DateOfBirth)
                 remove(Screening.referredReasons)
+            }
+
+            // TODO we have to verified it, needed or not once we are working for anc and pregnancy
+            val isPregnant =
+                patientDetailViewModel.patientDetailsLiveData.value?.data?.isPregnant
+            if (isPregnant == true) {
+                CommonUtils.addAncEnableOrNot(
+                    result.second,
+                    key = Screening.pregnancyAnc,
+                    true
+                )
             }
             result = Pair(StringConverter.convertGivenMapToString(result.second), result.second)
             result.first?.let {

@@ -2,11 +2,9 @@ package com.medtroniclabs.spice.ui.mypatients.fragment
 
 import android.content.res.Configuration
 import android.os.Bundle
-import android.text.SpannableStringBuilder
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.text.color
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import com.medtroniclabs.spice.R
@@ -22,15 +20,18 @@ import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.IsReferredScreen
 import com.medtroniclabs.spice.common.DefinedParams.OtherNotes
 import com.medtroniclabs.spice.common.StringConverter
+import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.databinding.FragmentPatientInfoBinding
 import com.medtroniclabs.spice.formgeneration.extension.capitalizeFirstChar
 import com.medtroniclabs.spice.model.PatientListRespModel
+import com.medtroniclabs.spice.ncd.data.NCDPregnancyRiskUpdate
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.ANC
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.PNC
+import com.medtroniclabs.spice.ui.common.GeneralInfoDialog
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.AncVisitCallBack
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -91,6 +92,11 @@ class PatientInfoFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        initView()
+        attachObservers()
+    }
+
+    fun  initView() {
         val patientId = arguments?.getString(DefinedParams.PatientId, "")
         if (patientId?.isNotBlank() == true) {
             if (CommonUtils.isNonNcdWorkflow()) {
@@ -103,7 +109,6 @@ class PatientInfoFragment : BaseFragment() {
                 )
             }
         }
-        attachObservers()
     }
 
     private fun attachObservers() {
@@ -126,6 +131,42 @@ class PatientInfoFragment : BaseFragment() {
 
                 ResourceState.ERROR -> {
 //                    hideProgress()
+                }
+            }
+        }
+
+        viewModel.ncdInstructionModelResponse.observe(viewLifecycleOwner) { resourceState ->
+            when (resourceState.state) {
+                ResourceState.SUCCESS -> {
+                    resourceState.data?.instructions?.let { instructions ->
+                        val title = instructions.removeAt(0)
+                        GeneralInfoDialog.newInstance(
+                            title,
+                            null,
+                            instructions
+                        ).show(childFragmentManager, GeneralInfoDialog.TAG)
+                    }
+                }
+
+                else -> {
+                    //Nothing to invoke
+                }
+            }
+        }
+
+        viewModel.updatePregnancyRisk.observe(viewLifecycleOwner) { resourceState ->
+            when (resourceState.state) {
+                ResourceState.LOADING -> {
+                    showProgress()
+                }
+
+                ResourceState.ERROR -> {
+                    hideProgress()
+                }
+
+                ResourceState.SUCCESS -> {
+                    hideProgress()
+                    initView()
                 }
             }
         }
@@ -238,7 +279,25 @@ class PatientInfoFragment : BaseFragment() {
 
     private fun commonAdapter(dataList: MutableList<Map<String, Any>>) {
         val adapter =
-            PatientInfoAdapter(dataList, R.color.fragment_bg, (requireActivity() as BaseActivity))
+            PatientInfoAdapter(
+                dataList,
+                R.color.fragment_bg,
+                (requireActivity() as BaseActivity),
+                onItemPregnantDialog = {
+                    withNetworkAvailability(online = {
+                        viewModel.ncdGetInstructions()
+                    })
+                }, onItemToggle = {
+                    withNetworkAvailability(online = {
+                        val request = NCDPregnancyRiskUpdate(
+                            memberReference = viewModel.getPatientFHIRId(),
+                            patientReference = viewModel.getPatientId(),
+                            isPregnancyRisk = it,
+                            provenance = ProvanceDto()
+                        )
+                        viewModel.ncdUpdatePregnancyRisk(request)
+                    })
+                })
         val isLandscape =
             resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
 
@@ -260,12 +319,12 @@ class PatientInfoFragment : BaseFragment() {
             )
         }
 
-        val cvdRiskLevel = data.cvdRiskScore?.let {
+        val cvdRiskLevel = data.cvdRiskScoreDisplay?.let {
             Pair(
                 StringConverter.appendTexts(
                     "${it}%",
                     data.cvdRiskLevel, separator = "-"
-                ), CommonUtils.cvdRiskColorCode(it, requireContext())
+                ), CommonUtils.cvdRiskColorCode(data.cvdRiskScore ?: 0.0, requireContext())
             )
         }
 
@@ -293,20 +352,23 @@ class PatientInfoFragment : BaseFragment() {
             ),
             mapOf(
                 DefinedParams.label to requireContext().getString(R.string.bmi),
-                DefinedParams.value to (CommonUtils.getBMIFormattedText(requireContext(), data.bmi).first
+                DefinedParams.value to (CommonUtils.getBMIFormattedText(
+                    requireContext(),
+                    data.bmi
+                ).first
                     ?: requireContext().getString(R.string.hyphen_symbol)).toString().trim(),
-                DefinedParams.color to CommonUtils.getBMIFormattedText(requireContext(), data.bmi).second
+                DefinedParams.color to CommonUtils.getBMIFormattedText(
+                    requireContext(),
+                    data.bmi
+                ).second
             ),
             mapOf(
                 DefinedParams.label to requireContext().getString(R.string.national_id),
                 DefinedParams.value to (data.identityValue
                     ?: requireContext().getString(R.string.hyphen_symbol)).toString().trim()
-            ),
-            mapOf(
-                DefinedParams.label to requireContext().getString(R.string.high_risk),
-                DefinedParams.value to (data.isPregnancyRisk ?: false),
-                DefinedParams.Gender to (data.gender)
-            ),
+            )
+        )
+        dataList.add(
             mapOf(
                 DefinedParams.label to requireContext().getString(R.string.contact_number),
                 DefinedParams.value to (getContactNumber(data.phoneNumber.takeIf { it?.isNotBlank() == true }
@@ -314,6 +376,31 @@ class PatientInfoFragment : BaseFragment() {
                     ?: requireContext().getString(R.string.hyphen_symbol))
             )
         )
+
+        val isPregnancyANC =
+            viewModel.mrMenuId.equals(DefinedParams.PregnancyANC, ignoreCase = true)
+        if (isPregnancyANC && CommonUtils.canShowToggle(viewModel.getGender(), data.pregnancyDetails?.isPregnancyRisk)) {
+            dataList.add(
+                mapOf(
+                    DefinedParams.label to requireContext().getString(R.string.high_risk),
+                    DefinedParams.value to (data.pregnancyDetails?.isPregnancyRisk ?: false),
+                    DefinedParams.Gender to (data.gender)
+                )
+            )
+        }
+        if (viewModel.isCmr) {
+            dataList.add(
+                mapOf(
+                    DefinedParams.label to requireContext().getString(R.string.diagnosis),
+                    DefinedParams.value to combineText(
+                        data.confirmDiagnosis?.diagnosis?.mapNotNull { it.name },
+                        data.confirmDiagnosis?.diagnosisNotes.takeIf { it?.isNotBlank() == true },
+                        getString(R.string.hyphen_symbol)
+                    )
+                )
+            )
+        }
+        (activity as BaseActivity).setRedRiskPatient(data.isRedRiskPatient)
         commonAdapter(dataList as MutableList<Map<String, Any>>)
     }
 

@@ -574,7 +574,7 @@ class NCDPregnancyDialog(private val callback: ((isPositiveResult: Boolean, mess
                 (activity as? BaseActivity?)?.withNetworkAvailability(online = {
                     if (validateInputs()) {
                         viewModel.ncdPregnancyCreateModel.apply {
-                            relatedPersonFhirId = viewModel.relatedPersonFhirId
+                            memberReference = viewModel.relatedPersonFhirId
                         }.also {
                             viewModel.ncdPregnancyCreate(it)
                         }
