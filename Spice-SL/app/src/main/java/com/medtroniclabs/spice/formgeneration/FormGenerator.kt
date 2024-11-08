@@ -62,6 +62,7 @@ import com.medtroniclabs.spice.databinding.CardLayoutBinding
 import com.medtroniclabs.spice.databinding.CheckboxDialogSpinnerLayoutBinding
 import com.medtroniclabs.spice.databinding.CustomSpinnerBinding
 import com.medtroniclabs.spice.databinding.DatepickerLayoutBinding
+import com.medtroniclabs.spice.databinding.EdittextAreaLayoutBinding
 import com.medtroniclabs.spice.databinding.EdittextLayoutBinding
 import com.medtroniclabs.spice.databinding.InstructionLayoutBinding
 import com.medtroniclabs.spice.databinding.LayoutInformationLabelBinding
@@ -94,6 +95,7 @@ import com.medtroniclabs.spice.formgeneration.config.ViewType.VIEW_TYPE_FORM_CAR
 import com.medtroniclabs.spice.formgeneration.config.ViewType.VIEW_TYPE_FORM_CHEKBOX
 import com.medtroniclabs.spice.formgeneration.config.ViewType.VIEW_TYPE_FORM_DATEPICKER
 import com.medtroniclabs.spice.formgeneration.config.ViewType.VIEW_TYPE_FORM_EDITTEXT
+import com.medtroniclabs.spice.formgeneration.config.ViewType.VIEW_TYPE_FORM_EDITTEXT_AREA
 import com.medtroniclabs.spice.formgeneration.config.ViewType.VIEW_TYPE_FORM_RADIOGROUP
 import com.medtroniclabs.spice.formgeneration.config.ViewType.VIEW_TYPE_FORM_SPINNER
 import com.medtroniclabs.spice.formgeneration.config.ViewType.VIEW_TYPE_FORM_TEXTLABEL
@@ -175,6 +177,7 @@ class FormGenerator(
             when (serverViewModel.viewType) {
                 VIEW_TYPE_FORM_CARD_FAMILY -> createCardViewFamily(serverViewModel)
                 VIEW_TYPE_FORM_EDITTEXT -> createEditText(serverViewModel)
+                VIEW_TYPE_FORM_EDITTEXT_AREA -> createEditTextArea(serverViewModel)
                 VIEW_TYPE_FORM_RADIOGROUP -> createRadioGroup(serverViewModel)
                 VIEW_TYPE_SINGLE_SELECTION -> createSingleSelectionView(serverViewModel)
                 VIEW_TYPE_FORM_SPINNER -> createCustomSpinner(serverViewModel)
@@ -847,6 +850,125 @@ class FormGenerator(
             }
         }
     }
+    private fun createEditTextArea(serverViewModel: FormLayout) {
+        val binding = EdittextAreaLayoutBinding.inflate(LayoutInflater.from(context))
+        serverViewModel.apply {
+            binding.root.tag = id + rootSuffix
+            binding.tvTitle.tag = id + titleSuffix
+            binding.etUserInput.tag = id
+            binding.tvErrorMessage.tag = id + errorSuffix
+            binding.tvNationalIdAction.visibility = View.GONE
+            binding.tvKey.tag = id + tvKey
+            binding.tvValue.tag = id + tvValue
+            binding.bgLastMeal.tag = id + rootSummary
+           // checkGenerateAction(this, binding)
+            binding.tvTitle.text = updateTitle(title, translate, titleCulture, unitMeasurement)
+
+           /* maxLines?.let { binding.etUserInput.setLines(it) }
+                ?: binding.etUserInput.setSingleLine()
+*/
+            if (isMandatory) {
+                binding.tvTitle.markMandatory()
+            }
+
+            defaultValue?.let {
+                binding.etUserInput.setText(it)
+                resultHashMap[id] = it
+            }
+            maxDecimalPlaces?.let {
+                binding.etUserInput.filters = arrayOf<InputFilter>(DecimalDigitsInputFilter(it))
+            }
+            hint?.let {
+                if (translate) {
+                    binding.etUserInput.hint = hintCulture ?: it
+                } else {
+                    binding.etUserInput.hint = it
+                }
+            }
+
+
+            isEnabled?.let {
+                binding.etUserInput.isEnabled = it
+            }
+
+            val inputFilter = arrayListOf<InputFilter>()
+            maxLength?.let {
+                inputFilter.add(InputFilter.LengthFilter(it))
+            }
+
+            contentLength?.let {
+                inputFilter.add(InputFilter.LengthFilter(it))
+            }
+
+            if (applyDecimalFilter == true)
+                inputFilter.add(DigitsInputFilter())
+
+            if (id == DefinedParams.NationalId) {
+                inputFilter.add(InputFilter.AllCaps())
+            }
+
+            if (inputFilter.isNotEmpty()) {
+                try {
+                   binding.etUserInput.filters = inputFilter.toTypedArray()
+                } catch (_: Exception) {
+                    //Exception - Catch block
+                }
+            }
+
+           /* inputType?.let {
+                when (it) {
+                    InputType.TYPE_CLASS_PHONE, InputType.TYPE_CLASS_NUMBER -> binding.etUserInput.inputType =
+                        InputType.TYPE_CLASS_NUMBER
+
+                    InputType.TYPE_NUMBER_FLAG_DECIMAL -> binding.etUserInput.inputType =
+                        InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
+
+                    else -> {
+                        binding.etUserInput.inputType = InputType.TYPE_TEXT_FLAG_CAP_SENTENCES
+                    }
+                }
+            }*/
+
+            getFamilyView(family)?.addView(binding.root) ?: kotlin.run {
+                parentLayout.addView(binding.root)
+            }
+
+            binding.etUserInput.addTextChangedListener { editable: Editable? ->
+                when {
+                    editable.isNullOrBlank() -> {
+                        if (editScreen == true) {
+                            if ((inputType != null && (inputType == InputType.TYPE_CLASS_NUMBER ||
+                                        inputType == InputType.TYPE_NUMBER_FLAG_DECIMAL))
+                            ) {
+                                resultHashMap.remove(id)
+                            } else {
+                                resultHashMap[id] = ""
+                            }
+                        } else {
+                            resultHashMap.remove(id)
+                        }
+                        setConditionalVisibility(serverViewModel, null)
+                    }
+
+                    else -> {
+                        if ((inputType != null && (inputType == InputType.TYPE_CLASS_NUMBER ||
+                                    inputType == InputType.TYPE_NUMBER_FLAG_DECIMAL))
+                        ) {
+                            val resultValue = editable.trim().toString().toDoubleOrNull()
+                            resultValue?.let {
+                                resultHashMap[id] = resultValue
+                            }
+                        } else
+                            resultHashMap[id] = editable.trim().toString()
+                        setConditionalVisibility(serverViewModel, editable.trim().toString())
+                    }
+                }
+            }
+            setViewVisibility(visibility, binding.root)
+            setViewEnableDisable(isEnabled, binding.root)
+        }
+    }
+
     private fun checkGenerateAction(serverViewModel: FormLayout, binding: EdittextLayoutBinding) {
         serverViewModel.apply {
             if (isNeedAction) {
@@ -878,6 +1000,36 @@ class FormGenerator(
         }
     }
 
+    private fun checkGenerateAction(serverViewModel: FormLayout, binding: EdittextAreaLayoutBinding) {
+        serverViewModel.apply {
+            if (isNeedAction) {
+                when (id) {
+                    Screening.identityValue -> {
+                        binding.tvNationalIdAction.visibility = View.VISIBLE
+                        val clickableSpan = object : ClickableSpan() {
+                            override fun onClick(mView: View) {
+                                // action click
+                                generateNationalId()
+                            }
+
+                            override fun updateDrawState(ds: TextPaint) {
+                                super.updateDrawState(ds)
+                                ds.isUnderlineText = false
+                            }
+                        }
+                        val text = context.getString(R.string.don_t_have_id_generate_id)
+                        var index = text.indexOf("?")
+                        index = if (index >= 0) index + 1 else 0
+                        binding.tvNationalIdAction.text = getSpannableString(
+                            clickableSpan,
+                            text, index
+                        )
+                        binding.tvNationalIdAction.movementMethod = LinkMovementMethod.getInstance()
+                    }
+                }
+            }
+        }
+    }
 
     private fun createRadioGroup(serverViewModel: FormLayout) {
         val binding = RadioGroupLayoutBinding.inflate(LayoutInflater.from(context))
@@ -1293,6 +1445,7 @@ class FormGenerator(
     private fun createInformationLabel(serverViewModel: FormLayout) {
         val binding = LayoutInformationLabelBinding.inflate(LayoutInflater.from(context))
         serverViewModel.apply {
+            listener.handleMandatoryCondition(serverViewModel)
             binding.root.tag = id + rootSuffix
             binding.tvValue.tag = id
             binding.tvSubValue.tag = id + infoSuffixText

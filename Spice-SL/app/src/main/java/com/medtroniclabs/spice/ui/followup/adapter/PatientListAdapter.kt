@@ -57,6 +57,7 @@ class PatientListAdapter(private val callback: (Int, FollowUpPatientModel) -> Un
                 tvPatientName.text =
                     getPatientName(context, data.name, data.dateOfBirth, data.gender)
 
+                callButton.visible()
                 assessmentButton.visible()
                 tvLabelReason.visible()
                 tvReason.visible()
@@ -65,6 +66,7 @@ class PatientListAdapter(private val callback: (Int, FollowUpPatientModel) -> Un
 
                 when(data.type) {
                     FU_TYPE_HH_VISIT -> {
+                        callButton.gone()
                         setOverDueInfo(data.nextVisitDate, tvDueInformation)
                     }
 

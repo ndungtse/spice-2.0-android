@@ -1,7 +1,5 @@
 package com.medtroniclabs.spice.model.assessment
 
-import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
-
 data class AssessmentDetails(
     val id: Long,
     val villageId: String, // Village Id of household
@@ -17,6 +15,7 @@ data class AssessmentDetails(
     val createdAt: Long,
     val followUpId: Long? = null,
     val neonatePatientId: String? = null,
+    val neonatePatientReferenceId: Long? = null,
     var latitude: Double = 0.0,
     var longitude: Double = 0.0
 )

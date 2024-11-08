@@ -3,6 +3,8 @@ package com.medtroniclabs.spice.ui.boarding.viewmodel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.work.ListenableWorker
+import com.medtroniclabs.spice.appextensions.hideNotification
 import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.common.SecuredPreference
@@ -13,6 +15,7 @@ import com.medtroniclabs.spice.repo.OfflineSyncRepository
 import com.medtroniclabs.spice.ui.boarding.repo.MetaRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -54,7 +57,13 @@ class ResourceLoadingViewModel @Inject constructor(
         viewModelScope.launch(dispatcherIO) {
             householdsLiveData.postLoading()
 
-            // 1. Check Village check
+            //1. Update status for old request Id
+            if (!getSyncStatus()) {
+                householdsLiveData.postError()
+                return@launch
+            }
+
+            // 2. Check Village check
             if (!checkAndProceedVillageChange()) {
                 return@launch
             }
@@ -62,6 +71,26 @@ class ResourceLoadingViewModel @Inject constructor(
             // 2. Get Fetch sync
             offlineSyncRepository.getInsertOrUpdateLocalData(householdsLiveData)
         }
+    }
+
+    private suspend fun getSyncStatus(): Boolean {
+        val requestIds =
+            SecuredPreference.getStringArray(SecuredPreference.EnvironmentKey.OFFLINE_SYNC_REQUEST_ID.name)
+        if (requestIds.isNullOrEmpty()) {
+            return true
+        }
+
+        val uuid = requestIds[0]
+
+        repeat(4) {
+            if (offlineSyncRepository.getSyncStatusForOffline(uuid)) {
+                SecuredPreference.remove(SecuredPreference.EnvironmentKey.OFFLINE_SYNC_REQUEST_ID.name)
+                return true
+            }
+            delay(syncDelay)
+        }
+
+        return false
     }
 
     private suspend fun checkAndProceedVillageChange(): Boolean {

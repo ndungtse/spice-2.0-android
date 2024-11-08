@@ -21,6 +21,7 @@ import com.medtroniclabs.spice.common.EntityMapper
 import com.medtroniclabs.spice.data.model.RecommendedDosageListModel
 import com.medtroniclabs.spice.databinding.FragmentAssessmentRmnchBinding
 import com.medtroniclabs.spice.formgeneration.FormGenerator
+import com.medtroniclabs.spice.formgeneration.config.DefinedParams.VISIBLE
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.listener.FormEventListener
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
@@ -437,15 +438,18 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
     }
 
     override fun handleMandatoryCondition(serverData: FormLayout?) {
-        serverData?.let { formData ->
-            when (formData.id) {
-                MUAC -> {
-                    viewModel.selectedMemberDob?.let { dateOfBirth ->
-                        formData.isMandatory = isMandateOrNot(dateOfBirth)
-                    }
-                }
+        if (serverData?.id == MUAC) {
+            viewModel.selectedMemberDob?.let { dateOfBirth ->
+                val visibility = isMandateOrNot(dateOfBirth)
+                serverData.visibility = visibility
+                serverData.isMandatory = (visibility == VISIBLE)
+                serverData.isSummary = (visibility == VISIBLE)
+            }
+        }
 
-                else -> {}
+        if (serverData?.id == muacStatus) {
+            viewModel.selectedMemberDob?.let { dateOfBirth ->
+                serverData.visibility = isMandateOrNot(dateOfBirth)
             }
         }
     }

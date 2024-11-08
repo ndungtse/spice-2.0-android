@@ -52,7 +52,7 @@ class FollowUpMyPatientActivity : BaseActivity() {
             when (position) {
                 0 -> tab.text = getString(R.string.hh_visit)
                 1 -> tab.text = getString(R.string.referred)
-                2 -> tab.text = getString(R.string.tab_medical_review)
+                2 -> tab.text = getString(R.string.tab_counter_referral)
             }
         }.attach()
 

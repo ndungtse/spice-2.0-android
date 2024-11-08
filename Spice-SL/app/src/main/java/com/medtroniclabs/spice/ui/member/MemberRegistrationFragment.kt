@@ -293,7 +293,9 @@ class MemberRegistrationFragment : Fragment(), FormEventListener, View.OnClickLi
             formGenerator.setValueForView(details.name, view)
         }
 
-        if (arguments?.getBoolean(HouseholdDefinedParams.isPhuWalkInsFlow) == false) {
+        val canDisableHHRelation = !(arguments?.getBoolean(HouseholdDefinedParams.isPhuWalkInsFlow) == true || details.householdHeadRelationship.isEmpty())
+
+        if (canDisableHHRelation) {
             formGenerator.getViewByTag(householdHeadRelationship)?.let { view ->
                 val relationship =
                     if (details.householdHeadRelationship.contains(getString(R.string.separator_hyphen))) {
@@ -310,7 +312,12 @@ class MemberRegistrationFragment : Fragment(), FormEventListener, View.OnClickLi
                 formGenerator.disableView(view, requireContext())
                 formGenerator.setValueForView(relationship, view)
             }
+        } else {
+            val view =
+                formGenerator.getViewByTag(DefinedParams.HouseholdHeadRelationship) as AppCompatSpinner
+            (view.adapter as CustomSpinnerAdapter).removeItemById(HouseholdHead)
         }
+
         formGenerator.getViewByTag(phoneNumber)?.let { view ->
             formGenerator.setValueForView(details.phoneNumber, view)
         }
@@ -415,10 +422,6 @@ class MemberRegistrationFragment : Fragment(), FormEventListener, View.OnClickLi
             }
         } ?: kotlin.run {
             if (householdRegistrationViewModel.memberID == -1L) {
-                (view.adapter as CustomSpinnerAdapter).removeItemById(HouseholdHead)
-            }
-            // Phu Walk Ins remove household head
-            if (arguments?.getBoolean(HouseholdDefinedParams.isPhuWalkInsFlow) == true){
                 (view.adapter as CustomSpinnerAdapter).removeItemById(HouseholdHead)
             }
         }

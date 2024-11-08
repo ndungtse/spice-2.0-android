@@ -490,6 +490,7 @@ class MetaRepository @Inject constructor(
     }
 
     private suspend fun saveFormsInDb(formData: List<FormData>) {
+        roomHelper.deleteAllForms()
         roomHelper.saveForms(formData.map { data ->
             FormEntity(
                 id = data.id,

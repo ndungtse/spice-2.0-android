@@ -6,6 +6,7 @@ import android.content.res.AssetManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.text.SpannableStringBuilder
+import android.view.View
 import com.google.gson.Gson
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.nullIfEmpty
@@ -27,8 +28,10 @@ import com.medtroniclabs.spice.db.entity.RiskClassificationModel
 import com.medtroniclabs.spice.db.entity.RiskFactorModel
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.DAY
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.DAYS
+import com.medtroniclabs.spice.formgeneration.config.DefinedParams.GONE
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.MONTH
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.MONTHS
+import com.medtroniclabs.spice.formgeneration.config.DefinedParams.VISIBLE
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.WEEK
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.WEEKS
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.YEARS
@@ -605,11 +608,14 @@ object CommonUtils {
         }
     }
 
-    fun isMandateOrNot(dateOfBirth: String): Boolean {
+    fun isMandateOrNot(dateOfBirth: String): String {
         val yearMonthWeek = DateUtils.getV2YearMonthAndWeek(dateOfBirth)
         val months = (yearMonthWeek.years * 12) + yearMonthWeek.months
 
-        return months >=6
+        if (months >= 6)
+            return VISIBLE
+        else
+            return GONE
     }
 
     fun formatConsent(consent: String): String {

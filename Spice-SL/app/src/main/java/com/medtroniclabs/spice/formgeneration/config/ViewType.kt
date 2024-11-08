@@ -3,6 +3,7 @@ package com.medtroniclabs.spice.formgeneration.config
 object ViewType {
     const val VIEW_TYPE_FORM_CARD_FAMILY = "CardView"
     const val VIEW_TYPE_FORM_EDITTEXT = "EditText"
+    const val VIEW_TYPE_FORM_EDITTEXT_AREA = "EditTextArea"
     const val VIEW_TYPE_FORM_RADIOGROUP = "RadioGroup"
     const val VIEW_TYPE_FORM_DATEPICKER = "DatePicker"
     const val VIEW_TYPE_FORM_SPINNER = "Spinner"

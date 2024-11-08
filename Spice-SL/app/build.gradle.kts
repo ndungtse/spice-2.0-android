@@ -104,7 +104,7 @@ android {
         create("staging") {
             initWith(getByName("release"))
             applicationIdSuffix = ".staging"
-            versionNameSuffix = "-(20240830_01)"
+           // versionNameSuffix = "-(20240830_01)"
             isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
