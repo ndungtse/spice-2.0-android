@@ -24,6 +24,7 @@ import com.medtroniclabs.spice.formgeneration.extension.markMandatory
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.ui.SingleSelectionCustomView
 import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
+import com.medtroniclabs.spice.model.medicalreview.WazWhzScoreRequest
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil.initTextWatcherForString
@@ -156,8 +157,6 @@ class ClinicalSummaryUnderFiveYearsFragment : BaseFragment() {
     private fun initView() {
         binding.tvHeightLabel.markMandatory()
         binding.tvWeightLabel.markMandatory()
-        binding.tvWAZLabel.markMandatory()
-        binding.tvWHZLabel.markMandatory()
         getFlowData().let {
             val view = SingleSelectionCustomView(binding.root.context)
             view.tag = MOTHER_VITAMIN_TAG
@@ -232,6 +231,28 @@ class ClinicalSummaryUnderFiveYearsFragment : BaseFragment() {
                 }
             }
         }
+        viewModel.wazWhzScoreResponseLiveData.observe(viewLifecycleOwner) {
+                resourceState ->
+            when (resourceState.state) {
+                ResourceState.LOADING -> {
+                    showProgress()
+                }
+
+                ResourceState.SUCCESS -> {
+                    hideProgress()
+                    resourceState.data?.let { it ->
+                        it.let { entity ->
+                            binding.etWAZ.setText(entity.wfa?.toString() ?: "")
+                            binding.etWHZ.setText(entity.wfh?.toString() ?: "")
+                        }
+                    }
+                }
+
+                ResourceState.ERROR -> {
+                    hideProgress()
+                }
+            }
+        }
     }
 
     private var vitaminAMotherSelectionCallBack: ((selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit)? =
@@ -260,9 +281,9 @@ class ClinicalSummaryUnderFiveYearsFragment : BaseFragment() {
         val temperature = temperatureValidate()
         val respirationRate = respirationRateValidate()
         val repeat = repeatValidate()
-        val whz = whzValidate()
-        val waz = wazValidate()
-        return weight && height && temperature && respirationRate && repeat && whz && waz
+//        val whz = whzValidate()
+//        val waz = wazValidate()
+        return weight && height && temperature && respirationRate && repeat
     }
 
     private fun whzValidate(): Boolean {
@@ -418,5 +439,59 @@ class ClinicalSummaryUnderFiveYearsFragment : BaseFragment() {
             binding.repeatGroup.invisible()
         }
     }
+    private fun wazPopulateScore() {
+        binding.apply {
+            etWAZ.isEnabled = false
+            etWHZ.isEnabled = false
+            if (arguments?.getInt(DefinedParams.Age)?.toString()?.toInt() in 0..60) {
+                val onFocusChangeListener = View.OnFocusChangeListener { _, hasFocus ->
+                    if (!hasFocus) {
+                        val gender = arguments?.getString(DefinedParams.Gender)
+                        val age = arguments?.getInt(DefinedParams.Age)?.toString()
+                        val weight = etWeight.text?.toString()
+                        val height = etHeight.text?.toString()
+
+                        val request = WazWhzScoreRequest(
+                            gender = gender,
+                            ageInMonths = age,
+                            weight = if (weight.isNullOrEmpty()) null else weight,
+                            height = if (height.isNullOrEmpty()) null else height
+                        )
+                        val heightText = etHeight.text.toString()
+                        val heightInt = heightText.toIntOrNull()
+
+                        val isHeightValid = heightInt == null || (heightInt in 45..120)
+
+                        if (weight.isNullOrEmpty() || weight=="0") {
+                            etWAZ.setText("")
+                            etWHZ.setText("")
+                            tvHeightError.visibility = if (isHeightValid) View.GONE else View.VISIBLE
+                        } else {
+                            tvHeightError.visibility = if (isHeightValid) View.GONE else View.VISIBLE
+                            if (isHeightValid) {
+                                viewModel.getWazWhzScore(request)
+                            } else {
+                                etWHZ.setText("")
+                            }
+                        }
+
+                    }
+                }
+                etWeight.onFocusChangeListener = onFocusChangeListener
+                etHeight.onFocusChangeListener = onFocusChangeListener
+
+            } else {
+                etWAZ.setText("0")
+                etWHZ.setText("0")
+            }
+        }
+    }
+
+
+    override fun onResume() {
+        super.onResume()
+        wazPopulateScore()
+    }
+
 
 }

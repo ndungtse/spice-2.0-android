@@ -1019,6 +1019,7 @@
     <string name="or_label"> (OR) </string>
     <string name="high_risk_confirmation" translatable="false">Are you sure you want to flag this as a High Risk Pregnancy?</string>
     <string name="no_new_medicines_prescribed_warning">Are you sure you want to continue submitting the report without prescribing medicine for the patient?</string>
+    <string name="please_enter_valid_value_between_45_to_120">Please enter valid value between 45 to 120</string>
     <string name="tobacoo_question">Are you a regular smoker or have you been a regular smoker in the past 12 months?</string>
     <string name="enter_height">Enter Height</string>
     <string name="enter_weight">Enter Weight</string>

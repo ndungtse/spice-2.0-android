@@ -14,6 +14,7 @@ import com.medtroniclabs.spice.app.analytics.model.UserDetail
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.visible
+import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.databinding.ActivityUnderTwoMonthsBaseBinding
@@ -36,7 +37,6 @@ import com.medtroniclabs.spice.ui.medicalreview.examinations.ExaminationCardView
 import com.medtroniclabs.spice.ui.medicalreview.investigation.InvestigationActivity
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.AncVisitCallBack
 import com.medtroniclabs.spice.ui.medicalreview.prescription.PrescriptionActivity
-import com.medtroniclabs.spice.ui.medicalreview.underfiveyears.UnderFiveYearsTreatmentSummaryFragment
 import com.medtroniclabs.spice.ui.medicalreview.undertwomonths.fragment.BirthHistoryFragment
 import com.medtroniclabs.spice.ui.medicalreview.undertwomonths.fragment.ClinicalSummaryFragment
 import com.medtroniclabs.spice.ui.medicalreview.undertwomonths.fragment.UnderTwoMonthsTreatmentSummaryFragment
@@ -281,11 +281,16 @@ private fun successSummaryDialog() {
             )
     }
 
-    private fun initializeFragments() {
+    private fun initializeFragments(details: PatientListRespModel) {
         showLoading()
         initializeDiagnosisFragments()
         initializeBirthHistoryFragments()
-        replaceFragment<ClinicalSummaryFragment>(binding.clinicalSummaryContainer.id,tag=ClinicalSummaryFragment.TAG)
+        val ageInMonth =details.birthDate?.let { DateUtils.calculateAgeInMonths(it) }
+        val bundle = Bundle().apply {
+            putString(DefinedParams.Gender, details.gender)
+            ageInMonth?.first?.let { putInt(DefinedParams.Age, it) }
+        }
+        replaceFragment<ClinicalSummaryFragment>(binding.clinicalSummaryContainer.id,tag=ClinicalSummaryFragment.TAG, bundle = bundle)
         replaceFragment<ExaminationCardFragment>(binding.examinationsContainer.id,tag=ExaminationCardFragment.TAG)
         replaceFragment<PresentingComplaintsFragment>(binding.presentingComplaintsContainer.id, initializeBundle(),tag=PresentingComplaintsFragment.TAG)
         replaceFragment<ClinicalNotesFragment>(binding.clinicalNotesContainer.id, initializeBundle(), tag = ClinicalNotesFragment.TAG)
@@ -468,7 +473,7 @@ private fun successSummaryDialog() {
                 initializeBirthHistoryFragments()
                 setRefresh(false)
             }
-            false -> initializeFragments()
+            false -> initializeFragments(details)
         }
     }
 

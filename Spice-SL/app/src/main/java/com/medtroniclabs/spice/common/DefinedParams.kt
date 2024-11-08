@@ -154,6 +154,8 @@ object DefinedParams {
 
     const val name = "name"
 
+    const val Age = "age"
+
     const val Landing = "landing"
     const val Screening = "screening"
     const val Registration = "registration"
@@ -223,4 +225,6 @@ object DefinedParams {
     const val DialogWidth = 720f
     const val COMMUNITY = "COMMUNITY"
     const val NON_COMMUNITY = "NON_COMMUNITY"
+    const val Others = "Others"
+
 }

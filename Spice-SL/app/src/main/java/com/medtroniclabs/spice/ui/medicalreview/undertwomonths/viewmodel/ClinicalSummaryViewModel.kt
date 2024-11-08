@@ -7,15 +7,20 @@ import androidx.lifecycle.viewModelScope
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.MeasurementDefinedParams
+import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.data.MedicalReviewMetaItems
 import com.medtroniclabs.spice.di.IoDispatcher
+import com.medtroniclabs.spice.model.medicalreview.WazWhzScoreRequest
+import com.medtroniclabs.spice.model.medicalreview.WazWhzScoreResponse
 import com.medtroniclabs.spice.network.resource.Resource
+import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.repo.UnderTwoMonthsRepository
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -29,6 +34,7 @@ class ClinicalSummaryViewModel @Inject constructor(
     var selectedImmunisationStatus: String? = null
     var clinicalSummaryAndSigns = ClinicalSummaryAndSigns()
     val summaryMetaListItems = MutableLiveData<Resource<List<MedicalReviewMetaItems>>>()
+    val wazWhzScoreResponseLiveData = MutableLiveData<Resource<WazWhzScoreResponse>>()
 
 
     fun updateWeight(weight: String) {
@@ -128,4 +134,14 @@ class ClinicalSummaryViewModel @Inject constructor(
             summaryMetaListItems.postValue(repository.getImmunisationStatusMetaItems(MedicalReviewTypeEnums.UNDER_TWO_MONTHS.name))
         }
     }
+
+    fun getWazWhzScore(request: WazWhzScoreRequest) {
+        viewModelScope.launch(dispatcherIO) {
+            wazWhzScoreResponseLiveData.postLoading()
+            wazWhzScoreResponseLiveData.postValue(
+                repository.getWazWhzScore(request)
+            )
+        }
+    }
+
 }

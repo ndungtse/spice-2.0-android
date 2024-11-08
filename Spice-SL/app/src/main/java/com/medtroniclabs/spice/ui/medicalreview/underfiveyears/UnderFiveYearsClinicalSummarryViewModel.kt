@@ -9,6 +9,8 @@ import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.MeasurementDefinedParams
 import com.medtroniclabs.spice.data.MedicalReviewMetaItems
 import com.medtroniclabs.spice.di.IoDispatcher
+import com.medtroniclabs.spice.model.medicalreview.WazWhzScoreRequest
+import com.medtroniclabs.spice.model.medicalreview.WazWhzScoreResponse
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.repo.UnderFiveYearsRepository
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
@@ -31,6 +33,8 @@ class UnderFiveYearsClinicalSummaryViewModel @Inject constructor(
     val summaryMetaListItems = MutableLiveData<Resource<List<MedicalReviewMetaItems>>>()
     val summaryMuacMetaItems = MutableLiveData<Resource<List<MedicalReviewMetaItems>>>()
     var selectedMuacStatus: String? = null
+    val wazWhzScoreResponseLiveData = MutableLiveData<Resource<WazWhzScoreResponse>>()
+
 
     fun updateWeight(weight: String) {
         val isEmpty = weight.isEmpty()
@@ -132,6 +136,14 @@ class UnderFiveYearsClinicalSummaryViewModel @Inject constructor(
                 repository.getMuAcStatusMetaItems(
                     MedicalReviewTypeEnums.UNDER_FIVE_YEARS.name
                 )
+            )
+        }
+    }
+    fun getWazWhzScore(request: WazWhzScoreRequest) {
+        viewModelScope.launch(dispatcherIO) {
+            wazWhzScoreResponseLiveData.postLoading()
+            wazWhzScoreResponseLiveData.postValue(
+                repository.getWazWhzScore(request)
             )
         }
     }

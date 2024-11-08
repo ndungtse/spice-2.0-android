@@ -13,6 +13,7 @@ import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.app.analytics.model.UserDetail
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.appextensions.gone
+import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.databinding.ActivityUnderFiveYearsBaseBinding
@@ -380,13 +381,18 @@ class UnderFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
         }
     }
 
-    private fun initializeFragments() {
+    private fun initializeFragments(details: PatientListRespModel) {
         binding.patientDiagnosisContainer.visibility = View.VISIBLE
         diagnosisAndExaminationFragment()
         showLoading()
         systemicExaminationFragment()
+        val ageInMonth =details.birthDate?.let { DateUtils.calculateAgeInMonths(it) }
+        val bundle = Bundle().apply {
+            putString(DefinedParams.Gender, details.gender)
+            ageInMonth?.first?.let { putInt(DefinedParams.Age, it) }
+        }
         replaceFragmentInId<ClinicalSummaryUnderFiveYearsFragment>(
-            binding.clinicalSummaryContainer.id, tag = ClinicalSummaryUnderFiveYearsFragment.TAG
+            binding.clinicalSummaryContainer.id, tag = ClinicalSummaryUnderFiveYearsFragment.TAG, bundle = bundle
         )
         replaceFragmentInId<ExaminationCardFragment>(
             binding.examinationsContainer.id,
@@ -569,7 +575,7 @@ class UnderFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
         if (viewModel.isSwipeRefresh) {
             systemicExaminationFragment()
         } else {
-            initializeFragments()
+            initializeFragments(details)
         }
         viewModel.memberId = details.memberId
     }

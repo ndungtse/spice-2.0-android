@@ -114,6 +114,11 @@ import com.medtroniclabs.spice.ncd.data.LifeStyleRequest
 import com.medtroniclabs.spice.ncd.data.NCDMedicalReviewUpdateModel
 import com.medtroniclabs.spice.ncd.data.PatientVisitRequest
 import com.medtroniclabs.spice.ncd.data.PatientVisitResponse
+import com.medtroniclabs.spice.ncd.data.ScreeningPatientResponse
+import com.medtroniclabs.spice.ncd.data.ValidatePatientModel
+import com.medtroniclabs.spice.model.medicalreview.WazWhzScoreRequest
+import com.medtroniclabs.spice.model.medicalreview.WazWhzScoreResponse
+import okhttp3.MultipartBody
 import com.medtroniclabs.spice.ncd.data.TermsAndConditionsModel
 import com.medtroniclabs.spice.ncd.data.NCDPatientRemoveRequest
 import com.medtroniclabs.spice.ncd.data.NCDPatientTransferValidate
@@ -445,6 +450,9 @@ interface ApiService {
 
     @PUT("/spice-service/patient/pregnancy-anc-risk/update")
     suspend fun ncdUpdatePregnancyRisk(@Body request: NCDPregnancyRiskUpdate): Response<APIResponse<Boolean>>
+    @POST("/spice-service/patient/calculate-wgs")
+    suspend fun getWazWhzScore(@Body request: WazWhzScoreRequest): Response<APIResponse<WazWhzScoreResponse>>
+
 
     @POST("/spice-service/screening/dashboard-count")
     suspend fun getUserDashboardDetails(@Body request: NCDUserDashboardRequest): Response<APIResponse<NCDUserDashboardResponse>>
