@@ -96,7 +96,7 @@ object Screening {
     const val NegativeValue: Boolean = false
     const val referredReasons = "referredReasons"
     const val UnitMeasurement = "unitMeasurement"
-    const val Customized_Workflows = "customizedWorkflows"
+    const val CustomizedWorkflows = "customizedWorkflows"
     const val PCMentalHealth = "pcMentalHealth"
     const val PIScore = "piScore"
     const val BMI_CATEGORY = "bmiCategory"

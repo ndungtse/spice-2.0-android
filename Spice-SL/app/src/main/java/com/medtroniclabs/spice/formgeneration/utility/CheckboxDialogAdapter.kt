@@ -63,15 +63,17 @@ class CheckboxDialogAdapter(
     }
 
     override fun getItemCount(): Int = dialogList.size
-    fun getSelectedItems(): ArrayList<HashMap<String, Any>> {
+    fun getSelectedItems(valueKeyNotNeeded: Boolean = false): ArrayList<HashMap<String, Any>> {
         val list = dialogList.filter { it.isSelected }
         val selectedItemList = ArrayList<HashMap<String, Any>>()
         list.forEach {
             val map = HashMap<String, Any>()
             map[DefinedParams.ID] = it._id
             map[DefinedParams.NAME] = it.symptom
-            it.value?.let { value ->
-                map[DefinedParams.value] = value
+            if (!valueKeyNotNeeded) {
+                it.value?.let { value ->
+                    map[DefinedParams.value] = value
+                }
             }
             selectedItemList.add(map)
         }

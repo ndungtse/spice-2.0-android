@@ -18,7 +18,7 @@ import com.medtroniclabs.spice.common.DefinedParams.DefaultIDLabel
 import com.medtroniclabs.spice.common.DefinedParams.ID
 import com.medtroniclabs.spice.common.DefinedParams.NAME
 import com.medtroniclabs.spice.common.DefinedParams.Yes
-import com.medtroniclabs.spice.common.DefinedParams.value
+import com.medtroniclabs.spice.common.DefinedParams.Value
 import com.medtroniclabs.spice.data.MedicalReviewMetaItems
 import com.medtroniclabs.spice.databinding.FragmentClinicalSummaryBinding
 import com.medtroniclabs.spice.formgeneration.extension.markMandatory
@@ -246,7 +246,7 @@ class ClinicalSummaryFragment : BaseFragment(), View.OnClickListener {
                 hashMapOf<String, Any>(
                     NAME to item.name,
                     DefinedParams.id to item.id.toString(),
-                    value to (item.value ?: item.name)
+                    Value to (item.value ?: item.name)
                 )
             )
         }
@@ -269,7 +269,7 @@ class ClinicalSummaryFragment : BaseFragment(), View.OnClickListener {
                     val selectedItem = adapter.getData(position = position)
                     selectedItem?.let {
                         val selectedId = it[ID] as String?
-                        val selectedImmunisationStatus = it[value] as String?
+                        val selectedImmunisationStatus = it[Value] as String?
                         if (selectedId != DefaultID) {
                             selectedImmunisationStatus?.let {
                                 viewModel.selectedImmunisationStatus = it

@@ -1,7 +1,6 @@
 package com.medtroniclabs.spice.repo
 
 import android.location.Location
-import androidx.lifecycle.LiveData
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.google.gson.reflect.TypeToken
@@ -298,12 +297,6 @@ class AssessmentRepository @Inject constructor(
 
     suspend fun getChildPatientId(parentId: Long): Long? {
         return roomHelper.getChildPatientId(parentId)
-    }
-    fun getAssessmentFormData(
-        formType: String,
-        workFlow: String
-    ): LiveData<String> {
-        return roomHelper.getAssessmentFormData(formType, workFlow)
     }
 
     suspend fun getSymptomList(): List<SignsAndSymptomsEntity> {

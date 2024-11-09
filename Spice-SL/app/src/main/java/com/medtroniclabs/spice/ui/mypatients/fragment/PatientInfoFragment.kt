@@ -210,34 +210,34 @@ class PatientInfoFragment : BaseFragment() {
             val dataList = mutableListOf(
                 mapOf(
                     DefinedParams.label to requireContext().getString(R.string.patient_id),
-                    DefinedParams.value to (patientListRespModel.patientId
+                    DefinedParams.Value to (patientListRespModel.patientId
                         ?: requireContext().getString(R.string.hyphen_symbol)).toString().trim()
                 ),
                 mapOf(
                     DefinedParams.label to requireContext().getString(R.string.contact_number),
-                    DefinedParams.value to (getContactNumber(patientListRespModel.phoneNumber.takeIf { it?.isNotBlank() == true }
+                    DefinedParams.Value to (getContactNumber(patientListRespModel.phoneNumber.takeIf { it?.isNotBlank() == true }
                         ?.trim())
                         ?: requireContext().getString(R.string.hyphen_symbol))
                 ),
                 mapOf(
                     DefinedParams.label to requireContext().getString(R.string.hh_id),
-                    DefinedParams.value to (patientListRespModel.houseHoldNumber
+                    DefinedParams.Value to (patientListRespModel.houseHoldNumber
                         ?: requireContext().getString(R.string.hyphen_symbol)).toString()
                 ),
                 mapOf(
                     DefinedParams.label to requireContext().getString(R.string.landmark),
-                    DefinedParams.value to (patientListRespModel.landmark.takeIf { it?.isNotBlank() == true }?.trim()
+                    DefinedParams.Value to (patientListRespModel.landmark.takeIf { it?.isNotBlank() == true }?.trim()
                         ?: requireContext().getString(R.string.hyphen_symbol))),
                 mapOf(
                     DefinedParams.label to requireContext().getString(R.string.village),
-                    DefinedParams.value to (patientListRespModel.village.takeIf { it?.isNotBlank() == true }?.trim()
+                    DefinedParams.Value to (patientListRespModel.village.takeIf { it?.isNotBlank() == true }?.trim()
                         ?: requireContext().getString(R.string.hyphen_symbol)))
             )
             if (isAnc == true && lastMenstrualDate != null) {
                 dataList.add(
                     mapOf(
                         DefinedParams.label to requireContext().getString(R.string.last_menstrual_period),
-                        DefinedParams.value to lastMenstrualDate
+                        DefinedParams.Value to lastMenstrualDate
                     )
                 )
             }
@@ -245,7 +245,7 @@ class PatientInfoFragment : BaseFragment() {
                 dataList.add(
                     mapOf(
                         DefinedParams.label to requireContext().getString(R.string.date_of_delivery),
-                        DefinedParams.value to dateOfDelivery
+                        DefinedParams.Value to dateOfDelivery
                     )
                 )
             }
@@ -253,7 +253,7 @@ class PatientInfoFragment : BaseFragment() {
                 dataList.add(
                     mapOf(
                         DefinedParams.label to requireContext().getString(R.string.anc_visit),
-                        DefinedParams.value to (patientListRespModel.pregnancyDetails?.ancVisitMedicalReview?.takeIf { true }
+                        DefinedParams.Value to (patientListRespModel.pregnancyDetails?.ancVisitMedicalReview?.takeIf { true }
                             ?.plus(1)
                             ?.toString()
                             ?: "1")
@@ -264,7 +264,7 @@ class PatientInfoFragment : BaseFragment() {
                 dataList.add(
                     mapOf(
                         DefinedParams.label to requireContext().getString(R.string.diagnosis),
-                        DefinedParams.value to combineText(
+                        DefinedParams.Value to combineText(
                             patientListRespModel.diagnosis?.filter { it.diseaseCategory?.lowercase() != OtherNotes.lowercase() }
                                 ?.map { it.diseaseCategory }?.distinct(),
                             "",
@@ -331,7 +331,7 @@ class PatientInfoFragment : BaseFragment() {
         val dataList = mutableListOf(
             mapOf(
                 DefinedParams.label to requireContext().getString(R.string.registration_date),
-                DefinedParams.value to (data.enrollmentAt?.let {
+                DefinedParams.Value to (data.enrollmentAt?.let {
                     DateUtils.convertDateFormat(
                         it,
                         DATE_TIME_yyyyMMddTHHmmssSSSXXX,
@@ -341,18 +341,18 @@ class PatientInfoFragment : BaseFragment() {
             ),
             mapOf(
                 DefinedParams.label to requireContext().getString(R.string.cvd_risk),
-                DefinedParams.value to (cvdRiskLevel?.first
+                DefinedParams.Value to (cvdRiskLevel?.first
                     ?: requireContext().getString(R.string.hyphen_symbol)).toString().trim(),
                 DefinedParams.color to cvdRiskLevel?.second
             ),
             mapOf(
                 DefinedParams.label to requireContext().getString(R.string.program_id),
-                DefinedParams.value to (data.programId
+                DefinedParams.Value to (data.programId
                     ?: requireContext().getString(R.string.hyphen_symbol)).toString().trim()
             ),
             mapOf(
                 DefinedParams.label to requireContext().getString(R.string.bmi),
-                DefinedParams.value to (CommonUtils.getBMIFormattedText(
+                DefinedParams.Value to (CommonUtils.getBMIFormattedText(
                     requireContext(),
                     data.bmi
                 ).first
@@ -364,14 +364,14 @@ class PatientInfoFragment : BaseFragment() {
             ),
             mapOf(
                 DefinedParams.label to requireContext().getString(R.string.national_id),
-                DefinedParams.value to (data.identityValue
+                DefinedParams.Value to (data.identityValue
                     ?: requireContext().getString(R.string.hyphen_symbol)).toString().trim()
             )
         )
         dataList.add(
             mapOf(
                 DefinedParams.label to requireContext().getString(R.string.contact_number),
-                DefinedParams.value to (getContactNumber(data.phoneNumber.takeIf { it?.isNotBlank() == true }
+                DefinedParams.Value to (getContactNumber(data.phoneNumber.takeIf { it?.isNotBlank() == true }
                     ?.trim())
                     ?: requireContext().getString(R.string.hyphen_symbol))
             )
@@ -383,7 +383,7 @@ class PatientInfoFragment : BaseFragment() {
             dataList.add(
                 mapOf(
                     DefinedParams.label to requireContext().getString(R.string.high_risk),
-                    DefinedParams.value to (data.pregnancyDetails?.isPregnancyRisk ?: false),
+                    DefinedParams.Value to (data.pregnancyDetails?.isPregnancyRisk ?: false),
                     DefinedParams.Gender to (data.gender)
                 )
             )
@@ -392,7 +392,7 @@ class PatientInfoFragment : BaseFragment() {
             dataList.add(
                 mapOf(
                     DefinedParams.label to requireContext().getString(R.string.diagnosis),
-                    DefinedParams.value to combineText(
+                    DefinedParams.Value to combineText(
                         data.confirmDiagnosis?.diagnosis?.mapNotNull { it.name },
                         data.confirmDiagnosis?.diagnosisNotes.takeIf { it?.isNotBlank() == true },
                         getString(R.string.hyphen_symbol)

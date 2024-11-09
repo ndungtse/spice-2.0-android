@@ -22,7 +22,6 @@ import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.ViewUtils
-import com.medtroniclabs.spice.data.MedicalReviewMetaItems
 import com.medtroniclabs.spice.data.MotherNeonatePncSummaryResponse
 import com.medtroniclabs.spice.data.history.PatientStatus
 import com.medtroniclabs.spice.databinding.FragmentMotherNeonarePncSummaryBinding
@@ -294,7 +293,7 @@ class MotherNeonatePncSummaryFragment : BaseFragment(), View.OnClickListener {
                 hashMapOf<String, Any>(
                     DefinedParams.NAME to
                         item.name,
-                    DefinedParams.value to item.value
+                    DefinedParams.Value to item.value
                 )
             )
         }
@@ -302,7 +301,7 @@ class MotherNeonatePncSummaryFragment : BaseFragment(), View.OnClickListener {
         adapter.setData(dropDownList)
         var defaultPosition = 0
         for ((index, patientStatus) in dropDownList.withIndex()) {
-            if ((patientStatus[DefinedParams.value] as? String).equals(
+            if ((patientStatus[DefinedParams.Value] as? String).equals(
                     ReferralStatus.OnTreatment.name,
                     true
                 )
@@ -324,7 +323,7 @@ class MotherNeonatePncSummaryFragment : BaseFragment(), View.OnClickListener {
                 ) {
                     val selectedItem = adapter.getData(position = pos)
                     selectedItem?.let {
-                        val selectedName = it[DefinedParams.value] as String?
+                        val selectedName = it[DefinedParams.Value] as String?
                         selectedName?.let { name ->
                             pncMotherPatientStatus.let { type ->
                                 viewModel.patientStatusMother = name

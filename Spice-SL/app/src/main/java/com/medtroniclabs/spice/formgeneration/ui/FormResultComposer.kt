@@ -1,6 +1,7 @@
 package com.medtroniclabs.spice.formgeneration.ui
 
 import android.content.Context
+import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.formgeneration.config.ViewType
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
@@ -17,7 +18,14 @@ class FormResultComposer {
         menuType: String? = null,
         bmiCategoryGroupId: String? = null
     ): Pair<String?, HashMap<String, Any>> {
+        val customWorkflowList = ArrayList<String>()
         serverData.forEach { serverViewModel ->
+            if (serverViewModel?.isCustomWorkflow == true) {
+                serverViewModel.id.let { cWorkflowId ->
+                    if (cWorkflowId.isNotBlank())
+                        customWorkflowList.add(cWorkflowId)
+                }
+            }
             when (serverViewModel?.viewType) {
                 ViewType.VIEW_TYPE_FORM_CARD_FAMILY -> createGroup(serverViewModel.id)
                 else -> {
@@ -31,12 +39,26 @@ class FormResultComposer {
             }
         }
 
-
         for (key in resultMap.keys) {
             groupResultsForNCD(serverData, key, resultMap[key])
         }
 
-
+        if (customWorkflowList.size > 0) {
+            val list = ArrayList<Any>()
+            customWorkflowList.forEach { entryMap ->
+                if (groupedResultMap.containsKey(entryMap)) {
+                    groupedResultMap.remove(entryMap)?.let { value ->
+                        if (value is Map<*, *> && value.isNotEmpty()) {
+                            val map = HashMap<String, Any>()
+                            map[entryMap] = value
+                            list.add(map)
+                        }
+                    }
+                }
+            }
+            if (list.isNotEmpty())
+                groupedResultMap[Screening.CustomizedWorkflows] = list
+        }
 
         if (groupedResultMap.containsKey(Screening.PCMentalHealth))
             (groupedResultMap[Screening.PCMentalHealth] as? HashMap<*, *>)?.let { pcMap ->

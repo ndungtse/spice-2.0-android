@@ -36,6 +36,7 @@ import com.medtroniclabs.spice.mappingkey.Screening.Avg_Diastolic
 import com.medtroniclabs.spice.mappingkey.Screening.Avg_Systolic
 import com.medtroniclabs.spice.mappingkey.Screening.bp_log
 import com.medtroniclabs.spice.ncd.data.TreatmentPlanResponse
+import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDFormViewModel
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
@@ -48,6 +49,7 @@ class AssessmentNCDSummaryFragment : BaseFragment(), View.OnClickListener {
 
     private lateinit var binding: FragmentAssessmentNCDSummaryBinding
     private val viewModel: AssessmentViewModel by activityViewModels()
+    private val ncdFormViewModel: NCDFormViewModel by activityViewModels()
     private lateinit var formSummaryReporter: FormSummaryReporter
     private val patientDetailViewModel: PatientDetailViewModel by activityViewModels()
 
@@ -104,17 +106,15 @@ class AssessmentNCDSummaryFragment : BaseFragment(), View.OnClickListener {
     }
 
     private fun attachObserver() {
-        viewModel.formLayoutsNcdLiveData.value.let { form ->
+        ncdFormViewModel.ncdFormResponse.value?.data?.let { form ->
             viewModel.assessmentSaveResponse.value?.data?.let {
                 StringConverter.convertStringToMap(it.first.assessmentDetails)?.let { map ->
-                    val formFieldsType = object : TypeToken<FormResponse>() {}.type
-                    val formFields: FormResponse = Gson().fromJson(form, formFieldsType)
                     formSummaryReporter.populateAssessmentSummary(
-                        formFields.formLayout,
+                        form,
                         map,
                         false
                     )
-                    calculateOtherMetrics(formFields.formLayout, map)
+                    calculateOtherMetrics(form, map)
                 }
 
                 it.second?.let { onlineResponseMap ->

@@ -164,7 +164,7 @@ class NCDPatientHistoryDialog : DialogFragment(), View.OnClickListener {
                     adapter.getData(pos)?.let {
                         val selectedId = (it[DefinedParams.id] as? Long) ?: -1L
                         val selectedName = it[DefinedParams.NAME] as String?
-                        val value = it[DefinedParams.value] as String?
+                        val value = it[DefinedParams.Value] as String?
                         if (selectedId != -1L) {
                             viewModel.value = value
                         } else {
@@ -190,7 +190,7 @@ class NCDPatientHistoryDialog : DialogFragment(), View.OnClickListener {
             hashMapOf<String, Any>().apply {
                 symptoms.id?.let { put(DefinedParams.ID, it) }
                 symptoms.name?.let { put(DefinedParams.NAME, it) }
-                symptoms.value?.let { put(DefinedParams.value, it) }
+                symptoms.value?.let { put(DefinedParams.Value, it) }
             }.takeIf { it.isNotEmpty() }
         }
         adapter.setData(list)

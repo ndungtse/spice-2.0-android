@@ -16,7 +16,6 @@ import com.medtroniclabs.spice.db.entity.ClinicalWorkflowEntity
 import com.medtroniclabs.spice.db.entity.ConsentEntity
 import com.medtroniclabs.spice.db.entity.DistrictEntity
 import com.medtroniclabs.spice.db.entity.FormEntity
-import com.medtroniclabs.spice.db.entity.FrequencyEntity
 import com.medtroniclabs.spice.db.entity.HealthFacilityEntity
 import com.medtroniclabs.spice.db.entity.MedicalComplianceEntity
 import com.medtroniclabs.spice.db.entity.MentalHealthEntity
@@ -207,16 +206,18 @@ interface MetaDataDAO {
     @Query("SELECT * FROM HealthFacilityEntity Order by isDefault DESC")
     fun getSites(): LiveData<List<HealthFacilityEntity>>
 
-    @Query("SELECT formInput FROM FormEntity where formType =:formType")
-    fun getFormDataForNcd(
-        formType: String
-    ): LiveData<String>
+    @Query("SELECT formInput FROM FormEntity where formType =:formType OR formType =:customizedFormType")
+    suspend fun getNCDForm(
+        formType: String,
+        customizedFormType: String
+    ): List<String>
 
-    @Query("SELECT formInput FROM FormEntity where formType =:formType AND workflowName =:workFlow")
+    @Query("SELECT formInput FROM FormEntity where formType =:formType OR formType =:customizedFormType AND workflowName =:workFlow")
     fun getAssessmentFormData(
         formType: String,
+        customizedFormType: String,
         workFlow: String
-    ): LiveData<String>
+    ): List<String>
 
     @Query("SELECT cwe.id, cwe.name, cwe.workflowName, cwce.category, cwce.groupName, cwce.subModule, cwe.displayOrder FROM ClinicalWorkflowEntity AS cwe JOIN ClinicalWorkflowConditionEntity AS cwce ON cwe.id = cwce.clinicalWorkflowId WHERE cwce.gender = :gender AND cwce.moduleType = :moduleType ORDER BY cwe.displayOrder")
     suspend fun getAssessmentClinicalWorkflow(

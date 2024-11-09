@@ -13,7 +13,6 @@ import androidx.fragment.app.setFragmentResult
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.CommonUtils.combineText
-import com.medtroniclabs.spice.common.CommonUtils.composeLabelName
 import com.medtroniclabs.spice.common.CommonUtils.convertListToString
 import com.medtroniclabs.spice.common.CommonUtils.createInvestigation
 import com.medtroniclabs.spice.common.CommonUtils.createPrescription
@@ -182,7 +181,7 @@ class AboveFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
                 dropDownList.add(
                     hashMapOf<String, Any>(
                         DefinedParams.NAME to item.name,
-                        DefinedParams.value to item.value
+                        DefinedParams.Value to item.value
                     )
                 )
             }
@@ -191,7 +190,7 @@ class AboveFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
         adapter.setData(dropDownList)
         var defaultPosition = 0
         for ((index, patientStatus) in dropDownList.withIndex()) {
-            if ((patientStatus[DefinedParams.value] as? String).equals(
+            if ((patientStatus[DefinedParams.Value] as? String).equals(
                     ReferralStatus.OnTreatment.name,
                     true
                 )
@@ -213,7 +212,7 @@ class AboveFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
                 ) {
                     val selectedItem = adapter.getData(position = pos)
                     selectedItem?.let {
-                        val selectedName = it[DefinedParams.value] as String?
+                        val selectedName = it[DefinedParams.Value] as String?
                         selectedName?.let { name ->
                             viewModel.selectedPatientStatus = name
                         }
@@ -250,7 +249,7 @@ class AboveFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
             hashMapOf<String, Any>(
                 DefinedParams.NAME to DefinedParams.DefaultIDLabel,
                 DefinedParams.id to DefinedParams.DefaultID,
-                DefinedParams.value to DefinedParams.DefaultIDLabel
+                DefinedParams.Value to DefinedParams.DefaultIDLabel
             )
         )
         for (item in costList) {
@@ -258,7 +257,7 @@ class AboveFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
                 hashMapOf<String, Any>(
                     DefinedParams.NAME to item.name,
                     DefinedParams.id to item.id.toString(),
-                    DefinedParams.value to (item.value ?: item.name)
+                    DefinedParams.Value to (item.value ?: item.name)
                 )
             )
         }
@@ -278,7 +277,7 @@ class AboveFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
                     selectedItem?.let {
                         val selectedName = it[DefinedParams.NAME] as String?
                         if (selectedName != DefinedParams.DefaultIDLabel) {
-                                viewModel.selectedCostItem = it[DefinedParams.value] as String
+                                viewModel.selectedCostItem = it[DefinedParams.Value] as String
                         } else {
                             viewModel.selectedCostItem = null
                         }

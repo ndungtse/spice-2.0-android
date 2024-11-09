@@ -25,20 +25,22 @@ import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.ui.FormResultComposer
 import com.medtroniclabs.spice.mappingkey.Screening
 import com.medtroniclabs.spice.mappingkey.Screening.BioMetrics
-import com.medtroniclabs.spice.network.resource.ResourceState
-import com.medtroniclabs.spice.ui.BaseActivity
-import com.medtroniclabs.spice.ui.BaseFragment
-import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
+import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDFormViewModel
 import com.medtroniclabs.spice.ncd.registration.ui.RegistrationActivity
 import com.medtroniclabs.spice.ncd.registration.viewmodel.RegistrationFormViewModel
 import com.medtroniclabs.spice.ncd.screening.ui.DuplicationNudgeDialog
+import com.medtroniclabs.spice.network.resource.ResourceState
+import com.medtroniclabs.spice.ui.BaseActivity
+import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.MenuConstants
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
 import com.medtroniclabs.spice.ui.home.AssessmentToolsActivity
+import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 
 class RegistrationFormFragment : BaseFragment(), View.OnClickListener, FormEventListener {
     private lateinit var binding: FragmentRegistrationFormBinding
     private val viewModel: RegistrationFormViewModel by activityViewModels()
+    private val ncdFormViewModel: NCDFormViewModel by activityViewModels()
     private val patientViewModel: PatientDetailViewModel by activityViewModels()
     private lateinit var formGenerator: FormGenerator
 
@@ -68,10 +70,28 @@ class RegistrationFormFragment : BaseFragment(), View.OnClickListener, FormEvent
     }
 
     private fun loadJson() {
-        viewModel.getFormData(DefinedParams.Registration)
+        ncdFormViewModel.getNCDForm(MenuConstants.REGISTRATION.lowercase())
     }
 
     private fun attachObservers() {
+        ncdFormViewModel.ncdFormResponse.observe(viewLifecycleOwner) { resources ->
+            when (resources.state) {
+                ResourceState.LOADING -> {
+                    (activity as? BaseActivity)?.showLoading()
+                }
+
+                ResourceState.SUCCESS -> {
+                    (activity as? BaseActivity)?.hideLoading()
+                    resources.data?.let {
+                        formGenerator.populateViews(it)
+                    }
+                }
+
+                ResourceState.ERROR -> {
+                    (activity as? BaseActivity)?.hideLoading()
+                }
+            }
+        }
         viewModel.validatePatientResponseLiveDate.observe(viewLifecycleOwner) { resources ->
             when (resources.state) {
                 ResourceState.LOADING -> {
@@ -107,25 +127,6 @@ class RegistrationFormFragment : BaseFragment(), View.OnClickListener, FormEvent
                             positiveButtonName = getString(R.string.ok),
                         ) {}
                     }
-                }
-            }
-        }
-        viewModel.registrationFormLayoutsLiveData.observe(viewLifecycleOwner) { resources ->
-            when (resources.state) {
-                ResourceState.LOADING -> {
-                    showProgress()
-                }
-
-                ResourceState.SUCCESS -> {
-                    hideProgress()
-                    resources.data?.let { data ->
-                        formGenerator.populateViews(data.formLayout)
-                        prePopulate()
-                    }
-                }
-
-                ResourceState.ERROR -> {
-                    hideProgress()
                 }
             }
         }
@@ -319,7 +320,6 @@ class RegistrationFormFragment : BaseFragment(), View.OnClickListener, FormEvent
                 CommonUtils.addAncEnableOrNot(it,BioMetrics)
 
                 it.apply {
-                    put(Screening.identityType, Screening.nationalId)
                     patientViewModel.patientDetailsLiveData.value?.data?.id?.let { memberId ->
                         put(AssessmentDefinedParams.memberReference, memberId)
                     }
@@ -333,6 +333,7 @@ class RegistrationFormFragment : BaseFragment(), View.OnClickListener, FormEvent
         resultMap: HashMap<String, Any>?,
         serverData: List<FormLayout?>?
     ) {
+        resultMap?.remove(Screening.identityType)
         withNetworkAvailability(online = {
             resultMap?.let { map ->
                 val unwantedKeys = setOf(Week, Year, Month, Days)

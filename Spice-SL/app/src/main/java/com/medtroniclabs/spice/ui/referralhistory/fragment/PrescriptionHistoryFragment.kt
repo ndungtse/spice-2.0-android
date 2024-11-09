@@ -202,7 +202,7 @@ class PrescriptionHistoryFragment : BaseFragment(), View.OnClickListener {
                 listOf(
                     mapOf(
                         label to requireContext().getString(R.string.date_of_prescription),
-                        value to prescriptionData.dateOfReview?.let {
+                        this.Value to prescriptionData.dateOfReview?.let {
                             DateUtils.convertDateFormat(
                                 it,
                                 DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
@@ -212,7 +212,7 @@ class PrescriptionHistoryFragment : BaseFragment(), View.OnClickListener {
                     ),
                     mapOf(
                         label to requireContext().getString(R.string.medication_prescribed),
-                        value to createPrescription(prescriptionData.prescriptions)
+                        this.Value to createPrescription(prescriptionData.prescriptions)
                     )
                 )
             )

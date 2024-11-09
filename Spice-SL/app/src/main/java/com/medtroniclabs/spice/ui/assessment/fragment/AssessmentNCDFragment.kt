@@ -42,12 +42,12 @@ import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.extension.textSizeSsp
 import com.medtroniclabs.spice.formgeneration.listener.FormEventListener
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
-import com.medtroniclabs.spice.formgeneration.model.FormResponse
 import com.medtroniclabs.spice.formgeneration.ui.FormResultComposer
 import com.medtroniclabs.spice.formgeneration.utility.CheckBoxDialog
 import com.medtroniclabs.spice.mappingkey.Screening
 import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.ncd.assessment.viewmodel.BloodPressureViewModel
+import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDFormViewModel
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
@@ -62,6 +62,7 @@ class AssessmentNCDFragment : BaseFragment(), FormEventListener, View.OnClickLis
     private lateinit var binding: FragmentAssessmentNCDBinding
     private lateinit var formGenerator: FormGenerator
     private val viewModel: AssessmentViewModel by activityViewModels()
+    private val ncdFormViewModel: NCDFormViewModel by activityViewModels()
     private val patientDetailViewModel: PatientDetailViewModel by activityViewModels()
     private val bpViewModel: BloodPressureViewModel by activityViewModels()
     private var assessmentJSON: List<FormLayout>? = null
@@ -93,7 +94,12 @@ class AssessmentNCDFragment : BaseFragment(), FormEventListener, View.OnClickLis
             }
         }
         viewModel.assessmentType = requireArguments().getString(Screening.type)
-        viewModel.assessmentType?.let { viewModel.getNcdFormData(DefinedParams.Assessment, it) }
+        viewModel.assessmentType?.let {
+            ncdFormViewModel.getNCDForm(
+                DefinedParams.Assessment,
+                workFlow = it
+            )
+        }
         bpViewModel.getRiskEntityList()
     }
 
@@ -160,16 +166,26 @@ class AssessmentNCDFragment : BaseFragment(), FormEventListener, View.OnClickLis
     }
 
     private fun attachObserver() {
-        viewModel.formLayoutsNcdLiveData.observe(viewLifecycleOwner) { data ->
-            if (data != null) {
-                val formFieldsType = object : TypeToken<FormResponse>() {}.type
-                val formFields: FormResponse = Gson().fromJson(data, formFieldsType)
-                formGenerator.populateViews(formFields.formLayout)
-                assessmentJSON = formFields.formLayout
-            }
-            getPatientDetails()
-        }
+        ncdFormViewModel.ncdFormResponse.observe(viewLifecycleOwner) { resources ->
+            when (resources.state) {
+                ResourceState.LOADING -> {
+                    showProgress()
+                }
 
+                ResourceState.SUCCESS -> {
+                    hideProgress()
+                    resources.data?.let {
+                        formGenerator.populateViews(it)
+                        assessmentJSON = it
+                        getPatientDetails()
+                    }
+                }
+
+                ResourceState.ERROR -> {
+                    hideProgress()
+                }
+            }
+        }
         viewModel.selectedMedication.observe(viewLifecycleOwner) { model ->
             hideComplianceOptions()
             model?.let { selectedModel ->

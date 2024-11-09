@@ -25,7 +25,7 @@ class ReferralHistoryAdapter :RecyclerView.Adapter<ReferralHistoryAdapter.ViewHo
             with(binding) {
                 tvLabel.text = data[DefinedParams.label] as? String
                     ?: binding.root.context.getString(R.string.hyphen_symbol)
-                val value = data[DefinedParams.value]
+                val value = data[DefinedParams.Value]
 
                 tvValue.text = processMapValue(value,data[DefinedParams.label] as? String)
                 val color = data[DefinedParams.valueColor] as? Int

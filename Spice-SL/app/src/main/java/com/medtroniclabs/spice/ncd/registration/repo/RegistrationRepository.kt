@@ -2,9 +2,8 @@ package com.medtroniclabs.spice.ncd.registration.repo
 
 import androidx.lifecycle.LiveData
 import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
-import com.medtroniclabs.spice.appextensions.postSuccess
 import com.medtroniclabs.spice.common.AppConstants
+import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.data.CountryModel
@@ -13,7 +12,6 @@ import com.medtroniclabs.spice.data.LocalSpinnerResponse
 import com.medtroniclabs.spice.data.model.RegistrationResponse
 import com.medtroniclabs.spice.db.local.RoomHelper
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
-import com.medtroniclabs.spice.formgeneration.model.FormResponse
 import com.medtroniclabs.spice.mappingkey.Screening
 import com.medtroniclabs.spice.network.ApiHelper
 import com.medtroniclabs.spice.network.resource.Resource
@@ -29,19 +27,6 @@ class RegistrationRepository @Inject constructor(
 ) {
     fun fetchConsentForm(formType: String): LiveData<String> {
         return roomHelper.getConsent(formType)
-    }
-
-    suspend fun getFormData(
-        formType: String
-    ): Resource<FormResponse> {
-        return try {
-            val response = roomHelper.getFormData(formType)
-            val formFieldsType = object : TypeToken<FormResponse>() {}.type
-            val formFields: FormResponse = Gson().fromJson(response, formFieldsType)
-            Resource(state = ResourceState.SUCCESS, data = formFields)
-        } catch (e: Exception) {
-            Resource(state = ResourceState.ERROR)
-        }
     }
 
     fun getCountries(
@@ -125,43 +110,32 @@ class RegistrationRepository @Inject constructor(
         patientCreateReq: Pair<HashMap<String, Any>, List<FormLayout?>?>
     ): Resource<Pair<HashMap<String, Any>, List<FormLayout?>?>> {
         return try {
-            val extractedMap = requestMap.filterKeys {
-                it == Screening.firstName ||
-                        it == Screening.lastName ||
-                        it == Screening.phoneNumber ||
-                        it == Screening.identityType ||
-                        it == Screening.identityValue ||
-                        it == AssessmentDefinedParams.memberReference
-            }
-            val response = apiHelper.validatePatient(HashMap(extractedMap))
+
+            val response = apiHelper.validatePatient(CommonUtils.validationRequest(requestMap))
+
             if (response.isSuccessful && response.body()?.status == true) {
+                //Not a duplicate patient
                 Resource(state = ResourceState.SUCCESS, data = patientCreateReq)
             } else if (response.code() == AppConstants.CONFLICT_ERROR_CODE) {
-                response.errorBody()?.let { errorBody ->
-                    StringConverter.getDuplicatePatientMap(errorBody)?.let { entity ->
-                        Resource(state = ResourceState.ERROR, data = Pair(entity, null), optionalData = true)
-                    } ?: run { Resource(state = ResourceState.ERROR, data = patientCreateReq) }
-                } ?: run { Resource(state = ResourceState.ERROR, data = patientCreateReq) }
+                //Duplicate patient found
+                val duplicateEntity = StringConverter.getDuplicatePatientMap(response.errorBody())
+
+                if (duplicateEntity.isNullOrEmpty())
+                    Resource(state = ResourceState.ERROR)
+                else
+                    Resource(
+                        state = ResourceState.ERROR,
+                        data = Pair(duplicateEntity, null)
+                    )
             } else {
+                //Error returned on Patient Validate API
                 Resource(
                     state = ResourceState.ERROR,
-                    message = getErrorMessage(response.errorBody()),
-                    data = patientCreateReq
+                    message = CommonUtils.getErrorMessage(response.errorBody())
                 )
             }
         } catch (_: Exception) {
             Resource(state = ResourceState.ERROR)
-        }
-    }
-
-    private fun getErrorMessage(errorBody: ResponseBody?): String? {
-        if (errorBody == null)
-            return null
-        return try {
-            val errorResponse = Gson().fromJson(errorBody.string(), ErrorResponse::class.java)
-            return errorResponse.message
-        } catch (e: Exception) {
-            null
         }
     }
 }

@@ -611,7 +611,7 @@ class NCDPregnancyDialog(private val callback: ((isPositiveResult: Boolean, mess
                         diagnosis?.let { list ->
                             if (list.isNotEmpty()) {
                                 val isNone =
-                                    list.size == 1 && list[0][DefinedParams.value] == N_A
+                                    list.size == 1 && list[0][DefinedParams.Value] == N_A
                                 if (!isNone && isOnTreatment == null) {
                                     binding.tvPatientTreatmentError.visible()
                                     return false
@@ -715,7 +715,7 @@ class NCDPregnancyDialog(private val callback: ((isPositiveResult: Boolean, mess
                 } else {
                     if (!diagnosis.isNullOrEmpty()) {
                         diagnosis?.forEach { map ->
-                            when (map[DefinedParams.value]) {
+                            when (map[DefinedParams.Value]) {
                                 NONE -> mcbNone.isChecked = true
                                 ECLAMPSIA -> mcbEclampsia.isChecked = true
                                 PRE_ECLAMPSIA -> mcbPreEclampsia.isChecked = true

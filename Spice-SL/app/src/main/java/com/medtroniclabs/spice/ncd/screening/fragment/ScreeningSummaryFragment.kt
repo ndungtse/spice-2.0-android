@@ -11,7 +11,6 @@ import androidx.core.content.ContextCompat.getColor
 import androidx.core.text.color
 import androidx.fragment.app.activityViewModels
 import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.appextensions.triggerOneTimeWorker
@@ -29,12 +28,12 @@ import com.medtroniclabs.spice.formgeneration.FormSummaryReporter
 import com.medtroniclabs.spice.formgeneration.extension.markMandatory
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
-import com.medtroniclabs.spice.formgeneration.model.FormResponse
 import com.medtroniclabs.spice.formgeneration.ui.FormResultComposer
 import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
 import com.medtroniclabs.spice.mappingkey.Screening
 import com.medtroniclabs.spice.mappingkey.Screening.ReferAssessment
 import com.medtroniclabs.spice.mappingkey.Screening.SuicidalIdeation
+import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDFormViewModel
 import com.medtroniclabs.spice.ncd.screening.viewmodel.GeneralDetailsViewModel
 import com.medtroniclabs.spice.ncd.screening.viewmodel.ScreeningFormBuilderViewModel
 import com.medtroniclabs.spice.network.resource.ResourceState
@@ -48,6 +47,7 @@ class ScreeningSummaryFragment : BaseFragment(), View.OnClickListener {
     private lateinit var binding: FragmentScreeningSummaryBinding
     private lateinit var formSummaryReporter: FormSummaryReporter
     private val viewModel: ScreeningFormBuilderViewModel by activityViewModels()
+    private val ncdFormViewModel: NCDFormViewModel by activityViewModels()
     private val generalDetailsViewModel: GeneralDetailsViewModel by activityViewModels()
     private val adapter by lazy { CustomSpinnerAdapter(requireContext()) }
     override fun onCreateView(
@@ -77,17 +77,15 @@ class ScreeningSummaryFragment : BaseFragment(), View.OnClickListener {
     }
 
     private fun attachObserver() {
-        viewModel.formLayoutsLiveData.value.let { form ->
+        ncdFormViewModel.ncdFormResponse.value?.data?.let { form ->
             viewModel.screeningSaveResponse.value?.data?.let {
                 StringConverter.convertStringToMap(it.screeningDetails)?.let { map ->
-                    val formFieldsType = object : TypeToken<FormResponse>() {}.type
-                    val formFields: FormResponse = Gson().fromJson(form, formFieldsType)
                     formSummaryReporter.populateSummary(
-                        formFields.formLayout,
+                        form,
                         map,
                         false
                     )
-                    calculateOtherMetrics(formFields.formLayout, map)
+                    calculateOtherMetrics(form, map)
                 }
             }
         }

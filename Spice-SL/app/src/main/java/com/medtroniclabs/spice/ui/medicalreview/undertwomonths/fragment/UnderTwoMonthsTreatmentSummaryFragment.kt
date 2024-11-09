@@ -258,7 +258,7 @@ class UnderTwoMonthsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
                 dropDownList.add(
                     hashMapOf<String, Any>(
                         DefinedParams.NAME to item.name,
-                        DefinedParams.value to item.value
+                        DefinedParams.Value to item.value
                     )
                 )
             }
@@ -267,7 +267,7 @@ class UnderTwoMonthsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
         adapter.setData(dropDownList)
         var defaultPosition = 0
         for ((index, patientStatus) in dropDownList.withIndex()) {
-            if ((patientStatus[DefinedParams.value] as? String).equals(
+            if ((patientStatus[DefinedParams.Value] as? String).equals(
                     ReferralStatus.OnTreatment.name,
                     true
                 )
@@ -289,7 +289,7 @@ class UnderTwoMonthsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
                 ) {
                     val selectedItem = adapter.getData(position = pos)
                     selectedItem?.let {
-                        val selectedName = it[DefinedParams.value] as String?
+                        val selectedName = it[DefinedParams.Value] as String?
                         selectedName?.let { name ->
                             summaryViewModel.selectedPatientStatus = name
                         }

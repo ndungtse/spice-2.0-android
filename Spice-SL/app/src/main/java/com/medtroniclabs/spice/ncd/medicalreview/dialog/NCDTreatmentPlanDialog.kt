@@ -19,7 +19,7 @@ import com.medtroniclabs.spice.common.DefinedParams.DefaultID
 import com.medtroniclabs.spice.common.DefinedParams.DefaultIDLabel
 import com.medtroniclabs.spice.common.DefinedParams.ID
 import com.medtroniclabs.spice.common.DefinedParams.NAME
-import com.medtroniclabs.spice.common.DefinedParams.value
+import com.medtroniclabs.spice.common.DefinedParams.Value
 import com.medtroniclabs.spice.databinding.DialogNcdTreatmentPlanBinding
 import com.medtroniclabs.spice.db.entity.TreatmentPlanEntity
 import com.medtroniclabs.spice.formgeneration.extension.markMandatory
@@ -178,7 +178,7 @@ class NCDTreatmentPlanDialog(private val callback: ((isPositiveResult: Boolean, 
             for (item in list) {
                 dropDownList.add(
                     hashMapOf(
-                        NAME to item.name, value to item
+                        NAME to item.name, Value to item
                     )
                 )
             }
@@ -218,7 +218,7 @@ class NCDTreatmentPlanDialog(private val callback: ((isPositiveResult: Boolean, 
                 ) {
                     medicalReviewAdapter.getData(pos)?.let { selectedItem ->
                         viewModel.medicalReviewFrequency =
-                            selectedItem[value] as? TreatmentPlanEntity?
+                            selectedItem[Value] as? TreatmentPlanEntity?
                         validateInputs()
                     }
                 }
@@ -231,7 +231,7 @@ class NCDTreatmentPlanDialog(private val callback: ((isPositiveResult: Boolean, 
                     adapterView: AdapterView<*>?, view: View?, pos: Int, itemId: Long
                 ) {
                     bPCheckAdapter.getData(pos)?.let { selectedItem ->
-                        viewModel.bpCheckFrequency = selectedItem[value] as? TreatmentPlanEntity?
+                        viewModel.bpCheckFrequency = selectedItem[Value] as? TreatmentPlanEntity?
                         validateInputs()
                     }
                 }
@@ -244,7 +244,7 @@ class NCDTreatmentPlanDialog(private val callback: ((isPositiveResult: Boolean, 
                     adapterView: AdapterView<*>?, view: View?, pos: Int, itemId: Long
                 ) {
                     bGCheckAdapter.getData(pos)?.let { selectedItem ->
-                        viewModel.bgCheckFrequency = selectedItem[value] as? TreatmentPlanEntity?
+                        viewModel.bgCheckFrequency = selectedItem[Value] as? TreatmentPlanEntity?
                         validateInputs()
                     }
                 }
@@ -257,7 +257,7 @@ class NCDTreatmentPlanDialog(private val callback: ((isPositiveResult: Boolean, 
                     adapterView: AdapterView<*>?, view: View?, pos: Int, itemId: Long
                 ) {
                     hbA1cAdapter.getData(pos)?.let { selectedItem ->
-                        viewModel.hba1cCheckFrequency = selectedItem[value] as? TreatmentPlanEntity?
+                        viewModel.hba1cCheckFrequency = selectedItem[Value] as? TreatmentPlanEntity?
                         validateInputs()
                     }
                 }

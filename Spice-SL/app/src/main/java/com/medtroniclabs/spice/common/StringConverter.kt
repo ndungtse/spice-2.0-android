@@ -97,16 +97,18 @@ object StringConverter {
         return strBuilder.trim().toString()
     }
 
-    fun getDuplicatePatientMap(errorBody: ResponseBody): HashMap<String, Any>? {
+    fun getDuplicatePatientMap(errorBody: ResponseBody?): HashMap<String, Any>? {
         return try {
             var returnMap: HashMap<String, Any>? = null
-            val errorResponse = Gson().fromJson(errorBody.string(), Map::class.java)
-            if (errorResponse.containsKey(Screening.Entity)) {
-                errorResponse[Screening.Entity]?.let { entity ->
-                    if (entity is Map<*, *> && entity.contains(Screening.PatientDetails)) {
-                        entity[Screening.PatientDetails]?.let { details ->
-                            (details as? Map<String, Any>)?.let { map ->
-                                returnMap = HashMap(map.toMutableMap())
+            errorBody?.let { err ->
+                val errorResponse = Gson().fromJson(err.string(), Map::class.java)
+                if (errorResponse.containsKey(Screening.Entity)) {
+                    errorResponse[Screening.Entity]?.let { entity ->
+                        if (entity is Map<*, *> && entity.contains(Screening.PatientDetails)) {
+                            entity[Screening.PatientDetails]?.let { details ->
+                                (details as? Map<String, Any>)?.let { map ->
+                                    returnMap = HashMap(map.toMutableMap())
+                                }
                             }
                         }
                     }

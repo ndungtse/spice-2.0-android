@@ -1,12 +1,17 @@
 package com.medtroniclabs.spice.ncd.screening.repo
 
 import androidx.lifecycle.LiveData
-import com.google.gson.JsonObject
+import com.medtroniclabs.spice.common.AppConstants
+import com.medtroniclabs.spice.common.CommonUtils
+import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.db.entity.HealthFacilityEntity
 import com.medtroniclabs.spice.db.entity.MentalHealthEntity
 import com.medtroniclabs.spice.db.entity.ScreeningEntity
 import com.medtroniclabs.spice.db.local.RoomHelper
+import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.network.ApiHelper
+import com.medtroniclabs.spice.network.resource.Resource
+import com.medtroniclabs.spice.network.resource.ResourceState
 import okhttp3.RequestBody
 import javax.inject.Inject
 
@@ -17,12 +22,6 @@ class ScreeningRepository @Inject constructor(
     fun getUserHealthFacilityEntity(
     ): LiveData<List<HealthFacilityEntity>> {
         return roomHelper.getSites()
-    }
-
-    fun getFormData(
-        formType: String,
-    ): LiveData<String> {
-        return roomHelper.getFormDataForNcd(formType)
     }
 
     fun getMentalQuestion(type:String) :  LiveData<MentalHealthEntity?>{
@@ -49,4 +48,39 @@ class ScreeningRepository @Inject constructor(
 
     suspend fun updateScreeningRecordById(id: Long, uploadStatus: Boolean) =
         roomHelper.updateScreeningRecordById(id, uploadStatus)
+
+    suspend fun validatePatient(
+        requestMap: HashMap<String, Any>,
+        patientCreateReq: Pair<HashMap<String, Any>, List<FormLayout?>?>
+    ): Resource<Pair<HashMap<String, Any>, List<FormLayout?>?>> {
+        return try {
+
+            val response = apiHelper.validatePatient(CommonUtils.validationRequest(requestMap))
+
+            if (response.isSuccessful && response.body()?.status == true) {
+                //Not a duplicate patient
+                Resource(state = ResourceState.SUCCESS, data = patientCreateReq)
+            } else if (response.code() == AppConstants.CONFLICT_ERROR_CODE) {
+                //Duplicate patient found
+                val duplicateEntity = StringConverter.getDuplicatePatientMap(response.errorBody())
+
+                if (duplicateEntity.isNullOrEmpty())
+                    Resource(state = ResourceState.ERROR, data = patientCreateReq)
+                else
+                    Resource(
+                        state = ResourceState.ERROR,
+                        data = Pair(duplicateEntity, null),
+                        optionalData = true
+                    )
+            } else {
+                Resource(
+                    state = ResourceState.ERROR,
+                    message = CommonUtils.getErrorMessage(response.errorBody()),
+                    data = patientCreateReq
+                )
+            }
+        } catch (_: Exception) {
+            Resource(state = ResourceState.ERROR)
+        }
+    }
 }

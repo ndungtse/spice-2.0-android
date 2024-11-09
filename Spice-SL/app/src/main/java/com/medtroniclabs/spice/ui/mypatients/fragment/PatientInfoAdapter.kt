@@ -2,7 +2,6 @@ package com.medtroniclabs.spice.ui.mypatients.fragment
 
 import android.content.Context
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
@@ -11,7 +10,6 @@ import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.setExpandableText
 import com.medtroniclabs.spice.appextensions.takeIfNotNull
 import com.medtroniclabs.spice.appextensions.visible
-import com.medtroniclabs.spice.common.CommonUtils.canShowToggle
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.databinding.PatientInfoItemBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
@@ -37,7 +35,7 @@ class PatientInfoAdapter(
                 val empty = context.getString(R.string.hyphen_symbol)
                 tvLabel.text = (label[DefinedParams.label] as? String).takeIfNotNull(empty)
                 tvValue.setExpandableText(
-                    (label[DefinedParams.value] as? String).takeIfNotNull(empty),
+                    (label[DefinedParams.Value] as? String).takeIfNotNull(empty),
                     title = (label[DefinedParams.label] as? String).takeIfNotNull(empty),
                     maxLength = 35,
                     activity = activity
@@ -52,7 +50,7 @@ class PatientInfoAdapter(
                     viewToggle.visible()
                     smHighRisk.visible()
                     tvHighRiskPregnancyCriteria.visible()
-                    smHighRisk.isOn = label[DefinedParams.value] as Boolean == true
+                    smHighRisk.isOn = label[DefinedParams.Value] as Boolean == true
                     viewToggle.safeClickListener {
                         if (!binding.smHighRisk.isOn) {
                             userConfirms()

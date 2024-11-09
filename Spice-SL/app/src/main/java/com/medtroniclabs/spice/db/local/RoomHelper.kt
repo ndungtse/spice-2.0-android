@@ -339,10 +339,6 @@ interface RoomHelper {
 
     suspend fun updateScreeningRecordById(id: Long, uploadStatus: Boolean)
 
-    fun getFormDataForNcd(
-        formType: String
-    ): LiveData<String>
-
     suspend fun insertRiskFactor(riskFactorEntity: RiskFactorEntity)
     fun getRiskFactorEntity(): LiveData<List<RiskFactorEntity>>
     suspend fun deleteRiskFactor()
@@ -359,7 +355,7 @@ interface RoomHelper {
     fun getComorbidities(type: String?,category: String): LiveData<List<NCDMedicalReviewMetaEntity>>
 
     fun getLifeStyle(): LiveData<List<LifestyleEntity>>
-    fun getAssessmentFormData(formType: String, workFlow: String): LiveData<String>
+    fun getAssessmentFormData(formType: String, customizedFormType:String, workFlow: String): List<String>
 
     suspend fun getSymptomList(): List<SignsAndSymptomsEntity>
 
@@ -398,4 +394,5 @@ interface RoomHelper {
     suspend fun getNCDShortageReason(type: String): List<ShortageReasonEntity>
     suspend fun deleteNCDShortageReason()
     suspend fun saveNCDShortageReason(shortageReasonEntity: List<ShortageReasonEntity>)
+    suspend fun getNCDForm(type: String, customizedType: String): List<String>
 }

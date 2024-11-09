@@ -14,13 +14,11 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.medtroniclabs.spice.R
-import com.medtroniclabs.spice.appextensions.changePatientStatus
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
-import com.medtroniclabs.spice.data.history.MedicalReviewHistory
 import com.medtroniclabs.spice.data.history.NCDMedicalReviewHistory
 import com.medtroniclabs.spice.databinding.FragmentReferralTicketBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
@@ -30,7 +28,6 @@ import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.mypatients.adapter.DateListAdapter
 import com.medtroniclabs.spice.ui.referralhistory.adapter.ReferralHistoryAdapter
-import dagger.hilt.android.AndroidEntryPoint
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 
@@ -359,7 +356,7 @@ class NCDMedicalReviewHistoryFragment : BaseFragment(), View.OnClickListener {
         val commonFields = listOf(
             mapOf(
                 DefinedParams.label to requireContext().getString(R.string.date_of_review),
-                DefinedParams.value to (viewModel.medicalReferralDates.value?.firstOrNull { it.id == viewModel.medicalVisitId }?.date?.let {
+                DefinedParams.Value to (viewModel.medicalReferralDates.value?.firstOrNull { it.id == viewModel.medicalVisitId }?.date?.let {
                     DateUtils.convertDateFormat(
                         it,
                         DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
@@ -369,7 +366,7 @@ class NCDMedicalReviewHistoryFragment : BaseFragment(), View.OnClickListener {
             ),
             mapOf(
                 DefinedParams.label to requireContext().getString(R.string.chief_complaints),
-                DefinedParams.value to CommonUtils.combineText(
+                DefinedParams.Value to CommonUtils.combineText(
                     CommonUtils.convertAnyToListOfString(medicalReviewHistory.medicalReview?.complaints),
                     "",
                     getString(R.string.separator_double_hyphen)
@@ -377,7 +374,7 @@ class NCDMedicalReviewHistoryFragment : BaseFragment(), View.OnClickListener {
             ),
             mapOf(
                 DefinedParams.label to requireContext().getString(R.string.clinical_notes),
-                DefinedParams.value to CommonUtils.combineText(
+                DefinedParams.Value to CommonUtils.combineText(
                     CommonUtils.convertAnyToListOfString(medicalReviewHistory.medicalReview?.notes),
                     "",
                     getString(R.string.separator_double_hyphen)
@@ -385,7 +382,7 @@ class NCDMedicalReviewHistoryFragment : BaseFragment(), View.OnClickListener {
             ),
             mapOf(
                 DefinedParams.label to requireContext().getString(R.string.obstetric_examination),
-                DefinedParams.value to CommonUtils.combineText(
+                DefinedParams.Value to CommonUtils.combineText(
                     CommonUtils.convertAnyToListOfString(medicalReviewHistory.medicalReview?.physicalExams),
                     "",
                     getString(R.string.separator_double_hyphen)

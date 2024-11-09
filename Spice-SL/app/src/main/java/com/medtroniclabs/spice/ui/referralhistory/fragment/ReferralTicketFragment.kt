@@ -201,24 +201,24 @@ class ReferralTicketFragment : BaseFragment(), View.OnClickListener {
             adapters.updateList(listOf(
                 mapOf(
                     label to requireContext().getString(R.string.patient_status),
-                    value to referralData.patientStatus
+                    this.Value to referralData.patientStatus
                 ),
                 mapOf(
                     label to requireContext().getString(R.string.referral_by),
-                    value to referredBy
+                    this.Value to referredBy
                 ),
                 mapOf(
                     label to requireContext().getString(R.string.referral_to),
-                    value to referralData.referredTo
+                    this.Value to referralData.referredTo
                 ),
                 mapOf(
                     label to requireContext().getString(R.string.referral_reason),
-                    value to getReferralReason(referralData.referredReason),
+                    this.Value to getReferralReason(referralData.referredReason),
                     valueColor to R.color.red_risk_moderate
                 ),
                 mapOf(
                     label to requireContext().getString(R.string.date_of_onset),
-                    value to referralData.dateOfOnset?.let {
+                    this.Value to referralData.dateOfOnset?.let {
                         DateUtils.convertDateFormat(
                             it,
                             DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
@@ -228,7 +228,7 @@ class ReferralTicketFragment : BaseFragment(), View.OnClickListener {
                 ),
                 mapOf(
                     label to requireContext().getString(R.string.referral_date),
-                    value to referralData.referredDate?.let {
+                    this.Value to referralData.referredDate?.let {
                         DateUtils.convertDateFormat(
                             it,
                             DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,

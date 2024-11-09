@@ -270,7 +270,7 @@ class InvestigationHistoryFragment : BaseFragment(), View.OnClickListener {
                 listOf(
                     mapOf(
                         label to requireContext().getString(R.string.date_of_investigation),
-                        value to data.dateOfReview?.let {
+                        this.Value to data.dateOfReview?.let {
                             DateUtils.convertDateFormat(
                                 it,
                                 DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
@@ -280,7 +280,7 @@ class InvestigationHistoryFragment : BaseFragment(), View.OnClickListener {
                     ),
                     mapOf(
                         label to requireContext().getString(R.string.investigations_referred),
-                        value to createInvestigationList(data.investigations)
+                        this.Value to createInvestigationList(data.investigations)
                     )
                )
             )

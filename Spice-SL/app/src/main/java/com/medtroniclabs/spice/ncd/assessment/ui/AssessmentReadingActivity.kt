@@ -3,6 +3,7 @@ package com.medtroniclabs.spice.ncd.assessment.ui
 import android.os.Bundle
 import android.view.View
 import androidx.activity.viewModels
+import androidx.fragment.app.activityViewModels
 import com.google.gson.Gson
 import com.google.gson.internal.LinkedTreeMap
 import com.google.gson.reflect.TypeToken
@@ -22,12 +23,12 @@ import com.medtroniclabs.spice.formgeneration.config.ViewType
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.listener.FormEventListener
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
-import com.medtroniclabs.spice.formgeneration.model.FormResponse
 import com.medtroniclabs.spice.formgeneration.ui.FormResultComposer
 import com.medtroniclabs.spice.mappingkey.Screening
 import com.medtroniclabs.spice.ncd.assessment.viewmodel.AssessmentReadingViewModel
 import com.medtroniclabs.spice.ncd.assessment.viewmodel.BloodPressureViewModel
 import com.medtroniclabs.spice.ncd.assessment.viewmodel.GlucoseViewModel
+import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDFormViewModel
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.MenuConstants
@@ -39,6 +40,7 @@ class AssessmentReadingActivity : BaseActivity(), FormEventListener, View.OnClic
 
     private lateinit var binding: ActivityAssessmentReadingBinding
     private val viewModel: AssessmentReadingViewModel by viewModels()
+    private val ncdFormViewModel: NCDFormViewModel by viewModels()
     private val bpViewModel: BloodPressureViewModel by viewModels()
     private val glucoseViewModel: GlucoseViewModel by viewModels()
 
@@ -83,20 +85,31 @@ class AssessmentReadingActivity : BaseActivity(), FormEventListener, View.OnClic
             }
         }
 
-        viewModel.getFormData(MenuConstants.ASSESSMENT.lowercase())
+        ncdFormViewModel.getNCDForm(MenuConstants.ASSESSMENT.lowercase())
         bpViewModel.getRiskEntityList()
     }
 
     private fun attachObservers() {
-        viewModel.formLayoutsLiveData.observe(this) { data ->
-            showLoading()
-            val formFieldsType = object : TypeToken<FormResponse>() {}.type
-            val formFields: FormResponse = Gson().fromJson(data, formFieldsType)
-            val filter = formFields.formLayout.filter {
-                it.id == viewModel.formTypeId || it.family == viewModel.formTypeId
+        ncdFormViewModel.ncdFormResponse.observe(this) { resources ->
+            when (resources.state) {
+                ResourceState.LOADING -> {
+                    showLoading()
+                }
+
+                ResourceState.SUCCESS -> {
+                    hideLoading()
+                    resources.data?.let { responseData ->
+                        val filter = responseData.filter {
+                            it.id == viewModel.formTypeId || it.family == viewModel.formTypeId
+                        }
+                        formGenerator.populateViews(filter)
+                    }
+                }
+
+                ResourceState.ERROR -> {
+                    hideLoading()
+                }
             }
-            formGenerator.populateViews(filter)
-            hideLoading()
         }
         bpViewModel.getRiskEntityListLiveData.observe(this) {}
         bpViewModel.bpLogCreateResponseLiveData.observe(this) { resourceState ->

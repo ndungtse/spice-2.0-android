@@ -133,7 +133,7 @@ class UnderFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
                 statusList.add(
                     hashMapOf<String, Any>(
                         DefinedParams.NAME to item.name,
-                        DefinedParams.value to item.value
+                        DefinedParams.Value to item.value
                     )
                 )
             }
@@ -255,7 +255,7 @@ class UnderFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
         adapter.setData(list)
         var defaultPosition = 0
         for ((index, patientStatus) in list.withIndex()) {
-            if ((patientStatus[DefinedParams.value] as? String).equals(
+            if ((patientStatus[DefinedParams.Value] as? String).equals(
                     ReferralStatus.OnTreatment.name,
                     true
                 )
@@ -274,7 +274,7 @@ class UnderFiveYearsTreatmentSummaryFragment : BaseFragment(), View.OnClickListe
                 ) {
                     val selectedItem = adapter.getData(position = position)
                     selectedItem?.let {
-                        val selectedName = it[DefinedParams.value] as String?
+                        val selectedName = it[DefinedParams.Value] as String?
                         selectedName?.let { name ->
                             summaryViewModel.selectedPatientStatus = name
                         }

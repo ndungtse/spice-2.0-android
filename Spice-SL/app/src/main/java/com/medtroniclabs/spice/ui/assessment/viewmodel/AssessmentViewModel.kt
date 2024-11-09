@@ -1,9 +1,7 @@
 package com.medtroniclabs.spice.ui.assessment.viewmodel
 
 import android.location.Location
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
 import com.medtroniclabs.spice.appextensions.postError
@@ -112,10 +110,6 @@ class AssessmentViewModel @Inject constructor(
     private var fbsBloodGlucose: Double? = null
     private var rbsBloodGlucose: Double? = null
     var assessmentType: String? = null
-    private val getNcdFormData = MutableLiveData<Pair<String, String>>()
-    val formLayoutsNcdLiveData: LiveData<String> = getNcdFormData.switchMap {
-        assessmentRepository.getAssessmentFormData(it.first, it.second)
-    }
     val assessmentSaveResponse =
         MutableLiveData<Resource<Pair<AssessmentNCDEntity, HashMap<String, Any>?>>>()
     var mentalHealthQuestions = MutableLiveData<Resource<HashMap<String, LocalSpinnerResponse>>>()
@@ -598,10 +592,6 @@ class AssessmentViewModel @Inject constructor(
                 status
             )
         }
-    }
-
-    fun getNcdFormData(formType: String, workFlow: String) {
-        getNcdFormData.value = Pair(formType, workFlow)
     }
 
     fun getSymptomList() {

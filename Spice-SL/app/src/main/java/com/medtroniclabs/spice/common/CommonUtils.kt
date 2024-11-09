@@ -6,6 +6,7 @@ import android.content.res.AssetManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.text.SpannableStringBuilder
+import com.google.gson.Gson
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.nullIfEmpty
 import com.medtroniclabs.spice.common.DateUtils.calculateAge
@@ -17,6 +18,7 @@ import com.medtroniclabs.spice.common.RoleConstant.PHYSICIAN_PRESCRIBER
 import com.medtroniclabs.spice.common.RoleConstant.PROVIDER
 import com.medtroniclabs.spice.common.RoleConstant.SECHN
 import com.medtroniclabs.spice.common.RoleConstant.SRN
+import com.medtroniclabs.spice.data.ErrorResponse
 import com.medtroniclabs.spice.data.Prescription
 import com.medtroniclabs.spice.data.history.Investigation
 import com.medtroniclabs.spice.db.entity.RiskClassificationModel
@@ -52,6 +54,7 @@ import com.medtroniclabs.spice.ncd.screening.utils.ReferredReason
 import com.medtroniclabs.spice.ui.MenuConstants
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
+import okhttp3.ResponseBody
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.math.RoundingMode
@@ -240,7 +243,7 @@ object CommonUtils {
 
     fun getOptions(value: String, name: String): Map<String, Any> {
         val map = HashMap<String, Any>()
-        map[DefinedParams.value] = value
+        map[DefinedParams.Value] = value
         map[DefinedParams.NAME] = name
         return map
     }
@@ -926,6 +929,7 @@ object CommonUtils {
 
     fun calculateBloodGlucose(
         map: HashMap<String, Any>,
+        removeUnwantedKeys: Boolean = false,
         addDateTime: Boolean = false,
         getRbsFbs: (Pair<Double?,Double?>) -> Unit
     ) {
@@ -934,6 +938,8 @@ object CommonUtils {
             val bloodGlucoseValue: Double? = parseGlucoseValue(bloodGlucoseString)
             if (bloodGlucoseValue != null) {
                 map[Screening.Glucose_Value] = bloodGlucoseValue
+                if (removeUnwantedKeys)
+                    map.keys.remove(Screening.BloodGlucoseID)
                 formatLastMealTime(map)
                 if (map.containsKey(lastMealTime) && map[lastMealTime] is String) {
                     setFBSAndRBSValues(map, bloodGlucoseValue, 1) {
@@ -1595,5 +1601,41 @@ object CommonUtils {
             return userRole.contains(RoleConstant.HRIO)
         }
         return false
+    }
+
+    fun getErrorMessage(errorBody: ResponseBody?): String? {
+        if (errorBody == null)
+            return null
+        return try {
+            val errorResponse = Gson().fromJson(errorBody.string(), ErrorResponse::class.java)
+            return errorResponse.message
+        } catch (e: Exception) {
+            null
+        }
+    }
+
+    fun validationRequest(requestMap: HashMap<String, Any>): HashMap<String, Any> {
+        requestMap[Screening.identityType] = Screening.nationalId
+        if (!requestMap.containsKey(DefinedParams.Country)) {
+            requestMap[DefinedParams.Country] = getCountryMap()
+        }
+        val map = requestMap.filterKeys {
+            it == Screening.firstName ||
+                    it == Screening.lastName ||
+                    it == Screening.phoneNumber ||
+                    it == Screening.identityType ||
+                    it == Screening.identityValue ||
+                    it == DefinedParams.Country ||
+                    it == AssessmentDefinedParams.memberReference
+        }
+        return HashMap(map)
+    }
+
+    fun getCountryMap(): HashMap<String, Any> {
+        val countryId = HashMap<String, Any>()
+        SecuredPreference.getCountryId()?.let { cId ->
+            countryId[DefinedParams.ID] = cId
+        }
+        return countryId
     }
 }

@@ -13,7 +13,6 @@ import com.medtroniclabs.spice.appextensions.setExpandableText
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.CommonUtils.combineText
-import com.medtroniclabs.spice.common.CommonUtils.composeLabelName
 import com.medtroniclabs.spice.common.CommonUtils.createInvestigation
 import com.medtroniclabs.spice.common.CommonUtils.getBMI
 import com.medtroniclabs.spice.common.DateUtils
@@ -153,7 +152,7 @@ class MotherNeonateAncSummary : BaseFragment(),View.OnClickListener {
                 statusList.add(
                     hashMapOf<String, Any>(
                         DefinedParams.NAME to item.name,
-                        DefinedParams.value to (item.value ?: item.name)
+                        DefinedParams.Value to (item.value ?: item.name)
                     )
                 )
             }
@@ -281,7 +280,7 @@ class MotherNeonateAncSummary : BaseFragment(),View.OnClickListener {
         adapter?.setData(statusList)
         var defaultPosition = 0
         for ((index, patientStatus) in statusList.withIndex()) {
-            if ((patientStatus[DefinedParams.value] as? String).equals(
+            if ((patientStatus[DefinedParams.Value] as? String).equals(
                     ReferralStatus.OnTreatment.name,
                     true
                 )
@@ -304,7 +303,7 @@ class MotherNeonateAncSummary : BaseFragment(),View.OnClickListener {
                     val selectedItem = adapter?.getData(position = pos)
                     selectedItem?.let {
                         val selectedId = it[DefinedParams.id] as String?
-                        val selectedPatientStatus = it[DefinedParams.value] as String?
+                        val selectedPatientStatus = it[DefinedParams.Value] as String?
                         if (selectedId != DefinedParams.DefaultID) {
                             viewModel.patientStatus = selectedPatientStatus
                            // handleRecoveredState()

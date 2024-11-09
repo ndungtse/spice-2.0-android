@@ -6,20 +6,18 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
-import androidx.appcompat.widget.AppCompatTextView
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.invisible
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
-import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.DefaultID
 import com.medtroniclabs.spice.common.DefinedParams.DefaultIDLabel
 import com.medtroniclabs.spice.common.DefinedParams.ID
 import com.medtroniclabs.spice.common.DefinedParams.NAME
-import com.medtroniclabs.spice.common.DefinedParams.value
+import com.medtroniclabs.spice.common.DefinedParams.Value
 import com.medtroniclabs.spice.data.MedicalReviewMetaItems
 import com.medtroniclabs.spice.databinding.FragmentUnderFiveYearClinicalSummarryBinding
 import com.medtroniclabs.spice.formgeneration.extension.markMandatory
@@ -33,7 +31,6 @@ import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateU
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil.isValidInput
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams.MOTHER_VITAMIN_TAG
-import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 
 class ClinicalSummaryUnderFiveYearsFragment : BaseFragment() {
     private lateinit var binding: FragmentUnderFiveYearClinicalSummarryBinding
@@ -98,7 +95,7 @@ class ClinicalSummaryUnderFiveYearsFragment : BaseFragment() {
                 hashMapOf<String, Any>(
                     NAME to item.name,
                     DefinedParams.id to item.id.toString(),
-                    value to (item.value ?: item.name)
+                    Value to (item.value ?: item.name)
                 )
             )
         }
@@ -117,7 +114,7 @@ class ClinicalSummaryUnderFiveYearsFragment : BaseFragment() {
                 hashMapOf<String, Any>(
                     NAME to item.name,
                     DefinedParams.id to item.id.toString(),
-                    value to (item.value ?: item.name)
+                    Value to (item.value ?: item.name)
                 )
             )
         }
@@ -138,7 +135,7 @@ class ClinicalSummaryUnderFiveYearsFragment : BaseFragment() {
                     val selectedItem = adapter.getData(position = position)
                     selectedItem?.let {
                         val selectedId = it[ID] as String?
-                        val selectedImmunisationStatus = it[DefinedParams.value] as String?
+                        val selectedImmunisationStatus = it[DefinedParams.Value] as String?
                         if (selectedId != DefaultID) {
                             selectedImmunisationStatus?.let {
                                 viewModel.selectedImmunisationStatus = it
@@ -361,7 +358,7 @@ class ClinicalSummaryUnderFiveYearsFragment : BaseFragment() {
                 parent: AdapterView<*>?, view: View?, position: Int, id: Long
             ) {
                 val selectedItem = adapter.getData(position = position)
-                val selectedValue = selectedItem?.get(value) as String?
+                val selectedValue = selectedItem?.get(Value) as String?
                 val selectedId = selectedItem?.get(ID) as String?
                 if (selectedId != DefaultID) {
                     selectedValue?.let { value ->

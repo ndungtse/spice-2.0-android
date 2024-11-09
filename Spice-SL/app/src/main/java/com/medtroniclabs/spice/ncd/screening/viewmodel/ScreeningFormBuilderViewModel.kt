@@ -1,6 +1,5 @@
 package com.medtroniclabs.spice.ncd.screening.viewmodel
 
-import android.content.Context
 import android.location.Location
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -15,7 +14,6 @@ import com.medtroniclabs.spice.db.entity.MentalHealthEntity
 import com.medtroniclabs.spice.db.entity.ScreeningEntity
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
-import com.medtroniclabs.spice.ncd.registration.repo.RegistrationRepository
 import com.medtroniclabs.spice.ncd.screening.repo.ScreeningRepository
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.network.utils.ConnectivityManager
@@ -27,8 +25,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ScreeningFormBuilderViewModel @Inject constructor(
     @IoDispatcher private val dispatcherIO: CoroutineDispatcher,
-    private val screeningRepository: ScreeningRepository,
-    private val registrationRepository: RegistrationRepository
+    private val screeningRepository: ScreeningRepository
 ) : ViewModel() {
 
     private var getMentalQuestion = MutableLiveData<Pair<String, String>>()
@@ -40,10 +37,6 @@ class ScreeningFormBuilderViewModel @Inject constructor(
             screeningRepository.getMentalQuestion(it.second)
         }
     private var lastLocation: Location? = null
-    val getFormData = MutableLiveData<String>()
-    val formLayoutsLiveData: LiveData<String> = getFormData.switchMap {
-        screeningRepository.getFormData(it)
-    }
     private var phQ4Score: Int? = null
     private var fbsBloodGlucose: Double? = null
     private var rbsBloodGlucose: Double? = null
@@ -58,9 +51,6 @@ class ScreeningFormBuilderViewModel @Inject constructor(
     }
 
     fun getIdOfMentalHealth() = getMentalQuestion.value
-    fun getFormData(formType: String) {
-        getFormData.value = formType
-    }
 
     fun setCurrentLocation(location: Location) {
         this.lastLocation = location
@@ -98,7 +88,7 @@ class ScreeningFormBuilderViewModel @Inject constructor(
         viewModelScope.launch(dispatcherIO) {
             validatePatientResponseLiveDate.postLoading()
             validatePatientResponseLiveDate.postValue(
-                registrationRepository.validatePatient(resp, Pair(resp, serverData))
+                screeningRepository.validatePatient(resp, Pair(resp, serverData))
             )
         }
     }

@@ -30,13 +30,16 @@ class CheckBoxDialog() : DialogFragment(), View.OnClickListener {
     companion object {
         const val TAG = "CheckBoxDialogComponent"
         private const val KEY_TYPE = "KEY_TYPE"
+        private const val VALUE_KEY_NOT_NEEDED = "VALUE_KEY_NOT_NEEDED"
         fun newInstance(
             key: String,
             resultMap: Any?,
+            valueKeyNotNeeded: Boolean = false,
             callback: (result: ArrayList<HashMap<String, Any>>) -> Unit
         ): CheckBoxDialog {
             val args = Bundle()
             args.putString(KEY_TYPE, key)
+            args.putBoolean(VALUE_KEY_NOT_NEEDED, valueKeyNotNeeded)
             val fragment = CheckBoxDialog(callback, resultMap)
             fragment.arguments = args
             return fragment
@@ -130,7 +133,13 @@ class CheckBoxDialog() : DialogFragment(), View.OnClickListener {
             R.id.btnOkay -> {
                 val adapter = binding.rvItems.adapter
                 if (adapter != null && adapter is CheckboxDialogAdapter) {
-                    callback?.invoke(adapter.getSelectedItems())
+                    callback?.invoke(
+                        adapter.getSelectedItems(
+                            requireArguments().getBoolean(
+                                VALUE_KEY_NOT_NEEDED
+                            )
+                        )
+                    )
                     dismiss()
                 }
             }

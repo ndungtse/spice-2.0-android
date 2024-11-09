@@ -206,7 +206,7 @@ class NCDPrescriptionHistoryFragment : BaseFragment(), View.OnClickListener {
                 listOf(
                     mapOf(
                         label to requireContext().getString(R.string.date_of_prescription),
-                        value to (viewModel.prescriptionReferralDates.value?.firstOrNull { it.id == viewModel.patientVisitId }?.date?.let {
+                        this.Value to (viewModel.prescriptionReferralDates.value?.firstOrNull { it.id == viewModel.patientVisitId }?.date?.let {
                             DateUtils.convertDateFormat(
                                 it,
                                 DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
@@ -216,7 +216,7 @@ class NCDPrescriptionHistoryFragment : BaseFragment(), View.OnClickListener {
                     ),
                     mapOf(
                         label to requireContext().getString(R.string.medication_prescribed),
-                        value to createPrescription(prescriptionData.prescriptions)
+                        this.Value to createPrescription(prescriptionData.prescriptions)
                     )
                 )
             )

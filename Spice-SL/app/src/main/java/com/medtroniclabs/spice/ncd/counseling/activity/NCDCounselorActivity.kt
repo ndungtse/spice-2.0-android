@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.setVisible
 import com.medtroniclabs.spice.appextensions.textOrHyphen
+import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.databinding.ActivityNcdCounselorBinding
@@ -255,7 +256,9 @@ class NCDCounselorActivity : BaseActivity(), View.OnClickListener {
                 patientReference = viewModel.patientReference,
                 memberReference = viewModel.memberReference,
                 visitId = viewModel.encounterReference,
-                patientVisitId = viewModel.encounterReference
+                patientVisitId = viewModel.encounterReference,
+                assessedBy = NCDMRUtil.getUserName(),
+                assessedDate = DateUtils.getTodayDateDDMMYYYY()
             )
             viewModel.updateAssessment(request, false)
         }

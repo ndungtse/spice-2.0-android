@@ -54,8 +54,8 @@ import com.medtroniclabs.spice.db.entity.HealthFacilityEntity
 import com.medtroniclabs.spice.db.entity.HouseholdEntity
 import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
 import com.medtroniclabs.spice.db.entity.LifestyleEntity
-import com.medtroniclabs.spice.db.entity.MedicalComplianceEntity
 import com.medtroniclabs.spice.db.entity.LinkHouseholdMember
+import com.medtroniclabs.spice.db.entity.MedicalComplianceEntity
 import com.medtroniclabs.spice.db.entity.MemberClinicalEntity
 import com.medtroniclabs.spice.db.entity.MentalHealthEntity
 import com.medtroniclabs.spice.db.entity.MenuEntity
@@ -894,10 +894,6 @@ class RoomHelperImpl @Inject constructor(
         return screeningDAO.updateScreeningRecordById(id, uploadStatus)
     }
 
-    override fun getFormDataForNcd(formType: String): LiveData<String> {
-        return metaDataDAO.getFormDataForNcd(formType)
-    }
-
     override suspend fun insertRiskFactor(riskFactorEntity: RiskFactorEntity) {
         riskFactorDAO.insertRiskFactor(riskFactorEntity)
     }
@@ -946,8 +942,12 @@ class RoomHelperImpl @Inject constructor(
         return ncdMedicalReviewDao.getLifeStyle()
     }
 
-    override fun getAssessmentFormData(formType: String, workFlow: String): LiveData<String> {
-        return metaDataDAO.getAssessmentFormData(formType, workFlow)
+    override fun getAssessmentFormData(
+        formType: String,
+        customizedFormType: String,
+        workFlow: String
+    ): List<String> {
+        return metaDataDAO.getAssessmentFormData(formType, customizedFormType, workFlow)
     }
 
     override suspend fun getSymptomList(): List<SignsAndSymptomsEntity> {
@@ -1014,6 +1014,10 @@ class RoomHelperImpl @Inject constructor(
 
     override suspend fun saveNCDShortageReason(shortageReasonEntity: List<ShortageReasonEntity>) {
          return ncdMedicalReviewDao.saveNCDShortageReason(shortageReasonEntity)
+    }
+
+    override suspend fun getNCDForm(type: String, customizedType: String): List<String> {
+        return metaDataDAO.getNCDForm(type, customizedType)
     }
 
 

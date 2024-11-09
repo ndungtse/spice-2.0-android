@@ -44,12 +44,11 @@ import com.medtroniclabs.spice.formgeneration.config.ViewType
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.listener.FormEventListener
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
-import com.medtroniclabs.spice.formgeneration.model.FormResponse
 import com.medtroniclabs.spice.formgeneration.ui.FormResultComposer
 import com.medtroniclabs.spice.formgeneration.utility.CheckBoxDialog
 import com.medtroniclabs.spice.mappingkey.Screening
-import com.medtroniclabs.spice.mappingkey.Screening.BioMetrics
 import com.medtroniclabs.spice.ncd.assessment.viewmodel.BloodPressureViewModel
+import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDFormViewModel
 import com.medtroniclabs.spice.ncd.screening.ui.DuplicationNudgeDialog
 import com.medtroniclabs.spice.ncd.screening.viewmodel.GeneralDetailsViewModel
 import com.medtroniclabs.spice.ncd.screening.viewmodel.ScreeningFormBuilderViewModel
@@ -69,6 +68,7 @@ class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener, View.OnC
     private lateinit var formGenerator: FormGenerator
     private val viewModel: ScreeningFormBuilderViewModel by activityViewModels()
     private val bpViewModel: BloodPressureViewModel by activityViewModels()
+    private val ncdFormViewModel: NCDFormViewModel by activityViewModels()
     private val generalDetailsViewModel: GeneralDetailsViewModel by activityViewModels()
 
 
@@ -139,8 +139,7 @@ class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener, View.OnC
 
                 }
             }
-
-        viewModel.getFormData(MenuConstants.SCREENING.lowercase())
+        ncdFormViewModel.getNCDForm(MenuConstants.SCREENING.lowercase())
         bpViewModel.getRiskEntityList()
     }
 
@@ -191,13 +190,24 @@ class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener, View.OnC
                 }
             dialog.show(childFragmentManager, DuplicationNudgeDialog.TAG)
         }
-        viewModel.formLayoutsLiveData.observe(viewLifecycleOwner) { data ->
-            showProgress()
-            val formFieldsType = object : TypeToken<FormResponse>() {}.type
-            val formFields: FormResponse = Gson().fromJson(data, formFieldsType)
-            formGenerator.populateViews(formFields.formLayout)
-            screeningJSON = formFields.formLayout
-            hideProgress()
+        ncdFormViewModel.ncdFormResponse.observe(viewLifecycleOwner) { resources ->
+            when (resources.state) {
+                ResourceState.LOADING -> {
+                    (activity as? BaseActivity)?.showLoading()
+                }
+
+                ResourceState.SUCCESS -> {
+                    (activity as? BaseActivity)?.hideLoading()
+                    resources.data?.let {
+                        screeningJSON = it
+                        formGenerator.populateViews(it)
+                    }
+                }
+
+                ResourceState.ERROR -> {
+                    (activity as? BaseActivity)?.hideLoading()
+                }
+            }
         }
 
         viewModel.getMentalQuestions.observe(viewLifecycleOwner) { mentalQuestions ->
@@ -311,7 +321,11 @@ class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener, View.OnC
         serverViewModel: FormLayout,
         resultMap: Any?
     ) {
-        CheckBoxDialog.newInstance(id, resultMap) { map ->
+        CheckBoxDialog.newInstance(
+            id,
+            resultMap,
+            valueKeyNotNeeded = serverViewModel.valueKeyNotNeeded == true
+        ) { map ->
             formGenerator.validateCheckboxDialogue(id, serverViewModel, map)
         }.show(childFragmentManager, CheckBoxDialog.TAG)
     }
@@ -352,7 +366,6 @@ class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener, View.OnC
             resultMap[Screening.AppVersion] = BuildConfig.VERSION_NAME
 
             withNetworkAvailability(online = {
-                resultMap[Screening.identityType] = Screening.nationalId
                 viewModel.validatePatient(resultMap, serverData)
             }, offline = {
                 processValuesAndProceed(resultMap, serverData)
@@ -369,7 +382,7 @@ class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener, View.OnC
         calculateBMI(map)
         calculateAverageBloodPressure(map)
         viewModel.setPhQ4Score(calculatePHQScore(map))
-        calculateBloodGlucose(map) {( fbs, rbs )->
+        calculateBloodGlucose(map, removeUnwantedKeys = true) {( fbs, rbs )->
             if (fbs != null) {
                 viewModel.setFbsBloodGlucose(fbs)
             }
@@ -400,13 +413,12 @@ class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener, View.OnC
         SecuredPreference.getDeviceID()?.let {
             map[Screening.Device_Info_Id] = it
         }
-
-        map[Screening.UnitMeasurement] = getUnitMeasurementType()
         SecuredPreference.getCountryId()?.let { countryId ->
             map[Screening.CountryId] = countryId
         }
         map[Screening.UnitMeasurement] = getUnitMeasurementType()
-        val unwantedKeys = setOf(Week, Year, Month, Days)
+        val unwantedKeys =
+            setOf(Week, Year, Month, Days, DefinedParams.Country, Screening.identityType)
         map.keys.removeAll(unwantedKeys)
         var result = screeningJSON?.let {
             FormResultComposer().groupValues(
@@ -424,6 +436,8 @@ class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener, View.OnC
         arguments?.getString(Screening.Initial)?.let { initial ->
             bioDataMap[Screening.Initial] = initial
         }
+        bioDataMap[DefinedParams.Country] = CommonUtils.getCountryMap()
+
         result = Pair(StringConverter.convertGivenMapToString(result.second), result.second)
         val siteDetail = Gson().toJson(generalDetailsViewModel.siteDetail)
         result.first?.let {

@@ -274,7 +274,7 @@ class NCDInvestigationHistoryFragment : BaseFragment(), View.OnClickListener {
                 listOf(
                     mapOf(
                         label to requireContext().getString(R.string.date_of_investigation),
-                        value to (viewModel.investigationReferralDates.value?.firstOrNull { it.id == viewModel.investigationVisitId }?.date?.let {
+                        this.Value to (viewModel.investigationReferralDates.value?.firstOrNull { it.id == viewModel.investigationVisitId }?.date?.let {
                             DateUtils.convertDateFormat(
                                 it,
                                 DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
@@ -284,7 +284,7 @@ class NCDInvestigationHistoryFragment : BaseFragment(), View.OnClickListener {
                     ),
                     mapOf(
                         label to requireContext().getString(R.string.investigations_referred),
-                        value to createInvestigationList(data.investigations)
+                        this.Value to createInvestigationList(data.investigations)
                     )
                 )
             )

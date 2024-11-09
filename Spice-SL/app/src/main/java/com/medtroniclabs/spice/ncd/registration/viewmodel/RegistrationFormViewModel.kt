@@ -5,7 +5,6 @@ import android.graphics.Bitmap
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.gson.internal.LinkedTreeMap
 import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.common.CommonUtils
@@ -17,10 +16,8 @@ import com.medtroniclabs.spice.data.model.RegistrationResponse
 import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
-import com.medtroniclabs.spice.formgeneration.model.FormResponse
 import com.medtroniclabs.spice.mappingkey.Screening
 import com.medtroniclabs.spice.ncd.registration.repo.RegistrationRepository
-import com.medtroniclabs.spice.ncd.screening.utils.ReferredReason
 import com.medtroniclabs.spice.network.resource.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
@@ -37,7 +34,6 @@ class RegistrationFormViewModel @Inject constructor(
     @IoDispatcher private val dispatcherIO: CoroutineDispatcher,
     private var registrationRepository: RegistrationRepository
 ) : ViewModel() {
-    val registrationFormLayoutsLiveData = MutableLiveData<Resource<FormResponse>>()
     var registrationResponseLiveData = MutableLiveData<Resource<RegistrationResponse>>()
     var validatePatientResponseLiveDate =
         MutableLiveData<Resource<Pair<HashMap<String, Any>, List<FormLayout?>?>>>()
@@ -47,13 +43,6 @@ class RegistrationFormViewModel @Inject constructor(
     val chiefdomSpinnerLiveData = MutableLiveData<Resource<LocalSpinnerResponse>>()
     val villageSpinnerLiveData = MutableLiveData<Resource<LocalSpinnerResponse>>()
     val programsSpinnerLiveData = MutableLiveData<Resource<LocalSpinnerResponse>>()
-
-    fun getFormData(formType: String) {
-        viewModelScope.launch(dispatcherIO) {
-            registrationFormLayoutsLiveData.postLoading()
-            registrationFormLayoutsLiveData.postValue(registrationRepository.getFormData(formType))
-        }
-    }
 
     fun loadDataCacheByType(type: String, tag: String, selectedParent: Long?) {
         viewModelScope.launch(dispatcherIO) {

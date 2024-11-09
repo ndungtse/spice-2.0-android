@@ -292,7 +292,7 @@ class LabourOrDeliveryFragment : BaseFragment() {
                 hashMapOf<String, Any>(
                     DefinedParams.NAME to it.name,
                     DefinedParams.ID to it.id,
-                    DefinedParams.value to it.value
+                    DefinedParams.Value to it.value
                 )
             )
         }
@@ -306,7 +306,7 @@ class LabourOrDeliveryFragment : BaseFragment() {
                 override fun onItemSelected(p0: AdapterView<*>?, p1: View?, pos: Int, p3: Long) {
                     val selectedItem = adapter.getData(position = pos)
                     selectedItem?.let {
-                        val selectedName = it[DefinedParams.value] as String?
+                        val selectedName = it[DefinedParams.Value] as String?
                         if (selectedName != DefinedParams.DefaultIDLabel) {
                             viewModel.deliveryStatus = selectedName
                             viewModel.validateSubmitButtonState()
@@ -336,7 +336,7 @@ class LabourOrDeliveryFragment : BaseFragment() {
                 hashMapOf<String, Any>(
                     DefinedParams.NAME to it.name,
                     DefinedParams.ID to it.id,
-                    DefinedParams.value to it.value
+                    DefinedParams.Value to it.value
                 )
             )
         }
@@ -348,7 +348,7 @@ class LabourOrDeliveryFragment : BaseFragment() {
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, pos: Int, p3: Long) {
                 val selectedItem = adapter.getData(position = pos)
                 selectedItem?.let {
-                    val selectedName = it[DefinedParams.value] as String?
+                    val selectedName = it[DefinedParams.Value] as String?
                     if (selectedName != DefinedParams.DefaultIDLabel) {
                         viewModel.deliveryAt = selectedName
                         viewModel.validateSubmitButtonState()
@@ -380,7 +380,7 @@ class LabourOrDeliveryFragment : BaseFragment() {
                 hashMapOf<String, Any>(
                     DefinedParams.NAME to it.name,
                     DefinedParams.ID to it.id,
-                    DefinedParams.value to it.value
+                    DefinedParams.Value to it.value
                 )
             )
         }
@@ -392,7 +392,7 @@ class LabourOrDeliveryFragment : BaseFragment() {
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, pos: Int, p3: Long) {
                 val selectedItem = adapter.getData(position = pos)
                 selectedItem?.let {
-                    val selectedName = it[DefinedParams.value] as String?
+                    val selectedName = it[DefinedParams.Value] as String?
                     if (selectedName != DefinedParams.DefaultIDLabel) {
                         viewModel.deliveryBy = selectedName
                         if (viewModel.deliveryBy == DefinedParams.Others_Specify) {
@@ -445,7 +445,7 @@ class LabourOrDeliveryFragment : BaseFragment() {
                 hashMapOf<String, Any>(
                     DefinedParams.NAME to it.name,
                     DefinedParams.ID to it.id,
-                    DefinedParams.value to it.value
+                    DefinedParams.Value to it.value
 
                 )
             )
@@ -460,7 +460,7 @@ class LabourOrDeliveryFragment : BaseFragment() {
                 override fun onItemSelected(p0: AdapterView<*>?, p1: View?, pos: Int, p3: Long) {
                     val selectedItem = adapter.getData(position = pos)
                     selectedItem?.let {
-                        val selectedName = it[DefinedParams.value] as String?
+                        val selectedName = it[DefinedParams.Value] as String?
                         if (selectedName != DefinedParams.DefaultIDLabel) {
                             viewModel.deliveryType = selectedName
                             viewModel.validateSubmitButtonState()
