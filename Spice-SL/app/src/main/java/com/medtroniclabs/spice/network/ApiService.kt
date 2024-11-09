@@ -108,7 +108,6 @@ import com.medtroniclabs.spice.ncd.data.NCDTreatmentPlanModel
 import com.medtroniclabs.spice.ncd.data.NCDTreatmentPlanModelDetails
 import com.medtroniclabs.spice.ncd.data.PatientVisitRequest
 import com.medtroniclabs.spice.ncd.data.PatientVisitResponse
-import com.medtroniclabs.spice.ncd.data.ValidatePatientModel
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
 import retrofit2.Response
@@ -421,7 +420,7 @@ interface ApiService {
     suspend fun getNCDMedicalReviewHistory(@Body request: ReferralDetailRequest): Response<APIResponse<NCDMedicalReviewHistory>>
 
     @POST("spice-service/patient/validate")
-    suspend fun validatePatient(@Body request: ValidatePatientModel): Response<APIResponse<ValidatePatientModel>>
+    suspend fun validatePatient(@Body request: HashMap<String, Any>): Response<APIResponse<HashMap<String, Any>>>
 
     @GET("/spice-service/medical-review/get-instructions")
     suspend fun ncdGetInstructions(): Response<APIResponse<NCDInstructionModel>>

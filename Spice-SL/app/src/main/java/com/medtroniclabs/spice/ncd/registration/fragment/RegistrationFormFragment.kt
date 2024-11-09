@@ -1,5 +1,6 @@
 package com.medtroniclabs.spice.ncd.registration.fragment
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -10,6 +11,7 @@ import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.EntityMapper
 import com.medtroniclabs.spice.common.FormAutofill
+import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.data.model.RecommendedDosageListModel
 import com.medtroniclabs.spice.databinding.FragmentRegistrationFormBinding
 import com.medtroniclabs.spice.formgeneration.FormGenerator
@@ -29,7 +31,10 @@ import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 import com.medtroniclabs.spice.ncd.registration.ui.RegistrationActivity
 import com.medtroniclabs.spice.ncd.registration.viewmodel.RegistrationFormViewModel
+import com.medtroniclabs.spice.ncd.screening.ui.DuplicationNudgeDialog
+import com.medtroniclabs.spice.ui.MenuConstants
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
+import com.medtroniclabs.spice.ui.home.AssessmentToolsActivity
 
 class RegistrationFormFragment : BaseFragment(), View.OnClickListener, FormEventListener {
     private lateinit var binding: FragmentRegistrationFormBinding
@@ -82,12 +87,26 @@ class RegistrationFormFragment : BaseFragment(), View.OnClickListener, FormEvent
 
                 ResourceState.ERROR -> {
                     hideProgress()
-                    (activity as? BaseActivity?)?.showErrorDialogue(
-                        title = getString(R.string.error),
-                        message = resources.message
-                            ?: getString(R.string.something_went_wrong_try_later),
-                        positiveButtonName = getString(R.string.ok),
-                    ) {}
+                    if (resources.data is Pair<*, *>) {
+                        resources.data.first.let { responseMap ->
+                            val dialog =
+                                DuplicationNudgeDialog.newInstance(
+                                    StringConverter.convertGivenMapToString(
+                                        responseMap
+                                    )
+                                ) {
+                                    proceedAssessment(responseMap)
+                                }
+                            dialog.show(childFragmentManager, DuplicationNudgeDialog.TAG)
+                        }
+                    } else {
+                        (activity as? BaseActivity?)?.showErrorDialogue(
+                            title = getString(R.string.error),
+                            message = resources.message
+                                ?: getString(R.string.something_went_wrong_try_later),
+                            positiveButtonName = getString(R.string.ok),
+                        ) {}
+                    }
                 }
             }
         }
@@ -238,6 +257,19 @@ class RegistrationFormFragment : BaseFragment(), View.OnClickListener, FormEvent
                         ) {}
                     }
                 }
+            }
+        }
+    }
+
+    private fun proceedAssessment(data: HashMap<String, Any>?) {
+        data?.let { map ->
+            map[AssessmentDefinedParams.memberReference]?.toString().let { fhirId ->
+                val intent = Intent(requireContext(), AssessmentToolsActivity::class.java)
+                intent.putExtra(DefinedParams.FhirId, fhirId)
+                intent.putExtra(DefinedParams.ORIGIN, MenuConstants.ASSESSMENT)
+                intent.putExtra(DefinedParams.Gender, "male")
+                startActivity(intent)
+                activity?.finish()
             }
         }
     }

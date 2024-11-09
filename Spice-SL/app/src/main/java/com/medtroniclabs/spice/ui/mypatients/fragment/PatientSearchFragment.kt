@@ -8,6 +8,7 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.paging.LoadState
@@ -234,6 +235,15 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
         binding.loadingProgress.safeClickListener(this)
         binding.btnAddNewMember.safeClickListener(this)
         binding.btnAddNewMember.visibility = if (CommonUtils.isSL()) View.VISIBLE else View.GONE
+
+        binding.llExactSearch.etPatientSearch.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                if (binding.llExactSearch.btnSearch.isEnabled)
+                    binding.llExactSearch.btnSearch.performClick()
+                true
+            } else
+                false
+        }
     }
 
     private val searchListener = object : TextWatcher {

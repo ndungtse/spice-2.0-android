@@ -167,10 +167,7 @@ class RegistrationFormViewModel @Inject constructor(
         viewModelScope.launch(dispatcherIO) {
             validatePatientResponseLiveDate.postLoading()
             validatePatientResponseLiveDate.postValue(
-                registrationRepository.validatePatient(
-                    ReferredReason.validateRequest(resp),
-                    Pair(resp, serverData)
-                )
+                registrationRepository.validatePatient(resp, Pair(resp, serverData))
             )
         }
     }

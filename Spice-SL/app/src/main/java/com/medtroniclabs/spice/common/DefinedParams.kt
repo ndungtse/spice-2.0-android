@@ -196,4 +196,12 @@ object DefinedParams {
     const val REGISTERED = "REGISTERED"
     const val REFERREDD = "REFERRED"
 
+    const val RedRiskLow = "Low"
+    const val RedRiskModerate = "Moderate"
+    const val RedRiskHigh = "High"
+
+    const val RiskLevel = "riskLevel"
+    const val RiskMessage = "riskMessage"
+
+    const val ProvisionalTreatmentPlan = "treatmentPlanResponse"
 }

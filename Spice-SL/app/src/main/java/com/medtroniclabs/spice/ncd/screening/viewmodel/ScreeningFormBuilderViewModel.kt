@@ -14,7 +14,8 @@ import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.db.entity.MentalHealthEntity
 import com.medtroniclabs.spice.db.entity.ScreeningEntity
 import com.medtroniclabs.spice.di.IoDispatcher
-import com.medtroniclabs.spice.ncd.data.ValidatePatientModel
+import com.medtroniclabs.spice.formgeneration.model.FormLayout
+import com.medtroniclabs.spice.ncd.registration.repo.RegistrationRepository
 import com.medtroniclabs.spice.ncd.screening.repo.ScreeningRepository
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.network.utils.ConnectivityManager
@@ -26,12 +27,13 @@ import javax.inject.Inject
 @HiltViewModel
 class ScreeningFormBuilderViewModel @Inject constructor(
     @IoDispatcher private val dispatcherIO: CoroutineDispatcher,
-    private val screeningRepository: ScreeningRepository
+    private val screeningRepository: ScreeningRepository,
+    private val registrationRepository: RegistrationRepository
 ) : ViewModel() {
 
     private var getMentalQuestion = MutableLiveData<Pair<String, String>>()
     var screeningSaveResponse = MutableLiveData<Resource<ScreeningEntity>>()
-    var duplicateNudgeLiveData = MutableLiveData<ValidatePatientModel>()
+    var duplicateNudgeLiveData = MutableLiveData<HashMap<String, Any>>()
     var screeningUpdateResponse = MutableLiveData<Resource<ScreeningEntity>>()
     val getMentalQuestions: LiveData<MentalHealthEntity?> =
         getMentalQuestion.switchMap {
@@ -45,6 +47,8 @@ class ScreeningFormBuilderViewModel @Inject constructor(
     private var phQ4Score: Int? = null
     private var fbsBloodGlucose: Double? = null
     private var rbsBloodGlucose: Double? = null
+    var validatePatientResponseLiveDate =
+        MutableLiveData<Resource<Pair<HashMap<String, Any>, List<FormLayout?>?>>>()
 
     @Inject
     lateinit var connectivityManager: ConnectivityManager
@@ -90,16 +94,21 @@ class ScreeningFormBuilderViewModel @Inject constructor(
         return rbsBloodGlucose ?: 0.0
     }
 
+    fun validatePatient(resp: HashMap<String, Any>, serverData: List<FormLayout?>?) {
+        viewModelScope.launch(dispatcherIO) {
+            validatePatientResponseLiveDate.postLoading()
+            validatePatientResponseLiveDate.postValue(
+                registrationRepository.validatePatient(resp, Pair(resp, serverData))
+            )
+        }
+    }
+
     fun savePatientScreeningInformation(
-        context: Context,
         screeningEntityRawString: String,
         generalDetail: String,
-        byteArray: ByteArray?,
-        isReferred: Boolean,
-        uploadStatus: Boolean,
-        isRecursion: Boolean
+        eSignature: ByteArray?,
+        isReferred: Boolean
     ) {
-
         viewModelScope.launch(dispatcherIO)
         {
             screeningSaveResponse.postLoading()
@@ -108,8 +117,7 @@ class ScreeningFormBuilderViewModel @Inject constructor(
                     screeningDetails = screeningEntityRawString,
                     generalDetails = generalDetail,
                     userId = SecuredPreference.getUserFhirId(),
-                    uploadStatus = uploadStatus,
-                    signature = byteArray,
+                    signature = eSignature,
                     isReferred = isReferred
                 )
                 val rowId = screeningRepository.savePatientScreeningInformation(screeningEntity)

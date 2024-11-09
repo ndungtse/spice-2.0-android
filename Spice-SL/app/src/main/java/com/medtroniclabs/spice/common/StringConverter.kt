@@ -8,6 +8,8 @@ import com.google.gson.ToNumberPolicy
 import com.google.gson.reflect.TypeToken
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.data.ErrorResponse
+import com.medtroniclabs.spice.mappingkey.Screening
+import com.medtroniclabs.spice.ncd.data.DuplicatePatientResponse
 import okhttp3.ResponseBody
 import java.lang.reflect.Type
 
@@ -94,5 +96,26 @@ object StringConverter {
             }
         }
         return strBuilder.trim().toString()
+    }
+
+    fun getDuplicatePatientMap(errorBody: ResponseBody): HashMap<String, Any>? {
+        return try {
+            var returnMap: HashMap<String, Any>? = null
+            val errorResponse = Gson().fromJson(errorBody.string(), Map::class.java)
+            if (errorResponse.containsKey(Screening.Entity)) {
+                errorResponse[Screening.Entity]?.let { entity ->
+                    if (entity is Map<*, *> && entity.contains(Screening.PatientDetails)) {
+                        entity[Screening.PatientDetails]?.let { details ->
+                            (details as? Map<String, Any>)?.let { map ->
+                                returnMap = HashMap(map.toMutableMap())
+                            }
+                        }
+                    }
+                }
+            }
+            returnMap
+        } catch (e: Exception) {
+            null
+        }
     }
 }

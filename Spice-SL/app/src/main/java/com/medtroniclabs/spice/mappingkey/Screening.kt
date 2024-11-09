@@ -177,6 +177,8 @@ object Screening {
     const val isPregnancyAnc = "isPregnancyAnc"
     const val RegistrationSignSuffix = "_registration_signature"
     const val ScreeningSignSuffix = "_screening_signature"
+    const val Entity = "entity"
+    const val PatientDetails = "patientDetails"
     fun getEmptyBPReading(size: Int): ArrayList<BPModel> {
         val list = ArrayList<BPModel>()
         for (i in 1..size) {

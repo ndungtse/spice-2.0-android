@@ -3,7 +3,10 @@ package com.medtroniclabs.spice.ncd.registration.repo
 import androidx.lifecycle.LiveData
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.medtroniclabs.spice.appextensions.postSuccess
+import com.medtroniclabs.spice.common.AppConstants
 import com.medtroniclabs.spice.common.SecuredPreference
+import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.data.CountryModel
 import com.medtroniclabs.spice.data.ErrorResponse
 import com.medtroniclabs.spice.data.LocalSpinnerResponse
@@ -11,10 +14,11 @@ import com.medtroniclabs.spice.data.model.RegistrationResponse
 import com.medtroniclabs.spice.db.local.RoomHelper
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.model.FormResponse
-import com.medtroniclabs.spice.ncd.data.ValidatePatientModel
+import com.medtroniclabs.spice.mappingkey.Screening
 import com.medtroniclabs.spice.network.ApiHelper
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.network.resource.ResourceState
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
 import javax.inject.Inject
@@ -117,17 +121,32 @@ class RegistrationRepository @Inject constructor(
     }
 
     suspend fun validatePatient(
-        requestMap: ValidatePatientModel,
+        requestMap: HashMap<String, Any>,
         patientCreateReq: Pair<HashMap<String, Any>, List<FormLayout?>?>
     ): Resource<Pair<HashMap<String, Any>, List<FormLayout?>?>> {
         return try {
-            val response = apiHelper.validatePatient(requestMap)
+            val extractedMap = requestMap.filterKeys {
+                it == Screening.firstName ||
+                        it == Screening.lastName ||
+                        it == Screening.phoneNumber ||
+                        it == Screening.identityType ||
+                        it == Screening.identityValue ||
+                        it == AssessmentDefinedParams.memberReference
+            }
+            val response = apiHelper.validatePatient(HashMap(extractedMap))
             if (response.isSuccessful && response.body()?.status == true) {
                 Resource(state = ResourceState.SUCCESS, data = patientCreateReq)
+            } else if (response.code() == AppConstants.CONFLICT_ERROR_CODE) {
+                response.errorBody()?.let { errorBody ->
+                    StringConverter.getDuplicatePatientMap(errorBody)?.let { entity ->
+                        Resource(state = ResourceState.ERROR, data = Pair(entity, null), optionalData = true)
+                    } ?: run { Resource(state = ResourceState.ERROR, data = patientCreateReq) }
+                } ?: run { Resource(state = ResourceState.ERROR, data = patientCreateReq) }
             } else {
                 Resource(
                     state = ResourceState.ERROR,
-                    message = getErrorMessage(response.errorBody())
+                    message = getErrorMessage(response.errorBody()),
+                    data = patientCreateReq
                 )
             }
         } catch (_: Exception) {

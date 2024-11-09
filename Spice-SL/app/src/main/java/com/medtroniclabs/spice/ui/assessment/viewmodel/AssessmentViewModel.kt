@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
+import com.google.gson.Gson
 import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.appextensions.postSuccess
@@ -29,6 +30,7 @@ import com.medtroniclabs.spice.mappingkey.Screening
 import com.medtroniclabs.spice.model.assessment.AssessmentMemberDetails
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.network.resource.ResourceState
+import com.medtroniclabs.spice.network.utils.ConnectivityManager
 import com.medtroniclabs.spice.repo.AssessmentRepository
 import com.medtroniclabs.spice.repo.HouseholdMemberRepository
 import com.medtroniclabs.spice.ui.BaseViewModel
@@ -114,9 +116,13 @@ class AssessmentViewModel @Inject constructor(
     val formLayoutsNcdLiveData: LiveData<String> = getNcdFormData.switchMap {
         assessmentRepository.getAssessmentFormData(it.first, it.second)
     }
-    val assessmentSaveResponse = MutableLiveData<Resource<AssessmentNCDEntity>>()
+    val assessmentSaveResponse =
+        MutableLiveData<Resource<Pair<AssessmentNCDEntity, HashMap<String, Any>?>>>()
     var mentalHealthQuestions = MutableLiveData<Resource<HashMap<String, LocalSpinnerResponse>>>()
     private var phQ4Score: Int? = null
+
+    @Inject
+    lateinit var connectivityManager: ConnectivityManager
 
     init {
         SecuredPreference.getFollowUpCriteria()?.let { followUpCriteria ->
@@ -624,18 +630,41 @@ class AssessmentViewModel @Inject constructor(
         }
     }
 
-    fun saveAssessmentInformation(request: String) {
+    fun saveAssessmentInformation(
+        request: String,
+        uploadStatus: Boolean,
+        isRecursion: Boolean,
+        onlineSaveResponse: HashMap<String, Any>? = null
+    ) {
         viewModelScope.launch(dispatcherIO)
         {
             assessmentSaveResponse.postLoading()
             try {
-                val assessmentEntity = AssessmentNCDEntity(
-                    assessmentDetails = request,
-                    userId = SecuredPreference.getUserId()
-                )
-                val rowId = assessmentRepository.saveAssessmentInformation(assessmentEntity)
-                assessmentSaveResponse.postSuccess(rowId)
+                if (!isRecursion && connectivityManager.isNetworkAvailable()) {
+                    val reqMap = StringConverter.convertStringToMap(request)
+                    val response = assessmentRepository.createAssessmentNCD(
+                        StringConverter.getJsonObject(
+                            Gson().toJson(reqMap)
+                        )
+                    )
+                    val success = response.isSuccessful
+                    saveAssessmentInformation(
+                        request,
+                        uploadStatus = success,
+                        isRecursion = true,
+                        onlineSaveResponse = if (success) response.body() else null
+                    )
+                } else {
+                    val assessmentEntity = AssessmentNCDEntity(
+                        assessmentDetails = request,
+                        uploadStatus = uploadStatus,
+                        userId = SecuredPreference.getUserId()
+                    )
+                    val rowId = assessmentRepository.saveAssessmentInformation(assessmentEntity)
+                    assessmentSaveResponse.postSuccess(Pair(rowId, onlineSaveResponse))
+                }
             } catch (e: Exception) {
+                e.printStackTrace()
                 assessmentSaveResponse.postError()
             }
         }

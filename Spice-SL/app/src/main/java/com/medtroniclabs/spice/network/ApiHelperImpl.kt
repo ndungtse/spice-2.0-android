@@ -108,7 +108,6 @@ import com.medtroniclabs.spice.ncd.data.NCDTreatmentPlanModel
 import com.medtroniclabs.spice.ncd.data.NCDTreatmentPlanModelDetails
 import com.medtroniclabs.spice.ncd.data.PatientVisitRequest
 import com.medtroniclabs.spice.ncd.data.PatientVisitResponse
-import com.medtroniclabs.spice.ncd.data.ValidatePatientModel
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
@@ -513,7 +512,7 @@ class ApiHelperImpl @Inject constructor(private val apiService: ApiService) : Ap
         return apiService.getNCDMedicalReviewHistory(request)
     }
 
-    override suspend fun validatePatient(request: ValidatePatientModel): Response<APIResponse<ValidatePatientModel>> {
+    override suspend fun validatePatient(request: HashMap<String, Any>): Response<APIResponse<HashMap<String, Any>>> {
         return apiService.validatePatient(request)
     }
 

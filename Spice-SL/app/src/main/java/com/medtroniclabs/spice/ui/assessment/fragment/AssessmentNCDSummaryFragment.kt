@@ -13,14 +13,15 @@ import com.google.gson.Gson
 import com.google.gson.internal.LinkedTreeMap
 import com.google.gson.reflect.TypeToken
 import com.medtroniclabs.spice.R
-import com.medtroniclabs.spice.appextensions.setVisible
 import com.medtroniclabs.spice.appextensions.takeIfNotNull
+import com.medtroniclabs.spice.appextensions.textOrHyphen
 import com.medtroniclabs.spice.appextensions.triggerOneTimeWorker
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.StringConverter
+import com.medtroniclabs.spice.databinding.CardLayoutBinding
 import com.medtroniclabs.spice.databinding.FragmentAssessmentNCDSummaryBinding
 import com.medtroniclabs.spice.databinding.SummaryLayoutBinding
 import com.medtroniclabs.spice.formgeneration.FormSummaryReporter
@@ -34,6 +35,7 @@ import com.medtroniclabs.spice.mappingkey.Screening.Avg_Blood_pressure
 import com.medtroniclabs.spice.mappingkey.Screening.Avg_Diastolic
 import com.medtroniclabs.spice.mappingkey.Screening.Avg_Systolic
 import com.medtroniclabs.spice.mappingkey.Screening.bp_log
+import com.medtroniclabs.spice.ncd.data.TreatmentPlanResponse
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
@@ -104,7 +106,7 @@ class AssessmentNCDSummaryFragment : BaseFragment(), View.OnClickListener {
     private fun attachObserver() {
         viewModel.formLayoutsNcdLiveData.value.let { form ->
             viewModel.assessmentSaveResponse.value?.data?.let {
-                StringConverter.convertStringToMap(it.assessmentDetails)?.let { map ->
+                StringConverter.convertStringToMap(it.first.assessmentDetails)?.let { map ->
                     val formFieldsType = object : TypeToken<FormResponse>() {}.type
                     val formFields: FormResponse = Gson().fromJson(form, formFieldsType)
                     formSummaryReporter.populateAssessmentSummary(
@@ -114,8 +116,61 @@ class AssessmentNCDSummaryFragment : BaseFragment(), View.OnClickListener {
                     )
                     calculateOtherMetrics(formFields.formLayout, map)
                 }
+
+                it.second?.let { onlineResponseMap ->
+                    if (onlineResponseMap.containsKey(DefinedParams.RiskLevel) && onlineResponseMap.containsKey(
+                            DefinedParams.RiskMessage
+                        )
+                    )
+                        updateRedRiskDetails(
+                            onlineResponseMap[DefinedParams.RiskLevel]?.toString(),
+                            onlineResponseMap[DefinedParams.RiskMessage]?.toString()
+                        )
+
+                    if (onlineResponseMap.containsKey(DefinedParams.ProvisionalTreatmentPlan)) {
+                        onlineResponseMap[DefinedParams.ProvisionalTreatmentPlan]?.let { treatmentPlanMap ->
+                            if (treatmentPlanMap is List<*>)
+                                addCardView(ArrayList(treatmentPlanMap.toMutableList()))
+                        }
+                    }
+                }
             }
         }
+    }
+
+    private fun addCardView(treatmentPlanMap: ArrayList<*>) {
+        val cardBinding = CardLayoutBinding.inflate(layoutInflater)
+        cardBinding.apply {
+            cardTitle.text = getString(R.string.treatment_plan)
+            viewCardBG.setBackgroundColor(requireContext().getColor(R.color.cobalt_blue))
+            cardTitle.setTextColor(requireContext().getColor(R.color.white))
+        }
+
+        cardBinding.llFamilyRoot.let { layout ->
+            treatmentPlanMap.forEach {
+                if (it is TreatmentPlanResponse) {
+                    layout.addView(
+                        inflateChildView(
+                            it.label.textOrHyphen(),
+                            it.value.textOrHyphen()
+                        )
+                    )
+                }
+            }
+        }
+
+        if (cardBinding.llFamilyRoot.childCount > 0)
+            binding.llFamilyRoot.addView(cardBinding.root)
+    }
+
+    private fun inflateChildView(labelKey: String, value: String): View {
+        val summaryBinding = SummaryLayoutBinding.inflate(layoutInflater)
+        summaryBinding.apply {
+            tvKey.text = labelKey
+            tvRowSeparator.text = requireContext().getString(R.string.separator_colon)
+            tvValue.text = value
+        }
+        return summaryBinding.root
     }
 
     private fun calculateOtherMetrics(
@@ -414,7 +469,7 @@ class AssessmentNCDSummaryFragment : BaseFragment(), View.OnClickListener {
         } else {
             binding.riskResultLayout.text = getString(R.string.no_assessment_required)
         }
-        binding.riskResultLayout.setVisible(assessmentCondition)
+//        binding.riskResultLayout.setVisible(assessmentCondition)
     }
 
     private fun setReferForFurtherAssessment() {
@@ -534,6 +589,31 @@ class AssessmentNCDSummaryFragment : BaseFragment(), View.OnClickListener {
         }
         binding.root.findViewWithTag<LinearLayout>(formSummaryReporter.getFormResultView())
             ?.addView(summaryBinding.root)
+    }
+
+    private fun updateRedRiskDetails(riskLevel: String?, riskMessage: String?) {
+        binding.clRedRisk.visibility =
+            if (riskMessage.isNullOrBlank() || riskLevel.isNullOrBlank()) View.GONE else View.VISIBLE
+        binding.tvRedRiskStatus.text = riskMessage ?: ""
+        riskLevel?.let {
+            when (it) {
+                DefinedParams.RedRiskLow -> {
+                    binding.ivRedRisk.setImageResource(R.drawable.ic_red_risk_green)
+                    binding.clRedRisk.background =
+                        ContextCompat.getDrawable(requireContext(), R.drawable.bg_red_risk_green)
+                }
+                DefinedParams.RedRiskModerate -> {
+                    binding.ivRedRisk.setImageResource(R.drawable.ic_red_risk_orange)
+                    binding.clRedRisk.background =
+                        ContextCompat.getDrawable(requireContext(), R.drawable.bg_red_risk_orange)
+                }
+                DefinedParams.RedRiskHigh -> {
+                    binding.ivRedRisk.setImageResource(R.drawable.ic_red_risk_red)
+                    binding.clRedRisk.background =
+                        ContextCompat.getDrawable(requireContext(), R.drawable.bg_red_risk)
+                }
+            }
+        }
     }
 
     companion object {

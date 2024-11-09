@@ -12,36 +12,35 @@ import com.medtroniclabs.spice.appextensions.setDialogPercent
 import com.medtroniclabs.spice.appextensions.setVisible
 import com.medtroniclabs.spice.appextensions.textOrHyphen
 import com.medtroniclabs.spice.appextensions.visible
+import com.medtroniclabs.spice.common.DefinedParams
+import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.databinding.DialogDuplicationNudgeBinding
-import com.medtroniclabs.spice.formgeneration.extension.capitalizeFirstChar
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
-import com.medtroniclabs.spice.ncd.data.ValidatePatientModel
-import com.medtroniclabs.spice.ncd.screening.utils.DuplicationNudgeInterface
+import com.medtroniclabs.spice.mappingkey.Screening
 
-class DuplicationNudgeDialog(
-    private val isFromScreening: Boolean,
-    private val patientModel: ValidatePatientModel,
-    private val duplicationNudgeInterface: DuplicationNudgeInterface
-) :
-    DialogFragment() {
+class DuplicationNudgeDialog(private val callback: () -> Unit) :
+    DialogFragment(), View.OnClickListener {
 
     private lateinit var binding: DialogDuplicationNudgeBinding
 
     companion object {
         const val TAG = "DuplicationNudgeDialog"
+        const val PATIENT_INFO = "PatientInfo"
 
         fun newInstance(
-            patientModel: ValidatePatientModel,
-            duplicationNudgeInterface: DuplicationNudgeInterface,
-            isFromScreening: Boolean = false
-        ): DuplicationNudgeDialog =
-            DuplicationNudgeDialog(isFromScreening, patientModel, duplicationNudgeInterface)
+            patientInfo: String?,
+            callback: () -> Unit
+        ): DuplicationNudgeDialog {
+            val args = Bundle()
+            args.putString(PATIENT_INFO, patientInfo)
+            val fragment = DuplicationNudgeDialog(callback)
+            fragment.arguments = args
+            return fragment
+        }
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         binding = DialogDuplicationNudgeBinding.inflate(inflater, container, false)
         val window: Window? = dialog?.window
@@ -53,88 +52,67 @@ class DuplicationNudgeDialog(
         super.onViewCreated(view, savedInstanceState)
         isCancelable = false
         setViews()
-        setupClickListeners()
     }
 
     private fun setViews() {
-        binding.apply {
-            patientModel.let {
-                if ((1 ?: 0) > 0) {
-                    if ((1 ?: 0) > 0) {
-                        tvPatientIdValue.text = "it.programId".toString()
-                        clPatientId.visibility = View.VISIBLE
+        requireArguments().getString(PATIENT_INFO)?.let { patientInfo ->
+            StringConverter.convertStringToMap(patientInfo)?.let { map ->
+                binding.apply {
+                    tvFirstNameValue.text = map[Screening.firstName]?.toString().textOrHyphen()
+                    tvLastNameValue.text = map[Screening.lastName]?.toString().textOrHyphen()
+                    tvPhoneNumberValue.text = map[Screening.phoneNumber]?.toString().textOrHyphen()
+                    tvNationalIdValue.text = map[Screening.identityValue]?.toString().textOrHyphen()
 
-                        doAssessment()
-                    } else {
-                        tvPatientIdValue.text = getString(R.string.hyphen_symbol)
-                        clPatientId.visibility = View.GONE
+                    val patientId = map[DefinedParams.PatientReference]?.toString()
+                    tvPatientIdValue.text = patientId.textOrHyphen()
+                    clPatientId.setVisible(!patientId.isNullOrBlank())
 
-                        if (isFromScreening)
-                            doAssessment()
-                        else
-                            doEnrollment()
-                    }
-                } else {
-                    tvPatientIdValue.text = getString(R.string.hyphen_symbol)
-                    clPatientId.visibility = View.GONE
+                    doAssessment()
 
-                    allowEditOnly()
+                    btnEdit.safeClickListener(this@DuplicationNudgeDialog)
+                    btnPrimary.safeClickListener(this@DuplicationNudgeDialog)
+                    ivClose.safeClickListener(this@DuplicationNudgeDialog)
                 }
-                tvFirstNameValue.text = it.firstName.textOrHyphen().capitalizeFirstChar()
-                tvLastNameValue.text = it.lastName.textOrHyphen().capitalizeFirstChar()
-                tvPhoneNumberValue.text = it.phoneNumber.textOrHyphen()
-                tvNationalIdValue.text = it.identityValue.textOrHyphen()
             }
         }
     }
 
     private fun allowEditOnly() {
         binding.apply {
-            btnPrimaryEdit.visible()
-            btnProceed.gone()
-            btnStartAssessment.gone()
-            btnEdit.gone()
+            btnEdit.visible()
+            btnPrimary.gone()
         }
     }
 
     private fun doEnrollment() {
         binding.apply {
-            btnPrimaryEdit.visibility = View.GONE
-            btnProceed.visibility =
-                if (true == true) View.VISIBLE else View.GONE
-            btnStartAssessment.visibility = View.GONE
-            btnEdit.visibility = View.VISIBLE
+            primaryGroup.visible()
+            btnPrimary.text = getString(R.string.proceed)
         }
     }
 
     private fun doAssessment() {
         binding.apply {
-            btnPrimaryEdit.gone()
-            btnProceed.gone()
-            btnStartAssessment.setVisible(true)
-            btnEdit.visible()
-        }
-    }
-
-    private fun setupClickListeners() {
-        binding.btnStartAssessment.safeClickListener {
-            dismiss()
-            duplicationNudgeInterface.proceedAssessment(0)
-        }
-        binding.btnProceed.safeClickListener {
-            dismiss()
-            duplicationNudgeInterface.proceedEnrollment(0)
-        }
-        binding.ivClose.safeClickListener {
-            dismiss()
-        }
-        binding.btnEdit.safeClickListener {
-            dismiss()
+            primaryGroup.visible()
+            btnPrimary.text = getString(R.string.start_assessment)
         }
     }
 
     override fun onStart() {
         super.onStart()
         setDialogPercent(60, 35)
+    }
+
+    override fun onClick(view: View?) {
+        when (view?.id) {
+            R.id.btnPrimary -> {
+                dismiss()
+                callback.invoke()
+            }
+
+            R.id.btnEdit, R.id.ivClose -> {
+                dismiss()
+            }
+        }
     }
 }

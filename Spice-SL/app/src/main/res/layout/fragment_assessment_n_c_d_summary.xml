@@ -38,10 +38,43 @@
                     android:textSize="@dimen/_16ssp"
                     android:visibility="gone" />
 
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/clRedRisk"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/_20sdp"
+                    android:layout_marginTop="@dimen/_16sdp"
+                    android:padding="@dimen/_12sdp"
+                    android:visibility="gone">
+
+                    <ImageView
+                        android:id="@+id/ivRedRisk"
+                        android:layout_width="@dimen/_30sdp"
+                        android:layout_height="@dimen/_30sdp"
+                        android:layout_marginHorizontal="@dimen/_10sdp"
+                        android:contentDescription="@string/red_risk"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/tvRedRiskStatus"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:paddingHorizontal="@dimen/_10sdp"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/_16ssp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/ivRedRisk"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
                 <com.google.android.material.card.MaterialCardView
                     style="@style/CardView_Style"
-                    android:layout_marginVertical="@dimen/_6sdp"
                     android:layout_marginHorizontal="@dimen/_16sdp"
+                    android:layout_marginVertical="@dimen/_6sdp"
                     app:cardUseCompatPadding="true">
 
                     <LinearLayout
@@ -67,7 +100,6 @@
                                 app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintStart_toStartOf="parent"
                                 app:layout_constraintTop_toTopOf="parent" />
-
 
                         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -104,7 +136,8 @@
                                 <include
                                     android:id="@+id/programId"
                                     layout="@layout/summary_layout"
-                                    android:visibility="gone"/>
+                                    android:visibility="gone" />
+
                             </LinearLayout>
 
                         </LinearLayout>
@@ -118,7 +151,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="@dimen/_16sdp"
-                    android:layout_marginVertical="@dimen/_10sdp"
                     android:orientation="vertical" />
 
             </LinearLayout>

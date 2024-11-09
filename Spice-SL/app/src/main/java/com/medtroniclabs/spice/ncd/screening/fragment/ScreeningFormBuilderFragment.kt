@@ -1,7 +1,6 @@
 package com.medtroniclabs.spice.ncd.screening.fragment
 
-import android.graphics.Bitmap
-import android.os.Build
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -49,17 +48,19 @@ import com.medtroniclabs.spice.formgeneration.model.FormResponse
 import com.medtroniclabs.spice.formgeneration.ui.FormResultComposer
 import com.medtroniclabs.spice.formgeneration.utility.CheckBoxDialog
 import com.medtroniclabs.spice.mappingkey.Screening
+import com.medtroniclabs.spice.mappingkey.Screening.BioMetrics
 import com.medtroniclabs.spice.ncd.assessment.viewmodel.BloodPressureViewModel
 import com.medtroniclabs.spice.ncd.screening.ui.DuplicationNudgeDialog
-import com.medtroniclabs.spice.ncd.screening.utils.DuplicationNudgeInterface
 import com.medtroniclabs.spice.ncd.screening.viewmodel.GeneralDetailsViewModel
 import com.medtroniclabs.spice.ncd.screening.viewmodel.ScreeningFormBuilderViewModel
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.MenuConstants
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.rootSuffix
 import com.medtroniclabs.spice.ui.common.GeneralInfoDialog
+import com.medtroniclabs.spice.ui.home.AssessmentToolsActivity
 import java.lang.reflect.Type
 
 class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener, View.OnClickListener {
@@ -184,7 +185,10 @@ class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener, View.OnC
     private fun attachObservers() {
         viewModel.duplicateNudgeLiveData.observe(viewLifecycleOwner) { data ->
             hideProgress()
-            val dialog = DuplicationNudgeDialog.newInstance(data, duplicateInterface)
+            val dialog =
+                DuplicationNudgeDialog.newInstance(StringConverter.convertGivenMapToString(data)) {
+                    proceedAssessment(data)
+                }
             dialog.show(childFragmentManager, DuplicationNudgeDialog.TAG)
         }
         viewModel.formLayoutsLiveData.observe(viewLifecycleOwner) { data ->
@@ -237,15 +241,52 @@ class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener, View.OnC
         bpViewModel.getRiskEntityListLiveData.observe(viewLifecycleOwner){
 
         }
+        viewModel.validatePatientResponseLiveDate.observe(viewLifecycleOwner) { resources ->
+            when (resources.state) {
+                ResourceState.LOADING -> {
+                    showProgress()
+                }
+
+                ResourceState.SUCCESS -> {
+                    hideProgress()
+                    proceedScreening(resources.data)
+                }
+
+                ResourceState.ERROR -> {
+                    hideProgress()
+                    if (resources.optionalData == true && resources.data is Pair<*, *>) {
+                        resources.data.first.let { responseMap ->
+                            val dialog =
+                                DuplicationNudgeDialog.newInstance(
+                                    StringConverter.convertGivenMapToString(
+                                        responseMap
+                                    )
+                                ) {
+                                    proceedAssessment(responseMap)
+                                }
+                            dialog.show(childFragmentManager, DuplicationNudgeDialog.TAG)
+                        }
+                    } else
+                        proceedScreening(resources.data)
+                }
+            }
+        }
     }
 
-    private val duplicateInterface = object : DuplicationNudgeInterface {
-        override fun proceedEnrollment(patientTrackerId: Long?) {
-            TODO("Not yet implemented")
-        }
+    private fun proceedScreening(data: Pair<java.util.HashMap<String, Any>, List<FormLayout?>?>?) {
+        data?.let { processValuesAndProceed(it.first, it.second) }
+    }
 
-        override fun proceedAssessment(patientTrackerId: Long?) {
-            TODO("Not yet implemented")
+    private fun proceedAssessment(data: HashMap<String, Any>?) {
+        data?.let { map ->
+            map[AssessmentDefinedParams.memberReference]?.toString().let { fhirId ->
+                val intent = Intent(requireContext(), AssessmentToolsActivity::class.java)
+                intent.putExtra(DefinedParams.FhirId, fhirId)
+                intent.putExtra(DefinedParams.ORIGIN, MenuConstants.ASSESSMENT)
+                intent.putExtra(DefinedParams.Gender, "male")
+                startActivity(intent)
+                activity?.finish()
+            }
         }
     }
 
@@ -309,7 +350,13 @@ class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener, View.OnC
             resultMap[Screening.Screening_Date_Time] =
                 DateUtils.getCurrentDateTimeInUserTimeZone(DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ)
             resultMap[Screening.AppVersion] = BuildConfig.VERSION_NAME
-            processValuesAndProceed(resultMap, serverData)
+
+            withNetworkAvailability(online = {
+                resultMap[Screening.identityType] = Screening.nationalId
+                viewModel.validatePatient(resultMap, serverData)
+            }, offline = {
+                processValuesAndProceed(resultMap, serverData)
+            })
         }
     }
 
@@ -379,18 +426,13 @@ class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener, View.OnC
         }
         result = Pair(StringConverter.convertGivenMapToString(result.second), result.second)
         val siteDetail = Gson().toJson(generalDetailsViewModel.siteDetail)
-        if (result != null) {
-            result.first?.let {
-                viewModel.savePatientScreeningInformation(
-                    requireContext(),
-                    it,
-                    siteDetail,
-                    byteArray = arguments?.getByteArray(Screening.Signature),
-                    isReferred = isReferred,
-                    uploadStatus = false,
-                    isRecursion = false
-                )
-            }
+        result.first?.let {
+            viewModel.savePatientScreeningInformation(
+                it,
+                siteDetail,
+                eSignature = arguments?.getByteArray(Screening.Signature),
+                isReferred = isReferred
+            )
         }
     }
 

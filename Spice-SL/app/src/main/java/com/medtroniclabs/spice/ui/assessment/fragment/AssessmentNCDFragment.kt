@@ -1145,7 +1145,7 @@ class AssessmentNCDFragment : BaseFragment(), FormEventListener, View.OnClickLis
             }
             result = Pair(StringConverter.convertGivenMapToString(result.second), result.second)
             result.first?.let {
-                viewModel.saveAssessmentInformation(it)
+                viewModel.saveAssessmentInformation(it, false, false)
             }
         } catch (_: Exception) {
             //Exception - Catch block
