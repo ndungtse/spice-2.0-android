@@ -106,6 +106,8 @@ import com.medtroniclabs.spice.ncd.data.NCDPatientStatusRequest
 import com.medtroniclabs.spice.ncd.data.NCDPregnancyRiskUpdate
 import com.medtroniclabs.spice.ncd.data.NCDTreatmentPlanModel
 import com.medtroniclabs.spice.ncd.data.NCDTreatmentPlanModelDetails
+import com.medtroniclabs.spice.ncd.data.LifeStyleResponse
+import com.medtroniclabs.spice.ncd.data.LifeStyleRequest
 import com.medtroniclabs.spice.ncd.data.PatientVisitRequest
 import com.medtroniclabs.spice.ncd.data.PatientVisitResponse
 import okhttp3.RequestBody
@@ -436,4 +438,8 @@ interface ApiService {
 
     @PUT("spice-service/medical-review/update-view-status")
     suspend fun updateBadgeNotifications(@Body request: BadgeNotificationModel): Response<APIResponse<Boolean>>
+
+    @POST("/spice-service/medical-review/patient-lifestyle-details")
+    suspend fun getNcdLifeStyleDetails(@Body request: LifeStyleRequest): Response<APIResponse<ArrayList<LifeStyleResponse>>>
+
 }

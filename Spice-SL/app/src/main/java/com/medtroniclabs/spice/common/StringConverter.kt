@@ -9,7 +9,6 @@ import com.google.gson.reflect.TypeToken
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.data.ErrorResponse
 import com.medtroniclabs.spice.mappingkey.Screening
-import com.medtroniclabs.spice.ncd.data.DuplicatePatientResponse
 import okhttp3.ResponseBody
 import java.lang.reflect.Type
 

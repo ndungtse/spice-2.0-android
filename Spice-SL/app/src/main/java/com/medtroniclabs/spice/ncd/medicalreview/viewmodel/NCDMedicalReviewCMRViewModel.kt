@@ -9,6 +9,8 @@ import com.medtroniclabs.spice.data.history.NCDMedicalReviewHistory
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.model.ReferralDetailRequest
 import com.medtroniclabs.spice.model.ReferredDate
+import com.medtroniclabs.spice.ncd.data.LifeStyleResponse
+import com.medtroniclabs.spice.ncd.data.LifeStyleRequest
 import com.medtroniclabs.spice.ncd.medicalreview.repo.NCDMedicalReviewRepository
 import com.medtroniclabs.spice.network.resource.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -37,6 +39,7 @@ class NCDMedicalReviewCMRViewModel @Inject constructor(
     val investigationTicketLiveData = MutableLiveData<Resource<HistoryEntity>>()
     var investigationVisitId: String? = null
 
+    val lifeStyleResponse = MutableLiveData<Resource<ArrayList<LifeStyleResponse>>>()
     fun getPrescriptionHistory(patientId: String? = null, patientVisitId: String? = null) {
         viewModelScope.launch(dispatcherIO) {
             prescriptionTicketLiveData.postLoading()
@@ -78,6 +81,14 @@ class NCDMedicalReviewCMRViewModel @Inject constructor(
                     )
                 )
             )
+        }
+    }
+
+    fun getNcdLifeStyleDetails(request: LifeStyleRequest) {
+        viewModelScope.launch(dispatcherIO) {
+            lifeStyleResponse.postLoading()
+            val response = ncdMedicalReviewRepo.getNcdLifeStyleDetails(request)
+            lifeStyleResponse.postValue(response)
         }
     }
 }

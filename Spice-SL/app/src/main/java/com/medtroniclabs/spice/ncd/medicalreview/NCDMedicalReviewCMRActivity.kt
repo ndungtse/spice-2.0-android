@@ -10,7 +10,6 @@ import androidx.activity.viewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.setVisible
-import com.medtroniclabs.spice.appextensions.textOrEmpty
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.DefinedParams
@@ -30,6 +29,7 @@ import com.medtroniclabs.spice.ncd.counseling.activity.NCDCounselingActivity
 import com.medtroniclabs.spice.ncd.counseling.activity.NCDLifestyleActivity
 import com.medtroniclabs.spice.ncd.medicalreview.fragment.NCDMedicalReviewHistoryFragment
 import com.medtroniclabs.spice.ncd.data.BadgeNotificationModel
+import com.medtroniclabs.spice.ncd.medicalreview.fragment.NCDLifeStyleStatusFragment
 import com.medtroniclabs.spice.ncd.medicalreview.prescription.activity.NCDPrescriptionActivity
 import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDMedicalReviewCMRViewModel
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.AncVisitCallBack
@@ -367,6 +367,12 @@ class NCDMedicalReviewCMRActivity : BaseActivity(), View.OnClickListener, AncVis
             R.id.medicalReviewHistory,
             NCDMedicalReviewHistoryFragment.TAG,
             medicalReview
+        )
+        val lifeStyle = NCDLifeStyleStatusFragment.newInstance()
+        replaceFragment(
+            R.id.lifestyleStatusHistory,
+            NCDLifeStyleStatusFragment.TAG,
+            lifeStyle
         )
     }
     override fun onResume() {

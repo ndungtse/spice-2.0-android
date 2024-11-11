@@ -80,7 +80,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="@dimen/_32sdp"
                     android:layout_marginTop="@dimen/_8sdp"
-                    android:visibility="gone"
+                    android:visibility="visible"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/medicalReviewHistory" />
@@ -91,7 +91,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="@dimen/_32sdp"
                     android:layout_marginTop="@dimen/_8sdp"
-                    android:visibility="gone"
+                    android:visibility="visible"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/prescriptionHistory" />
@@ -102,8 +102,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="@dimen/_32sdp"
                     android:layout_marginTop="@dimen/_8sdp"
-                    android:visibility="gone"
-                    android:layout_marginBottom="@dimen/_150sdp"
+                    android:visibility="visible"
+                    android:layout_marginBottom="@dimen/_160sdp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"

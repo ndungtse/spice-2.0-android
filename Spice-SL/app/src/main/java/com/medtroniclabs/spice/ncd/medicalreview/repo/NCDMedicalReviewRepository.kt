@@ -17,6 +17,8 @@ import com.medtroniclabs.spice.ncd.data.NCDInstructionModel
 import com.medtroniclabs.spice.ncd.data.NCDMRSummaryRequestResponse
 import com.medtroniclabs.spice.ncd.data.NCDPatientStatusRequest
 import com.medtroniclabs.spice.ncd.data.NCDPregnancyRiskUpdate
+import com.medtroniclabs.spice.ncd.data.LifeStyleResponse
+import com.medtroniclabs.spice.ncd.data.LifeStyleRequest
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.Comorbidity
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.Complaints
@@ -29,7 +31,6 @@ import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.PhysicalExamination
 import com.medtroniclabs.spice.network.ApiHelper
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.network.resource.ResourceState
-import okhttp3.ResponseBody
 import javax.inject.Inject
 
 class NCDMedicalReviewRepository @Inject constructor(
@@ -298,6 +299,20 @@ class NCDMedicalReviewRepository @Inject constructor(
             val response = apiHelper.updateBadgeNotifications(request)
             if (response.isSuccessful) {
                 Resource(state = ResourceState.SUCCESS, response.body()?.entity)
+            } else {
+                Resource(state = ResourceState.ERROR)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Resource(state = ResourceState.ERROR)
+        }
+    }
+
+    suspend fun getNcdLifeStyleDetails(request: LifeStyleRequest): Resource<ArrayList<LifeStyleResponse>> {
+        return try {
+            val response = apiHelper.getNcdLifeStyleDetails(request)
+            if (response.isSuccessful) {
+                Resource(state = ResourceState.SUCCESS, response.body()?.entity ?: ArrayList())
             } else {
                 Resource(state = ResourceState.ERROR)
             }

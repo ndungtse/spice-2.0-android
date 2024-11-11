@@ -1011,4 +1011,16 @@
     <string name="or_label"> (OR) </string>
     <string name="high_risk_confirmation" translatable="false">Are you sure you want to flag this as a High Risk Pregnancy?</string>
     <string name="no_new_medicines_prescribed_warning">Are you sure you want to continue submitting the report without prescribing medicine for the patient?</string>
+
+    // lifeStyle Status
+    <string name="lifestyle_status_">Lifestyle Status</string>
+    <string name="no_record_found">No Record Found</string>
+    <string name="reload_img_description">Reload</string>
+    <string name="lifestyle_smoking">Smoking\n-</string>
+    <string name="lifestyle_alcohol">Alcohol\n-</string>
+    <string name="lifestyle_diet_nutrition">Diet and Nutrition\n-</string>
+    <string name="lifestyle_physical_activity">Physical Activity\n-</string>
+    <string name="nutrition_comment_title">Nutrition Comments</string>
+    <string name="smoking_comments">"Smoking Comments "</string>
+    <string name="alcohol_comments">Alcohol Comments</string>
 </resources>

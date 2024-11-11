@@ -79,7 +79,10 @@ object NCDMRUtil {
     const val IsPregnant = "IsPregnant"
     const val LifestyleResults = "lifeStyleReviewStatus"
     const val PsychologicalResults = "psychologicalReviewStatus"
-
+    const val SMOKING = "SMOKE"
+    const val ALCOHOL = "ALCOHOL"
+    const val DIET_NUTRITION = "NUT"
+    const val PHYSICAL_ACTIVITY = "OTHER"
 
     fun validateInput(
         isMandatory: Boolean = false,
