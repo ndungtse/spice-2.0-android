@@ -87,9 +87,22 @@ class MetaRepository @Inject constructor(
                             saveConsentForm(consentForm)
                             saveFhirId(userProfile.fhirId, defaultHealthFacility,changeFacility)
                             saveUserProfileDetailsInDb(userProfile)
+                            appTypes?.forEach {
+                                when (it) {
+                                    DefinedParams.COMMUNITY -> SecuredPreference.putBoolean(
+                                        SecuredPreference.EnvironmentKey.IS_COMMUNITY.name,
+                                        true
+                                    )
+                                    DefinedParams.NON_COMMUNITY -> SecuredPreference.putBoolean(
+                                        SecuredPreference.EnvironmentKey.IS_NON_COMMUNITY.name,
+                                        true
+                                    )
+                                }
+                            }
+                            roomHelper.deleteAllMenus()
                             if (CommonUtils.isRolePresent()) {
                                 saveClinicalWorkflowsForProvider(defaultHealthFacility.clinicalWorkflows)
-                                if (!nonNcdWorkflowEnabled)
+                                if (CommonUtils.isNonCommunity())
                                     handleMeta(menu, meta)
                             } else {
                                 handleMeta(menu, meta)
@@ -121,10 +134,6 @@ class MetaRepository @Inject constructor(
                                 }
                                 roomHelper.savePrograms(list)
                             }
-                            SecuredPreference.putBoolean(
-                                SecuredPreference.EnvironmentKey.IS_NON_NCD_WORKFLOW_ENABLED.name,
-                                nonNcdWorkflowEnabled
-                            )
                             remainingAttemptsCount?.let { remAttempts ->
                                 SecuredPreference.putInt(
                                     SecuredPreference.EnvironmentKey.REMAINING_ATTEMPTS_COUNT.name,
@@ -136,7 +145,7 @@ class MetaRepository @Inject constructor(
                         val formsResponse = async {
                             apiHelper.getForms(
                                 FormRequest(
-                                    nonNcdWorkflowEnabled = CommonUtils.isNonNcdWorkflow(),
+                                    nonNcdWorkflowEnabled = CommonUtils.isCommunity(),
                                     workflowNames
                                 )
                             )
@@ -146,13 +155,15 @@ class MetaRepository @Inject constructor(
                                 return@with Resource(state = ResourceState.ERROR)
                             }
                             formsResponse.body()?.entity?.apply {
-                                if (CommonUtils.isNonNcdWorkflow()) {
+                                if (CommonUtils.isCommunity()) {
                                     formData?.let {
                                         saveFormsInDb(it)
                                     } ?: run {
                                         return@with Resource(state = ResourceState.ERROR)
                                     }
-                                } else {
+                                }
+                                if (CommonUtils.isNonCommunity())
+                                {
                                     saveNcdFormsInDb(this)
                                     saveNcdModelQuestions(modelQuestions)
                                 }
@@ -465,7 +476,6 @@ class MetaRepository @Inject constructor(
     }
 
     private suspend fun saveMenusInDb(menus: ArrayList<MenuDetail>, roleName: String) {
-        roomHelper.deleteAllMenus()
         menus.forEach { menu ->
             roomHelper.saveMenus(
                 MenuEntity(
@@ -480,7 +490,6 @@ class MetaRepository @Inject constructor(
     }
 
     private suspend fun saveFormsInDb(formData: List<FormData>) {
-        roomHelper.deleteAllForms()
         roomHelper.saveForms(formData.map { data ->
             FormEntity(
                 id = data.id,
@@ -493,7 +502,6 @@ class MetaRepository @Inject constructor(
     }
 
     private suspend fun saveNcdFormsInDb(formResponse: FormResponse) {
-        roomHelper.deleteAllForms()
         roomHelper.deleteConsent()
         formResponse.screening?.let { scr ->
             roomHelper.saveForm(

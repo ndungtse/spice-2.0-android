@@ -40,7 +40,7 @@ class GetSyncStatusWorker @AssistedInject constructor(
     private val ncdRetry = 3
 
     override suspend fun doWork(): Result {
-        if (CommonUtils.isNonNcdWorkflow()) {
+        if (CommonUtils.isCommunity()) {
             val requestIds = inputData.getStringArray(KEY_REQUESTS_ID)
 
             repeat(retryCount) {

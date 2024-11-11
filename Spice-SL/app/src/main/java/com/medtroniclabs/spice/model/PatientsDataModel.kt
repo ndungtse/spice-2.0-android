@@ -14,8 +14,7 @@ data class PatientsDataModel(
     val sort: SortModel? = null,
     val type: String? = null,
     var countryId: Long? = null,
-    var tenantId: Long? = null,
-    val requestFrom: String? = CommonUtils.requestFrom()
+    var tenantId: Long? = null
 )
 
 data class MedicalReviewFilterModel(

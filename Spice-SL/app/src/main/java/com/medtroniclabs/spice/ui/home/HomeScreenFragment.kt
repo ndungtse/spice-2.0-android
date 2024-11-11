@@ -104,13 +104,13 @@ class HomeScreenFragment : BaseFragment(), MenuSelectionListener {
                 val bundle = Bundle().apply {
                     putString(DefinedParams.ORIGIN, MenuConstants.MY_PATIENTS_MENU_ID)
                 }
-                val intent = if (CommonUtils.isSL()) Intent(
+                val intent = if (CommonUtils.isCommunity()) Intent(
                     requireContext(),
                     FollowUpMyPatientActivity::class.java
                 ) else Intent(requireContext(), PatientSearchActivity ::class.java)
 
                 intent.putExtras(bundle)
-                if (CommonUtils.isSL()) {
+                if (CommonUtils.isCommunity()) {
                     startActivity(intent)
                 } else {
                     withNetworkAvailability(online = {

@@ -257,7 +257,7 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
         binding.llSortFilter.btnSort.safeClickListener(this)
         binding.loadingProgress.safeClickListener(this)
         binding.btnAddNewMember.safeClickListener(this)
-        binding.btnAddNewMember.visibility = if (CommonUtils.isSL()) View.VISIBLE else View.GONE
+        binding.btnAddNewMember.visibility = if (CommonUtils.isCommunity()) View.VISIBLE else View.GONE
 
         binding.llExactSearch.etPatientSearch.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
@@ -321,7 +321,7 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
 
     override fun onSelectedPatient(item: PatientListRespModel) {
         withNetworkAvailability(online = {
-            if (CommonUtils.isSL()) {
+            if (CommonUtils.isCommunity()) {
                 val intent = Intent(requireActivity(), ReferralHistoryActivity::class.java)
                 intent.putExtra(DefinedParams.PatientId, item.patientId)
                 intent.putExtra(DefinedParams.Gender, item.gender)

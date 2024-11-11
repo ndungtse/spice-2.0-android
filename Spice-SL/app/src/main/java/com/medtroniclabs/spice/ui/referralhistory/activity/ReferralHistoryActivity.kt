@@ -262,7 +262,7 @@ class ReferralHistoryActivity : BaseActivity(), AncVisitCallBack {
 
     private fun swipeRefresh() {
         patientDetailViewModel.patientDetailsLiveData.value?.data?.let { details ->
-            if(CommonUtils.isSL()) {
+            if(CommonUtils.isCommunity()) {
                 details.patientId?.let { id ->
                     patientDetailViewModel.getPatients(id)
                 }
@@ -276,7 +276,7 @@ class ReferralHistoryActivity : BaseActivity(), AncVisitCallBack {
 
     override fun onResume() {
         super.onResume()
-        if (CommonUtils.isSL()) {
+        if (CommonUtils.isCommunity()) {
             intent.getStringExtra(DefinedParams.PatientId)?.let {
                 patientDetailViewModel.getPatients(it)
             }

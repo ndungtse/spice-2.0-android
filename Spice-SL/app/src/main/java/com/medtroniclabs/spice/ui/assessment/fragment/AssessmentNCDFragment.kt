@@ -27,6 +27,7 @@ import com.medtroniclabs.spice.common.CommonUtils.calculateCVDRiskFactor
 import com.medtroniclabs.spice.common.CommonUtils.calculateProvisionalDiagnosis
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
+import com.medtroniclabs.spice.common.DefinedParams.NON_COMMUNITY
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.data.model.RecommendedDosageListModel
@@ -1003,7 +1004,7 @@ class AssessmentNCDFragment : BaseFragment(), FormEventListener, View.OnClickLis
                 map[DefinedParams.Gender] = gender
             }
         }
-        map[AssessmentDefinedParams.assessmentType] = DefinedParams.Assessment
+        map[AssessmentDefinedParams.assessmentType] = NON_COMMUNITY
         map[AssessmentDefinedParams.assessmentProcessType] =
             AssessmentDefinedParams.africa_uppercase
         map[AssessmentDefinedParams.assessmentTakenOn] = DateUtils.getTodayDateDDMMYYYY()

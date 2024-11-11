@@ -339,7 +339,7 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
     private fun initializeDrawerView() {
         val menu: Menu = binding.navView.menu
         val menuItemToRemove: MenuItem? = menu.findItem(R.id.offline_sync)
-        if (CommonUtils.isSL() && !CommonUtils.isChw() && menuItemToRemove != null) {
+        if (CommonUtils.isCommunity() && !CommonUtils.isChw() && menuItemToRemove != null) {
             menu.removeItem(menuItemToRemove.itemId)
         }
 
@@ -417,7 +417,7 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
             }
 
             R.id.offline_sync -> {
-                if (CommonUtils.isSL()) {
+                if (CommonUtils.isCommunity()) {
                     goToOfflineSyncPage()
                 } else {
                     binding.drawerLayout.closeDrawer(GravityCompat.START)
@@ -493,7 +493,7 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
     }
 
     private fun handleNavigation() {
-        if (CommonUtils.isSL() && CommonUtils.isRolePresent()) {
+        if (CommonUtils.isCommunity() && CommonUtils.isRolePresent()) {
             binding.appBarMain.tvTitle.text = getString(R.string.search_patient)
             requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
             replaceFragmentIfExists<PatientSearchFragment>(
@@ -568,7 +568,7 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
     override fun onDialogDismissListener(isAfrica: Boolean) {
         val homeMenuItem = binding.navView.menu.findItem(R.id.home)
         onNavigationItemSelected(homeMenuItem)
-        if (isAfrica) {
+        if (CommonUtils.isNonCommunity()) {
             withNetworkAvailability(online = {
                 this.triggerOneTimeWorker()
             })
@@ -580,11 +580,22 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
         setIntent(intent)
         val refreshFragment =
             intent.getBooleanExtra(REFRESH_FRAGMENT, false)
-        if (refreshFragment == true) {
-            supportFragmentManager.fragments.forEach { fragment ->
-                supportFragmentManager.beginTransaction().remove(fragment).commit()
+        if (refreshFragment) {
+            if (CommonUtils.isNonCommunity()) {
+                supportFragmentManager.fragments.forEach { fragment ->
+                    supportFragmentManager.beginTransaction().remove(fragment).commit()
+                }
+                handleNavigation()
+            } else {
+                val fragment = supportFragmentManager.findFragmentByTag(PatientSearchFragment.TAG)
+                fragment?.let {
+                    supportFragmentManager.beginTransaction().remove(it).commit()
+                }
+                replaceFragmentInId<PatientSearchFragment>(
+                    R.id.fragmentContainerView,
+                    tag = PatientSearchFragment.TAG
+                )
             }
-            handleNavigation()
         }
     }
 

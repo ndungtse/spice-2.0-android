@@ -297,7 +297,7 @@ class AssessmentActivity : BaseActivity() {
             }
 
             MenuConstants.MENTAL_HEALTH -> {
-                setTitle(AssessmentDefinedParams.MentalHealth)
+                setTitle(this.getString(R.string.mental_health))
                 bundle.putString(Screening.type, MenuConstants.MENTAL_HEALTH)
                 showLoading()
                 replaceFragmentInId<AssessmentNCDFragment>(

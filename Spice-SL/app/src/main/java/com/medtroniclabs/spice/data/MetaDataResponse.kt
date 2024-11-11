@@ -25,7 +25,7 @@ data class MetaDataResponse(
     val chiefdoms: ArrayList<ChiefDomEntity>? = null,
     val programs: ArrayList<ProgramEntity>? = null,
     val cultures: ArrayList<CulturesEntity>? = null,
-    val nonNcdWorkflowEnabled: Boolean = false,
+    val appTypes: ArrayList<String>? = null,
     val remainingAttemptsCount: Int? = null,
     val consentForm: ConsentFormResponse ? = null
 

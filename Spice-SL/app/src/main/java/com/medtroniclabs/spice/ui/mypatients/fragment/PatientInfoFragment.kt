@@ -99,7 +99,7 @@ class PatientInfoFragment : BaseFragment() {
     fun  initView() {
         val patientId = arguments?.getString(DefinedParams.PatientId, "")
         if (patientId?.isNotBlank() == true) {
-            if (CommonUtils.isNonNcdWorkflow()) {
+            if (CommonUtils.isCommunity()) {
                 viewModel.getPatients(patientId, if (isAnc() == true) ANC.uppercase() else null)
             } else {
                 val origin = arguments?.getString(DefinedParams.ORIGIN, "")
@@ -120,7 +120,7 @@ class PatientInfoFragment : BaseFragment() {
 
                 ResourceState.SUCCESS -> {
                     resource.data?.let {
-                        if (CommonUtils.isNonNcdWorkflow()) {
+                        if (CommonUtils.isCommunity()) {
                             setDataInInfo(it)
                         } else {
                             setNCDData(it)

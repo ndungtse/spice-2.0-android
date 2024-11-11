@@ -209,7 +209,7 @@ object CommonUtils {
     }
 
     fun offlineUsers(): Boolean {
-        return isAfrica() && (isSL() && isChw())
+        return isAfrica() && (isCommunity() && isChw())
     }
 
     fun isChwChp(): Boolean {
@@ -610,10 +610,6 @@ object CommonUtils {
         val months = (yearMonthWeek.years * 12) + yearMonthWeek.months
 
         return months >=6
-    }
-
-    fun isNonNcdWorkflow(): Boolean {
-        return SecuredPreference.getBoolean(SecuredPreference.EnvironmentKey.IS_NON_NCD_WORKFLOW_ENABLED.name, true)
     }
 
     fun formatConsent(consent: String): String {
@@ -1444,10 +1440,6 @@ object CommonUtils {
                         ((!pregnancyRisk && SecuredPreference.isAncEnabled()) || pregnancyRisk))
     }
 
-    fun isSL(): Boolean {
-        return SecuredPreference.getString(SecuredPreference.EnvironmentKey.APPLICATION.name).equals(SPICE.SIERRA_LEONE.name, true)
-    }
-
     fun isBD(): Boolean {
         return SecuredPreference.getString(SecuredPreference.EnvironmentKey.APPLICATION.name).equals(SPICE.BANGLADESH.name, true)
     }
@@ -1458,14 +1450,14 @@ object CommonUtils {
 
     fun ncdType(): String {
         return when {
-            isSL() -> DefinedParams.NCD_REGISTER
+            isCommunity() -> DefinedParams.NCD_REGISTER
             else -> DefinedParams.EMPOWER_HEALTH_NCD
         }
     }
 
     fun requestFrom(): String {
         return when {
-            isSL() -> SPICE.SIERRA_LEONE.name
+            isCommunity() -> SPICE.SIERRA_LEONE.name
             isBD() -> SPICE.BANGLADESH.name
             else -> SPICE.AFRICA.name
         }
@@ -1699,6 +1691,14 @@ object CommonUtils {
             return canShowSort(origin) || isFromDispense || isFromInvestigation
         }
         return false
+    }
+
+    fun isCommunity(): Boolean {
+        return SecuredPreference.getBoolean(SecuredPreference.EnvironmentKey.IS_COMMUNITY.name)
+    }
+
+    fun isNonCommunity(): Boolean {
+        return SecuredPreference.getBoolean(SecuredPreference.EnvironmentKey.IS_NON_COMMUNITY.name)
     }
 
     fun isPharmacist(): Boolean {

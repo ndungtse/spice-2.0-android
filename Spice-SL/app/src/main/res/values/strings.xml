@@ -1011,6 +1011,7 @@
 
     <string name="duplicate_record_found">Duplicate Record Found</string>
     <string name="proceed">Proceed</string>
+    <string name="mental_health">Mental Health</string>
 
     //E-Signature
     <string name="or_label"> (OR) </string>

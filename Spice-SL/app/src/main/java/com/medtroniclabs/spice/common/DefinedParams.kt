@@ -221,4 +221,6 @@ object DefinedParams {
     const val rbs = "rbs"
     const val fbs = "fbs"
     const val DialogWidth = 720f
+    const val COMMUNITY = "COMMUNITY"
+    const val NON_COMMUNITY = "NON_COMMUNITY"
 }

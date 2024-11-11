@@ -56,7 +56,7 @@ class MedicalReviewSuccessDialogFragment : DialogFragment(), View.OnClickListene
     }
 
     private fun initializeListeners() {
-        binding.btnEnroll.setVisible(!getIsEnroll())
+        binding.btnEnroll.setVisible(CommonUtils.isNonCommunity() && (!getIsEnroll()))
         binding.btnDone.safeClickListener(this)
         binding.ivClose.safeClickListener(this)
         binding.btnEnroll.safeClickListener(this)
