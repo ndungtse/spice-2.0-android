@@ -3,7 +3,7 @@ package com.medtroniclabs.spice.data
 data class NCDUserDashboardRequest(
     val sortField: String? = null,
     val customDate: CustomDateModel? = null,
-    val userId: Long? = null
+    val userId: String? = null
 )
 
 data class CustomDateModel(val startDate: String? = null, val endDate: String? = null)

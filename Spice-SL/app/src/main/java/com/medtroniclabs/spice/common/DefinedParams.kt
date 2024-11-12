@@ -203,6 +203,7 @@ object DefinedParams {
     const val RiskMessage = "riskMessage"
 
     const val ProvisionalTreatmentPlan = "treatmentPlanResponse"
+    const val TreatmentPlan = "treatmentPlan"
     const val FormInput = "formInput"
     const val ViewScreens = "viewScreens"
 }

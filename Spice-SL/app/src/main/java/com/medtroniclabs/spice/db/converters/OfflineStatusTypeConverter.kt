@@ -89,4 +89,16 @@ class OfflineStatusTypeConverter {
         val listType = object : TypeToken<ArrayList<LifeStyleAnswer?>?>() {}.type
         return Gson().fromJson(value, listType)
     }
+
+    @TypeConverter
+    fun toLongList(value: String): ArrayList<Long> {
+        val listType: Type = object : TypeToken<ArrayList<Long>>() {}.type
+        return Gson().fromJson(value, listType)
+    }
+
+    @TypeConverter
+    fun fromLongList(list: ArrayList<Long>): String {
+        val gson = Gson()
+        return gson.toJson(list)
+    }
 }

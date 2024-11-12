@@ -134,12 +134,15 @@ class DashboardFragment : BaseFragment(), View.OnClickListener {
         var date: Triple<Int?, Int?, Int?>? = null
         if (!text.isNullOrBlank())
             date = DateUtils.convertedMMMToddMM(text)
-        val minMaxDate = getMinDate(isFromDate)
+
+        val fromDate = binding.etFromDate.text?.toString()
+
         if (datePickerDialog == null) {
             datePickerDialog = ViewUtils.showDatePicker(
                 context = requireContext(),
                 date = date,
-                minDate = minMaxDate.first,
+                minDate = if(isFromDate) null else DateUtils.convertDateToLong(fromDate, DATE_ddMMyyyy),
+                maxDate = System.currentTimeMillis(),
                 cancelCallBack = { datePickerDialog = null }) { _, year, month, dayOfMonth ->
                 DateUtils.convertDateTimeToDate(
                     "$dayOfMonth-$month-$year",
@@ -157,23 +160,6 @@ class DashboardFragment : BaseFragment(), View.OnClickListener {
                     getDashboardList(true)
                 datePickerDialog = null
             }
-        }
-    }
-
-    private fun getMinDate(isFromDate: Boolean): Pair<Long?, Long?> {
-        val fromDate = binding.etFromDate.text?.toString()
-        val toDate = binding.etToDate.text?.toString()
-        return if (isFromDate) {
-            if (!toDate.isNullOrBlank())
-                Pair(null, DateUtils.convertDateToLong(toDate, DATE_ddMMyyyy))
-            else Pair(null, System.currentTimeMillis())
-        } else {
-            if (!fromDate.isNullOrBlank())
-                Pair(
-                    DateUtils.convertDateToLong(fromDate, DATE_ddMMyyyy),
-                    System.currentTimeMillis()
-                )
-            else Pair(null, System.currentTimeMillis())
         }
     }
 
@@ -202,7 +188,7 @@ class DashboardFragment : BaseFragment(), View.OnClickListener {
                         hideDatePicker()
                         val request = NCDUserDashboardRequest(
                             sortField = model.value,
-                            userId = SecuredPreference.getUserId()
+                            userId = SecuredPreference.getUserFhirId()
                         )
                         constructRequest(request)
                     }
@@ -224,7 +210,7 @@ class DashboardFragment : BaseFragment(), View.OnClickListener {
                         inUTC = true
                     )
                 ),
-                userId = SecuredPreference.getUserId()
+                userId = SecuredPreference.getUserFhirId()
             )
             constructRequest(request)
         }

@@ -212,10 +212,9 @@ interface MetaDataDAO {
         customizedFormType: String
     ): List<String>
 
-    @Query("SELECT formInput FROM FormEntity where formType =:formType OR formType =:customizedFormType AND workflowName =:workFlow")
+    @Query("SELECT formInput FROM FormEntity where formType IN (:formTypes) AND workflowName =:workFlow")
     fun getAssessmentFormData(
-        formType: String,
-        customizedFormType: String,
+        formTypes: List<String>,
         workFlow: String
     ): List<String>
 

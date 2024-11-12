@@ -943,11 +943,10 @@ class RoomHelperImpl @Inject constructor(
     }
 
     override fun getAssessmentFormData(
-        formType: String,
-        customizedFormType: String,
+        formTypes: List<String>,
         workFlow: String
     ): List<String> {
-        return metaDataDAO.getAssessmentFormData(formType, customizedFormType, workFlow)
+        return metaDataDAO.getAssessmentFormData(formTypes, workFlow)
     }
 
     override suspend fun getSymptomList(): List<SignsAndSymptomsEntity> {

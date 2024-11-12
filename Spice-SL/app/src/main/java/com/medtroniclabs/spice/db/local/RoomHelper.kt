@@ -355,7 +355,7 @@ interface RoomHelper {
     fun getComorbidities(type: String?,category: String): LiveData<List<NCDMedicalReviewMetaEntity>>
 
     fun getLifeStyle(): LiveData<List<LifestyleEntity>>
-    fun getAssessmentFormData(formType: String, customizedFormType:String, workFlow: String): List<String>
+    fun getAssessmentFormData(formTypes: List<String>, workFlow: String): List<String>
 
     suspend fun getSymptomList(): List<SignsAndSymptomsEntity>
 

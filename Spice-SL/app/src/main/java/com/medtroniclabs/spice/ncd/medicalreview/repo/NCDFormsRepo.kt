@@ -15,6 +15,9 @@ class NCDFormsRepo @Inject constructor(
         return if (workFlow.isNullOrBlank()) roomHelper.getNCDForm(
             formType,
             customizedFormType
-        ) else roomHelper.getAssessmentFormData(formType, customizedFormType, workFlow)
+        ) else{
+            val types = listOf(formType, workFlow)
+            roomHelper.getAssessmentFormData(types, workFlow)
+        }
     }
 }

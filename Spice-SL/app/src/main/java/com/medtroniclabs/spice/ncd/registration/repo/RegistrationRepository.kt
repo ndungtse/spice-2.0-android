@@ -85,7 +85,7 @@ class RegistrationRepository @Inject constructor(
         tag: String
     ): Resource<LocalSpinnerResponse> {
         return try {
-            val response = roomHelper.getPrograms()
+            val response = roomHelper.getPrograms().filter { it.healthFacilityIds.contains(SecuredPreference.getOrganizationId()) }
             Resource(state = ResourceState.SUCCESS, LocalSpinnerResponse(tag, response))
         } catch (_: Exception) {
             Resource(state = ResourceState.ERROR)

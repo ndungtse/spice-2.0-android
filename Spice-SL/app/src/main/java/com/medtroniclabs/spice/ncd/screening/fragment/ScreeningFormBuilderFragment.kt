@@ -240,7 +240,6 @@ class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener, View.OnC
                             tag = ScreeningSummaryFragment.TAG
                         )
                     }
-                    viewModel.screeningSaveResponse.postError()
                 }
 
                 ResourceState.ERROR -> {

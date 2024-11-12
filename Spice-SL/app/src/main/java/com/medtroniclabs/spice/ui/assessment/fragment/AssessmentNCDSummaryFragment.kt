@@ -9,9 +9,7 @@ import android.widget.LinearLayout
 import androidx.core.content.ContextCompat
 import androidx.core.text.color
 import androidx.fragment.app.activityViewModels
-import com.google.gson.Gson
 import com.google.gson.internal.LinkedTreeMap
-import com.google.gson.reflect.TypeToken
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.takeIfNotNull
 import com.medtroniclabs.spice.appextensions.textOrHyphen
@@ -28,14 +26,12 @@ import com.medtroniclabs.spice.formgeneration.FormSummaryReporter
 import com.medtroniclabs.spice.formgeneration.extension.capitalizeFirstChar
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
-import com.medtroniclabs.spice.formgeneration.model.FormResponse
 import com.medtroniclabs.spice.formgeneration.ui.FormResultComposer
 import com.medtroniclabs.spice.mappingkey.Screening
 import com.medtroniclabs.spice.mappingkey.Screening.Avg_Blood_pressure
 import com.medtroniclabs.spice.mappingkey.Screening.Avg_Diastolic
 import com.medtroniclabs.spice.mappingkey.Screening.Avg_Systolic
 import com.medtroniclabs.spice.mappingkey.Screening.bp_log
-import com.medtroniclabs.spice.ncd.data.TreatmentPlanResponse
 import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDFormViewModel
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.BaseFragment
@@ -129,8 +125,12 @@ class AssessmentNCDSummaryFragment : BaseFragment(), View.OnClickListener {
 
                     if (onlineResponseMap.containsKey(DefinedParams.ProvisionalTreatmentPlan)) {
                         onlineResponseMap[DefinedParams.ProvisionalTreatmentPlan]?.let { treatmentPlanMap ->
-                            if (treatmentPlanMap is List<*>)
-                                addCardView(ArrayList(treatmentPlanMap.toMutableList()))
+                            if (treatmentPlanMap is Map<*, *> && treatmentPlanMap.containsKey(DefinedParams.TreatmentPlan)) {
+                                treatmentPlanMap[DefinedParams.TreatmentPlan]?.let { list ->
+                                    if (list is ArrayList<*>)
+                                        addCardView(list)
+                                }
+                            }
                         }
                     }
                 }
@@ -148,11 +148,11 @@ class AssessmentNCDSummaryFragment : BaseFragment(), View.OnClickListener {
 
         cardBinding.llFamilyRoot.let { layout ->
             treatmentPlanMap.forEach {
-                if (it is TreatmentPlanResponse) {
+                if (it is Map<*, *>) {
                     layout.addView(
                         inflateChildView(
-                            it.label.textOrHyphen(),
-                            it.value.textOrHyphen()
+                            it[DefinedParams.label].toString(),
+                            it[DefinedParams.Value].toString()
                         )
                     )
                 }

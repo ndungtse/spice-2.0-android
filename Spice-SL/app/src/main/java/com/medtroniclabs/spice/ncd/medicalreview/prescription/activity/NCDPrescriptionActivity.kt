@@ -860,7 +860,7 @@ class NCDPrescriptionActivity : BaseActivity(), View.OnClickListener, SignatureL
             dropDownList.add(
                 hashMapOf<String, Any>(
                     DefinedParams.NAME to it.unit,
-                    DefinedParams.ID to it._id,
+                    DefinedParams.ID to it.id,
                 )
             )
         }

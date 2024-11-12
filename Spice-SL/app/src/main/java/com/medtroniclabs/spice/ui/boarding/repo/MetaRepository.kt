@@ -18,6 +18,7 @@ import com.medtroniclabs.spice.data.HealthFacility
 import com.medtroniclabs.spice.data.Menu
 import com.medtroniclabs.spice.data.MenuDetail
 import com.medtroniclabs.spice.data.ModelQuestion
+import com.medtroniclabs.spice.data.ProgramEntity
 import com.medtroniclabs.spice.data.UserProfile
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowConditionEntity
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowEntity
@@ -101,9 +102,19 @@ class MetaRepository @Inject constructor(
                                 roomHelper.deleteChiefDoms()
                                 roomHelper.saveChiefDoms(chiefdomList)
                             }
-                            programs?.let { programs ->
+                            programs?.let { prgms ->
                                 roomHelper.deletePrograms()
-                                roomHelper.savePrograms(programs)
+                                val list = ArrayList<ProgramEntity>()
+                                prgms.forEach { item ->
+                                    list.add(
+                                        ProgramEntity(
+                                            id = item.id,
+                                            name = item.name,
+                                            healthFacilityIds = fetchIds(item.healthFacilities)
+                                        )
+                                    )
+                                }
+                                roomHelper.savePrograms(list)
                             }
                             SecuredPreference.putBoolean(
                                 SecuredPreference.EnvironmentKey.IS_NON_NCD_WORKFLOW_ENABLED.name,
@@ -221,6 +232,14 @@ class MetaRepository @Inject constructor(
             e.printStackTrace()
             Resource(state = ResourceState.ERROR)
         }
+    }
+
+    private fun fetchIds(healthFacilities: ArrayList<HealthFacility>?): ArrayList<Long> {
+        val ids = ArrayList<Long>()
+        healthFacilities?.forEach {
+            ids.add(it.id)
+        }
+        return ids
     }
 
     private suspend fun handleMeta(menu: Menu, meta: MutableList<String>) {

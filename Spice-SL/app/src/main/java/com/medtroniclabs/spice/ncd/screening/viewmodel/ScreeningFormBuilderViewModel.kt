@@ -15,6 +15,7 @@ import com.medtroniclabs.spice.db.entity.ScreeningEntity
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.ncd.screening.repo.ScreeningRepository
+import com.medtroniclabs.spice.network.SingleLiveEvent
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.network.utils.ConnectivityManager
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -29,7 +30,7 @@ class ScreeningFormBuilderViewModel @Inject constructor(
 ) : ViewModel() {
 
     private var getMentalQuestion = MutableLiveData<Pair<String, String>>()
-    var screeningSaveResponse = MutableLiveData<Resource<ScreeningEntity>>()
+    var screeningSaveResponse = SingleLiveEvent<Resource<ScreeningEntity>>()
     var duplicateNudgeLiveData = MutableLiveData<HashMap<String, Any>>()
     var screeningUpdateResponse = MutableLiveData<Resource<ScreeningEntity>>()
     val getMentalQuestions: LiveData<MentalHealthEntity?> =
@@ -41,7 +42,7 @@ class ScreeningFormBuilderViewModel @Inject constructor(
     private var fbsBloodGlucose: Double? = null
     private var rbsBloodGlucose: Double? = null
     var validatePatientResponseLiveDate =
-        MutableLiveData<Resource<Pair<HashMap<String, Any>, List<FormLayout?>?>>>()
+        SingleLiveEvent<Resource<Pair<HashMap<String, Any>, List<FormLayout?>?>>>()
 
     @Inject
     lateinit var connectivityManager: ConnectivityManager
