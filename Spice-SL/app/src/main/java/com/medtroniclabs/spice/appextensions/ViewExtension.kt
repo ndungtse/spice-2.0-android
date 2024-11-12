@@ -31,6 +31,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.ui.BaseActivity
+import kotlin.math.sqrt
 
 fun Context.hideKeyboard(view: View) {
     val inputMethodManager = getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
@@ -257,4 +258,20 @@ fun DialogFragment.setDialogPercentForWidth(percentage: Int) {
     val percentWidth = rect.width() * percent
     dialog?.window?.setLayout(percentWidth.toInt(), ViewGroup.LayoutParams.WRAP_CONTENT)
 }
+
+fun getScreenSizeInInches(context: Context): Double {
+    val displayMetrics = context.resources.displayMetrics
+    val widthInPixels = displayMetrics.widthPixels.toDouble()
+    val heightInPixels = displayMetrics.heightPixels.toDouble()
+    val densityDpi = displayMetrics.densityDpi.toDouble()
+
+    // Calculate width and height in inches
+    val widthInInches = widthInPixels / densityDpi
+    val heightInInches = heightInPixels / densityDpi
+
+    // Calculate the diagonal screen size in inches
+    return sqrt(widthInInches * widthInInches + heightInInches * heightInInches)
+}
+
+
 

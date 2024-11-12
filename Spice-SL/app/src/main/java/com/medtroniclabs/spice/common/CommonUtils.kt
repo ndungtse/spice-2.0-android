@@ -1434,6 +1434,7 @@ object CommonUtils {
             null,
             MenuConstants.LIFESTYLE.lowercase(),
             MenuConstants.PSYCHOLOGICAL.lowercase(),
+            MenuConstants.DISPENSE.lowercase(),
             MenuConstants.MY_PATIENTS_MENU_ID.lowercase() -> true
             else -> false
         }

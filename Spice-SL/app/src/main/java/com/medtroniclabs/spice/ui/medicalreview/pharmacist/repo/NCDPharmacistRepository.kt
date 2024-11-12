@@ -1,5 +1,6 @@
 package com.medtroniclabs.spice.ui.medicalreview.pharmacist.repo
 
+import com.medtroniclabs.spice.common.StringConverter.getErrorMessage
 import com.medtroniclabs.spice.data.DispensePrescriptionRequest
 import com.medtroniclabs.spice.data.DispensePrescriptionResponse
 import com.medtroniclabs.spice.data.DispenseUpdateRequest
@@ -57,7 +58,7 @@ class NCDPharmacistRepository @Inject constructor(
                     Resource(state = ResourceState.SUCCESS, it)
                 } ?: Resource(state = ResourceState.ERROR)
             } else {
-                Resource(state = ResourceState.ERROR)
+                Resource(state = ResourceState.ERROR,   message = getErrorMessage(response.errorBody()))
             }
         } catch (e: Exception) {
             e.printStackTrace()

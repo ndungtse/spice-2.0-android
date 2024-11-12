@@ -84,6 +84,7 @@ class NCDPrescriptionActivity : BaseActivity(), View.OnClickListener, SignatureL
     }
 
     private fun initializeView() {
+        binding.btnAddMedicine.isEnabled = false
         prescriptionAdapter = NCDPrescriptionAdapter(this)
         binding.etPrescriptionSearch.apply {
             setOnItemClickListener { _, _, position, _ ->
@@ -415,7 +416,6 @@ class NCDPrescriptionActivity : BaseActivity(), View.OnClickListener, SignatureL
     }
 
     private fun addMedicine() {
-        binding.btnAddMedicine.isEnabled = false
         binding.etPrescriptionSearch.setText("")
         prescriptionViewModel.selectedMedication?.let {
             if (prescriptionViewModel.prescriptionUIModel == null) {

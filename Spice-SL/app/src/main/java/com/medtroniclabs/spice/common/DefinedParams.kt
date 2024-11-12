@@ -196,6 +196,10 @@ object DefinedParams {
     const val ASSESSED = "ASSESSED"
     const val REGISTERED = "REGISTERED"
     const val REFERREDD = "REFERRED"
+    const val Dispense = "dispense"
+    const val Nutritionlifestyle = "nutritionlifestyle"
+    const val Investigation = "investigation"
+
 
     const val RedRiskLow = "Low"
     const val RedRiskModerate = "Moderate"

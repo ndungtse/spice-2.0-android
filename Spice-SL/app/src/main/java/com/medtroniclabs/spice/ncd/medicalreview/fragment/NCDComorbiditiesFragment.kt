@@ -81,7 +81,7 @@ class NCDComorbiditiesFragment : BaseFragment() {
         complaintList: ArrayList<ChipViewItemModel>
     ) {
         with(binding) {
-            binding.tvCommentsTitle.text = getString(R.string.please_specify_the_complication)
+            binding.tvCommentsTitle.text = getString(R.string.please_specify_the_comorbidity)
             binding.tvCommentsTitle.markMandatory()
             binding.etPhysicalExaminationComments.gone()
             binding.tvCommentsTitle.gone()

@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.Window
 import androidx.fragment.app.DialogFragment
+import com.medtroniclabs.spice.appextensions.getScreenSizeInInches
 import com.medtroniclabs.spice.appextensions.setDialogPercent
 import com.medtroniclabs.spice.appextensions.setDialogWidthAndHeightAsWrapPercent
 import com.medtroniclabs.spice.databinding.DialogGeneralSuccessBinding
@@ -87,7 +88,14 @@ class GeneralSuccessDialog(private val callback: () -> Unit) : DialogFragment() 
         if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
             setDialogWidthAndHeightAsWrapPercent(90)
         } else {
-            setDialogPercent(40, 50)
+            val screenSize = getScreenSizeInInches(requireContext())
+            when (screenSize) {
+                in 9.5..10.5 -> {}
+                in 6.5..7.5 -> {}
+                else -> {
+                    // Other screen size
+                }
+            }
         }
     }
 }

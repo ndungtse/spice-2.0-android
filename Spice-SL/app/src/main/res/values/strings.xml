@@ -879,6 +879,7 @@
     <string name="subjective_validation">Please answer the question</string>
     <string name="validation_message_lifestyle">Please answer all the questions</string>
     <string name="please_specify_the_complication">Please specify the complication</string>
+    <string name="please_specify_the_comorbidity"> Please specify the comorbidity</string>
     <string name="complications">Complications</string>
 
     // Side menu

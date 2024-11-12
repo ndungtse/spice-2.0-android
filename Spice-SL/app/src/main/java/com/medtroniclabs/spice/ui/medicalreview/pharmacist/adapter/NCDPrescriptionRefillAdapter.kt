@@ -48,11 +48,9 @@ class NCDPrescriptionRefillAdapter :
                 }
             )
 
-            binding.tvDaysFilled.setText("${model.prescriptionFilledDays ?: rootContext.getString(R.string.hyphen_symbol)}")
-            
-            model.prescriptionFilledDays.let {
-                binding.tvDaysFilled.text = Editable.Factory.getInstance().newEditable(it.toString())
-            }
+            val daysFilled =
+                if (model.prescriptionFilledDays == 0) rootContext.getString(R.string.empty) else "${model.prescriptionFilledDays}"
+            binding.tvDaysFilled.setText(daysFilled)
             binding.ivDropDown.safeClickListener {
                 list[layoutPosition].let {
                     it.isSelected = !it.isSelected

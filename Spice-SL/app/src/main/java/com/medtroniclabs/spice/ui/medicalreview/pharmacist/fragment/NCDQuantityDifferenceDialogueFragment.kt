@@ -11,7 +11,9 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
+import com.medtroniclabs.spice.appextensions.numberOrZero
 import com.medtroniclabs.spice.appextensions.setWidth
+import com.medtroniclabs.spice.appextensions.textOrHyphen
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DefinedParams
@@ -109,10 +111,9 @@ class NCDQuantityDifferenceDialogueFragment : DialogFragment(), View.OnClickList
             viewModel.prescriptionDispenseLiveData.value?.data?.filter { it.prescriptionRemainingDays != it.prescriptionFilledDays }
         list?.forEach { model ->
             val lifeStyleBinding = LayoutQuantityDifferenceBinding.inflate(layoutInflater)
-            lifeStyleBinding.tvMedicationName.text =
-                model.medicationName?.ifBlank { getString(R.string.hyphen_symbol) }
-            lifeStyleBinding.tvPrescribedDays.text = model.prescriptionRemainingDays.toString()
-            lifeStyleBinding.tvfilledDays.text = model.prescriptionFilledDays.toString()
+            lifeStyleBinding.tvMedicationName.text = model.medicationName.textOrHyphen()
+            lifeStyleBinding.tvPrescribedDays.text = model.dispenseRemainingDays.numberOrZero().toString()
+            lifeStyleBinding.tvfilledDays.text = model.prescriptionFilledDays.numberOrZero().toString()
             val adapter = CustomSpinnerAdapter(requireContext())
             adapter.setData(getDropDownList())
             lifeStyleBinding.etReasonSpinner.adapter = adapter
