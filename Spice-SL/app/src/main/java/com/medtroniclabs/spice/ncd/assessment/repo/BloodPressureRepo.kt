@@ -39,4 +39,17 @@ class BloodPressureRepo @Inject constructor(
             Resource(state = ResourceState.ERROR)
         }
     }
+
+    suspend fun createBpLogForNurse(hashMap: HashMap<String, Any>): Resource<APIResponse<HashMap<String, Any>>> {
+        return try {
+            val response = apiHelper.bpLogCreateForNurse(hashMap)
+            if (response.isSuccessful && response.body()?.status == true) {
+                Resource(state = ResourceState.SUCCESS, data = response.body())
+            } else {
+                Resource(state = ResourceState.ERROR)
+            }
+        } catch (_: Exception) {
+            Resource(state = ResourceState.ERROR)
+        }
+    }
 }

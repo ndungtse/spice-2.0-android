@@ -894,6 +894,10 @@ class RoomHelperImpl @Inject constructor(
         return screeningDAO.updateScreeningRecordById(id, uploadStatus)
     }
 
+    override fun getAssessmentFormData(formType: String, workFlow: String): LiveData<String> {
+        return metaDataDAO.getAssessmentFormData(formType, workFlow)
+    }
+
     override suspend fun insertRiskFactor(riskFactorEntity: RiskFactorEntity) {
         riskFactorDAO.insertRiskFactor(riskFactorEntity)
     }

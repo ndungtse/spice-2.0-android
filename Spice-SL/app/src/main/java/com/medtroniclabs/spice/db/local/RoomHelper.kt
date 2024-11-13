@@ -356,7 +356,7 @@ interface RoomHelper {
 
     fun getLifeStyle(): LiveData<List<LifestyleEntity>>
     fun getAssessmentFormData(formTypes: List<String>, workFlow: String): List<String>
-
+    fun getAssessmentFormData(formType: String, workFlow: String): LiveData<String>
     suspend fun getSymptomList(): List<SignsAndSymptomsEntity>
 
     suspend fun saveAssessmentInformation(request: AssessmentNCDEntity): AssessmentNCDEntity

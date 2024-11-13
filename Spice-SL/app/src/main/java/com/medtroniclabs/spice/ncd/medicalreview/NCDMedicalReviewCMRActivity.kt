@@ -29,7 +29,9 @@ import com.medtroniclabs.spice.ncd.counseling.activity.NCDCounselingActivity
 import com.medtroniclabs.spice.ncd.counseling.activity.NCDLifestyleActivity
 import com.medtroniclabs.spice.ncd.medicalreview.fragment.NCDMedicalReviewHistoryFragment
 import com.medtroniclabs.spice.ncd.data.BadgeNotificationModel
+import com.medtroniclabs.spice.ncd.medicalreview.fragment.NCDInvestigationHistoryFragment
 import com.medtroniclabs.spice.ncd.medicalreview.fragment.NCDLifeStyleStatusFragment
+import com.medtroniclabs.spice.ncd.medicalreview.fragment.NCDPrescriptionHistoryFragment
 import com.medtroniclabs.spice.ncd.medicalreview.prescription.activity.NCDPrescriptionActivity
 import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDMedicalReviewCMRViewModel
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.AncVisitCallBack
@@ -193,7 +195,7 @@ class NCDMedicalReviewCMRActivity : BaseActivity(), View.OnClickListener, AncVis
         viewModel.getBadgeNotifications(BadgeNotificationModel(patientReference = patientDetailViewModel.getPatientId()))
     }
 
-    private fun swipeRefresh() {
+     fun swipeRefresh() {
         patientDetailViewModel.patientDetailsLiveData.value?.data?.let { details ->
             details.id?.let { id ->
                 patientDetailViewModel.getPatients(id, origin = patientDetailViewModel.origin)
@@ -367,6 +369,18 @@ class NCDMedicalReviewCMRActivity : BaseActivity(), View.OnClickListener, AncVis
             R.id.medicalReviewHistory,
             NCDMedicalReviewHistoryFragment.TAG,
             medicalReview
+        )
+        val prescription = NCDPrescriptionHistoryFragment.newInstance(details.patientId)
+        replaceFragment(
+            R.id.prescriptionHistory,
+            NCDPrescriptionHistoryFragment.TAG,
+            prescription
+        )
+        val investigation = NCDInvestigationHistoryFragment.newInstance(details.patientId)
+        replaceFragment(
+            R.id.investigationHistory,
+            NCDInvestigationHistoryFragment.TAG,
+            investigation
         )
         val lifeStyle = NCDLifeStyleStatusFragment.newInstance()
         replaceFragment(

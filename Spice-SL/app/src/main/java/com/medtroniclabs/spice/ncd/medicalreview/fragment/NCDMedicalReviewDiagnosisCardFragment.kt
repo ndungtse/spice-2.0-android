@@ -374,11 +374,14 @@ class NCDMedicalReviewDiagnosisCardFragment : BaseFragment(), View.OnClickListen
         patientDetailViewModel.patientDetailsLiveData.value?.data?.let { detail ->
             val intent = Intent(requireActivity(), AssessmentReadingActivity::class.java)
             val bundle = Bundle().apply {
-                if (isBP)
+                if (isBP) {
                     putString(DefinedParams.FORM_TYPE_ID, DefinedParams.BP_LOG)
-                else
+                    detail.height?.let { putDouble(Screening.Height, it) }
+                    detail.weight?.let { putDouble(Screening.Weight, it) }
+                }
+                else {
                     putString(DefinedParams.FORM_TYPE_ID, DefinedParams.GLUCOSE_LOG)
-
+                }
                 putString(DefinedParams.RelatedPersonFhirId, detail.id)
                 putString(DefinedParams.PATIENT_ID, detail.patientId)
 

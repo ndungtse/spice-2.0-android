@@ -747,4 +747,49 @@ object DateUtils {
         return null
     }
 
+    fun validateForSameDate(year: Int, month: Int, dayOfMonth: Int): Boolean {
+        val today = getTodayDate()
+        val chosenDate = getTodayDate()
+        chosenDate.set(Calendar.YEAR, year)
+        chosenDate.set(Calendar.MONTH, month - 1)
+        chosenDate.set(Calendar.DAY_OF_MONTH, dayOfMonth)
+        if (!chosenDate.before(today) && !chosenDate.after(today))
+            return true
+        return false
+    }
+
+    private fun getTodayDate(): Calendar {
+        val calendar = Calendar.getInstance()
+        calendar.set(Calendar.HOUR, 0)
+        calendar.set(Calendar.HOUR_OF_DAY, 0)
+        calendar.set(Calendar.MINUTE, 0)
+        calendar.set(Calendar.SECOND, 0)
+        calendar.set(Calendar.MILLISECOND, 0)
+        return calendar
+    }
+
+    fun getDateStringInFormat(input: String?, ipFormat: String, opFormat: String): String {
+        try {
+            input?.let {
+                if (it.isNotBlank()) {
+                    val selectedCalendar = Calendar.getInstance()
+                    val currentCalendar = Calendar.getInstance()
+                    val inputFormat = SimpleDateFormat(ipFormat, Locale.ENGLISH)
+                    val date = inputFormat.parse(it)
+                    date?.let {
+                        selectedCalendar.time = date
+                        currentCalendar.set(Calendar.DAY_OF_MONTH, selectedCalendar.get(Calendar.DAY_OF_MONTH))
+                        currentCalendar.set(Calendar.MONTH, selectedCalendar.get(Calendar.MONTH))
+                        currentCalendar.set(Calendar.YEAR, selectedCalendar.get(Calendar.YEAR))
+                        val outputFormat =
+                            SimpleDateFormat(opFormat, Locale.ENGLISH)
+                        return outputFormat.format(currentCalendar.time)
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            return ""
+        }
+        return ""
+    }
 }

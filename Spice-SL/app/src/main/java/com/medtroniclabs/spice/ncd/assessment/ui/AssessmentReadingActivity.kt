@@ -13,6 +13,7 @@ import com.medtroniclabs.spice.common.CommonUtils.calculateAverageBloodPressure
 import com.medtroniclabs.spice.common.CommonUtils.calculateBMI
 import com.medtroniclabs.spice.common.CommonUtils.calculateBloodGlucose
 import com.medtroniclabs.spice.common.CommonUtils.calculateCVDRiskFactor
+import com.medtroniclabs.spice.common.CommonUtils.toDoubleOrEmptyString
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.data.model.RecommendedDosageListModel
@@ -24,6 +25,7 @@ import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.listener.FormEventListener
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.ui.FormResultComposer
+import com.medtroniclabs.spice.mappingkey.MemberRegistration
 import com.medtroniclabs.spice.mappingkey.Screening
 import com.medtroniclabs.spice.ncd.assessment.viewmodel.AssessmentReadingViewModel
 import com.medtroniclabs.spice.ncd.assessment.viewmodel.BloodPressureViewModel
@@ -89,6 +91,18 @@ class AssessmentReadingActivity : BaseActivity(), FormEventListener, View.OnClic
         bpViewModel.getRiskEntityList()
     }
 
+    private fun populateWeightHeight() {
+        intent.extras?.let { bundle ->
+            listOf(Screening.Height, Screening.Weight).forEach { key ->
+                bundle.getDouble(key).takeIf { it > 0.0 }?.let { value ->
+                    formGenerator.getViewByTag(key)?.let { view ->
+                        formGenerator.setValueForView(value.toDoubleOrEmptyString(), view)
+                    }
+                }
+            }
+        }
+    }
+
     private fun attachObservers() {
         ncdFormViewModel.ncdFormResponse.observe(this) { resources ->
             when (resources.state) {
@@ -103,6 +117,7 @@ class AssessmentReadingActivity : BaseActivity(), FormEventListener, View.OnClic
                             it.id == viewModel.formTypeId || it.family == viewModel.formTypeId
                         }
                         formGenerator.populateViews(filter)
+                        populateWeightHeight()
                     }
                 }
 

@@ -30,6 +30,8 @@ import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.BP_TAG
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.FBS
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.RBS
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.RBS_FBS
+import com.medtroniclabs.spice.ncd.medicalreview.dialog.NCDBloodGlucoseReadingDialog
+import com.medtroniclabs.spice.ncd.medicalreview.dialog.NCDBloodPressureVitalsDialog
 import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDBpAndBgViewModel
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
@@ -431,6 +433,29 @@ class NCDAssessmentHistoryFragment : BaseFragment(), View.OnClickListener {
             }
 
             R.id.btnAddNewReading -> {
+                val tag = if (isBPSummary) {
+                    NCDBloodPressureVitalsDialog.TAG
+                } else {
+                    NCDBloodGlucoseReadingDialog.TAG
+                }
+                // Check if the fragment already exists
+                val existingFragment = childFragmentManager.findFragmentByTag(tag)
+                // Show the new instance of the dialog
+                if (isBPSummary) {
+                    if (existingFragment == null) {
+                        NCDBloodPressureVitalsDialog.newInstance().show(
+                            childFragmentManager,
+                            NCDBloodPressureVitalsDialog.TAG
+                        )
+                    }
+                } else {
+                    if (existingFragment == null) {
+                        NCDBloodGlucoseReadingDialog.newInstance().show(
+                            childFragmentManager,
+                            NCDBloodGlucoseReadingDialog.TAG
+                        )
+                    }
+                }
             }
         }
     }

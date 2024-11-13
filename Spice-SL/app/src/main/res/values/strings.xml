@@ -1011,6 +1011,19 @@
     <string name="or_label"> (OR) </string>
     <string name="high_risk_confirmation" translatable="false">Are you sure you want to flag this as a High Risk Pregnancy?</string>
     <string name="no_new_medicines_prescribed_warning">Are you sure you want to continue submitting the report without prescribing medicine for the patient?</string>
+    <string name="tobacoo_question">Are you a regular smoker or have you been a regular smoker in the past 12 months?</string>
+    <string name="enter_height">Enter Height</string>
+    <string name="enter_weight">Enter Weight</string>
+    <string name="validation_error">Please enter a valid %1$s</string>
+    <string name="height_value">height value</string>
+    <string name="weight_value">weight value</string>
+    <string name="valid_assessment_date">Please select Assessment Date</string>
+    <string name="please_select_past_date">Please select past date</string>
+    <string name="blood_pressure_saved_successfully">Blood pressure saved successfully</string>
+    <string name="select_type">Select Type</string>
+    <string name="glucose_value">glucose value</string>
+    <string name="bg_select_type">Please select a type</string>
+    <string name="blood_glucose_saved_successfully">Blood glucose saved successfully</string>
 
     // lifeStyle Status
     <string name="lifestyle_status_">Lifestyle Status</string>

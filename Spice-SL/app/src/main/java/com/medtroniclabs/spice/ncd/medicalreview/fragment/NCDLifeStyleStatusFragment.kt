@@ -73,6 +73,11 @@ class NCDLifeStyleStatusFragment : BaseFragment(), View.OnClickListener {
                     it
                 )
             )
+        } ?: kotlin.run {
+            binding.ivRefresh.gone()
+            binding.CenterProgress.gone()
+            binding.clLifeStyle.visible()
+            loadLifeStyleData(ArrayList())
         }
     }
 

@@ -34,4 +34,17 @@ class GlucoseRepo @Inject constructor(private val apiHelper: ApiHelper) {
             Resource(state = ResourceState.ERROR)
         }
     }
+
+    suspend fun glucoseLogCreateForNurse(hashMap: HashMap<String, Any>): Resource<APIResponse<HashMap<String, Any>>> {
+        return try {
+            val response = apiHelper.glucoseLogCreateForNurse(hashMap)
+            if (response.isSuccessful && response.body()?.status == true) {
+                Resource(state = ResourceState.SUCCESS, data = response.body())
+            } else {
+                Resource(state = ResourceState.ERROR)
+            }
+        } catch (_: Exception) {
+            Resource(state = ResourceState.ERROR)
+        }
+    }
 }

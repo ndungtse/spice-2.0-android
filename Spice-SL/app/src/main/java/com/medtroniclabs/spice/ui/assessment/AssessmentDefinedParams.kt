@@ -127,4 +127,7 @@ object AssessmentDefinedParams {
     const val spiceUserId= "spiceUserId"
     const val memberReference = "memberReference"
     const val patientReference = "patientReference"
+    const val HBA1CUnit = "hba1cUnit"
+    const val Glucose_Date_Time = "glucoseDateTime"
+    const val hba1c = "hba1c"
 }

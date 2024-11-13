@@ -1,5 +1,6 @@
 package com.medtroniclabs.spice.ncd.medicalreview.viewmodel
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -63,5 +64,11 @@ class NCDMedicalReviewViewModel @Inject constructor(
                 ncdMedicalReviewRepo.updateBadgeNotifications(request)
             )
         }
+    }
+    private val isInitialLiveData = MutableLiveData<Boolean>()
+    val isInitial: LiveData<Boolean> = isInitialLiveData
+
+    fun isInitial(isInitial: Boolean) {
+        isInitialLiveData.value = isInitial
     }
 }

@@ -21,7 +21,6 @@ import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.MemberID
 import com.medtroniclabs.spice.common.DefinedParams.ORIGIN
-import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.databinding.ActivityNcdMrBaseBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
@@ -124,21 +123,6 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
         binding.refreshLayout.setOnRefreshListener {
             swipeRefresh()
         }
-
-        getPatientDetails()
-    }
-
-    fun getPatientDetails(){
-        withNetworkCheck(connectivityManager, onNetworkAvailable = {
-            supportFragmentManager.findFragmentById(R.id.patientDetailFragment).let {
-                    getPatientId()?.let { id ->
-                        patientDetailViewModel.getPatients(
-                            id,
-                            origin = getMenuOrigin()
-                        )
-                    }
-                }
-        })
     }
 
     private fun showHideVerticalIcon(visibility: Boolean) {
@@ -209,6 +193,15 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
     }
 
     fun attachObservers() {
+        viewModel.isInitial.observe(this) {
+            if (it) {
+                showNcdPatientStatus()
+                showMaternalStatus()
+                viewModel.isInitial(false)
+            } else {
+                loadFragment(true)
+            }
+        }
         viewModel.ncdMedicalReviewStaticLiveData.observe(this) { resourceState ->
             when (resourceState.state) {
                 ResourceState.LOADING -> {
@@ -914,9 +907,7 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
                     comorbiditiesFragment != null && !binding.chiefComplaintsContainer.isVisible -> loadFragment(true)
                     chiefComplaintsFragment != null && !binding.comorbiditiesContainer.isVisible -> loadFragment(false)
                     else -> {
-                        showNcdPatientStatus()
-                        showMaternalStatus()
-                        loadFragment(true)
+                        viewModel.isInitial(true)
                     }
                 }
             }

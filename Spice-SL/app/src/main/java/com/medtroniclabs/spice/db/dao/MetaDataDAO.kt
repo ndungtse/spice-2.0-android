@@ -218,6 +218,12 @@ interface MetaDataDAO {
         workFlow: String
     ): List<String>
 
+    @Query("SELECT formInput FROM FormEntity where formType =:formType AND workflowName =:workFlow")
+    fun getAssessmentFormData(
+        formType: String,
+        workFlow: String
+    ): LiveData<String>
+
     @Query("SELECT cwe.id, cwe.name, cwe.workflowName, cwce.category, cwce.groupName, cwce.subModule, cwe.displayOrder FROM ClinicalWorkflowEntity AS cwe JOIN ClinicalWorkflowConditionEntity AS cwce ON cwe.id = cwce.clinicalWorkflowId WHERE cwce.gender = :gender AND cwce.moduleType = :moduleType ORDER BY cwe.displayOrder")
     suspend fun getAssessmentClinicalWorkflow(
         gender: String,
