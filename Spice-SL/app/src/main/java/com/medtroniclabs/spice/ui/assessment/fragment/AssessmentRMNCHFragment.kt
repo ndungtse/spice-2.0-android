@@ -450,6 +450,16 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
         }
     }
 
+    override fun onAgeUpdateListener(
+        age: String?,
+        serverData: List<FormLayout?>?,
+        resultHashMap: HashMap<String, Any>
+    ) {
+        /*
+       Never used
+        */
+    }
+
     fun getCurrentAnsweredStatus(): Boolean {
         return formGenerator.getResultMap().isNotEmpty()
     }

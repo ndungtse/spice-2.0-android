@@ -45,6 +45,7 @@ import com.medtroniclabs.spice.common.RoleConstant
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.databinding.ActivityLandingBinding
 import com.medtroniclabs.spice.ncd.landing.dialog.NCDOfflineDataDialog
+import com.medtroniclabs.spice.ncd.landing.ui.UserTermsConditionsActivity
 import com.medtroniclabs.spice.network.NetworkConstants
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.ChooseSiteDialogueFragment
@@ -82,6 +83,14 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
             splashScreen.setKeepOnScreenCondition { false }
             finish()
             return
+        } else {
+            val isFromLauncher: Boolean =
+                intent?.categories?.contains(Intent.CATEGORY_LAUNCHER) ?: false
+            if (isFromLauncher && !SecuredPreference.getTermsAndConditionsStatus()) {
+                startActivity(Intent(this, UserTermsConditionsActivity::class.java))
+                finish()
+                return
+            }
         }
 
         // Initiate schedule worker

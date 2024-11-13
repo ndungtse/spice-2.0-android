@@ -251,6 +251,16 @@ class AssessmentOtherSymptomsFragment : BaseFragment(), FormEventListener, View.
 
     }
 
+    override fun onAgeUpdateListener(
+        age: String?,
+        serverData: List<FormLayout?>?,
+        resultHashMap: HashMap<String, Any>
+    ) {
+        /*
+       Never used
+        */
+    }
+
     private fun updateColorCode(id: String, colorCode: Int) {
         formGenerator.getViewByTag(id + com.medtroniclabs.spice.formgeneration.config.DefinedParams.Information)?.let { view ->
             if (view is TextView){

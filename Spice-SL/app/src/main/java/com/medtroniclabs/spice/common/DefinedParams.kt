@@ -21,6 +21,7 @@ object DefinedParams {
     const val TB = "TB"
     const val No = "No"
     const val Yes = "Yes"
+    const val yes = "yes"
     const val Other = "Other"
     const val ENABLED = "enabled"
     const val Username = "username"
@@ -153,6 +154,7 @@ object DefinedParams {
 
     const val name = "name"
 
+    const val Landing = "landing"
     const val Screening = "screening"
     const val Registration = "registration"
     const val Assessment = "assessment"

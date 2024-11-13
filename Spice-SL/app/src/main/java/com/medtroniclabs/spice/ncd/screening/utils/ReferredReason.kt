@@ -7,4 +7,5 @@ object ReferredReason {
     const val pregnancySymptoms = "PREGNANCY-SYMPTOMS"
     const val SuicidalIdeation = "Suicidal-Ideation"
     const val CAGEAID = "CAGEAID"
+    const val HIV= "HIV"
 }

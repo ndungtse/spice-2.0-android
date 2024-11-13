@@ -197,6 +197,16 @@ class NCDPatientEditFragment : BaseFragment(), FormEventListener, View.OnClickLi
          */
     }
 
+    override fun onAgeUpdateListener(
+        age: String?,
+        serverData: List<FormLayout?>?,
+        resultHashMap: HashMap<String, Any>
+    ) {
+        /**
+         * this method is not used
+         */
+    }
+
     override fun onPopulate(targetId: String) {
         /**
          * this method is not used

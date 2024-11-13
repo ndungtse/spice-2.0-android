@@ -9,6 +9,7 @@ import com.medtroniclabs.spice.db.entity.MentalHealthEntity
 import com.medtroniclabs.spice.db.entity.ScreeningEntity
 import com.medtroniclabs.spice.db.local.RoomHelper
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
+import com.medtroniclabs.spice.ncd.data.TermsAndConditionsModel
 import com.medtroniclabs.spice.network.ApiHelper
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.network.resource.ResourceState
@@ -22,6 +23,10 @@ class ScreeningRepository @Inject constructor(
     fun getUserHealthFacilityEntity(
     ): LiveData<List<HealthFacilityEntity>> {
         return roomHelper.getSites()
+    }
+
+    fun fetchConsentForm(formType: String): LiveData<String> {
+        return roomHelper.getConsent(formType)
     }
 
     fun getMentalQuestion(type:String) :  LiveData<MentalHealthEntity?>{
@@ -78,6 +83,19 @@ class ScreeningRepository @Inject constructor(
                     message = CommonUtils.getErrorMessage(response.errorBody()),
                     data = patientCreateReq
                 )
+            }
+        } catch (_: Exception) {
+            Resource(state = ResourceState.ERROR)
+        }
+    }
+
+    suspend fun updateTermsAndConditionsStatus(request: TermsAndConditionsModel): Resource<TermsAndConditionsModel> {
+        return try {
+            val response = apiHelper.updateTermsAndConditionsStatus(request)
+            if (response.isSuccessful && response.body()?.status == true) {
+                Resource(state = ResourceState.SUCCESS, data = response.body()?.entity)
+            } else {
+                Resource(state = ResourceState.ERROR)
             }
         } catch (_: Exception) {
             Resource(state = ResourceState.ERROR)

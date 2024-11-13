@@ -13,7 +13,6 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.medtroniclabs.spice.BuildConfig
 import com.medtroniclabs.spice.R
-import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.CommonUtils.addAncEnableOrNot
 import com.medtroniclabs.spice.common.CommonUtils.calculateAverageBloodPressure
@@ -50,6 +49,7 @@ import com.medtroniclabs.spice.mappingkey.Screening
 import com.medtroniclabs.spice.ncd.assessment.viewmodel.BloodPressureViewModel
 import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDFormViewModel
 import com.medtroniclabs.spice.ncd.screening.ui.DuplicationNudgeDialog
+import com.medtroniclabs.spice.ncd.screening.utils.ReferredReason
 import com.medtroniclabs.spice.ncd.screening.viewmodel.GeneralDetailsViewModel
 import com.medtroniclabs.spice.ncd.screening.viewmodel.ScreeningFormBuilderViewModel
 import com.medtroniclabs.spice.network.resource.ResourceState
@@ -392,7 +392,7 @@ class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener, View.OnC
         getPregnancySymptomCount(resultMap)
         calculateSuicidalIdeation(map)
         calculateCAGEAIDSCore(map, serverData)
-        calculateFurtherAssessment(map, getMeasurementTypeValues(map))
+        calculateFurtherAssessment(map, getMeasurementTypeValues(map), serverData)
         val resultOne = bpViewModel.getRiskEntityListLiveData.value
         val baseType: Type = object : TypeToken<ArrayList<RiskClassificationModel>>() {}.type
         if (resultOne?.isNotEmpty() == true) {
@@ -482,7 +482,90 @@ class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener, View.OnC
 
     }
 
-    private fun calculateFurtherAssessment(map: HashMap<String, Any>, unitGenericType: String) {
+    override fun onAgeUpdateListener(
+        age: String?,
+        serverData: List<FormLayout?>?,
+        resultHashMap: HashMap<String, Any>
+    ) {
+        age?.toIntOrNull()?.let { inputAge ->
+            var matchingCondition: String? = null
+            val hivViewBasedOnAge =
+                serverData?.filter {
+                    val (matches, condition) = it?.ageCondition?.let { ageConditionList ->
+                        getAgeConditionCategory(inputAge, ageConditionList)
+                    } ?: Pair(false, null)
+                    if (matches) {
+                        matchingCondition = condition
+                    }
+                    matches
+                }
+            val getRemainingHIVBasedViews =
+                serverData?.filter { it?.ageCondition?.contains(matchingCondition)?.not() ?: false }
+            hivViewBasedOnAge?.forEach { formItem ->
+                if (formGenerator.isViewGone(formItem?.id + rootSuffix)) {
+                    formGenerator.getViewByTag(formItem?.id + rootSuffix)?.visibility =
+                        View.VISIBLE
+                }
+            }
+            getRemainingHIVBasedViews?.forEach { formItem ->
+                if (formGenerator.isViewVisible(formItem?.id + rootSuffix)) {
+                    formGenerator.getViewByTag(formItem?.id + rootSuffix)?.visibility =
+                        View.GONE
+                    formGenerator.getViewByTag(formItem?.id + rootSuffix)
+                        ?.let { formGenerator.resetChildViews(it) }
+                }
+            }
+        } ?: kotlin.run {
+            resetAllHIVCategoryView(serverData)
+        }
+    }
+
+    fun getAgeConditionCategory(age: Int, ageCondition: ArrayList<String>): Pair<Boolean, String> {
+        for (condition in ageCondition) {
+            when {
+                condition.contains("-") -> {
+                    val (start, end) = condition.split("-").map { it.toInt() }
+                    if (age in start..end) return Pair(true, condition)
+                }
+                condition.startsWith(">=") -> {
+                    val minAge = condition.removePrefix(">=").toInt()
+                    if (age >= minAge) return Pair(true, condition)
+                }
+                condition.startsWith("<=") -> {
+                    val maxAge = condition.removePrefix("<=").toInt()
+                    if (age <= maxAge) return Pair(true, condition)
+                }
+                condition.startsWith(">") -> {
+                    val minAge = condition.removePrefix(">").toInt()
+                    if (age > minAge) return Pair(true, condition)
+                }
+                condition.startsWith("<") -> {
+                    val maxAge = condition.removePrefix("<").toInt()
+                    if (age < maxAge) return Pair(true, condition)
+                }
+            }
+        }
+        return Pair(false, "")
+    }
+
+    private fun resetAllHIVCategoryView(serverData: List<FormLayout?>?) {
+        val hivViewBasedOnAge = serverData?.filter { it?.ageCondition?.isNotEmpty() == true && it.workflowType?.contains(
+            ReferredReason.HIV) == true }
+        hivViewBasedOnAge?.forEach { formItem ->
+            if (formGenerator.isViewVisible(formItem?.id + rootSuffix)) {
+                formGenerator.getViewByTag(formItem?.id + rootSuffix)?.visibility =
+                    View.GONE
+                formGenerator.getViewByTag(formItem?.id + rootSuffix)
+                    ?.let { formGenerator.resetChildViews(it) }
+            }
+        }
+    }
+
+    private fun calculateFurtherAssessment(
+        map: HashMap<String, Any>,
+        unitGenericType: String,
+        serverData: List<FormLayout?>?
+    ) {
         screeningJSON?.first { it.viewType == ViewType.VIEW_TYPE_FORM_BP }?.let {
             bpViewModel.calculateBPValues(it, map)
         }
@@ -494,7 +577,8 @@ class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener, View.OnC
             Pair(viewModel.getFbsBloodGlucose(), viewModel.getRbsBloodGlucose()),
             unitGenericType,
             getPregnancySymptomCount(map),
-            Pair(null, map)
+            Pair(null, map),
+            serverData
         )
         map[Screening.ReferAssessment] =
             if (assessmentConditionResult.first) Screening.PositiveValue else Screening.NegativeValue

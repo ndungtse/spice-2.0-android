@@ -534,7 +534,7 @@
     <string name="is_the_baby_alive">Is the baby alive?</string>
     <string name="view_discontinued_medication">View Discontinued Medication</string>
     <string name="hide_discontinued_medication">Hide Discontinued Medication</string>
-    <string name="no_data_found">No data found.</string>
+    <string name="no_data_found">No Data Found</string>
     <string name="edit">Edit</string>
     <string name="confirmation">Confirmation</string>
     <string name="delete_confirmation">Are you sure you want to delete it?</string>
@@ -920,7 +920,6 @@
     <string name="enroll">Enroll</string>
 
     //graph
-    <string name="no_data_dound">No Data Found</string>
     <string name="previous">previous</string>
 
     //NCD Pharmacist
@@ -1045,4 +1044,7 @@
     <string name="patient_details">Patient Details</string>
     <string name="patient_detail_updated_successfully">Patient details updated successfully</string>
 
+
+    <string name="decline">Decline</string>
+    <string name="accept">Accept</string>
 </resources>

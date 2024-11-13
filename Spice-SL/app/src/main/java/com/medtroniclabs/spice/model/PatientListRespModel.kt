@@ -51,6 +51,7 @@ data class PatientListRespModel(
     val isRegularSmoker: Boolean? = null,
     val initialReviewed: Boolean? = false,
     val identityValue: String? = null,
+    val riskColorCode: String? = null,
     val isConfirmDiagnosis: Boolean = false,
     val height: Double? = null,
     val weight: Double? = null,

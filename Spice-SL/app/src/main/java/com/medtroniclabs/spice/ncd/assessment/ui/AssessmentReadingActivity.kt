@@ -257,6 +257,16 @@ class AssessmentReadingActivity : BaseActivity(), FormEventListener, View.OnClic
 
     }
 
+    override fun onAgeUpdateListener(
+        age: String?,
+        serverData: List<FormLayout?>?,
+        resultHashMap: HashMap<String, Any>
+    ) {
+        /*
+       Never used
+        */
+    }
+
     private fun processValuesAndProceed(
         resultMap: HashMap<String, Any>, serverData: List<FormLayout?>?
     ) {

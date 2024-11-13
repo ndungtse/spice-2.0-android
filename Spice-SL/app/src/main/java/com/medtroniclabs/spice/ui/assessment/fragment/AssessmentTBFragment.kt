@@ -154,6 +154,16 @@ class AssessmentTBFragment : BaseFragment(), FormEventListener, View.OnClickList
 
     }
 
+    override fun onAgeUpdateListener(
+        age: String?,
+        serverData: List<FormLayout?>?,
+        resultHashMap: HashMap<String, Any>
+    ) {
+        /*
+       Never used
+        */
+    }
+
     override fun onClick(view: View) {
         when (view.id) {
             binding.btnSubmit.id -> {

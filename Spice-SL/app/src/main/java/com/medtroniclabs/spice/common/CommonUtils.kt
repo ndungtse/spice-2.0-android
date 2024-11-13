@@ -883,7 +883,8 @@ object CommonUtils {
         glucoseValuePair: Pair<Double, Double>,
         unitGenericType: String,
         pregnantSymptoms: Int? = null,
-        resultMapPair: Pair<Boolean?, HashMap<String, Any>>
+        resultMapPair: Pair<Boolean?, HashMap<String, Any>>,
+        serverData: List<FormLayout?>?
     ): Pair<Boolean, java.util.ArrayList<String>> {
         var status = false
         var cageAId = 0
@@ -921,6 +922,21 @@ object CommonUtils {
         if (cageAId >= 2) {
             referredReasonList.add(ReferredReason.CAGEAID)
             status = true
+        }
+
+        val hivQuestionViews = serverData?.filter {
+            it?.ageCondition?.isNotEmpty() == true && it.workflowType?.contains(ReferredReason.HIV) == true
+        }?.map { it?.id }
+        hivQuestionViews?.let { hivQuestionList ->
+            val matchedItem = hivQuestionList.firstOrNull { item ->
+                resultMapPair.second.containsKey(item) &&
+                        resultMapPair.second[item] is String &&
+                        (resultMapPair.second[item] as String).equals(DefinedParams.yes, true)
+            }
+            if (matchedItem != null) {
+                status = true
+                referredReasonList.add(ReferredReason.HIV)
+            }
         }
 
         return Pair(status, referredReasonList)

@@ -334,7 +334,7 @@ class PatientInfoFragment : BaseFragment() {
                 DefinedParams.Value to (data.enrollmentAt?.let {
                     DateUtils.convertDateFormat(
                         it,
-                        DATE_TIME_yyyyMMddTHHmmssSSSXXX,
+                        DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
                         DATE_FORMAT_ddMMMyyyy
                     ).takeIf { it.isNotBlank() } ?: requireContext().getString(R.string.hyphen_symbol)
                 } ?: requireContext().getString(R.string.pending_registration)).toString().trim()

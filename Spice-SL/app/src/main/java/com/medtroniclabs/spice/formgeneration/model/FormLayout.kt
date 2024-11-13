@@ -84,7 +84,11 @@ data class FormLayout(
     var resource: String? = null,
     var spinnerAsObject: Boolean = false,
     var ranges: ArrayList<RangeModel>? = null,
-    var category: String? = null
+    var category: String? = null,
+    var familyOrder: Int? = null,
+    var ageCondition: ArrayList<String>? = null,
+    var workflowType: ArrayList<String>? = null,
+    var orderId: Int? = null
 ) : BaseViewParams
 
 data class RangeModel(

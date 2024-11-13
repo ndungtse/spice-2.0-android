@@ -26,6 +26,7 @@ object MenuConstants {
     const val MATERNAL_HEALTH = "maternalHealth"
     const val MENTAL_HEALTH = "mentalHealth"
     const val DISPENSE = "DISPENSE"
+    const val FOLLOW_UP = "FOLLOW UP"
     const val Other_Reason = "Other Reason"
     const val LIFESTYLE = "LIFESTYLE"
     const val PSYCHOLOGICAL = "PSYCHOLOGICAL"

@@ -524,6 +524,16 @@ class MemberRegistrationFragment : Fragment(), FormEventListener, View.OnClickLi
 
     }
 
+    override fun onAgeUpdateListener(
+        age: String?,
+        serverData: List<FormLayout?>?,
+        resultHashMap: HashMap<String, Any>
+    ) {
+        /*
+       Never used
+        */
+    }
+
     override fun onClick(v: View?) {
         when (v?.id) {
             R.id.btnStartAssessment -> {

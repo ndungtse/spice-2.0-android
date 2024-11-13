@@ -22,14 +22,13 @@
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/background_ligt_blue">
+                android:background="@color/background_ligt_blue"
+                android:paddingHorizontal="@dimen/_20sdp">
 
                 <androidx.fragment.app.FragmentContainerView
                     android:id="@+id/patientDetailFragment"
                     android:layout_width="@dimen/_0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="@dimen/_32sdp"
-                    android:layout_marginTop="@dimen/_8sdp"
                     android:visibility="visible"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -40,10 +39,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:weightSum="1"
-                    android:layout_marginHorizontal="@dimen/_32sdp"
-                    android:layout_marginTop="@dimen/_8sdp"
                     android:visibility="visible"
+                    android:weightSum="1"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/patientDetailFragment">
@@ -68,8 +65,6 @@
                     android:id="@+id/medicalReviewHistory"
                     android:layout_width="@dimen/_0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="@dimen/_32sdp"
-                    android:layout_marginTop="@dimen/_8sdp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/graphHolder" />
@@ -78,9 +73,7 @@
                     android:id="@+id/prescriptionHistory"
                     android:layout_width="@dimen/_0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="@dimen/_32sdp"
-                    android:layout_marginTop="@dimen/_8sdp"
-                    android:visibility="visible"
+                    android:visibility="gone"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/medicalReviewHistory" />
@@ -89,9 +82,7 @@
                     android:id="@+id/investigationHistory"
                     android:layout_width="@dimen/_0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="@dimen/_32sdp"
-                    android:layout_marginTop="@dimen/_8sdp"
-                    android:visibility="visible"
+                    android:visibility="gone"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/prescriptionHistory" />
@@ -100,31 +91,32 @@
                     android:id="@+id/lifestyleStatusHistory"
                     android:layout_width="@dimen/_0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="@dimen/_32sdp"
-                    android:layout_marginTop="@dimen/_8sdp"
                     android:visibility="visible"
-                    android:layout_marginBottom="@dimen/_160sdp"
-                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/investigationHistory" />
+                    app:layout_constraintTop_toBottomOf="@+id/medicalReviewHistory" />
 
-                <androidx.appcompat.widget.AppCompatImageView
-                    android:id="@+id/btnMedicalReview"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="@dimen/_8sdp"
-                    android:contentDescription="@string/patient_medical_review"
-                    android:elevation="@dimen/_4sdp"
-                    android:src="@drawable/ic_btn_start_treatment"
-                    android:visibility="visible"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent" />
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_200sdp"
+                    app:layout_constraintTop_toBottomOf="@id/lifestyleStatusHistory" />
+
             </androidx.constraintlayout.widget.ConstraintLayout>
 
         </androidx.core.widget.NestedScrollView>
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/btnMedicalReview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/_10sdp"
+        android:contentDescription="@string/patient_medical_review"
+        android:src="@drawable/ic_btn_start_treatment"
+        android:visibility="visible"
+        app:layout_constraintBottom_toTopOf="@id/btnLayout"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <include
         android:id="@+id/btnLayout"

@@ -84,6 +84,7 @@ class RegistrationFormFragment : BaseFragment(), View.OnClickListener, FormEvent
                     (activity as? BaseActivity)?.hideLoading()
                     resources.data?.let {
                         formGenerator.populateViews(it)
+                        prePopulate()
                     }
                 }
 
@@ -390,6 +391,16 @@ class RegistrationFormFragment : BaseFragment(), View.OnClickListener, FormEvent
 
     override fun handleMandatoryCondition(serverData: FormLayout?) {
 
+    }
+
+    override fun onAgeUpdateListener(
+        age: String?,
+        serverData: List<FormLayout?>?,
+        resultHashMap: HashMap<String, Any>
+    ) {
+        /*
+       Never used
+        */
     }
 
     companion object {

@@ -1,8 +1,11 @@
 package com.medtroniclabs.spice.ui.mypatients
 
 import android.content.Context
+import android.graphics.Color
+import android.graphics.drawable.GradientDrawable
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -56,6 +59,8 @@ class PatientsListAdapter(
                 tvRightLbl.text = rightLbl
                 tvLeftValue.text = leftValue
                 tvRightValue.text = rightValue
+
+                getDrawable(clPatientRoot, item.riskColorCode ?: "#FFFFFFFF")
             }
         }
     }
@@ -89,6 +94,14 @@ class PatientsListAdapter(
             newItem: PatientListRespModel
         ): Boolean {
             return oldItem.id == newItem.id
+        }
+    }
+
+    fun getDrawable(view: ConstraintLayout, colorCode: String) {
+        if (view.background != null) {
+            val drawable = view.background as GradientDrawable
+            drawable.mutate()
+            drawable.setStroke(3, Color.parseColor(colorCode))
         }
     }
 }

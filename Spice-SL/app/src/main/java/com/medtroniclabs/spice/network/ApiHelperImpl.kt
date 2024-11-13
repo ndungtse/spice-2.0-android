@@ -111,6 +111,7 @@ import com.medtroniclabs.spice.ncd.data.LifeStyleRequest
 import com.medtroniclabs.spice.ncd.data.PatientVisitRequest
 import com.medtroniclabs.spice.ncd.data.PatientVisitResponse
 import com.medtroniclabs.spice.ncd.data.NCDPatientRemoveRequest
+import com.medtroniclabs.spice.ncd.data.TermsAndConditionsModel
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
@@ -557,5 +558,13 @@ class ApiHelperImpl @Inject constructor(private val apiService: ApiService) : Ap
 
     override suspend fun ncdUpdatePatientDetail(request: HashMap<String, Any>): Response<APIResponse<HashMap<String, Any>>> {
         return  apiService.ncdUpdatePatientDetail(request)
+    }
+
+    override suspend fun getUserTermsAndConditions(request: TermsAndConditionsModel): Response<APIResponse<TermsAndConditionsModel>> {
+        return apiService.getUserTermsAndConditions(request)
+    }
+
+    override suspend fun updateTermsAndConditionsStatus(request: TermsAndConditionsModel): Response<APIResponse<TermsAndConditionsModel>> {
+        return apiService.updateTermsAndConditionsStatus(request)
     }
 }

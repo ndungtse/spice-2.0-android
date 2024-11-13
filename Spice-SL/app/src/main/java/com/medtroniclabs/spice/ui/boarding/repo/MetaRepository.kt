@@ -35,6 +35,7 @@ import com.medtroniclabs.spice.db.entity.UserProfileEntity
 import com.medtroniclabs.spice.db.entity.VillageEntity
 import com.medtroniclabs.spice.db.local.RoomHelper
 import com.medtroniclabs.spice.mappingkey.Screening
+import com.medtroniclabs.spice.ncd.data.TermsAndConditionsModel
 import com.medtroniclabs.spice.network.ApiHelper
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.network.resource.ResourceState
@@ -221,6 +222,31 @@ class MetaRepository @Inject constructor(
                             }
                         } else {
                             roomHelper.deleteAllSymptoms()
+                        }
+                        if (!SecuredPreference.getTermsAndConditionsStatus()) {
+                            val userTermsAndConditionsMeta = async {
+                                apiHelper.getUserTermsAndConditions(
+                                    TermsAndConditionsModel(countryId = SecuredPreference.getCountryId())
+                                )
+                            }.await()
+                            if (userTermsAndConditionsMeta.isSuccessful && userTermsAndConditionsMeta.body()?.status == true) {
+                                if (userTermsAndConditionsMeta.body()?.entity == null) {
+                                    return@with Resource(state = ResourceState.ERROR)
+                                }
+                                userTermsAndConditionsMeta.body()?.entity?.let { res ->
+                                    if (res.id != null && !res.formInput.isNullOrBlank())
+                                        roomHelper.saveConsent(
+                                            ConsentEntity(
+                                                formType = DefinedParams.Landing,
+                                                formInput = res.formInput
+                                            )
+                                        )
+                                    else
+                                        return@with Resource(state = ResourceState.ERROR)
+                                }
+                            } else {
+                                return@with Resource(state = ResourceState.ERROR)
+                            }
                         }
                         Resource(state = ResourceState.SUCCESS)
                     }

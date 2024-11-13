@@ -203,7 +203,7 @@ class NCDAssessmentHistoryGraphFragment : BaseFragment(), OnChartGestureListener
         lineChart.setDrawBorders(false)
         lineChart.setOnChartValueSelectedListener(this)
 
-        lineChart.setNoDataText(getString(R.string.no_data_dound))
+        lineChart.setNoDataText(getString(R.string.no_data_found))
         val paint = lineChart.getPaint(Chart.PAINT_INFO)
         paint.color = ContextCompat.getColor(requireContext(), R.color.cobalt_blue)
         paint.textSize = 40f

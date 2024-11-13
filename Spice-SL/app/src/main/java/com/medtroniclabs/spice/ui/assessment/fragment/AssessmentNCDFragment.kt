@@ -1046,7 +1046,7 @@ class AssessmentNCDFragment : BaseFragment(), FormEventListener, View.OnClickLis
 
         if (map.containsKey(AssessmentDefinedParams.GAD7_Mental_Health))
             CommonUtils.calculatePHQScore(map, type = AssessmentDefinedParams.GAD7)
-        calculateFurtherAssessment(map, unitGenericType)
+        calculateFurtherAssessment(map, unitGenericType, serverData)
         try {
             var result = serverData?.let {
                 FormResultComposer().groupValues(
@@ -1168,7 +1168,11 @@ class AssessmentNCDFragment : BaseFragment(), FormEventListener, View.OnClickLis
         }
     }
 
-    private fun calculateFurtherAssessment(map: HashMap<String, Any>, unitGenericType: String) {
+    private fun calculateFurtherAssessment(
+        map: HashMap<String, Any>,
+        unitGenericType: String,
+        serverData: List<FormLayout?>?
+    ) {
         val assessmentConditionResult = CommonUtils.checkAssessmentCondition(
             bpViewModel.getSystolicAverage(),
             bpViewModel.getDiastolicAverage(),
@@ -1176,7 +1180,8 @@ class AssessmentNCDFragment : BaseFragment(), FormEventListener, View.OnClickLis
             Pair(viewModel.getFbsBloodGlucose(), viewModel.getRbsBloodGlucose()),
             unitGenericType,
             getPregnancySymptomCount(map),
-            Pair(null, map)
+            Pair(null, map),
+            serverData
         )
         map[Screening.ReferAssessment] =
             if (assessmentConditionResult.first) Screening.PositiveValue else Screening.NegativeValue
@@ -1292,6 +1297,16 @@ class AssessmentNCDFragment : BaseFragment(), FormEventListener, View.OnClickLis
 
     override fun handleMandatoryCondition(serverData: FormLayout?) {
 
+    }
+
+    override fun onAgeUpdateListener(
+        age: String?,
+        serverData: List<FormLayout?>?,
+        resultHashMap: HashMap<String, Any>
+    ) {
+        /*
+       Never used
+        */
     }
 
 

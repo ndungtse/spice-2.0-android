@@ -53,7 +53,8 @@ object SecuredPreference {
         IS_PSYCHOLOGICAL_FLOW_ENABLED,
         IS_TRANSLATION_ENABLED,
         APPLICATION,
-        PREGNANCY_ANC_ENABLED_SITE
+        PREGNANCY_ANC_ENABLED_SITE,
+        IS_TERMS_AND_CONDITIONS_APPROVED
     }
 
 
@@ -414,6 +415,7 @@ object SecuredPreference {
         val villageIds = getString(EnvironmentKey.VILLAGE_IDS.name)
         val serverLastSyncedTime = getString(EnvironmentKey.SERVER_LAST_SYNCED.name)
         val deviceId = getString(EnvironmentKey.DEVICE_ID.name)
+        val isTermsAndConditionsApproved = getBoolean(EnvironmentKey.IS_TERMS_AND_CONDITIONS_APPROVED.name)
         try {
             preferences.edit().clear().apply()
         } catch (e: Exception) {
@@ -429,6 +431,7 @@ object SecuredPreference {
             putString(EnvironmentKey.VILLAGE_IDS.name, villageIds)
             putString(EnvironmentKey.SERVER_LAST_SYNCED.name, serverLastSyncedTime)
             putString(EnvironmentKey.DEVICE_ID.name, deviceId)
+            putBoolean(EnvironmentKey.IS_TERMS_AND_CONDITIONS_APPROVED.name, isTermsAndConditionsApproved)
         }
     }
 
@@ -473,6 +476,10 @@ object SecuredPreference {
 
     fun getRole(): String {
         return getUserDetails()?.roles?.first()?.name?: ""
+    }
+
+    fun getTermsAndConditionsStatus(): Boolean {
+        return getUserDetails()?.isTermsAndConditionsAccepted ?: false
     }
 
     fun putIdentityTypes(types: List<IdentityType>) {

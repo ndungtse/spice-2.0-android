@@ -3,21 +3,20 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/constraintLayout"
-    android:background="@color/fragment_bg"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/fragment_bg"
     tools:context=".ui.referralhistory.activity.ReferralHistoryActivity">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvPatientInfo"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="@dimen/_10sdp"
-        android:layout_marginTop="@dimen/_5sdp"
+        android:layout_marginTop="@dimen/_15sdp"
+        android:paddingHorizontal="@dimen/_10sdp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:listitem="@layout/patient_info_item"/>
-
+        tools:listitem="@layout/patient_info_item" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -110,6 +110,7 @@ import com.medtroniclabs.spice.ncd.data.LifeStyleResponse
 import com.medtroniclabs.spice.ncd.data.LifeStyleRequest
 import com.medtroniclabs.spice.ncd.data.PatientVisitRequest
 import com.medtroniclabs.spice.ncd.data.PatientVisitResponse
+import com.medtroniclabs.spice.ncd.data.TermsAndConditionsModel
 import com.medtroniclabs.spice.ncd.data.NCDPatientRemoveRequest
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
@@ -443,7 +444,6 @@ interface ApiService {
     @POST("/spice-service/medical-review/patient-lifestyle-details")
     suspend fun getNcdLifeStyleDetails(@Body request: LifeStyleRequest): Response<APIResponse<ArrayList<LifeStyleResponse>>>
 
-
     @POST("/spice-service/patient/delete")
     suspend fun ncdPatientRemove(@Body request: NCDPatientRemoveRequest): Response<APIResponse<Boolean>>
 
@@ -455,4 +455,9 @@ interface ApiService {
 
     @POST("/spice-service/patient/update")
     suspend fun ncdUpdatePatientDetail(@Body request: HashMap<String, Any>): Response<APIResponse<HashMap<String, Any>>>
+    @POST("admin-service/terms-and-conditions/details")
+    suspend fun getUserTermsAndConditions(@Body request: TermsAndConditionsModel): Response<APIResponse<TermsAndConditionsModel>>
+
+    @POST("user-service/user/terms-and-conditions/update")
+    suspend fun updateTermsAndConditionsStatus(@Body request: TermsAndConditionsModel): Response<APIResponse<TermsAndConditionsModel>>
 }

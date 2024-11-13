@@ -189,6 +189,11 @@ class DashboardMenuItemsAdapter(
                 R.drawable.ic_dispense
             )
 
+            MenuConstants.FOLLOW_UP -> return ContextCompat.getDrawable(
+                context,
+                R.drawable.ic_follow_up
+            )
+
             MenuConstants.INVESTIGATION -> return ContextCompat.getDrawable(
                 context,
                 R.drawable.ic_investigation

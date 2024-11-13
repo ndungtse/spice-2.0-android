@@ -11,6 +11,7 @@ import com.medtroniclabs.spice.common.RoleConstant
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.databinding.ActivityResourceLoadingScreenBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
+import com.medtroniclabs.spice.ncd.landing.ui.UserTermsConditionsActivity
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.boarding.viewmodel.ResourceLoadingViewModel
@@ -109,7 +110,10 @@ class ResourceLoadingScreen : BaseActivity() {
             SecuredPreference.EnvironmentKey.ISMETALOADED.name,
             true
         )
-        startActivity(Intent(this, LandingActivity::class.java))
+        if (SecuredPreference.getTermsAndConditionsStatus())
+            startActivity(Intent(this, LandingActivity::class.java))
+        else
+            startActivity(Intent(this, UserTermsConditionsActivity::class.java))
         finish()
     }
 

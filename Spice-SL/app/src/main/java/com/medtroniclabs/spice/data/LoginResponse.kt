@@ -17,6 +17,7 @@ data class LoginResponse(
     var cultureId: Long? = null,
     val organizations: ArrayList<OrganizationModel>? = null,
     val isSuperUser: Boolean,
+    val isTermsAndConditionsAccepted: Boolean? = null,
     val suiteAccess: List<String>,
     val client: String,
     val phoneNumber: String? = null

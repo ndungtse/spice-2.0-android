@@ -324,4 +324,14 @@ class HouseHoldRegistrationFragment : Fragment(), View.OnClickListener, FormEven
     override fun handleMandatoryCondition(serverData: FormLayout?) {
 
     }
+
+    override fun onAgeUpdateListener(
+        age: String?,
+        serverData: List<FormLayout?>?,
+        resultHashMap: HashMap<String, Any>
+    ) {
+        /*
+       Never used
+        */
+    }
 }

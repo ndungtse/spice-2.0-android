@@ -1501,6 +1501,13 @@ class FormGenerator(
                             binding.etDateOfBirth.text = DateUtils.getDateDDMMYYYY().format(it)
                             fillDetailsOnDatePickerSet(it, true, id)
                             callback?.invoke(resultHashMap,id)
+                            resultHashMap[Year]?.let { year ->
+                                listener.onAgeUpdateListener(
+                                    year.toString(),
+                                    serverData,
+                                    resultHashMap
+                                )
+                            }
                         }
                     }
                 }
@@ -2040,7 +2047,7 @@ class FormGenerator(
         }
     }
 
-    private fun resetChildViews(rootLyt: View) {
+    fun resetChildViews(rootLyt: View) {
         recursiveLoopChildren(rootLyt as ViewGroup, { view ->
             resetChildFormViewComponents(view)
         }) { viewGroup ->
@@ -2566,7 +2573,7 @@ class FormGenerator(
         return isValid
     }
 
-    private fun isViewVisible(id: String): Boolean {
+    fun isViewVisible(id: String): Boolean {
         val view = getViewByTag(id + rootSuffix)
         return view != null && view.visibility == View.VISIBLE
     }
@@ -3329,6 +3336,10 @@ class FormGenerator(
                 }
             }
         }
+    }
+
+    fun isViewGone(tag: Any): Boolean {
+        return getViewByTag(tag)?.visibility == View.GONE
     }
 
 }

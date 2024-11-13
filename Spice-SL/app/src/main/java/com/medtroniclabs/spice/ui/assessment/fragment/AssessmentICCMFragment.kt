@@ -538,6 +538,16 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
         }
     }
 
+    override fun onAgeUpdateListener(
+        age: String?,
+        serverData: List<FormLayout?>?,
+        resultHashMap: HashMap<String, Any>
+    ) {
+        /*
+       Never used
+        */
+    }
+
     private fun dismissAmoxicillinStatus(resultMap: HashMap<String, Any>?) {
         formGenerator.getViewByTag((Amoxicillin.lowercase()) + rootSuffix )?.apply {
             visibility = View.GONE

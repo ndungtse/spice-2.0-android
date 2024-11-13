@@ -11,6 +11,7 @@ import androidx.core.content.ContextCompat.getColor
 import androidx.core.text.color
 import androidx.fragment.app.activityViewModels
 import com.google.gson.Gson
+import com.google.gson.internal.LinkedTreeMap
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.appextensions.triggerOneTimeWorker
@@ -25,6 +26,7 @@ import com.medtroniclabs.spice.databinding.FragmentScreeningSummaryBinding
 import com.medtroniclabs.spice.databinding.SummaryLayoutBinding
 import com.medtroniclabs.spice.db.entity.HealthFacilityEntity
 import com.medtroniclabs.spice.formgeneration.FormSummaryReporter
+import com.medtroniclabs.spice.formgeneration.config.ViewType
 import com.medtroniclabs.spice.formgeneration.extension.markMandatory
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
@@ -33,7 +35,9 @@ import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
 import com.medtroniclabs.spice.mappingkey.Screening
 import com.medtroniclabs.spice.mappingkey.Screening.ReferAssessment
 import com.medtroniclabs.spice.mappingkey.Screening.SuicidalIdeation
+import com.medtroniclabs.spice.ncd.data.HivSummaryModel
 import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDFormViewModel
+import com.medtroniclabs.spice.ncd.screening.utils.ReferredReason
 import com.medtroniclabs.spice.ncd.screening.viewmodel.GeneralDetailsViewModel
 import com.medtroniclabs.spice.ncd.screening.viewmodel.ScreeningFormBuilderViewModel
 import com.medtroniclabs.spice.network.resource.ResourceState
@@ -180,6 +184,51 @@ class ScreeningSummaryFragment : BaseFragment(), View.OnClickListener {
         showCVDRiskValue(map)
         showPregnancyOrNot(serverData, map)
         showPregnancySymptomsSignsChanges(serverData, map)
+        showHIVRelatedMetrics(map, serverData)
+    }
+
+    private fun showHIVRelatedMetrics(resultMap: Map<String, Any>, serverData: List<FormLayout>) {
+        val hivParams = serverData.filter { data ->
+            (data.ageCondition?.isNotEmpty() == true && data.workflowType?.contains(
+                ReferredReason.HIV
+            ) == true) && (data.viewType == ViewType.VIEW_TYPE_FORM_CARD_FAMILY)
+        }.sortedBy { it.familyOrder }.map { it.id }
+        hivParams.forEach { item ->
+            if (resultMap.containsKey(item) && resultMap[item] is LinkedTreeMap<*, *>) {
+                (resultMap[item] as? LinkedTreeMap<*, *>)?.let { map ->
+                    if (map.isNotEmpty()) {
+                        val keyLabel = serverData.filter { it.id == item }[0].title
+                        val summaryValue = ArrayList<HivSummaryModel>()
+                        for ((key, value) in map) {
+                            value?.let { result ->
+                                if (result is String && result.equals(DefinedParams.yes, true) && key is String) {
+                                    serverData.filter { it.id == key }[0].let { listForm ->
+                                        listForm.orderId?.let { orderIndex ->
+                                            summaryValue.add(
+                                                HivSummaryModel(
+                                                    orderId = orderIndex,
+                                                    summaryValue = listForm.titleSummary ?: "-"
+                                                )
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        showBindingValue(
+                            keyLabel,
+                            if (summaryValue.size > 0) CommonUtils.convertListToString(
+                                ArrayList(summaryValue
+                                    .sortedBy { it.orderId }
+                                    .map { it.summaryValue })
+                            ) else getString(
+                                R.string.none
+                            )
+                        )
+                    }
+                }
+            }
+        }
     }
 
     private fun showDiabetesSymptoms(serverData: List<FormLayout>, map: Map<String, Any>) {
