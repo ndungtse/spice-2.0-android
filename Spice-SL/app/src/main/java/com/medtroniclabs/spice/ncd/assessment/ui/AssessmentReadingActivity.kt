@@ -34,6 +34,7 @@ import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDFormViewModel
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.MenuConstants
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
 import dagger.hilt.android.AndroidEntryPoint
 import java.lang.reflect.Type
 
@@ -333,29 +334,35 @@ class AssessmentReadingActivity : BaseActivity(), FormEventListener, View.OnClic
             }
 
             DefinedParams.GLUCOSE_LOG -> {
-                //Glucose Calculation
-                calculateBloodGlucose(map) {}
-
-                //Glucose Log Create - API
-                val result = serverData?.let {
-                    FormResultComposer().groupValues(
-                        context = this, serverData = it, map
+                if (map.containsKey(Screening.BloodGlucoseID) || map.containsKey(
+                        AssessmentDefinedParams.hba1c
                     )
-                }
-                result?.first?.let {
-                    StringConverter.stringToMap(it).let { requestMap ->
-                        //Removing unwanted params
-                        val glucoseLog = requestMap[DefinedParams.GLUCOSE_LOG]
-                        (glucoseLog as? LinkedTreeMap<String, Any>?)?.let { value ->
-                            requestMap.putAll(value)
-                            requestMap.remove(DefinedParams.GLUCOSE_LOG)
-                        }
+                ) {
+                    //Glucose Calculation
+                    calculateBloodGlucose(map) {}
 
-                        glucoseViewModel.glucoseLogCreate(
-                            requestMap, viewModel.relatedPersonFhirId, viewModel.patientId
+                    //Glucose Log Create - API
+                    val result = serverData?.let {
+                        FormResultComposer().groupValues(
+                            context = this, serverData = it, map
                         )
                     }
-                }
+                    result?.first?.let {
+                        StringConverter.stringToMap(it).let { requestMap ->
+                            //Removing unwanted params
+                            val glucoseLog = requestMap[DefinedParams.GLUCOSE_LOG]
+                            (glucoseLog as? LinkedTreeMap<String, Any>?)?.let { value ->
+                                requestMap.putAll(value)
+                                requestMap.remove(DefinedParams.GLUCOSE_LOG)
+                            }
+
+                            glucoseViewModel.glucoseLogCreate(
+                                requestMap, viewModel.relatedPersonFhirId, viewModel.patientId
+                            )
+                        }
+                    }
+                } else
+                    showErrorDialogue(message = getString(R.string.error_label)) {}
             }
         }
     }

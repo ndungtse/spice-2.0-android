@@ -611,7 +611,7 @@ class NCDPregnancyDialog(private val callback: ((isPositiveResult: Boolean, mess
                         diagnosis?.let { list ->
                             if (list.isNotEmpty()) {
                                 val isNone =
-                                    list.size == 1 && list[0][DefinedParams.Value] == N_A
+                                    list.size == 1 && list[0][DefinedParams.Value] == NONE
                                 if (!isNone && isOnTreatment == null) {
                                     binding.tvPatientTreatmentError.visible()
                                     return false

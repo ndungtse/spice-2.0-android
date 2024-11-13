@@ -3,10 +3,12 @@ package com.medtroniclabs.spice.ncd.medicalreview
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.view.MenuItem
 import android.view.View
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.appcompat.widget.PopupMenu
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.setVisible
@@ -14,8 +16,10 @@ import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.ORIGIN
+import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.databinding.ActivityNcdmedicalReviewCmractivityBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
+import com.medtroniclabs.spice.formgeneration.extension.safePopupMenuClickListener
 import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.EncounterReference
 import com.medtroniclabs.spice.ncd.medicalreview.dialog.NCDTreatmentPlanDialog
@@ -29,14 +33,19 @@ import com.medtroniclabs.spice.ncd.counseling.activity.NCDCounselingActivity
 import com.medtroniclabs.spice.ncd.counseling.activity.NCDLifestyleActivity
 import com.medtroniclabs.spice.ncd.medicalreview.fragment.NCDMedicalReviewHistoryFragment
 import com.medtroniclabs.spice.ncd.data.BadgeNotificationModel
+import com.medtroniclabs.spice.ncd.data.NCDPatientRemoveRequest
 import com.medtroniclabs.spice.ncd.medicalreview.fragment.NCDInvestigationHistoryFragment
 import com.medtroniclabs.spice.ncd.medicalreview.fragment.NCDLifeStyleStatusFragment
 import com.medtroniclabs.spice.ncd.medicalreview.fragment.NCDPrescriptionHistoryFragment
 import com.medtroniclabs.spice.ncd.medicalreview.prescription.activity.NCDPrescriptionActivity
 import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDMedicalReviewCMRViewModel
+import com.medtroniclabs.spice.ui.dialog.GeneralSuccessDialog
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.AncVisitCallBack
 import com.medtroniclabs.spice.ui.mypatients.fragment.PatientInfoFragment
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
+import com.medtroniclabs.spice.ui.patientDelete.NCDDeleteConfirmationDialog
+import com.medtroniclabs.spice.ui.patientDelete.viewModel.NCDPatientDeleteViewModel
+import com.medtroniclabs.spice.ui.patientEdit.NCDPatientEditActivity
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -45,6 +54,7 @@ class NCDMedicalReviewCMRActivity : BaseActivity(), View.OnClickListener, AncVis
     private val viewModel: NCDMedicalReviewViewModel by viewModels()
     private val cmrViewModel: NCDMedicalReviewCMRViewModel by viewModels()
     private val patientDetailViewModel: PatientDetailViewModel by viewModels()
+    private val patientDeleteViewModel: NCDPatientDeleteViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
@@ -55,6 +65,85 @@ class NCDMedicalReviewCMRActivity : BaseActivity(), View.OnClickListener, AncVis
             getString(R.string.patient_medical_review),
             homeAndBackVisibility = Pair(true, true),
         )
+    }
+
+    private fun showHideVerticalIcon(visibility: Boolean) {
+        showVerticalMoreIcon(visibility) {
+            onMoreIconClicked(it)
+        }
+    }
+
+    private fun onMoreIconClicked(view: View) {
+        val popupMenu = PopupMenu(this@NCDMedicalReviewCMRActivity, view)
+        popupMenu.menuInflater.inflate(R.menu.ncd_menu_patient_edit, popupMenu.menu)
+        popupMenu.menu.findItem(R.id.patient_delete).isVisible = true
+        popupMenu.safePopupMenuClickListener(object :
+            android.widget.PopupMenu.OnMenuItemClickListener,
+            PopupMenu.OnMenuItemClickListener {
+            override fun onMenuItemClick(menuItem: MenuItem): Boolean {
+                onPatientEditMenuItemClick(menuItem.itemId)
+                return true
+            }
+        })
+        popupMenu.setForceShowIcon(true)
+        popupMenu.show()
+    }
+
+    private fun onPatientEditMenuItemClick(itemId: Int) {
+        when (itemId) {
+            R.id.patient_delete -> {
+                patientDeleteCreate()
+            }
+
+            R.id.patient_edit -> {
+                val intent =
+                    Intent(this@NCDMedicalReviewCMRActivity, NCDPatientEditActivity::class.java)
+                intent.putExtra(NCDMRUtil.PATIENT_REFERENCE, patientDetailViewModel.getPatientId())
+                intent.putExtra(
+                    NCDMRUtil.MEMBER_REFERENCE,
+                    patientDetailViewModel.getPatientFHIRId()
+                )
+                intent.putExtra(DefinedParams.ORIGIN, patientDetailViewModel.origin)
+                startActivity(intent)
+            }
+        }
+    }
+
+    private fun patientDeleteCreate() {
+        patientDetailViewModel.patientDetailsLiveData.value?.data?.let { model ->
+            val deleteConfirmationDialog = NCDDeleteConfirmationDialog.newInstance(
+                getString(R.string.alert),
+                getString(
+                    R.string.patient_delete_confirmation,
+                    model.firstName,
+                    model.lastName
+                ),
+                { status, reason, otherReason ->
+                    if (status) {
+                        reason?.let {
+                            NCDPatientRemoveRequest(
+                                patientId = model.patientId.toString(),
+                                reason = it,
+                                provenance = ProvanceDto(),
+                                otherReason = otherReason
+                            )
+                        }?.let {
+                            patientDeleteViewModel.ncdPatientRemove(
+                                it
+                            )
+                        }
+                    }
+                },
+                this,
+                true,
+                okayButton = getString(R.string.yes),
+                cancelButton = getString(R.string.no)
+            )
+            deleteConfirmationDialog.show(
+                supportFragmentManager,
+                NCDDeleteConfirmationDialog.TAG
+            )
+        }
     }
 
     private fun initializeStaticDataSave() {
@@ -98,6 +187,7 @@ class NCDMedicalReviewCMRActivity : BaseActivity(), View.OnClickListener, AncVis
                         binding.refreshLayout.isRefreshing = false
                     }
                     badgeNotifications()
+                    showHideVerticalIcon(CommonUtils.isAfrica() && !resourceState.data?.programId.isNullOrBlank())
                 }
 
                 ResourceState.ERROR -> {
@@ -121,6 +211,29 @@ class NCDMedicalReviewCMRActivity : BaseActivity(), View.OnClickListener, AncVis
 
                 ResourceState.ERROR -> {
                     hideLoading()
+                }
+            }
+        }
+        patientDeleteViewModel.patientRemoveResponse.observe(this) { resourceState ->
+            when (resourceState.state) {
+                ResourceState.SUCCESS -> {
+                    hideLoading()
+                    GeneralSuccessDialog.newInstance(
+                        title = getString(R.string.delete),
+                        message = getString(R.string.patient_delete_message),
+                        okayButton = getString(R.string.done)
+                    ) {  redirectToHome() }.show(supportFragmentManager, GeneralSuccessDialog.TAG)
+                }
+
+                ResourceState.LOADING -> {
+                    showLoading()
+                }
+
+                ResourceState.ERROR -> {
+                    hideLoading()
+                    resourceState.message?.let {
+                        showErrorDialogue(getString(R.string.error), it, false) {}
+                    }
                 }
             }
         }
