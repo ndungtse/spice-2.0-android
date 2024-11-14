@@ -108,6 +108,7 @@ import com.medtroniclabs.spice.ncd.data.NCDTreatmentPlanModel
 import com.medtroniclabs.spice.ncd.data.NCDTreatmentPlanModelDetails
 import com.medtroniclabs.spice.ncd.data.LifeStyleResponse
 import com.medtroniclabs.spice.ncd.data.LifeStyleRequest
+import com.medtroniclabs.spice.ncd.data.NCDMedicalReviewUpdateModel
 import com.medtroniclabs.spice.ncd.data.PatientVisitRequest
 import com.medtroniclabs.spice.ncd.data.PatientVisitResponse
 import com.medtroniclabs.spice.ncd.data.TermsAndConditionsModel
@@ -460,4 +461,7 @@ interface ApiService {
 
     @POST("user-service/user/terms-and-conditions/update")
     suspend fun updateTermsAndConditionsStatus(@Body request: TermsAndConditionsModel): Response<APIResponse<TermsAndConditionsModel>>
+
+    @POST("/spice-service/medical-review/ncd/date/update")
+    suspend fun ncdUpdateNextVisitDate(@Body request: NCDMedicalReviewUpdateModel): Response<APIResponse<HashMap<String, Any>>>
 }

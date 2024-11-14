@@ -322,8 +322,8 @@ class PatientInfoFragment : BaseFragment() {
         val cvdRiskLevel = data.cvdRiskScoreDisplay?.let {
             Pair(
                 StringConverter.appendTexts(
-                    "${it}%",
-                    data.cvdRiskLevel, separator = "-"
+                    it,
+                    "", separator = "-"
                 ), CommonUtils.cvdRiskColorCode(data.cvdRiskScore ?: 0.0, requireContext())
             )
         }

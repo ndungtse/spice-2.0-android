@@ -137,10 +137,11 @@ class NCDMedicalReviewSummaryFragment : BaseFragment(),View.OnClickListener,
             if (!viewModel.nextFollowupDate.isNullOrBlank()) {
                 binding.tvNextMedicalReviewLabelText.text = viewModel.nextFollowupDate
             }
-            tvPrescrptionText.text = CommonUtils.combineText(
-                data.prescriptions,
-                "",
-                getString(R.string.hyphen_symbol)
+            tvPrescrptionText.text = NCDMRUtil.printNumberedListString(
+                NCDMRUtil.createPrescription(
+                    data.prescriptions,
+                    requireContext()
+                ), requireContext()
             )
             tvInvestigationText.text = CommonUtils.formatListToString(
                 data.investigations,

@@ -19,6 +19,7 @@ import com.medtroniclabs.spice.ncd.data.NCDPatientStatusRequest
 import com.medtroniclabs.spice.ncd.data.NCDPregnancyRiskUpdate
 import com.medtroniclabs.spice.ncd.data.LifeStyleResponse
 import com.medtroniclabs.spice.ncd.data.LifeStyleRequest
+import com.medtroniclabs.spice.ncd.data.NCDMedicalReviewUpdateModel
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.Comorbidity
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.Complaints
@@ -323,4 +324,18 @@ class NCDMedicalReviewRepository @Inject constructor(
     }
 
     suspend fun getNCDShortageReason(type: String) = roomHelper.getNCDShortageReason(type)
+
+    suspend fun ncdUpdateNextVisitDate(request: NCDMedicalReviewUpdateModel): Resource<HashMap<String, Any>> {
+        return try {
+            val response = apiHelper.ncdUpdateNextVisitDate(request)
+            if (response.isSuccessful) {
+                Resource(state = ResourceState.SUCCESS, response.body()?.entity)
+            } else {
+                Resource(state = ResourceState.ERROR)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Resource(state = ResourceState.ERROR)
+        }
+    }
 }

@@ -1654,4 +1654,8 @@ object CommonUtils {
         }
         return countryId
     }
+
+    fun canShowScheduleMenu(): Boolean {
+        return isAfrica() && isHRIO()
+    }
 }

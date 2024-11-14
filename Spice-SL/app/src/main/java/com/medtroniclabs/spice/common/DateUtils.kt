@@ -792,4 +792,15 @@ object DateUtils {
         }
         return ""
     }
+
+    fun convertddMMMToddMM(inputDate: String): Triple<Int?, Int?, Int?> {
+        return try{
+            val inputFormat = SimpleDateFormat(DATE_FORMAT_ddMMMyyyy, Locale.ENGLISH)
+            val outputFormat = SimpleDateFormat(DATE_ddMMyyyy, Locale.ENGLISH)
+            val date = inputFormat.parse(inputDate)
+            getYearMonthAndDate(outputFormat.format(date))
+        }catch (exception:Exception){
+            Triple(null, null, null)
+        }
+    }
 }

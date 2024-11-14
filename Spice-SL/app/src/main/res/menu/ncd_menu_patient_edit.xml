@@ -11,4 +11,9 @@
         android:icon="@drawable/ic_edit_menu"
         android:title="@string/edit" />
 
+    <item
+        android:id="@+id/schedule"
+        android:icon="@drawable/baseline_schedule_24"
+        android:title="@string/schedule" />
+
 </menu>

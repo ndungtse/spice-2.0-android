@@ -65,7 +65,10 @@ class NCDPrescriptionActivity : BaseActivity(), View.OnClickListener, SignatureL
             true,
             getString(R.string.prescription),
             homeAndBackVisibility = Pair(true, true),
-            callback = { finish() },
+            callback = {
+                setResult(RESULT_OK, intent)
+                finish()
+            },
         )
         getPatients()
         clickListener()

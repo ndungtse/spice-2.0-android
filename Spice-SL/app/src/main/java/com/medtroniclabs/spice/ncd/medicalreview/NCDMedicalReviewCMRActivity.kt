@@ -77,6 +77,8 @@ class NCDMedicalReviewCMRActivity : BaseActivity(), View.OnClickListener, AncVis
         val popupMenu = PopupMenu(this@NCDMedicalReviewCMRActivity, view)
         popupMenu.menuInflater.inflate(R.menu.ncd_menu_patient_edit, popupMenu.menu)
         popupMenu.menu.findItem(R.id.patient_delete).isVisible = true
+        popupMenu.menu.findItem(R.id.schedule).isVisible =
+            CommonUtils.canShowScheduleMenu()
         popupMenu.safePopupMenuClickListener(object :
             android.widget.PopupMenu.OnMenuItemClickListener,
             PopupMenu.OnMenuItemClickListener {

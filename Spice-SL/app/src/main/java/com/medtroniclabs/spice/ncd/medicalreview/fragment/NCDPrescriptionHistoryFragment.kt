@@ -20,10 +20,10 @@ import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.data.history.HistoryEntity
-import com.medtroniclabs.spice.data.history.Prescription
 import com.medtroniclabs.spice.databinding.FragmentReferralTicketBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.model.ReferredDate
+import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.createPrescription
 import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDMedicalReviewCMRViewModel
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
@@ -216,33 +216,13 @@ class NCDPrescriptionHistoryFragment : BaseFragment(), View.OnClickListener {
                     ),
                     mapOf(
                         label to requireContext().getString(R.string.medication_prescribed),
-                        this.Value to createPrescription(prescriptionData.prescriptions)
+                        this.Value to createPrescription(
+                            prescriptionData.prescriptions,
+                            requireContext()
+                        )
                     )
                 )
             )
-        }
-    }
-
-    private fun createPrescription(prescriptions: List<Prescription>?): List<String>? {
-        return prescriptions?.map { prescription ->
-            buildString {
-                append(prescription.medicationName.textOrHyphen())
-                append(" - ")
-                append("${prescription.dosageFormName.textOrHyphen()}/")
-                val dosageValue = prescription.dosageUnitValue?.toDoubleOrNull()?.toInt() ?: "-"
-                append(" ${dosageValue}${prescription.dosageUnitName.textOrHyphen()}/")
-                append(" ${prescription.dosageFrequencyName.textOrHyphen()}/")
-                append(" ${prescription.prescriptionRemainingDays ?: "-"} ${dayPeriod(prescription.prescriptionRemainingDays)}/")
-                append(" " +prescription.instructionNote.textOrHyphen())
-            }
-        }
-    }
-
-    private fun dayPeriod(prescribedDays: Int?): String {
-        return if (prescribedDays == 1) {
-            requireContext().getString(R.string.day)
-        } else {
-            requireContext().getString(R.string.days)
         }
     }
 

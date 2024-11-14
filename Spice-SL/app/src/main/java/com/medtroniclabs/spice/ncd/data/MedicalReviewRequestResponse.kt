@@ -1,5 +1,6 @@
 package com.medtroniclabs.spice.ncd.data
 
+import com.medtroniclabs.spice.data.history.Prescription
 import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 
 data class MedicalReviewRequestResponse(
@@ -72,7 +73,7 @@ data class MRSummaryResponse(
     val clinicalNote: String? = null,
     val comorbidities: List<String?>? = emptyList(),
     val complications: List<String?>? = emptyList(),
-    val prescriptions: List<String?>? = emptyList(),
+    val prescriptions: List<Prescription>? = emptyList(),
     val investigations: List<String>? = emptyList(),
     val confirmDiagnosis: Diagnosis? = null
 )

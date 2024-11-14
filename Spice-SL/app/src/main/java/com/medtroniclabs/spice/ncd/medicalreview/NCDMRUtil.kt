@@ -1,13 +1,17 @@
 package com.medtroniclabs.spice.ncd.medicalreview
 
+import android.content.Context
 import android.widget.TextView
 import androidx.appcompat.widget.AppCompatEditText
+import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.invisible
+import com.medtroniclabs.spice.appextensions.textOrHyphen
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.Other
 import com.medtroniclabs.spice.common.SecuredPreference
+import com.medtroniclabs.spice.data.history.Prescription
 import com.medtroniclabs.spice.data.model.ChipViewItemModel
 
 object NCDMRUtil {
@@ -216,5 +220,49 @@ object NCDMRUtil {
     fun getUserName(): String {
         val userDetails = SecuredPreference.getUserDetails()
         return "${userDetails?.firstName} ${userDetails?.lastName}"
+    }
+    fun createPrescription(prescriptions: List<Prescription>?, context: Context): List<String>? {
+        return prescriptions?.map { prescription ->
+            buildString {
+                append(prescription.medicationName.textOrHyphen())
+                append(" - ")
+                append("${prescription.dosageFormName.textOrHyphen()}/")
+                val dosageValue = prescription.dosageUnitValue?.toDoubleOrNull()?.toInt() ?: "-"
+                append(" ${dosageValue}${prescription.dosageUnitName.textOrHyphen()}/")
+                append(" ${prescription.dosageFrequencyName.textOrHyphen()}/")
+                append(
+                    " ${prescription.prescriptionRemainingDays ?: "-"} ${
+                        dayPeriod(
+                            prescription.prescriptionRemainingDays,
+                            context
+                        )
+                    }/"
+                )
+                append(" " + prescription.instructionNote.textOrHyphen())
+            }
+        }
+    }
+
+    private fun dayPeriod(prescribedDays: Int?, context: Context): String {
+        return if (prescribedDays == 1) {
+            context.getString(R.string.day)
+        } else {
+            context.getString(R.string.days)
+        }
+    }
+
+    fun printNumberedListString(items: List<String>?, context: Context): String {
+        if (items.isNullOrEmpty()) {
+            return context.getString(R.string.hyphen_symbol)
+        }
+
+        if (items.all { it.isBlank() }) {
+            return context.getString(R.string.hyphen_symbol)
+        }
+
+        return items.filter { it.isNotBlank() }
+            .mapIndexed { index, item -> "${index + 1}. $item" }
+            .joinToString("\n")
+
     }
 }

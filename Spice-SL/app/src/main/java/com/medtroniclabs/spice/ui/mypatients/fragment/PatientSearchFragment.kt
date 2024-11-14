@@ -29,6 +29,7 @@ import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.ncd.counseling.activity.NCDCounselorActivity
 import com.medtroniclabs.spice.ncd.counseling.activity.NCDNutritionistActivity
 import com.medtroniclabs.spice.ncd.data.PatientVisitRequest
+import com.medtroniclabs.spice.ncd.medicalreview.NCDHrioBaseActivity
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMedicalReviewCMRActivity
 import com.medtroniclabs.spice.ncd.screening.ui.ScreeningActivity
@@ -319,8 +320,7 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
                         if (MenuConstants.MY_PATIENTS_MENU_ID.lowercase() == origin && (CommonUtils.isAfrica() && CommonUtils.isNURSE())) {
                             NCDMedicalReviewCMRActivity::class.java
                         } else if (MenuConstants.MY_PATIENTS_MENU_ID.lowercase() == origin && (CommonUtils.isAfrica() && CommonUtils.isHRIO())) {
-                            // HRIO
-                            null
+                             NCDHrioBaseActivity::class.java
                         } else {
                             patientListViewModel.selectedPatientDetails = item
                             withNetworkAvailability(online = {

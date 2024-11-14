@@ -1047,4 +1047,13 @@
 
     <string name="decline">Decline</string>
     <string name="accept">Accept</string>
+    <string name="schedule">Schedule Appointment</string>
+    <string name="date_validation">Please select a date</string>
+    <string name="schedule_next_medical_review">Schedule Next Medical Review</string>
+    <string name="mobile_category">Mobile Number Category</string>
+    <string name="occupation">Occupation</string>
+    <string name="health_insurance_status">Health Insurance Status</string>
+    <string name="health_insurance_type">Health Insurance Type</string>
+    <string name="health_insurance_Id">Health Insurance Id</string>
+    <string name="next_medical_review_date">Next Medical Review Date</string>
 </resources>
