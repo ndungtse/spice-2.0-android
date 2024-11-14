@@ -16,6 +16,7 @@ import com.medtroniclabs.spice.common.DefinedParams.REFERRED
 import com.medtroniclabs.spice.data.model.ChipViewItemModel
 import com.medtroniclabs.spice.model.MedicalReviewFilterModel
 import com.medtroniclabs.spice.model.PatientListRespModel
+import com.medtroniclabs.spice.model.SortModel
 import com.medtroniclabs.spice.ncd.data.PatientVisitRequest
 import com.medtroniclabs.spice.ncd.data.PatientVisitResponse
 import com.medtroniclabs.spice.network.ApiHelper
@@ -42,10 +43,24 @@ class PatientListViewModel @Inject constructor(
     var searchText = ""
     var medicalReviewDueTag: List<ChipViewItemModel>? = null
     var patientStatusTag: List<ChipViewItemModel>? = null
+    var ncdMedicalReviewDateTag: List<ChipViewItemModel>? = null
+    var ncdRedRiskTag: List<ChipViewItemModel>? = null
+    var ncdRegistrationTag: List<ChipViewItemModel>? = null
+    var ncdCvdRiskTag: List<ChipViewItemModel>? = null
+    var ncdAssessmentTag: List<ChipViewItemModel>? = null
     var filterLiveData = MutableLiveData<Boolean>()
+    var sortLiveData = MutableLiveData<Boolean>()
     var origin: String? = null
     var selectedPatientDetails: PatientListRespModel? = null
     val patientVisitLiveData = MutableLiveData<Resource<PatientVisitResponse>>()
+
+    //Sort
+    var isRedRisk: Boolean? = null
+    var isLatestAssessment: Boolean? = null
+    var isMedicalReviewDueDate: Boolean? = null
+    var isHighLowBp: Boolean? = null
+    var isHighLowBg: Boolean? = null
+    var isAssessmentDueDate: Boolean? = null
 
     val patientsDataSource =
         Pager(config = PagingConfig(pageSize = LIST_LIMIT), pagingSourceFactory = {
@@ -54,6 +69,7 @@ class PatientListViewModel @Inject constructor(
                 patientRepository = patientRepository,
                 searchText = searchText,
                 filter = getFilter(),
+                sort = getSort(),
                 origin = getFormattedOrigin(origin),
                 isPatientListRequired = CommonUtils.isPatientListRequired(origin?.lowercase())
             ) { getPatientsCount ->
@@ -78,8 +94,41 @@ class PatientListViewModel @Inject constructor(
         filterLiveData.value = trigger
     }
 
+    fun setSort(trigger: Boolean) {
+        sortLiveData.value = trigger
+    }
+
+    private fun getSort(): SortModel {
+        return if (allAreNull()) SortModel(isRedRisk = true)
+        else
+            SortModel(
+                isRedRisk = isRedRisk,
+                isLatestAssessment = isLatestAssessment,
+                isMedicalReviewDueDate = isMedicalReviewDueDate,
+                isHighLowBp = isHighLowBp,
+                isHighLowBg = isHighLowBg,
+                isAssessmentDueDate = isAssessmentDueDate
+            )
+    }
+
+    private fun allAreNull(): Boolean {
+        return isRedRisk == null &&
+                isLatestAssessment == null &&
+                isMedicalReviewDueDate == null &&
+                isHighLowBp == null &&
+                isHighLowBg == null &&
+                isAssessmentDueDate == null
+    }
+
     private fun getFilter(): MedicalReviewFilterModel? {
-        return if (patientStatusTag?.isNullOrEmpty() == false || medicalReviewDueTag?.isNullOrEmpty() == false) {
+        return if (!patientStatusTag.isNullOrEmpty() ||
+            !medicalReviewDueTag.isNullOrEmpty() ||
+            !ncdMedicalReviewDateTag.isNullOrEmpty() ||
+            !ncdRedRiskTag.isNullOrEmpty() ||
+            !ncdRegistrationTag.isNullOrEmpty() ||
+            !ncdCvdRiskTag.isNullOrEmpty() ||
+            !ncdAssessmentTag.isNullOrEmpty()
+        ) {
             MedicalReviewFilterModel(
                 patientStatus = patientStatusTag?.map {
                     if (it.name.equals(OnTreatment, true)) OnHold else if (it.name.equals(
@@ -90,15 +139,43 @@ class PatientListViewModel @Inject constructor(
                         Active
                     } else ""
                 },
-                visitDate = medicalReviewDueTag?.map { it.name.lowercase() }
+                visitDate = medicalReviewDueTag?.map { it.name.lowercase() },
+                medicalReviewDate = ncdMedicalReviewDateTag?.map { it.name.lowercase() }?.get(0),
+                enrollmentStatus = ncdRegistrationTag?.map { it.optionalData }?.get(0),
+                isRedRiskPatient = redRisk(),
+                cvdRiskLevel = ncdCvdRiskTag?.map { it.name.lowercase() }?.get(0),
+                assessmentDate = ncdAssessmentTag?.map { it.name.lowercase() }?.get(0)
             )
         } else {
             null
         }
     }
 
+    private fun redRisk(): Boolean? {
+        val noRedRisk = ncdRedRiskTag?.map { it.name.lowercase() }.isNullOrEmpty()
+        return if (noRedRisk) null else true
+    }
+
     fun filterCount(): Int {
-        return listOf(patientStatusTag, medicalReviewDueTag).count { !it.isNullOrEmpty() }
+        return listOf(
+            patientStatusTag,
+            medicalReviewDueTag,
+            ncdMedicalReviewDateTag,
+            ncdRedRiskTag,
+            ncdRegistrationTag,
+            ncdCvdRiskTag,
+            ncdAssessmentTag
+        ).count { !it.isNullOrEmpty() }
+    }
+
+    fun sortCount(): Int {
+        val hasSort = isRedRisk != null ||
+                isLatestAssessment != null ||
+                isMedicalReviewDueDate != null ||
+                isHighLowBp != null ||
+                isHighLowBg != null ||
+                isAssessmentDueDate != null
+        return if (hasSort) 1 else 0
     }
 
     fun createPatientVisit(request: PatientVisitRequest) {

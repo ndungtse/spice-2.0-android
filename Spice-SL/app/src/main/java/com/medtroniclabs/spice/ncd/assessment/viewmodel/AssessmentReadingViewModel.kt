@@ -14,4 +14,5 @@ class AssessmentReadingViewModel @Inject constructor(
 
     var patientId: String? = null
     var relatedPersonFhirId: String? = null
+    var identityValue: String? = null
 }

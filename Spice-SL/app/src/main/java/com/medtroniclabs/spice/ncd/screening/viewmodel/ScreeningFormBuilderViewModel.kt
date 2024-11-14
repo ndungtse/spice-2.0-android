@@ -31,7 +31,6 @@ class ScreeningFormBuilderViewModel @Inject constructor(
 
     private var getMentalQuestion = MutableLiveData<Pair<String, String>>()
     var screeningSaveResponse = SingleLiveEvent<Resource<ScreeningEntity>>()
-    var duplicateNudgeLiveData = MutableLiveData<HashMap<String, Any>>()
     var screeningUpdateResponse = MutableLiveData<Resource<ScreeningEntity>>()
     val getMentalQuestions: LiveData<MentalHealthEntity?> =
         getMentalQuestion.switchMap {

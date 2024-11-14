@@ -182,14 +182,6 @@ class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener, View.OnC
 
     private var screeningJSON: List<FormLayout>? = null
     private fun attachObservers() {
-        viewModel.duplicateNudgeLiveData.observe(viewLifecycleOwner) { data ->
-            hideProgress()
-            val dialog =
-                DuplicationNudgeDialog.newInstance(StringConverter.convertGivenMapToString(data)) {
-                    proceedAssessment(data)
-                }
-            dialog.show(childFragmentManager, DuplicationNudgeDialog.TAG)
-        }
         ncdFormViewModel.ncdFormResponse.observe(viewLifecycleOwner) { resources ->
             when (resources.state) {
                 ResourceState.LOADING -> {
@@ -292,7 +284,7 @@ class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener, View.OnC
                 val intent = Intent(requireContext(), AssessmentToolsActivity::class.java)
                 intent.putExtra(DefinedParams.FhirId, fhirId)
                 intent.putExtra(DefinedParams.ORIGIN, MenuConstants.ASSESSMENT)
-                intent.putExtra(DefinedParams.Gender, "male")
+                intent.putExtra(DefinedParams.Gender, data[DefinedParams.Gender]?.toString()?.lowercase())
                 startActivity(intent)
                 activity?.finish()
             }
@@ -368,7 +360,7 @@ class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener, View.OnC
                 viewModel.validatePatient(resultMap, serverData)
             }, offline = {
                 processValuesAndProceed(resultMap, serverData)
-            })
+            }, requireErrorDialog = false)
         }
     }
 

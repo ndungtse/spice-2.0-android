@@ -19,8 +19,10 @@ data class NCDCounselingModel(
     val isCounselor: Boolean? = null,
     val referredDate: String? = null,
     val referredBy: String? = null,
+    val referredByDisplay: String? = null,
     val assessedDate: String? = null,
     val assessedBy: String? = null,
+    val assessedByDisplay: String? = null,
     var isExpanded: Boolean = false
 )
 
@@ -33,8 +35,10 @@ data class AssessmentResultModel(
     val patientVisitId: String? = null,
     val referredDate: String? = null,
     val referredBy: String? = null,
+    val referredByDisplay: String? = null,
     val assessedDate: String? = null,
     val assessedBy: String? = null,
+    val assessedByDisplay: String? = null,
     val provenance: ProvanceDto = ProvanceDto()
 )
 

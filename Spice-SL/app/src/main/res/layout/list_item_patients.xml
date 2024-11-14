@@ -31,7 +31,6 @@
                 android:id="@+id/tvCardPatientName"
                 style="@style/TextStyle_Bold_16_NoBG"
                 android:layout_width="match_parent"
-                android:paddingBottom="@dimen/_15sdp"
                 android:layout_height="wrap_content"
                 android:gravity="start"
                 android:textColor="@color/secondary_black"

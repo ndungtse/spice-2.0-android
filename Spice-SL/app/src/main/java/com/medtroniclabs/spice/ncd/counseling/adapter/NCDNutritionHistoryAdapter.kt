@@ -47,7 +47,7 @@ class NCDNutritionHistoryAdapter : RecyclerView.Adapter<NCDNutritionHistoryAdapt
                     }
                     tvRefDate.text = refDate.textOrHyphen()
 
-                    tvRefBy.text = referredBy.textOrHyphen()
+                    tvRefBy.text = referredByDisplay.textOrHyphen()
 
                     tvLifestyleAssessment.text = lifestyleAssessment.textOrHyphen()
                     tvOtherNotes.text = otherNote.textOrHyphen()

@@ -11,9 +11,11 @@ import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.nullIfEmpty
 import com.medtroniclabs.spice.common.DateUtils.calculateAge
 import com.medtroniclabs.spice.common.RoleConstant.CHA
+import com.medtroniclabs.spice.common.RoleConstant.COMMUNITY_HEALTH_WORKER
 import com.medtroniclabs.spice.common.RoleConstant.LAB_ASSISTANT
 import com.medtroniclabs.spice.common.RoleConstant.MCHA
 import com.medtroniclabs.spice.common.RoleConstant.MID_WIFE
+import com.medtroniclabs.spice.common.RoleConstant.PHARMACIST
 import com.medtroniclabs.spice.common.RoleConstant.PHYSICIAN_PRESCRIBER
 import com.medtroniclabs.spice.common.RoleConstant.PROVIDER
 import com.medtroniclabs.spice.common.RoleConstant.SECHN
@@ -1435,6 +1437,7 @@ object CommonUtils {
             MenuConstants.LIFESTYLE.lowercase(),
             MenuConstants.PSYCHOLOGICAL.lowercase(),
             MenuConstants.DISPENSE.lowercase(),
+            MenuConstants.INVESTIGATION.lowercase(),
             MenuConstants.MY_PATIENTS_MENU_ID.lowercase() -> true
             else -> false
         }
@@ -1670,5 +1673,33 @@ object CommonUtils {
             sb.append(" ")
         }
         return sb.toString().trim { it <= ' ' }
+    }
+
+    fun canShowSort(origin: String?): Boolean {
+        val isFromMyPatients: Boolean =
+            origin?.equals(MenuConstants.MY_PATIENTS_MENU_ID, true) ?: false
+
+        val userRole = SecuredPreference.getUserDetails()?.roles?.joinToString { it.name }
+
+        if (userRole != null) {
+            return isFromMyPatients &&
+                    (userRole.contains(COMMUNITY_HEALTH_WORKER) || userRole.contains(PROVIDER) || userRole.contains(
+                        PHYSICIAN_PRESCRIBER
+                    ))
+        }
+        return false
+    }
+
+    fun canShowFilter(origin: String?): Boolean {
+        val isFromInvestigation: Boolean =
+            origin?.equals(MenuConstants.INVESTIGATION, true) ?: false
+        val isFromDispense: Boolean = origin?.equals(MenuConstants.DISPENSE, true) ?: false
+
+        val userRole = SecuredPreference.getUserDetails()?.roles?.joinToString { it.name }
+
+        if (userRole != null) {
+            return canShowSort(origin) || isFromDispense || isFromInvestigation
+        }
+        return false
     }
 }

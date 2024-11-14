@@ -19,6 +19,7 @@ import com.medtroniclabs.spice.appextensions.loadAsGif
 import com.medtroniclabs.spice.appextensions.postSuccess
 import com.medtroniclabs.spice.appextensions.resetImageView
 import com.medtroniclabs.spice.appextensions.setDialogPercent
+import com.medtroniclabs.spice.appextensions.setVisible
 import com.medtroniclabs.spice.appextensions.takeIfNotNull
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
@@ -384,12 +385,9 @@ class NCDPregnancyDialog(private val callback: ((isPositiveResult: Boolean, mess
             if (selected.isNotEmpty())
                 viewModel.ncdPregnancyCreateModel.neonatalOutcomes =
                     selected[0].name.ifBlank { null }
-            if (checkedIds.size > 0) {
-                binding.actualDeliveryDateGroup.visible()
-            } else {
-                binding.actualDeliveryDateGroup.gone()
-                resetDeliveryDate()
-            }
+            val isNeonatalSelected = checkedIds.size > 0
+            binding.actualDeliveryDateGroup.setVisible(isNeonatalSelected)
+            setActualDeliveryDate(isNeonatalSelected)
         }
         binding.cgMaternalOutcomes.setOnCheckedStateChangeListener { _, _ ->
             val selected = maternalOutcomesView.getSelectedTags()
@@ -399,8 +397,9 @@ class NCDPregnancyDialog(private val callback: ((isPositiveResult: Boolean, mess
         }
     }
 
-    private fun resetDeliveryDate() {
-        binding.tvDeliveryDate.text = DateUtils.getCurrentDateAndTime(DATE_ddMMyyyy)
+    private fun setActualDeliveryDate(isNeonatalSelected: Boolean) {
+        binding.tvDeliveryDate.text =
+            if (isNeonatalSelected) DateUtils.getCurrentDateAndTime(DATE_ddMMyyyy) else getString(R.string.empty)
     }
 
     private fun handleCheckBox() {
@@ -528,7 +527,7 @@ class NCDPregnancyDialog(private val callback: ((isPositiveResult: Boolean, mess
 
             //Pregnancy ANC Fields
             cgNeonatalOutcomes.clearCheck()
-            resetDeliveryDate()
+            setActualDeliveryDate(false)
             cgMaternalOutcomes.clearCheck()
         }
     }

@@ -265,4 +265,6 @@ object NCDMRUtil {
             .joinToString("\n")
 
     }
+
+    fun currentUserId() = SecuredPreference.getUserFhirId()
 }

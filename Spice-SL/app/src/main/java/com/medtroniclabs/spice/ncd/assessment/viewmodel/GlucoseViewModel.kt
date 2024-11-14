@@ -9,6 +9,7 @@ import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.APIResponse
 import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.di.IoDispatcher
+import com.medtroniclabs.spice.mappingkey.Screening
 import com.medtroniclabs.spice.ncd.data.BPBGListModel
 import com.medtroniclabs.spice.ncd.assessment.repo.GlucoseRepo
 import com.medtroniclabs.spice.network.resource.Resource
@@ -28,6 +29,7 @@ class GlucoseViewModel @Inject constructor(
     fun glucoseLogCreate(
         hashMap: HashMap<String, Any>,
         relatedPersonFhirId: String?,
+        identityValue: String?,
         patientId: String?
     ) {
         hashMap.apply {
@@ -36,6 +38,9 @@ class GlucoseViewModel @Inject constructor(
             }
             relatedPersonFhirId?.let { requestRelatedPersonFhirId ->
                 put(DefinedParams.RelatedPersonFhirId, requestRelatedPersonFhirId)
+            }
+            identityValue?.let { idValue ->
+                put(Screening.identityValue, idValue)
             }
             put(DefinedParams.AssessmentOrganizationId, SecuredPreference.getOrganizationFhirId())
             put(DefinedParams.Provenance, ProvanceDto())

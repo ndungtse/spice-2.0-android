@@ -165,6 +165,7 @@ class BloodPressureViewModel @Inject constructor(
     fun createBpLog(
         hashMap: HashMap<String, Any>,
         relatedPersonFhirId: String?,
+        identityValue: String?,
         patientId: String?
     ) {
         hashMap.apply {
@@ -173,6 +174,9 @@ class BloodPressureViewModel @Inject constructor(
             }
             relatedPersonFhirId?.let { requestRelatedPersonFhirId ->
                 put(DefinedParams.RelatedPersonFhirId, requestRelatedPersonFhirId)
+            }
+            identityValue?.let { idValue ->
+                put(Screening.identityValue, idValue)
             }
             put(DefinedParams.AssessmentOrganizationId, SecuredPreference.getOrganizationFhirId())
             put(DefinedParams.Provenance, ProvanceDto())

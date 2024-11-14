@@ -19,11 +19,16 @@ data class NCDMedicalReviewHistory(
 )
 
 data class MedicalReview(
-    val physicalExams: List<String>? = null,
+    val physicalExams: List<PhysicalExaminations>? = null,
     val complaints: List<String>? = null,
     val notes: List<String>? = null,
     val prescriptions: List<String>? = null,
     val investigations: List<String>? = null
+)
+
+data class PhysicalExaminations(
+    val physicalExaminations: List<String>? = null,
+    val physicalExaminationsNote: String? = null
 )
 
 data class ReviewDetails(

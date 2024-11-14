@@ -177,6 +177,7 @@
     <string name="finished">Finished</string>
     <string name="apply">Apply</string>\
     <string name="filter_count">Filter (%1d)</string>
+    <string name="sort_count">Sort (%1d)</string>
     <string name="villages">Villages</string>
     <string name="start_with_validation">Phone number should starts with %1$s </string>
     <string name="or">or</string>
@@ -706,6 +707,10 @@
     <!-- Registration -->
     <string name="register">Register</string>
     <string name="registration">Registration</string>
+    <string name="registered">Registered</string>
+    <string name="enrolled_data">ENROLLED</string>
+    <string name="not_registered">Not Registered</string>
+    <string name="not_enrolled_data">NOT_ENROLLED</string>
     <string name="terms_and_conditions">Terms &amp; Conditions</string>
     <string name="terms_and_conditions_info_enrollment">The healthcare worker will be accepting the terms &amp; conditions on behalf of the enrollment participant.</string>
     <string name="patient_initial">Patient’s Initial</string>
@@ -1080,4 +1085,26 @@
     <string name="notification_plus">99+</string>
     <string name="enrollment_date">Enrollment Date</string>
     <string name="provisional_text">(Provisional)</string>
+
+    <string name="latest_screening_date">Latest Screening Date</string>
+    <string name="oldest_screening_date">Oldest Screening Date</string>
+    <string name="assessment_due_date">Assessment Due Date</string>
+    <string name="medical_review_due_date">Medical Review Due Date</string>
+    <string name="high_bp_to_low_bg">High BP to Low BP</string>
+    <string name="high_bg_to_low_bg">High BG to Low BG</string>
+    <string name="latest_assessment_on_that_day_in_that_respective_facility">BP Assessment Date</string>
+    <string name="sort_by">Sort By</string>
+    <string name="sort">Sort</string>
+
+    //Filter
+    <string name="medical_review_date">Medical Review Date</string>
+    <string name="session_due">Session Due</string>
+    <string name="weekly">This Week</string>
+    <string name="risk">Risk</string>
+    <string name="enrollment">Enrollment</string>
+    <string name="enrolled">Enrolled</string>
+    <string name="not_enrolled">Not Enrolled</string>
+    <string name="high">High</string>
+    <string name="medium">Medium</string>
+    <string name="low">Low</string>
 </resources>

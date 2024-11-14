@@ -131,6 +131,30 @@ class NCDNutritionistActivity : BaseActivity(), View.OnClickListener {
                 }
             }
         }
+        viewModel.updateAssessmentLiveData.observe(this) { resourceState ->
+            when (resourceState.state) {
+                ResourceState.LOADING -> {
+                    showLoading()
+                }
+
+                ResourceState.SUCCESS -> {
+                    hideLoading()
+                    resourceState?.data?.message?.let { message ->
+                        showSuccessDialogue(
+                            title = getString(R.string.lifestyle_assessment),
+                            message = message
+                        ) { finish() }
+                    } ?: run { finish() }
+                }
+
+                ResourceState.ERROR -> {
+                    hideLoading()
+                    resourceState.message?.let { message ->
+                        showErrorDialogue(message = message) {}
+                    }
+                }
+            }
+        }
         patientViewModel.patientDetailsLiveData.observe(this) { resource ->
             when (resource.state) {
                 ResourceState.LOADING -> {
@@ -265,7 +289,7 @@ class NCDNutritionistActivity : BaseActivity(), View.OnClickListener {
 
     private fun updateLifestyles() {
         val lifestyles =
-            viewModel.assessmentListLiveData.value?.data?.entityList?.filter { it.assessedBy.isNullOrBlank() && !it.lifestyleAssessment.isNullOrBlank() && !it.otherNote.isNullOrBlank() }
+            viewModel.assessmentListLiveData.value?.data?.entityList?.filter { it.assessedBy.isNullOrBlank() && !it.lifestyleAssessment.isNullOrBlank() }
         if (lifestyles.isNullOrEmpty())
             return
         else {
@@ -284,7 +308,8 @@ class NCDNutritionistActivity : BaseActivity(), View.OnClickListener {
                 memberReference = viewModel.memberReference,
                 visitId = viewModel.encounterReference,
                 patientVisitId = viewModel.encounterReference,
-                assessedBy = NCDMRUtil.getUserName(),
+                assessedBy = NCDMRUtil.currentUserId(),
+                assessedByDisplay = NCDMRUtil.getUserName(),
                 assessedDate = DateUtils.getTodayDateDDMMYYYY()
             )
             viewModel.updateAssessment(request, true)

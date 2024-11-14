@@ -63,7 +63,7 @@ class NCDCounselingAdapter(private val counselingInterface: CounselingInterface)
                         )
                     }.textOrHyphen()
 
-                    tvRefBy.text = referredBy.textOrHyphen()
+                    tvRefBy.text = referredByDisplay.textOrHyphen()
 
                     tvAssessedDate.apply {
                         text = assessedDate?.let {
@@ -79,8 +79,8 @@ class NCDCounselingAdapter(private val counselingInterface: CounselingInterface)
                     }
 
                     tvAssessedBy.apply {
-                        text = assessedBy ?: run { context.getString(R.string.not_available) }
-                        setTextColor(getTextColor(context, assessedBy))
+                        text = assessedByDisplay ?: run { context.getString(R.string.not_available) }
+                        setTextColor(getTextColor(context, assessedByDisplay))
                     }
 
                     if (id.isNullOrBlank()) {

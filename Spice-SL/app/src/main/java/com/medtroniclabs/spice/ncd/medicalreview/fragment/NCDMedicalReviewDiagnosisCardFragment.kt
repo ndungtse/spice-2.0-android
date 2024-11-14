@@ -388,6 +388,7 @@ class NCDMedicalReviewDiagnosisCardFragment : BaseFragment(), View.OnClickListen
                 putBoolean(Screening.is_regular_smoker, detail.isRegularSmoker ?: false)
                 putString(Screening.DateOfBirth, detail.dateOfBirth)
                 putString(DefinedParams.Gender, detail.gender)
+                putString(Screening.identityValue, detail.identityValue)
             }
             intent.putExtras(bundle)
             getResult.launch(intent)

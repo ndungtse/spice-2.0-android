@@ -275,3 +275,7 @@ fun getScreenSizeInInches(context: Context): Double {
 
 
 
+fun Context.isTablet(): Boolean {
+    return (resources.configuration.screenLayout and
+            Configuration.SCREENLAYOUT_SIZE_MASK) >= Configuration.SCREENLAYOUT_SIZE_LARGE
+}

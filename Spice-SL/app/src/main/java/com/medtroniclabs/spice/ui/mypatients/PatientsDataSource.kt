@@ -2,7 +2,6 @@ package com.medtroniclabs.spice.ui.mypatients
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
-import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DefinedParams.LIST_LIMIT
 import com.medtroniclabs.spice.common.DefinedParams.PAGE_INDEX
 import com.medtroniclabs.spice.common.SecuredPreference
@@ -11,6 +10,7 @@ import com.medtroniclabs.spice.model.MedicalReviewFilterModel
 import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.model.PatientsDataModel
 import com.medtroniclabs.spice.model.SearchAndListResponse
+import com.medtroniclabs.spice.model.SortModel
 import com.medtroniclabs.spice.network.ApiHelper
 import com.medtroniclabs.spice.ui.mypatients.repo.PatientRepository
 
@@ -20,6 +20,7 @@ class PatientsDataSource(
     private val patientRepository: PatientRepository,
     private val searchText: String,
     private val filter:MedicalReviewFilterModel?,
+    private val sort: SortModel?,
     private val isPatientListRequired: Boolean,
     private val origin: String?,
     private val getPatientsCount: (String) -> Unit
@@ -54,6 +55,7 @@ class PatientsDataSource(
                 villageIds = villages,
                 referencePatientId = referencePatientId?.ifBlank { null },
                 filter = filter,
+                sort = sort,
                 type = origin,
                 siteId = SecuredPreference.getOrganizationFhirId(),
                 countryId = SecuredPreference.getCountryId(),
@@ -67,7 +69,6 @@ class PatientsDataSource(
                     patientsDataModel.copy(
                         villageIds = null,
                         searchText = searchText.ifEmpty { null },
-                        type = origin,
                         districtId = districtId
                     )
                 )

@@ -236,7 +236,8 @@ class NCDCounselingActivity : BaseActivity(), View.OnClickListener, CounselingIn
                 add(
                     0, NCDCounselingModel(
                         clinicianNotes = arrayListOf(it),
-                        referredBy = NCDMRUtil.getUserName(),
+                        referredBy = NCDMRUtil.currentUserId(),
+                        referredByDisplay = NCDMRUtil.getUserName(),
                         referredDate = DateUtils.getTodayDateDDMMYYYY(),
                     )
                 )
@@ -262,7 +263,8 @@ class NCDCounselingActivity : BaseActivity(), View.OnClickListener, CounselingIn
                 visitId = encounterReference,
                 patientVisitId = encounterReference,
                 clinicianNotes = clinicianNotes,
-                referredBy = NCDMRUtil.getUserName(),
+                referredBy = NCDMRUtil.currentUserId(),
+                referredByDisplay = NCDMRUtil.getUserName(),
                 referredDate = DateUtils.getTodayDateDDMMYYYY(),
                 isCounselor = counselor
             )

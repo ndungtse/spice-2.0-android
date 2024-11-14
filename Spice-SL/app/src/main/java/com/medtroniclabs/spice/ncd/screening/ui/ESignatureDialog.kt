@@ -1,5 +1,6 @@
 package com.medtroniclabs.spice.ncd.screening.ui
 
+import android.content.res.Configuration
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,6 +10,8 @@ import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import com.medtroniclabs.spice.appextensions.setDialogPercent
+import com.medtroniclabs.spice.appextensions.setDialogPercentForWidth
+import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.databinding.DialogESignatureBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.ncd.registration.viewmodel.TermsAndConditionsViewModel
@@ -67,7 +70,10 @@ class ESignatureDialog(private val signatureInterface: SignatureInterface) : Dia
 
     override fun onStart() {
         super.onStart()
-        setDialogPercent(75, 45)
+        if (CommonUtils.checkIsTablet(requireContext()))
+            setDialogPercent(75, 45)
+        else
+            setDialogPercent(95, 65)
     }
 
     private fun setListeners() {
@@ -123,5 +129,16 @@ class ESignatureDialog(private val signatureInterface: SignatureInterface) : Dia
             signed = false
         }
         return signed
+    }
+
+    private fun handleOrientation() {
+        val isTablet = CommonUtils.checkIsTablet(requireContext())
+        val isLandscape = resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+        val percent = when {
+            isTablet && isLandscape -> 70
+            isTablet && !isLandscape -> 85
+            else -> 95
+        }
+        setDialogPercent(percent)
     }
 }

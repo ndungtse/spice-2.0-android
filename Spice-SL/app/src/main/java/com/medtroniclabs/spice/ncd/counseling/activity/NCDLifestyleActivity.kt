@@ -251,7 +251,8 @@ class NCDLifestyleActivity : BaseActivity(), View.OnClickListener, CounselingInt
                 visitId = encounterReference,
                 lifestyles = lifestyles,
                 clinicianNote = clinicianNote,
-                referredBy = NCDMRUtil.getUserName(),
+                referredBy = NCDMRUtil.currentUserId(),
+                referredByDisplay = NCDMRUtil.getUserName(),
                 referredDate = DateUtils.getTodayDateDDMMYYYY(),
                 isNutritionist = nutritionist
             )

@@ -32,6 +32,7 @@ import com.medtroniclabs.spice.ncd.data.PatientVisitRequest
 import com.medtroniclabs.spice.ncd.medicalreview.NCDHrioBaseActivity
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMedicalReviewCMRActivity
+import com.medtroniclabs.spice.ncd.medicalreview.dialog.SortDialogFragment
 import com.medtroniclabs.spice.ncd.screening.ui.ScreeningActivity
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
@@ -141,17 +142,29 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
                         )
                     }
                 }
-                binding.llFilter.apply {
-                    if (patientListViewModel.origin.equals(MenuConstants.MY_PATIENTS_MENU_ID, true)) {
-                        root.invisible() //TODO: filter needs to be implemented later
-                        if (patientListViewModel.filterCount() > 0) {
-                            binding.llFilter.btnFilter.text =
-                                getString(R.string.filter_count, patientListViewModel.filterCount())
-                        } else
-                            binding.llFilter.btnFilter.text = getString(R.string.filter)
+                binding.llSortFilter.btnSort.apply {
+                    if (CommonUtils.canShowSort(patientListViewModel.origin)) {
+                        visible()
 
+                        val sortCount = patientListViewModel.sortCount()
+                        text = if (sortCount > 0)
+                            getString(R.string.sort_count, sortCount)
+                        else
+                            getString(R.string.sort)
                     } else
-                        root.invisible()
+                        invisible()
+                }
+                binding.llSortFilter.btnFilter.apply {
+                    if (CommonUtils.canShowFilter(patientListViewModel.origin)) {
+                        visible()
+
+                        val filterCount = patientListViewModel.filterCount()
+                        text = if (filterCount > 0)
+                            getString(R.string.filter_count, filterCount)
+                        else
+                            getString(R.string.filter)
+                    } else
+                        invisible()
                 }
             }
             if (binding.refreshLayout.isRefreshing) {
@@ -164,6 +177,15 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
                     getPatientList()
                     scrollTop()
                     patientListViewModel.setFilter(false)
+                }
+            })
+        }
+        patientListViewModel.sortLiveData.observe(viewLifecycleOwner) {
+            withNetworkAvailability(online = {
+                if (it) {
+                    getPatientList()
+                    scrollTop()
+                    patientListViewModel.setSort(false)
                 }
             })
         }
@@ -213,12 +235,11 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
             }
         }
     }
-
-
     private fun initViews() {
         patientListViewModel.origin = arguments?.getString(DefinedParams.ORIGIN)
         binding.bottomCardView.gone()
-        binding.llFilter.btnFilter.text = getString(R.string.filters)
+        binding.llSortFilter.btnFilter.text = getString(R.string.filters)
+        binding.llSortFilter.btnSort.text = getString(R.string.sort)
         val tabletSize =
             resources.getBoolean(R.bool.isLargeTablet) || resources.getBoolean(R.bool.isTablet)
         if (tabletSize) {
@@ -232,7 +253,8 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
         binding.llExactSearch.btnSearch.safeClickListener(this)
         binding.btnRegister.safeClickListener(this)
         binding.btnScreening.safeClickListener(this)
-        binding.llFilter.btnFilter.safeClickListener(this)
+        binding.llSortFilter.btnFilter.safeClickListener(this)
+        binding.llSortFilter.btnSort.safeClickListener(this)
         binding.loadingProgress.safeClickListener(this)
         binding.btnAddNewMember.safeClickListener(this)
         binding.btnAddNewMember.visibility = if (CommonUtils.isSL()) View.VISIBLE else View.GONE
@@ -366,9 +388,13 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
                 networkAvailability()
             }
 
-            binding.llFilter.btnFilter.id -> {
+            binding.llSortFilter.btnFilter.id -> {
                 requireContext().hideKeyboard(v)
                 handleFilterClick()
+            }
+            binding.llSortFilter.btnSort.id -> {
+                requireContext().hideKeyboard(v)
+                handleSortClick()
             }
             binding.loadingProgress.id -> {}
 
@@ -409,6 +435,17 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
                 .show(childFragmentManager, PatientSearchFilterDialog.TAG)
         } else {
             existingFragment.show(childFragmentManager, PatientSearchFilterDialog.TAG)
+        }
+    }
+
+    private fun handleSortClick() {
+        val existingFragment =
+            childFragmentManager.findFragmentByTag(SortDialogFragment.TAG) as? SortDialogFragment
+        if (existingFragment == null) {
+            SortDialogFragment.newInstance()
+                .show(childFragmentManager, SortDialogFragment.TAG)
+        } else {
+            existingFragment.show(childFragmentManager, SortDialogFragment.TAG)
         }
     }
 

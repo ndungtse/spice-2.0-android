@@ -69,13 +69,16 @@ open class BaseFragment : Fragment(){
 
     fun withNetworkAvailability(
         online: () -> Unit,
-        offline: () -> Unit = {}
+        offline: () -> Unit = {},
+        requireErrorDialog: Boolean = true
     ) {
         connectivityManager.isNullableNetworkAvailable()?.let { isNetworkAvailable ->
             if (isNetworkAvailable) {
                 online()
             } else {
-                showErrorDialog(getString(R.string.error), getString(R.string.no_internet_error))
+                if (requireErrorDialog) {
+                    showErrorDialog(getString(R.string.error), getString(R.string.no_internet_error))
+                }
                 offline()
             }
         }

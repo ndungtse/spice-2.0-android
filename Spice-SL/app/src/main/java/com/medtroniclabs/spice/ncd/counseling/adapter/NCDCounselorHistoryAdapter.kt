@@ -45,8 +45,15 @@ class NCDCounselorHistoryAdapter : RecyclerView.Adapter<NCDCounselorHistoryAdapt
                     }
                     tvRefDate.text = refDate.textOrHyphen()
 
-                    tvRefBy.text = referredBy.textOrHyphen()
+                    tvRefBy.text = referredByDisplay.textOrHyphen()
 
+                    val assessedDate = assessedDate?.let {
+                        DateUtils.convertDateTimeToDate(
+                            it,
+                            DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+                            DateUtils.DATE_FORMAT_ddMMMyyyy
+                        )
+                    }
                     tvAssessedDate.text = assessedDate.textOrHyphen()
 
                     tvOtherNotes.text = counselorAssessment.textOrEmpty()

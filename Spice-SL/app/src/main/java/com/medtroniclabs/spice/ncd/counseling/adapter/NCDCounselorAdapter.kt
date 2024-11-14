@@ -48,7 +48,7 @@ class NCDCounselorAdapter(private val listener: ValidationListener) :
                     }
                     tvRefDate.text = refDate.textOrHyphen()
 
-                    tvRefBy.text = referredBy.textOrHyphen()
+                    tvRefBy.text = referredByDisplay.textOrHyphen()
 
                     etOtherNotes.setText(otherNote.textOrEmpty())
                     etOtherNotes.addTextChangedListener {

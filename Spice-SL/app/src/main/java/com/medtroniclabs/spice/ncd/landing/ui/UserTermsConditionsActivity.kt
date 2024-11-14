@@ -21,13 +21,11 @@ import com.medtroniclabs.spice.ncd.landing.viewmodel.UserTermsConditionsViewMode
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.landing.LandingActivity
-import com.medtroniclabs.spice.ui.landing.viewmodel.LandingViewModel
 
 class UserTermsConditionsActivity : BaseActivity(), View.OnClickListener {
     private lateinit var binding: ActivityUserTermsConditionsBinding
 
     private val viewModel: UserTermsConditionsViewModel by viewModels()
-    private val landingViewModel: LandingViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

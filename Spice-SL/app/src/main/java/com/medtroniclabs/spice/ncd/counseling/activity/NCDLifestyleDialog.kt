@@ -147,9 +147,11 @@ class NCDLifestyleDialog(private val callback: (isPositiveResult: Boolean) -> Un
                 lifestyles = lifestyles,
                 lifestyleAssessment = lifestyleAssessment,
                 otherNote = otherNote,
-                referredBy = NCDMRUtil.getUserName(),
+                referredBy = NCDMRUtil.currentUserId(),
+                referredByDisplay = NCDMRUtil.getUserName(),
                 referredDate = DateUtils.getTodayDateDDMMYYYY(),
-                assessedBy = NCDMRUtil.getUserName(),
+                assessedBy = NCDMRUtil.currentUserId(),
+                assessedByDisplay = NCDMRUtil.getUserName(),
                 assessedDate = DateUtils.getTodayDateDDMMYYYY(),
                 isNutritionist = nutritionist
             )
@@ -158,7 +160,7 @@ class NCDLifestyleDialog(private val callback: (isPositiveResult: Boolean) -> Un
 
     override fun onStart() {
         super.onStart()
-        setDialogPercent(80, 50)
+        setDialogPercent(80, 60)
     }
 
     private fun showLoading() {

@@ -74,7 +74,7 @@ class NCDLifestyleAdapter(private val lifeStyleInterface: CounselingInterface) :
                         displayHyphen(context)
                     }
 
-                    tvRefBy.text = referredBy ?: run { displayHyphen(context) }
+                    tvRefBy.text = referredByDisplay ?: run { displayHyphen(context) }
 
                     tvAssessedDate.apply {
                         text = assessedDate?.let {
@@ -90,8 +90,8 @@ class NCDLifestyleAdapter(private val lifeStyleInterface: CounselingInterface) :
                     }
 
                     tvAssessedBy.apply {
-                        text = assessedBy ?: run { context.getString(R.string.not_available) }
-                        setTextColor(getTextColor(context, assessedBy))
+                        text = assessedByDisplay ?: run { context.getString(R.string.not_available) }
+                        setTextColor(getTextColor(context, assessedByDisplay))
                     }
 
                     if (id.isNullOrBlank()) {

@@ -517,7 +517,7 @@
                                 android:background="@drawable/button_white_background"
                                 android:fontFamily="@font/inter_medium"
                                 android:gravity="center"
-                                android:paddingHorizontal="@dimen/_18sdp"
+                                android:paddingHorizontal="@dimen/_14sdp"
                                 android:paddingVertical="@dimen/_8sdp"
                                 android:text="@string/plus_add"
                                 android:textColor="@color/cobalt_blue"

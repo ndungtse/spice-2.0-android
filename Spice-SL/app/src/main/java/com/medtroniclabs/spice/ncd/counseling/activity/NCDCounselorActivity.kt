@@ -92,6 +92,30 @@ class NCDCounselorActivity : BaseActivity(), View.OnClickListener {
     }
 
     fun attachObservers() {
+        viewModel.updateAssessmentLiveData.observe(this) { resourceState ->
+            when (resourceState.state) {
+                ResourceState.LOADING -> {
+                    showLoading()
+                }
+
+                ResourceState.SUCCESS -> {
+                    hideLoading()
+                    resourceState?.data?.message?.let { message ->
+                        showSuccessDialogue(
+                            title = getString(R.string.psychological_assessment),
+                            message = message
+                        ) { finish() }
+                    } ?: run { finish() }
+                }
+
+                ResourceState.ERROR -> {
+                    hideLoading()
+                    resourceState.message?.let { message ->
+                        showErrorDialogue(message = message) {}
+                    }
+                }
+            }
+        }
         viewModel.assessmentListLiveData.observe(this) { resourceState ->
             when (resourceState.state) {
                 ResourceState.LOADING -> {
@@ -257,7 +281,8 @@ class NCDCounselorActivity : BaseActivity(), View.OnClickListener {
                 memberReference = viewModel.memberReference,
                 visitId = viewModel.encounterReference,
                 patientVisitId = viewModel.encounterReference,
-                assessedBy = NCDMRUtil.getUserName(),
+                assessedBy = NCDMRUtil.currentUserId(),
+                assessedByDisplay = NCDMRUtil.getUserName(),
                 assessedDate = DateUtils.getTodayDateDDMMYYYY()
             )
             viewModel.updateAssessment(request, false)

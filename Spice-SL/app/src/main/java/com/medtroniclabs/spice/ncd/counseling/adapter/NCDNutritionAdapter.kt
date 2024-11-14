@@ -51,7 +51,7 @@ class NCDNutritionAdapter(private val listener: ValidationListener) :
                     }
                     tvRefDate.text = refDate.textOrHyphen()
 
-                    tvRefBy.text = referredBy.textOrHyphen()
+                    tvRefBy.text = referredByDisplay.textOrHyphen()
 
                     etLifestyleAssessment.setText(lifestyleAssessment.textOrEmpty())
                     etLifestyleAssessment.addTextChangedListener {

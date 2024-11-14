@@ -20,6 +20,7 @@ import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.data.history.NCDMedicalReviewHistory
+import com.medtroniclabs.spice.data.history.PhysicalExaminations
 import com.medtroniclabs.spice.databinding.FragmentReferralTicketBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.model.ReferredDate
@@ -382,13 +383,25 @@ class NCDMedicalReviewHistoryFragment : BaseFragment(), View.OnClickListener {
             ),
             mapOf(
                 DefinedParams.label to requireContext().getString(R.string.obstetric_examination),
-                DefinedParams.Value to CommonUtils.combineText(
-                    CommonUtils.convertAnyToListOfString(medicalReviewHistory.medicalReview?.physicalExams),
-                    "",
-                    getString(R.string.separator_double_hyphen)
-                )
+                DefinedParams.Value to getPhysicalExamination(medicalReviewHistory.medicalReview?.physicalExams)
             )
         )
         return commonFields
+    }
+
+    private fun getPhysicalExamination(physicalExams: List<PhysicalExaminations>?): String {
+        val returnStr = StringBuilder()
+        physicalExams?.forEachIndexed { index, element ->
+            val items = element.physicalExaminations?.joinToString(", ")
+            if (!items.isNullOrBlank()) {
+                returnStr.append(items)
+            }
+            if (!element.physicalExaminationsNote.isNullOrBlank())
+                returnStr.append(" [${element.physicalExaminationsNote}]")
+            if (index < physicalExams.size - 1)
+                returnStr.append(", ")
+        }
+
+        return returnStr.toString()
     }
 }

@@ -124,9 +124,11 @@ class NCDCounselingDialog(private val callback: (isPositiveResult: Boolean) -> U
                 visitId = encounterReference,
                 patientVisitId = encounterReference,
                 counselorAssessment = counselorAssessment,
-                referredBy = NCDMRUtil.getUserName(),
+                referredBy = NCDMRUtil.currentUserId(),
+                referredByDisplay = NCDMRUtil.getUserName(),
                 referredDate = DateUtils.getTodayDateDDMMYYYY(),
-                assessedBy = NCDMRUtil.getUserName(),
+                assessedBy = NCDMRUtil.currentUserId(),
+                assessedByDisplay = NCDMRUtil.getUserName(),
                 assessedDate = DateUtils.getTodayDateDDMMYYYY(),
                 isCounselor = counselor
             )
@@ -135,7 +137,7 @@ class NCDCounselingDialog(private val callback: (isPositiveResult: Boolean) -> U
 
     override fun onStart() {
         super.onStart()
-        setDialogPercent(80, 25)
+        setDialogPercent(80, 35)
     }
 
     private fun showLoading() {

@@ -9,9 +9,9 @@
         android:id="@+id/refreshLayout"
         android:layout_width="0dp"
         android:layout_height="@dimen/_0dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -45,22 +45,20 @@
                 android:textSize="@dimen/_18ssp"
                 android:textStyle="bold"
                 android:visibility="gone"
-                app:layout_constraintEnd_toStartOf="@id/llFilter"
+                app:layout_constraintEnd_toStartOf="@id/llSortFilter"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@id/llFilter"
+                app:layout_constraintTop_toTopOf="@id/llSortFilter"
                 tools:text="@string/patients_found" />
 
             <include
-                android:id="@+id/llFilter"
+                android:id="@+id/llSortFilter"
                 layout="@layout/filter_btn_layout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/_10sdp"
                 android:layout_marginEnd="@dimen/_16sdp"
-                android:visibility="invisible"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/view" />
-
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvPatientsList"
@@ -73,7 +71,7 @@
                 app:layout_constraintBottom_toTopOf="@id/pageProgress"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/llFilter"
+                app:layout_constraintTop_toBottomOf="@id/llSortFilter"
                 app:spanCount="2"
                 tools:listitem="@layout/list_item_patients" />
 
@@ -117,9 +115,9 @@
                 android:textAllCaps="false"
                 android:textStyle="bold"
                 android:visibility="gone"
-                app:layout_constraintTop_toBottomOf="@id/centerGuideline"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/centerGuideline" />
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btnScreening"
@@ -131,9 +129,9 @@
                 android:textAllCaps="false"
                 android:textStyle="bold"
                 android:visibility="gone"
-                app:layout_constraintTop_toBottomOf="@id/centerGuideline"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/centerGuideline" />
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/bottomCardView"
@@ -163,6 +161,7 @@
                 app:layout_constraintTop_toBottomOf="@id/bottomCardView" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
+
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
     <RelativeLayout
@@ -190,4 +189,5 @@
             app:lottie_loop="true"
             app:lottie_rawRes="@raw/loader_spice" />
     </RelativeLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -66,6 +66,7 @@ class AssessmentReadingActivity : BaseActivity(), FormEventListener, View.OnClic
                 formTypeId = bundle.getString(DefinedParams.FORM_TYPE_ID)
                 patientId = bundle.getString(DefinedParams.PATIENT_ID)
                 relatedPersonFhirId = bundle.getString(DefinedParams.RelatedPersonFhirId)
+                identityValue = bundle.getString(Screening.identityValue)
             }
             bpViewModel.apply {
                 isRegularSmoker = bundle.getBoolean(Screening.is_regular_smoker)
@@ -327,7 +328,7 @@ class AssessmentReadingActivity : BaseActivity(), FormEventListener, View.OnClic
                         requestMap.remove(DefinedParams.Gender)
 
                         bpViewModel.createBpLog(
-                            requestMap, viewModel.relatedPersonFhirId, viewModel.patientId
+                            requestMap, viewModel.relatedPersonFhirId, viewModel.identityValue, viewModel.patientId
                         )
                     }
                 }
@@ -357,7 +358,7 @@ class AssessmentReadingActivity : BaseActivity(), FormEventListener, View.OnClic
                             }
 
                             glucoseViewModel.glucoseLogCreate(
-                                requestMap, viewModel.relatedPersonFhirId, viewModel.patientId
+                                requestMap, viewModel.relatedPersonFhirId, viewModel.identityValue, viewModel.patientId
                             )
                         }
                     }
