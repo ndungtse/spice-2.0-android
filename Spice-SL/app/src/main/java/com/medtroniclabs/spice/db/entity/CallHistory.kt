@@ -11,7 +11,7 @@ data class CallHistory(
     val id: Long = 0,
     val type: String,
     val referenceId: String,
-    val callStartTime: String,
-    val callEndTime: String,
+    val callStartTime: Long,
+    val callEndTime: Long,
     val syncStatus: OfflineSyncStatus = OfflineSyncStatus.NotSynced
 )

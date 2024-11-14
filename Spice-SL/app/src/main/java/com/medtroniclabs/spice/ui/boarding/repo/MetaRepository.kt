@@ -503,6 +503,7 @@ class MetaRepository @Inject constructor(
     }
 
     private suspend fun saveNcdFormsInDb(formResponse: FormResponse) {
+        roomHelper.deleteAllForms()
         roomHelper.deleteConsent()
         formResponse.screening?.let { scr ->
             roomHelper.saveForm(

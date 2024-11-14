@@ -73,8 +73,8 @@ class PhuWalkInsViewModel @Inject constructor(
             SecuredPreference.getString(DefinedParams.houseHoldLinkStartTiming)?.let {
                 householdMemberRepository.addLinkMemberCall(
                     memberID.toString(),
-                    callStartTime = it,
-                    callEndTime =  com.medtroniclabs.spice.app.analytics.utils.CommonUtils.getCurrentDateTimeInLocalTime()
+                    callStartTime = it.toLong(),
+                    callEndTime =  com.medtroniclabs.spice.app.analytics.utils.CommonUtils.getCurrentDateTimeInLocalTime().toLong()
                 )
             }
         }

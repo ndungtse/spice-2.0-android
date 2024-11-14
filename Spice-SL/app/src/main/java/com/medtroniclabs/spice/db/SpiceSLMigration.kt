@@ -191,6 +191,240 @@ object SpiceSLMigration {
                 )
                 """.trimIndent())
 
+            database.execSQL("ALTER TABLE DiagnosisEntity ADD COLUMN cultureValue TEXT")
+            database.execSQL("ALTER TABLE FrequencyEntity ADD COLUMN displayValue TEXT")
+            database.execSQL("ALTER TABLE ClinicalWorkflowConditionEntity ADD COLUMN groupName TEXT")
+            database.execSQL("ALTER TABLE ClinicalWorkflowConditionEntity ADD COLUMN category TEXT")
+
+            // Create a new table with the updated schema
+            database.execSQL("""
+            CREATE TABLE IF NOT EXISTS VillageEntity_new (
+                id INTEGER PRIMARY KEY NOT NULL,
+                name TEXT NOT NULL,
+                villagecode TEXT,
+                chiefdomId INTEGER,
+                countryId INTEGER NOT NULL,
+                districtId INTEGER,
+                chiefdomCode TEXT,
+                districtCode TEXT
+            )
+            """.trimIndent()
+            )
+
+            database.execSQL("""
+            INSERT INTO VillageEntity_new (id, name, villagecode, chiefdomId, countryId, districtId, chiefdomCode, districtCode)
+            SELECT id, name, villagecode, chiefdomId, countryId, districtId, chiefdomCode, districtCode FROM VillageEntity
+            """.trimIndent()
+            )
+
+            database.execSQL("DROP TABLE VillageEntity")
+            database.execSQL("ALTER TABLE VillageEntity_new RENAME TO VillageEntity")
+
+            database.execSQL("""
+            CREATE TABLE IF NOT EXISTS ProgramEntity (
+                id INTEGER PRIMARY KEY NOT NULL,
+                name TEXT NOT NULL,
+                health_facilities TEXT NOT NULL,
+                tenant_id INTEGER NOT NULL
+            )
+            """.trimIndent()
+            )
+
+            database.execSQL(
+                """
+            CREATE TABLE IF NOT EXISTS CulturesEntity (
+                id INTEGER PRIMARY KEY NOT NULL,
+                name TEXT NOT NULL
+            )
+            """.trimIndent())
+
+            database.execSQL(
+                """
+            CREATE TABLE IF NOT EXISTS ConsentEntity (
+                id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                formType TEXT NOT NULL,
+                formInput TEXT NOT NULL
+            )
+            """.trimIndent()
+            )
+
+            database.execSQL(
+                """
+            CREATE TABLE IF NOT EXISTS `MentalHealthEntity` (
+                `formType` TEXT NOT NULL,
+                `formInput` TEXT,
+                PRIMARY KEY(`formType`)
+            )
+            """.trimIndent()
+            )
+
+            database.execSQL(
+                """
+            CREATE TABLE IF NOT EXISTS MedicalComplianceEntity (
+                id INTEGER PRIMARY KEY NOT NULL,
+                name TEXT NOT NULL,
+                display_order INTEGER,
+                display_value TEXT,
+                parent_compliance_id INTEGER,
+                child_exists INTEGER NOT NULL DEFAULT 0,
+                culture_value TEXT
+            )
+            """.trimIndent()
+            )
+
+            database.execSQL(
+                """
+            CREATE TABLE IF NOT EXISTS ChiefDomEntity (
+                id INTEGER PRIMARY KEY NOT NULL,
+                name TEXT NOT NULL,
+                code TEXT,
+                districtId INTEGER NOT NULL
+            )
+            """.trimIndent()
+            )
+
+            database.execSQL(
+                """
+            CREATE TABLE IF NOT EXISTS DistrictEntity (
+                id INTEGER PRIMARY KEY NOT NULL,
+                name TEXT NOT NULL,
+                code TEXT,
+                countryId INTEGER NOT NULL
+            )
+            """.trimIndent()
+            )
+
+            database.execSQL("""
+            CREATE TABLE IF NOT EXISTS `ScreeningEntity` (
+                `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                `screeningDetails` TEXT NOT NULL,
+                `generalDetails` TEXT NOT NULL,
+                `uploadStatus` INTEGER NOT NULL DEFAULT 0,
+                `createdAt` INTEGER NOT NULL DEFAULT 0,
+                `userId` TEXT,
+                `signature` BLOB,
+                `isReferred` INTEGER NOT NULL DEFAULT 0
+            )
+            """.trimIndent()
+            )
+
+            database.execSQL("""
+            CREATE TABLE IF NOT EXISTS `RiskFactorEntity` (
+                `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                `nonLabEntity` TEXT NOT NULL,
+                `uploadStatus` INTEGER NOT NULL DEFAULT 0,
+                `createdAt` INTEGER NOT NULL DEFAULT CURRENT_TIMESTAMP
+            )
+            """.trimIndent()
+            )
+
+            database.execSQL("""
+            CREATE TABLE IF NOT EXISTS `LifestyleEntity` (
+                `id` INTEGER PRIMARY KEY NOT NULL,
+                `name` TEXT NOT NULL,
+                `displayValue` TEXT,
+                `value` TEXT,
+                `answers` TEXT NOT NULL, 
+                `type` TEXT NOT NULL,
+                `displayOrder` INTEGER NOT NULL
+            )
+            """.trimIndent()
+            )
+
+            database.execSQL("""
+            CREATE TABLE IF NOT EXISTS `NCDMedicalReviewMetaEntity` (
+                `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                `name` TEXT NOT NULL,
+                `displayValue` TEXT NOT NULL,
+                `displayOrder` INTEGER NOT NULL,
+                `type` TEXT,
+                `category` TEXT,
+                `value` TEXT
+            )
+            """.trimIndent()
+            )
+
+            database.execSQL("""
+            CREATE TABLE IF NOT EXISTS `AssessmentNCDEntity` (
+                `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, 
+                `assessmentDetails` TEXT NOT NULL, 
+                `uploadStatus` INTEGER NOT NULL DEFAULT 0, 
+                `createdAt` INTEGER NOT NULL, 
+                `userId` INTEGER
+            )
+            """.trimIndent()
+            )
+
+            database.execSQL("""
+            CREATE TABLE IF NOT EXISTS `unit_metric_entity` (
+                `id` INTEGER PRIMARY KEY NOT NULL,
+                `unit` TEXT NOT NULL,
+                `type` TEXT,
+                `displayOrder` INTEGER NOT NULL,
+                `description` TEXT,
+                `status` INTEGER NOT NULL,
+                `displayValue` TEXT NOT NULL,
+                `isDefault` INTEGER NOT NULL,
+                `answerDependent` INTEGER NOT NULL,
+                `childExists` INTEGER NOT NULL
+            )
+            """.trimIndent()
+            )
+
+            database.execSQL("""
+            CREATE TABLE IF NOT EXISTS `dosage_frequency_entity` (
+                `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                `name` TEXT NOT NULL,
+                `displayOrder` INTEGER NOT NULL,
+                `frequency` INTEGER NOT NULL DEFAULT 1,
+                `description` TEXT,
+                `status` INTEGER NOT NULL,
+                `displayValue` TEXT,
+                `isDefault` INTEGER NOT NULL,
+                `answerDependent` INTEGER NOT NULL,
+                `childExists` INTEGER NOT NULL
+            )
+            """.trimIndent()
+            )
+
+            database.execSQL(
+                """
+            CREATE TABLE IF NOT EXISTS NCDDiagnosisEntity (
+                id INTEGER PRIMARY KEY NOT NULL,
+                name TEXT NOT NULL,
+                displayOrder INTEGER NOT NULL,
+                value TEXT,
+                type TEXT,
+                gender TEXT
+            )
+            """.trimIndent()
+            )
+
+            database.execSQL("""
+            CREATE TABLE IF NOT EXISTS `TreatmentPlanEntity` (
+                `id` INTEGER PRIMARY KEY NOT NULL,
+                `name` TEXT NOT NULL,
+                `displayValue` TEXT,
+                `displayOrder` INTEGER NOT NULL,
+                `duration` TEXT NOT NULL,
+                `period` TEXT NOT NULL,
+                `riskLevel` TEXT,
+                `type` TEXT
+            )
+            """.trimIndent()
+            )
+
+            database.execSQL("""
+            CREATE TABLE IF NOT EXISTS `shortageReason` (
+                `id` INTEGER NOT NULL PRIMARY KEY, 
+                `name` TEXT NOT NULL, 
+                `type` TEXT NOT NULL, 
+                `displayOrder` INTEGER NOT NULL, 
+                `displayValue` TEXT NOT NULL
+            )
+            """.trimIndent()
+            )
+
         }
     }
 }

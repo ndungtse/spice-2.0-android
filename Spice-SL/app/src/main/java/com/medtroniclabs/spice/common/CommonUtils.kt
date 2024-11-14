@@ -41,11 +41,11 @@ import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration
 import com.medtroniclabs.spice.mappingkey.Screening
 import com.medtroniclabs.spice.mappingkey.Screening.CAGEAID
-import com.medtroniclabs.spice.mappingkey.Screening.PHQ4
 import com.medtroniclabs.spice.mappingkey.Screening.CategoryDisplayName
 import com.medtroniclabs.spice.mappingkey.Screening.CategoryDisplayType
 import com.medtroniclabs.spice.mappingkey.Screening.CategoryType
 import com.medtroniclabs.spice.mappingkey.Screening.Female
+import com.medtroniclabs.spice.mappingkey.Screening.PHQ4
 import com.medtroniclabs.spice.mappingkey.Screening.SiteName
 import com.medtroniclabs.spice.mappingkey.Screening.Type
 import com.medtroniclabs.spice.mappingkey.Screening.lastMealTime
@@ -212,7 +212,7 @@ object CommonUtils {
     }
 
     fun offlineUsers(): Boolean {
-        return isAfrica() && (isCommunity() && isChw())
+        return isAfrica() || (isCommunity() && isChw())
     }
 
     fun isChwChp(): Boolean {
