@@ -1044,4 +1044,23 @@ class RoomHelperImpl @Inject constructor(
     override suspend fun deleteDosageFrequencyList() {
         metaDataDAO.deleteDosageFrequencyList()
     }
+
+    override suspend fun getUnAssignedChildFhirIds(patientId: String): List<String> {
+        return linkHouseholdMemberDao.getUnAssignedChildFhirIds(patientId)
+    }
+
+    override suspend fun getUnAssignedParentFhirId(parentId: String): List<String> {
+        return linkHouseholdMemberDao.getUnAssignedParentFhirId(parentId)
+    }
+
+    override suspend fun updateHouseholdHeadAndRelationShip(
+        fhirIds: List<String>,
+        householdId: Long
+    ) {
+        memberDAO.updateHouseholdHeadAndRelationShip(fhirIds, householdId)
+    }
+
+    override suspend fun updateMembersAsAssigned(fhirIds: List<String>) {
+        linkHouseholdMemberDao.updateMembersAsAssigned(fhirIds)
+    }
 }

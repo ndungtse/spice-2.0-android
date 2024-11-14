@@ -392,6 +392,11 @@ interface RoomHelper {
     suspend fun getNCDShortageReason(type: String): List<ShortageReasonEntity>
     suspend fun deleteNCDShortageReason()
     suspend fun saveNCDShortageReason(shortageReasonEntity: List<ShortageReasonEntity>)
+    suspend fun getUnAssignedParentFhirId(parentId: String): List<String>
+    suspend fun getUnAssignedChildFhirIds(patientId: String): List<String>
+    suspend fun updateHouseholdHeadAndRelationShip(fhirIds: List<String>, householdId: Long)
+    suspend fun updateMembersAsAssigned(fhirIds: List<String>)
+
     suspend fun getNCDForm(type: String, customizedType: String): List<String>
     suspend fun getUserVillages(): List<VillageEntity>
 }

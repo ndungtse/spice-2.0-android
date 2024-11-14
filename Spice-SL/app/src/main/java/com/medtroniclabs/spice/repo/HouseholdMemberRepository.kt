@@ -41,6 +41,21 @@ class HouseholdMemberRepository @Inject constructor(
             return  null
         }*/
         val memberId = roomHelper.registerMember(memberEntity)
+
+        // Assign same household for Parent or Child
+        if (isPhuWalkInFlow == true) {
+            val fhirIds = if (memberEntity.parentId != null) {
+                roomHelper.getUnAssignedParentFhirId(memberEntity.parentId!!)
+            } else {
+                roomHelper.getUnAssignedChildFhirIds(memberEntity.patientId!!)
+            }
+
+            if (fhirIds.isNotEmpty()) {
+                roomHelper.updateHouseholdHeadAndRelationShip(fhirIds, householdId)
+                roomHelper.updateMembersAsAssigned(fhirIds)
+            }
+        }
+
         //Update Member count in household only in insert case
         if (entity == null || isPhuWalkInFlow == true) {
             val memberAddedForHouseHold = getMemberCountPerHouseHold(householdId)

@@ -110,7 +110,10 @@ interface MemberDAO {
         syncStatus: OfflineSyncStatus
     )
     @Query("UPDATE householdmember SET phone_number = :phoneNumber, sync_status =:syncStatus, updated_at =:updatedAt  WHERE household_id = :householdId AND household_head_relationship = :houseHoldRelationShip")
-    fun updatePhoneNumberForHouseholdHead(householdId: Long,phoneNumber: String?, syncStatus: String = OfflineSyncStatus.NotSynced.name, updatedAt: Long = System.currentTimeMillis(),houseHoldRelationShip:String= DefinedParams.HosueHoldHead)
+    suspend fun updatePhoneNumberForHouseholdHead(householdId: Long,phoneNumber: String?, syncStatus: String = OfflineSyncStatus.NotSynced.name, updatedAt: Long = System.currentTimeMillis(),houseHoldRelationShip:String= DefinedParams.HosueHoldHead)
 
+
+    @Query("UPDATE HouseholdMember SET household_id = :householdId, household_head_relationship = :defaultRelation, sync_status =:syncStatus, updated_at =:updatedAt  WHERE fhir_id IN (:memberIds)")
+    suspend fun updateHouseholdHeadAndRelationShip(memberIds: List<String>, householdId: Long, defaultRelation: String = "",syncStatus: String = OfflineSyncStatus.NotSynced.name, updatedAt: Long = System.currentTimeMillis())
 
 }

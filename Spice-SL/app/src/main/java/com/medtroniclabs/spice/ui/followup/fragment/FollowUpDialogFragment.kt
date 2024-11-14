@@ -102,6 +102,7 @@ class FollowUpDialogFragment : DialogFragment() {
                 when (details.type) {
                     FU_TYPE_HH_VISIT -> {
                         btnAssessment.visible()
+                        btnCall.gone()
                         tvStartDateLabel.text = getString(R.string.treatment_start_date)
                         tvReasonLabel.visible()
                         tvReasonText.visible()
@@ -110,6 +111,7 @@ class FollowUpDialogFragment : DialogFragment() {
 
                     FU_TYPE_REFERRED -> {
                         btnAssessment.gone()
+                        btnCall.visible()
                         tvStartDateLabel.text = getString(R.string.referred_date)
                         tvReasonLabel.visible()
                         tvReasonText.visible()
@@ -118,6 +120,7 @@ class FollowUpDialogFragment : DialogFragment() {
 
                     FU_TYPE_MEDICAL_REVIEW -> {
                         btnAssessment.gone()
+                        btnCall.visible()
                         tvStartDateLabel.text = getString(R.string.treatment_start_date)
                         tvReasonLabel.gone()
                         tvReasonText.gone()

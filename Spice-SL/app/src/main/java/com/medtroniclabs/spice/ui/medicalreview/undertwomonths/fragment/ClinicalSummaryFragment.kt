@@ -363,7 +363,7 @@ class ClinicalSummaryFragment : BaseFragment(), View.OnClickListener {
             binding.etHeight.text.toString(),
             binding.etHeight,
             binding.tvHeightError,
-            10.0..300.0,
+            45.0..120.0,
             R.string.height_error_0_300,
             true,
             requireContext()

@@ -20,10 +20,10 @@
             android:layout_width="0dp"
             android:gravity="start"
             android:paddingStart="@dimen/_16sdp"
-            android:paddingEnd="@dimen/_0dp"
-            android:textSize="@dimen/_16ssp"
-            android:paddingBottom="@dimen/_24sdp"
             android:paddingTop="@dimen/_16sdp"
+            android:paddingEnd="@dimen/_0dp"
+            android:paddingBottom="@dimen/_24sdp"
+            android:textSize="@dimen/_16ssp"
             app:layout_constraintBottom_toTopOf="@id/topDivider"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -359,47 +359,61 @@
             android:layout_width="@dimen/_0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/_10sdp"
-            app:layout_constraintBottom_toBottomOf="parent"
             android:layout_marginBottom="@dimen/_10sdp"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@id/endGuideline"
             app:layout_constraintStart_toStartOf="@id/startGuideline"
             app:layout_constraintTop_toBottomOf="@id/btnCardView">
 
-            <androidx.appcompat.widget.AppCompatButton
+
+            <FrameLayout
                 android:id="@+id/btnAssessment"
-                style="@style/Button_Style_Border"
-                android:layout_width="0dp"
+                android:background="@drawable/button_white_background"
+                android:layout_width="@dimen/_0dp"
+                android:paddingHorizontal="@dimen/_30sdp"
+                android:paddingVertical="@dimen/_10sdp"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_margin="@dimen/_8sdp"
-                android:drawableStart="@drawable/ic_follow_up_assessment"
-                android:drawablePadding="@dimen/_10sdp"
-                android:paddingStart="@dimen/_10sdp"
-                android:paddingEnd="@dimen/_10sdp"
-                android:text="Start Assessment"
-                android:textAllCaps="true"
                 android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintHorizontal_weight="0.6"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:drawableLeft="@drawable/ic_follow_up_assessment"
+                    android:drawablePadding="@dimen/_10sdp"
+                    android:fontFamily="@font/inter_bold"
+                    android:gravity="center_vertical"
+                    android:text="Start Assessment"
+                    android:textAllCaps="true"
+                    android:textColor="@color/cobalt_blue"
+                    android:textSize="@dimen/_14ssp"
+                    android:visibility="visible" />
+
+
+            </FrameLayout>
+
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/btnCall"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:background="@drawable/call_button_selector"
                 android:layout_margin="@dimen/_8sdp"
+                android:background="@drawable/call_button_selector"
                 android:paddingVertical="@dimen/_12sdp"
                 android:paddingStart="@dimen/_10sdp"
                 android:paddingEnd="@dimen/_10sdp"
                 android:src="@drawable/ic_call_with_text"
                 android:text="@string/call"
                 android:textAllCaps="true"
+                android:visibility="visible"
                 app:layout_constraintBottom_toBottomOf="@id/btnAssessment"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/btnAssessment"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="@id/btnAssessment" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
