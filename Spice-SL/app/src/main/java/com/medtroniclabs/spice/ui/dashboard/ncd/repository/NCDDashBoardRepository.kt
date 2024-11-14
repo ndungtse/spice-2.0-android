@@ -1,5 +1,6 @@
 package com.medtroniclabs.spice.ui.dashboard.ncd.repository
 
+import com.medtroniclabs.spice.common.StringConverter.getErrorMessage
 import com.medtroniclabs.spice.data.NCDUserDashboardRequest
 import com.medtroniclabs.spice.data.NCDUserDashboardResponse
 import com.medtroniclabs.spice.network.ApiHelper
@@ -19,7 +20,7 @@ class NCDDashBoardRepository @Inject constructor(
                     Resource(state = ResourceState.SUCCESS, it)
                 } ?: Resource(state = ResourceState.ERROR)
             } else {
-                Resource(state = ResourceState.ERROR)
+                Resource(state = ResourceState.ERROR, message = getErrorMessage(response.errorBody()))
             }
         } catch (e: Exception) {
             e.printStackTrace()

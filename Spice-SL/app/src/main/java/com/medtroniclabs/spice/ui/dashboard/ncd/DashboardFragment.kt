@@ -6,13 +6,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
+import androidx.recyclerview.widget.GridLayoutManager
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
+import com.medtroniclabs.spice.appextensions.numberOrZero
 import com.medtroniclabs.spice.appextensions.visible
+import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
 import com.medtroniclabs.spice.common.DateUtils.DATE_ddMMyyyy
 import com.medtroniclabs.spice.common.DefinedParams
+import com.medtroniclabs.spice.common.RoleConstant
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.ViewUtils
 import com.medtroniclabs.spice.data.CustomDateModel
@@ -21,11 +25,14 @@ import com.medtroniclabs.spice.data.NCDUserDashboardResponse
 import com.medtroniclabs.spice.data.model.ChipViewItemModel
 import com.medtroniclabs.spice.databinding.CardViewLayoutBinding
 import com.medtroniclabs.spice.databinding.FragmentDashboardBinding
+import com.medtroniclabs.spice.db.entity.MenuEntity
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
+import com.medtroniclabs.spice.ui.MenuConstants
 import com.medtroniclabs.spice.ui.TagListCustomView
 import com.medtroniclabs.spice.ui.common.ActivityEnum
+import com.medtroniclabs.spice.ui.dashboard.ncd.adapter.DashboardMenuItemsTabAdapter
 import com.medtroniclabs.spice.ui.dashboard.ncd.viewmodel.NCDDashBoardViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -33,6 +40,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class DashboardFragment : BaseFragment(), View.OnClickListener {
 
     private lateinit var binding: FragmentDashboardBinding
+    private lateinit var adapterDashboard: DashboardMenuItemsTabAdapter
     private lateinit var cgCalender: TagListCustomView
     private var datePickerDialog: DatePickerDialog? = null
     private val viewModel: NCDDashBoardViewModel by activityViewModels()
@@ -63,6 +71,7 @@ class DashboardFragment : BaseFragment(), View.OnClickListener {
                     }
                 }
                 ResourceState.ERROR -> {
+                    hideProgress()
                     showErrorDialog(getString(R.string.error),resourceState.message.toString())
                 }
             }
@@ -70,32 +79,76 @@ class DashboardFragment : BaseFragment(), View.OnClickListener {
     }
 
     private fun showView(entity: NCDUserDashboardResponse) {
-        val cardList = arrayListOf(
-            mapOf(
-                DefinedParams.Title to DefinedParams.SCREENED,
-                DefinedParams.Count to entity.screened.toString()
-            ),
-            mapOf(
-                DefinedParams.Title to DefinedParams.ASSESSED,
-                DefinedParams.Count to entity.assessed.toString()
-            ),
-            mapOf(
-                DefinedParams.Title to DefinedParams.REGISTERED,
-                DefinedParams.Count to entity.registered.toString()
-            ),
-            mapOf(
-                DefinedParams.Title to DefinedParams.REFERREDD,
-                DefinedParams.Count to entity.referred.toString()
+
+        if (CommonUtils.checkIsTablet(requireContext())) {
+            val data = listOf(
+                MenuEntity(
+                    id = 1,
+                    menuId = MenuConstants.SCREENING_CONDUCTED,
+                    roleName = RoleConstant.COMMUNITY_HEALTH_WORKER,
+                    name = MenuConstants.SCREENING_CONDUCTED,
+                    displayOrder = 1,
+                ).apply {
+                    patientCount = entity.screened.numberOrZero()
+                },
+                MenuEntity(
+                    id = 2,
+                    menuId = MenuConstants.ASSESSMENT_CONDUCTED,
+                    roleName = RoleConstant.COMMUNITY_HEALTH_WORKER,
+                    name = MenuConstants.ASSESSMENT_CONDUCTED,
+                    displayOrder = 2,
+                ).apply {
+                    patientCount = entity.assessed.numberOrZero()
+                },
+                MenuEntity(
+                    id = 3,
+                    menuId = MenuConstants.REGISTRATION_CONDUCTED,
+                    roleName = RoleConstant.COMMUNITY_HEALTH_WORKER,
+                    name = MenuConstants.REGISTRATION_CONDUCTED,
+                    displayOrder = 3,
+                ).apply {
+                    patientCount = entity.registered.numberOrZero()
+                },
+                MenuEntity(
+                    id = 4,
+                    menuId = MenuConstants.NO_OF_REFERRALS,
+                    roleName = RoleConstant.COMMUNITY_HEALTH_WORKER,
+                    name = MenuConstants.NO_OF_REFERRALS,
+                    displayOrder = 4
+                ).apply {
+                    patientCount = entity.referred.numberOrZero()
+                }
             )
-        )
-        binding.dashboard.removeAllViews()
-        cardList.forEach { cardData ->
-            val bindingCard =
-                CardViewLayoutBinding.inflate(LayoutInflater.from(context))
-            bindingCard.root.tag = cardData[DefinedParams.Title]
-            bindingCard.txTitle.text = cardData[DefinedParams.Title]
-            bindingCard.txCount.text = cardData[DefinedParams.Count]
-            binding.dashboard.addView(bindingCard.root)
+            binding.rvActivitiesList?.removeAllViews()
+            adapterDashboard.updateData(ArrayList(data))
+        } else {
+            val cardList = arrayListOf(
+                mapOf(
+                    DefinedParams.Title to DefinedParams.SCREENED,
+                    DefinedParams.Count to entity.screened.toString()
+                ),
+                mapOf(
+                    DefinedParams.Title to DefinedParams.ASSESSED,
+                    DefinedParams.Count to entity.assessed.toString()
+                ),
+                mapOf(
+                    DefinedParams.Title to DefinedParams.REGISTERED,
+                    DefinedParams.Count to entity.registered.toString()
+                ),
+                mapOf(
+                    DefinedParams.Title to DefinedParams.REFERREDD,
+                    DefinedParams.Count to entity.referred.toString()
+                )
+            )
+            binding.dashboard.removeAllViews()
+            cardList.forEach { cardData ->
+                val bindingCard =
+                    CardViewLayoutBinding.inflate(LayoutInflater.from(context))
+                bindingCard.root.tag = cardData[DefinedParams.Title]
+                bindingCard.txTitle.text = cardData[DefinedParams.Title]
+                bindingCard.txCount.text = cardData[DefinedParams.Count]
+                binding.dashboard.addView(bindingCard.root)
+            }
         }
     }
 
@@ -121,6 +174,15 @@ class DashboardFragment : BaseFragment(), View.OnClickListener {
     private fun initializeView() {
         binding.etFromDate.safeClickListener(this)
         binding.etToDate.safeClickListener(this)
+        adapterDashboard = DashboardMenuItemsTabAdapter()
+        if (CommonUtils.checkIsTablet(requireContext())) {
+            val layoutManager = GridLayoutManager(context, 3)
+            binding.rvActivitiesList?.layoutManager = layoutManager
+        } else {
+            val layoutManager = GridLayoutManager(context, 2)
+            binding.rvActivitiesList?.layoutManager = layoutManager
+        }
+        binding.rvActivitiesList?.adapter = adapterDashboard
     }
 
     companion object {

@@ -10,10 +10,6 @@ data class ShortageReasonEntity(
     val name: String,
     val type: String,
     val displayOrder: Int,
-    val status: Boolean,
     val displayValue: String,
-    val isDefault: Boolean,
-    val answerDependent: Boolean,
-    val childExists: Boolean
 )
 
