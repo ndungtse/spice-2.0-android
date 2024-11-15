@@ -238,7 +238,7 @@ class MetaRepository @Inject constructor(
                         } else {
                             roomHelper.deleteAllSymptoms()
                         }
-                        if (!SecuredPreference.getTermsAndConditionsStatus()) {
+                        if (CommonUtils.isAfrica() && !SecuredPreference.getTermsAndConditionsStatus()) {
                             val userTermsAndConditionsMeta = async {
                                 apiHelper.getUserTermsAndConditions(
                                     TermsAndConditionsModel(countryId = SecuredPreference.getCountryId())

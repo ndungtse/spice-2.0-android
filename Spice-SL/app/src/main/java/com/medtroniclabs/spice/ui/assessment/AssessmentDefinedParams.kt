@@ -49,6 +49,8 @@ object AssessmentDefinedParams {
     const val RMNCH = "rmnch"
     const val OrsDispensedStatus = "orsDispensedStatus"
     const val ZincDispensedStatus = "zincDispensedStatus"
+    const val JellyWaterDispensedStatus = "jellyWaterDispensedStatus"
+    const val SssDispensedStatus = "sssDispensedStatus"
     const val ZincStatus = "zincStatus"
     const val ORSStatus = "orsStatus"
     const val ACTStatus = "actStatus"

@@ -20,6 +20,7 @@ object SpiceSLMigration {
                 village_id INTEGER NOT NULL,
                 landmark TEXT,
                 head_phone_number TEXT,
+                head_phone_number_category TEXT,
                 no_of_people INTEGER NOT NULL,
                 is_owned_an_improved_latrine INTEGER NOT NULL,
                 is_owned_hand_washing_facility_with_soap INTEGER NOT NULL,
@@ -56,6 +57,7 @@ object SpiceSLMigration {
 
             database.execSQL("DROP TABLE Household")
             database.execSQL("ALTER TABLE Household_temp RENAME TO Household")
+            database.execSQL("Update Household SET head_phone_number_category = (SELECT member.phone_number_category  From HouseholdMember AS member WHERE member.household_id = Household.id AND member.household_head_relationship = 'HouseholdHead')")
 
             /* 2. Assessment Entity Migration
             *   2.1. Added householdMemberLocalId - for keeping local id as foreign key for assessment

@@ -89,6 +89,6 @@ interface HouseholdDAO {
     @Query("UPDATE HouseHold SET sync_status =:syncStatus, updated_at =:updatedAt WHERE id IN (:householdIds)")
     suspend fun updateInProgress(householdIds: List<String>, syncStatus: String, updatedAt: Long = System.currentTimeMillis())
 
-    @Query("UPDATE Household SET head_phone_number = :phoneNumber , sync_status =:syncStatus, updated_at =:updatedAt WHERE id = :id")
-    fun updateHeadPhoneNumber(id: Long, phoneNumber: String, syncStatus: String = OfflineSyncStatus.NotSynced.name, updatedAt: Long = System.currentTimeMillis())
+    @Query("UPDATE Household SET head_phone_number = :phoneNumber, head_phone_number_category = :phoneNumberCategory,  sync_status =:syncStatus, updated_at =:updatedAt WHERE id = :id")
+    fun updateHeadPhoneNumber(id: Long, phoneNumber: String, phoneNumberCategory: String, syncStatus: String = OfflineSyncStatus.NotSynced.name, updatedAt: Long = System.currentTimeMillis())
    }

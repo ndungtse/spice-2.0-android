@@ -132,6 +132,7 @@
             android:name=".ui.household.HouseholdActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:exported="false"
+            android:windowSoftInputMode="adjustPan"
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity" />
         <activity

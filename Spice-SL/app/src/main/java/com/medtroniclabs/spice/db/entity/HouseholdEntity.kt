@@ -25,6 +25,9 @@ data class HouseholdEntity(
     @ColumnInfo(name = "head_phone_number")
     var headPhoneNumber: String? = null,
 
+    @ColumnInfo(name = "head_phone_number_category")
+    var headPhoneNumberCategory: String? = null,
+
     @ColumnInfo(name = "no_of_people")
     var noOfPeople: Int = 0,
 

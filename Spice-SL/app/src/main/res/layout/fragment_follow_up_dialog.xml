@@ -175,7 +175,7 @@
             style="@style/TextStyle_Regular_16"
             android:layout_width="@dimen/_0dp"
             android:layout_marginTop="@dimen/_16sdp"
-            android:text="@string/village"
+            android:text="@string/household_location"
             app:layout_constraintEnd_toStartOf="@id/tvVillageSeparator"
             app:layout_constraintHorizontal_weight="0.4"
             app:layout_constraintStart_toEndOf="@id/startGuideline"

@@ -76,6 +76,9 @@ class HouseHoldRepository @Inject constructor(
         val headPhoneNumber = map[HouseHoldRegistration.headPhoneNumber]
         householdEntity.headPhoneNumber = CommonUtils.getStringOrEmptyString(headPhoneNumber)
 
+        val headPhoneNumberCategory = map[HouseHoldRegistration.headPhoneNumberCategory]
+        householdEntity.headPhoneNumberCategory = CommonUtils.getStringOrEmptyString(headPhoneNumberCategory)
+
         val landmark = map[HouseHoldRegistration.landmark]
         householdEntity.landmark = CommonUtils.getStringOrEmptyString(landmark)
 
@@ -118,8 +121,8 @@ class HouseHoldRepository @Inject constructor(
         return roomHelper.saveHouseHoldEntry(householdEntity)
     }
 
-    suspend fun updateHouseholdHeadPhoneNumber(id: Long, phoneNumber: String?) {
-        roomHelper.updatePhoneNumberForHouseholdHead(id, phoneNumber)
+    suspend fun updateHouseholdHeadPhoneNumber(id: Long, phoneNumber: String?, phoneNumberCategory: String?) {
+        roomHelper.updatePhoneNumberForHouseholdHead(id, phoneNumber, phoneNumberCategory)
     }
 
     suspend fun updateHouseHoldEntity(householdEntity: HouseholdEntity) {
@@ -168,17 +171,6 @@ class HouseHoldRepository @Inject constructor(
                 )
             }
         }
-    }
-
-    private suspend fun getUnSyncedEntities(): Response<SyncResponse> {
-        val req = RequestGetSyncStatus(
-            userId = SecuredPreference.getUserId(),
-            dataRequired = true,
-            statuses = listOf(OfflineSyncStatus.InProgress.name, OfflineSyncStatus.Failed.name),
-            types = listOf(HOUSEHOLD, HOUSEHOLD_MEMBER)
-        )
-
-        return apiHelper.getOfflineSyncStatus(req)
     }
 
     suspend fun getUnSyncedHouseholdCount(): Int {

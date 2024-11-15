@@ -2,6 +2,7 @@ package com.medtroniclabs.spice.ui.household.summary
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import androidx.activity.viewModels
@@ -13,6 +14,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.common.DefinedParams
+import com.medtroniclabs.spice.common.DefinedParams.MemberID
 import com.medtroniclabs.spice.common.DefinedParams.isMemberRegistration
 import com.medtroniclabs.spice.databinding.ActivityHouseholdSummaryBinding
 import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
@@ -36,6 +38,10 @@ class HouseholdSummaryActivity : BaseActivity(), MemberSelectionListener, View.O
     private lateinit var binding: ActivityHouseholdSummaryBinding
 
     private val householdSummaryViewModel: HouseHoldSummaryViewModel by viewModels()
+
+    private var linkHouseholdId: Long = -1
+    private var linkMemberId: Long = -1
+    private var linkFhirMemberId: Long = -1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -85,6 +91,9 @@ class HouseholdSummaryActivity : BaseActivity(), MemberSelectionListener, View.O
     private fun initializeView() {
         initializePhuLinkFlow()
         val householdId = intent.getLongExtra(ID, -1)
+        linkHouseholdId = householdId
+        linkMemberId = intent.getLongExtra(MemberID, -1)
+        linkFhirMemberId = intent.getLongExtra(DefinedParams.FhirMemberID,-1)
         householdSummaryViewModel.setHouseholdId(householdId)
         householdSummaryViewModel.isFromHouseHoldRegistration = intent.getBooleanExtra(
             isFromHouseHoldRegistration, false
@@ -224,10 +233,17 @@ class HouseholdSummaryActivity : BaseActivity(), MemberSelectionListener, View.O
                 val existingFragment =
                     supportFragmentManager.findFragmentByTag(LinkPatientDialogFragment.TAG)
                 if (existingFragment == null) {
-                    LinkPatientDialogFragment.newInstance( intent.getLongExtra(ID, -1),intent.getLongExtra(DefinedParams.MemberID,-1),intent.getLongExtra(DefinedParams.FhirMemberID,-1)).show(supportFragmentManager, LinkPatientDialogFragment.TAG)
+                    LinkPatientDialogFragment.newInstance(linkHouseholdId,linkMemberId,linkFhirMemberId).show(supportFragmentManager, LinkPatientDialogFragment.TAG)
                 }
             }
         }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        linkHouseholdId = intent.getLongExtra(ID, -1)
+        linkMemberId = intent.getLongExtra(MemberID, -1)
+        linkFhirMemberId = intent.getLongExtra(DefinedParams.FhirMemberID,-1)
     }
 
     private fun addNewMember() {

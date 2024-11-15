@@ -29,6 +29,9 @@ data class HouseHold(
     @ColumnInfo(name = "head_phone_number")
     val headPhoneNumber: String,
 
+    @ColumnInfo(name = "head_phone_number_category")
+    val headPhoneNumberCategory: String? = null,
+
     @ColumnInfo(name = "no_of_people")
     val noOfPeople: Int,
 
@@ -48,10 +51,10 @@ data class HouseHold(
     val bedNetCount: Int? = null,
 
     @ColumnInfo(name = "latitude")
-    val latitude: Double = 77.2,
+    val latitude: Double = 0.0,
 
     @ColumnInfo(name = "longitude")
-    val longitude: Double = 99.2,
+    val longitude: Double = 0.0,
 
     @ColumnInfo(name = "created_at")
     val createdAt: Long,
@@ -77,6 +80,7 @@ data class HouseHold(
             villageId = this.villageId,
             landmark = this.landmark,
             headPhoneNumber = this.headPhoneNumber,
+            headPhoneNumberCategory = this.headPhoneNumberCategory,
             noOfPeople = this.noOfPeople,
             isOwnedAnImprovedLatrine = this.ownedAnImprovedLatrine,
             isOwnedHandWashingFacilityWithSoap = this.ownedHandWashingFacilityWithSoap,

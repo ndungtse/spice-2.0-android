@@ -110,10 +110,10 @@ class ResourceLoadingScreen : BaseActivity() {
             SecuredPreference.EnvironmentKey.ISMETALOADED.name,
             true
         )
-        if (SecuredPreference.getTermsAndConditionsStatus())
-            startActivity(Intent(this, LandingActivity::class.java))
-        else
+        if (CommonUtils.isAfrica() && !SecuredPreference.getTermsAndConditionsStatus())
             startActivity(Intent(this, UserTermsConditionsActivity::class.java))
+        else
+            startActivity(Intent(this, LandingActivity::class.java))
         finish()
     }
 

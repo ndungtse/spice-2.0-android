@@ -53,6 +53,7 @@ import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.FB_MIN_BREA
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.FB_MIN_MONTH
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.FB_MIN_YEAR
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.FeverCondition
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.JellyWaterDispensedStatus
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.MUAC
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.MalnutritionCondition
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.ModerateDehydration
@@ -60,6 +61,7 @@ import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.NoOfDaysDia
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.ORSStatus
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.OrsDispensedStatus
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.SevereDehydration
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.SssDispensedStatus
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.ZincDispensedStatus
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.ZincStatus
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.chestInDrawing
@@ -280,7 +282,7 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
                     .show(childFragmentManager, InformationLayoutFragment.TAG)
             }
 
-            Amoxicillin.lowercase(), ZincDispensedStatus, ACT.lowercase(), OrsDispensedStatus -> {
+            Amoxicillin.lowercase(), ZincDispensedStatus, ACT.lowercase(), OrsDispensedStatus, JellyWaterDispensedStatus, SssDispensedStatus -> {
                 RecommendedDosageFragment.newInstance(id, titleById)
                     .show(childFragmentManager, RecommendedDosageFragment.TAG)
             }

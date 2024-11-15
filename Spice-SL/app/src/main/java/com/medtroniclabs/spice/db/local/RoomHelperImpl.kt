@@ -110,8 +110,8 @@ class RoomHelperImpl @Inject constructor(
         return householdDAO.updateHouseHold(householdEntity)
     }
 
-    override suspend fun updateHeadPhoneNumber(id: Long, phoneNumber: String) {
-        return householdDAO.updateHeadPhoneNumber(id,phoneNumber)
+    override suspend fun updateHeadPhoneNumber(id: Long, phoneNumber: String, phoneNumberCategory: String){
+        return householdDAO.updateHeadPhoneNumber(id,phoneNumber, phoneNumberCategory)
     }
 
 
@@ -763,8 +763,8 @@ class RoomHelperImpl @Inject constructor(
     override suspend fun getHHSignatureDetails(): List<HHSignatureDetail> {
         return memberDAO.getHHSignatureDetails()
     }
-    override suspend fun updatePhoneNumberForHouseholdHead(id: Long, phoneNumber: String?) {
-        return memberDAO.updatePhoneNumberForHouseholdHead(id,phoneNumber)
+    override suspend fun updatePhoneNumberForHouseholdHead(id: Long, phoneNumber: String?, phoneNumberCategory: String?) {
+        return memberDAO.updatePhoneNumberForHouseholdHead(id,phoneNumber, phoneNumberCategory)
     }
 
     override suspend fun insertLinkHouseholdMembers(insertList: List<LinkHouseholdMember>) {

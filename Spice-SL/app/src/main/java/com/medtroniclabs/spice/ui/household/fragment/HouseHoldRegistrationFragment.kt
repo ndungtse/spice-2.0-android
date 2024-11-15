@@ -26,6 +26,7 @@ import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.model.FormResponse
 import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.bedNetCount
 import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.headPhoneNumber
+import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.headPhoneNumberCategory
 import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.householdName
 import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.isOwnedATreatedBedNet
 import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.isOwnedAnImprovedLatrine
@@ -143,6 +144,11 @@ class HouseHoldRegistrationFragment : Fragment(), View.OnClickListener, FormEven
         formGenerator.getViewByTag(headPhoneNumber)?.let { view ->
             formGenerator.setValueForView(details.headPhoneNumber, view)
         }
+
+        formGenerator.getViewByTag(headPhoneNumberCategory)?.let { view ->
+            formGenerator.setValueForView(details.headPhoneNumberCategory, view)
+        }
+
         formGenerator.getViewByTag(noOfPeople)?.let { view ->
             formGenerator.setValueForView(details.noOfPeople, view)
         }

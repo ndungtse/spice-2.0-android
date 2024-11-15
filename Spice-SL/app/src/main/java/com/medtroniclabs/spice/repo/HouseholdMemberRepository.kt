@@ -73,7 +73,8 @@ class HouseholdMemberRepository @Inject constructor(
          if (map[MemberRegistration.householdHeadRelationship]==DefinedParams.HouseholdHead) {
             //Updating in HouseHoldMEMBER
             roomHelper.updateHeadPhoneNumber(householdId,
-                map[MemberRegistration.phoneNumber].toString()
+                map[MemberRegistration.phoneNumber].toString(),
+                map[MemberRegistration.phoneNumberCategory].toString()
             )
         }
     }

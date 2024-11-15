@@ -101,12 +101,14 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
             finish()
             return
         } else {
-            val isFromLauncher: Boolean =
-                intent?.categories?.contains(Intent.CATEGORY_LAUNCHER) ?: false
-            if (isFromLauncher && !SecuredPreference.getTermsAndConditionsStatus()) {
-                startActivity(Intent(this, UserTermsConditionsActivity::class.java))
-                finish()
-                return
+            if (CommonUtils.isAfrica()) {
+                val isFromLauncher: Boolean =
+                    intent?.categories?.contains(Intent.CATEGORY_LAUNCHER) ?: false
+                if (isFromLauncher && !SecuredPreference.getTermsAndConditionsStatus()) {
+                    startActivity(Intent(this, UserTermsConditionsActivity::class.java))
+                    finish()
+                    return
+                }
             }
         }
 

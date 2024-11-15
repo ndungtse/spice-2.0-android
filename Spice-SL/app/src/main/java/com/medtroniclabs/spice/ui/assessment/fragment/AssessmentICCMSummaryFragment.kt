@@ -51,12 +51,14 @@ import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.FB_MIN_BREA
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.FB_MIN_MONTH
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.General_Danger_Signs
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.IsClinicTaken
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.JellyWaterDispensedStatus
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.NextFollowupDate
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.NoOfDaysDiarrhoea
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.NoOfDaysOfCough
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.NoOfDaysOfFever
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.OrsDispensedStatus
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.ReferredPHUSiteID
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.SssDispensedStatus
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.ZincDispensedStatus
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.hasCough
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.hasDiarrhoea
@@ -75,6 +77,7 @@ import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.otherSigns
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
 import com.medtroniclabs.spice.ui.household.HouseholdSearchActivity
 import org.json.JSONObject
+import java.lang.StringBuilder
 
 class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
     private val viewModel: AssessmentViewModel by activityViewModels()
@@ -399,48 +402,59 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
                     }
 
                     else -> {
-                        if ((item.id != OrsDispensedStatus) && (item.id != ZincDispensedStatus) && (item.id != otherSigns)) {
+                        if ((item.id != OrsDispensedStatus) && (item.id != ZincDispensedStatus) &&
+                            (item.id != JellyWaterDispensedStatus) && (item.id != SssDispensedStatus) &&
+                            (item.id != otherSigns)
+                        ) {
                             bindICCMSummaryView(item.title, item.value)
                         }
                     }
                 }
             }
+
         val zincDispensedStatus = listSummaryData.filter { it.id == ZincDispensedStatus }[0].value
         val orsDispensedStatus = listSummaryData.filter { it.id == OrsDispensedStatus }[0].value
+        val jellyWaterDispensedStatus = listSummaryData.filter { it.id == JellyWaterDispensedStatus }[0].value
+        val sssDispensedStatus = listSummaryData.filter { it.id == SssDispensedStatus }[0].value
 
-        when {
-            zincDispensedStatus != null && orsDispensedStatus == null -> {
-                bindICCMSummaryView(
-                    Dispensed,
-                    requireContext().getString(
-                        R.string.zinc_or_ors_status,
-                        requireContext().getString(R.string.zinc),
-                        zincDispensedStatus
-                    )
-                )
-            }
+        val dispensedStatus = mutableListOf<String>()
+        zincDispensedStatus?.let {
+            dispensedStatus.add(requireContext().getString(
+                R.string.zinc_or_ors_status,
+                requireContext().getString(R.string.zinc),
+                it
+            ))
+        }
 
-            orsDispensedStatus != null && zincDispensedStatus == null -> {
-                bindICCMSummaryView(
-                    Dispensed,
-                    requireContext().getString(
-                        R.string.zinc_or_ors_status,
-                        requireContext().getString(R.string.ors),
-                        orsDispensedStatus
-                    )
-                )
-            }
+        orsDispensedStatus?.let {
+            dispensedStatus.add(requireContext().getString(
+                R.string.zinc_or_ors_status,
+                requireContext().getString(R.string.ors),
+                it
+            ))
+        }
 
-            zincDispensedStatus != null && orsDispensedStatus != null -> {
-                bindICCMSummaryView(
-                    Dispensed,
-                    requireContext().getString(
-                        R.string.zinc_ors_status,
-                        zincDispensedStatus,
-                        orsDispensedStatus
-                    )
-                )
-            }
+        jellyWaterDispensedStatus?.let {
+            dispensedStatus.add(requireContext().getString(
+                R.string.zinc_or_ors_status,
+                requireContext().getString(R.string.jelly_water),
+                it
+            ))
+        }
+
+        sssDispensedStatus?.let {
+            dispensedStatus.add(requireContext().getString(
+                R.string.zinc_or_ors_status,
+                requireContext().getString(R.string.sss),
+                it
+            ))
+        }
+
+        if (dispensedStatus.isNotEmpty()) {
+            bindICCMSummaryView(
+                Dispensed,
+                dispensedStatus.joinToString(", ")
+            )
         }
     }
 

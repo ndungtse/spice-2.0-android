@@ -64,6 +64,7 @@
     <string name="household_details">Household Details</string>
     <string name="house_no">House No</string>
     <string name="village">Village</string>
+    <string name="household_location">Household location</string>
     <string name="landmark">Landmark</string>
     <string name="hh_mobile_number">Household Head Mobile Number</string>
     <string name="household_summary_member_info">%1$s - %2$s - %3$s</string>
@@ -519,6 +520,8 @@
     <string name="mmHg">mmHg</string>
     <string name="zinc">Zinc</string>
     <string name="ors">ORS</string>
+    <string name="jelly_water">Jelly Water</string>
+    <string name="sss">SSS</string>
     <string name="zinc_or_ors_status">(%1$s - %2$s)</string>
     <string name="remove_medication">Remove Medication</string>
     <string name="medical_review_history">Medical Review History</string>

@@ -60,7 +60,7 @@ class HouseholdDetailsFragment : Fragment() {
 
     private fun addVillageNameView(villageName: String) {
         val view = SummaryListItemBinding.inflate(LayoutInflater.from(context))
-        view.tvLabel.text = getString(R.string.village)
+        view.tvLabel.text = getString(R.string.household_location)
         view.tvValue.text = villageName
         binding.llDetails.addView(view.root)
     }

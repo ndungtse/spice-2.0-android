@@ -4,6 +4,7 @@ object HouseHoldRegistration {
     const val householdName = "householdName"
     const val landmark = "landmark"
     const val headPhoneNumber = "head_phone_number"
+    const val headPhoneNumberCategory = "phone_number_category"
     const val noOfPeople = "no_of_people"
     const val isOwnedAnImprovedLatrine = "is_owned_an_improved_latrine"
     const val isOwnedHandWashingFacilityWithSoap = "is_owned_hand_washing_facility_with_soap"

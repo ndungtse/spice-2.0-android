@@ -46,6 +46,7 @@ import com.medtroniclabs.spice.formgeneration.listener.FormEventListener
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.model.FormResponse
 import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
+import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.headPhoneNumberCategory
 import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.no
 import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.villageId
 import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.yes
@@ -417,6 +418,7 @@ class MemberRegistrationFragment : Fragment(), FormEventListener, View.OnClickLi
                 householdRegistrationViewModel.householdEntityDetail?.let { details ->
                     formGenerator.getViewByTag(phoneNumber)?.let { view ->
                         formGenerator.setValueForView(details.headPhoneNumber, view)
+                        updateMobileNumberCategoryForHead(details.headPhoneNumberCategory)
                     }
                 }
             }
@@ -424,6 +426,15 @@ class MemberRegistrationFragment : Fragment(), FormEventListener, View.OnClickLi
             if (householdRegistrationViewModel.memberID == -1L) {
                 (view.adapter as CustomSpinnerAdapter).removeItemById(HouseholdHead)
             }
+        }
+    }
+
+    private fun updateMobileNumberCategoryForHead(category: String?) {
+        category?.let {
+            val view = formGenerator.getViewByTag(headPhoneNumberCategory) as AppCompatSpinner
+            val index = (view.adapter as CustomSpinnerAdapter).getIndexOfItemById(it)
+            view.setSelection(index, true)
+            view.isEnabled = false
         }
     }
 
