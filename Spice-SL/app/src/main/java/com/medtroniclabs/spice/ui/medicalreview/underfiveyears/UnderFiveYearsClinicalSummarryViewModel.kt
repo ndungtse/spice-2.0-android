@@ -1,9 +1,11 @@
 package com.medtroniclabs.spice.ui.medicalreview.underfiveyears
 
+import android.content.Context
 import com.medtroniclabs.spice.model.medicalreview.ClinicalSummaryAndSigns
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.MeasurementDefinedParams
@@ -32,7 +34,6 @@ class UnderFiveYearsClinicalSummaryViewModel @Inject constructor(
     var clinicalSummaryAndSigns = ClinicalSummaryAndSigns()
     val summaryMetaListItems = MutableLiveData<Resource<List<MedicalReviewMetaItems>>>()
     val summaryMuacMetaItems = MutableLiveData<Resource<List<MedicalReviewMetaItems>>>()
-    var selectedMuacStatus: String? = null
     val wazWhzScoreResponseLiveData = MutableLiveData<Resource<WazWhzScoreResponse>>()
 
 
@@ -113,9 +114,23 @@ class UnderFiveYearsClinicalSummaryViewModel @Inject constructor(
         )
     }
 
-    fun updateMuac() {
-        clinicalSummaryAndSigns =
-            clinicalSummaryAndSigns.copy(muacStatus = selectedMuacStatus)
+    fun updateMuac(muac: Double, context: Context) {
+        val muacStatus = getMuacStatus(muac, context)
+        clinicalSummaryAndSigns = clinicalSummaryAndSigns.copy(
+            muacInCentimeter = muac,
+            muacStatus = muacStatus
+        )
+    }
+    private fun getMuacStatus(muacValue: Double, context: Context): String? {
+        return if (muacValue <= DefinedParams.RED_MAX_MUAC) {
+            context.getString(R.string.red)
+        } else if (muacValue > DefinedParams.RED_MAX_MUAC && muacValue <= DefinedParams.YELLOW_MAX_MUAC) {
+            context.getString(R.string.yellow)
+        } else if (muacValue > DefinedParams.YELLOW_MAX_MUAC && muacValue <= DefinedParams.GREEN_MAX_MUAC) {
+            context.getString(R.string.green)
+        } else {
+            null
+        }
     }
 
     fun getImmunisationStatusMetaItems() {

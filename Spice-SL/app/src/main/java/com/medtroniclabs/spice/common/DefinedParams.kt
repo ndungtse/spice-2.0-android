@@ -227,4 +227,8 @@ object DefinedParams {
     const val NON_COMMUNITY = "NON_COMMUNITY"
     const val Others = "Others"
 
+    const val RED_MAX_MUAC = 11.5
+    const val YELLOW_MAX_MUAC = 12.5
+    const val GREEN_MAX_MUAC = 26.5
+
 }

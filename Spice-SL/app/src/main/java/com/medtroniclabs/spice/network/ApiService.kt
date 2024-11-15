@@ -115,7 +115,6 @@ import com.medtroniclabs.spice.ncd.data.NCDMedicalReviewUpdateModel
 import com.medtroniclabs.spice.ncd.data.PatientVisitRequest
 import com.medtroniclabs.spice.ncd.data.PatientVisitResponse
 import com.medtroniclabs.spice.ncd.data.ScreeningPatientResponse
-import com.medtroniclabs.spice.ncd.data.ValidatePatientModel
 import com.medtroniclabs.spice.model.medicalreview.WazWhzScoreRequest
 import com.medtroniclabs.spice.model.medicalreview.WazWhzScoreResponse
 import okhttp3.MultipartBody

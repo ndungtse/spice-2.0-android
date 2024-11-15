@@ -407,22 +407,27 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/_8sdp"
             android:fontFamily="@font/inter_regular"
-            android:text="@string/muac"
+            android:text="@string/muac_in_cm"
             android:textColor="@color/table_title"
             android:textSize="@dimen/_16ssp"
             app:layout_constraintStart_toStartOf="@+id/centerGuideline"
             app:layout_constraintTop_toBottomOf="@+id/tvWHZError"
             app:layout_constraintTop_toTopOf="@+id/tvTemperatureLabel" />
 
-        <androidx.appcompat.widget.AppCompatSpinner
+        <androidx.appcompat.widget.AppCompatEditText
             android:id="@+id/etMUACStatus"
-            style="@style/Form_Spinner_Style"
+            style="@style/Form_MH_Style_with_padding"
             android:layout_width="@dimen/_0dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/_24sdp"
             android:background="@drawable/edittext_background"
             android:textColor="@color/grey_black"
             android:textSize="@dimen/_16ssp"
+            android:maxLength="5"
+            android:inputType="numberDecimal"
+            android:textAlignment="textStart"
+            android:hint="@string/muac"
+            android:textColorHint="@color/btn_disable_grey"
             app:layout_constraintEnd_toEndOf="@+id/rightCenterGuideline"
             app:layout_constraintStart_toStartOf="@+id/tvMUACLabel"
             app:layout_constraintTop_toBottomOf="@+id/tvMUACLabel"
@@ -432,7 +437,7 @@
             android:id="@+id/muacStatusGroup"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:visibility="visible"
+            android:visibility="gone"
             app:constraint_referenced_ids=" llMUAC,tvMUACText,seperatorColon,tvMUACInput" />
 
         <LinearLayout

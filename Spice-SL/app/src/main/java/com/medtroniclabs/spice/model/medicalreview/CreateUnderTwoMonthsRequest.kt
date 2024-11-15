@@ -27,7 +27,8 @@ data class ClinicalSummaryAndSigns(
     val weight: Double? = null,
     val weightUnit: String? = null,
     val whz: Double? = null,
-    val muacStatus:String? = null
+    val muacStatus:String? = null,
+    val muacInCentimeter: Double? = null
 ) {
     fun isNotEmpty(): Boolean {
         return albendazole != null
@@ -44,7 +45,7 @@ data class ClinicalSummaryAndSigns(
                 || whz != null
                 || breastFeeding != null
                 || exclusiveBreastFeeding != null
-                || muacStatus != null
+                || muacInCentimeter != null
     }
 }
 

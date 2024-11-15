@@ -15,8 +15,11 @@ import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.DefaultID
 import com.medtroniclabs.spice.common.DefinedParams.DefaultIDLabel
+import com.medtroniclabs.spice.common.DefinedParams.GREEN_MAX_MUAC
 import com.medtroniclabs.spice.common.DefinedParams.ID
 import com.medtroniclabs.spice.common.DefinedParams.NAME
+import com.medtroniclabs.spice.common.DefinedParams.RED_MAX_MUAC
+import com.medtroniclabs.spice.common.DefinedParams.YELLOW_MAX_MUAC
 import com.medtroniclabs.spice.common.DefinedParams.Value
 import com.medtroniclabs.spice.data.MedicalReviewMetaItems
 import com.medtroniclabs.spice.databinding.FragmentUnderFiveYearClinicalSummarryBinding
@@ -82,6 +85,15 @@ class ClinicalSummaryUnderFiveYearsFragment : BaseFragment() {
         initTextWatcherForString(binding.etWHZ) {
             viewModel.updateWhz(it)
         }
+        initTextWatcherForString(binding.etMUACStatus) { input ->
+            input.toDoubleOrNull()?.let { value ->
+                binding.muacStatusGroup.visible()
+                viewModel.updateMuac(value, requireContext())
+                setMuacStatus(value)
+            } ?: kotlin.run {
+                binding.muacStatusGroup.gone()
+            }
+        }
     }
 
     private fun initializeImmunisationStatus(list: List<MedicalReviewMetaItems>) {
@@ -102,26 +114,6 @@ class ClinicalSummaryUnderFiveYearsFragment : BaseFragment() {
         }
         setImmunisationStatus(dropDownList)
     }
-
-    private fun initializeMuacStatus(list: List<MedicalReviewMetaItems>) {
-        val dropDownList = ArrayList<Map<String, Any>>()
-        dropDownList.add(
-            hashMapOf<String, Any>(
-                NAME to DefaultIDLabel, ID to DefaultID
-            )
-        )
-        for (item in list) {
-            dropDownList.add(
-                hashMapOf<String, Any>(
-                    NAME to item.name,
-                    DefinedParams.id to item.id.toString(),
-                    Value to (item.value ?: item.name)
-                )
-            )
-        }
-        setListenerInitializeMuacStatus(dropDownList)
-    }
-
 
     private fun setImmunisationStatus(list: ArrayList<Map<String, Any>>) {
         val adapter = CustomSpinnerAdapter(requireContext())
@@ -188,30 +180,10 @@ class ClinicalSummaryUnderFiveYearsFragment : BaseFragment() {
         }
 
         viewModel.getImmunisationStatusMetaItems()
-        viewModel.getMuAcStatusMetaItems()
 
     }
 
     private fun attachObserver() {
-        viewModel.summaryMuacMetaItems.observe(viewLifecycleOwner) { resourceState ->
-            when (resourceState.state) {
-                ResourceState.LOADING -> {
-                    showProgress()
-                }
-
-                ResourceState.SUCCESS -> {
-                    hideProgress()
-                    resourceState.data?.let { list ->
-                        initializeMuacStatus(list)
-
-                    }
-                }
-
-                ResourceState.ERROR -> {
-                    hideProgress()
-                }
-            }
-        }
         viewModel.summaryMetaListItems.observe(viewLifecycleOwner) { resourceState ->
             when (resourceState.state) {
                 ResourceState.LOADING -> {
@@ -281,9 +253,10 @@ class ClinicalSummaryUnderFiveYearsFragment : BaseFragment() {
         val temperature = temperatureValidate()
         val respirationRate = respirationRateValidate()
         val repeat = repeatValidate()
+        val muac = muacValidate()
 //        val whz = whzValidate()
 //        val waz = wazValidate()
-        return weight && height && temperature && respirationRate && repeat
+        return weight && height && temperature && respirationRate && repeat && muac
     }
 
     private fun whzValidate(): Boolean {
@@ -296,6 +269,19 @@ class ClinicalSummaryUnderFiveYearsFragment : BaseFragment() {
             isMandatory = true
         )
     }
+
+    private fun muacValidate(): Boolean {
+        return isValidInput(
+            binding.etMUACStatus.text.toString(),
+            binding.etMUACStatus,
+            binding.tvMUACError,
+            0.0..26.5,
+            (R.string.please_enter_muac_between_0_to_26),
+            false,
+            requireContext()
+        )
+    }
+
 
     private fun wazValidate(): Boolean {
         return isBasicValid(
@@ -369,63 +355,23 @@ class ClinicalSummaryUnderFiveYearsFragment : BaseFragment() {
         )
     }
 
-    private fun setListenerInitializeMuacStatus(list: ArrayList<Map<String, Any>>) {
-
-        val adapter = CustomSpinnerAdapter(requireContext())
-        adapter.setData(list)
-        binding.etMUACStatus.adapter = adapter
-        binding.etMUACStatus.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(
-                parent: AdapterView<*>?, view: View?, position: Int, id: Long
-            ) {
-                val selectedItem = adapter.getData(position = position)
-                val selectedValue = selectedItem?.get(Value) as String?
-                val selectedId = selectedItem?.get(ID) as String?
-                if (selectedId != DefaultID) {
-                    selectedValue?.let { value ->
-                        binding.muacStatusGroup.visible()
-                        viewModel.selectedMuacStatus = value
-                        viewModel.updateMuac()
-                        setMuacStatus()
-                    }
-                } else {
-                    binding.muacStatusGroup.gone()
-                }
-            }
-
-            override fun onNothingSelected(parent: AdapterView<*>?) {
-                /**
-                 * this method is not used
-                 */
-            }
-        }
-    }
-
-    private fun setMuacStatus() {
+    private fun setMuacStatus(muacValue: Double) {
         val muacText: String
         val muacInput: String
 
-        when (viewModel.selectedMuacStatus) {
-            getString(R.string.green) -> {
-                muacText = getString(R.string.muac_green)
-                muacInput = getString(R.string.normal)
-            }
-
-            getString(R.string.red) -> {
-                muacText = getString(R.string.muac_red)
-                muacInput = getString(R.string.severe_nutrition)
-            }
-
-            getString(R.string.yellow) -> {
-                muacText = getString(R.string.muac_yellow)
-                muacInput = getString(R.string.moderate_malnutrition)
-            }
-
-            else -> {
-                binding.muacStatusGroup.gone()
-                muacText = getString(R.string.empty__)
-                muacInput = getString(R.string.empty__)
-            }
+        if (muacValue <= RED_MAX_MUAC) {
+            muacText = getString(R.string.muac_red)
+            muacInput = getString(R.string.severe_nutrition)
+        } else if (muacValue > RED_MAX_MUAC && muacValue <= YELLOW_MAX_MUAC) {
+            muacText = getString(R.string.muac_yellow)
+            muacInput = getString(R.string.moderate_malnutrition)
+        } else if (muacValue > YELLOW_MAX_MUAC && muacValue <= GREEN_MAX_MUAC) {
+            muacText = getString(R.string.muac_green)
+            muacInput = getString(R.string.normal)
+        } else {
+            binding.muacStatusGroup.gone()
+            muacText = getString(R.string.empty__)
+            muacInput = getString(R.string.empty__)
         }
         binding.tvMUACText.text = muacText
         binding.tvMUACInput.text = muacInput

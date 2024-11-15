@@ -26,7 +26,7 @@ android {
     productFlavors {
         create("africa") {
             dimension = "version"
-            versionName = "1.0.0"
+            versionName = "2.1.0"
         }
         create("sl") {
             dimension = "version"
@@ -90,7 +90,7 @@ android {
                         buildConfigField("String", "DB_PASSWORD", "\"Med@Tr0ni#Lab$\"")
                         resValue("string", "spice_app_name", "SPICE 2.0 Dev")
                     } else if (productFlavors[0].name == "africa") {
-                        buildConfigField("String", "API_BASE_URL", "\"https://spice-dev-backend.sl.labsplatform.com/\"")
+                        buildConfigField("String", "API_BASE_URL", "\"https://spice-dev-migration-backend.labsplatform.com/\"")
                         buildConfigField("String", "ADMIN_BASE_URL", "\"https://spice-dev-migration.labsplatform.com/\"")
                         buildConfigField("String", "SALT", "\"spice_uat\"")
                         buildConfigField("String", "DB_PASSWORD", "\"Med@Tr0ni#Lab$\"")
