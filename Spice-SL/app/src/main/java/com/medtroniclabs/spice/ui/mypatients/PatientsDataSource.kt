@@ -28,7 +28,7 @@ class PatientsDataSource(
 
     private var loadedCount: Long = 0
     private var totalCount = 0
-    private var villages: List<Long> = mutableListOf()
+    private var villages: List<Long>? = null
     private var districtId: Long? = null
     private var referencePatientId: String? = null
     private var isInitialData: Boolean = false
@@ -42,9 +42,10 @@ class PatientsDataSource(
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, PatientListRespModel> {
         val pageIndex = params.key ?: PAGE_INDEX
         return try {
-            if (villages.isEmpty()) {
-                val villageIdNameList = patientRepository.getVillageIdName()
-                villages = villageIdNameList.map { it.id }
+            if (villages.isNullOrEmpty()) {
+                val userVillages = patientRepository.getUserVillages()
+                if (userVillages.isNotEmpty())
+                    villages = userVillages.map { it.id }
             }
 
             districtId = districtId ?: SecuredPreference.getDistrictId()
@@ -55,7 +56,7 @@ class PatientsDataSource(
                 villageIds = villages,
                 referencePatientId = referencePatientId?.ifBlank { null },
                 filter = filter,
-                sort = sort,
+//                sort = sort,
                 type = origin,
                 siteId = SecuredPreference.getOrganizationFhirId(),
                 countryId = SecuredPreference.getCountryId(),

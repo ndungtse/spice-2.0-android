@@ -1,6 +1,7 @@
 package com.medtroniclabs.spice.data.history
 
 import com.medtroniclabs.spice.model.ReferredDate
+import java.io.Serializable
 
 data class MedicalReviewHistory(
     val id: String? = null,
@@ -65,7 +66,7 @@ data class DiseaseInfo(
     val notes: String? = null,
     val diseaseCondition: String? = null,
     val type: String? = null
-)
+) : Serializable
 
 data class LabourDTO(
     val dateAndTimeOfDelivery: String? = null,

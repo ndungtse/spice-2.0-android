@@ -3,6 +3,7 @@ package com.medtroniclabs.spice.model
 import com.google.gson.annotations.SerializedName
 import com.medtroniclabs.spice.data.history.DiseaseInfo
 import com.medtroniclabs.spice.ncd.data.NCDDiagnosisGetResponse
+import java.io.Serializable
 
 data class PatientListRespModel(
     val id: String? = null,
@@ -65,7 +66,7 @@ data class PatientListRespModel(
     val dateOfBirth: String? = null,
     val patientReference : String? =null,
     val encounterId : String? = null
-)
+) : Serializable
 
 data class PregnancyDetails(
     val lastMenstrualPeriod: String? = null,
@@ -91,12 +92,12 @@ data class PregnancyDetails(
     val villageId: String? = null,
     val dateOfDelivery:String?=null,
     val isPregnancyRisk: Boolean? = null,
-)
+) : Serializable
 data class SearchAndListResponse(
     val patientList: List<PatientListRespModel> = emptyList(),
     val referencePatientId: String? = null,
     val totalCount: Int? = null
-)
+) : Serializable
 
 data class PrescribedDetails(
     var firstName: String? = null,
@@ -107,4 +108,4 @@ data class PrescribedDetails(
     var updatedAt: String? = null,
     var lastRefillDate: String? = null,
     var lastRefillVisitId: String? = null
-)
+) : Serializable

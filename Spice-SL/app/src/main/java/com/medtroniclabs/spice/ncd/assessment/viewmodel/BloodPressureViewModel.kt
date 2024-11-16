@@ -11,6 +11,7 @@ import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.postLoading
+import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.CommonUtils.getBMIForNcd
 import com.medtroniclabs.spice.common.CommonUtils.getBMIInformation
 import com.medtroniclabs.spice.common.DefinedParams
@@ -23,10 +24,13 @@ import com.medtroniclabs.spice.formgeneration.FormGenerator
 import com.medtroniclabs.spice.formgeneration.model.BPModel
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.mappingkey.Screening
-import com.medtroniclabs.spice.ncd.data.BPBGListModel
+import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.ncd.assessment.repo.BloodPressureRepo
+import com.medtroniclabs.spice.ncd.data.BPBGListModel
+import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil
 import com.medtroniclabs.spice.network.SingleLiveEvent
 import com.medtroniclabs.spice.network.resource.Resource
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
@@ -40,10 +44,6 @@ class BloodPressureViewModel @Inject constructor(
 ) : ViewModel() {
     var bpLogCreateResponseLiveData = MutableLiveData<Resource<APIResponse<HashMap<String, Any>>>>()
     var bpLogListResponseLiveData = SingleLiveEvent<Resource<BPBGListModel>>()
-
-    var isRegularSmoker: Boolean? = null
-    var dateOfBirth: String? = null
-    var gender: String? = null
 
     private var systolicAverageSummary: Int? = null
     private var diastolicAverageSummary: Int? = null
@@ -162,22 +162,23 @@ class BloodPressureViewModel @Inject constructor(
         }
     }
 
-    fun createBpLog(
-        hashMap: HashMap<String, Any>,
-        relatedPersonFhirId: String?,
-        identityValue: String?,
-        patientId: String?
-    ) {
+    fun createBpLog(hashMap: HashMap<String, Any>, patientDetails: PatientListRespModel) {
         hashMap.apply {
-            patientId?.let { requestPatientId ->
-                put(DefinedParams.PATIENT_ID, requestPatientId)
+            with(patientDetails) {
+                NCDMRUtil.getBioDataBioMetrics(
+                    hashMap,
+                    this,
+                    hashMap[Screening.Height]?.toString()?.toDoubleOrNull(),
+                    hashMap[Screening.Weight]?.toString()?.toDoubleOrNull()
+                )
+                id?.let { requestRelatedPersonFhirId ->
+                    put(DefinedParams.RelatedPersonFhirId, requestRelatedPersonFhirId)
+                }
+                patientId?.let { requestPatientId ->
+                    put(DefinedParams.PATIENT_ID, requestPatientId)
+                }
             }
-            relatedPersonFhirId?.let { requestRelatedPersonFhirId ->
-                put(DefinedParams.RelatedPersonFhirId, requestRelatedPersonFhirId)
-            }
-            identityValue?.let { idValue ->
-                put(Screening.identityValue, idValue)
-            }
+            put(AssessmentDefinedParams.assessmentProcessType, CommonUtils.requestFrom())
             put(DefinedParams.AssessmentOrganizationId, SecuredPreference.getOrganizationFhirId())
             put(DefinedParams.Provenance, ProvanceDto())
         }

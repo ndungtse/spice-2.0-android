@@ -212,4 +212,5 @@ object DefinedParams {
     const val TreatmentPlan = "treatmentPlan"
     const val FormInput = "formInput"
     const val ViewScreens = "viewScreens"
+    const val IntentPatientDetails = "IntentPatientDetails"
 }

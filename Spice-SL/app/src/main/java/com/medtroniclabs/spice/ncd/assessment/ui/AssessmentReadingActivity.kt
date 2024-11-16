@@ -3,7 +3,6 @@ package com.medtroniclabs.spice.ncd.assessment.ui
 import android.os.Bundle
 import android.view.View
 import androidx.activity.viewModels
-import androidx.fragment.app.activityViewModels
 import com.google.gson.Gson
 import com.google.gson.internal.LinkedTreeMap
 import com.google.gson.reflect.TypeToken
@@ -21,12 +20,13 @@ import com.medtroniclabs.spice.databinding.ActivityAssessmentReadingBinding
 import com.medtroniclabs.spice.db.entity.RiskClassificationModel
 import com.medtroniclabs.spice.formgeneration.FormGenerator
 import com.medtroniclabs.spice.formgeneration.config.ViewType
+import com.medtroniclabs.spice.formgeneration.extension.customSerializableExtra
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.listener.FormEventListener
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.ui.FormResultComposer
-import com.medtroniclabs.spice.mappingkey.MemberRegistration
 import com.medtroniclabs.spice.mappingkey.Screening
+import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.ncd.assessment.viewmodel.AssessmentReadingViewModel
 import com.medtroniclabs.spice.ncd.assessment.viewmodel.BloodPressureViewModel
 import com.medtroniclabs.spice.ncd.assessment.viewmodel.GlucoseViewModel
@@ -61,17 +61,10 @@ class AssessmentReadingActivity : BaseActivity(), FormEventListener, View.OnClic
     }
 
     private fun init() {
-        intent.extras?.let { bundle ->
-            viewModel.apply {
-                formTypeId = bundle.getString(DefinedParams.FORM_TYPE_ID)
-                patientId = bundle.getString(DefinedParams.PATIENT_ID)
-                relatedPersonFhirId = bundle.getString(DefinedParams.RelatedPersonFhirId)
-                identityValue = bundle.getString(Screening.identityValue)
-            }
-            bpViewModel.apply {
-                isRegularSmoker = bundle.getBoolean(Screening.is_regular_smoker)
-                dateOfBirth = bundle.getString(Screening.DateOfBirth)
-                gender = bundle.getString(DefinedParams.Gender)
+        viewModel.apply {
+            formTypeId = intent.getStringExtra(DefinedParams.FORM_TYPE_ID)
+            (intent.customSerializableExtra(DefinedParams.IntentPatientDetails) as PatientListRespModel?)?.let { intentPatientDetails ->
+                patientDetails = intentPatientDetails
             }
         }
 
@@ -287,14 +280,14 @@ class AssessmentReadingActivity : BaseActivity(), FormEventListener, View.OnClic
                 calculateBMI(map)
 
                 //CVD Risk Calculation
-                bpViewModel.let {
-                    it.isRegularSmoker?.let { regularSmoke ->
+                viewModel.patientDetails?.let { details ->
+                    details.isRegularSmoker?.let { regularSmoke ->
                         map[Screening.is_regular_smoker] = regularSmoke
                     }
-                    it.dateOfBirth?.let { dob ->
+                    details.dateOfBirth?.let { dob ->
                         map[Screening.DateOfBirth] = dob
                     }
-                    it.gender?.let { sex ->
+                    details.gender?.let { sex ->
                         map[DefinedParams.Gender] = sex
                     }
                 }
@@ -327,9 +320,12 @@ class AssessmentReadingActivity : BaseActivity(), FormEventListener, View.OnClic
                         requestMap.remove(Screening.DateOfBirth)
                         requestMap.remove(DefinedParams.Gender)
 
-                        bpViewModel.createBpLog(
-                            requestMap, viewModel.relatedPersonFhirId, viewModel.identityValue, viewModel.patientId
-                        )
+                        viewModel.patientDetails?.let { details ->
+                            bpViewModel.createBpLog(
+                                requestMap,
+                                patientDetails = details
+                            )
+                        }
                     }
                 }
             }
@@ -357,9 +353,12 @@ class AssessmentReadingActivity : BaseActivity(), FormEventListener, View.OnClic
                                 requestMap.remove(DefinedParams.GLUCOSE_LOG)
                             }
 
-                            glucoseViewModel.glucoseLogCreate(
-                                requestMap, viewModel.relatedPersonFhirId, viewModel.identityValue, viewModel.patientId
-                            )
+                            viewModel.patientDetails?.let { details ->
+                                glucoseViewModel.glucoseLogCreate(
+                                    requestMap,
+                                    patientDetails = details
+                                )
+                            }
                         }
                     }
                 } else

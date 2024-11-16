@@ -1,6 +1,5 @@
 package com.medtroniclabs.spice.ui.landing
 
-import android.content.Context
 import android.content.res.Configuration
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -10,13 +9,12 @@ import android.view.WindowManager
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.appextensions.gone
+import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils.getContactNumber
-import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.UserProfile
 import com.medtroniclabs.spice.databinding.FragmentProfileDialogBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
-import com.medtroniclabs.spice.db.entity.HealthFacilityEntity
-import com.medtroniclabs.spice.db.entity.VillageEntity
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.landing.viewmodel.LandingViewModel
@@ -24,12 +22,7 @@ import com.medtroniclabs.spice.ui.landing.viewmodel.LandingViewModel
 class ProfileDialogFragment : DialogFragment(), View.OnClickListener {
 
     private lateinit var binding: FragmentProfileDialogBinding
-    private var onDismissListener: OnDialogDismissListener? = null
     private val viewModel: LandingViewModel by activityViewModels()
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        onDismissListener = context as OnDialogDismissListener
-    }
 
     companion object {
         const val TAG = "ProfileDialogFragment"
@@ -53,14 +46,12 @@ class ProfileDialogFragment : DialogFragment(), View.OnClickListener {
         initView()
         attachObservers()
         getData()
-        viewModel.setUserJourney(getString(R.string.profile))
     }
 
     private fun getData() {
         with(viewModel) {
+            setUserJourney(getString(R.string.profile))
             getUserProfile()
-            getAllVillagesName()
-            getDefaultHealthFacility()
         }
     }
 
@@ -83,63 +74,11 @@ class ProfileDialogFragment : DialogFragment(), View.OnClickListener {
                 }
             }
         }
-        viewModel.villageListResponse.observe(this) {
-                resourceState ->
-            when (resourceState.state) {
-                ResourceState.LOADING -> {
-                    (activity as? BaseActivity)?.showLoading()
-                }
-
-                ResourceState.SUCCESS -> {
-                    (activity as? BaseActivity)?.hideLoading()
-                    resourceState.data?.let {
-                        setAllVillageName(it)
-                    }
-                }
-
-                ResourceState.ERROR -> {
-                    (activity as? BaseActivity)?.hideLoading()
-                }
-            }
-        }
-        viewModel.defaultHealthFacilityLiveData.observe(this) {
-                resourceState ->
-            when (resourceState.state) {
-                ResourceState.LOADING -> {
-                    (activity as? BaseActivity)?.showLoading()
-                }
-
-                ResourceState.SUCCESS -> {
-                    (activity as? BaseActivity)?.hideLoading()
-                    resourceState.data?.let {
-                        setDefaultHealthFacility(it)
-                    }
-                }
-
-                ResourceState.ERROR -> {
-                    (activity as? BaseActivity)?.hideLoading()
-                }
-            }
-        }
-
-    }
-
-    private fun setDefaultHealthFacility(healthFacilityEntity: HealthFacilityEntity) {
-        binding.tvAssignedHealthFacilityText.text =
-            healthFacilityEntity.name
-    }
-
-    private fun setAllVillageName(villageEntities: List<VillageEntity>) {
-        binding.tvVillageText.text = villageEntities.let { list ->
-            list.joinToString { it.name }
-        }
     }
 
     private fun initView() {
-
         with(binding) {
             ivClose.safeClickListener(this@ProfileDialogFragment)
-           // btnCancel.safeClickListener(this@ProfileDialogFragment)
         }
     }
 
@@ -157,6 +96,15 @@ class ProfileDialogFragment : DialogFragment(), View.OnClickListener {
             tvGenderText.text = user.gender.takeIf { it?.isNotBlank() == true } ?: getString(R.string.separator_double_hyphen)
             tvEmailText.text = user.username.takeIf { it.isNotBlank() } ?: getString(R.string.separator_double_hyphen)
             tvPhoneNumberText.text = getContactNumber(user.phoneNumber.takeIf { it?.isNotBlank() == true }) ?: getString(R.string.separator_double_hyphen)
+            if(user.villages.isNullOrEmpty()) {
+                villageGroup.gone()
+                tvVillageText.text = getString(R.string.hyphen_symbol)
+            } else {
+                villageGroup.visible()
+                tvVillageText.text = user.villages.joinToString(separator = ", ") { it.name }
+            }
+            tvAssignedHealthFacilityText.text = if(user.organizations.isNullOrEmpty()) getString(R.string.hyphen_symbol) else user.organizations.joinToString(separator = ", ") { it.name }
+                ?: getString(R.string.hyphen_symbol)
             tvSuiteAccessText.text = user.suiteAccess?.let {
                 user.suiteAccess[0]
             } ?: getString(R.string.separator_double_hyphen)
@@ -192,19 +140,12 @@ class ProfileDialogFragment : DialogFragment(), View.OnClickListener {
     override fun onClick(v: View?) {
         when (v?.id) {
             R.id.ivClose -> {
-                onDismissListener?.onDialogDismissListener()
                 dismiss()
             }
 
             R.id.btnCancel -> {
-                onDismissListener?.onDialogDismissListener()
                 dismiss()
             }
         }
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        onDismissListener = null
     }
 }

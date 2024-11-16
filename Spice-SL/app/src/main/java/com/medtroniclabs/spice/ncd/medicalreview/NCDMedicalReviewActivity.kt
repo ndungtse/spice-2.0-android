@@ -196,21 +196,13 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
                     model.firstName,
                     model.lastName
                 ),
-                { status, reason, otherReason ->
-                    if (status) {
-                        reason?.let {
-                            NCDPatientRemoveRequest(
-                                patientId = model.patientId.toString(),
-                                reason = it,
-                                provenance = ProvanceDto(),
-                                otherReason = otherReason
-                            )
-                        }?.let {
-                            patientDeleteViewModel.ncdPatientRemove(
-                                it
-                            )
-                        }
-                    }
+                { _, reason, otherReason ->
+                    val request = NCDPatientRemoveRequest(
+                        patientId = model.patientId.toString(),
+                        reason = reason,
+                        otherReason = otherReason
+                    )
+                    patientDeleteViewModel.ncdPatientRemove(request)
                 },
                 this,
                 true,

@@ -101,7 +101,6 @@ interface RoomHelper {
     suspend fun getMenuForClinicalWorkflows(): List<ClinicalWorkflowEntity>
     suspend fun deleteClinicalWorkflowConditions()
     suspend fun insertClinicalWorkflowConditions(clinicalWorkflowConditions: List<ClinicalWorkflowConditionEntity>)
-    suspend fun getUserVillages(): List<VillageEntity>
     suspend fun getVillageByID(villageId: Long): VillageEntity
     suspend fun getChiefDomAndVillageCodeByVillageId(id: Long): VillageInfo
     suspend fun getLastPatientId(patientIdStarts: String): String?
@@ -127,7 +126,6 @@ interface RoomHelper {
     suspend fun getNearestHealthFacility(): List<HealthFacilityEntity>
     suspend fun getUnSyncedHouseholdCount(): Int
     suspend fun getUnSyncedHouseholdMemberCount(): Int
-    suspend fun getVillageIdName(): List<VillageBasicDetails>
     suspend fun getPatientVisitCountByType(type: String, hhmLocalId: Long): MemberClinicalEntity?
     suspend fun savePatientVisitCountByType(memberClinicalEntity: MemberClinicalEntity)
     suspend fun deleteExaminationsComplaints(menuType: String)
@@ -395,4 +393,5 @@ interface RoomHelper {
     suspend fun deleteNCDShortageReason()
     suspend fun saveNCDShortageReason(shortageReasonEntity: List<ShortageReasonEntity>)
     suspend fun getNCDForm(type: String, customizedType: String): List<String>
+    suspend fun getUserVillages(): List<VillageEntity>
 }

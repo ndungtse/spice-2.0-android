@@ -79,13 +79,12 @@ class MetaRepository @Inject constructor(
                                 defaultHealthFacility.fhirId
                             )
                             deleteAllVillages()
-                            saveVillage(villages)
+                            saveVillage(modifiedVillages(villages, userProfile.villages))
                             deleteAllFrequencyList()
                             frequency?.let {
                                 saveFrequencyList(it)
                             }
                             saveConsentForm(consentForm)
-                            saveOrganizationId(defaultHealthFacility.id)
                             saveFhirId(userProfile.fhirId, defaultHealthFacility,changeFacility)
                             saveUserProfileDetailsInDb(userProfile)
                             if (CommonUtils.isRolePresent()) {
@@ -96,6 +95,7 @@ class MetaRepository @Inject constructor(
                                 handleMeta(menu, meta)
                             }
                             workflowNames.addAll(workflowIds)
+                            savePregnancyAncStatus(userHealthFacilities?.find { it.id == SecuredPreference.getOrganizationId() })
                             identityTypes?.let { types ->
                                 SecuredPreference.putIdentityTypes(types)
                             }
@@ -264,6 +264,30 @@ class MetaRepository @Inject constructor(
         }
     }
 
+    private fun savePregnancyAncStatus(currentHealthFacility: HealthFacility?) {
+        currentHealthFacility?.let { facility ->
+            SecuredPreference.putBoolean(
+                SecuredPreference.EnvironmentKey.PREGNANCY_ANC_ENABLED_SITE.name,
+                facility.clinicalWorkflows.find {
+                    it.workflowName.equals(
+                        DefinedParams.PregnancyANC,
+                        true
+                    )
+                } != null
+            )
+        }
+    }
+
+    private fun modifiedVillages(
+        allVillages: List<VillageEntity>,
+        userVillages: List<VillageEntity>?
+    ): List<VillageEntity> {
+        allVillages.forEach { root ->
+            root.isUserVillage = userVillages?.firstOrNull { it.id == root.id } != null
+        }
+        return allVillages
+    }
+
     private fun fetchIds(healthFacilities: ArrayList<HealthFacility>?): ArrayList<Long> {
         val ids = ArrayList<Long>()
         healthFacilities?.forEach {
@@ -347,12 +371,6 @@ class MetaRepository @Inject constructor(
         }
     }
 
-    private fun saveOrganizationId(organizationId: Long?) {
-        organizationId?.let {
-            SecuredPreference.putLong(SecuredPreference.EnvironmentKey.ORGANIZATION_ID.name, it)
-        }
-    }
-
     private fun saveFhirId(
         userId: String?,
         healthFacility: HealthFacility,
@@ -363,6 +381,13 @@ class MetaRepository @Inject constructor(
         }
 
         if (!changeFacility) {
+            healthFacility.id.let {
+                SecuredPreference.putLong(
+                    SecuredPreference.EnvironmentKey.ORGANIZATION_ID.name,
+                    it
+                )
+            }
+
             healthFacility.fhirId?.let {
                 SecuredPreference.putString(
                     SecuredPreference.EnvironmentKey.ORGANIZATION_FHIR_ID.name,
@@ -412,16 +437,6 @@ class MetaRepository @Inject constructor(
         }
         roomHelper.deleteAllClinicalWorkflow()
         roomHelper.deleteClinicalWorkflowConditions()
-        val isPregnancyAncEnabledSite = clinicalWorkFlowList.filter {
-            it.workflowName.equals(
-                DefinedParams.PregnancyANC,
-                true
-            )
-        }
-        SecuredPreference.putBoolean(
-            SecuredPreference.EnvironmentKey.PREGNANCY_ANC_ENABLED_SITE.name,
-            isPregnancyAncEnabledSite.isNotEmpty()
-        )
         roomHelper.saveClinicalWorkflows(clinicalWorkFlowList)
         roomHelper.insertClinicalWorkflowConditions(clinicalWorkFlowConditions)
         val psychologicalFlow = clinicalWorkFlowList.firstOrNull {

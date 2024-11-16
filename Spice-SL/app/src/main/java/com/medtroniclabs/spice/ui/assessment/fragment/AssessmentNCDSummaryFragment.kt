@@ -438,16 +438,17 @@ class AssessmentNCDSummaryFragment : BaseFragment(), View.OnClickListener {
     private fun showCVDRiskValue(map: Map<String, Any>) {
         if (map.containsKey(Screening.CVD_Risk_Score_Display)) {
             val cvdRiskScoreDisplay = map[Screening.CVD_Risk_Score_Display]
-            val cvdRiskScore = (map[Screening.CVD_Risk_Score] as? Number)?.toDouble() ?: 0.0
-            if (cvdRiskScoreDisplay is String) {
-                showBindingValue(
-                    getString(R.string.cvd_risk_level),
-                    "$cvdRiskScoreDisplay",
-                    CommonUtils.cvdRiskColorCode(
-                        cvdRiskScore,
-                        context = requireContext()
+            (map[Screening.CVD_Risk_Score] as? Long)?.let { cvdRiskScore ->
+                if (cvdRiskScoreDisplay is String) {
+                    showBindingValue(
+                        getString(R.string.cvd_risk_level),
+                        "$cvdRiskScoreDisplay",
+                        CommonUtils.cvdRiskColorCode(
+                            cvdRiskScore,
+                            context = requireContext()
+                        )
                     )
-                )
+                }
             }
         }
     }

@@ -1,6 +1,7 @@
 package com.medtroniclabs.spice.ncd.data
 
 import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
+import java.io.Serializable
 
 data class NCDDiagnosisRequestResponse(
     val provenanceDTO: ProvanceDto? = null,
@@ -14,7 +15,7 @@ data class NCDDiagnosisItem(
     val type: String? = null,
     val value: String? = null,
     val name: String? = null
-)
+)  : Serializable
 
 data class NCDDiagnosisGetRequest(
     val patientReference: String? = null,
@@ -24,4 +25,4 @@ data class NCDDiagnosisGetRequest(
 data class NCDDiagnosisGetResponse(
     val diagnosis: List<NCDDiagnosisItem>? = null,
     val diagnosisNotes: String? = null,
-)
+) : Serializable

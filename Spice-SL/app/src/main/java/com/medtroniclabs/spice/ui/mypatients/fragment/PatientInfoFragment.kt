@@ -324,7 +324,7 @@ class PatientInfoFragment : BaseFragment() {
                 StringConverter.appendTexts(
                     it,
                     "", separator = "-"
-                ), CommonUtils.cvdRiskColorCode(data.cvdRiskScore ?: 0.0, requireContext())
+                ), CommonUtils.cvdRiskColorCode(data.cvdRiskScore?.toLong() ?: 0, requireContext())
             )
         }
 

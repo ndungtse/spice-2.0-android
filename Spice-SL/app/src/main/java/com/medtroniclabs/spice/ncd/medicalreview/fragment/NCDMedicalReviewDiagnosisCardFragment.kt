@@ -18,13 +18,12 @@ import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.databinding.FragmentNcdMedicalReviewDiagnosisCardBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
-import com.medtroniclabs.spice.ncd.data.NCDDiagnosisGetRequest
-import com.medtroniclabs.spice.mappingkey.Screening
 import com.medtroniclabs.spice.ncd.assessment.dialog.BPLogListDialog
 import com.medtroniclabs.spice.ncd.assessment.dialog.GlucoseLogListDialog
 import com.medtroniclabs.spice.ncd.assessment.ui.AssessmentReadingActivity
 import com.medtroniclabs.spice.ncd.assessment.viewmodel.BloodPressureViewModel
 import com.medtroniclabs.spice.ncd.assessment.viewmodel.GlucoseViewModel
+import com.medtroniclabs.spice.ncd.data.NCDDiagnosisGetRequest
 import com.medtroniclabs.spice.ncd.medicalreview.NCDDialogDismissListener
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.IS_FEMALE
@@ -41,7 +40,6 @@ import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlin.collections.ArrayList
 
 @AndroidEntryPoint
 class NCDMedicalReviewDiagnosisCardFragment : BaseFragment(), View.OnClickListener,
@@ -167,7 +165,9 @@ class NCDMedicalReviewDiagnosisCardFragment : BaseFragment(), View.OnClickListen
             patientStatusCard.root.setVisible(false)
             when {
                 isContinuous -> {
-                    // All cards remain hidden
+                    pregnancyCard.root.setVisible(getIsFemale())
+                    weightCard.root.setVisible(getIsFemale())
+                    eddCard.root.setVisible(getIsFemale())
                 }
 
                 isMaternal -> {
@@ -373,24 +373,11 @@ class NCDMedicalReviewDiagnosisCardFragment : BaseFragment(), View.OnClickListen
     private fun addNewReading(isBP: Boolean) {
         patientDetailViewModel.patientDetailsLiveData.value?.data?.let { detail ->
             val intent = Intent(requireActivity(), AssessmentReadingActivity::class.java)
-            val bundle = Bundle().apply {
-                if (isBP) {
-                    putString(DefinedParams.FORM_TYPE_ID, DefinedParams.BP_LOG)
-                    detail.height?.let { putDouble(Screening.Height, it) }
-                    detail.weight?.let { putDouble(Screening.Weight, it) }
-                }
-                else {
-                    putString(DefinedParams.FORM_TYPE_ID, DefinedParams.GLUCOSE_LOG)
-                }
-                putString(DefinedParams.RelatedPersonFhirId, detail.id)
-                putString(DefinedParams.PATIENT_ID, detail.patientId)
-
-                putBoolean(Screening.is_regular_smoker, detail.isRegularSmoker ?: false)
-                putString(Screening.DateOfBirth, detail.dateOfBirth)
-                putString(DefinedParams.Gender, detail.gender)
-                putString(Screening.identityValue, detail.identityValue)
-            }
-            intent.putExtras(bundle)
+            intent.putExtra(
+                DefinedParams.FORM_TYPE_ID,
+                if (isBP) DefinedParams.BP_LOG else DefinedParams.GLUCOSE_LOG
+            )
+            intent.putExtra(DefinedParams.IntentPatientDetails, detail)
             getResult.launch(intent)
         }
     }

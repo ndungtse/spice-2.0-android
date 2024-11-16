@@ -4,15 +4,19 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.medtroniclabs.spice.appextensions.postLoading
+import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.APIResponse
 import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.mappingkey.Screening
+import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.ncd.data.BPBGListModel
 import com.medtroniclabs.spice.ncd.assessment.repo.GlucoseRepo
+import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil
 import com.medtroniclabs.spice.network.resource.Resource
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
@@ -26,22 +30,18 @@ class GlucoseViewModel @Inject constructor(
     var glucoseLogCreateResponseLiveData = MutableLiveData<Resource<APIResponse<HashMap<String, Any>>>>()
     var glucoseLogListResponseLiveData = MutableLiveData<Resource<BPBGListModel>>()
 
-    fun glucoseLogCreate(
-        hashMap: HashMap<String, Any>,
-        relatedPersonFhirId: String?,
-        identityValue: String?,
-        patientId: String?
-    ) {
+    fun glucoseLogCreate(hashMap: HashMap<String, Any>, patientDetails: PatientListRespModel) {
         hashMap.apply {
-            patientId?.let { requestPatientId ->
-                put(DefinedParams.PATIENT_ID, requestPatientId)
+            with(patientDetails) {
+                NCDMRUtil.getBioDataBioMetrics(hashMap, this)
+                id?.let { requestRelatedPersonFhirId ->
+                    put(DefinedParams.RelatedPersonFhirId, requestRelatedPersonFhirId)
+                }
+                patientId?.let { requestPatientId ->
+                    put(DefinedParams.PATIENT_ID, requestPatientId)
+                }
             }
-            relatedPersonFhirId?.let { requestRelatedPersonFhirId ->
-                put(DefinedParams.RelatedPersonFhirId, requestRelatedPersonFhirId)
-            }
-            identityValue?.let { idValue ->
-                put(Screening.identityValue, idValue)
-            }
+            put(AssessmentDefinedParams.assessmentProcessType, CommonUtils.requestFrom())
             put(DefinedParams.AssessmentOrganizationId, SecuredPreference.getOrganizationFhirId())
             put(DefinedParams.Provenance, ProvanceDto())
         }

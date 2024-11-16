@@ -121,9 +121,6 @@ interface MetaDataDAO {
     @Query("SELECT * FROM HealthFacilityEntity Order by isDefault DESC")
     suspend fun getNearestHealthFacility(): List<HealthFacilityEntity>
 
-    @Query("SELECT id,name,districtId FROM VillageEntity")
-    suspend fun getVillageIdName(): List<VillageBasicDetails>
-
     @Query("SELECT id FROM VillageEntity")
     suspend fun getVillageIds(): List<Long>
 
@@ -248,4 +245,6 @@ interface MetaDataDAO {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertUnitMetricList(frequencyList: List<UnitMetricEntity>): List<Long>
 
+    @Query("SELECT * FROM VillageEntity Where isUserVillage =:isUserVillage ORDER BY name ASC")
+    suspend fun getUserVillages(isUserVillage: Boolean): List<VillageEntity>
 }

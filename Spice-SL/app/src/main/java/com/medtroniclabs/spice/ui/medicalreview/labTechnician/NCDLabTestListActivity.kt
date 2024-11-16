@@ -170,7 +170,7 @@ class NCDLabTestListActivity : BaseActivity(), View.OnClickListener, Investigati
                     "${score}%",
                     patientDetails.cvdRiskLevel, separator = getString(R.string.separator_hyphen)
                 )
-                val textColor = CommonUtils.cvdRiskColorCode(score, this)
+                val textColor = CommonUtils.cvdRiskColorCode(score.toLong(), this)
                 binding.tvCVD.setTextColor(textColor)
             }
             data.firstName?.let { firstName ->

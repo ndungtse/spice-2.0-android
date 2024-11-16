@@ -13,6 +13,10 @@ import com.medtroniclabs.spice.common.DefinedParams.Other
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.history.Prescription
 import com.medtroniclabs.spice.data.model.ChipViewItemModel
+import com.medtroniclabs.spice.mappingkey.MemberRegistration
+import com.medtroniclabs.spice.mappingkey.Screening
+import com.medtroniclabs.spice.model.PatientListRespModel
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
 
 object NCDMRUtil {
     const val MENU_ID = "MENU_ID"
@@ -267,4 +271,33 @@ object NCDMRUtil {
     }
 
     fun currentUserId() = SecuredPreference.getUserFhirId()
+
+    fun getBioDataBioMetrics(
+        result: HashMap<String, Any>,
+        patientData: PatientListRespModel,
+        height: Double? = null,
+        weight: Double? = null
+    ) {
+        result.apply {
+            put(
+                Screening.bioData, hashMapOf(
+                    Screening.firstName to patientData.firstName,
+                    Screening.lastName to patientData.lastName,
+                    Screening.phoneNumber to patientData.phoneNumber,
+                    AssessmentDefinedParams.phoneNumberCategory to patientData.phoneNumberCategory,
+                    Screening.identityValue to patientData.identityValue,
+                    Screening.identityType to patientData.identityType
+                )
+            )
+
+            put(
+                Screening.BioMetrics, hashMapOf(
+                    MemberRegistration.gender to patientData.gender,
+                    Screening.Age to patientData.age,
+                    Screening.Height to (height ?: patientData.height),
+                    Screening.Weight to (weight ?: patientData.weight)
+                )
+            )
+        }
+    }
 }

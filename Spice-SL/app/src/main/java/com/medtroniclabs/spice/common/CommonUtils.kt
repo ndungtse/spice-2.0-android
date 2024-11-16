@@ -1421,7 +1421,7 @@ object CommonUtils {
         return false
     }
 
-    fun cvdRiskColorCode(score: Double, context: Context): Int {
+    fun cvdRiskColorCode(score: Long, context: Context): Int {
         return when {
             score < Screening.very_low_risk_limit -> context.getColor(R.color.very_low_risk_color)
             score < Screening.low_risk_limit -> context.getColor(R.color.low_risk_color)
@@ -1448,9 +1448,7 @@ object CommonUtils {
         return (role == PROVIDER || role == PHYSICIAN_PRESCRIBER) &&
                 gender.equals(Female, true) &&
                 (pregnancyRisk != null &&
-                        ((!pregnancyRisk && SecuredPreference.getBoolean(
-                            SecuredPreference.EnvironmentKey.PREGNANCY_ANC_ENABLED_SITE.name
-                        )) || pregnancyRisk))
+                        ((!pregnancyRisk && SecuredPreference.isAncEnabled()) || pregnancyRisk))
     }
 
     fun isSL(): Boolean {
@@ -1595,7 +1593,7 @@ object CommonUtils {
     }
 
     fun addAncEnableOrNot(map: HashMap<String, Any>, key: String, isPregnant: Boolean = false) {
-        if (SecuredPreference.getBoolean(SecuredPreference.EnvironmentKey.PREGNANCY_ANC_ENABLED_SITE.name)) {
+        if (SecuredPreference.isAncEnabled()) {
             (map[key] as? MutableMap<Any, Any>)?.let { pregnancyAnc ->
                 if (((pregnancyAnc[Screening.isPregnant] as? Boolean) == true) || isPregnant) {
                     if (isPregnant) {

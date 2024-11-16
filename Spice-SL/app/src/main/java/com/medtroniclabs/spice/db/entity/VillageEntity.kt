@@ -12,6 +12,7 @@ data class VillageEntity(
     val chiefdomId: Long? = null,
     val countryId: Long,
     val districtId: Long? = null,
+    var isUserVillage: Boolean = false,
     val chiefdomCode: String? = null,
     val districtCode: String? = null
 )

@@ -408,10 +408,12 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
             }
 
             R.id.profile -> {
+                binding.drawerLayout.closeDrawer(GravityCompat.START)
                 val profileDialogFragment =
                     supportFragmentManager.findFragmentByTag(ProfileDialogFragment.TAG)
                 profileDialogFragment ?: ProfileDialogFragment.newInstance()
                     .show(supportFragmentManager, ProfileDialogFragment.TAG)
+                return true
             }
 
             R.id.offline_sync -> {

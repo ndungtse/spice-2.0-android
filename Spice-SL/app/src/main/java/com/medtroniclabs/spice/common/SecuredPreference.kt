@@ -555,4 +555,8 @@ object SecuredPreference {
     fun getCountryId(): Long? {
         return getUserDetails()?.country?.id
     }
+
+    fun isAncEnabled(): Boolean {
+        return getBoolean(EnvironmentKey.PREGNANCY_ANC_ENABLED_SITE.name)
+    }
 }

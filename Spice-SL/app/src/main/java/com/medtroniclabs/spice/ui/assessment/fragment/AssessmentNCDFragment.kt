@@ -126,6 +126,7 @@ class AssessmentNCDFragment : BaseFragment(), FormEventListener, View.OnClickLis
         }
         binding.symptomCard.complianceSpinner.tvTitle.text =
             getString(R.string.complaince_title)
+        binding.symptomCard.complianceSpinner.tvTitle.markMandatory()
         viewModel.getMedicationParentComplianceList()
         binding.symptomCard.complianceSpinner.etUserInput
         binding.symptomCard.complianceSpinner.etUserInput.onItemSelectedListener =
@@ -665,10 +666,9 @@ class AssessmentNCDFragment : BaseFragment(), FormEventListener, View.OnClickLis
         }
     }
 
-    private fun showErrorMessage(message: String, view: TextView, titleView: TextView? = null) {
-        titleView?.let { title ->
-            formGenerator.scrollToView(binding.scrollView, title)
-        }
+    private fun showErrorMessage(message: String, view: TextView) {
+        if (binding.symptomCard.root.isVisible())
+            formGenerator.scrollToView(binding.scrollView, binding.symptomCard.viewSymptomCardBG)
         view.visible()
         view.text = message
     }
@@ -811,8 +811,7 @@ class AssessmentNCDFragment : BaseFragment(), FormEventListener, View.OnClickLis
             isValidData = false
             showErrorMessage(
                 getString(R.string.error_message_spinner),
-                binding.symptomCard.symptomsSpinner.tvErrorMessage,
-                binding.symptomCard.symptomsSpinner.tvTitle
+                binding.symptomCard.symptomsSpinner.tvErrorMessage
             )
         }
         return isValidData
@@ -869,37 +868,35 @@ class AssessmentNCDFragment : BaseFragment(), FormEventListener, View.OnClickLis
         return isValid
     }
 
-    private fun validateSymptomsAndCompliance(
+    private fun proceedToSaveAssessment(
         resultHashMap: HashMap<String, Any>,
         serverData: List<FormLayout?>?,
         unitGenericType: String
     ) {
-        if (validateCompliance() && validateSymptom()) {
-            if (viewModel.complianceMap != null) {
-                viewModel.complianceMap?.let { complianceList ->
-                    // Set compliance list in resultHashMap
-                    // Find compliance item with name "Other" (case-insensitive) and add "other_compliance" if reason is non-empty
-                    binding.symptomCard.otherComplianceReason.text?.trim()?.toString()
-                        ?.takeIf { it.isNotEmpty() }?.let { reason ->
-                            complianceList.find { data ->
-                                (data[DefinedParams.NAME] as? String)?.equals(
-                                    DefinedParams.Other,
-                                    ignoreCase = true
-                                ) == true
-                            }?.put(AssessmentDefinedParams.other_compliance, reason)
-                        }
+        if (viewModel.complianceMap != null) {
+            viewModel.complianceMap?.let { complianceList ->
+                // Set compliance list in resultHashMap
+                // Find compliance item with name "Other" (case-insensitive) and add "other_compliance" if reason is non-empty
+                binding.symptomCard.otherComplianceReason.text?.trim()?.toString()
+                    ?.takeIf { it.isNotEmpty() }?.let { reason ->
+                        complianceList.find { data ->
+                            (data[DefinedParams.NAME] as? String)?.equals(
+                                DefinedParams.Other,
+                                ignoreCase = true
+                            ) == true
+                        }?.put(AssessmentDefinedParams.other_compliance, reason)
+                    }
 
-                    resultHashMap[AssessmentDefinedParams.compliance] = complianceList
-                }
+                resultHashMap[AssessmentDefinedParams.compliance] = complianceList
             }
-            if (!viewModel.selectedSymptoms.value.isNullOrEmpty()) {
-                viewModel.selectedSymptoms.value?.let {
-                    resultHashMap[AssessmentDefinedParams.symptomsDTO] =
-                        getSymptomsList(it)
-                }
-            }
-            saveAssessmentBaseValues(resultHashMap, serverData, unitGenericType)
         }
+        if (!viewModel.selectedSymptoms.value.isNullOrEmpty()) {
+            viewModel.selectedSymptoms.value?.let {
+                resultHashMap[AssessmentDefinedParams.symptomsDTO] =
+                    getSymptomsList(it)
+            }
+        }
+        saveAssessmentBaseValues(resultHashMap, serverData, unitGenericType)
     }
 
     private fun otherComplianceCheck(complianceMap: ArrayList<HashMap<String, Any>>): Boolean? {
@@ -942,28 +939,30 @@ class AssessmentNCDFragment : BaseFragment(), FormEventListener, View.OnClickLis
 
     private fun validateCompliance(): Boolean {
         var isValidData = true
-        if (viewModel.complianceMap != null) {
-            viewModel.complianceMap?.let { complianceMap ->
-                if (complianceMap.isNotEmpty()) {
-                    val selectedModel = complianceMap[0]
-                    if (selectedModel.containsKey(AssessmentDefinedParams.is_child_exists) && (selectedModel[AssessmentDefinedParams.is_child_exists] as? Boolean) == true) {
-                        if (complianceMap.size < 2) {
-                            isValidData = false
-                            showErrorMessage(
-                                getString(R.string.default_user_input_error),
-                                binding.symptomCard.tvChildErrorMessage
-                            )
-                        } else
-                            otherComplianceCheck(complianceMap)?.let {
-                                isValidData = it
-                            }
-                    } else
-                        hideErrorMessage(binding.symptomCard.complianceSpinner.tvErrorMessage)
-                } else
-                    hideErrorMessage(binding.symptomCard.complianceSpinner.tvErrorMessage)
-            }
-        } else
+        val complianceMap = viewModel.complianceMap
+        if (complianceMap.isNullOrEmpty()) {
+            isValidData = false
+            showErrorMessage(
+                getString(R.string.default_user_input_error),
+                binding.symptomCard.complianceSpinner.tvErrorMessage
+            )
+        } else {
             hideErrorMessage(binding.symptomCard.complianceSpinner.tvErrorMessage)
+
+            val selectedModel = complianceMap[0]
+            if (selectedModel.containsKey(AssessmentDefinedParams.is_child_exists) && (selectedModel[AssessmentDefinedParams.is_child_exists] as? Boolean) == true) {
+                if (complianceMap.size < 2) {
+                    isValidData = false
+                    showErrorMessage(
+                        getString(R.string.default_user_input_error),
+                        binding.symptomCard.tvChildErrorMessage
+                    )
+                } else
+                    otherComplianceCheck(complianceMap)?.let {
+                        isValidData = it
+                    }
+            }
+        }
 
         return isValidData
     }
@@ -1266,16 +1265,6 @@ class AssessmentNCDFragment : BaseFragment(), FormEventListener, View.OnClickLis
     }
 
     override fun onFormSubmit(resultMap: HashMap<String, Any>?, serverData: List<FormLayout?>?) {
-        val unitGenericType = SecuredPreference.getUnitMeasurementType()
-        if (binding.symptomCard.root.isVisible()) {
-            if (resultMap != null) {
-                validateSymptomsAndCompliance(resultMap, serverData, unitGenericType)
-            }
-        } else {
-            if (resultMap != null) {
-                saveAssessmentBaseValues(resultMap, serverData, unitGenericType)
-            }
-        }
     }
 
     override fun onRenderingComplete() {
@@ -1310,10 +1299,39 @@ class AssessmentNCDFragment : BaseFragment(), FormEventListener, View.OnClickLis
     }
 
 
+    private fun proceedFormSubmission(v: View) {
+        formGenerator.formSubmitAction(v)
+    }
+
     override fun onClick(v: View?) {
         when (v?.id) {
             binding.btnSubmit.id -> {
-                formGenerator.formSubmitAction(v)
+                val unitGenericType = SecuredPreference.getUnitMeasurementType()
+
+                if (binding.symptomCard.root.isVisible()) {
+                    val assessment = formGenerator.formSubmitAction(v)
+                    val compliance = validateCompliance()
+                    val symptoms = validateSymptom()
+
+                    if (symptoms && compliance && assessment)
+                        formGenerator.let {
+                            proceedToSaveAssessment(
+                                it.getResultMap(),
+                                it.getServerData(),
+                                unitGenericType
+                            )
+                        }
+                } else {
+                    formGenerator.let {
+                        if (it.formSubmitAction(v)) {
+                            saveAssessmentBaseValues(
+                                it.getResultMap(),
+                                it.getServerData(),
+                                unitGenericType
+                            )
+                        }
+                    }
+                }
             }
         }
     }

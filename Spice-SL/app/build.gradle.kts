@@ -90,7 +90,6 @@ android {
                         buildConfigField("String", "DB_PASSWORD", "\"Med@Tr0ni#Lab$\"")
                         resValue("string", "spice_app_name", "SPICE 2.0 Dev")
                     } else if (productFlavors[0].name == "africa") {
-//                        buildConfigField("String", "API_BASE_URL", "\"https://brief-likely-walleye.ngrok-free.app/\"")
                         buildConfigField("String", "API_BASE_URL", "\"https://spice-dev-migration-backend.labsplatform.com/\"")
                         buildConfigField("String", "ADMIN_BASE_URL", "\"https://spice-dev-migration.labsplatform.com/\"")
                         buildConfigField("String", "SALT", "\"spice_uat\"")

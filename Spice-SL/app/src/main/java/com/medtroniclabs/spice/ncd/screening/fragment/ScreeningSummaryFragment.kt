@@ -377,11 +377,11 @@ class ScreeningSummaryFragment : BaseFragment(), View.OnClickListener {
     }
 
     private fun showPHQ4Score(serverData: List<FormLayout>, map: Map<String, Any>) {
-        FormResultComposer.findGroupIdForNCD(serverData, Screening.PHQ4_Score)?.let {
+        FormResultComposer.findGroupIdForNCD(serverData, Screening.PHQ4_Mental_Health)?.let {
             val subMap = map[it] as Map<String, Any>
             if (subMap.containsKey(Screening.PHQ4_Score)) {
                 val phq4Score = subMap[Screening.PHQ4_Score]
-                if (phq4Score is Double) {
+                if (phq4Score is Long) {
                     showBindingValue(
                         getString(R.string.phq4_score),
                         getPHQ4ReadableName(score = phq4Score.toInt(), requireContext())
@@ -518,7 +518,7 @@ class ScreeningSummaryFragment : BaseFragment(), View.OnClickListener {
     private fun showCVDRiskValue(map: Map<String, Any>) {
         if (map.containsKey(Screening.CVD_Risk_Score_Display)) {
             val cvdRiskScoreDisplay = map[Screening.CVD_Risk_Score_Display]
-            (map[Screening.CVD_Risk_Score] as? Double?)?.let { cvdRiskScore ->
+            (map[Screening.CVD_Risk_Score] as? Long)?.let { cvdRiskScore ->
                 if (cvdRiskScoreDisplay is String) {
                     showBindingValue(
                         getString(R.string.cvd_risk_level),

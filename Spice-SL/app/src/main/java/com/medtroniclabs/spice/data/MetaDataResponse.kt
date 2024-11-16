@@ -112,6 +112,7 @@ data class UserProfile(
     val country: Country?,
     val fhirId: String?,
     val organizations: List<Organization>? = null,
+    val villages: List<VillageEntity>? = null,
     val tenantId: Long,
     val suiteAccess: List<String>? = null,
     val supervisor: String?

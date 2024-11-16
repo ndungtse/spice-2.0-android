@@ -2,8 +2,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/blue_80_percent_alpha">
+    android:layout_height="match_parent">
 
     <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
@@ -265,6 +264,13 @@
                         app:layout_constraintStart_toEndOf="@id/tvVillageSeparator"
                         app:layout_constraintTop_toTopOf="@id/tvVillageLabel"
                         tools:text="Gbinti" />
+
+                    <androidx.constraintlayout.widget.Group
+                        android:id="@+id/villageGroup"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone"
+                        app:constraint_referenced_ids="tvVillageLabel, tvVillageSeparator, tvVillageText" />
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/tvAssignedHealthFacilityLabel"

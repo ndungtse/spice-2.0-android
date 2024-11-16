@@ -1056,6 +1056,10 @@ class FormGenerator(
         return resultHashMap
     }
 
+    fun getServerData(): List<FormLayout>? {
+        return serverData
+    }
+
     private fun saveSelectedOptionValue(
         id: Pair<String, String?>,
         idValue: Any?,
@@ -2314,7 +2318,7 @@ class FormGenerator(
     }
 
 
-    private fun validateInputs(): Boolean {
+    fun validateInputs(): Boolean {
         var isValid = true
         focusNeeded = null
         serverData?.forEach { data ->
@@ -2953,12 +2957,18 @@ class FormGenerator(
 
     fun spinnerDataInjection(data: LocalSpinnerResponse, mapList: ArrayList<Map<String, Any>>) {
         val spinner = getViewByTag(data.tag) as? AppCompatSpinner ?: return
+        val mandatory = serverData?.find { it.id == data.tag }?.isMandatory ?: false
         if (spinner.adapter is CustomSpinnerAdapter) {
-//            if (mapList.size > 1) {
+            if (!mandatory || mapList.size != 1) {
                 mapList.add(0, createDefaultMap())
-//            }
+            }
             (spinner.adapter as CustomSpinnerAdapter).setData(mapList)
-//            spinner.onItemSelectedListener?.onItemSelected(spinner, spinner.selectedView, 0, spinner.selectedItemId)
+            spinner.onItemSelectedListener?.onItemSelected(
+                spinner,
+                spinner.selectedView,
+                0,
+                spinner.selectedItemId
+            )
         }
     }
 

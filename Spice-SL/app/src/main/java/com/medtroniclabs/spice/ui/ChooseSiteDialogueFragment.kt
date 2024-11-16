@@ -101,21 +101,40 @@ class ChooseSiteDialogueFragment : DialogFragment(),
             }
 
             R.id.btnConfirm -> {
-                viewModel.selectedSiteEntity?.let {
-                    SecuredPreference.putBoolean(
-                        SecuredPreference.EnvironmentKey.ISMETALOADED.name,
-                        false
-                    )
-                    SecuredPreference.putBoolean(
-                        SecuredPreference.EnvironmentKey.ISLOGGEDIN.name,
-                        false
-                    )
-                    SecuredPreference.putLong(SecuredPreference.EnvironmentKey.TENANT_ID.name,it.tenantId)
-                    SecuredPreference.putString(SecuredPreference.EnvironmentKey.ORGANIZATION_FHIR_ID.name,it.fhirId)
-                    SecuredPreference.putLong(SecuredPreference.EnvironmentKey.DISTRICT_ID.name,it.districtId)
-                    triggerResourceLoading()
-                    dismiss()
-                }
+                (requireActivity() as? BaseActivity)?.withNetworkAvailability(
+                    online = {
+                        viewModel.selectedSiteEntity?.let {
+                            SecuredPreference.putBoolean(
+                                SecuredPreference.EnvironmentKey.ISMETALOADED.name,
+                                false
+                            )
+                            SecuredPreference.putBoolean(
+                                SecuredPreference.EnvironmentKey.ISLOGGEDIN.name,
+                                false
+                            )
+                            SecuredPreference.putLong(
+                                SecuredPreference.EnvironmentKey.TENANT_ID.name,
+                                it.tenantId
+                            )
+                            SecuredPreference.putLong(
+                                SecuredPreference.EnvironmentKey.ORGANIZATION_ID.name,
+                                it.id
+                            )
+                            SecuredPreference.putString(
+                                SecuredPreference.EnvironmentKey.ORGANIZATION_FHIR_ID.name,
+                                it.fhirId
+                            )
+                            SecuredPreference.putLong(
+                                SecuredPreference.EnvironmentKey.DISTRICT_ID.name,
+                                it.districtId
+                            )
+                            triggerResourceLoading()
+                            dismiss()
+                        }
+                    }, offline = {
+                        dismiss()
+                    }
+                )
             }
         }
     }

@@ -141,7 +141,7 @@ class HouseHoldRepository @Inject constructor(
         tag: String
     ): Resource<LocalSpinnerResponse> {
         return try {
-            val response = roomHelper.getUserVillages()
+            val response = roomHelper.getAllVillageEntity()
             Resource(state = ResourceState.SUCCESS, LocalSpinnerResponse(tag, response))
         } catch (_: Exception) {
             Resource(state = ResourceState.ERROR)

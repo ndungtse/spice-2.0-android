@@ -99,25 +99,9 @@
                 android:text="@string/dosage"
                 android:textColor="@color/table_title"
                 android:textSize="@dimen/_16ssp"
-                app:layout_constraintBottom_toBottomOf="@+id/tvFreq"
+                app:layout_constraintBottom_toBottomOf="@+id/tvForm"
                 app:layout_constraintEnd_toEndOf="@+id/secondGuidelineGuideline"
                 app:layout_constraintStart_toEndOf="@+id/firstGuidelineGuideline"
-                app:layout_constraintTop_toTopOf="@+id/tvFreq" />
-
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/tvFreq"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:fontFamily="@font/inter_regular"
-                android:gravity="center"
-                android:padding="@dimen/_8sdp"
-                android:text="@string/freq"
-                android:textColor="@color/table_title"
-                android:textSize="@dimen/_16ssp"
-                app:layout_constraintBottom_toBottomOf="@+id/tvForm"
-                app:layout_constraintEnd_toEndOf="@+id/thirdGuidelineGuideline"
-                app:layout_constraintStart_toEndOf="@+id/secondGuidelineGuideline"
                 app:layout_constraintTop_toTopOf="@+id/tvForm" />
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -129,6 +113,22 @@
                 android:gravity="center"
                 android:padding="@dimen/_8sdp"
                 android:text="@string/form"
+                android:textColor="@color/table_title"
+                android:textSize="@dimen/_16ssp"
+                app:layout_constraintBottom_toBottomOf="@+id/tvFreq"
+                app:layout_constraintEnd_toEndOf="@+id/thirdGuidelineGuideline"
+                app:layout_constraintStart_toEndOf="@+id/secondGuidelineGuideline"
+                app:layout_constraintTop_toTopOf="@+id/tvFreq" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvFreq"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:fontFamily="@font/inter_regular"
+                android:gravity="center"
+                android:padding="@dimen/_8sdp"
+                android:text="@string/freq"
                 android:textColor="@color/table_title"
                 android:textSize="@dimen/_16ssp"
                 app:layout_constraintBottom_toBottomOf="@+id/tvMedicationPrescribedDays"

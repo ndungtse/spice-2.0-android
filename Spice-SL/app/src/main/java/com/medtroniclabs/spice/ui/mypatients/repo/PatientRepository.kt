@@ -1,5 +1,6 @@
 package com.medtroniclabs.spice.ui.mypatients.repo
 
+import com.medtroniclabs.spice.db.entity.VillageEntity
 import com.medtroniclabs.spice.db.local.RoomHelper
 import com.medtroniclabs.spice.db.response.VillageBasicDetails
 import com.medtroniclabs.spice.model.PatientDetailRequest
@@ -17,8 +18,8 @@ class PatientRepository @Inject constructor(
     private var roomHelper: RoomHelper
 ) {
 
-    suspend fun getVillageIdName(): List<VillageBasicDetails> {
-        return roomHelper.getVillageIdName()
+    suspend fun getUserVillages(): List<VillageEntity> {
+        return roomHelper.getUserVillages()
     }
 
     suspend fun getPatients(

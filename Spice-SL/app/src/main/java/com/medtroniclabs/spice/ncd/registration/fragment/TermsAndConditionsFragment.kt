@@ -83,6 +83,7 @@ class TermsAndConditionsFragment : BaseFragment(), View.OnClickListener {
 
     private val signatureInterface = object : SignatureInterface {
         override fun applySignature(signature: Bitmap?, initial: String?) {
+            showProgress()
             val bundle = Bundle().apply {
                 signature?.let { sign ->
                     putByteArray(

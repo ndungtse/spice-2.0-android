@@ -291,8 +291,6 @@ class RoomHelperImpl @Inject constructor(
         return metaDataDAO.getUserProfile()
     }
 
-    override suspend fun getUserVillages(): List<VillageEntity> = metaDataDAO.getVillages()
-
     override suspend fun getVillageByID(villageId: Long): VillageEntity =
         metaDataDAO.getVillageByID(villageId)
 
@@ -351,10 +349,6 @@ class RoomHelperImpl @Inject constructor(
 
     override suspend fun getNearestHealthFacility(): List<HealthFacilityEntity> {
         return metaDataDAO.getNearestHealthFacility()
-    }
-
-    override suspend fun getVillageIdName(): List<VillageBasicDetails> {
-        return metaDataDAO.getVillageIdName()
     }
 
     override suspend fun getPatientVisitCountByType(
@@ -1021,6 +1015,10 @@ class RoomHelperImpl @Inject constructor(
 
     override suspend fun getNCDForm(type: String, customizedType: String): List<String> {
         return metaDataDAO.getNCDForm(type, customizedType)
+    }
+
+    override suspend fun getUserVillages(): List<VillageEntity> {
+        return metaDataDAO.getUserVillages(true)
     }
 
 

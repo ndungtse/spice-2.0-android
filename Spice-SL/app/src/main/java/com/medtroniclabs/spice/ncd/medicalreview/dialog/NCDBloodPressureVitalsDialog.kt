@@ -483,26 +483,13 @@ class NCDBloodPressureVitalsDialog : DialogFragment(), View.OnClickListener {
         result.putAll(viewModel.resultHashMap)
         patientViewModel.patientDetailsLiveData.value?.data?.let { patientData ->
             with(result) {
-                // Set bioData and bioMetrics
-                put(
-                    Screening.bioData, hashMapOf(
-                        Screening.firstName to patientData.firstName,
-                        Screening.lastName to patientData.lastName,
-                        Screening.phoneNumber to patientData.phoneNumber,
-                        AssessmentDefinedParams.phoneNumberCategory to patientData.phoneNumberCategory,
-                        Screening.identityValue to patientData.identityValue,
-                        Screening.identityType to patientData.identityType
-                    )
+                NCDMRUtil.getBioDataBioMetrics(
+                    result,
+                    patientData,
+                    binding.etHeight.text.toString().toDouble(),
+                    binding.etWeight.text.toString().toDouble()
                 )
 
-                put(
-                    Screening.BioMetrics, hashMapOf(
-                        MemberRegistration.gender to patientData.gender,
-                        Screening.Age to patientData.age,
-                        Screening.Height to binding.etHeight.text.toString().toDouble(),
-                        Screening.Weight to binding.etWeight.text.toString().toDouble()
-                    )
-                )
                 put(MemberRegistration.gender, patientData.gender ?: "")
                 // Add individual parameters
                 put(Screening.Weight, binding.etWeight.text.toString().toDouble())

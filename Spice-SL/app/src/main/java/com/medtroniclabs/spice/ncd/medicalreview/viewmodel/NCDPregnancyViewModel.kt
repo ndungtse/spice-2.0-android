@@ -35,8 +35,7 @@ class NCDPregnancyViewModel @Inject constructor(
     var ncdPregnancyCreateModel: PregnancyDetailsModel = PregnancyDetailsModel()
 
     init {
-        isPregnancyAncEnabledSite =
-            SecuredPreference.getBoolean(SecuredPreference.EnvironmentKey.PREGNANCY_ANC_ENABLED_SITE.name)
+        isPregnancyAncEnabledSite = SecuredPreference.isAncEnabled()
     }
 
     fun ncdPregnancyCreate(requestModel: PregnancyDetailsModel) {

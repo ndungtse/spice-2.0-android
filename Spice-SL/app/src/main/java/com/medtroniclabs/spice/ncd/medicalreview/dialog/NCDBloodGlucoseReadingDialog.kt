@@ -257,25 +257,7 @@ class NCDBloodGlucoseReadingDialog : DialogFragment(), View.OnClickListener {
 
         patientViewModel.patientDetailsLiveData.value?.data?.let { patientData ->
             result.apply {
-                put(
-                    Screening.bioData, hashMapOf(
-                        Screening.firstName to patientData.firstName,
-                        Screening.lastName to patientData.lastName,
-                        Screening.phoneNumber to patientData.phoneNumber,
-                        AssessmentDefinedParams.phoneNumberCategory to patientData.phoneNumberCategory,
-                        Screening.identityValue to patientData.identityValue,
-                        Screening.identityType to patientData.identityType
-                    )
-                )
-
-                put(
-                    Screening.BioMetrics, hashMapOf(
-                        MemberRegistration.gender to patientData.gender,
-                        Screening.Age to patientData.age,
-                        Screening.Height to patientData.height,
-                        Screening.Weight to patientData.weight
-                    )
-                )
+                NCDMRUtil.getBioDataBioMetrics(result, patientData)
 
                 putAll(
                     mapOf(
