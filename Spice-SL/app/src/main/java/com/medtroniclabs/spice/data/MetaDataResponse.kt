@@ -36,6 +36,7 @@ data class HealthFacility(
     val name: String,
     val type: String?,
     val district: District,
+    val chiefdom: ChiefDom?,
     val chiefdomId: Long,
     val latitude: String?,
     val longitude: String?,
@@ -48,6 +49,12 @@ data class HealthFacility(
 )
 
 data class District(
+    val id: Long,
+    val name: String?,
+    val code: String?
+)
+
+data class ChiefDom(
     val id: Long,
     val name: String?,
     val code: String?

@@ -129,6 +129,7 @@ object Screening {
     const val Pharmacy = "pharmacy"
     const val Type = "type"
     const val bioData = "bioData"
+    const val bioMetrics = "bioMetrics"
     const val identityType = "identityType"
     const val GlucoseUnit = "glucoseUnit"
     const val DateOfBirth = "dateOfBirth"
@@ -187,4 +188,6 @@ object Screening {
         }
         return list
     }
+    const val DISTRICT_ID = "districtId"
+    const val CHIEFDOM_ID = "chiefdomId"
 }

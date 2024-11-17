@@ -346,7 +346,7 @@ class MetaRepository @Inject constructor(
                     id = healthFacility.id,
                     name = healthFacility.name,
                     districtId = healthFacility.district.id,
-                    chiefdomId = healthFacility.chiefdomId,
+                    chiefdomId = healthFacility.chiefdom?.id ?: healthFacility.chiefdomId,
                     tenantId = healthFacility.tenantId,
                     fhirId = healthFacility.fhirId,
                     isDefault = healthFacility.id == defaultId,
@@ -361,7 +361,7 @@ class MetaRepository @Inject constructor(
                     id = healthFacility.id,
                     name = healthFacility.name,
                     districtId = healthFacility.district.id,
-                    chiefdomId = healthFacility.chiefdomId,
+                    chiefdomId = healthFacility.chiefdom?.id ?: healthFacility.chiefdomId,
                     tenantId = healthFacility.tenantId,
                     fhirId = healthFacility.fhirId,
                     isDefault = healthFacility.id == defaultId,
@@ -402,6 +402,10 @@ class MetaRepository @Inject constructor(
 
             healthFacility.district.id.let {
                 SecuredPreference.putLong(SecuredPreference.EnvironmentKey.DISTRICT_ID.name,it)
+            }
+
+            healthFacility.chiefdom?.id?.let {
+                SecuredPreference.putLong(SecuredPreference.EnvironmentKey.CHIEFDOM_ID.name,it)
             }
         }
     }

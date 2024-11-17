@@ -431,7 +431,7 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
         val existingFragment =
             childFragmentManager.findFragmentByTag(PatientSearchFilterDialog.TAG) as? PatientSearchFilterDialog
         if (existingFragment == null) {
-            PatientSearchFilterDialog.newInstance()
+            PatientSearchFilterDialog.newInstance(patientListViewModel.origin)
                 .show(childFragmentManager, PatientSearchFilterDialog.TAG)
         } else {
             existingFragment.show(childFragmentManager, PatientSearchFilterDialog.TAG)

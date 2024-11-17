@@ -128,6 +128,11 @@ class ChooseSiteDialogueFragment : DialogFragment(),
                                 SecuredPreference.EnvironmentKey.DISTRICT_ID.name,
                                 it.districtId
                             )
+
+                            SecuredPreference.putLong(
+                                SecuredPreference.EnvironmentKey.CHIEFDOM_ID.name,
+                                it.chiefdomId
+                            )
                             triggerResourceLoading()
                             dismiss()
                         }

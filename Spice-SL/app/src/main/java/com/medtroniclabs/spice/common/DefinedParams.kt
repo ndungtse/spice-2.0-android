@@ -194,6 +194,7 @@ object DefinedParams {
     const val Count = "Count"
     const val SCREENED = "SCREENED"
     const val ASSESSED = "ASSESSED"
+    const val ENROLLED = "ENROLLED"
     const val REGISTERED = "REGISTERED"
     const val REFERREDD = "REFERRED"
     const val Dispense = "dispense"

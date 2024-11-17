@@ -21,6 +21,8 @@ data class PatientsDataModel(
 data class MedicalReviewFilterModel(
     val patientStatus: List<String>? = null,
     val visitDate: List<String>? = null,
+    val labTestReferredOn: String? = null,
+    val prescriptionReferredOn: String? = null,
     val medicalReviewDate: String? = null,
     val enrollmentStatus: String? = null,
     val isRedRiskPatient: Boolean? = null,

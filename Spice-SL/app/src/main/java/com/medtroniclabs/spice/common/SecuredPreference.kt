@@ -43,6 +43,7 @@ object SecuredPreference {
         IS_NEONATE_LOADED_PNC,
         TENANT_ID,
         DISTRICT_ID,
+        CHIEFDOM_ID,
         IDENTITY_TYPES,
         IS_NON_NCD_WORKFLOW_ENABLED,
         REMAINING_ATTEMPTS_COUNT,
@@ -525,6 +526,10 @@ object SecuredPreference {
 
     fun getDistrictId(): Long {
         return getLong(EnvironmentKey.DISTRICT_ID.name)
+    }
+
+    fun getChiefdomId(): Long {
+        return getLong(EnvironmentKey.CHIEFDOM_ID.name)
     }
 
 

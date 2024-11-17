@@ -119,6 +119,34 @@
                     app:constraint_referenced_ids="tvMedicalReviewDate, ncdMedicalReviewDateChipGroup" />
 
                 <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvReferredFor"
+                    style="@style/TextStyle_Medium_16_NoBG"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_8sdp"
+                    android:text="@string/referred_for"
+                    android:textColor="@color/b_w_black"
+                    app:layout_constraintStart_toEndOf="@id/leftInnerGuideline"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/ncdReferredForChipGroup"
+                    android:layout_width="@dimen/_0dp"
+                    android:layout_height="wrap_content"
+                    android:paddingVertical="@dimen/_10sdp"
+                    app:layout_constraintEnd_toEndOf="@id/rightInnerGuideline"
+                    app:layout_constraintStart_toStartOf="@id/leftInnerGuideline"
+                    app:layout_constraintTop_toBottomOf="@id/tvReferredFor"
+                    app:singleSelection="true" />
+
+                <androidx.constraintlayout.widget.Group
+                    android:id="@+id/referredForGroup"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    app:constraint_referenced_ids="tvReferredFor, ncdReferredForChipGroup" />
+
+                <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/tvRisk"
                     style="@style/TextStyle_Medium_16_NoBG"
                     android:layout_width="wrap_content"

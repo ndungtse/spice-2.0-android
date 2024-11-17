@@ -261,7 +261,7 @@ class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener, View.OnC
                                 DuplicationNudgeDialog.newInstance(
                                     StringConverter.convertGivenMapToString(
                                         responseMap
-                                    )
+                                    ), isFromEnrollment = false
                                 ) {
                                     proceedAssessment(responseMap)
                                 }

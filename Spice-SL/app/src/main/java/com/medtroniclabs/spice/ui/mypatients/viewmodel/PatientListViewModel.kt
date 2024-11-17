@@ -43,6 +43,7 @@ class PatientListViewModel @Inject constructor(
     var searchText = ""
     var medicalReviewDueTag: List<ChipViewItemModel>? = null
     var patientStatusTag: List<ChipViewItemModel>? = null
+    var ncdReferredForTag: List<ChipViewItemModel>? = null
     var ncdMedicalReviewDateTag: List<ChipViewItemModel>? = null
     var ncdRedRiskTag: List<ChipViewItemModel>? = null
     var ncdRegistrationTag: List<ChipViewItemModel>? = null
@@ -121,8 +122,10 @@ class PatientListViewModel @Inject constructor(
     }
 
     private fun getFilter(): MedicalReviewFilterModel? {
+        val isPharmacist: Boolean = CommonUtils.isPharmacist()
         return if (!patientStatusTag.isNullOrEmpty() ||
             !medicalReviewDueTag.isNullOrEmpty() ||
+            !ncdReferredForTag.isNullOrEmpty() ||
             !ncdMedicalReviewDateTag.isNullOrEmpty() ||
             !ncdRedRiskTag.isNullOrEmpty() ||
             !ncdRegistrationTag.isNullOrEmpty() ||
@@ -140,6 +143,8 @@ class PatientListViewModel @Inject constructor(
                     } else ""
                 },
                 visitDate = medicalReviewDueTag?.map { it.name.lowercase() },
+                labTestReferredOn = if(isPharmacist) null else getReferredOn(),
+                prescriptionReferredOn = if(isPharmacist) getReferredOn() else null,
                 medicalReviewDate = ncdMedicalReviewDateTag?.map { it.name.lowercase() }?.get(0),
                 enrollmentStatus = ncdRegistrationTag?.map { it.optionalData }?.get(0),
                 isRedRiskPatient = redRisk(),
@@ -149,6 +154,10 @@ class PatientListViewModel @Inject constructor(
         } else {
             null
         }
+    }
+
+    private fun getReferredOn(): String? {
+        return ncdReferredForTag?.map { it.name.lowercase() }?.get(0)
     }
 
     private fun redRisk(): Boolean? {

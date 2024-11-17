@@ -21,6 +21,7 @@ class PatientSearchFilterDialog : DialogFragment(), View.OnClickListener {
     private lateinit var medicalReviewDueTag: TagListCustomView
     private lateinit var patientStatusTag: TagListCustomView
 
+    private lateinit var ncdReferredForTag: TagListCustomView
     private lateinit var ncdMedicalReviewDateTag: TagListCustomView
     private lateinit var ncdRedRiskTag: TagListCustomView
     private lateinit var ncdRegistrationTag: TagListCustomView
@@ -46,6 +47,17 @@ class PatientSearchFilterDialog : DialogFragment(), View.OnClickListener {
     }
 
     private fun initView() {
+        binding.apply {
+            if (CommonUtils.isDispenseOrInvestigation(requireArguments().getString(ORIGIN))) {
+                referredForGroup.visible()
+            } else {
+                medicalReviewDateGroup.visible()
+                riskGroup.visible()
+                registrationGroup.visible()
+                cvdGroup.visible()
+                assessmentGroup.visible()
+            }
+        }
         binding.btnLayout.btnConfirm.text = requireContext().getString(R.string.apply)
         medicalReviewDueTag =
             TagListCustomView(binding.root.context, binding.medicalReviewDueChipGroup) { _, _, _ ->
@@ -53,6 +65,10 @@ class PatientSearchFilterDialog : DialogFragment(), View.OnClickListener {
             }
         patientStatusTag =
             TagListCustomView(binding.root.context, binding.patientStatusChipGroup) { _, _, _ ->
+                enableConfirm()
+            }
+        ncdReferredForTag =
+            TagListCustomView(binding.root.context, binding.ncdReferredForChipGroup) { _, _, _ ->
                 enableConfirm()
             }
         ncdMedicalReviewDateTag =
@@ -83,6 +99,10 @@ class PatientSearchFilterDialog : DialogFragment(), View.OnClickListener {
             getPatientStatusChip(),
             patientListViewModel.patientStatusTag
         )
+        ncdReferredForTag.addChipItemList(
+            getTodayTomorrowChip(),
+            patientListViewModel.ncdReferredForTag
+        )
         ncdMedicalReviewDateTag.addChipItemList(
             getTodayTomorrowChip(),
             patientListViewModel.ncdMedicalReviewDateTag
@@ -106,19 +126,13 @@ class PatientSearchFilterDialog : DialogFragment(), View.OnClickListener {
         binding.btnLayout.btnCancel.safeClickListener(this)
         binding.imgClose.safeClickListener(this)
         binding.btnLayout.btnConfirm.safeClickListener(this)
-        binding.apply {
-            medicalReviewDateGroup.visible()
-            riskGroup.visible()
-            registrationGroup.visible()
-            cvdGroup.visible()
-            assessmentGroup.visible()
-        }
     }
 
     private fun enableConfirm() {
         binding.btnLayout.btnConfirm.isEnabled =
             patientStatusTag.getSelectedTags().isNotEmpty() ||
                     medicalReviewDueTag.getSelectedTags().isNotEmpty() ||
+                    ncdReferredForTag.getSelectedTags().isNotEmpty() ||
                     ncdMedicalReviewDateTag.getSelectedTags().isNotEmpty() ||
                     ncdRedRiskTag.getSelectedTags().isNotEmpty() ||
                     ncdRegistrationTag.getSelectedTags().isNotEmpty() ||
@@ -137,8 +151,14 @@ class PatientSearchFilterDialog : DialogFragment(), View.OnClickListener {
 
     companion object {
         const val TAG = "PatientSearchFilterDialog"
-        fun newInstance(): PatientSearchFilterDialog {
-            return PatientSearchFilterDialog()
+        const val ORIGIN = "origin"
+
+        fun newInstance(origin: String?): PatientSearchFilterDialog {
+            val args = Bundle()
+            args.putString(ORIGIN, origin)
+            val fragment = PatientSearchFilterDialog()
+            fragment.arguments = args
+            return fragment
         }
     }
 
@@ -148,6 +168,7 @@ class PatientSearchFilterDialog : DialogFragment(), View.OnClickListener {
             binding.btnLayout.btnCancel.id -> {
                 patientListViewModel.patientStatusTag = null
                 patientListViewModel.medicalReviewDueTag = null
+                patientListViewModel.ncdReferredForTag = null
                 patientListViewModel.ncdMedicalReviewDateTag = null
                 patientListViewModel.ncdRedRiskTag = null
                 patientListViewModel.ncdRegistrationTag = null
@@ -160,6 +181,7 @@ class PatientSearchFilterDialog : DialogFragment(), View.OnClickListener {
             binding.btnLayout.btnConfirm.id -> {
                 patientListViewModel.medicalReviewDueTag = medicalReviewDueTag.getSelectedTags().takeIf { it.isNotEmpty() }
                 patientListViewModel.patientStatusTag = patientStatusTag.getSelectedTags().takeIf { it.isNotEmpty() }
+                patientListViewModel.ncdReferredForTag = ncdReferredForTag.getSelectedTags().takeIf { it.isNotEmpty() }
                 patientListViewModel.ncdMedicalReviewDateTag = ncdMedicalReviewDateTag.getSelectedTags().takeIf { it.isNotEmpty() }
                 patientListViewModel.ncdRedRiskTag = ncdRedRiskTag.getSelectedTags().takeIf { it.isNotEmpty() }
                 patientListViewModel.ncdRegistrationTag = ncdRegistrationTag.getSelectedTags().takeIf { it.isNotEmpty() }

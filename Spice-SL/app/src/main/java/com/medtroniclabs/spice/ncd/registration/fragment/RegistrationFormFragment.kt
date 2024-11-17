@@ -114,7 +114,7 @@ class RegistrationFormFragment : BaseFragment(), View.OnClickListener, FormEvent
                                 DuplicationNudgeDialog.newInstance(
                                     StringConverter.convertGivenMapToString(
                                         responseMap
-                                    )
+                                    ), isFromEnrollment = true
                                 ) {
                                     proceedAssessment(responseMap)
                                 }

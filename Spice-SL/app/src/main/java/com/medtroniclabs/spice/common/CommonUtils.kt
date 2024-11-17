@@ -207,13 +207,6 @@ object CommonUtils {
         }
         return false
     }
-    fun isPharmist():Boolean {
-        val userRole = SecuredPreference.getUserDetails()?.roles?.joinToString { it.name }
-        if (userRole != null) {
-            return userRole.contains(RoleConstant.PHARMACIST)
-        }
-        return false
-    }
 
     fun offlineUsers(): Boolean {
         return isAfrica() && (isSL() && isChw())
@@ -1601,6 +1594,13 @@ object CommonUtils {
                     }
                     pregnancyAnc[Screening.isPregnancyAnc] = true
                 }
+
+                (map[Screening.bioMetrics] as? HashMap<*, *>)?.let { bioMetricMap ->
+                    val isMale =
+                        bioMetricMap[DefinedParams.Gender]?.toString().equals(Screening.Male, true)
+                    if (isMale)
+                        map.remove(Screening.pregnancyAnc)
+                }
             }
         }
     }
@@ -1699,5 +1699,17 @@ object CommonUtils {
             return canShowSort(origin) || isFromDispense || isFromInvestigation
         }
         return false
+    }
+
+    fun isPharmacist(): Boolean {
+        val userRole = SecuredPreference.getUserDetails()?.roles?.joinToString { it.name }
+        return userRole != null && userRole.contains(PHARMACIST)
+    }
+
+    fun isDispenseOrInvestigation(origin: String?): Boolean {
+        return when (origin?.lowercase()) {
+            MenuConstants.DISPENSE.lowercase(), MenuConstants.INVESTIGATION.lowercase() -> true
+            else -> false
+        }
     }
 }
