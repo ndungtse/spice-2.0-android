@@ -1,11 +1,13 @@
 package com.medtroniclabs.spice.ui.assessment.fragment
 
 import android.content.res.Configuration
+import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.appcompat.widget.AppCompatSpinner
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
@@ -38,6 +40,7 @@ import com.medtroniclabs.spice.formgeneration.utility.RecommendedDosageFragment
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.MenuConstants.ICCM_MENU_ID
+import com.medtroniclabs.spice.ui.assessment.AssessmentCommonUtils.getMuacColorCode
 import com.medtroniclabs.spice.ui.assessment.AssessmentCommonUtils.getNutritionStatus
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.ACT
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.ACTStatus
@@ -396,11 +399,20 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
                             it.text = getNutritionStatus(selectedId, requireContext())
                         }
                     }
+                    formGenerator.getViewByTag(muacCode)?.apply {
+                        val background = background as? GradientDrawable
+                        background?.setStroke(resources.getDimensionPixelSize(R.dimen._4sdp), getMuacColorCode(selectedId as String, requireContext()))
+                    }
                 } else {
                     formGenerator.getViewByTag(muacStatus + rootSuffix)?.apply {
                         visibility = View.GONE
                     }
+                    formGenerator.getViewByTag(muacCode)?.apply {
+                        val background = background as? GradientDrawable
+                        background?.setStroke(resources.getDimensionPixelSize(R.dimen._1sdp), getMuacColorCode(selectedId as String, requireContext()))
+                    }
                 }
+
             }
             hasCough ->{
                 viewModel.memberDetailsLiveData.value?.data?.let {

@@ -7,6 +7,7 @@ import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.Point
+import android.graphics.drawable.GradientDrawable
 import android.text.Editable
 import android.text.InputFilter
 import android.text.InputType
@@ -130,6 +131,7 @@ import com.medtroniclabs.spice.mappingkey.Screening
 import com.medtroniclabs.spice.mappingkey.Screening.DateOfBirth
 import com.medtroniclabs.spice.mappingkey.Screening.Hour
 import com.medtroniclabs.spice.mappingkey.Screening.Minute
+import com.medtroniclabs.spice.ui.assessment.AssessmentCommonUtils.getMuacColorCode
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.PREGNANCY_MAX_AGE
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.PREGNANCY_MIN_AGE
@@ -270,6 +272,9 @@ class FormGenerator(
                             resultHashMap.remove(id)
                     }
                 }
+            }
+            (binding.etUserInput.background as? GradientDrawable)?.apply {
+                setStroke(resources.getDimensionPixelSize(R.dimen._1sdp), context.getColor(R.color.edittext_stroke))
             }
             setViewVisibility(visibility, binding.root)
             setViewEnableDisable(isEnabled, binding.root)
@@ -424,7 +429,9 @@ class FormGenerator(
                     }
                 }
             }
-
+            (binding.etUserInput.background as? GradientDrawable)?.apply {
+                setStroke(resources.getDimensionPixelSize(R.dimen._1sdp), context.getColor(R.color.edittext_stroke))
+            }
             setViewVisibility(visibility, binding.root)
             setViewEnableDisable(isEnabled, binding.root)
         }
@@ -1241,6 +1248,9 @@ class FormGenerator(
             binding.tvTitle.tag = id + titleSuffix
             binding.tvErrorMessage.tag = id + errorSuffix
             binding.tvTitle.text = translateTitle(titleCulture, title, translate)
+            (binding.etUserInput.background as? GradientDrawable)?.apply {
+                setStroke(resources.getDimensionPixelSize(R.dimen._1sdp), context.getColor(R.color.edittext_stroke))
+            }
             val dropDownList = java.util.ArrayList<Map<String, Any>>()
             dropDownList.add(
                 hashMapOf<String, Any>(
@@ -1266,6 +1276,7 @@ class FormGenerator(
             optionsList?.let { list ->
                 addDropDownList(list, dropDownList)
             }
+
             adapter.setData(dropDownList)
             binding.etUserInput.adapter = adapter
             binding.etUserInput.onItemSelectedListener =
@@ -1437,6 +1448,9 @@ class FormGenerator(
             getFamilyView(family)?.addView(binding.root) ?: kotlin.run {
                 parentLayout.addView(binding.root)
             }
+            (binding.etUserInput.background as? GradientDrawable)?.apply {
+                setStroke(resources.getDimensionPixelSize(R.dimen._1sdp), context.getColor(R.color.edittext_stroke))
+            }
             setViewVisibility(visibility, binding.root)
             setViewEnableDisable(isEnabled, binding.root)
         }
@@ -1588,6 +1602,9 @@ class FormGenerator(
 
             getFamilyView(family)?.addView(binding.root) ?: kotlin.run {
                 parentLayout.addView(binding.root)
+            }
+            (binding.etUserInput.background as? GradientDrawable)?.apply {
+                setStroke(resources.getDimensionPixelSize(R.dimen._1sdp), context.getColor(R.color.edittext_stroke))
             }
             setViewVisibility(visibility, binding.root)
             setViewEnableDisable(isEnabled, binding.root)

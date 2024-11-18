@@ -92,4 +92,12 @@ object AssessmentCommonUtils {
             else -> context.getString(R.string.hyphen_symbol)
         }
     }
+    fun getMuacColorCode(selectedId: String?, context: Context): Int {
+        return when (selectedId) {
+            AssessmentDefinedParams.Green -> context.getColor( R.color.bmi_normal_weight)
+            AssessmentDefinedParams.Yellow -> context.getColor( R.color.bmi_over_weight)
+            AssessmentDefinedParams.Red ->context.getColor( R.color.medium_high_risk_color)
+            else ->context.getColor( R.color.edittext_stroke)
+        }
+    }
 }
