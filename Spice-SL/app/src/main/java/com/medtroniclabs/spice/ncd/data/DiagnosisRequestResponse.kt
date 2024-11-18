@@ -8,7 +8,8 @@ data class NCDDiagnosisRequestResponse(
     val confirmDiagnosis: List<NCDDiagnosisItem>? = null,
     val diagnosis: List<NCDDiagnosisItem>? = null,
     val diagnosisNotes: String? = null,
-    val patientReference: String? = null
+    val patientReference: String? = null,
+    val type: String? = null
 )
 
 data class NCDDiagnosisItem(

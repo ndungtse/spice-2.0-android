@@ -1203,7 +1203,8 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
                     getTypeForDiagnoses(getMenuId()),
                     patientDetailViewModel.getGenderIsFemale(),
                     getConfirmDiagnoses(getMenuId()),
-                    patientDetailViewModel.isPregnant()
+                    patientDetailViewModel.isPregnant(),
+                    getMenuId()
                 ).apply {
                     listener = this@NCDMedicalReviewActivity
                 }.show(supportFragmentManager, NCDDiagnosisDialogFragment.TAG)

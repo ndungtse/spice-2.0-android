@@ -15,6 +15,8 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
+import com.medtroniclabs.spice.appextensions.loadAsGif
+import com.medtroniclabs.spice.appextensions.resetImageView
 import com.medtroniclabs.spice.appextensions.setDialogPercent
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
@@ -142,14 +144,16 @@ class NCDPatientHistoryDialog : DialogFragment(), View.OnClickListener {
         viewModel.createNCDPatientStatus.observe(viewLifecycleOwner) { resourceState ->
             when (resourceState.state) {
                 ResourceState.LOADING -> {
+                    showLoading()
                 }
 
                 ResourceState.SUCCESS -> {
+                    hideLoading()
                     listener?.onDialogDismissed(true)
                 }
 
                 ResourceState.ERROR -> {
-
+                    hideLoading()
                 }
             }
         }
@@ -431,6 +435,20 @@ class NCDPatientHistoryDialog : DialogFragment(), View.OnClickListener {
             binding.ivClose.id -> {
                 dismiss()
             }
+        }
+    }
+
+    private fun showLoading() {
+        binding.loadingProgress.visibility = View.VISIBLE
+        binding.loaderImage.apply {
+            loadAsGif(R.drawable.loader_spice)
+        }
+    }
+
+    private fun hideLoading() {
+        binding.loadingProgress.visibility = View.GONE
+        binding.loaderImage.apply {
+            resetImageView()
         }
     }
 

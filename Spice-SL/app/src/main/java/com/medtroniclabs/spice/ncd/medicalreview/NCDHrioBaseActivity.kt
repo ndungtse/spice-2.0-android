@@ -9,8 +9,9 @@ import androidx.appcompat.widget.PopupMenu
 import androidx.core.content.ContextCompat
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.CommonUtils
+import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
-import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
+import com.medtroniclabs.spice.common.DefinedParams.Other
 import com.medtroniclabs.spice.databinding.ActivityNcdhrioBaseBinding
 import com.medtroniclabs.spice.formgeneration.extension.capitalizeFirstChar
 import com.medtroniclabs.spice.formgeneration.extension.safePopupMenuClickListener
@@ -19,6 +20,7 @@ import com.medtroniclabs.spice.ncd.data.NCDPatientRemoveRequest
 import com.medtroniclabs.spice.ncd.medicalreview.fragment.NCDScheduleDialog
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
+import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil.toYesNoOrDefault
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 import com.medtroniclabs.spice.ui.patientDelete.NCDDeleteConfirmationDialog
 import com.medtroniclabs.spice.ui.patientDelete.viewModel.NCDPatientDeleteViewModel
@@ -180,16 +182,31 @@ class NCDHrioBaseActivity : BaseActivity() {
         binding.occupation.tvValue.text = patientListRespModel.occupation.takeUnless { it.isNullOrBlank() }?.capitalizeFirstChar() ?: getString(R.string.hyphen_symbol)
 
         binding.healthStatus.tvKey.text = getString(R.string.health_insurance_status)
-        binding.healthStatus.tvValue.text = getString(R.string.hyphen_symbol)
+        binding.healthStatus.tvValue.text = patientListRespModel.insuranceStatus.toYesNoOrDefault(
+            getString(R.string.hyphen_symbol),
+            getString(R.string.yes),
+            getString(R.string.no)
+        )
 
         binding.healthType.tvKey.text = getString(R.string.health_insurance_type)
-        binding.healthType.tvValue.text = getString(R.string.hyphen_symbol)
+        binding.healthType.tvValue.text =  patientListRespModel.insuranceType ?: getString(R.string.hyphen_symbol)
+        binding.healthType.tvValue.text = if (patientListRespModel.insuranceType.equals(Other,true)) {
+            "$Other${patientListRespModel.otherInsurance?.takeIf { it.isNotBlank() }?.let { " - $it" } ?: ""}"
+        } else {
+            patientListRespModel.insuranceType ?: getString(R.string.hyphen_symbol)
+        }
 
         binding.healthId.tvKey.text = getString(R.string.health_insurance_Id)
-        binding.healthId.tvValue.text = getString(R.string.hyphen_symbol)
+        binding.healthId.tvValue.text = patientListRespModel.insuranceId?.capitalizeFirstChar() ?: getString(R.string.hyphen_symbol)
 
         binding.nextVisit.tvKey.text = getString(R.string.next_medical_review_date)
-        binding.nextVisit.tvValue.text = getString(R.string.hyphen_symbol)
+        binding.nextVisit.tvValue.text = patientListRespModel.nextMedicalReviewDate?.let {
+            DateUtils.convertDateFormat(
+                it,
+                DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+                DateUtils.DATE_FORMAT_ddMMMyyyy
+            ).takeIf { it.isNotBlank() } ?: getString(R.string.hyphen_symbol)
+        } ?: getString(R.string.hyphen_symbol)
     }
 
     private fun showError(isActivityClosed: Boolean = false) {

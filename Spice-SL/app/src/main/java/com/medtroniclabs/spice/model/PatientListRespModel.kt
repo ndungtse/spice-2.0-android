@@ -65,7 +65,12 @@ data class PatientListRespModel(
     val mentalHealthLevels: List<String>? = null,
     val dateOfBirth: String? = null,
     val patientReference : String? =null,
-    val encounterId : String? = null
+    val encounterId : String? = null,
+    val insuranceId : String? = null,
+    val insuranceStatus : Boolean? = null,
+    val insuranceType : String? = null,
+    val otherInsurance : String? = null,
+    val nextMedicalReviewDate: String? = null,
 ) : Serializable
 
 data class PregnancyDetails(

@@ -216,6 +216,14 @@ object NCDMRUtil {
             else -> arrayListOf()
         }
     }
+    fun requestTypeForConfirmDiagnoses(menu: String?): String? {
+        return when (menu?.lowercase()) {
+            NCD.lowercase() -> NCD
+            MENTAL_HEALTH.lowercase() -> MENTALHEALTH
+            DefinedParams.PregnancyANC.lowercase() -> maternalHealth
+            else -> null
+        }
+    }
 
     fun isNCDMRMetaLoaded(): Boolean {
         return SecuredPreference.getBoolean(SecuredPreference.EnvironmentKey.IS_NCD_MEDICAL_REVIEW_LOADED.name)

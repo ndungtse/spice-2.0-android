@@ -6,7 +6,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
+import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
+import com.medtroniclabs.spice.appextensions.loadAsGif
+import com.medtroniclabs.spice.appextensions.resetImageView
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.data.model.ChipViewItemModel
@@ -53,7 +56,8 @@ class NCDDiagnosisDialogFragment : DialogFragment(), View.OnClickListener {
             types: ArrayList<String>,
             isFemale: Boolean,
             getTypes: ArrayList<String>,
-            isPregnant: Boolean
+            isPregnant: Boolean,
+            type: String? = null
         ) = NCDDiagnosisDialogFragment().apply {
                 arguments = Bundle().apply {
                     putString(DefinedParams.PatientId, patientId)
@@ -61,6 +65,7 @@ class NCDDiagnosisDialogFragment : DialogFragment(), View.OnClickListener {
                     putStringArrayList(CONFIRM_DIAGNOSIS_TYPE_GET, getTypes)
                     putBoolean(NCDMRUtil.IS_FEMALE, isFemale)
                     putBoolean(IsPregnant, isPregnant)
+                    putString(Screening.Type,type)
                 }
             }
     }
@@ -88,6 +93,9 @@ class NCDDiagnosisDialogFragment : DialogFragment(), View.OnClickListener {
     fun getPatientId(): String? {
         return arguments?.getString(DefinedParams.PatientId)
     }
+    private fun getTypeForRequest(): String? {
+        return NCDMRUtil.requestTypeForConfirmDiagnoses(arguments?.getString(Screening.Type))
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -104,16 +112,18 @@ class NCDDiagnosisDialogFragment : DialogFragment(), View.OnClickListener {
         viewModel.createConfirmDiagonsis.observe(viewLifecycleOwner) { resourceState ->
             when (resourceState.state) {
                 ResourceState.LOADING -> {
-
+                    showLoading()
                 }
 
                 ResourceState.SUCCESS -> {
+                    hideLoading()
                     dismiss()
                     listener?.onDialogDismissed(true)
                 }
 
                 ResourceState.ERROR -> {
                     // error dialog
+                    hideLoading()
                 }
             }
         }
@@ -121,10 +131,11 @@ class NCDDiagnosisDialogFragment : DialogFragment(), View.OnClickListener {
         viewModel.getConfirmDiagonsis.observe(viewLifecycleOwner) { resourceState ->
             when (resourceState.state) {
                 ResourceState.LOADING -> {
-
+                    showLoading()
                 }
 
                 ResourceState.SUCCESS -> {
+                    hideLoading()
                     resourceState.data?.let { data ->
                         viewModel.getChipLiveData.value?.let { liveData ->
                             data.diagnosis?.mapNotNull { it.value }?.let { values ->
@@ -155,7 +166,7 @@ class NCDDiagnosisDialogFragment : DialogFragment(), View.OnClickListener {
                 }
 
                 ResourceState.ERROR -> {
-
+                    hideLoading()
                 }
             }
         }
@@ -234,7 +245,8 @@ class NCDDiagnosisDialogFragment : DialogFragment(), View.OnClickListener {
                 confirmDiagnosis = viewModel.selectedChips.map { chip ->
                     NCDDiagnosisItem(type = chip.type, value = chip.value)
                 },
-                patientReference = patientId
+                patientReference = patientId,
+                type = getTypeForRequest()
             )
             viewModel.createConfirmDiagonsis(request)
         }
@@ -248,5 +260,19 @@ class NCDDiagnosisDialogFragment : DialogFragment(), View.OnClickListener {
             binding.tvErrorMessage.visible()
         }
         return isValid
+    }
+
+    private fun showLoading() {
+        binding.loadingProgress.visibility = View.VISIBLE
+        binding.loaderImage.apply {
+            loadAsGif(R.drawable.loader_spice)
+        }
+    }
+
+    private fun hideLoading() {
+        binding.loadingProgress.visibility = View.GONE
+        binding.loaderImage.apply {
+            resetImageView()
+        }
     }
 }

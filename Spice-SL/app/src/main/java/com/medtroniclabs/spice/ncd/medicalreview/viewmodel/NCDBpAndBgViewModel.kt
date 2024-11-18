@@ -31,7 +31,6 @@ class NCDBpAndBgViewModel @Inject constructor(
     var glucoseLogListResponseLiveData = MutableLiveData<Resource<BPBGListModel>>()
     val onBPValueSelectedObserver = MutableLiveData<GraphModel>()
     val onBGValueSelectedObserver = MutableLiveData<GraphModel>()
-    val refreshGraphDetails = MutableLiveData<Resource<Boolean>>()
     fun bpLogList(request: BPBGListModel) {
         viewModelScope.launch(dispatcherIO) {
             bpLogListResponseLiveData.postLoading()

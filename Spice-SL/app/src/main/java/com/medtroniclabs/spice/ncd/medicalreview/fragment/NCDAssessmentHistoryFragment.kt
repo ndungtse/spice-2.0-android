@@ -223,11 +223,11 @@ class NCDAssessmentHistoryFragment : BaseFragment(), View.OnClickListener {
             if (isBP) {
                 viewModel.totalBPCount = updatedCount
                 request.skip = updatedCount * NCDMRUtil.PageLimit
-                viewModel.glucoseLogList(request, forward)
+                viewModel.bpLogList(request)
             } else {
                 viewModel.totalBGCount = updatedCount
                 request.skip = updatedCount * NCDMRUtil.PageLimit
-                viewModel.bpLogList(request)
+                viewModel.glucoseLogList(request, forward)
             }
         }
     }
