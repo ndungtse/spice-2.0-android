@@ -69,8 +69,8 @@ class PatientListViewModel @Inject constructor(
                 apiHelper = apiHelper,
                 patientRepository = patientRepository,
                 searchText = searchText,
-                filter = getFilter(),
-                sort = getSort(),
+                filter = if(CommonUtils.canShowFilter(origin)) getFilter() else null,
+                sort = if(CommonUtils.canShowSort(origin)) getSort() else null,
                 origin = getFormattedOrigin(origin),
                 isPatientListRequired = CommonUtils.isPatientListRequired(origin?.lowercase())
             ) { getPatientsCount ->
@@ -148,7 +148,7 @@ class PatientListViewModel @Inject constructor(
                 medicalReviewDate = ncdMedicalReviewDateTag?.map { it.name.lowercase() }?.get(0),
                 enrollmentStatus = ncdRegistrationTag?.map { it.optionalData }?.get(0),
                 isRedRiskPatient = redRisk(),
-                cvdRiskLevel = ncdCvdRiskTag?.map { it.name.lowercase() }?.get(0),
+                cvdRiskLevel = ncdCvdRiskTag?.map { it.optionalData ?: it.name.lowercase() }?.get(0),
                 assessmentDate = ncdAssessmentTag?.map { it.name.lowercase() }?.get(0)
             )
         } else {

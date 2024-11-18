@@ -166,34 +166,48 @@ class PatientSearchFilterDialog : DialogFragment(), View.OnClickListener {
         when (v?.id) {
             binding.imgClose.id -> dismiss()
             binding.btnLayout.btnCancel.id -> {
-                patientListViewModel.patientStatusTag = null
-                patientListViewModel.medicalReviewDueTag = null
-                patientListViewModel.ncdReferredForTag = null
-                patientListViewModel.ncdMedicalReviewDateTag = null
-                patientListViewModel.ncdRedRiskTag = null
-                patientListViewModel.ncdRegistrationTag = null
-                patientListViewModel.ncdCvdRiskTag = null
-                patientListViewModel.ncdAssessmentTag = null
+                patientListViewModel.apply {
+                    patientStatusTag = null
+                    medicalReviewDueTag = null
+                    ncdReferredForTag = null
+                    ncdMedicalReviewDateTag = null
+                    ncdRedRiskTag = null
+                    ncdRegistrationTag = null
+                    ncdCvdRiskTag = null
+                    ncdAssessmentTag = null
+                }
                 patientListViewModel.setFilter(true)
                 dismiss()
             }
 
             binding.btnLayout.btnConfirm.id -> {
-                patientListViewModel.medicalReviewDueTag = medicalReviewDueTag.getSelectedTags().takeIf { it.isNotEmpty() }
-                patientListViewModel.patientStatusTag = patientStatusTag.getSelectedTags().takeIf { it.isNotEmpty() }
-                patientListViewModel.ncdReferredForTag = ncdReferredForTag.getSelectedTags().takeIf { it.isNotEmpty() }
-                patientListViewModel.ncdMedicalReviewDateTag = ncdMedicalReviewDateTag.getSelectedTags().takeIf { it.isNotEmpty() }
-                patientListViewModel.ncdRedRiskTag = ncdRedRiskTag.getSelectedTags().takeIf { it.isNotEmpty() }
-                patientListViewModel.ncdRegistrationTag = ncdRegistrationTag.getSelectedTags().takeIf { it.isNotEmpty() }
-                patientListViewModel.ncdCvdRiskTag = ncdCvdRiskTag.getSelectedTags().takeIf { it.isNotEmpty() }
-                patientListViewModel.ncdAssessmentTag = ncdAssessmentTag.getSelectedTags().takeIf { it.isNotEmpty() }
+                patientListViewModel.apply {
+                    this@PatientSearchFilterDialog.let {
+                        medicalReviewDueTag =
+                            it.medicalReviewDueTag.getSelectedTags().takeIf { it.isNotEmpty() }
+                        patientStatusTag =
+                            it.patientStatusTag.getSelectedTags().takeIf { it.isNotEmpty() }
+                        ncdReferredForTag =
+                            it.ncdReferredForTag.getSelectedTags().takeIf { it.isNotEmpty() }
+                        ncdMedicalReviewDateTag =
+                            it.ncdMedicalReviewDateTag.getSelectedTags().takeIf { it.isNotEmpty() }
+                        ncdRedRiskTag =
+                            it.ncdRedRiskTag.getSelectedTags().takeIf { it.isNotEmpty() }
+                        ncdRegistrationTag =
+                            it.ncdRegistrationTag.getSelectedTags().takeIf { it.isNotEmpty() }
+                        ncdCvdRiskTag =
+                            it.ncdCvdRiskTag.getSelectedTags().takeIf { it.isNotEmpty() }
+                        ncdAssessmentTag =
+                            it.ncdAssessmentTag.getSelectedTags().takeIf { it.isNotEmpty() }
+                    }
+                }
                 patientListViewModel.setFilter(true)
                 dismiss()
             }
         }
     }
 
-    fun getMedicalReviewDueChip(): ArrayList<ChipViewItemModel> {
+    private fun getMedicalReviewDueChip(): ArrayList<ChipViewItemModel> {
         val chipItemList = ArrayList<ChipViewItemModel>()
         chipItemList.add(
             ChipViewItemModel(
@@ -210,7 +224,7 @@ class PatientSearchFilterDialog : DialogFragment(), View.OnClickListener {
         return chipItemList
     }
 
-    fun getPatientStatusChip(): ArrayList<ChipViewItemModel> {
+    private fun getPatientStatusChip(): ArrayList<ChipViewItemModel> {
         val chipItemList = ArrayList<ChipViewItemModel>()
         chipItemList.add(
             ChipViewItemModel(
@@ -227,7 +241,7 @@ class PatientSearchFilterDialog : DialogFragment(), View.OnClickListener {
         return chipItemList
     }
 
-    fun getTodayTomorrowChip(): ArrayList<ChipViewItemModel> {
+    private fun getTodayTomorrowChip(): ArrayList<ChipViewItemModel> {
         val chipItemList = ArrayList<ChipViewItemModel>()
         chipItemList.add(
             ChipViewItemModel(
@@ -244,7 +258,7 @@ class PatientSearchFilterDialog : DialogFragment(), View.OnClickListener {
         return chipItemList
     }
 
-    fun getRegistrations(): ArrayList<ChipViewItemModel> {
+    private fun getRegistrations(): ArrayList<ChipViewItemModel> {
         val chipItemList = ArrayList<ChipViewItemModel>()
         chipItemList.add(
             ChipViewItemModel(
@@ -263,30 +277,33 @@ class PatientSearchFilterDialog : DialogFragment(), View.OnClickListener {
         return chipItemList
     }
 
-    fun getCvdRisks(): ArrayList<ChipViewItemModel> {
+    private fun getCvdRisks(): ArrayList<ChipViewItemModel> {
         val chipItemList = ArrayList<ChipViewItemModel>()
         chipItemList.add(
             ChipViewItemModel(
                 id = 1,
-                name = getString(R.string.high)
+                name = getString(R.string.high),
+                optionalData =getString(R.string.high_risk_filter)
             )
         )
         chipItemList.add(
             ChipViewItemModel(
                 id = 2,
-                name = getString(R.string.medium)
+                name = getString(R.string.medium),
+                optionalData =getString(R.string.medium_risk_filter)
             )
         )
         chipItemList.add(
             ChipViewItemModel(
                 id = 2,
-                name = getString(R.string.low)
+                name = getString(R.string.low),
+                optionalData =getString(R.string.low_risk_filter)
             )
         )
         return chipItemList
     }
 
-    fun getRedRisks(): ArrayList<ChipViewItemModel> {
+    private fun getRedRisks(): ArrayList<ChipViewItemModel> {
         val chipItemList = ArrayList<ChipViewItemModel>()
         chipItemList.add(
             ChipViewItemModel(

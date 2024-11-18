@@ -16,6 +16,4 @@ data class MenuEntity(
 ){
     @Ignore
     var isDisabled: Boolean = false
-    @Ignore
-    var patientCount: Int = 0
 }

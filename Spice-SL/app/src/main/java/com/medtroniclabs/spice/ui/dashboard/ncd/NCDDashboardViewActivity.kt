@@ -10,28 +10,30 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class NCDDashboardViewActivity : BaseActivity() {
-
     private lateinit var binding: ActivityNcdDashboardVeiwBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (isTablet()) {
-            requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+        requestedOrientation = if (isTablet()) {
+            ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
         } else {
-            requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+            ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         }
         binding = ActivityNcdDashboardVeiwBinding.inflate(layoutInflater)
         setMainContentView(
-            binding.root, isToolbarVisible = true, title = getString(R.string.dashboard),homeAndBackVisibility = Pair(false, true)
+            binding.root,
+            isToolbarVisible = true,
+            title = getString(R.string.dashboard),
+            homeAndBackVisibility = Pair(false, true)
         )
         loadSearchFragment()
     }
 
     private fun loadSearchFragment() {
-            replaceFragmentInId<DashboardFragment>(
-                R.id.fragmentContainerView,
-                bundle = intent.extras,
-                tag = DashboardFragment.TAG
-            )
+        replaceFragmentInId<DashboardFragment>(
+            R.id.fragmentContainerView,
+            bundle = intent.extras,
+            tag = DashboardFragment.TAG
+        )
     }
 }

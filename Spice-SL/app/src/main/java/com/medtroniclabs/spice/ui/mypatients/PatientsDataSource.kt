@@ -56,7 +56,7 @@ class PatientsDataSource(
                 villageIds = villages,
                 referencePatientId = referencePatientId?.ifBlank { null },
                 filter = filter,
-//                sort = sort,
+                sort = sort,
                 type = origin,
                 siteId = SecuredPreference.getOrganizationFhirId(),
                 countryId = SecuredPreference.getCountryId(),

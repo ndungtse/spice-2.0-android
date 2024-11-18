@@ -1105,7 +1105,9 @@
     <string name="enrolled">Enrolled</string>
     <string name="not_enrolled">Not Enrolled</string>
     <string name="high">High</string>
+    <string name="high_risk_filter">High risk</string>
     <string name="medium">Medium</string>
+    <string name="medium_risk_filter">Medium risk</string>
     <string name="low">Low</string>
 
     <string name="treatment_intensification" translatable="false">Treatment Intensification</string>
@@ -1122,4 +1124,5 @@
     <string name="hba1c_recommended_question" translatable="false">It has been three months since the patient has gone through the HbA1c test. Would you like to recommend another round of HbA1c test?</string>
     <string name="no_data_dound">No Data Found</string>
     <string name="lipid_profile" translatable="false">Lipid Profile</string>
+    <string name="low_risk_filter">Low risk</string>
 </resources>
