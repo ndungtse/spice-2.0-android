@@ -96,6 +96,7 @@ import com.medtroniclabs.spice.ncd.counseling.model.AssessmentResultModel
 import com.medtroniclabs.spice.ncd.counseling.model.NCDCounselingModel
 import com.medtroniclabs.spice.ncd.data.BPBGListModel
 import com.medtroniclabs.spice.ncd.data.BadgeNotificationModel
+import com.medtroniclabs.spice.ncd.data.LabTestPredictionResponse
 import com.medtroniclabs.spice.ncd.data.MRSummaryResponse
 import com.medtroniclabs.spice.ncd.data.MedicalReviewRequestResponse
 import com.medtroniclabs.spice.ncd.data.MedicalReviewResponse
@@ -123,6 +124,8 @@ import com.medtroniclabs.spice.ncd.data.NCDRegionSiteModel
 import com.medtroniclabs.spice.ncd.data.RegionSiteResponse
 import com.medtroniclabs.spice.ncd.data.NCDSiteRoleModel
 import com.medtroniclabs.spice.ncd.data.NCDSiteRoleResponse
+import com.medtroniclabs.spice.ncd.data.PredictionRequest
+import com.medtroniclabs.spice.ncd.data.PrescriptionNudgeResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
@@ -262,4 +265,6 @@ interface ApiHelper {
     suspend fun getPatientListTransfer(request: NCDPatientTransferNotificationCountRequest): Response<APIResponse<PatientTransferListResponse>>
     suspend fun patientTransferNotificationCount(request: NCDPatientTransferNotificationCountRequest): Response<APIResponse<NCDPatientTransferNotificationCountResponse>>
     suspend fun patientTransferUpdate(request: NCDPatientTransferUpdateRequest): Response<APIResponse<String>>
+    suspend fun getNudgesList(prescriptionNudgeRequest: PredictionRequest): Response<APIResponse<PrescriptionNudgeResponse>>
+    suspend fun getLabTestNudgeList(predictionRequest: PredictionRequest): Response<APIResponse<LabTestPredictionResponse>>
 }

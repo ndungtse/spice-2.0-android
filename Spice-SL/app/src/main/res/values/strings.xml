@@ -1107,4 +1107,19 @@
     <string name="high">High</string>
     <string name="medium">Medium</string>
     <string name="low">Low</string>
+
+    <string name="treatment_intensification" translatable="false">Treatment Intensification</string>
+    <string name="presciption_since_last_3" translatable="false">Prescription since last 3 months :</string>
+    <string name="medication_nudege_card_header_text_prefix" translatable="false">Considering the patient is not at target, would you like to</string>
+    <string name="medication_nudege_card_header_text_sufix" translatable="false">intensify the treatment?</string>
+    <string name="glucose_rbs">RBS</string>
+    <string name="glucose_fbs">FBS</string>
+    <string name="glucose_hba1c">HbA1c</string>
+    <string name="review_date">Review Date</string>
+
+    <string name="recommended_investigations" translatable="false">Recommended Investigations</string>
+    <string name="lipids_recommended_investigations" translatable="false">It has been one year since the patient has gone through the %1$s. Would you like to recommend another round of %1$s?</string>
+    <string name="hba1c_recommended_question" translatable="false">It has been three months since the patient has gone through the HbA1c test. Would you like to recommend another round of HbA1c test?</string>
+    <string name="no_data_dound">No Data Found</string>
+    <string name="lipid_profile" translatable="false">Lipid Profile</string>
 </resources>

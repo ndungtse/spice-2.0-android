@@ -214,4 +214,11 @@ object DefinedParams {
     const val FormInput = "formInput"
     const val ViewScreens = "viewScreens"
     const val IntentPatientDetails = "IntentPatientDetails"
+
+    const val FBS = "FBS"
+    const val RBS = "RBS"
+    const val RBS_FBS = "RBS & FBS"
+    const val rbs = "rbs"
+    const val fbs = "fbs"
+    const val DialogWidth = 720f
 }

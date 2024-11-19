@@ -96,6 +96,7 @@ import com.medtroniclabs.spice.ncd.counseling.model.AssessmentResultModel
 import com.medtroniclabs.spice.ncd.counseling.model.NCDCounselingModel
 import com.medtroniclabs.spice.ncd.data.BPBGListModel
 import com.medtroniclabs.spice.ncd.data.BadgeNotificationModel
+import com.medtroniclabs.spice.ncd.data.LabTestPredictionResponse
 import com.medtroniclabs.spice.ncd.data.MRSummaryResponse
 import com.medtroniclabs.spice.ncd.data.MedicalReviewRequestResponse
 import com.medtroniclabs.spice.ncd.data.MedicalReviewResponse
@@ -123,6 +124,8 @@ import com.medtroniclabs.spice.ncd.data.NCDRegionSiteModel
 import com.medtroniclabs.spice.ncd.data.RegionSiteResponse
 import com.medtroniclabs.spice.ncd.data.NCDSiteRoleModel
 import com.medtroniclabs.spice.ncd.data.NCDSiteRoleResponse
+import com.medtroniclabs.spice.ncd.data.PredictionRequest
+import com.medtroniclabs.spice.ncd.data.PrescriptionNudgeResponse
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
 import retrofit2.Response
@@ -495,4 +498,11 @@ interface ApiService {
 
     @POST("/spice-service/patient-transfer/update")
     suspend fun patientTransferUpdate(@Body request: NCDPatientTransferUpdateRequest): Response<APIResponse<String>>
+
+    @POST("/spice-service/prescription-request/prediction")
+    suspend fun getNudgesList(@Body prescriptionNudgeRequest: PredictionRequest): Response<APIResponse<PrescriptionNudgeResponse>>
+
+    @POST("/spice-service/investigation/prediction")
+    suspend fun getLabTestNudgeList(@Body predictionRequest: PredictionRequest): Response<APIResponse<LabTestPredictionResponse>>
+
 }

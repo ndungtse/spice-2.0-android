@@ -39,6 +39,7 @@ import com.medtroniclabs.spice.ncd.medicalreview.prescription.adapter.NCDDiscont
 import com.medtroniclabs.spice.ncd.medicalreview.prescription.adapter.NCDPrescriptionAdapter
 import com.medtroniclabs.spice.ncd.medicalreview.prescription.dialog.NCDInstructionExpansionDialog
 import com.medtroniclabs.spice.ncd.medicalreview.prescription.dialog.NCDMedicationHistoryDialog
+import com.medtroniclabs.spice.ncd.medicalreview.prescription.dialog.PrescriptionResultDialogFragment
 import com.medtroniclabs.spice.ncd.medicalreview.prescription.viewmodel.NCDPrescriptionViewModel
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
@@ -74,6 +75,7 @@ class NCDPrescriptionActivity : BaseActivity(), View.OnClickListener, SignatureL
         clickListener()
         attachObserver()
         initializeView()
+        showMedicationNudge()
     }
 
     fun getPatients() {
@@ -81,6 +83,10 @@ class NCDPrescriptionActivity : BaseActivity(), View.OnClickListener, SignatureL
         prescriptionViewModel.patient_visit_id = intent.getStringExtra(DefinedParams.PatientVisitId)
         val patientId = intent.getStringExtra(DefinedParams.PatientId)
         prescriptionViewModel.getPrescriptionsList(PatientListRespModel(id = patientId))
+    }
+
+    private fun showMedicationNudge() {
+        prescriptionViewModel.getPrescriptionPrediction()
     }
 
     private fun initializeView() {
@@ -142,6 +148,27 @@ class NCDPrescriptionActivity : BaseActivity(), View.OnClickListener, SignatureL
     }
 
     fun attachObserver() {
+
+        prescriptionViewModel.prescriptionPredictionResponseLiveDate.observe(this) { resourceState ->
+            when (resourceState.state) {
+                ResourceState.LOADING -> {
+                    showLoading()
+                }
+
+                ResourceState.ERROR -> {
+                    hideLoading()
+                }
+
+                ResourceState.SUCCESS -> {
+                    resourceState.data?.let {
+                        PrescriptionResultDialogFragment().show(
+                            supportFragmentManager,
+                            PrescriptionResultDialogFragment.TAG
+                        )
+                    }
+                }
+            }
+        }
 
         patientViewModel.patientDetailsLiveData.observe(this) { resource ->
             when (resource.state) {

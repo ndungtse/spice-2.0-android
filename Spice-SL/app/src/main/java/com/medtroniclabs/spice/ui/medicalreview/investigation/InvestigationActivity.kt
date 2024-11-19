@@ -9,14 +9,19 @@ import androidx.core.widget.addTextChangedListener
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.visible
+import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.databinding.ActivityInvestigationBinding
 import com.medtroniclabs.spice.model.medicalreview.InvestigationModel
 import com.medtroniclabs.spice.model.medicalreview.SearchLabTestResponse
+import com.medtroniclabs.spice.ncd.data.LabTestPredictionResponse
+import com.medtroniclabs.spice.ncd.data.PrescriptionNudgeResponse
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.DeleteReasonDialog
+import com.medtroniclabs.spice.ui.medicalreview.investigation.dialog.HBA1CNudgesDialog
+import com.medtroniclabs.spice.ui.medicalreview.investigation.dialog.LipidsNudgesDialog
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 
 class InvestigationActivity : BaseActivity(), AdapterView.OnItemClickListener,
@@ -37,9 +42,21 @@ class InvestigationActivity : BaseActivity(), AdapterView.OnItemClickListener,
         initView()
         setListeners()
         attachObserver()
+        showLabTestNudge()
     }
 
     private fun attachObserver() {
+        investigationViewModel.labTestPredictionLivdata.observe(this) { resourceState ->
+            when (resourceState.state) {
+                ResourceState.SUCCESS -> {
+                    showNudgesDialog(resourceState.data)
+                }
+
+                else -> {
+                    //else block
+                }
+            }
+        }
         investigationViewModel.investigationSearchResponseListLiveData.observe(this) { resourceState ->
             when (resourceState.state) {
                 ResourceState.LOADING -> {
@@ -161,6 +178,38 @@ class InvestigationActivity : BaseActivity(), AdapterView.OnItemClickListener,
                 }
             }
         }
+    }
+
+    private fun showLabTestNudge() {
+        investigationViewModel.getLabTestNudgeList()
+    }
+
+    private fun showNudgesDialog(data: LabTestPredictionResponse?) {
+        if (data?.HbA1c != null) {
+            showHBA1CDialog()
+        } else {
+            if (data != null) {
+                checkLipids(data)
+            }
+        }
+    }
+
+    private fun showHBA1CDialog() {
+        HBA1CNudgesDialog.newInstance { isClosed ->
+            if (isClosed) {
+                investigationViewModel.labTestPredictionLivdata.value?.data?.let { checkLipids(it) }
+            }
+        }.show(supportFragmentManager, HBA1CNudgesDialog.TAG)
+    }
+
+    private fun checkLipids(data: LabTestPredictionResponse?) {
+        data?.LipidProfile?.let {
+            showLipidsDialog()
+        }
+    }
+
+    private fun showLipidsDialog() {
+        LipidsNudgesDialog.newInstance().show(supportFragmentManager, LipidsNudgesDialog.TAG)
     }
 
     private fun enableDisableSubmitButton() {

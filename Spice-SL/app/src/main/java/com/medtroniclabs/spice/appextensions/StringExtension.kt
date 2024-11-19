@@ -11,4 +11,3 @@ fun String?.textOrEmpty(): String {
 fun Int?.numberOrZero(): Int {
     return if (this == null || this < 0) 0 else this
 }
-

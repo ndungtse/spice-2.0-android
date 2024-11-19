@@ -174,6 +174,14 @@ android {
         buildConfig = true
     }
 
+    buildFeatures {
+        viewBinding = true
+        compose = true
+    }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.5.5"
+    }
 }
 
 dependencies {
@@ -269,4 +277,27 @@ dependencies {
 
     // loading progress
     implementation ("com.github.ybq:Android-SpinKit:1.4.0")
+
+    //compose
+    val composeBom = platform("androidx.compose:compose-bom:2024.10.01")
+    implementation(composeBom)
+    testImplementation(composeBom)
+    androidTestImplementation(composeBom)
+    implementation("androidx.compose.foundation:foundation")
+
+    // Core Compose libraries
+    implementation("androidx.compose.foundation:foundation")
+    implementation("androidx.activity:activity-compose")
+    implementation("androidx.compose.material3:material3")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose")
+    implementation("androidx.compose.runtime:runtime-livedata")
+    implementation("com.google.accompanist:accompanist-themeadapter-material3:0.28.0")
+
+    // Debug dependencies
+    debugImplementation("androidx.compose.ui:ui-tooling")
+
+    // Testing dependencies
+    testImplementation("androidx.compose.ui:ui-test-junit4")
+    androidTestImplementation("androidx.compose.ui:ui-test")
+
 }

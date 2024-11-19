@@ -29,6 +29,8 @@ import com.medtroniclabs.spice.model.RemoveLabTestRequest
 import com.medtroniclabs.spice.model.medicalreview.InvestigationModel
 import com.medtroniclabs.spice.model.medicalreview.SearchLabTestResponse
 import com.medtroniclabs.spice.model.medicalreview.SearchRequestLabTest
+import com.medtroniclabs.spice.ncd.data.LabTestPredictionResponse
+import com.medtroniclabs.spice.ncd.data.PredictionRequest
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.repo.InvestigationRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -57,6 +59,8 @@ class InvestigationViewModel @Inject constructor(
     val labTestListLiveData = MutableLiveData<Resource<ArrayList<LabTestListResponse>>>()
 
     val removeLabTestLiveData = MutableLiveData<Resource<Map<String, Any>>>()
+
+    val labTestPredictionLivdata = MutableLiveData<Resource<LabTestPredictionResponse?>>()
 
     fun searchInvestigationByName(searchTerm: String) {
         viewModelScope.launch(dispatcherIO) {
@@ -235,16 +239,16 @@ class InvestigationViewModel @Inject constructor(
                     }
                 }
                 actualValue?.let { value ->
-                        val resultObject = LabTestResultObject(
-                            name = formData.id,
-                            value = value,
-                            SecuredPreference.getUserFhirId(),
-                            getCodeDetailsObject(formData),
-                            testedOn = testedOn,
-                            resource = formData.resource,
-                            unitValue
-                        )
-                        list.add(resultObject)
+                    val resultObject = LabTestResultObject(
+                        name = formData.id,
+                        value = value,
+                        SecuredPreference.getUserFhirId(),
+                        getCodeDetailsObject(formData),
+                        testedOn = testedOn,
+                        resource = formData.resource,
+                        unitValue
+                    )
+                    list.add(resultObject)
                 }
             } else {
                 validResultList = false
@@ -299,6 +303,24 @@ class InvestigationViewModel @Inject constructor(
                 )
             }
             investigationListLiveData.postValue(investigationList)
+        }
+    }
+
+    fun getLabTestNudgeList() {
+        viewModelScope.launch(dispatcherIO) {
+            try {
+                val response = investigationRepository.getLabTestNudgeList(
+                    predictionRequest = PredictionRequest(patientReference = patientId)
+                )
+                if (response.isSuccessful) {
+                    val res = response.body()
+                    if (res?.status == true) {
+                        labTestPredictionLivdata.postSuccess(res.entity)
+                    }
+                }
+            } catch (e: Exception) {
+                //error Block
+            }
         }
     }
 

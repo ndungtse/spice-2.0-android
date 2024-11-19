@@ -7,6 +7,7 @@ import com.medtroniclabs.spice.model.LabTestListResponse
 import com.medtroniclabs.spice.model.RemoveLabTestRequest
 import com.medtroniclabs.spice.model.medicalreview.SearchLabTestResponse
 import com.medtroniclabs.spice.model.medicalreview.SearchRequestLabTest
+import com.medtroniclabs.spice.ncd.data.PredictionRequest
 import com.medtroniclabs.spice.network.ApiHelper
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.network.resource.ResourceState
@@ -85,5 +86,7 @@ class InvestigationRepository @Inject constructor(
             Resource(ResourceState.ERROR)
         }
     }
+
+    suspend fun getLabTestNudgeList(predictionRequest: PredictionRequest) = apiHelper.getLabTestNudgeList(predictionRequest)
 
 }

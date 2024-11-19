@@ -24,7 +24,10 @@ import com.medtroniclabs.spice.data.UpdatePrescriptionModel
 import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.model.PatientListRespModel
+import com.medtroniclabs.spice.ncd.data.PredictionRequest
+import com.medtroniclabs.spice.ncd.data.PrescriptionNudgeResponse
 import com.medtroniclabs.spice.ncd.medicalreview.prescription.repo.NCDPrescriptionRepo
+import com.medtroniclabs.spice.network.SingleLiveEvent
 import com.medtroniclabs.spice.network.resource.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
@@ -57,6 +60,8 @@ class NCDPrescriptionViewModel @Inject constructor(
     val updatePrescriptionLiveDate = MutableLiveData<Resource<ResponseDataModel>>()
     val removePrescriptionLiveData = MutableLiveData<Resource<Map<String, Any>>>()
     val medicationHistoryLiveData = MutableLiveData<Resource<ArrayList<Prescription>>>()
+    val prescriptionPredictionResponseLiveDate =
+        SingleLiveEvent<Resource<PrescriptionNudgeResponse>>()
 
     fun searchMedication(request: MedicationSearchRequest? = null) {
         viewModelScope.launch(dispatcherIO) {
@@ -228,5 +233,19 @@ class NCDPrescriptionViewModel @Inject constructor(
         }
     }
 
-
+     fun getPrescriptionPrediction() {
+        viewModelScope.launch(dispatcherIO) {
+            try {
+                val response = prescriptionRepository.getNudgesList(PredictionRequest(memberId = patientId))
+                if (response.isSuccessful) {
+                    val res = response.body()
+                    if (res?.status == true) {
+                        prescriptionPredictionResponseLiveDate.postSuccess(res.entity)
+                    }
+                }
+            } catch (e: Exception) {
+                //error Block
+            }
+        }
+    }
 }
