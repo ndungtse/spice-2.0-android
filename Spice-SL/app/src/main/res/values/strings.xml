@@ -621,7 +621,7 @@
 
     // Screening
     <string name="time_meal_error">Please enter an hour between %1$d to %2$d and a minute between %3$d to %4$d</string>
-    <string name="change_facility">CHANGE FACILITY\n</string>
+    <string name="change_facility">CHANGE FACILITY</string>
     <string name="choose_site">Change Health Facility</string>
     <string name="display_range">Display Range</string>
     <string name="tested_value">Test Value</string>
@@ -722,7 +722,6 @@
     <string name="enter_your_initials">Enter Your Initial</string>
     <string name="accept_terms_condition">Accept Terms &amp; Conditions</string>
     <string name="date_of_registration">Date of Registration</string>
-    <string name="program_id">Program ID</string>
     <string name="facility_name">Facility Name</string>
 
     <!-- Screening -->
@@ -1131,7 +1130,6 @@
     <string name="recommended_investigations" translatable="false">Recommended Investigations</string>
     <string name="lipids_recommended_investigations" translatable="false">It has been one year since the patient has gone through the %1$s. Would you like to recommend another round of %1$s?</string>
     <string name="hba1c_recommended_question" translatable="false">It has been three months since the patient has gone through the HbA1c test. Would you like to recommend another round of HbA1c test?</string>
-    <string name="no_data_dound">No Data Found</string>
     <string name="lipid_profile" translatable="false">Lipid Profile</string>
     <string name="low_risk_filter">Low risk</string>
     <string name="unable_to_drink_or_breastfeed">Unable to drink or breastfeed</string>

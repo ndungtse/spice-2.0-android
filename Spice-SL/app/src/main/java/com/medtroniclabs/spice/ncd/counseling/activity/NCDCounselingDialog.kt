@@ -29,7 +29,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class NCDCounselingDialog(private val callback: (isPositiveResult: Boolean) -> Unit) :
+class NCDCounselingDialog(private val callback: (isPositiveResult: Pair<String, String>?) -> Unit) :
     DialogFragment(), View.OnClickListener {
 
     private lateinit var binding: DialogNcdCounselingBinding
@@ -41,7 +41,7 @@ class NCDCounselingDialog(private val callback: (isPositiveResult: Boolean) -> U
 
     companion object {
         const val TAG = "NCDCounselingDialog"
-        fun newInstance(callback: (isPositiveResult: Boolean) -> Unit): NCDCounselingDialog {
+        fun newInstance(callback: (isPositiveResult: Pair<String, String>?) -> Unit): NCDCounselingDialog {
             return NCDCounselingDialog(callback)
         }
     }
@@ -91,8 +91,16 @@ class NCDCounselingDialog(private val callback: (isPositiveResult: Boolean) -> U
 
                 ResourceState.SUCCESS -> {
                     hideLoading()
+                    resourceState.data?.message?.let { message ->
+                        if (message.isNotEmpty())
+                            callback.invoke(
+                                Pair(
+                                    getString(R.string.psychological_assessment),
+                                    message
+                                )
+                            )
+                    }
                     dismiss()
-                    callback.invoke(true)
                 }
 
                 ResourceState.ERROR -> {

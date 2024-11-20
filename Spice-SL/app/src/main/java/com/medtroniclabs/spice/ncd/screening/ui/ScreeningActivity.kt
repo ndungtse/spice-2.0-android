@@ -1,10 +1,16 @@
 package com.medtroniclabs.spice.ncd.screening.ui
 
+import android.Manifest
 import android.os.Bundle
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.appextensions.isFineAndCoarseLocationPermissionGranted
+import com.medtroniclabs.spice.appextensions.isGpsEnabled
+import com.medtroniclabs.spice.common.SpiceLocationManager
 import com.medtroniclabs.spice.databinding.ActivityScreeningBinding
 import com.medtroniclabs.spice.ncd.screening.fragment.GeneralDetailsFragment
 import com.medtroniclabs.spice.ncd.screening.fragment.ScreeningFormBuilderFragment
@@ -82,4 +88,48 @@ class ScreeningActivity : BaseActivity() {
         )
     }
 
+    fun ableToGetLocation(): Boolean {
+        //Check Location service is enabled
+        if (!isGpsEnabled()) {
+            showTurnOnGPSDialog(isNegativeButtonNeed = true)
+            return false
+        }
+
+        //Check Location permission for limit exceed
+        if (ActivityCompat.shouldShowRequestPermissionRationale(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            )
+        ) {
+            showAllowLocationServiceDialog(isNegativeButtonNeed = true)
+            return false
+        }
+
+        //Check Location permission
+        if (!isFineAndCoarseLocationPermissionGranted()) {
+            requestPermissionLauncher.launch(
+                arrayOf(
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                )
+            )
+            return false
+        }
+
+        return true
+    }
+
+    private val requestPermissionLauncher =
+        registerForActivityResult(
+            ActivityResultContracts.RequestMultiplePermissions()
+        ) { permissions ->
+            val finePermission = permissions[Manifest.permission.ACCESS_FINE_LOCATION]
+            val coarsePermission = permissions[Manifest.permission.ACCESS_COARSE_LOCATION]
+
+            if (finePermission == true && coarsePermission == true) {
+                SpiceLocationManager(this).getCurrentLocation {
+                    viewModel.setCurrentLocation(it)
+                }
+            }
+        }
 }

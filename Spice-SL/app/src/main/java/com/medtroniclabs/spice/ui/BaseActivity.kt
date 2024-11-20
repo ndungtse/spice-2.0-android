@@ -266,11 +266,12 @@ open class BaseActivity : SpiceRootActivity() {
         }
     }
 
-    fun showTurnOnGPSDialog() {
+    fun showTurnOnGPSDialog(isNegativeButtonNeed : Boolean = false) {
         showErrorDialogue(
             title = getString(R.string.gps_disabled_title),
             message = getString(R.string.gps_disabled_message),
             positiveButtonName = getString(R.string.ok),
+            isNegativeButtonNeed = isNegativeButtonNeed
         ) {
             if (it) {
                 val settingsIntent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
@@ -279,11 +280,12 @@ open class BaseActivity : SpiceRootActivity() {
         }
     }
 
-    fun showAllowLocationServiceDialog() {
+    fun showAllowLocationServiceDialog(isNegativeButtonNeed: Boolean = false) {
         showErrorDialogue(
             title = getString(R.string.gps_disabled_title),
             message = getString(R.string.gps_disabled_message),
             positiveButtonName = getString(R.string.ok),
+            isNegativeButtonNeed = isNegativeButtonNeed
         ) {
             if (it) {
                 val intent = Intent()

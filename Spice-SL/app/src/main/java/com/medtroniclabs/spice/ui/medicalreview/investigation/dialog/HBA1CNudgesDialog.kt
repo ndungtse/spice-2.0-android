@@ -127,7 +127,7 @@ class HBA1CNudgesDialog(val callback: (isClosed: Boolean) -> Unit) : DialogFragm
             GenerateHbA1cTable(hba1cList.HbA1c)
         } else {
             Text(
-                getString(R.string.no_data_dound),
+                getString(R.string.no_data_found),
                 modifier = Modifier
                     .padding(15.dp)
                     .fillMaxWidth(1f),

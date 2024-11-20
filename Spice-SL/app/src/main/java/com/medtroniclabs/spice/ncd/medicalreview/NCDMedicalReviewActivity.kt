@@ -1013,7 +1013,11 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
                     val dialog = supportFragmentManager.findFragmentByTag(NCDPregnancyDialog.TAG)
                     if (dialog == null) {
                         val ncdPregnancyDialog =
-                            NCDPregnancyDialog.newInstance(patientId = id) { isPositiveResult, message ->
+                            NCDPregnancyDialog.newInstance(
+                                patientId = id,
+                                patientDetailViewModel.getGenderIsFemale(),
+                                patientDetailViewModel.isPregnant()
+                            ) { isPositiveResult, message ->
                                 if (isPositiveResult) showErrorDialogue(
                                     title = getString(R.string.pregnancy_details),
                                     message = message,

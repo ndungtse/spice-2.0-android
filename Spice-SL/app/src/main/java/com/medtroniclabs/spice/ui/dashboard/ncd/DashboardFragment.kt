@@ -62,6 +62,7 @@ class DashboardFragment : BaseFragment(), View.OnClickListener {
             val isVisible =
                 cgCalender.getSelectedTags().any { it.name == getString(R.string.customize) }
             if (isVisible) {
+                viewModel.userDashboardDetails.value?.data?.let { showView(true, it) }
                 binding.clDateRange.visible()
             } else {
                 binding.clDateRange.gone()
@@ -126,7 +127,7 @@ class DashboardFragment : BaseFragment(), View.OnClickListener {
                 ResourceState.SUCCESS -> {
                     hideProgress()
                     resourceState.data?.let { entity ->
-                        showView(entity)
+                        showView(false, entity)
                     }
                 }
 
@@ -138,7 +139,7 @@ class DashboardFragment : BaseFragment(), View.OnClickListener {
         }
     }
 
-    private fun showView(entity: NCDUserDashboardResponse) {
+    private fun showView(customize: Boolean, entity: NCDUserDashboardResponse) {
         val userDashboardList = ArrayList<Triple<String, Int, Int>>()
         entity.let {
             it.screened?.let { screenedCount ->
@@ -157,7 +158,7 @@ class DashboardFragment : BaseFragment(), View.OnClickListener {
         binding.rvActivitiesList.apply {
             layoutManager =
                 GridLayoutManager(requireContext(), if (requireContext().isTablet()) 3 else 1)
-            adapter = UserDashboardAdapter(userDashboardList)
+            adapter = UserDashboardAdapter(customize, userDashboardList)
         }
     }
 

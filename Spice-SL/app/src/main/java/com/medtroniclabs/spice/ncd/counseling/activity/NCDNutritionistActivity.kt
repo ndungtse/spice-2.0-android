@@ -6,12 +6,16 @@ import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.setVisible
 import com.medtroniclabs.spice.appextensions.textOrHyphen
+import com.medtroniclabs.spice.appextensions.visible
+import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.databinding.ActivityNcdNutritionistBinding
+import com.medtroniclabs.spice.formgeneration.extension.capitalizeFirstChar
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.ncd.counseling.adapter.NCDNutritionAdapter
@@ -176,8 +180,21 @@ class NCDNutritionistActivity : BaseActivity(), View.OnClickListener {
 
     private fun loadPatientInfo(data: PatientListRespModel) {
         binding.apply {
-            tvProgramId.text = data.patientId.textOrHyphen()
+            tvProgramId.text = data.programId.textOrHyphen()
             tvNationalId.text = data.identityValue.textOrHyphen()
+            data.cvdRiskScoreDisplay?.let {
+                tvPatientRisk.text = StringConverter.appendTexts(it, "", separator = "-")
+                tvPatientRisk.setTextColor(
+                    CommonUtils.cvdRiskColorCode(
+                        data.cvdRiskScore?.toLong() ?: 0, this@NCDNutritionistActivity
+                    )
+                )
+            }
+            CommonUtils.getBMIFormattedText(this@NCDNutritionistActivity, data.bmi)
+                .let { formattedBmi ->
+                    tvBMI.text = formattedBmi.first?.toString().textOrHyphen()
+                    formattedBmi.second?.let { bmiColor -> tvBMI.setTextColor(bmiColor) }
+                }
         }
         data.firstName?.let {
             val text = StringConverter.appendTexts(firstText = it, data.lastName)
@@ -283,7 +300,17 @@ class NCDNutritionistActivity : BaseActivity(), View.OnClickListener {
 
             binding.btnDone.id -> updateLifestyles()
 
-            binding.tvViewHistory.id -> binding.clLifeStyleHistory.setVisible(binding.clLifeStyleHistory.visibility == View.GONE)
+            binding.tvViewHistory.id -> {
+                val show = binding.clLifeStyleHistory.visibility == View.GONE
+
+                if (show) {
+                    binding.tvViewHistory.setText(getString(R.string.hide_history))
+                    binding.clLifeStyleHistory.visible()
+                } else {
+                    binding.tvViewHistory.setText(getString(R.string.view_history))
+                    binding.clLifeStyleHistory.gone()
+                }
+            }
         }
     }
 

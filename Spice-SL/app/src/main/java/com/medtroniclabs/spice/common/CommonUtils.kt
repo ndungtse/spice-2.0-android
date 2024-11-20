@@ -206,7 +206,7 @@ object CommonUtils {
     fun isChw(): Boolean {
         val userRole = SecuredPreference.getUserDetails()?.roles?.joinToString { it.name }
         if (userRole != null) {
-            return userRole.contains(RoleConstant.COMMUNITY_HEALTH_WORKER)
+            return userRole.contains(COMMUNITY_HEALTH_WORKER)
         }
         return false
     }
@@ -217,11 +217,15 @@ object CommonUtils {
 
     fun isChwChp(): Boolean {
         val userRole = SecuredPreference.getUserDetails()?.roles?.joinToString { it.name }
-        return userRole?.contains(RoleConstant.COMMUNITY_HEALTH_WORKER) == true || userRole?.contains(RoleConstant.COMMUNITY_HEALTH_PROVIDER) == true
+        return userRole?.contains(COMMUNITY_HEALTH_WORKER) == true || userRole?.contains(RoleConstant.COMMUNITY_HEALTH_PROVIDER) == true
     }
 
     fun isProvider(): Boolean {
-        return SecuredPreference.getRole() == PROVIDER
+        val userRole = SecuredPreference.getUserDetails()?.roles?.joinToString { it.name }
+        if (userRole != null) {
+            return userRole.contains(PROVIDER)
+        }
+        return false
     }
 
     fun isRolePresent(): Boolean {
@@ -912,7 +916,7 @@ object CommonUtils {
             referredReasonList.add(ReferredReason.pregnancySymptoms)
             status = true
         }
-        if (resultMapPair.second.containsKey(Screening.SuicidalIdeation) && (resultMapPair.second[Screening.SuicidalIdeation] as String).lowercase() == DefinedParams.Yes) {
+        if (resultMapPair.second.containsKey(Screening.SuicidalIdeation) && (resultMapPair.second[Screening.SuicidalIdeation] as String).equals(DefinedParams.Yes, true)) {
             referredReasonList.add(ReferredReason.SuicidalIdeation)
             status = true
         }
@@ -1446,25 +1450,13 @@ object CommonUtils {
                         ((!pregnancyRisk && SecuredPreference.isAncEnabled()) || pregnancyRisk))
     }
 
-    fun isBD(): Boolean {
-        return SecuredPreference.getString(SecuredPreference.EnvironmentKey.APPLICATION.name).equals(SPICE.BANGLADESH.name, true)
-    }
-
     fun isAfrica(): Boolean {
         return SecuredPreference.getString(SecuredPreference.EnvironmentKey.APPLICATION.name).equals(SPICE.AFRICA.name, true)
-    }
-
-    fun ncdType(): String {
-        return when {
-            isCommunity() -> DefinedParams.NCD_REGISTER
-            else -> DefinedParams.EMPOWER_HEALTH_NCD
-        }
     }
 
     fun requestFrom(): String {
         return when {
             isCommunity() -> SPICE.SIERRA_LEONE.name
-            isBD() -> SPICE.BANGLADESH.name
             else -> SPICE.AFRICA.name
         }
     }

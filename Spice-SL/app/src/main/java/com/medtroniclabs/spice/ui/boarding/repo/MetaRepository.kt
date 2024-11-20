@@ -559,7 +559,7 @@ class MetaRepository @Inject constructor(
                         it.viewType.equals(
                             AssessmentDefinedParams.CardView,
                             true
-                        ) && it.category.equals(category, true)
+                        ) && (it.category?.contains(category) == true)
                     }
                     .map { it.id }
                 if (cardIdList.isNotEmpty()) {
@@ -773,3 +773,4 @@ class MetaRepository @Inject constructor(
 
 
 }
+

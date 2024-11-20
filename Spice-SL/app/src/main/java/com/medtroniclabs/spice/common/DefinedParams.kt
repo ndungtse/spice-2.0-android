@@ -236,4 +236,7 @@ object DefinedParams {
     const val YELLOW_MAX_MUAC = 12.5
     const val GREEN_MAX_MUAC = 26.5
 
+    const val BOLD = "bold"
+    const val ITALIC = "italic"
+    const val BOLD_ITALIC = "bold_italic"
 }

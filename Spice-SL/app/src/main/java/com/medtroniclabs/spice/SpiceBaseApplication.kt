@@ -48,7 +48,6 @@ class SpiceBaseApplication : Application(), Configuration.Provider {
         val packageName = applicationContext.packageName
         return when {
             packageName.contains(".sl") -> SPICE.SIERRA_LEONE.name
-            packageName.contains(".bd") -> SPICE.BANGLADESH.name
             else -> SPICE.AFRICA.name
         }
     }

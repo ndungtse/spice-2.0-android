@@ -48,14 +48,14 @@
         android:id="@+id/tvValue"
         style="@style/TextStyle_Regular_16"
         android:layout_width="@dimen/_0dp"
-        android:layout_height="@dimen/_0dp"
+        android:layout_height="wrap_content"
         android:fontFamily="@font/inter_regular"
         android:textColor="@color/grey_black"
         android:visibility="visible"
-        app:layout_constraintBottom_toBottomOf="@id/tvSeparator"
+        app:layout_constraintBottom_toBottomOf="@id/tvLabel"
         app:layout_constraintEnd_toStartOf="@id/smHighRisk"
         app:layout_constraintStart_toStartOf="@id/centreTwoGuideline"
-        app:layout_constraintTop_toTopOf="@id/tvSeparator" />
+        app:layout_constraintTop_toTopOf="@id/tvLabel" />
 
 
     <com.medtroniclabs.spice.toggle.LabeledSwitch

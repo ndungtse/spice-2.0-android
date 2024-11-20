@@ -770,33 +770,30 @@
                         app:barrierDirection="bottom"
                         app:constraint_referenced_ids="tvPatientTreatmentError,tvMaternalOutcomesError" />
 
-                    <androidx.appcompat.widget.AppCompatTextView
-                        android:id="@+id/tvNCD"
-                        android:layout_width="@dimen/_0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/_12sdp"
-                        android:fontFamily="@font/inter_bold"
-                        android:paddingVertical="@dimen/_10sdp"
-                        android:text="@string/ncd"
-                        android:textColor="@color/table_title"
-                        android:textSize="@dimen/_16ssp"
-                        android:visibility="gone"
-                        app:layout_constraintEnd_toEndOf="@id/tvGravida"
-                        app:layout_constraintStart_toStartOf="@id/tvGravida"
-                        app:layout_constraintTop_toBottomOf="@+id/ncdPregnancyBarrier" />
-
-                    <include
-                        android:id="@+id/ncdDiabetesHypertension"
-                        layout="@layout/ncd_diabetes_hypertension"
-                        android:layout_width="@dimen/_0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/_10sdp"
-                        android:visibility="gone"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/tvNCD" />
-
                 </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvNCD"
+                    android:layout_width="@dimen/_0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_12sdp"
+                    android:fontFamily="@font/inter_bold"
+                    android:paddingVertical="@dimen/_10sdp"
+                    android:text="@string/ncd"
+                    android:layout_marginStart="@dimen/_16sdp"
+                    android:textColor="@color/house_hold_title"
+                    android:textSize="@dimen/_15ssp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/clPregnant" />
+
+                <include
+                    android:id="@+id/ncdDiabetesHypertension"
+                    layout="@layout/ncd_diabetes_hypertension"
+                    android:layout_width="@dimen/_0dp"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintEnd_toStartOf="@id/middleGuideLine"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tvNCD" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 

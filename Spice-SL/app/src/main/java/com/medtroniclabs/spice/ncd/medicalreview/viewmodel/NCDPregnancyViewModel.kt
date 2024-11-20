@@ -2,6 +2,7 @@ package com.medtroniclabs.spice.ncd.medicalreview.viewmodel
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.common.DefinedParams
@@ -10,6 +11,8 @@ import com.medtroniclabs.spice.data.APIResponse
 import com.medtroniclabs.spice.data.PregnancyDetailsModel
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.ncd.assessment.repo.NCDPregnancyRepo
+import com.medtroniclabs.spice.ncd.data.NCDPatientStatusRequest
+import com.medtroniclabs.spice.ncd.medicalreview.repo.NCDMedicalReviewRepository
 import com.medtroniclabs.spice.network.resource.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
@@ -19,6 +22,7 @@ import javax.inject.Inject
 @HiltViewModel
 class NCDPregnancyViewModel @Inject constructor(
     private val ncdPregnancyRepo: NCDPregnancyRepo,
+    private val ncdMedicalReviewRepository: NCDMedicalReviewRepository,
     @IoDispatcher private val dispatcherIO: CoroutineDispatcher
 ) : ViewModel() {
     var isPregnancyAncEnabledSite: Boolean = false
@@ -29,6 +33,11 @@ class NCDPregnancyViewModel @Inject constructor(
 
     val ncdPregnancyCreateResponse = MutableLiveData<Resource<APIResponse<HashMap<String, Any>>>>()
     val ncdPregnancyDetailsResponse = MutableLiveData<Resource<PregnancyDetailsModel>>()
+
+    private val getSymptomListByTypeForNCD = MutableLiveData<Triple<String,String,Boolean>>()
+    var value: String? = null
+    var yearForDiabetes :String? = null
+    var yearForHypertension :String? = null
 
     var relatedPersonFhirId: String? = null
 
@@ -55,5 +64,12 @@ class NCDPregnancyViewModel @Inject constructor(
                 ncdPregnancyRepo.ncdPregnancyDetails(request)
             )
         }
+    }
+
+    val getSymptomListByTypeForNCDLiveData = getSymptomListByTypeForNCD.switchMap {
+        ncdMedicalReviewRepository.getNCDDiagnosisList(listOf(it.first), it.second, it.third)
+    }
+    fun getSymptoms(type: String, gender: String, isPregnant: Boolean) {
+        getSymptomListByTypeForNCD.value = Triple(type, gender, isPregnant)
     }
 }

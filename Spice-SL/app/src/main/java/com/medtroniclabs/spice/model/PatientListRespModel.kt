@@ -71,7 +71,9 @@ data class PatientListRespModel(
     val insuranceId : String? = null,
     val insuranceStatus : Boolean? = null,
     val insuranceType : String? = null,
+    val suicidalIdeation : String? = null,
     val otherInsurance : String? = null,
+    val cageAid : String? = null,
     val nextMedicalReviewDate: String? = null,
 ) : Serializable
 

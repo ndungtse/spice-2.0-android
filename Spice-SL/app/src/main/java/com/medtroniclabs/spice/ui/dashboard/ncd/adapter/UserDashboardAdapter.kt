@@ -5,9 +5,13 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.medtroniclabs.spice.appextensions.gone
+import com.medtroniclabs.spice.appextensions.isTablet
+import com.medtroniclabs.spice.appextensions.setVisible
+import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.databinding.ListItemUserDashboardBinding
 
-class UserDashboardAdapter(private val userDashboardLists: ArrayList<Triple<String, Int, Int>>) :
+class UserDashboardAdapter(private val  customize: Boolean, private val userDashboardLists: ArrayList<Triple<String, Int, Int>>) :
     RecyclerView.Adapter<UserDashboardAdapter.UserDashboardViewHolder>() {
 
     inner class UserDashboardViewHolder(val binding: ListItemUserDashboardBinding) :
@@ -29,15 +33,23 @@ class UserDashboardAdapter(private val userDashboardLists: ArrayList<Triple<Stri
         position: Int
     ) {
         userDashboardLists[position].let { dashboard ->
+            val context = holder.binding.root.context
             holder.binding.apply {
                 tvKey.text = dashboard.first
-                tvValue.text = dashboard.second.toString()
-                ivActivity.setImageDrawable(
-                    ContextCompat.getDrawable(
-                        root.context,
-                        dashboard.third
-                    )
-                )
+                tvValue.text = if (customize) "0" else dashboard.second.toString()
+
+                if (context.isTablet()) {
+                    ivActivity.apply {
+                        visible()
+                        setImageDrawable(
+                            ContextCompat.getDrawable(
+                                root.context,
+                                dashboard.third
+                            )
+                        )
+                    }
+                } else
+                    ivActivity.gone()
             }
         }
     }

@@ -309,7 +309,7 @@ class ScreeningSummaryFragment : BaseFragment(), View.OnClickListener {
     private fun showGestationalAge(map: Map<String, Any>) {
         (map[Screening.pregnancyAnc] as? Map<*, *>)?.let { pregnancyAnc ->
             if (pregnancyAnc.containsKey(Screening.GestationalAge)) {
-                val weeks = (pregnancyAnc[Screening.GestationalAge] as? Double)?.toInt()
+                val weeks = (pregnancyAnc[Screening.GestationalAge] as? Number?)?.toInt()
                 val value = weeks?.let {
                     if (it > 1) "$it ${getString(R.string.weeks)}" else "$it ${getString(R.string.week)}"
                 } ?: getString(R.string.hyphen_symbol)

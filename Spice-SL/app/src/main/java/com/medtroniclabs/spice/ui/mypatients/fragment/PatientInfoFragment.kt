@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.appextensions.textOrHyphen
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.CommonUtils.combineText
 import com.medtroniclabs.spice.common.CommonUtils.getContactNumber
@@ -347,7 +348,7 @@ class PatientInfoFragment : BaseFragment() {
                 DefinedParams.color to cvdRiskLevel?.second
             ),
             mapOf(
-                DefinedParams.label to requireContext().getString(R.string.program_id),
+                DefinedParams.label to requireContext().getString(R.string.patient_id),
                 DefinedParams.Value to (data.programId
                     ?: requireContext().getString(R.string.hyphen_symbol)).toString().trim()
             ),
@@ -377,6 +378,17 @@ class PatientInfoFragment : BaseFragment() {
                     ?: requireContext().getString(R.string.hyphen_symbol))
             )
         )
+        data.cageAid?.toDoubleOrNull()?.toInt()?.let { cageId ->
+            if (cageId > 0) {
+                dataList.add(
+                    mapOf(
+                        DefinedParams.label to requireContext().getString(R.string.cage_aid),
+                        DefinedParams.Value to cageId.toString(),
+                        DefinedParams.color to requireContext().getColor(R.color.medium_high_risk_color)
+                    )
+                )
+            }
+        }
 
         val isPregnancyANC =
             viewModel.mrMenuId.equals(DefinedParams.PregnancyANC, ignoreCase = true)

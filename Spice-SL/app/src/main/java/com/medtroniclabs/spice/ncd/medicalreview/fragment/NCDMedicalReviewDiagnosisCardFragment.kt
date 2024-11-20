@@ -278,15 +278,18 @@ class NCDMedicalReviewDiagnosisCardFragment : BaseFragment(), View.OnClickListen
                         val dialog = childFragmentManager.findFragmentByTag(NCDPregnancyDialog.TAG)
                         if (dialog == null) {
                             val ncdPregnancyDialog =
-                                NCDPregnancyDialog.newInstance(patientId = id) { isPositiveResult, message ->
+                                NCDPregnancyDialog.newInstance(
+                                    patientId = id,
+                                    patientDetailViewModel.getGenderIsFemale(),
+                                    patientDetailViewModel.isPregnant()
+                                ) { isPositiveResult, message ->
                                     if (isPositiveResult) {
                                         showSuccessDialogue(
                                             title = getString(R.string.pregnancy_details),
                                             message = message,
                                         )
                                         (requireActivity() as? NCDMedicalReviewActivity)?.swipeRefresh()
-                                    }
-                                    else showErrorDialog(
+                                    } else showErrorDialog(
                                         title = getString(R.string.error),
                                         message = message
                                     )

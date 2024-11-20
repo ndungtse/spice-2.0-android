@@ -47,8 +47,10 @@ import com.medtroniclabs.spice.formgeneration.ui.FormResultComposer
 import com.medtroniclabs.spice.formgeneration.utility.CheckBoxDialog
 import com.medtroniclabs.spice.mappingkey.Screening
 import com.medtroniclabs.spice.ncd.assessment.viewmodel.BloodPressureViewModel
+import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.HIV
 import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDFormViewModel
 import com.medtroniclabs.spice.ncd.screening.ui.DuplicationNudgeDialog
+import com.medtroniclabs.spice.ncd.screening.ui.ScreeningActivity
 import com.medtroniclabs.spice.ncd.screening.utils.ReferredReason
 import com.medtroniclabs.spice.ncd.screening.viewmodel.GeneralDetailsViewModel
 import com.medtroniclabs.spice.ncd.screening.viewmodel.ScreeningFormBuilderViewModel
@@ -91,7 +93,6 @@ class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener, View.OnC
         initView()
         attachObservers()
         setListeners()
-        getCurrentLocation()
     }
 
     private fun getCurrentLocation() {
@@ -141,6 +142,13 @@ class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener, View.OnC
             }
         ncdFormViewModel.getNCDForm(MenuConstants.SCREENING.lowercase())
         bpViewModel.getRiskEntityList()
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        if ((activity as? ScreeningActivity?)?.ableToGetLocation() == true)
+            getCurrentLocation()
     }
 
     private fun getGestationalPeriod(resultHashMap: HashMap<String, Any>, id: String) {
@@ -500,7 +508,7 @@ class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener, View.OnC
                 }
             }
             getRemainingHIVBasedViews?.forEach { formItem ->
-                if (formGenerator.isViewVisible(formItem?.id + rootSuffix)) {
+                if (formGenerator.isViewVisible(formItem?.id ?: "")) {
                     formGenerator.getViewByTag(formItem?.id + rootSuffix)?.visibility =
                         View.GONE
                     formGenerator.getViewByTag(formItem?.id + rootSuffix)
@@ -512,7 +520,7 @@ class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener, View.OnC
         }
     }
 
-    fun getAgeConditionCategory(age: Int, ageCondition: ArrayList<String>): Pair<Boolean, String> {
+    private fun getAgeConditionCategory(age: Int, ageCondition: ArrayList<String>): Pair<Boolean, String> {
         for (condition in ageCondition) {
             when {
                 condition.contains("-") -> {
@@ -542,9 +550,9 @@ class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener, View.OnC
 
     private fun resetAllHIVCategoryView(serverData: List<FormLayout?>?) {
         val hivViewBasedOnAge = serverData?.filter { it?.ageCondition?.isNotEmpty() == true && it.workflowType?.contains(
-            ReferredReason.HIV) == true }
+            HIV) == true }
         hivViewBasedOnAge?.forEach { formItem ->
-            if (formGenerator.isViewVisible(formItem?.id + rootSuffix)) {
+            if (formGenerator.isViewVisible(formItem?.id + "")) {
                 formGenerator.getViewByTag(formItem?.id + rootSuffix)?.visibility =
                     View.GONE
                 formGenerator.getViewByTag(formItem?.id + rootSuffix)

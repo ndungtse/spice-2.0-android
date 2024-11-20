@@ -7,6 +7,7 @@ import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.Point
+import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
 import android.text.Editable
 import android.text.InputFilter
@@ -88,6 +89,9 @@ import com.medtroniclabs.spice.formgeneration.config.DefinedParams.VISIBLE
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.Week
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.Year
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.value
+import com.medtroniclabs.spice.common.DefinedParams.BOLD
+import com.medtroniclabs.spice.common.DefinedParams.BOLD_ITALIC
+import com.medtroniclabs.spice.common.DefinedParams.ITALIC
 import com.medtroniclabs.spice.formgeneration.config.ViewType.VIEW_INFORMATION_LABEL
 import com.medtroniclabs.spice.formgeneration.config.ViewType.VIEW_TYPE_DIALOG_CHECKBOX
 import com.medtroniclabs.spice.formgeneration.config.ViewType.VIEW_TYPE_FORM_AGE
@@ -119,6 +123,7 @@ import com.medtroniclabs.spice.formgeneration.model.MentalHealthOption
 import com.medtroniclabs.spice.formgeneration.ui.SingleSelectionCustomView
 import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapterCustomLayout
 import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
+import com.medtroniclabs.spice.formgeneration.utility.DecimalInputFilter
 import com.medtroniclabs.spice.formgeneration.utility.DigitsInputFilter
 import com.medtroniclabs.spice.formgeneration.utility.FormFieldValidator
 import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.headPhoneNumber
@@ -368,6 +373,10 @@ class FormGenerator(
 
             if (id == Screening.identityValue) {
                 inputFilter.add(InputFilter.AllCaps())
+            }
+
+            if (id == Screening.BloodGlucoseID || id == Screening.HbA1cID) {
+                inputFilter.add(DecimalInputFilter())
             }
 
             if (inputFilter.isNotEmpty()) {
@@ -1563,6 +1572,19 @@ class FormGenerator(
             } else {
                 binding.tvTitle.text = title
             }
+            textLabelColor?.let {
+                binding.tvTitle.setTextColor(Color.parseColor(it))
+            }
+            textLabelStyle?.let {style ->
+                binding.tvTitle.apply {
+                    when (style) {
+                        BOLD -> setTypeface(null, Typeface.BOLD)
+                        ITALIC -> setTypeface(null, Typeface.ITALIC)
+                        BOLD_ITALIC -> setTypeface(null, Typeface.BOLD_ITALIC)
+                        else -> setTypeface(null, Typeface.NORMAL)
+                    }
+                }
+            }
             getFamilyView(family)?.addView(binding.root) ?: kotlin.run {
                 parentLayout.addView(binding.root)
             }
@@ -1688,6 +1710,11 @@ class FormGenerator(
                 }
 
                 override fun afterTextChanged(s: Editable?) {
+                    listener.onAgeUpdateListener(
+                        resultHashMap[Year]?.toString(),
+                        serverData,
+                        resultHashMap
+                    )
                 }
             }
 
@@ -1710,13 +1737,6 @@ class FormGenerator(
                             binding.etDateOfBirth.text = DateUtils.getDateDDMMYYYY().format(it)
                             fillDetailsOnDatePickerSet(it, true, id)
                             callback?.invoke(resultHashMap,id)
-                            resultHashMap[Year]?.let { year ->
-                                listener.onAgeUpdateListener(
-                                    year.toString(),
-                                    serverData,
-                                    resultHashMap
-                                )
-                            }
                         }
                     }
                 }

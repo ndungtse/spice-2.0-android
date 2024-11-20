@@ -18,7 +18,6 @@
         android:orientation="vertical"
         app:layout_constraintGuide_end="@dimen/_16sdp" />
 
-
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/tvDiabetes"
         android:layout_width="@dimen/_0dp"
@@ -27,8 +26,7 @@
         android:paddingVertical="@dimen/_10sdp"
         android:text="@string/diabetes"
         android:textColor="@color/table_title"
-        android:textSize="@dimen/_16ssp"
-        app:layout_constraintBottom_toTopOf="@id/llDiabetes"
+        android:textSize="@dimen/_15ssp"
         app:layout_constraintEnd_toEndOf="@id/endGuideline"
         app:layout_constraintStart_toStartOf="@id/startGuideline"
         app:layout_constraintTop_toTopOf="parent" />
@@ -60,11 +58,12 @@
         android:id="@+id/tvYearOfDiagnosis"
         android:layout_width="@dimen/_0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_12sdp"
         android:fontFamily="@font/inter_regular"
         android:paddingVertical="@dimen/_10sdp"
         android:text="@string/year_of_diagnosis"
         android:textColor="@color/table_title"
-        android:textSize="@dimen/_16ssp"
+        android:textSize="@dimen/_15ssp"
         app:layout_constraintEnd_toEndOf="@id/endGuideline"
         app:layout_constraintStart_toStartOf="@id/startGuideline"
         app:layout_constraintTop_toBottomOf="@id/tvDiabetesError" />
@@ -73,7 +72,6 @@
         android:id="@+id/etYearOfDiagnosis"
         style="@style/Form_Input_Style_BG"
         android:layout_width="0dp"
-        android:layout_marginTop="@dimen/_2sdp"
         android:inputType="number"
         android:maxLength="4"
         android:paddingHorizontal="@dimen/_8sdp"
@@ -100,11 +98,12 @@
         android:id="@+id/tvDiabetesControlledTypeLabel"
         android:layout_width="@dimen/_0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_12sdp"
         android:fontFamily="@font/inter_regular"
         android:paddingVertical="@dimen/_10sdp"
         android:text="@string/diabetes_controlled_type"
         android:textColor="@color/table_title"
-        android:textSize="@dimen/_16ssp"
+        android:textSize="@dimen/_15ssp"
         app:layout_constraintEnd_toEndOf="@id/endGuideline"
         app:layout_constraintStart_toStartOf="@id/startGuideline"
         app:layout_constraintTop_toBottomOf="@id/tvYearOfDiagnosisError" />
@@ -143,11 +142,12 @@
         android:id="@+id/tvHypertension"
         android:layout_width="@dimen/_0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_12sdp"
         android:fontFamily="@font/inter_regular"
         android:paddingVertical="@dimen/_10sdp"
         android:text="@string/hypertension"
         android:textColor="@color/table_title"
-        android:textSize="@dimen/_16ssp"
+        android:textSize="@dimen/_15ssp"
         app:layout_constraintEnd_toEndOf="@id/endGuideline"
         app:layout_constraintStart_toStartOf="@id/startGuideline"
         app:layout_constraintTop_toBottomOf="@id/tvDiabetesControlledError" />
@@ -175,16 +175,16 @@
         app:layout_constraintStart_toStartOf="@id/startGuideline"
         app:layout_constraintTop_toBottomOf="@id/llHypertension" />
 
-
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/tvYearOfDiagnosisHtn"
         android:layout_width="@dimen/_0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_12sdp"
         android:fontFamily="@font/inter_regular"
         android:paddingVertical="@dimen/_10sdp"
         android:text="@string/year_of_diagnosis"
         android:textColor="@color/table_title"
-        android:textSize="@dimen/_16ssp"
+        android:textSize="@dimen/_15ssp"
         app:layout_constraintEnd_toEndOf="@id/endGuideline"
         app:layout_constraintStart_toStartOf="@id/startGuideline"
         app:layout_constraintTop_toBottomOf="@id/tvHypertensionError" />
@@ -193,7 +193,6 @@
         android:id="@+id/etYearOfDiagnosisHtn"
         style="@style/Form_Input_Style_BG"
         android:layout_width="0dp"
-        android:layout_marginTop="@dimen/_2sdp"
         android:inputType="number"
         android:maxLength="4"
         android:paddingHorizontal="@dimen/_8sdp"

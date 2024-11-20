@@ -93,7 +93,7 @@ class AssessmentNCDSummaryFragment : BaseFragment(), View.OnClickListener {
                 binding.dobAge.tvValue.text = CommonUtils.getDecimalFormatted(age)
             }
             binding.programId.root.visible()
-            binding.programId.tvKey.text = getString(R.string.program_id)
+            binding.programId.tvKey.text = getString(R.string.patient_id)
             screeningDetailsModel.programId.let { programId ->
                 binding.programId.tvValue.text =
                     programId.takeIfNotNull(getString(R.string.hyphen_symbol))

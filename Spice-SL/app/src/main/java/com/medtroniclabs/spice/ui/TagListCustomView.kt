@@ -257,7 +257,7 @@ class TagListCustomView(
         binding.root.tag = Other
         binding.tvOther.text = chipData.second
         binding.tvOther.tag = data
-        binding.tvOther.safeClickListener {
+        binding.tvOther.setOnClickListener { //Don't change it to safeClickListener
             otherOnClick(binding.tvOther, binding.tagView, chipData)
         }
         chipGroup.addView(binding.root)

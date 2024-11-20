@@ -125,6 +125,7 @@ class SingleSelectionCustomView : LinearLayout {
                if( it.text.toString().equals(string, ignoreCase = true)) {
                    it.isSelected = true
                    it.performClick()
+                   return@forEach
                }
             }
         }
@@ -135,6 +136,7 @@ class SingleSelectionCustomView : LinearLayout {
             if (it is TextView && it.tag.toString() == id) {
                 it.isSelected = boolean
                 it.performClick()
+                return@forEach
             }
         }
     }

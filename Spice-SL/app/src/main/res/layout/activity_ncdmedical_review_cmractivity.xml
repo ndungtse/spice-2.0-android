@@ -73,7 +73,6 @@
                     android:id="@+id/prescriptionHistory"
                     android:layout_width="@dimen/_0dp"
                     android:layout_height="wrap_content"
-                    android:visibility="gone"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/medicalReviewHistory" />
@@ -82,7 +81,6 @@
                     android:id="@+id/investigationHistory"
                     android:layout_width="@dimen/_0dp"
                     android:layout_height="wrap_content"
-                    android:visibility="gone"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/prescriptionHistory" />
@@ -94,7 +92,7 @@
                     android:visibility="visible"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/medicalReviewHistory" />
+                    app:layout_constraintTop_toBottomOf="@+id/investigationHistory" />
 
                 <View
                     android:layout_width="match_parent"

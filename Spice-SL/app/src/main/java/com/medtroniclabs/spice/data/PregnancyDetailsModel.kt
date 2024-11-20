@@ -1,6 +1,7 @@
 package com.medtroniclabs.spice.data
 
 import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
+import com.medtroniclabs.spice.ncd.data.NcdPatientStatus
 
 data class PregnancyDetailsModel(
     var height: Double? = null,
@@ -26,5 +27,6 @@ data class PregnancyDetailsModel(
     var maternalOutcomes: String? = null,
     var neonatalOutcomes: String? = null,
     var temperature: Int? = null,
+    var ncdPatientStatus: NcdPatientStatus? = null,
     val provenance: ProvanceDto = ProvanceDto(),
 )

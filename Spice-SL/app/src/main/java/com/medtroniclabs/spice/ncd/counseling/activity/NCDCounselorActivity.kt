@@ -6,12 +6,16 @@ import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.setVisible
 import com.medtroniclabs.spice.appextensions.textOrHyphen
+import com.medtroniclabs.spice.appextensions.visible
+import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.databinding.ActivityNcdCounselorBinding
+import com.medtroniclabs.spice.formgeneration.extension.capitalizeFirstChar
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.ncd.counseling.adapter.NCDCounselorAdapter
@@ -25,6 +29,7 @@ import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.MenuConstants
+import com.medtroniclabs.spice.ui.dialog.GeneralSuccessDialog
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 
 class NCDCounselorActivity : BaseActivity(), View.OnClickListener {
@@ -156,8 +161,36 @@ class NCDCounselorActivity : BaseActivity(), View.OnClickListener {
 
     private fun loadPatientInfo(data: PatientListRespModel) {
         binding.apply {
-            tvProgramId.text = data.patientId.textOrHyphen()
+            tvProgramId.text = data.programId.textOrHyphen()
             tvNationalId.text = data.identityValue.textOrHyphen()
+            data.cvdRiskScoreDisplay?.let {
+                tvPatientRisk.text = StringConverter.appendTexts(it, "", separator = "-")
+                tvPatientRisk.setTextColor(
+                    CommonUtils.cvdRiskColorCode(
+                        data.cvdRiskScore?.toLong() ?: 0, this@NCDCounselorActivity
+                    )
+                )
+            }
+            CommonUtils.getBMIFormattedText(this@NCDCounselorActivity, data.bmi)
+                .let { formattedBmi ->
+                    tvBMI.text = formattedBmi.first?.toString().textOrHyphen()
+                    formattedBmi.second?.let { bmiColor -> tvBMI.setTextColor(bmiColor) }
+                }
+            data.suicidalIdeation?.let { si ->
+                tvSuicidal.text = si.textOrHyphen().capitalizeFirstChar()
+                val color = if (si.equals(
+                        DefinedParams.yes,
+                        true
+                    )
+                ) R.color.medium_high_risk_color else R.color.black
+                tvSuicidal.setTextColor(getColor(color))
+            }
+            data.cageAid?.toDoubleOrNull()?.toInt()?.let { cageId ->
+                if (cageId > 0) {
+                    tvCageAid.text = cageId.toString()
+                    tvCageAid.setTextColor(getColor(R.color.medium_high_risk_color))
+                }
+            }
         }
         data.firstName?.let {
             val text = StringConverter.appendTexts(firstText = it, data.lastName)
@@ -172,6 +205,7 @@ class NCDCounselorActivity : BaseActivity(), View.OnClickListener {
         }
     }
 
+
     private fun setClickListener() {
         binding.apply {
             btnAdd.safeClickListener(this@NCDCounselorActivity)
@@ -181,9 +215,13 @@ class NCDCounselorActivity : BaseActivity(), View.OnClickListener {
     }
 
     private fun openDialog() {
-        val ncdCounselingDialog = NCDCounselingDialog.newInstance { isPositiveResult ->
-            if (isPositiveResult)
-                getCounselingList()
+        val ncdCounselingDialog = NCDCounselingDialog.newInstance { response ->
+            if (response != null)
+                GeneralSuccessDialog.newInstance(
+                    title = response.first,
+                    message = response.second,
+                    okayButton = getString(R.string.done)
+                ) { getCounselingList() }.show(supportFragmentManager, GeneralSuccessDialog.TAG)
         }
         ncdCounselingDialog.show(supportFragmentManager, NCDCounselingDialog.TAG)
     }
@@ -256,7 +294,17 @@ class NCDCounselorActivity : BaseActivity(), View.OnClickListener {
 
             binding.btnDone.id -> updateCounseling()
 
-            binding.tvViewHistory.id -> binding.clPsychologicalHistory.setVisible(binding.clPsychologicalHistory.visibility == View.GONE)
+            binding.tvViewHistory.id -> {
+                val show = binding.clPsychologicalHistory.visibility == View.GONE
+
+                if (show) {
+                    binding.tvViewHistory.setText(getString(R.string.hide_history))
+                    binding.clPsychologicalHistory.visible()
+                } else {
+                    binding.tvViewHistory.setText(getString(R.string.view_history))
+                    binding.clPsychologicalHistory.gone()
+                }
+            }
         }
     }
 

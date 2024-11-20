@@ -143,7 +143,7 @@ class LipidsNudgesDialog : DialogFragment() {
             GenerateLipidsTable(list)
         } else {
             Text(
-                getString(R.string.no_data_dound),
+                getString(R.string.no_data_found),
                 modifier = Modifier
                     .padding(15.dp)
                     .fillMaxWidth(1f),

@@ -8,7 +8,6 @@ import com.github.mikephil.charting.highlight.Highlight
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.visible
-import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil
 
 class NCDAssessmentMarkerView(
@@ -52,7 +51,7 @@ class NCDAssessmentMarkerView(
             tvHbA1C.text = context?.getString(
                 R.string.diastolic_formatted,
                 title.takeIf { !it.isNullOrBlank() } ?: "",
-                CommonUtils.getDecimalFormatted(hbA1CValue[0].y),
+                hbA1CValue[0].y.toString(),
                 unitSuffix ?: ""
             )?.trim() ?: "-"
             tvHbA1C.visible()
@@ -73,7 +72,7 @@ class NCDAssessmentMarkerView(
             tvSystolic.text = context?.getString(
                 R.string.systolic_formatted,
                 title,
-                CommonUtils.getDecimalFormatted(systolicValue[0].y),
+                systolicValue[0].y.toString(),
                 unit ?: ""
             ) ?: "-"
         }
@@ -94,7 +93,7 @@ class NCDAssessmentMarkerView(
                 context?.getString(
                     R.string.diastolic_formatted,
                     title,
-                    CommonUtils.getDecimalFormatted(diastolicValue[0].y),
+                    diastolicValue[0].y.toString(),
                     unit ?: ""
                 ) ?: "-"
         }
