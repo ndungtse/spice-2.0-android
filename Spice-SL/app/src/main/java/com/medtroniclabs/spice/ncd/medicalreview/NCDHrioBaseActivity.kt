@@ -70,6 +70,7 @@ class NCDHrioBaseActivity : BaseActivity() {
         popupMenu.menu.findItem(R.id.patient_delete).isVisible = true
         popupMenu.menu.findItem(R.id.schedule).isVisible =
             CommonUtils.canShowScheduleMenu()
+        popupMenu.menu.findItem(R.id.transfer_patient).isVisible = false
         popupMenu.safePopupMenuClickListener(object :
             android.widget.PopupMenu.OnMenuItemClickListener,
             PopupMenu.OnMenuItemClickListener {

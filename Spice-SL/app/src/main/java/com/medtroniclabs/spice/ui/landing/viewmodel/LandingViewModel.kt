@@ -11,6 +11,7 @@ import com.medtroniclabs.spice.ncd.data.NCDPatientTransferNotificationCountReque
 import com.medtroniclabs.spice.ncd.data.NCDPatientTransferNotificationCountResponse
 import com.medtroniclabs.spice.ncd.data.NCDPatientTransferUpdateRequest
 import com.medtroniclabs.spice.ncd.data.PatientTransferListResponse
+import com.medtroniclabs.spice.network.SingleLiveEvent
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.ui.BaseViewModel
 import com.medtroniclabs.spice.ui.boarding.repo.MetaRepository
@@ -33,7 +34,7 @@ class LandingViewModel @Inject constructor(
         MutableLiveData<Resource<NCDPatientTransferNotificationCountResponse>>()
 
     var selectedSiteEntity: HealthFacilityEntity ?= null
-    val patientUpdateResponse = MutableLiveData<Resource<String>>()
+    val patientUpdateResponse = SingleLiveEvent<Resource<String>>()
     var transferPatientViewId: Long? = null
 
 

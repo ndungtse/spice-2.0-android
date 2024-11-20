@@ -11,11 +11,13 @@ import androidx.activity.viewModels
 import androidx.appcompat.widget.PopupMenu
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
+import com.medtroniclabs.spice.appextensions.setError
 import com.medtroniclabs.spice.appextensions.setVisible
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.ORIGIN
+import com.medtroniclabs.spice.common.GeneralErrorDialog
 import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.databinding.ActivityNcdmedicalReviewCmractivityBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
@@ -83,6 +85,7 @@ class NCDMedicalReviewCMRActivity : BaseActivity(), View.OnClickListener, AncVis
         popupMenu.menu.findItem(R.id.patient_delete).isVisible = true
         popupMenu.menu.findItem(R.id.schedule).isVisible =
             CommonUtils.canShowScheduleMenu()
+        popupMenu.menu.findItem(R.id.transfer_patient).isVisible = CommonUtils.isAfrica() && !CommonUtils.isNURSE()
         popupMenu.safePopupMenuClickListener(object :
             android.widget.PopupMenu.OnMenuItemClickListener,
             PopupMenu.OnMenuItemClickListener {
@@ -114,15 +117,12 @@ class NCDMedicalReviewCMRActivity : BaseActivity(), View.OnClickListener, AncVis
             }
 
             R.id.transfer_patient -> {
-                if (patientTransferViewModel.validateTransferResponse.value?.state != ResourceState.LOADING
-                ) {
-                    patientDetailViewModel.patientDetailsLiveData.value?.data?.let { data ->
-                        data.patientId?.let {
-                            val request = NCDPatientTransferValidate(
-                                patientReference = it
-                            )
-                            patientTransferViewModel.validatePatientTransfer(request)
-                        }
+                patientDetailViewModel.patientDetailsLiveData.value?.data?.let { data ->
+                    data.patientId?.let {
+                        val request = NCDPatientTransferValidate(
+                            patientReference = it
+                        )
+                        patientTransferViewModel.validatePatientTransfer(request)
                     }
                 }
             }
@@ -259,12 +259,24 @@ class NCDMedicalReviewCMRActivity : BaseActivity(), View.OnClickListener, AncVis
                 ResourceState.ERROR -> {
                     hideLoading()
                     resourceState?.message?.let { message ->
-                        val title = if (message.equals(
-                                getString(R.string.no_internet_error),
-                                true
+                        val title = getString(R.string.patient_transfer)
+                        val generalErrorDialog =
+                            GeneralErrorDialog.newInstance(
+                                title,
+                                callback = {
+                                    patientTransferViewModel.validateTransferResponse.setError(message = null)
+                                    val dialog = supportFragmentManager.findFragmentByTag(GeneralErrorDialog.TAG) as? GeneralErrorDialog
+                                    dialog?.dismiss()
+                                },
+                                this,
+                                false,
+                                okayButton = getString(R.string.ok),
+                                messageBtnData = Pair(message, true)
                             )
-                        ) getString(R.string.error) else getString(R.string.patient_transfer)
-                        showErrorDialogue(title, message, isNegativeButtonNeed = false) {}
+                        val errorFragment = supportFragmentManager.findFragmentByTag(GeneralErrorDialog.TAG)
+                        if (errorFragment == null) {
+                            generalErrorDialog.show(supportFragmentManager, GeneralErrorDialog.TAG)
+                        }
                     }
                 }
 

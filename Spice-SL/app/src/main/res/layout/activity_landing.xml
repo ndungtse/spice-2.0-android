@@ -51,6 +51,7 @@
             android:id="@+id/nav_notification_view"
             android:layout_width="@dimen/_320sdp"
             android:layout_height="match_parent"
+            android:visibility="gone"
             android:layout_gravity="end"
             android:fitsSystemWindows="true">
 

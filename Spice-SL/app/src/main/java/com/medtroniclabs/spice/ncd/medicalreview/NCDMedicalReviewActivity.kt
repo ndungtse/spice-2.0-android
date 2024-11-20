@@ -141,6 +141,7 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
         popupMenu.menu.findItem(R.id.patient_delete).isVisible = true
         popupMenu.menu.findItem(R.id.schedule).isVisible =
             CommonUtils.canShowScheduleMenu()
+        popupMenu.menu.findItem(R.id.transfer_patient).isVisible = CommonUtils.isAfrica() && !CommonUtils.isNURSE()
         popupMenu.safePopupMenuClickListener(object :
             android.widget.PopupMenu.OnMenuItemClickListener,
             PopupMenu.OnMenuItemClickListener {
@@ -172,15 +173,12 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
             }
 
             R.id.transfer_patient -> {
-                if (patientTransferViewModel.validateTransferResponse.value?.state != ResourceState.LOADING
-                ) {
-                    patientDetailViewModel.patientDetailsLiveData.value?.data?.let { data ->
-                        data.patientId?.let {
-                            val request = NCDPatientTransferValidate(
-                                patientReference = it
-                            )
-                            patientTransferViewModel.validatePatientTransfer(request)
-                        }
+                patientDetailViewModel.patientDetailsLiveData.value?.data?.let { data ->
+                    data.patientId?.let {
+                        val request = NCDPatientTransferValidate(
+                            patientReference = it
+                        )
+                        patientTransferViewModel.validatePatientTransfer(request)
                     }
                 }
             }
@@ -358,11 +356,7 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
                 ResourceState.ERROR -> {
                     hideLoading()
                     resourceState?.message?.let { message ->
-                        val title = if (message.equals(
-                                getString(R.string.no_internet_error),
-                                true
-                            )
-                        ) getString(R.string.error) else getString(R.string.patient_transfer)
+                        val title = getString(R.string.patient_transfer)
                         showErrorDialogue(title, message, isNegativeButtonNeed = false) {}
                     }
                 }

@@ -60,7 +60,7 @@ class NCDTransferArchiveDialog : DialogFragment(), View.OnClickListener {
     private var selectedUser: NCDSiteRoleResponse? = null
 
     companion object {
-        val TAG = "TransferArchiveDialog"
+        const val TAG = "NCDTransferArchiveDialog"
         fun newInstance(): NCDTransferArchiveDialog {
             return NCDTransferArchiveDialog()
         }
@@ -234,17 +234,19 @@ class NCDTransferArchiveDialog : DialogFragment(), View.OnClickListener {
                     hideLoading()
                     patientTransferViewModel.searchRoleUserResponse.setError()
                     patientTransferViewModel.searchSiteResponse.setError()
-                    patientTransferViewModel.patientTransferResponse.setError()
                     resourceState.data?.let {
-                        GeneralSuccessDialog.newInstance(
-                            title = getString(R.string.transfer),
-                            message = it,
-                            okayButton = getString(R.string.done)
-                        ) {
-                            dismiss()
-                        }.show(parentFragmentManager, GeneralSuccessDialog.TAG)
+                        val fragment = childFragmentManager.findFragmentByTag(GeneralSuccessDialog.TAG)
+                        if (fragment == null) {
+                            GeneralSuccessDialog.newInstance(
+                                title = getString(R.string.transfer),
+                                message = it,
+                                okayButton = getString(R.string.done)
+                            ) {
+                                patientTransferViewModel.patientTransferResponse.setError()
+                                dismiss()
+                            }.show(childFragmentManager, GeneralSuccessDialog.TAG)
+                        }
                     }
-                    dismiss()
                 }
 
                 ResourceState.ERROR -> {

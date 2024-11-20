@@ -13,6 +13,7 @@ import com.medtroniclabs.spice.ncd.data.NCDTransferCreateRequest
 import com.medtroniclabs.spice.ncd.data.RegionSiteResponse
 import com.medtroniclabs.spice.ncd.data.NCDSiteRoleModel
 import com.medtroniclabs.spice.ncd.data.NCDSiteRoleResponse
+import com.medtroniclabs.spice.network.SingleLiveEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
@@ -24,8 +25,8 @@ class NCDPatientTransferViewModel @Inject constructor(
     @IoDispatcher private val dispatcherIO: CoroutineDispatcher
 ) : ViewModel() {
 
-    val validateTransferResponse = MutableLiveData<Resource<HashMap<String, Any>>>()
-    val patientTransferResponse = MutableLiveData<Resource<String>>()
+    val validateTransferResponse = SingleLiveEvent<Resource<HashMap<String, Any>>>()
+    var patientTransferResponse = SingleLiveEvent<Resource<String>>()
     val searchSiteResponse = MutableLiveData<Resource<ArrayList<RegionSiteResponse>>>()
     val searchRoleUserResponse = MutableLiveData<Resource<ArrayList<NCDSiteRoleResponse>>>()
 

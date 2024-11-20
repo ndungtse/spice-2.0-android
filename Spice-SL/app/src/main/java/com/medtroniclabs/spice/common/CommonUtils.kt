@@ -1556,6 +1556,14 @@ object CommonUtils {
         return false
     }
 
+    fun isNCDProvider(): Boolean {
+        val userRole = SecuredPreference.getUserDetails()?.roles?.joinToString { it.name }
+        if (userRole != null) {
+            return userRole.contains(PROVIDER)
+        }
+        return false
+    }
+
     fun isPsychologicalFlowEnabled(): Boolean {
         return SecuredPreference.getBoolean(SecuredPreference.EnvironmentKey.IS_PSYCHOLOGICAL_FLOW_ENABLED.name)
     }

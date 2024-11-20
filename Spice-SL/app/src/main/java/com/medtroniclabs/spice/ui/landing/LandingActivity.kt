@@ -44,6 +44,7 @@ import com.medtroniclabs.spice.appextensions.workerUniqueName
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.REFRESH_FRAGMENT
+import com.medtroniclabs.spice.common.GeneralErrorDialog
 import com.medtroniclabs.spice.common.RoleConstant
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.ncd.data.NCDPatientTransferNotificationCountRequest
@@ -159,14 +160,27 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
 
                 ResourceState.SUCCESS -> {
                     showHideList(true)
-                    viewModel.patientUpdateResponse.setError()
                     binding.drawerLayout.closeDrawer(binding.navNotificationView)
                     resorceState.data?.let {
-                        GeneralSuccessDialog.newInstance(
-                            getString(R.string.transfer),
-                            it,
-                            okayButton = getString(R.string.done)
-                        ) { redirectToHome() }.show(supportFragmentManager, GeneralSuccessDialog.TAG)
+                        val generalErrorDialog =
+                            GeneralErrorDialog.newInstance(
+                                getString(R.string.transfer),
+                                callback = {
+                                    viewModel.patientUpdateResponse.setError(message = null)
+                                    val dialog = supportFragmentManager.findFragmentByTag(
+                                        GeneralErrorDialog.TAG) as? GeneralErrorDialog
+                                    dialog?.dismiss()
+                                },
+                                this,
+                                false,
+                                okayButton = getString(R.string.ok),
+                                messageBtnData = Pair(it, true)
+                            )
+                        val errorFragment = supportFragmentManager.findFragmentByTag(
+                            GeneralErrorDialog.TAG)
+                        if (errorFragment == null) {
+                            generalErrorDialog.show(supportFragmentManager, GeneralErrorDialog.TAG)
+                        }
                     }
                 }
             }
@@ -256,8 +270,8 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
             binding.rvOutgoingList.visible()
         } else {
             binding.CenterProgress.visible()
-            binding.rvOutgoingList.visible()
-            binding.rvInformationList.visible()
+            binding.rvOutgoingList.gone()
+            binding.rvInformationList.gone()
         }
     }
     private fun onClickUploadLog(){
@@ -313,10 +327,13 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
      * method to initialize home view toolbar and views
      */
     private fun initializeHomeViews() {
+        if (CommonUtils.isAfrica()) {
+            binding.navNotificationView.visible()
+            binding.appBarMain.clNotification.visible()
+        }
         binding.appBarMain.ivNotification.safeClickListener(this)
         binding.appBarMain.tvNotificationCount.safeClickListener(this)
-        val role = SecuredPreference.getRole()
-        if (role == RoleConstant.PROVIDER || role == RoleConstant.PHYSICIAN_PRESCRIBER) {
+        if (CommonUtils.isNCDProvider() || CommonUtils.isNurse()) {
             binding.appBarMain.ivNotification.visible()
         } else {
             binding.drawerLayout.setDrawerLockMode(
@@ -534,8 +551,7 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
     }
 
     private fun doRefreshForDataUpdate() {
-        val role = SecuredPreference.getRole()
-        if (role == RoleConstant.PHYSICIAN_PRESCRIBER || role == RoleConstant.PROVIDER) {
+        if (CommonUtils.isNCDProvider() || CommonUtils.isNurse()) {
             viewModel.patientTransferNotificationCount(
                 NCDPatientTransferNotificationCountRequest(
                     SecuredPreference.getOrganizationId().toString()
