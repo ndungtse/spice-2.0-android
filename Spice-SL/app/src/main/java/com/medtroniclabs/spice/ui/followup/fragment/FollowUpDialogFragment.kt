@@ -103,6 +103,9 @@ class FollowUpDialogFragment : DialogFragment() {
                     FU_TYPE_HH_VISIT -> {
                         btnAssessment.visible()
                         btnCall.gone()
+                        tvCallsMadeLabel.gone()
+                        tvCallsMadeSeparator.gone()
+                        tvCallsMadeText.gone()
                         tvStartDateLabel.text = getString(R.string.treatment_start_date)
                         tvReasonLabel.visible()
                         tvReasonText.visible()

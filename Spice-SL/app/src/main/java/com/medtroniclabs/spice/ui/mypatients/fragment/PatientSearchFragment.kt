@@ -151,7 +151,7 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
                     }
                 }
                 binding.llSortFilter.btnSort.apply {
-                    if (CommonUtils.canShowSort(patientListViewModel.origin)) {
+                    if (CommonUtils.isAfrica() && CommonUtils.canShowSort(patientListViewModel.origin)) {
                         visible()
 
                         val sortCount = patientListViewModel.sortCount()
@@ -258,6 +258,12 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
             requireActivity().requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
             patientListViewModel.spanCount = DefinedParams.span_count_1
         }
+
+        if (CommonUtils.isAfrica()) {
+            binding.llExactSearch.etPatientSearch.hint = getString(R.string.search_by_national_id)
+        }
+
+
         binding.llExactSearch.etPatientSearch.addTextChangedListener(searchListener)
         binding.llExactSearch.btnSearch.safeClickListener(this)
         binding.btnRegister.safeClickListener(this)
@@ -445,7 +451,7 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
         val existingFragment =
             childFragmentManager.findFragmentByTag(PatientSearchFilterDialog.TAG) as? PatientSearchFilterDialog
         if (existingFragment == null) {
-            PatientSearchFilterDialog.newInstance(patientListViewModel.origin)
+            PatientSearchFilterDialog.newInstance()
                 .show(childFragmentManager, PatientSearchFilterDialog.TAG)
         } else {
             existingFragment.show(childFragmentManager, PatientSearchFilterDialog.TAG)

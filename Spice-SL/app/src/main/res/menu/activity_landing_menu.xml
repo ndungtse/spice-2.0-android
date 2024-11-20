@@ -17,7 +17,7 @@
         <item
             android:id="@+id/changeFacility"
             android:icon="@drawable/ic_change_facility"
-            android:title="@string/change_facility" />
+            android:title="@string/change_health_facility" />
 
         <item
             android:id="@+id/switch_language"

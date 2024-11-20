@@ -1,5 +1,6 @@
 package com.medtroniclabs.spice.ui.mypatients.fragment
 
+import android.content.res.Configuration
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -7,6 +8,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.appextensions.setWidth
 import com.medtroniclabs.spice.app.analytics.model.UserDetail
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.appextensions.setDialogPercent
@@ -18,6 +20,7 @@ import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.ncd.medicalreview.CommonEnums
 import com.medtroniclabs.spice.ui.TagListCustomView
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientListViewModel
+import timber.log.Timber
 
 class PatientSearchFilterDialog : DialogFragment(), View.OnClickListener {
     private lateinit var binding: FragmentPatientSearchFilterDialogBinding
@@ -140,35 +143,33 @@ class PatientSearchFilterDialog : DialogFragment(), View.OnClickListener {
 
     private fun enableConfirm() {
         binding.btnLayout.btnConfirm.isEnabled =
-            patientStatusTag.getSelectedTags().isNotEmpty() ||
-                    medicalReviewDueTag.getSelectedTags().isNotEmpty() ||
-                    ncdReferredForTag.getSelectedTags().isNotEmpty() ||
-                    ncdMedicalReviewDateTag.getSelectedTags().isNotEmpty() ||
-                    ncdRedRiskTag.getSelectedTags().isNotEmpty() ||
-                    ncdRegistrationTag.getSelectedTags().isNotEmpty() ||
-                    ncdCvdRiskTag.getSelectedTags().isNotEmpty() ||
-                    ncdAssessmentTag.getSelectedTags().isNotEmpty()
+            patientStatusTag.getSelectedTags().isNotEmpty() || medicalReviewDueTag.getSelectedTags().isNotEmpty()
     }
 
     override fun onStart() {
         super.onStart()
-        if (CommonUtils.checkIsTablet(requireContext())) {
-            setDialogPercent(60)
+        handleDialogSize()
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        handleDialogSize()
+    }
+
+    private fun handleDialogSize() {
+        val isLandscape = resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+        val width = if (CommonUtils.checkIsTablet(requireContext())) {
+            if (isLandscape) 65 else 90
         } else {
-            setDialogPercent(90)
+            if (isLandscape) 65 else 90
         }
+        setWidth(width)
     }
 
     companion object {
         const val TAG = "PatientSearchFilterDialog"
-        const val ORIGIN = "origin"
-
-        fun newInstance(origin: String?): PatientSearchFilterDialog {
-            val args = Bundle()
-            args.putString(ORIGIN, origin)
-            val fragment = PatientSearchFilterDialog()
-            fragment.arguments = args
-            return fragment
+        fun newInstance(): PatientSearchFilterDialog {
+            return PatientSearchFilterDialog()
         }
     }
 
@@ -176,21 +177,15 @@ class PatientSearchFilterDialog : DialogFragment(), View.OnClickListener {
         when (v?.id) {
             binding.imgClose.id -> dismiss()
             binding.btnLayout.btnCancel.id -> {
-                patientListViewModel.apply {
-                    patientStatusTag = null
-                    medicalReviewDueTag = null
-                    ncdReferredForTag = null
-                    ncdMedicalReviewDateTag = null
-                    ncdRedRiskTag = null
-                    ncdRegistrationTag = null
-                    ncdCvdRiskTag = null
-                    ncdAssessmentTag = null
-                }
+                patientListViewModel.patientStatusTag = null
+                patientListViewModel.medicalReviewDueTag = null
                 patientListViewModel.setFilter(true)
                 dismiss()
             }
 
             binding.btnLayout.btnConfirm.id -> {
+                patientListViewModel.medicalReviewDueTag = medicalReviewDueTag.getSelectedTags().takeIf { it.isNotEmpty() }
+                patientListViewModel.patientStatusTag = patientStatusTag.getSelectedTags().takeIf { it.isNotEmpty() }
                 patientListViewModel.apply {
                     this@PatientSearchFilterDialog.let {
                         medicalReviewDueTag =
@@ -222,7 +217,7 @@ class PatientSearchFilterDialog : DialogFragment(), View.OnClickListener {
         }
     }
 
-    private fun getMedicalReviewDueChip(): ArrayList<ChipViewItemModel> {
+    fun getMedicalReviewDueChip(): ArrayList<ChipViewItemModel> {
         val chipItemList = ArrayList<ChipViewItemModel>()
         chipItemList.add(
             ChipViewItemModel(
@@ -243,7 +238,7 @@ class PatientSearchFilterDialog : DialogFragment(), View.OnClickListener {
         return chipItemList
     }
 
-    private fun getPatientStatusChip(): ArrayList<ChipViewItemModel> {
+    fun getPatientStatusChip(): ArrayList<ChipViewItemModel> {
         val chipItemList = ArrayList<ChipViewItemModel>()
         chipItemList.add(
             ChipViewItemModel(

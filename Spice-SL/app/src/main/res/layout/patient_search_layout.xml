@@ -16,7 +16,7 @@
         android:background="@drawable/edittext_background"
         android:drawableStart="@drawable/ic_patient_search_purple"
         android:drawablePadding="@dimen/_8sdp"
-        android:hint="@string/search_by_national_id"
+        android:hint="@string/search_by_patient_id_name"
         android:imeOptions="actionSearch"
         android:inputType="textCapWords"
         android:maxLines="1"

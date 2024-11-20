@@ -54,7 +54,9 @@ class CustomSpinnerAdapter(context: Context,val translate:Boolean =false) :
     override fun getDropDownView(position: Int, mView: View?, parentGroup: ViewGroup): View {
         if (itemList.isEmpty()) {
             // If itemList is empty, inflate the empty state layout
-            return LayoutInflater.from(parentGroup.context).inflate(emptyLayoutResourceId, parentGroup, false)
+            val emptyView=  LayoutInflater.from(parentGroup.context).inflate(emptyLayoutResourceId, parentGroup, false)
+            emptyView.setBackgroundResource(R.drawable.edittext_background)
+            return emptyView
         } else {
             // If itemList is not empty, create and return the regular item view
             return createView(position, parentGroup)

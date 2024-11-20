@@ -34,9 +34,7 @@
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:exported="false"
             android:windowSoftInputMode="adjustPan" />
-        <activity
-            android:name=".ui.phuwalkins.activity.PhuWalkInsActivity"
-            android:exported="false" />
+
         <activity
             android:name=".ncd.medicalreview.NCDMedicalReviewCMRActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
@@ -136,6 +134,14 @@
             android:windowSoftInputMode="adjustPan"
             android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".ui.phuwalkins.activity.PhuWalkInsActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:exported="false"
+            android:windowSoftInputMode="adjustPan"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity"  />
+
         <activity
             android:name=".ui.landing.OfflineSyncActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"

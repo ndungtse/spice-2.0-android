@@ -70,6 +70,7 @@ import com.medtroniclabs.spice.ui.patientTransfer.dialog.NCDPatientDetailDialogu
 import com.medtroniclabs.spice.ncd.data.PatientTransferListResponse
 import com.medtroniclabs.spice.ncd.data.NCDPatientTransferUpdateRequest
 import com.medtroniclabs.spice.common.TransferStatusEnum
+import com.medtroniclabs.spice.ui.MenuConstants
 import com.medtroniclabs.spice.ncd.data.NCDSupportRequest
 import com.medtroniclabs.spice.ncd.data.PatientTransfer
 import com.medtroniclabs.spice.ncd.landing.dialog.LanguagePreferenceDialog
@@ -662,9 +663,12 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
         if (CommonUtils.isCommunity() && CommonUtils.isRolePresent()) {
             binding.appBarMain.tvTitle.text = getString(R.string.search_patient)
             requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+            val bundle = Bundle().apply {
+                putString(DefinedParams.ORIGIN, MenuConstants.MY_PATIENTS_MENU_ID)
+            }
             replaceFragmentIfExists<PatientSearchFragment>(
                 R.id.fragmentContainerView,
-                bundle = null,
+                bundle = bundle,
                 tag = PatientSearchFragment.TAG
             )
         } else {

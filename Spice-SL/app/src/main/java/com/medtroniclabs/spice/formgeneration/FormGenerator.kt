@@ -124,9 +124,9 @@ import com.medtroniclabs.spice.formgeneration.model.ConditionalModel
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.model.MentalHealthOption
 import com.medtroniclabs.spice.formgeneration.ui.SingleSelectionCustomView
-import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapterCustomLayout
 import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
 import com.medtroniclabs.spice.formgeneration.utility.DecimalInputFilter
+import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapterCustomLayout
 import com.medtroniclabs.spice.formgeneration.utility.DigitsInputFilter
 import com.medtroniclabs.spice.formgeneration.utility.FormFieldValidator
 import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.headPhoneNumber
@@ -151,7 +151,7 @@ class FormGenerator(
     private val resultLauncher: ActivityResultLauncher<Intent>? = null,
     private val listener: FormEventListener,
     var scrollView: NestedScrollView? = null,
-    val translate: Boolean,
+    val translate: Boolean = false,
     private val callback: ((HashMap<String, Any>,String) -> Unit)? = null
 ) : ContextWrapper(context) {
 
@@ -239,6 +239,7 @@ class FormGenerator(
                 binding.etUserInput.isEnabled = it
             }
             isInfo?.let {
+                binding.ivInfo.text = infoTitle ?: getString(R.string.job_aid)
                 binding.ivInfo.visibility = getVisibility(it)
             }
 
@@ -345,6 +346,9 @@ class FormGenerator(
             }
             maxDecimalPlaces?.let {
                 binding.etUserInput.filters = arrayOf<InputFilter>(DecimalDigitsInputFilter(it))
+            }
+            unitMeasurement?.let {
+                it.also { resultHashMap[id + Screening.unitMeasurement_KEY] = it }
             }
             hint?.let {
                 if (translate) {
@@ -1194,6 +1198,7 @@ class FormGenerator(
                 binding.tvTitle.markMandatory()
 
             isInfo?.let {
+                binding.ivInfo.text = infoTitle ?: getString(R.string.job_aid)
                 binding.ivInfo.visibility = getVisibility(it)
             }
 
@@ -1278,6 +1283,7 @@ class FormGenerator(
                 binding.tvTitle.markMandatory()
             }
             isInfo?.let {
+                binding.ivInfo.text = infoTitle ?: getString(R.string.job_aid)
                 binding.ivInfo.visibility = getVisibility(it)
             }
 
@@ -1321,6 +1327,7 @@ class FormGenerator(
                         }
                     }
             } else {
+                binding.etUserInput.background=null
                 val adapter=CustomSpinnerAdapter(context, translate)
                 optionsList?.let { list ->
                     addDropDownList(list, dropDownList)

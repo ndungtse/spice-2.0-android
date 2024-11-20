@@ -5,6 +5,7 @@ import androidx.room.Ignore
 import com.medtroniclabs.spice.appextensions.convertToUtcDateTime
 import com.medtroniclabs.spice.db.entity.HouseholdEntity
 import com.medtroniclabs.spice.data.offlinesync.utils.OfflineSyncStatus
+import java.util.Locale
 
 data class HouseHold(
 
@@ -80,7 +81,7 @@ data class HouseHold(
             villageId = this.villageId,
             landmark = this.landmark,
             headPhoneNumber = this.headPhoneNumber,
-            headPhoneNumberCategory = this.headPhoneNumberCategory,
+            headPhoneNumberCategory = toRegularCase(this.headPhoneNumberCategory),
             noOfPeople = this.noOfPeople,
             isOwnedAnImprovedLatrine = this.ownedAnImprovedLatrine,
             isOwnedHandWashingFacilityWithSoap = this.ownedHandWashingFacilityWithSoap,
@@ -93,5 +94,10 @@ data class HouseHold(
                 fhirId = this@HouseHold.id.toString()
                 sync_status = status
         }
+    }
+
+    private fun toRegularCase(sentence: String?): String {
+        return sentence?.split(" ")?.joinToString(" ") { it.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() } }
+            ?: ""
     }
 }

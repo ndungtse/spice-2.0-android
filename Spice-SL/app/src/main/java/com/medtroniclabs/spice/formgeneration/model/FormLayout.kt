@@ -94,6 +94,8 @@ data class FormLayout(
     var workflowType: ArrayList<String>? = null,
     var orderId: Int? = null,
     var customizedWorkflowId: Double? = null
+    var orderId: Int? = null,
+    var infoTitle: String? = null
 ) : BaseViewParams
 
 data class RangeModel(

@@ -62,11 +62,17 @@ class PatientListAdapter(private val callback: (Int, FollowUpPatientModel) -> Un
                 tvLabelReason.visible()
                 tvReason.visible()
                 tvLabelReasonSeperator.visible()
+                tvLastCallAtLabel.visible()
+                tvLastCallAtLabelSeperator.visible()
+                tvLastCallAtValue.visible()
                 callButton.isEnabled = !data.isWrongNumber
 
                 when(data.type) {
                     FU_TYPE_HH_VISIT -> {
                         callButton.gone()
+                        tvLastCallAtLabel.gone()
+                        tvLastCallAtLabelSeperator.gone()
+                        tvLastCallAtValue.gone()
                         setOverDueInfo(data.nextVisitDate, tvDueInformation)
                     }
 

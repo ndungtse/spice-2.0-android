@@ -1,62 +1,72 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/llRoot"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:animateLayoutChanges="true"
-    android:minWidth="@dimen/_520sdp"
-    android:orientation="vertical"
-    android:paddingHorizontal="@dimen/_16sdp"
-    android:paddingTop="@dimen/_5sdp"
-    android:paddingBottom="@dimen/_5sdp">
-
-
-    <TextView
-        android:id="@+id/tvTitle"
-        style="@style/Form_Label_Style"
-        android:layout_width="0dp"
-        android:paddingStart="@dimen/_0dp"
-        android:paddingEnd="@dimen/_10sdp"
-        app:layout_constraintEnd_toStartOf="@id/ivInfo"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    android:orientation="vertical">
 
     <TextView
         android:id="@+id/ivInfo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@drawable/bg_rounded_rect_orange"
-        android:paddingHorizontal="@dimen/_8sdp"
-        android:text="@string/job_aid"
-        android:textColor="@color/white"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@id/tvTitle"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/tvTitle"
-        app:layout_constraintTop_toTopOf="@id/tvTitle" />
-
-    <LinearLayout
-        android:id="@+id/selectionGroup"
-        android:layout_width="@dimen/_0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/_8sdp"
-        android:orientation="horizontal"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvTitle">
-
-    </LinearLayout>
-
-
-    <TextView
-        android:id="@+id/tvErrorMessage"
-        style="@style/TextStyle_Error_14"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingVertical="@dimen/_8sdp"
-        android:visibility="gone"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/selectionGroup" />
+        android:layout_marginTop="@dimen/_10sdp"
+        android:background="@color/background_job_aid"
+        android:drawableEnd="@drawable/ic_job_aid"
+        android:fontFamily="@font/inter_bold"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="@dimen/_16sdp"
+        android:paddingVertical="@dimen/_4sdp"
+        android:text="Job Aid"
+        android:textColor="@color/primary_medium_blue"
+        android:textSize="@dimen/_12sdp"
+        android:visibility="gone" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:animateLayoutChanges="true"
+        android:minWidth="@dimen/_520sdp"
+        android:orientation="vertical"
+        android:paddingHorizontal="@dimen/_16sdp"
+        android:paddingVertical="@dimen/_10sdp">
+
+
+        <TextView
+            android:id="@+id/tvTitle"
+            style="@style/Form_Label_Style"
+            android:layout_width="0dp"
+            android:paddingStart="@dimen/_0dp"
+            android:paddingEnd="@dimen/_10sdp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <LinearLayout
+            android:id="@+id/selectionGroup"
+            android:layout_width="@dimen/_0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_8sdp"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvTitle">
+
+        </LinearLayout>
+
+
+        <TextView
+            android:id="@+id/tvErrorMessage"
+            style="@style/TextStyle_Error_14"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingVertical="@dimen/_8sdp"
+            android:visibility="gone"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/selectionGroup" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</LinearLayout>
+
+
