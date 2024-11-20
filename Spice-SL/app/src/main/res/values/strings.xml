@@ -706,7 +706,6 @@
     <string name="phu_walk_ins_title">PHU Walk-ins</string>
     <string name="households_in">" Households in "</string>
     <string name="no_household_found">No Household found.</string>
-
     <string name="open_play_store">Open Play Store</string>
     <string name="please_check_if_play_store_available">Please check if Google Play Store is installed in the device</string>
 
@@ -1025,7 +1024,6 @@
     <string name="high_risk_confirmation" translatable="false">Are you sure you want to flag this as a High Risk Pregnancy?</string>
     <string name="no_new_medicines_prescribed_warning">Are you sure you want to continue submitting the report without prescribing medicine for the patient?</string>
     <string name="please_enter_valid_value_between_45_to_120">Please enter valid value between 45 to 120</string>
-
     <string name="please_enter_muac_between_0_to_26">Please enter a value between 0 to 26.5</string>
     <string name="tobacoo_question">Are you a regular smoker or have you been a regular smoker in the past 12 months?</string>
     <string name="enter_height">Enter Height</string>
@@ -1157,4 +1155,13 @@
     <string name="job_aid_convulsions">Job Aid (Convulsions)</string>
     <string name="job_aid_unconscious_unusually_sleepy">Job Aid (Unconscious/unusually sleepy)</string>
     <string name="job_aid_not_able_to_breastfeed_drink">Job Aid (Not able to breastfeed/drink)</string>
+    <string name="latest_screening_due_date">Latest Screening Date</string>
+    <string name="oldest_screening_due_date">Oldest Screening Date</string>
+    <string name="daily">Daily</string>
+    <string name="retry_attempts">Remaining Attempts</string>
+    <string name="due_at">Due at</string>
+    <string name="days_due">%1$s days due</string>
+    <string name="day_due">%1$s day due</string>
+    <string name="overdue_for">Overdue: %s</string>
+    <string name="device_phone_info">Your device does not support the calling feature.</string>
 </resources>

@@ -803,4 +803,7 @@ object DateUtils {
             Triple(null, null, null)
         }
     }
+    fun changeFormat(dateString: String): Date? =
+        SimpleDateFormat(DATE_FORMAT_ddMMMyyyy, Locale.ENGLISH).parse(dateString)
+
 }

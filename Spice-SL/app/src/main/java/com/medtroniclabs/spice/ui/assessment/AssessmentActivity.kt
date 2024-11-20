@@ -7,9 +7,7 @@ import androidx.activity.viewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.app.analytics.model.UserDetail
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
-import com.medtroniclabs.spice.app.analytics.utils.CommonUtils
 import com.medtroniclabs.spice.appextensions.startBackgroundOfflineSync
-import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.SpiceLocationManager
 import com.medtroniclabs.spice.databinding.ActivityAssessmentBinding
@@ -122,7 +120,7 @@ class AssessmentActivity : BaseActivity() {
     }
 
     private fun navigationHandling(isHome: Boolean, isFromSummary: Boolean) {
-        if (isFromSummary)
+        if (isFromSummary && !com.medtroniclabs.spice.common.CommonUtils.isAfrica())
             startBackgroundOfflineSync()
 
         if (isHome) {
@@ -336,7 +334,9 @@ class AssessmentActivity : BaseActivity() {
                 ResourceState.SUCCESS -> {
                     hideLoading()
                     finishSuccessFlow()
-                    startBackgroundOfflineSync()
+                    if (!com.medtroniclabs.spice.common.CommonUtils.isAfrica()) {
+                        startBackgroundOfflineSync()
+                    }
                 }
 
                 else -> {}

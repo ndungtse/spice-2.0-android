@@ -128,6 +128,10 @@ import com.medtroniclabs.spice.ncd.data.PredictionRequest
 import com.medtroniclabs.spice.ncd.data.PrescriptionNudgeResponse
 import com.medtroniclabs.spice.model.medicalreview.WazWhzScoreRequest
 import com.medtroniclabs.spice.model.medicalreview.WazWhzScoreResponse
+import com.medtroniclabs.spice.ncd.data.FollowUpRequest
+import com.medtroniclabs.spice.ncd.data.FollowUpUpdateRequest
+import com.medtroniclabs.spice.ncd.data.PatientFollowUpEntity
+import com.medtroniclabs.spice.ncd.data.RegisterCallResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
@@ -250,7 +254,6 @@ interface ApiHelper {
     suspend fun ncdGetInstructions(): Response<APIResponse<NCDInstructionModel>>
     suspend fun ncdUpdatePregnancyRisk(request: NCDPregnancyRiskUpdate): Response<APIResponse<Boolean>>
     suspend fun getWazWhzScore(request: WazWhzScoreRequest): Response<APIResponse<WazWhzScoreResponse>>
-
     suspend fun getUserDashboardDetails(request: NCDUserDashboardRequest): Response<APIResponse<NCDUserDashboardResponse>>
     suspend fun getBadgeNotifications(request: BadgeNotificationModel): Response<APIResponse<BadgeNotificationModel>>
     suspend fun updateBadgeNotifications(request: BadgeNotificationModel): Response<APIResponse<Boolean>>
@@ -271,4 +274,7 @@ interface ApiHelper {
     suspend fun patientTransferUpdate(request: NCDPatientTransferUpdateRequest): Response<APIResponse<String>>
     suspend fun getNudgesList(prescriptionNudgeRequest: PredictionRequest): Response<APIResponse<PrescriptionNudgeResponse>>
     suspend fun getLabTestNudgeList(predictionRequest: PredictionRequest): Response<APIResponse<LabTestPredictionResponse>>
+    suspend fun ncdFollowUpList(request: FollowUpRequest): APIResponse<List<PatientFollowUpEntity>>
+    suspend fun getPatientCallRegister(): Response<APIResponse<RegisterCallResponse>>
+    suspend fun updatePatientCallRegister(request: FollowUpUpdateRequest): Response<APIResponse<HashMap<String, Any>>>
 }

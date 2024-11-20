@@ -114,10 +114,10 @@ import com.medtroniclabs.spice.ncd.data.LifeStyleRequest
 import com.medtroniclabs.spice.ncd.data.NCDMedicalReviewUpdateModel
 import com.medtroniclabs.spice.ncd.data.PatientVisitRequest
 import com.medtroniclabs.spice.ncd.data.PatientVisitResponse
-import com.medtroniclabs.spice.ncd.data.ScreeningPatientResponse
 import com.medtroniclabs.spice.model.medicalreview.WazWhzScoreRequest
 import com.medtroniclabs.spice.model.medicalreview.WazWhzScoreResponse
-import okhttp3.MultipartBody
+import com.medtroniclabs.spice.ncd.data.FollowUpRequest
+import com.medtroniclabs.spice.ncd.data.FollowUpUpdateRequest
 import com.medtroniclabs.spice.ncd.data.TermsAndConditionsModel
 import com.medtroniclabs.spice.ncd.data.NCDPatientRemoveRequest
 import com.medtroniclabs.spice.ncd.data.NCDPatientTransferValidate
@@ -128,8 +128,10 @@ import com.medtroniclabs.spice.ncd.data.NCDRegionSiteModel
 import com.medtroniclabs.spice.ncd.data.RegionSiteResponse
 import com.medtroniclabs.spice.ncd.data.NCDSiteRoleModel
 import com.medtroniclabs.spice.ncd.data.NCDSiteRoleResponse
+import com.medtroniclabs.spice.ncd.data.PatientFollowUpEntity
 import com.medtroniclabs.spice.ncd.data.PredictionRequest
 import com.medtroniclabs.spice.ncd.data.PrescriptionNudgeResponse
+import com.medtroniclabs.spice.ncd.data.RegisterCallResponse
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
 import retrofit2.Response
@@ -449,6 +451,7 @@ interface ApiService {
 
     @PUT("/spice-service/patient/pregnancy-anc-risk/update")
     suspend fun ncdUpdatePregnancyRisk(@Body request: NCDPregnancyRiskUpdate): Response<APIResponse<Boolean>>
+
     @POST("/spice-service/patient/calculate-wgs")
     suspend fun getWazWhzScore(@Body request: WazWhzScoreRequest): Response<APIResponse<WazWhzScoreResponse>>
 
@@ -512,4 +515,12 @@ interface ApiService {
     @POST("/spice-service/investigation/prediction")
     suspend fun getLabTestNudgeList(@Body predictionRequest: PredictionRequest): Response<APIResponse<LabTestPredictionResponse>>
 
+    @POST("/spice-service/follow-up/ncd/list")
+    suspend fun ncdFollowUpList(@Body request: FollowUpRequest): APIResponse<List<PatientFollowUpEntity>>
+
+    @GET("/spice-service/follow-up")
+    suspend fun getPatientCallRegister(): Response<APIResponse<RegisterCallResponse>>
+
+    @POST("/spice-service/follow-up/ncd/update")
+    suspend fun updatePatientCallRegister(@Body request: FollowUpUpdateRequest): Response<APIResponse<HashMap<String, Any>>>
 }

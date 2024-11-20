@@ -128,6 +128,10 @@ import com.medtroniclabs.spice.ncd.data.PredictionRequest
 import com.medtroniclabs.spice.ncd.data.PrescriptionNudgeResponse
 import com.medtroniclabs.spice.model.medicalreview.WazWhzScoreRequest
 import com.medtroniclabs.spice.model.medicalreview.WazWhzScoreResponse
+import com.medtroniclabs.spice.ncd.data.FollowUpRequest
+import com.medtroniclabs.spice.ncd.data.FollowUpUpdateRequest
+import com.medtroniclabs.spice.ncd.data.PatientFollowUpEntity
+import com.medtroniclabs.spice.ncd.data.RegisterCallResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
@@ -626,5 +630,17 @@ class ApiHelperImpl @Inject constructor(private val apiService: ApiService) : Ap
 
     override suspend fun getLabTestNudgeList(predictionRequest: PredictionRequest): Response<APIResponse<LabTestPredictionResponse>> {
         return apiService.getLabTestNudgeList(predictionRequest)
+    }
+
+    override suspend fun ncdFollowUpList(request: FollowUpRequest): APIResponse<List<PatientFollowUpEntity>> {
+        return apiService.ncdFollowUpList(request)
+    }
+
+    override suspend fun getPatientCallRegister(): Response<APIResponse<RegisterCallResponse>> {
+        return apiService.getPatientCallRegister()
+    }
+
+    override suspend fun updatePatientCallRegister(request: FollowUpUpdateRequest): Response<APIResponse<HashMap<String, Any>>> {
+        return apiService.updatePatientCallRegister(request)
     }
 }

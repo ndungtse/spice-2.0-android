@@ -360,7 +360,15 @@ class MetaRepository @Inject constructor(
                     chiefdomId = healthFacility.chiefdom?.id ?: healthFacility.chiefdomId,
                     tenantId = healthFacility.tenantId,
                     fhirId = healthFacility.fhirId,
-                    isDefault = healthFacility.id == defaultId,
+                    isDefault = if (healthFacility.id == defaultId) {
+                        SecuredPreference.putString(
+                            SecuredPreference.EnvironmentKey.IS_DEFAULT_SITE_ID.name,
+                            healthFacility.fhirId
+                        )
+                        true
+                    } else {
+                        false
+                    },
                     isUserSite = userHealthFacilities?.any { userSiteFacility -> userSiteFacility.id == healthFacility.id } ?: false
                 )
             )

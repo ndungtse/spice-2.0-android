@@ -1,7 +1,9 @@
 package com.medtroniclabs.spice.model
 
 import com.google.gson.annotations.SerializedName
+import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.data.history.DiseaseInfo
+import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.ncd.data.NCDDiagnosisGetResponse
 import java.io.Serializable
 

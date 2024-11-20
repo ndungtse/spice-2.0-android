@@ -15,6 +15,7 @@ import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.databinding.FragmentHomeScreenBinding
 import com.medtroniclabs.spice.db.entity.MenuEntity
+import com.medtroniclabs.spice.ncd.followup.activity.NCDFollowUpActivity
 import com.medtroniclabs.spice.ncd.screening.ui.ScreeningActivity
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
@@ -196,6 +197,10 @@ class HomeScreenFragment : BaseFragment(), MenuSelectionListener {
                 }
                 val intent = Intent(requireContext(), PatientSearchActivity::class.java)
                 intent.putExtras(bundle)
+                startActivity(intent)
+            }
+            MenuConstants.FOLLOW_UP -> {
+                val intent = Intent(requireContext(), NCDFollowUpActivity::class.java)
                 startActivity(intent)
             }
         }
