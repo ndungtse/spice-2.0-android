@@ -15,20 +15,16 @@ import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.app.analytics.model.UserDetail
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.common.CommonUtils
-import com.medtroniclabs.spice.common.CommonUtils.getAgeFromDOB
 import com.medtroniclabs.spice.common.CommonUtils.isMandateOrNot
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
 import com.medtroniclabs.spice.common.DateUtils.getYearMonthAndWeek
 import com.medtroniclabs.spice.common.DefinedParams.DefaultID
-import com.medtroniclabs.spice.common.RegexConstants
 import com.medtroniclabs.spice.data.model.RecommendedDosageListModel
 import com.medtroniclabs.spice.databinding.FragmentAssessmentBinding
 import com.medtroniclabs.spice.formgeneration.FormGenerator
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.Information
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.VISIBLE
-import com.medtroniclabs.spice.formgeneration.config.DefinedParams.YEAR
-import com.medtroniclabs.spice.formgeneration.config.DefinedParams.YEARS
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.listener.FormEventListener
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
@@ -72,11 +68,16 @@ import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.hasCough
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.hasDiarrhoea
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.hasOedemaOfBothFeet
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.infoSuffixText
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.isBreastfeed
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.isConvulsionPastFewDays
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.isUnusualSleepy
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.isVomiting
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.muacCode
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.muacStatus
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.rdtTest
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.rootSuffix
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.summaryKey
+import com.medtroniclabs.spice.ui.assessment.dialog.DangerSignsDialog
 import com.medtroniclabs.spice.ui.assessment.referrallogic.ReferralResultGenerator
 import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefinedParams.IsBloodyDiarrhoea
 import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefinedParams.RdtPositive
@@ -84,9 +85,11 @@ import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefined
 import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralReasons
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import timber.log.Timber
 
 @AndroidEntryPoint
-class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickListener {
+class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickListener,
+    DangerSignsDialog.DangerSignsClickListener {
 
     private lateinit var binding: FragmentAssessmentBinding
     private lateinit var formGenerator: FormGenerator
@@ -280,7 +283,7 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
     private fun showInstructionDialog(id: String) {
         val titleById = getTitleById(id)
         when (id) {
-            muacCode, hasOedemaOfBothFeet, chestInDrawing -> {
+            isUnusualSleepy,isVomiting,isConvulsionPastFewDays,isBreastfeed,muacCode, hasOedemaOfBothFeet, chestInDrawing -> {
                 InformationLayoutFragment.newInstance(id, titleById)
                     .show(childFragmentManager, InformationLayoutFragment.TAG)
             }
@@ -301,12 +304,23 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
             muacCode -> getString(R.string.measuring_muac)
             hasOedemaOfBothFeet -> getString(R.string.checking_for_oedema)
             chestInDrawing -> getString(R.string.chest_in_drawing)
+            isUnusualSleepy-> getString(R.string.job_aid_unconscious_unusually_sleepy)
+            isConvulsionPastFewDays -> getString(R.string.job_aid_convulsions)
+            isVomiting -> getString(R.string.job_aid_vomiting)
+            isBreastfeed -> getString(R.string.job_aid_not_able_to_breastfeed_drink)
             else -> {id}
         }
     }
 
 
     override fun onFormSubmit(resultMap: HashMap<String, Any>?, serverData: List<FormLayout?>?) {
+        onSubmitICCM(resultMap,serverData)
+    }
+
+    fun onSubmitICCM(resultMap: HashMap<String, Any>?, serverData: List<FormLayout?>?) {
+        if (viewModel.isDangerSignFlow){
+            resultMap?.keys?.retainAll(listOf(isUnusualSleepy,isConvulsionPastFewDays,isBreastfeed,isVomiting))
+        }
         resultMap?.let { details ->
             composeICCMOtherMetrics(details)
             val referralResult = ReferralResultGenerator().calculateIccmReferralResult(details, viewModel.memberDetailsLiveData.value?.data)
@@ -425,6 +439,21 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
                     renderDosageDetails(it.dateOfBirth)
                 }
             }
+            isUnusualSleepy,isConvulsionPastFewDays,isVomiting,isBreastfeed->{
+                if (selectedId==true) {
+                    viewModel.isDangerSignFlow=true
+                    val existingFragment =
+                        childFragmentManager.findFragmentByTag(
+                            DangerSignsDialog.TAG
+                        )
+                    if (existingFragment == null) {
+                        DangerSignsDialog.newInstance(id)
+                            .apply { setDangerSignListener(this@AssessmentICCMFragment) }
+                            .show(childFragmentManager, DangerSignsDialog.TAG)
+                    }
+                }
+            }
+
         }
     }
 
@@ -639,5 +668,9 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
 
     fun getCurrentAnsweredStatus(): Boolean {
         return formGenerator.getResultMap().isNotEmpty()
+    }
+
+    override fun onDangerSignsClicked() {
+        onSubmitICCM(formGenerator.getResultMap(),formGenerator.getServerData())
     }
 }

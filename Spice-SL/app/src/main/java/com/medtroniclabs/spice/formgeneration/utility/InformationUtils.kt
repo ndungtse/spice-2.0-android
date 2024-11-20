@@ -5,6 +5,10 @@ import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.formgeneration.model.InformationModel
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.chestInDrawing
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.hasOedemaOfBothFeet
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.isBreastfeed
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.isConvulsionPastFewDays
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.isUnusualSleepy
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.isVomiting
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.muacCode
 
 class InformationUtils {
@@ -125,6 +129,99 @@ class InformationUtils {
 
         return informationList
 
+    }
+    fun getDangerSignsInstructions(context: Context, id: String?): ArrayList<InformationModel> {
+        val informationList = ArrayList<InformationModel>()
+        when (id) {
+            isUnusualSleepy -> {
+                informationList.add(
+                    InformationModel(
+                        imageId = R.drawable.ic_unusefulsleep,
+                        inputText = context.getString(R.string.ask_is_the_child_very_sleepy),
+                        type = isUnusualSleepy
+                    )
+                )
+                informationList.add(
+                    InformationModel(
+                        inputText = context.getString(R.string.clap_your_hands_close_to_the_child),
+                        type = isUnusualSleepy
+                    )
+                )
+                informationList.add(
+                    InformationModel(
+                        inputText = context.getString(R.string.if_the_child_does_not),
+                        type = isUnusualSleepy
+                    )
+                )
+            }
+
+            isVomiting -> {
+                informationList.add(
+                    InformationModel(
+                        imageId = R.drawable.ic_isvomiting,
+                        inputText = context.getString(R.string.ask_does_the_child_vomit_everything_he_she_eats_or_drinks),
+                        type = isVomiting
+                    )
+                )
+                informationList.add(
+                    InformationModel(
+                        inputText = context.getString(R.string.give_the_child_clean_water_or_ask_the_mother_to_offer_her_breast_to_the_child),
+                        type = isVomiting
+                    )
+                )
+                informationList.add(
+                    InformationModel(
+                        inputText = context.getString(R.string.if_the_child_vomits_the_water_or_breastmilk_refer_to_the_phu_immediately),
+                        type = isVomiting
+                    )
+                )
+            }
+
+            isConvulsionPastFewDays -> {
+                informationList.add(
+                    InformationModel(
+                        imageId = R.drawable.ic_convulsions,
+                        inputText = context.getString(R.string.look_is_the_child_convulsing_now),
+                        type = isConvulsionPastFewDays
+                    )
+                )
+                informationList.add(
+                    InformationModel(
+                        inputText = context.getString(R.string.ask_did_the_child_have_convulsions_at_home),
+                        type = isConvulsionPastFewDays
+                    )
+                )
+                informationList.add(
+                    InformationModel(
+                        inputText = context.getString(R.string.if_the_child_is_convulsing_now_or_if_the_child_had_convulsions_at_home_refer_to_the_phu_immediately),
+                        type = isConvulsionPastFewDays
+                    )
+                )
+            }
+
+            isBreastfeed -> {
+                informationList.add(
+                    InformationModel(
+                        imageId = R.drawable.ic_unablebreastfeed,
+                        inputText = context.getString(R.string.ask_if_the_child_is_able_to_drink_or_breastfeed),
+                        type = isBreastfeed
+                    )
+                )
+                informationList.add(
+                    InformationModel(
+                        inputText = context.getString(R.string.ask_did_the_child_have_convulsions_at_home),
+                        type = isBreastfeed
+                    )
+                )
+                informationList.add(
+                    InformationModel(
+                        inputText = context.getString(R.string.if_the_child_is_not_able_to_drink_or_breastfeed_refer_to_the_phu_immediately),
+                        type = isBreastfeed
+                    )
+                )
+            }
+        }
+        return informationList
     }
 
 }

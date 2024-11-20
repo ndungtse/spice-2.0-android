@@ -364,7 +364,7 @@ class ClinicalSummaryFragment : BaseFragment(), View.OnClickListener {
             binding.etHeight,
             binding.tvHeightError,
             45.0..120.0,
-            R.string.height_error_0_300,
+            R.string.please_enter_valid_value_between_45_to_120,
             true,
             requireContext()
         )

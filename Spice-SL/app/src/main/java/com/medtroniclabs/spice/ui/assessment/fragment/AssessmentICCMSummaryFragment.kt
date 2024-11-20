@@ -12,10 +12,7 @@ import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
-import com.medtroniclabs.spice.appextensions.gone
-import com.medtroniclabs.spice.appextensions.isGone
 import com.medtroniclabs.spice.appextensions.startBackgroundOfflineSync
-import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.CommonUtils.convertStringToIntString
 import com.medtroniclabs.spice.common.CommonUtils.getOptionMap
@@ -63,6 +60,7 @@ import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.ZincDispens
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.hasCough
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.hasDiarrhoea
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.hasFever
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.hasOedemaOfBothFeet
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.isBreastfeed
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.isConvulsionPastFewDays
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.isUnusualSleepy
@@ -132,7 +130,6 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
     }
 
     private fun loadPhuSitesList(healthFacilityList: ArrayList<Map<String, Any>>) {
-
         val adapter = CustomSpinnerAdapter(requireContext())
         adapter.setData(healthFacilityList)
         binding.etPhuChange.adapter = adapter
@@ -292,6 +289,7 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
                                 )
                             )
                         }
+                        showHyphenSymbol(item)
                     }
 
                     hasDiarrhoea -> {
@@ -315,6 +313,7 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
                         } else {
                             bindICCMSummaryView(item.title, item.value)
                         }
+                        showHyphenSymbol(item)
                     }
 
                     hasCough -> {
@@ -335,6 +334,8 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
                         } else {
                             bindICCMSummaryView(item.title, item.value)
                         }
+                        showHyphenSymbol(item)
+
                     }
 
                     BreathPerMinute -> {
@@ -380,6 +381,7 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
                         } else {
                             bindICCMSummaryView(item.title, item.value)
                         }
+                        showHyphenSymbol(item)
                     }
 
                     NoOfDaysOfCough, NoOfDaysDiarrhoea, NoOfDaysOfFever -> {
@@ -409,6 +411,9 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
                             bindICCMSummaryView(item.title, item.value)
                         }
                     }
+                }
+                if (item.id == hasOedemaOfBothFeet) {
+                    showHyphenSymbol(item)
                 }
             }
 
@@ -456,6 +461,8 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
                 dispensedStatus.joinToString(", ")
             )
         }
+
+
     }
 
     private fun getSelectedSigns(listItems: String): String {
@@ -511,10 +518,14 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
                 feverObject?.optString(ReferralDefinedParams.IsBloodyDiarrhoea)
             diarrhoeaDays?.let {
                 bloodyDiarrhoea?.let {
-                    result = if (diarrhoeaDays.toInt() >= 14 || bloodyDiarrhoea == True) {
-                        requireContext().getString(R.string.severe_dehydration)
-                    } else {
-                        requireContext().getString(R.string.moderate_dehydration)
+                    if (diarrhoeaDays.isNotEmpty()) {
+                        result = if (diarrhoeaDays.toInt() >= 14 || bloodyDiarrhoea == True) {
+                            requireContext().getString(R.string.severe_dehydration)
+                        } else {
+                            requireContext().getString(R.string.moderate_dehydration)
+                        }
+                    }else{
+                        requireContext().getString(R.string.hyphen_symbol)
                     }
                 }
             }
@@ -651,6 +662,15 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
 
     fun getCurrentAnsweredStatus(): Boolean {
         return viewModel.otherAssessmentDetails.isNotEmpty()
+    }
+
+    fun showHyphenSymbol(item: AssessmentSummaryModel) {
+        if (viewModel.isDangerSignFlow){
+            bindICCMSummaryView(
+                item.title,
+                getString(R.string.separator_double_hyphen)
+            )
+        }
     }
 
 }

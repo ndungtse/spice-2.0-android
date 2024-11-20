@@ -17,6 +17,10 @@ import com.medtroniclabs.spice.formgeneration.model.InformationModel
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.MUAC
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.chestInDrawing
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.hasOedemaOfBothFeet
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.isBreastfeed
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.isConvulsionPastFewDays
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.isUnusualSleepy
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.isVomiting
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.muacCode
 
 class InformationLayoutFragment : DialogFragment(), View.OnClickListener {
@@ -58,6 +62,8 @@ class InformationLayoutFragment : DialogFragment(), View.OnClickListener {
             muacCode, MUAC-> InformationUtils().getMuacInformationListItem(requireContext())
             hasOedemaOfBothFeet -> InformationUtils().getOedemaInformationList(requireContext())
             chestInDrawing -> InformationUtils().getChestIndrawingInformation(requireContext())
+            isUnusualSleepy,isVomiting,isConvulsionPastFewDays,isBreastfeed->{InformationUtils().getDangerSignsInstructions(requireContext(),arguments?.getString(ID))
+            }
             else -> null
         }
         binding.rvInfoList.apply {

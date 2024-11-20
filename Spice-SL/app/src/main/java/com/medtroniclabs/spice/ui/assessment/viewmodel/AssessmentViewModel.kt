@@ -114,6 +114,7 @@ class AssessmentViewModel @Inject constructor(
         MutableLiveData<Resource<Pair<AssessmentNCDEntity, HashMap<String, Any>?>>>()
     var mentalHealthQuestions = MutableLiveData<Resource<HashMap<String, LocalSpinnerResponse>>>()
     private var phQ4Score: Int? = null
+    var isDangerSignFlow: Boolean = false
 
     @Inject
     lateinit var connectivityManager: ConnectivityManager
