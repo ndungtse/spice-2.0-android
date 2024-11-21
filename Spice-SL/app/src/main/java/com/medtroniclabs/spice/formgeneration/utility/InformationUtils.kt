@@ -18,27 +18,28 @@ class InformationUtils {
 
         informationList.add(
             InformationModel(
+                imageId = R.drawable.measuring_muac_1,
                 inputText = context.getString(R.string.muac_info_1),
                 type = muacCode
             )
         )
         informationList.add(
             InformationModel(
-                imageId = R.drawable.measuring_muac_1,
+                imageId = R.drawable.measuring_muac_2,
                 inputText = context.getString(R.string.muac_info_2),
                 type = muacCode
             )
         )
         informationList.add(
             InformationModel(
-                imageId = R.drawable.measuring_muac_2,
+                imageId = R.drawable.measuring_muac_3,
                 inputText = context.getString(R.string.muac_info_3),
                 type = muacCode
             )
         )
         informationList.add(
             InformationModel(
-                imageId = R.drawable.measuring_muac_3,
+                imageId = R.drawable.measuring_muac_4,
                 inputText = context.getString(R.string.muac_info_4),
                 type = muacCode
             )
@@ -63,16 +64,14 @@ class InformationUtils {
 
         informationList.add(
             InformationModel(
-                imageId = R.drawable.oedema_1,
+                imageId = R.drawable.oedema_2,
                 inputText = context.getString(R.string.oedema_info_1),
                 type = hasOedemaOfBothFeet
             )
         )
         informationList.add(
             InformationModel(
-                imageId = R.drawable.oedema_2,
                 inputText = context.getString(R.string.oedema_info_2),
-                type = hasOedemaOfBothFeet
             )
         )
         informationList.add(
@@ -97,7 +96,6 @@ class InformationUtils {
         )
         informationList.add(
             InformationModel(
-                imageId = R.drawable.chest_in_drawing_2,
                 inputText = context.getString(R.string.chest_info_2),
                 type = chestInDrawing
             )

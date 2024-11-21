@@ -245,6 +245,7 @@
     <string name="checking_for_oedema">Checking for Oedema</string>
     <string name="chest_in_drawing">Chest in-drawing</string>
     <string name="patient_on_treatment">Patient On Treatment</string>
+    <string name ="treatment_pneumonia"> Treatment for Pneumonia Amoxicillin 250mg tab</string>
     <string name="no_refferral_treatment_required">No Referral / No Treatment Required</string>
     <string name="select">Select</string>
     <string name="muac_info_1"> Ask the mother to remove any clothing that covers the child’s left arm.</string>
