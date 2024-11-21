@@ -13,4 +13,14 @@ object FollowUpDefinedParams {
     const val WrongNumber = "Wrong Number"
     const val WRONG_NUMBER = "WRONG_NUMBER"
     const val UNREACHABLE = "UNREACHABLE"
+
+    const val FilterMalaria = "Malaria"
+    const val FilterFever = "Fever"
+    const val FilterDiarrhoea = "Diarrhoea"
+    const val FilterANC = "ANC"
+    const val FilterPNC = "PNC"
+    const val FilterPneumonia = "Pneumonia"
+    const val FilterCough = "Cough"
+    const val FilterGeneralDangerSigns = "General Danger Signs"
+    const val FilterMUAC = "MUAC"
 }

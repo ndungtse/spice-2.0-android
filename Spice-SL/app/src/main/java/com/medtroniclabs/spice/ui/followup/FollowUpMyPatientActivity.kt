@@ -242,6 +242,8 @@ class FollowUpMyPatientActivity : BaseActivity() {
                 count++
             if (!it.selectedDateRange.isNullOrEmpty())
                 count++
+            if (!it.selectedReasons.isNullOrEmpty())
+                count++
 
             if (count > 0) {
                 binding.llFilter.btnFilter.text = this.getString(R.string.filter_count, count)

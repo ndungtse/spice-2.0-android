@@ -75,6 +75,7 @@ class FollowUpViewModel @Inject constructor(
         search: String? = null,
         selectedVillages: List<ChipViewItemModel>? = null,
         selectedDateRange: List<ChipViewItemModel>? = null,
+        selectedReasons: List<ChipViewItemModel>? = null,
         fromDate: String? = null,
         toDate: String? = null
     ) {
@@ -100,6 +101,10 @@ class FollowUpViewModel @Inject constructor(
                 this.selectedDateRange = it
                 this.fromDate = ""
                 this.toDate = ""
+            }
+
+            selectedReasons?.let {
+                this.selectedReasons = it
             }
 
             //Update Date Filter
@@ -140,6 +145,20 @@ class FollowUpViewModel @Inject constructor(
             FollowUpDefinedParams.FilterToday,
             FollowUpDefinedParams.FilterTomorrow,
             FollowUpDefinedParams.FilterCustomize
+        )
+    }
+
+    fun getReferralReasons(): List<String> {
+        return listOf(
+            FollowUpDefinedParams.FilterMalaria,
+            FollowUpDefinedParams.FilterFever,
+            FollowUpDefinedParams.FilterDiarrhoea,
+            FollowUpDefinedParams.FilterANC,
+            FollowUpDefinedParams.FilterPNC,
+            FollowUpDefinedParams.FilterPneumonia,
+            FollowUpDefinedParams.FilterCough,
+            FollowUpDefinedParams.FilterGeneralDangerSigns,
+            FollowUpDefinedParams.FilterMUAC
         )
     }
 

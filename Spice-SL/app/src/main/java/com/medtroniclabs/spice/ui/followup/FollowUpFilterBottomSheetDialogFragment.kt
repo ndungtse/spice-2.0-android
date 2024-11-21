@@ -14,6 +14,7 @@ import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.ViewUtils
 import com.medtroniclabs.spice.data.model.ChipViewItemModel
+import com.medtroniclabs.spice.databinding.FollowupFilterBottomSheetDialogBinding
 import com.medtroniclabs.spice.databinding.FragmentFilterBottomSheetDialogBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.ui.TagListCustomView
@@ -25,9 +26,10 @@ import java.time.ZoneOffset
 
 class FollowUpFilterBottomSheetDialogFragment : BottomSheetDialogFragment(), View.OnClickListener {
 
-    private lateinit var binding: FragmentFilterBottomSheetDialogBinding
+    private lateinit var binding: FollowupFilterBottomSheetDialogBinding
     private lateinit var villageListTagView: TagListCustomView
     private lateinit var dataRangesListTagView: TagListCustomView
+    private lateinit var referralReasonTagView: TagListCustomView
     private var datePickerDialog: DatePickerDialog? = null
     private val viewModel: FollowUpViewModel by activityViewModels()
 
@@ -51,7 +53,7 @@ class FollowUpFilterBottomSheetDialogFragment : BottomSheetDialogFragment(), Vie
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentFilterBottomSheetDialogBinding.inflate(inflater, container, false)
+        binding = FollowupFilterBottomSheetDialogBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -83,7 +85,13 @@ class FollowUpFilterBottomSheetDialogFragment : BottomSheetDialogFragment(), Vie
             villageListTagView.getSelectedTags().isNotEmpty()
         }
 
-        binding.btnApply.isEnabled = isVillageValid || isDateRangeValid
+        val isValidReferralReasons = if (isCustomizedOptionSelected) {
+            isDateRangeValid && referralReasonTagView.getSelectedTags().isNotEmpty()
+        } else {
+            referralReasonTagView.getSelectedTags().isNotEmpty()
+        }
+
+        binding.btnApply.isEnabled = isVillageValid || isDateRangeValid || isValidReferralReasons
     }
 
     private fun initializeListeners() {
@@ -114,6 +122,10 @@ class FollowUpFilterBottomSheetDialogFragment : BottomSheetDialogFragment(), Vie
             TagListCustomView(binding.root.context, binding.villageChipGroup) { _, _, _ ->
                 enableConfirm()
             }
+
+        referralReasonTagView = TagListCustomView(binding.root.context, binding.cgReferralReason) { _, _, _ ->
+            enableConfirm()
+        }
 
         dataRangesListTagView =
             TagListCustomView(binding.root.context, binding.registrationStatusChipGroup) { _, _, _ ->
@@ -163,6 +175,19 @@ class FollowUpFilterBottomSheetDialogFragment : BottomSheetDialogFragment(), Vie
             statusList,
             viewModel.getFilterData()?.selectedDateRange
         )
+
+        val reasons = viewModel.getReferralReasons()
+        val reasonList = ArrayList<ChipViewItemModel>()
+        reasons.forEach {
+            reasonList.add(
+                ChipViewItemModel(name = it)
+            )
+        }
+
+        referralReasonTagView.addChipItemList(
+            reasonList,
+            viewModel.getFilterData()?.selectedReasons
+        )
     }
 
     override fun onClick(view: View) {
@@ -191,11 +216,13 @@ class FollowUpFilterBottomSheetDialogFragment : BottomSheetDialogFragment(), Vie
                 viewModel.updateFollowUpFilter(
                     selectedVillages = listOf(),
                     selectedDateRange = listOf(),
+                    selectedReasons = listOf(),
                     fromDate = "",
                     toDate = ""
                 )
                 villageListTagView.clearSelection()
                 dataRangesListTagView.clearSelection()
+                referralReasonTagView.clearSelection()
                 dismiss()
             }
         }
@@ -205,6 +232,7 @@ class FollowUpFilterBottomSheetDialogFragment : BottomSheetDialogFragment(), Vie
         viewModel.updateFollowUpFilter(
             selectedVillages = villageListTagView.getSelectedTags(),
             selectedDateRange = dataRangesListTagView.getSelectedTags(),
+            selectedReasons = referralReasonTagView.getSelectedTags(),
             fromDate = binding.etFromDate.text.toString(),
             toDate = binding.etToDate.text.toString()
         )

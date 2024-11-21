@@ -35,13 +35,21 @@ class FollowUpRepository @Inject constructor(
 
         val fromAndToDate = getFromDateAndToDate(filter, referralLimit)
 
-        return roomHelper.getFollowUpPatientListLiveData(
+        val result = roomHelper.getFollowUpPatientListLiveData(
             filter.type,
             filter.search,
             villageIds,
             fromAndToDate.first,
             fromAndToDate.second
-        ).map { list -> list.sortedBy { it.updatedAt } }
+        )
+
+        val reasons = filter.selectedReasons?.map { it.name }.orEmpty()
+
+        return result.map { items ->
+            items.filter { item ->
+                reasons.isEmpty() || reasons.any { reason -> item.reason?.contains(reason) ?: true }
+            }.sortedBy { it.updatedAt }
+        }
     }
 
     private fun getFromDateAndToDate(filter: FollowUpFilter, referralLimit: Int): Pair<String, String> {

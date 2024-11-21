@@ -8,6 +8,7 @@ data class FollowUpFilter(
     var villages: List<Long> = listOf(),
     var selectedVillages: List<ChipViewItemModel>? = null,
     var selectedDateRange: List<ChipViewItemModel>? = null,
+    var selectedReasons: List<ChipViewItemModel>? = null,
     var fromDate: String = "",
     var toDate: String = ""
 )
