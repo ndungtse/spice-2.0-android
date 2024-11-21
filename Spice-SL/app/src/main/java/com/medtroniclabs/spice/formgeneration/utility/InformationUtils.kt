@@ -207,7 +207,7 @@ class InformationUtils {
                 )
                 informationList.add(
                     InformationModel(
-                        inputText = context.getString(R.string.ask_did_the_child_have_convulsions_at_home),
+                        inputText = context.getString(R.string.give_did_the_child_have_convulsions_at_home),
                         type = isBreastfeed
                     )
                 )

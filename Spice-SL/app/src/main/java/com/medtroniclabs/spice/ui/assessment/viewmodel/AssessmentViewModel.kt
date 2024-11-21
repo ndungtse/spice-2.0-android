@@ -118,7 +118,7 @@ class AssessmentViewModel @Inject constructor(
     private var phQ4Score: Int? = null
     var isDangerSignFlow: Boolean = false
     var ageInMonth:MutableLiveData<String> = MutableLiveData()
-
+    var dangerSingsKey:String? = null
     @Inject
     lateinit var connectivityManager: ConnectivityManager
 

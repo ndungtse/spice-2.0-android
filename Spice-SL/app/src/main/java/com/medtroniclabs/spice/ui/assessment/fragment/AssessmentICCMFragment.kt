@@ -320,6 +320,7 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
 
     fun onSubmitICCM(resultMap: HashMap<String, Any>?, serverData: List<FormLayout?>?) {
         if (viewModel.isDangerSignFlow){
+            resultMap?.keys?.forEach { viewModel.dangerSingsKey =  it }
             resultMap?.keys?.retainAll(listOf(isUnusualSleepy,isConvulsionPastFewDays,isBreastfeed,isVomiting))
         }
         resultMap?.let { details ->

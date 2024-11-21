@@ -1140,7 +1140,7 @@
     <string name="low_risk_filter">Low risk</string>
     <string name="unable_to_drink_or_breastfeed">Unable to drink or breastfeed</string>
     <string name="convulsions">Convulsions</string>
-    <string name="vomits_everything">Vomits Everything</string>
+    <string name="vomits_everything">Vomiting Everything</string>
     <string name="danger_sign_identified">Danger Sign Identified</string>
     <string name="its_recommended_to_immediately">Its recommended to Immediately \n refer the patient to the nearest facility</string>
     <string name="ask_is_the_child_very_sleepy">ASK: Is the child very sleepy or difficult to wake up?\nASK the caregiver to wake the child by shaking or speaking to the child</string>
@@ -1152,6 +1152,7 @@
     <string name="if_the_child_vomits_the_water_or_breastmilk_refer_to_the_phu_immediately">If the child vomits the water or breastmilk, REFER to the PHU immediately.\n</string>
     <string name="look_is_the_child_convulsing_now">LOOK: Is the child convulsing now?</string>
     <string name="ask_did_the_child_have_convulsions_at_home">ASK: Did the child have convulsions at home?</string>
+    <string name="give_did_the_child_have_convulsions_at_home">Give: Did the child have convulsions at home?</string>
     <string name="if_the_child_is_convulsing_now_or_if_the_child_had_convulsions_at_home_refer_to_the_phu_immediately">If the child is convulsing now OR if the child had convulsions at home, REFER to the PHU immediately</string>
     <string name="ask_if_the_child_is_able_to_drink_or_breastfeed">ASK: If the child is able to drink or breastfeed?</string>
     <string name="if_the_child_is_not_able_to_drink_or_breastfeed_refer_to_the_phu_immediately">If the child is not able to drink or breastfeed, REFER to the PHU immediately</string>

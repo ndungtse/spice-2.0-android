@@ -566,9 +566,18 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
 
         var result = DefinedParams.No
         for (assessment in listSummaryData) {
-            if (assessment.id in targetIds && assessment.value == Yes) {
-                result = Yes
-
+            if (assessment.value == Yes) {
+                if (viewModel.isDangerSignFlow) {
+                    result = when (viewModel.dangerSingsKey.toString()) {
+                        isUnusualSleepy -> getString(R.string.unconscious_unusually_sleepy)
+                        isVomiting -> getString(R.string.vomits_everything)
+                        isConvulsionPastFewDays -> getString(R.string.convulsions)
+                        isBreastfeed -> getString(R.string.unable_to_drink_or_breastfeed)
+                        else -> {
+                            getString(R.string.separator_double_hyphen)
+                        }
+                    }
+                }
             }
             if (assessment.title.equals(
                     AssessmentDefinedParams.Signs,
