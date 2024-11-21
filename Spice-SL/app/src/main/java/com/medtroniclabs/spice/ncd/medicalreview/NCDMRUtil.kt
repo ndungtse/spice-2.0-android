@@ -284,7 +284,8 @@ object NCDMRUtil {
         result: HashMap<String, Any>,
         patientData: PatientListRespModel,
         height: Double? = null,
-        weight: Double? = null
+        weight: Double? = null,
+        isGlucose: Boolean = false
     ) {
         result.apply {
             put(
@@ -298,14 +299,15 @@ object NCDMRUtil {
                 )
             )
 
-            put(
-                Screening.BioMetrics, hashMapOf(
-                    MemberRegistration.gender to patientData.gender,
-                    Screening.Age to patientData.age,
-                    Screening.Height to (height ?: patientData.height),
-                    Screening.Weight to (weight ?: patientData.weight)
-                )
+            val bioMetricsData = hashMapOf(
+                MemberRegistration.gender to patientData.gender,
+                Screening.Age to patientData.age
             )
+            if (!isGlucose) {
+                bioMetricsData[Screening.Height] = height ?: patientData.height
+                bioMetricsData[Screening.Weight] = weight ?: patientData.weight
+            }
+            put(Screening.BioMetrics, bioMetricsData)
         }
     }
 }

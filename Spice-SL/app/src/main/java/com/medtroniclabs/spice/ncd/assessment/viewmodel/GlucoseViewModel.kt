@@ -33,7 +33,7 @@ class GlucoseViewModel @Inject constructor(
     fun glucoseLogCreate(hashMap: HashMap<String, Any>, patientDetails: PatientListRespModel) {
         hashMap.apply {
             with(patientDetails) {
-                NCDMRUtil.getBioDataBioMetrics(hashMap, this)
+                NCDMRUtil.getBioDataBioMetrics(hashMap, this, isGlucose = true)
                 id?.let { requestRelatedPersonFhirId ->
                     put(DefinedParams.RelatedPersonFhirId, requestRelatedPersonFhirId)
                 }

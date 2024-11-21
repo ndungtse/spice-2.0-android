@@ -257,7 +257,7 @@ class NCDBloodGlucoseReadingDialog : DialogFragment(), View.OnClickListener {
 
         patientViewModel.patientDetailsLiveData.value?.data?.let { patientData ->
             result.apply {
-                NCDMRUtil.getBioDataBioMetrics(result, patientData)
+                NCDMRUtil.getBioDataBioMetrics(result, patientData, isGlucose = true)
 
                 putAll(
                     mapOf(

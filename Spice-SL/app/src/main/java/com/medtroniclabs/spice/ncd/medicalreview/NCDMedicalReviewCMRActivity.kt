@@ -142,7 +142,8 @@ class NCDMedicalReviewCMRActivity : BaseActivity(), View.OnClickListener, AncVis
                     val request = NCDPatientRemoveRequest(
                         patientId = model.patientId.toString(),
                         reason = reason,
-                        otherReason = otherReason
+                        otherReason = otherReason,
+                        memberId = model.id
                     )
                     patientDeleteViewModel.ncdPatientRemove(request)
                 },
