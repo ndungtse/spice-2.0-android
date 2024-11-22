@@ -1711,6 +1711,7 @@ object CommonUtils {
         return SecuredPreference.getBoolean(SecuredPreference.EnvironmentKey.IS_COMMUNITY.name)
     }
 
+    //Africa
     fun isNonCommunity(): Boolean {
         return SecuredPreference.getBoolean(SecuredPreference.EnvironmentKey.IS_NON_COMMUNITY.name)
     }
@@ -1725,5 +1726,12 @@ object CommonUtils {
             MenuConstants.DISPENSE.lowercase(), MenuConstants.INVESTIGATION.lowercase() -> true
             else -> false
         }
+    }
+    fun isPhysicianPrescriber(): Boolean {
+        val userRole = SecuredPreference.getUserDetails()?.roles?.joinToString { it.name }
+        if (userRole != null) {
+            return userRole.contains(PHYSICIAN_PRESCRIBER)
+        }
+        return false
     }
 }

@@ -12,6 +12,7 @@ import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.model.SortModel
 import com.medtroniclabs.spice.ncd.data.CustomDate
 import com.medtroniclabs.spice.ncd.data.FollowUpUpdateRequest
+import com.medtroniclabs.spice.ncd.data.PatientFollowUpEntity
 import com.medtroniclabs.spice.ncd.data.RegisterCallResponse
 import com.medtroniclabs.spice.ncd.followup.adapter.NCDFollowUpDataSource
 import com.medtroniclabs.spice.ncd.followup.fragment.NCDFollowUpFilterEnum
@@ -44,6 +45,7 @@ class NCDFollowUpViewModel @Inject constructor(
     var getPatientRegisterResponse = SingleLiveEvent<Resource<RegisterCallResponse>>()
     var statusUpdateResponse = SingleLiveEvent<Resource<HashMap<String, Any>>>()
     var remainingAttempts = listOf<ChipViewItemModel>()
+    var selectedPatient: PatientFollowUpEntity? = null
     val patientsDataSource =
         Pager(config = PagingConfig(pageSize = DefinedParams.LIST_LIMIT), pagingSourceFactory = {
             NCDFollowUpDataSource(

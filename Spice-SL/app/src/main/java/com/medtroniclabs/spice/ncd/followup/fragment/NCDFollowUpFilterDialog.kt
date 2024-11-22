@@ -22,12 +22,15 @@ import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.ncd.data.CustomDate
 import com.medtroniclabs.spice.ncd.followup.viewmodel.NCDFollowUpViewModel
 import com.medtroniclabs.spice.network.utils.ConnectivityManager
+import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.TagListCustomView
+import dagger.hilt.android.AndroidEntryPoint
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 import javax.inject.Inject
 
+@AndroidEntryPoint
 class NCDFollowUpFilterDialog : DialogFragment(), View.OnClickListener,
     CompoundButton.OnCheckedChangeListener {
 
@@ -246,7 +249,15 @@ class NCDFollowUpFilterDialog : DialogFragment(), View.OnClickListener,
     override fun onClick(v: View?) {
         when (v?.id) {
             binding.btnDone.id -> {
-                viewModel.filterLiveData()
+                if (connectivityManager.isNetworkAvailable()) {
+                    viewModel.filterLiveData()
+                } else {
+                    (activity as BaseActivity).showErrorDialogue(
+                        getString(R.string.error),
+                        getString(R.string.no_internet_error),
+                        false
+                    ) {}
+                }
                 dismiss()
             }
 

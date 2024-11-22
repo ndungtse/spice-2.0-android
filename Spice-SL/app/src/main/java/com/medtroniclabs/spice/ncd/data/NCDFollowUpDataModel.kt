@@ -84,6 +84,7 @@ data class PatientFollowUpEntity(
     val countyName: String? = null,
     val subCountyName: String? = null,
     val referredReasons: List<String>? = null,
+    val overDueCategories: List<String>? = null,
     val communityHealthUnitName: String? = null,
     val villageName: String? = null,
     val landmark: String? = null,
@@ -97,5 +98,6 @@ data class PatientFollowUpEntity(
     val nextBpAssessmentDate: String? = null,
     val nextBgAssessmentDate: String? = null,
     val noOfDueDays: Int? = null,
-    val dueDate: String? = null
+    val dueDate: String? = null,
+    val identityValue :String? =null
 )

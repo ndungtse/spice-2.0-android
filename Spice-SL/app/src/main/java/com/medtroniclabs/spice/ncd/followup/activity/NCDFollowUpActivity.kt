@@ -17,14 +17,10 @@ import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.databinding.ActivityNcdFollowUpBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
-import com.medtroniclabs.spice.ncd.followup.NCDFollowUpUtils.Assessment
 import com.medtroniclabs.spice.ncd.followup.NCDFollowUpUtils.Assessment_Type
-import com.medtroniclabs.spice.ncd.followup.NCDFollowUpUtils.Defaulters
 import com.medtroniclabs.spice.ncd.followup.NCDFollowUpUtils.Defaulters_Type
-import com.medtroniclabs.spice.ncd.followup.NCDFollowUpUtils.LTFU
 import com.medtroniclabs.spice.ncd.followup.NCDFollowUpUtils.LTFU_Type
-import com.medtroniclabs.spice.ncd.followup.NCDFollowUpUtils.Referred
-import com.medtroniclabs.spice.ncd.followup.NCDFollowUpUtils.Referred_Type
+import com.medtroniclabs.spice.ncd.followup.NCDFollowUpUtils.SCREENED
 import com.medtroniclabs.spice.ncd.followup.adapter.NCDFollowUpAdapter
 import com.medtroniclabs.spice.ncd.followup.fragment.NCDFollowUpFilterDialog
 import com.medtroniclabs.spice.ncd.followup.viewmodel.NCDFollowUpViewModel
@@ -85,20 +81,21 @@ class NCDFollowUpActivity : BaseActivity() {
         binding.llExactSearch.etSearchTerm.hint = getString(R.string.search_by_national_id)
         binding.viewPager.adapter = NCDFollowUpAdapter(supportFragmentManager, lifecycle)
         TabLayoutMediator(binding.llExactSearch.tabLayout, binding.viewPager) { tab, position ->
-            when (position) {
-                0 -> tab.text = Referred
-                1 -> tab.text = Assessment
-                2 -> tab.text = Defaulters
-                3 -> tab.text = LTFU
-            }
+            val tabTitles = listOf(
+                getString(R.string.referred),
+                getString(R.string.assessment),
+                getString(R.string.defaulters),
+                getString(R.string.LTFU)
+            )
+            tab.text = tabTitles.getOrNull(position) ?: ""
         }.attach()
 
         binding.llExactSearch.tabLayout.getTabAt(0)?.view?.setBackgroundResource(R.drawable.left_mh_view_selector)
         binding.llExactSearch.tabLayout.getTabAt(1)?.view?.setBackgroundResource(R.drawable.mental_health_button_bg)
         binding.llExactSearch.tabLayout.getTabAt(2)?.view?.setBackgroundResource(R.drawable.mental_health_button_bg)
         binding.llExactSearch.tabLayout.getTabAt(3)?.view?.setBackgroundResource(R.drawable.right_mh_view_selector)
-        val tabView3 = (binding.llExactSearch.tabLayout.getChildAt(0) as? ViewGroup)?.getChildAt(2)
-        tabView3?.setPadding(0, 0, 0, 0)
+        val tabView4 = (binding.llExactSearch.tabLayout.getChildAt(0) as? ViewGroup)?.getChildAt(3)
+        tabView4?.setPadding(0, 0, 0, 0)
 
         binding.llExactSearch.tabLayout.addOnTabSelectedListener(object :
             TabLayout.OnTabSelectedListener {
@@ -111,7 +108,7 @@ class NCDFollowUpActivity : BaseActivity() {
                     viewModel.remainingAttempts = listOf()
                     viewModel.filterCount.postValue(0)
                     viewModel.type = when (it.position) {
-                        0 -> Referred_Type
+                        0 -> SCREENED
                         1 -> Assessment_Type
                         2 -> Defaulters_Type
                         3 -> LTFU_Type
@@ -158,11 +155,20 @@ class NCDFollowUpActivity : BaseActivity() {
                 val search = it?.trim().toString()
                 llExactSearch.btnSearch.isEnabled = !search.isNullOrEmpty()
                 if (search.isNullOrEmpty()) {
-                    viewModel.searchLiveData(text = "")
+                    withNetworkAvailability(
+                        online = {
+                            viewModel.searchLiveData(text = "")
+                        },
+                        isErrorShow = false
+                    )
                 }
             }
             llExactSearch.btnSearch.safeClickListener {
-                viewModel.searchLiveData(text = llExactSearch.etSearchTerm.text?.trim().toString())
+                withNetworkAvailability(online = {
+                    viewModel.searchLiveData(
+                        text = llExactSearch.etSearchTerm.text?.trim().toString()
+                    )
+                })
             }
         }
     }

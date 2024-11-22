@@ -7,7 +7,7 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.medtroniclabs.spice.ncd.followup.NCDFollowUpUtils.Assessment_Type
 import com.medtroniclabs.spice.ncd.followup.NCDFollowUpUtils.Defaulters_Type
 import com.medtroniclabs.spice.ncd.followup.NCDFollowUpUtils.LTFU_Type
-import com.medtroniclabs.spice.ncd.followup.NCDFollowUpUtils.Referred_Type
+import com.medtroniclabs.spice.ncd.followup.NCDFollowUpUtils.SCREENED
 import com.medtroniclabs.spice.ncd.followup.fragment.NCDFollowUpSearchFragment
 
 class NCDFollowUpAdapter(
@@ -20,7 +20,7 @@ class NCDFollowUpAdapter(
 
     override fun createFragment(position: Int): Fragment {
         val type = when (position) {
-            0 -> Referred_Type
+            0 -> SCREENED
             1 -> Assessment_Type
             2 -> Defaulters_Type
             3 -> LTFU_Type

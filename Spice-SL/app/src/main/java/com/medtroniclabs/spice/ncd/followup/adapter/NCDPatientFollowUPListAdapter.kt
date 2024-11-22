@@ -17,10 +17,15 @@ import com.medtroniclabs.spice.databinding.FollowUpListItemPatientsBinding
 import com.medtroniclabs.spice.formgeneration.extension.capitalizeFirstChar
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.ncd.data.PatientFollowUpEntity
+import com.medtroniclabs.spice.ncd.followup.NCDFollowUpUtils.LTFU_Type
+import com.medtroniclabs.spice.ncd.followup.NCDFollowUpUtils.SCREENED
+import com.medtroniclabs.spice.ncd.followup.NCDFollowUpUtils.getDaysString
+import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.mypatients.PatientSelectionListenerForFollowUp
 
 class NCDPatientFollowUPListAdapter(
-    val listener: PatientSelectionListenerForFollowUp
+    val listener: PatientSelectionListenerForFollowUp,
+    val activity : BaseActivity
 ) : PagingDataAdapter<PatientFollowUpEntity, NCDPatientFollowUPListAdapter.NCDPatientFollowUPListViewHolder>(
     PatientListComparator
 ) {
@@ -42,24 +47,33 @@ class NCDPatientFollowUPListAdapter(
                 age,
                 gender
             )
-            binding.tvLabelReason.text = context.getString(R.string.reason)
-            val referredReasonsText = item.referredReasons
-                ?.filterNot { it.isBlank() }
-                ?.joinToString(", ")
-            if (!referredReasonsText.isNullOrEmpty()) {
-                binding.tvReason.text = referredReasonsText
-                binding.tvReason.visible()
-                binding.tvLabelReasonSeperator.visible()
-                binding.tvLabelReason.visible()
-            } else {
-                binding.tvReason.text = context.getString(R.string.hyphen_symbol)
-                binding.tvReason.gone()
-                binding.tvLabelReasonSeperator.gone()
-                binding.tvLabelReason.gone()
-            }
-            binding.tvReason.text = context.getString(R.string.hyphen_symbol)
             binding.tvPatientName.text = patientInfo
             binding.tvDueInformation.setTextColor(Color.parseColor("#994242"))
+            binding.tvReason.gone()
+            binding.tvLabelReasonSeperator.gone()
+            binding.tvLabelReason.gone()
+            if (item.type.equals(SCREENED, true)) {
+                val referredReasonsText =
+                    item.referredReasons?.filterNot { it.isBlank() }?.joinToString(", ")
+                updateReasonSection(
+                    label = context.getString(R.string.reason),
+                    text = referredReasonsText,
+                    context = context,
+                    binding = binding
+                )
+            }
+            if (item.type.equals(LTFU_Type, true)) {
+                val overDueCategoriesText = item.overDueCategories
+                    ?.asSequence()
+                    ?.filter { it.isNotBlank() }
+                    ?.joinToString(", ") { it.lowercase().capitalizeFirstChar() }
+                updateReasonSection(
+                    label = context.getString(R.string.overdue),
+                    text = overDueCategoriesText,
+                    context = context,
+                    binding = binding
+                )
+            }
             item.referredDateSince?.let {
                 binding.tvDueInformation.visible()
                 binding.tvDueInformation.text =
@@ -75,17 +89,38 @@ class NCDPatientFollowUPListAdapter(
                     text = it.toString()
                 }
             } ?: kotlin.run { binding.ivRecentAttemptCount.visibility = View.GONE }
-            binding.callButton.safeClickListener{
+            binding.callButton.safeClickListener {
                 listener.onSelectedPatientForCall(item)
             }
-            binding.assessmentButton.safeClickListener{
+            binding.assessmentButton.safeClickListener {
                 listener.onSelectedPatientForAssessment(item)
+            }
+            binding.root.safeClickListener {
+                listener.onSelectedPatientCard(item)
             }
         }
     }
-    private fun getDaysString(it: Long): Int {
-        return if (it == 1L) R.string.day_due else R.string.days_due
+
+    private fun updateReasonSection(
+        label: String,
+        text: String?,
+        context: Context,
+        binding: FollowUpListItemPatientsBinding // Replace with the actual type of your binding
+    ) {
+        if (!text.isNullOrEmpty()) {
+            binding.tvLabelReason.text = label
+            binding.tvReason.text = text
+            binding.tvReason.visible()
+            binding.tvLabelReasonSeperator.visible()
+            binding.tvLabelReason.visible()
+        } else {
+            binding.tvReason.text = context.getString(R.string.hyphen_symbol)
+            binding.tvReason.gone()
+            binding.tvLabelReasonSeperator.gone()
+            binding.tvLabelReason.gone()
+        }
     }
+
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int

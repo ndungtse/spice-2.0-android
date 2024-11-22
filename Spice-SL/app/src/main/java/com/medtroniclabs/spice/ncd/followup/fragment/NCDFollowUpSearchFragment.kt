@@ -35,7 +35,7 @@ import kotlinx.coroutines.launch
 
 class NCDFollowUpSearchFragment : BaseFragment(), PatientSelectionListenerForFollowUp {
     private lateinit var binding: FragmentFollowUpSearchBinding
-    private val followUpAdapter: NCDPatientFollowUPListAdapter by lazy { NCDPatientFollowUPListAdapter(this) }
+    private val followUpAdapter: NCDPatientFollowUPListAdapter by lazy { NCDPatientFollowUPListAdapter(this, (requireActivity() as BaseActivity)) }
 
     private val viewModel: NCDFollowUpViewModel by activityViewModels()
     override fun onCreateView(
@@ -203,6 +203,13 @@ class NCDFollowUpSearchFragment : BaseFragment(), PatientSelectionListenerForFol
         startActivity(intent)
     }
 
+    override fun onSelectedPatientCard(item: PatientFollowUpEntity) {
+        viewModel.selectedPatient = item
+        val fragment = childFragmentManager.findFragmentByTag(NCDFollowUpDialogFragment.TAG)
+        if (fragment == null) {
+            NCDFollowUpDialogFragment.newInstance(this).show(childFragmentManager, NCDFollowUpDialogFragment.TAG)
+        }
+    }
     private fun hasTelephonyFeature(): Boolean {
         val packageManager = requireContext().packageManager
         return packageManager.hasSystemFeature(PackageManager.FEATURE_TELEPHONY)

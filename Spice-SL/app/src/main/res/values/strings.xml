@@ -1164,4 +1164,11 @@
     <string name="day_due">%1$s day due</string>
     <string name="overdue_for">Overdue: %s</string>
     <string name="device_phone_info">Your device does not support the calling feature.</string>
+    <string name="day_since_last_review">Days since last Review</string>
+    <string name="county">County</string>
+    <string name="sub_county">Sub County</string>
+    <string name="community_health_unit">Community Health Unit</string>
+    <string name="defaulters">Defaulters</string>
+    <string name="LTFU">LTFU</string>
+    <string name="overdue">Overdue</string>
 </resources>

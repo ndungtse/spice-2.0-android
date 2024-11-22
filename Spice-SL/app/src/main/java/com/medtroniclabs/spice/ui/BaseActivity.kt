@@ -386,17 +386,20 @@ open class BaseActivity : SpiceRootActivity() {
 
     fun withNetworkAvailability(
         online: () -> Unit,
-        offline: () -> Unit = {}
+        offline: () -> Unit = {},
+        isErrorShow: Boolean = true
     ) {
         connectivityManager.isNullableNetworkAvailable()?.let { isNetworkAvailable ->
             if (isNetworkAvailable) {
                 online()
             } else {
-                showErrorDialogue(
-                    getString(R.string.error),
-                    getString(R.string.no_internet_error),
-                    isNegativeButtonNeed = false
-                ) {}
+                if (isErrorShow) {
+                    showErrorDialogue(
+                        getString(R.string.error),
+                        getString(R.string.no_internet_error),
+                        isNegativeButtonNeed = false
+                    ) {}
+                }
                 offline()
             }
         }

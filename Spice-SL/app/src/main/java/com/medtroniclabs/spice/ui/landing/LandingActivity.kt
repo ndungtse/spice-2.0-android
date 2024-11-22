@@ -333,7 +333,9 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
         }
         binding.appBarMain.ivNotification.safeClickListener(this)
         binding.appBarMain.tvNotificationCount.safeClickListener(this)
-        if (CommonUtils.isNCDProvider() || CommonUtils.isNurse()) {
+        val isNotificationVisible =
+            CommonUtils.isNCDProvider() || CommonUtils.isNurse() || CommonUtils.isPhysicianPrescriber()
+        if (isNotificationVisible) {
             binding.appBarMain.ivNotification.visible()
         } else {
             binding.drawerLayout.setDrawerLockMode(

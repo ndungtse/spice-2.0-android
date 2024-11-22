@@ -543,7 +543,6 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
     }
 
     private fun loadFragment(isInitialMR: Boolean) {
-        showHideVerticalIcon(isInitialMR)
         showLoading()
         if (isInitialMR) {
             binding.apply {
