@@ -36,6 +36,8 @@ class PatientDetailViewModel @Inject constructor(
     val updatePregnancyRisk = MutableLiveData<Resource<Boolean>>()
     val ncdInstructionModelResponse = MutableLiveData<Resource<NCDInstructionModel>>()
     val patientDetailsLiveData = MutableLiveData<Resource<PatientListRespModel>>()
+    val patientDetailsNeonateLiveData = MutableLiveData<Resource<PatientListRespModel>>()
+
     //the below id is one which get from patient details response
     var patientDetailsId : String? = null
     var isSummary : Boolean = false
@@ -193,6 +195,13 @@ class PatientDetailViewModel @Inject constructor(
     fun getMenuForClinicalWorkflows() {
         viewModelScope.launch(dispatcherIO) {
             clinicalWorkflowsMenusLiveData.postValue(patientRepository.getMenuForClinicalWorkflows())
+        }
+    }
+
+    fun getNeonatePatients(id: String, assessmentType: String? = null, origin: String? = null) {
+        viewModelScope.launch(dispatcherIO) {
+            patientDetailsNeonateLiveData.postLoading()
+            patientDetailsNeonateLiveData.postValue(patientRepository.getPatients(PatientDetailRequest(patientId = id, assessmentType = assessmentType, id = id, type = origin)))
         }
     }
 }

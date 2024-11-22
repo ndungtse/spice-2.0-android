@@ -74,6 +74,7 @@ data class PatientListRespModel(
     val suicidalIdeation : String? = null,
     val otherInsurance : String? = null,
     val cageAid : String? = null,
+    var isActive:Boolean?=null,
     val nextMedicalReviewDate: String? = null,
     val phq4score: String? = null,
     val gad7Score: String? = null,
@@ -123,3 +124,5 @@ data class PrescribedDetails(
     var lastRefillDate: String? = null,
     var lastRefillVisitId: String? = null
 ) : Serializable
+
+data class NeoNateListModel(var isActive:Boolean?=null)

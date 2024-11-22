@@ -105,11 +105,26 @@
             android:textAlignment="textStart"
             android:hint="@string/name"
             android:maxLines="1"
+            android:inputType="textCapWords"
             android:textSize="@dimen/_16ssp"
             app:layout_constraintEnd_toStartOf="@+id/endGuideline"
             app:layout_constraintStart_toEndOf="@+id/seperatorColon1"
             app:layout_constraintTop_toTopOf="@+id/tvNeonateOutcomeLabel"
             app:layout_constraintBottom_toBottomOf="@+id/tvNeonateOutcomeLabel"/>
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/etNameError"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/inter_regular"
+            android:text="@string/error_label"
+            android:textColor="@color/a_red_error"
+            android:textSize="@dimen/_12ssp"
+            android:visibility="gone"
+            android:layout_marginBottom="@dimen/_8sdp"
+            app:layout_constraintEnd_toEndOf="@id/etName"
+            app:layout_constraintStart_toStartOf="@id/etName"
+            app:layout_constraintTop_toBottomOf="@id/etName" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/cgNeonateOutcomeError"
@@ -401,7 +416,19 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:visibility="visible"
-            app:constraint_referenced_ids="tvGestationalAge,seperatorColon7,tvGestationalAgeLabel,cgSignsSymptomsObserved,seperatorColon6,tvSignsSymptomsObservedLabel,rvAgparScores,seperatorColon5,tvAgparScoreLabel,stateOfBabyGroup,seperatorColon4,tvStateOfBabyLabel,,tvBirthWeightCal,etBirthWeight,seperatorColon3, tvBirthWeightLabel,,cgNeonateOutcome" />
+            app:constraint_referenced_ids="tvGestationalAge,seperatorColon7,tvGestationalAgeLabel,cgSignsSymptomsObserved,seperatorColon6,tvSignsSymptomsObservedLabel,rvAgparScores,seperatorColon5,tvAgparScoreLabel,stateOfBabyGroup,seperatorColon4,tvStateOfBabyLabel,,tvBirthWeightCal,etBirthWeight,seperatorColon3, tvBirthWeightLabel" />
+        <androidx.constraintlayout.widget.Group
+            android:id="@+id/neonateOvercomePncGroup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="visible"
+            app:constraint_referenced_ids="seperatorColon1,tvNeonateOutcomeLabel,cgNeonateOutcome" />
+        <androidx.constraintlayout.widget.Group
+            android:id="@+id/genderPncGroup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="visible"
+            app:constraint_referenced_ids="seperatorColon2,tvGenderLabel,genderLabelGroup" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tvGestationalAge"

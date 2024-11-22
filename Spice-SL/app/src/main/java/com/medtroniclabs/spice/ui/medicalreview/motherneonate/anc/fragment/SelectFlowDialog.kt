@@ -123,7 +123,10 @@ class SelectFlowDialog : DialogFragment(), View.OnClickListener {
                 val childId = arguments?.getString(DefinedParams.ChildPatientId, null)
                 val  neonateOutcome = arguments?.getString(DefinedParams.NeonateOutcome, null)
                 val targetActivity = if (!childId.isNullOrEmpty()) MotherNeonatePncActivity::class.java else{
-                    if (neonateOutcome== MedicalReviewDefinedParams.MaceratedStillBirth){
+                    if (neonateOutcome== MedicalReviewDefinedParams.MaceratedStillBirth
+                        ||neonateOutcome== MedicalReviewDefinedParams.FreshStillBirth
+                        || neonateOutcome==MedicalReviewDefinedParams.StillBirth
+                        ||neonateOutcome==MedicalReviewDefinedParams.Miscarriage ){
                         MotherNeonatePncActivity::class.java
                     }else {
                         LabourDeliveryBaseActivity::class.java

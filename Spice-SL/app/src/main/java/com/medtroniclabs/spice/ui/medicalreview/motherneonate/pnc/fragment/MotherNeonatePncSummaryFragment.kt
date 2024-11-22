@@ -13,6 +13,7 @@ import androidx.fragment.app.setFragmentResult
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.setExpandableText
+import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.CommonUtils.combineText
 import com.medtroniclabs.spice.common.CommonUtils.convertListToString
@@ -42,7 +43,7 @@ import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 
 
-class MotherNeonatePncSummaryFragment : BaseFragment(), View.OnClickListener {
+class MotherNeonatePncSummaryFragment(var isShowNeonate: Boolean) : BaseFragment(), View.OnClickListener {
     private lateinit var binding: FragmentMotherNeonarePncSummaryBinding
     var adapter: CustomSpinnerAdapter? = null
     private var datePickerDialog: DatePickerDialog? = null
@@ -60,8 +61,8 @@ class MotherNeonatePncSummaryFragment : BaseFragment(), View.OnClickListener {
 
     companion object {
         const val TAG = "MotherNeonateSummary"
-        fun newInstance(): MotherNeonatePncSummaryFragment {
-            return MotherNeonatePncSummaryFragment()
+        fun newInstance(isShowNeonate: Boolean): MotherNeonatePncSummaryFragment {
+            return MotherNeonatePncSummaryFragment(isShowNeonate)
         }
     }
 
@@ -71,8 +72,16 @@ class MotherNeonatePncSummaryFragment : BaseFragment(), View.OnClickListener {
         getPncPatientStatus(MedicalReviewTypeEnums.PNC_MOTHER_REVIEW.name)
         clickListener()
         attachObservers()
+        showNeonateSummary()
     }
 
+    private fun showNeonateSummary() {
+        if (!isShowNeonate) {
+            binding.neonateSummary.cardSummary.gone()
+        } else {
+            binding.neonateSummary.cardSummary.visible()
+        }
+    }
     private fun getPncSummaryDetails() = viewModel.getPncSummaryDetails()
     private fun getPncPatientStatus(category: String) =
         viewModel.setPncReqToGetMetaForPatientStatus(category = category)

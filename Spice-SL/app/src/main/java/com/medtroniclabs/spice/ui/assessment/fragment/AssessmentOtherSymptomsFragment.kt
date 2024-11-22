@@ -29,8 +29,10 @@ import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.MenuConstants.OTHER_SYMPTOMS
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
 import com.medtroniclabs.spice.ui.assessment.referrallogic.ReferralResultGenerator
+import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefinedParams
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import timber.log.Timber
 
 @AndroidEntryPoint
 class AssessmentOtherSymptomsFragment : BaseFragment(), FormEventListener, View.OnClickListener {
@@ -174,6 +176,11 @@ class AssessmentOtherSymptomsFragment : BaseFragment(), FormEventListener, View.
         when (id) {
             AssessmentDefinedParams.hasFever -> {
                     renderDosageDetails()
+            }
+            AssessmentDefinedParams.rdtTest->{
+                if (selectedId==ReferralDefinedParams.RdtPositive){
+                    renderDosageDetails()
+                }
             }
         }
     }

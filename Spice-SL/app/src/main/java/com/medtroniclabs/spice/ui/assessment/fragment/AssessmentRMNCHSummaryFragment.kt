@@ -26,12 +26,13 @@ import com.medtroniclabs.spice.common.ViewUtils
 import com.medtroniclabs.spice.databinding.FragmentRmnchSummaryBinding
 import com.medtroniclabs.spice.formgeneration.config.ViewType
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
-import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
 import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapterCustomLayout
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.assessment.AssessmentCommonUtils
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.ExclusivelyBreastfeeding
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.rootSuffix
 import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.DeathOfMother
@@ -114,6 +115,7 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
             conditionBasedRendering(map)
             addDefaultSummaryView(map)
             viewModel.formLayoutsLiveData.value?.data?.formLayout?.filter { it.isSummary == true }
+                ?.filterNot { it.id in showQuestionBasedAge() } // Remove the item with id "childhoodVisitSigns"
                 ?.forEach { data ->
                     with(data) {
                         updateStatusBar()
@@ -387,4 +389,28 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
         return viewModel.otherAssessmentDetails.isNotEmpty()
     }
 
+    private fun showQuestionBasedAge():List<String> {
+        var age=viewModel.ageInMonth.value
+        var questionList=ArrayList<String>()
+            if (age?.contains(getString(R.string.week),true) == true || age?.contains(getString(R.string.day),true) == true){
+                questionList.add(AssessmentDefinedParams.TakingMinimumMealsPerDay)
+                questionList.add(AssessmentDefinedParams.FedFrom4FoodGroups)
+
+            }else {
+                when (age?.replace(getString(R.string.months), "")?.replace(getString(R.string.month), "")?.trim()?.toInt()) {
+                    in 0..5 -> {
+                        questionList.add(AssessmentDefinedParams.TakingMinimumMealsPerDay)
+                        questionList.add(AssessmentDefinedParams.FedFrom4FoodGroups)
+                    }
+                    in 6..15 -> {
+                        questionList.add(AssessmentDefinedParams.ExclusivelyBreastfeeding)
+                    }
+
+                    else -> {
+                    }
+                }
+            }
+
+        return questionList
+    }
 }

@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.AppCompatTextView
+import androidx.compose.material3.TimePicker
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
@@ -31,6 +32,8 @@ import com.medtroniclabs.spice.ui.medicalreview.motherneonate.labourdelivery.vie
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
 import com.medtroniclabs.spice.ui.mypatients.adapter.AgparScoreAdapter
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.labourdelivery.AddAgparScoreDialog
+import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
+import timber.log.Timber
 
 class NeonateFragment : BaseFragment() {
 
@@ -38,6 +41,9 @@ class NeonateFragment : BaseFragment() {
     private lateinit var cgNeonateOutcome: TagListCustomView
     private lateinit var cgSignSymptomsObserved: TagListCustomView
     private lateinit var agparScoreAdapter: AgparScoreAdapter
+    private lateinit var  viewGender:SingleSelectionCustomView
+    private lateinit var  viewStateOfBaby:SingleSelectionCustomView
+
     private val viewModel: LabourDeliveryViewModel by activityViewModels()
 
     override fun onCreateView(
@@ -142,9 +148,9 @@ class NeonateFragment : BaseFragment() {
 
     private fun initializeStateOfBabyLabel() {
         getStateOfBabyFlowData().let {
-            val view = SingleSelectionCustomView(binding.root.context)
-            view.tag = TAG
-            view.addViewElements(
+            viewStateOfBaby = SingleSelectionCustomView(binding.root.context)
+            viewStateOfBaby.tag = TAG
+            viewStateOfBaby.addViewElements(
                 it,
                 SecuredPreference.getIsTranslationEnabled(),
                 viewModel.stateOfBaby,
@@ -152,7 +158,7 @@ class NeonateFragment : BaseFragment() {
                 FormLayout(viewType = "", id = "", title = "", visibility = "", optionsList = null),
                 stateOfBabySingleSelectionCallback
             )
-            binding.stateOfBabyGroup.addView(view)
+            binding.stateOfBabyGroup.addView(viewStateOfBaby)
         }
     }
 
@@ -166,9 +172,9 @@ class NeonateFragment : BaseFragment() {
 
     private fun initializeGenderLabel() {
         getGenderFlowData().let {
-            val view = SingleSelectionCustomView(binding.root.context)
-            view.tag = TAG
-            view.addViewElements(
+            viewGender = SingleSelectionCustomView(binding.root.context)
+            viewGender.tag = TAG
+            viewGender.addViewElements(
                 it,
                 SecuredPreference.getIsTranslationEnabled(),
                 viewModel.genderFlow,
@@ -176,7 +182,7 @@ class NeonateFragment : BaseFragment() {
                 FormLayout(viewType = "", id = "", title = "", visibility = "", optionsList = null),
                 genderSingleSelectionCallback
             )
-            binding.genderLabelGroup.addView(view)
+            binding.genderLabelGroup.addView(viewGender)
         }
     }
 
@@ -230,18 +236,22 @@ class NeonateFragment : BaseFragment() {
 
     private fun initUI() {
         binding.tvGenderLabel.markMandatory()
+        binding.tvNeonateOutcomeLabel.markMandatory()
         if (viewModel.isDirectPnc){
             val constraintLayout =binding.tvGenderLabel // Replace with your actual ConstraintLayout ID
             val params = constraintLayout.layoutParams as ConstraintLayout.LayoutParams
-            params.topToBottom =binding.etName.id
+            params.topToBottom =binding.etNameError.id
             constraintLayout.layoutParams = params
             constraintLayout.requestLayout()
             binding.tvNeonateOutcomeLabel.text=getString(R.string.name)
             binding.etName.visible()
             binding.directPncGroup.gone()
+            binding.cgNeonateOutcome.gone()
         }else {
-            binding.directPncGroup.visible()
+            binding.directPncGroup.gone()
+            binding.genderPncGroup.gone()
             binding.etName.gone()
+            binding.etNameError.gone()
         }
             agparScoreAdapter = AgparScoreAdapter { rowType, columnType, selectedScore ->
                 viewModel.agparRowIdentifier = rowType
@@ -271,7 +281,19 @@ class NeonateFragment : BaseFragment() {
             val name = it?.trim().toString()
                 viewModel.name = name
                 viewModel.validateSubmitButtonState()
-
+            //Validating the direct pnc child name contains only alphabets
+            if (viewModel.isDirectPnc&&!CommonUtils.isAlphabetsWithSpace(name)){
+                binding.etNameError.apply {
+                    visible()
+                    text =
+                        getString(R.string.entered_values_should_contain_only_alphabets)
+                    requestFocus()
+                }
+            }else{
+                binding.etNameError.apply {
+                    gone()
+                }
+            }
         }
 
             cgNeonateOutcome =
@@ -279,8 +301,32 @@ class NeonateFragment : BaseFragment() {
                     cgNeonateOutcome.getSelectedTags().let {
                         if (it.isNotEmpty()) {
                             viewModel.neonateOutcome = it[0].value
+                            if(viewModel.neonateOutcome ==  MedicalReviewDefinedParams.FreshStillBirth||viewModel.neonateOutcome ==MedicalReviewDefinedParams.MaceratedStillBirth || viewModel.neonateOutcome.isNullOrEmpty()){
+                                binding.directPncGroup.gone()
+                                binding.genderPncGroup.gone()
+                                binding.neonateOvercomePncGroup.visible()
+                                viewModel.apply {
+                                    neonateBirthWeight=null
+                                    binding.tvBirthWeightCal.text =""
+                                    binding.etBirthWeight.text?.clear()
+                                    viewStateOfBaby.resetSingleSelectionChildViews()
+                                    viewGender.resetSingleSelectionChildViews()
+//                                    genderFlow= hashMapOf()
+//                                    stateOfBaby= hashMapOf()
+                                    gestationalAge=null
+                                    binding.tvGestationalAge.text=""
+                                    cgSignSymptomsObserved.clearSelection()
+                                    neonateSignsAndSymptoms= listOf()
+
+
+                                }
+                            }else {
+                                binding.directPncGroup.visible()
+                                binding.genderPncGroup.visible()
+                            }
                         } else {
                             viewModel.neonateOutcome = null
+
                         }
                     }
                     viewModel.validateSubmitButtonState()
@@ -343,11 +389,21 @@ class NeonateFragment : BaseFragment() {
 
         // Validate Gender
         if (viewModel.genderFlow[DefinedParams.Gender] == null) {
-            binding.tvGenderError.isVisible = true
-            binding.tvGenderLabel.requestFocus()
-            isValid = false
+            if (viewModel.neonateOutcome ==  MedicalReviewDefinedParams.FreshStillBirth||viewModel.neonateOutcome ==MedicalReviewDefinedParams.MaceratedStillBirth || viewModel.neonateOutcome.isNullOrEmpty()){
+                binding.tvGenderError.isVisible = false
+                isValid=true
+            }else {
+                binding.tvGenderError.isVisible = true
+                binding.tvGenderLabel.requestFocus()
+                isValid = false
+            }
         } else {
-            binding.tvGenderError.isVisible = false
+             if (viewModel.neonateOutcome ==  MedicalReviewDefinedParams.FreshStillBirth||viewModel.neonateOutcome ==MedicalReviewDefinedParams.MaceratedStillBirth || viewModel.neonateOutcome.isNullOrEmpty()){
+                 binding.tvGenderError.isVisible = false
+                 isValid=true
+            }else{
+                 binding.tvGenderError.isVisible = false
+             }
         }
 
         // Validate Neonate Outcome

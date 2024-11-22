@@ -17,7 +17,7 @@ data class Child(
     val motherPatientId: String?,
     val dateOfBirth: String?,
     val patientId: String?,
-    val gender: String?,
+    val gender: String?=null,
     val provenance: ProvanceDto,
     val phoneNumber: String?,
     val phoneNumberCategory: String?,
@@ -35,7 +35,7 @@ data class LabourDTO(
     val deliveryByOther:String?,
     val deliveryType: String?,
     val noOfNeoNates: Int?
-)
+    )
 
 data class MotherDTO(
     val id: String?,
@@ -49,12 +49,14 @@ data class MotherDTO(
     val tear: String?,
     val ttDoseTaken: Int?,
     val prescriptions: List<Prescription>? = null,
-    val investigations: List<Investigation>? = null,)
+    val investigations: List<Investigation>? = null,
+    val neonateOutcome: String?=null,
+)
 
 data class NeonateDTO(
     val birthWeight: String?,
     val encounter: MedicalReviewEncounter?,
-    val gender: String?,
+    val gender: String?=null,
     val neonateOutcome: String?,
     val signs: List<String>?,
     val stateOfBaby: String?,

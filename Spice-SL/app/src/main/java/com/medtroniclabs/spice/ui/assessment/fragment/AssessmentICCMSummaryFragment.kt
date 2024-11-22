@@ -173,6 +173,10 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
             }
         }
         binding.etNextFollowUpDate.safeClickListener(this)
+        binding.etNextFollowUpDate.background=null
+          binding.etNextFollowUpDate.background= ContextCompat.getDrawable(requireContext(),R.drawable.edittext_background)
+        val background = binding.etNextFollowUpDate.background as? GradientDrawable
+        background?.setStroke(resources.getDimensionPixelSize(R.dimen._1sdp), ContextCompat.getColor(requireContext(), R.color.edittext_stroke))
 
     }
 

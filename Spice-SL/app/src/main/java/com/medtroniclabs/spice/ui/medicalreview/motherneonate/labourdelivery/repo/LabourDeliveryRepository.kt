@@ -31,6 +31,7 @@ class LabourDeliveryRepository @Inject constructor(
                             Pair(deliveryAt, deliveryBy),
                             Pair(deliveryType, deliveryStatus),
                             neonateOutcome,
+                            pncNeonateOutcome,
                             riskFactors,
                             conditionOfMother,
                             motherDeliveryStatus,
@@ -61,6 +62,7 @@ class LabourDeliveryRepository @Inject constructor(
         deliveryAtDeliveryByPair: Pair<List<LabourDeliveryMetaEntity>, List<LabourDeliveryMetaEntity>>,
         deliveryTypeAndStatusPair: Pair<List<LabourDeliveryMetaEntity>, List<LabourDeliveryMetaEntity>>,
         neonateOutcome: List<LabourDeliveryMetaEntity>,
+        pncNeonateOutcome: List<LabourDeliveryMetaEntity>,
         riskFactors: List<LabourDeliveryMetaEntity>,
         conditionOfMother: List<LabourDeliveryMetaEntity>,
         motherDeliveryStatus: List<LabourDeliveryMetaEntity>,
@@ -81,6 +83,7 @@ class LabourDeliveryRepository @Inject constructor(
             it.category = MedicalReviewTypeEnums.DeliveryStatus.name
         }
         neonateOutcome.forEach { it.category = MedicalReviewTypeEnums.NeonateOutcome.name }
+        pncNeonateOutcome.forEach { it.category = MedicalReviewTypeEnums.PNCNeonateOutcome.name }
         riskFactors.forEach { it.category = MedicalReviewTypeEnums.RiskFactors.name }
         conditionOfMother.forEach { it.category = MedicalReviewTypeEnums.ConditionOfMother.name }
         motherDeliveryStatus.forEach {
@@ -93,6 +96,7 @@ class LabourDeliveryRepository @Inject constructor(
         chipItemList.addAll(deliveryTypeAndStatusPair.first)
         chipItemList.addAll(deliveryTypeAndStatusPair.second)
         chipItemList.addAll(neonateOutcome)
+        chipItemList.addAll(pncNeonateOutcome)
         chipItemList.addAll(riskFactors)
         chipItemList.addAll(conditionOfMother)
         chipItemList.addAll(motherDeliveryStatus)

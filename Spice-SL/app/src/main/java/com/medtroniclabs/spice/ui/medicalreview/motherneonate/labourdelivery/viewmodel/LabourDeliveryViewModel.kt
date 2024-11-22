@@ -25,6 +25,7 @@ import com.medtroniclabs.spice.data.model.NeonateDTO
 import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.data.resource.LabourDeliverySummaryRequest
 import com.medtroniclabs.spice.di.IoDispatcher
+import com.medtroniclabs.spice.mappingkey.UnderFiveYearExaminationKeyMapping.HivAndAids.child
 import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.model.assessment.AgparScoreFooter
 import com.medtroniclabs.spice.model.assessment.AgparScoreHeader
@@ -33,6 +34,7 @@ import com.medtroniclabs.spice.model.assessment.ApgarScore
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.ui.BaseViewModel
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.labourdelivery.repo.LabourDeliveryRepository
+import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
 import com.medtroniclabs.spice.ui.mypatients.enumType.AgparColumnIdentifierType
 import com.medtroniclabs.spice.ui.mypatients.enumType.AgparItemViewType
 import com.medtroniclabs.spice.ui.mypatients.enumType.AgparRowIdentifierType
@@ -65,8 +67,8 @@ class LabourDeliveryViewModel @Inject constructor(
     var motherTTDosageSoFar: String? = null
     var motherStatus = listOf<ChipViewItemModel>()
     var motherStatusFactors = listOf<ChipViewItemModel>()
-    val genderFlow = HashMap<String, Any>()
-    val stateOfBaby = HashMap<String, Any>()
+    var genderFlow = HashMap<String, Any>()
+    var stateOfBaby = HashMap<String, Any>()
     val labourDeliveryMetaLiveData = MutableLiveData<Resource<Boolean>>()
     val labourDeliveryMetaList = MutableLiveData<Resource<List<LabourDeliveryMetaEntity>>>()
     val createLabourDeliveryMedicalReviewResponse =
@@ -275,7 +277,8 @@ class LabourDeliveryViewModel @Inject constructor(
         }
     }
 
-    fun createLabourDeliveryRequest(prescriptionEncounterId: String?) {
+    fun createLabourDeliveryRequest(
+        prescriptionEncounterId: String?) {
         if (timeOfDeliveryInHour?.toInt()!! <=12 && timeOfDeliveryInMinute?.toInt()!! <=59 && timeOfLabourOnSetInHour?.toInt()!!<=12 &&
             timeOfLabourOnSetInMinutes?.toInt()!!<=59){
            val createLabourMedicalReviewRequest = setLabourDeliveryRequest(prescriptionEncounterId)
@@ -329,8 +332,8 @@ class LabourDeliveryViewModel @Inject constructor(
         val childModel = createChildModel(ProvanceDto())
         val createLabourMedicalReviewRequest = CreateLabourDeliveryRequest(
             motherDTO = motherModel,
-            neonateDTO = neonateModel,
-            child = childModel
+            neonateDTO = if (neonateModel.neonateOutcome?.contains(MedicalReviewDefinedParams.MaceratedStillBirth)==true || neonateModel.neonateOutcome?.contains(MedicalReviewDefinedParams.FreshStillBirth)== true|| neonateModel.neonateOutcome?.contains(MedicalReviewDefinedParams.StillBirth)== true|| neonateModel.neonateOutcome?.contains(MedicalReviewDefinedParams.Miscarriage)== true) null else neonateModel,
+            child = if (neonateModel.neonateOutcome?.contains(MedicalReviewDefinedParams.MaceratedStillBirth)==true || neonateModel.neonateOutcome?.contains(MedicalReviewDefinedParams.FreshStillBirth)== true|| neonateModel.neonateOutcome?.contains(MedicalReviewDefinedParams.StillBirth)== true|| neonateModel.neonateOutcome?.contains(MedicalReviewDefinedParams.Miscarriage)== true) null else childModel
         )
         return createLabourMedicalReviewRequest
     }
@@ -348,6 +351,8 @@ class LabourDeliveryViewModel @Inject constructor(
         val village = patientDetailModel?.village.takeIf { it != null }
         val villageId = patientDetailModel?.villageId.takeIf { it != null }
 
+        val genderValue = genderFlow[DefinedParams.Gender]?.toString()?.takeIf { it != "null" }
+
         return Child(
             name = childName,
             village = village,
@@ -356,7 +361,7 @@ class LabourDeliveryViewModel @Inject constructor(
             dateOfBirth = getTimeOfDelivery(),
             patientId = null,
             isChild = true,
-            gender = genderFlow[DefinedParams.Gender].toString(),
+            gender =  genderValue,
             provenance = provanceDto,
             householdId = patientDetailModel?.houseHoldId,
             phoneNumber = patientDetailModel?.phoneNumber,
@@ -369,8 +374,10 @@ class LabourDeliveryViewModel @Inject constructor(
         val apgarScoreOneMinute = createOneMinuteApgarScore()
         val apgarScoreFiveMinute = createFiveMinuteApgarScore()
         val apgarScoreTenMinute = createTenMinuteApgarScore()
+        val genderValue = genderFlow[DefinedParams.Gender]?.toString()?.takeIf { it != "null" }
+
         return NeonateDTO(neonateOutcome = neonateOutcome.takeIf { it != null },
-            gender = genderFlow[DefinedParams.Gender].toString(),
+            gender = genderValue,
             birthWeight = neonateBirthWeight.takeIf { it != null },
             stateOfBaby = stateOfBaby[DefinedParams.StateOfBaby] as? String,
             signs = neonateSignsAndSymptoms.map { it.value.toString() }.takeIf { it.isNotEmpty() },
@@ -462,7 +469,8 @@ class LabourDeliveryViewModel @Inject constructor(
             status = motherStatus.map { it.value.toString() }.takeIf { it.isNotEmpty() },
             tear = perineumStateMap[DefinedParams.Tear] as? String,
             encounter = encounter,
-            labourDTO = labourDTO
+            labourDTO = labourDTO,
+            neonateOutcome = neonateOutcome.takeIf { it != null }
         )
     }
 
@@ -475,7 +483,7 @@ class LabourDeliveryViewModel @Inject constructor(
             deliveryByOther = deliveryByOthers,
             noOfNeoNates = noOfNeonates?.toInt(),
             dateAndTimeOfDelivery = getTimeOfDelivery(),
-            dateAndTimeOfLabourOnset = getTimeOfLabourOnset()
+            dateAndTimeOfLabourOnset = getTimeOfLabourOnset(),
         )
     }
 

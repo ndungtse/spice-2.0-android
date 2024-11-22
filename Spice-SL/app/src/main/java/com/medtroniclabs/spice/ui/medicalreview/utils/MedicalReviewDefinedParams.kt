@@ -20,6 +20,8 @@ object MedicalReviewDefinedParams {
     const val GESTATIONAL_AGE = "gestationalAge"
     const val FreshStillBirth = "freshStillBirth"
     const val MaceratedStillBirth="maceratedStillBirth"
+    const val StillBirth = "stillBirth"
+    const val Miscarriage="miscarriage"
     const val LiveBirth="liveBirth"
 
 }

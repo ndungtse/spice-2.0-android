@@ -501,7 +501,7 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
     }
 
     private fun updateAgeInMonths(age: String) {
-        if (age.contains(getString(R.string.weeks))||age.lowercase().contains(getString(R.string.week))){
+        if (age.contains(getString(R.string.week),true)||age.contains(getString(R.string.day),true)){
             hideUnder5Months()
         }else {
             when (age.replace(getString(R.string.months), "").replace(getString(R.string.month), "").trim().toInt()) {

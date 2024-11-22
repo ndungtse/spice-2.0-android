@@ -222,7 +222,6 @@
                 android:layout_height="wrap_content"
                 android:inputType="date"
                 style="@style/Form_Input_Style"
-                android:background="@drawable/edittext_background"
                 android:drawableEnd="@drawable/referral_calendar_icon"
                 android:gravity="start|center"
                 android:layout_marginVertical="@dimen/_8sdp"

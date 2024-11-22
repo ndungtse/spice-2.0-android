@@ -7,6 +7,7 @@ import android.view.View
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.core.location.LocationManagerCompat.getCurrentLocation
 import androidx.core.view.isVisible
 import com.google.gson.Gson
 import com.medtroniclabs.spice.R
@@ -169,7 +170,7 @@ private fun attachObserver() {
     viewModel.neonateOutComeStateLiveData.observe(this) {
         binding.neonateContainer.apply {
             if (it != null && it.isNotEmpty()) {
-                if (it[0].value == MedicalReviewDefinedParams.MaceratedStillBirth || it[0].value == MedicalReviewDefinedParams.FreshStillBirth) {gone() }
+                if (it[0].value == MedicalReviewDefinedParams.StillBirth || it[0].value == MedicalReviewDefinedParams.Miscarriage) {gone() }
                 else {
                     visible()
                     replaceFragmentInId<NeonateFragment>(
@@ -403,12 +404,11 @@ private fun handleInvestigationClick() {
 
     private fun handleSubmitClick() {
         if (viewModel.isDirectPnc) {
-            if (viewModel.neonateOutComeStateLiveData.value?.get(0)?.value == MedicalReviewDefinedParams.FreshStillBirth) {
+            if (viewModel.neonateOutComeStateLiveData.value?.get(0)?.value == MedicalReviewDefinedParams.Miscarriage) {
                 handleDirectPncNavigation(viewModel.setLabourDeliveryRequest(patientViewModel.encounterId))
-            }else if (viewModel.neonateOutComeStateLiveData.value?.get(0)?.value == MedicalReviewDefinedParams.MaceratedStillBirth &&validateLabourOrDelivery()){
-                    withNetworkCheck(connectivityManager, ::submitDetails)
-            }
-            else {
+            } else if (viewModel.neonateOutComeStateLiveData.value?.get(0)?.value == MedicalReviewDefinedParams.StillBirth && validateLabourOrDelivery()) {
+                withNetworkCheck(connectivityManager, ::submitDetails)
+            } else {
                 if (labourValidation()) {
                     withNetworkCheck(connectivityManager, ::submitDetails)
                 }
@@ -485,8 +485,13 @@ private fun showLabourDeliverySummary() {
     binding.referalBottomView.visibility = View.VISIBLE
     supportFragmentManager.beginTransaction()
         .replace(R.id.labourDeliveryContainer, MotherSummaryFragment()).commit()
-    supportFragmentManager.beginTransaction()
-        .replace(R.id.motherContainer, NeonateSummaryFragment()).commit()
+    if (viewModel.neonateOutcome==MedicalReviewDefinedParams.MaceratedStillBirth||viewModel.neonateOutcome==MedicalReviewDefinedParams.FreshStillBirth) {
+        binding.motherContainer.gone()
+    }else{
+        binding.motherContainer.visible()
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.motherContainer, NeonateSummaryFragment()).commit()
+    }
     binding.neonateContainer.isVisible = false
 }
 
