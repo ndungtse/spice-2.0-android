@@ -239,12 +239,14 @@ class BioDataFragment : BaseFragment() {
             binding.gender.tvKey.text = getString(R.string.gender)
             binding.gender.tvValue.text = gender.capitalizeFirstChar()
             binding.dobAge.tvKey.text = getString(R.string.age)
-            binding.dobAge.tvValue.text = getAgeValue(
-                CommonUtils.getAgeFromDOB(
-                    dateOfBirth,
-                    requireContext()
-                )
+            var age= CommonUtils.getAgeFromDOB(
+                dateOfBirth,
+                requireContext()
             )
+            binding.dobAge.tvValue.text = getAgeValue(
+                age
+            )
+            viewModel.ageInMonth.value=age
             viewModel.workflowName?.let { workFlowName ->
                 viewModel.getPatientVisitCountByType(workFlowName, id)
             }

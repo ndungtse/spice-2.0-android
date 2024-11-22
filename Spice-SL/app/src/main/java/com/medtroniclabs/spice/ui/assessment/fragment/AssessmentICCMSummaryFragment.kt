@@ -208,7 +208,14 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
                 binding.phuReferredGroup.visibility = View.VISIBLE
                 binding.riskResultLayout.backgroundTintList =
                     ContextCompat.getColorStateList(requireContext(), R.color.attention_color)
-                binding.riskResultLayout.text = getString(R.string.referred_for_further_assessment)
+                if (viewModel.isDangerSignFlow) {
+                    binding.riskResultLayout.text =
+                        getString(R.string.urgent_referral)
+                } else {
+                    binding.riskResultLayout.text =
+                        getString(R.string.referred_for_further_assessment)
+                }
+
             }
 
             ReferralStatus.OnTreatment.name -> {

@@ -138,4 +138,8 @@ object AssessmentDefinedParams {
     const val suicidalIdeation = "suicideScreener"
     const val cageAid = "substanceAbuse"
     const val ObservationID = "ObservationId"
+
+    const val TakingMinimumMealsPerDay="takingMinimumMealsPerDay"
+    const val ExclusivelyBreastfeeding="exclusivelyBreastfeeding"
+    const val FedFrom4FoodGroups="fedFrom4FoodGroups"
 }

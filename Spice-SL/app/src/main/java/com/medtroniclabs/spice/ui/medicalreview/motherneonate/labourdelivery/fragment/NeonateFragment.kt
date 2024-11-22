@@ -338,16 +338,31 @@ class NeonateFragment : BaseFragment() {
     }
 
     fun validate(): Boolean {
-        binding.tvGenderError.isVisible = false
-        return if (viewModel.genderFlow[DefinedParams.Gender] != null) {
-            true
-        } else {
+        // Initialize validation result as true
+        var isValid = true
+
+        // Validate Gender
+        if (viewModel.genderFlow[DefinedParams.Gender] == null) {
             binding.tvGenderError.isVisible = true
             binding.tvGenderLabel.requestFocus()
-            false
+            isValid = false
+        } else {
+            binding.tvGenderError.isVisible = false
         }
 
+        // Validate Neonate Outcome
+        if (viewModel.neonateOutcome == null) {
+            binding.cgNeonateOutcomeError.isVisible = true
+            binding.cgNeonateOutcomeError.requestFocus()
+            isValid = false
+        } else {
+            binding.cgNeonateOutcomeError.isVisible = false
+        }
+
+        // Return final validation result
+        return isValid
     }
+
 
     class DecimalInputFilter : InputFilter {
         override fun filter(

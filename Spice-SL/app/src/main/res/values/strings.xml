@@ -782,7 +782,7 @@
     <string name="year_of_diagnosis">Year of Diagnosis</string>
     <string name="new_patient">New Patient</string>
     <string name="known_patient">Known Patient</string>
-    <string name="diabetes_controlled_type">Diabetes Type</string>
+    <string name="diabetes_controlled_type">Diabetes Controlled Type</string>
     <string name="patient_history">Patient History</string>
     <string name="add_new_reading">Add New Reading</string>
     <string name="assessment_date">Assessment Date</string>
@@ -1231,6 +1231,7 @@
     <string name="several_days">Several days</string>
     <string name="more_than_half_day">More than half the days</string>
     <string name="nearly_every_day">Nearly every day</string>
+    <string name="urgent_referral">Urgent Referral</string>
 
     <string name="support_label" translatable="false">Please write your issues with the\napplication</string>
     <string name="support" translatable="false">Support</string>

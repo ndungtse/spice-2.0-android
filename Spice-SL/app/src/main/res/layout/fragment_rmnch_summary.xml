@@ -119,10 +119,10 @@
                 style="@style/Form_Spinner_Style"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:paddingHorizontal="@dimen/_4sdp"
                 android:layout_marginVertical="@dimen/_8sdp"
-                android:layout_marginTop="@dimen/_8sdp"
-                android:minHeight="@dimen/_40sdp"
-                android:paddingHorizontal="@dimen/_16sdp" />
+                android:layout_marginHorizontal="@dimen/_14sdp"                android:layout_marginTop="@dimen/_8sdp"
+                android:minHeight="@dimen/_40sdp" />
 
             <TextView
                 android:id="@+id/tvNextFollowupDateTitle"

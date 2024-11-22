@@ -139,6 +139,7 @@ import com.medtroniclabs.spice.mappingkey.Screening.DateOfBirth
 import com.medtroniclabs.spice.mappingkey.Screening.Hour
 import com.medtroniclabs.spice.mappingkey.Screening.Minute
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.MUAC
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.muacCode
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.PREGNANCY_MAX_AGE
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.PREGNANCY_MIN_AGE
@@ -1294,7 +1295,7 @@ class FormGenerator(
                     dosageListModel = serverViewModel.dosageListItems
                 )
             }
-            if (id==muacCode){
+            if (id==muacCode ||id== MUAC){
                 binding.etUserInput.background= ContextCompat.getDrawable(context,R.drawable.edittext_background)
                 val adapter =  CustomSpinnerAdapterCustomLayout(context, translate)
                 optionsList?.let { list ->

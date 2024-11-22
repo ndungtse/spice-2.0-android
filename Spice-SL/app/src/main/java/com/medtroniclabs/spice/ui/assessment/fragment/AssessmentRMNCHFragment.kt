@@ -1,6 +1,7 @@
 package com.medtroniclabs.spice.ui.assessment.fragment
 
 import android.content.res.Configuration
+import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -32,9 +33,13 @@ import com.medtroniclabs.spice.formgeneration.utility.InformationLayoutFragment
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.assessment.AssessmentActivity
+import com.medtroniclabs.spice.ui.assessment.AssessmentCommonUtils.getMuacColorCode
 import com.medtroniclabs.spice.ui.assessment.AssessmentCommonUtils.getNutritionStatus
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.ExclusivelyBreastfeeding
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.FedFrom4FoodGroups
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.MUAC
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.TakingMinimumMealsPerDay
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.muacStatus
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.rootSuffix
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.summaryKey
@@ -46,6 +51,7 @@ import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.PlaceOfDelivery
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.deathOfBaby
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -77,7 +83,8 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
         viewModel.getNearestHealthFacility()
         attachObservers()
         setListener()
-        UserDetail.startDateTime = com.medtroniclabs.spice.app.analytics.utils.CommonUtils.getCurrentDateTimeInLocalTime()
+        UserDetail.startDateTime =
+            com.medtroniclabs.spice.app.analytics.utils.CommonUtils.getCurrentDateTimeInLocalTime()
     }
 
     private fun setListener() {
@@ -108,13 +115,19 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
                 ResourceState.SUCCESS -> {
                     hideProgress()
                     resourceState.data?.let { data ->
-                        val facilityList =EntityMapper.getResultSpinnerMapList(data)
-                        if (viewModel.workflowName==RMNCH.ANC) {
-                            facilityList.add(mapOf(DefinedParams.name to DefinedParams.Others, DefinedParams.ID to DefinedParams.Others))
+                        val facilityList = EntityMapper.getResultSpinnerMapList(data)
+                        if (viewModel.workflowName == RMNCH.ANC) {
+                            facilityList.add(
+                                mapOf(
+                                    DefinedParams.name to DefinedParams.Others,
+                                    DefinedParams.ID to DefinedParams.Others
+                                )
+                            )
                         }
                         formGenerator.spinnerDataInjection(
                             data,
-                            facilityList                        )
+                            facilityList
+                        )
                     }
                 }
 
@@ -138,6 +151,9 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
                     formGenerator.getViewByTag(RMNCH.NoOfNeonate + formGenerator.rootSuffix)?.gone()
                 }
             }
+        }
+        viewModel.ageInMonth.observe(viewLifecycleOwner) {
+            updateAgeInMonths(it)
         }
     }
 
@@ -401,6 +417,7 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
     }
 
     override fun onUpdateInstruction(id: String, selectedId: Any?) {
+        Timber.d("onUpdateInstruction $id $selectedId")
         when (id) {
             MUAC -> {
                 val rootSuffixTag = muacStatus + rootSuffix
@@ -419,8 +436,22 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
 
                     (formGenerator.getViewByTag(muacStatusTag) as? TextView)?.text =
                         getNutritionStatus(selectedId, requireContext())
+                    formGenerator.getViewByTag(MUAC)?.apply {
+                        val background = background as? GradientDrawable
+                        background?.setStroke(
+                            resources.getDimensionPixelSize(R.dimen._4sdp),
+                            getMuacColorCode(selectedId as String, requireContext())
+                        )
+                    }
                 } else {
                     formGenerator.getViewByTag(rootSuffixTag)?.visibility = View.GONE
+                    formGenerator.getViewByTag(MUAC)?.apply {
+                        val background = background as? GradientDrawable
+                        background?.setStroke(
+                            resources.getDimensionPixelSize(R.dimen._1sdp),
+                            getMuacColorCode(selectedId as String, requireContext())
+                        )
+                    }
                 }
             }
         }
@@ -467,6 +498,36 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
 
     fun getCurrentAnsweredStatus(): Boolean {
         return formGenerator.getResultMap().isNotEmpty()
+    }
+
+    private fun updateAgeInMonths(age: String) {
+        if (age.contains(getString(R.string.weeks))||age.lowercase().contains(getString(R.string.week))){
+            hideUnder5Months()
+        }else {
+            when (age.replace(getString(R.string.months), "").replace(getString(R.string.month), "").trim().toInt()) {
+                in 0..5 -> {
+                    hideUnder5Months()
+                }
+                in 6..15 -> {
+
+                    formGenerator.getViewByTag(ExclusivelyBreastfeeding + rootSuffix)?.apply {
+                        visibility = View.GONE
+                    }
+                }
+
+                else -> {
+                }
+            }
+        }
+    }
+    private fun hideUnder5Months(){
+        formGenerator.getViewByTag(TakingMinimumMealsPerDay + rootSuffix)?.apply {
+            visibility = View.GONE
+        }
+
+        formGenerator.getViewByTag(FedFrom4FoodGroups + rootSuffix)?.apply {
+            visibility = View.GONE
+        }
     }
 
 }

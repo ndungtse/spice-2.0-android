@@ -2,6 +2,7 @@ package com.medtroniclabs.spice.ui.assessment.fragment
 
 import android.app.DatePickerDialog
 import android.content.Intent
+import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -26,6 +27,7 @@ import com.medtroniclabs.spice.databinding.FragmentRmnchSummaryBinding
 import com.medtroniclabs.spice.formgeneration.config.ViewType
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
+import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapterCustomLayout
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.assessment.AssessmentCommonUtils
@@ -61,6 +63,9 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
         setListener()
         initSummaryViewByWorkFlowName()
         viewModel.setUserJourney(AnalyticsDefinedParams.RMNCHSummaryAssessment)
+        binding.etNextFollowUpDate.background= ContextCompat.getDrawable(requireContext(),R.drawable.edittext_background)
+        val background = binding.etNextFollowUpDate.background as? GradientDrawable
+        background?.setStroke(resources.getDimensionPixelSize(R.dimen._1sdp), ContextCompat.getColor(requireContext(), R.color.edittext_stroke))
     }
 
     private fun setListener() {
@@ -176,7 +181,10 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
 
 
     private fun loadPhuSitesList(siteList: ArrayList<Map<String, Any>>) {
-        val adapter = CustomSpinnerAdapter(requireContext())
+        binding.etPhuChange.background= ContextCompat.getDrawable(requireContext(),R.drawable.edittext_background)
+        val background = binding.etPhuChange.background as? GradientDrawable
+        background?.setStroke(resources.getDimensionPixelSize(R.dimen._1sdp), ContextCompat.getColor(requireContext(), R.color.edittext_stroke))
+        val adapter = CustomSpinnerAdapterCustomLayout(requireContext())
         adapter.setData(siteList)
         binding.etPhuChange.adapter = adapter
         binding.etPhuChange.onItemSelectedListener =
@@ -339,7 +347,7 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
     }
 
     private fun showDatePickerDialog() {
-        var yearMonthDate: Triple<Int?, Int?, Int?>? = null
+       var yearMonthDate: Triple<Int?, Int?, Int?>? = null
         if (!binding.etNextFollowUpDate.text.isNullOrBlank())
             yearMonthDate =
                 DateUtils.convertedMMMToddMM(binding.etNextFollowUpDate.text.toString())
