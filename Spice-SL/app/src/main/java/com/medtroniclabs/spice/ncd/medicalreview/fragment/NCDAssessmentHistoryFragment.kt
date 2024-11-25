@@ -99,12 +99,21 @@ class NCDAssessmentHistoryFragment : BaseFragment(), View.OnClickListener {
 
             // Set up graph navigation buttons
             ivGraphNext.apply {
-                safeClickListener(this@NCDAssessmentHistoryFragment)
                 tag = isBPSummary
+                safeClickListener(this@NCDAssessmentHistoryFragment)
             }
 
             ivGraphPrevious.apply {
+                tag = isBPSummary
                 safeClickListener(this@NCDAssessmentHistoryFragment)
+            }
+            clGraph.apply {
+                tag = isBPSummary
+            }
+            btnAddNewReading.apply {
+                tag = isBPSummary
+            }
+            CenterProgress.apply {
                 tag = isBPSummary
             }
             spinnerRbsFbs.visibility = if (isBPSummary) View.INVISIBLE else View.VISIBLE
@@ -149,7 +158,7 @@ class NCDAssessmentHistoryFragment : BaseFragment(), View.OnClickListener {
                 DefinedParams.ID to NCDMRUtil.rbs_code
             ) as Map<String, Any>,
             hashMapOf<String, Any>(
-                DefinedParams.NAME to NCDMRUtil.FBS,
+                DefinedParams.NAME to FBS,
                 DefinedParams.ID to NCDMRUtil.fbs_code
             ) as Map<String, Any>
         )
@@ -171,15 +180,15 @@ class NCDAssessmentHistoryFragment : BaseFragment(), View.OnClickListener {
         viewModel.bpLogListResponseLiveData.observe(viewLifecycleOwner) { resourceState ->
             when (resourceState.state) {
                 ResourceState.LOADING -> {
-                    showGraphLoader()
+                    showGraphLoader(true)
                 }
 
                 ResourceState.ERROR -> {
-                    hideGraphLoader()
+                    hideGraphLoader(true)
                 }
 
                 ResourceState.SUCCESS -> {
-                    hideGraphLoader()
+                    hideGraphLoader(true)
                     if (isBPSummary)
                         loadBPValues(resourceState.data)
                 }
@@ -189,15 +198,15 @@ class NCDAssessmentHistoryFragment : BaseFragment(), View.OnClickListener {
         viewModel.glucoseLogListResponseLiveData.observe(viewLifecycleOwner) { resourceState ->
             when (resourceState.state) {
                 ResourceState.LOADING -> {
-                    showGraphLoader()
+                    showGraphLoader(false)
                 }
 
                 ResourceState.ERROR -> {
-                    hideGraphLoader()
+                    hideGraphLoader(false)
                 }
 
                 ResourceState.SUCCESS -> {
-                    hideGraphLoader()
+                    hideGraphLoader(false)
                     if (!isBPSummary)
                         loadBGValues(resourceState.data)
                 }
@@ -400,10 +409,22 @@ class NCDAssessmentHistoryFragment : BaseFragment(), View.OnClickListener {
         )
     }
 
-    private fun hideGraphLoader() {
-        binding.clGraph.visible()
-        binding.btnAddNewReading.visible()
-        binding.CenterProgress.gone()
+    private fun hideGraphLoader(isBPSummary: Boolean) {
+        val viewsToShow = listOf(binding.clGraph, binding.btnAddNewReading)
+        val viewsToHide = listOf(binding.CenterProgress)
+
+        viewsToShow.forEach { view ->
+            if (view.tag == isBPSummary) {
+                view.visible()
+            }
+        }
+
+        viewsToHide.forEach { view ->
+            if (view.tag == isBPSummary) {
+                view.gone()
+            }
+        }
+
         assessmentBpBg()
     }
 
@@ -418,10 +439,21 @@ class NCDAssessmentHistoryFragment : BaseFragment(), View.OnClickListener {
             binding.btnAddNewReading.gone()
     }
 
-    private fun showGraphLoader() {
-        binding.clGraph.gone()
-        binding.btnAddNewReading.gone()
-        binding.CenterProgress.visible()
+    private fun showGraphLoader(isBPSummary: Boolean) {
+        val viewsToHide = listOf(binding.clGraph, binding.btnAddNewReading)
+        val viewsToShow = listOf(binding.CenterProgress)
+
+        viewsToHide.forEach { view ->
+            if (view.tag == isBPSummary) {
+                view.gone()
+            }
+        }
+
+        viewsToShow.forEach { view ->
+            if (view.tag == isBPSummary) {
+                view.visible()
+            }
+        }
     }
 
     override fun onClick(v: View?) {
