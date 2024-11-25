@@ -141,6 +141,7 @@ object AppModule {
 
     private fun redirectLogin(context: Context) {
         val intent = Intent(ACTION_SESSION_EXPIRED)
+
         intent.putExtra(SL_SESSION, true)
         LocalBroadcastManager.getInstance(context).sendBroadcast(intent)
     }

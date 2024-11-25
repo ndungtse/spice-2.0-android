@@ -27,6 +27,7 @@
             <TextView
                 android:id="@+id/tvMorning"
                 style="@style/table_row_item"
+                android:layout_height="match_parent"
                 android:layout_width="0dp"
                 android:layout_column="2"
                 android:layout_margin="1dp"
@@ -37,6 +38,7 @@
             <TextView
                 android:id="@+id/tvNight"
                 style="@style/table_row_item"
+                android:layout_height="match_parent"
                 android:layout_width="0dp"
                 android:layout_column="3"
                 android:layout_margin="1dp"
