@@ -49,7 +49,7 @@ class NCDPrescriptionRefillAdapter :
             )
 
             val daysFilled =
-                if (model.prescriptionFilledDays == 0) rootContext.getString(R.string.empty) else "${model.prescriptionFilledDays}"
+                if (model.prescriptionFilledDays == 0 || model.prescriptionFilledDays == null) rootContext.getString(R.string.empty) else "${model.prescriptionFilledDays}"
             binding.tvDaysFilled.setText(daysFilled)
             binding.ivDropDown.safeClickListener {
                 list[layoutPosition].let {

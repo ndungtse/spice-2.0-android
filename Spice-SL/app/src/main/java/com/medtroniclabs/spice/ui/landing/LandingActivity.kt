@@ -334,7 +334,7 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
         binding.appBarMain.ivNotification.safeClickListener(this)
         binding.appBarMain.tvNotificationCount.safeClickListener(this)
         val isNotificationVisible =
-            CommonUtils.isNCDProvider() || CommonUtils.isNurse() || CommonUtils.isPhysicianPrescriber()
+            CommonUtils.isNCDProvider() || CommonUtils.isPhysicianPrescriber()
         if (isNotificationVisible) {
             binding.appBarMain.ivNotification.visible()
         } else {
@@ -553,7 +553,7 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
     }
 
     private fun doRefreshForDataUpdate() {
-        if (CommonUtils.isNCDProvider() || CommonUtils.isNurse()) {
+        if (CommonUtils.isNCDProvider() || CommonUtils.isPhysicianPrescriber()) {
             viewModel.patientTransferNotificationCount(
                 NCDPatientTransferNotificationCountRequest(
                     SecuredPreference.getOrganizationId().toString()

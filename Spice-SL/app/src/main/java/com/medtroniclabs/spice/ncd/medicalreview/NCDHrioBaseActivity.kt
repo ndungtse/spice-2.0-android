@@ -174,7 +174,7 @@ class NCDHrioBaseActivity : BaseActivity() {
         binding.mobileNumber.tvKey.text = getString(R.string.mobile_number)
         binding.mobileNumber.tvValue.text = patientListRespModel.phoneNumber.takeUnless { it.isNullOrBlank() } ?: getString(R.string.hyphen_symbol)
 
-        binding.mobileCategory.tvKey.text = getString(R.string.mobile_number)
+        binding.mobileCategory.tvKey.text = getString(R.string.mobile_category)
         binding.mobileCategory.tvValue.text = patientListRespModel.phoneNumberCategory.takeUnless { it.isNullOrBlank() }?.capitalizeFirstChar() ?: getString(R.string.hyphen_symbol)
 
         binding.landmark.tvKey.text = getString(R.string.landmark)

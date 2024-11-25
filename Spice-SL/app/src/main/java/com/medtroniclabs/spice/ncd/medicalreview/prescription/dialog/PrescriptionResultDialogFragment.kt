@@ -236,16 +236,14 @@ class PrescriptionResultDialogFragment : DialogFragment() {
                         DefinedParams.fbs -> {
                             MedicationNudgeTableRow(
                                 fbs = getGlucoseValue(
-                                    recentBg.glucoseValue.toString(),
+                                    recentBg.glucoseValue,
                                     recentBg.glucoseUnit
-                                )
-                                    ?: stringResource(id = R.string.hyphen_symbol),
+                                ),
                                 rbs = stringResource(id = R.string.hyphen_symbol),
                                 hba1c = getGlucoseValue(
-                                    recentBg.hba1c.toString(),
+                                    recentBg.hba1c,
                                     recentBg.hba1cUnit
-                                )
-                                    ?: stringResource(id = R.string.hyphen_symbol),
+                                ),
                                 reviewDate = getReviewDate(recentBg.glucoseDateTime)
                                     ?: stringResource(id = R.string.hyphen_symbol),
                                 colorResource = colorResource(id = R.color.secondary_black),
@@ -257,15 +255,11 @@ class PrescriptionResultDialogFragment : DialogFragment() {
                             MedicationNudgeTableRow(
                                 fbs = stringResource(id = R.string.hyphen_symbol),
                                 rbs = getGlucoseValue(
-                                    recentBg.glucoseValue.toString(),
+                                    recentBg.glucoseValue,
                                     recentBg.glucoseUnit
-                                )
-                                    ?: stringResource(id = R.string.hyphen_symbol),
-                                hba1c = getGlucoseValue(
-                                    recentBg.hba1c.toString(),
-                                    recentBg.hba1cUnit
-                                )
-                                    ?: stringResource(id = R.string.hyphen_symbol),
+                                ),
+                                hba1c = getGlucoseValue(recentBg.hba1c,
+                                    recentBg.hba1cUnit),
                                 reviewDate = getReviewDate(recentBg.glucoseDateTime)
                                     ?: stringResource(id = R.string.hyphen_symbol),
                                 colorResource = colorResource(id = R.color.secondary_black),
@@ -277,11 +271,8 @@ class PrescriptionResultDialogFragment : DialogFragment() {
                             MedicationNudgeTableRow(
                                 fbs = stringResource(id = R.string.hyphen_symbol),
                                 rbs = stringResource(id = R.string.hyphen_symbol),
-                                hba1c = getGlucoseValue(
-                                    recentBg.hba1c.toString(),
-                                    recentBg.hba1cUnit
-                                )
-                                    ?: stringResource(id = R.string.hyphen_symbol),
+                                hba1c = getGlucoseValue(recentBg.hba1c,
+                                    recentBg.hba1cUnit),
                                 reviewDate = getReviewDate(recentBg.glucoseDateTime),
                                 colorResource = colorResource(id = R.color.secondary_black),
                                 textUnit = TextUnit(16f, TextUnitType.Sp)
@@ -300,19 +291,15 @@ class PrescriptionResultDialogFragment : DialogFragment() {
         }
     }
 
-    private fun getGlucoseValue(glucoseValue: String?, glucoseUnit: String?): String? {
-        if (glucoseValue != null) {
-            var value = ""
-            glucoseValue.toDoubleOrNull()?.let {
-                value = CommonUtils.getDecimalFormatted(it)
-            } ?: kotlin.run {
-                value = glucoseValue
+    private fun getGlucoseValue(glucoseValue: Double?, glucoseUnit: String?): String {
+        return glucoseValue?.let { value ->
+            val formattedValue = CommonUtils.getDecimalFormatted(value)
+            if (glucoseUnit != null) {
+                "$formattedValue $glucoseUnit"
+            } else {
+                formattedValue
             }
-            if (glucoseUnit != null)
-                value = "$value $glucoseUnit"
-            return value
-        }
-        return null
+        } ?: getString(R.string.hyphen_symbol)
     }
 
     private fun getReviewDate(bgTakenOn: String?): String {
