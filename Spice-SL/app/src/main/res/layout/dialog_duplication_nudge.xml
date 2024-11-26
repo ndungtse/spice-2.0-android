@@ -25,7 +25,7 @@
                 style="@style/Form_Header_Style"
                 android:layout_width="wrap_content"
                 android:padding="@dimen/_15sdp"
-                android:text="@string/duplicate_record_found"
+                android:text="@string/duplicate_patient_found"
                 android:textSize="@dimen/_16ssp"
                 app:layout_constraintBottom_toBottomOf="@+id/ivClose"
                 app:layout_constraintStart_toStartOf="parent"

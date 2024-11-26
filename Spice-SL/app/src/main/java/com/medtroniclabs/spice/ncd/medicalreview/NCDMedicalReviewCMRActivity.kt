@@ -85,7 +85,7 @@ class NCDMedicalReviewCMRActivity : BaseActivity(), View.OnClickListener, AncVis
         popupMenu.menu.findItem(R.id.patient_delete).isVisible = true
         popupMenu.menu.findItem(R.id.schedule).isVisible =
             CommonUtils.canShowScheduleMenu()
-        popupMenu.menu.findItem(R.id.transfer_patient).isVisible = CommonUtils.isAfrica() && !CommonUtils.isNURSE()
+        popupMenu.menu.findItem(R.id.transfer_patient).isVisible = CommonUtils.isNonCommunity() && !CommonUtils.isNURSE()
         popupMenu.safePopupMenuClickListener(object :
             android.widget.PopupMenu.OnMenuItemClickListener,
             PopupMenu.OnMenuItemClickListener {
@@ -200,7 +200,7 @@ class NCDMedicalReviewCMRActivity : BaseActivity(), View.OnClickListener, AncVis
                         binding.refreshLayout.isRefreshing = false
                     }
                     badgeNotifications()
-                    showHideVerticalIcon(CommonUtils.isAfrica() && !resourceState.data?.programId.isNullOrBlank())
+                    showHideVerticalIcon(CommonUtils.isNonCommunity() && !resourceState.data?.programId.isNullOrBlank())
                 }
 
                 ResourceState.ERROR -> {
@@ -406,30 +406,24 @@ class NCDMedicalReviewCMRActivity : BaseActivity(), View.OnClickListener, AncVis
             }
 
             binding.btnLayout.ivTreatmentPlan.id -> {
-                val patientId = getPatientId()
-                val fhirId = getFhirId()
-                if (patientId.isNullOrBlank() || fhirId.isNullOrBlank())
-                    return
-                else {
-                    val dialog =
-                        NCDTreatmentPlanDialog.newInstance(
-                            patientId,
-                            fhirId
-                        ) { isPositiveResult, message ->
-                            if (isPositiveResult)
-                                showSuccessDialogue(
-                                    title = getString(R.string.treatment_plan),
-                                    message = message
-                                ) {}
-                            else
-                                showErrorDialogue(
-                                    title = getString(R.string.error),
-                                    message = message,
-                                    positiveButtonName = getString(R.string.ok),
-                                ) {}
-                        }
-                    dialog.show(supportFragmentManager, NCDTreatmentPlanDialog.TAG)
-                }
+                val dialog =
+                    NCDTreatmentPlanDialog.newInstance(
+                        getPatientId(),
+                        getFhirId()
+                    ) { isPositiveResult, message ->
+                        if (isPositiveResult)
+                            showSuccessDialogue(
+                                title = getString(R.string.treatment_plan),
+                                message = message
+                            ) {}
+                        else
+                            showErrorDialogue(
+                                title = getString(R.string.error),
+                                message = message,
+                                positiveButtonName = getString(R.string.ok),
+                            ) {}
+                    }
+                dialog.show(supportFragmentManager, NCDTreatmentPlanDialog.TAG)
             }
 
             binding.btnLayout.ivInvestigation.id -> {
@@ -457,16 +451,14 @@ class NCDMedicalReviewCMRActivity : BaseActivity(), View.OnClickListener, AncVis
             )
 
             binding.btnLayout.ivPrescriptionImgView.id -> {
-                if (!patientDetailViewModel.getPatientId().isNullOrEmpty() && !getEncounterReference().isNullOrEmpty()){
-                    withNetworkAvailability(online ={
-                        val intent = Intent(this, NCDPrescriptionActivity::class.java)
-                        intent.putExtra(ORIGIN, DefinedParams.MedicalReview)
-                        intent.putExtra(DefinedParams.PatientId, patientDetailViewModel.getPatientId()  )
-                        intent.putExtra(DefinedParams.id,  patientDetailViewModel.getPatientFHIRId())
-                        intent.putExtra(DefinedParams.PatientVisitId, getEncounterReference())
-                        getResult.launch(intent)
-                    } )
-                }
+                withNetworkAvailability(online = {
+                    val intent = Intent(this, NCDPrescriptionActivity::class.java)
+                    intent.putExtra(ORIGIN, DefinedParams.MedicalReview)
+                    intent.putExtra(DefinedParams.PatientId, patientDetailViewModel.getPatientId())
+                    intent.putExtra(DefinedParams.id, patientDetailViewModel.getPatientFHIRId())
+                    intent.putExtra(DefinedParams.PatientVisitId, getEncounterReference())
+                    getResult.launch(intent)
+                })
             }
         }
     }

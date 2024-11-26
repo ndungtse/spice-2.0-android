@@ -79,10 +79,13 @@ class NCDPrescriptionActivity : BaseActivity(), View.OnClickListener, SignatureL
     }
 
     fun getPatients() {
-        prescriptionViewModel.patientId = intent.getStringExtra(DefinedParams.id)
+        prescriptionViewModel.memberReference = intent.getStringExtra(DefinedParams.id)
         prescriptionViewModel.patient_visit_id = intent.getStringExtra(DefinedParams.PatientVisitId)
         val patientId = intent.getStringExtra(DefinedParams.PatientId)
-        prescriptionViewModel.getPrescriptionsList(PatientListRespModel(id = patientId))
+        prescriptionViewModel.getPrescriptionsList(
+            patientReference = patientId,
+            memberReference = prescriptionViewModel.memberReference
+        )
     }
 
     private fun showMedicationNudge() {
@@ -183,7 +186,10 @@ class NCDPrescriptionActivity : BaseActivity(), View.OnClickListener, SignatureL
                 ResourceState.SUCCESS -> {
                     hideLoading()
                     resource.data?.let { data ->
-                        prescriptionViewModel.getPrescriptionsList(data)
+                        prescriptionViewModel.getPrescriptionsList(
+                            patientReference = data.patientId,
+                            memberReference = data.id
+                        )
                     }
                 }
             }
@@ -311,7 +317,10 @@ class NCDPrescriptionActivity : BaseActivity(), View.OnClickListener, SignatureL
                     binding.tvDiscontinuedMedication.text =
                         getString(R.string.view_discontinued_medication)
                     val patientId = intent.getStringExtra(DefinedParams.PatientId)
-                    prescriptionViewModel.getPrescriptionsList(PatientListRespModel(id = patientId))
+                    prescriptionViewModel.getPrescriptionsList(
+                        patientReference = patientId,
+                        memberReference = prescriptionViewModel.memberReference
+                    )
                 }
             }
         }
@@ -438,7 +447,10 @@ class NCDPrescriptionActivity : BaseActivity(), View.OnClickListener, SignatureL
         } else {
             val patientId =
                 PatientListRespModel(id = intent.getStringExtra(DefinedParams.PatientId))
-            prescriptionViewModel.getPrescriptionsList(patientId, false)
+            prescriptionViewModel.getPrescriptionsList(
+                patientReference = patientId.patientId,
+                prescriptionViewModel.memberReference
+            )
         }
     }
 

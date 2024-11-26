@@ -141,7 +141,7 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
         popupMenu.menu.findItem(R.id.patient_delete).isVisible = true
         popupMenu.menu.findItem(R.id.schedule).isVisible =
             CommonUtils.canShowScheduleMenu()
-        popupMenu.menu.findItem(R.id.transfer_patient).isVisible = CommonUtils.isAfrica() && !CommonUtils.isNURSE()
+        popupMenu.menu.findItem(R.id.transfer_patient).isVisible = CommonUtils.isNonCommunity() && !CommonUtils.isNURSE()
         popupMenu.safePopupMenuClickListener(object :
             android.widget.PopupMenu.OnMenuItemClickListener,
             PopupMenu.OnMenuItemClickListener {
@@ -274,7 +274,7 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
                         binding.refreshLayout.isRefreshing = false
                     }
                     badgeNotifications()
-                    showHideVerticalIcon(CommonUtils.isAfrica() && !resourceState.data?.programId.isNullOrBlank())
+                    showHideVerticalIcon(CommonUtils.isNonCommunity() && !resourceState.data?.programId.isNullOrBlank())
                 }
 
                 ResourceState.ERROR -> {
@@ -596,10 +596,19 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
             addOrReuseFragment(
                 R.id.obstetricExaminationContainer,
                 NCDObstetricExaminationFragment.TAG,
-                NCDObstetricExaminationFragment.newInstance(getMenuId())
+                NCDObstetricExaminationFragment.newInstance(getMenuId(), isFemalePregnant())
             )
         }
         hideLoading()
+    }
+
+    private fun isFemalePregnant(): Boolean {
+        var isFemalePregnant = false
+        patientDetailViewModel.patientDetailsLiveData.value?.data?.let {
+            isFemalePregnant =
+                (it.gender?.equals(DefinedParams.female, true) == true) && (it.isPregnant == true)
+        }
+        return isFemalePregnant
     }
 
     fun showCurrentMedication() {
@@ -665,30 +674,23 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
             }
 
             binding.btnLayout.ivTreatmentPlan.id -> {
-                val patientId = patientDetailViewModel.getPatientId()
-                val fhirId = patientDetailViewModel.getPatientFHIRId()
-                if (patientId.isNullOrBlank() || fhirId.isNullOrBlank())
-                    return
-                else {
-                    val dialog =
-                        NCDTreatmentPlanDialog.newInstance(
-                            patientId,
-                            fhirId
-                        ) { isPositiveResult, message ->
-                            if (isPositiveResult)
-                                showSuccessDialogue(
-                                    title = getString(R.string.treatment_plan),
-                                    message = message
-                                ) {}
-                            else
-                                showErrorDialogue(
-                                    title = getString(R.string.error),
-                                    message = message,
-                                    positiveButtonName = getString(R.string.ok),
-                                ) {}
-                        }
-                    dialog.show(supportFragmentManager, NCDTreatmentPlanDialog.TAG)
+                val dialog = NCDTreatmentPlanDialog.newInstance(
+                    patientDetailViewModel.getPatientId(),
+                    patientDetailViewModel.getPatientFHIRId()
+                ) { isPositiveResult, message ->
+                    if (isPositiveResult)
+                        showSuccessDialogue(
+                            title = getString(R.string.treatment_plan),
+                            message = message
+                        ) {}
+                    else
+                        showErrorDialogue(
+                            title = getString(R.string.error),
+                            message = message,
+                            positiveButtonName = getString(R.string.ok),
+                        ) {}
                 }
+                dialog.show(supportFragmentManager, NCDTreatmentPlanDialog.TAG)
             }
 
             binding.btnLayout.ivInvestigation.id -> {
@@ -719,18 +721,14 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
     }
 
     fun showPrescription() {
-        if (!patientDetailViewModel.getPatientId()
-                .isNullOrEmpty() && !getEncounterReference().isNullOrEmpty()
-        ) {
-            withNetworkAvailability(online = {
-                val intent = Intent(this, NCDPrescriptionActivity::class.java)
-                intent.putExtra(ORIGIN, DefinedParams.MedicalReview)
-                intent.putExtra(DefinedParams.PatientId, patientDetailViewModel.getPatientId())
-                intent.putExtra(DefinedParams.id, patientDetailViewModel.getPatientFHIRId())
-                intent.putExtra(DefinedParams.PatientVisitId, getEncounterReference())
-                getResult.launch(intent)
-            })
-        }
+        withNetworkAvailability(online = {
+            val intent = Intent(this, NCDPrescriptionActivity::class.java)
+            intent.putExtra(ORIGIN, DefinedParams.MedicalReview)
+            intent.putExtra(DefinedParams.PatientId, patientDetailViewModel.getPatientId())
+            intent.putExtra(DefinedParams.id, patientDetailViewModel.getPatientFHIRId())
+            intent.putExtra(DefinedParams.PatientVisitId, getEncounterReference())
+            getResult.launch(intent)
+        })
     }
 
     private fun navigateUser(intent: Intent) {
@@ -1195,18 +1193,17 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
     fun showConfirmDiagnoses() {
         val dialog = supportFragmentManager.findFragmentByTag(NCDDiagnosisDialogFragment.TAG)
         if (dialog == null) {
-            patientDetailViewModel.getPatientId()?.let {
-                NCDDiagnosisDialogFragment.newInstance(
-                    it,
-                    getTypeForDiagnoses(getMenuId()),
-                    patientDetailViewModel.getGenderIsFemale(),
-                    getConfirmDiagnoses(getMenuId()),
-                    patientDetailViewModel.isPregnant(),
-                    getMenuId()
-                ).apply {
-                    listener = this@NCDMedicalReviewActivity
-                }.show(supportFragmentManager, NCDDiagnosisDialogFragment.TAG)
-            }
+            NCDDiagnosisDialogFragment.newInstance(
+                patientDetailViewModel.getPatientId(),
+                patientDetailViewModel.getPatientFHIRId(),
+                getTypeForDiagnoses(getMenuId()),
+                patientDetailViewModel.getGenderIsFemale(),
+                getConfirmDiagnoses(getMenuId()),
+                patientDetailViewModel.isPregnant(),
+                getMenuId()
+            ).apply {
+                listener = this@NCDMedicalReviewActivity
+            }.show(supportFragmentManager, NCDDiagnosisDialogFragment.TAG)
         }
     }
 }

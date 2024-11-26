@@ -179,9 +179,9 @@ class InvestigationViewModel @Inject constructor(
                 val request = LabTestCreateRequest(
                     EncounterDetails(
                         id = encounterId,
-                        patientReference = if (CommonUtils.isAfrica()) patientDetail.patientId.orEmpty() else patientDetail.id.orEmpty(),
-                        patientId = if (CommonUtils.isAfrica()) null else patientDetail.patientId.orEmpty(),
-                        memberId = if (!CommonUtils.isAfrica()) patientDetail.memberId.orEmpty() else patientDetail.id.orEmpty(),
+                        patientReference = if (CommonUtils.isNonCommunity() ) patientDetail.patientId.orEmpty() else patientDetail.id.orEmpty(),
+                        patientId = if (CommonUtils.isNonCommunity() ) null else patientDetail.patientId.orEmpty(),
+                        memberId = if (!CommonUtils.isNonCommunity() ) patientDetail.memberId.orEmpty() else patientDetail.id.orEmpty(),
                         provenance = ProvanceDto(),
                         visitId = visitId
                     ),
@@ -271,7 +271,7 @@ class InvestigationViewModel @Inject constructor(
 
     fun getLabTestList(data: PatientListRespModel) {
         viewModelScope.launch(dispatcherIO) {
-            val patientId = if (CommonUtils.isAfrica()) data.patientId else data.id
+            val patientId = if (CommonUtils.isNonCommunity() ) data.patientId else data.id
             patientId?.let { id ->
                 labTestListLiveData.postLoading()
                 val response = investigationRepository.getLabTestList(LabTestListRequest(id))

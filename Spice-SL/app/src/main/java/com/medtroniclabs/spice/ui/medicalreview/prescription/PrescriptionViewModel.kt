@@ -263,9 +263,13 @@ class PrescriptionViewModel @Inject constructor(
     }
 
     fun getPrescriptionList(data: PatientListRespModel, isDeleted: Boolean = true) {
-        data.id?.let { id ->
-            getPrescriptionList(PrescriptionListRequest(id, isDeleted))
-        }
+        getPrescriptionList(
+            PrescriptionListRequest(
+                patientReference = data.patientReference,
+                memberReference = data.id,
+                isDeleted
+            )
+        )
     }
 
 

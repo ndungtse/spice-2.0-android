@@ -102,7 +102,7 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
             finish()
             return
         } else {
-            if (CommonUtils.isAfrica()) {
+            if (CommonUtils.isNonCommunity() ) {
                 val isFromLauncher: Boolean =
                     intent?.categories?.contains(Intent.CATEGORY_LAUNCHER) ?: false
                 if (isFromLauncher && !SecuredPreference.getTermsAndConditionsStatus()) {
@@ -327,7 +327,7 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
      * method to initialize home view toolbar and views
      */
     private fun initializeHomeViews() {
-        if (CommonUtils.isAfrica()) {
+        if (CommonUtils.isNonCommunity() ) {
             binding.navNotificationView.visible()
             binding.appBarMain.clNotification.visible()
         }

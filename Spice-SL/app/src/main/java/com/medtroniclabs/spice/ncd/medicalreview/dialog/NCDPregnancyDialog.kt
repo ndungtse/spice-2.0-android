@@ -338,15 +338,18 @@ class NCDPregnancyDialog(private val callback: ((isPositiveResult: Boolean, mess
     private var singleSelectionCallbackForPregnant: ((selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit)? =
         { selectedID, _, _, _ ->
             (selectedID as? String?)?.let { pregnantStatus ->
-                viewModel.resultPregnantHashMap[PREGNANT_STATUS] = pregnantStatus
-
-                clearFields()
-
                 val isPregnant = pregnantStatus.equals(PREGNANT, true)
-                binding.clPregnant.visibility = if (isPregnant) View.VISIBLE else View.GONE
-                viewModel.ncdPregnancyCreateModel.isPregnant = isPregnant
 
-                binding.tvPregnantError.gone()
+                if ((isPregnant && binding.clPregnant.visibility == View.GONE) || (!isPregnant && binding.clPregnant.visibility == View.VISIBLE)) {
+                    viewModel.resultPregnantHashMap[PREGNANT_STATUS] = pregnantStatus
+
+                    clearFields()
+
+                    binding.clPregnant.visibility = if (isPregnant) View.VISIBLE else View.GONE
+                    viewModel.ncdPregnancyCreateModel.isPregnant = isPregnant
+
+                    binding.tvPregnantError.gone()
+                }
             }
         }
 

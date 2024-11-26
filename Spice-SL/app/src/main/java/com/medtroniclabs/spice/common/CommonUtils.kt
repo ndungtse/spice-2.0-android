@@ -6,7 +6,6 @@ import android.content.res.AssetManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.text.SpannableStringBuilder
-import android.view.View
 import com.google.gson.Gson
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.nullIfEmpty
@@ -212,7 +211,7 @@ object CommonUtils {
     }
 
     fun offlineUsers(): Boolean {
-        return isAfrica() || (isCommunity() && isChw())
+        return isNonCommunity() || (isCommunity() && isChw())
     }
 
     fun isChwChp(): Boolean {
@@ -1450,10 +1449,6 @@ object CommonUtils {
                         ((!pregnancyRisk && SecuredPreference.isAncEnabled()) || pregnancyRisk))
     }
 
-    fun isAfrica(): Boolean {
-        return SecuredPreference.getString(SecuredPreference.EnvironmentKey.APPLICATION.name).equals(SPICE.AFRICA.name, true)
-    }
-
     fun requestFrom(): String {
         return when {
             isCommunity() -> SPICE.SIERRA_LEONE.name
@@ -1656,7 +1651,7 @@ object CommonUtils {
     }
 
     fun canShowScheduleMenu(): Boolean {
-        return isAfrica() && isHRIO()
+        return isNonCommunity() && isHRIO()
     }
 
     fun capitalize(str: String): String {

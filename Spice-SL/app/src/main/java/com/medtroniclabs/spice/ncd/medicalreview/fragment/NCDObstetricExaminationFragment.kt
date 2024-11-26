@@ -9,6 +9,7 @@ import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.visible
+import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.model.ChipViewItemModel
 import com.medtroniclabs.spice.databinding.FragmentSystemicExaminationsBinding
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil
@@ -22,10 +23,12 @@ class NCDObstetricExaminationFragment : BaseFragment() {
 
     companion object {
         const val TAG = "NCDObstetricExaminationFragment"
-        fun newInstance(menuId: String?): NCDObstetricExaminationFragment {
+        const val IS_FEMALE_PREGNANT = "isFemalePregnant"
+        fun newInstance(menuId: String?, isFemalePregnant: Boolean): NCDObstetricExaminationFragment {
             return NCDObstetricExaminationFragment().apply {
                 arguments = Bundle().apply {
                     putString(MENU_ID, menuId)
+                    putBoolean(IS_FEMALE_PREGNANT, isFemalePregnant)
                 }
             }
         }
@@ -33,6 +36,10 @@ class NCDObstetricExaminationFragment : BaseFragment() {
 
     fun getType(): String? {
         return arguments?.getString(MENU_ID)
+    }
+
+    fun isFemalePregnant(): Boolean {
+        return arguments?.getBoolean(IS_FEMALE_PREGNANT) == true
     }
 
     private val viewModel: NCDObstetricExaminationViewModel by activityViewModels()
@@ -83,7 +90,9 @@ class NCDObstetricExaminationFragment : BaseFragment() {
         with(binding) {
             binding.etPhysicalExaminationComments.visible()
             binding.tvCommentsTitle.gone()
-            tvSystemicExaminationTitle.text = getString(R.string.obstetric_examination)
+            getType()?.let { type ->
+                tvSystemicExaminationTitle.text = getTitleText(type)
+            }
             tagView =
                 TagListCustomView(
                     root.context,
@@ -96,6 +105,16 @@ class NCDObstetricExaminationFragment : BaseFragment() {
                 )
             tagView.addChipItemList(complaintList, viewModel.chips)
         }
+    }
+
+    private fun getTitleText(type: String): String {
+        if (type.equals(NCDMRUtil.MENTAL_HEALTH, true))
+            return getString(R.string.systemic_examinations)
+
+        if (type.equals(NCDMRUtil.MATERNAL_HEALTH, true) && SecuredPreference.isAncEnabled() && isFemalePregnant())
+            return getString(R.string.obstetric_examination)
+
+        return getString(R.string.physical_examinations)
     }
 
     fun validateInput(isMandatory: Boolean = false): Pair<Boolean, AppCompatEditText> {

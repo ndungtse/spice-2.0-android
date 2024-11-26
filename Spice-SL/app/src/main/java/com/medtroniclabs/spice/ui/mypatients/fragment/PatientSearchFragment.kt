@@ -339,9 +339,9 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
                     MenuConstants.PSYCHOLOGICAL.lowercase(),
                     MenuConstants.MY_PATIENTS_MENU_ID.lowercase(),
                     MenuConstants.DISPENSE.lowercase() -> {
-                        if (MenuConstants.MY_PATIENTS_MENU_ID.lowercase() == origin && (CommonUtils.isAfrica() && CommonUtils.isNURSE())) {
+                        if (MenuConstants.MY_PATIENTS_MENU_ID.lowercase() == origin && (CommonUtils.isNonCommunity() && CommonUtils.isNURSE())) {
                             NCDMedicalReviewCMRActivity::class.java
-                        } else if (MenuConstants.MY_PATIENTS_MENU_ID.lowercase() == origin && (CommonUtils.isAfrica() && CommonUtils.isHRIO())) {
+                        } else if (MenuConstants.MY_PATIENTS_MENU_ID.lowercase() == origin && (CommonUtils.isNonCommunity() && CommonUtils.isHRIO())) {
                              NCDHrioBaseActivity::class.java
                         } else {
                             patientListViewModel.selectedPatientDetails = item

@@ -52,7 +52,8 @@ class NCDDiagnosisDialogFragment : DialogFragment(), View.OnClickListener {
     companion object {
         const val TAG = "NCDDiagnosisDialogFragment"
         fun newInstance(
-            patientId: String,
+            patientId: String?,
+            memberId: String?,
             types: ArrayList<String>,
             isFemale: Boolean,
             getTypes: ArrayList<String>,
@@ -61,6 +62,7 @@ class NCDDiagnosisDialogFragment : DialogFragment(), View.OnClickListener {
         ) = NCDDiagnosisDialogFragment().apply {
                 arguments = Bundle().apply {
                     putString(DefinedParams.PatientId, patientId)
+                    putString(DefinedParams.MemberID, memberId)
                     putStringArrayList(CONFIRM_DIAGNOSIS_TYPE, types)
                     putStringArrayList(CONFIRM_DIAGNOSIS_TYPE_GET, getTypes)
                     putBoolean(NCDMRUtil.IS_FEMALE, isFemale)
@@ -92,6 +94,9 @@ class NCDDiagnosisDialogFragment : DialogFragment(), View.OnClickListener {
 
     fun getPatientId(): String? {
         return arguments?.getString(DefinedParams.PatientId)
+    }
+    fun getMemberId(): String? {
+        return arguments?.getString(DefinedParams.MemberID)
     }
     private fun getTypeForRequest(): String? {
         return NCDMRUtil.requestTypeForConfirmDiagnoses(arguments?.getString(Screening.Type))
@@ -173,14 +178,13 @@ class NCDDiagnosisDialogFragment : DialogFragment(), View.OnClickListener {
     }
 
     private fun getDiagonsis() {
-        getPatientId()?.let { patientId ->
-            viewModel.getConfirmDiagonsis(
-                NCDDiagnosisGetRequest(
-                    patientReference = patientId,
-                    diagnosisType = getConfirmDiagnosisTypes()
-                )
+        viewModel.getConfirmDiagonsis(
+            NCDDiagnosisGetRequest(
+                patientReference = getPatientId(),
+                memberReference = getMemberId(),
+                diagnosisType = getConfirmDiagnosisTypes()
             )
-        }
+        )
     }
 
     private fun setChipItems(ncdDiagnosisEntities: List<NCDDiagnosisEntity>) {
@@ -238,18 +242,17 @@ class NCDDiagnosisDialogFragment : DialogFragment(), View.OnClickListener {
     }
 
     private fun createDiagonsis() {
-        getPatientId()?.let { patientId ->
-            val request = NCDDiagnosisRequestResponse(
-                ProvanceDto(),
-                diagnosisNotes = viewModel.comments.takeIf { it.isNotBlank() },
-                confirmDiagnosis = viewModel.selectedChips.map { chip ->
-                    NCDDiagnosisItem(type = chip.type, value = chip.value)
-                },
-                patientReference = patientId,
-                type = getTypeForRequest()
-            )
-            viewModel.createConfirmDiagonsis(request)
-        }
+        val request = NCDDiagnosisRequestResponse(
+            ProvanceDto(),
+            diagnosisNotes = viewModel.comments.takeIf { it.isNotBlank() },
+            confirmDiagnosis = viewModel.selectedChips.map { chip ->
+                NCDDiagnosisItem(type = chip.type, value = chip.value)
+            },
+            patientReference = getPatientId(),
+            memberReference = getMemberId(),
+            type = getTypeForRequest()
+        )
+        viewModel.createConfirmDiagonsis(request)
     }
 
     fun validateInput(): Boolean {

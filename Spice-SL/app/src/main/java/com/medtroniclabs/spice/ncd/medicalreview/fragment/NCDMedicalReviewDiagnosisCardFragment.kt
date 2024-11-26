@@ -84,10 +84,14 @@ class NCDMedicalReviewDiagnosisCardFragment : BaseFragment(), View.OnClickListen
 
                 ResourceState.SUCCESS -> {
                     resourceState.data?.let { data ->
-                        binding.diagnosisCard.tvDiagnosis.text = data.diagnosis
-                            ?.mapNotNull { it.name }
+                        val diag = data.diagnosis?.mapNotNull { it.name }
                             ?.let { convertListToString(ArrayList(it)) }
-                            ?: getString(R.string.hyphen_symbol)
+                        binding.diagnosisCard.tvDiagnosis.text = diag ?: getString(R.string.hyphen_symbol)
+                        binding.diagnosisCard.tvDiagnosisConfirm.text =
+                            if (diag.isNullOrBlank())
+                                getString(R.string.confirm_diagnoses)
+                            else
+                                getString(R.string.edit_diagnosis)
                     }
                 }
 
@@ -317,18 +321,17 @@ class NCDMedicalReviewDiagnosisCardFragment : BaseFragment(), View.OnClickListen
     private fun showDiagnosisDialog() {
         val dialog = childFragmentManager.findFragmentByTag(NCDDiagnosisDialogFragment.TAG)
         if (dialog == null) {
-            patientDetailViewModel.getPatientId()?.let {
-                NCDDiagnosisDialogFragment.newInstance(
-                    it,
-                    NCDMRUtil.getTypeForDiagnoses(getMenu()),
-                    patientDetailViewModel.getGenderIsFemale(),
-                    NCDMRUtil.getConfirmDiagnoses(getMenu()),
-                    patientDetailViewModel.isPregnant(),
-                    getMenu()
-                ).apply {
-                    listener = this@NCDMedicalReviewDiagnosisCardFragment
-                }.show(childFragmentManager, NCDDiagnosisDialogFragment.TAG)
-            }
+            NCDDiagnosisDialogFragment.newInstance(
+                patientDetailViewModel.getPatientId(),
+                patientDetailViewModel.getPatientFHIRId(),
+                NCDMRUtil.getTypeForDiagnoses(getMenu()),
+                patientDetailViewModel.getGenderIsFemale(),
+                NCDMRUtil.getConfirmDiagnoses(getMenu()),
+                patientDetailViewModel.isPregnant(),
+                getMenu()
+            ).apply {
+                listener = this@NCDMedicalReviewDiagnosisCardFragment
+            }.show(childFragmentManager, NCDDiagnosisDialogFragment.TAG)
         }
     }
 

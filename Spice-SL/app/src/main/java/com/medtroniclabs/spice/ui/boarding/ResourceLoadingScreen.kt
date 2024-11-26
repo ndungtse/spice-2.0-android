@@ -69,7 +69,7 @@ class ResourceLoadingScreen : BaseActivity() {
 
                 ResourceState.SUCCESS -> {
                     launchLandingScreen()
-                    if (CommonUtils.isAfrica() && connectivityManager.isNetworkAvailable()) {
+                    if (CommonUtils.isNonCommunity() && connectivityManager.isNetworkAvailable()) {
                         this.triggerOneTimeWorker()
                     }
                 }
@@ -110,7 +110,7 @@ class ResourceLoadingScreen : BaseActivity() {
             SecuredPreference.EnvironmentKey.ISMETALOADED.name,
             true
         )
-        if (CommonUtils.isAfrica() && !SecuredPreference.getTermsAndConditionsStatus())
+        if (CommonUtils.isNonCommunity() && !SecuredPreference.getTermsAndConditionsStatus())
             startActivity(Intent(this, UserTermsConditionsActivity::class.java))
         else
             startActivity(Intent(this, LandingActivity::class.java))

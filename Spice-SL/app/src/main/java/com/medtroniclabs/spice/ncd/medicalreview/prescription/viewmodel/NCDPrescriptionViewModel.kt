@@ -23,7 +23,6 @@ import com.medtroniclabs.spice.data.UnitMetricEntity
 import com.medtroniclabs.spice.data.UpdatePrescriptionModel
 import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.di.IoDispatcher
-import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.ncd.data.PredictionRequest
 import com.medtroniclabs.spice.ncd.data.PrescriptionNudgeResponse
 import com.medtroniclabs.spice.ncd.medicalreview.prescription.repo.NCDPrescriptionRepo
@@ -50,7 +49,7 @@ class NCDPrescriptionViewModel @Inject constructor(
     val unitList = MutableLiveData<List<UnitMetricEntity>>()
     val createPrescriptionLiveData = MutableLiveData<Resource<Map<String, Any>>>()
     var patient_visit_id: String? = null
-    var patientId: String? = null
+    var memberReference: String? = null
     var selectedMedication: MedicationResponse? = null
     var prescriptionUIModel: ArrayList<MedicationResponse>? = null
     val reloadInstruction = MutableLiveData<Boolean>()
@@ -109,10 +108,19 @@ class NCDPrescriptionViewModel @Inject constructor(
         }
     }
 
-    fun getPrescriptionsList(data: PatientListRespModel, isDeleted: Boolean = true) {
-        data.id?.let { id ->
-            getPrescriptionList(PrescriptionListRequest(id, isDeleted, DefinedParams.Africa))
-        }
+    fun getPrescriptionsList(
+        patientReference: String?,
+        memberReference: String?,
+        isDeleted: Boolean = true
+    ) {
+        getPrescriptionList(
+            PrescriptionListRequest(
+                patientReference = patientReference,
+                memberReference = memberReference,
+                isDeleted,
+                DefinedParams.Africa
+            )
+        )
     }
 
     private fun getPrescriptionList(request: PrescriptionListRequest) {
@@ -216,7 +224,7 @@ class NCDPrescriptionViewModel @Inject constructor(
                 requestFrom = DefinedParams.Africa,
                 encounter = EncounterDetails(
                     patientVisitId = patient_visit_id,
-                    memberId = patientId,
+                    memberId = memberReference,
                     provenance = ProvanceDto()
                 ), prescriptions = it
             )
@@ -236,7 +244,7 @@ class NCDPrescriptionViewModel @Inject constructor(
      fun getPrescriptionPrediction() {
         viewModelScope.launch(dispatcherIO) {
             try {
-                val response = prescriptionRepository.getNudgesList(PredictionRequest(memberId = patientId))
+                val response = prescriptionRepository.getNudgesList(PredictionRequest(memberId = memberReference))
                 if (response.isSuccessful) {
                     val res = response.body()
                     if (res?.status == true) {

@@ -1004,7 +1004,6 @@ class AssessmentNCDFragment : BaseFragment(), FormEventListener, View.OnClickLis
                 map[DefinedParams.Gender] = gender
             }
         }
-        map[AssessmentDefinedParams.assessmentType] = NON_COMMUNITY
         map[AssessmentDefinedParams.assessmentProcessType] =
             AssessmentDefinedParams.africa_uppercase
         map[AssessmentDefinedParams.assessmentTakenOn] = DateUtils.getTodayDateDDMMYYYY()
@@ -1143,6 +1142,7 @@ class AssessmentNCDFragment : BaseFragment(), FormEventListener, View.OnClickLis
             }
             result?.second?.apply {
                 this[AssessmentDefinedParams.encounter] = provenance
+                this[AssessmentDefinedParams.assessmentType] = NON_COMMUNITY
                 remove(DefinedParams.Gender)
                 remove(Screening.is_regular_smoker)
                 remove(Screening.DateOfBirth)

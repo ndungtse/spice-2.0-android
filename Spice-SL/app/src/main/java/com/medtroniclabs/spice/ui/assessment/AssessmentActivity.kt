@@ -120,7 +120,7 @@ class AssessmentActivity : BaseActivity() {
     }
 
     private fun navigationHandling(isHome: Boolean, isFromSummary: Boolean) {
-        if (isFromSummary && !com.medtroniclabs.spice.common.CommonUtils.isAfrica())
+        if (isFromSummary && !com.medtroniclabs.spice.common.CommonUtils.isNonCommunity() )
             startBackgroundOfflineSync()
 
         if (isHome) {
@@ -334,7 +334,7 @@ class AssessmentActivity : BaseActivity() {
                 ResourceState.SUCCESS -> {
                     hideLoading()
                     finishSuccessFlow()
-                    if (!com.medtroniclabs.spice.common.CommonUtils.isAfrica()) {
+                    if (!com.medtroniclabs.spice.common.CommonUtils.isNonCommunity() ) {
                         startBackgroundOfflineSync()
                     }
                 }

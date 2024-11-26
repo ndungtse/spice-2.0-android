@@ -45,8 +45,8 @@ class NCDTreatmentPlanDialog(private val callback: ((isPositiveResult: Boolean, 
     companion object {
         const val TAG = "NCDTreatmentPlanDialog"
         fun newInstance(
-            patientId: String,
-            fhirId: String,
+            patientId: String?,
+            fhirId: String?,
             callback: ((isPositiveResult: Boolean, message: String) -> Unit)
         ): NCDTreatmentPlanDialog {
             val dialog = NCDTreatmentPlanDialog(callback)

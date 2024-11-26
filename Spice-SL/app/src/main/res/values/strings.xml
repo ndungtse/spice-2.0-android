@@ -44,6 +44,7 @@
     <string name="household_name_no">Household Name / No</string>
     <string name="diagnoses">Diagnoses</string>
     <string name="confirm_diagnoses">Confirm Diagnoses</string>
+    <string name="edit_diagnosis">Edit Diagnoses</string>
     <string name="patient_status">Patient Status</string>
     <string name="referred">Referred</string>
     <string name="edit_diagnoses">Edit Diagnoses</string>
@@ -1013,7 +1014,7 @@
     <string name="test_comments">Test Comments</string>
     <string name="screening_after_search">No Patient found. Please perform screening to proceed.</string>
 
-    <string name="duplicate_record_found">Duplicate Record Found</string>
+    <string name="duplicate_patient_found">Duplicate Patient Found</string>
     <string name="proceed">Proceed</string>
     <string name="mental_health">Mental Health</string>
     <string name="job_aid">Job Aid</string>
