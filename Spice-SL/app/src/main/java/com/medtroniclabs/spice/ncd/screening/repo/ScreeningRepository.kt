@@ -4,9 +4,11 @@ import androidx.lifecycle.LiveData
 import com.medtroniclabs.spice.common.AppConstants
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.StringConverter
+import com.medtroniclabs.spice.data.LocalSpinnerResponse
 import com.medtroniclabs.spice.db.entity.HealthFacilityEntity
 import com.medtroniclabs.spice.db.entity.MentalHealthEntity
 import com.medtroniclabs.spice.db.entity.ScreeningEntity
+import com.medtroniclabs.spice.db.entity.VillageEntity
 import com.medtroniclabs.spice.db.local.RoomHelper
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.ncd.data.TermsAndConditionsModel
@@ -31,6 +33,18 @@ class ScreeningRepository @Inject constructor(
 
     fun getMentalQuestion(type:String) :  LiveData<MentalHealthEntity?>{
         return  roomHelper.getMentalQuestion(type)
+    }
+
+    suspend fun getVillagesByChiefDom(
+        tag: String,
+        selectedParent: Long
+    ): Resource<LocalSpinnerResponse> {
+        return try {
+            val response = roomHelper.getVillagesByChiefDom(selectedParent)
+            Resource(state = ResourceState.SUCCESS, LocalSpinnerResponse(tag, response))
+        } catch (_: Exception) {
+            Resource(state = ResourceState.ERROR)
+        }
     }
 
     suspend fun savePatientScreeningInformation(screeningEntity: ScreeningEntity) =

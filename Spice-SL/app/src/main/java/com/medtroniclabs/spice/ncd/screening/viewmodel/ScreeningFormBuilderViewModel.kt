@@ -10,6 +10,7 @@ import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.appextensions.postSuccess
 import com.medtroniclabs.spice.common.SecuredPreference
+import com.medtroniclabs.spice.data.LocalSpinnerResponse
 import com.medtroniclabs.spice.db.entity.MentalHealthEntity
 import com.medtroniclabs.spice.db.entity.ScreeningEntity
 import com.medtroniclabs.spice.di.IoDispatcher
@@ -30,6 +31,7 @@ class ScreeningFormBuilderViewModel @Inject constructor(
 ) : ViewModel() {
 
     private var getMentalQuestion = MutableLiveData<Pair<String, String>>()
+    val villageSpinnerLiveData = MutableLiveData<Resource<LocalSpinnerResponse>>()
     var screeningSaveResponse = SingleLiveEvent<Resource<ScreeningEntity>>()
     var screeningUpdateResponse = MutableLiveData<Resource<ScreeningEntity>>()
     val getMentalQuestions: LiveData<MentalHealthEntity?> =
@@ -48,6 +50,15 @@ class ScreeningFormBuilderViewModel @Inject constructor(
 
     fun getMentalQuestion(id: String, type: String) {
         getMentalQuestion.value = Pair(id, type)
+    }
+
+    fun getVillages(tag: String) {
+        viewModelScope.launch(dispatcherIO) {
+            villageSpinnerLiveData.postLoading()
+            villageSpinnerLiveData.postValue(
+                screeningRepository.getVillagesByChiefDom(tag, SecuredPreference.getChiefdomId())
+            )
+        }
     }
 
     fun getIdOfMentalHealth() = getMentalQuestion.value

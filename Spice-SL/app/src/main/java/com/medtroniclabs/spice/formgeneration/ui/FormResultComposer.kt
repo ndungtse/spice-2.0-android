@@ -100,7 +100,12 @@ class FormResultComposer {
             menuGroupMap[menuType] = groupedResultMap
             return menuGroupMap
         }
-        return groupedResultMap
+        val (valueHashMap, valueNotHashMap) = groupedResultMap.entries.partition { it.value is HashMap<*, *> }
+        val validValueHashMap = valueHashMap.filter {
+            val value = it.value
+            value is HashMap<*, *> && value.isNotEmpty()
+        }
+        return HashMap((validValueHashMap + valueNotHashMap).associate { it.toPair() })
     }
 
     private fun createGroup(id: String) {

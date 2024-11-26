@@ -1004,6 +1004,7 @@ class AssessmentNCDFragment : BaseFragment(), FormEventListener, View.OnClickLis
                 map[DefinedParams.Gender] = gender
             }
         }
+        map[AssessmentDefinedParams.assessmentType] = NON_COMMUNITY
         map[AssessmentDefinedParams.assessmentProcessType] =
             AssessmentDefinedParams.africa_uppercase
         map[AssessmentDefinedParams.assessmentTakenOn] = DateUtils.getTodayDateDDMMYYYY()

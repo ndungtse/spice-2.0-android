@@ -26,6 +26,7 @@ import com.medtroniclabs.spice.common.CommonUtils.checkAssessmentCondition
 import com.medtroniclabs.spice.common.CommonUtils.getMeasurementTypeValues
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
+import com.medtroniclabs.spice.common.EntityMapper
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.SecuredPreference.getUnitMeasurementType
 import com.medtroniclabs.spice.common.SpiceLocationManager
@@ -225,6 +226,23 @@ class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener, View.OnC
             }
         }
 
+        viewModel.villageSpinnerLiveData.observe(viewLifecycleOwner) { resourceState ->
+            when (resourceState.state) {
+                ResourceState.SUCCESS -> {
+                    resourceState.data?.let { data ->
+                        formGenerator.spinnerDataInjection(
+                            data,
+                            EntityMapper.getResultSpinnerMapList(data)
+                        )
+                    }
+                }
+
+                ResourceState.LOADING -> {}
+
+                ResourceState.ERROR -> {}
+            }
+        }
+
         viewModel.screeningSaveResponse.observe(viewLifecycleOwner) { resources ->
             when (resources.state) {
                 ResourceState.LOADING -> {
@@ -304,6 +322,9 @@ class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener, View.OnC
             when (localDataCache) {
                 Screening.PHQ4 -> {
                     viewModel.getMentalQuestion(id, localDataCache)
+                }
+                Screening.VILLAGE -> {
+                    viewModel.getVillages(localDataCache)
                 }
             }
         }

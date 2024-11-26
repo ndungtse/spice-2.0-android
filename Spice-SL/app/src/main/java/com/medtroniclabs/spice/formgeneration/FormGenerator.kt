@@ -343,9 +343,6 @@ class FormGenerator(
             maxDecimalPlaces?.let {
                 binding.etUserInput.filters = arrayOf<InputFilter>(DecimalDigitsInputFilter(it))
             }
-            unitMeasurement?.let {
-                it.also { resultHashMap[id + Screening.unitMeasurement_KEY] = it }
-            }
             hint?.let {
                 if (translate) {
                     binding.etUserInput.hint = hintCulture ?: it
@@ -375,7 +372,7 @@ class FormGenerator(
                 inputFilter.add(InputFilter.AllCaps())
             }
 
-            if (id == Screening.BloodGlucoseID || id == Screening.HbA1cID) {
+            if (applyTwoDigitPrecision == true) {
                 inputFilter.add(DecimalInputFilter())
             }
 
@@ -420,6 +417,7 @@ class FormGenerator(
                             resultHashMap.remove(id)
                         }
                         setConditionalVisibility(serverViewModel, null)
+                        resultHashMap.remove(id + Screening.unitMeasurement_KEY)
                     }
 
                     else -> {
@@ -434,6 +432,9 @@ class FormGenerator(
                         } else
                             resultHashMap[id] = editable.trim().toString()
                         setConditionalVisibility(serverViewModel, editable.trim().toString())
+                        unitMeasurement?.let {
+                            it.also { resultHashMap[id + Screening.unitMeasurement_KEY] = it }
+                        }
                     }
                 }
             }
@@ -920,6 +921,10 @@ class FormGenerator(
 
             if (id == DefinedParams.NationalId) {
                 inputFilter.add(InputFilter.AllCaps())
+            }
+
+            if (applyTwoDigitPrecision == true) {
+                inputFilter.add(DecimalInputFilter())
             }
 
             if (inputFilter.isNotEmpty()) {

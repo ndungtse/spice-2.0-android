@@ -68,7 +68,6 @@ object Screening {
         "Have you thought of/contemplated ending your life or not worth living?"
 
     const val BloodGlucoseID = "glucose"
-    const val HbA1cID = "hba1c"
     const val unitMeasurement_KEY = "Unit"
     const val mmoll = "mmol/L"
     const val UpperLimitSystolic = 140
@@ -191,4 +190,5 @@ object Screening {
     }
     const val DISTRICT_ID = "districtId"
     const val CHIEFDOM_ID = "chiefdomId"
+    const val VILLAGE = "village"
 }
