@@ -13,6 +13,7 @@ import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.databinding.PatientInfoItemBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
+import com.medtroniclabs.spice.mappingkey.Screening
 import com.medtroniclabs.spice.toggle.OnToggledListener
 import com.medtroniclabs.spice.toggle.ToggleableView
 import com.medtroniclabs.spice.ui.BaseActivity
@@ -44,6 +45,17 @@ class PatientInfoAdapter(
                     label[DefinedParams.color]?.let {
                         tvValue.setTextColor(label[DefinedParams.color] as Int)
                     }
+                }
+                val mentalHealthLabels = listOf(
+                    context.getString(R.string.phq4_score),
+                    context.getString(R.string.suicidcal_ideation)
+                )
+
+                if (mentalHealthLabels.contains(label[DefinedParams.label])) {
+                    tvMentalHealth.visible()
+                    tvMentalHealth.text = label[Screening.type] as String
+                } else {
+                    tvMentalHealth.gone()
                 }
                 if (label[DefinedParams.label]?.equals(context.getString(R.string.high_risk)) == true) {
                     tvValue.gone()

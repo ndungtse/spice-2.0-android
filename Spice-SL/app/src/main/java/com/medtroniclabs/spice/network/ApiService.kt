@@ -119,6 +119,7 @@ import com.medtroniclabs.spice.model.medicalreview.WazWhzScoreResponse
 import com.medtroniclabs.spice.ncd.data.DeviceDetails
 import com.medtroniclabs.spice.ncd.data.FollowUpRequest
 import com.medtroniclabs.spice.ncd.data.FollowUpUpdateRequest
+import com.medtroniclabs.spice.ncd.data.NCDMentalHealthStatusRequest
 import com.medtroniclabs.spice.ncd.data.TermsAndConditionsModel
 import com.medtroniclabs.spice.ncd.data.NCDPatientRemoveRequest
 import com.medtroniclabs.spice.ncd.data.NCDPatientTransferValidate
@@ -527,4 +528,7 @@ interface ApiService {
 
     @POST("/spice-service/devicedetails")
     suspend fun updateDeviceDetails(@Body request: DeviceDetails): Response<APIResponse<DeviceDetails>>
+
+    @POST("/spice-service/medical-review/patient-status/create")
+    suspend fun createMentalHealthStatus(@Body request: NCDMentalHealthStatusRequest): Response<APIResponse<HashMap<String, Any>>>
 }

@@ -75,6 +75,9 @@ data class PatientListRespModel(
     val otherInsurance : String? = null,
     val cageAid : String? = null,
     val nextMedicalReviewDate: String? = null,
+    val phq4score: String? = null,
+    val gad7Score: String? = null,
+    val phq9Score: String? = null
 ) : Serializable
 
 data class PregnancyDetails(

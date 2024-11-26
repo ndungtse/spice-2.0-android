@@ -31,12 +31,14 @@ import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.IS_INITIAL_MR
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.MENU_ID
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMedicalReviewActivity
 import com.medtroniclabs.spice.ncd.medicalreview.dialog.NCDDiagnosisDialogFragment
+import com.medtroniclabs.spice.ncd.medicalreview.dialog.NCDMentalHealthQuestionDialog
 import com.medtroniclabs.spice.ncd.medicalreview.dialog.NCDPatientHistoryDialog
 import com.medtroniclabs.spice.ncd.medicalreview.dialog.NCDPregnancyDialog
 import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDMedicalReviewDiagnosisCardViewModel
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.BaseFragment
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -168,6 +170,7 @@ class NCDMedicalReviewDiagnosisCardFragment : BaseFragment(), View.OnClickListen
             weightCard.root.setVisible(false)
             eddCard.root.setVisible(false)
             patientStatusCard.root.setVisible(false)
+            mentalHealthCard.root.setVisible(false)
             when {
                 isContinuous -> {
                     pregnancyCard.root.setVisible(isFemalePregnancy)
@@ -184,6 +187,9 @@ class NCDMedicalReviewDiagnosisCardFragment : BaseFragment(), View.OnClickListen
                 isNCDAndMentalHealth -> {
                     if (getMenu().equals(NCDMRUtil.NCD, true)) {
                         // restrict the patient status hide
+                        patientStatusCard.root.setVisible(false)
+                    } else if (getMenu().equals(NCDMRUtil.MENTAL_HEALTH, true)) {
+                        mentalHealthCard.root.setVisible(true)
                         patientStatusCard.root.setVisible(false)
                     }
                 }
@@ -251,6 +257,8 @@ class NCDMedicalReviewDiagnosisCardFragment : BaseFragment(), View.OnClickListen
             pregnancyCard.tvDiagnosis.safeClickListener(this@NCDMedicalReviewDiagnosisCardFragment)
             diagnosisCard.tvDiagnosisConfirm.safeClickListener(this@NCDMedicalReviewDiagnosisCardFragment)
             patientStatusCard.tvDiagnosis.safeClickListener(this@NCDMedicalReviewDiagnosisCardFragment)
+            mentalHealthCard.tvAssessmentPHQ9.safeClickListener(this@NCDMedicalReviewDiagnosisCardFragment)
+            mentalHealthCard.tvAssessmentGAD7.safeClickListener(this@NCDMedicalReviewDiagnosisCardFragment)
         }
     }
 
@@ -320,6 +328,17 @@ class NCDMedicalReviewDiagnosisCardFragment : BaseFragment(), View.OnClickListen
                 })
             }
 
+            binding.mentalHealthCard.tvAssessmentPHQ9 -> {
+                withNetworkAvailability(online = {
+                    showMentalHealthDialog(getString(R.string.phq9_type))
+                })
+            }
+
+            binding.mentalHealthCard.tvAssessmentGAD7 -> {
+                withNetworkAvailability(online = {
+                    showMentalHealthDialog(getString(R.string.gad7_type))
+                })
+            }
         }
     }
 
@@ -355,6 +374,15 @@ class NCDMedicalReviewDiagnosisCardFragment : BaseFragment(), View.OnClickListen
             }
         }
     }
+
+    private fun showMentalHealthDialog(type: String) {
+        val dialog = childFragmentManager.findFragmentByTag(NCDMentalHealthQuestionDialog.TAG)
+        if (dialog == null) {
+            NCDMentalHealthQuestionDialog.newInstance(type)
+                .show(childFragmentManager, NCDPatientHistoryDialog.TAG)
+        }
+    }
+
     override fun onDialogDismissed(isConfirmed: Boolean) {
         // call the get method
         if (isConfirmed) {

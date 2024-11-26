@@ -42,6 +42,13 @@
             android:layout_height="wrap_content"
             android:layout_weight="1" />
 
+        <include
+            android:id="@+id/mentalHealthCard"
+            layout="@layout/mental_health_card_layout"
+            android:layout_width="@dimen/_0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
     </LinearLayout>
 
     <LinearLayout

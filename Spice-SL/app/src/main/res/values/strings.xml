@@ -1173,4 +1173,15 @@
     <string name="duplicate_patient_not_registered">A duplicate patient with the mentioned details has been found. Would you like to override it with the information you entered?</string>
     <string name="duplicate_patient_different_acct">A duplicate patient with the same details has been found at another health facility.</string>
     <string name="duplicate_patient_same_acct">A duplicate patient is found. Would you like to proceed with the assessment instead?</string>
+
+    //Mental Health UI
+    <string name="mental_health_disorder">Mental Health Disorder</string>
+    <string name="comments">Comments</string>
+    <string name="substance_use">Substance Use</string>
+    <string name="substance_use_disorder">Substance Use Disorder</string>
+    <string name="phq9_mental_health">PHQ 9</string>
+    <string name="gad7_mental_health">GAD 7</string>
+    <string name="edit_assessment">Edit Assessment</string>
+    <string name="phq9_type">phq9</string>
+    <string name="gad7_type">gad7</string>
 </resources>

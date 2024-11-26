@@ -10,6 +10,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.view.isVisible
+import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.isVisible
@@ -83,6 +84,9 @@ import com.medtroniclabs.spice.ui.patientDelete.NCDDeleteConfirmationDialog
 import com.medtroniclabs.spice.ui.patientDelete.viewModel.NCDPatientDeleteViewModel
 import com.medtroniclabs.spice.ui.patientEdit.NCDPatientEditActivity
 import com.medtroniclabs.spice.ncd.data.NCDPatientTransferValidate
+import com.medtroniclabs.spice.ncd.medicalreview.dialog.NCDMentalHealthFragment
+import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDMentalHealthViewModel
+import com.medtroniclabs.spice.ui.mypatients.fragment.ReferPatientFragment
 import com.medtroniclabs.spice.ui.patientTransfer.viewModel.NCDPatientTransferViewModel
 import com.medtroniclabs.spice.ui.patientTransfer.dialog.NCDTransferArchiveDialog
 import dagger.hilt.android.AndroidEntryPoint
@@ -104,6 +108,7 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
     private val medicalReviewDiagnosisCardViewModel: NCDMedicalReviewDiagnosisCardViewModel by viewModels()
     private val patientDeleteViewModel: NCDPatientDeleteViewModel by viewModels()
     private val patientTransferViewModel: NCDPatientTransferViewModel by viewModels()
+    private val mentalHealthViewModel: NCDMentalHealthViewModel by viewModels()
     private lateinit var binding: ActivityNcdMrBaseBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -220,6 +225,7 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
             if (it) {
                 showNcdPatientStatus()
                 showMaternalStatus()
+                showMentalStatus()
                 viewModel.isInitial(false)
             } else {
                 loadFragment(true)
@@ -371,8 +377,42 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
                 }
             }
         }
+
+        mentalHealthViewModel.createMentalHealthStatus.observe(this) { resourceState ->
+            when (resourceState.state) {
+                ResourceState.LOADING -> {
+                    showLoading()
+                }
+
+                ResourceState.SUCCESS -> {
+                    hideLoading()
+                    val fragment =
+                        supportFragmentManager.findFragmentByTag(NCDMentalHealthFragment.TAG) as? NCDMentalHealthFragment
+                    fragment?.dismiss()
+                    resourceState.data?.let { map ->
+                        showSuccessDialog(map)
+                    }
+                }
+
+                ResourceState.ERROR -> {
+                    hideLoading()
+                }
+            }
+        }
     }
 
+    private fun showSuccessDialog(map: HashMap<String, Any>) {
+        if (map.containsKey(NCDMRUtil.message)) {
+            val message = map[NCDMRUtil.message]
+            if (message is String) {
+                GeneralSuccessDialog.newInstance(
+                    title = "Medical Review",
+                    message = message,
+                    okayButton = getString(R.string.done)
+                ) { }.show(supportFragmentManager, GeneralSuccessDialog.TAG)
+            }
+        }
+    }
     private fun updateCounts(it: BadgeNotificationModel) {
         binding.btnLayout.apply {
             ivLSBadgeCount.text = it.nutritionLifestyleReviewedCount.toString()
@@ -1032,6 +1072,28 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
                                 }
                             }
                         ncdPregnancyDialog.show(supportFragmentManager, NCDPregnancyDialog.TAG)
+                    }
+                }
+            })
+        }
+    }
+
+    private fun showMentalStatus() {
+        if (getMenuId().equals(MENTAL_HEALTH.lowercase(), true)) {
+            withNetworkAvailability(online = {
+                patientDetailViewModel.getPatientFHIRId()?.let { id ->
+                    val dialog =
+                        supportFragmentManager.findFragmentByTag(NCDMentalHealthFragment.TAG)
+                    if (dialog == null) {
+                        NCDMentalHealthFragment.newInstance(
+                            patientDetailViewModel.getPatientId(),
+                            id,
+                            true,
+                            isFemale = patientDetailViewModel.getGenderIsFemale(),
+                            patientDetailViewModel.isPregnant()
+                        ).apply {
+                            listener = this@NCDMedicalReviewActivity
+                        }.show(supportFragmentManager, NCDMentalHealthFragment.TAG)
                     }
                 }
             })

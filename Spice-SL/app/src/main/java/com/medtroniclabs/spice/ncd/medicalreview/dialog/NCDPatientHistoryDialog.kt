@@ -64,7 +64,7 @@ class NCDPatientHistoryDialog : DialogFragment(), View.OnClickListener {
         val isTablet = CommonUtils.checkIsTablet(requireContext())
         val isLandscape = resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
         val percent = when {
-            isTablet && isLandscape -> 70
+            isTablet && isLandscape -> 40
             isTablet && !isLandscape -> 85
             else -> 95
         }

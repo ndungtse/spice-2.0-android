@@ -93,6 +93,9 @@ object NCDMRUtil {
     const val PHYSICAL_ACTIVITY = "OTHER"
     const val TYPE_DELETE = "PATIENT_DELETE"
     const val message = "message"
+    const val Tobbaco = "Tobbaco"
+    const val Anxiety = "Anxiety"
+    const val Disorder = "Disorder"
 
 
     fun validateInput(

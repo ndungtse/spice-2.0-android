@@ -131,6 +131,7 @@ import com.medtroniclabs.spice.model.medicalreview.WazWhzScoreResponse
 import com.medtroniclabs.spice.ncd.data.DeviceDetails
 import com.medtroniclabs.spice.ncd.data.FollowUpRequest
 import com.medtroniclabs.spice.ncd.data.FollowUpUpdateRequest
+import com.medtroniclabs.spice.ncd.data.NCDMentalHealthStatusRequest
 import com.medtroniclabs.spice.ncd.data.PatientFollowUpEntity
 import com.medtroniclabs.spice.ncd.data.RegisterCallResponse
 import okhttp3.MultipartBody
@@ -279,4 +280,5 @@ interface ApiHelper {
     suspend fun getPatientCallRegister(): Response<APIResponse<RegisterCallResponse>>
     suspend fun updatePatientCallRegister(request: FollowUpUpdateRequest): Response<APIResponse<HashMap<String, Any>>>
     suspend fun updateDeviceDetails(request: DeviceDetails): Response<APIResponse<DeviceDetails>>
+    suspend fun createMentalHealthStatus(request: NCDMentalHealthStatusRequest): Response<APIResponse<HashMap<String, Any>>>
 }

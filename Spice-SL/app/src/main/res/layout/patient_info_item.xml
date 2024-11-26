@@ -90,8 +90,22 @@
         android:textColor="@color/cobalt_blue"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@id/smHighRisk"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/tvMentalHealth"
         app:layout_constraintStart_toEndOf="@id/smHighRisk"
         app:layout_constraintTop_toTopOf="@id/smHighRisk" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tvMentalHealth"
+        style="@style/TextStyle_Regular_16"
+        android:layout_width="@dimen/_0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/edit_assessment"
+        android:layout_marginStart="@dimen/_10sdp"
+        android:textColor="@color/cobalt_blue"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="@id/tvHighRiskPregnancyCriteria"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/tvHighRiskPregnancyCriteria"
+        app:layout_constraintTop_toTopOf="@id/tvHighRiskPregnancyCriteria" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
