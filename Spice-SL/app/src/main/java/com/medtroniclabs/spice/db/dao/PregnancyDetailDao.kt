@@ -23,7 +23,7 @@ interface PregnancyDetailDao {
     @Query("SELECT patientId, ancVisitNo as visitCount, lastMenstrualPeriod as clinicalDate FROM PregnancyDetail WHERE householdMemberLocalId=:hhmLocalId Limit 1")
     suspend fun getAncDetail(hhmLocalId: Long): MemberClinicalEntity?
 
-    @Query("SELECT patientId, pncVisitNo as visitCount, dateOfDelivery as clinicalDate, noOfNeonates as numberOfNeonate, isDeliveryAtHome FROM PregnancyDetail WHERE householdMemberLocalId=:hhmLocalId Limit 1")
+    @Query("SELECT patientId, pncVisitNo as visitCount, dateOfDelivery as clinicalDate, noOfNeonates as numberOfNeonate, isDeliveryAtHome, neonateHouseholdMemberLocalId, isNeonateDeathRecordedByPHU FROM PregnancyDetail WHERE householdMemberLocalId=:hhmLocalId Limit 1")
     suspend fun getPncDetail(hhmLocalId: Long): MemberClinicalEntity?
 
     @Query("SELECT patientId, childVisitNo as visitCount FROM PregnancyDetail WHERE householdMemberLocalId=:hhmLocalId Limit 1")
@@ -46,9 +46,15 @@ interface PregnancyDetailDao {
         val hhmLocalId = getHHMLocalID(entity.householdMemberId!!)
         val neonateLocalId = entity.neonatePatientId?.let { getHHMLocalIDByPatientId(it) }
         val existingEntity = getPregnancyDetailByPatientId(hhmLocalId)
+        val ancVisitNo = existingEntity?.ancVisitNo
+        val pncVisitNo = existingEntity?.pncVisitNo
+        val childHoodNo = existingEntity?.childVisitNo
         val entityToInsert = existingEntity?.let { entity.copy(id = it.id) } ?: entity
         entityToInsert.householdMemberLocalId = hhmLocalId
         entityToInsert.neonateHouseholdMemberLocalId = neonateLocalId
+        entityToInsert.ancVisitNo = entityToInsert.ancVisitNo?.takeIf { ancVisitNo == null || it > ancVisitNo } ?: ancVisitNo
+        entityToInsert.pncVisitNo = entityToInsert.pncVisitNo?.takeIf { pncVisitNo == null || it > pncVisitNo } ?: pncVisitNo
+        entityToInsert.childVisitNo = entityToInsert.childVisitNo?.takeIf { childHoodNo == null || it > childHoodNo } ?: childHoodNo
 
         return savePregnancyDetail(entityToInsert)
     }

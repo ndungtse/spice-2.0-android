@@ -145,6 +145,7 @@ object SpiceSLMigration {
 
             database.execSQL("ALTER TABLE PregnancyDetail ADD COLUMN householdMemberLocalId INTEGER NOT NULL DEFAULT 0")
             database.execSQL("ALTER TABLE PregnancyDetail ADD COLUMN neonateHouseholdMemberLocalId INTEGER")
+            database.execSQL("ALTER TABLE PregnancyDetail ADD COLUMN isNeonateDeathRecordedByPHU INTEGER")
 
             database.execSQL(
                 """

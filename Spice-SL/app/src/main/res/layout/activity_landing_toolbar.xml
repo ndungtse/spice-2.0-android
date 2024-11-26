@@ -36,17 +36,19 @@
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/tvTitle"
-                    android:layout_width="@dimen/_0dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:ellipsize="end"
                     android:fontFamily="@font/inter_bold"
                     android:gravity="center"
                     android:maxLines="1"
-                    android:layout_marginEnd="@dimen/_8sdp"
+                    android:text="Home"
+                    android:layout_marginEnd="@dimen/_24sdp"
                     android:paddingHorizontal="@dimen/_8sdp"
                     android:textColor="@color/white"
                     android:textSize="@dimen/_16ssp"
-                    app:layout_constraintEnd_toStartOf="@+id/clNotification"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 

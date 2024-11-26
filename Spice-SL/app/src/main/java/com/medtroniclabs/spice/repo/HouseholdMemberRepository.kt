@@ -187,6 +187,12 @@ class HouseholdMemberRepository @Inject constructor(
         }
     }
 
+    suspend fun getMemberDetails(
+        memberId: Long,
+    ): HouseholdMemberEntity {
+        return roomHelper.getMemberDetailsByID(memberId)
+    }
+
     suspend fun getMemberDetailsByParentId(
         memberId: String,
     ): Resource<List<HouseholdMemberEntity>> {

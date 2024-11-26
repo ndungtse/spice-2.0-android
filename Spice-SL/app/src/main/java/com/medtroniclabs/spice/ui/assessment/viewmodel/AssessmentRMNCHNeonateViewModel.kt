@@ -43,7 +43,7 @@ class AssessmentRMNCHNeonateViewModel @Inject constructor(
     val assessmentStringSaveLiveData = MutableLiveData<String?>()
 
     val assessmentSaveLiveData =
-        MutableLiveData<Resource<Pair<AssessmentEntity, AssessmentEntity>>>()
+        MutableLiveData<Resource<Pair<AssessmentEntity, AssessmentEntity?>>>()
 
     val childMemberDetailsLiveData = MutableLiveData<Resource<HouseholdMemberEntity>>()
 
@@ -265,6 +265,7 @@ class AssessmentRMNCHNeonateViewModel @Inject constructor(
     }
 
     fun updateOtherAssessmentDetails(
+        pncAssessmentDetails: Pair<AssessmentEntity, AssessmentEntity?>?,
         otherAssessmentDetails: HashMap<String, Any>,
         lastLocation: Location?,
         assessmentUpdateLiveData: MutableLiveData<Resource<String>>
@@ -279,7 +280,7 @@ class AssessmentRMNCHNeonateViewModel @Inject constructor(
 
             assessmentUpdateLiveData.postValue(
                 assessmentRepository.updateOtherAssessmentDetails(
-                    assessmentSaveLiveData.value?.data,
+                    pncAssessmentDetails,
                     otherAssessmentDetails,
                     lastLocation
                 )

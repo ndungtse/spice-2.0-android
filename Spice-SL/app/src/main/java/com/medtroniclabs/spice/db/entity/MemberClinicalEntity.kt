@@ -9,5 +9,7 @@ data class MemberClinicalEntity(
     val visitCount: Long,
     val clinicalDate: String?,
     val numberOfNeonate: Long? = null,
-    val isDeliveryAtHome: Boolean? = null
+    val isDeliveryAtHome: Boolean? = null,
+    val neonateHouseholdMemberLocalId: Long? = null,
+    val isNeonateDeathRecordedByPHU: Boolean? = null
 )

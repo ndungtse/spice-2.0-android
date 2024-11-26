@@ -47,7 +47,7 @@ class FollowUpRepository @Inject constructor(
 
         return result.map { items ->
             items.filter { item ->
-                reasons.isEmpty() || reasons.any { reason -> item.reason?.contains(reason) ?: true }
+                reasons.isEmpty() || reasons.any { reason -> item.reason?.contains(reason, true) ?: true }
             }.sortedBy { it.updatedAt }
         }
     }

@@ -33,14 +33,14 @@ class AssessmentRepository @Inject constructor(
 
     suspend fun savePNCAssessment(
         second: String,
-        third: String,
+        third: String? = null,
         memberDetail: AssessmentMemberDetails,
         referralResult: Pair<String?, ArrayList<String>>,
         lastLocation: Location?,
         otherDetails: HashMap<String, Any>?,
         childMemberIdFollowupIDAndDeathOfNewBorn: Triple<Long, Long?, Boolean?>,
         childReferralResult: Pair<String?, ArrayList<String>>
-    ): Resource<Pair<AssessmentEntity, AssessmentEntity>> {
+    ): Resource<Pair<AssessmentEntity, AssessmentEntity?>> {
         return try {
             val motherAssessmentEntity = getAssessmentEntity(
                 memberDetail,
@@ -52,35 +52,42 @@ class AssessmentRepository @Inject constructor(
                 followUpId = childMemberIdFollowupIDAndDeathOfNewBorn.second
             )
             motherAssessmentEntity.id = roomHelper.saveAssessment(motherAssessmentEntity)
-            val childMemberDetail =
-                roomHelper.getAssessmentMemberDetails(childMemberIdFollowupIDAndDeathOfNewBorn.first)
 
-            val childAssessmentEntity = getAssessmentEntity(
-                childMemberDetail,
-                third,
-                if (childReferralResult.first.equals(ReferralStatus.Referred.name)) otherDetails else null,
-                childReferralResult,
-                lastLocation,
-                RMNCH.pnc_neonate_key,
-                followUpId = childMemberIdFollowupIDAndDeathOfNewBorn.second
-            )
-            childAssessmentEntity.id = roomHelper.saveAssessment(childAssessmentEntity)
+            if (third != null) {
+                val childMemberDetail =
+                    roomHelper.getAssessmentMemberDetails(childMemberIdFollowupIDAndDeathOfNewBorn.first)
 
-            childMemberIdFollowupIDAndDeathOfNewBorn.third?.let { deathOfNewborn ->
-                if (deathOfNewborn){
-                    roomHelper.updateMemberDeceasedStatus(childMemberDetail.id, false)
+                val childAssessmentEntity = getAssessmentEntity(
+                    childMemberDetail,
+                    third,
+                    if (childReferralResult.first.equals(ReferralStatus.Referred.name)) otherDetails else null,
+                    childReferralResult,
+                    lastLocation,
+                    RMNCH.pnc_neonate_key,
+                    followUpId = childMemberIdFollowupIDAndDeathOfNewBorn.second
+                )
+                childAssessmentEntity.id = roomHelper.saveAssessment(childAssessmentEntity)
+
+                childMemberIdFollowupIDAndDeathOfNewBorn.third?.let { deathOfNewborn ->
+                    if (deathOfNewborn){
+                        roomHelper.updateMemberDeceasedStatus(childMemberDetail.id, false)
+                    }
                 }
+
+                /**/
+                roomHelper.updateNeonatePatientId(memberDetail.id, childMemberDetail.id)
+                /**/
+
+                Resource(
+                    state = ResourceState.SUCCESS,
+                    data = Pair(motherAssessmentEntity, childAssessmentEntity)
+                )
+            } else {
+                Resource(
+                    state = ResourceState.SUCCESS,
+                    data = Pair(motherAssessmentEntity, null)
+                )
             }
-
-            /**/
-            roomHelper.updateNeonatePatientId(memberDetail.id, childMemberDetail.id)
-            /**/
-
-            Resource(
-                state = ResourceState.SUCCESS,
-                data = Pair(motherAssessmentEntity, childAssessmentEntity)
-            )
-
         } catch (e: Exception) {
             Resource(state = ResourceState.ERROR)
         }
@@ -203,7 +210,7 @@ class AssessmentRepository @Inject constructor(
     }
 
     suspend fun updateOtherAssessmentDetails(
-        pair: Pair<AssessmentEntity, AssessmentEntity>?,
+        pair: Pair<AssessmentEntity, AssessmentEntity?>?,
         otherAssessmentDetails: HashMap<String, Any>,
         lastLocation: Location?
     ): Resource<String> {

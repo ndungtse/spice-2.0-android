@@ -23,6 +23,7 @@ data class PregnancyDetail(
     var neonatePatientId: String? = null,
     var isDeliveryAtHome: Boolean? = null,
     var neonateHouseholdMemberLocalId: Long? = null,
+    var isNeonateDeathRecordedByPHU: Boolean? = null,
     //Childhood Visit Detail
     var childVisitNo: Long? = null,
 )

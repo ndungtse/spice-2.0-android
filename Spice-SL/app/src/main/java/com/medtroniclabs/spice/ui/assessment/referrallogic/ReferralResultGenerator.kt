@@ -59,6 +59,8 @@ import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.Miscarriage
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.deathOfBaby
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.deathOfNewborn
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.getDeathStatus
+import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.lowBirthWeight
+import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.newbornReferredToSBCU
 
 class ReferralResultGenerator {
 
@@ -122,6 +124,17 @@ class ReferralResultGenerator {
                         RMNCH.pncNeonateSigns,
                         ReferralReasons.aliasOf(ReferralReasons.PNCNeonateSigns)
                     )
+
+                    if (checkMiscarrageStatus(map, RMNCH.PNCNeonatal, newbornReferredToSBCU)) {
+                        addResultMap("", ReferralStatus.Referred.name)
+                        addReferralReason(referralReason, "")
+                    }
+
+                    if (checkMiscarrageStatus(map, RMNCH.PNCNeonatal, lowBirthWeight)) {
+                        addResultMap("", ReferralStatus.Referred.name)
+                        addReferralReason(referralReason, "")
+                    }
+
                     updateVisitCount(map, RMNCH.PNC)
                 }
             } else {
@@ -138,6 +151,15 @@ class ReferralResultGenerator {
                         RMNCH.pncNeonateSigns,
                         ReferralReasons.aliasOf(ReferralReasons.PNCNeonateSigns)
                     )
+                    if (checkMiscarrageStatus(map, RMNCH.PNCNeonatal, newbornReferredToSBCU)) {
+                        addResultMap("", ReferralStatus.Referred.name)
+                        addReferralReason(referralReason, "")
+                    }
+
+                    if (checkMiscarrageStatus(map, RMNCH.PNCNeonatal, lowBirthWeight)) {
+                        addResultMap("", ReferralStatus.Referred.name)
+                        addReferralReason(referralReason, "")
+                    }
                 }
                 updateVisitCount(map, RMNCH.PNC)
             }
@@ -148,17 +170,47 @@ class ReferralResultGenerator {
 
 
     private fun updateVisitCount(map: HashMap<String, Any>, workFlow: String) {
-        if (referralReason.isNotEmpty()) {
+        var visitInfo = ""
+        val workflowMap = map[workFlow]
+        if (workflowMap is Map<*, *> && workflowMap.containsKey(RMNCH.visitNo)) {
+            val visitNo = workflowMap[RMNCH.visitNo]
+            visitInfo = "${getVisitLabel(workFlow)} $visitNo"
+        }
+
+
+        while (referralReason.isNotEmpty() && referralReason[0].isEmpty()) {
+            referralReason.removeAt(0)
+        }
+
+        if (referralReason.isEmpty()) {
+            referralReason.add(visitInfo)
+            return
+        }
+
+        for (i in referralReason.size - 1 downTo 0) {
+            if (referralReason[i].isNotEmpty()) {
+                referralReason[i] = "${referralReason[i]} - $visitInfo"
+                return
+            }
+        }
+
+        referralReason.add(visitInfo)
+        
+       /* if (referralReason.isNotEmpty()) {
             var lastReason = referralReason[referralReason.size - 1]
             val workflowMap = map[workFlow]
             if (workflowMap is Map<*, *> && workflowMap.containsKey(RMNCH.visitNo)) {
                 val visitNo = workflowMap[RMNCH.visitNo]
                 if (visitNo is Long) {
-                    lastReason = "$lastReason - ${getVisitLabel(workFlow)} $visitNo"
+                    if (lastReason.trim().isNotEmpty()) {
+                        lastReason = "$lastReason - ${getVisitLabel(workFlow)} $visitNo"
+                    } else {
+                        lastReason = "${getVisitLabel(workFlow)} $visitNo"
+                    }
                     referralReason[referralReason.size - 1] = lastReason
                 }
             }
-        }
+        }*/
     }
 
     private fun getVisitLabel(workFlow: String): String {
@@ -323,47 +375,58 @@ class ReferralResultGenerator {
     ) {
         if (map.containsKey(hasCough)) {
             if ((map[hasCough] is String && map[hasCough] == Yes) || (map[hasCough] is Boolean && map[hasCough] == true)) {
-                if (map.containsKey(NoOfDaysOfCough) && map[NoOfDaysOfCough] is Int) {
-                    val noOfDays = map[NoOfDaysOfCough] as Int
-                    if (noOfDays >= MaxDaysCough) {
-                        addResultMap(
-                            ReferralReasons.Pneumonia.name.lowercase(), ReferralStatus.Referred.name
-                        )
-                        addReferralReason(referralReason, ReferralReasons.Cough.name)
-                    } else {
-                        if (map.containsKey(ChestInDrawing) && ((map[ChestInDrawing] is String && map[ChestInDrawing] == Yes) || (map[ChestInDrawing] is Boolean && map[ChestInDrawing] == true))) {
-                            addResultMap(
-                                ReferralReasons.Pneumonia.name.lowercase(),
-                                ReferralStatus.Referred.name
-                            )
-                            addReferralReason(referralReason, ReferralReasons.Cough.name)
-                        } else if (map.containsKey(BreathPerMinute) && map[BreathPerMinute] is Int) {
-                            val bpmValue = map[BreathPerMinute] as Int
-                            memberDetails?.let { details ->
-                                DateUtils.dateToMonths(details.dateOfBirth).let { month ->
-                                    month?.let {
-                                        if ((month in FB_MIN_MONTH..11) && bpmValue >= FB_MAX_BREATHING) {
-                                            addResultMap(
-                                                ReferralReasons.Pneumonia.name.lowercase(),
-                                                getMedicationStatus(map, Amoxicillin)
-                                            )
-                                            addReferralReason(
-                                                referralReason, ReferralReasons.Pneumonia.name
-                                            )
-                                        } else if (month in FB_MAX_MONTH..60 && bpmValue >= FB_MIN_BREATHING) {
-                                            addResultMap(
-                                                ReferralReasons.Pneumonia.name.lowercase(),
-                                                getMedicationStatus(map, Amoxicillin)
-                                            )
-                                            addReferralReason(
-                                                referralReason, ReferralReasons.Pneumonia.name
-                                            )
-                                        }
-                                    }
+
+                // Condition for fast breathing
+                if (map.containsKey(BreathPerMinute) && map[BreathPerMinute] is Int) {
+                    val bpmValue = map[BreathPerMinute] as Int
+                    memberDetails?.let { details ->
+                        DateUtils.dateToMonths(details.dateOfBirth).let { month ->
+                            month?.let {
+                                if ((month in FB_MIN_MONTH..11) && bpmValue >= FB_MAX_BREATHING) {
+                                    addResultMap(
+                                        ReferralReasons.Pneumonia.name.lowercase(),
+                                        getMedicationStatus(map, Amoxicillin)
+                                    )
+                                    addReferralReason(
+                                        referralReason, ReferralReasons.Pneumonia.name
+                                    )
+                                    return
+                                } else if (month in FB_MAX_MONTH..60 && bpmValue >= FB_MIN_BREATHING) {
+                                    addResultMap(
+                                        ReferralReasons.Pneumonia.name.lowercase(),
+                                        getMedicationStatus(map, Amoxicillin)
+                                    )
+                                    addReferralReason(
+                                        referralReason, ReferralReasons.Pneumonia.name
+                                    )
+                                    return
                                 }
                             }
                         }
                     }
+                }
+
+                // Condition for No of days cough
+                if (map.containsKey(NoOfDaysOfCough) && map[NoOfDaysOfCough] is Int) {
+                    val noOfDays = map[NoOfDaysOfCough] as Int
+                    if (noOfDays >= MaxDaysCough) {
+                        addResultMap(
+                            ReferralReasons.Pneumonia.name.lowercase(),
+                            ReferralStatus.Referred.name
+                        )
+                        addReferralReason(referralReason, ReferralReasons.Cough.name)
+                        return
+                    }
+                }
+
+                // Condition for Chest In Drawing
+                if (map.containsKey(ChestInDrawing) && ((map[ChestInDrawing] is String && map[ChestInDrawing] == Yes) || (map[ChestInDrawing] is Boolean && map[ChestInDrawing] == true))) {
+                    addResultMap(
+                        ReferralReasons.Pneumonia.name.lowercase(),
+                        ReferralStatus.Referred.name
+                    )
+                    addReferralReason(referralReason, ReferralReasons.Cough.name)
+                    return
                 }
             }
         }

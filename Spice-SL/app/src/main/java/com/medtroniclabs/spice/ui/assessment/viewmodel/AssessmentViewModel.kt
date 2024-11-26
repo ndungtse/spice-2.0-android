@@ -18,6 +18,7 @@ import com.medtroniclabs.spice.data.LocalSpinnerResponse
 import com.medtroniclabs.spice.data.model.RecommendedDosageListModel
 import com.medtroniclabs.spice.data.model.SymptomModel
 import com.medtroniclabs.spice.db.entity.AssessmentEntity
+import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
 import com.medtroniclabs.spice.db.entity.MedicalComplianceEntity
 import com.medtroniclabs.spice.db.entity.MemberClinicalEntity
 import com.medtroniclabs.spice.db.entity.PregnancyDetail
@@ -42,6 +43,7 @@ import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.otherSympto
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.signsAndSymptoms
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.symptoms
 import com.medtroniclabs.spice.ui.assessment.AssessmentNCDEntity
+import com.medtroniclabs.spice.ui.assessment.referrallogic.ReferralResultGenerator
 import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefinedParams.Diarrhoea
 import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefinedParams.DiarrhoeaSigns
 import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralReasons
@@ -122,12 +124,26 @@ class AssessmentViewModel @Inject constructor(
     @Inject
     lateinit var connectivityManager: ConnectivityManager
 
+    val pncChildMemberDetailsLiveData = MutableLiveData<HouseholdMemberEntity?>()
+    val pncAssessmentStringSaveLiveData = MutableLiveData<String?>()
+    val pncAssessmentSaveLiveData = MutableLiveData<Resource<Pair<AssessmentEntity, AssessmentEntity?>>>()
+
     init {
         SecuredPreference.getFollowUpCriteria()?.let { followUpCriteria ->
             treatmentDays[ReferralReasons.Pneumonia.name] = followUpCriteria.pneumonia
             treatmentDays[ReferralReasons.Diarrhoea.name] = followUpCriteria.diarrhea
             treatmentDays[ReferralReasons.MUAC.name] = followUpCriteria.muac
             treatmentDays[ReferralReasons.Malaria.name] = followUpCriteria.malaria
+        }
+    }
+
+    fun getPNCChildInfoByParentId(parentId: Long) {
+        viewModelScope.launch(dispatcherIO) {
+            assessmentRepository.getChildPatientId(parentId)?.let { childLocalId ->
+                pncChildMemberDetailsLiveData.postValue(
+                    memberRegistrationRepository.getMemberDetails(childLocalId)
+                )
+            }
         }
     }
 
@@ -171,6 +187,41 @@ class AssessmentViewModel @Inject constructor(
                 )
             }
         }
+    }
+
+    private fun calculatePNCOtherDetails(
+        assessmentMap: HashMap<Any, Any>,
+        referralStatus: String?
+    ): HashMap<String, Any>? {
+        val otherDetails = HashMap<String, Any>()
+        if (referralStatus != null && referralStatus == ReferralStatus.Referred.name) {
+            otherDetails[AssessmentDefinedParams.ReferredPHUSiteID] =
+                SecuredPreference.getString(SecuredPreference.EnvironmentKey.DEFAULT_SITE_ID.name)
+                    ?: "-1"
+        }
+        if (assessmentMap.containsKey(RMNCH.PNC)) {
+            val map = assessmentMap[RMNCH.PNC] as Map<*, *>
+            if (map.containsKey(RMNCH.DateOfDelivery)) {
+                val dateOfDelivery = map[RMNCH.DateOfDelivery] as String
+                DateUtils.convertStringToDate(
+                    dateOfDelivery,
+                    DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
+                )?.let { deliveryDate ->
+                    RMNCH.calculateNextPNCVisitDate(deliveryDate)?.let { visitDate ->
+                        otherDetails[AssessmentDefinedParams.NextFollowupDate] =
+                            DateUtils.convertDateTimeToDate(
+                                DateUtils.getDateStringFromDate(
+                                    visitDate, DateUtils.DATE_ddMMyyyy
+                                ),
+                                DateUtils.DATE_ddMMyyyy,
+                                DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
+                            )
+                    }
+                }
+            }
+        }
+
+        return if (otherDetails.isEmpty()) null else otherDetails
     }
 
     private fun calculateOtherDetails(
@@ -258,6 +309,65 @@ class AssessmentViewModel @Inject constructor(
             }
         }
         return if (otherDetails.isEmpty()) null else otherDetails
+    }
+
+    private fun getPNCAssessmentDetails(map: HashMap<Any, Any>): Triple<String, String, String> {
+        val assessmentDetail = StringConverter.convertGivenMapToString(map) ?: ""
+        var motherMapString: String? = null
+        var childMapString: String? = null
+
+        // Request modification for syncing PNC Mother to Backend
+        if (map.containsKey(RMNCH.PNC)) {
+            val pnc = map[RMNCH.PNC] as HashMap<Any, Any>
+            if (pnc.containsKey(RMNCH.pncMotherSigns)) {
+                val signsList = mutableListOf<String>()
+                val list = pnc[RMNCH.pncMotherSigns] as List<*>
+                list.forEach { it ->
+                    if (it is HashMap<*, *>) {
+                        signsList.add(it[DefinedParams.Value] as String)
+                    }
+                }
+                pnc[RMNCH.pncMotherSigns] = signsList
+            }
+
+            if (pnc.containsKey(RMNCH.otherPncMotherSigns)) {
+                val os = pnc[RMNCH.otherPncMotherSigns] as Any
+                pnc.remove(RMNCH.otherPncMotherSigns)
+                pnc[RMNCH.otherSigns] = os
+            }
+
+            val parentMap = HashMap<String, Any>()
+            parentMap[RMNCH.PNC] = pnc
+            motherMapString = StringConverter.convertGivenMapToString(parentMap)
+        }
+
+        // Request modification for syncing PNC neonatal to Backend
+        if (map.containsKey(RMNCH.PNCNeonatal)) {
+            val pncNeonate = map[RMNCH.PNCNeonatal] as HashMap<Any, Any>
+            if (pncNeonate.containsKey(RMNCH.pncNeonateSigns)) {
+                val signsList = mutableListOf<String>()
+                val list = pncNeonate[RMNCH.pncNeonateSigns] as List<*>
+                list.forEach { it ->
+                    if (it is HashMap<*, *>) {
+                        signsList.add(it[DefinedParams.Value] as String)
+                    }
+                }
+
+                pncNeonate.remove(RMNCH.pncNeonateSigns)
+                pncNeonate[RMNCH.pncNeonatalSigns] = signsList
+            }
+
+            if (pncNeonate.containsKey(RMNCH.otherPncNeonateSigns)) {
+                val os = pncNeonate[RMNCH.otherPncNeonateSigns] as Any
+                pncNeonate.remove(RMNCH.otherPncNeonateSigns)
+                pncNeonate[RMNCH.otherSigns] = os
+            }
+            val parentMap = HashMap<String, Any>()
+            parentMap[RMNCH.PNCNeonatal] = pncNeonate
+            childMapString = StringConverter.convertGivenMapToString(parentMap)
+        }
+
+        return Triple(assessmentDetail, motherMapString ?: "", childMapString ?: "")
     }
 
     private fun getAssessmentDetails(
@@ -525,6 +635,7 @@ class AssessmentViewModel @Inject constructor(
                 pregnancyDetail.neonatePatientId = null
                 pregnancyDetail.isDeliveryAtHome = null
                 pregnancyDetail.neonateHouseholdMemberLocalId = null
+                pregnancyDetail.isNeonateDeathRecordedByPHU = null
             }
 
             RMNCH.PNC -> {
@@ -726,5 +837,46 @@ class AssessmentViewModel @Inject constructor(
 
     fun getPhQ4Score(): Int? {
         return phQ4Score
+    }
+
+    fun savePNCDetails(
+        motherDetailMap: HashMap<String, Any>,
+        memberDetail: AssessmentMemberDetails,
+        childMemberId: Long,
+        childFhirId: String? = null,
+        followUpId: Long? = null,
+        deathOfNewborn: Boolean?
+    ) {
+
+        viewModelScope.launch(dispatcherIO) {
+            //Update Mother member details to NotSynced for PNC Flow
+            if(childFhirId == null) {
+                memberRegistrationRepository.changeMemberDetailsToNotSynced(memberDetail.id)
+            }
+
+            val groupMap = HashMap<String, Any>()
+            groupMap[RMNCH.PNC] = motherDetailMap[RMNCH.PNC] as Any
+
+            val motherReferralResult =
+                ReferralResultGenerator().calculateRMNCHReferralResult(groupMap, false)
+            val childReferralResult =
+                ReferralResultGenerator().calculateRMNCHReferralResult(groupMap, true)
+            val assessmentDetail = getPNCAssessmentDetails(groupMap as HashMap<Any, Any>)
+            referralStatus = motherReferralResult.first
+            pncAssessmentStringSaveLiveData.postValue(assessmentDetail.first)
+            val otherDetails = calculatePNCOtherDetails(groupMap, referralStatus)
+            pncAssessmentSaveLiveData.postValue(
+                assessmentRepository.savePNCAssessment(
+                    assessmentDetail.second,
+                    null,
+                    memberDetail,
+                    motherReferralResult,
+                    null,
+                    otherDetails,
+                    Triple(childMemberId, followUpId,deathOfNewborn),
+                    childReferralResult
+                )
+            )
+        }
     }
 }

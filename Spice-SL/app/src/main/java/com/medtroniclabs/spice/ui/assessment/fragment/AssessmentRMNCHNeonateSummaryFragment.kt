@@ -14,6 +14,7 @@ import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.appextensions.gone
+import com.medtroniclabs.spice.appextensions.isVisible
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
@@ -64,27 +65,13 @@ class AssessmentRMNCHNeonateSummaryFragment : BaseFragment(), View.OnClickListen
     private fun initView() {
         viewModel.getNearestHealthFacility()
         assessmentRMNCHNeonateViewModel.assessmentStringSaveLiveData.value?.let {
-            val map = stringToMap(it)
-            if (map.containsKey(RMNCH.PNC)) {
-                addDefaultSummaryView(map)
-                showSummaryDetail(
-                    map,
-                    RMNCH.PNC,
-                    binding.motherParentLayout,
-                    viewModel.formLayoutsLiveData.value
-                )
-                showNextFollowUpDate(map)
-            }
-            if (map.containsKey(RMNCH.PNCNeonatal)) {
-                showSummaryDetail(
-                    map,
-                    RMNCH.PNCNeonatal,
-                    binding.neonateParentLayout,
-                    assessmentRMNCHNeonateViewModel.formLayoutsLiveData.value
-                )
-            }
-            updateStatusBar()
+            displayMotherAndNeonateSummary(it)
         }
+
+        viewModel.pncAssessmentStringSaveLiveData.value?.let {
+            displayMotherAndNeonateSummary(it)
+        }
+
         viewModel.nearestFacilityLiveData.observe(viewLifecycleOwner) { resourceState ->
             when (resourceState.state) {
                 ResourceState.LOADING -> {
@@ -100,6 +87,33 @@ class AssessmentRMNCHNeonateSummaryFragment : BaseFragment(), View.OnClickListen
                 }
             }
         }
+    }
+
+    private fun displayMotherAndNeonateSummary(it: String) {
+        val map = stringToMap(it)
+        if (map.containsKey(RMNCH.PNC)) {
+            addDefaultSummaryView(map)
+            showSummaryDetail(
+                map,
+                RMNCH.PNC,
+                binding.motherParentLayout,
+                viewModel.formLayoutsLiveData.value
+            )
+            showNextFollowUpDate(map)
+        }
+        if (map.containsKey(RMNCH.PNCNeonatal)) {
+            binding.resultNeonateCardView.visible()
+            showSummaryDetail(
+                map,
+                RMNCH.PNCNeonatal,
+                binding.neonateParentLayout,
+                assessmentRMNCHNeonateViewModel.formLayoutsLiveData.value
+            )
+            updateStatusBar(assessmentRMNCHNeonateViewModel.referralStatus)
+        } else {
+            updateStatusBar(viewModel.referralStatus)
+        }
+
     }
 
     private fun loadPhuSitesList(siteList: ArrayList<Map<String, Any>>) {
@@ -133,8 +147,8 @@ class AssessmentRMNCHNeonateSummaryFragment : BaseFragment(), View.OnClickListen
             }
     }
 
-    private fun updateStatusBar() {
-        when (assessmentRMNCHNeonateViewModel.referralStatus) {
+    private fun updateStatusBar(referralStatus: String?) {
+        when (referralStatus) {
             ReferralStatus.Referred.name -> {
                 viewModel.nearestFacilityLiveData.value?.data?.let { siteList ->
                     loadPhuSitesList(siteList)
@@ -271,7 +285,14 @@ class AssessmentRMNCHNeonateSummaryFragment : BaseFragment(), View.OnClickListen
                     startActivity(intent)
                     requireActivity().finish()
                 } else {
+                    val pncDetails = if (binding.resultNeonateCardView.isVisible()) {
+                        assessmentRMNCHNeonateViewModel.assessmentSaveLiveData.value?.data
+                    } else {
+                        viewModel.pncAssessmentSaveLiveData.value?.data
+                    }
+
                     assessmentRMNCHNeonateViewModel.updateOtherAssessmentDetails(
+                        pncDetails,
                         viewModel.otherAssessmentDetails,
                         viewModel.getCurrentLocation(),
                         viewModel.assessmentUpdateLiveData

@@ -141,6 +141,24 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
             }
         }
 
+        viewModel.memberDetailsLiveData.observe(viewLifecycleOwner) { resource ->
+            when(resource.state) {
+                ResourceState.LOADING -> {}
+                ResourceState.SUCCESS -> {
+                    if (viewModel.workflowName == RMNCH.PNC) {
+                        resource.data?.id?.let {
+                            viewModel.getPNCChildInfoByParentId(resource.data.id)
+                        }
+                    }
+                }
+                ResourceState.ERROR -> {}
+            }
+        }
+
+        viewModel.pncChildMemberDetailsLiveData.observe(viewLifecycleOwner) {
+
+        }
+
         viewModel.memberClinicalLiveData.observe(viewLifecycleOwner) { data ->
             data?.clinicalDate?.let { date ->
                 if (date.isNotEmpty()) {
@@ -151,9 +169,34 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
                     formGenerator.getViewByTag(RMNCH.NoOfNeonate + formGenerator.rootSuffix)?.gone()
                 }
             }
+
+            if (shouldHideNeonateFlow()) {
+                binding.btnSubmit.text = getString(R.string.submit)
+            } else {
+                binding.btnSubmit.text = getString(R.string.next)
+            }
         }
         viewModel.ageInMonth.observe(viewLifecycleOwner) {
             updateAgeInMonths(it)
+        }
+
+        viewModel.pncAssessmentSaveLiveData.observe(viewLifecycleOwner) { resources ->
+            when (resources.state) {
+                ResourceState.LOADING -> {
+                    showProgress()
+                }
+
+                ResourceState.SUCCESS -> {
+                    hideProgress()
+                    resources.data?.let { _ ->
+                        (requireActivity() as AssessmentActivity).replaceAssessmentRMNCHNeonateSummaryFragment()
+                    }
+                }
+
+                ResourceState.ERROR -> {
+                    hideProgress()
+                }
+            }
         }
     }
 
@@ -182,7 +225,6 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
 
             RMNCH.PNC -> {
                 binding.btnSubmit.text = getString(R.string.next)
-
             }
         }
         viewModel.workflowName?.let { name ->
@@ -252,12 +294,29 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
         )
     }
 
+    private fun shouldHideNeonateFlow(): Boolean {
+        val memberClinicalDetail = viewModel.memberClinicalLiveData.value
+        if (memberClinicalDetail != null) {
+            if (memberClinicalDetail.isNeonateDeathRecordedByPHU == true)
+                return true // Marked child death by provider
+
+            if (memberClinicalDetail.visitCount >= 1 && memberClinicalDetail.neonateHouseholdMemberLocalId == null) {
+                return true // Still birth and Miscarriage
+            }
+        }
+        return false
+    }
+
     private fun handleNextPregnancyFlow(second: HashMap<String, Any>) {
         viewModel.workflowName?.let { name ->
             when (name) {
                 RMNCH.PNC -> {
-                    viewModel.pncMotherDetailMap = second
-                    (requireActivity() as AssessmentActivity).replaceAssessmentRMNCHNeonateFragment()
+                    if (shouldHideNeonateFlow()) {
+                        proceedChildDeadFlow(second)
+                    }  else {
+                        viewModel.pncMotherDetailMap = second
+                        (requireActivity() as AssessmentActivity).replaceAssessmentRMNCHNeonateFragment()
+                    }
                 }
 
                 else -> {
@@ -287,6 +346,28 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
                     )
                 }
             }
+        }
+    }
+
+    private fun proceedChildDeadFlow(second: HashMap<String, Any>) {
+        val childDetails = viewModel.pncChildMemberDetailsLiveData.value
+
+        viewModel.memberDetailsLiveData.value?.data?.let { memberDetail ->
+            viewModel.handlePregnancy(
+                second,
+                workflowName = RMNCH.PNC,
+                memberDetail,
+                viewModel.memberClinicalLiveData.value,
+                null
+            )
+            viewModel.savePNCDetails(
+                motherDetailMap =  second,
+                memberDetail = memberDetail,
+                childMemberId = childDetails?.id ?: 0,
+                childFhirId = childDetails?.fhirId,
+                followUpId = viewModel.followUpId,
+                deathOfNewborn = true
+            )
         }
     }
 
@@ -501,7 +582,8 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
     }
 
     private fun updateAgeInMonths(age: String) {
-        if (age.contains(getString(R.string.week),true)||age.contains(getString(R.string.day),true)){
+        if (age.contains(getString(R.string.week), true)
+            || age.contains(getString(R.string.day), true)){
             hideUnder5Months()
         }else {
             when (age.replace(getString(R.string.months), "").replace(getString(R.string.month), "").trim().toInt()) {
