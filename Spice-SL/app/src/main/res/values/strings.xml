@@ -1170,4 +1170,7 @@
     <string name="defaulters">Defaulters</string>
     <string name="LTFU">LTFU</string>
     <string name="overdue">Overdue</string>
+    <string name="duplicate_patient_not_registered">A duplicate patient with the mentioned details has been found. Would you like to override it with the information you entered?</string>
+    <string name="duplicate_patient_different_acct">A duplicate patient with the same details has been found at another health facility.</string>
+    <string name="duplicate_patient_same_acct">A duplicate patient is found. Would you like to proceed with the assessment instead?</string>
 </resources>

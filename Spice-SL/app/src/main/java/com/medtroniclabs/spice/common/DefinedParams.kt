@@ -94,6 +94,8 @@ object DefinedParams {
     const val LMB = "LMB"
     const val Recovered = "Recovered"
     const val PatientReference = "patientReference"
+    const val MemberReference = "memberReference"
+    const val ProgramId = "programId"
     const val valueColor = "color"
     const val Above5MedicalReview = "Above5MedicalReview"
     const val Neonate_Birth_Review = "NEONATE_BIRTH_REVIEW"

@@ -68,12 +68,25 @@ class ESignatureDialog(private val signatureInterface: SignatureInterface) : Dia
         binding.btnConfirm.isEnabled = (viewModel.patientInitial.value != null) || isSigned
     }
 
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        handleConfiguration()
+
+    }
+
     override fun onStart() {
         super.onStart()
-        if (CommonUtils.checkIsTablet(requireContext()))
-            setDialogPercent(85, 55)
-        else
-            setDialogPercent(95, 65)
+        handleConfiguration()
+    }
+
+    private fun handleConfiguration() {
+        val isTablet = CommonUtils.checkIsTablet(requireContext())
+        val isLandscape = resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+        when {
+            isTablet && isLandscape -> setDialogPercent(55, 95)
+            isTablet -> setDialogPercent(85, 55)
+            else -> setDialogPercent(95, 65)
+        }
     }
 
     private fun setListeners() {

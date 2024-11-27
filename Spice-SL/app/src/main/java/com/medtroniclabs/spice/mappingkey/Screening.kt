@@ -9,6 +9,7 @@ object Screening {
     const val firstName = "firstName"
     const val lastName = "lastName"
     const val nationalId = "nationalId"
+    const val healthFacilityName = "siteName"
     const val phoneNumber = "phoneNumber"
     const val BPAverageMinimumValue = 50.0
     const val BPAverageMaximumValue = 300.0

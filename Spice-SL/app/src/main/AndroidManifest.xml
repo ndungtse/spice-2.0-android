@@ -177,7 +177,7 @@
             android:name=".ui.medicalreview.prescription.PrescriptionActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:exported="false"
-            android:screenOrientation="sensorLandscape" />
+            android:screenOrientation="landscape" />
         <activity
             android:name=".ui.medicalreview.motherneonate.anc.activity.MotherNeonateANCActivity"
             android:exported="false"
@@ -217,9 +217,9 @@
             android:exported="false" />
         <activity
             android:name=".ncd.registration.ui.RegistrationActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
             android:exported="false"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustResize" />
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".ui.followup.FollowUpMyPatientActivity"
             android:exported="false"
@@ -242,8 +242,9 @@
             tools:node="remove" /> <!-- NCD WorkFlow -->
         <activity
             android:name=".ncd.screening.ui.ScreeningActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
             android:exported="false"
-            android:screenOrientation="portrait" />
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".ui.medicalreview.pharmacist.activity.NCDPharmacistActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"

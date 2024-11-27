@@ -52,271 +52,43 @@
             app:layout_constraintTop_toBottomOf="@id/clToolbar" />
 
         <LinearLayout
-            android:id="@+id/clDuplicateDetails"
+            android:id="@+id/llRoot"
             android:layout_width="match_parent"
             android:layout_height="@dimen/_0dp"
             android:orientation="vertical"
+            app:layout_constraintBottom_toTopOf="@id/llMessage"
+            app:layout_constraintTop_toBottomOf="@id/divider" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/llMessage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/_15sdp"
+            android:layout_marginBottom="@dimen/_15sdp"
             android:padding="@dimen/_15sdp"
-            app:layout_constraintBottom_toTopOf="@id/btmDivider"
-            app:layout_constraintTop_toBottomOf="@id/divider">
+            app:layout_constraintBottom_toTopOf="@id/btmDivider">
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/clPatientId"
-                android:layout_width="match_parent"
+            <ImageView
+                android:id="@+id/ivInformation"
+                android:layout_width="26dp"
+                android:layout_height="26dp"
+                android:contentDescription="@string/duplicate_patient_found"
+                app:layout_constraintBottom_toBottomOf="@id/tvMessage"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@id/tvMessage" />
+
+            <TextView
+                android:id="@+id/tvMessage"
+                android:layout_width="@dimen/_0dp"
                 android:layout_height="wrap_content"
-                android:paddingVertical="@dimen/_10sdp"
-                android:visibility="gone"
-                app:layout_constraintTop_toTopOf="parent">
+                android:layout_marginStart="@dimen/_10sdp"
+                android:textColor="@color/secondary_black"
+                android:textSize="@dimen/_14ssp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/ivInformation"
+                app:layout_constraintTop_toTopOf="parent" />
 
-                <TextView
-                    android:id="@+id/tvPatientIdLbl"
-                    android:layout_width="@dimen/_0dp"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/inter_regular"
-                    android:text="@string/patient_id"
-                    android:textColor="@color/charcoal_grey"
-                    android:textSize="@dimen/_14ssp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/tvRowSeparator0"
-                    app:layout_constraintHorizontal_weight="1"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <TextView
-                    android:id="@+id/tvRowSeparator0"
-                    android:layout_width="@dimen/_0dp"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/inter_regular"
-                    android:gravity="center"
-                    android:text="@string/separator_colon"
-                    android:textColor="@color/charcoal_grey"
-                    android:textSize="@dimen/_14ssp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/tvPatientIdValue"
-                    app:layout_constraintHorizontal_weight="0.3"
-                    app:layout_constraintStart_toEndOf="@id/tvPatientIdLbl"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <TextView
-                    android:id="@+id/tvPatientIdValue"
-                    android:layout_width="@dimen/_0dp"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/inter_regular"
-                    android:textColor="@color/navy_blue"
-                    android:textSize="@dimen/_16ssp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_weight="1"
-                    app:layout_constraintStart_toEndOf="@+id/tvRowSeparator0"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/clFirstName"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingVertical="@dimen/_10sdp"
-                app:layout_constraintTop_toBottomOf="@id/clPatientId">
-
-                <TextView
-                    android:id="@+id/tvFirstNameLbl"
-                    android:layout_width="@dimen/_0dp"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/inter_regular"
-                    android:text="@string/first_name"
-                    android:textColor="@color/charcoal_grey"
-                    android:textSize="@dimen/_14ssp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/tvRowSeparator1"
-                    app:layout_constraintHorizontal_weight="1"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <TextView
-                    android:id="@+id/tvRowSeparator1"
-                    android:layout_width="@dimen/_0dp"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/inter_regular"
-                    android:gravity="center"
-                    android:text="@string/separator_colon"
-                    android:textColor="@color/charcoal_grey"
-                    android:textSize="@dimen/_14ssp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/tvFirstNameValue"
-                    app:layout_constraintHorizontal_weight="0.3"
-                    app:layout_constraintStart_toEndOf="@id/tvFirstNameLbl"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <TextView
-                    android:id="@+id/tvFirstNameValue"
-                    android:layout_width="@dimen/_0dp"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/inter_regular"
-                    android:textColor="@color/navy_blue"
-                    android:textSize="@dimen/_16ssp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_weight="1"
-                    app:layout_constraintStart_toEndOf="@+id/tvRowSeparator1"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/clLastName"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingVertical="@dimen/_10sdp"
-                app:layout_constraintTop_toBottomOf="@id/clFirstName">
-
-                <TextView
-                    android:id="@+id/tvLastNameLbl"
-                    android:layout_width="@dimen/_0dp"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/inter_regular"
-                    android:text="@string/last_name"
-                    android:textColor="@color/charcoal_grey"
-                    android:textSize="@dimen/_14ssp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/tvRowSeparator2"
-                    app:layout_constraintHorizontal_weight="1"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <TextView
-                    android:id="@+id/tvRowSeparator2"
-                    android:layout_width="@dimen/_0dp"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/inter_regular"
-                    android:gravity="center"
-                    android:text="@string/separator_colon"
-                    android:textColor="@color/charcoal_grey"
-                    android:textSize="@dimen/_14ssp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/tvLastNameValue"
-                    app:layout_constraintHorizontal_weight="0.3"
-                    app:layout_constraintStart_toEndOf="@id/tvLastNameLbl"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <TextView
-                    android:id="@+id/tvLastNameValue"
-                    android:layout_width="@dimen/_0dp"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/inter_regular"
-                    android:textColor="@color/navy_blue"
-                    android:textSize="@dimen/_16ssp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_weight="1"
-                    app:layout_constraintStart_toEndOf="@+id/tvRowSeparator2"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/clPhoneNumber"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingVertical="@dimen/_10sdp"
-                app:layout_constraintTop_toBottomOf="@id/clLastName">
-
-                <TextView
-                    android:id="@+id/tvPhoneNumberLbl"
-                    android:layout_width="@dimen/_0dp"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/inter_regular"
-                    android:text="@string/mobile_number"
-                    android:textColor="@color/charcoal_grey"
-                    android:textSize="@dimen/_14ssp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/tvRowSeparator3"
-                    app:layout_constraintHorizontal_weight="1"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <TextView
-                    android:id="@+id/tvRowSeparator3"
-                    android:layout_width="@dimen/_0dp"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/inter_regular"
-                    android:gravity="center"
-                    android:text="@string/separator_colon"
-                    android:textColor="@color/charcoal_grey"
-                    android:textSize="@dimen/_14ssp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/tvPhoneNumberValue"
-                    app:layout_constraintHorizontal_weight="0.3"
-                    app:layout_constraintStart_toEndOf="@id/tvPhoneNumberLbl"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <TextView
-                    android:id="@+id/tvPhoneNumberValue"
-                    android:layout_width="@dimen/_0dp"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/inter_regular"
-                    android:textColor="@color/navy_blue"
-                    android:textSize="@dimen/_16ssp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_weight="1"
-                    app:layout_constraintStart_toEndOf="@+id/tvRowSeparator3"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/clNationalId"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingVertical="@dimen/_10sdp"
-                app:layout_constraintTop_toBottomOf="@id/clPhoneNumber">
-
-                <TextView
-                    android:id="@+id/tvNationalIdLbl"
-                    android:layout_width="@dimen/_0dp"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/inter_regular"
-                    android:text="@string/national_id"
-                    android:textColor="@color/charcoal_grey"
-                    android:textSize="@dimen/_14ssp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/tvRowSeparator4"
-                    app:layout_constraintHorizontal_weight="1"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <TextView
-                    android:id="@+id/tvRowSeparator4"
-                    android:layout_width="@dimen/_0dp"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/inter_regular"
-                    android:gravity="center"
-                    android:text="@string/separator_colon"
-                    android:textColor="@color/charcoal_grey"
-                    android:textSize="@dimen/_14ssp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/tvNationalIdValue"
-                    app:layout_constraintHorizontal_weight="0.3"
-                    app:layout_constraintStart_toEndOf="@id/tvNationalIdLbl"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <TextView
-                    android:id="@+id/tvNationalIdValue"
-                    android:layout_width="@dimen/_0dp"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/inter_regular"
-                    android:textColor="@color/navy_blue"
-                    android:textSize="@dimen/_16ssp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_weight="1"
-                    app:layout_constraintStart_toEndOf="@+id/tvRowSeparator4"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-        </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <View
             android:id="@+id/btmDivider"

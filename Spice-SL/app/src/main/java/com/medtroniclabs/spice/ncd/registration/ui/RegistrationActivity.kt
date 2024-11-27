@@ -1,9 +1,11 @@
 package com.medtroniclabs.spice.ncd.registration.ui
 
+import android.content.pm.ActivityInfo
 import android.os.Bundle
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.databinding.ActivityRegistrationBinding
 import com.medtroniclabs.spice.ui.BaseActivity
@@ -19,6 +21,7 @@ class RegistrationActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        fixOrientation()
         onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
         binding = ActivityRegistrationBinding.inflate(layoutInflater)
         setMainContentView(
@@ -35,6 +38,11 @@ class RegistrationActivity : BaseActivity() {
         )
         getPatientDetails()
         loadTermsAndConditionsFragment()
+    }
+
+    private fun fixOrientation() {
+        requestedOrientation =
+            if (CommonUtils.checkIsTablet(this)) ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED else ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
     }
 
     private fun getPatientDetails() {

@@ -509,38 +509,39 @@ class AssessmentNCDSummaryFragment : BaseFragment(), View.OnClickListener {
     private fun showBloodGlucoseValue(serverData: List<FormLayout>, map: Map<String, Any>) {
 
         FormResultComposer.findGroupIdForNCD(serverData, Screening.Glucose_Type)?.let {
-            val subMap = map[it] as Map<String, Any>
-            if (subMap.containsKey(Screening.Glucose_Type)) {
-                val type = subMap[Screening.Glucose_Type] as String
-                val glucoseValue = (subMap[Screening.Glucose_Value] as Double)
-                var unitType: String? = null
-                if (subMap.containsKey(Screening.BloodGlucoseID + Screening.unitMeasurement_KEY)) {
-                    val unitTypeKey =
-                        subMap[Screening.BloodGlucoseID + Screening.unitMeasurement_KEY]
-                    if (unitTypeKey is String) {
-                        unitType = unitTypeKey
+            (map[it] as? Map<*, *>?)?.let { subMap ->
+                if (subMap.containsKey(Screening.Glucose_Type)) {
+                    val type = subMap[Screening.Glucose_Type] as String
+                    val glucoseValue = (subMap[Screening.Glucose_Value] as Double)
+                    var unitType: String? = null
+                    if (subMap.containsKey(Screening.BloodGlucoseID + Screening.unitMeasurement_KEY)) {
+                        val unitTypeKey =
+                            subMap[Screening.BloodGlucoseID + Screening.unitMeasurement_KEY]
+                        if (unitTypeKey is String) {
+                            unitType = unitTypeKey
+                        }
                     }
-                }
-                if (type.lowercase().equals(Screening.rbs, true)) {
-                    showBindingValue(
-                        getString(R.string.blood_glucose_rbs),
-                        "${CommonUtils.getDecimalFormatted(glucoseValue)} ${
-                            CommonUtils.getGlucoseUnit(
-                                unitType,
-                                true
-                            )
-                        }"
-                    )
-                } else if (type.lowercase().equals(Screening.fbs, true)) {
-                    showBindingValue(
-                        getString(R.string.blood_glucose_fbs),
-                        "${CommonUtils.getDecimalFormatted(glucoseValue)} ${
-                            CommonUtils.getGlucoseUnit(
-                                unitType,
-                                true
-                            )
-                        }"
-                    )
+                    if (type.lowercase().equals(Screening.rbs, true)) {
+                        showBindingValue(
+                            getString(R.string.blood_glucose_rbs),
+                            "${CommonUtils.getDecimalFormatted(glucoseValue)} ${
+                                CommonUtils.getGlucoseUnit(
+                                    unitType,
+                                    true
+                                )
+                            }"
+                        )
+                    } else if (type.lowercase().equals(Screening.fbs, true)) {
+                        showBindingValue(
+                            getString(R.string.blood_glucose_fbs),
+                            "${CommonUtils.getDecimalFormatted(glucoseValue)} ${
+                                CommonUtils.getGlucoseUnit(
+                                    unitType,
+                                    true
+                                )
+                            }"
+                        )
+                    }
                 }
             }
         }

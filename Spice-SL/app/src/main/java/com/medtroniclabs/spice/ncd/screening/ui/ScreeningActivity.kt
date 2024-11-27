@@ -1,6 +1,7 @@
 package com.medtroniclabs.spice.ncd.screening.ui
 
 import android.Manifest
+import android.content.pm.ActivityInfo
 import android.os.Bundle
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
@@ -10,6 +11,7 @@ import androidx.fragment.app.Fragment
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.isFineAndCoarseLocationPermissionGranted
 import com.medtroniclabs.spice.appextensions.isGpsEnabled
+import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.SpiceLocationManager
 import com.medtroniclabs.spice.databinding.ActivityScreeningBinding
 import com.medtroniclabs.spice.ncd.screening.fragment.GeneralDetailsFragment
@@ -28,6 +30,7 @@ class ScreeningActivity : BaseActivity() {
     private val viewModel: ScreeningFormBuilderViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        fixOrientation()
         onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
         binding = ActivityScreeningBinding.inflate(layoutInflater)
         setMainContentView(
@@ -40,6 +43,11 @@ class ScreeningActivity : BaseActivity() {
             }
         )
         initView()
+    }
+
+    private fun fixOrientation() {
+        requestedOrientation =
+            if (CommonUtils.checkIsTablet(this)) ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED else ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
     }
 
     private fun initView() {
