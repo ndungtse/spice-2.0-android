@@ -349,22 +349,25 @@ class AssessmentRMNCHNeonateSummaryFragment : BaseFragment(), View.OnClickListen
                 val map = it[RMNCH.PNC] as Map<*, *>? ?: return
                 if (map.containsKey(RMNCH.DateOfDelivery)) {
                     val dateOfDelivery = map[RMNCH.DateOfDelivery] as String
-                    DateUtils.convertStringToDate(
-                        dateOfDelivery,
-                        DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
-                    )?.let { deliveryDate ->
-                        RMNCH.calculateNextPNCVisitDate(deliveryDate)?.let { visitDate ->
-                            binding.etNextFollowUpDate.text = DateUtils.getDateStringFromDate(
-                                visitDate, DateUtils.DATE_ddMMyyyy
-                            )
-                            updateFollowUpDate(DateUtils.getDateStringFromDate(
-                                visitDate, DateUtils.DATE_ddMMyyyy
-                            ))
-                            if (binding.etNextFollowUpDate.text.isNotEmpty()) {
-                                binding.btnDone.isEnabled = true
+                    if (dateOfDelivery.trim().isNotEmpty()) {
+                        DateUtils.convertStringToDate(
+                            dateOfDelivery,
+                            DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
+                        )?.let { deliveryDate ->
+                            RMNCH.calculateNextPNCVisitDate(deliveryDate)?.let { visitDate ->
+                                binding.etNextFollowUpDate.text = DateUtils.getDateStringFromDate(
+                                    visitDate, DateUtils.DATE_ddMMyyyy
+                                )
+                                updateFollowUpDate(DateUtils.getDateStringFromDate(
+                                    visitDate, DateUtils.DATE_ddMMyyyy
+                                ))
+                                if (binding.etNextFollowUpDate.text.isNotEmpty()) {
+                                    binding.btnDone.isEnabled = true
+                                }
                             }
                         }
                     }
+
                 }
             }
         }

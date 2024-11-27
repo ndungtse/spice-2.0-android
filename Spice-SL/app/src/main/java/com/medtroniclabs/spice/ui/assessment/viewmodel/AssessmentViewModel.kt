@@ -203,19 +203,21 @@ class AssessmentViewModel @Inject constructor(
             val map = assessmentMap[RMNCH.PNC] as Map<*, *>
             if (map.containsKey(RMNCH.DateOfDelivery)) {
                 val dateOfDelivery = map[RMNCH.DateOfDelivery] as String
-                DateUtils.convertStringToDate(
-                    dateOfDelivery,
-                    DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
-                )?.let { deliveryDate ->
-                    RMNCH.calculateNextPNCVisitDate(deliveryDate)?.let { visitDate ->
-                        otherDetails[AssessmentDefinedParams.NextFollowupDate] =
-                            DateUtils.convertDateTimeToDate(
-                                DateUtils.getDateStringFromDate(
-                                    visitDate, DateUtils.DATE_ddMMyyyy
-                                ),
-                                DateUtils.DATE_ddMMyyyy,
-                                DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
-                            )
+                if (dateOfDelivery != null && dateOfDelivery.isNotEmpty()) {
+                    DateUtils.convertStringToDate(
+                        dateOfDelivery,
+                        DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
+                    )?.let { deliveryDate ->
+                        RMNCH.calculateNextPNCVisitDate(deliveryDate)?.let { visitDate ->
+                            otherDetails[AssessmentDefinedParams.NextFollowupDate] =
+                                DateUtils.convertDateTimeToDate(
+                                    DateUtils.getDateStringFromDate(
+                                        visitDate, DateUtils.DATE_ddMMyyyy
+                                    ),
+                                    DateUtils.DATE_ddMMyyyy,
+                                    DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
+                                )
+                        }
                     }
                 }
             }

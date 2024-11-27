@@ -17,6 +17,7 @@ import com.medtroniclabs.spice.db.entity.DistrictEntity
 import com.medtroniclabs.spice.db.entity.DosageDurationEntity
 import com.medtroniclabs.spice.db.entity.FormEntity
 import com.medtroniclabs.spice.db.entity.HealthFacilityEntity
+import com.medtroniclabs.spice.db.entity.LinkedVillageEntity
 import com.medtroniclabs.spice.db.entity.MedicalComplianceEntity
 import com.medtroniclabs.spice.db.entity.MentalHealthEntity
 import com.medtroniclabs.spice.db.entity.MenuEntity
@@ -252,4 +253,14 @@ interface MetaDataDAO {
 
     @Query("SELECT * FROM DosageDurationEntity")
     suspend fun getDosageDurationsList(): List<DosageDurationEntity>
+
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertLinkedVillages(linkedVillages: List<LinkedVillageEntity>)
+
+    @Query("DELETE FROM LinkedVillageEntity")
+    suspend fun deleteAllLinkedVillages()
+
+    @Query("SELECT villageId as id, tenantId, name, villagecode, chiefdomId, countryId, districtId, isUserVillage, chiefdomCode, districtCode FROM LinkedVillageEntity WHERE tenantId = :tenantId")
+    suspend fun getLinkedVillages(tenantId: Long): List<VillageEntity>
 }

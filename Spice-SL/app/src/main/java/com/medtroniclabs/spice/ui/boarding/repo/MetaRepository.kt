@@ -27,6 +27,7 @@ import com.medtroniclabs.spice.db.entity.ConsentEntity
 import com.medtroniclabs.spice.db.entity.ConsentForm
 import com.medtroniclabs.spice.db.entity.FormEntity
 import com.medtroniclabs.spice.db.entity.HealthFacilityEntity
+import com.medtroniclabs.spice.db.entity.LinkedVillageEntity
 import com.medtroniclabs.spice.db.entity.MentalHealthEntity
 import com.medtroniclabs.spice.db.entity.MenuEntity
 import com.medtroniclabs.spice.db.entity.NCDAssessmentClinicalWorkflow
@@ -94,6 +95,7 @@ class MetaRepository @Inject constructor(
                                 defaultHealthFacility.id,
                                 userHealthFacilities
                             )
+                            saveUserLinkedVillages(userHealthFacilities)
                             SecuredPreference.putString(
                                 SecuredPreference.EnvironmentKey.DEFAULT_SITE_ID.name,
                                 defaultHealthFacility.fhirId
@@ -357,6 +359,32 @@ class MetaRepository @Inject constructor(
             }
         }
         return allVillages
+    }
+
+    private suspend fun saveUserLinkedVillages(userHealthFacilities: List<HealthFacility>?) {
+        val linkedVillages = mutableListOf<LinkedVillageEntity>()
+        userHealthFacilities?.let { facilities ->
+            facilities.forEach { facility ->
+                val list = facility.linkedVillages.map {
+                    LinkedVillageEntity(
+                        villageId = it.id,
+                        tenantId = facility.tenantId,
+                        name = it.name,
+                        villagecode = it.code,
+                        chiefdomId = it.chiefdomId,
+                        countryId = it.countryId,
+                        districtId = it.districtId,
+                        districtCode = it.districtCode,
+                        chiefdomCode = it.chiefdomCode
+                    )
+                }.toList()
+
+                linkedVillages.addAll(list)
+            }
+        }
+
+        roomHelper.deleteAllLinkedVillages()
+        roomHelper.insertLinkedVillages(linkedVillages)
     }
 
     private fun fetchIds(healthFacilities: ArrayList<HealthFacility>?): ArrayList<Long> {

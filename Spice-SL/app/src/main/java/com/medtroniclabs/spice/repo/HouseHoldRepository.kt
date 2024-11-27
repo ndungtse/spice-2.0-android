@@ -151,6 +151,17 @@ class HouseHoldRepository @Inject constructor(
         }
     }
 
+    suspend fun getUserLinkedVillages(
+        tag: String
+    ): Resource<LocalSpinnerResponse> {
+        return try {
+            val response = roomHelper.getAllLinkedVillageEntity()
+            Resource(state = ResourceState.SUCCESS, LocalSpinnerResponse(tag, response))
+        } catch (_: Exception) {
+            Resource(state = ResourceState.ERROR)
+        }
+    }
+
     suspend fun getVillageByID(villageId: Long): Resource<VillageEntity> {
         val response = roomHelper.getVillageByID(villageId)
         return Resource(state = ResourceState.SUCCESS, data = response)

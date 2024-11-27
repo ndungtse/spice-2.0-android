@@ -35,6 +35,7 @@ class HouseRegistrationViewModel @Inject constructor(
     val houseHoldDetailLiveData = MutableLiveData<Resource<HouseholdEntity>>()
     var householdId: Long = -1L
     var villageListResponse = MutableLiveData<Resource<LocalSpinnerResponse>>()
+    var memberVillageListResponse = MutableLiveData<Resource<LocalSpinnerResponse>>()
     var memberID: Long = -1L
     private var lastLocation: Location? = null
     var addNewMember: Boolean = false
@@ -58,6 +59,17 @@ class HouseRegistrationViewModel @Inject constructor(
                 villageId -> {
                     villageListResponse.postLoading()
                     villageListResponse.postValue(houseHoldRepository.getUserVillages(tag))
+                }
+            }
+        }
+    }
+
+    fun loadVillageDataCacheByType(type: String, tag: String) {
+        viewModelScope.launch(dispatcherIO) {
+            when (type) {
+                villageId -> {
+                    memberVillageListResponse.postLoading()
+                    memberVillageListResponse.postValue(houseHoldRepository.getUserLinkedVillages(tag))
                 }
             }
         }

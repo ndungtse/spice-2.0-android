@@ -46,6 +46,7 @@ import com.medtroniclabs.spice.db.entity.DistrictEntity
 import com.medtroniclabs.spice.db.entity.DosageDurationEntity
 import com.medtroniclabs.spice.db.entity.LifestyleEntity
 import com.medtroniclabs.spice.db.entity.NCDCallDetails
+import com.medtroniclabs.spice.db.entity.LinkedVillageEntity
 import com.medtroniclabs.spice.db.entity.NCDDiagnosisEntity
 import com.medtroniclabs.spice.db.entity.NCDFollowUp
 import com.medtroniclabs.spice.db.entity.NCDPatientDetailsEntity
@@ -80,6 +81,12 @@ interface RoomHelper {
     suspend fun deleteAllHealthFacility()
     suspend fun saveVillage(villageEntityList: List<VillageEntity>)
     suspend fun getAllVillageEntity(): List<VillageEntity>
+
+    suspend fun getAllLinkedVillageEntity(): List<VillageEntity>
+
+    suspend fun insertLinkedVillages(linkedVillages: List<LinkedVillageEntity>)
+
+    suspend fun deleteAllLinkedVillages()
     suspend fun getVillagesByChiefDom(chiefdomId: Long): List<VillageEntity>
     suspend fun deleteAllVillages()
     suspend fun deleteAllHouseholds()

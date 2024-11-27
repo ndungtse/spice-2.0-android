@@ -7,18 +7,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
-import androidx.core.content.ContentProviderCompat.requireContext
-import androidx.core.content.ContextCompat.startActivity
 import androidx.fragment.app.DialogFragment
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.invisible
-import com.medtroniclabs.spice.common.DefinedParams.DefaultID
-import com.medtroniclabs.spice.common.DefinedParams.PatientId
 import com.medtroniclabs.spice.databinding.FragmentSuccessDialogBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
-import com.medtroniclabs.spice.ui.household.HouseholdDefinedParams
-import com.medtroniclabs.spice.ui.household.HouseholdDefinedParams.HouseholdNo
 import com.medtroniclabs.spice.ui.household.HouseholdDefinedParams.IsHousehold
 import com.medtroniclabs.spice.ui.household.HouseholdDefinedParams.IsHouseholdMember
 import com.medtroniclabs.spice.ui.household.HouseholdDefinedParams.isPhuWalkInsFlow
@@ -101,6 +95,7 @@ class SuccessDialogFragment : DialogFragment(), View.OnClickListener {
             binding.btnDone.id -> {
                 if (arguments?.getBoolean(isPhuWalkInsFlow)==true) {
                     val intent= Intent(requireContext(),PhuWalkInsActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
                     startActivity(intent)
                     requireActivity().finish()
                 }else {

@@ -208,6 +208,7 @@ object SpiceSLMigration {
                 chiefdomId INTEGER,
                 countryId INTEGER NOT NULL,
                 districtId INTEGER,
+                isUserVillage INTEGER NOT NULL DEFAULT 0,
                 chiefdomCode TEXT,
                 districtCode TEXT
             )
@@ -227,11 +228,9 @@ object SpiceSLMigration {
             CREATE TABLE IF NOT EXISTS ProgramEntity (
                 id INTEGER PRIMARY KEY NOT NULL,
                 name TEXT NOT NULL,
-                health_facilities TEXT NOT NULL,
-                tenant_id INTEGER NOT NULL
+                healthFacilityIds TEXT NOT NULL
             )
-            """.trimIndent()
-            )
+            """.trimIndent())
 
             database.execSQL(
                 """
@@ -424,6 +423,24 @@ object SpiceSLMigration {
                 `type` TEXT NOT NULL, 
                 `displayOrder` INTEGER NOT NULL, 
                 `displayValue` TEXT NOT NULL
+            )
+            """.trimIndent()
+            )
+
+            database.execSQL(
+                """
+            CREATE TABLE IF NOT EXISTS LinkedVillageEntity (
+                id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                villageId INTEGER NOT NULL,
+                tenantId INTEGER NOT NULL,
+                name TEXT NOT NULL,
+                villagecode TEXT,
+                chiefdomId INTEGER,
+                countryId INTEGER NOT NULL,
+                districtId INTEGER,
+                isUserVillage INTEGER NOT NULL DEFAULT 0,
+                chiefdomCode TEXT,
+                districtCode TEXT
             )
             """.trimIndent()
             )

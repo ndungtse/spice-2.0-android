@@ -68,12 +68,20 @@ object AssessmentCommonUtils {
     fun addViewSummaryLayout(title: String?, value: String?, valueTextColor: Int? = null, context:Context): ConstraintLayout {
         val summaryBinding = AssessmentSummaryLayoutBinding.inflate(LayoutInflater.from(context))
         summaryBinding.tvKey.text = title ?: context.getString(R.string.separator_hyphen)
-        summaryBinding.tvValue.text = value ?: context.getString(R.string.separator_hyphen)
+        summaryBinding.tvValue.text = getSummaryValue(context, value)
         valueTextColor?.let {
             summaryBinding.tvValue.setTextColor(it)
             summaryBinding.tvValue.typeface = Typeface.defaultFromStyle(Typeface.BOLD)
         }
         return summaryBinding.root
+    }
+
+    private fun getSummaryValue(context: Context, input: String?): String {
+        if (input !=null && input.trim().isNotEmpty()) {
+            return input
+        } else {
+            return context.getString(R.string.separator_hyphen)
+        }
     }
 
     fun getNutritionStatus(selectedId: String?, context: Context): String {

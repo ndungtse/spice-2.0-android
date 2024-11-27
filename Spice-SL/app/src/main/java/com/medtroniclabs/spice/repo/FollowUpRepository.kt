@@ -43,7 +43,11 @@ class FollowUpRepository @Inject constructor(
             fromAndToDate.second
         )
 
-        val reasons = filter.selectedReasons?.map { it.name }.orEmpty()
+        val reasons = if (filter.type == FollowUpDefinedParams.FU_TYPE_MEDICAL_REVIEW) {
+            emptyList()
+        } else {
+            filter.selectedReasons?.map { it.name }.orEmpty()
+        }
 
         return result.map { items ->
             items.filter { item ->

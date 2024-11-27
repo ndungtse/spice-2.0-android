@@ -52,9 +52,10 @@ interface PregnancyDetailDao {
         val entityToInsert = existingEntity?.let { entity.copy(id = it.id) } ?: entity
         entityToInsert.householdMemberLocalId = hhmLocalId
         entityToInsert.neonateHouseholdMemberLocalId = neonateLocalId
-        entityToInsert.ancVisitNo = entityToInsert.ancVisitNo?.takeIf { ancVisitNo == null || it > ancVisitNo } ?: ancVisitNo
-        entityToInsert.pncVisitNo = entityToInsert.pncVisitNo?.takeIf { pncVisitNo == null || it > pncVisitNo } ?: pncVisitNo
-        entityToInsert.childVisitNo = entityToInsert.childVisitNo?.takeIf { childHoodNo == null || it > childHoodNo } ?: childHoodNo
+
+//        entityToInsert.ancVisitNo = entityToInsert.ancVisitNo?.takeIf { ancVisitNo == null || it > ancVisitNo } ?: ancVisitNo
+//        entityToInsert.pncVisitNo = entityToInsert.pncVisitNo?.takeIf { pncVisitNo == null || it > pncVisitNo } ?: pncVisitNo
+//        entityToInsert.childVisitNo = entityToInsert.childVisitNo?.takeIf { childHoodNo == null || it > childHoodNo } ?: childHoodNo
 
         return savePregnancyDetail(entityToInsert)
     }

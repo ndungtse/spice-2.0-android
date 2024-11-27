@@ -70,13 +70,12 @@ class PhuWalkInsViewModel @Inject constructor(
 
     fun saveCallHistory() {
         viewModelScope.launch(dispatcherIO) {
-            SecuredPreference.getString(DefinedParams.houseHoldLinkStartTiming)?.let {
-                householdMemberRepository.addLinkMemberCall(
-                    memberID.toString(),
-                    callStartTime = it.toLong(),
-                    callEndTime =  com.medtroniclabs.spice.app.analytics.utils.CommonUtils.getCurrentDateTimeInLocalTime().toLong()
-                )
-            }
+            val callStartTime = SecuredPreference.getLong(DefinedParams.houseHoldLinkStartTiming)
+            householdMemberRepository.addLinkMemberCall(
+                memberID.toString(),
+                callStartTime = callStartTime,
+                callEndTime =  System.currentTimeMillis()
+            )
         }
     }
 

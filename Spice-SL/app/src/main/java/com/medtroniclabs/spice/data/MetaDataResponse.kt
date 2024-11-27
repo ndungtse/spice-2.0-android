@@ -93,7 +93,9 @@ data class Village(
     val code: String? = null,
     val chiefdomId: Long,
     val countryId: Long,
-    val districtId: Long
+    val districtId: Long,
+    val chiefdomCode: String? = null,
+    val districtCode: String? = null
 )
 
 data class Menu(

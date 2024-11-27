@@ -163,13 +163,23 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
         }
 
         viewModel.memberClinicalLiveData.observe(viewLifecycleOwner) { data ->
-            data?.clinicalDate?.let { date ->
-                if (date.isNotEmpty()) {
-                    formGenerator.getViewByTag(RMNCH.lastMenstrualPeriod + formGenerator.rootSuffix)
-                        ?.gone()
-                    formGenerator.getViewByTag(RMNCH.DateOfDelivery + formGenerator.rootSuffix)
-                        ?.gone()
-                    formGenerator.getViewByTag(RMNCH.NoOfNeonate + formGenerator.rootSuffix)?.gone()
+            if (viewModel.workflowName == RMNCH.PNC) {
+                data?.visitCount?.let { visitNo ->
+                    if (visitNo >= 1) {
+                        formGenerator.getViewByTag(RMNCH.DateOfDelivery + formGenerator.rootSuffix)
+                            ?.gone()
+                        formGenerator.getViewByTag(RMNCH.NoOfNeonate + formGenerator.rootSuffix)
+                            ?.gone()
+                        formGenerator.getViewByTag(RMNCH.lastMenstrualPeriod + formGenerator.rootSuffix)
+                            ?.gone()
+                    }
+                }
+            } else {
+                data?.clinicalDate?.let { date ->
+                    if (date.isNotEmpty()) {
+                        formGenerator.getViewByTag(RMNCH.lastMenstrualPeriod + formGenerator.rootSuffix)
+                            ?.gone()
+                    }
                 }
             }
 

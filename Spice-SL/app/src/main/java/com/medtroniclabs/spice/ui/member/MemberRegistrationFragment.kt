@@ -118,7 +118,7 @@ class MemberRegistrationFragment : Fragment(), FormEventListener, View.OnClickLi
 
     private fun attachObserver() {
         if (memberRegistrationViewModel.medicalReviewFlow) {
-            householdRegistrationViewModel.villageListResponse.observe(viewLifecycleOwner) { resourceState ->
+            householdRegistrationViewModel.memberVillageListResponse.observe(viewLifecycleOwner) { resourceState ->
                 when (resourceState.state) {
                     ResourceState.SUCCESS -> {
                         resourceState.data?.let { data ->
@@ -452,7 +452,7 @@ class MemberRegistrationFragment : Fragment(), FormEventListener, View.OnClickLi
 
     override fun loadLocalCache(id: String, localDataCache: Any, selectedParent: Long?) {
         if (localDataCache is String) {
-            householdRegistrationViewModel.loadDataCacheByType(id, localDataCache)
+            householdRegistrationViewModel.loadVillageDataCacheByType(id, localDataCache)
         }
 
     }

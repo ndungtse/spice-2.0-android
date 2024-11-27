@@ -3,6 +3,7 @@ package com.medtroniclabs.spice.db.local
 import androidx.lifecycle.LiveData
 import androidx.room.Transaction
 import androidx.sqlite.db.SimpleSQLiteQuery
+import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.data.CulturesEntity
 import com.medtroniclabs.spice.data.DiseaseCategoryItems
@@ -60,6 +61,7 @@ import com.medtroniclabs.spice.db.entity.HouseholdEntity
 import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
 import com.medtroniclabs.spice.db.entity.LifestyleEntity
 import com.medtroniclabs.spice.db.entity.LinkHouseholdMember
+import com.medtroniclabs.spice.db.entity.LinkedVillageEntity
 import com.medtroniclabs.spice.db.entity.MedicalComplianceEntity
 import com.medtroniclabs.spice.db.entity.MemberClinicalEntity
 import com.medtroniclabs.spice.db.entity.MentalHealthEntity
@@ -209,6 +211,10 @@ class RoomHelperImpl @Inject constructor(
 
     override suspend fun getAllVillageEntity(): List<VillageEntity> {
         return metaDataDAO.getVillages()
+    }
+
+    override suspend fun getAllLinkedVillageEntity(): List<VillageEntity> {
+        return metaDataDAO.getLinkedVillages(SecuredPreference.getTenantId())
     }
 
     override suspend fun getVillagesByChiefDom(chiefdomId: Long): List<VillageEntity> {
@@ -1170,5 +1176,13 @@ class RoomHelperImpl @Inject constructor(
 
     override suspend fun deleteCultures() {
         metaDataDAO.deleteCultures()
+    }
+
+    override suspend fun insertLinkedVillages(linkedVillages: List<LinkedVillageEntity>) {
+        metaDataDAO.insertLinkedVillages(linkedVillages)
+    }
+
+    override suspend fun deleteAllLinkedVillages() {
+        metaDataDAO.deleteAllLinkedVillages()
     }
 }
