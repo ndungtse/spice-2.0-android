@@ -65,7 +65,7 @@
     <string name="household_details">Household Details</string>
     <string name="house_no">House No</string>
     <string name="village">Village</string>
-    <string name="household_location">Household location</string>
+    <string name="household_location">Household Location</string>
     <string name="landmark">Landmark</string>
     <string name="hh_mobile_number">Household Head Mobile Number</string>
     <string name="household_summary_member_info">%1$s - %2$s - %3$s</string>

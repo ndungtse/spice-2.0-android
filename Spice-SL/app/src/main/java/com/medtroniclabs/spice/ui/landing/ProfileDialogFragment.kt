@@ -97,7 +97,7 @@ class ProfileDialogFragment : DialogFragment(), View.OnClickListener {
             tvPhoneNumberText.text = getContactNumber(user.phoneNumber.takeIf { it?.isNotBlank() == true }) ?: getString(R.string.separator_double_hyphen)
             if(user.villages.isNullOrEmpty()) {
                 villageGroup.gone()
-                tvVillageText.text = getString(R.string.hyphen_symbol)
+                tvVillageText.text = getString(R.string.separator_double_hyphen)
             } else {
                 villageGroup.visible()
                 tvVillageText.text = user.villages.joinToString(separator = ", ") { it.name }

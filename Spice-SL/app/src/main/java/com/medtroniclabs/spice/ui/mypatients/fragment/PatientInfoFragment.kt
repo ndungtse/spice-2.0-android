@@ -240,7 +240,7 @@ class PatientInfoFragment : BaseFragment() {
                     DefinedParams.Value to (patientListRespModel.landmark.takeIf { it?.isNotBlank() == true }?.trim()
                         ?: requireContext().getString(R.string.hyphen_symbol))),
                 mapOf(
-                    DefinedParams.label to requireContext().getString(R.string.village),
+                    DefinedParams.label to requireContext().getString(R.string.household_location),
                     DefinedParams.Value to (patientListRespModel.village.takeIf { it?.isNotBlank() == true }?.trim()
                         ?: requireContext().getString(R.string.hyphen_symbol)))
             )

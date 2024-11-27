@@ -301,7 +301,7 @@
                         app:layout_constraintHorizontal_weight="0.6"
                         app:layout_constraintStart_toEndOf="@id/tvVillageSeparator"
                         app:layout_constraintTop_toTopOf="@id/tvVillageLabel"
-                        tools:text="Gbinti" />
+                        tools:text="@string/household_location" />
 
                     <androidx.constraintlayout.widget.Group
                         android:id="@+id/villageGroup"
@@ -314,7 +314,7 @@
                         android:id="@+id/tvAssignedHealthFacilityLabel"
                         style="@style/TextStyle_Regular_16"
                         android:layout_width="@dimen/_0dp"
-                        android:layout_marginTop="@dimen/_32sdp"
+                        android:layout_marginTop="@dimen/_16sdp"
                         android:text="@string/assigned_health_facility"
                         app:layout_constraintEnd_toStartOf="@id/tvAssignedHealthFacilitySeparator"
                         app:layout_constraintHorizontal_weight="0.3"

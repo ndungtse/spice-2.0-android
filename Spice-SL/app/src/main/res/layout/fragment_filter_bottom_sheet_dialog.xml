@@ -41,7 +41,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginVertical="@dimen/_10sdp"
                 android:layout_marginStart="@dimen/_16sdp"
-                android:text="@string/villages"
+                android:text="@string/household_location"
                 android:textColor="@color/grey_black"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />

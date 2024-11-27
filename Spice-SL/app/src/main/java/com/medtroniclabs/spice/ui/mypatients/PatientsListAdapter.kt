@@ -50,7 +50,7 @@ class PatientsListAdapter(
             if (CommonUtils.isCommunity()) {
                 leftLbl = context.getString(R.string.patient_id)
                 leftValue = item.patientId ?: context.getString(R.string.separator_hyphen)
-                rightLbl = context.getString(R.string.village)
+                rightLbl = context.getString(R.string.household_location)
                 rightValue = item.village ?: context.getString(R.string.separator_hyphen)
             } else if (CommonUtils.isNonCommunity()) {
                 leftLbl = context.getString(R.string.national_id)

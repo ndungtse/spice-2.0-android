@@ -39,7 +39,7 @@ class PatientInfoAdapter(
                 tvValue.setExpandableText(
                     (label[DefinedParams.Value] as? String).takeIfNotNull(empty),
                     title = (label[DefinedParams.label] as? String).takeIfNotNull(empty),
-                    maxLength = 35,
+                    maxLength = 25,
                     activity = activity
                 )
                 if (label.containsKey(DefinedParams.color)) {
