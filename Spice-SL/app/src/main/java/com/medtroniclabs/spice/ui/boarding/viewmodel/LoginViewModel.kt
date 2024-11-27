@@ -1,11 +1,14 @@
 package com.medtroniclabs.spice.ui.boarding.viewmodel
 
+import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.data.LoginResponse
 import com.medtroniclabs.spice.di.IoDispatcher
+import com.medtroniclabs.spice.ncd.data.DeviceDetails
+import com.medtroniclabs.spice.network.DeviceInformation
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.network.utils.ConnectivityManager
 import com.medtroniclabs.spice.repo.AssessmentRepository
@@ -38,12 +41,13 @@ class LoginViewModel @Inject constructor(
     }
 
     fun doLogin(
+        context: Context,
         username: String,
         password: String
     ) {
         viewModelScope.launch(dispatcherIO) {
             loginResponseLiveData.postLoading()
-            loginResponseLiveData.postValue(loginRepository.doLogin(username, password))
+            loginResponseLiveData.postValue(loginRepository.doLogin(username, password, DeviceInformation.getDeviceDetails(context)))
         }
     }
 

@@ -44,6 +44,8 @@ class RegistrationFormViewModel @Inject constructor(
     val villageSpinnerLiveData = MutableLiveData<Resource<LocalSpinnerResponse>>()
     val programsSpinnerLiveData = MutableLiveData<Resource<LocalSpinnerResponse>>()
 
+    var isFromProceedEnrollment = false
+
     fun loadDataCacheByType(type: String, tag: String, selectedParent: Long?) {
         viewModelScope.launch(dispatcherIO) {
             when (type) {
@@ -94,20 +96,12 @@ class RegistrationFormViewModel @Inject constructor(
     fun registerPatient(
         context: Context,
         hashMap: HashMap<String, Any>,
-        id: Long?,
-        patientId: Long?,
         signature: ByteArray?
     ) {
         val builder = MultipartBody.Builder()
         builder.setType(MultipartBody.FORM)
 
         hashMap.apply {
-            id?.let { requestId ->
-                put(DefinedParams.ID, requestId)
-            }
-            patientId?.let { requestPatientId ->
-                put(DefinedParams.PATIENT_ID, requestPatientId)
-            }
             put(DefinedParams.TenantId, SecuredPreference.getTenantId())
             put(DefinedParams.HealthFacilityId, SecuredPreference.getOrganizationId())
             put(DefinedParams.HealthFacilityFhirId, SecuredPreference.getOrganizationFhirId())

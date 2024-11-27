@@ -115,8 +115,13 @@ class RegistrationFormFragment : BaseFragment(), View.OnClickListener, FormEvent
                                     StringConverter.convertGivenMapToString(
                                         responseMap
                                     ), isFromEnrollment = true
-                                ) {
-                                    proceedAssessment(responseMap)
+                                ) { doAssessment ->
+                                    if (doAssessment)
+                                        proceedAssessment(responseMap)
+                                    else {
+                                        viewModel.isFromProceedEnrollment = true
+                                        formGenerator.formSubmitAction(binding.btnSubmit)
+                                    }
                                 }
                             dialog.show(childFragmentManager, DuplicationNudgeDialog.TAG)
                         }
@@ -285,6 +290,7 @@ class RegistrationFormFragment : BaseFragment(), View.OnClickListener, FormEvent
     override fun onClick(view: View?) {
         when (view?.id) {
             binding.btnSubmit.id -> {
+                viewModel.isFromProceedEnrollment = false
                 formGenerator.formSubmitAction(view)
             }
         }
@@ -318,14 +324,41 @@ class RegistrationFormFragment : BaseFragment(), View.OnClickListener, FormEvent
     override fun onFormSubmit(resultMap: HashMap<String, Any>?, serverData: List<FormLayout?>?) {
         withNetworkAvailability(online = {
             resultMap?.let {
-                CommonUtils.addAncEnableOrNot(it,BioMetrics)
+                CommonUtils.addAncEnableOrNot(it, BioMetrics)
 
-                it.apply {
-                    patientViewModel.patientDetailsLiveData.value?.data?.id?.let { memberId ->
-                        put(AssessmentDefinedParams.memberReference, memberId)
+                if (viewModel.isFromProceedEnrollment) {
+                    it.apply {
+                        viewModel.validatePatientResponseLiveDate.value?.data?.first?.let { validateData ->
+                            if (validateData.containsKey(AssessmentDefinedParams.memberReference)) {
+                                validateData[AssessmentDefinedParams.memberReference]?.toString()
+                                    .let { member ->
+                                        if (!member.isNullOrBlank())
+                                            put(AssessmentDefinedParams.memberReference, member)
+                                    }
+                            }
+                            if (validateData.containsKey(Screening.Patient_Id)) {
+                                validateData[Screening.Patient_Id]?.toString()
+                                    .let { patientId ->
+                                        if (!patientId.isNullOrBlank())
+                                            put(Screening.Patient_Id, patientId)
+                                    }
+                            }
+                        }
                     }
+                    proceedRegistration(it, serverData)
+                } else {
+                    it.apply {
+                        patientViewModel.patientDetailsLiveData.value?.data?.let { patientData ->
+                            patientData.id?.let { memberId ->
+                                put(AssessmentDefinedParams.memberReference, memberId)
+                            }
+                            patientData.patientId?.let { patientId ->
+                                put(Screening.Patient_Id, patientId)
+                            }
+                        }
+                    }
+                    viewModel.validatePatient(it, serverData)
                 }
-                viewModel.validatePatient(it, serverData)
             }
         })
     }
@@ -347,24 +380,22 @@ class RegistrationFormFragment : BaseFragment(), View.OnClickListener, FormEvent
                     )
                 }
                 result?.second?.let {
-                    var id: Long? = null
-                    var patientId: Long? = null
-                    patientViewModel.patientDetailsLiveData.value?.data?.let { patientDetails ->
-                        id = patientDetails.id?.toLongOrNull()
-                        patientId = patientDetails.patientId?.toLongOrNull()
-                    }
-
                     val bioDataMap = it[Screening.bioData] as HashMap<String, Any>
                     bioDataMap[Screening.identityType] = Screening.nationalId
                     arguments?.getString(Screening.Initial)?.let { initial ->
                         bioDataMap[Screening.Initial] = initial
                     }
 
+                    if (it.containsKey(AssessmentDefinedParams.memberReference)) {
+                        it[AssessmentDefinedParams.memberReference]?.toString().let { member ->
+                            if (!member.isNullOrBlank())
+                                it[AssessmentDefinedParams.id] = member
+                        }
+                    }
+
                     viewModel.registerPatient(
                         requireContext(),
                         it,
-                        id,
-                        patientId,
                         arguments?.getByteArray(Screening.Signature)
                     )
                 }

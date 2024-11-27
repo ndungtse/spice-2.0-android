@@ -61,7 +61,7 @@ import timber.log.Timber
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class NCDBloodPressureVitalsDialog : DialogFragment(), View.OnClickListener {
+class NCDBloodPressureVitalsDialog(private val callback: () -> Unit) : DialogFragment(), View.OnClickListener {
 
     private lateinit var binding: FragmentNcdBloodPressureVitalsDialogBinding
     private val viewModel: NCDBloodPressureVitalsViewModel by viewModels()
@@ -82,8 +82,8 @@ class NCDBloodPressureVitalsDialog : DialogFragment(), View.OnClickListener {
 
     companion object {
         const val TAG = "NCDBloodPressureVitalsDialog"
-        fun newInstance() =
-            NCDBloodPressureVitalsDialog()
+        fun newInstance(callback: () -> Unit) =
+            NCDBloodPressureVitalsDialog(callback)
     }
 
     override fun onStart() {
@@ -131,14 +131,8 @@ class NCDBloodPressureVitalsDialog : DialogFragment(), View.OnClickListener {
 
                 ResourceState.SUCCESS -> {
                     hideLoading()
-                    GeneralSuccessDialog.newInstance(
-                        getString(R.string.blood_pressure), getString(
-                            R.string.blood_pressure_saved_successfully
-                        ), getString(R.string.okay)
-                    ) {
-                        dismiss()
-                        (requireActivity() as? NCDMedicalReviewCMRActivity)?.swipeRefresh()
-                    }.show(parentFragmentManager, GeneralSuccessDialog.TAG)
+                    dismiss()
+                    callback.invoke()
                 }
 
                 ResourceState.ERROR -> {

@@ -37,6 +37,7 @@ import com.medtroniclabs.spice.db.entity.UserProfileEntity
 import com.medtroniclabs.spice.db.entity.VillageEntity
 import com.medtroniclabs.spice.db.local.RoomHelper
 import com.medtroniclabs.spice.mappingkey.Screening
+import com.medtroniclabs.spice.ncd.data.DeviceDetails
 import com.medtroniclabs.spice.ncd.data.TermsAndConditionsModel
 import com.medtroniclabs.spice.network.ApiHelper
 import com.medtroniclabs.spice.network.resource.Resource
@@ -56,6 +57,22 @@ class MetaRepository @Inject constructor(
     private var apiHelper: ApiHelper,
     private var roomHelper: RoomHelper
 ) {
+
+    suspend fun updateDeviceDetails(deviceDetails: DeviceDetails): Resource<DeviceDetails> {
+        return try {
+            val response = apiHelper.updateDeviceDetails(deviceDetails)
+            if (response.isSuccessful) {
+                val responseBody = response.body()
+                if (responseBody?.status == true)
+                    Resource(state = ResourceState.SUCCESS)
+                else
+                    Resource(state = ResourceState.ERROR)
+            } else
+                Resource(state = ResourceState.ERROR)
+        } catch (e: Exception) {
+            Resource(state = ResourceState.ERROR)
+        }
+    }
 
     suspend fun getMetaDataInformation(
         workflowNames: MutableList<Long>,

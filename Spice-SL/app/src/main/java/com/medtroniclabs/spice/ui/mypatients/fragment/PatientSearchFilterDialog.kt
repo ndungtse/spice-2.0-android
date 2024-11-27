@@ -48,14 +48,18 @@ class PatientSearchFilterDialog : DialogFragment(), View.OnClickListener {
 
     private fun initView() {
         binding.apply {
-            if (CommonUtils.isDispenseOrInvestigation(requireArguments().getString(ORIGIN))) {
-                referredForGroup.visible()
+            if (CommonUtils.isNonCommunity()) {
+                if (CommonUtils.isDispenseOrInvestigation(requireArguments().getString(ORIGIN))) {
+                    referredForGroup.visible()
+                } else {
+                    medicalReviewDateGroup.visible()
+                    riskGroup.visible()
+                    registrationGroup.visible()
+                    cvdGroup.visible()
+                    assessmentGroup.visible()
+                }
             } else {
-                medicalReviewDateGroup.visible()
-                riskGroup.visible()
-                registrationGroup.visible()
-                cvdGroup.visible()
-                assessmentGroup.visible()
+                spiceFilterGroup.visible()
             }
         }
         binding.btnLayout.btnConfirm.text = requireContext().getString(R.string.apply)

@@ -1,14 +1,15 @@
 package com.medtroniclabs.spice.ui.boarding.viewmodel
 
+import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.work.ListenableWorker
-import com.medtroniclabs.spice.appextensions.hideNotification
 import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.di.IoDispatcher
+import com.medtroniclabs.spice.ncd.data.DeviceDetails
+import com.medtroniclabs.spice.network.DeviceInformation
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.network.utils.ConnectivityManager
 import com.medtroniclabs.spice.repo.OfflineSyncRepository
@@ -28,6 +29,7 @@ class ResourceLoadingViewModel @Inject constructor(
 ) : ViewModel() {
 
     val metaDataCompleteLiveData = MutableLiveData<Resource<Boolean>>()
+    val deviceDetailsLiveData = MutableLiveData<Resource<DeviceDetails>>()
     val householdsLiveData = MutableLiveData<Resource<Boolean>>()
 
     private val workflowNames = mutableListOf<Long>()
@@ -49,6 +51,19 @@ class ResourceLoadingViewModel @Inject constructor(
                     meta,
                     changeFacility
                 )
+            )
+        }
+    }
+
+    fun updateDeviceDetails(context: Context) {
+        viewModelScope.launch(dispatcherIO) {
+            deviceDetailsLiveData.postLoading()
+            if (!connectivityManager.isNetworkAvailable()) {
+                deviceDetailsLiveData.postError()
+                return@launch
+            }
+            deviceDetailsLiveData.postValue(
+                metaRepository.updateDeviceDetails(DeviceInformation.getDeviceDetails(context))
             )
         }
     }

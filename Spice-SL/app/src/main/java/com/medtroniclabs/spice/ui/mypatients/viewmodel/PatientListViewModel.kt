@@ -83,9 +83,8 @@ class PatientListViewModel @Inject constructor(
             MenuConstants.SCREENING.lowercase() -> DefinedParams.Screening
             MenuConstants.REGISTRATION.lowercase() -> DefinedParams.Registration
             MenuConstants.ASSESSMENT.lowercase() -> DefinedParams.Assessment
-            MenuConstants.MY_PATIENTS_MENU_ID.lowercase() -> DefinedParams.MyPatients
+            MenuConstants.LIFESTYLE.lowercase(), MenuConstants.MY_PATIENTS_MENU_ID.lowercase() -> DefinedParams.MyPatients
             MenuConstants.DISPENSE.lowercase() -> DefinedParams.Dispense
-            MenuConstants.LIFESTYLE.lowercase() -> DefinedParams.Nutritionlifestyle
             MenuConstants.INVESTIGATION.lowercase() -> DefinedParams.Investigation
             else -> null
         }

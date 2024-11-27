@@ -33,6 +33,7 @@ class NCDPatientEditActivity : BaseActivity() {
             homeAndBackVisibility = Pair(true, null),
             homeIcon = ContextCompat.getDrawable(this, R.drawable.ic_more_vertical)
         )
+        showVerticalMoreIcon(false)
         getPatientDetails()
         loadFragment()
     }

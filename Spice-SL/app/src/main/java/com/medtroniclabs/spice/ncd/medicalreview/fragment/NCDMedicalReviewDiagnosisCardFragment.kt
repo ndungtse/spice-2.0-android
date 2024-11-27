@@ -158,8 +158,9 @@ class NCDMedicalReviewDiagnosisCardFragment : BaseFragment(), View.OnClickListen
         getDiagonsis()
         val hyphen = getString(R.string.hyphen_symbol)
         binding.apply {
+            val isFemalePregnancy = isFemalePregnancy()
             val isContinuous = getInitialMr()
-            val isMaternal = !getInitialMr() && getIsFemale() && (getMenu().equals(DefinedParams.PregnancyANC,true))
+            val isMaternal = !getInitialMr() && isFemalePregnancy
             val isNCDAndMentalHealth = !getInitialMr()
 
             // Hide all cards initially
@@ -169,9 +170,9 @@ class NCDMedicalReviewDiagnosisCardFragment : BaseFragment(), View.OnClickListen
             patientStatusCard.root.setVisible(false)
             when {
                 isContinuous -> {
-                    pregnancyCard.root.setVisible(getIsFemale())
-                    weightCard.root.setVisible(getIsFemale())
-                    eddCard.root.setVisible(getIsFemale())
+                    pregnancyCard.root.setVisible(isFemalePregnancy)
+                    weightCard.root.setVisible(isFemalePregnancy)
+                    eddCard.root.setVisible(isFemalePregnancy)
                 }
 
                 isMaternal -> {
@@ -251,6 +252,10 @@ class NCDMedicalReviewDiagnosisCardFragment : BaseFragment(), View.OnClickListen
             diagnosisCard.tvDiagnosisConfirm.safeClickListener(this@NCDMedicalReviewDiagnosisCardFragment)
             patientStatusCard.tvDiagnosis.safeClickListener(this@NCDMedicalReviewDiagnosisCardFragment)
         }
+    }
+
+    private fun isFemalePregnancy(): Boolean {
+        return getMenu().equals(DefinedParams.PregnancyANC, true) && getIsFemale()
     }
 
     override fun onClick(v: View?) {

@@ -50,6 +50,7 @@ class NCDPrescriptionViewModel @Inject constructor(
     val createPrescriptionLiveData = MutableLiveData<Resource<Map<String, Any>>>()
     var patient_visit_id: String? = null
     var memberReference: String? = null
+    var patientReference: String? = null
     var selectedMedication: MedicationResponse? = null
     var prescriptionUIModel: ArrayList<MedicationResponse>? = null
     val reloadInstruction = MutableLiveData<Boolean>()
@@ -108,22 +109,7 @@ class NCDPrescriptionViewModel @Inject constructor(
         }
     }
 
-    fun getPrescriptionsList(
-        patientReference: String?,
-        memberReference: String?,
-        isDeleted: Boolean = true
-    ) {
-        getPrescriptionList(
-            PrescriptionListRequest(
-                patientReference = patientReference,
-                memberReference = memberReference,
-                isDeleted,
-                DefinedParams.Africa
-            )
-        )
-    }
-
-    private fun getPrescriptionList(request: PrescriptionListRequest) {
+    fun getPrescriptionList(request: PrescriptionListRequest) {
         viewModelScope.launch(dispatcherIO) {
             if (request.isActive) {
                 prescriptionListLiveData.postLoading()

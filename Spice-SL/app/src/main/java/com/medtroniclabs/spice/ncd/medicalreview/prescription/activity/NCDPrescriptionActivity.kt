@@ -27,6 +27,7 @@ import com.medtroniclabs.spice.data.PatientPrescriptionHistoryResponse
 import com.medtroniclabs.spice.data.PatientPrescriptionModel
 import com.medtroniclabs.spice.data.Prescription
 import com.medtroniclabs.spice.data.PrescriptionDetails
+import com.medtroniclabs.spice.data.PrescriptionListRequest
 import com.medtroniclabs.spice.data.UpdatePrescriptionModel
 import com.medtroniclabs.spice.databinding.ActivityNcdPrescriptionBinding
 import com.medtroniclabs.spice.databinding.NcdRowPrescriptionBinding
@@ -79,13 +80,10 @@ class NCDPrescriptionActivity : BaseActivity(), View.OnClickListener, SignatureL
     }
 
     fun getPatients() {
+        prescriptionViewModel.patientReference = intent.getStringExtra(DefinedParams.PatientId)
         prescriptionViewModel.memberReference = intent.getStringExtra(DefinedParams.id)
         prescriptionViewModel.patient_visit_id = intent.getStringExtra(DefinedParams.PatientVisitId)
-        val patientId = intent.getStringExtra(DefinedParams.PatientId)
-        prescriptionViewModel.getPrescriptionsList(
-            patientReference = patientId,
-            memberReference = prescriptionViewModel.memberReference
-        )
+        fetchPrescriptionList()
     }
 
     private fun showMedicationNudge() {
@@ -173,27 +171,6 @@ class NCDPrescriptionActivity : BaseActivity(), View.OnClickListener, SignatureL
             }
         }
 
-        patientViewModel.patientDetailsLiveData.observe(this) { resource ->
-            when (resource.state) {
-                ResourceState.LOADING -> {
-                    showLoading()
-                }
-
-                ResourceState.ERROR -> {
-                    hideLoading()
-                }
-
-                ResourceState.SUCCESS -> {
-                    hideLoading()
-                    resource.data?.let { data ->
-                        prescriptionViewModel.getPrescriptionsList(
-                            patientReference = data.patientId,
-                            memberReference = data.id
-                        )
-                    }
-                }
-            }
-        }
         reloadPrescriptionInstruction()
         prescriptionViewModel.createPrescriptionLiveData.observe(this) { resourceState ->
             when (resourceState.state) {
@@ -316,11 +293,7 @@ class NCDPrescriptionActivity : BaseActivity(), View.OnClickListener, SignatureL
                     binding.llDiscontinuedMedication.visibility = View.GONE
                     binding.tvDiscontinuedMedication.text =
                         getString(R.string.view_discontinued_medication)
-                    val patientId = intent.getStringExtra(DefinedParams.PatientId)
-                    prescriptionViewModel.getPrescriptionsList(
-                        patientReference = patientId,
-                        memberReference = prescriptionViewModel.memberReference
-                    )
+                    fetchPrescriptionList()
                 }
             }
         }
@@ -445,12 +418,7 @@ class NCDPrescriptionActivity : BaseActivity(), View.OnClickListener, SignatureL
                 getText(R.string.view_discontinued_medication)
             binding.llDiscontinuedMedication.gone()
         } else {
-            val patientId =
-                PatientListRespModel(id = intent.getStringExtra(DefinedParams.PatientId))
-            prescriptionViewModel.getPrescriptionsList(
-                patientReference = patientId.patientId,
-                prescriptionViewModel.memberReference
-            )
+            fetchPrescriptionList()
         }
     }
 
@@ -1247,6 +1215,17 @@ class NCDPrescriptionActivity : BaseActivity(), View.OnClickListener, SignatureL
             llDiscontinuedMedication.visibility = View.VISIBLE
             tvDMNoData.visibility = View.VISIBLE
             tvDiscontinuedMedication.text = getString(R.string.hide_discontinued_medication)
+        }
+    }
+
+    private fun fetchPrescriptionList() {
+        prescriptionViewModel.let {
+            prescriptionViewModel.getPrescriptionList(
+                PrescriptionListRequest(
+                    patientReference = it.patientReference,
+                    memberReference = it.memberReference
+                )
+            )
         }
     }
 

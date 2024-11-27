@@ -2,6 +2,7 @@ package com.medtroniclabs.spice.ncd.medicalreview.dialog
 
 import android.app.DatePickerDialog
 import android.os.Bundle
+import android.text.InputFilter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -25,10 +26,12 @@ import com.medtroniclabs.spice.common.ViewUtils
 import com.medtroniclabs.spice.data.model.ChipViewItemModel
 import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.databinding.FragmentNcdBloodGlucoseReadingDialogBinding
+import com.medtroniclabs.spice.formgeneration.extension.DecimalDigitsInputFilter
 import com.medtroniclabs.spice.formgeneration.extension.markMandatory
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.model.FormResponse
+import com.medtroniclabs.spice.formgeneration.utility.DecimalInputFilter
 import com.medtroniclabs.spice.mappingkey.MemberRegistration
 import com.medtroniclabs.spice.mappingkey.Screening
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil
@@ -45,7 +48,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class NCDBloodGlucoseReadingDialog : DialogFragment(), View.OnClickListener {
+class NCDBloodGlucoseReadingDialog(private val callback: () -> Unit) : DialogFragment(), View.OnClickListener {
 
     private lateinit var binding: FragmentNcdBloodGlucoseReadingDialogBinding
     private lateinit var tagListCustomView: TagListCustomView
@@ -67,8 +70,8 @@ class NCDBloodGlucoseReadingDialog : DialogFragment(), View.OnClickListener {
 
     companion object {
         const val TAG = "NCDBloodGlucoseReadingDialog"
-        fun newInstance() =
-            NCDBloodGlucoseReadingDialog()
+        fun newInstance(callback: () -> Unit) =
+            NCDBloodGlucoseReadingDialog(callback)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -90,6 +93,8 @@ class NCDBloodGlucoseReadingDialog : DialogFragment(), View.OnClickListener {
             binding.tvHbA1c.text = setTitle(hbA1c)
             binding.etHbA1c.hint = setHint(hbA1c)
         }
+        binding.etBloodGlucose.filters = arrayOf<InputFilter>(DecimalInputFilter())
+        binding.etHbA1c.filters = arrayOf<InputFilter>(DecimalInputFilter())
         binding.tvAssessmentDate.markMandatory()
         binding.tvBloodGlucoseTitle.markMandatory()
         binding.tvSelectType.markMandatory()
@@ -405,14 +410,8 @@ class NCDBloodGlucoseReadingDialog : DialogFragment(), View.OnClickListener {
 
                 ResourceState.SUCCESS -> {
                     hideLoading()
-                    GeneralSuccessDialog.newInstance(
-                        getString(R.string.blood_glucose), getString(
-                            R.string.blood_glucose_saved_successfully
-                        ), getString(R.string.okay)
-                    ) {
-                        dismiss()
-                        (requireActivity() as? NCDMedicalReviewCMRActivity)?.swipeRefresh()
-                    }.show(parentFragmentManager, GeneralSuccessDialog.TAG)
+                    dismiss()
+                    callback.invoke()
                 }
             }
         }

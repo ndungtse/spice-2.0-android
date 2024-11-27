@@ -23,8 +23,8 @@ import com.medtroniclabs.spice.databinding.LayoutDuplicatePatientBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.mappingkey.Screening
 
-class DuplicationNudgeDialog(private val callback: () -> Unit) : DialogFragment(),
-    View.OnClickListener {
+class DuplicationNudgeDialog(private val callback: (doAssessment: Boolean) -> Unit) :
+    DialogFragment(), View.OnClickListener {
 
     private lateinit var binding: DialogDuplicationNudgeBinding
 
@@ -34,7 +34,9 @@ class DuplicationNudgeDialog(private val callback: () -> Unit) : DialogFragment(
         const val IS_FROM_ENROLLMENT = "isFromEnrollment"
 
         fun newInstance(
-            patientInfo: String?, isFromEnrollment: Boolean, callback: () -> Unit
+            patientInfo: String?,
+            isFromEnrollment: Boolean,
+            callback: (doAssessment: Boolean) -> Unit
         ): DuplicationNudgeDialog {
             val args = Bundle()
             args.putString(PATIENT_INFO, patientInfo)
@@ -66,7 +68,6 @@ class DuplicationNudgeDialog(private val callback: () -> Unit) : DialogFragment(
         requireArguments().getString(PATIENT_INFO)?.let { patientInfo ->
             StringConverter.convertStringToMap(patientInfo)?.let { map ->
                 binding.apply {
-
                     addView(
                         Pair(
                             getString(R.string.first_name),
@@ -90,28 +91,24 @@ class DuplicationNudgeDialog(private val callback: () -> Unit) : DialogFragment(
                         Pair(
                             getString(R.string.facility_name),
                             map[Screening.healthFacilityName]?.toString().textOrHyphen()
-                        ),
-                        if (patientId.isNullOrBlank()) Pair(
-                            getString(R.string.empty),
-                            getString(R.string.empty)
+                        ), if (patientId.isNullOrBlank()) Pair(
+                            getString(R.string.empty), getString(R.string.empty)
                         )
                         else Pair(
                             getString(R.string.patient_id),
-                            map[Screening.phoneNumber]?.toString().textOrHyphen()
+                            patientId
                         )
                     )
 
                     val isPatientEnrolled = map[AnalyticsDefinedParams.PatientStatus]?.toString()
-                        .equals(DefinedParams.SCREENED, true)
+                        .equals(DefinedParams.ENROLLED, true)
                     val sameOperatingUnit = map[Screening.CHIEFDOM_ID]?.toString()
                         .equals(SecuredPreference.getChiefdomId().toString())
                     val sameAccount = map[Screening.DISTRICT_ID]?.toString()
                         .equals(SecuredPreference.getDistrictId().toString())
                     if (isFromEnrollment) {
-                        if (isPatientEnrolled)
-                            doAssessment(sameAccount)
-                        else
-                            doEnrollment()
+                        if (isPatientEnrolled) doAssessment(sameAccount)
+                        else doEnrollment()
                     } else {
                         doAssessment(sameAccount)
                     }
@@ -192,7 +189,7 @@ class DuplicationNudgeDialog(private val callback: () -> Unit) : DialogFragment(
         when (view?.id) {
             R.id.btnPrimary -> {
                 dismiss()
-                callback.invoke()
+                callback.invoke(binding.btnPrimary.text.equals(getString(R.string.start_assessment)))
             }
 
             R.id.btnEdit, R.id.ivClose -> {

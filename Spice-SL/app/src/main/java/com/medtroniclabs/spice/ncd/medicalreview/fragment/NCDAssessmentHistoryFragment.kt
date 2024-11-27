@@ -30,12 +30,14 @@ import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.BP_TAG
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.FBS
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.RBS
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.RBS_FBS
+import com.medtroniclabs.spice.ncd.medicalreview.NCDMedicalReviewCMRActivity
 import com.medtroniclabs.spice.ncd.medicalreview.dialog.NCDBloodGlucoseReadingDialog
 import com.medtroniclabs.spice.ncd.medicalreview.dialog.NCDBloodPressureVitalsDialog
 import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDBpAndBgViewModel
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.BaseFragment
+import com.medtroniclabs.spice.ui.dialog.GeneralSuccessDialog
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 
 class NCDAssessmentHistoryFragment : BaseFragment(), View.OnClickListener {
@@ -443,14 +445,30 @@ class NCDAssessmentHistoryFragment : BaseFragment(), View.OnClickListener {
                 // Show the new instance of the dialog
                 if (isBPSummary) {
                     if (existingFragment == null) {
-                        NCDBloodPressureVitalsDialog.newInstance().show(
+                        NCDBloodPressureVitalsDialog.newInstance(){
+                            GeneralSuccessDialog.newInstance(
+                                getString(R.string.blood_pressure), getString(
+                                    R.string.blood_pressure_saved_successfully
+                                ), getString(R.string.okay)
+                            ) {
+                                (requireActivity() as? NCDMedicalReviewCMRActivity)?.swipeRefresh()
+                            }.show(parentFragmentManager, GeneralSuccessDialog.TAG)
+                        }.show(
                             childFragmentManager,
                             NCDBloodPressureVitalsDialog.TAG
                         )
                     }
                 } else {
                     if (existingFragment == null) {
-                        NCDBloodGlucoseReadingDialog.newInstance().show(
+                        NCDBloodGlucoseReadingDialog.newInstance(){
+                            GeneralSuccessDialog.newInstance(
+                                getString(R.string.blood_glucose), getString(
+                                    R.string.blood_glucose_saved_successfully
+                                ), getString(R.string.okay)
+                            ) {
+                                (requireActivity() as? NCDMedicalReviewCMRActivity)?.swipeRefresh()
+                            }.show(parentFragmentManager, GeneralSuccessDialog.TAG)
+                        }.show(
                             childFragmentManager,
                             NCDBloodGlucoseReadingDialog.TAG
                         )

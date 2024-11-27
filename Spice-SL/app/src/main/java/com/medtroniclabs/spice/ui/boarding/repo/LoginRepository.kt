@@ -7,6 +7,7 @@ import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.ErrorResponse
 import com.medtroniclabs.spice.data.LoginResponse
 import com.medtroniclabs.spice.db.local.RoomHelper
+import com.medtroniclabs.spice.ncd.data.DeviceDetails
 import com.medtroniclabs.spice.network.ApiHelper
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.network.resource.ResourceState
@@ -19,7 +20,7 @@ class LoginRepository @Inject constructor(
     private var roomHelper: RoomHelper
 ) {
 
-    suspend fun doLogin(username: String, password: String): Resource<LoginResponse> {
+    suspend fun doLogin(username: String, password: String, deviceDetails: DeviceDetails): Resource<LoginResponse> {
         return try {
             val securePassword = EncryptionUtil.getSecurePassword(password)
             val builder = MultipartBody.Builder()
@@ -34,12 +35,23 @@ class LoginRepository @Inject constructor(
                 if (versionCheckResponse.isSuccessful) {
                     val appVersionResponse = versionCheckResponse.body()
                     if (appVersionResponse?.entity == true) {
-                        val loginResponseModel = response.body()
-                        loginResponseModel?.let {
-                            SecuredPreference.putUserDetails(it)
-                            saveUserNameAndPassword(username, securePassword)
-                        }
-                        Resource(state = ResourceState.SUCCESS, data = response.body())
+                        val deviceDetailsAPI = apiHelper.updateDeviceDetails(deviceDetails)
+                        if (deviceDetailsAPI.isSuccessful) {
+                            val deviceDetailsResponse = deviceDetailsAPI.body()
+                            if (deviceDetailsResponse?.status == true) {
+                                val loginResponseModel = response.body()
+                                loginResponseModel?.let {
+                                    SecuredPreference.putUserDetails(it)
+                                    saveUserNameAndPassword(username, securePassword)
+                                }
+                                Resource(state = ResourceState.SUCCESS, data = response.body())
+                            } else
+                                Resource(state = ResourceState.ERROR)
+                        } else
+                            Resource(
+                                state = ResourceState.ERROR,
+                                message = getErrorMessage(response.errorBody())
+                            )
                     } else
                         Resource(
                             state = ResourceState.ERROR,

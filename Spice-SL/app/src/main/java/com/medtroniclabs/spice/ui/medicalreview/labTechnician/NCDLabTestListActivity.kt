@@ -11,6 +11,7 @@ import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.databinding.ActivityLabTestListBinding
+import com.medtroniclabs.spice.formgeneration.extension.capitalizeFirstChar
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.model.medicalreview.InvestigationModel
@@ -157,13 +158,11 @@ class NCDLabTestListActivity : BaseActivity(), View.OnClickListener, Investigati
                 patientDetails.programId?.toString() ?: getString(R.string.separator_hyphen)
             binding.tvNationalId.text =
                 patientDetails.identityValue ?: getString(R.string.separator_hyphen)
-            var diagnosisText = ""
             if (patientDetails.isConfirmDiagnosis) {
-                diagnosisText =
+                binding.tvDiagnoses.text =
                     patientDetails.diagnosis?.joinToString(separator = getString(R.string.comma_symbol))
                         .toString()
             }
-            binding.tvDiagnoses.text = diagnosisText
 
             patientDetails.cvdRiskScore?.let { score ->
                 binding.tvCVD.text = StringConverter.appendTexts(
@@ -179,7 +178,7 @@ class NCDLabTestListActivity : BaseActivity(), View.OnClickListener, Investigati
                     StringConverter.appendTexts(
                         firstText = text,
                         data.age?.toString(),
-                        data.gender,
+                        data.gender?.capitalizeFirstChar(),
                         separator = getString(R.string.separator_hyphen)
                     )
                 )

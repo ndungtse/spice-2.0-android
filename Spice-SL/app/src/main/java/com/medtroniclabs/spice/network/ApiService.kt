@@ -116,6 +116,7 @@ import com.medtroniclabs.spice.ncd.data.PatientVisitRequest
 import com.medtroniclabs.spice.ncd.data.PatientVisitResponse
 import com.medtroniclabs.spice.model.medicalreview.WazWhzScoreRequest
 import com.medtroniclabs.spice.model.medicalreview.WazWhzScoreResponse
+import com.medtroniclabs.spice.ncd.data.DeviceDetails
 import com.medtroniclabs.spice.ncd.data.FollowUpRequest
 import com.medtroniclabs.spice.ncd.data.FollowUpUpdateRequest
 import com.medtroniclabs.spice.ncd.data.TermsAndConditionsModel
@@ -523,4 +524,7 @@ interface ApiService {
 
     @POST("/spice-service/follow-up/ncd/update")
     suspend fun updatePatientCallRegister(@Body request: FollowUpUpdateRequest): Response<APIResponse<HashMap<String, Any>>>
+
+    @POST("/spice-service/devicedetails")
+    suspend fun updateDeviceDetails(@Body request: DeviceDetails): Response<APIResponse<DeviceDetails>>
 }

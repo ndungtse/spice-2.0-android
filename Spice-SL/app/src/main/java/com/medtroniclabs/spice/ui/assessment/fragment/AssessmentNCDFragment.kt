@@ -177,8 +177,6 @@ class AssessmentNCDFragment : BaseFragment(), FormEventListener, View.OnClickLis
                 ResourceState.SUCCESS -> {
                     hideProgress()
                     resources.data?.let {
-                        formGenerator.populateViews(it)
-                        assessmentJSON = it
                         getPatientDetails()
                     }
                 }
@@ -237,7 +235,28 @@ class AssessmentNCDFragment : BaseFragment(), FormEventListener, View.OnClickLis
 
                 ResourceState.SUCCESS -> {
                     hideProgress()
-                    autoPopulateDetails(data = resourceData.data)
+                    resourceData.data?.let { patientDetails ->
+                        if (patientDetails.gender.equals(
+                                Screening.Female,
+                                true
+                            ) && patientDetails.isPregnant == true
+                        ) {
+                            ncdFormViewModel.ncdFormResponse.value?.data?.let {
+                                formGenerator.populateViews(it)
+                                assessmentJSON = it
+                            }
+                        } else {
+                            ncdFormViewModel.ncdFormResponse.value?.data?.filterNot {
+                                it.id.equals(
+                                    AssessmentDefinedParams.pregnancyAnc,
+                                    true
+                                ) || it.family.equals(AssessmentDefinedParams.pregnancyAnc, true)
+                            }?.let {
+                                formGenerator.populateViews(it)
+                                assessmentJSON = it
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -1270,6 +1289,9 @@ class AssessmentNCDFragment : BaseFragment(), FormEventListener, View.OnClickLis
     }
 
     override fun onRenderingComplete() {
+        patientDetailViewModel.patientDetailsLiveData.value?.data.let {
+            autoPopulateDetails(data = it)
+        }
     }
 
     override fun onUpdateInstruction(id: String, selectedId: Any?) {

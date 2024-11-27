@@ -16,6 +16,7 @@ import com.medtroniclabs.spice.data.DispenseUpdatePrescriptionRequest
 import com.medtroniclabs.spice.data.DispenseUpdateRequest
 import com.medtroniclabs.spice.data.DispenseUpdateResponse
 import com.medtroniclabs.spice.databinding.ActivityNcdPharmacistBinding
+import com.medtroniclabs.spice.formgeneration.extension.capitalizeFirstChar
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil
@@ -161,7 +162,7 @@ class NCDPharmacistActivity : BaseActivity(), View.OnClickListener {
                     StringConverter.appendTexts(
                         firstText = text,
                         data.age.toString(),
-                        data.gender,
+                        data.gender?.capitalizeFirstChar(),
                         separator = "-"
                     )
                 )

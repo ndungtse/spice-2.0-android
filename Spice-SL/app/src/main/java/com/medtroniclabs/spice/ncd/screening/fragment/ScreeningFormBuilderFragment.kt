@@ -288,8 +288,9 @@ class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener, View.OnC
                                     StringConverter.convertGivenMapToString(
                                         responseMap
                                     ), isFromEnrollment = false
-                                ) {
-                                    proceedAssessment(responseMap)
+                                ) { doAssessment ->
+                                    if (doAssessment)
+                                        proceedAssessment(responseMap)
                                 }
                             dialog.show(childFragmentManager, DuplicationNudgeDialog.TAG)
                         }

@@ -8,13 +8,10 @@ import android.os.Bundle
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
-import androidx.core.app.ActivityCompat
 import com.medtroniclabs.spice.BuildConfig
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.app.analytics.model.UserDetail
 import com.medtroniclabs.spice.appextensions.hideKeyboard
-import com.medtroniclabs.spice.appextensions.invisible
-import com.medtroniclabs.spice.appextensions.startBackgroundOfflineSync
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.EncryptionUtil
@@ -243,11 +240,11 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
                 }
             } else { // Different user login so clear last synced at
                 SecuredPreference.remove(SecuredPreference.EnvironmentKey.SERVER_LAST_SYNCED.name)
-                viewModel.doLogin(userName, password)
+                viewModel.doLogin(this, userName, password)
             }
         } else {
             // Same user login in online
-            viewModel.doLogin(userName, password)
+            viewModel.doLogin(this, userName, password)
         }
     }
 

@@ -198,7 +198,7 @@ class NCDCounselorActivity : BaseActivity(), View.OnClickListener {
                 StringConverter.appendTexts(
                     firstText = text,
                     data.age.toString(),
-                    data.gender,
+                    data.gender?.capitalizeFirstChar(),
                     separator = "-"
                 )
             )

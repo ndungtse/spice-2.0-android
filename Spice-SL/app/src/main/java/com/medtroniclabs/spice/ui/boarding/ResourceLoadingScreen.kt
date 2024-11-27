@@ -35,10 +35,25 @@ class ResourceLoadingScreen : BaseActivity() {
 
     private fun initView() {
         viewModel.changeFacility = intent.getBooleanExtra(DefinedParams.changeFacility,false)
-        viewModel.getMetaDataInformation()
+        getMetaData()
     }
 
     private fun attachObserver() {
+        viewModel.deviceDetailsLiveData.observe(this) { resourceState ->
+            when (resourceState.state) {
+                ResourceState.LOADING -> {
+                }
+
+                ResourceState.SUCCESS -> {
+                    viewModel.getMetaDataInformation()
+                }
+
+                ResourceState.ERROR -> {
+                    handleError()
+                }
+            }
+        }
+
         viewModel.metaDataCompleteLiveData.observe(this) { resourceState ->
             when (resourceState.state) {
                 ResourceState.LOADING -> {
@@ -97,8 +112,15 @@ class ResourceLoadingScreen : BaseActivity() {
     private fun setViewListener() {
         binding.actionButton.safeClickListener {
             binding.actionButton.visibility = View.GONE
-            viewModel.getMetaDataInformation()
+            getMetaData()
         }
+    }
+
+    private fun getMetaData() {
+        if (viewModel.changeFacility)
+            viewModel.updateDeviceDetails(this)
+        else
+            viewModel.getMetaDataInformation()
     }
 
     private fun launchLandingScreen() {
