@@ -375,7 +375,7 @@ class MotherNeonatePncActivity : BaseActivity(), View.OnClickListener, AncVisitC
                 val summaryFragment =
                     getFragmentById(supportFragmentManager, (R.id.diagnosisFragment))
                 if (summaryFragment is MotherNeonatePncSummaryFragment) {
-                    viewModel.saveMotherNeonatePncData()
+//                    viewModel.saveMotherNeonatePncData()
                 } else {
                     bpWeightViewModel.fetchWeight(MotherNeonateAncRequest(memberId = viewModel.memberId))
                     bpWeightViewModel.fetchBloodPressure(MotherNeonateAncRequest(memberId = viewModel.memberId))
@@ -755,10 +755,7 @@ class MotherNeonatePncActivity : BaseActivity(), View.OnClickListener, AncVisitC
         ) {
             motherNeonatePncSummaryViewModel.motherNeonateAlive = false
         }
-       var isShowNeonate= !(viewModel.isChildActive==false || viewModel.neonateOutCome == MedicalReviewDefinedParams.FreshStillBirth
-               || viewModel.neonateOutCome == MedicalReviewDefinedParams.MaceratedStillBirth
-               || viewModel.neonateOutCome == MedicalReviewDefinedParams.StillBirth
-               || viewModel.neonateOutCome == MedicalReviewDefinedParams.Miscarriage)
+       var isShowNeonate= viewModel.neonateOutCome==MedicalReviewDefinedParams.LiveBirth
         val motherNeonatePncSummaryFragment =
             MotherNeonatePncSummaryFragment.newInstance(isShowNeonate)
         addReplaceFragment(R.id.diagnosisFragment, motherNeonatePncSummaryFragment)

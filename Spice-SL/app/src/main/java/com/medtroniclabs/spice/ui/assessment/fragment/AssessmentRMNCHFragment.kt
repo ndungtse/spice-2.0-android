@@ -39,7 +39,10 @@ import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.ExclusivelyBreastfeeding
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.FedFrom4FoodGroups
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.MUAC
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.Measles1Given
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.Measles2Given
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.TakingMinimumMealsPerDay
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.YellowFeverVacineGiven
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.muacStatus
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.rootSuffix
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.summaryKey
@@ -590,7 +593,16 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
                 in 0..5 -> {
                     hideUnder5Months()
                 }
-                in 6..15 -> {
+                in 6..12 -> {
+
+                    formGenerator.getViewByTag(ExclusivelyBreastfeeding + rootSuffix)?.apply {
+                        visibility = View.GONE
+                    }
+                    formGenerator.getViewByTag(Measles2Given + rootSuffix)?.apply {
+                        visibility = View.GONE
+                    }
+                }
+                in 13..15-> {
 
                     formGenerator.getViewByTag(ExclusivelyBreastfeeding + rootSuffix)?.apply {
                         visibility = View.GONE
@@ -606,8 +618,16 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
         formGenerator.getViewByTag(TakingMinimumMealsPerDay + rootSuffix)?.apply {
             visibility = View.GONE
         }
-
         formGenerator.getViewByTag(FedFrom4FoodGroups + rootSuffix)?.apply {
+            visibility = View.GONE
+        }
+        formGenerator.getViewByTag(Measles1Given + rootSuffix)?.apply {
+            visibility = View.GONE
+        }
+        formGenerator.getViewByTag(YellowFeverVacineGiven + rootSuffix)?.apply {
+            visibility = View.GONE
+        }
+        formGenerator.getViewByTag(Measles2Given + rootSuffix)?.apply {
             visibility = View.GONE
         }
     }

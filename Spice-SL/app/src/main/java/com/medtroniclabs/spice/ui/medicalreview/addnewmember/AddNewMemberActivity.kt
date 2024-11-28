@@ -7,7 +7,6 @@ import com.medtroniclabs.spice.appextensions.invisible
 import com.medtroniclabs.spice.databinding.ActivityAddNewMemberBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.ui.BaseActivity
-import com.medtroniclabs.spice.ui.dialog.MedicalReviewSuccessDialogFragment
 import com.medtroniclabs.spice.ui.dialog.SuccessDialogFragment
 import com.medtroniclabs.spice.ui.landing.OnDialogDismissListener
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
@@ -84,11 +83,17 @@ class AddNewMemberActivity : BaseActivity(), View.OnClickListener, OnDialogDismi
     override fun onClick(v: View?) {
         when (v?.id) {
             binding.btnNext.id -> {
-                val memberRegistrationFragment =
-                    supportFragmentManager.findFragmentById(R.id.fragmentContainer) as MemberRegistrationFragment
-                memberRegistrationFragment.medicalReviewAddMember(v)
+                withNetworkCheck(
+                    connectivityManager,
+                    onNetworkAvailable = { addNewMemberCreate(v) })
             }
         }
+    }
+
+    private fun addNewMemberCreate(v: View) {
+        val memberRegistrationFragment =
+            supportFragmentManager.findFragmentById(R.id.fragmentContainer) as MemberRegistrationFragment
+        memberRegistrationFragment.medicalReviewAddMember(v)
     }
 
     override fun onDialogDismissListener(isFinish: Boolean) {

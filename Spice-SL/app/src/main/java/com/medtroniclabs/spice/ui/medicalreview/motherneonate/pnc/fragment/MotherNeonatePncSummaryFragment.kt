@@ -76,10 +76,15 @@ class MotherNeonatePncSummaryFragment(var isShowNeonate: Boolean) : BaseFragment
     }
 
     private fun showNeonateSummary() {
-        if (!isShowNeonate) {
-            binding.neonateSummary.cardSummary.gone()
-        } else {
+        if (isShowNeonate) {
+           if (patientDetailViewModel.patientDetailsNeonateLiveData.value?.data?.isActive==false)
+           {
+               binding.neonateSummary.cardSummary.gone()
+           }else{
             binding.neonateSummary.cardSummary.visible()
+            }
+        } else {
+            binding.neonateSummary.cardSummary.gone()
         }
     }
     private fun getPncSummaryDetails() = viewModel.getPncSummaryDetails()

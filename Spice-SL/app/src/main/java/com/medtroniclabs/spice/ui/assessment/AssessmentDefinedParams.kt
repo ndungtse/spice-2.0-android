@@ -142,4 +142,7 @@ object AssessmentDefinedParams {
     const val TakingMinimumMealsPerDay="takingMinimumMealsPerDay"
     const val ExclusivelyBreastfeeding="exclusivelyBreastfeeding"
     const val FedFrom4FoodGroups="fedFrom4FoodGroups"
+    const val Measles1Given="measles1Given"
+    const val YellowFeverVacineGiven="yellowFeverVacineGiven"
+    const val Measles2Given="measles2Given"
 }

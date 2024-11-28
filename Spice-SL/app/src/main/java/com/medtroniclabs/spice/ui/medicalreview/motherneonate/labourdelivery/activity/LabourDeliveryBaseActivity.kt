@@ -7,6 +7,7 @@ import android.view.View
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.location.LocationManagerCompat.getCurrentLocation
 import androidx.core.view.isVisible
 import com.google.gson.Gson
@@ -486,9 +487,21 @@ private fun showLabourDeliverySummary() {
     supportFragmentManager.beginTransaction()
         .replace(R.id.labourDeliveryContainer, MotherSummaryFragment()).commit()
     if (viewModel.neonateOutcome==MedicalReviewDefinedParams.MaceratedStillBirth||viewModel.neonateOutcome==MedicalReviewDefinedParams.FreshStillBirth) {
+        binding.clinicalNameGroup.visible()
+        binding.tvClinicalName.text =getString(
+            R.string.firstname_lastname,
+            SecuredPreference.getUserDetails()?.firstName,
+            SecuredPreference.getUserDetails()?.lastName
+        )
+        binding.tvDateOfReviewValue.text = DateUtils.convertDateTimeToDate(
+            DateUtils.getTodayDateDDMMYYYY(),
+            DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+            DateUtils.DATE_ddMMyyyy
+        )
         binding.motherContainer.gone()
     }else{
         binding.motherContainer.visible()
+        binding.clinicalNameGroup.gone()
         supportFragmentManager.beginTransaction()
             .replace(R.id.motherContainer, NeonateSummaryFragment()).commit()
     }

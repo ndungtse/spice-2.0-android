@@ -392,17 +392,30 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
     private fun showQuestionBasedAge():List<String> {
         var age=viewModel.ageInMonth.value
         var questionList=ArrayList<String>()
-            if (age?.contains(getString(R.string.week),true) == true || age?.contains(getString(R.string.day),true) == true){
-                questionList.add(AssessmentDefinedParams.TakingMinimumMealsPerDay)
-                questionList.add(AssessmentDefinedParams.FedFrom4FoodGroups)
+        if (age?.contains(getString(R.string.week), true) == true
+            || age?.contains(getString(R.string.day), true) == true
+        ){
+            questionList.add(AssessmentDefinedParams.TakingMinimumMealsPerDay)
+            questionList.add(AssessmentDefinedParams.FedFrom4FoodGroups)
+            questionList.add(AssessmentDefinedParams.Measles1Given)
+            questionList.add(AssessmentDefinedParams.YellowFeverVacineGiven)
+            questionList.add(AssessmentDefinedParams.Measles2Given)
 
-            }else {
+        }else {
                 when (age?.replace(getString(R.string.months), "")?.replace(getString(R.string.month), "")?.trim()?.toInt()) {
                     in 0..5 -> {
                         questionList.add(AssessmentDefinedParams.TakingMinimumMealsPerDay)
                         questionList.add(AssessmentDefinedParams.FedFrom4FoodGroups)
+                        questionList.add(AssessmentDefinedParams.Measles1Given)
+                        questionList.add(AssessmentDefinedParams.YellowFeverVacineGiven)
+                        questionList.add(AssessmentDefinedParams.Measles2Given)
                     }
-                    in 6..15 -> {
+                    in 6..12 -> {
+                        questionList.add(AssessmentDefinedParams.ExclusivelyBreastfeeding)
+                        questionList.add(AssessmentDefinedParams.Measles2Given)
+
+                    }
+                    in 13..15 -> {
                         questionList.add(AssessmentDefinedParams.ExclusivelyBreastfeeding)
                     }
 
