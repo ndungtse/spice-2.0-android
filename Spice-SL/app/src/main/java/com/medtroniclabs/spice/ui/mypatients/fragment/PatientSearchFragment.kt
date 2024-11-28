@@ -163,16 +163,11 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
                         invisible()
                 }
                 binding.llSortFilter.btnFilter.apply {
-                    if (CommonUtils.canShowFilter(patientListViewModel.origin)) {
-                        visible()
-
-                        val filterCount = patientListViewModel.filterCount()
-                        text = if (filterCount > 0)
-                            getString(R.string.filter_count, filterCount)
-                        else
-                            getString(R.string.filter)
-                    } else
-                        invisible()
+                    val filterCount = patientListViewModel.filterCount()
+                    text = if (filterCount > 0)
+                        getString(R.string.filter_count, filterCount)
+                    else
+                        getString(R.string.filter)
                 }
             }
             if (binding.refreshLayout.isRefreshing) {

@@ -142,6 +142,14 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
                 }
             }
         }
+        viewModel.isAssessmentCancelLiveData.observe(viewLifecycleOwner){
+            if (it){
+                formGenerator.getViewByTag(muacCode)?.apply {
+                    val background = background as? GradientDrawable
+                    background?.setStroke(resources.getDimensionPixelSize(R.dimen._1sdp), context.getColor( R.color.edittext_stroke))
+                }
+            }
+        }
     }
 
     private fun renderDosageDetails(dateOfBirth: String) {

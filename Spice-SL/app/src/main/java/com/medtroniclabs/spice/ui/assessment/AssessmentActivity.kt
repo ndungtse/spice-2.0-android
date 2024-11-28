@@ -81,6 +81,7 @@ class AssessmentActivity : BaseActivity() {
                 isNegativeButtonNeed = true
             ) { isPositive ->
                 if (isPositive) {
+                    viewModel.isAssessmentCancelLiveData.value = true
                     navigationHandling(isHome, backButtonStatus.second)
                 }
             }

@@ -128,6 +128,8 @@ class AssessmentViewModel @Inject constructor(
     val pncAssessmentStringSaveLiveData = MutableLiveData<String?>()
     val pncAssessmentSaveLiveData = MutableLiveData<Resource<Pair<AssessmentEntity, AssessmentEntity?>>>()
 
+    var isAssessmentCancelLiveData=MutableLiveData<Boolean>()
+
     init {
         SecuredPreference.getFollowUpCriteria()?.let { followUpCriteria ->
             treatmentDays[ReferralReasons.Pneumonia.name] = followUpCriteria.pneumonia

@@ -211,6 +211,14 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
                 }
             }
         }
+        viewModel.isAssessmentCancelLiveData.observe(viewLifecycleOwner){
+            if (it){
+                formGenerator.getViewByTag(MUAC)?.apply {
+                    val background = background as? GradientDrawable
+                    background?.setStroke(resources.getDimensionPixelSize(R.dimen._1sdp), context.getColor( R.color.edittext_stroke))
+                }
+            }
+        }
     }
 
 
