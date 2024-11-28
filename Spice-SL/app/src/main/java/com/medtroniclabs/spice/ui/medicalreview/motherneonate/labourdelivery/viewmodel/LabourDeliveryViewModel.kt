@@ -25,7 +25,6 @@ import com.medtroniclabs.spice.data.model.NeonateDTO
 import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.data.resource.LabourDeliverySummaryRequest
 import com.medtroniclabs.spice.di.IoDispatcher
-import com.medtroniclabs.spice.mappingkey.UnderFiveYearExaminationKeyMapping.HivAndAids.child
 import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.model.assessment.AgparScoreFooter
 import com.medtroniclabs.spice.model.assessment.AgparScoreHeader
@@ -91,6 +90,7 @@ class LabourDeliveryViewModel @Inject constructor(
     var neonateSignsAndSymptoms = listOf<ChipViewItemModel>()
     var gestationalAge:String?=null
     var encounterID:String? = null
+    var deliveryPlaceOthers:String?=null
     private val _apgarScoresLiveData = MutableLiveData<List<ApgarScore>>()
     val apgarScoreLiveData: LiveData<List<ApgarScore>>
         get() = _apgarScoresLiveData
@@ -484,6 +484,7 @@ class LabourDeliveryViewModel @Inject constructor(
             noOfNeoNates = noOfNeonates?.toInt(),
             dateAndTimeOfDelivery = getTimeOfDelivery(),
             dateAndTimeOfLabourOnset = getTimeOfLabourOnset(),
+            deliveryAtOther = deliveryPlaceOthers
         )
     }
 

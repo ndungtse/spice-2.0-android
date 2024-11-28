@@ -216,6 +216,63 @@
             app:layout_constraintStart_toStartOf="@id/etDeliveryAt"
             app:layout_constraintTop_toBottomOf="@id/etDeliveryAt" />
 
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvOtherDeliveryAt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_20sdp"
+            android:layout_marginTop="@dimen/_20sdp"
+            android:fontFamily="@font/inter_regular"
+            android:text="@string/delivery_at_others"
+            android:textColor="@color/table_title"
+            android:textSize="@dimen/_16ssp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvDeliveryAtError" />
+
+        <androidx.appcompat.widget.AppCompatEditText
+            android:id="@+id/etOtherDeliveryPlace"
+            style="@style/Form_MH_Style_with_padding"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_5sdp"
+            android:layout_marginEnd="@dimen/_25sdp"
+            android:background="@drawable/edittext_background"
+            android:fontFamily="@font/inter_medium"
+            android:gravity="start|center"
+            android:hint="@string/type_notes"
+            android:inputType="textCapWords"
+            android:paddingStart="@dimen/_10sdp"
+            android:textAlignment="textStart"
+            android:textColorHint="@color/btn_disable_grey"
+            android:textSize="@dimen/_16ssp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/centerGuideline"
+            app:layout_constraintStart_toStartOf="@+id/tvOtherDeliveryAt"
+            app:layout_constraintTop_toBottomOf="@+id/tvOtherDeliveryAt"
+            app:layout_constraintVertical_bias="0.0" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvOtherPlaceError"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/_10sdp"
+            android:fontFamily="@font/inter_regular"
+            android:padding="@dimen/_5sdp"
+            android:text="@string/error_label"
+            android:textColor="@color/a_red_error"
+            android:textSize="@dimen/_12ssp"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="@id/etOtherDeliveryPlace"
+            app:layout_constraintStart_toStartOf="@id/etOtherDeliveryPlace"
+            app:layout_constraintTop_toBottomOf="@id/etOtherDeliveryPlace" />
+
+        <androidx.constraintlayout.widget.Group
+            android:id="@+id/deliveryPlaceOtherGroup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:constraint_referenced_ids="tvOtherDeliveryAt, etOtherDeliveryPlace" />
+
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/leftGuideline"
             android:layout_width="wrap_content"
@@ -300,7 +357,7 @@
             android:textColor="@color/table_title"
             android:textSize="@dimen/_16ssp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvDeliveryAtError" />
+            app:layout_constraintTop_toBottomOf="@+id/tvOtherPlaceError" />
 
         <androidx.appcompat.widget.AppCompatEditText
             android:id="@+id/etNoOfDeonates"
@@ -581,7 +638,7 @@
             android:text="@string/error_label"
             android:textColor="@color/a_red_error"
             android:textSize="@dimen/_12ssp"
-            android:visibility="gone"
+            android:visibility="invisible"
             app:layout_constraintEnd_toEndOf="@id/etDeliveryByOthers"
             app:layout_constraintStart_toStartOf="@id/etDeliveryByOthers"
             app:layout_constraintTop_toBottomOf="@id/etDeliveryByOthers" />

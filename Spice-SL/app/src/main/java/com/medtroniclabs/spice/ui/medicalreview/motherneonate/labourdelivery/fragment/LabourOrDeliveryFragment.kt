@@ -85,6 +85,8 @@ class LabourOrDeliveryFragment : BaseFragment() {
                 cgNeonateOutcome.visible()
                 tvNeonateOutcomeLabel.visible()
                 seperatorColon1.visible()
+                deliveryPlaceOtherGroup.gone()
+                tvDeliveryByOthersError.gone()
             }
         }
 
@@ -110,9 +112,12 @@ class LabourOrDeliveryFragment : BaseFragment() {
                         if (selectedValue == MedicalReviewDefinedParams.Miscarriage || selectedValue.isNullOrEmpty()) {
                             hideAllGroup.gone()
                             hideAllErrorGroup.gone()
+                            deliveryPlaceOtherGroup.gone()
+                            tvDeliveryByOthersError.gone()
                         } else {
                             hideAllGroup.visible()
                             hideAllErrorGroup.gone()
+                            tvDeliveryByOthersError.gone()
                         }
                     }
                 } else {
@@ -121,8 +126,12 @@ class LabourOrDeliveryFragment : BaseFragment() {
                     with(binding) {
                         hideAllGroup.gone()
                         hideAllErrorGroup.gone()
+                        etOtherDeliveryPlace.gone()
+                        tvOtherDeliveryAt.gone()
+                        tvOtherPlaceError.gone()
                     }
                 }
+
             }
 
 //            viewModel.validateSubmitButtonState()
@@ -140,6 +149,17 @@ class LabourOrDeliveryFragment : BaseFragment() {
                 viewModel.validateSubmitButtonState()
             }
 
+        }
+
+        binding.etOtherDeliveryPlace.doAfterTextChanged {
+            val deliveryPlaceOthers = it?.trim().toString()
+            if (deliveryPlaceOthers.isNotEmpty()) {
+                viewModel.deliveryPlaceOthers = it.toString()
+                viewModel.validateSubmitButtonState()
+            } else {
+                viewModel.deliveryPlaceOthers = null
+                viewModel.validateSubmitButtonState()
+            }
         }
 
         binding.etMinutesTimeOfDelivery.doAfterTextChanged {
@@ -211,7 +231,7 @@ class LabourOrDeliveryFragment : BaseFragment() {
         binding.tvDeliveryStatus.markMandatory()
         binding.tvNoOfDeonates.markMandatory()
         binding.tvNeonateOutcomeLabel.markMandatory()
-
+        binding.tvOtherDeliveryAt.markMandatory()
     }
 
 
@@ -421,9 +441,16 @@ class LabourOrDeliveryFragment : BaseFragment() {
                     if (selectedName != DefinedParams.DefaultIDLabel) {
                         viewModel.deliveryAt = selectedName
                         viewModel.validateSubmitButtonState()
+                        if (selectedName == DefinedParams.Other.lowercase()){
+                            binding.deliveryPlaceOtherGroup.visible()
+                        }
+                        else{
+                            validateOtherDeliveryAt()
+                        }
                     } else {
                         viewModel.deliveryAt = null
                         viewModel.validateSubmitButtonState()
+                        validateOtherDeliveryAt()
                     }
                 }
             }
@@ -434,6 +461,14 @@ class LabourOrDeliveryFragment : BaseFragment() {
         }
 
 
+    }
+
+    private fun validateOtherDeliveryAt() {
+        if (binding.deliveryPlaceOtherGroup.isVisible() || binding.tvOtherPlaceError.isVisible()){
+            binding.deliveryPlaceOtherGroup.gone()
+            binding.etOtherDeliveryPlace.text = null
+            binding.tvOtherPlaceError.gone()
+        }
     }
 
     private fun initializeDeliveryByItem(listItems: List<LabourDeliveryMetaEntity>) {
@@ -588,6 +623,10 @@ class LabourOrDeliveryFragment : BaseFragment() {
                 tvDeliveryByOthersError.showIf(deliveryByOthers?.isEmpty() == true)
             }
 
+            if (viewModel.deliveryAt == DefinedParams.Other.lowercase()) {
+                tvOtherPlaceError.showIf(viewModel.deliveryPlaceOthers?.isEmpty() == true)
+            }
+
         }
     }
 
@@ -623,7 +662,9 @@ class LabourOrDeliveryFragment : BaseFragment() {
         val deliveryOthers = viewModel.deliveryBy
         val deliveryOther =
             (deliveryOthers == DefinedParams.Others_Specify && deliveryByOthers?.isNotEmpty() == true || deliveryOthers != DefinedParams.Others_Specify)
-
+        val otherDeliveryPlace = viewModel.deliveryPlaceOthers
+        val otherDeliveryAt =
+            (viewModel.deliveryAt == DefinedParams.Other.lowercase() && otherDeliveryPlace?.isNotEmpty() == true || viewModel.deliveryAt != DefinedParams.Other.lowercase())
         var isValidDeliveryBy = viewModel.deliveryBy != null &&
                 viewModel.deliveryAt != null &&
                 viewModel.deliveryStatus != null
@@ -644,7 +685,7 @@ class LabourOrDeliveryFragment : BaseFragment() {
                 viewModel.timeOfLabourOnsetMap[DefinedParams.TimeOfLabourOnset] != null &&
                 viewModel.deliveryType != null &&
                 viewModel.deliveryBy != null &&
-                viewModel.deliveryAt != null &&
+                otherDeliveryAt &&
                 viewModel.deliveryStatus != null &&
                 viewModel.noOfNeonates != null && noOfNeonate != 0
 
@@ -757,6 +798,9 @@ class LabourOrDeliveryFragment : BaseFragment() {
             }
             if (deliveryOthers == DefinedParams.Others_Specify) {
                 tvDeliveryByOthersError.showIf(deliveryByOthers == null)
+            }
+            if (viewModel.deliveryAt == DefinedParams.Other.lowercase()) {
+                tvOtherPlaceError.showIf(viewModel.deliveryPlaceOthers == null)
             }
             if (viewModel.deliveryAt == null && viewModel.deliveryBy == DefinedParams.Others_Specify && viewModel.deliveryByOthers != null) {
                 binding.tvDeliveryByOthersError.invisible()

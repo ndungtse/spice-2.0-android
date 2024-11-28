@@ -10,6 +10,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.medtroniclabs.spice.BuildConfig
 import com.medtroniclabs.spice.app.analytics.db.AnalyticsRepository
 import com.medtroniclabs.spice.common.AppConstants
+import com.medtroniclabs.spice.common.BaseUrlProvider
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.ACTION_SESSION_EXPIRED
 import com.medtroniclabs.spice.common.DefinedParams.SL_SESSION
@@ -147,7 +148,9 @@ object AppModule {
     }
 
     @Provides
-    fun provideBaseUrl() = BASE_URL
+    fun provideBaseUrl(): String {
+        return BaseUrlProvider.dynamicURL()
+    }
 
     @Singleton
     @Provides
