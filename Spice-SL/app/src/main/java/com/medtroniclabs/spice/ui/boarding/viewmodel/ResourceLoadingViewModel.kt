@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.common.SecuredPreference
+import com.medtroniclabs.spice.data.offlinesync.utils.OfflineConstant
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.ncd.data.DeviceDetails
 import com.medtroniclabs.spice.network.DeviceInformation
@@ -121,7 +122,7 @@ class ResourceLoadingViewModel @Inject constructor(
             // Existing village changed remove all data and fresh download for all villages
             if (changedVillage.isNotEmpty()) {
                 // Village changed post local changes
-                val requestIds = offlineSyncRepository.postOfflineUnSyncedChangesWithMutex()
+                val requestIds = offlineSyncRepository.postOfflineUnSyncedChangesWithMutex(OfflineConstant.SYNC_MODE_INITIAL)
                 if (requestIds == null) {
                     householdsLiveData.postError()
                     return false

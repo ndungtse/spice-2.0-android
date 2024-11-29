@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.medtroniclabs.spice.common.DateUtils.DATE_TIME_DISPLAY_FORMAT
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.offlinesync.model.UnAssignedHouseholdMemberDetail
+import com.medtroniclabs.spice.data.offlinesync.utils.OfflineConstant
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.model.landing.OfflineSyncEntityDetail
 import com.medtroniclabs.spice.network.utils.ConnectivityManager
@@ -105,7 +106,7 @@ class OfflineSyncViewModel @Inject constructor(
     fun startUploadingData(minutes: Long = 3) {
         viewModelScope.launch(dispatcherIO) {
             startProgress(minutes)
-            val requestIds = offlineSyncRepository.postOfflineUnSyncedChangesWithMutex()
+            val requestIds = offlineSyncRepository.postOfflineUnSyncedChangesWithMutex(OfflineConstant.SYNC_MODE_MANUAL)
             if (requestIds != null) {
                 if (requestIds.isNotEmpty()) { // Has some changes in local
                     SecuredPreference.saveStringArray(

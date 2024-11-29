@@ -538,7 +538,7 @@ class OfflineSyncRepository @Inject constructor(
     * 2. List size == 0 -> There are no local changes to post
     * 3. List is null -> Post un-synced local changes and API is failed
     * */
-    private suspend fun postOfflineUnSyncedChanges(): List<String>? {
+    private suspend fun postOfflineUnSyncedChanges(syncMode: String): List<String>? {
         val householdIds = mutableListOf<String>()
         val householdMemberIds = mutableListOf<String>()
         val assessmentIds = mutableListOf<String>()
@@ -590,6 +590,7 @@ class OfflineSyncRepository @Inject constructor(
         }
 
         val request = OfflineUtils.getRequestObject()
+        request[OfflineConstant.SYNC_MODE] = syncMode
         request[OfflineConstant.HOUSE_HOLDS] = houseHoldList
         request[OfflineConstant.HOUSE_HOLD_MEMBERS] = otherMembers
         request[OfflineConstant.ASSESSMENTS] = otherAssessments
@@ -668,9 +669,9 @@ class OfflineSyncRepository @Inject constructor(
     }
 
 
-    suspend fun postOfflineUnSyncedChangesWithMutex(): List<String>? {
+    suspend fun postOfflineUnSyncedChangesWithMutex(syncMode: String): List<String>? {
         mutex.withLock {
-            return postOfflineUnSyncedChanges()
+            return postOfflineUnSyncedChanges(syncMode)
         }
     }
 }

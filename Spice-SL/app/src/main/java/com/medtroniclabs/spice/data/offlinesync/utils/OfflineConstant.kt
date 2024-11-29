@@ -13,7 +13,12 @@ object OfflineConstant {
     const val APP_VERSION_NAME = "appVersionName"
     const val APP_VERSION_CODE = "appVersionCode"
     const val DEVICE_ID = "deviceId"
+    const val SYNC_MODE = "syncMode"
 
     const val CALL_TYPE_LINK_HHM = "LinkHouseholdMember"
+
+    const val SYNC_MODE_INITIAL = "InitialSync"
+    const val SYNC_MODE_MANUAL = "ManualSync"
+    const val SYNC_MODE_AUTOMATIC = "AutomaticSync"
 
 }

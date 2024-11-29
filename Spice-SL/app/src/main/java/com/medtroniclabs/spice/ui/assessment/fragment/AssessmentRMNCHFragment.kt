@@ -189,7 +189,12 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
                 binding.btnSubmit.text = getString(R.string.next)
             }
         }
+
         viewModel.ageInMonth.observe(viewLifecycleOwner) {
+
+        }
+
+        viewModel.formRenderedConditionLiveData.observe(viewLifecycleOwner) {
             updateAgeInMonths(it)
         }
 
@@ -220,8 +225,7 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
             }
         }
     }
-
-
+    
     private fun initView() {
         replaceFragmentInId<BioDataFragment>(
             binding.bioDataFragmentContainer.id,
@@ -517,6 +521,7 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
         viewModel.memberClinicalLiveData.value?.clinicalDate?.let {
             formGenerator.getViewByTag(RMNCH.lastMenstrualPeriod + formGenerator.rootSuffix)?.gone()
         }
+        viewModel.formRenderedLiveData.postValue(true)
     }
 
     override fun onUpdateInstruction(id: String, selectedId: Any?) {

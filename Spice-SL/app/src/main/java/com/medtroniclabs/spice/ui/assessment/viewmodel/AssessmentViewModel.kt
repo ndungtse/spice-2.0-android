@@ -1,6 +1,7 @@
 package com.medtroniclabs.spice.ui.assessment.viewmodel
 
 import android.location.Location
+import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
@@ -119,7 +120,22 @@ class AssessmentViewModel @Inject constructor(
     var mentalHealthQuestions = MutableLiveData<Resource<HashMap<String, LocalSpinnerResponse>>>()
     private var phQ4Score: Int? = null
     var isDangerSignFlow: Boolean = false
-    var ageInMonth:MutableLiveData<String> = MutableLiveData()
+    var ageInMonth = MutableLiveData<String>()
+    var formRenderedLiveData = MutableLiveData<Boolean>()
+    val formRenderedConditionLiveData = MediatorLiveData<String>().apply {
+        addSource(ageInMonth) { age ->
+            if (formRenderedLiveData.value == true && age != null) {
+                value = age
+            }
+        }
+
+        addSource(formRenderedLiveData) { rendered ->
+            if (rendered == true && ageInMonth.value != null) {
+                value = ageInMonth.value
+            }
+        }
+    }
+
     var dangerSingsKey:String? = null
     @Inject
     lateinit var connectivityManager: ConnectivityManager
@@ -138,6 +154,8 @@ class AssessmentViewModel @Inject constructor(
             treatmentDays[ReferralReasons.Malaria.name] = followUpCriteria.malaria
         }
     }
+
+
 
     fun getPNCChildInfoByParentId(parentId: Long) {
         viewModelScope.launch(dispatcherIO) {

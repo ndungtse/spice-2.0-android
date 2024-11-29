@@ -53,9 +53,17 @@ interface PregnancyDetailDao {
         entityToInsert.householdMemberLocalId = hhmLocalId
         entityToInsert.neonateHouseholdMemberLocalId = neonateLocalId
 
-//        entityToInsert.ancVisitNo = entityToInsert.ancVisitNo?.takeIf { ancVisitNo == null || it > ancVisitNo } ?: ancVisitNo
-//        entityToInsert.pncVisitNo = entityToInsert.pncVisitNo?.takeIf { pncVisitNo == null || it > pncVisitNo } ?: pncVisitNo
-//        entityToInsert.childVisitNo = entityToInsert.childVisitNo?.takeIf { childHoodNo == null || it > childHoodNo } ?: childHoodNo
+        if (entityToInsert.ancVisitNo != null) {
+            entityToInsert.ancVisitNo?.takeIf { ancVisitNo == null || it > ancVisitNo } ?: ancVisitNo
+        }
+
+        if (entityToInsert.pncVisitNo != null) {
+            entityToInsert.pncVisitNo?.takeIf { pncVisitNo == null || it > pncVisitNo } ?: pncVisitNo
+        }
+
+        if (entityToInsert.childVisitNo != null) {
+            entityToInsert.childVisitNo?.takeIf { childHoodNo == null || it > childHoodNo } ?: childHoodNo
+        }
 
         return savePregnancyDetail(entityToInsert)
     }

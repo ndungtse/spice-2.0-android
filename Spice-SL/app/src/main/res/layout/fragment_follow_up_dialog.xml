@@ -21,11 +21,10 @@
             android:gravity="start"
             android:paddingStart="@dimen/_16sdp"
             android:paddingTop="@dimen/_16sdp"
-            android:paddingEnd="@dimen/_0dp"
             android:paddingBottom="@dimen/_24sdp"
             android:textSize="@dimen/_16ssp"
             app:layout_constraintBottom_toTopOf="@id/topDivider"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/ivClose"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tool:text="George Kamara - 41 - M " />

@@ -246,7 +246,7 @@ class BioDataFragment : BaseFragment() {
             binding.dobAge.tvValue.text = getAgeValue(
                 age
             )
-            viewModel.ageInMonth.value=age
+            viewModel.ageInMonth.postValue(age)
             viewModel.workflowName?.let { workFlowName ->
                 viewModel.getPatientVisitCountByType(workFlowName, id)
             }

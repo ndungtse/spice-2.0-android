@@ -8,6 +8,7 @@ import com.medtroniclabs.spice.appextensions.hideNotification
 import com.medtroniclabs.spice.appextensions.showNotification
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.SecuredPreference
+import com.medtroniclabs.spice.data.offlinesync.utils.OfflineConstant
 import com.medtroniclabs.spice.db.local.RoomHelper
 import com.medtroniclabs.spice.ncd.followup.repo.NCDFollowUpRepo
 import com.medtroniclabs.spice.repo.OfflineSyncRepository
@@ -127,7 +128,7 @@ class ScheduledSyncWork @AssistedInject constructor(
     }
 
     private suspend fun postLocalChanges(): Boolean {
-        val requestIds = offlineSyncRepository.postOfflineUnSyncedChangesWithMutex() ?: return false
+        val requestIds = offlineSyncRepository.postOfflineUnSyncedChangesWithMutex(OfflineConstant.SYNC_MODE_AUTOMATIC) ?: return false
 
         //Save request id in Preference
         if (requestIds.isNotEmpty()) {

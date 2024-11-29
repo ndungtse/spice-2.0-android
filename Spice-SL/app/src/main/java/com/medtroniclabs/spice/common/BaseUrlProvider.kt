@@ -5,6 +5,7 @@ import com.medtroniclabs.spice.data.model.BaseUrlRequest
 import com.medtroniclabs.spice.data.model.BaseUrlResponse
 import kotlinx.coroutines.runBlocking
 import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.POST
@@ -12,7 +13,11 @@ import java.util.concurrent.TimeUnit
 
 object BaseUrlProvider {
 
-    const val BaseUrl = "https://su.medtroniclabs.org/sl/"
+    private const val BaseUrl = "https://su.medtroniclabs.org/sl/"
+
+    private val loggingInterceptor = HttpLoggingInterceptor().apply {
+        setLevel(HttpLoggingInterceptor.Level.BODY)
+    }
 
     private val client = OkHttpClient.Builder()
         .connectTimeout(10, TimeUnit.SECONDS)
