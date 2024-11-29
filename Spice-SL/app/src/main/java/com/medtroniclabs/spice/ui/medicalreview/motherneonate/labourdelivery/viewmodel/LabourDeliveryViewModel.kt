@@ -351,7 +351,7 @@ class LabourDeliveryViewModel @Inject constructor(
         val village = patientDetailModel?.village.takeIf { it != null }
         val villageId = patientDetailModel?.villageId.takeIf { it != null }
 
-        val genderValue = genderFlow[DefinedParams.Gender]?.toString()?.takeIf { it != "null" }
+        val genderValue = genderFlow[DefinedParams.Gender]?.toString()?.takeIf { it != null }
 
         return Child(
             name = childName,

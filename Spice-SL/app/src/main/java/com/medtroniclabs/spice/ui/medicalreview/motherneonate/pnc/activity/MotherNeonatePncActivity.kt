@@ -737,11 +737,6 @@ class MotherNeonatePncActivity : BaseActivity(), View.OnClickListener, AncVisitC
     }
 
     private fun pncSummary(resource: Resource<PncSubmitResponse>) {
-        binding.bottomNavigationView.gone()
-        binding.tvAliveStatus.gone()
-        binding.systemicExaminationsContainer.gone()
-        binding.clinicalNotesContainer.gone()
-        binding.presentingComplaintsContainer.gone()
         binding.referalBottomView.visible()
         motherNeonatePncSummaryViewModel.motherNeonatePncSummaryRequest.apply {
             id = resource.data?.encounterId
@@ -759,6 +754,12 @@ class MotherNeonatePncActivity : BaseActivity(), View.OnClickListener, AncVisitC
         val motherNeonatePncSummaryFragment =
             MotherNeonatePncSummaryFragment.newInstance(isShowNeonate)
         addReplaceFragment(R.id.diagnosisFragment, motherNeonatePncSummaryFragment)
+        supportFragmentManager.executePendingTransactions()
+        binding.bottomNavigationView.gone()
+        binding.tvAliveStatus.gone()
+        binding.systemicExaminationsContainer.gone()
+        binding.clinicalNotesContainer.gone()
+        binding.presentingComplaintsContainer.gone()
         viewModel.setAnalyticsData(
             UserDetail.startDateTime,
             eventType = AnalyticsDefinedParams.MotherNeonatePnc,

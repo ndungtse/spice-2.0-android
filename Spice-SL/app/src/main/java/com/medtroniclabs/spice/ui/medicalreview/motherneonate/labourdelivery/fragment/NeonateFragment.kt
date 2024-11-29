@@ -305,14 +305,15 @@ class NeonateFragment : BaseFragment() {
                                 binding.directPncGroup.gone()
                                 binding.genderPncGroup.gone()
                                 binding.neonateOvercomePncGroup.visible()
+                                binding.tvGenderError.gone()
                                 viewModel.apply {
                                     neonateBirthWeight=null
                                     binding.tvBirthWeightCal.text =""
                                     binding.etBirthWeight.text?.clear()
                                     viewStateOfBaby.resetSingleSelectionChildViews()
                                     viewGender.resetSingleSelectionChildViews()
-//                                    genderFlow= hashMapOf()
-//                                    stateOfBaby= hashMapOf()
+                                    viewModel.genderFlow.clear()
+                                    viewModel.stateOfBaby.clear()
                                     gestationalAge=null
                                     binding.tvGestationalAge.text=""
                                     cgSignSymptomsObserved.clearSelection()

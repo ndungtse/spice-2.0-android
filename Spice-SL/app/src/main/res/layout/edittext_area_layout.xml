@@ -55,15 +55,14 @@
                 style="@style/Form_Input_Style"
                 android:layout_width="@dimen/_0dp"
                 android:inputType="textMultiLine"
-                android:maxLines="4"
-                android:minLines="3"
+                android:maxLines="6"
+                android:minLines="6"
                 android:gravity="top|start"
                 android:ellipsize="none"
                 android:scrollHorizontally="false"
                 android:scrollbars="vertical"
                 android:layout_height="@dimen/_140sdp"
                 android:layout_weight="0.8"
-
                 android:paddingHorizontal="@dimen/_12sdp"
                 android:paddingVertical="@dimen/_10sdp" />
 

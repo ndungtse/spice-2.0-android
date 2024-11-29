@@ -18,6 +18,7 @@ import android.text.TextWatcher
 import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewParent
@@ -961,6 +962,14 @@ class FormGenerator(
                 parentLayout.addView(binding.root)
             }
 
+            binding.etUserInput.setOnTouchListener { v, event ->
+                v.parent?.requestDisallowInterceptTouchEvent(true)
+                when (event.action) {
+                    MotionEvent.ACTION_UP -> v.parent?.requestDisallowInterceptTouchEvent(false)
+                }
+                false
+            }
+
             binding.etUserInput.addTextChangedListener { editable: Editable? ->
                 when {
                     editable.isNullOrBlank() -> {
@@ -989,6 +998,41 @@ class FormGenerator(
                         } else
                             resultHashMap[id] = editable.trim().toString()
                         setConditionalVisibility(serverViewModel, editable.trim().toString())
+
+                        val textWatcher = object : TextWatcher {
+                            override fun beforeTextChanged(
+                                s: CharSequence?,
+                                start: Int,
+                                count: Int,
+                                after: Int
+                            ) {
+                            }
+
+                            override fun onTextChanged(
+                                s: CharSequence?,
+                                start: Int,
+                                before: Int,
+                                count: Int
+                            ) {
+                            }
+
+                            override fun afterTextChanged(s: Editable?) {
+                                s?.let {
+                                    val inputText = it.toString()
+                                    // Capitalize the first letter if it's lowercase
+                                    if (inputText.isNotEmpty() && inputText[0].isLowerCase()) {
+                                        binding.etUserInput.removeTextChangedListener(this) // Prevent infinite loop
+                                        it.replace(
+                                            0,
+                                            1,
+                                            inputText[0].uppercase()
+                                        ) // Capitalize first character
+                                        binding.etUserInput.addTextChangedListener(this)
+                                    }
+                                }
+                            }
+                        }
+                        binding.etUserInput.addTextChangedListener(textWatcher)
                     }
                 }
             }

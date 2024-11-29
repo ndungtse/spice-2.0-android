@@ -124,7 +124,7 @@ android {
                     }
                 }
             }
-            signingConfig = signingConfigs.getByName("staging")
+//            signingConfig = signingConfigs.getByName("staging")
         }
 
         create("staging") {

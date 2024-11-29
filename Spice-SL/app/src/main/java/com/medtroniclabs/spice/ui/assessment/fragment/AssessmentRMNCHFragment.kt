@@ -227,6 +227,7 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
             binding.bioDataFragmentContainer.id,
             tag = BioDataFragment.TAG
         )
+        childFragmentManager.executePendingTransactions() // Ensures transaction is complete
         formGenerator = FormGenerator(
             requireContext(), binding.llForm, null, this, binding.scrollView,
             translate = SecuredPreference.getIsTranslationEnabled()

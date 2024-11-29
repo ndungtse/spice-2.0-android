@@ -110,6 +110,7 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
                     binding.tvNoPatientsFound.gone()
                     binding.btnRegister.gone()
                 } else {
+                    binding.tvNoPatientsFound.visible()
                     binding.tvPatientCount.gone()
                     binding.tvNoPatientsFound.text = getString(R.string.no_patients_found)
                     val isNotShown = patientListViewModel.origin?.lowercase() == MenuConstants.ASSESSMENT.lowercase() || patientListViewModel.origin?.lowercase() == MenuConstants.REGISTRATION.lowercase()
@@ -163,12 +164,18 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
                         invisible()
                 }
                 binding.llSortFilter.btnFilter.apply {
+                    val patientCount = count.toLong()
+                    if (patientCount ==0L) {
+                        binding.tvNoPatientsFound.visible()
+                    }
                     val filterCount = patientListViewModel.filterCount()
                     text = if (filterCount > 0)
                         getString(R.string.filter_count, filterCount)
                     else
                         getString(R.string.filter)
                 }
+            } else {
+                binding.tvNoPatientsFound.visible()
             }
             if (binding.refreshLayout.isRefreshing) {
                 binding.refreshLayout.isRefreshing = false

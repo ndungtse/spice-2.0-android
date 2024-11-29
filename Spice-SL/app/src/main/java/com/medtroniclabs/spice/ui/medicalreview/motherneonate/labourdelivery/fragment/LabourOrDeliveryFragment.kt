@@ -125,7 +125,7 @@ class LabourOrDeliveryFragment : BaseFragment() {
                 }
             }
 
-            viewModel.validateSubmitButtonState()
+//            viewModel.validateSubmitButtonState()
         }
     }
 
@@ -627,7 +627,7 @@ class LabourOrDeliveryFragment : BaseFragment() {
         var isValidDeliveryBy = viewModel.deliveryBy != null &&
                 viewModel.deliveryAt != null &&
                 viewModel.deliveryStatus != null
-        val isValidDelivery = etHourTimeOfDelivery.isNotEmpty() &&
+        var isValidDelivery = etHourTimeOfDelivery.isNotEmpty() &&
                 etMinutesTimeOfDelivery.isNotEmpty() &&
                 dateOfDelivery != null &&
                 deliveryOther &&
@@ -698,27 +698,34 @@ class LabourOrDeliveryFragment : BaseFragment() {
                     if (etHourTimeOfLabourOnset.isEmpty() && etHourTimeOfDelivery.isEmpty() && etMinutesTimeOfLabourOnSet.isEmpty() && etMinutesTimeOfDelivery.isEmpty()) {
                         tvTimeOfLabourOnsetError.showIf(true)
                         tvTimeOfDeliveryError.showIf(true)
+                        isValidDelivery=false
                     } else {
                         if (etHourTimeOfDelivery == "" || etMinutesTimeOfDelivery == "") {
                             tvTimeOfDeliveryError.showIf(true)
+                            isValidDelivery=false
                         } else if (etHourTimeOfLabourOnset == "" || etMinutesTimeOfLabourOnSet == "") {
                             tvTimeOfLabourOnsetError.showIf(true)
+                            isValidDelivery=false
                         } else {
                             if (etHourTimeOfLabourOnset.toInt() > etHourTimeOfDelivery.toInt()) {
                                 tvTimeOfLabourOnsetError.showIf(true)
                                 tvTimeOfDeliveryError.showIf(true)
+                                isValidDelivery=false
                             }
                             if (etHourTimeOfDelivery.toInt() == 12 && etHourTimeOfLabourOnset.toInt() < etHourTimeOfDelivery.toInt()) {
                                 tvTimeOfLabourOnsetError.showIf(true)
                                 tvTimeOfDeliveryError.showIf(true)
+                                isValidDelivery=false
                             }
                             if (etHourTimeOfLabourOnset.toInt() == 12 && etHourTimeOfLabourOnset.toInt() > etHourTimeOfDelivery.toInt()) {
                                 tvTimeOfLabourOnsetError.showIf(false)
                                 tvTimeOfDeliveryError.showIf(false)
+                                isValidDelivery=true
                             }
                             if (etHourTimeOfLabourOnset.toInt() == etHourTimeOfDelivery.toInt() && etMinutesTimeOfLabourOnSet.toInt() > etMinutesTimeOfDelivery.toInt()) {
                                 tvTimeOfLabourOnsetError.showIf(true)
                                 tvTimeOfDeliveryError.showIf(true)
+                                isValidDelivery=false
                             }
                             if (viewModel.timeOfLabourOnsetMap[DefinedParams.TimeOfLabourOnset] == getString(
                                     R.string.pm
@@ -728,6 +735,7 @@ class LabourOrDeliveryFragment : BaseFragment() {
                             ) {
                                 tvTimeOfLabourOnsetError.showIf(true)
                                 tvTimeOfDeliveryError.showIf(true)
+                                isValidDelivery=false
                             }
 
                         }
