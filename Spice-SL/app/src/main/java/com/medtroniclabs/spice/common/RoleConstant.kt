@@ -17,4 +17,5 @@ object RoleConstant {
     val PHARMACIST = "PHARMACIST"
     val NURSE = "NURSE"
     val HRIO = "HRIO"
+    val LAB_TECHNICIAN = "LAB_TECHNICIAN"
 }

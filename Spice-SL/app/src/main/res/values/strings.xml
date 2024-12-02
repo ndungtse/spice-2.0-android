@@ -1046,7 +1046,7 @@
     <string name="lifestyle_smoking">Smoking\n-</string>
     <string name="lifestyle_alcohol">Alcohol\n-</string>
     <string name="lifestyle_diet_nutrition">Diet and Nutrition\n-</string>
-    <string name="lifestyle_physical_activity">Physical Activity\n-</string>
+    <string name="lifestyle_physical_activity">Physical Activity</string>
     <string name="nutrition_comment_title">Nutrition Comments</string>
     <string name="smoking_comments">"Smoking Comments "</string>
     <string name="alcohol_comments">Alcohol Comments</string>
@@ -1182,6 +1182,11 @@
     <string name="phq9_mental_health">PHQ 9</string>
     <string name="gad7_mental_health">GAD 7</string>
     <string name="edit_assessment">Edit Assessment</string>
-    <string name="phq9_type">phq9</string>
-    <string name="gad7_type">gad7</string>
+
+    <string name="lab_test">Lab Test</string>
+    <string name="lab_test_result_save">Lab Test result saved successfully</string>
+    <string name="phq4_assessment">PHQ 4 Assessment</string>
+    <string name="phq9_assessment">PHQ 9 Assessment</string>
+    <string name="gad7_assessment">GAD 7 Assessment</string>
+    <string name="suicide_screener">Suicide Screener</string>
 </resources>

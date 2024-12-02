@@ -10,7 +10,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.view.isVisible
-import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.isVisible
@@ -37,6 +36,7 @@ import com.medtroniclabs.spice.ncd.data.InitialMedicalReview
 import com.medtroniclabs.spice.ncd.data.MedicalReviewRequestResponse
 import com.medtroniclabs.spice.ncd.data.NCDMRSummaryRequestResponse
 import com.medtroniclabs.spice.ncd.data.NCDPatientRemoveRequest
+import com.medtroniclabs.spice.ncd.data.NCDPatientTransferValidate
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.EncounterReference
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.MATERNAL_HEALTH
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.MENTAL_HEALTH
@@ -46,6 +46,7 @@ import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.getConfirmDiagnoses
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.getTypeForDiagnoses
 import com.medtroniclabs.spice.ncd.medicalreview.dialog.NCDDiagnosisDialogFragment
 import com.medtroniclabs.spice.ncd.medicalreview.dialog.NCDMRAlertDialog
+import com.medtroniclabs.spice.ncd.medicalreview.dialog.NCDMentalHealthFragment
 import com.medtroniclabs.spice.ncd.medicalreview.dialog.NCDPatientHistoryDialog
 import com.medtroniclabs.spice.ncd.medicalreview.dialog.NCDPregnancyDialog
 import com.medtroniclabs.spice.ncd.medicalreview.dialog.NCDTreatmentPlanDialog
@@ -68,6 +69,7 @@ import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDLifestyleAssessmen
 import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDMedicalReviewDiagnosisCardViewModel
 import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDMedicalReviewSummaryViewModel
 import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDMedicalReviewViewModel
+import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDMentalHealthViewModel
 import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDObstetricExaminationViewModel
 import com.medtroniclabs.spice.ncd.registration.ui.RegistrationActivity
 import com.medtroniclabs.spice.network.resource.ResourceState
@@ -83,12 +85,8 @@ import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 import com.medtroniclabs.spice.ui.patientDelete.NCDDeleteConfirmationDialog
 import com.medtroniclabs.spice.ui.patientDelete.viewModel.NCDPatientDeleteViewModel
 import com.medtroniclabs.spice.ui.patientEdit.NCDPatientEditActivity
-import com.medtroniclabs.spice.ncd.data.NCDPatientTransferValidate
-import com.medtroniclabs.spice.ncd.medicalreview.dialog.NCDMentalHealthFragment
-import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDMentalHealthViewModel
-import com.medtroniclabs.spice.ui.mypatients.fragment.ReferPatientFragment
-import com.medtroniclabs.spice.ui.patientTransfer.viewModel.NCDPatientTransferViewModel
 import com.medtroniclabs.spice.ui.patientTransfer.dialog.NCDTransferArchiveDialog
+import com.medtroniclabs.spice.ui.patientTransfer.viewModel.NCDPatientTransferViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -374,28 +372,6 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
                         supportFragmentManager,
                         NCDTransferArchiveDialog.TAG
                     )
-                }
-            }
-        }
-
-        mentalHealthViewModel.createMentalHealthStatus.observe(this) { resourceState ->
-            when (resourceState.state) {
-                ResourceState.LOADING -> {
-                    showLoading()
-                }
-
-                ResourceState.SUCCESS -> {
-                    hideLoading()
-                    val fragment =
-                        supportFragmentManager.findFragmentByTag(NCDMentalHealthFragment.TAG) as? NCDMentalHealthFragment
-                    fragment?.dismiss()
-                    resourceState.data?.let { map ->
-                        showSuccessDialog(map)
-                    }
-                }
-
-                ResourceState.ERROR -> {
-                    hideLoading()
                 }
             }
         }

@@ -27,9 +27,12 @@ import com.medtroniclabs.spice.formgeneration.extension.capitalizeFirstChar
 import com.medtroniclabs.spice.mappingkey.Screening
 import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.ncd.data.NCDPregnancyRiskUpdate
+import com.medtroniclabs.spice.ncd.medicalreview.dialog.NCDMentalHealthQuestionDialog
+import com.medtroniclabs.spice.ncd.medicalreview.dialog.NCDPatientHistoryDialog
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.BaseFragment
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.ANC
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.PNC
@@ -286,6 +289,22 @@ class PatientInfoFragment : BaseFragment() {
                 dataList,
                 R.color.fragment_bg,
                 (requireActivity() as BaseActivity),
+                mentalHealthAssessment = { mhPair ->
+                    mhPair.first?.let { type ->
+                        if (type.isNotBlank()) {
+                            viewModel.patientDetailsLiveData.value?.data?.let {
+                                withNetworkAvailability(online = {
+                                    showMentalHealthDialog(
+                                        CommonUtils.getAssessmentType(
+                                            requireContext(),
+                                            type
+                                        ), mhPair.second
+                                    )
+                                })
+                            }
+                        }
+                    }
+                },
                 onItemPregnantDialog = {
                     withNetworkAvailability(online = {
                         viewModel.ncdGetInstructions()
@@ -312,6 +331,19 @@ class PatientInfoFragment : BaseFragment() {
         }
         binding.rvPatientInfo.adapter = adapter
         hideProgress()
+    }
+
+    private fun showMentalHealthDialog(type: String, isEditAssessment: Boolean) {
+        val dialog = childFragmentManager.findFragmentByTag(NCDMentalHealthQuestionDialog.TAG)
+        if (dialog == null) {
+            NCDMentalHealthQuestionDialog.newInstance(
+                type,
+                viewModel.getPatientId(),
+                viewModel.getPatientFHIRId(),
+                isEditAssessment
+            )
+                .show(childFragmentManager, NCDPatientHistoryDialog.TAG)
+        }
     }
 
     private fun setNCDData(data: PatientListRespModel) {
@@ -381,8 +413,33 @@ class PatientInfoFragment : BaseFragment() {
         )
         val isMentalHealth = viewModel.mrMenuId.equals("mentalHealth", ignoreCase = true)
         if (isMentalHealth) {
-            val cageAid =
-                data.cageAid?.toString() ?: requireContext().getString(R.string.hyphen_symbol)
+            val phq4Score = data.phq4score ?: requireContext().getString(R.string.hyphen_symbol)
+            val phq4AssessmentType = if (data.phq4score != null) requireContext().getString(R.string.edit_assessment) else requireContext().getString(
+                    R.string.start_assessment
+                )
+            dataList.add(
+                mapOf(
+                    DefinedParams.label to requireContext().getString(R.string.phq4_score),
+                    DefinedParams.Value to phq4Score,
+                    Screening.type to phq4AssessmentType,
+                    DefinedParams.color to requireContext().getColor(R.color.medium_high_risk_color)
+                )
+            )
+            val suicidcalIdeation = data.suicidalIdeation ?: requireContext().getString(
+                R.string.hyphen_symbol
+            )
+            val type = if (data.suicidalIdeation != null) requireContext().getString(R.string.edit_assessment) else requireContext().getString(
+                    R.string.start_assessment
+                )
+            dataList.add(
+                mapOf(
+                    DefinedParams.label to requireContext().getString(R.string.suicidcal_ideation),
+                    DefinedParams.Value to suicidcalIdeation,
+                    Screening.type to type,
+                    DefinedParams.color to requireContext().getColor(R.color.medium_high_risk_color)
+                )
+            )
+            val cageAid = data.cageAid ?: requireContext().getString(R.string.hyphen_symbol)
             val assessmentType =
                 if (data.cageAid != null) requireContext().getString(R.string.edit_assessment) else requireContext().getString(
                     R.string.start_assessment
@@ -409,39 +466,6 @@ class PatientInfoFragment : BaseFragment() {
             }
         }
 
-
-
-        if (isMentalHealth) {
-            val phq4Score =
-                data.phq4score?.toString() ?: requireContext().getString(R.string.hyphen_symbol)
-            val assessmentType =
-                if (data.phq4score != null) requireContext().getString(R.string.edit_assessment) else requireContext().getString(
-                    R.string.start_assessment
-                )
-            dataList.add(
-                mapOf(
-                    DefinedParams.label to requireContext().getString(R.string.phq4_score),
-                    DefinedParams.Value to phq4Score,
-                    Screening.type to assessmentType,
-                    DefinedParams.color to requireContext().getColor(R.color.medium_high_risk_color)
-                )
-            )
-            val suicidcalIdeation = data.suicidalIdeation?.toString() ?: requireContext().getString(
-                R.string.hyphen_symbol
-            )
-            val type =
-                if (data.suicidalIdeation != null) requireContext().getString(R.string.edit_assessment) else requireContext().getString(
-                    R.string.start_assessment
-                )
-            dataList.add(
-                mapOf(
-                    DefinedParams.label to requireContext().getString(R.string.suicidcal_ideation),
-                    DefinedParams.Value to suicidcalIdeation,
-                    Screening.type to type,
-                    DefinedParams.color to requireContext().getColor(R.color.medium_high_risk_color)
-                )
-            )
-        }
         val isPregnancyANC =
             viewModel.mrMenuId.equals(DefinedParams.PregnancyANC, ignoreCase = true)
         if (isPregnancyANC && CommonUtils.canShowToggle(viewModel.getGender(), data.pregnancyDetails?.isPregnancyRisk)) {

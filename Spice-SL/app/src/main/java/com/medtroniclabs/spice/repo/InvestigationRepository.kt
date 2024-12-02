@@ -1,5 +1,7 @@
 package com.medtroniclabs.spice.repo
 
+import com.google.gson.Gson
+import com.medtroniclabs.spice.data.ErrorResponse
 import com.medtroniclabs.spice.db.local.RoomHelper
 import com.medtroniclabs.spice.model.LabTestCreateRequest
 import com.medtroniclabs.spice.model.LabTestListRequest
@@ -11,6 +13,7 @@ import com.medtroniclabs.spice.ncd.data.PredictionRequest
 import com.medtroniclabs.spice.network.ApiHelper
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.network.resource.ResourceState
+import okhttp3.ResponseBody
 import javax.inject.Inject
 
 class InvestigationRepository @Inject constructor(
@@ -46,7 +49,7 @@ class InvestigationRepository @Inject constructor(
                     Resource(ResourceState.ERROR)
                 }
             } else {
-                Resource(ResourceState.ERROR)
+                Resource(ResourceState.ERROR, message = getErrorMessage(response.errorBody()))
             }
         } catch (e: Exception) {
             Resource(ResourceState.ERROR)
@@ -89,4 +92,14 @@ class InvestigationRepository @Inject constructor(
 
     suspend fun getLabTestNudgeList(predictionRequest: PredictionRequest) = apiHelper.getLabTestNudgeList(predictionRequest)
 
+    private fun getErrorMessage(errorBody: ResponseBody?): String? {
+        if (errorBody == null)
+            return null
+        return try {
+            val errorResponse = Gson().fromJson(errorBody.string(), ErrorResponse::class.java)
+            return errorResponse.message
+        } catch (e: Exception) {
+            null
+        }
+    }
 }

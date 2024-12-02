@@ -13,28 +13,26 @@ import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
 import com.medtroniclabs.spice.mappingkey.Screening
 
 object FormAutofill {
-    fun start(formGenerator: FormGenerator, values: Any?) {
-        values?.let {
-            val resultMap = objectToMap(it)
-            resultMap.forEach { map ->
-                (map.key as? String?)?.let { key ->
-                    formGenerator.getViewByTag(key)?.let { view ->
-                        when (view) {
-                            is EditText -> {
-                                setEditText(view, map.value)
-                            }
+    fun start(formGenerator: FormGenerator, values: Any) {
+        val resultMap = objectToMap(values)
+        resultMap.forEach { map ->
+            (map.key as? String?)?.let { key ->
+                formGenerator.getViewByTag(key)?.let { view ->
+                    when (view) {
+                        is EditText -> {
+                            setEditText(view, map.value)
+                        }
 
-                            is Spinner -> {
-                                setSpinner(view, map.value)
-                            }
+                        is Spinner -> {
+                            setSpinner(view, map.value)
+                        }
 
-                            is SingleSelectionCustomView -> {
-                                setSingleSelectionCustomView(view, key, map.value)
-                            }
+                        is SingleSelectionCustomView -> {
+                            setSingleSelectionCustomView(view, key, map.value)
+                        }
 
-                            is TextView -> {
-                                setTextView(view, key, map.value, formGenerator)
-                            }
+                        is TextView -> {
+                            setTextView(view, key, map.value, formGenerator)
                         }
                     }
                 }
@@ -73,7 +71,7 @@ object FormAutofill {
             is String -> view.singleSelectionChildViewsOption(value)
             is Boolean -> {
                 val id = "${value}_$key"
-                view.singleSelectionChildViewsOption(value, id)
+                view.singleSelectionAutofill(id)
             }
         }
     }

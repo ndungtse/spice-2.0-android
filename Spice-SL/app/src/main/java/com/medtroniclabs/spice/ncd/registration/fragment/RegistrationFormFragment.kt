@@ -82,8 +82,14 @@ class RegistrationFormFragment : BaseFragment(), View.OnClickListener, FormEvent
 
                 ResourceState.SUCCESS -> {
                     (activity as? BaseActivity)?.hideLoading()
-                    resources.data?.let {
-                        formGenerator.populateViews(it)
+                    resources.data?.let { resData ->
+                        val updatedResData = resData.map {
+                            if (isGenderOrPregnantField(it) && isPregnantFemale())
+                                it.copy(enableSingleSelection = false)
+                            else
+                                it
+                        }
+                        formGenerator.populateViews(updatedResData)
                         prePopulate()
                     }
                 }
@@ -282,7 +288,7 @@ class RegistrationFormFragment : BaseFragment(), View.OnClickListener, FormEvent
     }
 
     private fun prePopulate() {
-        patientViewModel.patientDetailsLiveData.value?.data.let {
+        patientViewModel.patientDetailsLiveData.value?.data?.let {
             FormAutofill.start(formGenerator, it)
         }
     }
@@ -361,6 +367,19 @@ class RegistrationFormFragment : BaseFragment(), View.OnClickListener, FormEvent
                 }
             }
         })
+    }
+
+    private fun isGenderOrPregnantField(formLayout: FormLayout): Boolean {
+        return formLayout.id.equals(DefinedParams.Gender, true) ||
+                formLayout.id.equals(Screening.isPregnant, true)
+    }
+
+    private fun isPregnantFemale(): Boolean {
+        var isPregnantFemale = false
+        patientViewModel.patientDetailsLiveData.value?.data?.let {
+            isPregnantFemale = it.gender.equals(Screening.Female, true) && it.isPregnant == true
+        }
+        return isPregnantFemale
     }
 
     private fun proceedRegistration(

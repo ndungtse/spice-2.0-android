@@ -1,7 +1,10 @@
 package com.medtroniclabs.spice.ui.assessment.fragment
 
+import android.content.res.ColorStateList
+import android.graphics.Color
 import android.os.Bundle
 import android.text.SpannableStringBuilder
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -118,8 +121,8 @@ class AssessmentNCDSummaryFragment : BaseFragment(), View.OnClickListener {
                             DefinedParams.RiskMessage
                         )
                     )
-                        updateRedRiskDetails(
-                            onlineResponseMap[DefinedParams.RiskLevel]?.toString(),
+                        updateRedRiskCodes(
+                            onlineResponseMap[DefinedParams.RiskColorCode]?.toString(),
                             onlineResponseMap[DefinedParams.RiskMessage]?.toString()
                         )
 
@@ -591,6 +594,21 @@ class AssessmentNCDSummaryFragment : BaseFragment(), View.OnClickListener {
         }
         binding.root.findViewWithTag<LinearLayout>(formSummaryReporter.getFormResultView())
             ?.addView(summaryBinding.root)
+    }
+
+    private fun updateRedRiskCodes(riskCode: String?, riskMessage: String?) {
+        val hasRiskLevel = !(riskMessage.isNullOrBlank() || riskCode.isNullOrBlank())
+        if (hasRiskLevel) {
+            binding.clRedRisk.visibility = View.VISIBLE
+            val color = Color.parseColor(riskCode)
+            binding.clRedRisk.backgroundTintList =
+                ColorStateList.valueOf(color)
+            binding.tvRedRiskStatus.setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
+            binding.tvRedRiskStatus.gravity = Gravity.CENTER
+            binding.ivRedRisk.visibility = View.GONE
+            binding.tvRedRiskStatus.text = riskMessage ?: ""
+        } else
+            binding.clRedRisk.visibility = View.GONE
     }
 
     private fun updateRedRiskDetails(riskLevel: String?, riskMessage: String?) {

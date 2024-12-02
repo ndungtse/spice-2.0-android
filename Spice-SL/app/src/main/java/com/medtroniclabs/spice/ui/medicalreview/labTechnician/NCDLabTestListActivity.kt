@@ -15,9 +15,9 @@ import com.medtroniclabs.spice.formgeneration.extension.capitalizeFirstChar
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.model.medicalreview.InvestigationModel
-import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
+import com.medtroniclabs.spice.ui.dialog.GeneralSuccessDialog
 import com.medtroniclabs.spice.ui.medicalreview.investigation.InvestigationGenerator
 import com.medtroniclabs.spice.ui.medicalreview.investigation.InvestigationListener
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
@@ -51,11 +51,7 @@ class NCDLabTestListActivity : BaseActivity(), View.OnClickListener, Investigati
                 ResourceState.SUCCESS -> {
                     hideLoading()
                     autoPopulateDetails(resourceData.data)
-                    resourceData.data?.let { data ->
-                        viewModel.getLabTestList(data)
-                    } ?: kotlin.run {
-                        hideLoading()
-                    }
+                    getLabTests()
                 }
             }
         }
@@ -94,22 +90,21 @@ class NCDLabTestListActivity : BaseActivity(), View.OnClickListener, Investigati
                 }
 
                 ResourceState.SUCCESS -> {
-                    resource.data?.let { map ->
-                        hideLoading()
-                        val intent = Intent()
-                        if (map.containsKey(DefinedParams.EncounterId)) {
-                            val value = map[DefinedParams.EncounterId]
-                            if (value is String) {
-                                intent.putExtra(DefinedParams.EncounterId, value)
-                            }
-                        }
-                        setResult(RESULT_OK, intent)
-                        finish()
-                    } ?: kotlin.run {
-                        hideLoading()
-                    }
+                    hideLoading()
+                    GeneralSuccessDialog.newInstance(
+                        title = getString(R.string.lab_test),
+                        message = resource.data?.message
+                            ?: getString(R.string.lab_test_result_save),
+                        okayButton = getString(R.string.done)
+                    ) { getLabTests() }.show(supportFragmentManager, GeneralSuccessDialog.TAG)
                 }
             }
+        }
+    }
+
+    private fun getLabTests() {
+        patientDetailViewModel.patientDetailsLiveData.value?.data?.let { data ->
+            viewModel.getLabTestList(data)
         }
     }
 
@@ -133,7 +128,7 @@ class NCDLabTestListActivity : BaseActivity(), View.OnClickListener, Investigati
     }
 
     private fun initView() {
-        binding.bottomView.safeClickListener(this)
+        binding.btnDone.safeClickListener(this)
         intent?.let {
             patientDetailViewModel.origin = it.getStringExtra(DefinedParams.ORIGIN)
             it.getStringExtra(DefinedParams.FhirId)?.let { id ->
@@ -158,19 +153,23 @@ class NCDLabTestListActivity : BaseActivity(), View.OnClickListener, Investigati
                 patientDetails.programId?.toString() ?: getString(R.string.separator_hyphen)
             binding.tvNationalId.text =
                 patientDetails.identityValue ?: getString(R.string.separator_hyphen)
-            if (patientDetails.isConfirmDiagnosis) {
-                binding.tvDiagnoses.text =
-                    patientDetails.diagnosis?.joinToString(separator = getString(R.string.comma_symbol))
-                        .toString()
-            }
+            val diagnosis: List<String?>? =
+                patientDetails.confirmDiagnosis?.diagnosis?.map { it.name }
+            binding.tvDiagnoses.text =
+                if (diagnosis.isNullOrEmpty()) getString(R.string.hyphen_symbol) else diagnosis.joinToString(
+                    separator = getString(R.string.comma_symbol)
+                )
 
             patientDetails.cvdRiskScore?.let { score ->
-                binding.tvCVD.text = StringConverter.appendTexts(
-                    "${score}%",
-                    patientDetails.cvdRiskLevel, separator = getString(R.string.separator_hyphen)
-                )
-                val textColor = CommonUtils.cvdRiskColorCode(score.toLong(), this)
-                binding.tvCVD.setTextColor(textColor)
+                if (score > 0) {
+                    binding.tvPatientRisk.text = StringConverter.appendTexts(
+                        "${score}%",
+                        patientDetails.cvdRiskLevel,
+                        separator = getString(R.string.separator_hyphen)
+                    )
+                    val textColor = CommonUtils.cvdRiskColorCode(score.toLong(), this)
+                    binding.tvPatientRisk.setTextColor(textColor)
+                }
             }
             data.firstName?.let { firstName ->
                 val text = StringConverter.appendTexts(firstText = firstName, data.lastName)
@@ -188,10 +187,10 @@ class NCDLabTestListActivity : BaseActivity(), View.OnClickListener, Investigati
 
     override fun onClick(v: View?) {
         when (v?.id) {
-            binding.bottomView.id -> {
+            binding.btnDone.id -> {
                 if (investigationGenerator.onValidateInput(true)) {
                     patientDetailViewModel.patientDetailsLiveData.value?.data?.let { data ->
-                        viewModel.createLabTest(
+                        viewModel.updateLabTest(
                             geyPayloadForLabTest(investigationGenerator.getResultFromInvestigation()),
                             data
                         )

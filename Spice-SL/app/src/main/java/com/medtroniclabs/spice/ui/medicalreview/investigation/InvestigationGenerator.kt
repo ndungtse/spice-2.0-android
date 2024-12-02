@@ -21,6 +21,7 @@ import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.invisible
 import com.medtroniclabs.spice.appextensions.visible
+import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.CommonUtils.getDecimalFormatted
 import com.medtroniclabs.spice.common.CommonUtils.getMaxDateLimit
 import com.medtroniclabs.spice.common.DateUtils
@@ -652,12 +653,15 @@ class InvestigationGenerator(
             LayoutInvestigationRowBinding.inflate(LayoutInflater.from(this))
         this.serverData?.let { investigationList ->
             if (isLabTech) {
-                investigationList.forEach { investigation ->
-                    if ((investigation.resultHashMap.isNullOrEmpty())) {
-                        investigation.dropdownState = !investigation.dropdownState
-                        toggleFacility(investigationBinding,investigation)
-                        investigation.dataError = false
-                        isValid = false
+                val anyResultsEntered : Boolean = investigationList.any { !it.resultHashMap.isNullOrEmpty() }
+                if (CommonUtils.isCommunity() || !anyResultsEntered) {
+                    investigationList.forEach { investigation ->
+                        if ((investigation.resultHashMap.isNullOrEmpty())) {
+                            investigation.dropdownState = !investigation.dropdownState
+                            toggleFacility(investigationBinding,investigation)
+                            investigation.dataError = false
+                            isValid = false
+                        }
                     }
                 }
             }

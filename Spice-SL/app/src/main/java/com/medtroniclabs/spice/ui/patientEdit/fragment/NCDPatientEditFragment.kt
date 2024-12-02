@@ -110,7 +110,9 @@ class NCDPatientEditFragment : BaseFragment(), FormEventListener, View.OnClickLi
 
                 ResourceState.SUCCESS -> {
                     hideProgress()
-                    FormAutofill.start(formGenerator, resourceState.data)
+                    resourceState.data?.let {
+                        FormAutofill.start(formGenerator, it)
+                    }
                 }
             }
         }

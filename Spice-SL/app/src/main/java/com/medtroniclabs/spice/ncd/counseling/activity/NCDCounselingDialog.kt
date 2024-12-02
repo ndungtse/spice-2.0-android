@@ -12,7 +12,6 @@ import com.medtroniclabs.spice.appextensions.loadAsGif
 import com.medtroniclabs.spice.appextensions.resetImageView
 import com.medtroniclabs.spice.appextensions.setDialogPercent
 import com.medtroniclabs.spice.common.DateUtils
-import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.databinding.DialogNcdCounselingBinding
 import com.medtroniclabs.spice.formgeneration.extension.hideKeyboard
 import com.medtroniclabs.spice.formgeneration.extension.markMandatory
@@ -20,9 +19,6 @@ import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.ncd.counseling.model.NCDCounselingModel
 import com.medtroniclabs.spice.ncd.counseling.viewmodel.CounselingViewModel
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil
-import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.MEMBER_REFERENCE
-import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.PATIENT_REFERENCE
-import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.VISIT_ID
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.network.utils.ConnectivityManager
 import dagger.hilt.android.AndroidEntryPoint
@@ -41,8 +37,24 @@ class NCDCounselingDialog(private val callback: (isPositiveResult: Pair<String, 
 
     companion object {
         const val TAG = "NCDCounselingDialog"
-        fun newInstance(callback: (isPositiveResult: Pair<String, String>?) -> Unit): NCDCounselingDialog {
-            return NCDCounselingDialog(callback)
+
+        const val PatientReference = "patientReference"
+        const val MemberReference = "memberReference"
+        const val EncounterReference = "encounterReference"
+
+        fun newInstance(
+            patientReference: String?,
+            memberReference: String?,
+            encounterReference: String?,
+            callback: (isPositiveResult: Pair<String, String>?) -> Unit
+        ): NCDCounselingDialog {
+            val dialog = NCDCounselingDialog(callback)
+            val bundle = Bundle()
+            bundle.putString(PatientReference, patientReference)
+            bundle.putString(MemberReference, memberReference)
+            bundle.putString(EncounterReference, encounterReference)
+            dialog.arguments = bundle
+            return dialog
         }
     }
 
@@ -62,6 +74,14 @@ class NCDCounselingDialog(private val callback: (isPositiveResult: Pair<String, 
     }
 
     private fun initView() {
+        arguments?.let {
+            viewModel.apply {
+                patientReference = it.getString(PatientReference)
+                memberReference = it.getString(MemberReference)
+                encounterReference = it.getString(EncounterReference)
+            }
+        }
+
         binding.apply {
             tvCounselorNotesLbl.markMandatory()
             btnSave.safeClickListener(this@NCDCounselingDialog)

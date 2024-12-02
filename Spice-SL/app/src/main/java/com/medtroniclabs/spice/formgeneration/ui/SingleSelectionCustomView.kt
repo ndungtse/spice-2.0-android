@@ -84,6 +84,9 @@ class SingleSelectionCustomView : LinearLayout {
             getBackgroundDrawable(index, optionList)?.let {
                 textView.background = it
             }
+            serverViewModel.enableSingleSelection?.let { enableStatus ->
+                textView.isEnabled = enableStatus
+            }
 
             textView.safeClickListener {
                 callback?.invoke(optionValue[DefinedParams.ID], elementID,serverViewModel,(name as String?))
@@ -119,23 +122,22 @@ class SingleSelectionCustomView : LinearLayout {
             it.isSelected = false
         }
     }
+
     fun singleSelectionChildViewsOption(string: String) {
         forEach {
-            if (it is TextView) {
-               if( it.text.toString().equals(string, ignoreCase = true)) {
-                   it.isSelected = true
-                   it.performClick()
-                   return@forEach
-               }
+            if (it is TextView && it.text.toString().equals(string, ignoreCase = true)) {
+                it.performClick()
+                it.isEnabled = false
+                return@forEach
             }
         }
     }
 
-    fun singleSelectionChildViewsOption(boolean: Boolean, id: String) {
+    fun singleSelectionAutofill(id: String) {
         forEach {
             if (it is TextView && it.tag.toString() == id) {
-                it.isSelected = boolean
                 it.performClick()
+                it.isEnabled = false
                 return@forEach
             }
         }

@@ -54,6 +54,7 @@ import com.medtroniclabs.spice.mappingkey.Screening.otherType
 import com.medtroniclabs.spice.mappingkey.Screening.siteId
 import com.medtroniclabs.spice.mappingkey.Screening.substanceAbuse
 import com.medtroniclabs.spice.mappingkey.Screening.userSiteId
+import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil
 import com.medtroniclabs.spice.ncd.screening.utils.ReferredReason
 import com.medtroniclabs.spice.ui.MenuConstants
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
@@ -839,7 +840,7 @@ object CommonUtils {
 
     fun calculateCAGEAIDSCore(map: HashMap<String, Any>, serverData: List<FormLayout?>?) {
         var cageAid = 0
-        if (serverData?.any { it?.id == substanceAbuse } != true) {
+        if (serverData?.any { it?.id == substanceAbuse || it?.family == substanceAbuse} != true) {
             return
         }
         serverData?.let { dataList ->
@@ -1543,6 +1544,14 @@ object CommonUtils {
         return false
     }
 
+    fun isLabTechnician(): Boolean {
+        val userRole = SecuredPreference.getUserDetails()?.roles?.joinToString { it.name }
+        if (userRole != null) {
+            return userRole.contains(RoleConstant.LAB_TECHNICIAN)
+        }
+        return false
+    }
+
     fun isNCDProvider(): Boolean {
         val userRole = SecuredPreference.getUserDetails()?.roles?.joinToString { it.name }
         if (userRole != null) {
@@ -1720,5 +1729,34 @@ object CommonUtils {
             return userRole.contains(PHYSICIAN_PRESCRIBER)
         }
         return false
+    }
+
+    fun getPhysicalExaminationTitle(
+        context: Context,
+        workflow: String,
+        isFemalePregnant: Boolean
+    ): String {
+        if (workflow.equals(NCDMRUtil.MENTAL_HEALTH, true))
+            return context.getString(R.string.systemic_examinations)
+
+        if (workflow.equals(
+                DefinedParams.PregnancyANC,
+                true
+            ) && SecuredPreference.isAncEnabled() && isFemalePregnant
+        )
+            return context.getString(R.string.obstetric_examination)
+
+        return context.getString(R.string.physical_examinations)
+    }
+
+    fun getAssessmentType(context: Context, type: String): String {
+        return when (type) {
+            context.getString(R.string.phq4_score) -> AssessmentDefinedParams.phq4
+            context.getString(R.string.phq9_score) -> AssessmentDefinedParams.phq9
+            context.getString(R.string.gad7_score) -> AssessmentDefinedParams.gad7
+            context.getString(R.string.suicidcal_ideation) -> AssessmentDefinedParams.suicidcalIdeation
+            context.getString(R.string.cage_aid) -> AssessmentDefinedParams.cageAid
+            else -> ""
+        }
     }
 }

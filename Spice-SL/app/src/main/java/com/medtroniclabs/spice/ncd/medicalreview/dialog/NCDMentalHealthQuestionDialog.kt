@@ -8,10 +8,16 @@ import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import com.google.gson.Gson
+import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
+import com.medtroniclabs.spice.appextensions.invisible
+import com.medtroniclabs.spice.appextensions.loadAsGif
+import com.medtroniclabs.spice.appextensions.resetImageView
 import com.medtroniclabs.spice.appextensions.setDialogPercent
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
+import com.medtroniclabs.spice.common.CommonUtils.calculateCAGEAIDSCore
+import com.medtroniclabs.spice.common.CommonUtils.calculateSuicidalIdeation
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.FormAutofill
 import com.medtroniclabs.spice.common.StringConverter
@@ -24,23 +30,23 @@ import com.medtroniclabs.spice.formgeneration.listener.FormEventListener
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.ui.FormResultComposer
 import com.medtroniclabs.spice.mappingkey.Screening
-import com.medtroniclabs.spice.ncd.data.NCDMentalHealthDetails
+import com.medtroniclabs.spice.ncd.data.NCDMentalHealthMedicalReviewDetails
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil
 import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDFormViewModel
 import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDMentalHealthViewModel
 import com.medtroniclabs.spice.network.resource.ResourceState
-import com.medtroniclabs.spice.ui.MenuConstants
+import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
 
 class NCDMentalHealthQuestionDialog : DialogFragment(), FormEventListener, View.OnClickListener {
-
     private lateinit var binding: FragmentNCDMentalHealthQuestionDialogBinding
     private lateinit var formGenerator: FormGenerator
+
     private val ncdFormViewModel: NCDFormViewModel by activityViewModels()
     private val assessmentViewModel: AssessmentViewModel by activityViewModels()
-    private var assessmentJSON: List<FormLayout>? = null
     private val viewModel: NCDMentalHealthViewModel by activityViewModels()
+
     private var isEditAssessment: Boolean = false
 
     override fun onCreateView(
@@ -72,12 +78,15 @@ class NCDMentalHealthQuestionDialog : DialogFragment(), FormEventListener, View.
     private fun handleOrientation() {
         val isTablet = CommonUtils.checkIsTablet(requireContext())
         val isLandscape = resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
-        val percent = when {
-            isTablet && isLandscape -> 70
-            isTablet && !isLandscape -> 90
+        val width = when {
+            isTablet && isLandscape -> 75
             else -> 100
         }
-        setDialogPercent(percent)
+        val height = when {
+            isTablet && isLandscape -> 95
+            else -> 100
+        }
+        setDialogPercent(width, height)
     }
 
     private fun initializeFormGenerator() {
@@ -94,18 +103,52 @@ class NCDMentalHealthQuestionDialog : DialogFragment(), FormEventListener, View.
         ) { map, id ->
 
         }
-        ncdFormViewModel.getNCDForm(
-            DefinedParams.Assessment,
-            workFlow = NCDMRUtil.mentalHealth
-        )
-        val request = NCDMentalHealthDetails(
+        if (screeningCards().contains(myFormType()))
+            ncdFormViewModel.getNCDForm(DefinedParams.Screening)
+        else
+            ncdFormViewModel.getNCDForm(
+                DefinedParams.Assessment,
+                workFlow = NCDMRUtil.mentalHealth
+            )
+        val request = NCDMentalHealthMedicalReviewDetails(
             memberReference = requireArguments().getString(NCDMRUtil.MEMBER_REFERENCE) as String,
-            type = AssessmentDefinedParams.PHQ9
+            type = myFormType()
         )
         if (isEditAssessment) {
-            viewModel.ncdMentalHealthDetails(request)
+            viewModel.ncdMentalHealthMedicalReviewDetails(request, isAssessment())
         }
-        binding.tvMentalHealthLabel.text = requireArguments().getString(Screening.type)
+        binding.tvMentalHealthLabel.text = getTitle(myFormType())
+    }
+
+    private fun myFormType(): String? {
+        return requireArguments().getString(Screening.type)
+    }
+
+    private fun assessmentCards(): List<String> {
+        return listOf(
+            AssessmentDefinedParams.phq4,
+            AssessmentDefinedParams.phq9,
+            AssessmentDefinedParams.gad7
+        )
+    }
+
+    private fun screeningCards(): List<String> {
+        return listOf(AssessmentDefinedParams.suicidcalIdeation, AssessmentDefinedParams.cageAid)
+    }
+
+    private fun getTitle(type: String?): String {
+        return type?.let { t ->
+            when (t.lowercase()) {
+                AssessmentDefinedParams.phq4 -> getString(R.string.phq4_assessment)
+                AssessmentDefinedParams.phq9 -> getString(R.string.phq9_assessment)
+                AssessmentDefinedParams.gad7 -> getString(R.string.gad7_assessment)
+                AssessmentDefinedParams.suicidcalIdeation -> getString(R.string.gad7_assessment)
+                AssessmentDefinedParams.cageAid -> getString(R.string.cage_aid)
+                else -> getString(R.string.assessment)
+            }
+        } ?: run {
+            getString(R.string.assessment)
+        }
     }
 
     private fun attachObserver() {
@@ -118,12 +161,11 @@ class NCDMentalHealthQuestionDialog : DialogFragment(), FormEventListener, View.
                 ResourceState.SUCCESS -> {
                     hideLoading()
                     resources.data?.let { it ->
-                        assessmentJSON = it.filter {
-                            requireArguments().getString(Screening.type)
-                                ?.let { type -> it.family?.contains(type) } == true
-                        }
-                        assessmentJSON?.let { json ->
-                            formGenerator.populateViews(json)
+                        it.filter {
+                            myFormType()?.let { type -> it.family?.contains(type) } == true
+                        }.let { json ->
+                            if (json.isNotEmpty())
+                                formGenerator.populateViews(json)
                         }
                     }
                 }
@@ -173,18 +215,41 @@ class NCDMentalHealthQuestionDialog : DialogFragment(), FormEventListener, View.
                 }
             }
         }
+        viewModel.assessmentMentalHealth.observe(viewLifecycleOwner) { resource ->
+            when (resource.state) {
+                ResourceState.LOADING -> {
+                    showLoading()
+                }
+
+                ResourceState.ERROR -> {
+                    hideLoading()
+                    (activity as? BaseActivity?)?.showErrorDialogue(
+                        title = getString(R.string.error),
+                        message = resource.message
+                            ?: getString(R.string.something_went_wrong_try_later),
+                        positiveButtonName = getString(R.string.ok)
+                    ) {}
+                }
+
+                ResourceState.SUCCESS -> {
+
+                }
+            }
+        }
     }
 
     companion object {
         const val TAG = "NCDMentalHealthQuestionDialog"
         fun newInstance(
             type: String,
+            patientId: String?,
             patientFHIRId: String?,
             isEditAssessment: Boolean
         ): NCDMentalHealthQuestionDialog {
             val fragment = NCDMentalHealthQuestionDialog()
             val args = Bundle()
             args.putString(Screening.type, type)
+            args.putString(NCDMRUtil.PATIENT_REFERENCE, patientId)
             args.putString(NCDMRUtil.MEMBER_REFERENCE, patientFHIRId)
             args.putBoolean(NCDMRUtil.isEditAssessment, isEditAssessment)
             fragment.arguments = args
@@ -268,12 +333,26 @@ class NCDMentalHealthQuestionDialog : DialogFragment(), FormEventListener, View.
 
     }
 
-    private fun showLoading() {
-        binding.loadingProgress.visible()
+    fun showLoading() {
+        binding.apply {
+            btnConfirm.invisible()
+            btnCancel.invisible()
+            loadingProgress.visible()
+            loaderImage.apply {
+                loadAsGif(R.drawable.loader_spice)
+            }
+        }
     }
 
-    private fun hideLoading() {
-        binding.loadingProgress.gone()
+    fun hideLoading() {
+        binding.apply {
+            btnConfirm.visible()
+            btnCancel.visible()
+            loadingProgress.gone()
+            loaderImage.apply {
+                resetImageView()
+            }
+        }
     }
 
     private fun processValuesAndProceed(
@@ -282,22 +361,40 @@ class NCDMentalHealthQuestionDialog : DialogFragment(), FormEventListener, View.
     ) {
         val map = HashMap<String, Any>()
         map.putAll(resultHashMap)
-        map[AssessmentDefinedParams.memberReference] =
-            requireArguments().getString(NCDMRUtil.MEMBER_REFERENCE) as String
+
+        //Patient ID
+        getPatientReference()?.let { patientId ->
+            map[Screening.Patient_Id] = patientId
+        }
+
+        //Member or FHIR ID
+        getMemberReference()?.let { memberId ->
+            map[AssessmentDefinedParams.memberReference] = memberId
+        }
+
+        //Encounter object [Encounter ID and Provance]
         val provenance = HashMap<String, Any>()
         provenance[DefinedParams.Provenance] = ProvanceDto()
         viewModel.encounterId?.let {
             provenance[DefinedParams.id] = it
         }
         map[AssessmentDefinedParams.encounter] = provenance
-        if (map.containsKey(Screening.PHQ4_Mental_Health))
-            CommonUtils.calculatePHQScore(map)
 
-        if (map.containsKey(AssessmentDefinedParams.PHQ9_Mental_Health))
-            CommonUtils.calculatePHQScore(map, type = AssessmentDefinedParams.PHQ9)
+        when (myFormType()) {
+            AssessmentDefinedParams.phq4 -> CommonUtils.calculatePHQScore(map)
+            AssessmentDefinedParams.phq9 -> CommonUtils.calculatePHQScore(
+                map,
+                type = AssessmentDefinedParams.PHQ9
+            )
 
-        if (map.containsKey(AssessmentDefinedParams.GAD7_Mental_Health))
-            CommonUtils.calculatePHQScore(map, type = AssessmentDefinedParams.GAD7)
+            AssessmentDefinedParams.gad7 -> CommonUtils.calculatePHQScore(
+                map,
+                type = AssessmentDefinedParams.GAD7
+            )
+
+            AssessmentDefinedParams.cageAid -> calculateCAGEAIDSCore(map, serverData)
+            AssessmentDefinedParams.suicidcalIdeation -> calculateSuicidalIdeation(map)
+        }
 
         try {
             var result = serverData?.let {
@@ -307,32 +404,6 @@ class NCDMentalHealthQuestionDialog : DialogFragment(), FormEventListener, View.
                     map
                 )
             }
-            result?.second
-            if (result?.second?.containsKey(AssessmentDefinedParams.PHQ9.lowercase()) == true) {
-                val gad7 =
-                    result?.second?.get(AssessmentDefinedParams.PHQ9.lowercase()) as HashMap<String, Any>
-                if (gad7.isEmpty()) {
-                    result?.second?.apply {
-                        remove(AssessmentDefinedParams.PHQ9.lowercase())
-                    }
-                } else {
-                    viewModel.questionarieId?.let {
-                        gad7[NCDMRUtil.questionnaireId] = it
-                    }
-                    val score = gad7[AssessmentDefinedParams.PHQ9_Score] as Int
-                    gad7[Screening.PHQ4_Score] = score
-                    gad7.remove(AssessmentDefinedParams.PHQ9_Score)
-
-                    val riskLevel = gad7[AssessmentDefinedParams.PHQ9_Risk_Level] as String
-                    gad7[Screening.PHQ4_Risk_Level] = riskLevel
-                    gad7.remove(AssessmentDefinedParams.PHQ9_Risk_Level)
-
-                    val mentalHealth =
-                        gad7[AssessmentDefinedParams.PHQ9_Mental_Health] as ArrayList<*>
-                    gad7[Screening.PHQ4_Mental_Health] = mentalHealth
-                    gad7.remove(AssessmentDefinedParams.PHQ9_Mental_Health)
-                }
-            }
             if (result != null) {
                 result = Pair(StringConverter.convertGivenMapToString(result.second), result.second)
                 result.first?.let {
@@ -340,12 +411,24 @@ class NCDMentalHealthQuestionDialog : DialogFragment(), FormEventListener, View.
                     val request = StringConverter.getJsonObject(
                         Gson().toJson(reqMap)
                     )
-                    viewModel.createMentalHealthAssessment(request)
+                    viewModel.ncdMentalHealthMedicalReviewCreate(request, isAssessment())
                 }
             }
         } catch (_: Exception) {
             //Exception - Catch block
         }
+    }
+
+    private fun getPatientReference(): String? {
+        return requireArguments().getString(NCDMRUtil.PATIENT_REFERENCE)
+    }
+
+    private fun getMemberReference(): String? {
+        return requireArguments().getString(NCDMRUtil.MEMBER_REFERENCE)
+    }
+
+    private fun isAssessment(): Boolean {
+        return assessmentCards().contains(myFormType())
     }
 
     override fun onClick(v: View?) {

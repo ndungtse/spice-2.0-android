@@ -12,7 +12,6 @@ import com.medtroniclabs.spice.appextensions.loadAsGif
 import com.medtroniclabs.spice.appextensions.resetImageView
 import com.medtroniclabs.spice.appextensions.setDialogPercent
 import com.medtroniclabs.spice.common.DateUtils
-import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.model.ChipViewItemModel
 import com.medtroniclabs.spice.databinding.DialogNcdLifestyleBinding
 import com.medtroniclabs.spice.formgeneration.extension.hideKeyboard
@@ -41,8 +40,24 @@ class NCDLifestyleDialog(private val callback: (isPositiveResult: Boolean) -> Un
 
     companion object {
         const val TAG = "NCDLifestyleDialog"
-        fun newInstance(callback: (isPositiveResult: Boolean) -> Unit): NCDLifestyleDialog {
-            return NCDLifestyleDialog(callback)
+
+        const val PatientReference = "patientReference"
+        const val MemberReference = "memberReference"
+        const val EncounterReference = "encounterReference"
+
+        fun newInstance(
+            patientReference: String?,
+            memberReference: String?,
+            encounterReference: String?,
+            callback: (isPositiveResult: Boolean) -> Unit
+        ): NCDLifestyleDialog {
+            val dialog = NCDLifestyleDialog(callback)
+            val bundle = Bundle()
+            bundle.putString(PatientReference, patientReference)
+            bundle.putString(MemberReference, memberReference)
+            bundle.putString(EncounterReference, encounterReference)
+            dialog.arguments = bundle
+            return dialog
         }
     }
 
@@ -62,6 +77,14 @@ class NCDLifestyleDialog(private val callback: (isPositiveResult: Boolean) -> Un
     }
 
     private fun initView() {
+        arguments?.let {
+            viewModel.apply {
+                patientReference = it.getString(PatientReference)
+                memberReference = it.getString(MemberReference)
+                encounterReference = it.getString(EncounterReference)
+            }
+        }
+
         binding.apply {
             tvLifestyleAssessmentLbl.markMandatory()
             tvOtherNotesLbl.markMandatory()

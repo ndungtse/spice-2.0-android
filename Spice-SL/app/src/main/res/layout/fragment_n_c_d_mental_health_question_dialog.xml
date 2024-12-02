@@ -13,7 +13,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="@dimen/_16sdp"
-            android:text="@string/pregnancy_details"
             android:textColor="@color/house_hold_title"
             android:textSize="@dimen/_16ssp"
             android:textStyle="bold"
@@ -50,9 +49,7 @@
                 android:id="@+id/llForm"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-            </LinearLayout>
+                android:orientation="vertical" />
 
         </androidx.core.widget.NestedScrollView>
 

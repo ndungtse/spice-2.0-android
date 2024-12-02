@@ -187,12 +187,7 @@ class InvestigationViewModel @Inject constructor(
                     ),
                     labTestList
                 )
-                val response = investigationRepository.createLabTest(request)
-                response.data?.let {
-                    createLabTestLiveData.postSuccess(it)
-                } ?: kotlin.run {
-                    createLabTestLiveData.postError()
-                }
+                createLabTestLiveData.postValue(investigationRepository.createLabTest(request))
             } catch (e: Exception) {
                 createLabTestLiveData.postError()
             }

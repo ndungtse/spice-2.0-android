@@ -139,7 +139,7 @@ open class BaseActivity : SpiceRootActivity() {
     }
 
     fun showVerticalMoreIcon(canVisible: Boolean, callback: ((view: View) -> Unit?)? = null) {
-        binding.ivMore.visibility = if (canVisible) View.VISIBLE else View.GONE
+        binding.ivMore.setVisible(canVisible)
         binding.ivMore.safeClickListener {
             callback?.invoke(it)
         }

@@ -3,6 +3,7 @@ package com.medtroniclabs.spice.data
 data class PrescriptionCreateRequest(
     val requestFrom: String,
     val encounter: EncounterDetails,
+    val patientReference: String? = null,
     val prescriptions: ArrayList<PrescriptionDetails>
 )
 

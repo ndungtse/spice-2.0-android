@@ -211,6 +211,7 @@ class NCDPrescriptionViewModel @Inject constructor(
                 encounter = EncounterDetails(
                     patientVisitId = patient_visit_id,
                     memberId = memberReference,
+                    patientReference = patientReference,
                     provenance = ProvanceDto()
                 ), prescriptions = it
             )

@@ -9,6 +9,7 @@ import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.visible
+import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.model.ChipViewItemModel
 import com.medtroniclabs.spice.databinding.FragmentSystemicExaminationsBinding
@@ -91,7 +92,11 @@ class NCDObstetricExaminationFragment : BaseFragment() {
             binding.etPhysicalExaminationComments.visible()
             binding.tvCommentsTitle.gone()
             getType()?.let { type ->
-                tvSystemicExaminationTitle.text = getTitleText(type)
+                tvSystemicExaminationTitle.text = CommonUtils.getPhysicalExaminationTitle(
+                    requireContext(),
+                    type,
+                    isFemalePregnant()
+                )
             }
             tagView =
                 TagListCustomView(
@@ -105,16 +110,6 @@ class NCDObstetricExaminationFragment : BaseFragment() {
                 )
             tagView.addChipItemList(complaintList, viewModel.chips)
         }
-    }
-
-    private fun getTitleText(type: String): String {
-        if (type.equals(NCDMRUtil.MENTAL_HEALTH, true))
-            return getString(R.string.systemic_examinations)
-
-        if (type.equals(NCDMRUtil.MATERNAL_HEALTH, true) && SecuredPreference.isAncEnabled() && isFemalePregnant())
-            return getString(R.string.obstetric_examination)
-
-        return getString(R.string.physical_examinations)
     }
 
     fun validateInput(isMandatory: Boolean = false): Pair<Boolean, AppCompatEditText> {

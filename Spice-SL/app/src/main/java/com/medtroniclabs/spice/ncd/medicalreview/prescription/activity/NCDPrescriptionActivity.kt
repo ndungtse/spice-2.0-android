@@ -418,7 +418,7 @@ class NCDPrescriptionActivity : BaseActivity(), View.OnClickListener, SignatureL
                 getText(R.string.view_discontinued_medication)
             binding.llDiscontinuedMedication.gone()
         } else {
-            fetchPrescriptionList()
+            fetchPrescriptionList(true)
         }
     }
 
@@ -1218,12 +1218,14 @@ class NCDPrescriptionActivity : BaseActivity(), View.OnClickListener, SignatureL
         }
     }
 
-    private fun fetchPrescriptionList() {
+    private fun fetchPrescriptionList(isFromDiscontinue: Boolean = false) {
         prescriptionViewModel.let {
             prescriptionViewModel.getPrescriptionList(
                 PrescriptionListRequest(
                     patientReference = it.patientReference,
-                    memberReference = it.memberReference
+                    memberReference = it.memberReference,
+                    isActive = !isFromDiscontinue,
+                    requestFrom = DefinedParams.Africa
                 )
             )
         }

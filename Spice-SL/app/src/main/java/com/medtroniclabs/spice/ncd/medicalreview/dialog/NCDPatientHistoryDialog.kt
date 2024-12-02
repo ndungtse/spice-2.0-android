@@ -63,12 +63,15 @@ class NCDPatientHistoryDialog : DialogFragment(), View.OnClickListener {
     private fun handleOrientation() {
         val isTablet = CommonUtils.checkIsTablet(requireContext())
         val isLandscape = resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
-        val percent = when {
-            isTablet && isLandscape -> 40
-            isTablet && !isLandscape -> 85
-            else -> 95
+        val width = when {
+            isTablet && isLandscape -> 50
+            else -> 100
         }
-        setDialogPercent(percent)
+        val height = when {
+            isTablet && isLandscape -> 95
+            else -> 100
+        }
+        setDialogPercent(width, height)
     }
 
     override fun onCreateView(
@@ -222,11 +225,10 @@ class NCDPatientHistoryDialog : DialogFragment(), View.OnClickListener {
                     viewModel.yearForHypertension = it
                 }
             }
-            btnLayout.btnCancel.gone()
-            btnLayout.btnConfirm.text = getString(R.string.save)
-            btnLayout.btnConfirm.isEnabled = true
-            tvTitle.text = getString(R.string.patient_history)
-            btnLayout.btnConfirm.safeClickListener(this@NCDPatientHistoryDialog)
+            btnCancel.gone()
+            btnConfirm.text = getString(R.string.save)
+            btnConfirm.isEnabled = true
+            btnConfirm.safeClickListener(this@NCDPatientHistoryDialog)
             ivClose.safeClickListener(this@NCDPatientHistoryDialog)
 
         }
@@ -412,7 +414,7 @@ class NCDPatientHistoryDialog : DialogFragment(), View.OnClickListener {
 
     override fun onClick(v: View?) {
         when (v?.id) {
-            binding.btnLayout.btnConfirm.id -> {
+            binding.btnConfirm.id -> {
                 if (validateInput()) {
                     // Do the API call
                     val request = NCDPatientStatusRequest(

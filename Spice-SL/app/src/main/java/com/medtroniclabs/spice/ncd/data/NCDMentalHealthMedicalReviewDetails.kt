@@ -1,6 +1,6 @@
 package com.medtroniclabs.spice.ncd.data
 
-data class NCDMentalHealthDetails(
+data class NCDMentalHealthMedicalReviewDetails(
     val memberReference: String,
-    val type: String,
+    val type: String? = null
 )

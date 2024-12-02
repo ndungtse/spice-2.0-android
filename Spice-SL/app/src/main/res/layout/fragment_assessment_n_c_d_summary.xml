@@ -44,6 +44,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="@dimen/_20sdp"
                     android:layout_marginTop="@dimen/_16sdp"
+                    android:background="@drawable/red_risk_color_bg"
                     android:padding="@dimen/_12sdp"
                     android:visibility="gone">
 

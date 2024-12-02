@@ -14,6 +14,7 @@ import com.medtroniclabs.spice.common.CommonUtils.calculateBloodGlucose
 import com.medtroniclabs.spice.common.CommonUtils.calculateCVDRiskFactor
 import com.medtroniclabs.spice.common.CommonUtils.toDoubleOrEmptyString
 import com.medtroniclabs.spice.common.DefinedParams
+import com.medtroniclabs.spice.common.FormAutofill
 import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.data.model.RecommendedDosageListModel
 import com.medtroniclabs.spice.databinding.ActivityAssessmentReadingBinding

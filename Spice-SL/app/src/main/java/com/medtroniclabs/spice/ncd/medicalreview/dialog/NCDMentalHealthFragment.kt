@@ -41,15 +41,17 @@ import com.medtroniclabs.spice.ncd.medicalreview.NCDDialogDismissListener
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil
 import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDMedicalReviewViewModel
 import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDMentalHealthViewModel
+import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class NCDMentalHealthFragment : DialogFragment(), View.OnClickListener {
-
     private lateinit var binding: FragmentNCDMentalHealthBinding
+
     private val viewModel: NCDMentalHealthViewModel by activityViewModels()
     private val medicalReviewViewModel: NCDMedicalReviewViewModel by activityViewModels()
+
     val adapter by lazy { CustomSpinnerAdapter(requireContext()) }
     var listener: NCDDialogDismissListener? = null
 
@@ -76,12 +78,15 @@ class NCDMentalHealthFragment : DialogFragment(), View.OnClickListener {
     private fun handleOrientation() {
         val isTablet = CommonUtils.checkIsTablet(requireContext())
         val isLandscape = resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
-        val percent = when {
-            isTablet && isLandscape -> 40
-            isTablet && !isLandscape -> 85
+        val width = when {
+            isTablet && isLandscape -> 50
             else -> 100
         }
-        setDialogPercent(percent)
+        val height = when {
+            isTablet && isLandscape -> 95
+            else -> 100
+        }
+        setDialogPercent(width, height)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -121,7 +126,22 @@ class NCDMentalHealthFragment : DialogFragment(), View.OnClickListener {
             medicalReviewViewModel.validationForStatus = it
             loadSiteDetails(ArrayList(it))
         }
+        viewModel.createMentalHealthStatus.observe(this) { resourceState ->
+            when (resourceState.state) {
+                ResourceState.LOADING -> {
+                    showLoading()
+                }
 
+                ResourceState.SUCCESS -> {
+                    hideLoading()
+                    dismiss()
+                }
+
+                ResourceState.ERROR -> {
+                    hideLoading()
+                }
+            }
+        }
     }
 
     private fun initializeMentalHealthSpinner() {
@@ -206,8 +226,8 @@ class NCDMentalHealthFragment : DialogFragment(), View.OnClickListener {
 
         data.mapNotNullTo(list) { symptoms ->
             hashMapOf<String, Any>().apply {
-                symptoms.id?.let { put(DefinedParams.ID, it) }
-                symptoms.name?.let { put(DefinedParams.NAME, it) }
+                symptoms.id.let { put(DefinedParams.ID, it) }
+                symptoms.name.let { put(DefinedParams.NAME, it) }
                 symptoms.value?.let { put(DefinedParams.Value, it) }
             }.takeIf { it.isNotEmpty() }
         }
@@ -323,7 +343,7 @@ class NCDMentalHealthFragment : DialogFragment(), View.OnClickListener {
         groupSubstanceUseSpinner.isVisible = isKnownPatient
         if (!isKnownPatient) {
             etSubstanceDiagnosis.setText(getString(R.string.empty))
-            etSubstanceComments.setText("")
+            etSubstanceComments.setText(getString(R.string.empty))
             viewModel.selectedMentalHealthListItem.clear()
             etSubstanceDisorder.post {
                 etSubstanceDisorder.setSelection(0, false)
@@ -345,7 +365,7 @@ class NCDMentalHealthFragment : DialogFragment(), View.OnClickListener {
         groupSubstanceUseSpinner.isVisible = isKnownPatient
         if (!isKnownPatient) {
             etSubstanceDiagnosis.setText(getString(R.string.empty))
-            etSubstanceComments.setText("")
+            etSubstanceComments.setText(getString(R.string.empty))
             viewModel.selectedSubstanceListItem.clear()
             etSubstanceDisorder.post {
                 etSubstanceDisorder.setSelection(0, false)
@@ -557,13 +577,13 @@ class NCDMentalHealthFragment : DialogFragment(), View.OnClickListener {
     }
 
     fun validateInput(): Boolean {
-        val isDiabetesValid = !viewModel.resultDiabetesHashMap.isNullOrEmpty()
-        val isHypertensionValid = !viewModel.resultHypertensionHashMap.isNullOrEmpty()
-        val isMentalHealthValid = !viewModel.resultMentalHealthHashMap.isNullOrEmpty()
-        val isSubstanceUseValid = !viewModel.resultSubstanceUseHashMap.isNullOrEmpty()
+        val isDiabetesValid = viewModel.resultDiabetesHashMap.isNotEmpty()
+        val isHypertensionValid = viewModel.resultHypertensionHashMap.isNotEmpty()
+        val isMentalHealthValid = viewModel.resultMentalHealthHashMap.isNotEmpty()
+        val isSubstanceUseValid = viewModel.resultSubstanceUseHashMap.isNotEmpty()
         val isValueValid = !viewModel.value.isNullOrBlank()
-        val isMentalHealthValueValid = !viewModel.selectedMentalHealthListItem.isNullOrEmpty()
-        val isSubstanceUseValueValid = !viewModel.selectedSubstanceListItem.isNullOrEmpty()
+        val isMentalHealthValueValid = viewModel.selectedMentalHealthListItem.isNotEmpty()
+        val isSubstanceUseValueValid = viewModel.selectedSubstanceListItem.isNotEmpty()
 
         if (isDiabetesValid) {
             binding.ncdDiabetesHypertension.tvDiabetesError.gone()
@@ -710,18 +730,17 @@ class NCDMentalHealthFragment : DialogFragment(), View.OnClickListener {
                             comments = viewModel.mentalHealthComments.takeIf { !it.isNullOrBlank() },
                             yearOfDiagnosis = viewModel.yearForMentalHealth?.takeIf { true },
                             mentalHealthDisorder = viewModel.selectedMentalHealthListItem.takeIf { it.isNotEmpty() }
-                                ?.mapNotNull { it.name.lowercase() } as ArrayList<String>?,
+                                ?.map { it.name.lowercase() } as ArrayList<String>?,
                         ),
                         substanceUseStatus = MentalHealthStatus(
                             status = viewModel.resultSubstanceUseHashMap[SUBSTANCE_USE_STATUS] as? String,
                             comments = viewModel.substanceUseComments.takeIf { !it.isNullOrBlank() },
                             yearOfDiagnosis = viewModel.yearForSubstanceUse?.takeIf { true },
                             mentalHealthDisorder = viewModel.selectedSubstanceListItem.takeIf { it.isNotEmpty() }
-                                ?.mapNotNull { it.name.lowercase() } as ArrayList<String>?,
+                                ?.map { it.name.lowercase() } as ArrayList<String>?,
                         )
                     )
                     viewModel.createMentalHealthStatus(request)
-//                    dismiss()
                 }
             }
         }

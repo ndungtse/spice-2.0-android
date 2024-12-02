@@ -134,6 +134,12 @@ class InvestigationActivity : BaseActivity(), AdapterView.OnItemClickListener,
 
                 ResourceState.ERROR -> {
                     hideLoading()
+                    showErrorDialogue(
+                        title = getString(R.string.error),
+                        message = resource.message
+                            ?: getString(R.string.something_went_wrong_try_later),
+                        positiveButtonName = getString(R.string.ok)
+                    ) {}
                 }
 
                 ResourceState.SUCCESS -> {

@@ -119,7 +119,7 @@ import com.medtroniclabs.spice.model.medicalreview.WazWhzScoreResponse
 import com.medtroniclabs.spice.ncd.data.DeviceDetails
 import com.medtroniclabs.spice.ncd.data.FollowUpRequest
 import com.medtroniclabs.spice.ncd.data.FollowUpUpdateRequest
-import com.medtroniclabs.spice.ncd.data.NCDMentalHealthDetails
+import com.medtroniclabs.spice.ncd.data.NCDMentalHealthMedicalReviewDetails
 import com.medtroniclabs.spice.ncd.data.NCDMentalHealthStatusRequest
 import com.medtroniclabs.spice.ncd.data.TermsAndConditionsModel
 import com.medtroniclabs.spice.ncd.data.NCDPatientRemoveRequest
@@ -305,6 +305,9 @@ interface ApiService {
     @POST("spice-service/investigation/create")
     suspend fun createLabTest(@Body request: LabTestCreateRequest): Response<APIResponse<Map<String, Any>>>
 
+    @POST("spice-service/investigation/result/create")
+    suspend fun updateLabTest(@Body request: LabTestCreateRequest): Response<APIResponse<Map<String, Any>>>
+
     @POST("spice-service/investigation/list")
     suspend fun getLabTestList(@Body request: LabTestListRequest): Response<APIResponse<ArrayList<LabTestListResponse>>>
 
@@ -430,9 +433,6 @@ interface ApiService {
     @POST("spice-service/medical-review/patient-psychology/remove")
     suspend fun removePsychological(@Body request: NCDCounselingModel): Response<APIResponse<NCDCounselingModel>>
 
-    @POST("spice-service/investigation/list")
-    suspend fun getPatientLabTests(@Body request: LabTestListRequest): Response<APIResponse<ArrayList<LabTestListResponse>>>
-
     @POST("/spice-service/prescription-request/fill-prescription/list")
     suspend fun getPrescriptionDispenseList(@Body request: DispenseUpdateRequest): Response<APIResponse<ArrayList<DispensePrescriptionResponse>>>
 
@@ -533,9 +533,18 @@ interface ApiService {
     @POST("/spice-service/medical-review/patient-status/create")
     suspend fun createMentalHealthStatus(@Body request: NCDMentalHealthStatusRequest): Response<APIResponse<HashMap<String, Any>>>
 
+    @POST("/spice-service/medical-review/patient-status/details")
+    suspend fun ncdPatientDiagnosisStatus(@Body request: HashMap<String, Any>): Response<APIResponse<HashMap<String, Any>>>
+
     @POST("/spice-service/mentalhealth/create")
-    suspend fun createMentalHealthAssessment(@Body request: JsonObject): Response<APIResponse<HashMap<String, Any>>>
+    suspend fun ncdMentalHealthMedicalReviewCreateA(@Body request: JsonObject): Response<APIResponse<HashMap<String, Any>>>
+
+    @POST("/spice-service/mentalhealth/condition-create")
+    suspend fun ncdMentalHealthMedicalReviewCreateS(@Body request: JsonObject): Response<APIResponse<HashMap<String, Any>>>
 
     @POST("/spice-service/mentalhealth/details")
-    suspend fun ncdMentalHealthDetails(@Body request: NCDMentalHealthDetails): Response<APIResponse<HashMap<String, Any>>>
+    suspend fun ncdMentalHealthMedicalReviewDetailsA(@Body request: NCDMentalHealthMedicalReviewDetails): Response<APIResponse<HashMap<String, Any>>>
+
+    @POST("/spice-service/mentalhealth/condition-details")
+    suspend fun ncdMentalHealthMedicalReviewDetailsS(@Body request: NCDMentalHealthMedicalReviewDetails): Response<APIResponse<HashMap<String, Any>>>
 }

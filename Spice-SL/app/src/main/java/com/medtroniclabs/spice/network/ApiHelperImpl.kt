@@ -131,7 +131,7 @@ import com.medtroniclabs.spice.model.medicalreview.WazWhzScoreResponse
 import com.medtroniclabs.spice.ncd.data.DeviceDetails
 import com.medtroniclabs.spice.ncd.data.FollowUpRequest
 import com.medtroniclabs.spice.ncd.data.FollowUpUpdateRequest
-import com.medtroniclabs.spice.ncd.data.NCDMentalHealthDetails
+import com.medtroniclabs.spice.ncd.data.NCDMentalHealthMedicalReviewDetails
 import com.medtroniclabs.spice.ncd.data.NCDMentalHealthStatusRequest
 import com.medtroniclabs.spice.ncd.data.PatientFollowUpEntity
 import com.medtroniclabs.spice.ncd.data.RegisterCallResponse
@@ -357,6 +357,10 @@ class ApiHelperImpl @Inject constructor(private val apiService: ApiService) : Ap
         return apiService.createLabTest(request)
     }
 
+    override suspend fun updateLabTest(request: LabTestCreateRequest): Response<APIResponse<Map<String, Any>>> {
+        return apiService.updateLabTest(request)
+    }
+
     override suspend fun getLabTestList(request: LabTestListRequest): Response<APIResponse<ArrayList<LabTestListResponse>>> {
         return apiService.getLabTestList(request)
     }
@@ -531,10 +535,6 @@ class ApiHelperImpl @Inject constructor(private val apiService: ApiService) : Ap
         return apiService.removePsychological(request)
     }
 
-    override suspend fun getPatientLabTests(request: LabTestListRequest): Response<APIResponse<ArrayList<LabTestListResponse>>> {
-        return apiService.getPatientLabTests(request)
-    }
-
     override suspend fun getNCDMedicalReviewHistory(request: ReferralDetailRequest): Response<APIResponse<NCDMedicalReviewHistory>> {
         return apiService.getNCDMedicalReviewHistory(request)
     }
@@ -655,11 +655,23 @@ class ApiHelperImpl @Inject constructor(private val apiService: ApiService) : Ap
         return apiService.createMentalHealthStatus(request)
     }
 
-    override suspend fun createMentalHealthAssessment(request: JsonObject): Response<APIResponse<HashMap<String, Any>>> {
-        return apiService.createMentalHealthAssessment(request)
+    override suspend fun ncdMentalHealthMedicalReviewCreateA(request: JsonObject): Response<APIResponse<HashMap<String, Any>>> {
+        return apiService.ncdMentalHealthMedicalReviewCreateA(request)
     }
 
-    override suspend fun ncdMentalHealthDetails(request: NCDMentalHealthDetails): Response<APIResponse<HashMap<String, Any>>> {
-        return apiService.ncdMentalHealthDetails(request)
+    override suspend fun ncdPatientDiagnosisStatus(request: HashMap<String, Any>): Response<APIResponse<HashMap<String, Any>>> {
+        return apiService.ncdPatientDiagnosisStatus(request)
+    }
+
+    override suspend fun ncdMentalHealthMedicalReviewCreateS(request: JsonObject): Response<APIResponse<HashMap<String, Any>>> {
+        return apiService.ncdMentalHealthMedicalReviewCreateS(request)
+    }
+
+    override suspend fun ncdMentalHealthMedicalReviewDetailsA(request: NCDMentalHealthMedicalReviewDetails): Response<APIResponse<HashMap<String, Any>>> {
+        return apiService.ncdMentalHealthMedicalReviewDetailsA(request)
+    }
+
+    override suspend fun ncdMentalHealthMedicalReviewDetailsS(request: NCDMentalHealthMedicalReviewDetails): Response<APIResponse<HashMap<String, Any>>> {
+        return apiService.ncdMentalHealthMedicalReviewDetailsS(request)
     }
 }

@@ -1,7 +1,9 @@
 package com.medtroniclabs.spice.ncd.medicalreview.repo
 
+import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.medtroniclabs.spice.common.SecuredPreference
+import com.medtroniclabs.spice.data.ErrorResponse
 import com.medtroniclabs.spice.data.history.NCDMedicalReviewHistory
 import com.medtroniclabs.spice.data.history.HistoryEntity
 import com.medtroniclabs.spice.db.entity.NCDMedicalReviewMetaEntity
@@ -21,7 +23,7 @@ import com.medtroniclabs.spice.ncd.data.NCDPregnancyRiskUpdate
 import com.medtroniclabs.spice.ncd.data.LifeStyleResponse
 import com.medtroniclabs.spice.ncd.data.LifeStyleRequest
 import com.medtroniclabs.spice.ncd.data.NCDMedicalReviewUpdateModel
-import com.medtroniclabs.spice.ncd.data.NCDMentalHealthDetails
+import com.medtroniclabs.spice.ncd.data.NCDMentalHealthMedicalReviewDetails
 import com.medtroniclabs.spice.ncd.data.NCDMentalHealthStatusRequest
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.Comorbidity
@@ -35,6 +37,7 @@ import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.PhysicalExamination
 import com.medtroniclabs.spice.network.ApiHelper
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.network.resource.ResourceState
+import okhttp3.ResponseBody
 import javax.inject.Inject
 
 class NCDMedicalReviewRepository @Inject constructor(
@@ -356,11 +359,42 @@ class NCDMedicalReviewRepository @Inject constructor(
         }
     }
 
-    suspend fun createMentalHealthAssessment(request: JsonObject): Resource<String> {
+    suspend fun ncdMentalHealthMedicalReviewCreate(
+        request: JsonObject,
+        isAssessment: Boolean
+    ): Resource<String> {
         return try {
-            val response = apiHelper.createMentalHealthAssessment(request)
+            val response =
+                if (isAssessment)
+                    apiHelper.ncdMentalHealthMedicalReviewCreateA(request)
+                else
+                    apiHelper.ncdMentalHealthMedicalReviewCreateS(request)
             if (response.isSuccessful) {
                 Resource(state = ResourceState.SUCCESS, response.body()?.message)
+            } else {
+                Resource(
+                    state = ResourceState.ERROR,
+                    message = getErrorMessage(response.errorBody())
+                )
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Resource(state = ResourceState.ERROR)
+        }
+    }
+
+    suspend fun ncdMentalHealthMedicalReviewDetails(
+        request: NCDMentalHealthMedicalReviewDetails,
+        isAssessment: Boolean
+    ): Resource<HashMap<String, Any>>? {
+        return try {
+            val response =
+                if (isAssessment)
+                    apiHelper.ncdMentalHealthMedicalReviewDetailsA(request)
+                else
+                    apiHelper.ncdMentalHealthMedicalReviewDetailsS(request)
+            if (response.isSuccessful) {
+                Resource(state = ResourceState.SUCCESS, response.body()?.entity)
             } else {
                 Resource(state = ResourceState.ERROR)
             }
@@ -370,17 +404,14 @@ class NCDMedicalReviewRepository @Inject constructor(
         }
     }
 
-    suspend fun ncdMentalHealthDetails(request: NCDMentalHealthDetails): Resource<HashMap<String, Any>>? {
+    private fun getErrorMessage(errorBody: ResponseBody?): String? {
+        if (errorBody == null)
+            return null
         return try {
-            val response = apiHelper.ncdMentalHealthDetails(request)
-            if (response.isSuccessful) {
-                Resource(state = ResourceState.SUCCESS, response.body()?.entity)
-            } else {
-                Resource(state = ResourceState.ERROR)
-            }
+            val errorResponse = Gson().fromJson(errorBody.string(), ErrorResponse::class.java)
+            return errorResponse.message
         } catch (e: Exception) {
-            e.printStackTrace()
-            Resource(state = ResourceState.ERROR)
+            null
         }
     }
 }

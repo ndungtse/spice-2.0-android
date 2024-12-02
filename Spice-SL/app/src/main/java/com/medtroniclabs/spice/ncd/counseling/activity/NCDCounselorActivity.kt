@@ -215,7 +215,11 @@ class NCDCounselorActivity : BaseActivity(), View.OnClickListener {
     }
 
     private fun openDialog() {
-        val ncdCounselingDialog = NCDCounselingDialog.newInstance { response ->
+        val ncdCounselingDialog = NCDCounselingDialog.newInstance(
+            viewModel.patientReference,
+            viewModel.memberReference,
+            viewModel.encounterReference
+        ) { response ->
             if (response != null)
                 GeneralSuccessDialog.newInstance(
                     title = response.first,

@@ -47,9 +47,9 @@
                     android:gravity="center_horizontal"
                     android:text="@string/separator_colon"
                     android:textColor="@color/b_w_black"
+                    app:layout_constraintBottom_toBottomOf="@id/tvProgramIdLbl"
                     app:layout_constraintEnd_toStartOf="@id/tvProgramId"
                     app:layout_constraintHorizontal_weight="0.05"
-                    app:layout_constraintBottom_toBottomOf="@id/tvProgramIdLbl"
                     app:layout_constraintStart_toEndOf="@id/tvProgramIdLbl"
                     app:layout_constraintTop_toTopOf="@id/tvProgramIdLbl" />
 
@@ -59,9 +59,9 @@
                     android:layout_width="@dimen/_0dp"
                     android:text="@string/separator_hyphen"
                     android:textColor="@color/black"
+                    app:layout_constraintBottom_toBottomOf="@id/tvProgramIdLbl"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_weight="0.6"
-                    app:layout_constraintBottom_toBottomOf="@id/tvProgramIdLbl"
                     app:layout_constraintStart_toEndOf="@id/tvSeparator1"
                     app:layout_constraintTop_toTopOf="@id/tvProgramIdLbl" />
 
@@ -95,9 +95,9 @@
                     android:gravity="center_horizontal"
                     android:text="@string/separator_colon"
                     android:textColor="@color/b_w_black"
+                    app:layout_constraintBottom_toBottomOf="@id/tvSmokingStatusLbl"
                     app:layout_constraintEnd_toStartOf="@id/tvSmokingStatus"
                     app:layout_constraintHorizontal_weight="0.05"
-                    app:layout_constraintBottom_toBottomOf="@id/tvSmokingStatusLbl"
                     app:layout_constraintStart_toEndOf="@id/tvSmokingStatusLbl"
                     app:layout_constraintTop_toTopOf="@id/tvSmokingStatusLbl" />
 
@@ -107,9 +107,9 @@
                     android:layout_width="@dimen/_0dp"
                     android:text="@string/separator_hyphen"
                     android:textColor="@color/black"
+                    app:layout_constraintBottom_toBottomOf="@id/tvSmokingStatusLbl"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_weight="0.6"
-                    app:layout_constraintBottom_toBottomOf="@id/tvSmokingStatusLbl"
                     app:layout_constraintStart_toEndOf="@id/tvSeparator2"
                     app:layout_constraintTop_toTopOf="@id/tvSmokingStatusLbl" />
 
@@ -153,9 +153,9 @@
                     android:gravity="center_horizontal"
                     android:text="@string/separator_colon"
                     android:textColor="@color/b_w_black"
+                    app:layout_constraintBottom_toBottomOf="@id/tvNationalIdLbl"
                     app:layout_constraintEnd_toStartOf="@id/tvNationalId"
                     app:layout_constraintHorizontal_weight="0.05"
-                    app:layout_constraintBottom_toBottomOf="@id/tvNationalIdLbl"
                     app:layout_constraintStart_toEndOf="@id/tvNationalIdLbl"
                     app:layout_constraintTop_toTopOf="@id/tvNationalIdLbl" />
 
@@ -165,9 +165,9 @@
                     android:layout_width="@dimen/_0dp"
                     android:text="@string/separator_hyphen"
                     android:textColor="@color/black"
+                    app:layout_constraintBottom_toBottomOf="@id/tvNationalIdLbl"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_weight="0.6"
-                    app:layout_constraintBottom_toBottomOf="@id/tvNationalIdLbl"
                     app:layout_constraintStart_toEndOf="@id/tvSeparator3"
                     app:layout_constraintTop_toTopOf="@id/tvNationalIdLbl" />
 
@@ -201,9 +201,9 @@
                     android:gravity="center_horizontal"
                     android:text="@string/separator_colon"
                     android:textColor="@color/b_w_black"
+                    app:layout_constraintBottom_toBottomOf="@id/tvAlcoholStatusLbl"
                     app:layout_constraintEnd_toStartOf="@id/tvAlcoholStatus"
                     app:layout_constraintHorizontal_weight="0.05"
-                    app:layout_constraintBottom_toBottomOf="@id/tvAlcoholStatusLbl"
                     app:layout_constraintStart_toEndOf="@id/tvAlcoholStatusLbl"
                     app:layout_constraintTop_toTopOf="@id/tvAlcoholStatusLbl" />
 
@@ -213,9 +213,9 @@
                     android:layout_width="@dimen/_0dp"
                     android:text="@string/separator_hyphen"
                     android:textColor="@color/black"
+                    app:layout_constraintBottom_toBottomOf="@id/tvAlcoholStatusLbl"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_weight="0.6"
-                    app:layout_constraintBottom_toBottomOf="@id/tvAlcoholStatusLbl"
                     app:layout_constraintStart_toEndOf="@id/tvSeparator4"
                     app:layout_constraintTop_toTopOf="@id/tvAlcoholStatusLbl" />
 
@@ -259,9 +259,9 @@
                     android:gravity="center_horizontal"
                     android:text="@string/separator_colon"
                     android:textColor="@color/b_w_black"
+                    app:layout_constraintBottom_toBottomOf="@id/tvPatientRiskLbl"
                     app:layout_constraintEnd_toStartOf="@id/tvPatientRisk"
                     app:layout_constraintHorizontal_weight="0.05"
-                    app:layout_constraintBottom_toBottomOf="@id/tvPatientRiskLbl"
                     app:layout_constraintStart_toEndOf="@id/tvPatientRiskLbl"
                     app:layout_constraintTop_toTopOf="@id/tvPatientRiskLbl" />
 
@@ -271,9 +271,9 @@
                     android:layout_width="@dimen/_0dp"
                     android:text="@string/separator_hyphen"
                     android:textColor="@color/black"
+                    app:layout_constraintBottom_toBottomOf="@id/tvPatientRiskLbl"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_weight="0.6"
-                    app:layout_constraintBottom_toBottomOf="@id/tvPatientRiskLbl"
                     app:layout_constraintStart_toEndOf="@id/tvSeparator5"
                     app:layout_constraintTop_toTopOf="@id/tvPatientRiskLbl" />
 
@@ -307,9 +307,9 @@
                     android:gravity="center_horizontal"
                     android:text="@string/separator_colon"
                     android:textColor="@color/b_w_black"
+                    app:layout_constraintBottom_toBottomOf="@id/tvDietNutritionLbl"
                     app:layout_constraintEnd_toStartOf="@id/tvDietNutrition"
                     app:layout_constraintHorizontal_weight="0.05"
-                    app:layout_constraintBottom_toBottomOf="@id/tvDietNutritionLbl"
                     app:layout_constraintStart_toEndOf="@id/tvDietNutritionLbl"
                     app:layout_constraintTop_toTopOf="@id/tvDietNutritionLbl" />
 
@@ -319,9 +319,9 @@
                     android:layout_width="@dimen/_0dp"
                     android:text="@string/separator_hyphen"
                     android:textColor="@color/black"
+                    app:layout_constraintBottom_toBottomOf="@id/tvDietNutritionLbl"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_weight="0.6"
-                    app:layout_constraintBottom_toBottomOf="@id/tvDietNutritionLbl"
                     app:layout_constraintStart_toEndOf="@id/tvSeparator6"
                     app:layout_constraintTop_toTopOf="@id/tvDietNutritionLbl" />
 
@@ -364,9 +364,9 @@
                     android:gravity="center_horizontal"
                     android:text="@string/separator_colon"
                     android:textColor="@color/b_w_black"
+                    app:layout_constraintBottom_toBottomOf="@id/tvBMILbl"
                     app:layout_constraintEnd_toStartOf="@id/tvBMI"
                     app:layout_constraintHorizontal_weight="0.05"
-                    app:layout_constraintBottom_toBottomOf="@id/tvBMILbl"
                     app:layout_constraintStart_toEndOf="@id/tvBMILbl"
                     app:layout_constraintTop_toTopOf="@id/tvBMILbl" />
 
@@ -376,9 +376,9 @@
                     android:layout_width="@dimen/_0dp"
                     android:text="@string/separator_hyphen"
                     android:textColor="@color/black"
+                    app:layout_constraintBottom_toBottomOf="@id/tvBMILbl"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_weight="0.6"
-                    app:layout_constraintBottom_toBottomOf="@id/tvBMILbl"
                     app:layout_constraintStart_toEndOf="@id/tvSeparator7"
                     app:layout_constraintTop_toTopOf="@id/tvBMILbl" />
 
@@ -411,9 +411,9 @@
                     android:gravity="center_horizontal"
                     android:text="@string/separator_colon"
                     android:textColor="@color/b_w_black"
+                    app:layout_constraintBottom_toBottomOf="@id/tvPhysicalActivityLbl"
                     app:layout_constraintEnd_toStartOf="@id/tvPhysicalActivity"
                     app:layout_constraintHorizontal_weight="0.05"
-                    app:layout_constraintBottom_toBottomOf="@id/tvPhysicalActivityLbl"
                     app:layout_constraintStart_toEndOf="@id/tvPhysicalActivityLbl"
                     app:layout_constraintTop_toTopOf="@id/tvPhysicalActivityLbl" />
 
@@ -423,9 +423,9 @@
                     android:layout_width="@dimen/_0dp"
                     android:text="@string/separator_hyphen"
                     android:textColor="@color/black"
+                    app:layout_constraintBottom_toBottomOf="@id/tvPhysicalActivityLbl"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_weight="0.6"
-                    app:layout_constraintBottom_toBottomOf="@id/tvPhysicalActivityLbl"
                     app:layout_constraintStart_toEndOf="@id/tvSeparator8"
                     app:layout_constraintTop_toTopOf="@id/tvPhysicalActivityLbl" />
 

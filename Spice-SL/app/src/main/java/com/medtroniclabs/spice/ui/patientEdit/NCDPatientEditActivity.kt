@@ -30,8 +30,7 @@ class NCDPatientEditActivity : BaseActivity() {
             binding.root,
             true,
             getString(R.string.patient_details),
-            homeAndBackVisibility = Pair(true, null),
-            homeIcon = ContextCompat.getDrawable(this, R.drawable.ic_more_vertical)
+            homeAndBackVisibility = Pair(true, null)
         )
         showVerticalMoreIcon(false)
         getPatientDetails()

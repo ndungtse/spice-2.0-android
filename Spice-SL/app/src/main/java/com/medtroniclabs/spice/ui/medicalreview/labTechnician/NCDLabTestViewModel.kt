@@ -10,9 +10,12 @@ import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.appextensions.postSuccess
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DefinedParams
+import com.medtroniclabs.spice.common.RoleConstant
 import com.medtroniclabs.spice.common.SecuredPreference
+import com.medtroniclabs.spice.data.APIResponse
 import com.medtroniclabs.spice.data.CodeDetailsObject
 import com.medtroniclabs.spice.data.EncounterDetails
+import com.medtroniclabs.spice.data.Role
 import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.formgeneration.config.ViewType
@@ -26,6 +29,7 @@ import com.medtroniclabs.spice.model.LabTestResultObject
 import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.model.medicalreview.InvestigationModel
 import com.medtroniclabs.spice.model.medicalreview.SearchLabTestResponse
+import com.medtroniclabs.spice.network.SingleLiveEvent
 import com.medtroniclabs.spice.network.resource.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
@@ -40,7 +44,7 @@ class NCDLabTestViewModel @Inject constructor(
 
     val labTestListLiveData = MutableLiveData<Resource<ArrayList<LabTestListResponse>>>()
     val investigationListLiveData = MutableLiveData<ArrayList<InvestigationModel>>()
-    val createLabTestLiveData = MutableLiveData<Resource<Map<String, Any>>>()
+    val createLabTestLiveData = MutableLiveData<Resource<APIResponse<Map<String, Any>>>>()
     var encounterId: String? = null
 
     fun getLabTestList(data: PatientListRespModel) {
@@ -48,7 +52,7 @@ class NCDLabTestViewModel @Inject constructor(
             val patientId = if (CommonUtils.isNonCommunity() ) data.patientId else data.id
             patientId?.let { id ->
                 labTestListLiveData.postLoading()
-                val response = labTestRepository.getLabTestList(LabTestListRequest(id))
+                val response = labTestRepository.getLabTestList(LabTestListRequest(id, roleName = roleName()))
                 response.data?.let {
                     labTestListLiveData.postSuccess(it)
                 } ?: kotlin.run {
@@ -58,9 +62,17 @@ class NCDLabTestViewModel @Inject constructor(
         }
     }
 
+    private fun roleName(): String? {
+        return when {
+            CommonUtils.isNCDProvider() -> RoleConstant.PROVIDER
+            CommonUtils.isLabTechnician() -> RoleConstant.LAB_TECHNICIAN
+            else -> null
+        }
+    }
+
     fun addExistingLabTestListToUI(list: ArrayList<LabTestListResponse>) {
         viewModelScope.launch(dispatcherIO) {
-            val investigationList = investigationListLiveData.value ?: ArrayList()
+            val investigationList = ArrayList<InvestigationModel>()
             list.forEach { investigationExisting ->
                 investigationList.add(
                     InvestigationModel(
@@ -93,7 +105,7 @@ class NCDLabTestViewModel @Inject constructor(
         return null
     }
 
-    fun createLabTest(
+    fun updateLabTest(
         resultFromInvestigation: List<InvestigationModel>?,
         patientDetail: PatientListRespModel
     ) {
@@ -124,12 +136,8 @@ class NCDLabTestViewModel @Inject constructor(
                     ),
                     labTestList
                 )
-                val response = labTestRepository.createLabTest(request)
-                response.data?.let {
-                    createLabTestLiveData.postSuccess(it)
-                } ?: kotlin.run {
-                    createLabTestLiveData.postError()
-                }
+                createLabTestLiveData.postLoading()
+                createLabTestLiveData.postValue(labTestRepository.updateLabTest(request))
             } catch (e: Exception) {
                 createLabTestLiveData.postError()
             }

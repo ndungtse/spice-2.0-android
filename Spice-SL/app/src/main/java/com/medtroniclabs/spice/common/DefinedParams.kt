@@ -210,6 +210,7 @@ object DefinedParams {
     const val RedRiskModerate = "Moderate"
     const val RedRiskHigh = "High"
 
+    const val RiskColorCode = "riskColorCode"
     const val RiskLevel = "riskLevel"
     const val RiskMessage = "riskMessage"
 

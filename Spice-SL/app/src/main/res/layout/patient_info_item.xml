@@ -90,22 +90,27 @@
         android:textColor="@color/cobalt_blue"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@id/smHighRisk"
-        app:layout_constraintEnd_toStartOf="@+id/tvMentalHealth"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/smHighRisk"
         app:layout_constraintTop_toTopOf="@id/smHighRisk" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/dummyGuideLone"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.50" />
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/tvMentalHealth"
         style="@style/TextStyle_Regular_16"
-        android:layout_width="@dimen/_0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/edit_assessment"
-        android:layout_marginStart="@dimen/_10sdp"
         android:textColor="@color/cobalt_blue"
         android:visibility="visible"
-        app:layout_constraintBottom_toBottomOf="@id/tvHighRiskPregnancyCriteria"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/tvHighRiskPregnancyCriteria"
-        app:layout_constraintTop_toTopOf="@id/tvHighRiskPregnancyCriteria" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@id/dummyGuideLone"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

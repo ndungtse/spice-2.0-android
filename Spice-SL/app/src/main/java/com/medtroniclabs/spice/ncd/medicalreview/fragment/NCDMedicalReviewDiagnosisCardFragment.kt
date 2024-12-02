@@ -330,20 +330,18 @@ class NCDMedicalReviewDiagnosisCardFragment : BaseFragment(), View.OnClickListen
 
             binding.mentalHealthCard.tvAssessmentPHQ9 -> {
                 patientDetailViewModel.patientDetailsLiveData.value?.data?.let {
-                    it.phq4score?.let {
-                        withNetworkAvailability(online = {
-                            showMentalHealthDialog(getString(R.string.phq9_type), true)
-                        })
-                    } ?: withNetworkAvailability(online = {
-                        showMentalHealthDialog(getString(R.string.phq9_type), false)
+                    withNetworkAvailability(online = {
+                        showMentalHealthDialog(AssessmentDefinedParams.phq9, it.phq4score != null)
                     })
                 }
             }
 
             binding.mentalHealthCard.tvAssessmentGAD7 -> {
-                withNetworkAvailability(online = {
-                    showMentalHealthDialog(getString(R.string.gad7_type), true)
-                })
+                patientDetailViewModel.patientDetailsLiveData.value?.data?.let {
+                    withNetworkAvailability(online = {
+                        showMentalHealthDialog(AssessmentDefinedParams.gad7, it.gad7Score != null)
+                    })
+                }
             }
         }
     }
@@ -384,7 +382,12 @@ class NCDMedicalReviewDiagnosisCardFragment : BaseFragment(), View.OnClickListen
     private fun showMentalHealthDialog(type: String, isEditAssessment: Boolean) {
         val dialog = childFragmentManager.findFragmentByTag(NCDMentalHealthQuestionDialog.TAG)
         if (dialog == null) {
-            NCDMentalHealthQuestionDialog.newInstance(type,patientDetailViewModel.getPatientFHIRId(), isEditAssessment)
+            NCDMentalHealthQuestionDialog.newInstance(
+                type,
+                patientDetailViewModel.getPatientId(),
+                patientDetailViewModel.getPatientFHIRId(),
+                isEditAssessment
+            )
                 .show(childFragmentManager, NCDPatientHistoryDialog.TAG)
         }
     }

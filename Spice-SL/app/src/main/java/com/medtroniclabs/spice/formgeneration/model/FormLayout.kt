@@ -84,6 +84,7 @@ data class FormLayout(
     var url: String? = null,
     var resource: String? = null,
     var spinnerAsObject: Boolean = false,
+    var enableSingleSelection: Boolean? = null,
     var ranges: ArrayList<RangeModel>? = null,
     var category: List<String>? = null,
     var textLabelColor: String? = null,

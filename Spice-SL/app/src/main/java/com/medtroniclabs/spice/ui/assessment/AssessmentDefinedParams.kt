@@ -132,4 +132,9 @@ object AssessmentDefinedParams {
     const val HBA1CUnit = "hba1cUnit"
     const val Glucose_Date_Time = "glucoseDateTime"
     const val hba1c = "hba1c"
+    const val phq4 = "phq4"
+    const val phq9 = "phq9"
+    const val gad7 = "gad7"
+    const val suicidcalIdeation = "suicideScreener"
+    const val cageAid = "substanceAbuse"
 }

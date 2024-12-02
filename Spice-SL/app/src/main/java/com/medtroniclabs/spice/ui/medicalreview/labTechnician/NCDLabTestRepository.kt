@@ -1,5 +1,6 @@
 package com.medtroniclabs.spice.ui.medicalreview.labTechnician
 
+import com.medtroniclabs.spice.data.APIResponse
 import com.medtroniclabs.spice.db.local.RoomHelper
 import com.medtroniclabs.spice.model.LabTestCreateRequest
 import com.medtroniclabs.spice.model.LabTestListRequest
@@ -30,18 +31,13 @@ class NCDLabTestRepository @Inject constructor(
         }
     }
 
-    suspend fun createLabTest(request: LabTestCreateRequest): Resource<Map<String, Any>> {
+    suspend fun updateLabTest(request: LabTestCreateRequest): Resource<APIResponse<Map<String, Any>>> {
         return try {
-            val response = apiHelper.createLabTest(request)
-            if (response.isSuccessful) {
-                response.body()?.entity?.let {
-                    Resource(ResourceState.SUCCESS, response.body()?.entity)
-                } ?: kotlin.run {
-                    Resource(ResourceState.ERROR)
-                }
-            } else {
+            val response = apiHelper.updateLabTest(request)
+            if (response.isSuccessful)
+                Resource(ResourceState.SUCCESS, response.body())
+            else
                 Resource(ResourceState.ERROR)
-            }
         } catch (e: Exception) {
             Resource(ResourceState.ERROR)
         }

@@ -9,6 +9,7 @@ import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.setExpandableText
 import com.medtroniclabs.spice.appextensions.takeIfNotNull
+import com.medtroniclabs.spice.appextensions.textOrEmpty
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.databinding.PatientInfoItemBinding
@@ -22,6 +23,7 @@ class PatientInfoAdapter(
     private val data: List<Map<String, Any?>?> = emptyList(),
     private val fragmentBg: Int,
     private val activity: BaseActivity,
+    private val mentalHealthAssessment: (mhPair: Pair<String?, Boolean>) -> Unit,
     private val onItemPregnantDialog: () -> Unit,
     private val onItemToggle: (isChecked: Boolean) -> Unit
 ) :
@@ -48,14 +50,26 @@ class PatientInfoAdapter(
                 }
                 val mentalHealthLabels = listOf(
                     context.getString(R.string.phq4_score),
-                    context.getString(R.string.suicidcal_ideation)
+                    context.getString(R.string.suicidcal_ideation),
+                    context.getString(R.string.cage_aid)
                 )
 
                 if (mentalHealthLabels.contains(label[DefinedParams.label])) {
                     tvMentalHealth.visible()
                     tvMentalHealth.text = label[Screening.type] as String
                 } else {
+                    tvMentalHealth.text = context.getString(R.string.empty)
                     tvMentalHealth.gone()
+                }
+                tvMentalHealth.safeClickListener {
+                    val isEdit = tvMentalHealth.text.toString()
+                        .equals(context.getString(R.string.edit_assessment), true)
+                    mentalHealthAssessment.invoke(
+                        Pair(
+                            label[DefinedParams.label] as? String?,
+                            isEdit
+                        )
+                    )
                 }
                 if (label[DefinedParams.label]?.equals(context.getString(R.string.high_risk)) == true) {
                     tvValue.gone()

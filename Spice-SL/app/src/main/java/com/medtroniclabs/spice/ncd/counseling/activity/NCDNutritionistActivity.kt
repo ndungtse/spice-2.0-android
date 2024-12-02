@@ -60,7 +60,6 @@ class NCDNutritionistActivity : BaseActivity(), View.OnClickListener {
         setClickListener()
 
         getPatientDetails()
-        getLifestyleList()
     }
 
     private val onBackPressedCallback: OnBackPressedCallback =
@@ -92,7 +91,6 @@ class NCDNutritionistActivity : BaseActivity(), View.OnClickListener {
     private fun saveIntentValues() {
         intent?.extras?.let { bundle ->
             viewModel.apply {
-                patientReference = bundle.getString(DefinedParams.PatientId)
                 memberReference = bundle.getString(DefinedParams.FhirId)
                 encounterReference = bundle.getString(NCDMRUtil.EncounterReference)
             }
@@ -168,6 +166,7 @@ class NCDNutritionistActivity : BaseActivity(), View.OnClickListener {
                 ResourceState.SUCCESS -> {
                     resource.data?.let {
                         loadPatientInfo(it)
+                        getLifestyleList()
                     }
                 }
 
@@ -207,6 +206,7 @@ class NCDNutritionistActivity : BaseActivity(), View.OnClickListener {
                 )
             )
         }
+        viewModel.patientReference = data.patientId
     }
 
     private fun setClickListener() {
@@ -218,7 +218,11 @@ class NCDNutritionistActivity : BaseActivity(), View.OnClickListener {
     }
 
     private fun openDialog() {
-        val ncdLifestyleDialog = NCDLifestyleDialog.newInstance {
+        val ncdLifestyleDialog = NCDLifestyleDialog.newInstance(
+            viewModel.patientReference,
+            viewModel.memberReference,
+            viewModel.encounterReference
+        ) {
             getLifestyleList()
         }
         ncdLifestyleDialog.show(supportFragmentManager, NCDLifestyleDialog.TAG)
