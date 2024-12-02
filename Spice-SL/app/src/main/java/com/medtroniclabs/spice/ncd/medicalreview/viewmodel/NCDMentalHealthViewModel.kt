@@ -4,9 +4,11 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
+import com.google.gson.JsonObject
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.data.model.MultiSelectDropDownModel
 import com.medtroniclabs.spice.di.IoDispatcher
+import com.medtroniclabs.spice.ncd.data.NCDMentalHealthDetails
 import com.medtroniclabs.spice.ncd.data.NCDMentalHealthStatusRequest
 import com.medtroniclabs.spice.ncd.medicalreview.repo.NCDMedicalReviewRepository
 import com.medtroniclabs.spice.network.resource.Resource
@@ -23,6 +25,8 @@ class NCDMentalHealthViewModel @Inject constructor(
 
     val resultDiabetesHashMap = HashMap<String, Any>()
     var value: String? = null
+    var encounterId: String? = null
+    var questionarieId: String? = null
     var yearForDiabetes :String? = null
     var yearForHypertension :String? = null
     var yearForMentalHealth :Int? = null
@@ -36,7 +40,9 @@ class NCDMentalHealthViewModel @Inject constructor(
     var selectedMentalHealthListItem  = ArrayList<MultiSelectDropDownModel>()
     var selectedSubstanceListItem  = ArrayList<MultiSelectDropDownModel>()
     val createMentalHealthStatus = MutableLiveData<Resource<HashMap<String, Any>>>()
-private val type : String? = null
+    val assessmentMentalHealth =
+        MutableLiveData<Resource<String>>()
+    val mentalHealthDetails = MutableLiveData<Resource<HashMap<String, Any>>>()
 
     val getSymptomListByTypeForNCDLiveData = getSymptomListByTypeForNCD.switchMap {
         ncdMedicalReviewRepository.getNCDDiagnosisList(listOf(it.first), it.second, it.third)
@@ -50,6 +56,20 @@ private val type : String? = null
         viewModelScope.launch(dispatcherIO) {
             createMentalHealthStatus.postLoading()
             createMentalHealthStatus.postValue(ncdMedicalReviewRepository.createMentalHealthStatus(request))
+        }
+    }
+
+    fun createMentalHealthAssessment(request: JsonObject) {
+        viewModelScope.launch(dispatcherIO) {
+            assessmentMentalHealth.postLoading()
+            assessmentMentalHealth.postValue(ncdMedicalReviewRepository.createMentalHealthAssessment(request))
+        }
+    }
+
+    fun ncdMentalHealthDetails(request: NCDMentalHealthDetails) {
+        viewModelScope.launch(dispatcherIO) {
+            mentalHealthDetails.postLoading()
+            mentalHealthDetails.postValue(ncdMedicalReviewRepository.ncdMentalHealthDetails(request))
         }
     }
 }

@@ -96,6 +96,9 @@ object NCDMRUtil {
     const val Tobbaco = "Tobbaco"
     const val Anxiety = "Anxiety"
     const val Disorder = "Disorder"
+    const val isEditAssessment = "isEditAssessment"
+    const val questionnaireId = "questionnaireId"
+    const val mentalHealth = "mentalHealth"
 
 
     fun validateInput(

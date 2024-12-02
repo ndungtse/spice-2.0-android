@@ -1,5 +1,6 @@
 package com.medtroniclabs.spice.ncd.medicalreview.repo
 
+import com.google.gson.JsonObject
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.history.NCDMedicalReviewHistory
 import com.medtroniclabs.spice.data.history.HistoryEntity
@@ -20,6 +21,7 @@ import com.medtroniclabs.spice.ncd.data.NCDPregnancyRiskUpdate
 import com.medtroniclabs.spice.ncd.data.LifeStyleResponse
 import com.medtroniclabs.spice.ncd.data.LifeStyleRequest
 import com.medtroniclabs.spice.ncd.data.NCDMedicalReviewUpdateModel
+import com.medtroniclabs.spice.ncd.data.NCDMentalHealthDetails
 import com.medtroniclabs.spice.ncd.data.NCDMentalHealthStatusRequest
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.Comorbidity
@@ -343,6 +345,34 @@ class NCDMedicalReviewRepository @Inject constructor(
     suspend fun createMentalHealthStatus(request: NCDMentalHealthStatusRequest): Resource<HashMap<String, Any>>? {
         return try {
             val response = apiHelper.createMentalHealthStatus(request)
+            if (response.isSuccessful) {
+                Resource(state = ResourceState.SUCCESS, response.body()?.entity)
+            } else {
+                Resource(state = ResourceState.ERROR)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Resource(state = ResourceState.ERROR)
+        }
+    }
+
+    suspend fun createMentalHealthAssessment(request: JsonObject): Resource<String> {
+        return try {
+            val response = apiHelper.createMentalHealthAssessment(request)
+            if (response.isSuccessful) {
+                Resource(state = ResourceState.SUCCESS, response.body()?.message)
+            } else {
+                Resource(state = ResourceState.ERROR)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Resource(state = ResourceState.ERROR)
+        }
+    }
+
+    suspend fun ncdMentalHealthDetails(request: NCDMentalHealthDetails): Resource<HashMap<String, Any>>? {
+        return try {
+            val response = apiHelper.ncdMentalHealthDetails(request)
             if (response.isSuccessful) {
                 Resource(state = ResourceState.SUCCESS, response.body()?.entity)
             } else {

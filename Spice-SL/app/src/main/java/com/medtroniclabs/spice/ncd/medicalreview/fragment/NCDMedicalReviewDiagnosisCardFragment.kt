@@ -329,14 +329,20 @@ class NCDMedicalReviewDiagnosisCardFragment : BaseFragment(), View.OnClickListen
             }
 
             binding.mentalHealthCard.tvAssessmentPHQ9 -> {
-                withNetworkAvailability(online = {
-                    showMentalHealthDialog(getString(R.string.phq9_type))
-                })
+                patientDetailViewModel.patientDetailsLiveData.value?.data?.let {
+                    it.phq4score?.let {
+                        withNetworkAvailability(online = {
+                            showMentalHealthDialog(getString(R.string.phq9_type), true)
+                        })
+                    } ?: withNetworkAvailability(online = {
+                        showMentalHealthDialog(getString(R.string.phq9_type), false)
+                    })
+                }
             }
 
             binding.mentalHealthCard.tvAssessmentGAD7 -> {
                 withNetworkAvailability(online = {
-                    showMentalHealthDialog(getString(R.string.gad7_type))
+                    showMentalHealthDialog(getString(R.string.gad7_type), true)
                 })
             }
         }
@@ -375,10 +381,10 @@ class NCDMedicalReviewDiagnosisCardFragment : BaseFragment(), View.OnClickListen
         }
     }
 
-    private fun showMentalHealthDialog(type: String) {
+    private fun showMentalHealthDialog(type: String, isEditAssessment: Boolean) {
         val dialog = childFragmentManager.findFragmentByTag(NCDMentalHealthQuestionDialog.TAG)
         if (dialog == null) {
-            NCDMentalHealthQuestionDialog.newInstance(type)
+            NCDMentalHealthQuestionDialog.newInstance(type,patientDetailViewModel.getPatientFHIRId(), isEditAssessment)
                 .show(childFragmentManager, NCDPatientHistoryDialog.TAG)
         }
     }

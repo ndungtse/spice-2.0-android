@@ -131,6 +131,7 @@ import com.medtroniclabs.spice.model.medicalreview.WazWhzScoreResponse
 import com.medtroniclabs.spice.ncd.data.DeviceDetails
 import com.medtroniclabs.spice.ncd.data.FollowUpRequest
 import com.medtroniclabs.spice.ncd.data.FollowUpUpdateRequest
+import com.medtroniclabs.spice.ncd.data.NCDMentalHealthDetails
 import com.medtroniclabs.spice.ncd.data.NCDMentalHealthStatusRequest
 import com.medtroniclabs.spice.ncd.data.PatientFollowUpEntity
 import com.medtroniclabs.spice.ncd.data.RegisterCallResponse
@@ -281,4 +282,6 @@ interface ApiHelper {
     suspend fun updatePatientCallRegister(request: FollowUpUpdateRequest): Response<APIResponse<HashMap<String, Any>>>
     suspend fun updateDeviceDetails(request: DeviceDetails): Response<APIResponse<DeviceDetails>>
     suspend fun createMentalHealthStatus(request: NCDMentalHealthStatusRequest): Response<APIResponse<HashMap<String, Any>>>
+    suspend fun createMentalHealthAssessment(request: JsonObject): Response<APIResponse<HashMap<String, Any>>>
+    suspend fun ncdMentalHealthDetails(request: NCDMentalHealthDetails): Response<APIResponse<HashMap<String, Any>>>
 }

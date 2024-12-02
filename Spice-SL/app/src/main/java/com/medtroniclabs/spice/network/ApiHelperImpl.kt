@@ -131,6 +131,7 @@ import com.medtroniclabs.spice.model.medicalreview.WazWhzScoreResponse
 import com.medtroniclabs.spice.ncd.data.DeviceDetails
 import com.medtroniclabs.spice.ncd.data.FollowUpRequest
 import com.medtroniclabs.spice.ncd.data.FollowUpUpdateRequest
+import com.medtroniclabs.spice.ncd.data.NCDMentalHealthDetails
 import com.medtroniclabs.spice.ncd.data.NCDMentalHealthStatusRequest
 import com.medtroniclabs.spice.ncd.data.PatientFollowUpEntity
 import com.medtroniclabs.spice.ncd.data.RegisterCallResponse
@@ -652,5 +653,13 @@ class ApiHelperImpl @Inject constructor(private val apiService: ApiService) : Ap
 
     override suspend fun createMentalHealthStatus(request: NCDMentalHealthStatusRequest): Response<APIResponse<HashMap<String, Any>>> {
         return apiService.createMentalHealthStatus(request)
+    }
+
+    override suspend fun createMentalHealthAssessment(request: JsonObject): Response<APIResponse<HashMap<String, Any>>> {
+        return apiService.createMentalHealthAssessment(request)
+    }
+
+    override suspend fun ncdMentalHealthDetails(request: NCDMentalHealthDetails): Response<APIResponse<HashMap<String, Any>>> {
+        return apiService.ncdMentalHealthDetails(request)
     }
 }
