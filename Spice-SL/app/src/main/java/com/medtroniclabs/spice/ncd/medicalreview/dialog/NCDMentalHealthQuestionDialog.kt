@@ -38,6 +38,7 @@ import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
+import com.medtroniclabs.spice.ui.dialog.GeneralSuccessDialog
 
 class NCDMentalHealthQuestionDialog : DialogFragment(), FormEventListener, View.OnClickListener {
     private lateinit var binding: FragmentNCDMentalHealthQuestionDialogBinding
@@ -232,7 +233,18 @@ class NCDMentalHealthQuestionDialog : DialogFragment(), FormEventListener, View.
                 }
 
                 ResourceState.SUCCESS -> {
-
+                    resource.data?.let {
+                        val fragment = childFragmentManager.findFragmentByTag(GeneralSuccessDialog.TAG)
+                        if (fragment == null) {
+                            GeneralSuccessDialog.newInstance(
+                                title = getString(R.string.tab_medical_review),
+                                message = it,
+                                okayButton = getString(R.string.done)
+                            ) {
+                                dismiss()
+                            }.show(childFragmentManager, GeneralSuccessDialog.TAG)
+                        }
+                    }
                 }
             }
         }
@@ -405,6 +417,7 @@ class NCDMentalHealthQuestionDialog : DialogFragment(), FormEventListener, View.
                 )
             }
             if (result != null) {
+                CommonUtils.assessmentPHQ4(result)
                 result = Pair(StringConverter.convertGivenMapToString(result.second), result.second)
                 result.first?.let {
                     val reqMap = StringConverter.convertStringToMap(it)

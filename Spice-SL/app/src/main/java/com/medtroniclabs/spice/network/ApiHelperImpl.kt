@@ -133,6 +133,7 @@ import com.medtroniclabs.spice.ncd.data.FollowUpRequest
 import com.medtroniclabs.spice.ncd.data.FollowUpUpdateRequest
 import com.medtroniclabs.spice.ncd.data.NCDMentalHealthMedicalReviewDetails
 import com.medtroniclabs.spice.ncd.data.NCDMentalHealthStatusRequest
+import com.medtroniclabs.spice.ncd.data.NCDPatientDiagnosisStatusRequest
 import com.medtroniclabs.spice.ncd.data.PatientFollowUpEntity
 import com.medtroniclabs.spice.ncd.data.RegisterCallResponse
 import okhttp3.MultipartBody
@@ -659,7 +660,7 @@ class ApiHelperImpl @Inject constructor(private val apiService: ApiService) : Ap
         return apiService.ncdMentalHealthMedicalReviewCreateA(request)
     }
 
-    override suspend fun ncdPatientDiagnosisStatus(request: HashMap<String, Any>): Response<APIResponse<HashMap<String, Any>>> {
+    override suspend fun ncdPatientDiagnosisStatus(request: NCDPatientDiagnosisStatusRequest): Response<APIResponse<HashMap<String, Any>>> {
         return apiService.ncdPatientDiagnosisStatus(request)
     }
 

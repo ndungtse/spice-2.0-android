@@ -121,6 +121,7 @@ import com.medtroniclabs.spice.ncd.data.FollowUpRequest
 import com.medtroniclabs.spice.ncd.data.FollowUpUpdateRequest
 import com.medtroniclabs.spice.ncd.data.NCDMentalHealthMedicalReviewDetails
 import com.medtroniclabs.spice.ncd.data.NCDMentalHealthStatusRequest
+import com.medtroniclabs.spice.ncd.data.NCDPatientDiagnosisStatusRequest
 import com.medtroniclabs.spice.ncd.data.TermsAndConditionsModel
 import com.medtroniclabs.spice.ncd.data.NCDPatientRemoveRequest
 import com.medtroniclabs.spice.ncd.data.NCDPatientTransferValidate
@@ -534,7 +535,7 @@ interface ApiService {
     suspend fun createMentalHealthStatus(@Body request: NCDMentalHealthStatusRequest): Response<APIResponse<HashMap<String, Any>>>
 
     @POST("/spice-service/medical-review/patient-status/details")
-    suspend fun ncdPatientDiagnosisStatus(@Body request: HashMap<String, Any>): Response<APIResponse<HashMap<String, Any>>>
+    suspend fun ncdPatientDiagnosisStatus(@Body request: NCDPatientDiagnosisStatusRequest): Response<APIResponse<HashMap<String, Any>>>
 
     @POST("/spice-service/mentalhealth/create")
     suspend fun ncdMentalHealthMedicalReviewCreateA(@Body request: JsonObject): Response<APIResponse<HashMap<String, Any>>>

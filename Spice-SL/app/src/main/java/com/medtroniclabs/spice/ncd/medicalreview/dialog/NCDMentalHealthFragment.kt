@@ -16,9 +16,11 @@ import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.invisible
+import com.medtroniclabs.spice.appextensions.isVisible
 import com.medtroniclabs.spice.appextensions.loadAsGif
 import com.medtroniclabs.spice.appextensions.resetImageView
 import com.medtroniclabs.spice.appextensions.setDialogPercent
+import com.medtroniclabs.spice.appextensions.setVisible
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DateUtils
@@ -36,11 +38,13 @@ import com.medtroniclabs.spice.formgeneration.utility.MultiSelectSpinnerAdapter
 import com.medtroniclabs.spice.mappingkey.Screening
 import com.medtroniclabs.spice.ncd.data.MentalHealthStatus
 import com.medtroniclabs.spice.ncd.data.NCDMentalHealthStatusRequest
+import com.medtroniclabs.spice.ncd.data.NCDPatientDiagnosisStatusRequest
 import com.medtroniclabs.spice.ncd.data.NcdPatientStatus
 import com.medtroniclabs.spice.ncd.medicalreview.NCDDialogDismissListener
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil
 import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDMedicalReviewViewModel
 import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDMentalHealthViewModel
+import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDPatientDiagnosisViewModel
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil
 import dagger.hilt.android.AndroidEntryPoint
@@ -51,6 +55,7 @@ class NCDMentalHealthFragment : DialogFragment(), View.OnClickListener {
 
     private val viewModel: NCDMentalHealthViewModel by activityViewModels()
     private val medicalReviewViewModel: NCDMedicalReviewViewModel by activityViewModels()
+    private val patientDiagnosisViewModel: NCDPatientDiagnosisViewModel by activityViewModels()
 
     val adapter by lazy { CustomSpinnerAdapter(requireContext()) }
     var listener: NCDDialogDismissListener? = null
@@ -135,6 +140,37 @@ class NCDMentalHealthFragment : DialogFragment(), View.OnClickListener {
                 ResourceState.SUCCESS -> {
                     hideLoading()
                     dismiss()
+                }
+
+                ResourceState.ERROR -> {
+                    hideLoading()
+                }
+            }
+        }
+
+        patientDiagnosisViewModel.ncdPatientDiagnosisStatus.observe(this) { resourceState ->
+            when (resourceState.state) {
+                ResourceState.LOADING -> {
+                    showLoading()
+                }
+
+                ResourceState.SUCCESS -> {
+                    hideLoading()
+                    if (resourceState.data != null) {
+                        binding.tvNCD.gone()
+                        binding.ncdDiabetesHypertension.groupYearOfDiagnosis2.gone()
+                        binding.ncdDiabetesHypertension.groupYearOfDiagnosis.gone()
+                        binding.ncdDiabetesHypertension.groupDiabetesSpinner.gone()
+                        binding.ncdDiabetesHypertension.tvHypertension.gone()
+                        binding.ncdDiabetesHypertension.llHypertension.gone()
+                        binding.ncdDiabetesHypertension.llDiabetes.gone()
+                        binding.ncdDiabetesHypertension.tvDiabetes.gone()
+                        binding.ncdDiabetesHypertension.tvDiabetesError.gone()
+                        binding.ncdDiabetesHypertension.tvYearOfDiagnosisError.gone()
+                        binding.ncdDiabetesHypertension.tvDiabetesControlledError.gone()
+                        binding.ncdDiabetesHypertension.tvHypertensionError.gone()
+                        binding.ncdDiabetesHypertension.tvYearOfDiagnosisErrorHtn.gone()
+                    }
                 }
 
                 ResourceState.ERROR -> {
@@ -412,6 +448,11 @@ class NCDMentalHealthFragment : DialogFragment(), View.OnClickListener {
     }
 
     private fun initView() {
+        getPatientReference()?.let { NCDPatientDiagnosisStatusRequest(it) }?.let {
+            patientDiagnosisViewModel.ncdPatientDiagnosisStatus(
+                it
+            )
+        }
         binding.apply {
             tvMentalHealth.markMandatory()
             tvMentalHealthDisorder.markMandatory()
@@ -577,25 +618,20 @@ class NCDMentalHealthFragment : DialogFragment(), View.OnClickListener {
     }
 
     fun validateInput(): Boolean {
-        val isDiabetesValid = viewModel.resultDiabetesHashMap.isNotEmpty()
-        val isHypertensionValid = viewModel.resultHypertensionHashMap.isNotEmpty()
+        return if (binding.tvNCD.isVisible()) {
+            validateNCDPatientStatus() && validateMentalHealthAndSubstance()
+        } else {
+            validateMentalHealthAndSubstance()
+        }
+    }
+
+    private fun validateMentalHealthAndSubstance(): Boolean {
         val isMentalHealthValid = viewModel.resultMentalHealthHashMap.isNotEmpty()
         val isSubstanceUseValid = viewModel.resultSubstanceUseHashMap.isNotEmpty()
-        val isValueValid = !viewModel.value.isNullOrBlank()
         val isMentalHealthValueValid = viewModel.selectedMentalHealthListItem.isNotEmpty()
         val isSubstanceUseValueValid = viewModel.selectedSubstanceListItem.isNotEmpty()
-
-        if (isDiabetesValid) {
-            binding.ncdDiabetesHypertension.tvDiabetesError.gone()
-        } else {
-            binding.ncdDiabetesHypertension.tvDiabetesError.visible()
-        }
-
-        if (isHypertensionValid) {
-            binding.ncdDiabetesHypertension.tvHypertensionError.gone()
-        } else {
-            binding.ncdDiabetesHypertension.tvHypertensionError.visible()
-        }
+        val isCommentsValidMentalHealth = viewModel.mentalHealthComments?.isNotEmpty()
+        val isCommentsValidSubstanceUse = viewModel.substanceUseComments?.isNotEmpty()
 
         if (isMentalHealthValid) {
             binding.tvMentalHealthError.gone()
@@ -609,6 +645,18 @@ class NCDMentalHealthFragment : DialogFragment(), View.OnClickListener {
             binding.tvSubstanceUseError.visible()
         }
 
+        if (isMentalHealthValid && isCommentsValidMentalHealth == true) {
+            binding.tvCommentsError.gone()
+        } else {
+            binding.tvCommentsError.visible()
+        }
+
+        if (isSubstanceUseValid && isCommentsValidSubstanceUse == true) {
+            binding.tvDiagnosisError.gone()
+        } else {
+            binding.tvDiagnosisError.visible()
+        }
+
         val isKnownMentalHealthPatient =
             (viewModel.resultMentalHealthHashMap[MENTAL_HEALTH_STATUS] as? String)?.equals(
                 Known_patient,
@@ -617,12 +665,6 @@ class NCDMentalHealthFragment : DialogFragment(), View.OnClickListener {
 
         val isKnownSubstanceUsePatient =
             (viewModel.resultSubstanceUseHashMap[SUBSTANCE_USE_STATUS] as? String)?.equals(
-                Known_patient,
-                true
-            ) == true
-
-        val isKnownDiabetesPatient =
-            (viewModel.resultDiabetesHashMap[Diabetes] as? String)?.equals(
                 Known_patient,
                 true
             ) == true
@@ -643,20 +685,6 @@ class NCDMentalHealthFragment : DialogFragment(), View.OnClickListener {
             }
         }
 
-        if (isKnownDiabetesPatient && isValueValid) {
-            binding.ncdDiabetesHypertension.tvDiabetesControlledError.gone()
-        } else {
-            if (isKnownDiabetesPatient) {
-                binding.ncdDiabetesHypertension.tvDiabetesControlledError.visible()
-            }
-        }
-
-        val isKnownHypertensionPatient =
-            (viewModel.resultHypertensionHashMap[Hypertension] as? String)?.equals(
-                Known_patient,
-                true
-            ) == true
-
         val knownPatientValidForMentalHealth =
             (!isKnownMentalHealthPatient || (isValidDiagnosis(
                 binding.etYrOfDiagnosis,
@@ -669,6 +697,37 @@ class NCDMentalHealthFragment : DialogFragment(), View.OnClickListener {
                 binding.tvDiagnosisError
             ) && isSubstanceUseValueValid))
 
+        return isMentalHealthValid && isSubstanceUseValid && knownPatientValidForMentalHealth && knownPatientValidForSubstanceUse
+    }
+
+    private fun validateNCDPatientStatus(): Boolean {
+        val isDiabetesValid = viewModel.resultDiabetesHashMap.isNotEmpty()
+        val isHypertensionValid = viewModel.resultHypertensionHashMap.isNotEmpty()
+        val isValueValid = !viewModel.value.isNullOrBlank()
+
+        binding.ncdDiabetesHypertension.tvDiabetesError.setVisible(!isDiabetesValid)
+        binding.ncdDiabetesHypertension.tvHypertensionError.setVisible(!isHypertensionValid)
+
+        val isKnownDiabetesPatient =
+            (viewModel.resultDiabetesHashMap[NCDPatientHistoryDialog.Diabetes] as? String)?.equals(
+                NCDPatientHistoryDialog.Known_patient,
+                true
+            ) == true
+
+        if (isKnownDiabetesPatient && isValueValid) {
+            binding.ncdDiabetesHypertension.tvDiabetesControlledError.gone()
+        } else {
+            if (isKnownDiabetesPatient) {
+                binding.ncdDiabetesHypertension.tvDiabetesControlledError.visible()
+            }
+        }
+
+        val isKnownHypertensionPatient =
+            (viewModel.resultHypertensionHashMap[NCDPatientHistoryDialog.Hypertension] as? String)?.equals(
+                NCDPatientHistoryDialog.Known_patient,
+                true
+            ) == true
+
         val knownPatientValidForDiabetes =
             (!isKnownDiabetesPatient || (isValidDiagnosis(
                 binding.ncdDiabetesHypertension.etYearOfDiagnosis,
@@ -676,9 +735,8 @@ class NCDMentalHealthFragment : DialogFragment(), View.OnClickListener {
             ) && isValueValid))
         val knownPatientValidForHypertension =
             (!isKnownHypertensionPatient || isValidDiagnosisTwo())
-        return knownPatientValidForMentalHealth && knownPatientValidForSubstanceUse && isDiabetesValid && isHypertensionValid && knownPatientValidForDiabetes
+        return isDiabetesValid && isHypertensionValid && knownPatientValidForDiabetes
                 && knownPatientValidForHypertension
-
     }
 
     private fun isValidDiagnosis(

@@ -14,11 +14,13 @@ import androidx.constraintlayout.widget.Group
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.hideKeyboard
 import com.medtroniclabs.spice.appextensions.invisible
+import com.medtroniclabs.spice.appextensions.isVisible
 import com.medtroniclabs.spice.appextensions.loadAsGif
 import com.medtroniclabs.spice.appextensions.postSuccess
 import com.medtroniclabs.spice.appextensions.resetImageView
@@ -47,10 +49,13 @@ import com.medtroniclabs.spice.formgeneration.ui.SingleSelectionCustomView
 import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
 import com.medtroniclabs.spice.mappingkey.Screening.Female
 import com.medtroniclabs.spice.mappingkey.Screening.Male
+import com.medtroniclabs.spice.ncd.data.NCDPatientDiagnosisStatusRequest
 import com.medtroniclabs.spice.ncd.data.NcdPatientStatus
+import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil
 import com.medtroniclabs.spice.ncd.medicalreview.dialog.NCDPatientHistoryDialog.Companion.Diabetes
 import com.medtroniclabs.spice.ncd.medicalreview.dialog.NCDPatientHistoryDialog.Companion.Hypertension
 import com.medtroniclabs.spice.ncd.medicalreview.dialog.NCDPatientHistoryDialog.Companion.Known_patient
+import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDPatientDiagnosisViewModel
 import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDPregnancyViewModel
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
@@ -69,6 +74,7 @@ class NCDPregnancyDialog(private val callback: ((isPositiveResult: Boolean, mess
 
     private lateinit var binding: DialogNcdPregnancyBinding
     private val viewModel: NCDPregnancyViewModel by viewModels()
+    private val patientDiagnosisViewModel: NCDPatientDiagnosisViewModel by activityViewModels()
 
     private lateinit var neonatalOutcomesView: TagListCustomView
     private lateinit var maternalOutcomesView: TagListCustomView
@@ -114,6 +120,12 @@ class NCDPregnancyDialog(private val callback: ((isPositiveResult: Boolean, mess
     }
 
     private fun initView() {
+        NCDPatientDiagnosisStatusRequest(arguments?.getString(NCDMRUtil.PATIENT_REFERENCE))
+            .let {
+                patientDiagnosisViewModel.ncdPatientDiagnosisStatus(
+                    it
+                )
+            }
         viewModel.relatedPersonFhirId = arguments?.getString(PATIENT_ID)
         with(binding) {
             tvPregnant.markMandatory()
@@ -584,6 +596,31 @@ class NCDPregnancyDialog(private val callback: ((isPositiveResult: Boolean, mess
         viewModel.getSymptomListByTypeForNCDLiveData.observe(viewLifecycleOwner) {
             loadSiteDetails(ArrayList(it))
         }
+        patientDiagnosisViewModel.ncdPatientDiagnosisStatus.observe(this) {resourceState ->
+            when (resourceState.state) {
+                ResourceState.LOADING -> {
+                    showLoading()
+                }
+
+                ResourceState.SUCCESS -> {
+                    hideLoading()
+                    if(resourceState.data != null) {
+                        binding.tvNCD.gone()
+                        binding.ncdDiabetesHypertension.groupYearOfDiagnosis2.gone()
+                        binding.ncdDiabetesHypertension.groupYearOfDiagnosis.gone()
+                        binding.ncdDiabetesHypertension.groupDiabetesSpinner.gone()
+                        binding.ncdDiabetesHypertension.tvHypertension.gone()
+                        binding.ncdDiabetesHypertension.llHypertension.gone()
+                        binding.ncdDiabetesHypertension.llDiabetes.gone()
+                        binding.ncdDiabetesHypertension.tvDiabetes.gone()
+                    }
+                }
+
+                ResourceState.ERROR -> {
+                    hideLoading()
+                }
+            }
+        }
     }
 
     private fun loadSiteDetails(data: ArrayList<NCDDiagnosisEntity>) {
@@ -675,6 +712,7 @@ class NCDPregnancyDialog(private val callback: ((isPositiveResult: Boolean, mess
 
         const val TAG = "NCDPregnancyCreateDialog"
         fun newInstance(
+            patientReference: String?,
             patientId: String,
             isFemale: Boolean,
             isPregnant: Boolean,
@@ -682,6 +720,7 @@ class NCDPregnancyDialog(private val callback: ((isPositiveResult: Boolean, mess
         ): NCDPregnancyDialog {
             val fragment = NCDPregnancyDialog(callback)
             val bundle = Bundle()
+            bundle.putString(NCDMRUtil.PATIENT_REFERENCE, patientReference)
             bundle.putString(PATIENT_ID, patientId)
             bundle.putBoolean(IS_FEMALE, isFemale)
             bundle.putBoolean(IS_PREGNANT, isPregnant)
@@ -725,7 +764,11 @@ class NCDPregnancyDialog(private val callback: ((isPositiveResult: Boolean, mess
     private fun validateInputs(): Boolean {
         var ncdPatientStatus : Boolean
         with(viewModel.ncdPregnancyCreateModel) {
-            ncdPatientStatus = validateNCDPatientStatus()
+            ncdPatientStatus = if (binding.tvNCD.isVisible()) {
+                validateNCDPatientStatus()
+            } else {
+                true
+            }
 
             if (isPregnant == null) {
                 binding.tvPregnantError.visible()

@@ -409,6 +409,7 @@
                         android:fontFamily="@font/inter_bold"
                         android:paddingVertical="@dimen/_10sdp"
                         android:text="@string/ncd"
+                        android:visibility="visible"
                         android:textColor="@color/house_hold_title"
                         android:textSize="@dimen/_15ssp"
                         app:layout_constraintStart_toStartOf="parent"
@@ -421,6 +422,7 @@
                     layout="@layout/ncd_diabetes_hypertension"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:visibility="visible"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/clMH" />
 

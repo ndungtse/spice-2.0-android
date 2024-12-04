@@ -1759,4 +1759,59 @@ object CommonUtils {
             else -> ""
         }
     }
+
+    fun assessmentPHQ4(result: Pair<String?, HashMap<String, Any>>) {
+        if (result?.second?.containsKey(AssessmentDefinedParams.PHQ9.lowercase()) == true) {
+            val phq9 =
+                result?.second?.get(AssessmentDefinedParams.PHQ9.lowercase()) as HashMap<String, Any>
+            if (phq9.isEmpty()) {
+                result?.second?.apply {
+                    remove(AssessmentDefinedParams.PHQ9.lowercase())
+                }
+            } else {
+                val score = phq9[AssessmentDefinedParams.PHQ9_Score] as Int
+                phq9[Screening.PHQ4_Score] = score
+                phq9.remove(AssessmentDefinedParams.PHQ9_Score)
+
+                val riskLevel = phq9[AssessmentDefinedParams.PHQ9_Risk_Level] as String
+                phq9[Screening.PHQ4_Risk_Level] = riskLevel
+                phq9.remove(AssessmentDefinedParams.PHQ9_Risk_Level)
+
+                val mentalHealth =
+                    phq9[AssessmentDefinedParams.PHQ9_Mental_Health] as ArrayList<*>
+                phq9[Screening.PHQ4_Mental_Health] = mentalHealth
+                phq9.remove(AssessmentDefinedParams.PHQ9_Mental_Health)
+            }
+        }
+        if (result?.second?.containsKey(Screening.PHQ4.lowercase()) == true) {
+            val phq4 = result?.second?.get(Screening.PHQ4.lowercase()) as HashMap<String, Any>
+            if (phq4.isEmpty()) {
+                result?.second?.apply {
+                    remove(Screening.PHQ4.lowercase())
+                }
+            }
+        }
+        if (result?.second?.containsKey(AssessmentDefinedParams.GAD7.lowercase()) == true) {
+            val gad7 =
+                result?.second?.get(AssessmentDefinedParams.GAD7.lowercase()) as HashMap<String, Any>
+            if (gad7.isEmpty()) {
+                result?.second?.apply {
+                    remove(AssessmentDefinedParams.GAD7.lowercase())
+                }
+            } else {
+                val score = gad7[AssessmentDefinedParams.GAD7_Score] as Int
+                gad7[Screening.PHQ4_Score] = score
+                gad7.remove(AssessmentDefinedParams.GAD7_Score)
+
+                val riskLevel = gad7[AssessmentDefinedParams.GAD7_Risk_Level] as String
+                gad7[Screening.PHQ4_Risk_Level] = riskLevel
+                gad7.remove(AssessmentDefinedParams.GAD7_Risk_Level)
+
+                val mentalHealth =
+                    gad7[AssessmentDefinedParams.GAD7_Mental_Health] as ArrayList<*>
+                gad7[Screening.PHQ4_Mental_Health] = mentalHealth
+                gad7.remove(AssessmentDefinedParams.GAD7_Mental_Health)
+            }
+        }
+    }
 }

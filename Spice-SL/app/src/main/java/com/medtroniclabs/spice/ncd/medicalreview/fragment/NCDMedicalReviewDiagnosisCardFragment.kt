@@ -296,6 +296,7 @@ class NCDMedicalReviewDiagnosisCardFragment : BaseFragment(), View.OnClickListen
                         if (dialog == null) {
                             val ncdPregnancyDialog =
                                 NCDPregnancyDialog.newInstance(
+                                    patientDetailViewModel.getPatientId(),
                                     patientId = id,
                                     patientDetailViewModel.getGenderIsFemale(),
                                     patientDetailViewModel.isPregnant()
