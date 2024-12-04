@@ -49,13 +49,12 @@ import com.medtroniclabs.spice.formgeneration.ui.SingleSelectionCustomView
 import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
 import com.medtroniclabs.spice.mappingkey.Screening.Female
 import com.medtroniclabs.spice.mappingkey.Screening.Male
-import com.medtroniclabs.spice.ncd.data.NCDPatientDiagnosisStatusRequest
 import com.medtroniclabs.spice.ncd.data.NcdPatientStatus
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil
 import com.medtroniclabs.spice.ncd.medicalreview.dialog.NCDPatientHistoryDialog.Companion.Diabetes
 import com.medtroniclabs.spice.ncd.medicalreview.dialog.NCDPatientHistoryDialog.Companion.Hypertension
 import com.medtroniclabs.spice.ncd.medicalreview.dialog.NCDPatientHistoryDialog.Companion.Known_patient
-import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDPatientDiagnosisViewModel
+import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDMedicalReviewViewModel
 import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDPregnancyViewModel
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
@@ -74,7 +73,7 @@ class NCDPregnancyDialog(private val callback: ((isPositiveResult: Boolean, mess
 
     private lateinit var binding: DialogNcdPregnancyBinding
     private val viewModel: NCDPregnancyViewModel by viewModels()
-    private val patientDiagnosisViewModel: NCDPatientDiagnosisViewModel by activityViewModels()
+    private val medicalReviewViewModel: NCDMedicalReviewViewModel by activityViewModels()
 
     private lateinit var neonatalOutcomesView: TagListCustomView
     private lateinit var maternalOutcomesView: TagListCustomView
@@ -95,12 +94,15 @@ class NCDPregnancyDialog(private val callback: ((isPositiveResult: Boolean, mess
     private fun handleOrientation() {
         val isTablet = CommonUtils.checkIsTablet(requireContext())
         val isLandscape = resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
-        val percent = when {
+        val width = when {
             isTablet && isLandscape -> 70
-            isTablet && !isLandscape -> 90
             else -> 100
         }
-        setDialogPercent(percent)
+        val height = when {
+            isTablet && isLandscape -> 95
+            else -> 100
+        }
+        setDialogPercent(width, height)
     }
 
     override fun onCreateView(
@@ -120,12 +122,7 @@ class NCDPregnancyDialog(private val callback: ((isPositiveResult: Boolean, mess
     }
 
     private fun initView() {
-        NCDPatientDiagnosisStatusRequest(arguments?.getString(NCDMRUtil.PATIENT_REFERENCE))
-            .let {
-                patientDiagnosisViewModel.ncdPatientDiagnosisStatus(
-                    it
-                )
-            }
+        ncdVisibility()
         viewModel.relatedPersonFhirId = arguments?.getString(PATIENT_ID)
         with(binding) {
             tvPregnant.markMandatory()
@@ -269,6 +266,18 @@ class NCDPregnancyDialog(private val callback: ((isPositiveResult: Boolean, mess
 
         }
         binding.loadingProgress.bringToFront()
+    }
+
+    private fun ncdVisibility() {
+        var showNCD = true
+        medicalReviewViewModel.ncdPatientDiagnosisStatus.value?.data?.let { responseMap ->
+            showNCD =
+                !(responseMap.containsKey(NCDMRUtil.NCDPatientStatus) && responseMap[NCDMRUtil.NCDPatientStatus] != null)
+        }
+        binding.apply {
+            tvNCD.setVisible(showNCD)
+            ncdDiabetesHypertension.root.setVisible(showNCD)
+        }
     }
 
     private fun getGender(): String {
@@ -596,31 +605,6 @@ class NCDPregnancyDialog(private val callback: ((isPositiveResult: Boolean, mess
         viewModel.getSymptomListByTypeForNCDLiveData.observe(viewLifecycleOwner) {
             loadSiteDetails(ArrayList(it))
         }
-        patientDiagnosisViewModel.ncdPatientDiagnosisStatus.observe(this) {resourceState ->
-            when (resourceState.state) {
-                ResourceState.LOADING -> {
-                    showLoading()
-                }
-
-                ResourceState.SUCCESS -> {
-                    hideLoading()
-                    if(resourceState.data != null) {
-                        binding.tvNCD.gone()
-                        binding.ncdDiabetesHypertension.groupYearOfDiagnosis2.gone()
-                        binding.ncdDiabetesHypertension.groupYearOfDiagnosis.gone()
-                        binding.ncdDiabetesHypertension.groupDiabetesSpinner.gone()
-                        binding.ncdDiabetesHypertension.tvHypertension.gone()
-                        binding.ncdDiabetesHypertension.llHypertension.gone()
-                        binding.ncdDiabetesHypertension.llDiabetes.gone()
-                        binding.ncdDiabetesHypertension.tvDiabetes.gone()
-                    }
-                }
-
-                ResourceState.ERROR -> {
-                    hideLoading()
-                }
-            }
-        }
     }
 
     private fun loadSiteDetails(data: ArrayList<NCDDiagnosisEntity>) {
@@ -718,14 +702,14 @@ class NCDPregnancyDialog(private val callback: ((isPositiveResult: Boolean, mess
             isPregnant: Boolean,
             callback: ((isPositiveResult: Boolean, message: String) -> Unit)
         ): NCDPregnancyDialog {
-            val fragment = NCDPregnancyDialog(callback)
-            val bundle = Bundle()
-            bundle.putString(NCDMRUtil.PATIENT_REFERENCE, patientReference)
-            bundle.putString(PATIENT_ID, patientId)
-            bundle.putBoolean(IS_FEMALE, isFemale)
-            bundle.putBoolean(IS_PREGNANT, isPregnant)
-            fragment.arguments = bundle
-            return fragment
+            return NCDPregnancyDialog(callback).apply {
+                arguments = Bundle().apply {
+                    putString(NCDMRUtil.PATIENT_REFERENCE, patientReference)
+                    putString(PATIENT_ID, patientId)
+                    putBoolean(IS_FEMALE, isFemale)
+                    putBoolean(IS_PREGNANT, isPregnant)
+                }
+            }
         }
     }
 

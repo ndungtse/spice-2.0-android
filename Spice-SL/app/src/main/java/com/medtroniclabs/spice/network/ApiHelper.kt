@@ -133,7 +133,6 @@ import com.medtroniclabs.spice.ncd.data.FollowUpRequest
 import com.medtroniclabs.spice.ncd.data.FollowUpUpdateRequest
 import com.medtroniclabs.spice.ncd.data.NCDMentalHealthMedicalReviewDetails
 import com.medtroniclabs.spice.ncd.data.NCDMentalHealthStatusRequest
-import com.medtroniclabs.spice.ncd.data.NCDPatientDiagnosisStatusRequest
 import com.medtroniclabs.spice.ncd.data.PatientFollowUpEntity
 import com.medtroniclabs.spice.ncd.data.RegisterCallResponse
 import okhttp3.MultipartBody
@@ -245,11 +244,11 @@ interface ApiHelper {
     suspend fun updateDispensePrescription(request: DispensePrescriptionRequest): Response<APIResponse<DispenseUpdateResponse>>
     suspend fun getDispensePrescriptionHistory(request: DispenseUpdateRequest): Response<APIResponse<ArrayList<DispensePrescriptionResponse>>>
     suspend fun createLifestyle(request: NCDCounselingModel): Response<APIResponse<NCDCounselingModel>>
-    suspend fun updateLifestyle(request: AssessmentResultModel): Response<APIResponse<NCDCounselingModel>>
+    suspend fun updateLifestyle(request: AssessmentResultModel): Response<APIResponse<HashMap<String, Any>>>
     suspend fun getLifestyleList(request: NCDCounselingModel): Response<APIResponse<ArrayList<NCDCounselingModel>>>
     suspend fun removeLifestyle(request: NCDCounselingModel): Response<APIResponse<NCDCounselingModel>>
     suspend fun createPsychological(request: NCDCounselingModel): Response<APIResponse<NCDCounselingModel>>
-    suspend fun updatePsychological(request: AssessmentResultModel): Response<APIResponse<NCDCounselingModel>>
+    suspend fun updatePsychological(request: AssessmentResultModel): Response<APIResponse<HashMap<String, Any>>>
     suspend fun getPsychological(request: NCDCounselingModel): Response<APIResponse<ArrayList<NCDCounselingModel>>>
     suspend fun removePsychological(request: NCDCounselingModel): Response<APIResponse<NCDCounselingModel>>
     suspend fun getPatientPrescriptionHistoryList(request: RemovePrescriptionRequest): Response<APIResponse<ArrayList<Prescription>>>
@@ -284,8 +283,9 @@ interface ApiHelper {
     suspend fun updateDeviceDetails(request: DeviceDetails): Response<APIResponse<DeviceDetails>>
     suspend fun createMentalHealthStatus(request: NCDMentalHealthStatusRequest): Response<APIResponse<HashMap<String, Any>>>
     suspend fun ncdMentalHealthMedicalReviewCreateA(request: JsonObject): Response<APIResponse<HashMap<String, Any>>>
-    suspend fun ncdPatientDiagnosisStatus(request: NCDPatientDiagnosisStatusRequest): Response<APIResponse<HashMap<String, Any>>>
+    suspend fun ncdPatientDiagnosisStatus(request: HashMap<String, Any>): Response<APIResponse<HashMap<String, Any>>>
     suspend fun ncdMentalHealthMedicalReviewCreateS(request: JsonObject): Response<APIResponse<HashMap<String, Any>>>
     suspend fun ncdMentalHealthMedicalReviewDetailsA(request: NCDMentalHealthMedicalReviewDetails): Response<APIResponse<HashMap<String, Any>>>
     suspend fun ncdMentalHealthMedicalReviewDetailsS(request: NCDMentalHealthMedicalReviewDetails): Response<APIResponse<HashMap<String, Any>>>
+    suspend fun markAsReviewed(request: HashMap<String, Any>): Response<APIResponse<HashMap<String, Any>>>
 }

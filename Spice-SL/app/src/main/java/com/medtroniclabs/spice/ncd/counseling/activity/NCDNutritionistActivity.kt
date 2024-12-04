@@ -308,10 +308,10 @@ class NCDNutritionistActivity : BaseActivity(), View.OnClickListener {
                 val show = binding.clLifeStyleHistory.visibility == View.GONE
 
                 if (show) {
-                    binding.tvViewHistory.setText(getString(R.string.hide_history))
+                    binding.tvViewHistory.text = getString(R.string.hide_history)
                     binding.clLifeStyleHistory.visible()
                 } else {
-                    binding.tvViewHistory.setText(getString(R.string.view_history))
+                    binding.tvViewHistory.text = getString(R.string.view_history)
                     binding.clLifeStyleHistory.gone()
                 }
             }

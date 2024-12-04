@@ -231,6 +231,7 @@ object DefinedParams {
     const val DirectPNCFlow = "DirectPNCFlow"
     const val LabourDeliveryData="LabourDeliveryData"
     const val NeonateOutcome = "NeonateOutcome"
+    const val Comments = "comments"
 
 
     const val Others = "Others"

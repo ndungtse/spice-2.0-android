@@ -15,7 +15,6 @@ import com.medtroniclabs.spice.common.CommonUtils.getContactNumber
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DateUtils.DATE_FORMAT_ddMMMyyyy
 import com.medtroniclabs.spice.common.DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
-import com.medtroniclabs.spice.common.DateUtils.DATE_TIME_yyyyMMddTHHmmssSSSXXX
 import com.medtroniclabs.spice.common.DateUtils.DATE_ddMMyyyy
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.IsReferredScreen
@@ -27,6 +26,7 @@ import com.medtroniclabs.spice.formgeneration.extension.capitalizeFirstChar
 import com.medtroniclabs.spice.mappingkey.Screening
 import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.ncd.data.NCDPregnancyRiskUpdate
+import com.medtroniclabs.spice.ncd.medicalreview.NCDMedicalReviewActivity
 import com.medtroniclabs.spice.ncd.medicalreview.dialog.NCDMentalHealthQuestionDialog
 import com.medtroniclabs.spice.ncd.medicalreview.dialog.NCDPatientHistoryDialog
 import com.medtroniclabs.spice.network.resource.ResourceState
@@ -37,6 +37,7 @@ import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.ANC
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.PNC
 import com.medtroniclabs.spice.ui.common.GeneralInfoDialog
+import com.medtroniclabs.spice.ui.dialog.GeneralSuccessDialog
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.AncVisitCallBack
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -341,7 +342,18 @@ class PatientInfoFragment : BaseFragment() {
                 viewModel.getPatientId(),
                 viewModel.getPatientFHIRId(),
                 isEditAssessment
-            )
+            ) { response ->
+                val fragment = childFragmentManager.findFragmentByTag(GeneralSuccessDialog.TAG)
+                if (fragment == null) {
+                    GeneralSuccessDialog.newInstance(
+                        title = response.first,
+                        message = response.second,
+                        okayButton = getString(R.string.done)
+                    ) {
+                        (requireActivity() as? NCDMedicalReviewActivity)?.swipeRefresh()
+                    }.show(childFragmentManager, GeneralSuccessDialog.TAG)
+                }
+            }
                 .show(childFragmentManager, NCDPatientHistoryDialog.TAG)
         }
     }
@@ -434,7 +446,7 @@ class PatientInfoFragment : BaseFragment() {
             dataList.add(
                 mapOf(
                     DefinedParams.label to requireContext().getString(R.string.suicidcal_ideation),
-                    DefinedParams.Value to suicidcalIdeation,
+                    DefinedParams.Value to suicidcalIdeation.capitalizeFirstChar(),
                     Screening.type to type,
                     DefinedParams.color to requireContext().getColor(R.color.medium_high_risk_color)
                 )
@@ -453,12 +465,12 @@ class PatientInfoFragment : BaseFragment() {
                 )
             )
         } else {
-            data.cageAid?.toDoubleOrNull()?.toInt()?.let { cageId ->
-                if (cageId > 0) {
+            data.cageAid?.let { aid ->
+                if ((aid.toDoubleOrNull()?.toInt() ?: 0) > 0) {
                     dataList.add(
                         mapOf(
                             DefinedParams.label to requireContext().getString(R.string.cage_aid),
-                            DefinedParams.Value to cageId.toString(),
+                            DefinedParams.Value to aid,
                             DefinedParams.color to requireContext().getColor(R.color.medium_high_risk_color)
                         )
                     )

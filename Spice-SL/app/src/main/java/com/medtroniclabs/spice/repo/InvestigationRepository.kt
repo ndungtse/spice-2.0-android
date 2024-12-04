@@ -1,6 +1,7 @@
 package com.medtroniclabs.spice.repo
 
 import com.google.gson.Gson
+import com.medtroniclabs.spice.data.APIResponse
 import com.medtroniclabs.spice.data.ErrorResponse
 import com.medtroniclabs.spice.db.local.RoomHelper
 import com.medtroniclabs.spice.model.LabTestCreateRequest
@@ -100,6 +101,18 @@ class InvestigationRepository @Inject constructor(
             return errorResponse.message
         } catch (e: Exception) {
             null
+        }
+    }
+
+    suspend fun markAsReviewed(request: HashMap<String, Any>): Resource<APIResponse<HashMap<String, Any>>> {
+        return try {
+            val response = apiHelper.markAsReviewed(request)
+            if (response.isSuccessful)
+                Resource(ResourceState.SUCCESS, response.body())
+            else
+                Resource(ResourceState.ERROR)
+        } catch (e: Exception) {
+            Resource(ResourceState.ERROR)
         }
     }
 }

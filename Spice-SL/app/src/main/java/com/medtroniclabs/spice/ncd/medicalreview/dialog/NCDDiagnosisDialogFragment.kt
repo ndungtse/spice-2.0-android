@@ -34,10 +34,10 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class NCDDiagnosisDialogFragment : DialogFragment(), View.OnClickListener {
-    var listener: NCDDialogDismissListener? = null
     private lateinit var binding: FragmentNcdDiagnosisBinding
     private val viewModel: NCDDiagnosisViewModel by viewModels()
     private lateinit var tagListCustomView: TagListCustomView
+    var listener: NCDDialogDismissListener? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

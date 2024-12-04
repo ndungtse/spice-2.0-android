@@ -20,6 +20,7 @@ import com.medtroniclabs.spice.network.SingleLiveEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
+import retrofit2.Response
 import javax.inject.Inject
 
 @HiltViewModel
@@ -55,7 +56,7 @@ class CounselingViewModel @Inject constructor(
     var createAssessmentLiveData =
         SingleLiveEvent<Resource<APIResponse<NCDCounselingModel>>>()
     var updateAssessmentLiveData =
-        MutableLiveData<Resource<APIResponse<NCDCounselingModel>>>()
+        MutableLiveData<Resource<APIResponse<HashMap<String, Any>>>>()
     var assessmentListLiveData =
         MutableLiveData<Resource<APIResponse<ArrayList<NCDCounselingModel>>>>()
     var removeAssessmentLiveData =

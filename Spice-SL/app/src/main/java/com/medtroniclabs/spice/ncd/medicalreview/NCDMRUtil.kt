@@ -99,6 +99,8 @@ object NCDMRUtil {
     const val isEditAssessment = "isEditAssessment"
     const val questionnaireId = "questionnaireId"
     const val mentalHealth = "mentalHealth"
+    const val NCDPatientStatus = "ncdPatientStatus"
+    const val MentalHealthStatus = "mentalHealthStatus"
 
 
     fun validateInput(

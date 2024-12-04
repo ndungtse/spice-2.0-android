@@ -218,5 +218,9 @@ class NCDLabTestListActivity : BaseActivity(), View.OnClickListener, Investigati
     override fun checkValidation() {
 //     Method not to be used
     }
+
+    override fun markAsReviewed(id: String?, comments: String?) {
+//     Method not to be used
+    }
 }
 

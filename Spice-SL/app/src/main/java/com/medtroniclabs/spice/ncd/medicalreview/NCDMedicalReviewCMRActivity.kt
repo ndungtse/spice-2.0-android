@@ -220,6 +220,9 @@ class NCDMedicalReviewCMRActivity : BaseActivity(), View.OnClickListener, AncVis
 
                 ResourceState.SUCCESS -> {
                     hideLoading()
+                    resourceState.data?.let {
+                        updateCounts(it)
+                    }
                 }
 
                 ResourceState.ERROR -> {

@@ -12,6 +12,7 @@ import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.SecuredPreference
+import com.medtroniclabs.spice.data.APIResponse
 import com.medtroniclabs.spice.data.CodeDetailsObject
 import com.medtroniclabs.spice.data.EncounterDetails
 import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
@@ -61,6 +62,8 @@ class InvestigationViewModel @Inject constructor(
     val removeLabTestLiveData = MutableLiveData<Resource<Map<String, Any>>>()
 
     val labTestPredictionLivdata = MutableLiveData<Resource<LabTestPredictionResponse?>>()
+
+    val markAsReviewedLiveData = MutableLiveData<Resource<APIResponse<HashMap<String, Any>>>>()
 
     fun searchInvestigationByName(searchTerm: String) {
         viewModelScope.launch(dispatcherIO) {
@@ -319,4 +322,10 @@ class InvestigationViewModel @Inject constructor(
         }
     }
 
+    fun markAsReviewed(request: HashMap<String, Any>) {
+        viewModelScope.launch(dispatcherIO) {
+            markAsReviewedLiveData.postLoading()
+            markAsReviewedLiveData.postValue(investigationRepository.markAsReviewed(request))
+        }
+    }
 }

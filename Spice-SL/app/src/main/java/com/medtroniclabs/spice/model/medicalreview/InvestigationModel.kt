@@ -15,5 +15,6 @@ data class InvestigationModel(
     var dataError: Boolean = true,
     var labTestResultList: ArrayList<LabTestResultObject>? = null,
     val id: String ?= null,
-    var dropdownState: Boolean = false
+    var dropdownState: Boolean = false,
+    val isReview: Boolean? = null,
 )

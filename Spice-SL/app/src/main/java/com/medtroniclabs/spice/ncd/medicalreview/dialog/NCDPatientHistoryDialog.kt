@@ -68,7 +68,7 @@ class NCDPatientHistoryDialog : DialogFragment(), View.OnClickListener {
             else -> 100
         }
         val height = when {
-            isTablet && isLandscape -> 95
+            isTablet && isLandscape -> 70
             else -> 100
         }
         setDialogPercent(width, height)
@@ -89,11 +89,9 @@ class NCDPatientHistoryDialog : DialogFragment(), View.OnClickListener {
         const val Diabetes = "Diabetes"
         const val Hypertension = "Hypertension"
         const val Known_patient = "Known Patient"
-        const val IS_CLOSED = "Is Closed"
         fun newInstance(
             patientReference: String?,
             memberReference: String?,
-            isCloseNeeded: Boolean = false,
             isFemale: Boolean,
             isPregnant: Boolean
         ): NCDPatientHistoryDialog {
@@ -101,7 +99,6 @@ class NCDPatientHistoryDialog : DialogFragment(), View.OnClickListener {
                 arguments = Bundle().apply {
                     putString(NCDMRUtil.PATIENT_REFERENCE, patientReference)
                     putString(NCDMRUtil.MEMBER_REFERENCE, memberReference)
-                    putBoolean(IS_CLOSED, isCloseNeeded)
                     putBoolean(NCDMRUtil.IS_FEMALE, isFemale)
                     putBoolean(NCDMRUtil.IsPregnant, isPregnant)
                 }
@@ -115,10 +112,6 @@ class NCDPatientHistoryDialog : DialogFragment(), View.OnClickListener {
 
     private fun getMemberReference(): String? {
         return arguments?.getString(NCDMRUtil.MEMBER_REFERENCE)
-    }
-
-    private fun getCloseNeeded(): Boolean {
-        return arguments?.getBoolean(IS_CLOSED) ?: false
     }
 
     private fun getGender(): String {
@@ -209,10 +202,8 @@ class NCDPatientHistoryDialog : DialogFragment(), View.OnClickListener {
 
     private fun initView() {
         binding.apply {
+
             ncdDiabetesHypertension.apply {
-                if (getCloseNeeded()) {
-                    ivClose.gone()
-                }
                 tvDiabetes.markMandatory()
                 tvYearOfDiagnosis.markMandatory()
                 tvYearOfDiagnosisHtn.markMandatory()
@@ -225,12 +216,11 @@ class NCDPatientHistoryDialog : DialogFragment(), View.OnClickListener {
                     viewModel.yearForHypertension = it
                 }
             }
-            btnCancel.gone()
             btnConfirm.text = getString(R.string.save)
             btnConfirm.isEnabled = true
             btnConfirm.safeClickListener(this@NCDPatientHistoryDialog)
+            btnCancel.safeClickListener(this@NCDPatientHistoryDialog)
             ivClose.safeClickListener(this@NCDPatientHistoryDialog)
-
         }
         viewModel.getSymptoms(Diabetes.lowercase(), getGender(),isPregnant())
 
@@ -434,8 +424,8 @@ class NCDPatientHistoryDialog : DialogFragment(), View.OnClickListener {
                 }
             }
 
-            binding.ivClose.id -> {
-                dismiss()
+            binding.btnCancel.id, binding.ivClose.id -> {
+                listener?.closePage()
             }
         }
     }

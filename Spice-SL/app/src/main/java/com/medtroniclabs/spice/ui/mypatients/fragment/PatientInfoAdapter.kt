@@ -56,7 +56,7 @@ class PatientInfoAdapter(
 
                 if (mentalHealthLabels.contains(label[DefinedParams.label])) {
                     tvMentalHealth.visible()
-                    tvMentalHealth.text = label[Screening.type] as String
+                    tvMentalHealth.text = (label[Screening.type] as? String).takeIfNotNull()
                 } else {
                     tvMentalHealth.text = context.getString(R.string.empty)
                     tvMentalHealth.gone()

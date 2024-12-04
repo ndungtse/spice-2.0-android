@@ -219,14 +219,32 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
     }
 
     fun attachObservers() {
-        viewModel.isInitial.observe(this) {
-            if (it) {
-                showNcdPatientStatus()
-                showMaternalStatus()
-                showMentalStatus()
-                viewModel.isInitial(false)
-            } else {
-                loadFragment(true)
+        viewModel.ncdPatientDiagnosisStatus.observe(this) { resourceState ->
+            when (resourceState.state) {
+                ResourceState.LOADING -> {
+                    showLoading()
+                }
+
+                ResourceState.SUCCESS -> {
+                    hideLoading()
+                    resourceState.data?.let { responseMap ->
+                        val hideNCD =
+                            responseMap.containsKey(NCDMRUtil.NCDPatientStatus) && responseMap[NCDMRUtil.NCDPatientStatus] != null
+                        val hasMentalHealth =
+                            responseMap.containsKey(NCDMRUtil.MentalHealthStatus) && responseMap[NCDMRUtil.MentalHealthStatus] != null
+
+                        showNcdPatientHistoryDialog(!hideNCD)
+                        if (!hasMentalHealth)
+                            showMentalHealthPatientHistoryDialog()
+                        showPregnancyDialog()
+                    } ?: kotlin.run {
+                        showInitialDialogs()
+                    }
+                }
+
+                ResourceState.ERROR -> {
+                    hideLoading()
+                }
             }
         }
         viewModel.ncdMedicalReviewStaticLiveData.observe(this) { resourceState ->
@@ -277,6 +295,10 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
                     if (binding.refreshLayout.isRefreshing) {
                         binding.refreshLayout.isRefreshing = false
                     }
+                    checkPatientDetails(
+                        resourceState.data?.initialReviewed == false,
+                        resourceState.data?.patientId
+                    )
                     badgeNotifications()
                     showHideVerticalIcon(CommonUtils.isNonCommunity() && !resourceState.data?.programId.isNullOrBlank())
                 }
@@ -374,6 +396,48 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
                     )
                 }
             }
+        }
+    }
+
+    private fun showInitialDialogs() {
+        showNcdPatientHistoryDialog(true)
+        showMentalHealthPatientHistoryDialog()
+        showPregnancyDialog()
+    }
+
+    private fun showNcdPatientHistoryDialog(showPatientHistoryDialog: Boolean) {
+        if (showPatientHistoryDialog && getMenuId().equals(NCD.lowercase(), true)) {
+            patientDetailViewModel.getPatientFHIRId()?.let {
+                val fragment = supportFragmentManager.findFragmentByTag(NCDPatientHistoryDialog.TAG)
+                if (fragment == null) {
+                    NCDPatientHistoryDialog.newInstance(
+                        patientDetailViewModel.getPatientId(),
+                        it,
+                        isFemale = patientDetailViewModel.getGenderIsFemale(),
+                        patientDetailViewModel.isPregnant()
+                    ).apply {
+                        listener = this@NCDMedicalReviewActivity
+                    }.show(supportFragmentManager, NCDPatientHistoryDialog.TAG)
+                }
+            }
+        }
+    }
+
+    private fun checkPatientDetails(isInitialMR: Boolean, patientReference: String?) {
+        if (viewModel.isPatientStatusCompleted)
+            return
+        else {
+            viewModel.isPatientStatusCompleted = true
+
+            if (isInitialMR || patientReference.isNullOrBlank())
+                showInitialDialogs()
+            else
+                viewModel.ncdPatientDiagnosisStatus(HashMap<String, Any>().apply {
+                    put(
+                        DefinedParams.PatientReference,
+                        patientReference
+                    )
+                })
         }
     }
 
@@ -982,7 +1046,7 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
                     )
 
                     else -> {
-                        viewModel.isInitial(true)
+                        loadFragment(true)
                     }
                 }
             }
@@ -999,28 +1063,10 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
         if (summaryFragment == null) {
             initializeFragments()
         }
+
     }
 
-    private fun showNcdPatientStatus() {
-        if (getMenuId().equals(NCD.lowercase(), true)) {
-            patientDetailViewModel.getPatientFHIRId()?.let {
-                val fragment = supportFragmentManager.findFragmentByTag(NCDPatientHistoryDialog.TAG)
-                if (fragment == null) {
-                    NCDPatientHistoryDialog.newInstance(
-                        patientDetailViewModel.getPatientId(),
-                        it,
-                        true,
-                        isFemale = patientDetailViewModel.getGenderIsFemale(),
-                        patientDetailViewModel.isPregnant()
-                    ).apply {
-                        listener = this@NCDMedicalReviewActivity
-                    }.show(supportFragmentManager, NCDPatientHistoryDialog.TAG)
-                }
-            }
-        }
-    }
-
-    private fun showMaternalStatus() {
+    private fun showPregnancyDialog() {
         if (getMenuId().equals(DefinedParams.PregnancyANC.lowercase(), true)) {
             withNetworkAvailability(online = {
                 patientDetailViewModel.getPatientFHIRId()?.let { id ->
@@ -1055,7 +1101,7 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
         }
     }
 
-    private fun showMentalStatus() {
+    private fun showMentalHealthPatientHistoryDialog() {
         if (getMenuId().equals(MENTAL_HEALTH.lowercase(), true)) {
             withNetworkAvailability(online = {
                 patientDetailViewModel.getPatientFHIRId()?.let { id ->
@@ -1065,7 +1111,6 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
                         NCDMentalHealthFragment.newInstance(
                             patientDetailViewModel.getPatientId(),
                             id,
-                            true,
                             isFemale = patientDetailViewModel.getGenderIsFemale(),
                             patientDetailViewModel.isPregnant()
                         ).apply {
@@ -1215,6 +1260,10 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
             showCurrentMedication()
             swipeRefresh()
         }
+    }
+
+    override fun closePage() {
+        finish()
     }
 
     override fun onYesClicked() {

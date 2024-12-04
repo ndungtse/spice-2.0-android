@@ -177,6 +177,46 @@
             android:paddingVertical="@dimen/_8sdp"
             android:visibility="gone" />
 
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/clMarkAsReviewed"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingVertical="@dimen/_15sdp"
+            android:visibility="gone">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvTestComments"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/inter_regular"
+                android:paddingVertical="@dimen/_10sdp"
+                android:text="@string/test_comments"
+                android:textColor="@color/b_w_black"
+                android:textSize="@dimen/_15ssp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <androidx.appcompat.widget.AppCompatEditText
+                android:id="@+id/etTestComments"
+                style="@style/Form_Input_Style_BG"
+                android:layout_width="match_parent"
+                android:gravity="top"
+                android:minHeight="@dimen/_80sdp"
+                android:padding="@dimen/_12sdp"
+                app:layout_constraintTop_toBottomOf="@id/tvTestComments" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btnMarkAsReviewed"
+                style="@style/Button_Style_Border"
+                android:layout_marginTop="@dimen/_15sdp"
+                android:text="@string/mark_as_reviewed"
+                android:textAllCaps="true"
+                android:textSize="@dimen/_12ssp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/etTestComments" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
     </LinearLayout>
 
 

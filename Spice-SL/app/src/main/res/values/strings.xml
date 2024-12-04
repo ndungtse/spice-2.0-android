@@ -1189,4 +1189,6 @@
     <string name="phq9_assessment">PHQ 9 Assessment</string>
     <string name="gad7_assessment">GAD 7 Assessment</string>
     <string name="suicide_screener">Suicide Screener</string>
+    <string name="mental_health_success">Mental Health updated successfully</string>
+    <string name="mark_as_reviewed">Mark as Reviewed</string>
 </resources>

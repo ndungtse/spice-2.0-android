@@ -7,6 +7,7 @@ import com.medtroniclabs.spice.network.ApiHelper
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ncd.counseling.model.NCDCounselingModel
+import retrofit2.Response
 import javax.inject.Inject
 
 class CounselingRepo @Inject constructor(
@@ -28,7 +29,7 @@ class CounselingRepo @Inject constructor(
         }
     }
 
-    suspend fun updateAssessment(request: AssessmentResultModel, lifestyle: Boolean): Resource<APIResponse<NCDCounselingModel>> {
+    suspend fun updateAssessment(request: AssessmentResultModel, lifestyle: Boolean): Resource<APIResponse<HashMap<String, Any>>> {
         return try {
             val response = if (lifestyle) apiHelper.updateLifestyle(request) else apiHelper.updatePsychological(request)
             if (response.isSuccessful && response.body()?.status == true) {

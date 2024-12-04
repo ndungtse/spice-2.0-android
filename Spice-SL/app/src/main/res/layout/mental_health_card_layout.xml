@@ -25,7 +25,7 @@
             android:padding="@dimen/_10sdp">
 
             <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/tvDiagnosisLbl"
+                android:id="@+id/tvMentalHealthLbl"
                 style="@style/TextStyle_Regular_16"
                 android:ellipsize="end"
                 android:gravity="center"
@@ -36,17 +36,17 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/tvDiagnosis"
+                android:id="@+id/clPHQ9"
+                style="@style/TextStyle_Regular_16_Size"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:ellipsize="end"
-                style="@style/TextStyle_Regular_16_Size"
-                android:gravity="center"
                 android:layout_marginTop="@dimen/_5sdp"
+                android:ellipsize="end"
+                android:gravity="center"
                 android:maxLines="1"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tvDiagnosisLbl">
+                app:layout_constraintTop_toBottomOf="@id/tvMentalHealthLbl">
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/tvPHQ9"
@@ -58,22 +58,22 @@
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/seperator"
+                    android:id="@+id/separate1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="@dimen/_10sdp"
-                    android:text=":"
+                    android:text="@string/separator_colon"
                     app:layout_constraintStart_toEndOf="@+id/tvPHQ9"
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/tvValue"
+                    android:id="@+id/phq9Value"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="@dimen/_10sdp"
-                    android:text="10"
+                    android:text="@string/hyphen_symbol"
                     android:textColor="@color/a_red_error"
-                    app:layout_constraintStart_toEndOf="@+id/seperator"
+                    app:layout_constraintStart_toEndOf="@+id/separate1"
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -81,23 +81,22 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="@dimen/_10sdp"
-                    android:text="Edit Assesment"
                     android:textColor="@color/medium_blue"
-                    app:layout_constraintStart_toEndOf="@+id/tvValue"
+                    app:layout_constraintStart_toEndOf="@+id/phq9Value"
                     app:layout_constraintTop_toTopOf="parent" />
+
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/tvLayout"
+                style="@style/TextStyle_Regular_16_Size"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:ellipsize="end"
-                style="@style/TextStyle_Regular_16_Size"
-                android:maxLines="1"
                 android:layout_marginTop="@dimen/_5sdp"
+                android:ellipsize="end"
+                android:maxLines="1"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tvDiagnosis">
+                app:layout_constraintTop_toBottomOf="@id/clPHQ9">
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/tvGAD7"
@@ -109,22 +108,22 @@
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/seperatorColon2"
+                    android:id="@+id/separate2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="@dimen/_10sdp"
-                    android:text=":"
+                    android:text="@string/separator_colon"
                     app:layout_constraintStart_toEndOf="@+id/tvGAD7"
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/tvValue2"
+                    android:id="@+id/gad7Value"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="@dimen/_10sdp"
-                    android:text="10"
+                    android:text="@string/hyphen_symbol"
                     android:textColor="@color/a_red_error"
-                    app:layout_constraintStart_toEndOf="@+id/seperatorColon2"
+                    app:layout_constraintStart_toEndOf="@+id/separate2"
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -132,14 +131,14 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="@dimen/_10sdp"
-                    android:text="Edit Assesment"
                     android:textColor="@color/medium_blue"
-                    app:layout_constraintStart_toEndOf="@+id/tvValue2"
+                    app:layout_constraintStart_toEndOf="@+id/gad7Value"
                     app:layout_constraintTop_toTopOf="parent" />
-            </androidx.constraintlayout.widget.ConstraintLayout>
 
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </com.google.android.material.card.MaterialCardView>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

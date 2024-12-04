@@ -38,17 +38,14 @@ import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
-import com.medtroniclabs.spice.ui.dialog.GeneralSuccessDialog
 
-class NCDMentalHealthQuestionDialog : DialogFragment(), FormEventListener, View.OnClickListener {
+class NCDMentalHealthQuestionDialog(private val callback: ((successDialog: Pair<String, String>) -> Unit)) : DialogFragment(), FormEventListener, View.OnClickListener {
     private lateinit var binding: FragmentNCDMentalHealthQuestionDialogBinding
     private lateinit var formGenerator: FormGenerator
 
     private val ncdFormViewModel: NCDFormViewModel by activityViewModels()
     private val assessmentViewModel: AssessmentViewModel by activityViewModels()
     private val viewModel: NCDMentalHealthViewModel by activityViewModels()
-
-    private var isEditAssessment: Boolean = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -91,7 +88,6 @@ class NCDMentalHealthQuestionDialog : DialogFragment(), FormEventListener, View.
     }
 
     private fun initializeFormGenerator() {
-        isEditAssessment = requireArguments().getBoolean(NCDMRUtil.isEditAssessment)
         binding.btnCancel.safeClickListener(this@NCDMentalHealthQuestionDialog)
         binding.btnConfirm.safeClickListener(this@NCDMentalHealthQuestionDialog)
         binding.ivClose.safeClickListener(this@NCDMentalHealthQuestionDialog)
@@ -113,9 +109,9 @@ class NCDMentalHealthQuestionDialog : DialogFragment(), FormEventListener, View.
             )
         val request = NCDMentalHealthMedicalReviewDetails(
             memberReference = requireArguments().getString(NCDMRUtil.MEMBER_REFERENCE) as String,
-            type = myFormType()
+            type = myFormType()?.uppercase()
         )
-        if (isEditAssessment) {
+        if (requireArguments().getBoolean(EditAssessment)) {
             viewModel.ncdMentalHealthMedicalReviewDetails(request, isAssessment())
         }
         binding.tvMentalHealthLabel.text = getTitle(myFormType())
@@ -233,18 +229,13 @@ class NCDMentalHealthQuestionDialog : DialogFragment(), FormEventListener, View.
                 }
 
                 ResourceState.SUCCESS -> {
-                    resource.data?.let {
-                        val fragment = childFragmentManager.findFragmentByTag(GeneralSuccessDialog.TAG)
-                        if (fragment == null) {
-                            GeneralSuccessDialog.newInstance(
-                                title = getString(R.string.tab_medical_review),
-                                message = it,
-                                okayButton = getString(R.string.done)
-                            ) {
-                                dismiss()
-                            }.show(childFragmentManager, GeneralSuccessDialog.TAG)
-                        }
-                    }
+                    dismiss()
+                    callback.invoke(
+                        Pair(
+                            getString(R.string.tab_medical_review),
+                            resource.data ?: getString(R.string.mental_health_success)
+                        )
+                    )
                 }
             }
         }
@@ -252,18 +243,20 @@ class NCDMentalHealthQuestionDialog : DialogFragment(), FormEventListener, View.
 
     companion object {
         const val TAG = "NCDMentalHealthQuestionDialog"
+        const val EditAssessment = "EditAssessment"
         fun newInstance(
             type: String,
             patientId: String?,
             patientFHIRId: String?,
-            isEditAssessment: Boolean
+            isEditAssessment: Boolean,
+            callback: ((successDialog: Pair<String, String>) -> Unit)
         ): NCDMentalHealthQuestionDialog {
-            val fragment = NCDMentalHealthQuestionDialog()
+            val fragment = NCDMentalHealthQuestionDialog(callback)
             val args = Bundle()
             args.putString(Screening.type, type)
             args.putString(NCDMRUtil.PATIENT_REFERENCE, patientId)
             args.putString(NCDMRUtil.MEMBER_REFERENCE, patientFHIRId)
-            args.putBoolean(NCDMRUtil.isEditAssessment, isEditAssessment)
+            args.putBoolean(EditAssessment, isEditAssessment)
             fragment.arguments = args
             return fragment
         }

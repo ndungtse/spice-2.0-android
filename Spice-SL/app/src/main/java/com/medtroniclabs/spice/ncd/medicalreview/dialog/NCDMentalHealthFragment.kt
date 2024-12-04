@@ -38,13 +38,11 @@ import com.medtroniclabs.spice.formgeneration.utility.MultiSelectSpinnerAdapter
 import com.medtroniclabs.spice.mappingkey.Screening
 import com.medtroniclabs.spice.ncd.data.MentalHealthStatus
 import com.medtroniclabs.spice.ncd.data.NCDMentalHealthStatusRequest
-import com.medtroniclabs.spice.ncd.data.NCDPatientDiagnosisStatusRequest
 import com.medtroniclabs.spice.ncd.data.NcdPatientStatus
 import com.medtroniclabs.spice.ncd.medicalreview.NCDDialogDismissListener
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil
 import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDMedicalReviewViewModel
 import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDMentalHealthViewModel
-import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDPatientDiagnosisViewModel
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil
 import dagger.hilt.android.AndroidEntryPoint
@@ -55,7 +53,6 @@ class NCDMentalHealthFragment : DialogFragment(), View.OnClickListener {
 
     private val viewModel: NCDMentalHealthViewModel by activityViewModels()
     private val medicalReviewViewModel: NCDMedicalReviewViewModel by activityViewModels()
-    private val patientDiagnosisViewModel: NCDPatientDiagnosisViewModel by activityViewModels()
 
     val adapter by lazy { CustomSpinnerAdapter(requireContext()) }
     var listener: NCDDialogDismissListener? = null
@@ -140,37 +137,6 @@ class NCDMentalHealthFragment : DialogFragment(), View.OnClickListener {
                 ResourceState.SUCCESS -> {
                     hideLoading()
                     dismiss()
-                }
-
-                ResourceState.ERROR -> {
-                    hideLoading()
-                }
-            }
-        }
-
-        patientDiagnosisViewModel.ncdPatientDiagnosisStatus.observe(this) { resourceState ->
-            when (resourceState.state) {
-                ResourceState.LOADING -> {
-                    showLoading()
-                }
-
-                ResourceState.SUCCESS -> {
-                    hideLoading()
-                    if (resourceState.data != null) {
-                        binding.tvNCD.gone()
-                        binding.ncdDiabetesHypertension.groupYearOfDiagnosis2.gone()
-                        binding.ncdDiabetesHypertension.groupYearOfDiagnosis.gone()
-                        binding.ncdDiabetesHypertension.groupDiabetesSpinner.gone()
-                        binding.ncdDiabetesHypertension.tvHypertension.gone()
-                        binding.ncdDiabetesHypertension.llHypertension.gone()
-                        binding.ncdDiabetesHypertension.llDiabetes.gone()
-                        binding.ncdDiabetesHypertension.tvDiabetes.gone()
-                        binding.ncdDiabetesHypertension.tvDiabetesError.gone()
-                        binding.ncdDiabetesHypertension.tvYearOfDiagnosisError.gone()
-                        binding.ncdDiabetesHypertension.tvDiabetesControlledError.gone()
-                        binding.ncdDiabetesHypertension.tvHypertensionError.gone()
-                        binding.ncdDiabetesHypertension.tvYearOfDiagnosisErrorHtn.gone()
-                    }
                 }
 
                 ResourceState.ERROR -> {
@@ -448,11 +414,7 @@ class NCDMentalHealthFragment : DialogFragment(), View.OnClickListener {
     }
 
     private fun initView() {
-        getPatientReference()?.let { NCDPatientDiagnosisStatusRequest(it) }?.let {
-            patientDiagnosisViewModel.ncdPatientDiagnosisStatus(
-                it
-            )
-        }
+        ncdVisibility()
         binding.apply {
             tvMentalHealth.markMandatory()
             tvMentalHealthDisorder.markMandatory()
@@ -565,6 +527,18 @@ class NCDMentalHealthFragment : DialogFragment(), View.OnClickListener {
         binding.loadingProgress.bringToFront()
     }
 
+    private fun ncdVisibility() {
+        var showNCD = true
+        medicalReviewViewModel.ncdPatientDiagnosisStatus.value?.data?.let { responseMap ->
+            showNCD =
+                !(responseMap.containsKey(NCDMRUtil.NCDPatientStatus) && responseMap[NCDMRUtil.NCDPatientStatus] != null)
+        }
+        binding.apply {
+            tvNCD.setVisible(showNCD)
+            ncdDiabetesHypertension.root.setVisible(showNCD)
+        }
+    }
+
     private fun getGender(): String {
         return if (arguments?.getBoolean(NCDMRUtil.IS_FEMALE) == true) {
             Screening.Female.lowercase()
@@ -594,14 +568,12 @@ class NCDMentalHealthFragment : DialogFragment(), View.OnClickListener {
         const val Diabetes = "Diabetes"
         const val Hypertension = "Hypertension"
         const val Known_patient = "Known Patient"
-        const val IS_CLOSED = "Is Closed"
 
         const val MENTAL_HEALTH_STATUS = "MentalHealthStatus"
         const val SUBSTANCE_USE_STATUS = "SubstanceUseStatus"
         fun newInstance(
             patientReference: String?,
             memberReference: String?,
-            isCloseNeeded: Boolean = false,
             isFemale: Boolean,
             isPregnant: Boolean
         ): NCDMentalHealthFragment {
@@ -609,7 +581,6 @@ class NCDMentalHealthFragment : DialogFragment(), View.OnClickListener {
                 arguments = Bundle().apply {
                     putString(NCDMRUtil.PATIENT_REFERENCE, patientReference)
                     putString(NCDMRUtil.MEMBER_REFERENCE, memberReference)
-                    putBoolean(IS_CLOSED, isCloseNeeded)
                     putBoolean(NCDMRUtil.IS_FEMALE, isFemale)
                     putBoolean(NCDMRUtil.IsPregnant, isPregnant)
                 }
@@ -768,7 +739,9 @@ class NCDMentalHealthFragment : DialogFragment(), View.OnClickListener {
 
     override fun onClick(v: View?) {
         when (v?.id) {
-            binding.ivClose.id, binding.btnCancel.id -> dismiss()
+            binding.btnCancel.id, binding.ivClose.id -> {
+                listener?.closePage()
+            }
             binding.btnConfirm.id -> {
                 if (validateInput()) {
                     val request = NCDMentalHealthStatusRequest(

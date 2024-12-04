@@ -20,6 +20,7 @@ import com.google.android.flexbox.FlexboxLayout
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.invisible
+import com.medtroniclabs.spice.appextensions.setVisible
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.CommonUtils.getDecimalFormatted
@@ -98,6 +99,14 @@ class InvestigationGenerator(
             investigationBinding.root.setOnClickListener {
                 investigation.dropdownState = !investigation.dropdownState
                 toggleFacility(investigationBinding,investigation)
+                
+            }
+            investigationBinding.clMarkAsReviewed.setVisible(CommonUtils.isNonCommunity() && (!investigation.labTestResultList.isNullOrEmpty()) && investigation.isReview != true)
+            investigationBinding.btnMarkAsReviewed.safeClickListener {
+                listener.markAsReviewed(
+                    investigation.id,
+                    investigationBinding.etTestComments.text.toString()
+                )
             }
             if (investigation.dataError) {
                 investigationBinding.tvErrorMessage.visibility = View.GONE

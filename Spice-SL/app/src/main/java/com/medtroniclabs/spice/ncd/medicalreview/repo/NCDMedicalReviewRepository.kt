@@ -25,7 +25,6 @@ import com.medtroniclabs.spice.ncd.data.LifeStyleRequest
 import com.medtroniclabs.spice.ncd.data.NCDMedicalReviewUpdateModel
 import com.medtroniclabs.spice.ncd.data.NCDMentalHealthMedicalReviewDetails
 import com.medtroniclabs.spice.ncd.data.NCDMentalHealthStatusRequest
-import com.medtroniclabs.spice.ncd.data.NCDPatientDiagnosisStatusRequest
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.Comorbidity
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.Complaints
@@ -416,7 +415,7 @@ class NCDMedicalReviewRepository @Inject constructor(
         }
     }
 
-    suspend fun ncdPatientDiagnosisStatus(request: NCDPatientDiagnosisStatusRequest): Resource<HashMap<String, Any>>? {
+    suspend fun ncdPatientDiagnosisStatus(request: HashMap<String, Any>): Resource<HashMap<String, Any>>? {
         return try {
             val response = apiHelper.ncdPatientDiagnosisStatus(request)
             if (response.isSuccessful) {

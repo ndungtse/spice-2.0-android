@@ -23,6 +23,7 @@ class NCDMedicalReviewViewModel @Inject constructor(
     private var ncdMedicalReviewRepo: NCDMedicalReviewRepository,
     @IoDispatcher private val dispatcherIO: CoroutineDispatcher
 ) : ViewModel() {
+    val ncdPatientDiagnosisStatus = MutableLiveData<Resource<HashMap<String, Any>>>()
 
     val ncdMedicalReviewStaticLiveData = MutableLiveData<Resource<Boolean>>()
     val createMedicalReview = MutableLiveData<Resource<MedicalReviewResponse>>()
@@ -31,6 +32,8 @@ class NCDMedicalReviewViewModel @Inject constructor(
 
     val getBadgeNotificationLiveData = MutableLiveData<Resource<BadgeNotificationModel>>()
     val updateBadgeNotificationLiveData = MutableLiveData<Resource<Boolean>>()
+
+    var isPatientStatusCompleted = false
 
     fun getStaticMetaData() {
         viewModelScope.launch(dispatcherIO) {
@@ -65,10 +68,15 @@ class NCDMedicalReviewViewModel @Inject constructor(
             )
         }
     }
-    private val isInitialLiveData = MutableLiveData<Boolean>()
-    val isInitial: LiveData<Boolean> = isInitialLiveData
 
-    fun isInitial(isInitial: Boolean) {
-        isInitialLiveData.value = isInitial
+    fun ncdPatientDiagnosisStatus(request: HashMap<String, Any>) {
+        viewModelScope.launch(dispatcherIO) {
+            ncdPatientDiagnosisStatus.postLoading()
+            ncdPatientDiagnosisStatus.postValue(
+                ncdMedicalReviewRepo.ncdPatientDiagnosisStatus(
+                    request
+                )
+            )
+        }
     }
 }

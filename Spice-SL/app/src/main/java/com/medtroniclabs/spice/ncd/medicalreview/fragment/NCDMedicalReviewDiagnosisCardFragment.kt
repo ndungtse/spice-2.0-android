@@ -13,6 +13,8 @@ import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.invisible
 import com.medtroniclabs.spice.appextensions.setVisible
+import com.medtroniclabs.spice.appextensions.textOrEmpty
+import com.medtroniclabs.spice.appextensions.textOrHyphen
 import com.medtroniclabs.spice.common.CommonUtils.convertListToString
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
@@ -39,6 +41,7 @@ import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
+import com.medtroniclabs.spice.ui.dialog.GeneralSuccessDialog
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -160,10 +163,10 @@ class NCDMedicalReviewDiagnosisCardFragment : BaseFragment(), View.OnClickListen
         getDiagonsis()
         val hyphen = getString(R.string.hyphen_symbol)
         binding.apply {
-            val isFemalePregnancy = isFemalePregnancy()
             val isContinuous = getInitialMr()
+            val isFemalePregnancy = isFemalePregnancy()
             val isMaternal = !getInitialMr() && isFemalePregnancy
-            val isNCDAndMentalHealth = !getInitialMr()
+            val isMentalHealth = isMentalHealth()
 
             // Hide all cards initially
             pregnancyCard.root.setVisible(false)
@@ -176,6 +179,7 @@ class NCDMedicalReviewDiagnosisCardFragment : BaseFragment(), View.OnClickListen
                     pregnancyCard.root.setVisible(isFemalePregnancy)
                     weightCard.root.setVisible(isFemalePregnancy)
                     eddCard.root.setVisible(isFemalePregnancy)
+                    mentalHealthCard.root.setVisible(isMentalHealth)
                 }
 
                 isMaternal -> {
@@ -184,13 +188,26 @@ class NCDMedicalReviewDiagnosisCardFragment : BaseFragment(), View.OnClickListen
                     eddCard.root.setVisible(true)
                 }
 
-                isNCDAndMentalHealth -> {
-                    if (getMenu().equals(NCDMRUtil.NCD, true)) {
-                        // restrict the patient status hide
-                        patientStatusCard.root.setVisible(false)
-                    } else if (getMenu().equals(NCDMRUtil.MENTAL_HEALTH, true)) {
-                        mentalHealthCard.root.setVisible(true)
-                        patientStatusCard.root.setVisible(false)
+                isMentalHealth -> {
+                    mentalHealthCard.root.setVisible(true)
+                }
+            }
+
+            patientDetailViewModel.patientDetailsLiveData.value?.data?.let {
+                mentalHealthCard.apply {
+                    if (it.phq9Score.isNullOrBlank()) {
+                        phq9Value.text = getString(R.string.hyphen_symbol)
+                        tvAssessmentPHQ9.text = getString(R.string.start_assessment)
+                    } else {
+                        phq9Value.text = it.phq9Score.textOrHyphen()
+                        tvAssessmentPHQ9.text = getString(R.string.edit_assessment)
+                    }
+                    if (it.gad7Score.isNullOrBlank()) {
+                        gad7Value.text = getString(R.string.hyphen_symbol)
+                        tvAssessmentGAD7.text = getString(R.string.start_assessment)
+                    } else {
+                        gad7Value.text = it.gad7Score.textOrHyphen()
+                        tvAssessmentGAD7.text = getString(R.string.edit_assessment)
                     }
                 }
             }
@@ -264,6 +281,10 @@ class NCDMedicalReviewDiagnosisCardFragment : BaseFragment(), View.OnClickListen
 
     private fun isFemalePregnancy(): Boolean {
         return getMenu().equals(DefinedParams.PregnancyANC, true) && getIsFemale()
+    }
+
+    private fun isMentalHealth(): Boolean {
+        return getMenu().equals(NCDMRUtil.MENTAL_HEALTH, true)
     }
 
     override fun onClick(v: View?) {
@@ -369,8 +390,8 @@ class NCDMedicalReviewDiagnosisCardFragment : BaseFragment(), View.OnClickListen
         if (dialog == null) {
             patientDetailViewModel.getPatientId()?.let {
                 NCDPatientHistoryDialog.newInstance(
-                    it,
-                    patientDetailViewModel.getPatientFHIRId(),
+                    patientReference = it,
+                    memberReference = patientDetailViewModel.getPatientFHIRId(),
                     isFemale = patientDetailViewModel.getGenderIsFemale(),
                     isPregnant = patientDetailViewModel.isPregnant()
                 ).apply {
@@ -388,8 +409,18 @@ class NCDMedicalReviewDiagnosisCardFragment : BaseFragment(), View.OnClickListen
                 patientDetailViewModel.getPatientId(),
                 patientDetailViewModel.getPatientFHIRId(),
                 isEditAssessment
-            )
-                .show(childFragmentManager, NCDPatientHistoryDialog.TAG)
+            ) { response ->
+                val fragment = childFragmentManager.findFragmentByTag(GeneralSuccessDialog.TAG)
+                if (fragment == null) {
+                    GeneralSuccessDialog.newInstance(
+                        title = response.first,
+                        message = response.second,
+                        okayButton = getString(R.string.done)
+                    ) {
+                        (requireActivity() as? NCDMedicalReviewActivity)?.swipeRefresh()
+                    }.show(childFragmentManager, GeneralSuccessDialog.TAG)
+                }
+            }.show(childFragmentManager, NCDPatientHistoryDialog.TAG)
         }
     }
 
@@ -407,6 +438,12 @@ class NCDMedicalReviewDiagnosisCardFragment : BaseFragment(), View.OnClickListen
             dialogFragment?.dismiss()
             (requireActivity() as? NCDMedicalReviewActivity)?.showCurrentMedication()
         }
+    }
+
+    override fun closePage() {
+        /*
+      Never used
+       */
     }
 
     private fun getDiagonsis() {

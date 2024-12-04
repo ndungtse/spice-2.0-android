@@ -11,6 +11,7 @@ import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DefinedParams
+import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.databinding.ActivityInvestigationBinding
 import com.medtroniclabs.spice.model.medicalreview.InvestigationModel
 import com.medtroniclabs.spice.model.medicalreview.SearchLabTestResponse
@@ -46,6 +47,26 @@ class InvestigationActivity : BaseActivity(), AdapterView.OnItemClickListener,
     }
 
     private fun attachObserver() {
+        investigationViewModel.markAsReviewedLiveData.observe(this) { resourceState ->
+            when (resourceState.state) {
+                ResourceState.LOADING -> {
+                    showLoading()
+                }
+
+                ResourceState.ERROR -> {
+                    hideLoading()
+                }
+
+                ResourceState.SUCCESS -> {
+//                    patientViewModel.patientDetailsLiveData.value?.data?.let {
+//                        if (!it.patientId.isNullOrBlank())
+//                            investigationViewModel.getLabTestList(it)
+//                    }
+                    hideLoading()
+                    finish()
+                }
+            }
+        }
         investigationViewModel.labTestPredictionLivdata.observe(this) { resourceState ->
             when (resourceState.state) {
                 ResourceState.SUCCESS -> {
@@ -302,6 +323,14 @@ class InvestigationActivity : BaseActivity(), AdapterView.OnItemClickListener,
 
     override fun checkValidation() {
         enableDisableSubmitButton()
+    }
+
+    override fun markAsReviewed(id: String?, comments: String?) {
+        val requestMap = HashMap<String, Any>()
+        requestMap[DefinedParams.Provenance] = ProvanceDto()
+        id?.let { requestMap[DefinedParams.ID] = it }
+        comments?.let { requestMap[DefinedParams.Comments] = it }
+        investigationViewModel.markAsReviewed(requestMap)
     }
 
     override fun onClick(v: View?) {
