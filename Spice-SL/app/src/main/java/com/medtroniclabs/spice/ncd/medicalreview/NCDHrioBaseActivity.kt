@@ -20,6 +20,7 @@ import com.medtroniclabs.spice.ncd.data.NCDPatientRemoveRequest
 import com.medtroniclabs.spice.ncd.medicalreview.fragment.NCDScheduleDialog
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
+import com.medtroniclabs.spice.ui.MenuConstants
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil.toYesNoOrDefault
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 import com.medtroniclabs.spice.ui.patientDelete.NCDDeleteConfirmationDialog

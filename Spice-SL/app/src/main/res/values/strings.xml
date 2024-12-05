@@ -1191,4 +1191,7 @@
     <string name="suicide_screener">Suicide Screener</string>
     <string name="mental_health_success">Mental Health updated successfully</string>
     <string name="mark_as_reviewed">Mark as Reviewed</string>
+    <string name="test_review_confirmation">Test Review Confirmation</string>
+    <string name="yes_i_confirm">Yes, I Confirm</string>
+    <string name="test_review_confirmation_message">Have you observed to confirm the test values and comments uploaded by the Lab Technician?</string>
 </resources>

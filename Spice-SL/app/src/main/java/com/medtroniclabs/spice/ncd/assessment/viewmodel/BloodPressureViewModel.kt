@@ -42,7 +42,7 @@ class BloodPressureViewModel @Inject constructor(
     @IoDispatcher private val dispatcherIO: CoroutineDispatcher,
     private val bloodPressureRepo: BloodPressureRepo
 ) : ViewModel() {
-    var bpLogCreateResponseLiveData = MutableLiveData<Resource<APIResponse<HashMap<String, Any>>>>()
+    var bpLogCreateResponseLiveData = SingleLiveEvent<Resource<APIResponse<HashMap<String, Any>>>>()
     var bpLogListResponseLiveData = SingleLiveEvent<Resource<BPBGListModel>>()
 
     private var systolicAverageSummary: Int? = null

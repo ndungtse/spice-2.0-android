@@ -89,7 +89,6 @@ class NCDCounselorActivity : BaseActivity(), View.OnClickListener {
     private fun saveIntentValues() {
         intent?.extras?.let { bundle ->
             viewModel.apply {
-                patientReference = bundle.getString(DefinedParams.PatientId)
                 memberReference = bundle.getString(DefinedParams.FhirId)
                 encounterReference = bundle.getString(NCDMRUtil.EncounterReference)
             }
@@ -203,6 +202,7 @@ class NCDCounselorActivity : BaseActivity(), View.OnClickListener {
                 )
             )
         }
+        viewModel.patientReference = data.patientId
     }
 
 
@@ -269,7 +269,7 @@ class NCDCounselorActivity : BaseActivity(), View.OnClickListener {
     private val validation = object : ValidationListener {
         override fun validate() {
             binding.btnDone.isEnabled =
-                viewModel.assessmentListLiveData.value?.data?.entityList?.firstOrNull { !it.otherNote.isNullOrBlank() } != null
+                viewModel.assessmentListLiveData.value?.data?.entityList?.firstOrNull { !it.counselorAssessment.isNullOrBlank() } != null
         }
     }
 

@@ -54,19 +54,25 @@ class NCDNutritionAdapter(private val listener: ValidationListener) :
                     tvRefBy.text = referredByDisplay.textOrHyphen()
 
                     etLifestyleAssessment.setText(lifestyleAssessment.textOrEmpty())
-                    etLifestyleAssessment.addTextChangedListener {
-                        lifestyleAssessment = it?.toString()
+                    etLifestyleAssessment.addTextChangedListener { value ->
+                        adapterList[layoutPosition].apply {
+                            this.lifestyleAssessment = if (value.isNullOrBlank())
+                                null
+                            else
+                                value.toString()
+                        }
                         listener.validate()
                     }
 
                     etOtherNotes.setText(otherNote.textOrEmpty())
-                    etOtherNotes.addTextChangedListener {
-                        otherNote = it?.toString()
+                    etOtherNotes.addTextChangedListener { value ->
+                        adapterList[layoutPosition].apply {
+                            this.otherNote = if (value.isNullOrBlank())
+                                null
+                            else
+                                value.toString()
+                        }
                         listener.validate()
-                    }
-
-                    etOtherNotes.addTextChangedListener {
-                        otherNote = it?.toString()
                     }
 
                     root.safeClickListener(this@ViewHolder)

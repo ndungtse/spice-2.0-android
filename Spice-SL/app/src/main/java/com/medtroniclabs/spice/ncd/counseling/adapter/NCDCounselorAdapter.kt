@@ -50,14 +50,15 @@ class NCDCounselorAdapter(private val listener: ValidationListener) :
 
                     tvRefBy.text = referredByDisplay.textOrHyphen()
 
-                    etOtherNotes.setText(otherNote.textOrEmpty())
-                    etOtherNotes.addTextChangedListener {
-                        otherNote = it?.toString()
+                    etOtherNotes.setText(counselorAssessment.textOrEmpty())
+                    etOtherNotes.addTextChangedListener { value ->
+                        adapterList[layoutPosition].apply {
+                            this.counselorAssessment = if (value.isNullOrBlank())
+                                null
+                            else
+                                value.toString()
+                        }
                         listener.validate()
-                    }
-
-                    etOtherNotes.addTextChangedListener {
-                        counselorAssessment = it?.toString()
                     }
 
                     root.safeClickListener(this@ViewHolder)

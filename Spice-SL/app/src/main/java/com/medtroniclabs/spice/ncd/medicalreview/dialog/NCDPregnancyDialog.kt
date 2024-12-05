@@ -296,10 +296,10 @@ class NCDPregnancyDialog(private val callback: ((isPositiveResult: Boolean, mess
         return weeks.split(" ")[0].toLongOrNull()
     }
 
-    private fun apiFormattedDate(toString: String): String {
+    private fun apiFormattedDate(toString: String): String? {
         return DateUtils.convertDateFormat(
             toString, DATE_ddMMyyyy, DATE_FORMAT_yyyyMMdd
-        )
+        ).ifBlank { null }
     }
 
     private var singleSelectionCallbackForDiabetes: ((selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit)? =
@@ -720,14 +720,7 @@ class NCDPregnancyDialog(private val callback: ((isPositiveResult: Boolean, mess
                     if (validateInputs()) {
                         viewModel.ncdPregnancyCreateModel.apply {
                             memberReference = viewModel.relatedPersonFhirId
-                            ncdPatientStatus = NcdPatientStatus(
-                                diabetesStatus = viewModel.resultDiabetesHashMap[Diabetes] as? String,
-                                hypertensionStatus = viewModel.resultHypertensionHashMap[Hypertension] as? String,
-                                hypertensionYearOfDiagnosis = viewModel.yearForHypertension.takeIf { !it.isNullOrBlank() },
-                                diabetesYearOfDiagnosis = viewModel.yearForDiabetes.takeIf { !it.isNullOrBlank() },
-                                diabetesControlledType = null,
-                                diabetesDiagnosis = viewModel.value
-                            )
+                            ncdPatientStatus = getNcdPatientStatus()
                         }.also {
                             viewModel.ncdPregnancyCreate(it)
                         }
@@ -743,6 +736,18 @@ class NCDPregnancyDialog(private val callback: ((isPositiveResult: Boolean, mess
 
             binding.ivClose.id, binding.btnCancel.id -> dismiss()
         }
+    }
+
+    private fun getNcdPatientStatus(): NcdPatientStatus? {
+        val ncdPatientStatus = NcdPatientStatus(
+            diabetesStatus = viewModel.resultDiabetesHashMap[Diabetes] as? String,
+            hypertensionStatus = viewModel.resultHypertensionHashMap[Hypertension] as? String,
+            hypertensionYearOfDiagnosis = viewModel.yearForHypertension.takeIf { !it.isNullOrBlank() },
+            diabetesYearOfDiagnosis = viewModel.yearForDiabetes.takeIf { !it.isNullOrBlank() },
+            diabetesControlledType = null,
+            diabetesDiagnosis = viewModel.value
+        )
+        return if (ncdPatientStatus.diabetesStatus != null && ncdPatientStatus.hypertensionStatus != null) ncdPatientStatus else null
     }
 
     private fun validateInputs(): Boolean {

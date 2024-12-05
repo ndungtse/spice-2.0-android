@@ -18,11 +18,13 @@ import com.medtroniclabs.spice.model.medicalreview.SearchLabTestResponse
 import com.medtroniclabs.spice.ncd.data.LabTestPredictionResponse
 import com.medtroniclabs.spice.ncd.data.PrescriptionNudgeResponse
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil
+import com.medtroniclabs.spice.ncd.medicalreview.dialog.NCDPregnancyDialog
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.DeleteReasonDialog
 import com.medtroniclabs.spice.ui.medicalreview.investigation.dialog.HBA1CNudgesDialog
 import com.medtroniclabs.spice.ui.medicalreview.investigation.dialog.LipidsNudgesDialog
+import com.medtroniclabs.spice.ui.medicalreview.investigation.dialog.MarkAsReviewedConfirmationDialog
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 
 class InvestigationActivity : BaseActivity(), AdapterView.OnItemClickListener,
@@ -39,7 +41,14 @@ class InvestigationActivity : BaseActivity(), AdapterView.OnItemClickListener,
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityInvestigationBinding.inflate(layoutInflater)
-        setMainContentView(binding.root, true, title = getString(R.string.investigation))
+        setMainContentView(
+            binding.root,
+            true,
+            title = getString(R.string.investigation),
+            callback = {
+                setResult(RESULT_OK, intent)
+                finish()
+            })
         initView()
         setListeners()
         attachObserver()
@@ -326,11 +335,23 @@ class InvestigationActivity : BaseActivity(), AdapterView.OnItemClickListener,
     }
 
     override fun markAsReviewed(id: String?, comments: String?) {
-        val requestMap = HashMap<String, Any>()
-        requestMap[DefinedParams.Provenance] = ProvanceDto()
-        id?.let { requestMap[DefinedParams.ID] = it }
-        comments?.let { requestMap[DefinedParams.Comments] = it }
-        investigationViewModel.markAsReviewed(requestMap)
+        val dialog = supportFragmentManager.findFragmentByTag(MarkAsReviewedConfirmationDialog.TAG)
+        if (dialog == null) {
+            val markAsReviewedConfirmationDialog =
+                MarkAsReviewedConfirmationDialog.newInstance { userConfirmed ->
+                    if (userConfirmed) {
+                        val requestMap = HashMap<String, Any>()
+                        requestMap[DefinedParams.Provenance] = ProvanceDto()
+                        id?.let { requestMap[DefinedParams.ID] = it }
+                        comments?.let { requestMap[DefinedParams.Comments] = it }
+                        investigationViewModel.markAsReviewed(requestMap)
+                    }
+                }
+            markAsReviewedConfirmationDialog.show(
+                supportFragmentManager,
+                MarkAsReviewedConfirmationDialog.TAG
+            )
+        }
     }
 
     override fun onClick(v: View?) {

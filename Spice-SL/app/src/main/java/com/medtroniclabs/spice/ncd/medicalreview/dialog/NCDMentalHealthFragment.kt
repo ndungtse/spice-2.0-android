@@ -29,6 +29,7 @@ import com.medtroniclabs.spice.data.model.MultiSelectDropDownModel
 import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.databinding.FragmentNCDMentalHealthBinding
 import com.medtroniclabs.spice.db.entity.NCDDiagnosisEntity
+import com.medtroniclabs.spice.formgeneration.extension.capitalizeFirstChar
 import com.medtroniclabs.spice.formgeneration.extension.markMandatory
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
@@ -158,8 +159,8 @@ class NCDMentalHealthFragment : DialogFragment(), View.OnClickListener {
         dropDownList.add(
             MultiSelectDropDownModel(
                 id = 2,
-                name = NCDMRUtil.Disorder,
-                value = NCDMRUtil.Disorder.lowercase()
+                name = NCDMRUtil.Depression,
+                value = NCDMRUtil.Depression.lowercase()
             )
         )
         val adapter = MultiSelectSpinnerAdapter(
@@ -187,7 +188,7 @@ class NCDMentalHealthFragment : DialogFragment(), View.OnClickListener {
         dropDownList.add(
             MultiSelectDropDownModel(
                 id = 1,
-                name = NCDMRUtil.ALCOHOL,
+                name = NCDMRUtil.ALCOHOL.lowercase().capitalizeFirstChar(),
                 value = NCDMRUtil.ALCOHOL.lowercase()
             )
         )

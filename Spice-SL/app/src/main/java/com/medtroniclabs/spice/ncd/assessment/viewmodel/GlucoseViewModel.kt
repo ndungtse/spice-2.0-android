@@ -15,6 +15,7 @@ import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.ncd.data.BPBGListModel
 import com.medtroniclabs.spice.ncd.assessment.repo.GlucoseRepo
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil
+import com.medtroniclabs.spice.network.SingleLiveEvent
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -27,8 +28,8 @@ class GlucoseViewModel @Inject constructor(
     @IoDispatcher private val dispatcherIO: CoroutineDispatcher,
     private val glucoseRepo: GlucoseRepo
 ) : ViewModel() {
-    var glucoseLogCreateResponseLiveData = MutableLiveData<Resource<APIResponse<HashMap<String, Any>>>>()
-    var glucoseLogListResponseLiveData = MutableLiveData<Resource<BPBGListModel>>()
+    var glucoseLogCreateResponseLiveData = SingleLiveEvent<Resource<APIResponse<HashMap<String, Any>>>>()
+    var glucoseLogListResponseLiveData = SingleLiveEvent<Resource<BPBGListModel>>()
 
     fun glucoseLogCreate(hashMap: HashMap<String, Any>, patientDetails: PatientListRespModel) {
         hashMap.apply {

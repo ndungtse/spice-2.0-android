@@ -11,6 +11,7 @@ import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.databinding.ActivityNcdPatientEditBinding
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil
 import com.medtroniclabs.spice.ui.BaseActivity
+import com.medtroniclabs.spice.ui.MenuConstants
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 import com.medtroniclabs.spice.ui.patientEdit.fragment.NCDPatientEditFragment
 import com.medtroniclabs.spice.ui.patientEdit.viewModel.NCDPatientEditViewModel
@@ -44,7 +45,7 @@ class NCDPatientEditActivity : BaseActivity() {
             it.getStringExtra(NCDMRUtil.MEMBER_REFERENCE)?.let { id ->
                 patientDetailViewModel.getPatients(
                     id,
-                    origin = patientDetailViewModel.origin?.lowercase()
+                    origin = MenuConstants.MY_PATIENTS_MENU_ID
                 )
             }
         }
