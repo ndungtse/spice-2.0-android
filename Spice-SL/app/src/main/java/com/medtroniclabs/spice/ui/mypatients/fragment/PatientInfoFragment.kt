@@ -460,7 +460,7 @@ class PatientInfoFragment : BaseFragment() {
                     DefinedParams.color to requireContext().getColor(R.color.medium_high_risk_color)
                 )
             )
-            val cageAid = data.cageAid ?: requireContext().getString(R.string.hyphen_symbol)
+            val cageAid = data.cageAid?.toDoubleOrNull()?.toInt()?.toString() ?: requireContext().getString(R.string.hyphen_symbol)
             val assessmentType =
                 if (data.cageAid != null) requireContext().getString(R.string.edit_assessment) else requireContext().getString(
                     R.string.start_assessment
@@ -479,7 +479,7 @@ class PatientInfoFragment : BaseFragment() {
                     dataList.add(
                         mapOf(
                             DefinedParams.label to requireContext().getString(R.string.cage_aid),
-                            DefinedParams.Value to aid,
+                            DefinedParams.Value to aid.toDoubleOrNull()?.toInt()?.toString(),
                             DefinedParams.color to requireContext().getColor(R.color.medium_high_risk_color)
                         )
                     )

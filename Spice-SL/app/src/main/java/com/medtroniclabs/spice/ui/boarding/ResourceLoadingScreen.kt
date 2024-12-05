@@ -63,8 +63,10 @@ class ResourceLoadingScreen : BaseActivity() {
                 ResourceState.SUCCESS -> {
                     val userRole = SecuredPreference.getUserDetails()?.roles?.joinToString { it.name }
                     if (userRole != null) {
-                        if (userRole.contains(RoleConstant.COMMUNITY_HEALTH_WORKER)) {
+                        if (userRole.contains(RoleConstant.COMMUNITY_HEALTH_WORKER) && CommonUtils.isCommunity()) {
                             viewModel.downloadInitialDetails()
+                        } else if (CommonUtils.isNonCommunity() && CommonUtils.isChp()) {
+                            viewModel.downloadTheFollowUpData()
                         } else {
                             launchLandingScreen()
                         }
@@ -77,6 +79,26 @@ class ResourceLoadingScreen : BaseActivity() {
         }
 
         viewModel.householdsLiveData.observe(this) { resourceState ->
+            when (resourceState.state) {
+                ResourceState.LOADING -> {
+                    binding.tvOfflineSyncMessage.gone()
+                }
+
+                ResourceState.SUCCESS -> {
+                    launchLandingScreen()
+                    if (CommonUtils.isNonCommunity() && connectivityManager.isNetworkAvailable()) {
+                        this.triggerOneTimeWorker()
+                        viewModel.downloadTheFollowUpData()
+                    }
+                }
+
+                ResourceState.ERROR -> {
+                    handleError()
+                }
+            }
+        }
+
+        viewModel.ncdFollowUpLiveData.observe(this) { resourceState ->
             when (resourceState.state) {
                 ResourceState.LOADING -> {
                     binding.tvOfflineSyncMessage.gone()

@@ -1,152 +1,121 @@
 {
   "project_info": {
-    "project_number": "141742997357",
-    "project_id": "spice-prod-cd346",
-    "storage_bucket": "spice-prod-cd346.appspot.com"
+    "project_number": "791794371431",
+    "project_id": "spice-sl-4025b",
+    "storage_bucket": "spice-sl-4025b.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:141742997357:android:972a7ff168c3cc600ae464",
+        "mobilesdk_app_id": "1:791794371431:android:2a253529d0039668247dc2",
         "android_client_info": {
           "package_name": "com.medtroniclabs.spice"
         }
       },
-      "oauth_client": [
-        {
-          "client_id": "141742997357-12noe0mt05r10qrod2ot39e7ofh4hq8f.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
+      "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyD6UmtFIHRZIVNARu5IJaXsTQINWhj8yLo"
+          "current_key": "AIzaSyBC673emo8LJ1W02uein-0y4ZB9A4gi7W8"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "141742997357-12noe0mt05r10qrod2ot39e7ofh4hq8f.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
+          "other_platform_oauth_client": []
         }
       }
     },
     {
       "client_info": {
-        "mobilesdk_app_id": "1:141742997357:android:6bdf397920ecccda0ae464",
+        "mobilesdk_app_id": "1:791794371431:android:aabac04cb743a1ac247dc2",
         "android_client_info": {
-          "package_name": "com.medtroniclabs.spice.bd"
+          "package_name": "com.medtroniclabs.spice.dev"
         }
       },
-      "oauth_client": [
-        {
-          "client_id": "141742997357-12noe0mt05r10qrod2ot39e7ofh4hq8f.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
+      "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyD6UmtFIHRZIVNARu5IJaXsTQINWhj8yLo"
+          "current_key": "AIzaSyBC673emo8LJ1W02uein-0y4ZB9A4gi7W8"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "141742997357-12noe0mt05r10qrod2ot39e7ofh4hq8f.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
+          "other_platform_oauth_client": []
         }
       }
     },
     {
       "client_info": {
-        "mobilesdk_app_id": "1:141742997357:android:0113d5c8f2b2f40b0ae464",
+        "mobilesdk_app_id": "1:791794371431:android:b8b2e145b0cee3f6247dc2",
         "android_client_info": {
-          "package_name": "com.medtroniclabs.spice.ke"
+          "package_name": "com.medtroniclabs.spice.sl.dev"
         }
       },
-      "oauth_client": [
-        {
-          "client_id": "141742997357-12noe0mt05r10qrod2ot39e7ofh4hq8f.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
+      "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyD6UmtFIHRZIVNARu5IJaXsTQINWhj8yLo"
+          "current_key": "AIzaSyBC673emo8LJ1W02uein-0y4ZB9A4gi7W8"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "141742997357-12noe0mt05r10qrod2ot39e7ofh4hq8f.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
+          "other_platform_oauth_client": []
         }
       }
     },
     {
       "client_info": {
-        "mobilesdk_app_id": "1:141742997357:android:65bbf908b3dabcb30ae464",
+        "mobilesdk_app_id": "1:791794371431:android:7a2a8380609de61d247dc2",
         "android_client_info": {
-          "package_name": "com.medtroniclabs.spice.sl"
+          "package_name": "com.medtroniclabs.spice.sl.staging"
         }
       },
-      "oauth_client": [
-        {
-          "client_id": "141742997357-12noe0mt05r10qrod2ot39e7ofh4hq8f.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
+      "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyD6UmtFIHRZIVNARu5IJaXsTQINWhj8yLo"
+          "current_key": "AIzaSyBC673emo8LJ1W02uein-0y4ZB9A4gi7W8"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "141742997357-12noe0mt05r10qrod2ot39e7ofh4hq8f.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
+          "other_platform_oauth_client": []
         }
       }
     },
     {
       "client_info": {
-        "mobilesdk_app_id": "1:141742997357:android:bc16eeb85041b56c0ae464",
+        "mobilesdk_app_id": "1:791794371431:android:9db292b193f43838247dc2",
         "android_client_info": {
-          "package_name": "com.medtroniclabs.spice.us"
+          "package_name": "com.medtroniclabs.spice.sl.training"
         }
       },
-      "oauth_client": [
-        {
-          "client_id": "141742997357-12noe0mt05r10qrod2ot39e7ofh4hq8f.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
+      "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyD6UmtFIHRZIVNARu5IJaXsTQINWhj8yLo"
+          "current_key": "AIzaSyBC673emo8LJ1W02uein-0y4ZB9A4gi7W8"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "141742997357-12noe0mt05r10qrod2ot39e7ofh4hq8f.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:791794371431:android:ce1a606d9fd209d4247dc2",
+        "android_client_info": {
+          "package_name": "com.medtroniclabs.spice.training"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBC673emo8LJ1W02uein-0y4ZB9A4gi7W8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
         }
       }
     }

@@ -11,7 +11,9 @@ import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.nullIfEmpty
 import com.medtroniclabs.spice.common.DateUtils.calculateAge
 import com.medtroniclabs.spice.common.RoleConstant.CHA
+import com.medtroniclabs.spice.common.RoleConstant.COMMUNITY_HEALTH_PROMOTER
 import com.medtroniclabs.spice.common.RoleConstant.COMMUNITY_HEALTH_WORKER
+import com.medtroniclabs.spice.common.RoleConstant.HEALTH_SCREENER
 import com.medtroniclabs.spice.common.RoleConstant.LAB_ASSISTANT
 import com.medtroniclabs.spice.common.RoleConstant.MCHA
 import com.medtroniclabs.spice.common.RoleConstant.MID_WIFE
@@ -1847,6 +1849,30 @@ object CommonUtils {
         return ArrayList<VillageEntity>().apply {
             addAll(villages)
             addAll(otherVillage)
+        }
+    }
+
+    fun isHealthScreener(): Boolean {
+        val userRole = SecuredPreference.getUserDetails()?.roles?.joinToString { it.name }
+        if (userRole != null) {
+            return userRole.contains(HEALTH_SCREENER)
+        }
+        return false
+    }
+
+    fun isChp(): Boolean {
+        val userRole = SecuredPreference.getUserDetails()?.roles?.joinToString { it.name }
+        if (userRole != null) {
+            return userRole.contains(COMMUNITY_HEALTH_PROMOTER)
+        }
+        return false
+    }
+
+    fun isCommunityOrNot(): String {
+        return if (isCommunity()) {
+            DefinedParams.COMMUNITY
+        } else {
+            DefinedParams.NON_COMMUNITY
         }
     }
 }

@@ -141,10 +141,12 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
     private fun onMoreIconClicked(view: View) {
         val popupMenu = PopupMenu(this@NCDMedicalReviewActivity, view)
         popupMenu.menuInflater.inflate(R.menu.ncd_menu_patient_edit, popupMenu.menu)
-        popupMenu.menu.findItem(R.id.patient_delete).isVisible = true
+        popupMenu.menu.findItem(R.id.patient_delete).isVisible =
+            CommonUtils.isNonCommunity() && !CommonUtils.isChp()
         popupMenu.menu.findItem(R.id.schedule).isVisible =
             CommonUtils.canShowScheduleMenu()
-        popupMenu.menu.findItem(R.id.transfer_patient).isVisible = CommonUtils.isNonCommunity() && !CommonUtils.isNURSE()
+        popupMenu.menu.findItem(R.id.transfer_patient).isVisible =
+            CommonUtils.isNonCommunity() && !CommonUtils.isNURSE() && !CommonUtils.isChp()
         popupMenu.safePopupMenuClickListener(object :
             android.widget.PopupMenu.OnMenuItemClickListener,
             PopupMenu.OnMenuItemClickListener {
@@ -838,6 +840,7 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
                     DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
                     inUTC = true
                 ),
+                villageId = patientDetailViewModel.getPatientVillageId(),
                 provenance = ProvanceDto()
             )
             summaryViewModel.createNCDMRSummaryCreate(request)

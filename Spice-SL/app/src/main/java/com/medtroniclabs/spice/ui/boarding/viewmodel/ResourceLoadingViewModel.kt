@@ -10,6 +10,7 @@ import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.ncd.data.DeviceDetails
 import com.medtroniclabs.spice.network.DeviceInformation
+import com.medtroniclabs.spice.ncd.followup.repo.NCDFollowUpRepo
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.network.utils.ConnectivityManager
 import com.medtroniclabs.spice.repo.OfflineSyncRepository
@@ -25,12 +26,14 @@ class ResourceLoadingViewModel @Inject constructor(
     private val metaRepository: MetaRepository,
     private val offlineSyncRepository: OfflineSyncRepository,
     private val connectivityManager: ConnectivityManager,
+    private val followUpRepo: NCDFollowUpRepo,
     @IoDispatcher private val dispatcherIO: CoroutineDispatcher
 ) : ViewModel() {
 
     val metaDataCompleteLiveData = MutableLiveData<Resource<Boolean>>()
     val deviceDetailsLiveData = MutableLiveData<Resource<DeviceDetails>>()
     val householdsLiveData = MutableLiveData<Resource<Boolean>>()
+    val ncdFollowUpLiveData = MutableLiveData<Resource<Boolean>>()
 
     private val workflowNames = mutableListOf<Long>()
     private val meta = mutableListOf<String>()
@@ -134,6 +137,27 @@ class ResourceLoadingViewModel @Inject constructor(
 
         SecuredPreference.saveLongList(prefKey, newVillageIds)
         return true
+    }
+
+
+    fun downloadTheFollowUpData() {
+        viewModelScope.launch(dispatcherIO) {
+            ncdFollowUpLiveData.postLoading()
+            val prefKey = SecuredPreference.EnvironmentKey.LINKED_VILLAGE_IDS.name
+            val villageIds = SecuredPreference.getLongList(prefKey)
+            // 2. Check Village check
+            if (villageIds.isEmpty()) {
+                return@launch
+            }
+            // 2. Get Fetch sync
+            followUpRepo.getNcdFollowUpData(ncdFollowUpLiveData)
+        }
+    }
+
+    fun syncCallResultDetails() {
+        viewModelScope.launch(dispatcherIO) {
+            followUpRepo.createCallDetails()
+        }
     }
 
 }

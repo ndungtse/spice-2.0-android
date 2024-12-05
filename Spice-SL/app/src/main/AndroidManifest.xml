@@ -217,6 +217,7 @@
             android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".ui.followup.FollowUpMyPatientActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity

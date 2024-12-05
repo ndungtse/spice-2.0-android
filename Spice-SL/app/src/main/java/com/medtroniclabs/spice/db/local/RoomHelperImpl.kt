@@ -1,6 +1,7 @@
 package com.medtroniclabs.spice.db.local
 
 import androidx.lifecycle.LiveData
+import androidx.room.Transaction
 import androidx.sqlite.db.SimpleSQLiteQuery
 import com.medtroniclabs.spice.data.DiseaseCategoryItems
 import com.medtroniclabs.spice.data.DosageFrequency
@@ -34,6 +35,7 @@ import com.medtroniclabs.spice.db.dao.LabourDeliveryDAO
 import com.medtroniclabs.spice.db.dao.LinkHouseholdMemberDao
 import com.medtroniclabs.spice.db.dao.MemberDAO
 import com.medtroniclabs.spice.db.dao.MetaDataDAO
+import com.medtroniclabs.spice.db.dao.NCDFollowUpDao
 import com.medtroniclabs.spice.db.dao.NcdMedicalReviewDao
 import com.medtroniclabs.spice.db.dao.PregnancyDetailDao
 import com.medtroniclabs.spice.db.dao.RiskFactorDAO
@@ -61,8 +63,11 @@ import com.medtroniclabs.spice.db.entity.MemberClinicalEntity
 import com.medtroniclabs.spice.db.entity.MentalHealthEntity
 import com.medtroniclabs.spice.db.entity.MenuEntity
 import com.medtroniclabs.spice.db.entity.NCDAssessmentClinicalWorkflow
+import com.medtroniclabs.spice.db.entity.NCDCallDetails
 import com.medtroniclabs.spice.db.entity.NCDDiagnosisEntity
+import com.medtroniclabs.spice.db.entity.NCDFollowUp
 import com.medtroniclabs.spice.db.entity.NCDMedicalReviewMetaEntity
+import com.medtroniclabs.spice.db.entity.NCDPatientDetailsEntity
 import com.medtroniclabs.spice.db.entity.PregnancyDetail
 import com.medtroniclabs.spice.db.entity.RiskFactorEntity
 import com.medtroniclabs.spice.db.entity.ScreeningEntity
@@ -72,7 +77,6 @@ import com.medtroniclabs.spice.db.entity.UserProfileEntity
 import com.medtroniclabs.spice.db.entity.VillageEntity
 import com.medtroniclabs.spice.db.response.HouseHoldEntityWithMemberCount
 import com.medtroniclabs.spice.db.response.HouseholdMemberCount
-import com.medtroniclabs.spice.db.response.VillageBasicDetails
 import com.medtroniclabs.spice.model.MemberDobGenderModel
 import com.medtroniclabs.spice.model.assessment.AssessmentDetails
 import com.medtroniclabs.spice.model.assessment.AssessmentMemberDetails
@@ -101,7 +105,8 @@ class RoomHelperImpl @Inject constructor(
     private val callHistoryDao: CallHistoryDao,
     private val screeningDAO: ScreeningDAO,
     private val riskFactorDAO: RiskFactorDAO,
-    private val ncdMedicalReviewDao: NcdMedicalReviewDao
+    private val ncdMedicalReviewDao: NcdMedicalReviewDao,
+    private val ncdFollowUpDao: NCDFollowUpDao
 ) : RoomHelper {
     override suspend fun saveHouseHoldEntry(householdEntity: HouseholdEntity): Long {
         return householdDAO.insertHouseHold(householdEntity)
@@ -1070,5 +1075,79 @@ class RoomHelperImpl @Inject constructor(
 
     override suspend fun updateMembersAsAssigned(fhirIds: List<String>) {
         linkHouseholdMemberDao.updateMembersAsAssigned(fhirIds)
+    }
+    override suspend fun deleteAllNCDFollowUp() {
+        ncdFollowUpDao.deleteAllNCDFollowUps()
+    }
+    override suspend fun insertNCDFollowUp(followUp: NCDFollowUp): Long {
+        return ncdFollowUpDao.insertNCDFollowUp(followUp)
+    }
+
+    override fun getNCDFollowUpData(
+        villageIds: List<String>?,
+        type: String,
+        searchText: String,
+        dateBasedOnChip: Pair<Long?, Long?>?
+    ): LiveData<List<NCDFollowUp>> {
+        return ncdFollowUpDao.getFilteredNCDFollowUp(
+            villageIds,
+            type,
+            searchText,
+            dateBasedOnChip?.first,
+            dateBasedOnChip?.second
+        )
+    }
+
+    override suspend fun updatedCallInitiatedCall(ncdFollowUp: NCDFollowUp): NCDFollowUp {
+        ncdFollowUpDao.updatedCallInitiated(ncdFollowUp) // Perform the update/insert
+        return ncdFollowUpDao.getNCDFollowUpById(ncdFollowUp.id) // Retrieve the updated object
+    }
+
+
+    override suspend fun getNCDInitiatedCallFollowUp(): NCDFollowUp? {
+        return ncdFollowUpDao.getNCDInitiatedCallFollowUp()
+    }
+
+    @Transaction
+    override suspend fun insertNCDCallDetails(followUp: NCDCallDetails): NCDCallDetails? {
+        val id = ncdFollowUpDao.insertNCDCallDetails(followUp)
+        if (followUp.reason == "WRONG_NUMBER") {
+            // Update isWrongNumber in NCDFollowUp
+            ncdFollowUpDao.markAsWrongNumber(followUp.id)
+        }
+        ncdFollowUpDao.updateNCDInitiatedCallFollowUp(followUp.id)
+        return ncdFollowUpDao.getNCDCallDetails(id)
+    }
+
+    override suspend fun updateRetryAttempts(id: Long, retryAttempts: Long) {
+        return ncdFollowUpDao.updateRetryAttempts(id, retryAttempts)
+    }
+
+    override suspend fun getAttemptsById(id: Long): Long? {
+        return ncdFollowUpDao.getAttemptsById(id)
+    }
+
+    override suspend fun getNCDFollowUpById(id: Long): NCDFollowUp {
+        return ncdFollowUpDao.getNCDFollowUpById(id)
+    }
+
+    override suspend fun getAllNCDCallDetails(): List<NCDCallDetails> {
+        return ncdFollowUpDao.getAllNCDCallDetails()
+    }
+
+    override suspend fun insertNCDPatientDetails(patients: NCDPatientDetailsEntity): Long {
+        return ncdFollowUpDao.insertNCDPatientDetails(patients)
+    }
+
+    override suspend fun deleteAllNCDPatientDetails() {
+        return ncdFollowUpDao.deleteAllNCDPatientDetails()
+    }
+
+    override suspend fun getPatientBasedOnId(id: String): NCDPatientDetailsEntity {
+        return ncdFollowUpDao.getPatientBasedOnId(id)
+    }
+
+    override suspend fun deleteCallDetails(id: Long) {
+        return ncdFollowUpDao.deleteCallDetails(id)
     }
 }

@@ -1,6 +1,7 @@
 package com.medtroniclabs.spice.formgeneration.ui
 
 import android.content.Context
+import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.formgeneration.config.ViewType
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
@@ -17,12 +18,12 @@ class FormResultComposer {
         menuType: String? = null,
         bmiCategoryGroupId: String? = null
     ): Pair<String?, HashMap<String, Any>> {
-        val customWorkflowList = ArrayList<String>()
+        val customWorkflowList = ArrayList<Pair<String,Long?>>()
         serverData.forEach { serverViewModel ->
             if (serverViewModel?.isCustomWorkflow == true) {
                 serverViewModel.id.let { cWorkflowId ->
                     if (cWorkflowId.isNotBlank())
-                        customWorkflowList.add(cWorkflowId)
+                        customWorkflowList.add(Pair(cWorkflowId, serverViewModel.workflowId))
                 }
             }
             when (serverViewModel?.viewType) {
@@ -45,11 +46,12 @@ class FormResultComposer {
         if (customWorkflowList.size > 0) {
             val list = ArrayList<Any>()
             customWorkflowList.forEach { entryMap ->
-                if (groupedResultMap.containsKey(entryMap)) {
-                    groupedResultMap.remove(entryMap)?.let { value ->
+                if (groupedResultMap.containsKey(entryMap.first)) {
+                    groupedResultMap.remove(entryMap.first)?.let { value ->
                         if (value is Map<*, *> && value.isNotEmpty()) {
                             val map = HashMap<String, Any>()
-                            map[entryMap] = value
+                            map[entryMap.first] = value
+                            map[DefinedParams.id] = entryMap.second ?: 0L
                             list.add(map)
                         }
                     }

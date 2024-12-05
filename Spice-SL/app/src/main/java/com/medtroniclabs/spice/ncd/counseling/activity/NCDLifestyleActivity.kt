@@ -8,12 +8,11 @@ import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.DateUtils
-import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.model.ChipViewItemModel
 import com.medtroniclabs.spice.databinding.ActivityNcdLifestyleBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.ncd.counseling.adapter.NCDLifestyleAdapter
-import com.medtroniclabs.spice.ncd.counseling.model.NCDCounselingModel
+import com.medtroniclabs.spice.ncd.data.NCDCounselingModel
 import com.medtroniclabs.spice.ncd.counseling.utils.CounselingInterface
 import com.medtroniclabs.spice.ncd.counseling.viewmodel.CounselingViewModel
 import com.medtroniclabs.spice.ncd.data.BadgeNotificationModel

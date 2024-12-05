@@ -350,7 +350,8 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
     private fun startSyncWorker() {
         val userRole = SecuredPreference.getUserDetails()?.roles?.joinToString { it.name }
         if (userRole != null) {
-            if (userRole.contains(RoleConstant.COMMUNITY_HEALTH_WORKER)) {
+            // add chp
+            if (userRole.contains(RoleConstant.COMMUNITY_HEALTH_WORKER) || CommonUtils.isChp()) {
                 startBackgroundOfflineSync()
                 checkBGSyncStatus()
             }
@@ -667,6 +668,9 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
     override fun onResume() {
         super.onResume()
         doRefreshForDataUpdate()
+        if (CommonUtils.isChp()) {
+            startSyncWorker()
+        }
     }
 
     override fun onTransferStatusUpdate(status: String, id: Long, tenantId: Long, reason: String) {
@@ -711,5 +715,6 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
         NCDPatientDetailDialogue.newInstance(patientID)
             .show(supportFragmentManager, NCDPatientDetailDialogue.TAG)
     }
+
 
 }

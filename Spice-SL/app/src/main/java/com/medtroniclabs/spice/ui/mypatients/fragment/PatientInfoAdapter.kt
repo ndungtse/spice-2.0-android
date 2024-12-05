@@ -54,7 +54,7 @@ class PatientInfoAdapter(
                     context.getString(R.string.cage_aid)
                 )
 
-                if (mentalHealthLabels.contains(label[DefinedParams.label])) {
+                if (label[Screening.type] != null && mentalHealthLabels.contains(label[Screening.type])) {
                     tvMentalHealth.visible()
                     tvMentalHealth.text = (label[Screening.type] as? String).takeIfNotNull()
                 } else {

@@ -1,4 +1,4 @@
-package com.medtroniclabs.spice.ncd.counseling.model
+package com.medtroniclabs.spice.ncd.data
 
 import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 

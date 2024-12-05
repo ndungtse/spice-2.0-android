@@ -12,20 +12,20 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
+import com.medtroniclabs.spice.appextensions.invisible
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.databinding.FollowUpListItemPatientsBinding
 import com.medtroniclabs.spice.formgeneration.extension.capitalizeFirstChar
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.ncd.data.PatientFollowUpEntity
+import com.medtroniclabs.spice.ncd.followup.NCDFollowUpUtils
 import com.medtroniclabs.spice.ncd.followup.NCDFollowUpUtils.LTFU_Type
 import com.medtroniclabs.spice.ncd.followup.NCDFollowUpUtils.SCREENED
 import com.medtroniclabs.spice.ncd.followup.NCDFollowUpUtils.getDaysString
-import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.mypatients.PatientSelectionListenerForFollowUp
 
 class NCDPatientFollowUPListAdapter(
-    val listener: PatientSelectionListenerForFollowUp,
-    val activity : BaseActivity
+    val listener: PatientSelectionListenerForFollowUp
 ) : PagingDataAdapter<PatientFollowUpEntity, NCDPatientFollowUPListAdapter.NCDPatientFollowUPListViewHolder>(
     PatientListComparator
 ) {
@@ -49,12 +49,11 @@ class NCDPatientFollowUPListAdapter(
             )
             binding.tvPatientName.text = patientInfo
             binding.tvDueInformation.setTextColor(Color.parseColor("#994242"))
-            binding.tvReason.gone()
-            binding.tvLabelReasonSeperator.gone()
             binding.tvLabelReason.gone()
             if (item.type.equals(SCREENED, true)) {
                 val referredReasonsText =
-                    item.referredReasons?.filterNot { it.isBlank() }?.joinToString(", ")
+                    item.referredReasons?.filterNot { it.isBlank() }
+                        ?.joinToString(", ") { it.trim() }
                 updateReasonSection(
                     label = context.getString(R.string.reason),
                     text = referredReasonsText,
@@ -75,12 +74,16 @@ class NCDPatientFollowUPListAdapter(
                 )
             }
             item.referredDateSince?.let {
-                binding.tvDueInformation.visible()
-                binding.tvDueInformation.text =
-                    context.getString(
-                        getDaysString(item.referredDateSince),
-                        item.referredDateSince
-                    )
+                if (it > 0) {
+                    binding.tvDueInformation.visible()
+                    binding.tvDueInformation.text =
+                        context.getString(
+                            getDaysString(item.referredDateSince),
+                            item.referredDateSince
+                        )
+                } else {
+                    binding.tvDueInformation.gone()
+                }
             } ?: binding.tvDueInformation.gone()
 
             item.retryAttempts?.let {
@@ -88,7 +91,12 @@ class NCDPatientFollowUPListAdapter(
                     visibility = View.VISIBLE
                     text = it.toString()
                 }
-            } ?: kotlin.run { binding.ivRecentAttemptCount.visibility = View.GONE }
+            } ?: kotlin.run { binding.ivRecentAttemptCount.gone() }
+            if (item.type.equals(NCDFollowUpUtils.Defaulters_Type, true)) {
+                binding.assessmentButton.invisible()
+            } else {
+                binding.assessmentButton.visible()
+            }
             binding.callButton.safeClickListener {
                 listener.onSelectedPatientForCall(item)
             }
@@ -108,15 +116,9 @@ class NCDPatientFollowUPListAdapter(
         binding: FollowUpListItemPatientsBinding // Replace with the actual type of your binding
     ) {
         if (!text.isNullOrEmpty()) {
-            binding.tvLabelReason.text = label
-            binding.tvReason.text = text
-            binding.tvReason.visible()
-            binding.tvLabelReasonSeperator.visible()
+            binding.tvLabelReason.text = context.getString(R.string.label_with_text, label, text)
             binding.tvLabelReason.visible()
         } else {
-            binding.tvReason.text = context.getString(R.string.hyphen_symbol)
-            binding.tvReason.gone()
-            binding.tvLabelReasonSeperator.gone()
             binding.tvLabelReason.gone()
         }
     }

@@ -6,17 +6,22 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.convertToUtcDateTime
+import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.CommonUtils.getOptionMap
 import com.medtroniclabs.spice.common.DefinedParams
+import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.offlinesync.model.FollowUpCallReason
 import com.medtroniclabs.spice.data.offlinesync.model.FollowUpCallStatus
 import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.databinding.FragmentNcdCallResultBottomDialogBinding
+import com.medtroniclabs.spice.db.entity.NCDCallDetails
+import com.medtroniclabs.spice.db.entity.NCDFollowUp
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.ui.SingleSelectionCustomView
@@ -25,12 +30,20 @@ import com.medtroniclabs.spice.ncd.data.FollowUpUpdateRequest
 import com.medtroniclabs.spice.ncd.followup.NCDFollowUpUtils.visited_facility
 import com.medtroniclabs.spice.ncd.followup.NCDFollowUpUtils.will_visit_facility
 import com.medtroniclabs.spice.ncd.followup.NCDFollowUpUtils.wont_visit_facility
+import com.medtroniclabs.spice.ncd.followup.viewmodel.NCDCallResultViewModel
 import com.medtroniclabs.spice.ncd.followup.viewmodel.NCDFollowUpViewModel
 import com.medtroniclabs.spice.ui.followup.fragment.CallResultDialogFragment
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class NCDCallResultBottomDialog : BottomSheetDialogFragment(), View.OnClickListener {
     private lateinit var binding: FragmentNcdCallResultBottomDialogBinding
     private val viewModel: NCDFollowUpViewModel by activityViewModels()
+    private val callResultViewModel: NCDCallResultViewModel by viewModels()
+    var data: NCDFollowUp? = null
+    fun setFollowUpData(value: NCDFollowUp) {
+        this.data = value
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -60,6 +73,11 @@ class NCDCallResultBottomDialog : BottomSheetDialogFragment(), View.OnClickListe
         fun newInstance() =
             NCDCallResultBottomDialog().apply {
             }
+        fun newInstance(data: NCDFollowUp) =
+            NCDCallResultBottomDialog().apply {
+                setFollowUpData(data)
+            }
+
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog =
@@ -71,6 +89,33 @@ class NCDCallResultBottomDialog : BottomSheetDialogFragment(), View.OnClickListe
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initView()
+        callResultViewModel.getAttempts.observe(viewLifecycleOwner) {
+            data?.let { value ->
+                SecuredPreference.putBoolean(SecuredPreference.EnvironmentKey.INITIAL_CALL.name, false)
+                viewModel.insertNCDCallDetails(
+                    NCDCallDetails(
+                        id = value.id,
+                        villageId = value.villageId,
+                        patientId = value.patientId,
+                        memberId = value.memberId,
+                        referredSiteId = value.referredSiteId,
+                        callDate = System.currentTimeMillis().convertToUtcDateTime(),
+                        status = (viewModel.callResultHashMap[DefinedParams.CallResult] as? String)
+                            ?: null,
+                        reason = (viewModel.unSuccessfulHashMap[DefinedParams.UnSuccessful] as? String)
+                            ?: null,
+                        patientStatus = (viewModel.patientStatusHashMap[DefinedParams.PatientStatus] as? String)
+                            ?: null,
+                        type = viewModel.typeOffline,
+                        attempts = it?.plus(1) ?: 1,
+                        createdAt = System.currentTimeMillis(),
+                        createdBy = SecuredPreference.getUserId(),
+                        updatedAt = System.currentTimeMillis(),
+                        updatedBy = SecuredPreference.getUserId()
+                    )
+                )
+            }
+        }
     }
 
     private fun initView() {
@@ -190,28 +235,35 @@ class NCDCallResultBottomDialog : BottomSheetDialogFragment(), View.OnClickListe
     override fun onClick(v: View?) {
         when (v?.id) {
             binding.btnDone.id -> {
-                viewModel.getPatientRegisterResponse.value?.data?.let {
-                    val request = FollowUpUpdateRequest(
-                        id = it.id,
-                        patientId = it.patientId,
-                        memberId = it.memberId,
-                        type = viewModel.type,
-                        villageId = it.villageId,
-                        isInitiated = false,
-                        provenance = ProvanceDto(),
-                        followUpDetails = listOf(
-                            CallDetails(
-                                callDate = System.currentTimeMillis().convertToUtcDateTime(),
-                                status = (viewModel.callResultHashMap[DefinedParams.CallResult] as? String)
-                                    ?: null,
-                                reason = (viewModel.unSuccessfulHashMap[DefinedParams.UnSuccessful] as? String)
-                                    ?: null,
-                                patientStatus = (viewModel.patientStatusHashMap[DefinedParams.PatientStatus] as? String)
-                                    ?: null
+                if ((CommonUtils.isChp()) ) {
+                    // do save flow
+                    data?.let { value ->
+                        callResultViewModel.getAttemptsById(value.id)
+                    }
+                } else {
+                    viewModel.getPatientRegisterResponse.value?.data?.let {
+                        val request = FollowUpUpdateRequest(
+                            id = it.id,
+                            patientId = it.patientId,
+                            memberId = it.memberId,
+                            type = viewModel.type,
+                            villageId = it.villageId,
+                            isInitiated = false,
+                            provenance = ProvanceDto(),
+                            followUpDetails = listOf(
+                                CallDetails(
+                                    callDate = System.currentTimeMillis().convertToUtcDateTime(),
+                                    status = (viewModel.callResultHashMap[DefinedParams.CallResult] as? String)
+                                        ?: null,
+                                    reason = (viewModel.unSuccessfulHashMap[DefinedParams.UnSuccessful] as? String)
+                                        ?: null,
+                                    patientStatus = (viewModel.patientStatusHashMap[DefinedParams.PatientStatus] as? String)
+                                        ?: null
+                                )
                             )
                         )
-                    )
-                    viewModel.updatePatientCallRegister(request)
+                        viewModel.updatePatientCallRegister(request)
+                    }
                 }
             }
         }

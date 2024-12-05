@@ -13,7 +13,7 @@ import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.databinding.ListItemNutritionistHistoryBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
-import com.medtroniclabs.spice.ncd.counseling.model.NCDCounselingModel
+import com.medtroniclabs.spice.ncd.data.NCDCounselingModel
 
 class NCDNutritionHistoryAdapter : RecyclerView.Adapter<NCDNutritionHistoryAdapter.ViewHolder>() {
     private var adapterList = ArrayList<NCDCounselingModel>()

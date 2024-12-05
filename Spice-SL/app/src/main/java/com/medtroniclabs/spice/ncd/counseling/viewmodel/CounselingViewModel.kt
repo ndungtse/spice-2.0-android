@@ -13,14 +13,13 @@ import com.medtroniclabs.spice.db.entity.NCDMedicalReviewMetaEntity
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.PatientLifestyle
 import com.medtroniclabs.spice.network.resource.Resource
-import com.medtroniclabs.spice.ncd.counseling.model.NCDCounselingModel
-import com.medtroniclabs.spice.ncd.counseling.model.AssessmentResultModel
+import com.medtroniclabs.spice.ncd.data.NCDCounselingModel
+import com.medtroniclabs.spice.ncd.data.AssessmentResultModel
 import com.medtroniclabs.spice.ncd.counseling.repo.CounselingRepo
 import com.medtroniclabs.spice.network.SingleLiveEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
-import retrofit2.Response
 import javax.inject.Inject
 
 @HiltViewModel

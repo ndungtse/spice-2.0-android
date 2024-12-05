@@ -1,11 +1,18 @@
 package com.medtroniclabs.spice.ui
 
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.common.DefinedParams
+import com.medtroniclabs.spice.ncd.data.PatientFollowUpEntity
+import com.medtroniclabs.spice.ncd.followup.fragment.NCDFollowUpDialogFragment
 import com.medtroniclabs.spice.network.utils.ConnectivityManager
+import com.medtroniclabs.spice.ui.home.AssessmentToolsActivity
+import com.medtroniclabs.spice.ui.mypatients.PatientSelectionListenerForFollowUp
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -100,6 +107,31 @@ open class BaseFragment : Fragment(){
                 // Fragment does not exist, create a new instance and replace it
                 replace<F>(id, args = bundle, tag = tag)
             }
+        }
+    }
+
+    fun showCallDialError() {
+        (activity as BaseActivity).showErrorDialogue(
+            message = getString(R.string.device_phone_info)
+        ) {
+            requireActivity().finish()
+        }
+    }
+
+    fun launchAssessment(item: PatientFollowUpEntity, context: Context) {
+        val intent = Intent(requireContext(), AssessmentToolsActivity::class.java)
+        intent.putExtra(DefinedParams.FhirId, item.memberId)
+        intent.putExtra(DefinedParams.PatientId, item.patientId)
+        intent.putExtra(DefinedParams.ORIGIN, MenuConstants.ASSESSMENT.lowercase())
+        intent.putExtra(DefinedParams.Gender, item.gender)
+        startActivity(intent)
+    }
+
+    fun launchPatientDetailsDialog(listener: PatientSelectionListenerForFollowUp) {
+        val fragment = childFragmentManager.findFragmentByTag(NCDFollowUpDialogFragment.TAG)
+        if (fragment == null) {
+            NCDFollowUpDialogFragment.newInstance(listener)
+                .show(childFragmentManager, NCDFollowUpDialogFragment.TAG)
         }
     }
 }

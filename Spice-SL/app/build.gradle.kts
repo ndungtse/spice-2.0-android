@@ -40,7 +40,7 @@ android {
             keyAlias = "medtronic"
             keyPassword = "Med@Tr0ni#Lab$"
             storePassword = "Med@Tr0ni#Lab$"
-            storeFile = file("spice_sl.jks")
+            storeFile = file("spice_prod.jks")
         }
         create("staging") {
             keyAlias = "spice"
@@ -53,6 +53,7 @@ android {
     buildTypes {
 
         release {
+            applicationIdSuffix = ".dev"
             isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
@@ -148,9 +149,9 @@ android {
                         buildConfigField("String", "DB_PASSWORD", "\"Med@Tr0ni#Lab$\"")
                         resValue("string", "spice_app_name", "SPICE 2.0 Training")
                     } else if (productFlavors[0].name == "africa") {
-                        buildConfigField("String", "API_BASE_URL", "\"https://localhost.com/\"")
-                        buildConfigField("String", "ADMIN_BASE_URL", "\"https://localhost.com/\"")
-                        buildConfigField("String", "SALT", "\" \"")
+                        buildConfigField("String", "API_BASE_URL", "\"https://spice-training-migration-backend.labsplatform.com/\"")
+                        buildConfigField("String", "ADMIN_BASE_URL", "\"https://spice-training-migration.labsplatform.com/\"")
+                        buildConfigField("String", "SALT", "\"spice_uat\"")
                         buildConfigField("String", "DB_PASSWORD", "\"Med@Tr0ni#Lab$\"")
                         resValue("string", "spice_app_name", "SPICE 2.1 Training")
                     }

@@ -247,4 +247,5 @@ object DefinedParams {
     const val BOLD = "bold"
     const val ITALIC = "italic"
     const val BOLD_ITALIC = "bold_italic"
+    const val appType = "appType"
 }

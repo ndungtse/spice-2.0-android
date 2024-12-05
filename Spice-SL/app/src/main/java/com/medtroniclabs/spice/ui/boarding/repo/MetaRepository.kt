@@ -313,6 +313,17 @@ class MetaRepository @Inject constructor(
         allVillages.forEach { root ->
             root.isUserVillage = userVillages?.firstOrNull { it.id == root.id } != null
         }
+        if (allVillages.isNotEmpty()) {
+            val storedVillages = SecuredPreference.getLongList(SecuredPreference.EnvironmentKey.LINKED_VILLAGE_IDS.name)
+            val newVillages = allVillages.filter { it.isUserVillage }.map { it.id }
+            val hasChanges = storedVillages.isEmpty() || storedVillages != newVillages
+            SecuredPreference.putBoolean(SecuredPreference.EnvironmentKey.LINKED_VILLAGE_IDS_ALTER.name, hasChanges)
+            if (hasChanges) {
+                // Update the stored list only if there are changes
+                SecuredPreference.remove(SecuredPreference.EnvironmentKey.NCD_FOLLOW_UP_LAST_SYNCED.name)
+                SecuredPreference.saveLongList(SecuredPreference.EnvironmentKey.LINKED_VILLAGE_IDS.name, newVillages)
+            }
+        }
         return allVillages
     }
 

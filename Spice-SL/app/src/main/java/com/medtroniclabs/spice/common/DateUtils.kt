@@ -34,6 +34,7 @@ object DateUtils {
     const val DATE_FORMAT_yyyyMMdd = "yyyy-MM-dd"
     const val DATE_FORMAT_yyyyMMddHHmmssZZZZZ = "yyyy-MM-dd'T'HH:mm:ssZZZZZ"
     const val DATE_FORMAT_yyyyMMddHHmmss = "yyyy-MM-dd'T'HH:mm:ss"
+    const val DATE_FORMAT_yyyyMMdd_HHmmss = "yyyy-MM-dd HH:mm:ss"
     const val DATE_FORMAT_ddMMMyyyy = "dd MMM, yyyy"
     const val DATE_TIME_DISPLAY_FORMAT = "dd MMM, yyyy - hh:mm a"
     const val DATE_TIME_CALL_DISPLAY_FORMAT = "dd MMM, hh:mm a"
@@ -806,4 +807,44 @@ object DateUtils {
     fun changeFormat(dateString: String): Date? =
         SimpleDateFormat(DATE_FORMAT_ddMMMyyyy, Locale.ENGLISH).parse(dateString)
 
+    fun convertToTimestamp(dateString: String?): Long? {
+        return dateString?.let {
+            val zonedDateTime = ZonedDateTime.parse(it, DateTimeFormatter.ISO_OFFSET_DATE_TIME)
+            zonedDateTime.toInstant().toEpochMilli()
+        }
+    }
+
+    fun convertToTimestampWithoutZone(dateString: String?, isStartOfDay: Boolean): Long? {
+        return dateString?.let {
+            // Define a custom formatter matching the input format
+            val formatter = DateTimeFormatter.ofPattern(DATE_FORMAT_yyyyMMdd_HHmmss)
+
+            // Parse the input string into LocalDateTime
+            val localDateTime = LocalDateTime.parse(it, formatter)
+
+            // Adjust for start or end of the day
+            val adjustedDateTime = if (isStartOfDay) {
+                localDateTime.withHour(0).withMinute(0).withSecond(0).withNano(0)
+            } else {
+                localDateTime.withHour(23).withMinute(59).withSecond(59).withNano(999_999_999)
+            }
+
+            // Convert to timestamp in milliseconds
+            adjustedDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+        }
+    }
+
+    fun getDaysDifference(due: Long): Int? {
+        return try {
+            val diffInMillis = due - System.currentTimeMillis()
+            TimeUnit.MILLISECONDS.toDays(diffInMillis).toInt()
+        } catch (e: Exception) {
+            null
+        }
+    }
+
+    fun getCurrentDayMonthYear(): Triple<Int, Int, Int> {
+        val currentDate = LocalDate.now()
+        return Triple(currentDate.dayOfMonth, currentDate.monthValue, currentDate.year)
+    }
 }

@@ -1,8 +1,8 @@
 package com.medtroniclabs.spice.ui.mypatients.repo
 
+import com.google.gson.Gson
 import com.medtroniclabs.spice.db.entity.VillageEntity
 import com.medtroniclabs.spice.db.local.RoomHelper
-import com.medtroniclabs.spice.db.response.VillageBasicDetails
 import com.medtroniclabs.spice.model.PatientDetailRequest
 import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.ncd.data.PatientVisitRequest
@@ -32,6 +32,17 @@ class PatientRepository @Inject constructor(
             } else {
                 Resource(state = ResourceState.ERROR)
             }
+        } catch (e: Exception) {
+            Resource(state = ResourceState.ERROR)
+        }
+    }
+    suspend fun getPatientBasedOnId(id: String): Resource<PatientListRespModel> {
+        return try {
+            val response = roomHelper.getPatientBasedOnId(id)
+            Gson().fromJson(response.patientDetails, PatientListRespModel::class.java)
+                ?.let { data ->
+                    Resource(state = ResourceState.SUCCESS, data = data)
+                } ?: Resource(state = ResourceState.ERROR)
         } catch (e: Exception) {
             Resource(state = ResourceState.ERROR)
         }

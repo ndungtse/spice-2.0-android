@@ -20,9 +20,9 @@ import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.ncd.counseling.adapter.NCDCounselorAdapter
 import com.medtroniclabs.spice.ncd.counseling.adapter.NCDCounselorHistoryAdapter
-import com.medtroniclabs.spice.ncd.counseling.model.AssessmentResultModel
-import com.medtroniclabs.spice.ncd.counseling.model.NCDCounselingModel
-import com.medtroniclabs.spice.ncd.counseling.model.ResultModel
+import com.medtroniclabs.spice.ncd.data.AssessmentResultModel
+import com.medtroniclabs.spice.ncd.data.NCDCounselingModel
+import com.medtroniclabs.spice.ncd.data.ResultModel
 import com.medtroniclabs.spice.ncd.counseling.utils.ValidationListener
 import com.medtroniclabs.spice.ncd.counseling.viewmodel.CounselingViewModel
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil

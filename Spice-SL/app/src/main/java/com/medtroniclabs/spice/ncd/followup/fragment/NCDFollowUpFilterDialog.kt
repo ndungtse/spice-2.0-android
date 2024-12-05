@@ -106,7 +106,7 @@ class NCDFollowUpFilterDialog : DialogFragment(), View.OnClickListener,
         initializeChipView(binding.dataRangeWeeklyChip)
         initializeChipView(binding.dataRangeMonthlyChip)
         initializeChipView(binding.dataRangeCustomizeChip)
-        enableButton()
+        prefillData()
 
         if (binding.tvFromDate.text.isNullOrEmpty()) {
             binding.tvToDate.isEnabled = false
@@ -148,7 +148,6 @@ class NCDFollowUpFilterDialog : DialogFragment(), View.OnClickListener,
 
         tagListCustomView =
             TagListCustomView(requireContext(), binding.cgRetryAttempts) { _, _, _ ->
-                viewModel.remainingAttempts = tagListCustomView.getSelectedTags()
                 enableButton()
             }
         val chipItems = (1..5).map { id ->
@@ -158,14 +157,11 @@ class NCDFollowUpFilterDialog : DialogFragment(), View.OnClickListener,
             )
         }.toCollection(ArrayList())
         tagListCustomView.addChipItemList(chipItems, viewModel.remainingAttempts)
-        prefillData()
+        enableButton()
     }
 
     private fun prefillData() {
         viewModel.dateRange?.let {
-            binding.dataRangeDailyChip.isChecked = NCDFollowUpFilterEnum.DAILY.title == it
-            binding.dataRangeWeeklyChip.isChecked = NCDFollowUpFilterEnum.WEEKLY.title == it
-            binding.dataRangeMonthlyChip.isChecked = NCDFollowUpFilterEnum.MONTHLY.title == it
             binding.dataRangeCustomizeChip.isChecked = NCDFollowUpFilterEnum.CUSTOMISE.title == it
             if (NCDFollowUpFilterEnum.CUSTOMISE.title == it) {
                 viewModel.customDate?.startDate?.let {
@@ -183,7 +179,11 @@ class NCDFollowUpFilterDialog : DialogFragment(), View.OnClickListener,
                         DateUtils.DATE_FORMAT_ddMMMyyyy
                     )
                 }
+                changeUIFromToDateVisibility(NCDFollowUpFilterEnum.CUSTOMISE.title == it)
             }
+            binding.dataRangeDailyChip.isChecked = NCDFollowUpFilterEnum.DAILY.title == it
+            binding.dataRangeWeeklyChip.isChecked = NCDFollowUpFilterEnum.WEEKLY.title == it
+            binding.dataRangeMonthlyChip.isChecked = NCDFollowUpFilterEnum.MONTHLY.title == it
         }
 
     }
@@ -249,6 +249,7 @@ class NCDFollowUpFilterDialog : DialogFragment(), View.OnClickListener,
     override fun onClick(v: View?) {
         when (v?.id) {
             binding.btnDone.id -> {
+                viewModel.remainingAttempts = tagListCustomView.getSelectedTags()
                 if (connectivityManager.isNetworkAvailable()) {
                     viewModel.filterLiveData()
                 } else {
@@ -352,7 +353,11 @@ class NCDFollowUpFilterDialog : DialogFragment(), View.OnClickListener,
         when (buttonView?.id) {
             binding.dataRangeCustomizeChip.id -> {
                 changeUIFromToDateVisibility(isChecked)
-                viewModel.dateRange = NCDFollowUpFilterEnum.CUSTOMISE.title
+                if (isChecked) {
+                    viewModel.dateRange = NCDFollowUpFilterEnum.CUSTOMISE.title
+                } else {
+                    viewModel.dateRange = null
+                }
             }
 
             else -> {
@@ -385,10 +390,23 @@ class NCDFollowUpFilterDialog : DialogFragment(), View.OnClickListener,
     }
 
     private fun enableButton() {
-        binding.btnReset.isEnabled =
-            viewModel.remainingAttempts.isNotEmpty() && ((!viewModel.dateRange.isNullOrBlank() && viewModel.dateRange != NCDFollowUpFilterEnum.CUSTOMISE.title) || ((!viewModel.dateRange.isNullOrBlank() && viewModel.dateRange == NCDFollowUpFilterEnum.CUSTOMISE.title) && (viewModel.customDate?.startDate != null && viewModel.customDate?.endDate != null)))
-        binding.btnDone.isEnabled =
-            viewModel.remainingAttempts.isNotEmpty() && ((!viewModel.dateRange.isNullOrBlank() && viewModel.dateRange != NCDFollowUpFilterEnum.CUSTOMISE.title) || ((!viewModel.dateRange.isNullOrBlank() && viewModel.dateRange == NCDFollowUpFilterEnum.CUSTOMISE.title) && (viewModel.customDate?.startDate != null && viewModel.customDate?.endDate != null)))
+        val hasRemainingAttempts = tagListCustomView.getSelectedTags().isNotEmpty()
+        val isDateRangeValid = !viewModel.dateRange.isNullOrBlank()
+        val isCustomiseSelected = viewModel.dateRange == NCDFollowUpFilterEnum.CUSTOMISE.title
+        val isCustomDateValid = viewModel.customDate?.startDate != null && viewModel.customDate?.endDate != null
+
+        val shouldEnable = when {
+            !hasRemainingAttempts && !isDateRangeValid -> false
+            hasRemainingAttempts && !isDateRangeValid -> true
+            hasRemainingAttempts && isDateRangeValid && !isCustomiseSelected -> true
+            !hasRemainingAttempts && isDateRangeValid && !isCustomiseSelected -> true
+            hasRemainingAttempts && isDateRangeValid && isCustomiseSelected && isCustomDateValid -> true
+            !hasRemainingAttempts && isDateRangeValid && isCustomiseSelected && isCustomDateValid -> true
+            else -> false
+        }
+
+        binding.btnReset.isEnabled = shouldEnable
+        binding.btnDone.isEnabled = shouldEnable
     }
 }
 

@@ -1,6 +1,6 @@
 package com.medtroniclabs.spice.ncd.counseling.utils
 
-import com.medtroniclabs.spice.ncd.counseling.model.NCDCounselingModel
+import com.medtroniclabs.spice.ncd.data.NCDCounselingModel
 
 interface CounselingInterface {
     fun removeElement(model: NCDCounselingModel)

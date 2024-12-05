@@ -202,8 +202,13 @@ class HomeScreenFragment : BaseFragment(), MenuSelectionListener {
                 startActivity(intent)
             }
             MenuConstants.FOLLOW_UP -> {
-                val intent = Intent(requireContext(), NCDFollowUpActivity::class.java)
-                startActivity(intent)
+                if ((CommonUtils.isChp())) {
+                    val intent = Intent(requireContext(), FollowUpMyPatientActivity::class.java)
+                    startActivity(intent)
+                } else {
+                    val intent = Intent(requireContext(), NCDFollowUpActivity::class.java)
+                    startActivity(intent)
+                }
             }
         }
     }

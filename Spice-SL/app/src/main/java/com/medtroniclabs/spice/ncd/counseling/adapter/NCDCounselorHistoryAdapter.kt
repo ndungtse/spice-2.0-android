@@ -14,7 +14,7 @@ import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.databinding.ListItemCounselorHistoryBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
-import com.medtroniclabs.spice.ncd.counseling.model.NCDCounselingModel
+import com.medtroniclabs.spice.ncd.data.NCDCounselingModel
 
 class NCDCounselorHistoryAdapter : RecyclerView.Adapter<NCDCounselorHistoryAdapter.ViewHolder>() {
     private var adapterList = ArrayList<NCDCounselingModel>()

@@ -1,6 +1,8 @@
 package com.medtroniclabs.spice.data.offlinesync.utils
 
 import com.medtroniclabs.spice.BuildConfig
+import com.medtroniclabs.spice.common.CommonUtils
+import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.SecuredPreference
 import java.util.UUID
 
@@ -14,7 +16,9 @@ object OfflineUtils {
         SecuredPreference.getDeviceId()?.let {
             map[OfflineConstant.DEVICE_ID] = it
         }
-
+        if (CommonUtils.isNonCommunity()) {
+            map[DefinedParams.appType] = CommonUtils.isCommunityOrNot()
+        }
         return map
     }
 }

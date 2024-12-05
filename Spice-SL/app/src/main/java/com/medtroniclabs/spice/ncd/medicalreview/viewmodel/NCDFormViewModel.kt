@@ -42,10 +42,15 @@ class NCDFormViewModel @Inject constructor(
                                         val hasVs =
                                             viewScreens.any { it.toString().equals(type, true) }
                                         if (hasVs) {
+                                            val id = (listItem[DefinedParams.id] as? Long)
                                             (listItem[DefinedParams.FormInput] as? String)?.let { responseStr ->
                                                 gson.fromJson(responseStr, FormResponse::class.java)
                                                     ?.let { formResponse ->
-                                                        formLayouts.addAll(formResponse.formLayout)
+                                                        formLayouts.addAll(formResponse.formLayout.map { form ->
+                                                            form.copy(
+                                                                workflowId = id
+                                                            )
+                                                        })
                                                     }
                                             }
                                         }

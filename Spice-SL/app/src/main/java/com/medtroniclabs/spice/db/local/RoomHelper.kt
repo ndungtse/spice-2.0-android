@@ -44,14 +44,16 @@ import com.medtroniclabs.spice.db.entity.SignsAndSymptomsEntity
 import com.medtroniclabs.spice.db.entity.DistrictEntity
 import com.medtroniclabs.spice.db.entity.DosageDurationEntity
 import com.medtroniclabs.spice.db.entity.LifestyleEntity
+import com.medtroniclabs.spice.db.entity.NCDCallDetails
 import com.medtroniclabs.spice.db.entity.NCDDiagnosisEntity
+import com.medtroniclabs.spice.db.entity.NCDFollowUp
+import com.medtroniclabs.spice.db.entity.NCDPatientDetailsEntity
 import com.medtroniclabs.spice.db.entity.RiskFactorEntity
 import com.medtroniclabs.spice.db.entity.TreatmentPlanEntity
 import com.medtroniclabs.spice.db.entity.UserProfileEntity
 import com.medtroniclabs.spice.db.entity.VillageEntity
 import com.medtroniclabs.spice.db.response.HouseHoldEntityWithMemberCount
 import com.medtroniclabs.spice.db.response.HouseholdMemberCount
-import com.medtroniclabs.spice.db.response.VillageBasicDetails
 import com.medtroniclabs.spice.model.MemberDobGenderModel
 import com.medtroniclabs.spice.model.assessment.AssessmentDetails
 import com.medtroniclabs.spice.model.assessment.AssessmentMemberDetails
@@ -402,4 +404,30 @@ interface RoomHelper {
     suspend fun deleteDosageDurations()
     suspend fun insertDosageDurations(items: List<DosageDurationEntity>)
     suspend fun getDosageDurations(): List<DosageDurationEntity>
+    suspend fun deleteAllNCDFollowUp()
+    suspend fun insertNCDFollowUp(followUp: NCDFollowUp): Long
+
+    fun getNCDFollowUpData(
+        villageIds: List<String>?,
+        type: String,
+        searchText: String,
+        dateBasedOnChip: Pair<Long?, Long?>?
+    ): LiveData<List<NCDFollowUp>>
+
+    suspend fun updatedCallInitiatedCall(ncdFollowUp: NCDFollowUp): NCDFollowUp
+
+    suspend fun getNCDInitiatedCallFollowUp(): NCDFollowUp?
+    suspend fun insertNCDCallDetails(followUp: NCDCallDetails): NCDCallDetails?
+    suspend fun updateRetryAttempts(id: Long, retryAttempts: Long)
+    suspend fun getAttemptsById(id: Long): Long?
+    suspend fun getNCDFollowUpById(id: Long): NCDFollowUp
+
+    suspend fun getAllNCDCallDetails(): List<NCDCallDetails>
+    suspend fun insertNCDPatientDetails(patients: NCDPatientDetailsEntity): Long
+
+    suspend fun deleteAllNCDPatientDetails()
+
+    suspend fun getPatientBasedOnId(id: String): NCDPatientDetailsEntity
+
+    suspend fun deleteCallDetails(id: Long)
 }

@@ -52,6 +52,13 @@ class PatientDetailViewModel @Inject constructor(
             patientDetailsLiveData.postValue(patientRepository.getPatients(PatientDetailRequest(patientId = id, assessmentType = assessmentType, id = id, type = origin)))
         }
     }
+    fun getPatients(id: String) {
+        viewModelScope.launch(dispatcherIO) {
+            patientDetailsLiveData.postLoading()
+            patientDetailsLiveData.postValue(patientRepository.getPatientBasedOnId(id))
+        }
+    }
+
 
     fun getLastRefillVisitId() : String? {
         return patientDetailsLiveData.value?.data?.prescribedDetails?.lastRefillVisitId
@@ -61,6 +68,9 @@ class PatientDetailViewModel @Inject constructor(
         return patientDetailsLiveData.value?.data?.id
     }
 
+    fun getPatientVillageId(): String? {
+        return patientDetailsLiveData.value?.data?.villageId
+    }
     fun getPatientMemberId(): String? {
         return patientDetailsLiveData.value?.data?.memberId
     }

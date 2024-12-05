@@ -489,11 +489,16 @@ class NCDBloodPressureVitalsDialog(private val callback: () -> Unit) : DialogFra
                 put(Screening.Weight, binding.etWeight.text.toString().toDouble())
                 put(Screening.Height, binding.etHeight.text.toString().toDouble())
                 put(Screening.UnitMeasurement, Screening.Unit_Measurement_Metric_Type)
-                put(AssessmentDefinedParams.patientReference, patientViewModel.getPatientId() ?: "")
-                put(
-                    AssessmentDefinedParams.memberReference,
-                    patientViewModel.getPatientFHIRId() ?: ""
-                )
+                patientViewModel.getPatientId()?.let {
+                    put(AssessmentDefinedParams.patientReference, it)
+                }
+                patientViewModel.getPatientFHIRId()?.let {
+                    put(
+                        AssessmentDefinedParams.memberReference,
+                        it
+                    )
+                }
+
                 put(
                     AssessmentDefinedParams.assessmentTakenOn, DateUtils.getDateStringInFormat(
                         binding.etAssessmentDate.text.toString(),

@@ -4,11 +4,16 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
 import androidx.viewpager2.adapter.FragmentStateAdapter
+import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.ncd.followup.NCDFollowUpUtils.Assessment_Type
 import com.medtroniclabs.spice.ncd.followup.NCDFollowUpUtils.Defaulters_Type
 import com.medtroniclabs.spice.ncd.followup.NCDFollowUpUtils.LTFU_Type
 import com.medtroniclabs.spice.ncd.followup.NCDFollowUpUtils.SCREENED
-import com.medtroniclabs.spice.ncd.followup.fragment.NCDFollowUpSearchFragment
+import com.medtroniclabs.spice.ncd.followup.fragment.NCDFollowUpAssessmentFragment
+import com.medtroniclabs.spice.ncd.followup.fragment.NCDFollowUpLostFragment
+import com.medtroniclabs.spice.ncd.followup.fragment.NCDFollowUpMRFragment
+import com.medtroniclabs.spice.ncd.followup.fragment.NCDFollowUpOfflineSearchFragment
+import com.medtroniclabs.spice.ncd.followup.fragment.NCDFollowUpScreenedFragment
 
 class NCDFollowUpAdapter(
     fragmentManager: FragmentManager,
@@ -26,6 +31,16 @@ class NCDFollowUpAdapter(
             3 -> LTFU_Type
             else -> ""
         }
-        return NCDFollowUpSearchFragment.newInstance(type)
+        return if (CommonUtils.isChp()) {
+            NCDFollowUpOfflineSearchFragment.newInstance(type)
+        } else {
+            when (position) {
+                0 -> NCDFollowUpScreenedFragment.newInstance(type)
+                1 -> NCDFollowUpAssessmentFragment.newInstance(type)
+                2 -> NCDFollowUpMRFragment.newInstance(type)
+                3 -> NCDFollowUpLostFragment.newInstance(type)
+                else -> NCDFollowUpScreenedFragment.newInstance(type)
+            }
+        }
     }
 }

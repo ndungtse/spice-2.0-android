@@ -30,6 +30,7 @@ import com.medtroniclabs.spice.db.dao.LabourDeliveryDAO
 import com.medtroniclabs.spice.db.dao.LinkHouseholdMemberDao
 import com.medtroniclabs.spice.db.dao.MemberDAO
 import com.medtroniclabs.spice.db.dao.MetaDataDAO
+import com.medtroniclabs.spice.db.dao.NCDFollowUpDao
 import com.medtroniclabs.spice.db.dao.NcdMedicalReviewDao
 import com.medtroniclabs.spice.db.dao.PregnancyDetailDao
 import com.medtroniclabs.spice.db.entity.ConsentForm
@@ -317,6 +318,12 @@ object AppModule {
     @Provides
     fun provideNcdMedicalReviewDao(db: SpiceDataBase): NcdMedicalReviewDao {
         return db.ncdMedicalReviewDao()
+    }
+
+    @Singleton
+    @Provides
+    fun provideNcdFollowUpDAO(db: SpiceDataBase): NCDFollowUpDao {
+        return db.ncdFollowUpDao()
     }
 }
 

@@ -2,12 +2,11 @@ package com.medtroniclabs.spice.ncd.counseling.repo
 
 import com.medtroniclabs.spice.data.APIResponse
 import com.medtroniclabs.spice.db.local.RoomHelper
-import com.medtroniclabs.spice.ncd.counseling.model.AssessmentResultModel
+import com.medtroniclabs.spice.ncd.data.AssessmentResultModel
 import com.medtroniclabs.spice.network.ApiHelper
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.network.resource.ResourceState
-import com.medtroniclabs.spice.ncd.counseling.model.NCDCounselingModel
-import retrofit2.Response
+import com.medtroniclabs.spice.ncd.data.NCDCounselingModel
 import javax.inject.Inject
 
 class CounselingRepo @Inject constructor(

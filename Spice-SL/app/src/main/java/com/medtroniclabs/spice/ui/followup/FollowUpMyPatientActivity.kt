@@ -11,38 +11,141 @@ import androidx.activity.viewModels
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.widget.addTextChangedListener
+import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.startBackgroundOfflineSync
+import com.medtroniclabs.spice.appextensions.visible
+import com.medtroniclabs.spice.common.CommonUtils
+import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.databinding.ActivityFollowUpMyPatientBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.extension.safePopupMenuClickListener
+import com.medtroniclabs.spice.ncd.followup.NCDFollowUpUtils
+import com.medtroniclabs.spice.ncd.followup.adapter.NCDFollowUpAdapter
+import com.medtroniclabs.spice.ncd.followup.fragment.NCDCallResultBottomDialog
+import com.medtroniclabs.spice.ncd.followup.fragment.NCDFollowUpOfflineBottomDialogFilter
+import com.medtroniclabs.spice.ncd.followup.viewmodel.NCDFollowUpViewModel
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.MenuConstants
 import com.medtroniclabs.spice.ui.followup.adapter.FollowUpPatientListAdapter
 import com.medtroniclabs.spice.ui.followup.viewmodel.FollowUpViewModel
 import com.medtroniclabs.spice.ui.phuwalkins.activity.PhuWalkInsActivity
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class FollowUpMyPatientActivity : BaseActivity() {
     private lateinit var binding: ActivityFollowUpMyPatientBinding
     private val viewModel: FollowUpViewModel by viewModels()
+    private val ncdFollowUpViewModel: NCDFollowUpViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityFollowUpMyPatientBinding.inflate(layoutInflater)
         setMainContentView(
-            binding.root, isToolbarVisible = true, title = getString(R.string.my_patients)
+            binding.root, isToolbarVisible = true, title = if (CommonUtils.isCommunity()) {
+                getString(R.string.my_patients)
+            } else {
+                getString(R.string.search_patient)
+            }
         )
-        initView()
-        initObserver()
-        setTabLayout()
-        viewModel.setUserJourney(getString(R.string.my_patients))
-        showHideVerticalIcon(true)
+        if (CommonUtils.isCommunity()) {
+            initView()
+            initObserver()
+            setTabLayout()
+            viewModel.setUserJourney(getString(R.string.my_patients))
+            showHideVerticalIcon(true)
+        } else {
+            initViewForNcd()
+            setNCDTabLayout()
+            attachObserversForNcd()
+            showHideVerticalIcon(false)
+        }
     }
 
+    private fun setNCDTabLayout() {
+        binding.llExactSearch.etSearchTerm.hint = getString(R.string.search_by_national_id)
+        binding.viewPager.adapter = NCDFollowUpAdapter(supportFragmentManager, lifecycle)
+        TabLayoutMediator(binding.llExactSearch.tabLayout, binding.viewPager) { tab, position ->
+            val tabTitles = listOf(
+                getString(R.string.referred),
+                getString(R.string.assessment),
+                getString(R.string.defaulters),
+                getString(R.string.LTFU)
+            )
+            tab.text = tabTitles.getOrNull(position) ?: ""
+        }.attach()
+        binding.llExactSearch.tabLayout.getTabAt(0)?.view?.setBackgroundResource(R.drawable.left_mh_view_selector)
+        binding.llExactSearch.tabLayout.getTabAt(1)?.view?.setBackgroundResource(R.drawable.mental_health_button_bg)
+        binding.llExactSearch.tabLayout.getTabAt(2)?.view?.setBackgroundResource(R.drawable.mental_health_button_bg)
+        binding.llExactSearch.tabLayout.getTabAt(3)?.view?.setBackgroundResource(R.drawable.right_mh_view_selector)
+        val tabView1 = (binding.llExactSearch.tabLayout.getChildAt(0) as? ViewGroup)?.getChildAt(0)
+        tabView1?.setPadding(0, 0, 0, 0)
+        val tabView2 = (binding.llExactSearch.tabLayout.getChildAt(0) as? ViewGroup)?.getChildAt(1)
+        tabView2?.setPadding(0, 0, 0, 0)
+        val tabView3 = (binding.llExactSearch.tabLayout.getChildAt(0) as? ViewGroup)?.getChildAt(2)
+        tabView3?.setPadding(0, 0, 0, 0)
+        ncdFollowUpViewModel.typeOffline = NCDFollowUpUtils.SCREENED
+        binding.llExactSearch.tabLayout.addOnTabSelectedListener(object :
+            TabLayout.OnTabSelectedListener {
+            override fun onTabSelected(tab: TabLayout.Tab?) {
+                showLoading()
+                tab?.let {
+                    ncdFollowUpViewModel.customDate = null
+                    ncdFollowUpViewModel.filterByDateRange = listOf()
+                    ncdFollowUpViewModel.filterByVillage = listOf()
+                    binding.llExactSearch.etSearchTerm.setText("")
+                    ncdFollowUpViewModel.filterCount.postValue(0)
+                    ncdFollowUpViewModel.typeOffline = when (it.position) {
+                        0 -> NCDFollowUpUtils.SCREENED
+                        1 -> NCDFollowUpUtils.Assessment_Type
+                        2 -> NCDFollowUpUtils.Defaulters_Type
+                        3 -> NCDFollowUpUtils.LTFU_Type
+                        else -> ""
+                    }
+                    binding.viewPager.currentItem = it.position
+
+                    setTabTypeface(
+                        it,
+                        ResourcesCompat.getFont(applicationContext, R.font.inter_bold)
+                    )
+                }
+            }
+
+            override fun onTabUnselected(tab: TabLayout.Tab?) {
+                setTabTypeface(
+                    tab,
+                    ResourcesCompat.getFont(applicationContext, R.font.inter_regular)
+                )
+            }
+
+            override fun onTabReselected(tab: TabLayout.Tab?) {
+                // No action needed
+            }
+        })
+        binding.viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) {
+                super.onPageSelected(position)
+                hideProgressAfterDelay() // Hide loading once transition is complete
+            }
+        })
+        binding.llExactSearch.tabLayout.getTabAt(0)?.let {
+            setTabTypeface(it, ResourcesCompat.getFont(applicationContext, R.font.inter_bold))
+        }
+    }
+
+    private fun hideProgressAfterDelay() {
+        CoroutineScope(Dispatchers.Main).launch {
+            delay(1500) // Wait for 3 seconds
+            hideLoading()
+        }
+    }
 
 
     private fun setTabLayout() {
@@ -187,6 +290,111 @@ class FollowUpMyPatientActivity : BaseActivity() {
         popupMenu.show()
     }
 
+    private fun initViewForNcd() {
+        with(binding) {
+            llFilter.btnFilter.gone()
+            binding.llFilter.btnFilter.text = getString(R.string.filter)
+            llFilter.btnFilter.safeClickListener {
+                val fragment =
+                    supportFragmentManager.findFragmentByTag(NCDFollowUpOfflineBottomDialogFilter.TAG)
+                if (fragment == null) {
+                    NCDFollowUpOfflineBottomDialogFilter.newInstance()
+                        .show(supportFragmentManager, NCDFollowUpOfflineBottomDialogFilter.TAG)
+                }
+            }
+
+            llExactSearch.etSearchTerm.addTextChangedListener {
+                val search = it?.trim().toString()
+                llExactSearch.btnSearch.isEnabled = !search.isNullOrEmpty()
+                if (search.isNullOrEmpty()) {
+                    ncdFollowUpViewModel.searchLiveDataForOffline("")
+                }
+            }
+
+            llExactSearch.btnSearch.setOnClickListener {
+                ncdFollowUpViewModel.searchLiveDataForOffline(
+                    llExactSearch.etSearchTerm.text?.trim().toString()
+                )
+            }
+        }
+    }
+
+    private fun attachObserversForNcd() {
+        ncdFollowUpViewModel.totalPatientCountOffline.observe(this) { count ->
+            if (count > 0) {
+                binding.tvHPatientCount.apply {
+                    text = if (count == 1) getString(R.string.patient_found) else getString(
+                        R.string.patients_found,
+                        count
+                    )
+                    visibility = View.VISIBLE
+                }
+                binding.tvPatientNoFound.gone()
+                binding.llFilter.btnFilter.visible()
+            } else {
+                ncdFollowUpViewModel.filterCount.value?.let { count ->
+                    if (count == 0) {
+                        binding.llFilter.btnFilter.gone()
+                    } else {
+                        binding.llFilter.btnFilter.visible()
+                    }
+                } ?: binding.llFilter.btnFilter.gone()
+                binding.tvHPatientCount.text = getString(R.string.no_patients_found)
+                binding.tvPatientNoFound.visible()
+            }
+        }
+        ncdFollowUpViewModel.getInitialLiveData.observe(this) { resources ->
+            when (resources.state) {
+                ResourceState.LOADING -> {
+                    showLoading()
+                }
+
+                ResourceState.SUCCESS -> {
+                    hideLoading()
+                    resources.data?.let {
+                        val fragment =
+                            supportFragmentManager.findFragmentByTag(NCDCallResultBottomDialog.TAG)
+                        if (fragment == null) {
+                            NCDCallResultBottomDialog.newInstance(it)
+                                .show(supportFragmentManager, NCDCallResultBottomDialog.TAG)
+                        }
+                    }
+                }
+
+                ResourceState.ERROR -> {
+                    hideLoading()
+                }
+            }
+        }
+        ncdFollowUpViewModel.saveCallDetails.observe(this) { resources ->
+            when (resources.state) {
+                ResourceState.LOADING -> {
+                    showLoading()
+                }
+
+                ResourceState.SUCCESS -> {
+                    hideLoading()
+                    SecuredPreference.putBoolean(SecuredPreference.EnvironmentKey.INITIAL_CALL.name, false)
+                    val fragment =
+                        supportFragmentManager.findFragmentByTag(NCDCallResultBottomDialog.TAG)
+                    fragment?.let { fragment ->
+                        (fragment as? NCDCallResultBottomDialog)?.dismiss()
+                    }
+                }
+
+                ResourceState.ERROR -> {
+                    hideLoading()
+                }
+            }
+        }
+        ncdFollowUpViewModel.filterCount.observe(this) { count ->
+            if (count > 0) {
+                binding.llFilter.btnFilter.text = this.getString(R.string.filter_count, count)
+            } else {
+                binding.llFilter.btnFilter.text = getString(R.string.filter)
+            }
+        }
+    }
 }
 
 

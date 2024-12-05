@@ -270,13 +270,16 @@ class NCDBloodGlucoseReadingDialog(private val callback: () -> Unit) : DialogFra
                         AssessmentDefinedParams.assessmentType to DefinedParams.Assessment,
                         DefinedParams.AssessmentOrganizationId to SecuredPreference.getOrganizationFhirId(),
                         AssessmentDefinedParams.assessmentProcessType to CommonUtils.requestFrom(),
-                        AssessmentDefinedParams.patientReference to (patientViewModel.getPatientId()
-                            ?: ""),
-                        AssessmentDefinedParams.memberReference to (patientViewModel.getPatientFHIRId()
-                            ?: ""),
                         AssessmentDefinedParams.assessmentTakenOn to assessmentDate
                     )
                 )
+                patientViewModel.getPatientId()?.let {
+                    put(AssessmentDefinedParams.patientReference, it)
+                }
+                patientViewModel.getPatientFHIRId()?.let {
+                    put(AssessmentDefinedParams.memberReference, it)
+
+                }
             }
         }
 
