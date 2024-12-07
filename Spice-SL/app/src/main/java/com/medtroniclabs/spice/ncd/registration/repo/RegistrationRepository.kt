@@ -1,24 +1,19 @@
 package com.medtroniclabs.spice.ncd.registration.repo
 
 import androidx.lifecycle.LiveData
-import com.google.gson.Gson
 import com.medtroniclabs.spice.common.AppConstants
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.data.CountryModel
-import com.medtroniclabs.spice.data.ErrorResponse
 import com.medtroniclabs.spice.data.LocalSpinnerResponse
 import com.medtroniclabs.spice.data.model.RegistrationResponse
 import com.medtroniclabs.spice.db.local.RoomHelper
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
-import com.medtroniclabs.spice.mappingkey.Screening
 import com.medtroniclabs.spice.network.ApiHelper
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.network.resource.ResourceState
-import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
 import okhttp3.RequestBody
-import okhttp3.ResponseBody
 import javax.inject.Inject
 
 class RegistrationRepository @Inject constructor(
@@ -75,7 +70,10 @@ class RegistrationRepository @Inject constructor(
     ): Resource<LocalSpinnerResponse> {
         return try {
             val response = roomHelper.getVillagesByChiefDom(selectedParent)
-            Resource(state = ResourceState.SUCCESS, LocalSpinnerResponse(tag, response))
+            Resource(
+                state = ResourceState.SUCCESS,
+                LocalSpinnerResponse(tag, CommonUtils.getModifiedResponse(response))
+            )
         } catch (_: Exception) {
             Resource(state = ResourceState.ERROR)
         }

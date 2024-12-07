@@ -691,7 +691,7 @@ class AssessmentViewModel @Inject constructor(
                     mhResponse = HashMap()
                 mhResponse[Screening.PHQ4] =
                     LocalSpinnerResponse(
-                        tag = Screening.PHQ4_Mental_Health,
+                        tag = Screening.MentalHealthDetails,
                         response = phq4Questions
                     )
                 mhResponse[AssessmentDefinedParams.PHQ9] =

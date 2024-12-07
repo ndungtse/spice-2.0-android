@@ -766,7 +766,6 @@
     <string name="referred_for_nfurther_assessment">Referred for\nFurther Assessment</string>
     <string name="no_assessment_required">No Assessment Required</string>
     <string name="cage_aid">CAGE-AID</string>
-    <string name="suicidcal_ideation">Suicidal Ideation</string>
     <string name="cvd_risk_level">CVD Risk Level</string>
     <string name="phq4_normal">%1$d - Normal</string>
     <string name="phq4_mild">%1$d - Mild</string>
@@ -1179,15 +1178,15 @@
     <string name="comments">Comments</string>
     <string name="substance_use">Substance Use</string>
     <string name="substance_use_disorder">Substance Use Disorder</string>
-    <string name="phq9_mental_health">PHQ 9</string>
-    <string name="gad7_mental_health">GAD 7</string>
+    <string name="phq9_mental_health">PHQ9</string>
+    <string name="gad7_mental_health">GAD7</string>
     <string name="edit_assessment">Edit Assessment</string>
 
     <string name="lab_test">Lab Test</string>
     <string name="lab_test_result_save">Lab Test result saved successfully</string>
-    <string name="phq4_assessment">PHQ 4 Assessment</string>
-    <string name="phq9_assessment">PHQ 9 Assessment</string>
-    <string name="gad7_assessment">GAD 7 Assessment</string>
+    <string name="phq4_assessment">PHQ4 Assessment</string>
+    <string name="phq9_assessment">PHQ9 Assessment</string>
+    <string name="gad7_assessment">GAD7 Assessment</string>
     <string name="suicide_screener">Suicide Screener</string>
     <string name="mental_health_success">Mental Health updated successfully</string>
     <string name="mark_as_reviewed">Mark as Reviewed</string>

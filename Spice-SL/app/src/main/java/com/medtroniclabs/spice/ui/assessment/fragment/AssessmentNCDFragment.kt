@@ -1057,7 +1057,7 @@ class AssessmentNCDFragment : BaseFragment(), FormEventListener, View.OnClickLis
             }
         }
         map[Screening.UnitMeasurement] = SecuredPreference.getUnitMeasurementType()
-        if (map.containsKey(Screening.PHQ4_Mental_Health))
+        if (map.containsKey(Screening.MentalHealthDetails))
             viewModel.setPhQ4Score(CommonUtils.calculatePHQScore(map))
 
         if (map.containsKey(AssessmentDefinedParams.PHQ9_Mental_Health))
@@ -1121,12 +1121,12 @@ class AssessmentNCDFragment : BaseFragment(), FormEventListener, View.OnClickLis
                     phq9.remove(AssessmentDefinedParams.PHQ9_Score)
 
                     val riskLevel = phq9[AssessmentDefinedParams.PHQ9_Risk_Level] as String
-                    phq9[Screening.PHQ4_Risk_Level] = riskLevel
+                    phq9[Screening.RiskLevel] = riskLevel
                     phq9.remove(AssessmentDefinedParams.PHQ9_Risk_Level)
 
                     val mentalHealth =
                         phq9[AssessmentDefinedParams.PHQ9_Mental_Health] as ArrayList<*>
-                    phq9[Screening.PHQ4_Mental_Health] = mentalHealth
+                    phq9[Screening.MentalHealthDetails] = mentalHealth
                     phq9.remove(AssessmentDefinedParams.PHQ9_Mental_Health)
                 }
             }
@@ -1151,12 +1151,12 @@ class AssessmentNCDFragment : BaseFragment(), FormEventListener, View.OnClickLis
                     gad7.remove(AssessmentDefinedParams.GAD7_Score)
 
                     val riskLevel = gad7[AssessmentDefinedParams.GAD7_Risk_Level] as String
-                    gad7[Screening.PHQ4_Risk_Level] = riskLevel
+                    gad7[Screening.RiskLevel] = riskLevel
                     gad7.remove(AssessmentDefinedParams.GAD7_Risk_Level)
 
                     val mentalHealth =
                         gad7[AssessmentDefinedParams.GAD7_Mental_Health] as ArrayList<*>
-                    gad7[Screening.PHQ4_Mental_Health] = mentalHealth
+                    gad7[Screening.MentalHealthDetails] = mentalHealth
                     gad7.remove(AssessmentDefinedParams.GAD7_Mental_Health)
                 }
             }

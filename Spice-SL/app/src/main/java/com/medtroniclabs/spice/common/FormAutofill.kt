@@ -3,11 +3,14 @@ package com.medtroniclabs.spice.common
 import android.widget.EditText
 import android.widget.Spinner
 import android.widget.TextView
+import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
 import com.medtroniclabs.spice.common.DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
 import com.medtroniclabs.spice.common.DateUtils.DATE_ddMMyyyy
 import com.medtroniclabs.spice.common.DateUtils.convertDateFormat
 import com.medtroniclabs.spice.formgeneration.FormGenerator
+import com.medtroniclabs.spice.formgeneration.MentalHealthAdapter
+import com.medtroniclabs.spice.formgeneration.SingleSelectionMHView
 import com.medtroniclabs.spice.formgeneration.ui.SingleSelectionCustomView
 import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
 import com.medtroniclabs.spice.mappingkey.Screening
@@ -34,17 +37,47 @@ object FormAutofill {
                         is TextView -> {
                             setTextView(view, key, map.value, formGenerator)
                         }
+
+                        is RecyclerView -> {
+                            if (view.adapter is MentalHealthAdapter)
+                                (map.value as? ArrayList<Map<String, Any>>)?.let { list ->
+                                    prefillRecyclerView(view, list)
+                                }
+                        }
                     }
                 }
             }
         }
     }
 
+    private fun prefillRecyclerView(view: RecyclerView, list: ArrayList<Map<String, Any>>) {
+        for (i in 0 until list.size) {
+            //Getting one by one listItem
+            (view.findViewHolderForAdapterPosition(i) as? MentalHealthAdapter.MentalHealthViewHolder)?.let { viewHolder ->
+                val questionView = viewHolder.binding.tvQuestion
+                val inflatedView = viewHolder.binding.llAnswerRoot
+
+                val map = list.firstOrNull {
+                    (it[Screening.MHQuestion] as? String)?.equals(
+                        questionView.text?.toString(),
+                        true
+                    ) == true
+                }
+
+                if (!map.isNullOrEmpty())
+                    for (j in 0 until inflatedView.childCount) {
+                        (inflatedView.getChildAt(j) as? SingleSelectionMHView)?.let { singleSelectionView ->
+                            (map[Screening.MHAnswer] as? String)?.let {
+                                singleSelectionView.prefillSingleSelection(it)
+                            }
+                        }
+                    }
+            }
+        }
+    }
+
     private fun setTextView(
-        view: TextView,
-        key: String,
-        value: Any?,
-        formGenerator: FormGenerator
+        view: TextView, key: String, value: Any?, formGenerator: FormGenerator
     ) {
         if (value is String) {
             if (key.equals(Screening.DateOfBirth, true)) {
@@ -52,20 +85,19 @@ object FormAutofill {
                     convertDateFormat(value, DATE_FORMAT_yyyyMMddHHmmssZZZZZ, DATE_ddMMyyyy)
                 val dobDate = DateUtils.convertStringToDate(value, DATE_FORMAT_yyyyMMddHHmmssZZZZZ)
 
-                if (dobString.isNotBlank())
-                    view.text = dobString
+                if (dobString.isNotBlank()) view.text = dobString
 
-                if (dobDate != null)
-                    formGenerator.fillDetailsOnDatePickerSet(dobDate, false, id = key)
-            } else
-                view.text = value
+                if (dobDate != null) formGenerator.fillDetailsOnDatePickerSet(
+                    dobDate,
+                    false,
+                    id = key
+                )
+            } else view.text = value
         }
     }
 
     private fun setSingleSelectionCustomView(
-        view: SingleSelectionCustomView,
-        key: String,
-        value: Any?
+        view: SingleSelectionCustomView, key: String, value: Any?
     ) {
         when (value) {
             is String -> view.singleSelectionChildViewsOption(value)

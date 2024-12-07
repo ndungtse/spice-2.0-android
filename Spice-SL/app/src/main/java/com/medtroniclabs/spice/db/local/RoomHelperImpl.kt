@@ -262,10 +262,6 @@ class RoomHelperImpl @Inject constructor(
         metaDataDAO.deleteAllSymptoms()
     }
 
-    override suspend fun getChiefDomAndVillageCodeByVillageId(id: Long): VillageInfo {
-        return metaDataDAO.getChiefDomAndVillageCodeByVillageId(id)
-    }
-
 
     override suspend fun getFormData(formType: String): String {
         return metaDataDAO.getFormData(formType)

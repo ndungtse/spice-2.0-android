@@ -22,6 +22,8 @@ class MarkAsReviewedConfirmationDialog(private val callback: (userConfirmed: Boo
         savedInstanceState: Bundle?
     ): View {
         binding = DialogConfirmationMarkAsReviewedBinding.inflate(inflater, container, false)
+        dialog?.window?.setBackgroundDrawableResource(android.R.color.transparent)
+        isCancelable = false
         return binding.root
     }
 
@@ -52,11 +54,11 @@ class MarkAsReviewedConfirmationDialog(private val callback: (userConfirmed: Boo
         val isTablet = CommonUtils.checkIsTablet(requireContext())
         val isLandscape = resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
         val width = when {
-            isTablet && isLandscape -> 70
+            isTablet && isLandscape -> 50
             else -> 100
         }
         val height = when {
-            isTablet && isLandscape -> 35
+            isTablet && isLandscape -> 50
             else -> 100
         }
         setDialogPercent(width, height)

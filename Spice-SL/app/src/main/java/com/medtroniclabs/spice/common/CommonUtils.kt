@@ -25,6 +25,7 @@ import com.medtroniclabs.spice.data.Prescription
 import com.medtroniclabs.spice.data.history.Investigation
 import com.medtroniclabs.spice.db.entity.RiskClassificationModel
 import com.medtroniclabs.spice.db.entity.RiskFactorModel
+import com.medtroniclabs.spice.db.entity.VillageEntity
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.DAY
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.DAYS
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.GONE
@@ -44,12 +45,15 @@ import com.medtroniclabs.spice.mappingkey.Screening.CategoryDisplayName
 import com.medtroniclabs.spice.mappingkey.Screening.CategoryDisplayType
 import com.medtroniclabs.spice.mappingkey.Screening.CategoryType
 import com.medtroniclabs.spice.mappingkey.Screening.Female
+import com.medtroniclabs.spice.mappingkey.Screening.MentalHealthDetails
 import com.medtroniclabs.spice.mappingkey.Screening.PHQ4
+import com.medtroniclabs.spice.mappingkey.Screening.RiskLevel
 import com.medtroniclabs.spice.mappingkey.Screening.SiteName
 import com.medtroniclabs.spice.mappingkey.Screening.Type
 import com.medtroniclabs.spice.mappingkey.Screening.lastMealTime
 import com.medtroniclabs.spice.mappingkey.Screening.lastMealTypeDateSuffix
 import com.medtroniclabs.spice.mappingkey.Screening.lastMealTypeMeridiem
+import com.medtroniclabs.spice.mappingkey.Screening.mentalHealthScore
 import com.medtroniclabs.spice.mappingkey.Screening.otherType
 import com.medtroniclabs.spice.mappingkey.Screening.siteId
 import com.medtroniclabs.spice.mappingkey.Screening.substanceAbuse
@@ -744,7 +748,7 @@ object CommonUtils {
     }
 
     fun mentalHealthKey(type: String): String {
-        var key = Screening.PHQ4_Mental_Health
+        var key = Screening.MentalHealthDetails
         if (type.equals(AssessmentDefinedParams.PHQ9, true))
             key = AssessmentDefinedParams.PHQ9_Mental_Health
         else if (type.equals(AssessmentDefinedParams.GAD7,true))
@@ -798,23 +802,23 @@ object CommonUtils {
         when (type) {
             PHQ4 -> {
                 map[Screening.PHQ4_Score] = phqScore
-                map[Screening.PHQ4_Risk_Level] = getPhQ4RiskLevel(phqScore)
-                map[Screening.PHQ4_Mental_Health] = phqMap
+                map[Screening.RiskLevel] = getPhQ4RiskLevel(phqScore)
+                map[Screening.MentalHealthDetails] = phqMap
             }
             AssessmentDefinedParams.PHQ9 -> {
                 map[AssessmentDefinedParams.PHQ9_Score] = phqScore
                 map[AssessmentDefinedParams.PHQ9_Risk_Level] = getPhQ4RiskLevel(phqScore)
                 map[AssessmentDefinedParams.PHQ9_Mental_Health] = phqMap
-                if (map.containsKey(Screening.PHQ4_Mental_Health))
-                    map.remove(Screening.PHQ4_Mental_Health)
+                if (map.containsKey(Screening.MentalHealthDetails))
+                    map.remove(Screening.MentalHealthDetails)
             }
 
             AssessmentDefinedParams.GAD7 -> {
                 map[AssessmentDefinedParams.GAD7_Score] = phqScore
                 map[AssessmentDefinedParams.GAD7_Risk_Level] = getPhQ4RiskLevel(phqScore)
                 map[AssessmentDefinedParams.GAD7_Mental_Health] = phqMap
-                if (map.containsKey(Screening.PHQ4_Mental_Health))
-                    map.remove(Screening.PHQ4_Mental_Health)
+                if (map.containsKey(Screening.MentalHealthDetails))
+                    map.remove(Screening.MentalHealthDetails)
             }
 
         }
@@ -1754,64 +1758,95 @@ object CommonUtils {
             context.getString(R.string.phq4_score) -> AssessmentDefinedParams.phq4
             context.getString(R.string.phq9_score) -> AssessmentDefinedParams.phq9
             context.getString(R.string.gad7_score) -> AssessmentDefinedParams.gad7
-            context.getString(R.string.suicidcal_ideation) -> AssessmentDefinedParams.suicidcalIdeation
+            context.getString(R.string.suicidal_ideation) -> AssessmentDefinedParams.suicidalIdeation
             context.getString(R.string.cage_aid) -> AssessmentDefinedParams.cageAid
             else -> ""
         }
     }
 
-    fun assessmentPHQ4(result: Pair<String?, HashMap<String, Any>>) {
-        if (result?.second?.containsKey(AssessmentDefinedParams.PHQ9.lowercase()) == true) {
-            val phq9 =
-                result?.second?.get(AssessmentDefinedParams.PHQ9.lowercase()) as HashMap<String, Any>
-            if (phq9.isEmpty()) {
-                result?.second?.apply {
-                    remove(AssessmentDefinedParams.PHQ9.lowercase())
+    fun mentalHealths(
+        questionarieId: String?,
+        observationId: String?,
+        result: Pair<String?, HashMap<String, Any>>
+    ) {
+        result.second.let { mentalHealthMap ->
+            (mentalHealthMap[AssessmentDefinedParams.phq4] as? HashMap<String, Any>)?.let { phq4Map ->
+                if (phq4Map.isEmpty())
+                    mentalHealthMap.remove(AssessmentDefinedParams.phq4)
+                else {
+                    questionarieId?.let { qId ->
+                        phq4Map[NCDMRUtil.questionnaireId] = qId
+                    }
                 }
-            } else {
-                val score = phq9[AssessmentDefinedParams.PHQ9_Score] as Int
-                phq9[Screening.PHQ4_Score] = score
-                phq9.remove(AssessmentDefinedParams.PHQ9_Score)
-
-                val riskLevel = phq9[AssessmentDefinedParams.PHQ9_Risk_Level] as String
-                phq9[Screening.PHQ4_Risk_Level] = riskLevel
-                phq9.remove(AssessmentDefinedParams.PHQ9_Risk_Level)
-
-                val mentalHealth =
-                    phq9[AssessmentDefinedParams.PHQ9_Mental_Health] as ArrayList<*>
-                phq9[Screening.PHQ4_Mental_Health] = mentalHealth
-                phq9.remove(AssessmentDefinedParams.PHQ9_Mental_Health)
+            }
+            (mentalHealthMap[AssessmentDefinedParams.phq9] as? HashMap<String, Any>)?.let { phq9Map ->
+                if (phq9Map.isEmpty())
+                    mentalHealthMap.remove(AssessmentDefinedParams.phq9)
+                else {
+                    (phq9Map[AssessmentDefinedParams.PHQ9_Score] as? Int)?.let { phq9Score ->
+                        phq9Map[mentalHealthScore] = phq9Score
+                        phq9Map.remove(AssessmentDefinedParams.PHQ9_Score)
+                    }
+                    (phq9Map[AssessmentDefinedParams.PHQ9_Risk_Level] as? String)?.let { phq9RiskLevel ->
+                        phq9Map[RiskLevel] = phq9RiskLevel
+                        phq9Map.remove(AssessmentDefinedParams.PHQ9_Risk_Level)
+                    }
+                    (phq9Map[AssessmentDefinedParams.PHQ9_Mental_Health] as? ArrayList<*>)?.let { phq9MentalHealth ->
+                        phq9Map[MentalHealthDetails] = phq9MentalHealth
+                        phq9Map.remove(AssessmentDefinedParams.PHQ9_Mental_Health)
+                    }
+                    questionarieId?.let { qId ->
+                        phq9Map[NCDMRUtil.questionnaireId] = qId
+                    }
+                }
+            }
+            (mentalHealthMap[AssessmentDefinedParams.gad7] as? HashMap<String, Any>)?.let { gad7Map ->
+                if (gad7Map.isEmpty())
+                    mentalHealthMap.remove(AssessmentDefinedParams.gad7)
+                else {
+                    (gad7Map[AssessmentDefinedParams.GAD7_Score] as? Int)?.let { gad7Score ->
+                        gad7Map[mentalHealthScore] = gad7Score
+                        gad7Map.remove(AssessmentDefinedParams.GAD7_Score)
+                    }
+                    (gad7Map[AssessmentDefinedParams.GAD7_Risk_Level] as? String)?.let { gad7RiskLevel ->
+                        gad7Map[RiskLevel] = gad7RiskLevel
+                        gad7Map.remove(AssessmentDefinedParams.GAD7_Risk_Level)
+                    }
+                    (gad7Map[AssessmentDefinedParams.GAD7_Mental_Health] as? ArrayList<*>)?.let { gad7MentalHealth ->
+                        gad7Map[MentalHealthDetails] = gad7MentalHealth
+                        gad7Map.remove(AssessmentDefinedParams.GAD7_Mental_Health)
+                    }
+                    questionarieId?.let { qId ->
+                        gad7Map[NCDMRUtil.questionnaireId] = qId
+                    }
+                }
+            }
+            (mentalHealthMap[AssessmentDefinedParams.suicidalIdeation] as? HashMap<String, Any>)?.let { suicideScreener ->
+                if (suicideScreener.isEmpty())
+                    mentalHealthMap.remove(AssessmentDefinedParams.suicidalIdeation)
+                else {
+                    observationId?.let { oId ->
+                        suicideScreener[AssessmentDefinedParams.ObservationID] = oId
+                    }
+                }
+            }
+            (mentalHealthMap[AssessmentDefinedParams.cageAid] as? HashMap<String, Any>)?.let { substanceAbuse ->
+                if (substanceAbuse.isEmpty())
+                    mentalHealthMap.remove(AssessmentDefinedParams.cageAid)
+                else {
+                    observationId?.let { oId ->
+                        substanceAbuse[AssessmentDefinedParams.ObservationID] = oId
+                    }
+                }
             }
         }
-        if (result?.second?.containsKey(Screening.PHQ4.lowercase()) == true) {
-            val phq4 = result?.second?.get(Screening.PHQ4.lowercase()) as HashMap<String, Any>
-            if (phq4.isEmpty()) {
-                result?.second?.apply {
-                    remove(Screening.PHQ4.lowercase())
-                }
-            }
-        }
-        if (result?.second?.containsKey(AssessmentDefinedParams.GAD7.lowercase()) == true) {
-            val gad7 =
-                result?.second?.get(AssessmentDefinedParams.GAD7.lowercase()) as HashMap<String, Any>
-            if (gad7.isEmpty()) {
-                result?.second?.apply {
-                    remove(AssessmentDefinedParams.GAD7.lowercase())
-                }
-            } else {
-                val score = gad7[AssessmentDefinedParams.GAD7_Score] as Int
-                gad7[Screening.PHQ4_Score] = score
-                gad7.remove(AssessmentDefinedParams.GAD7_Score)
+    }
 
-                val riskLevel = gad7[AssessmentDefinedParams.GAD7_Risk_Level] as String
-                gad7[Screening.PHQ4_Risk_Level] = riskLevel
-                gad7.remove(AssessmentDefinedParams.GAD7_Risk_Level)
-
-                val mentalHealth =
-                    gad7[AssessmentDefinedParams.GAD7_Mental_Health] as ArrayList<*>
-                gad7[Screening.PHQ4_Mental_Health] = mentalHealth
-                gad7.remove(AssessmentDefinedParams.GAD7_Mental_Health)
-            }
+    fun getModifiedResponse(response: List<VillageEntity>): List<VillageEntity> {
+        val (villages, otherVillage) = response.partition { it.chiefdomId != null }
+        return ArrayList<VillageEntity>().apply {
+            addAll(villages)
+            addAll(otherVillage)
         }
     }
 }

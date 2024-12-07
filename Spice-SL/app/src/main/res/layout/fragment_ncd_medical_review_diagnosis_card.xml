@@ -8,7 +8,7 @@
         android:id="@+id/firstRow"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:baselineAligned="true"
+        android:baselineAligned="false"
         android:orientation="horizontal"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -17,7 +17,6 @@
             layout="@layout/diagnosis_card_layout"
             android:layout_width="@dimen/_0dp"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/_8sdp"
             android:layout_weight="1" />
 
         <include
@@ -25,7 +24,6 @@
             layout="@layout/diagnosis_card_layout"
             android:layout_width="@dimen/_0dp"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/_8sdp"
             android:layout_weight="1" />
 
         <include
@@ -56,8 +54,7 @@
         android:id="@+id/secondRow"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/_16sdp"
-        android:baselineAligned="true"
+        android:baselineAligned="false"
         android:orientation="horizontal"
         app:layout_constraintTop_toBottomOf="@id/firstRow">
 
@@ -65,27 +62,26 @@
             android:id="@+id/pregnancyCard"
             layout="@layout/diagnosis_card_layout"
             android:layout_width="@dimen/_0dp"
-            android:visibility="gone"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/_8sdp"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            android:visibility="gone" />
 
         <include
             android:id="@+id/weightCard"
             layout="@layout/diagnosis_card_layout"
             android:layout_width="@dimen/_0dp"
-            android:visibility="gone"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/_8sdp"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            android:visibility="gone" />
 
         <include
             android:id="@+id/eddCard"
             layout="@layout/diagnosis_card_layout"
             android:layout_width="@dimen/_0dp"
-            android:visibility="gone"
             android:layout_height="wrap_content"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            android:visibility="gone" />
+
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

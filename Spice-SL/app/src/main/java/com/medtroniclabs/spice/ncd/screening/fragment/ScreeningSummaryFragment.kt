@@ -344,7 +344,7 @@ class ScreeningSummaryFragment : BaseFragment(), View.OnClickListener {
 
         if (map.containsKey(SuicidalIdeation)) {
             showBindingValue(
-                getString(R.string.suicidcal_ideation),
+                getString(R.string.suicidal_ideation),
                 map[SuicidalIdeation].toString(),
                 getColor(requireContext(), R.color.medium_high_risk_color)
             )
@@ -377,7 +377,7 @@ class ScreeningSummaryFragment : BaseFragment(), View.OnClickListener {
     }
 
     private fun showPHQ4Score(serverData: List<FormLayout>, map: Map<String, Any>) {
-        FormResultComposer.findGroupIdForNCD(serverData, Screening.PHQ4_Mental_Health)?.let {
+        FormResultComposer.findGroupIdForNCD(serverData, Screening.MentalHealthDetails)?.let {
             val subMap = map[it] as Map<String, Any>
             if (subMap.containsKey(Screening.PHQ4_Score)) {
                 val phq4Score = subMap[Screening.PHQ4_Score]

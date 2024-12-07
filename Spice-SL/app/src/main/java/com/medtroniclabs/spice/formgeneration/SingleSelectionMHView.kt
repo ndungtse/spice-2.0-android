@@ -175,10 +175,19 @@ class SingleSelectionMHView : LinearLayout {
     }
     fun getResultMapType(type: String?): String? {
         return when(type){
-            Screening.PHQ4 -> Screening.PHQ4_Mental_Health
+            Screening.PHQ4 -> Screening.MentalHealthDetails
             AssessmentDefinedParams.GAD7 -> AssessmentDefinedParams.GAD7_Mental_Health
             AssessmentDefinedParams.PHQ9 -> AssessmentDefinedParams.PHQ9_Mental_Health
             else -> null
+        }
+    }
+
+    fun prefillSingleSelection(string: String) {
+        forEach {
+            if (it is TextView && it.text.toString().equals(string, ignoreCase = true)) {
+                it.performClick()
+                return@forEach
+            }
         }
     }
 }

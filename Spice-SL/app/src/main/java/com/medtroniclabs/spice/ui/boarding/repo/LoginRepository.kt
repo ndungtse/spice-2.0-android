@@ -42,6 +42,10 @@ class LoginRepository @Inject constructor(
                                 val loginResponseModel = response.body()
                                 loginResponseModel?.let {
                                     SecuredPreference.putUserDetails(it)
+                                    SecuredPreference.putBoolean(
+                                        SecuredPreference.EnvironmentKey.IS_TERMS_AND_CONDITIONS_APPROVED.name,
+                                        it.isTermsAndConditionsAccepted == true
+                                    )
                                     saveUserNameAndPassword(username, securePassword)
                                 }
                                 Resource(state = ResourceState.SUCCESS, data = response.body())

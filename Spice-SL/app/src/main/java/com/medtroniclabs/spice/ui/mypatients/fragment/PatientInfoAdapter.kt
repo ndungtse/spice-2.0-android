@@ -50,7 +50,7 @@ class PatientInfoAdapter(
                 }
                 val mentalHealthLabels = listOf(
                     context.getString(R.string.phq4_score),
-                    context.getString(R.string.suicidcal_ideation),
+                    context.getString(R.string.suicidal_ideation),
                     context.getString(R.string.cage_aid)
                 )
 

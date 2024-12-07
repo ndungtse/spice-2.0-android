@@ -28,6 +28,7 @@ class NCDMentalHealthViewModel @Inject constructor(
     var value: String? = null
     var encounterId: String? = null
     var questionarieId: String? = null
+    var observationId: String? = null
     var yearForDiabetes :String? = null
     var yearForHypertension :String? = null
     var yearForMentalHealth :Int? = null

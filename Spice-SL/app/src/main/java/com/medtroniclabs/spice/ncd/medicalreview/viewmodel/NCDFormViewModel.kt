@@ -12,6 +12,7 @@ import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.model.FormResponse
 import com.medtroniclabs.spice.ncd.medicalreview.repo.NCDFormsRepo
+import com.medtroniclabs.spice.network.SingleLiveEvent
 import com.medtroniclabs.spice.network.resource.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
@@ -24,7 +25,7 @@ class NCDFormViewModel @Inject constructor(
     private val ncdFormsRepo: NCDFormsRepo,
 ) : ViewModel() {
 
-    val ncdFormResponse = MutableLiveData<Resource<List<FormLayout>>>()
+    val ncdFormResponse = SingleLiveEvent<Resource<List<FormLayout>>>()
 
     fun getNCDForm(type: String, workFlow: String? = null) {
         viewModelScope.launch(dispatcherIO) {

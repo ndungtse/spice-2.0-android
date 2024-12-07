@@ -3524,7 +3524,7 @@ class FormGenerator(
                     AssessmentDefinedParams.GAD7_Mental_Health
                 )
 
-                else -> Pair(Screening.PHQ4.lowercase(), Screening.PHQ4_Mental_Health)
+                else -> Pair(Screening.PHQ4.lowercase(), Screening.MentalHealthDetails)
             }
 
             getViewByTag(mhType.first + rootSuffix)?.let {

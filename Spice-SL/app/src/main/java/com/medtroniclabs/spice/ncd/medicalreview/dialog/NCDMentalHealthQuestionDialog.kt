@@ -6,7 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
-import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import com.google.gson.Gson
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
@@ -35,17 +35,19 @@ import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil
 import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDFormViewModel
 import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDMentalHealthViewModel
 import com.medtroniclabs.spice.network.resource.ResourceState
-import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
-class NCDMentalHealthQuestionDialog(private val callback: ((successDialog: Pair<String, String>) -> Unit)) : DialogFragment(), FormEventListener, View.OnClickListener {
+@AndroidEntryPoint
+class NCDMentalHealthQuestionDialog(private val callback: ((successDialog: Pair<String, String>?, errorResponse: String?) -> Unit)) :
+    DialogFragment(), FormEventListener, View.OnClickListener {
     private lateinit var binding: FragmentNCDMentalHealthQuestionDialogBinding
     private lateinit var formGenerator: FormGenerator
 
-    private val ncdFormViewModel: NCDFormViewModel by activityViewModels()
-    private val assessmentViewModel: AssessmentViewModel by activityViewModels()
-    private val viewModel: NCDMentalHealthViewModel by activityViewModels()
+    private val ncdFormViewModel: NCDFormViewModel by viewModels()
+    private val assessmentViewModel: AssessmentViewModel by viewModels()
+    private val viewModel: NCDMentalHealthViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -92,14 +94,20 @@ class NCDMentalHealthQuestionDialog(private val callback: ((successDialog: Pair<
         binding.btnConfirm.safeClickListener(this@NCDMentalHealthQuestionDialog)
         binding.ivClose.safeClickListener(this@NCDMentalHealthQuestionDialog)
         binding.loadingProgress.safeClickListener(this@NCDMentalHealthQuestionDialog)
+
         formGenerator = FormGenerator(
             requireContext(),
             binding.llForm,
             listener = this,
             scrollView = binding.mentalHealthScrollView
-        ) { map, id ->
+        )
 
-        }
+        fetchForms()
+
+        binding.tvMentalHealthLabel.text = getTitle(myFormType())
+    }
+
+    private fun fetchForms() {
         if (screeningCards().contains(myFormType()))
             ncdFormViewModel.getNCDForm(DefinedParams.Screening)
         else
@@ -107,14 +115,6 @@ class NCDMentalHealthQuestionDialog(private val callback: ((successDialog: Pair<
                 DefinedParams.Assessment,
                 workFlow = NCDMRUtil.mentalHealth
             )
-        val request = NCDMentalHealthMedicalReviewDetails(
-            memberReference = requireArguments().getString(NCDMRUtil.MEMBER_REFERENCE) as String,
-            type = myFormType()?.uppercase()
-        )
-        if (requireArguments().getBoolean(EditAssessment)) {
-            viewModel.ncdMentalHealthMedicalReviewDetails(request, isAssessment())
-        }
-        binding.tvMentalHealthLabel.text = getTitle(myFormType())
     }
 
     private fun myFormType(): String? {
@@ -130,21 +130,17 @@ class NCDMentalHealthQuestionDialog(private val callback: ((successDialog: Pair<
     }
 
     private fun screeningCards(): List<String> {
-        return listOf(AssessmentDefinedParams.suicidcalIdeation, AssessmentDefinedParams.cageAid)
+        return listOf(AssessmentDefinedParams.suicidalIdeation, AssessmentDefinedParams.cageAid)
     }
 
     private fun getTitle(type: String?): String {
-        return type?.let { t ->
-            when (t.lowercase()) {
-                AssessmentDefinedParams.phq4 -> getString(R.string.phq4_assessment)
-                AssessmentDefinedParams.phq9 -> getString(R.string.phq9_assessment)
-                AssessmentDefinedParams.gad7 -> getString(R.string.gad7_assessment)
-                AssessmentDefinedParams.suicidcalIdeation -> getString(R.string.gad7_assessment)
-                AssessmentDefinedParams.cageAid -> getString(R.string.cage_aid)
-                else -> getString(R.string.assessment)
-            }
-        } ?: run {
-            getString(R.string.assessment)
+        return when (type) {
+            AssessmentDefinedParams.phq4 -> getString(R.string.phq4_assessment)
+            AssessmentDefinedParams.phq9 -> getString(R.string.phq9_assessment)
+            AssessmentDefinedParams.gad7 -> getString(R.string.gad7_assessment)
+            AssessmentDefinedParams.suicidalIdeation -> getString(R.string.suicide_screener)
+            AssessmentDefinedParams.cageAid -> getString(R.string.cage_aid)
+            else -> getString(R.string.assessment)
         }
     }
 
@@ -200,14 +196,43 @@ class NCDMentalHealthQuestionDialog(private val callback: ((successDialog: Pair<
 
                 ResourceState.ERROR -> {
                     hideLoading()
+                    dismiss()
+                    callback.invoke(null, resourceState.message)
                 }
 
                 ResourceState.SUCCESS -> {
                     hideLoading()
                     resourceState.data?.let { data ->
-                        viewModel.questionarieId = data[NCDMRUtil.questionnaireId] as? String
-                        viewModel.encounterId = data[DefinedParams.EncounterId] as? String
-                        FormAutofill.start(formGenerator, data)
+                        val prefill = HashMap<String, Any>()
+
+                        if (isAssessment()) {
+                            data[Screening.MentalHealthDetails]?.let {
+                                viewModel.questionarieId =
+                                    data[NCDMRUtil.questionnaireId] as? String
+                                viewModel.encounterId = data[DefinedParams.EncounterId] as? String
+
+                                prefill.put(getFormattedKey(), it)
+                            }
+                        } else {
+                            (data[AssessmentDefinedParams.encounter] as? Map<String, Any>)?.let {
+                                viewModel.encounterId = it[AssessmentDefinedParams.id] as? String
+                            }
+
+                            (data[Screening.suicideScreener] as? Map<String, Any>)?.let {
+                                prefill.putAll(
+                                    modifiedPrefills(it)
+                                )
+                            }
+
+                            (data[Screening.substanceAbuse] as? Map<String, Any>)?.let {
+                                prefill.putAll(
+                                    modifiedPrefills(it)
+                                )
+                            }
+                        }
+
+                        if (prefill.isNotEmpty())
+                            FormAutofill.start(formGenerator, prefill)
                     }
                 }
             }
@@ -220,25 +245,48 @@ class NCDMentalHealthQuestionDialog(private val callback: ((successDialog: Pair<
 
                 ResourceState.ERROR -> {
                     hideLoading()
-                    (activity as? BaseActivity?)?.showErrorDialogue(
-                        title = getString(R.string.error),
-                        message = resource.message
-                            ?: getString(R.string.something_went_wrong_try_later),
-                        positiveButtonName = getString(R.string.ok)
-                    ) {}
+                    dismiss()
+                    callback.invoke(null, resource.message)
                 }
 
                 ResourceState.SUCCESS -> {
+                    hideLoading()
                     dismiss()
                     callback.invoke(
                         Pair(
                             getString(R.string.tab_medical_review),
                             resource.data ?: getString(R.string.mental_health_success)
-                        )
+                        ), null
                     )
                 }
             }
         }
+    }
+
+    private fun modifiedPrefills(map: Map<String, Any>): HashMap<String, Any> {
+        viewModel.observationId = map[AssessmentDefinedParams.ObservationID] as? String
+
+        val returnMap = HashMap<String, Any>(map)
+        returnMap.remove(AssessmentDefinedParams.ObservationID)
+        return returnMap
+    }
+
+    private fun getFormattedKey(): String {
+        return when (myFormType()) {
+            AssessmentDefinedParams.phq9 -> AssessmentDefinedParams.PHQ9_Mental_Health
+            AssessmentDefinedParams.gad7 -> AssessmentDefinedParams.GAD7_Mental_Health
+            else -> Screening.MentalHealthDetails
+        }
+    }
+
+    private fun callDetailsAPI() {
+        val isAssessment = isAssessment()
+        val request = NCDMentalHealthMedicalReviewDetails(
+            memberReference = requireArguments().getString(NCDMRUtil.MEMBER_REFERENCE) as String,
+            type = if (isAssessment) myFormType()?.uppercase() else myFormType()
+        )
+        if (requireArguments().getBoolean(EditAssessment))
+            viewModel.ncdMentalHealthMedicalReviewDetails(request, isAssessment)
     }
 
     companion object {
@@ -249,7 +297,7 @@ class NCDMentalHealthQuestionDialog(private val callback: ((successDialog: Pair<
             patientId: String?,
             patientFHIRId: String?,
             isEditAssessment: Boolean,
-            callback: ((successDialog: Pair<String, String>) -> Unit)
+            callback: ((successDialog: Pair<String, String>?, errorResponse: String?) -> Unit)
         ): NCDMentalHealthQuestionDialog {
             val fragment = NCDMentalHealthQuestionDialog(callback)
             val args = Bundle()
@@ -306,7 +354,7 @@ class NCDMentalHealthQuestionDialog(private val callback: ((successDialog: Pair<
     }
 
     override fun onRenderingComplete() {
-
+        callDetailsAPI()
     }
 
     override fun onUpdateInstruction(id: String, selectedId: Any?) {
@@ -398,7 +446,7 @@ class NCDMentalHealthQuestionDialog(private val callback: ((successDialog: Pair<
             )
 
             AssessmentDefinedParams.cageAid -> calculateCAGEAIDSCore(map, serverData)
-            AssessmentDefinedParams.suicidcalIdeation -> calculateSuicidalIdeation(map)
+            AssessmentDefinedParams.suicidalIdeation -> calculateSuicidalIdeation(map)
         }
 
         try {
@@ -410,7 +458,7 @@ class NCDMentalHealthQuestionDialog(private val callback: ((successDialog: Pair<
                 )
             }
             if (result != null) {
-                CommonUtils.assessmentPHQ4(result)
+                CommonUtils.mentalHealths(viewModel.questionarieId, viewModel.observationId, result)
                 result = Pair(StringConverter.convertGivenMapToString(result.second), result.second)
                 result.first?.let {
                     val reqMap = StringConverter.convertStringToMap(it)

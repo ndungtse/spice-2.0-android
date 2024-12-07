@@ -135,6 +135,7 @@ object AssessmentDefinedParams {
     const val phq4 = "phq4"
     const val phq9 = "phq9"
     const val gad7 = "gad7"
-    const val suicidcalIdeation = "suicideScreener"
+    const val suicidalIdeation = "suicideScreener"
     const val cageAid = "substanceAbuse"
+    const val ObservationID = "ObservationId"
 }

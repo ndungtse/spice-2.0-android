@@ -342,16 +342,25 @@ class PatientInfoFragment : BaseFragment() {
                 viewModel.getPatientId(),
                 viewModel.getPatientFHIRId(),
                 isEditAssessment
-            ) { response ->
-                val fragment = childFragmentManager.findFragmentByTag(GeneralSuccessDialog.TAG)
-                if (fragment == null) {
-                    GeneralSuccessDialog.newInstance(
-                        title = response.first,
-                        message = response.second,
-                        okayButton = getString(R.string.done)
-                    ) {
-                        (requireActivity() as? NCDMedicalReviewActivity)?.swipeRefresh()
-                    }.show(childFragmentManager, GeneralSuccessDialog.TAG)
+            ) { response, errorResponse ->
+                if (errorResponse.isNullOrBlank() && response != null) {
+                    val fragment = childFragmentManager.findFragmentByTag(GeneralSuccessDialog.TAG)
+                    if (fragment == null) {
+                        GeneralSuccessDialog.newInstance(
+                            title = response.first,
+                            message = response.second,
+                            okayButton = getString(R.string.done)
+                        ) {
+                            (requireActivity() as? NCDMedicalReviewActivity)?.swipeRefresh()
+                        }.show(childFragmentManager, GeneralSuccessDialog.TAG)
+                    }
+                } else {
+                    (activity as BaseActivity?)?.showErrorDialogue(
+                        title = getString(R.string.error),
+                        message = errorResponse
+                            ?: getString(R.string.something_went_wrong_try_later),
+                        positiveButtonName = getString(R.string.ok)
+                    ) {}
                 }
             }
                 .show(childFragmentManager, NCDPatientHistoryDialog.TAG)
@@ -445,7 +454,7 @@ class PatientInfoFragment : BaseFragment() {
                 )
             dataList.add(
                 mapOf(
-                    DefinedParams.label to requireContext().getString(R.string.suicidcal_ideation),
+                    DefinedParams.label to requireContext().getString(R.string.suicidal_ideation),
                     DefinedParams.Value to suicidcalIdeation.capitalizeFirstChar(),
                     Screening.type to type,
                     DefinedParams.color to requireContext().getColor(R.color.medium_high_risk_color)

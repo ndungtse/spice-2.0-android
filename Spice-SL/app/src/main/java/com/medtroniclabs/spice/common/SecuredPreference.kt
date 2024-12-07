@@ -487,7 +487,7 @@ object SecuredPreference {
     }
 
     fun getTermsAndConditionsStatus(): Boolean {
-        return getUserDetails()?.isTermsAndConditionsAccepted ?: false
+        return getBoolean(EnvironmentKey.IS_TERMS_AND_CONDITIONS_APPROVED.name)
     }
 
     fun putIdentityTypes(types: List<IdentityType>) {

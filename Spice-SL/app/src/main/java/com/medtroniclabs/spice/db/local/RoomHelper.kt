@@ -102,7 +102,6 @@ interface RoomHelper {
     suspend fun deleteClinicalWorkflowConditions()
     suspend fun insertClinicalWorkflowConditions(clinicalWorkflowConditions: List<ClinicalWorkflowConditionEntity>)
     suspend fun getVillageByID(villageId: Long): VillageEntity
-    suspend fun getChiefDomAndVillageCodeByVillageId(id: Long): VillageInfo
     suspend fun getLastPatientId(patientIdStarts: String): String?
     fun getMemberCountInHouseholdLiveData(houseHoldId: Long): LiveData<HouseholdMemberCount>
     suspend fun getClinicalWorkflowId(

@@ -43,7 +43,7 @@ interface MetaDataDAO {
     @Query("DELETE FROM VillageEntity")
     suspend fun deleteAllVillages()
 
-    @Query("SELECT * FROM VillageEntity WHERE chiefdomId =:chiefdomId ORDER BY name ASC")
+    @Query("SELECT * FROM VillageEntity WHERE chiefdomId =:chiefdomId OR chiefdomId IS NULL ORDER BY name ASC")
     suspend fun getVillagesByChiefDom(chiefdomId: Long): List<VillageEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -95,9 +95,6 @@ interface MetaDataDAO {
 
     @Query("SELECT * FROM VillageEntity ORDER BY name ASC")
     suspend fun getVillages(): List<VillageEntity>
-
-    @Query("SELECT chiefdomId,villagecode AS code FROM VillageEntity WHERE id =:id")
-    suspend fun getChiefDomAndVillageCodeByVillageId(id: Long): VillageInfo
 
     @Query("SELECT * FROM VillageEntity where id = :villageId")
     suspend fun getVillageByID(villageId: Long): VillageEntity

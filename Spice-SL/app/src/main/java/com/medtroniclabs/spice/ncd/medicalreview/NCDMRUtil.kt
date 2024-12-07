@@ -41,6 +41,7 @@ object NCDMRUtil {
     const val MENTALHEALTH = "Mental Health"
     const val HYPERTENSION = "Hypertension"
     const val DIABETES = "Diabetes"
+    const val HIV_DIAGNOSIS = "hiv"
     const val HIV = "HIV"
     const val PREGNANCY = "Pregnancy"
     const val PATIENT_REFERENCE = "PatientReference"
@@ -209,18 +210,18 @@ object NCDMRUtil {
 
     fun getTypeForDiagnoses(menu: String?): ArrayList<String> {
         return when (menu?.lowercase()) {
-            NCD.lowercase() -> arrayListOf(HYPERTENSION, DIABETES,Other)
-            MENTAL_HEALTH.lowercase() -> arrayListOf(SUBSTANCE_DISORDER, MENTALHEALTH,Other)
-            DefinedParams.PregnancyANC.lowercase() -> arrayListOf(PREGNANCY,Other)
+            NCD.lowercase() -> arrayListOf(HYPERTENSION, DIABETES,Other, HIV_DIAGNOSIS)
+            MENTAL_HEALTH.lowercase() -> arrayListOf(SUBSTANCE_DISORDER, MENTALHEALTH,Other, HIV_DIAGNOSIS)
+            DefinedParams.PregnancyANC.lowercase() -> arrayListOf(PREGNANCY,Other, HIV_DIAGNOSIS)
             else -> arrayListOf()
         }
     }
 
     fun getConfirmDiagnoses(menu: String?): ArrayList<String> {
         return when (menu?.lowercase()) {
-            NCD.lowercase() -> arrayListOf(NCD)
-            MENTAL_HEALTH.lowercase() -> arrayListOf(MENTALHEALTH)
-            DefinedParams.PregnancyANC.lowercase() -> arrayListOf(maternalHealth)
+            NCD.lowercase() -> arrayListOf(NCD, HIV)
+            MENTAL_HEALTH.lowercase() -> arrayListOf(MENTALHEALTH, HIV)
+            DefinedParams.PregnancyANC.lowercase() -> arrayListOf(maternalHealth, HIV)
             else -> arrayListOf()
         }
     }
@@ -319,3 +320,4 @@ object NCDMRUtil {
         }
     }
 }
+

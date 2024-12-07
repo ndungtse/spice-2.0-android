@@ -8,7 +8,6 @@ import com.medtroniclabs.spice.data.LocalSpinnerResponse
 import com.medtroniclabs.spice.db.entity.HealthFacilityEntity
 import com.medtroniclabs.spice.db.entity.MentalHealthEntity
 import com.medtroniclabs.spice.db.entity.ScreeningEntity
-import com.medtroniclabs.spice.db.entity.VillageEntity
 import com.medtroniclabs.spice.db.local.RoomHelper
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.ncd.data.TermsAndConditionsModel
@@ -41,7 +40,10 @@ class ScreeningRepository @Inject constructor(
     ): Resource<LocalSpinnerResponse> {
         return try {
             val response = roomHelper.getVillagesByChiefDom(selectedParent)
-            Resource(state = ResourceState.SUCCESS, LocalSpinnerResponse(tag, response))
+            Resource(
+                state = ResourceState.SUCCESS,
+                LocalSpinnerResponse(tag, CommonUtils.getModifiedResponse(response))
+            )
         } catch (_: Exception) {
             Resource(state = ResourceState.ERROR)
         }
