@@ -15,6 +15,6 @@ data class PatientPrescriptionHistoryResponse(
     val createdAt: String? = null,
     val prescribedSince: String? = null,
     val dosageFormName: String? = null,
-    val prescribedDays: Int? = null,
+    val prescribedDays: Long? = null,
     val instructionNote: String? = null
 ) : Parcelable

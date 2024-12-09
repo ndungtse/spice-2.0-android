@@ -10,12 +10,13 @@ data class PrescriptionRequest(
 )
 
 data class  Prescription(
-    val prescribedDays: Long,
+    val prescribedDays: Long? = null,
     val medicationName: String,
     val medicationId: String,
     val frequency: Int,
     val prescribedSince: String,
     val prescriptionId: String? = null,
+    val dosageDurationName: String? = null,
     val endDate: String? = null,
     val discontinuedDate: String? = null,
     var codeDetails: CodeDetailsObject? = null,

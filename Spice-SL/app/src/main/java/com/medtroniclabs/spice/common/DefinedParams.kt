@@ -184,6 +184,7 @@ object DefinedParams {
     const val BP_LOG = "bpLog"
     const val GLUCOSE_LOG = "glucoseLog"
     const val DESCRIPTION = "description"
+    const val QUANTITY = "quantity"
     const val PRESCRIPTION = "PRESCRIPTION"
     const val Tablet = "Tablet"
     const val Liquid_Oral = "Liquid"

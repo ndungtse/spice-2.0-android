@@ -11,6 +11,7 @@ data class MedicationResponse(
     val id: Long? = null,     // prescription id
     val name: String? = null,
     val classificationName: String? = null,
+    val dosageDurationName: String? = null,
     val brandName: String? = null,
     val dosageFormName: String? = null,
     var dosageUnitId: Long? = null,
@@ -39,6 +40,7 @@ data class MedicationResponse(
     var isInstructionUpdated = false
     var enteredDosageUnitValue: String? = null
     var dosage_form_name_entered: String? = null
+    var dosage_duration_name: String? = null
     var dosage_unit_selected: Long? = null
     var dosage_unit_name_entered: String? = null
     var dosage_frequency_name_entered: String? = null

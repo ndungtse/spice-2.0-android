@@ -550,7 +550,11 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
     }
 
     fun initView() {
-        binding.btnLayout.clPsycMenu.setVisible(CommonUtils.isPsychologicalFlowEnabled())
+        val isPsycho = CommonUtils.isPsychologicalFlowEnabled()
+        binding.btnLayout.apply {
+            clPsycMenu.setVisible(isPsycho)
+            viewLine.setVisible(isPsycho)
+        }
         initializePatientDetails()
     }
 

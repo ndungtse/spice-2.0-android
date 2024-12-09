@@ -15,6 +15,7 @@ import com.medtroniclabs.spice.db.entity.ClinicalWorkflowConditionEntity
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowEntity
 import com.medtroniclabs.spice.db.entity.ConsentEntity
 import com.medtroniclabs.spice.db.entity.DistrictEntity
+import com.medtroniclabs.spice.db.entity.DosageDurationEntity
 import com.medtroniclabs.spice.db.entity.FormEntity
 import com.medtroniclabs.spice.db.entity.HealthFacilityEntity
 import com.medtroniclabs.spice.db.entity.MedicalComplianceEntity
@@ -244,4 +245,13 @@ interface MetaDataDAO {
 
     @Query("SELECT * FROM VillageEntity Where isUserVillage =:isUserVillage ORDER BY name ASC")
     suspend fun getUserVillages(isUserVillage: Boolean): List<VillageEntity>
+
+    @Query("DELETE FROM DosageDurationEntity")
+    suspend fun deleteDosageDurations()
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertDosageDurations(dosageDurationEntity: List<DosageDurationEntity>)
+
+    @Query("SELECT * FROM DosageDurationEntity")
+    suspend fun getDosageDurationsList(): List<DosageDurationEntity>
 }

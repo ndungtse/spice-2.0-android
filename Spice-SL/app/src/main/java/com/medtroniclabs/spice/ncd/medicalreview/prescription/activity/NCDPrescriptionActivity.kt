@@ -17,10 +17,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.hideKeyboard
+import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.SearchLength
+import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.MedicationResponse
 import com.medtroniclabs.spice.data.MedicationSearchRequest
 import com.medtroniclabs.spice.data.PatientPrescriptionHistoryResponse
@@ -34,7 +36,6 @@ import com.medtroniclabs.spice.databinding.NcdRowPrescriptionBinding
 import com.medtroniclabs.spice.databinding.NcdRowPrescriptionEditBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
-import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.ncd.medicalreview.MedicationListener
 import com.medtroniclabs.spice.ncd.medicalreview.prescription.adapter.NCDDiscontinuedMedicationAdapter
 import com.medtroniclabs.spice.ncd.medicalreview.prescription.adapter.NCDPrescriptionAdapter
@@ -138,6 +139,7 @@ class NCDPrescriptionActivity : BaseActivity(), View.OnClickListener, SignatureL
             })
         }
         prescriptionViewModel.getDosageFrequencyList()
+        prescriptionViewModel.getPrescribedDays()
     }
 
     private fun clickListener() {
@@ -316,7 +318,7 @@ class NCDPrescriptionActivity : BaseActivity(), View.OnClickListener, SignatureL
                             patientPrescriptionHistoryResponse.add(
                                 PatientPrescriptionHistoryResponse(
                                     medicationName = data.medicationName,
-                                    prescribedDays = data.prescribedDays.toInt(),
+                                    prescribedDays = data.prescribedDays,
                                     instructionNote = data.instructionNote,
                                     dosageFrequencyName = data.dosageFrequencyName,
                                     dosageFormName = data.dosageFormName,
@@ -432,6 +434,7 @@ class NCDPrescriptionActivity : BaseActivity(), View.OnClickListener, SignatureL
                     name = it.name,
                     quantity = it.quantity,
                     prescribedDays = it.prescribedDays,
+                    dosageDurationName = it.dosageDurationName,
                     dosageFormName = it.dosageFormName,
                     classificationName = it.classificationName,
                     brandName = it.brandName,
@@ -450,6 +453,7 @@ class NCDPrescriptionActivity : BaseActivity(), View.OnClickListener, SignatureL
                     name = it.name,
                     quantity = it.quantity,
                     prescribedDays = it.prescribedDays,
+                    dosageDurationName = it.dosageDurationName,
                     dosageFormName = it.dosageFormName,
                     classificationName = it.classificationName,
                     brandName = it.brandName,
@@ -601,6 +605,40 @@ class NCDPrescriptionActivity : BaseActivity(), View.OnClickListener, SignatureL
             )
         } ?: kotlin.run {
             medicationEditBinding.tvUnit.setSelection(0, true)
+        }
+        if (SecuredPreference.isTiberbu()) {
+            medicationEditBinding.spinnerPrescribedDays.visible()
+            medicationEditBinding.etPrescribedDays.gone()
+            val prescribedDaysAdapter = CustomSpinnerAdapter(this)
+            prescribedDaysAdapter.setData(getPrescribedDays())
+            medicationEditBinding.spinnerPrescribedDays.adapter = prescribedDaysAdapter
+            medicationEditBinding.spinnerPrescribedDays.onItemSelectedListener =
+                object : AdapterView.OnItemSelectedListener {
+                    override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
+                        val selectedItem = prescribedDaysAdapter.getData(position = p2)
+                        selectedItem?.let {
+                            model.filledPrescriptionDays = it[DefinedParams.QUANTITY].toString().toLongOrNull()
+                            model.dosage_duration_name = it[DefinedParams.NAME].toString()
+                        }
+                    }
+
+                    override fun onNothingSelected(p0: AdapterView<*>?) {
+                        /**
+                         * this method is not used
+                         */
+                    }
+                }
+            model.dosage_duration_name?.let {
+                medicationEditBinding.spinnerPrescribedDays.setSelection(
+                    getSpinnerPosition(prescribedDaysAdapter, it),
+                    true
+                )
+            } ?: kotlin.run {
+                medicationEditBinding.tvUnit.setSelection(0, true)
+            }
+        } else {
+            medicationEditBinding.spinnerPrescribedDays.gone()
+            medicationEditBinding.etPrescribedDays.visible()
         }
         val adapter = CustomSpinnerAdapter(this)
         adapter.setData(getFrequencyList())
@@ -829,7 +867,8 @@ class NCDPrescriptionActivity : BaseActivity(), View.OnClickListener, SignatureL
             prescriptionList.add(
                 PrescriptionDetails(
                     prescriptionId = it.prescriptionId,
-                    prescribedDays = it.prescribedDays!!.toInt(),
+                    prescribedDays = it.prescribedDays,
+                    dosageDurationName = it.dosageDurationName,
                     medicationName = it.medicationName ?: "",
                     medicationId = it.medicationId.toString(),
                     dosageFormName = it.dosageFormName ?: "",
@@ -855,6 +894,27 @@ class NCDPrescriptionActivity : BaseActivity(), View.OnClickListener, SignatureL
             View.GONE
         else
             View.VISIBLE
+    }
+
+    private fun getPrescribedDays(): ArrayList<Map<String, Any>> {
+        val dropDownList = ArrayList<Map<String, Any>>()
+        dropDownList.add(
+            hashMapOf<String, Any>(
+                DefinedParams.NAME to getString(R.string.please_select),
+                DefinedParams.ID to "-1",
+                DefinedParams.QUANTITY to ""
+            )
+        )
+        prescriptionViewModel.prescribedDaysList.value?.forEach {
+            dropDownList.add(
+                hashMapOf<String, Any>(
+                    DefinedParams.NAME to it.name,
+                    DefinedParams.ID to it.id,
+                    DefinedParams.QUANTITY to it.quantity,
+                )
+            )
+        }
+        return dropDownList
     }
 
     private fun getDosageUnit(): ArrayList<Map<String, Any>> {
@@ -1045,6 +1105,7 @@ class NCDPrescriptionActivity : BaseActivity(), View.OnClickListener, SignatureL
                             dosageFrequencyName = it.dosage_frequency_name_entered,
                             dosageFrequencyId = it.dosage_frequency_entered,
                             prescribedDays = it.filledPrescriptionDays,
+                            dosageDurationName = it.dosage_duration_name,
                             instructionNote = it.instruction_entered,
                             isDeleted = false,
                             dosageUnitId = it.dosage_unit_selected,
@@ -1187,6 +1248,7 @@ class NCDPrescriptionActivity : BaseActivity(), View.OnClickListener, SignatureL
                 it.isEdit = true
                 it.isEdited = true
                 it.filledPrescriptionDays = null
+                it.dosage_duration_name = null
                 it.enteredDosageUnitValue = null
                 it.dosage_form_name_entered = it.dosageFormName
                 it.dosage_frequency_entered = null

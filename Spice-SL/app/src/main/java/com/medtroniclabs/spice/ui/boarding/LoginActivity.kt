@@ -140,6 +140,11 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
     private fun initView() {
         binding.tvUserNameLabel.markMandatory()
         binding.tvPasswordLabel.markMandatory()
+
+        binding.apply {
+            userName.setText("beneto_provider@spice.mdt")
+            password.setText("Spice123")
+        }
     }
 
     override fun onClick(view: View) {

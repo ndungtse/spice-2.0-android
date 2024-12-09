@@ -118,6 +118,20 @@
             android:textSize="@dimen/_14ssp"
             tools:text="PRN" />
 
+        <androidx.appcompat.widget.AppCompatSpinner
+            android:id="@+id/spinnerPrescribedDays"
+            style="@style/Form_Spinner_Style"
+            android:layout_width="@dimen/_0dp"
+            android:layout_gravity="center"
+            android:layout_marginEnd="@dimen/_5sdp"
+            android:layout_weight="1"
+            android:background="@drawable/edittext_background"
+            android:minHeight="@dimen/_40sdp"
+            android:textColor="@color/black"
+            android:textSize="@dimen/_14ssp"
+            android:visibility="gone"
+            tools:text="PRN" />
+
         <androidx.appcompat.widget.AppCompatEditText
             android:id="@+id/etPrescribedDays"
             style="@style/MR_Field_Style"
@@ -132,6 +146,7 @@
             android:paddingHorizontal="@dimen/_5sdp"
             android:textColor="@color/black"
             android:textSize="@dimen/_14ssp"
+            android:visibility="gone"
             tools:text="30" />
 
         <androidx.appcompat.widget.AppCompatTextView

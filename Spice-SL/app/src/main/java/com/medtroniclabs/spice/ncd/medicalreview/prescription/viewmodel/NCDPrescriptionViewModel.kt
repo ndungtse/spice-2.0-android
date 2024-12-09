@@ -22,6 +22,8 @@ import com.medtroniclabs.spice.data.ResponseDataModel
 import com.medtroniclabs.spice.data.UnitMetricEntity
 import com.medtroniclabs.spice.data.UpdatePrescriptionModel
 import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
+import com.medtroniclabs.spice.db.entity.DosageDurationEntity
+import com.medtroniclabs.spice.db.entity.NCDMedicalReviewMetaEntity
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.ncd.data.PredictionRequest
 import com.medtroniclabs.spice.ncd.data.PrescriptionNudgeResponse
@@ -47,6 +49,7 @@ class NCDPrescriptionViewModel @Inject constructor(
     val medicationListLiveData = MutableLiveData<Resource<ArrayList<MedicationResponse>>>()
     val prescriptionListLiveData = MutableLiveData<Resource<ArrayList<Prescription>>>()
     val unitList = MutableLiveData<List<UnitMetricEntity>>()
+    val prescribedDaysList = MutableLiveData<List<DosageDurationEntity>>()
     val createPrescriptionLiveData = MutableLiveData<Resource<Map<String, Any>>>()
     var patient_visit_id: String? = null
     var memberReference: String? = null
@@ -103,6 +106,16 @@ class NCDPrescriptionViewModel @Inject constructor(
         viewModelScope.launch(dispatcherIO) {
             try {
                 unitList.postValue(prescriptionRepository.getUnitList(DefinedParams.PRESCRIPTION))
+            } catch (_: Exception) {
+                //Exception - Catch block
+            }
+        }
+    }
+
+    fun getPrescribedDays() {
+        viewModelScope.launch(dispatcherIO) {
+            try {
+                prescribedDaysList.postValue(prescriptionRepository.getDosageDurations())
             } catch (_: Exception) {
                 //Exception - Catch block
             }

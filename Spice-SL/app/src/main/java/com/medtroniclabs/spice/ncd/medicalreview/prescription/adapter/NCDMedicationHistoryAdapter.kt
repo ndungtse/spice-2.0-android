@@ -48,7 +48,7 @@ class NCDMedicationHistoryAdapter(
         return if (value.isNullOrBlank()) context.getString(R.string.hyphen_symbol) else value
     }
 
-    fun validateInt(context: Context, value: Int?): String {
+    fun validateInt(context: Context, value: Long?): String {
         return value?.toString() ?: context.getString(R.string.hyphen_symbol)
     }
 

@@ -233,7 +233,7 @@ class PrescriptionActivity : BaseActivity(), AdapterView.OnItemClickListener, Vi
                 )
             )
             discontinuedMedicationBinding.tvQuantity.text =
-                (data.prescribedDays * data.frequency).toString()
+                ((data.prescribedDays ?: 0) * data.frequency).toString()
             discontinuedMedicationBinding.tvPrescribedDays.text = data.prescribedDays.toString()
             data.discontinuedDate?.let { endDate ->
                 discontinuedMedicationBinding.tvDiscontinuedOn.text = DateUtils.convertDateFormat(

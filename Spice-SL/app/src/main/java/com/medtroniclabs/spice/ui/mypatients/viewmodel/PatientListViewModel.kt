@@ -4,6 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
+import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DefinedParams
@@ -142,12 +143,14 @@ class PatientListViewModel @Inject constructor(
                     } else ""
                 },
                 visitDate = medicalReviewDueTag?.map { it.name.lowercase() },
-                labTestReferredOn = if(isPharmacist) null else getReferredOn(),
-                prescriptionReferredOn = if(isPharmacist) getReferredOn() else null,
+                labTestReferredOn = if (isPharmacist) null else getReferredOn(),
+                prescriptionReferredOn = if (isPharmacist) getReferredOn() else null,
                 medicalReviewDate = ncdMedicalReviewDateTag?.map { it.name.lowercase() }?.get(0),
-                enrollmentStatus = ncdRegistrationTag?.map { it.optionalData }?.get(0),
+                enrollmentStatus = if (CommonUtils.isHRIO()) DefinedParams.ENROLLED else ncdRegistrationTag?.map { it.optionalData }
+                    ?.get(0),
                 isRedRiskPatient = redRisk(),
-                cvdRiskLevel = ncdCvdRiskTag?.map { it.optionalData ?: it.name.lowercase() }?.get(0),
+                cvdRiskLevel = ncdCvdRiskTag?.map { it.optionalData ?: it.name.lowercase() }
+                    ?.get(0),
                 assessmentDate = ncdAssessmentTag?.map { it.name.lowercase() }?.get(0)
             )
         } else {

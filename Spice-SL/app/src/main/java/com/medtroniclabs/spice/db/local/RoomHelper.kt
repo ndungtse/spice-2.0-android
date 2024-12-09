@@ -42,6 +42,7 @@ import com.medtroniclabs.spice.db.entity.PregnancyDetail
 import com.medtroniclabs.spice.db.entity.ScreeningEntity
 import com.medtroniclabs.spice.db.entity.SignsAndSymptomsEntity
 import com.medtroniclabs.spice.db.entity.DistrictEntity
+import com.medtroniclabs.spice.db.entity.DosageDurationEntity
 import com.medtroniclabs.spice.db.entity.LifestyleEntity
 import com.medtroniclabs.spice.db.entity.NCDDiagnosisEntity
 import com.medtroniclabs.spice.db.entity.RiskFactorEntity
@@ -398,4 +399,7 @@ interface RoomHelper {
 
     suspend fun getNCDForm(type: String, customizedType: String): List<String>
     suspend fun getUserVillages(): List<VillageEntity>
+    suspend fun deleteDosageDurations()
+    suspend fun insertDosageDurations(items: List<DosageDurationEntity>)
+    suspend fun getDosageDurations(): List<DosageDurationEntity>
 }

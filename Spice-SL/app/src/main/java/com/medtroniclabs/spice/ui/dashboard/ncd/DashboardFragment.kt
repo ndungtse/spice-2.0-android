@@ -154,6 +154,18 @@ class DashboardFragment : BaseFragment(), View.OnClickListener {
             it.referred?.let { referredCount ->
                 userDashboardList.add(Triple(MenuConstants.NO_OF_REFERRALS, referredCount, R.drawable.ic_assessment))
             }
+            it.dispensed?.let { screenedCount ->
+                userDashboardList.add(Triple(MenuConstants.PRESCRIPTIONS_DISPENSED, screenedCount, R.drawable.ic_screening))
+            }
+            it.investigated?.let { assessedCount ->
+                userDashboardList.add(Triple(MenuConstants.INVESTIGATIONS_CONDUCTED, assessedCount, R.drawable.ic_assessment))
+            }
+            it.nutritionistLifestyleCount?.let { registeredCount ->
+                userDashboardList.add(Triple(MenuConstants.REVIEWS_CONDUCTED, registeredCount, R.drawable.ic_registration))
+            }
+            it.psychologicalNotesCount?.let { referredCount ->
+                userDashboardList.add(Triple(MenuConstants.COUNSELLINGS_CONDUCTED, referredCount, R.drawable.ic_assessment))
+            }
         }
         binding.rvActivitiesList.apply {
             layoutManager =

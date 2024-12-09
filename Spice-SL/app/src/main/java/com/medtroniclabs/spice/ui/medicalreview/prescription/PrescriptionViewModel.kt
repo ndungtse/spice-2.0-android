@@ -139,7 +139,8 @@ class PrescriptionViewModel @Inject constructor(
                     if (it.medicationResponse.prescribedDays != null) {
                         it.medicationResponse.name?.let { it1 ->
                             Prescription(
-                                prescribedDays = it.medicationResponse.prescribedDays!!,
+                                prescribedDays = it.medicationResponse.prescribedDays,
+                                dosageDurationName = it.medicationResponse.dosageDurationName,
                                 medicationName = it1,
                                 medicationId = it.medicationResponse.id.toString(),
                                 frequency = getMedicationFrequency(it),

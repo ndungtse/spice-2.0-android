@@ -11,6 +11,7 @@ data class UpdatePrescriptionModel(
     var prescribedDays: Long? = null,
     var prescriptionRemainingDays: Int? = null,
     var prescribedSince: String? = null,
+    var dosageDurationName: String? = null,
     var endDate: String? = null,
     var medicationName: String? = null,
     var dosageName: String? = null,

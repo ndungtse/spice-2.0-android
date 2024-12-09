@@ -46,6 +46,7 @@ import com.medtroniclabs.spice.db.entity.ClinicalWorkflowEntity
 import com.medtroniclabs.spice.db.entity.ConsentEntity
 import com.medtroniclabs.spice.db.entity.ConsentForm
 import com.medtroniclabs.spice.db.entity.DistrictEntity
+import com.medtroniclabs.spice.db.entity.DosageDurationEntity
 import com.medtroniclabs.spice.db.entity.FollowUp
 import com.medtroniclabs.spice.db.entity.FollowUpCall
 import com.medtroniclabs.spice.db.entity.FormEntity
@@ -1017,6 +1018,17 @@ class RoomHelperImpl @Inject constructor(
         return metaDataDAO.getUserVillages(true)
     }
 
+    override suspend fun deleteDosageDurations() {
+        return metaDataDAO.deleteDosageDurations()
+    }
+
+    override suspend fun insertDosageDurations(items: List<DosageDurationEntity>) {
+        return metaDataDAO.insertDosageDurations(items)
+    }
+
+    override suspend fun getDosageDurations(): List<DosageDurationEntity> {
+        return metaDataDAO.getDosageDurationsList()
+    }
 
     override suspend fun getUnitList(type: String): List<UnitMetricEntity> {
         return metaDataDAO.getUnitList(type)

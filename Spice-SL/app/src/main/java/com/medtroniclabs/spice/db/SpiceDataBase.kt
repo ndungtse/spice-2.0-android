@@ -44,6 +44,7 @@ import com.medtroniclabs.spice.db.entity.NCDMedicalReviewMetaEntity
 import com.medtroniclabs.spice.db.entity.ConsentEntity
 import com.medtroniclabs.spice.db.entity.ConsentForm
 import com.medtroniclabs.spice.db.entity.DistrictEntity
+import com.medtroniclabs.spice.db.entity.DosageDurationEntity
 import com.medtroniclabs.spice.db.entity.FollowUp
 import com.medtroniclabs.spice.db.entity.FollowUpCall
 import com.medtroniclabs.spice.db.entity.FormEntity
@@ -75,7 +76,7 @@ import net.zetetic.database.sqlcipher.SupportOpenHelperFactory
         LinkHouseholdMember::class, CallHistory::class, ProgramEntity::class, CulturesEntity::class, ConsentEntity::class,
         MentalHealthEntity::class, MedicalComplianceEntity::class, ChiefDomEntity::class, DistrictEntity::class, ScreeningEntity::class,
         RiskFactorEntity::class, LifestyleEntity::class, NCDMedicalReviewMetaEntity::class, AssessmentNCDEntity::class, UnitMetricEntity::class,
-        DosageFrequency::class, NCDDiagnosisEntity::class, TreatmentPlanEntity::class, ShortageReasonEntity::class],
+        DosageFrequency::class, NCDDiagnosisEntity::class, TreatmentPlanEntity::class, ShortageReasonEntity::class, DosageDurationEntity::class],
     version = 2
 )
 @TypeConverters(OfflineStatusTypeConverter::class)

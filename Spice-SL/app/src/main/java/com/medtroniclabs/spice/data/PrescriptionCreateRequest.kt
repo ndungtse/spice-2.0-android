@@ -9,10 +9,11 @@ data class PrescriptionCreateRequest(
 
 data class PrescriptionDetails(
     val prescriptionId: String? = null,
-    val prescribedDays: Int,
+    val prescribedDays: Long? = null,
     val medicationName: String,
     val medicationId: String,
     val prescribedSince: String? = null,
+    val dosageDurationName: String? = null,
     val dosageFormName: String,
     val dosageFrequencyName: String,
     val brandName: String,

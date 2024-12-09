@@ -50,11 +50,6 @@
             android:screenOrientation="landscape"
             android:windowSoftInputMode="adjustPan"/>
         <activity
-            android:name=".ncd.dashboard.DashboardActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden"
-            android:exported="false"
-            android:windowSoftInputMode="adjustResize" />
-        <activity
             android:name=".ui.medicalreview.labTechnician.NCDLabTestListActivity"
             android:exported="false"
             android:screenOrientation="portrait"

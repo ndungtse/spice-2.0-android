@@ -62,6 +62,8 @@ class NCDPrescriptionRepo @Inject constructor(
 
     suspend fun getUnitList(type: String) = roomHelper.getUnitList(type)
 
+    suspend fun getDosageDurations() = roomHelper.getDosageDurations()
+
     suspend fun getPrescriptionList(request: PrescriptionListRequest): Resource<ArrayList<Prescription>> {
         return try {
             val response = apiHelper.getPrescriptionList(request)

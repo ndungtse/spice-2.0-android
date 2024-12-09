@@ -338,7 +338,11 @@ class NCDMedicalReviewCMRActivity : BaseActivity(), View.OnClickListener, AncVis
         // FOR Nurse ,Visit id(is always null) for other role always have value
         binding.btnLayout.root.setVisible(!getEncounterReference().isNullOrBlank())
         binding.btnMedicalReview.setVisible(!getEncounterReference().isNullOrBlank())
-        binding.btnLayout.clPsycMenu.setVisible(CommonUtils.isPsychologicalFlowEnabled())
+        val isPsycho = CommonUtils.isPsychologicalFlowEnabled()
+        binding.btnLayout.apply {
+            clPsycMenu.setVisible(isPsycho)
+            viewLine.setVisible(isPsycho)
+        }
         binding.btnLayout.clBtn.gone()
         binding.btnMedicalReview.safeClickListener(this)
         binding.btnLayout.ivTreatmentPlan.safeClickListener(this)
