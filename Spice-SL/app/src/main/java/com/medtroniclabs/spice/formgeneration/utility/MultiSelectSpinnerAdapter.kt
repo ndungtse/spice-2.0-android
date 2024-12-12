@@ -103,4 +103,13 @@ class MultiSelectSpinnerAdapter(
     private fun getSelectedItems(): List<MultiSelectDropDownModel> {
         return selectedItems
     }
+
+    fun reset() {
+        selectedItems.clear()
+        checkedItems.fill(false)
+
+        //Update adapter
+        notifyDataSetChanged()
+        onItemSelectedListener?.onItemSelected(selectedItems, -1)
+    }
 }

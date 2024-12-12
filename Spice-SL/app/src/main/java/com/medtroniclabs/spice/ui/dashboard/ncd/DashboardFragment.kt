@@ -22,6 +22,7 @@ import com.medtroniclabs.spice.data.model.ChipViewItemModel
 import com.medtroniclabs.spice.databinding.FragmentDashboardBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.network.resource.ResourceState
+import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.MenuConstants
 import com.medtroniclabs.spice.ui.TagListCustomView
@@ -46,12 +47,38 @@ class DashboardFragment : BaseFragment(), View.OnClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initializeView()
-        initializeChipItem()
-        initializeCardView()
+        clickListeners()
+        attachObservers()
+        viewModel.getMenus()
     }
 
-    private fun initializeView() {
+    private fun attachObservers() {
+        viewModel.menuListLiveData.observe(viewLifecycleOwner) { menus ->
+            if (!menus.isNullOrEmpty())
+                initializeChipItem()
+        }
+        viewModel.userDashboardDetails.observe(viewLifecycleOwner) { resourceState ->
+            when (resourceState.state) {
+                ResourceState.LOADING -> {
+                    showProgress()
+                }
+
+                ResourceState.SUCCESS -> {
+                    hideProgress()
+                    resourceState.data?.let { entity ->
+                        showView(false, entity)
+                    }
+                }
+
+                ResourceState.ERROR -> {
+                    hideProgress()
+                    showErrorDialog(getString(R.string.error), resourceState.message.toString())
+                }
+            }
+        }
+    }
+
+    private fun clickListeners() {
         binding.etFromDate.safeClickListener(this)
         binding.etToDate.safeClickListener(this)
     }
@@ -117,60 +144,107 @@ class DashboardFragment : BaseFragment(), View.OnClickListener {
         return chipItemList
     }
 
-    private fun initializeCardView() {
-        viewModel.userDashboardDetails.observe(viewLifecycleOwner) { resourceState ->
-            when (resourceState.state) {
-                ResourceState.LOADING -> {
-                    showProgress()
-                }
-
-                ResourceState.SUCCESS -> {
-                    hideProgress()
-                    resourceState.data?.let { entity ->
-                        showView(false, entity)
+    private fun showView(customize: Boolean, entity: NCDUserDashboardResponse) {
+        viewModel.menuListLiveData.value?.let { menus ->
+            if (menus.isNotEmpty()) {
+                val userDashboardList = ArrayList<Triple<String, Int, Int>>()
+                entity.let {
+                    if (menus.contains(MenuConstants.SCREENING)) {
+                        it.screened?.let { screenedCount ->
+                            userDashboardList.add(
+                                Triple(
+                                    MenuConstants.SCREENING_CONDUCTED,
+                                    screenedCount,
+                                    R.drawable.ic_screening
+                                )
+                            )
+                        }
+                        it.referred?.let { referredCount ->
+                            userDashboardList.add(
+                                Triple(
+                                    MenuConstants.NO_OF_REFERRALS,
+                                    referredCount,
+                                    R.drawable.ic_referred
+                                )
+                            )
+                        }
+                    }
+                    if (menus.contains(MenuConstants.REGISTRATION)) {
+                        it.registered?.let { registeredCount ->
+                            userDashboardList.add(
+                                Triple(
+                                    MenuConstants.REGISTRATION_CONDUCTED,
+                                    registeredCount,
+                                    R.drawable.ic_registration
+                                )
+                            )
+                        }
+                    }
+                    if (menus.contains(MenuConstants.ASSESSMENT)) {
+                        it.assessed?.let { assessedCount ->
+                            userDashboardList.add(
+                                Triple(
+                                    MenuConstants.ASSESSMENT_CONDUCTED,
+                                    assessedCount,
+                                    R.drawable.ic_assessment
+                                )
+                            )
+                        }
+                    }
+                    if (menus.contains(MenuConstants.DISPENSE)) {
+                        it.dispensed?.let { screenedCount ->
+                            userDashboardList.add(
+                                Triple(
+                                    MenuConstants.PRESCRIPTIONS_DISPENSED,
+                                    screenedCount,
+                                    R.drawable.ic_dispense
+                                )
+                            )
+                        }
+                    }
+                    if (menus.contains(MenuConstants.INVESTIGATION)) {
+                        it.investigated?.let { assessedCount ->
+                            userDashboardList.add(
+                                Triple(
+                                    MenuConstants.INVESTIGATIONS_CONDUCTED,
+                                    assessedCount,
+                                    R.drawable.ic_investigation
+                                )
+                            )
+                        }
+                    }
+                    if (menus.contains(MenuConstants.LIFESTYLE)) {
+                        it.nutritionistLifestyleCount?.let { registeredCount ->
+                            userDashboardList.add(
+                                Triple(
+                                    MenuConstants.REVIEWS_CONDUCTED,
+                                    registeredCount,
+                                    R.drawable.ic_lifestyle
+                                )
+                            )
+                        }
+                    }
+                    if (menus.contains(MenuConstants.PSYCHOLOGICAL)) {
+                        it.psychologicalNotesCount?.let { referredCount ->
+                            userDashboardList.add(
+                                Triple(
+                                    MenuConstants.COUNSELLINGS_CONDUCTED,
+                                    referredCount,
+                                    R.drawable.ic_psycological_menu
+                                )
+                            )
+                        }
                     }
                 }
-
-                ResourceState.ERROR -> {
-                    hideProgress()
-                    showErrorDialog(getString(R.string.error), resourceState.message.toString())
+                binding.rvActivitiesList.apply {
+                    layoutManager =
+                        GridLayoutManager(
+                            requireContext(),
+                            if (requireContext().isTablet()) 3 else 1
+                        )
+                    adapter = UserDashboardAdapter(customize, userDashboardList)
                 }
             }
-        }
-    }
-
-    private fun showView(customize: Boolean, entity: NCDUserDashboardResponse) {
-        val userDashboardList = ArrayList<Triple<String, Int, Int>>()
-        entity.let {
-            it.screened?.let { screenedCount ->
-                userDashboardList.add(Triple(MenuConstants.SCREENING_CONDUCTED, screenedCount, R.drawable.ic_screening))
-            }
-            it.assessed?.let { assessedCount ->
-                userDashboardList.add(Triple(MenuConstants.ASSESSMENT_CONDUCTED, assessedCount, R.drawable.ic_assessment))
-            }
-            it.registered?.let { registeredCount ->
-                userDashboardList.add(Triple(MenuConstants.REGISTRATION_CONDUCTED, registeredCount, R.drawable.ic_registration))
-            }
-            it.referred?.let { referredCount ->
-                userDashboardList.add(Triple(MenuConstants.NO_OF_REFERRALS, referredCount, R.drawable.ic_assessment))
-            }
-            it.dispensed?.let { screenedCount ->
-                userDashboardList.add(Triple(MenuConstants.PRESCRIPTIONS_DISPENSED, screenedCount, R.drawable.ic_screening))
-            }
-            it.investigated?.let { assessedCount ->
-                userDashboardList.add(Triple(MenuConstants.INVESTIGATIONS_CONDUCTED, assessedCount, R.drawable.ic_assessment))
-            }
-            it.nutritionistLifestyleCount?.let { registeredCount ->
-                userDashboardList.add(Triple(MenuConstants.REVIEWS_CONDUCTED, registeredCount, R.drawable.ic_registration))
-            }
-            it.psychologicalNotesCount?.let { referredCount ->
-                userDashboardList.add(Triple(MenuConstants.COUNSELLINGS_CONDUCTED, referredCount, R.drawable.ic_assessment))
-            }
-        }
-        binding.rvActivitiesList.apply {
-            layoutManager =
-                GridLayoutManager(requireContext(), if (requireContext().isTablet()) 3 else 1)
-            adapter = UserDashboardAdapter(customize, userDashboardList)
         }
     }
 

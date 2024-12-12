@@ -10,5 +10,6 @@ data class LabTestListResponse(
     val recommendedName: String,
     val labTestResults: ArrayList<LabTestResultObject>,
     val labTestCustomization: SearchLabTestResponse,
-    val testedOn: String? = null
+    val testedOn: String? = null,
+    val isReview: Boolean? = null
 )

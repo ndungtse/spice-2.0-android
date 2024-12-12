@@ -75,9 +75,9 @@ class CustomSpinnerAdapter(context: Context,val translate:Boolean =false) :
 
     fun getIndexOfItemByName(name: String): Int {
         itemList.forEachIndexed { index, map ->
-            if (map[DefinedParams.NAME] == name || map[DefinedParams.ID] == name) {
+            if (map[DefinedParams.NAME] == name || map[DefinedParams.ID] == name || map[DefinedParams.Value] == name) {
                 return index
-            } else if((map[DefinedParams.NAME] as? String?)?.equals(name, true) == true || (map[DefinedParams.ID] as? String?)?.equals(name, true) == true) {
+            } else if((map[DefinedParams.NAME] as? String?)?.equals(name, true) == true || (map[DefinedParams.ID] as? String?)?.equals(name, true) == true || (map[DefinedParams.Value] as? String?)?.equals(name, true) == true) {
                 return index
             }
         }

@@ -86,6 +86,7 @@ object NCDMRUtil {
     const val BPTakenOn = "bpTakenOn"
     const val BGTakenOn = "bgTakenOn"
     const val IsPregnant = "IsPregnant"
+    const val ShowNCD = "showNCD"
     const val LifestyleResults = "lifeStyleReviewStatus"
     const val PsychologicalResults = "psychologicalReviewStatus"
     const val SMOKING = "SMOKE"
@@ -102,6 +103,12 @@ object NCDMRUtil {
     const val mentalHealth = "mentalHealth"
     const val NCDPatientStatus = "ncdPatientStatus"
     const val MentalHealthStatus = "mentalHealthStatus"
+    const val SubstanceUseStatus = "substanceUseStatus"
+    const val DiabetesStatus = "diabetesStatus"
+    const val DiabetesYearOfDiagnosis = "diabetesYearOfDiagnosis"
+    const val DiabetesControlledType = "diabetesControlledType"
+    const val HypertensionStatus = "hypertensionStatus"
+    const val HypertensionYearOfDiagnosis = "hypertensionYearOfDiagnosis"
 
 
     fun validateInput(

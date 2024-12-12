@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.TextView
+import androidx.activity.viewModels
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.constraintlayout.widget.Group
@@ -63,6 +64,7 @@ import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateU
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil.EstimatedDeliveryDate
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil.initTextWatcherForDouble
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil.initTextWatcherForInt
+import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -73,6 +75,7 @@ class NCDPregnancyDialog(private val callback: ((isPositiveResult: Boolean, mess
 
     private lateinit var binding: DialogNcdPregnancyBinding
     private val viewModel: NCDPregnancyViewModel by viewModels()
+    private val patientDetailViewModel: PatientDetailViewModel by viewModels()
     private val medicalReviewViewModel: NCDMedicalReviewViewModel by activityViewModels()
 
     private lateinit var neonatalOutcomesView: TagListCustomView
@@ -119,6 +122,51 @@ class NCDPregnancyDialog(private val callback: ((isPositiveResult: Boolean, mess
         initView()
         clickListener()
         attachObserver()
+    }
+
+    private fun prefill() {
+        medicalReviewViewModel.ncdPatientDiagnosisStatus.value?.data?.let { responseMap ->
+            (responseMap[NCDMRUtil.NCDPatientStatus] as? Map<*, *>)?.let { ncdMap ->
+                viewModel.id = ncdMap[DefinedParams.ID] as? String
+                //Diabetes
+                (ncdMap[NCDMRUtil.DiabetesStatus] as? String)?.let { diabetesStatus ->
+                    with(binding.ncdDiabetesHypertension.llDiabetes) {
+                        if (childCount > 0) (getChildAt(0) as? SingleSelectionCustomView)?.singleSelectionChildViewsOption(
+                            diabetesStatus
+                        )
+                    }
+                }
+                (ncdMap[NCDMRUtil.DiabetesYearOfDiagnosis] as? String)?.let { diabetesYear ->
+                    binding.ncdDiabetesHypertension.etYearOfDiagnosis.setText(diabetesYear)
+                }
+                (ncdMap[NCDMRUtil.DiabetesControlledType] as? String)?.let { diabetesType ->
+                    (binding.ncdDiabetesHypertension.tvDiabetesControlledSpinner.adapter as? CustomSpinnerAdapter)?.let {
+                        it.getIndexOfItemByName(diabetesType).let { pos ->
+                            if (pos > 0)
+                                binding.ncdDiabetesHypertension.tvDiabetesControlledSpinner.post {
+                                    binding.ncdDiabetesHypertension.tvDiabetesControlledSpinner.setSelection(
+                                        pos,
+                                        false
+                                    )
+                                }
+                        }
+                    }
+                }
+
+
+                //Hypertension
+                (ncdMap[NCDMRUtil.HypertensionStatus] as? String)?.let { hypertensionStatus ->
+                    with(binding.ncdDiabetesHypertension.llHypertension) {
+                        if (childCount > 0) (getChildAt(0) as? SingleSelectionCustomView)?.singleSelectionChildViewsOption(
+                            hypertensionStatus
+                        )
+                    }
+                }
+                (ncdMap[NCDMRUtil.HypertensionYearOfDiagnosis] as? String)?.let { hypertensionYear ->
+                    binding.ncdDiabetesHypertension.etYearOfDiagnosisHtn.setText(hypertensionYear)
+                }
+            }
+        }
     }
 
     private fun initView() {
@@ -269,15 +317,15 @@ class NCDPregnancyDialog(private val callback: ((isPositiveResult: Boolean, mess
     }
 
     private fun ncdVisibility() {
-        var showNCD = true
-        medicalReviewViewModel.ncdPatientDiagnosisStatus.value?.data?.let { responseMap ->
-            showNCD =
-                !(responseMap.containsKey(NCDMRUtil.NCDPatientStatus) && responseMap[NCDMRUtil.NCDPatientStatus] != null)
-        }
+        val showNCD = showNCD()
         binding.apply {
             tvNCD.setVisible(showNCD)
             ncdDiabetesHypertension.root.setVisible(showNCD)
         }
+    }
+
+    private fun showNCD(): Boolean {
+        return arguments?.getBoolean(NCDMRUtil.ShowNCD) ?: false
     }
 
     private fun getGender(): String {
@@ -411,17 +459,20 @@ class NCDPregnancyDialog(private val callback: ((isPositiveResult: Boolean, mess
         val yearOfDiagnosis = ArrayList<Map<String, Any>>()
         yearOfDiagnosis.add(
             CommonUtils.getOptionMap(
-                N_A, getString(R.string.n_a)
+                getString(R.string.na),
+                getString(R.string.na)
             )
         )
         yearOfDiagnosis.add(
             CommonUtils.getOptionMap(
-                NEW_PATIENT, getString(R.string.new_patient)
+                getString(R.string.new_patient),
+                getString(R.string.new_patient)
             )
         )
         yearOfDiagnosis.add(
             CommonUtils.getOptionMap(
-                KNOWN_PATIENT, getString(R.string.known_patient)
+                getString(R.string.known_patient),
+                getString(R.string.known_patient)
             )
         )
         return yearOfDiagnosis
@@ -626,6 +677,8 @@ class NCDPregnancyDialog(private val callback: ((isPositiveResult: Boolean, mess
             binding.ncdDiabetesHypertension.tvDiabetesControlledSpinner.setSelection(0, false)
         }
         binding.ncdDiabetesHypertension.tvDiabetesControlledSpinner.adapter = adapter
+
+        prefill()
     }
 
     private fun clearFields() {
@@ -700,6 +753,7 @@ class NCDPregnancyDialog(private val callback: ((isPositiveResult: Boolean, mess
             patientId: String,
             isFemale: Boolean,
             isPregnant: Boolean,
+            showNCD: Boolean,
             callback: ((isPositiveResult: Boolean, message: String) -> Unit)
         ): NCDPregnancyDialog {
             return NCDPregnancyDialog(callback).apply {
@@ -708,6 +762,7 @@ class NCDPregnancyDialog(private val callback: ((isPositiveResult: Boolean, mess
                     putString(PATIENT_ID, patientId)
                     putBoolean(IS_FEMALE, isFemale)
                     putBoolean(IS_PREGNANT, isPregnant)
+                    putBoolean(NCDMRUtil.ShowNCD, showNCD)
                 }
             }
         }

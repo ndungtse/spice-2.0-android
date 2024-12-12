@@ -96,9 +96,103 @@ class NCDMentalHealthFragment : DialogFragment(), View.OnClickListener {
         super.onViewCreated(view, savedInstanceState)
         initView()
         attachObserver()
-        initializeMentalHealthSpinner()
-        initializeSubstanceSpinner()
         setListeners()
+
+        prefillMH()
+    }
+
+    private fun prefillMH() {
+        val mentalHealth = ArrayList<String>()
+        val substanceUse = ArrayList<String>()
+        medicalReviewViewModel.ncdPatientDiagnosisStatus.value?.data?.let { responseMap ->
+            viewModel.patientStatusId = responseMap[DefinedParams.ID] as? String
+            (responseMap[NCDMRUtil.MentalHealthStatus] as? Map<*, *>)?.let { mhsMap ->
+                viewModel.mentalHealthStatusId = mhsMap[DefinedParams.ID] as? String
+                (mhsMap[DefinedParams.Status] as? String)?.let { status ->
+                    with(binding.llMentalHealth) {
+                        if (childCount > 0) (getChildAt(0) as? SingleSelectionCustomView)?.singleSelectionChildViewsOption(
+                            status
+                        )
+                    }
+                }
+                (mhsMap[DefinedParams.MentalHealthDisorder] as? ArrayList<String>)?.let { disorders ->
+                    mentalHealth.addAll(disorders)
+                }
+                (mhsMap[DefinedParams.Comments] as? String)?.let { comments ->
+                    binding.etComments.setText(comments)
+                }
+                (mhsMap[DefinedParams.YearOfDiagnosis] as? String)?.let { yearOfDiagnosis ->
+                    binding.etYrOfDiagnosis.setText(yearOfDiagnosis)
+                }
+            }
+            (responseMap[NCDMRUtil.SubstanceUseStatus] as? Map<*, *>)?.let { susMap ->
+                viewModel.substanceUseStatusId = susMap[DefinedParams.ID] as? String
+                (susMap[DefinedParams.Status] as? String)?.let { status ->
+                    with(binding.llSubstanceUse) {
+                        if (childCount > 0) (getChildAt(0) as? SingleSelectionCustomView)?.singleSelectionChildViewsOption(
+                            status
+                        )
+                    }
+                }
+                (susMap[DefinedParams.MentalHealthDisorder] as? ArrayList<String>)?.let { disorders ->
+                    substanceUse.addAll(disorders)
+                }
+                (susMap[DefinedParams.Comments] as? String)?.let { comments ->
+                    binding.etSubstanceComments.setText(comments)
+                }
+                (susMap[DefinedParams.YearOfDiagnosis] as? String)?.let { yearOfDiagnosis ->
+                    binding.etSubstanceDiagnosis.setText(yearOfDiagnosis)
+                }
+            }
+        }
+        initializeMentalHealthSpinner(mentalHealth)
+        initializeSubstanceSpinner(substanceUse)
+    }
+
+    private fun prefill() {
+        medicalReviewViewModel.ncdPatientDiagnosisStatus.value?.data?.let { responseMap ->
+            viewModel.patientStatusId = responseMap[DefinedParams.ID] as? String
+            (responseMap[NCDMRUtil.NCDPatientStatus] as? Map<*, *>)?.let { ncdMap ->
+                viewModel.id = ncdMap[DefinedParams.ID] as? String
+                //Diabetes
+                (ncdMap[NCDMRUtil.DiabetesStatus] as? String)?.let { diabetesStatus ->
+                    with(binding.ncdDiabetesHypertension.llDiabetes) {
+                        if (childCount > 0) (getChildAt(0) as? SingleSelectionCustomView)?.singleSelectionChildViewsOption(
+                            diabetesStatus
+                        )
+                    }
+                }
+                (ncdMap[NCDMRUtil.DiabetesYearOfDiagnosis] as? String)?.let { diabetesYear ->
+                    binding.ncdDiabetesHypertension.etYearOfDiagnosis.setText(diabetesYear)
+                }
+                (ncdMap[NCDMRUtil.DiabetesControlledType] as? String)?.let { diabetesType ->
+                    (binding.ncdDiabetesHypertension.tvDiabetesControlledSpinner.adapter as? CustomSpinnerAdapter)?.let {
+                        it.getIndexOfItemByName(diabetesType).let { pos ->
+                            if (pos > 0)
+                                binding.ncdDiabetesHypertension.tvDiabetesControlledSpinner.post {
+                                    binding.ncdDiabetesHypertension.tvDiabetesControlledSpinner.setSelection(
+                                        pos,
+                                        false
+                                    )
+                                }
+                        }
+                    }
+                }
+
+
+                //Hypertension
+                (ncdMap[NCDMRUtil.HypertensionStatus] as? String)?.let { hypertensionStatus ->
+                    with(binding.ncdDiabetesHypertension.llHypertension) {
+                        if (childCount > 0) (getChildAt(0) as? SingleSelectionCustomView)?.singleSelectionChildViewsOption(
+                            hypertensionStatus
+                        )
+                    }
+                }
+                (ncdMap[NCDMRUtil.HypertensionYearOfDiagnosis] as? String)?.let { hypertensionYear ->
+                    binding.ncdDiabetesHypertension.etYearOfDiagnosisHtn.setText(hypertensionYear)
+                }
+            }
+        }
     }
 
     private fun setListeners() {
@@ -147,7 +241,7 @@ class NCDMentalHealthFragment : DialogFragment(), View.OnClickListener {
         }
     }
 
-    private fun initializeMentalHealthSpinner() {
+    private fun initializeMentalHealthSpinner(mentalHealth: ArrayList<String>) {
         val dropDownList = ArrayList<MultiSelectDropDownModel>()
         dropDownList.add(
             MultiSelectDropDownModel(
@@ -163,6 +257,9 @@ class NCDMentalHealthFragment : DialogFragment(), View.OnClickListener {
                 value = NCDMRUtil.Depression.lowercase()
             )
         )
+
+        viewModel.selectedMentalHealthListItem.addAll(dropDownList.filter { it.value in mentalHealth })
+
         val adapter = MultiSelectSpinnerAdapter(
             requireContext(),
             dropDownList,
@@ -175,15 +272,13 @@ class NCDMentalHealthFragment : DialogFragment(), View.OnClickListener {
                 selectedItems: List<MultiSelectDropDownModel>,
                 pos: Int,
             ) {
-                if (selectedItems.isNotEmpty()) {
-                    viewModel.selectedMentalHealthListItem = ArrayList(selectedItems)
-                }
+                viewModel.selectedMentalHealthListItem = ArrayList(selectedItems)
             }
         }
         )
     }
 
-    private fun initializeSubstanceSpinner() {
+    private fun initializeSubstanceSpinner(substanceUse: ArrayList<String>) {
         val dropDownList = ArrayList<MultiSelectDropDownModel>()
         dropDownList.add(
             MultiSelectDropDownModel(
@@ -199,6 +294,9 @@ class NCDMentalHealthFragment : DialogFragment(), View.OnClickListener {
                 value = NCDMRUtil.Tobbaco.lowercase()
             )
         )
+
+        viewModel.selectedSubstanceListItem.addAll(dropDownList.filter { it.value in substanceUse })
+
         val adapter = MultiSelectSpinnerAdapter(
             requireContext(),
             dropDownList,
@@ -211,9 +309,7 @@ class NCDMentalHealthFragment : DialogFragment(), View.OnClickListener {
                 selectedItems: List<MultiSelectDropDownModel>,
                 pos: Int,
             ) {
-                if (selectedItems.isNotEmpty()) {
-                    viewModel.selectedSubstanceListItem = ArrayList(selectedItems)
-                }
+                viewModel.selectedSubstanceListItem = ArrayList(selectedItems)
             }
         }
         )
@@ -229,8 +325,8 @@ class NCDMentalHealthFragment : DialogFragment(), View.OnClickListener {
 
         data.mapNotNullTo(list) { symptoms ->
             hashMapOf<String, Any>().apply {
-                symptoms.id.let { put(DefinedParams.ID, it) }
-                symptoms.name.let { put(DefinedParams.NAME, it) }
+                put(DefinedParams.ID, symptoms.id)
+                put(DefinedParams.NAME, symptoms.name)
                 symptoms.value?.let { put(DefinedParams.Value, it) }
             }.takeIf { it.isNotEmpty() }
         }
@@ -239,23 +335,28 @@ class NCDMentalHealthFragment : DialogFragment(), View.OnClickListener {
             binding.ncdDiabetesHypertension.tvDiabetesControlledSpinner.setSelection(0, false)
         }
         binding.ncdDiabetesHypertension.tvDiabetesControlledSpinner.adapter = adapter
+
+        prefill()
     }
 
     private fun getSingleSelectionOptions(): ArrayList<Map<String, Any>> {
         val yearOfDiagnosis = ArrayList<Map<String, Any>>()
         yearOfDiagnosis.add(
             CommonUtils.getOptionMap(
-                NCDPregnancyDialog.N_A, getString(R.string.n_a)
+                getString(R.string.na),
+                getString(R.string.na)
             )
         )
         yearOfDiagnosis.add(
             CommonUtils.getOptionMap(
-                NCDPregnancyDialog.NEW_PATIENT, getString(R.string.new_patient)
+                getString(R.string.new_patient),
+                getString(R.string.new_patient)
             )
         )
         yearOfDiagnosis.add(
             CommonUtils.getOptionMap(
-                NCDPregnancyDialog.KNOWN_PATIENT, getString(R.string.known_patient)
+                getString(R.string.known_patient),
+                getString(R.string.known_patient)
             )
         )
         return yearOfDiagnosis
@@ -277,44 +378,42 @@ class NCDMentalHealthFragment : DialogFragment(), View.OnClickListener {
         { selectedID, _, _, _ ->
             viewModel.resultSubstanceUseHashMap[SUBSTANCE_USE_STATUS] =
                 selectedID as String
-            showViewsMentalHealth(
-                binding.groupSubstanceUse,
-                selectedID,
-                binding.tvDiagnosisError,
-                binding.etSubstanceDiagnosis,
-                binding.tvSubstanceCommentsError,
-                binding.etSubstanceComments
-            )
-            showSpinnerViewSubstanceUse(
-                selectedID,
-                binding.groupSubstanceUseSpinner,
-                binding.etSubstanceDiagnosis,
-                binding.etSubstanceComments,
-                binding.etSubstanceDisorder,
-                binding.tvSubstanceDisorderError
-            )
+
+            val isKnown = selectedID.equals(Known_patient, ignoreCase = true)
+
+            binding.apply {
+                groupSubstanceUse.setVisible(isKnown)
+                groupSubstanceUseSpinner.setVisible(isKnown)
+
+                etSubstanceDiagnosis.text?.clear()
+                etSubstanceComments.text?.clear()
+                (etSubstanceDisorder.adapter as? MultiSelectSpinnerAdapter)?.reset()
+
+                tvDiagnosisError.gone()
+                tvSubstanceCommentsError.gone()
+                tvSubstanceDisorderError.gone()
+            }
         }
 
     private var singleSelectionCallbackForMentalHealth: ((selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit)? =
         { selectedID, _, _, _ ->
             viewModel.resultMentalHealthHashMap[MENTAL_HEALTH_STATUS] =
                 selectedID as String
-            showViewsMentalHealth(
-                binding.groupMentalHealth,
-                selectedID,
-                binding.tvYrOfDiagnosisError,
-                binding.etYrOfDiagnosis,
-                binding.tvMentalHealthDisorderError,
-                binding.etComments
-            )
-            showSpinnerViewMentalHealth(
-                selectedID,
-                binding.groupMentalHealthSpinner,
-                binding.etYrOfDiagnosis,
-                binding.etComments,
-                binding.etMentalHealthDisorder,
-                binding.tvMentalHealthDisorderError
-            )
+
+            val isKnown = selectedID.equals(Known_patient, ignoreCase = true)
+
+            binding.apply {
+                groupMentalHealth.setVisible(isKnown)
+                groupMentalHealthSpinner.setVisible(isKnown)
+
+                etComments.text?.clear()
+                etYrOfDiagnosis.text?.clear()
+                (etMentalHealthDisorder.adapter as? MultiSelectSpinnerAdapter)?.reset()
+
+                tvMentalHealthDisorderError.gone()
+                tvCommentsError.gone()
+                tvYrOfDiagnosisError.gone()
+            }
         }
 
     private fun showSpinnerView(selectedValue: String) {
@@ -333,50 +432,6 @@ class NCDMentalHealthFragment : DialogFragment(), View.OnClickListener {
         }
     }
 
-    private fun showSpinnerViewMentalHealth(
-        selectedValue: String,
-        groupSubstanceUseSpinner: Group,
-        etSubstanceDiagnosis: AppCompatEditText,
-        etSubstanceComments: AppCompatEditText,
-        etSubstanceDisorder: AppCompatSpinner,
-        tvSubstanceDisorderError: AppCompatTextView
-    ) {
-        val isKnownPatient =
-            selectedValue.equals(Known_patient, ignoreCase = true)
-        groupSubstanceUseSpinner.isVisible = isKnownPatient
-        if (!isKnownPatient) {
-            etSubstanceDiagnosis.setText(getString(R.string.empty))
-            etSubstanceComments.setText(getString(R.string.empty))
-            viewModel.selectedMentalHealthListItem.clear()
-            etSubstanceDisorder.post {
-                etSubstanceDisorder.setSelection(0, false)
-            }
-        }
-        tvSubstanceDisorderError.gone()
-    }
-
-    private fun showSpinnerViewSubstanceUse(
-        selectedValue: String,
-        groupSubstanceUseSpinner: Group,
-        etSubstanceDiagnosis: AppCompatEditText,
-        etSubstanceComments: AppCompatEditText,
-        etSubstanceDisorder: AppCompatSpinner,
-        tvSubstanceDisorderError: AppCompatTextView
-    ) {
-        val isKnownPatient =
-            selectedValue.equals(Known_patient, ignoreCase = true)
-        groupSubstanceUseSpinner.isVisible = isKnownPatient
-        if (!isKnownPatient) {
-            etSubstanceDiagnosis.setText(getString(R.string.empty))
-            etSubstanceComments.setText(getString(R.string.empty))
-            viewModel.selectedSubstanceListItem.clear()
-            etSubstanceDisorder.post {
-                etSubstanceDisorder.setSelection(0, false)
-            }
-        }
-        tvSubstanceDisorderError.gone()
-    }
-
     private fun showViews(
         groupYearOfDiagnosis: Group,
         selectedValue: String,
@@ -391,27 +446,6 @@ class NCDMentalHealthFragment : DialogFragment(), View.OnClickListener {
             etYearOfDiagnosis.text = null
         }
         tvYearOfDiagnosis.gone()
-    }
-
-    private fun showViewsMentalHealth(
-        groupYearOfDiagnosis: Group,
-        selectedValue: String,
-        tvYearOfDiagnosis: AppCompatTextView,
-        etYearOfDiagnosis: AppCompatEditText,
-        tvSubstanceCommentsError: AppCompatTextView,
-        etSubstanceComments: AppCompatEditText
-    ) {
-        if (selectedValue.equals(Known_patient, true)) {
-            groupYearOfDiagnosis.isVisible = true
-            etYearOfDiagnosis.text = null
-            etSubstanceComments.text = null
-        } else {
-            groupYearOfDiagnosis.isVisible = false
-            etYearOfDiagnosis.text = null
-            etSubstanceComments.text = null
-        }
-        tvYearOfDiagnosis.gone()
-        tvSubstanceCommentsError.gone()
     }
 
     private fun initView() {
@@ -529,11 +563,7 @@ class NCDMentalHealthFragment : DialogFragment(), View.OnClickListener {
     }
 
     private fun ncdVisibility() {
-        var showNCD = true
-        medicalReviewViewModel.ncdPatientDiagnosisStatus.value?.data?.let { responseMap ->
-            showNCD =
-                !(responseMap.containsKey(NCDMRUtil.NCDPatientStatus) && responseMap[NCDMRUtil.NCDPatientStatus] != null)
-        }
+        val showNCD = showNCD()
         binding.apply {
             tvNCD.setVisible(showNCD)
             ncdDiabetesHypertension.root.setVisible(showNCD)
@@ -550,6 +580,10 @@ class NCDMentalHealthFragment : DialogFragment(), View.OnClickListener {
 
     private fun isPregnant(): Boolean {
         return arguments?.getBoolean(NCDMRUtil.IsPregnant) ?: false
+    }
+
+    private fun showNCD(): Boolean {
+        return arguments?.getBoolean(NCDMRUtil.ShowNCD) ?: false
     }
 
     private var singleSelectionCallbackForHypertension: ((selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit)? =
@@ -576,7 +610,8 @@ class NCDMentalHealthFragment : DialogFragment(), View.OnClickListener {
             patientReference: String?,
             memberReference: String?,
             isFemale: Boolean,
-            isPregnant: Boolean
+            isPregnant: Boolean,
+            showNCD: Boolean,
         ): NCDMentalHealthFragment {
             return NCDMentalHealthFragment().apply {
                 arguments = Bundle().apply {
@@ -584,6 +619,7 @@ class NCDMentalHealthFragment : DialogFragment(), View.OnClickListener {
                     putString(NCDMRUtil.MEMBER_REFERENCE, memberReference)
                     putBoolean(NCDMRUtil.IS_FEMALE, isFemale)
                     putBoolean(NCDMRUtil.IsPregnant, isPregnant)
+                    putBoolean(NCDMRUtil.ShowNCD, showNCD)
                 }
             }
         }
@@ -598,78 +634,41 @@ class NCDMentalHealthFragment : DialogFragment(), View.OnClickListener {
     }
 
     private fun validateMentalHealthAndSubstance(): Boolean {
+        //Mental Health
         val isMentalHealthValid = viewModel.resultMentalHealthHashMap.isNotEmpty()
-        val isSubstanceUseValid = viewModel.resultSubstanceUseHashMap.isNotEmpty()
         val isMentalHealthValueValid = viewModel.selectedMentalHealthListItem.isNotEmpty()
+        val isCommentsValidMentalHealth = viewModel.mentalHealthComments?.isNotEmpty() == true
+
+        //Substance Use
+        val isSubstanceUseValid = viewModel.resultSubstanceUseHashMap.isNotEmpty()
         val isSubstanceUseValueValid = viewModel.selectedSubstanceListItem.isNotEmpty()
-        val isCommentsValidMentalHealth = viewModel.mentalHealthComments?.isNotEmpty()
-        val isCommentsValidSubstanceUse = viewModel.substanceUseComments?.isNotEmpty()
+        val isCommentsValidSubstanceUse = viewModel.substanceUseComments?.isNotEmpty() == true
 
-        if (isMentalHealthValid) {
-            binding.tvMentalHealthError.gone()
-        } else {
-            binding.tvMentalHealthError.visible()
+        binding.tvMentalHealthError.setVisible(!isMentalHealthValid)
+        binding.tvSubstanceUseError.setVisible(!isSubstanceUseValid)
+
+        val isKnownMH =
+            binding.groupMentalHealth.isVisible() && binding.groupMentalHealthSpinner.isVisible()
+        val isKnownSU =
+            binding.groupSubstanceUse.isVisible() && binding.groupSubstanceUseSpinner.isVisible()
+
+        if (isKnownMH) {
+            binding.tvMentalHealthDisorderError.setVisible(!isMentalHealthValueValid)
+            binding.tvCommentsError.setVisible(!isCommentsValidMentalHealth)
         }
 
-        if (isSubstanceUseValid) {
-            binding.tvSubstanceUseError.gone()
-        } else {
-            binding.tvSubstanceUseError.visible()
+        if (isKnownSU) {
+            binding.tvSubstanceDisorderError.setVisible(!isSubstanceUseValueValid)
+            binding.tvSubstanceCommentsError.setVisible(!isCommentsValidSubstanceUse)
         }
 
-        if (isMentalHealthValid && isCommentsValidMentalHealth == true) {
-            binding.tvCommentsError.gone()
-        } else {
-            binding.tvCommentsError.visible()
-        }
+        val isYearsValidMentalHealth =
+            !isKnownMH || isValidDiagnosis(binding.etYrOfDiagnosis, binding.tvYrOfDiagnosisError)
 
-        if (isSubstanceUseValid && isCommentsValidSubstanceUse == true) {
-            binding.tvDiagnosisError.gone()
-        } else {
-            binding.tvDiagnosisError.visible()
-        }
+        val isYearsValidSubstanceUse =
+            !isKnownSU || isValidDiagnosis(binding.etSubstanceDiagnosis, binding.tvDiagnosisError)
 
-        val isKnownMentalHealthPatient =
-            (viewModel.resultMentalHealthHashMap[MENTAL_HEALTH_STATUS] as? String)?.equals(
-                Known_patient,
-                true
-            ) == true
-
-        val isKnownSubstanceUsePatient =
-            (viewModel.resultSubstanceUseHashMap[SUBSTANCE_USE_STATUS] as? String)?.equals(
-                Known_patient,
-                true
-            ) == true
-
-        if (isKnownMentalHealthPatient && isMentalHealthValueValid) {
-            binding.tvMentalHealthDisorderError.gone()
-        } else {
-            if (isKnownMentalHealthPatient) {
-                binding.tvMentalHealthDisorderError.visible()
-            }
-        }
-
-        if (isKnownSubstanceUsePatient && isSubstanceUseValueValid) {
-            binding.tvSubstanceDisorderError.gone()
-        } else {
-            if (isKnownSubstanceUsePatient) {
-                binding.tvSubstanceDisorderError.visible()
-            }
-        }
-
-        val knownPatientValidForMentalHealth =
-            (!isKnownMentalHealthPatient || (isValidDiagnosis(
-                binding.etYrOfDiagnosis,
-                binding.tvYrOfDiagnosisError
-            ) && isMentalHealthValueValid))
-
-        val knownPatientValidForSubstanceUse =
-            (!isKnownSubstanceUsePatient || (isValidDiagnosis(
-                binding.etSubstanceDiagnosis,
-                binding.tvDiagnosisError
-            ) && isSubstanceUseValueValid))
-
-        return isMentalHealthValid && isSubstanceUseValid && knownPatientValidForMentalHealth && knownPatientValidForSubstanceUse
+        return isMentalHealthValid && isSubstanceUseValid && isYearsValidMentalHealth && isYearsValidSubstanceUse
     }
 
     private fun validateNCDPatientStatus(): Boolean {
@@ -746,10 +745,12 @@ class NCDMentalHealthFragment : DialogFragment(), View.OnClickListener {
             binding.btnConfirm.id -> {
                 if (validateInput()) {
                     val request = NCDMentalHealthStatusRequest(
+                        id = viewModel.patientStatusId,
                         provenance = ProvanceDto(),
                         memberReference = getMemberReference(),
                         patientReference = getPatientReference(),
                         ncdPatientStatus = NcdPatientStatus(
+                            id = viewModel.id,
                             diabetesStatus = viewModel.resultDiabetesHashMap[Diabetes] as? String,
                             hypertensionStatus = viewModel.resultHypertensionHashMap[Hypertension] as? String,
                             hypertensionYearOfDiagnosis = viewModel.yearForHypertension.takeIf { !it.isNullOrBlank() },
@@ -758,6 +759,7 @@ class NCDMentalHealthFragment : DialogFragment(), View.OnClickListener {
                             diabetesDiagnosis = viewModel.value
                         ),
                         mentalHealthStatus = MentalHealthStatus(
+                            id = viewModel.mentalHealthStatusId,
                             status = viewModel.resultMentalHealthHashMap[MENTAL_HEALTH_STATUS] as? String,
                             comments = viewModel.mentalHealthComments.takeIf { !it.isNullOrBlank() },
                             yearOfDiagnosis = viewModel.yearForMentalHealth?.takeIf { true },
@@ -765,6 +767,7 @@ class NCDMentalHealthFragment : DialogFragment(), View.OnClickListener {
                                 ?.map { it.name.lowercase() } as ArrayList<String>?,
                         ),
                         substanceUseStatus = MentalHealthStatus(
+                            id = viewModel.substanceUseStatusId,
                             status = viewModel.resultSubstanceUseHashMap[SUBSTANCE_USE_STATUS] as? String,
                             comments = viewModel.substanceUseComments.takeIf { !it.isNullOrBlank() },
                             yearOfDiagnosis = viewModel.yearForSubstanceUse?.takeIf { true },

@@ -296,7 +296,8 @@ class InvestigationViewModel @Inject constructor(
                         labTestResultList = investigationExisting.labTestResults,
                         id = investigationExisting.id,
                         resultList = getInvestigationModelWithResult(investigationExisting.labTestCustomization),
-                        dropdownState = false
+                        dropdownState = false,
+                        isReview = investigationExisting.isReview
                     )
                 )
             }

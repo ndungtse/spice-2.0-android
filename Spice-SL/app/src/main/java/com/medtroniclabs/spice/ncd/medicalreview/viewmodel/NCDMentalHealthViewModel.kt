@@ -24,6 +24,10 @@ class NCDMentalHealthViewModel @Inject constructor(
     @IoDispatcher private val dispatcherIO: CoroutineDispatcher
 ) : ViewModel() {
 
+    var patientStatusId: String? = null
+    var id: String? = null
+    var mentalHealthStatusId: String? = null
+    var substanceUseStatusId: String? = null
     val resultDiabetesHashMap = HashMap<String, Any>()
     var value: String? = null
     var encounterId: String? = null

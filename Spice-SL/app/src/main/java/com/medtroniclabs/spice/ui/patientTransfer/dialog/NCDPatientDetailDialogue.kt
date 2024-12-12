@@ -11,6 +11,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
+import com.medtroniclabs.spice.appextensions.textOrHyphen
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DateUtils
@@ -118,15 +119,15 @@ class NCDPatientDetailDialogue : DialogFragment() {
             val patientModel = model[0]
             patientModel.patient.firstName.let { firstName ->
                 var patientName = "$firstName "
-                patientModel.patient.lastName.let {
-                    patientName += it
+                patientModel.patient.lastName?.let {
+                        patientName += it
                 }
                 binding.tvDialogTitle.text = patientName
             }
 
             patientModel.patient.gender.let { gender ->
                 patientModel.patient.age.let { age ->
-                    binding.tvGenderAgeValue.text = "${gender}/${age}"
+                    binding.tvGenderAgeValue.text = "${gender}/${age.textOrHyphen()}"
                 }
             }
             patientModel.patient.phoneNumber.let {

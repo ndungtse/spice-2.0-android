@@ -227,19 +227,7 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
 
                 ResourceState.SUCCESS -> {
                     hideLoading()
-                    resourceState.data?.let { responseMap ->
-                        val hideNCD =
-                            responseMap.containsKey(NCDMRUtil.NCDPatientStatus) && responseMap[NCDMRUtil.NCDPatientStatus] != null
-                        val hasMentalHealth =
-                            responseMap.containsKey(NCDMRUtil.MentalHealthStatus) && responseMap[NCDMRUtil.MentalHealthStatus] != null
-
-                        showNcdPatientHistoryDialog(!hideNCD)
-                        if (!hasMentalHealth)
-                            showMentalHealthPatientHistoryDialog()
-                        showPregnancyDialog()
-                    } ?: kotlin.run {
-                        showInitialDialogs()
-                    }
+                    showInitialDialogs()
                 }
 
                 ResourceState.ERROR -> {
@@ -295,10 +283,7 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
                     if (binding.refreshLayout.isRefreshing) {
                         binding.refreshLayout.isRefreshing = false
                     }
-                    checkPatientDetails(
-                        resourceState.data?.initialReviewed == false,
-                        resourceState.data?.patientId
-                    )
+                    checkPatientDetails(resourceState.data?.patientId)
                     badgeNotifications()
                     showHideVerticalIcon(CommonUtils.isNonCommunity() && !resourceState.data?.programId.isNullOrBlank())
                 }
@@ -400,19 +385,21 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
     }
 
     private fun showInitialDialogs() {
-        showNcdPatientHistoryDialog(true)
-        showMentalHealthPatientHistoryDialog()
-        showPregnancyDialog()
+        when (getMenuId()) {
+            NCD.lowercase() -> showNcdPatientHistoryDialog()
+            MENTAL_HEALTH.lowercase() -> showMentalHealthPatientHistoryDialog()
+            DefinedParams.PregnancyANC.lowercase() -> showPregnancyDialog()
+        }
     }
 
-    private fun showNcdPatientHistoryDialog(showPatientHistoryDialog: Boolean) {
-        if (showPatientHistoryDialog && getMenuId().equals(NCD.lowercase(), true)) {
-            patientDetailViewModel.getPatientFHIRId()?.let {
+    private fun showNcdPatientHistoryDialog() {
+        if (!patientDetailViewModel.getNCDInitialMedicalReview())
+            patientDetailViewModel.getPatientFHIRId()?.let { fhirId ->
                 val fragment = supportFragmentManager.findFragmentByTag(NCDPatientHistoryDialog.TAG)
                 if (fragment == null) {
                     NCDPatientHistoryDialog.newInstance(
                         patientDetailViewModel.getPatientId(),
-                        it,
+                        fhirId,
                         isFemale = patientDetailViewModel.getGenderIsFemale(),
                         patientDetailViewModel.isPregnant()
                     ).apply {
@@ -420,16 +407,15 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
                     }.show(supportFragmentManager, NCDPatientHistoryDialog.TAG)
                 }
             }
-        }
     }
 
-    private fun checkPatientDetails(isInitialMR: Boolean, patientReference: String?) {
+    private fun checkPatientDetails(patientReference: String?) {
         if (viewModel.isPatientStatusCompleted)
             return
         else {
             viewModel.isPatientStatusCompleted = true
 
-            if (isInitialMR || patientReference.isNullOrBlank())
+            if (patientReference.isNullOrBlank())
                 showInitialDialogs()
             else
                 viewModel.ncdPatientDiagnosisStatus(HashMap<String, Any>().apply {
@@ -1071,43 +1057,50 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
     }
 
     private fun showPregnancyDialog() {
-        if (getMenuId().equals(DefinedParams.PregnancyANC.lowercase(), true)) {
-            withNetworkAvailability(online = {
-                patientDetailViewModel.getPatientFHIRId()?.let { id ->
-                    val dialog = supportFragmentManager.findFragmentByTag(NCDPregnancyDialog.TAG)
-                    if (dialog == null) {
-                        val ncdPregnancyDialog =
-                            NCDPregnancyDialog.newInstance(
-                                patientDetailViewModel.getPatientId(),
-                                patientId = id,
-                                patientDetailViewModel.getGenderIsFemale(),
-                                patientDetailViewModel.isPregnant()
-                            ) { isPositiveResult, message ->
-                                if (isPositiveResult) showErrorDialogue(
-                                    title = getString(R.string.pregnancy_details),
-                                    message = message,
-                                    isNegativeButtonNeed = false
-                                ) {
-                                    swipeRefresh()
-                                }
-                                else showErrorDialogue(
-                                    title = getString(R.string.error),
-                                    message = message,
-                                    isNegativeButtonNeed = false
-                                ) {
-
-                                }
+        withNetworkAvailability(online = {
+            val hasNCD =
+                !(viewModel.ncdPatientDiagnosisStatus.value?.data?.get(NCDMRUtil.NCDPatientStatus) as? Map<*, *>).isNullOrEmpty()
+            val initialReviewed = patientDetailViewModel.getNCDInitialMedicalReview()
+            patientDetailViewModel.getPatientFHIRId()?.let { id ->
+                val dialog = supportFragmentManager.findFragmentByTag(NCDPregnancyDialog.TAG)
+                if (dialog == null) {
+                    val ncdPregnancyDialog =
+                        NCDPregnancyDialog.newInstance(
+                            patientDetailViewModel.getPatientId(),
+                            patientId = id,
+                            patientDetailViewModel.getGenderIsFemale(),
+                            patientDetailViewModel.isPregnant(),
+                            showNCD = !initialReviewed || !hasNCD
+                        ) { isPositiveResult, message ->
+                            if (isPositiveResult) showErrorDialogue(
+                                title = getString(R.string.pregnancy_details),
+                                message = message,
+                                isNegativeButtonNeed = false
+                            ) {
+                                swipeRefresh()
                             }
-                        ncdPregnancyDialog.show(supportFragmentManager, NCDPregnancyDialog.TAG)
-                    }
+                            else showErrorDialogue(
+                                title = getString(R.string.error),
+                                message = message,
+                                isNegativeButtonNeed = false
+                            ) {
+
+                            }
+                        }
+                    ncdPregnancyDialog.show(supportFragmentManager, NCDPregnancyDialog.TAG)
                 }
-            })
-        }
+            }
+        })
     }
 
     private fun showMentalHealthPatientHistoryDialog() {
-        if (getMenuId().equals(MENTAL_HEALTH.lowercase(), true)) {
-            withNetworkAvailability(online = {
+        withNetworkAvailability(online = {
+            val hasMentalHealth =
+                !(viewModel.ncdPatientDiagnosisStatus.value?.data?.get(NCDMRUtil.MentalHealthStatus) as? Map<*, *>).isNullOrEmpty()
+            val hasNCD =
+                !(viewModel.ncdPatientDiagnosisStatus.value?.data?.get(NCDMRUtil.NCDPatientStatus) as? Map<*, *>).isNullOrEmpty()
+            val initialReviewed = patientDetailViewModel.getNCDInitialMedicalReview()
+            if (!initialReviewed || !hasMentalHealth)
                 patientDetailViewModel.getPatientFHIRId()?.let { id ->
                     val dialog =
                         supportFragmentManager.findFragmentByTag(NCDMentalHealthFragment.TAG)
@@ -1116,14 +1109,14 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
                             patientDetailViewModel.getPatientId(),
                             id,
                             isFemale = patientDetailViewModel.getGenderIsFemale(),
-                            patientDetailViewModel.isPregnant()
+                            patientDetailViewModel.isPregnant(),
+                            showNCD = !initialReviewed || !hasNCD
                         ).apply {
                             listener = this@NCDMedicalReviewActivity
                         }.show(supportFragmentManager, NCDMentalHealthFragment.TAG)
                     }
                 }
-            })
-        }
+        })
     }
 
     fun validateInput(): Boolean {

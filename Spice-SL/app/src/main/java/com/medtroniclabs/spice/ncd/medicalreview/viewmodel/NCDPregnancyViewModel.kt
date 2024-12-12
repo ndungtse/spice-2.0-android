@@ -11,7 +11,6 @@ import com.medtroniclabs.spice.data.APIResponse
 import com.medtroniclabs.spice.data.PregnancyDetailsModel
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.ncd.assessment.repo.NCDPregnancyRepo
-import com.medtroniclabs.spice.ncd.data.NCDPatientStatusRequest
 import com.medtroniclabs.spice.ncd.medicalreview.repo.NCDMedicalReviewRepository
 import com.medtroniclabs.spice.network.resource.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -25,6 +24,7 @@ class NCDPregnancyViewModel @Inject constructor(
     private val ncdMedicalReviewRepository: NCDMedicalReviewRepository,
     @IoDispatcher private val dispatcherIO: CoroutineDispatcher
 ) : ViewModel() {
+    var id: String? = null
     var isPregnancyAncEnabledSite: Boolean = false
 
     val resultDiabetesHashMap = HashMap<String, Any>()

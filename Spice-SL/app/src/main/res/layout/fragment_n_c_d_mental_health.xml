@@ -306,6 +306,7 @@
                             android:layout_width="@dimen/_0dp"
                             android:inputType="number"
                             android:maxLength="4"
+                            android:padding="@dimen/_12sdp"
                             android:paddingVertical="@dimen/_10sdp"
                             app:layout_constraintEnd_toEndOf="@id/tvSubstanceDiagnosis"
                             app:layout_constraintStart_toStartOf="@id/tvSubstanceDiagnosis"

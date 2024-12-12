@@ -21,6 +21,8 @@ class NCDPatientHistoryViewModel @Inject constructor(
     private val ncdMedicalReviewRepository: NCDMedicalReviewRepository
 ) : ViewModel() {
 
+    var patientStatusId: String? = null
+    var id: String? = null
     val resultDiabetesHashMap = HashMap<String, Any>()
     val resultHypertensionHashMap = HashMap<String, Any>()
     var value: String? = null

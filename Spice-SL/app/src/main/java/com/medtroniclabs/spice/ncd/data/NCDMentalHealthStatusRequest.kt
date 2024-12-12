@@ -3,6 +3,7 @@ package com.medtroniclabs.spice.ncd.data
 import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 
 data class NCDMentalHealthStatusRequest(
+    val id: String? = null,
     val mentalHealthStatus: MentalHealthStatus? = null,
     val substanceUseStatus: MentalHealthStatus? = null,
     val provenance: ProvanceDto? = null,
@@ -12,6 +13,7 @@ data class NCDMentalHealthStatusRequest(
 )
 
 data class MentalHealthStatus(
+    val id: String? = null,
     val status: String? = null,
     val comments: String? = null,
     val yearOfDiagnosis: Int? = null,

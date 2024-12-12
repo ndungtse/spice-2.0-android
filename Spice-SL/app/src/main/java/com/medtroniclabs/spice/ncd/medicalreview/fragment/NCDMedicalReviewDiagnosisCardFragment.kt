@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.core.content.ContextCompat.getColor
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.activityViewModels
@@ -37,6 +38,7 @@ import com.medtroniclabs.spice.ncd.medicalreview.dialog.NCDMentalHealthQuestionD
 import com.medtroniclabs.spice.ncd.medicalreview.dialog.NCDPatientHistoryDialog
 import com.medtroniclabs.spice.ncd.medicalreview.dialog.NCDPregnancyDialog
 import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDMedicalReviewDiagnosisCardViewModel
+import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDMedicalReviewViewModel
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.BaseFragment
@@ -54,6 +56,7 @@ class NCDMedicalReviewDiagnosisCardFragment : BaseFragment(), View.OnClickListen
     private lateinit var binding: FragmentNcdMedicalReviewDiagnosisCardBinding
     private val bpViewModel: BloodPressureViewModel by activityViewModels()
     private val glucoseViewModel: GlucoseViewModel by activityViewModels()
+    private val viewModel: NCDMedicalReviewViewModel by activityViewModels()
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -312,6 +315,9 @@ class NCDMedicalReviewDiagnosisCardFragment : BaseFragment(), View.OnClickListen
 
             binding.pregnancyCard.tvDiagnosis -> {
                 withNetworkAvailability(online = {
+                    val hasNCD =
+                        !(viewModel.ncdPatientDiagnosisStatus.value?.data?.get(NCDMRUtil.NCDPatientStatus) as? Map<*, *>).isNullOrEmpty()
+                    val initialReviewed = patientDetailViewModel.getNCDInitialMedicalReview()
                     patientDetailViewModel.getPatientFHIRId()?.let { id ->
                         val dialog = childFragmentManager.findFragmentByTag(NCDPregnancyDialog.TAG)
                         if (dialog == null) {
@@ -320,7 +326,8 @@ class NCDMedicalReviewDiagnosisCardFragment : BaseFragment(), View.OnClickListen
                                     patientDetailViewModel.getPatientId(),
                                     patientId = id,
                                     patientDetailViewModel.getGenderIsFemale(),
-                                    patientDetailViewModel.isPregnant()
+                                    patientDetailViewModel.isPregnant(),
+                                    showNCD = !initialReviewed || !hasNCD
                                 ) { isPositiveResult, message ->
                                     if (isPositiveResult) {
                                         showSuccessDialogue(

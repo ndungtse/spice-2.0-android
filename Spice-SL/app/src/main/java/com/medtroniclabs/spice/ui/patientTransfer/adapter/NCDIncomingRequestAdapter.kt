@@ -3,6 +3,7 @@ package com.medtroniclabs.spice.ui.patientTransfer.adapter
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.medtroniclabs.spice.appextensions.textOrEmpty
 import com.medtroniclabs.spice.databinding.RowIncomingRequestMessageBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.ui.patientTransfer.NCDApproveRejectListener
@@ -52,10 +53,11 @@ class NCDIncomingRequestAdapter(
             listener.onViewDetail(model.id)
         }
 
-        holder.binding.tvPatientName.text = "${model.patient.firstName} ${model.patient.lastName}"
+        holder.binding.tvPatientName.text = "${model.patient.firstName} ${model.patient.lastName.textOrEmpty()}"
     }
 
     override fun getItemCount(): Int {
         return list.size
     }
 }
+

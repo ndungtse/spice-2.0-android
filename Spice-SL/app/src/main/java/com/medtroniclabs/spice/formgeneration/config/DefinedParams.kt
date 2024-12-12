@@ -4,6 +4,7 @@ object DefinedParams {
 
     const val NAME = "name"
     const val ID = "id"
+    const val Value = "value"
     const val cultureValue = "cultureValue"
     const val DefaultIDLabel = "--Select--"
 
