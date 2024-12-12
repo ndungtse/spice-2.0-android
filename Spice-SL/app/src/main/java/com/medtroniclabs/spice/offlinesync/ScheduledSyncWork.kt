@@ -26,7 +26,7 @@ class ScheduledSyncWork @AssistedInject constructor(
 ) : CoroutineWorker(context, userParameter) {
 
     //For schedule
-    //private val syncDelay = 40 * 1000L // 40 Sec
+   // private val syncDelay = 40 * 1000L // 40 Sec
 
     //For automatic
     private val syncDelay = 10 * 1000L // 40 Sec

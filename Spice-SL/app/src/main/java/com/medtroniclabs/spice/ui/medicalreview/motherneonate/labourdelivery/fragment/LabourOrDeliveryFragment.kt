@@ -441,7 +441,7 @@ class LabourOrDeliveryFragment : BaseFragment() {
                     if (selectedName != DefinedParams.DefaultIDLabel) {
                         viewModel.deliveryAt = selectedName
                         viewModel.validateSubmitButtonState()
-                        if (selectedName == DefinedParams.Other.lowercase()){
+                        if (selectedName?.contains(DefinedParams.Other,true) == true){
                             binding.deliveryPlaceOtherGroup.visible()
                         }
                         else{
@@ -623,7 +623,7 @@ class LabourOrDeliveryFragment : BaseFragment() {
                 tvDeliveryByOthersError.showIf(deliveryByOthers?.isEmpty() == true)
             }
 
-            if (viewModel.deliveryAt == DefinedParams.Other.lowercase()) {
+            if (viewModel.deliveryAt?.contains(DefinedParams.Other,true) == true) {
                 tvOtherPlaceError.showIf(viewModel.deliveryPlaceOthers?.isEmpty() == true)
             }
 
@@ -664,7 +664,7 @@ class LabourOrDeliveryFragment : BaseFragment() {
             (deliveryOthers == DefinedParams.Others_Specify && deliveryByOthers?.isNotEmpty() == true || deliveryOthers != DefinedParams.Others_Specify)
         val otherDeliveryPlace = viewModel.deliveryPlaceOthers
         val otherDeliveryAt =
-            (viewModel.deliveryAt == DefinedParams.Other.lowercase() && otherDeliveryPlace?.isNotEmpty() == true || viewModel.deliveryAt != DefinedParams.Other.lowercase())
+            (viewModel.deliveryAt?.contains(DefinedParams.Other,true) == true && otherDeliveryPlace?.isNotEmpty() == true || viewModel.deliveryAt?.contains(DefinedParams.Other,true) != true)
         var isValidDeliveryBy = viewModel.deliveryBy != null &&
                 viewModel.deliveryAt != null &&
                 viewModel.deliveryStatus != null
@@ -799,7 +799,7 @@ class LabourOrDeliveryFragment : BaseFragment() {
             if (deliveryOthers == DefinedParams.Others_Specify) {
                 tvDeliveryByOthersError.showIf(deliveryByOthers == null)
             }
-            if (viewModel.deliveryAt == DefinedParams.Other.lowercase()) {
+            if (viewModel.deliveryAt?.contains(DefinedParams.Other,true) == true) {
                 tvOtherPlaceError.showIf(viewModel.deliveryPlaceOthers == null)
             }
             if (viewModel.deliveryAt == null && viewModel.deliveryBy == DefinedParams.Others_Specify && viewModel.deliveryByOthers != null) {

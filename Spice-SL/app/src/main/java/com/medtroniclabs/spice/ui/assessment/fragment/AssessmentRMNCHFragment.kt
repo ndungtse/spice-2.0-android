@@ -22,6 +22,7 @@ import com.medtroniclabs.spice.common.EntityMapper
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.model.RecommendedDosageListModel
 import com.medtroniclabs.spice.databinding.FragmentAssessmentRmnchBinding
+import com.medtroniclabs.spice.db.entity.MemberClinicalEntity
 import com.medtroniclabs.spice.formgeneration.FormGenerator
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.VISIBLE
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
@@ -163,30 +164,8 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
         }
 
         viewModel.memberClinicalLiveData.observe(viewLifecycleOwner) { data ->
-            if (viewModel.workflowName == RMNCH.PNC) {
-                data?.visitCount?.let { visitNo ->
-                    if (visitNo >= 1) {
-                        formGenerator.getViewByTag(RMNCH.DateOfDelivery + formGenerator.rootSuffix)
-                            ?.gone()
-                        formGenerator.getViewByTag(RMNCH.NoOfNeonate + formGenerator.rootSuffix)
-                            ?.gone()
-                        formGenerator.getViewByTag(RMNCH.lastMenstrualPeriod + formGenerator.rootSuffix)
-                            ?.gone()
-                    }
-                }
-            } else {
-                data?.clinicalDate?.let { date ->
-                    if (date.isNotEmpty()) {
-                        formGenerator.getViewByTag(RMNCH.lastMenstrualPeriod + formGenerator.rootSuffix)
-                            ?.gone()
-                    }
-                }
-            }
-
-            if (shouldHideNeonateFlow()) {
-                binding.btnSubmit.text = getString(R.string.submit)
-            } else {
-                binding.btnSubmit.text = getString(R.string.next)
+            data?.let {
+                hideOrShowFormBasedOnCondition(data)
             }
         }
 
@@ -194,7 +173,7 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
 
         }
 
-        viewModel.formRenderedConditionLiveData.observe(viewLifecycleOwner) {
+        viewModel.childhoodVisitConditionLiveData.observe(viewLifecycleOwner) {
             updateAgeInMonths(it)
         }
 
@@ -518,10 +497,38 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
 
 
     override fun onRenderingComplete() {
-        viewModel.memberClinicalLiveData.value?.clinicalDate?.let {
-            formGenerator.getViewByTag(RMNCH.lastMenstrualPeriod + formGenerator.rootSuffix)?.gone()
-        }
         viewModel.formRenderedLiveData.postValue(true)
+        viewModel.memberClinicalLiveData.value?.let {
+            hideOrShowFormBasedOnCondition(it)
+        }
+    }
+
+    private fun hideOrShowFormBasedOnCondition(data: MemberClinicalEntity) {
+        if (viewModel.workflowName == RMNCH.PNC) {
+            data.visitCount.let { visitNo ->
+                if (visitNo >= 1) {
+                    formGenerator.getViewByTag(RMNCH.DateOfDelivery + formGenerator.rootSuffix)
+                        ?.gone()
+                    formGenerator.getViewByTag(RMNCH.NoOfNeonate + formGenerator.rootSuffix)
+                        ?.gone()
+                    formGenerator.getViewByTag(RMNCH.lastMenstrualPeriod + formGenerator.rootSuffix)
+                        ?.gone()
+                }
+            }
+        } else {
+            data.clinicalDate?.let { date ->
+                if (date.isNotEmpty()) {
+                    formGenerator.getViewByTag(RMNCH.lastMenstrualPeriod + formGenerator.rootSuffix)
+                        ?.gone()
+                }
+            }
+        }
+
+        if (shouldHideNeonateFlow()) {
+            binding.btnSubmit.text = getString(R.string.submit)
+        } else {
+            binding.btnSubmit.text = getString(R.string.next)
+        }
     }
 
     override fun onUpdateInstruction(id: String, selectedId: Any?) {

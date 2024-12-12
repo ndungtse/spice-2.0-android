@@ -122,7 +122,8 @@ class AssessmentViewModel @Inject constructor(
     var isDangerSignFlow: Boolean = false
     var ageInMonth = MutableLiveData<String>()
     var formRenderedLiveData = MutableLiveData<Boolean>()
-    val formRenderedConditionLiveData = MediatorLiveData<String>().apply {
+
+    val childhoodVisitConditionLiveData = MediatorLiveData<String>().apply {
         addSource(ageInMonth) { age ->
             if (formRenderedLiveData.value == true && age != null) {
                 value = age
