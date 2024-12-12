@@ -184,6 +184,10 @@ class HouseholdSummaryActivity : BaseActivity(), MemberSelectionListener, View.O
                         MemberEditDialogFragment.newInstance(this@HouseholdSummaryActivity)
                             .show(supportFragmentManager, MemberEditDialogFragment.TAG)
                     }
+                    R.id.memberDeceased -> {
+                        MemberDeceasedDialogFragment.newInstance(this@HouseholdSummaryActivity)
+                            .show(supportFragmentManager, MemberDeceasedDialogFragment.TAG)
+                    }
                 }
                 return true
             }

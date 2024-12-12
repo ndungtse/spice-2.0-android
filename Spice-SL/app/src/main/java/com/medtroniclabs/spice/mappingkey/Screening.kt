@@ -199,4 +199,6 @@ object Screening {
     const val SeveralDays = "Several days"
     const val MoreThanHalfTheDays = "More than half the days"
     const val NearlyEveryDay = "Nearly every day"
+
+    const val NoOfNeonates="noOfNeonates"
 }

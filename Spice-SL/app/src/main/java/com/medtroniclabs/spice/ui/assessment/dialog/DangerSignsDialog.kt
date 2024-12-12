@@ -13,7 +13,6 @@ import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.isConvulsio
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.isUnusualSleepy
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.isVomiting
 import com.medtroniclabs.spice.R
-import com.medtroniclabs.spice.mappingkey.UnderFiveYearExaminationKeyMapping.HivAndAids.child
 
 class DangerSignsDialog : DialogFragment(), View.OnClickListener {
 
@@ -75,13 +74,19 @@ class DangerSignsDialog : DialogFragment(), View.OnClickListener {
 
     private fun setListener() {
         binding.btnLink.safeClickListener(this)
+        binding.btnCancel.safeClickListener(this)
     }
 
 
     override fun onClick(view: View) {
         when (view.id) {
             binding.btnLink.id -> {
-                okayButtonClickListener?.onDangerSignsClicked()
+                okayButtonClickListener?.onDangerSignsClicked(true)
+            }
+            binding.btnCancel.id -> {
+                dismiss()
+                okayButtonClickListener?.onDangerSignsClicked(false)
+
             }
         }
     }
@@ -95,6 +100,6 @@ class DangerSignsDialog : DialogFragment(), View.OnClickListener {
         this.okayButtonClickListener = listener
     }
     interface DangerSignsClickListener {
-        fun onDangerSignsClicked()
+        fun onDangerSignsClicked(b: Boolean)
     }
 }

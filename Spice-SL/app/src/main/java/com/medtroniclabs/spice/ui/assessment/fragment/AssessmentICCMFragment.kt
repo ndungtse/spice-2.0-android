@@ -6,8 +6,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import android.widget.TextView
-import androidx.appcompat.widget.AppCompatSpinner
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
@@ -58,6 +58,8 @@ import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.MUAC
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.MalnutritionCondition
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.ModerateDehydration
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.NoOfDaysDiarrhoea
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.NoOfDaysOfCough
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.NoOfDaysOfFever
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.ORSStatus
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.OrsDispensedStatus
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.SevereDehydration
@@ -65,6 +67,7 @@ import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.SssDispense
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.ZincDispensedStatus
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.ZincStatus
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.chestInDrawing
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.errorSuffix
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.hasCough
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.hasDiarrhoea
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.hasOedemaOfBothFeet
@@ -86,7 +89,6 @@ import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefined
 import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralReasons
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import timber.log.Timber
 
 @AndroidEntryPoint
 class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickListener,
@@ -323,10 +325,78 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
 
 
     override fun onFormSubmit(resultMap: HashMap<String, Any>?, serverData: List<FormLayout?>?) {
-        onSubmitICCM(resultMap,serverData)
+        val dob = viewModel.memberDetailsLiveData.value?.data?.dateOfBirth
+
+        resultMap?.let { map ->
+            var noOfDaysOfFever = if (map.containsKey(NoOfDaysOfFever)) {
+                map[NoOfDaysOfFever] as? Int
+            } else {
+                null
+            }
+
+
+            var numberOfDaysDiarrhoea = if (map.containsKey(NoOfDaysDiarrhoea)) {
+                map[NoOfDaysDiarrhoea] as? Int
+            } else {
+                null
+            }
+
+            var noOfDaysOfCough = if (map.containsKey(NoOfDaysOfCough)) {
+                map[NoOfDaysOfCough] as? Int
+            } else {
+                null
+            }
+            var isFeverDaysValid: Boolean? = null
+            var isCoughDaysValid: Boolean? = null
+            var isDiarrhoeaDaysValid: Boolean? = null
+            if (!dob.isNullOrEmpty()) {
+                if (noOfDaysOfFever != null) {
+                    isFeverDaysValid = noOfDaysOfFever.let {
+                        CommonUtils.isDateHigherThanInput(dob, it)
+                    }
+                }
+                if (noOfDaysOfCough != null) {
+                    isCoughDaysValid = noOfDaysOfCough.let {
+                        CommonUtils.isDateHigherThanInput(dob, it)
+                    }
+                }
+                if (numberOfDaysDiarrhoea != null) {
+                    isDiarrhoeaDaysValid = numberOfDaysDiarrhoea.let {
+                        CommonUtils.isDateHigherThanInput(dob, it)
+                    }
+                }
+
+            }
+
+            if (isFeverDaysValid == null && isDiarrhoeaDaysValid == null && isCoughDaysValid == null) {
+                onSubmitICCM(resultMap, serverData)
+            } else {
+                val feverValid = isFeverDaysValid ?: true
+                val coughValid = isCoughDaysValid ?: true
+                val diarrhoeaValid = isDiarrhoeaDaysValid ?: true
+                if (!feverValid) {
+                    formGenerator.getViewByTag(NoOfDaysOfFever + errorSuffix)?.apply {
+                        visibility =  View.VISIBLE
+                    }
+                }
+                if (!diarrhoeaValid) {
+                    formGenerator.getViewByTag(NoOfDaysDiarrhoea + errorSuffix)?.apply {
+                        visibility = View.VISIBLE
+                    }
+                }
+                if (!coughValid) {
+                    formGenerator.getViewByTag(NoOfDaysOfCough + errorSuffix)?.apply {
+                        visibility = View.VISIBLE
+                    }
+                }
+                if (feverValid && coughValid && diarrhoeaValid) {
+                    onSubmitICCM(resultMap, serverData)
+                }
+            }
+        }
     }
 
-    fun onSubmitICCM(resultMap: HashMap<String, Any>?, serverData: List<FormLayout?>?) {
+    private fun onSubmitICCM(resultMap: HashMap<String, Any>?, serverData: List<FormLayout?>?) {
         if (viewModel.isDangerSignFlow){
             resultMap?.keys?.retainAll(listOf(isUnusualSleepy,isConvulsionPastFewDays,isBreastfeed,isVomiting))
             resultMap?.filterValues { it == true }?.keys?.forEach { key ->
@@ -452,6 +522,7 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
                 }
             }
             isUnusualSleepy,isConvulsionPastFewDays,isVomiting,isBreastfeed->{
+                viewModel.nameOfDangerSignClicked=id
                 if (selectedId==true) {
                     viewModel.isDangerSignFlow=true
                     val existingFragment =
@@ -564,14 +635,24 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
                     displayDaysInformation(id, View.INVISIBLE)
                 }
             }
+
+            NoOfDaysOfCough -> {
+                onDaysValidation(id)
+                showDaysLimitation(enteredDays,noOfDays,id)
+            }
+
+            NoOfDaysDiarrhoea -> {
+                onDaysValidation(id)
+                showDaysLimitation(enteredDays,noOfDays,id)
+            }
+
+            NoOfDaysOfFever -> {
+                onDaysValidation(id)
+                showDaysLimitation(enteredDays,noOfDays,id)
+            }
+
             else -> {
-                if (enteredDays!=null && enteredDays > noOfDays) {
-                    updateColorCode(id, ContextCompat.getColor(requireContext(), R.color.medium_high_risk_color))
-                    displayDaysInformation(id, View.VISIBLE)
-                } else {
-                    updateColorCode(id, ContextCompat.getColor(requireContext(), R.color.secondary_black))
-                    displayDaysInformation(id, View.INVISIBLE)
-                }
+                showDaysLimitation(enteredDays,noOfDays,id)
             }
         }
     }
@@ -682,7 +763,37 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
         return formGenerator.getResultMap().isNotEmpty()
     }
 
-    override fun onDangerSignsClicked() {
-        onSubmitICCM(formGenerator.getResultMap(),formGenerator.getServerData())
+    override fun onDangerSignsClicked(isClicked: Boolean) {
+        if (isClicked) {
+            onSubmitICCM(formGenerator.getResultMap(), formGenerator.getServerData())
+        }else{
+            formGenerator.getViewByTag(viewModel.nameOfDangerSignClicked.toString()+rootSuffix)
+                ?.let { formGenerator.resetChildViews(it) }
+        }
+    }
+
+    // Based on age the no of days fever/cough/diarrhoea validation
+    private fun onDaysValidation(id: String) {
+        formGenerator.getViewByTag(id).takeIf { it is EditText }?.let { editText ->
+            val dob = viewModel.memberDetailsLiveData.value?.data?.dateOfBirth
+            val inputText = (editText as EditText).text.toString()
+            if (!dob.isNullOrEmpty() && inputText.isNotEmpty()) {
+                val isValid = CommonUtils.isDateHigherThanInput(dob, inputText.toInt())
+                formGenerator.getViewByTag(id + errorSuffix)?.apply {
+                    visibility = if (isValid) View.GONE else View.VISIBLE
+                }.takeIf { it is TextView }?.let { textView->(textView as TextView).text=
+                    getString(R.string.please_select_a_valid_value)
+                }
+            }
+        }
+    }
+    private fun showDaysLimitation(enteredDays: Int?, noOfDays: Int, id: String) {
+        if (enteredDays!=null && enteredDays > noOfDays) {
+            updateColorCode(id, ContextCompat.getColor(requireContext(), R.color.medium_high_risk_color))
+            displayDaysInformation(id, View.VISIBLE)
+        } else {
+            updateColorCode(id, ContextCompat.getColor(requireContext(), R.color.secondary_black))
+            displayDaysInformation(id, View.INVISIBLE)
+        }
     }
 }

@@ -282,4 +282,8 @@ class HouseholdMemberRepository @Inject constructor(
     suspend fun updateMemberAsAssigned(memberId: String) {
         roomHelper.updateMemberAsAssigned(memberId)
     }
+
+    suspend fun updateMemberDeceasedReason(id: Long, status: Boolean,deceasedReason: String?) {
+        return roomHelper.updateMemberDeceasedReason(id, status,deceasedReason)
+    }
 }

@@ -116,20 +116,35 @@
             app:layout_constraintGuide_percent="0.80" />
 
         <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnCancel"
+            style="@style/Button_Style_Border"
+            android:layout_width="@dimen/_0dp"
+            android:layout_gravity="center"
+            android:layout_margin="@dimen/_15sdp"
+            android:layout_weight="1"
+            android:text="@string/cancel"
+            android:textAllCaps="true"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/endGuideline"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/bottomDivider"
+            app:layout_constraintVertical_bias="1.0" />
+
+
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btnLink"
             style="@style/Button_Style"
             android:layout_width="@dimen/_0dp"
             android:layout_gravity="center"
-            android:layout_margin="@dimen/_20sdp"
+            android:layout_margin="@dimen/_15sdp"
             android:layout_weight="1"
-            android:fontFamily="@font/inter_bold"
-            android:text="@string/okay"
+            android:text="@string/confirm"
             android:textAllCaps="true"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/endGuideline"
             app:layout_constraintTop_toBottomOf="@id/bottomDivider"
- />
+            app:layout_constraintVertical_bias="1.0" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

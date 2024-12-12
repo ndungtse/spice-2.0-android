@@ -447,4 +447,10 @@ object SpiceSLMigration {
 
         }
     }
+    val MIGRATION_2_3 = object : Migration(2, 3) {
+        override fun migrate(database: SupportSQLiteDatabase) {
+            // Add the new deceasedReason column
+            database.execSQL("ALTER TABLE HouseholdMember ADD COLUMN deceasedReason TEXT")
+        }
+    }
 }

@@ -97,27 +97,36 @@ class PatientMenuFragment : BaseFragment(), MenuSelectionListener {
 
         // Check and set isDisable property based on gender
         menuItemsList.forEach { menuItem ->
-            if (menuItem.name == MenuConstants.MOTHER_AND_NEONATE_ID) {
-                menuItem.isDisabled = when {
-                    gender.equals(male, true) -> true
-                    gender.equals(female, true) && !dob.isNullOrBlank() -> {
-                        val ageAndWeek = DateUtils.getV2YearMonthAndWeek(dob)
-                        val ageYears = ageAndWeek.years
-                        val ageMonths = ageAndWeek.months
-                        val ageWeeks = ageAndWeek.weeks
-                        val ageDays = ageAndWeek.days
+            when (menuItem.name) {
+                 (MenuConstants.MOTHER_AND_NEONATE_ID)->{
+                    menuItem.isDisabled = when {
+                        gender.equals(male, true) -> true
+                        gender.equals(female, true) && !dob.isNullOrBlank() -> {
+                            val ageAndWeek = DateUtils.getV2YearMonthAndWeek(dob)
+                            val ageYears = ageAndWeek.years
+                            val ageMonths = ageAndWeek.months
+                            val ageWeeks = ageAndWeek.weeks
+                            val ageDays = ageAndWeek.days
 
-                        (ageYears !in PREGNANCY_MIN_AGE..PREGNANCY_MAX_AGE) || (ageYears == PREGNANCY_MAX_AGE && (ageMonths + ageWeeks + ageDays) != 0)
+                            (ageYears !in PREGNANCY_MIN_AGE..PREGNANCY_MAX_AGE) || (ageYears == PREGNANCY_MAX_AGE && (ageMonths + ageWeeks + ageDays) != 0)
+                        }
+
+                        (gender.equals(female, true) || gender.equals(
+                            male,
+                            true
+                        )) && dob.isNullOrBlank() -> true
+
+                        else -> false
                     }
-
-                    (gender.equals(female, true) || gender.equals(
-                        male,
-                        true
-                    )) && dob.isNullOrBlank() -> true
-
-                    else -> false
                 }
+
+                    MenuConstants.GENERAL_ID -> menuItem.isDisabled =isGeneralDisabled(dob)
+                    MenuConstants.UNDER_AGE_FIVE_TO_TWO_MONTHS_ID -> menuItem.isDisabled =isUnderFiveToTwoMonthsDisabled(dob)
+                    MenuConstants.UNDER_AGE_ABOVE_FIVE_YEAR_ID ->menuItem.isDisabled = isUnderAgeAboveFiveYearsDisabled(dob)
+                    else -> {}
+
             }
+
         }
         binding.rvActivitiesList.adapter =
             DashboardMenuItemsAdapter(menuItemsList.filter { !it.isDisabled }, this)
@@ -215,6 +224,43 @@ class PatientMenuFragment : BaseFragment(), MenuSelectionListener {
             startActivity(intent)
         } else {
             showErrorDialog(getString(R.string.error), getString(R.string.no_internet_error))
+        }
+    }
+    private fun isGeneralDisabled(dob: String?): Boolean {
+        if (dob.isNullOrBlank()) return false
+        val age = DateUtils.getV2YearMonthAndWeek(dob)
+        return when {
+            age.years > 5 -> false
+            age.years == 5 && (age.months > 0 || age.weeks > 0 || age.days > 0) -> false
+            else -> true
+        }
+    }
+
+    private fun isUnderFiveToTwoMonthsDisabled(dob: String?): Boolean {
+        if (dob.isNullOrBlank()) return false
+        val age = DateUtils.getV2YearMonthAndWeek(dob)
+        return when {
+            // Age is under 2 months
+            age.years == 0 && age.months < 2 -> false
+            // Age is exactly 2 months but with any week or day deviation
+            age.years == 0 && age.months == 2 && age.weeks == 0 && age.days== 0 -> false
+            else -> true
+        }
+    }
+
+    private fun isUnderAgeAboveFiveYearsDisabled(dob: String?): Boolean {
+        if (dob.isNullOrBlank()) return false
+        val age = DateUtils.getV2YearMonthAndWeek(dob)
+        return when {
+            // Age is less than 2 months
+            age.years == 0 && age.months < 2 -> true
+
+            age.years == 0  && (age.months == 2 && age.weeks == 0 && age.days == 0)->false
+            // Age is exactly 5 years
+            age.years == 5 && (age.months == 0 && age.weeks == 0 && age.days == 0) -> false
+            // Age is more than 2 months but less than 5 years
+            age.years < 5 -> false
+            else -> true
         }
     }
 }

@@ -72,6 +72,8 @@ data class HouseHoldMember(
 
     val lastUpdated: String? = null,
 
+    var deceasedReason: String? = null,
+
     val assignHousehold: Boolean? = null,
 ) {
 
@@ -105,7 +107,8 @@ data class HouseHoldMember(
             signature = this.signature,
             initial = this.initial,
             version = this.version,
-            lastUpdated = this.lastUpdated
+            lastUpdated = this.lastUpdated,
+            deceasedReason = this.deceasedReason
         ).apply {
             fhirId = this@HouseHoldMember.id.toString()
             sync_status = status

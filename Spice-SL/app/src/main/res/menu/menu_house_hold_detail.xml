@@ -15,5 +15,9 @@
         android:id="@+id/addNewMember"
         android:icon="@drawable/ic_add_new_member"
         android:title="@string/add_new_member_small" />
+    <item
+        android:id="@+id/memberDeceased"
+        android:icon="@drawable/ic_member_deceased"
+        android:title="@string/member_deceased" />
 
 </menu>

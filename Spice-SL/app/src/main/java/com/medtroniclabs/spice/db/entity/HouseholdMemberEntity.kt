@@ -54,6 +54,8 @@ data class HouseholdMemberEntity(
 
     var localSignatureFile: String? = null,
 
-    var motherReferenceId: Long? = null
+    var motherReferenceId: Long? = null,
+
+    var deceasedReason: String? = null
 
     ) : BaseEntity()

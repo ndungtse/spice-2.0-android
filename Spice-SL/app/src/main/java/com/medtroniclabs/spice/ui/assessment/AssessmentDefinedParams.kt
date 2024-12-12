@@ -145,4 +145,8 @@ object AssessmentDefinedParams {
     const val Measles1Given="measles1Given"
     const val YellowFeverVacineGiven="yellowFeverVacineGiven"
     const val Measles2Given="measles2Given"
+
+    const val errorSuffix = "errorMessageView"
+    const val DateOfBirth="date_of_birth"
+
 }

@@ -61,6 +61,8 @@ import com.medtroniclabs.spice.mappingkey.MemberRegistration.phoneNumber
 import com.medtroniclabs.spice.mappingkey.MemberRegistration.phoneNumberCategory
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.DateOfBirth
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.errorSuffix
 import com.medtroniclabs.spice.ui.dialog.SuccessDialogFragment
 import com.medtroniclabs.spice.ui.home.AssessmentToolsActivity
 import com.medtroniclabs.spice.ui.household.HouseholdActivity
@@ -404,7 +406,21 @@ class MemberRegistrationFragment : Fragment(), FormEventListener, View.OnClickLi
     private fun initializeView() {
         formGenerator = FormGenerator(
             requireContext(), binding.llForm, null, this, binding.scrollView, translate = SecuredPreference.getIsTranslationEnabled()
-        )
+        ) { map, id->
+            val month = map["month"] as? Int
+            val week = map["week"] as? Int
+            if (month in 0..11 && week in 0..4) {
+                formGenerator.getViewByTag(DateOfBirth + errorSuffix)?.apply {
+                    visibility = View.GONE
+                }
+            }else{
+                formGenerator.getViewByTag(DateOfBirth + errorSuffix)?.apply {
+                    visibility = View.VISIBLE
+                }.takeIf { it is TextView }?.let { textView->(textView as TextView).text=
+                    getString(R.string.please_select_a_valid_value)
+                }
+            }
+        }
     }
 
     private fun handleRelationshipSpinner() {
@@ -476,27 +492,44 @@ class MemberRegistrationFragment : Fragment(), FormEventListener, View.OnClickLi
 
     override fun onFormSubmit(resultMap: HashMap<String, Any>?, serverData: List<FormLayout?>?) {
         resultMap?.let { map ->
-            if (memberRegistrationViewModel.medicalReviewFlow) {
-                memberRegistrationViewModel.addNewMember(map, formGenerator)
-            } else {
-                if (householdRegistrationViewModel.isMemberRegistration || householdRegistrationViewModel.memberID != -1L) {
-                    if (memberRegistrationViewModel.isPhuWalkInsFlow == true) {
-                        householdRegistrationViewModel.updateMemberAsAssigned(arguments?.getLong(com.medtroniclabs.spice.common.DefinedParams.FhirMemberID))
-                    }
-                    memberRegistrationViewModel.registerMember(
-                        map,
-                        householdRegistrationViewModel.householdId
-                    )
+            val month = map["month"] as? Int
+            val week = map["week"] as? Int
+            if (month in 0..11 && week in 0..4) {
+                if (memberRegistrationViewModel.medicalReviewFlow) {
+                    memberRegistrationViewModel.addNewMember(map, formGenerator)
                 } else {
-                    householdRegistrationViewModel.householdEntityDetail?.let { householdEntity ->
-                        memberRegistrationViewModel.registerHouseThenMember(
-                            householdEntity,
+                    if (householdRegistrationViewModel.isMemberRegistration || householdRegistrationViewModel.memberID != -1L) {
+                        if (memberRegistrationViewModel.isPhuWalkInsFlow == true) {
+                            householdRegistrationViewModel.updateMemberAsAssigned(
+                                arguments?.getLong(
+                                    com.medtroniclabs.spice.common.DefinedParams.FhirMemberID
+                                )
+                            )
+                        }
+                        memberRegistrationViewModel.registerMember(
                             map,
-                            householdRegistrationViewModel.getCurrentLocation(),
-                            householdRegistrationViewModel.initialValue,
-                            householdRegistrationViewModel.signatureFilename
+                            householdRegistrationViewModel.householdId
                         )
+                    } else {
+                        householdRegistrationViewModel.householdEntityDetail?.let { householdEntity ->
+                            memberRegistrationViewModel.registerHouseThenMember(
+                                householdEntity,
+                                map,
+                                householdRegistrationViewModel.getCurrentLocation(),
+                                householdRegistrationViewModel.initialValue,
+                                householdRegistrationViewModel.signatureFilename
+                            )
+                        }
                     }
+                }
+                formGenerator.getViewByTag(DateOfBirth + errorSuffix)?.apply {
+                    visibility = View.GONE
+                }
+            }else{
+                formGenerator.getViewByTag(DateOfBirth + errorSuffix)?.apply {
+                    visibility = View.VISIBLE
+                }.takeIf { it is TextView }?.let { textView->(textView as TextView).text=
+                    getString(R.string.please_select_a_valid_value)
                 }
             }
         }

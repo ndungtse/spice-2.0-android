@@ -525,6 +525,12 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
         }
 
         if (shouldHideNeonateFlow()) {
+            viewModel.isDeathOfNewborn=true
+            if (viewModel.workflowName == RMNCH.PNC) {
+            formGenerator.getViewByTag(ExclusivelyBreastfeeding + rootSuffix)?.apply {
+                visibility = View.GONE
+            }
+            }
             binding.btnSubmit.text = getString(R.string.submit)
         } else {
             binding.btnSubmit.text = getString(R.string.next)
@@ -616,51 +622,57 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
     }
 
     private fun updateAgeInMonths(age: String) {
-        if (age.contains(getString(R.string.week), true)
-            || age.contains(getString(R.string.day), true)){
-            hideUnder5Months()
-        }else {
-            when (age.replace(getString(R.string.months), "").replace(getString(R.string.month), "").trim().toInt()) {
-                in 0..5 -> {
-                    hideUnder5Months()
-                }
-                in 6..12 -> {
-
-                    formGenerator.getViewByTag(ExclusivelyBreastfeeding + rootSuffix)?.apply {
-                        visibility = View.GONE
+        if (viewModel.workflowName != RMNCH.PNC) {
+            if (age.contains(getString(R.string.week), true)
+                || age.contains(getString(R.string.day), true)
+            ) {
+                hideUnder5Months()
+            } else {
+                when (age.replace(getString(R.string.months), "")
+                    .replace(getString(R.string.month), "").trim().toInt()) {
+                    in 0..5 -> {
+                        hideUnder5Months()
                     }
-                    formGenerator.getViewByTag(Measles2Given + rootSuffix)?.apply {
-                        visibility = View.GONE
-                    }
-                }
-                in 13..15-> {
 
-                    formGenerator.getViewByTag(ExclusivelyBreastfeeding + rootSuffix)?.apply {
-                        visibility = View.GONE
-                    }
-                }
+                    in 6..12 -> {
 
-                else -> {
+                        formGenerator.getViewByTag(ExclusivelyBreastfeeding + rootSuffix)?.apply {
+                            visibility = View.GONE
+                        }
+                        formGenerator.getViewByTag(Measles2Given + rootSuffix)?.apply {
+                            visibility = View.GONE
+                        }
+                    }
+
+                    in 13..15 -> {
+
+                        formGenerator.getViewByTag(ExclusivelyBreastfeeding + rootSuffix)?.apply {
+                            visibility = View.GONE
+                        }
+                    }
+
+                    else -> {
+                    }
                 }
             }
         }
-    }
-    private fun hideUnder5Months(){
-        formGenerator.getViewByTag(TakingMinimumMealsPerDay + rootSuffix)?.apply {
-            visibility = View.GONE
         }
-        formGenerator.getViewByTag(FedFrom4FoodGroups + rootSuffix)?.apply {
-            visibility = View.GONE
+        private fun hideUnder5Months() {
+            formGenerator.getViewByTag(TakingMinimumMealsPerDay + rootSuffix)?.apply {
+                visibility = View.GONE
+            }
+            formGenerator.getViewByTag(FedFrom4FoodGroups + rootSuffix)?.apply {
+                visibility = View.GONE
+            }
+            formGenerator.getViewByTag(Measles1Given + rootSuffix)?.apply {
+                visibility = View.GONE
+            }
+            formGenerator.getViewByTag(YellowFeverVacineGiven + rootSuffix)?.apply {
+                visibility = View.GONE
+            }
+            formGenerator.getViewByTag(Measles2Given + rootSuffix)?.apply {
+                visibility = View.GONE
+            }
         }
-        formGenerator.getViewByTag(Measles1Given + rootSuffix)?.apply {
-            visibility = View.GONE
-        }
-        formGenerator.getViewByTag(YellowFeverVacineGiven + rootSuffix)?.apply {
-            visibility = View.GONE
-        }
-        formGenerator.getViewByTag(Measles2Given + rootSuffix)?.apply {
-            visibility = View.GONE
-        }
-    }
 
 }

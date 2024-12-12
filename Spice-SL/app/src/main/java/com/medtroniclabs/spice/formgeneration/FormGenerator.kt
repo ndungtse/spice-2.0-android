@@ -2780,7 +2780,10 @@ class FormGenerator(
                         val actualValue = resultHashMap[id]
                         if (actualValue is String && actualValue.isEmpty() && !isMandatory) {
                             hideValidationField(data)
-                        } else {
+                        }else if (id == Screening.NoOfNeonates && resultHashMap[id].toString().toIntOrNull() == 0) {
+                            isValid = false
+                            requestFocusView(data)
+                        }else {
                             isValid = validateMinMaxLength(
                                 actualValue,
                                 isValid,

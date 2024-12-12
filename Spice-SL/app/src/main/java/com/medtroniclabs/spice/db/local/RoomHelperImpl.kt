@@ -1185,4 +1185,8 @@ class RoomHelperImpl @Inject constructor(
     override suspend fun deleteAllLinkedVillages() {
         metaDataDAO.deleteAllLinkedVillages()
     }
+
+    override suspend fun updateMemberDeceasedReason(id: Long, status: Boolean,deceasedReason: String?) {
+        memberDAO.updateMemberDeceasedReason(id, status, OfflineSyncStatus.NotSynced,deceasedReason)
+    }
 }

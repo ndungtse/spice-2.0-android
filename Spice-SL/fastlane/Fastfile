@@ -23,7 +23,7 @@ platform :android do
 
 desc "Submit a new dev Build to firebase"
      lane :fireInternal do
-     gradle(task: "clean assemble",build_type: "staging" )
+     gradle(task: "clean assemble",build_type: "staging", flavor: "sl" )
        # Read release notes from file
        release_notes_file_path = "./release_notes/staging/release_notes1.txt"
        release_notes = File.read(release_notes_file_path)
@@ -38,7 +38,7 @@ desc "Submit a new dev Build to firebase"
 
   desc "Submit a new dev Build to firebase"
      lane :fireStaging do
-     gradle(task: "clean assemble",build_type: "staging" )
+     gradle(task: "clean assemble",build_type: "staging",flavor: "sl" )
      # Read release notes from file
             release_notes_file_path = "./release_notes/staging/release_notes1.txt"
             release_notes = File.read(release_notes_file_path)
@@ -53,7 +53,7 @@ desc "Submit a new dev Build to firebase"
 
   desc "Submit a new training Build to firebase"
      lane :fireTrainingInternal do
-     gradle(task: "clean assemble",build_type: "training" )
+     gradle(task: "clean assemble",build_type: "training",flavor: "sl")
      # Read release notes from file
             release_notes_file_path = "./release_notes/training/release_notes.txt"
             release_notes = File.read(release_notes_file_path)
@@ -67,7 +67,7 @@ desc "Submit a new dev Build to firebase"
 
   desc "Submit a new training Build to firebase"
        lane :fireTraining do
-       gradle(task: "clean assemble",build_type: "training" )
+       gradle(task: "clean assemble",build_type: "training", flavor: "sl" )
        # Read release notes from file
               release_notes_file_path = "./release_notes/training/release_notes.txt"
               release_notes = File.read(release_notes_file_path)

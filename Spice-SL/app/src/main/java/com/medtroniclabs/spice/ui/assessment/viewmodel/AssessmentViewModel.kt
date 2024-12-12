@@ -156,6 +156,9 @@ class AssessmentViewModel @Inject constructor(
         }
     }
 
+    var isDeathOfNewborn=false
+    var nameOfDangerSignClicked:String? = null
+
 
 
     fun getPNCChildInfoByParentId(parentId: Long) {

@@ -194,6 +194,7 @@ class AssessmentRMNCHNeonateSummaryFragment : BaseFragment(), View.OnClickListen
         value: Resource<FormResponse>?
     ) {
         value?.data?.formLayout?.filter { it.family == pnc && it.isSummary == true }
+            ?.filterNot { it.id in showQuestionBasedAge() }
             ?.forEach { formlayout ->
                 formlayout.apply {
                     parentLayout.addView(
@@ -375,5 +376,12 @@ class AssessmentRMNCHNeonateSummaryFragment : BaseFragment(), View.OnClickListen
 
     fun getCurrentAnsweredStatus(): Boolean {
         return viewModel.otherAssessmentDetails.isNotEmpty()
+    }
+    private fun showQuestionBasedAge(): List<String> {
+        var questionList = ArrayList<String>()
+        if (viewModel.isDeathOfNewborn) {
+            questionList.add(AssessmentDefinedParams.ExclusivelyBreastfeeding)
+        }
+        return questionList
     }
 }

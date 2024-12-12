@@ -746,8 +746,7 @@ class MotherNeonatePncActivity : BaseActivity(), View.OnClickListener, AncVisitC
         }
 
         if (viewModel.motherNeonatePncRequest.pncMother?.isMotherAlive == false &&
-            viewModel.motherNeonatePncRequest.pncChild?.isChildAlive == false
-        ) {
+            (viewModel.motherNeonatePncRequest.pncChild?.isChildAlive == false ||viewModel.motherNeonatePncRequest.pncChild==null)        ) {
             motherNeonatePncSummaryViewModel.motherNeonateAlive = false
         }
        var isShowNeonate= viewModel.neonateOutCome==MedicalReviewDefinedParams.LiveBirth
@@ -932,8 +931,8 @@ class MotherNeonatePncActivity : BaseActivity(), View.OnClickListener, AncVisitC
     }
 
     private fun areMotherAndChildNotAlive(): Boolean {
-        return viewModel.motherNeonatePncRequest.pncMother?.isMotherAlive == false &&
-                viewModel.motherNeonatePncRequest.pncChild?.isChildAlive == false
+         return viewModel.motherNeonatePncRequest.pncMother?.isMotherAlive == false && (
+                viewModel.motherNeonatePncRequest.pncChild?.isChildAlive == false || viewModel.motherNeonatePncRequest.pncMother==null )
     }
 
     private fun setLabourDeliveryData(labourRequest: String?) {

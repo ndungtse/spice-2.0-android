@@ -1235,6 +1235,8 @@
     <string name="urgent_referral">Urgent Referral</string>
     <string name="entered_values_should_contain_only_alphabets">Entered values should contain only alphabets</string>
     <string name="delivery_at_others">Delivery At(Others)</string>
+    <string name="please_select_a_valid_value">Please select a valid value</string>
+    <string name="select_member_deceased">Select Member Deceased</string>
 
     <string name="support_label" translatable="false">Please write your issues with the\napplication</string>
     <string name="support" translatable="false">Support</string>

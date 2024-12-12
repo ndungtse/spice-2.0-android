@@ -444,4 +444,7 @@ interface RoomHelper {
     suspend fun saveCultures(cultures: List<CulturesEntity>)
     suspend fun getCultures(): List<CulturesEntity>
     suspend fun deleteCultures()
+
+    suspend fun updateMemberDeceasedReason(id: Long, status: Boolean,deceasedReason: String?)
+
 }

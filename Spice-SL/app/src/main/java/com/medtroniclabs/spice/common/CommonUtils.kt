@@ -77,6 +77,9 @@ import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.Period
 import java.time.format.DateTimeFormatter
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
 import java.util.Calendar
 import java.util.Locale
 import kotlin.math.roundToInt
@@ -1980,4 +1983,20 @@ object CommonUtils {
     fun mandatoryNotRequired(): Boolean {
         return isNonCommunity() && isProvider()
     }
+
+    fun isDateHigherThanInput(dateString: String, noOfDayFever: Int): Boolean {
+            // Parse the given date string
+            val formatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME
+            val givenDate = LocalDate.parse(dateString, formatter)
+
+            // Get the current date
+            val currentDate = LocalDate.now()
+
+            // Calculate the number of days between the current date and the given date
+            val daysDifference = ChronoUnit.DAYS.between(givenDate, currentDate).toInt()
+
+            // Check if the given date is not lesser than the noOfDayFever
+            return daysDifference >= noOfDayFever
+        }
+
 }

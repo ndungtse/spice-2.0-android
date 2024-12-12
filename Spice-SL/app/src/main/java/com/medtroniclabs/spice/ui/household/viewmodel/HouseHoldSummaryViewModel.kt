@@ -9,6 +9,7 @@ import com.medtroniclabs.spice.data.model.HouseholdCardDetail
 import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.repo.HouseHoldRepository
+import com.medtroniclabs.spice.repo.HouseholdMemberRepository
 import com.medtroniclabs.spice.ui.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
@@ -18,8 +19,9 @@ import javax.inject.Inject
 @HiltViewModel
 class HouseHoldSummaryViewModel @Inject constructor(
     @IoDispatcher override var dispatcherIO: CoroutineDispatcher,
-    private val houseHoldRepository: HouseHoldRepository
-) : BaseViewModel(dispatcherIO) {
+    private val houseHoldRepository: HouseHoldRepository,
+    private var memberRegistrationRepository: HouseholdMemberRepository,
+    ) : BaseViewModel(dispatcherIO) {
 
     var houseHoldId: Long = -1L
     var isFromHouseHoldRegistration: Boolean = false
@@ -28,6 +30,7 @@ class HouseHoldSummaryViewModel @Inject constructor(
     var previousCount: Int = 0
     var selectedMemberDob: String? = null
     var isPhuWalkInsFlow:Boolean=false
+    var hasDeceasedReason:Boolean=false
 
     private val houseHoldNoLiveData = MutableLiveData<Long>()
     val householdCardDetailLiveData: LiveData<HouseholdCardDetail> =
@@ -45,5 +48,13 @@ class HouseHoldSummaryViewModel @Inject constructor(
     fun setHouseholdId(hhId: Long) {
         this.houseHoldId = hhId
         houseHoldNoLiveData.value = hhId
+    }
+    fun updateMemberDeceasedReason(id: Long, status: Boolean,deceasedReason: String?) {
+        viewModelScope.launch(dispatcherIO) {
+            memberRegistrationRepository.updateMemberDeceasedReason(
+                id,
+                status,deceasedReason
+            )
+        }
     }
 }
