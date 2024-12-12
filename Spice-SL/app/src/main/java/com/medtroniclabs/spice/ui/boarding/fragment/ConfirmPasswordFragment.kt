@@ -85,7 +85,7 @@ class ConfirmPasswordFragment : BaseFragment(), View.OnClickListener {
             return
         }
 
-        viewModel.resetPassword(password)
+        withNetworkAvailability(online = { viewModel.resetPassword(password) })
     }
 
     private fun isPasswordValid(password: String): Boolean {

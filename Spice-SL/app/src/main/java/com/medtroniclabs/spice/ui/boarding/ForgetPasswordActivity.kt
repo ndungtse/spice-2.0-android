@@ -37,9 +37,17 @@ class ForgetPasswordActivity : BaseActivity() {
     private fun attachObservers() {
         viewModel.resetTokenLiveData.observe(this) {
             if (!it.isNullOrEmpty()) {
-                viewModel.validateToken(it)
                 supportFragmentManager.beginTransaction()
                     .replace(binding.fcEmailFragment.id, ConfirmPasswordFragment()).commit()
+                if (connectivityManager.isNetworkAvailable()) {
+                    viewModel.validateToken(it)
+                } else {
+                    showErrorDialogue(getString(R.string.error), getString(R.string.no_internet_error)){ isPositive ->
+                        if (isPositive) {
+                            redirectToLogin()
+                        }
+                    }
+                }
             } else {
                 supportFragmentManager.beginTransaction()
                     .add(binding.fcEmailFragment.id, ResetPasswordFragment()).commit()
