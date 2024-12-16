@@ -47,7 +47,7 @@ class UnderFiveYearsViewModel @Inject constructor(
         MutableLiveData<Resource<CreateUnderTwoMonthsResponse>>()
     val createUnderFiveYearMedicalReview: LiveData<Resource<CreateUnderTwoMonthsResponse>>
         get() = createUnderFiveMedicalReviewLiveData
-    private var lastLocation: Location? = null
+    var lastLocation: Location? = null
     val summaryCreateResponse = MutableLiveData<Resource<HashMap<String, Any>>>()
 
     val underFiveYearsMetaLiveData = MutableLiveData<Resource<Boolean>>()

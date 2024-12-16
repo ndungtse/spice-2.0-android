@@ -49,7 +49,7 @@ class UnderTwoMonthViewModel @Inject constructor(
         get() = createUnderTwoMonthsMedicalReviewLiveData
     val underTwoMonthsMetaLiveData = MutableLiveData<Resource<Boolean>>()
     var patientId: String? = null
-    private var lastLocation: Location? = null
+    var lastLocation: Location? = null
     val summaryCreateResponse = MutableLiveData<Resource<HashMap<String, Any>>>()
     var isRefresh: Boolean=false
     var encounterId:String?=null

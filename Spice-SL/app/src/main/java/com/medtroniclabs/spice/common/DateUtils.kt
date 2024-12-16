@@ -86,8 +86,8 @@ object DateUtils {
 
         // Calculate the weeks by finding the number of days and then converting to weeks
         val daysBetween = ChronoUnit.DAYS.between(
-            dobDate.plusYears(years.toLong()).plusMonths(months.toLong()),
-            today
+            dobDate,
+            today.minusYears(years.toLong()).minusMonths(months.toLong())
         )
         val weeks = (daysBetween / 7).toInt()
         val days = (daysBetween % 7).toInt()

@@ -17,6 +17,7 @@ import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.SecuredPreference
+import com.medtroniclabs.spice.common.SpiceLocationManager
 import com.medtroniclabs.spice.databinding.ActivityUnderTwoMonthsBaseBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.model.PatientListRespModel
@@ -87,6 +88,7 @@ class UnderTwoMonthsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
         attachObserver()
         initializeListeners()
         setAnalytics()
+        getCurrentLocation()
     }
     private fun setAnalytics(){
         UserDetail.eventName= AnalyticsDefinedParams.MedicalReviewCreation
@@ -541,6 +543,11 @@ private fun successSummaryDialog() {
                     }
                 startActivityWithoutSplashScreen()
             }
+        }
+    }
+    private fun getCurrentLocation() {
+        SpiceLocationManager(this).getCurrentLocation {
+            viewModel.lastLocation = it
         }
     }
 

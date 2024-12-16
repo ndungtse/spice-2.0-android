@@ -76,6 +76,7 @@ class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
         initializeViews()
         initializeListeners()
         attachObserver()
+        getCurrentLocation()
         UserDetail.eventName=AnalyticsDefinedParams.MedicalReviewCreation
         viewModel.setUserJourney(AnalyticsDefinedParams.AboveFiveYears)
     }

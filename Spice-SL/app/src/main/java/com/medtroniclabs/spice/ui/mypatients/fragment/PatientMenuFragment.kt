@@ -243,7 +243,7 @@ class PatientMenuFragment : BaseFragment(), MenuSelectionListener {
             // Age is under 2 months
             age.years == 0 && age.months < 2 -> false
             // Age is exactly 2 months but with any week or day deviation
-            age.years == 0 && age.months == 2 && age.weeks == 0 && age.days== 0 -> false
+            // age.years == 0 && age.months == 2 && age.weeks == 0 && age.days== 0 -> false
             else -> true
         }
     }

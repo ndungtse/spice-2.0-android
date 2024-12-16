@@ -381,6 +381,9 @@ class MemberRegistrationFragment : Fragment(), FormEventListener, View.OnClickLi
             dateDob?.let { dob ->
                 formGenerator.fillDetailsOnDatePickerSet(dob, false)
             }
+                formGenerator.getViewByTag(DateOfBirth + errorSuffix)?.apply {
+                    visibility = View.GONE
+                }
 
         }
     }
@@ -416,8 +419,9 @@ class MemberRegistrationFragment : Fragment(), FormEventListener, View.OnClickLi
             }else{
                 formGenerator.getViewByTag(DateOfBirth + errorSuffix)?.apply {
                     visibility = View.VISIBLE
-                }.takeIf { it is TextView }?.let { textView->(textView as TextView).text=
-                    getString(R.string.please_select_a_valid_value)
+                }.takeIf { it is TextView }?.let { textView ->
+                    (textView as TextView).text =
+                        getString(R.string.please_select_a_valid_value_month)
                 }
             }
         }
