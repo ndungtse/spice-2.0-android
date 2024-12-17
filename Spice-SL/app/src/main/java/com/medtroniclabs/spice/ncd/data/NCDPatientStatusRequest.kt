@@ -8,6 +8,7 @@ data class NCDPatientStatusRequest(
     val provenance: ProvanceDto? = null,
     val ncdPatientStatus: NcdPatientStatus? = null,
     val patientReference: String? = null,
+    val patientVisitId: String? = null
 )
 
 data class NcdPatientStatus(

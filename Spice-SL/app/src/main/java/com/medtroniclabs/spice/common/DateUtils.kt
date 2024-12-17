@@ -836,7 +836,7 @@ object DateUtils {
 
     fun getDaysDifference(due: Long): Int? {
         return try {
-            val diffInMillis = due - System.currentTimeMillis()
+            val diffInMillis = abs(System.currentTimeMillis() - due)
             TimeUnit.MILLISECONDS.toDays(diffInMillis).toInt()
         } catch (e: Exception) {
             null

@@ -137,6 +137,7 @@ class ToolsMenuFragment : BaseFragment(), MenuSelectionListener {
         val intent = Intent(requireContext(), AssessmentActivity::class.java)
         intent.putExtra(DefinedParams.MemberID, viewModel.selectedHouseholdMemberID)
         intent.putExtra(DefinedParams.DOB, viewModel.selectedMemberDob)
+        intent.putExtra(MenuConstants.FOLLOW_UP, isFollowUp())
         intent.putExtra(DefinedParams.FollowUpId, viewModel.followUpId)
         intent.putExtra(DefinedParams.MenuId, menuId)
         intent.putExtra(DefinedParams.FhirId, getMemberReference())
@@ -153,6 +154,9 @@ class ToolsMenuFragment : BaseFragment(), MenuSelectionListener {
 
     private fun getMemberReference(): String? {
         return requireArguments().getString(DefinedParams.FhirId)
+    }
+    private fun isFollowUp(): Boolean {
+        return requireArguments().getBoolean(MenuConstants.FOLLOW_UP)
     }
 
     private fun getOrigin(): String {

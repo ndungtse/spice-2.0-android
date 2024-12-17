@@ -607,6 +607,7 @@ class NCDMentalHealthFragment : DialogFragment(), View.OnClickListener {
         const val MENTAL_HEALTH_STATUS = "MentalHealthStatus"
         const val SUBSTANCE_USE_STATUS = "SubstanceUseStatus"
         fun newInstance(
+            visitId: String?,
             patientReference: String?,
             memberReference: String?,
             isFemale: Boolean,
@@ -617,6 +618,7 @@ class NCDMentalHealthFragment : DialogFragment(), View.OnClickListener {
                 arguments = Bundle().apply {
                     putString(NCDMRUtil.PATIENT_REFERENCE, patientReference)
                     putString(NCDMRUtil.MEMBER_REFERENCE, memberReference)
+                    putString(NCDMRUtil.EncounterReference, visitId)
                     putBoolean(NCDMRUtil.IS_FEMALE, isFemale)
                     putBoolean(NCDMRUtil.IsPregnant, isPregnant)
                     putBoolean(NCDMRUtil.ShowNCD, showNCD)
@@ -746,6 +748,7 @@ class NCDMentalHealthFragment : DialogFragment(), View.OnClickListener {
                 if (validateInput()) {
                     val request = NCDMentalHealthStatusRequest(
                         id = viewModel.patientStatusId,
+                        patientVisitId = getEncounterReference(),
                         provenance = ProvanceDto(),
                         memberReference = getMemberReference(),
                         patientReference = getPatientReference(),
@@ -787,6 +790,10 @@ class NCDMentalHealthFragment : DialogFragment(), View.OnClickListener {
 
     private fun getMemberReference(): String? {
         return arguments?.getString(NCDMRUtil.MEMBER_REFERENCE)
+    }
+
+    private fun getEncounterReference(): String? {
+        return arguments?.getString(NCDMRUtil.EncounterReference)
     }
 
     fun showLoading() {

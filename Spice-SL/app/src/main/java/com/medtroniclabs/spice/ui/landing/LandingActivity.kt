@@ -586,13 +586,15 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
         }
     }
 
-    override fun onDialogDismissListener(isAfrica: Boolean) {
+    override fun onDialogDismissListener(isFinish: Boolean) {
         val homeMenuItem = binding.navView.menu.findItem(R.id.home)
         onNavigationItemSelected(homeMenuItem)
-        if (CommonUtils.isNonCommunity()) {
-            withNetworkAvailability(online = {
-                this.triggerOneTimeWorker()
-            })
+        if (isFinish) {
+            if (CommonUtils.isNonCommunity()) {
+                withNetworkAvailability(online = {
+                    this.triggerOneTimeWorker()
+                })
+            }
         }
     }
 

@@ -9,7 +9,8 @@ data class NCDMentalHealthStatusRequest(
     val provenance: ProvanceDto? = null,
     val ncdPatientStatus: NcdPatientStatus? = null,
     val patientReference: String? = null,
-    val memberReference: String? = null
+    val memberReference: String? = null,
+    val patientVisitId: String? = null
 )
 
 data class MentalHealthStatus(

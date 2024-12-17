@@ -239,6 +239,7 @@ class AssessmentActivity : BaseActivity() {
         val bundle = Bundle()
         bundle.putString(DefinedParams.FhirId, intent.getStringExtra(DefinedParams.FhirId))
         bundle.putString(DefinedParams.ORIGIN, intent.getStringExtra(DefinedParams.ORIGIN))
+        bundle.putBoolean(MenuConstants.FOLLOW_UP, intent.getBooleanExtra(MenuConstants.FOLLOW_UP,false))
         when (viewModel.menuId) {
             MenuConstants.ICCM_MENU_ID -> {
                 setTitle(MenuConstants.ICCM_MENU_ID.uppercase())

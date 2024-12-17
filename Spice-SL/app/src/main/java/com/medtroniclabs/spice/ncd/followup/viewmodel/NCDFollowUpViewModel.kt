@@ -23,6 +23,7 @@ import com.medtroniclabs.spice.ncd.data.CustomDate
 import com.medtroniclabs.spice.ncd.data.FollowUpUpdateRequest
 import com.medtroniclabs.spice.ncd.data.PatientFollowUpEntity
 import com.medtroniclabs.spice.ncd.data.RegisterCallResponse
+import com.medtroniclabs.spice.ncd.data.SortModelForFollowUp
 import com.medtroniclabs.spice.ncd.followup.NCDFollowUpUtils
 import com.medtroniclabs.spice.ncd.followup.adapter.NCDFollowUpDataSource
 import com.medtroniclabs.spice.ncd.followup.fragment.NCDFollowUpFilterEnum
@@ -48,12 +49,11 @@ class NCDFollowUpViewModel @Inject constructor(
     var spanCount: Int = DefinedParams.span_count_1
     var searchText = ""
     var type = ""
-    var sortModel = SortModel()
+    var sortModel : SortModelForFollowUp? = null
     var customDate: CustomDate? = null
     var dateRange: String? = null
     var totalPatientCount = MutableLiveData<Int?>()
     var filterCount = MutableLiveData<Int>()
-    var searchLiveData = MutableLiveData<Boolean>()
     var filterSet = MutableLiveData<Boolean>()
     var getPatientRegisterResponse = SingleLiveEvent<Resource<RegisterCallResponse>>()
     var statusUpdateResponse = SingleLiveEvent<Resource<HashMap<String, Any>>>()
@@ -126,7 +126,9 @@ class NCDFollowUpViewModel @Inject constructor(
                 .takeIf { list -> list.any { it.isNotBlank() } },
             typeOffline,
             searchTextOffline,
-            getDateBasedOnChip()
+            getDateBasedOnChip(),
+            sortTriple.first,
+            sortTriple.second
         )
     }
     var typeOffline = ""
@@ -244,5 +246,26 @@ class NCDFollowUpViewModel @Inject constructor(
             }
         }
         return result
+    }
+
+    private var sortTriple: Pair<Boolean?, String?> = Pair(null, null)
+
+    fun sortTriple() {
+        val (triple, list) = when (typeOffline) {
+            NCDFollowUpUtils.SCREENED -> sortModel?.isScreeningDueDate to null
+            NCDFollowUpUtils.Assessment_Type -> sortModel?.isAssessmentDueDate to null
+            NCDFollowUpUtils.Defaulters_Type -> sortModel?.isMedicalReviewDueDate to null
+            NCDFollowUpUtils.LTFU_Type -> {
+                val isAssessmentDue = sortModel?.isAssessmentDueDate == true
+                val value =
+                    if (isAssessmentDue) "assessment" else if (sortModel?.isMedicalReviewDueDate == true)
+                        "medicalReview" else null
+                isAssessmentDue to value
+            }
+
+            else -> null to null
+        }
+        sortTriple = Pair(triple, list)
+        searchTextOfflineLiveData.value = true
     }
 }

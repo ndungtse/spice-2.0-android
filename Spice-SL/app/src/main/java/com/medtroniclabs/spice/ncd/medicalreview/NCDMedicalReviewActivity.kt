@@ -400,6 +400,7 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
                 val fragment = supportFragmentManager.findFragmentByTag(NCDPatientHistoryDialog.TAG)
                 if (fragment == null) {
                     NCDPatientHistoryDialog.newInstance(
+                        getEncounterReference(),
                         patientDetailViewModel.getPatientId(),
                         fhirId,
                         isFemale = patientDetailViewModel.getGenderIsFemale(),
@@ -606,6 +607,7 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
             R.id.medicalDiagnosisContainer,
             NCDMedicalReviewDiagnosisCardFragment.TAG,
             NCDMedicalReviewDiagnosisCardFragment.newInstance(
+                getEncounterReference(),
                 patientDetailViewModel.getNCDInitialMedicalReview(),
                 patientDetailViewModel.getGenderIsFemale(),
                 getMenuId()
@@ -1109,6 +1111,7 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
                         supportFragmentManager.findFragmentByTag(NCDMentalHealthFragment.TAG)
                     if (dialog == null) {
                         NCDMentalHealthFragment.newInstance(
+                            getEncounterReference(),
                             patientDetailViewModel.getPatientId(),
                             id,
                             isFemale = patientDetailViewModel.getGenderIsFemale(),

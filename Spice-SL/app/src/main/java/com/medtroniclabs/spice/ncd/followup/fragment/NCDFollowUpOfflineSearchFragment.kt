@@ -152,6 +152,7 @@ class NCDFollowUpOfflineSearchFragment : BaseFragment(),
         val intent = Intent(requireContext(), AssessmentToolsActivity::class.java)
         intent.putExtra(DefinedParams.FhirId, item.memberId)
         intent.putExtra(DefinedParams.PatientId, item.patientId)
+        intent.putExtra(MenuConstants.FOLLOW_UP, true)
         intent.putExtra(DefinedParams.ORIGIN, MenuConstants.ASSESSMENT.lowercase())
         intent.putExtra(DefinedParams.Gender, item.gender)
         startActivity(intent)

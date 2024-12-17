@@ -11,6 +11,7 @@ import com.medtroniclabs.spice.model.SortModel
 import com.medtroniclabs.spice.ncd.data.CustomDate
 import com.medtroniclabs.spice.ncd.data.FollowUpRequest
 import com.medtroniclabs.spice.ncd.data.PatientFollowUpEntity
+import com.medtroniclabs.spice.ncd.data.SortModelForFollowUp
 import com.medtroniclabs.spice.ncd.followup.repo.NCDFollowUpRepo
 import com.medtroniclabs.spice.network.ApiHelper
 
@@ -19,7 +20,7 @@ class NCDFollowUpDataSource(
     private var apiHelper: ApiHelper,
     private var roomHelper: RoomHelper,
     private val searchText: String,
-    private val sortModel: SortModel,
+    private val sortModel: SortModelForFollowUp?,
     private val customDate: CustomDate?,
     private val dateRange: String?,
     private val type: String,

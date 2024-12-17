@@ -93,7 +93,7 @@ data class FormLayout(
     var ageCondition: ArrayList<String>? = null,
     var workflowType: ArrayList<String>? = null,
     var orderId: Int? = null,
-    var workflowId: Long? = null
+    var customizedWorkflowId: Double? = null
 ) : BaseViewParams
 
 data class RangeModel(

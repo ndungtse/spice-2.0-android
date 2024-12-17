@@ -24,7 +24,7 @@ interface NCDFollowUpDao {
         (:villageIds IS NULL OR villageId IN (:villageIds))
         AND LOWER(type) = LOWER(:type)
         AND (
-            (:searchText = '' OR :searchText IS NULL) 
+            (:searchText IS NULL OR :searchText = '') 
             OR (
                 LOWER(identityValue) LIKE '%' || LOWER(:searchText) || '%' 
                 OR LOWER(name) LIKE '%' || LOWER(:searchText) || '%' 
@@ -38,18 +38,26 @@ interface NCDFollowUpDao {
             (:dateFirst IS NULL OR dueDate >= :dateFirst) 
             AND (:dateSecond IS NULL OR dueDate <= :dateSecond)
         )
-
+        AND (
+           (:reason IS NULL OR overDueCategories LIKE '%'||LOWER(:reason)||'%')
+        )
     ORDER BY 
         retryAttempts DESC, 
+        CASE 
+            WHEN :isScreened = 1 THEN dueDate
+            ELSE NULL
+        END ASC,
         dueDate DESC, 
         patientId DESC
 """)
     fun getFilteredNCDFollowUp(
         villageIds: List<String>?,
         type: String,
-        searchText: String,
+        searchText: String?,
         dateFirst: Long?,
-        dateSecond: Long?
+        dateSecond: Long?,
+        isScreened: Boolean?,
+        reason: String?
     ): LiveData<List<NCDFollowUp>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

@@ -411,7 +411,9 @@ interface RoomHelper {
         villageIds: List<String>?,
         type: String,
         searchText: String,
-        dateBasedOnChip: Pair<Long?, Long?>?
+        dateBasedOnChip: Pair<Long?, Long?>?,
+        isScreened: Boolean?,
+        reason:String?
     ): LiveData<List<NCDFollowUp>>
 
     suspend fun updatedCallInitiatedCall(ncdFollowUp: NCDFollowUp): NCDFollowUp

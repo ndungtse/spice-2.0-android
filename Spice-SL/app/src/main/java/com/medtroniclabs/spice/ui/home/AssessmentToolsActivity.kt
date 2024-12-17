@@ -9,6 +9,7 @@ import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.databinding.ActivityToolsBinding
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.EncounterReference
 import com.medtroniclabs.spice.ui.BaseActivity
+import com.medtroniclabs.spice.ui.MenuConstants
 import com.medtroniclabs.spice.ui.landing.LandingActivity
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -45,6 +46,7 @@ class AssessmentToolsActivity : BaseActivity() {
         bundle.putString(DefinedParams.FhirId, intent.getStringExtra(DefinedParams.FhirId))
         bundle.putString(DefinedParams.ORIGIN, intent.getStringExtra(DefinedParams.ORIGIN))
         bundle.putString(DefinedParams.Gender, intent.getStringExtra(DefinedParams.Gender))
+        bundle.putBoolean(MenuConstants.FOLLOW_UP, intent.getBooleanExtra(MenuConstants.FOLLOW_UP,false))
         // only for Africa encounterReference is visit id(Support landscape )
         intent.getStringExtra(EncounterReference)?.let { encounterReference ->
             bundle.putString(EncounterReference, encounterReference)

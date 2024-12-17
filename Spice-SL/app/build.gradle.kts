@@ -68,9 +68,9 @@ android {
                         buildConfigField("String", "DB_PASSWORD", "\"Med@Tr0ni#Lab$\"")
                         resValue("string", "spice_app_name", "SPICE 2.0")
                     } else if (productFlavors[0].name == "africa") {
-                        buildConfigField("String", "API_BASE_URL", "\"https://localhost.com/\"")
-                        buildConfigField("String", "ADMIN_BASE_URL", "\"https://localhost.com/\"")
-                        buildConfigField("String", "SALT", "\" \"")
+                        buildConfigField("String", "API_BASE_URL", "\"https://spice-dev-migration-backend.labsplatform.com/\"")
+                        buildConfigField("String", "ADMIN_BASE_URL", "\"https://spice-dev-migration.labsplatform.com/\"")
+                        buildConfigField("String", "SALT", "\"spice_uat\"")
                         buildConfigField("String", "DB_PASSWORD", "\"Med@Tr0ni#Lab$\"")
                         resValue("string", "spice_app_name", "SPICE 2.1")
                     }

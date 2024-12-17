@@ -27,6 +27,7 @@ import com.medtroniclabs.spice.ncd.followup.NCDFollowUpUtils
 import com.medtroniclabs.spice.ncd.followup.adapter.NCDFollowUpAdapter
 import com.medtroniclabs.spice.ncd.followup.fragment.NCDCallResultBottomDialog
 import com.medtroniclabs.spice.ncd.followup.fragment.NCDFollowUpOfflineBottomDialogFilter
+import com.medtroniclabs.spice.ncd.followup.fragment.NCDFollowUpSortDialog
 import com.medtroniclabs.spice.ncd.followup.viewmodel.NCDFollowUpViewModel
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
@@ -98,6 +99,7 @@ class FollowUpMyPatientActivity : BaseActivity() {
                 showLoading()
                 tab?.let {
                     ncdFollowUpViewModel.customDate = null
+                    ncdFollowUpViewModel.sortModel = null
                     ncdFollowUpViewModel.filterByDateRange = listOf()
                     ncdFollowUpViewModel.filterByVillage = listOf()
                     binding.llExactSearch.etSearchTerm.setText("")
@@ -293,13 +295,25 @@ class FollowUpMyPatientActivity : BaseActivity() {
     private fun initViewForNcd() {
         with(binding) {
             llFilter.btnFilter.gone()
-            binding.llFilter.btnFilter.text = getString(R.string.filter)
+            llFilter.btnSort.visible()
+            llFilter.btnFilter.text = getString(R.string.filter)
+            llFilter.btnSort.text = getString(R.string.sort_by)
+
             llFilter.btnFilter.safeClickListener {
                 val fragment =
                     supportFragmentManager.findFragmentByTag(NCDFollowUpOfflineBottomDialogFilter.TAG)
                 if (fragment == null) {
                     NCDFollowUpOfflineBottomDialogFilter.newInstance()
                         .show(supportFragmentManager, NCDFollowUpOfflineBottomDialogFilter.TAG)
+                }
+            }
+
+            llFilter.btnSort.safeClickListener {
+                val fragment =
+                    supportFragmentManager.findFragmentByTag(NCDFollowUpSortDialog.TAG)
+                if (fragment == null) {
+                    NCDFollowUpSortDialog.newInstance()
+                        .show(supportFragmentManager, NCDFollowUpSortDialog.TAG)
                 }
             }
 

@@ -1,6 +1,7 @@
 package com.medtroniclabs.spice.ncd.followup.fragment
 
 import android.content.res.Configuration
+import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -111,7 +112,7 @@ class NCDFollowUpDialogFragment : DialogFragment() {
                 viewModel.selectedFollowUpPatient?.let { listenerForFollowUp?.onSelectedPatientForAssessment(it) }
             }
         }
-
+        binding.tvReasonText.setTextColor(Color.parseColor("#994242"))
         // Populate UI elements with patient data
         viewModel.selectedPatient?.let { patient ->
             with(binding) {
@@ -228,9 +229,9 @@ class NCDFollowUpDialogFragment : DialogFragment() {
                             getString(R.string.hyphen_symbol)
                         } else {
                             val adjustedValue = if (viewModel.typeOffline == LTFU_Type) {
-                                dueDate
+                                daysDifference
                             } else {
-                                dueDate - daysDifference
+                                daysDifference - remainingDays
                             }
                             if (adjustedValue > 0) {
                                 getString(getDaysString(adjustedValue), adjustedValue)

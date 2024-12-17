@@ -90,6 +90,7 @@ class NCDPatientHistoryDialog : DialogFragment(), View.OnClickListener {
         const val Hypertension = "Hypertension"
         const val Known_patient = "Known Patient"
         fun newInstance(
+            visitId: String?,
             patientReference: String?,
             memberReference: String?,
             isFemale: Boolean,

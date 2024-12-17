@@ -18,12 +18,12 @@ class FormResultComposer {
         menuType: String? = null,
         bmiCategoryGroupId: String? = null
     ): Pair<String?, HashMap<String, Any>> {
-        val customWorkflowList = ArrayList<Pair<String,Long?>>()
+        val customWorkflowList = ArrayList<Pair<String,Double?>>()
         serverData.forEach { serverViewModel ->
             if (serverViewModel?.isCustomWorkflow == true) {
                 serverViewModel.id.let { cWorkflowId ->
                     if (cWorkflowId.isNotBlank())
-                        customWorkflowList.add(Pair(cWorkflowId, serverViewModel.workflowId))
+                        customWorkflowList.add(Pair(cWorkflowId, serverViewModel.customizedWorkflowId))
                 }
             }
             when (serverViewModel?.viewType) {
@@ -51,7 +51,7 @@ class FormResultComposer {
                         if (value is Map<*, *> && value.isNotEmpty()) {
                             val map = HashMap<String, Any>()
                             map[entryMap.first] = value
-                            map[DefinedParams.id] = entryMap.second ?: 0L
+                            map[DefinedParams.id] = entryMap.second ?: 0.0
                             list.add(map)
                         }
                     }

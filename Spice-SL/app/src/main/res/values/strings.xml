@@ -1153,8 +1153,8 @@
     <string name="job_aid_convulsions">Job Aid (Convulsions)</string>
     <string name="job_aid_unconscious_unusually_sleepy">Job Aid (Unconscious/unusually sleepy)</string>
     <string name="job_aid_not_able_to_breastfeed_drink">Job Aid (Not able to breastfeed/drink)</string>
-    <string name="latest_screening_due_date">Latest Screening Date</string>
-    <string name="oldest_screening_due_date">Oldest Screening Date</string>
+    <string name="latest_screening_due_date">Oldest Screening Date</string>
+    <string name="oldest_assessment_due_date">Oldest Assessment Date</string>
     <string name="daily">Daily</string>
     <string name="retry_attempts">Remaining Attempts</string>
     <string name="due_at">Due at</string>

@@ -101,3 +101,9 @@ data class PatientFollowUpEntity(
     val dueDate: String? = null,
     val identityValue :String? =null
 )
+
+data class SortModelForFollowUp(
+    var isScreeningDueDate: Boolean? = null,
+    var isAssessmentDueDate: Boolean? = null,
+    var isMedicalReviewDueDate: Boolean? = null
+)

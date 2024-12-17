@@ -266,9 +266,14 @@ class NCDFollowUpRepo @Inject constructor(
         villageIds: List<String>?,
         type: String,
         searchText: String,
-        dateBasedOnChip: Pair<Long?, Long?>?
+        dateBasedOnChip: Pair<Long?, Long?>?,
+        isScreened: Boolean?,
+        reason:String?
     ): LiveData<List<NCDFollowUp>> =
-        roomHelper.getNCDFollowUpData(villageIds, type, searchText,dateBasedOnChip)
+        roomHelper.getNCDFollowUpData(
+            villageIds, type, searchText, dateBasedOnChip, isScreened,
+            reason
+        )
 
     suspend fun updatedCallInitiatedCall(id: NCDFollowUp) = roomHelper.updatedCallInitiatedCall(id)
 

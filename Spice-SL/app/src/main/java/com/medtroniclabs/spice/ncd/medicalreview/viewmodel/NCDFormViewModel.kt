@@ -1,6 +1,5 @@
 package com.medtroniclabs.spice.ncd.medicalreview.viewmodel
 
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
@@ -42,13 +41,13 @@ class NCDFormViewModel @Inject constructor(
                                         val hasVs =
                                             viewScreens.any { it.toString().equals(type, true) }
                                         if (hasVs) {
-                                            val id = (listItem[DefinedParams.id] as? Long)
+                                            val id = (listItem[DefinedParams.id] as? Double)
                                             (listItem[DefinedParams.FormInput] as? String)?.let { responseStr ->
                                                 gson.fromJson(responseStr, FormResponse::class.java)
                                                     ?.let { formResponse ->
                                                         formLayouts.addAll(formResponse.formLayout.map { form ->
                                                             form.copy(
-                                                                workflowId = id
+                                                                customizedWorkflowId = id
                                                             )
                                                         })
                                                     }

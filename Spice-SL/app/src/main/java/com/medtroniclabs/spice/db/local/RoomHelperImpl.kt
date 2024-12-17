@@ -1087,14 +1087,18 @@ class RoomHelperImpl @Inject constructor(
         villageIds: List<String>?,
         type: String,
         searchText: String,
-        dateBasedOnChip: Pair<Long?, Long?>?
+        dateBasedOnChip: Pair<Long?, Long?>?,
+        isScreened: Boolean?,
+        reason:String?
     ): LiveData<List<NCDFollowUp>> {
         return ncdFollowUpDao.getFilteredNCDFollowUp(
             villageIds,
             type,
             searchText,
             dateBasedOnChip?.first,
-            dateBasedOnChip?.second
+            dateBasedOnChip?.second,
+            isScreened,
+            reason
         )
     }
 

@@ -51,6 +51,7 @@ import com.medtroniclabs.spice.ncd.assessment.viewmodel.BloodPressureViewModel
 import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDFormViewModel
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
+import com.medtroniclabs.spice.ui.MenuConstants
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
 import com.medtroniclabs.spice.ui.assessment.ComplianceSpinnerAdapter
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
@@ -107,7 +108,7 @@ class AssessmentNCDFragment : BaseFragment(), FormEventListener, View.OnClickLis
     private fun getPatientDetails() {
         patientDetailViewModel.origin = requireArguments().getString(DefinedParams.ORIGIN)
         requireArguments().getString(DefinedParams.FhirId)?.let { id ->
-            if ((CommonUtils.isChp()) ) {
+            if (CommonUtils.isChp() && requireArguments().getBoolean(MenuConstants.FOLLOW_UP)) {
                 patientDetailViewModel.getPatients(id)
             } else {
                 patientDetailViewModel.getPatients(

@@ -29,6 +29,7 @@ import com.medtroniclabs.spice.ncd.assessment.viewmodel.GlucoseViewModel
 import com.medtroniclabs.spice.ncd.data.NCDDiagnosisGetRequest
 import com.medtroniclabs.spice.ncd.medicalreview.NCDDialogDismissListener
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil
+import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.EncounterReference
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.IS_FEMALE
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.IS_INITIAL_MR
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.MENU_ID
@@ -67,9 +68,10 @@ class NCDMedicalReviewDiagnosisCardFragment : BaseFragment(), View.OnClickListen
 
     companion object {
         const val TAG = "NCDMedicalReviewDiagnosisCardFragment"
-        fun newInstance(isInitial: Boolean, isFemale: Boolean, menu: String?) =
+        fun newInstance(visitId: String?, isInitial: Boolean, isFemale: Boolean, menu: String?) =
             NCDMedicalReviewDiagnosisCardFragment().apply {
                 arguments = Bundle().apply {
+                    putString(EncounterReference, visitId)
                     putBoolean(IS_INITIAL_MR, isInitial)
                     putBoolean(IS_FEMALE, isFemale)
                     putString(MENU_ID, menu)
@@ -160,6 +162,10 @@ class NCDMedicalReviewDiagnosisCardFragment : BaseFragment(), View.OnClickListen
 
     private fun getMenu(): String? {
         return arguments?.getString(MENU_ID)?.lowercase()
+    }
+
+    private fun geEncounterReference(): String? {
+        return arguments?.getString(EncounterReference)
     }
 
     private fun initView() {
@@ -397,6 +403,7 @@ class NCDMedicalReviewDiagnosisCardFragment : BaseFragment(), View.OnClickListen
         if (dialog == null) {
             patientDetailViewModel.getPatientId()?.let {
                 NCDPatientHistoryDialog.newInstance(
+                    visitId = geEncounterReference(),
                     patientReference = it,
                     memberReference = patientDetailViewModel.getPatientFHIRId(),
                     isFemale = patientDetailViewModel.getGenderIsFemale(),
