@@ -26,15 +26,16 @@ import com.medtroniclabs.spice.common.ViewUtils
 import com.medtroniclabs.spice.databinding.FragmentRmnchSummaryBinding
 import com.medtroniclabs.spice.formgeneration.config.ViewType
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
+import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapterCustomLayout
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.assessment.AssessmentCommonUtils
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
-import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.ExclusivelyBreastfeeding
-import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.rootSuffix
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.DEATH_OF_MOTHER_KEY
 import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
+import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.ANC
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.DeathOfMother
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.childHoodVisitMaxMonth
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.deathOfBaby
@@ -115,7 +116,7 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
             conditionBasedRendering(map)
             addDefaultSummaryView(map)
             viewModel.formLayoutsLiveData.value?.data?.formLayout?.filter { it.isSummary == true }
-                ?.filterNot { it.id in showQuestionBasedAge() } // Remove the item with id "childhoodVisitSigns"
+                ?.filterNot { it.id in showQuestionBasedAge(map,it) } // Remove the item with id "childhoodVisitSigns"
                 ?.forEach { data ->
                     with(data) {
                         updateStatusBar()
@@ -389,20 +390,28 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
         return viewModel.otherAssessmentDetails.isNotEmpty()
     }
 
-    private fun showQuestionBasedAge():List<String> {
+    private fun showQuestionBasedAge(map: HashMap<String, Any>, formLayout: FormLayout):List<String> {
         var age=viewModel.ageInMonth.value
         var questionList=ArrayList<String>()
-        if (age?.contains(getString(R.string.week), true) == true
-            || age?.contains(getString(R.string.day), true) == true
-        ){
-            questionList.add(AssessmentDefinedParams.TakingMinimumMealsPerDay)
-            questionList.add(AssessmentDefinedParams.FedFrom4FoodGroups)
-            questionList.add(AssessmentDefinedParams.Measles1Given)
-            questionList.add(AssessmentDefinedParams.YellowFeverVacineGiven)
-            questionList.add(AssessmentDefinedParams.Measles2Given)
-
+        val resultMap = map[ANC] as? Map<String, Any> // Cast to Map<String, Any>
+        val deathOfMother = resultMap?.get(DEATH_OF_MOTHER_KEY) as? Boolean
+        if (deathOfMother==true  ){
+           if (formLayout.id!=DEATH_OF_MOTHER_KEY) {
+               questionList.add(getAllIdsExcludingDeathOfMother(formLayout))
+           }
         }else {
-                when (age?.replace(getString(R.string.months), "")?.replace(getString(R.string.month), "")?.trim()?.toInt()) {
+            if (age?.contains(getString(R.string.week), true) == true
+                || age?.contains(getString(R.string.day), true) == true
+            ) {
+                questionList.add(AssessmentDefinedParams.TakingMinimumMealsPerDay)
+                questionList.add(AssessmentDefinedParams.FedFrom4FoodGroups)
+                questionList.add(AssessmentDefinedParams.Measles1Given)
+                questionList.add(AssessmentDefinedParams.YellowFeverVacineGiven)
+                questionList.add(AssessmentDefinedParams.Measles2Given)
+
+            } else {
+                when (age?.replace(getString(R.string.months), "")
+                    ?.replace(getString(R.string.month), "")?.trim()?.toInt()) {
                     in 0..5 -> {
                         questionList.add(AssessmentDefinedParams.TakingMinimumMealsPerDay)
                         questionList.add(AssessmentDefinedParams.FedFrom4FoodGroups)
@@ -410,11 +419,13 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
                         questionList.add(AssessmentDefinedParams.YellowFeverVacineGiven)
                         questionList.add(AssessmentDefinedParams.Measles2Given)
                     }
+
                     in 6..12 -> {
                         questionList.add(AssessmentDefinedParams.ExclusivelyBreastfeeding)
                         questionList.add(AssessmentDefinedParams.Measles2Given)
 
                     }
+
                     in 13..15 -> {
                         questionList.add(AssessmentDefinedParams.ExclusivelyBreastfeeding)
                     }
@@ -423,7 +434,11 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
                     }
                 }
             }
+        }
 
         return questionList
+    }
+    private fun getAllIdsExcludingDeathOfMother(formLayouts: FormLayout): String {
+        return formLayouts.id  // Exclude "deathOfMother"
     }
 }

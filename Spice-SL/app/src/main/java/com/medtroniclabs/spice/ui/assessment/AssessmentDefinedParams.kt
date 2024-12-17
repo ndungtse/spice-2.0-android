@@ -149,4 +149,9 @@ object AssessmentDefinedParams {
     const val errorSuffix = "errorMessageView"
     const val DateOfBirth="date_of_birth"
 
+    const val DEATH_OF_MOTHER_KEY = "deathOfMother"
+    const val NA = "NA"
+    const val NotApplicable = "Not Applicable"
+    const val IsBloodyDiarrhoea = "isBloodyDiarrhoea"
+
 }

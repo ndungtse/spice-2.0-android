@@ -39,6 +39,7 @@ import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.MenuConstants.ICCM_MENU_ID
 import com.medtroniclabs.spice.ui.assessment.AssessmentCommonUtils.getMuacColorCode
 import com.medtroniclabs.spice.ui.assessment.AssessmentCommonUtils.getNutritionStatus
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.ACT
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.ACTStatus
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.Amoxicillin
@@ -474,6 +475,8 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
     }
 
     override fun onUpdateInstruction(id: String, selectedId: Any?) {
+        // Updating ORS Visibility based on muac
+        updateOrsConditionBasedOnMuac(id, selectedId)
         when (id) {
             muacCode -> {
                 if (selectedId is String && selectedId != DefaultID)
@@ -795,5 +798,64 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
             updateColorCode(id, ContextCompat.getColor(requireContext(), R.color.secondary_black))
             displayDaysInformation(id, View.INVISIBLE)
         }
+    }
+
+    private fun updateOrsConditionBasedOnMuac(id: String, selectedId: Any?) {
+        if (id == muacCode){
+            if (selectedId == AssessmentDefinedParams.Red) {
+                viewModel.muacColor = AssessmentDefinedParams.Red
+                formGenerator.getViewByTag(OrsDispensedStatus + rootSuffix)?.apply {
+                    visibility = View.GONE
+                }.let {
+                    if (it != null) {
+                        formGenerator.resetChildViews(it)
+                    }
+                }
+                formGenerator.getViewByTag(ORSStatus + rootSuffix)?.apply {
+                    visibility = View.GONE
+                }
+            }else{
+                viewModel.muacColor = selectedId.toString()
+                if (viewModel.hasDiarrhoea) {
+                    formGenerator.getViewByTag(OrsDispensedStatus + rootSuffix)?.apply {
+                        visibility = View.VISIBLE
+                    }.let {
+                        if (it != null) {
+                            formGenerator.resetChildViews(it)
+                        }
+                    }
+                    formGenerator.getViewByTag(ORSStatus + rootSuffix)?.apply {
+                        visibility = View.VISIBLE
+                    }
+                }
+            }
+        }
+        if (id == hasDiarrhoea && selectedId == true){
+            viewModel.hasDiarrhoea= true
+            if (viewModel.muacColor==AssessmentDefinedParams.Red){
+                formGenerator.getViewByTag(OrsDispensedStatus + rootSuffix)?.apply {
+                    visibility = View.GONE
+                }.let {
+                    if (it != null) {
+                        formGenerator.resetChildViews(it)
+                    }
+                }
+                formGenerator.getViewByTag(ORSStatus + rootSuffix)?.apply {
+                    visibility = View.GONE
+                }
+            }else{
+                formGenerator.getViewByTag(OrsDispensedStatus + rootSuffix)?.apply {
+                    visibility = View.VISIBLE
+                }.let {
+                    if (it != null) {
+                        formGenerator.resetChildViews(it)
+                    }
+                }
+                formGenerator.getViewByTag(ORSStatus + rootSuffix)?.apply {
+                    visibility = View.VISIBLE
+                }
+            }
+        }
+
     }
 }

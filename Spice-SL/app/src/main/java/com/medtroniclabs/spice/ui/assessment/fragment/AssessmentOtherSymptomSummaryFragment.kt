@@ -182,11 +182,16 @@ class AssessmentOtherSymptomSummaryFragment : BaseFragment(), View.OnClickListen
     }
 
     private fun renderSummaryView(summaryData: MutableList<AssessmentSummaryModel>) {
+        // Na to Not applicable Ui level change
+        summaryData.forEach { model ->
+            if (model.value == AssessmentDefinedParams.NA) {
+                model.value = AssessmentDefinedParams.NotApplicable
+            }
+        }
         bindSummaryView(
             getString(R.string.patient_status),
             getStatus(viewModel.referralStatus) ?: getString(R.string.seperator_hyphen)
         )
-        renderDangerSigns(summaryData)
         summaryData.filter { it.title?.lowercase() != AssessmentDefinedParams.General_Danger_Signs.lowercase() }
             .forEach { item ->
                 when (item.id) {
@@ -237,6 +242,7 @@ class AssessmentOtherSymptomSummaryFragment : BaseFragment(), View.OnClickListen
                     }
                 }
             }
+        renderDangerSigns(summaryData)
     }
 
     private fun getStatus(referralStatus: String?): String? {
@@ -263,7 +269,7 @@ class AssessmentOtherSymptomSummaryFragment : BaseFragment(), View.OnClickListen
                 requireContext().getString(R.string.other_value, item.value, otherConcernSymptoms)
             } else item.value
             bindSummaryView(
-                getString(R.string.general_danger_signs),
+                getString(R.string.other_signs_and_symptoms),
                 result ?: getString(R.string.seperator_hyphen)
             )
         }

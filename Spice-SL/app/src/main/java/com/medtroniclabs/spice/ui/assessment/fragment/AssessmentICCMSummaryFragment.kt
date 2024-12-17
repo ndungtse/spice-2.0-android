@@ -286,6 +286,12 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
     }
 
     private fun composeIccmSummaryView(listSummaryData: MutableList<AssessmentSummaryModel>) {
+        // Na to Not applicable Ui level change
+        listSummaryData.forEach { model ->
+            if (model.value == AssessmentDefinedParams.NA) {
+                model.value = AssessmentDefinedParams.NotApplicable
+            }
+        }
         bindICCMSummaryView(
             getString(R.string.patient_status),
             getStatus(viewModel.referralStatus) ?: getString(R.string.seperator_hyphen)

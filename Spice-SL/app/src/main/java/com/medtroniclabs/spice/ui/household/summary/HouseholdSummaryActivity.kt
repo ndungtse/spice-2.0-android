@@ -13,6 +13,7 @@ import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
+import com.medtroniclabs.spice.appextensions.isVisible
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.MemberID
 import com.medtroniclabs.spice.common.DefinedParams.isMemberRegistration
@@ -154,6 +155,10 @@ class HouseholdSummaryActivity : BaseActivity(), MemberSelectionListener, View.O
             showHideVerticalIcon(false)
         }else{
             binding.bottomNavigationViewLinkPatient.visibility = View.GONE
+            showHideVerticalIcon(false)
+        }
+
+        if (!binding.bottomNavigationView.isVisible() && !binding.bottomNavigationViewLinkPatient.isVisible()){
             showHideVerticalIcon(true)
         }
 
