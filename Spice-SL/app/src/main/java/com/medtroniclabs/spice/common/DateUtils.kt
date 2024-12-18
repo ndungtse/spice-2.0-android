@@ -851,4 +851,23 @@ object DateUtils {
     fun dateToLong(dateString: String = getTodayDateDDMMYYYY()): Long? {
         return convertToTimestampWithoutZone(dateString, false)
     }
+
+    fun calculateGestationalWeeks(dateGiven: String): Int? {
+        try {
+            val dateFormat = SimpleDateFormat(DATE_FORMAT_yyyyMMddHHmmssZZZZZ, Locale.ENGLISH)
+            val date = dateFormat.parse(dateGiven)
+
+            val calendar = Calendar.getInstance()
+            val currentTime = calendar.timeInMillis
+            calendar.time = date
+            val targetTime = calendar.timeInMillis
+
+            val diffInMillis = targetTime - currentTime
+            val diffInWeeks = diffInMillis / (1000 * 60 * 60 * 24 * 7)
+
+            return abs(diffInWeeks.toInt())
+        } catch (e: Exception) {
+            return null
+        }
+    }
 }

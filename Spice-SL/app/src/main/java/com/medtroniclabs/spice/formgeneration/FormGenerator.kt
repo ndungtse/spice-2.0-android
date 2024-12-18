@@ -112,6 +112,7 @@ import com.medtroniclabs.spice.formgeneration.extension.DecimalDigitsInputFilter
 import com.medtroniclabs.spice.formgeneration.extension.dp
 import com.medtroniclabs.spice.formgeneration.extension.hideKeyboard
 import com.medtroniclabs.spice.formgeneration.extension.markMandatory
+import com.medtroniclabs.spice.formgeneration.extension.markNonMandatory
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.extension.textSizeSsp
 import com.medtroniclabs.spice.formgeneration.listener.FormEventListener
@@ -1577,6 +1578,10 @@ class FormGenerator(
             } else {
                 binding.tvTitle.text = title
             }
+            if (displayAsterisk)
+                binding.tvTitle.markMandatory()
+            else
+                binding.tvTitle.markNonMandatory()
             textLabelColor?.let {
                 binding.tvTitle.setTextColor(Color.parseColor(it))
             }

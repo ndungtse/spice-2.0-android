@@ -25,7 +25,10 @@ import com.medtroniclabs.spice.ncd.data.NCDCounselingModel
 import com.medtroniclabs.spice.ncd.data.ResultModel
 import com.medtroniclabs.spice.ncd.counseling.utils.ValidationListener
 import com.medtroniclabs.spice.ncd.counseling.viewmodel.CounselingViewModel
+import com.medtroniclabs.spice.ncd.data.LifeStyleRequest
+import com.medtroniclabs.spice.ncd.data.LifeStyleResponse
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil
+import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDMedicalReviewCMRViewModel
 import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDMedicalReviewViewModel
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
@@ -39,6 +42,7 @@ class NCDNutritionistActivity : BaseActivity(), View.OnClickListener {
     private val viewModel: CounselingViewModel by viewModels()
     private val patientViewModel: PatientDetailViewModel by viewModels()
     private val mrViewModel: NCDMedicalReviewViewModel by viewModels()
+    private val cmrViewModel: NCDMedicalReviewCMRViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -98,6 +102,24 @@ class NCDNutritionistActivity : BaseActivity(), View.OnClickListener {
     }
 
     fun attachObservers() {
+        cmrViewModel.lifeStyleResponse.observe(this) { resourceState ->
+            when (resourceState.state) {
+                ResourceState.LOADING -> {
+                    showLoading()
+                }
+
+                ResourceState.ERROR -> {
+                    hideLoading()
+                }
+
+                ResourceState.SUCCESS -> {
+                    hideLoading()
+                    resourceState.data?.let {
+                        loadLifeStyleData(it)
+                    }
+                }
+            }
+        }
         mrViewModel.ncdMedicalReviewStaticLiveData.observe(this) { resourceState ->
             when (resourceState.state) {
                 ResourceState.LOADING -> {
@@ -172,6 +194,29 @@ class NCDNutritionistActivity : BaseActivity(), View.OnClickListener {
 
                 ResourceState.ERROR -> {
                     hideLoading()
+                }
+            }
+        }
+    }
+
+    private fun loadLifeStyleData(it: java.util.ArrayList<LifeStyleResponse>) {
+        it.forEachIndexed { _, lifeStyle ->
+            binding.apply {
+                when (lifeStyle.lifestyleType) {
+                    NCDMRUtil.SMOKING -> tvSmokingStatus.text =
+                        lifeStyle.lifestyleAnswer.textOrHyphen()
+
+                    NCDMRUtil.ALCOHOL -> tvAlcoholStatus.text =
+                        lifeStyle.lifestyleAnswer.textOrHyphen()
+
+                    NCDMRUtil.DIET_NUTRITION -> tvDietNutrition.text =
+                        lifeStyle.lifestyleAnswer.textOrHyphen()
+
+
+                    NCDMRUtil.PHYSICAL_ACTIVITY -> {
+                        val answer = lifeStyle.lifestyleAnswer.textOrHyphen() + " hrs/week"
+                        tvPhysicalActivity.text = answer
+                    }
                 }
             }
         }
@@ -278,6 +323,8 @@ class NCDNutritionistActivity : BaseActivity(), View.OnClickListener {
             visitId = viewModel.encounterReference
         )
         viewModel.getAssessmentList(request, true)
+
+        cmrViewModel.getNcdLifeStyleDetails(LifeStyleRequest(patientReference = viewModel.patientReference))
     }
 
     private fun lifestyles(visible: Boolean) {
@@ -329,6 +376,7 @@ class NCDNutritionistActivity : BaseActivity(), View.OnClickListener {
                 items.add(
                     ResultModel(
                         id = it.id,
+                        referredBy = it.referredBy,
                         lifestyleAssessment = it.lifestyleAssessment,
                         otherNote = it.otherNote
                     )

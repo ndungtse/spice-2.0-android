@@ -166,7 +166,7 @@
     <string name="alert">Alert</string>
     <string name="retry">Retry</string>
     <string name="session_expired">Session Expired! Please login again.</string>
-    <string name="offline_login_message">You does not have internet to connect our system. Do you wish to continue?</string>
+    <string name="offline_login_message">You does not have internet to connect our system. Though you can login offline for offline features. Do you wish to continue?</string>
     <string name="role">Role</string>
     <string name="email_cap">Email</string>
     <string name="phone_no">Phone No</string>
@@ -915,6 +915,7 @@
     <string name="blood_pressure_check_frequency">Blood Pressure Check Frequency</string>
     <string name="blood_glucose_check_frequency">Blood Glucose Check Frequency</string>
     <string name="hba1c_frequency">HbA1c Frequency</string>
+    <string name="cho_check_frequency">CHO Check Frequency</string>
 
     // warning NCD
     <string name="no_confirm_diagnosis_warning">Are you sure you want to continue submitting the report without confirming diagnoses for the patient?</string>

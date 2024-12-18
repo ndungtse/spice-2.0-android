@@ -10,9 +10,11 @@ import androidx.fragment.app.viewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.invisible
+import com.medtroniclabs.spice.appextensions.isVisible
 import com.medtroniclabs.spice.appextensions.loadAsGif
 import com.medtroniclabs.spice.appextensions.resetImageView
 import com.medtroniclabs.spice.appextensions.setDialogPercent
+import com.medtroniclabs.spice.appextensions.setVisible
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.DefaultID
@@ -20,6 +22,7 @@ import com.medtroniclabs.spice.common.DefinedParams.DefaultIDLabel
 import com.medtroniclabs.spice.common.DefinedParams.ID
 import com.medtroniclabs.spice.common.DefinedParams.NAME
 import com.medtroniclabs.spice.common.DefinedParams.Value
+import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.databinding.DialogNcdTreatmentPlanBinding
 import com.medtroniclabs.spice.db.entity.TreatmentPlanEntity
 import com.medtroniclabs.spice.formgeneration.extension.markMandatory
@@ -27,6 +30,7 @@ import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
 import com.medtroniclabs.spice.ncd.data.NCDTreatmentPlanModel
 import com.medtroniclabs.spice.ncd.data.NCDTreatmentPlanModelDetails
+import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil
 import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDTreatmentPlanViewModel
 import com.medtroniclabs.spice.network.resource.ResourceState
 import dagger.hilt.android.AndroidEntryPoint
@@ -41,18 +45,21 @@ class NCDTreatmentPlanDialog(private val callback: ((isPositiveResult: Boolean, 
     private val bPCheckAdapter by lazy { CustomSpinnerAdapter(requireContext()) }
     private val bGCheckAdapter by lazy { CustomSpinnerAdapter(requireContext()) }
     private val hbA1cAdapter by lazy { CustomSpinnerAdapter(requireContext()) }
+    private val choAdapter by lazy { CustomSpinnerAdapter(requireContext()) }
 
     companion object {
         const val TAG = "NCDTreatmentPlanDialog"
         fun newInstance(
             patientId: String?,
             fhirId: String?,
+            showCHO: Boolean,
             callback: ((isPositiveResult: Boolean, message: String) -> Unit)
         ): NCDTreatmentPlanDialog {
             val dialog = NCDTreatmentPlanDialog(callback)
             val bundle = Bundle()
             bundle.putString(DefinedParams.PatientId, patientId)
             bundle.putString(DefinedParams.FhirId, fhirId)
+            bundle.putBoolean(NCDMRUtil.ShowCHO, showCHO)
             dialog.arguments = bundle
             return dialog
         }
@@ -84,10 +91,12 @@ class NCDTreatmentPlanDialog(private val callback: ((isPositiveResult: Boolean, 
             }
         }
         with(binding) {
+            choGroup.setVisible(arguments?.getBoolean(NCDMRUtil.ShowCHO) == true)
             tvMedicalReviewFrequencyLbl.markMandatory()
             tvBPCheckFrequencyLbl.markMandatory()
             tvBGCheckFrequencyLbl.markMandatory()
             tvHbA1cFrequencyLbl.markMandatory()
+            tvCHOCheckFrequencyLbl.markMandatory()
             ivClose.safeClickListener(this@NCDTreatmentPlanDialog)
             btnCancel.safeClickListener(this@NCDTreatmentPlanDialog)
             btnSubmit.safeClickListener(this@NCDTreatmentPlanDialog)
@@ -165,6 +174,11 @@ class NCDTreatmentPlanDialog(private val callback: ((isPositiveResult: Boolean, 
                 binding.etHbA1cFrequency.setSelection(it)
             }
         }
+        data.choCheckFrequency?.let { choCheck ->
+            choAdapter.getIndexOfItemByName(choCheck).let {
+                binding.etCHOCheckFrequency.setSelection(it)
+            }
+        }
     }
 
     private fun handleFrequencies(data: List<TreatmentPlanEntity>?) {
@@ -187,12 +201,14 @@ class NCDTreatmentPlanDialog(private val callback: ((isPositiveResult: Boolean, 
             bPCheckAdapter.setData(dropDownList)
             bGCheckAdapter.setData(dropDownList)
             hbA1cAdapter.setData(dropDownList)
+            choAdapter.setData(dropDownList)
 
             with(binding) {
                 etMedicalReviewFrequency.adapter = medicalReviewAdapter
                 etBPCheckFrequency.adapter = bPCheckAdapter
                 etBGCheckFrequency.adapter = bGCheckAdapter
                 etHbA1cFrequency.adapter = hbA1cAdapter
+                etCHOCheckFrequency.adapter = choAdapter
             }
 
             getTreatmentPlan()
@@ -264,12 +280,26 @@ class NCDTreatmentPlanDialog(private val callback: ((isPositiveResult: Boolean, 
 
                 override fun onNothingSelected(parent: AdapterView<*>?) {}
             }
+        binding.etCHOCheckFrequency.onItemSelectedListener =
+            object : AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(
+                    adapterView: AdapterView<*>?, view: View?, pos: Int, itemId: Long
+                ) {
+                    choAdapter.getData(pos)?.let { selectedItem ->
+                        viewModel.choCheckFrequency = selectedItem[Value] as? TreatmentPlanEntity?
+                        validateInputs()
+                    }
+                }
+
+                override fun onNothingSelected(parent: AdapterView<*>?) {}
+            }
     }
 
     private fun validateInputs() {
         val haveValidInputs =
             viewModel.medicalReviewFrequency != null && viewModel.bpCheckFrequency != null && viewModel.bgCheckFrequency != null && viewModel.hba1cCheckFrequency != null
-        binding.btnSubmit.isEnabled = haveValidInputs
+        binding.btnSubmit.isEnabled =
+            if (binding.choGroup.isVisible()) haveValidInputs && viewModel.choCheckFrequency != null else haveValidInputs
     }
 
     override fun onClick(v: View?) {
@@ -289,6 +319,7 @@ class NCDTreatmentPlanDialog(private val callback: ((isPositiveResult: Boolean, 
                     bpCheckFrequency = bpCheckFrequency,
                     bgCheckFrequency = bgCheckFrequency,
                     hba1cCheckFrequency = hba1cCheckFrequency,
+                    choCheckFrequency = choCheckFrequency,
                     carePlanId = carePlanId
                 )
             )

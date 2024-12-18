@@ -20,10 +20,12 @@ import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.MemberID
 import com.medtroniclabs.spice.common.DefinedParams.ORIGIN
+import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.databinding.ActivityNcdMrBaseBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.extension.safePopupMenuClickListener
+import com.medtroniclabs.spice.mappingkey.Screening
 import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.ncd.counseling.activity.NCDCounselingActivity
 import com.medtroniclabs.spice.ncd.counseling.activity.NCDLifestyleActivity
@@ -750,7 +752,8 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
             binding.btnLayout.ivTreatmentPlan.id -> {
                 val dialog = NCDTreatmentPlanDialog.newInstance(
                     patientDetailViewModel.getPatientId(),
-                    patientDetailViewModel.getPatientFHIRId()
+                    patientDetailViewModel.getPatientFHIRId(),
+                    showCHO = showCHO()
                 ) { isPositiveResult, message ->
                     if (isPositiveResult)
                         showSuccessDialogue(
@@ -1277,11 +1280,11 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
 
     override fun onConfirmDiagnosisClicked() {
         withNetworkAvailability(online = {
-            showConfirmDiagnoses()
+            showConfirmDiagnoses(isDiagnosisMismatch = true)
         })
     }
 
-    fun showConfirmDiagnoses() {
+    fun showConfirmDiagnoses(isDiagnosisMismatch: Boolean = false) {
         val dialog = supportFragmentManager.findFragmentByTag(NCDDiagnosisDialogFragment.TAG)
         if (dialog == null) {
             NCDDiagnosisDialogFragment.newInstance(
@@ -1291,10 +1294,22 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
                 patientDetailViewModel.getGenderIsFemale(),
                 getConfirmDiagnoses(getMenuId()),
                 patientDetailViewModel.isPregnant(),
+                isDiagnosisMismatch = isDiagnosisMismatch,
                 getMenuId()
             ).apply {
                 listener = this@NCDMedicalReviewActivity
             }.show(supportFragmentManager, NCDDiagnosisDialogFragment.TAG)
         }
+    }
+
+    private fun showCHO(): Boolean {
+        patientDetailViewModel.patientDetailsLiveData.value?.data?.let {
+            return SecuredPreference.isAncEnabled() &&
+                    it.gender.equals(Screening.Female, true) &&
+                    it.isPregnant == true &&
+                    it.isDangerSymptom == true &&
+                    CommonUtils.gestationalWeekLimitCheck(it.pregnancyDetails?.lastMenstrualPeriod)
+        }
+        return false
     }
 }

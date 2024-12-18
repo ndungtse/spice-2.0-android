@@ -200,7 +200,6 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
 
                 ResourceState.ERROR -> {
                     hideLoading()
-                    binding.appBarMain.tvNotificationCount.visible()
                 }
 
                 ResourceState.SUCCESS -> {

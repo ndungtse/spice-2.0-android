@@ -46,6 +46,7 @@ data class AssessmentResultModel(
 
 data class ResultModel(
     val id: String? = null,
+    val referredBy: String? = null,
     val lifestyleAssessment: String? = null,
     val counselorAssessment: String? = null,
     val otherNote: String? = null

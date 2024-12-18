@@ -10,6 +10,7 @@ data class FormLayout(
     var visibility: String?,
     var prefixText: String? = null,
     var isMandatory: Boolean = false,
+    var displayAsterisk: Boolean = false,
     var maxLength: Int? = null,
     var minLength: Int? = null,
     var blockedCharacterSet: String? = null,

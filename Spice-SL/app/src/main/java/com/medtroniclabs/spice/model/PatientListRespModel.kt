@@ -38,6 +38,7 @@ data class PatientListRespModel(
     val houseHoldNumber: Long? = null,
     val dateOfOnset:String? = null,
     var isPregnant: Boolean? = null,
+    var isDangerSymptom: Boolean? = null,
     var isPregnancyRisk: Boolean? = null,
     var riskPatient: Boolean = false,
     @SerializedName("redRiskPatient")

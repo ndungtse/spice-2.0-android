@@ -27,6 +27,7 @@ import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.CONFIRM_DIAGNOSIS_TYP
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.CONFIRM_DIAGNOSIS_TYPE_GET
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.IsPregnant
 import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDDiagnosisViewModel
+import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDMedicalReviewViewModel
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.TagListCustomView
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil
@@ -36,6 +37,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class NCDDiagnosisDialogFragment : DialogFragment(), View.OnClickListener {
     private lateinit var binding: FragmentNcdDiagnosisBinding
     private val viewModel: NCDDiagnosisViewModel by viewModels()
+    private val ncdMedicalReviewViewModel: NCDMedicalReviewViewModel by viewModels()
     private lateinit var tagListCustomView: TagListCustomView
     var listener: NCDDialogDismissListener? = null
 
@@ -58,6 +60,7 @@ class NCDDiagnosisDialogFragment : DialogFragment(), View.OnClickListener {
             isFemale: Boolean,
             getTypes: ArrayList<String>,
             isPregnant: Boolean,
+            isDiagnosisMismatch: Boolean,
             type: String? = null
         ) = NCDDiagnosisDialogFragment().apply {
                 arguments = Bundle().apply {
@@ -66,6 +69,7 @@ class NCDDiagnosisDialogFragment : DialogFragment(), View.OnClickListener {
                     putStringArrayList(CONFIRM_DIAGNOSIS_TYPE, types)
                     putStringArrayList(CONFIRM_DIAGNOSIS_TYPE_GET, getTypes)
                     putBoolean(NCDMRUtil.IS_FEMALE, isFemale)
+                    putBoolean(NCDMRUtil.IS_DIAGNOSIS_MISMATCH, isDiagnosisMismatch)
                     putBoolean(IsPregnant, isPregnant)
                     putString(Screening.Type,type)
                 }
@@ -82,6 +86,10 @@ class NCDDiagnosisDialogFragment : DialogFragment(), View.OnClickListener {
 
     private fun isPregnant(): Boolean {
         return arguments?.getBoolean(IsPregnant) ?: false
+    }
+
+    private fun isDiagnosisMismatch(): Boolean {
+        return arguments?.getBoolean(NCDMRUtil.IS_DIAGNOSIS_MISMATCH) ?: false
     }
 
     private fun getGender(): String {
@@ -109,6 +117,22 @@ class NCDDiagnosisDialogFragment : DialogFragment(), View.OnClickListener {
     }
 
     private fun attachObservers() {
+        ncdMedicalReviewViewModel.ncdPatientDiagnosisStatus.observe(this) { resourceState ->
+            when (resourceState.state) {
+                ResourceState.LOADING -> {
+                    showLoading()
+                }
+
+                ResourceState.SUCCESS -> {
+                    hideLoading()
+                    confirmDiagnosis()
+                }
+
+                ResourceState.ERROR -> {
+                    hideLoading()
+                }
+            }
+        }
         viewModel.getChipLiveData.observe(viewLifecycleOwner) {
             setChipItems(it)
             getDiagonsis()
@@ -144,21 +168,49 @@ class NCDDiagnosisDialogFragment : DialogFragment(), View.OnClickListener {
                     resourceState.data?.let { data ->
                         viewModel.getChipLiveData.value?.let { liveData ->
                             data.diagnosis?.mapNotNull { it.value }?.let { values ->
-                                val filteredChips = liveData.filter { db ->
-                                    values.any { db.value.equals(it, true) }
-                                }.map { item ->
-                                    ChipViewItemModel(
-                                        id = item.id,
-                                        name = item.name,
-                                        type = item.type,
-                                        value = item.value
-                                    )
+                                val filteredChips = if (isDiagnosisMismatch()) {
+                                    ncdMedicalReviewViewModel.ncdPatientDiagnosisStatus.value?.data?.let { patientDoagnosisMap ->
+                                        (patientDoagnosisMap[NCDMRUtil.NCDPatientStatus] as? Map<*, *>)?.let { patientStatusMap ->
+                                            val patientDiagnosis = ArrayList<String>()
+                                            (patientStatusMap[NCDMRUtil.DiabetesControlledType] as? String)?.let { dia ->
+                                                patientDiagnosis.add(dia)
+                                            }
+                                            (patientStatusMap[NCDMRUtil.HypertensionStatus] as? String)?.let { hyp ->
+                                                if (hyp.equals(NCDMRUtil.KnownPatient, true))
+                                                    patientDiagnosis.add(NCDMRUtil.HYPERTENSION.lowercase())
+                                            }
+                                            if (values.contains(DefinedParams.Other.lowercase()))
+                                                patientDiagnosis.add(DefinedParams.Other.lowercase())
+                                            liveData.filter { db ->
+                                                patientDiagnosis.any { db.value.equals(it, true) }
+                                            }.map { item ->
+                                                ChipViewItemModel(
+                                                    id = item.id,
+                                                    name = item.name,
+                                                    type = item.type,
+                                                    value = item.value
+                                                )
+                                            }
+                                        }
+                                    }
+                                } else {
+                                    liveData.filter { db ->
+                                        values.any { db.value.equals(it, true) }
+                                    }.map { item ->
+                                        ChipViewItemModel(
+                                            id = item.id,
+                                            name = item.name,
+                                            type = item.type,
+                                            value = item.value
+                                        )
+                                    }
                                 }
+
                                 if (!data.diagnosisNotes.isNullOrBlank()) {
                                     binding.etCommentDiagnosis.setText(data.diagnosisNotes.takeIf { it.isNotBlank() })
                                 }
 
-                                if (filteredChips.isNotEmpty()) {
+                                if (!filteredChips.isNullOrEmpty()) {
                                     viewModel.selectedChips.apply {
                                         clear()
                                         addAll(filteredChips)
@@ -178,6 +230,20 @@ class NCDDiagnosisDialogFragment : DialogFragment(), View.OnClickListener {
     }
 
     private fun getDiagonsis() {
+        if (isDiagnosisMismatch()) {
+            getPatientId()?.let { patientReference ->
+                ncdMedicalReviewViewModel.ncdPatientDiagnosisStatus(HashMap<String, Any>().apply {
+                    put(
+                        DefinedParams.PatientReference,
+                        patientReference
+                    )
+                })
+            }
+        } else
+            confirmDiagnosis()
+    }
+
+    private fun confirmDiagnosis() {
         viewModel.getConfirmDiagonsis(
             NCDDiagnosisGetRequest(
                 patientReference = getPatientId(),

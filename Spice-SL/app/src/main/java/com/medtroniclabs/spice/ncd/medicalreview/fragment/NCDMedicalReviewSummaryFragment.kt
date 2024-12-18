@@ -275,7 +275,7 @@ class NCDMedicalReviewSummaryFragment : BaseFragment(),View.OnClickListener,
 
     override fun onConfirmDiagnosisClicked() {
         withNetworkAvailability(online = {
-            (requireActivity() as? NCDMedicalReviewActivity)?.showConfirmDiagnoses()
+            (requireActivity() as? NCDMedicalReviewActivity)?.showConfirmDiagnoses(isDiagnosisMismatch = true)
         })
     }
 }

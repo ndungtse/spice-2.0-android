@@ -7,6 +7,7 @@ import android.view.View
 import androidx.activity.viewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
+import com.medtroniclabs.spice.appextensions.numberOrZero
 import com.medtroniclabs.spice.appextensions.textOrHyphen
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.DateUtils
@@ -240,7 +241,7 @@ class NCDPharmacistActivity : BaseActivity(), View.OnClickListener {
     private fun validateCountDifference() {
         viewModel.prescriptionDispenseLiveData.value?.data?.let { list ->
             val differedQuantityList =
-                list.filter { it.prescriptionFilledDays != it.prescriptionRemainingDays }
+                list.filter { it.prescriptionFilledDays.numberOrZero() < it.prescriptionRemainingDays.numberOrZero() }
             if (differedQuantityList.isNotEmpty()) {
                 NCDQuantityDifferenceDialogueFragment.newInstance()
                     .show(supportFragmentManager, NCDQuantityDifferenceDialogueFragment.TAG)

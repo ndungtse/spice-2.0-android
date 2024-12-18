@@ -6,6 +6,7 @@ import androidx.appcompat.widget.AppCompatEditText
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.invisible
+import com.medtroniclabs.spice.appextensions.textOrEmpty
 import com.medtroniclabs.spice.appextensions.textOrHyphen
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.DefinedParams
@@ -35,6 +36,7 @@ object NCDMRUtil {
     const val MENTAL_HEALTH = "MENTALHEALTH"
     const val IS_INITIAL_MR = "ISINITIALMR"
     const val IS_FEMALE = "ISFEMALE"
+    const val IS_DIAGNOSIS_MISMATCH = "IS_DIAGNOSIS_MISMATCH"
     const val CONFIRM_DIAGNOSIS_TYPE = "CONFIRM_DIAGNOSIS_TYPE"
     const val CONFIRM_DIAGNOSIS_TYPE_GET = "CONFIRM_DIAGNOSIS_TYPE_GET"
     const val SUBSTANCE_DISORDER = "Substance Disorder"
@@ -87,6 +89,7 @@ object NCDMRUtil {
     const val BGTakenOn = "bgTakenOn"
     const val IsPregnant = "IsPregnant"
     const val ShowNCD = "showNCD"
+    const val ShowCHO = "showCHO"
     const val LifestyleResults = "lifeStyleReviewStatus"
     const val PsychologicalResults = "psychologicalReviewStatus"
     const val SMOKING = "SMOKE"
@@ -109,6 +112,7 @@ object NCDMRUtil {
     const val DiabetesControlledType = "diabetesControlledType"
     const val HypertensionStatus = "hypertensionStatus"
     const val HypertensionYearOfDiagnosis = "hypertensionYearOfDiagnosis"
+    const val KnownPatient = "Known Patient"
 
 
     fun validateInput(
@@ -254,19 +258,20 @@ object NCDMRUtil {
             buildString {
                 append(prescription.medicationName.textOrHyphen())
                 append(" - ")
-                append("${prescription.dosageFormName.textOrHyphen()}/")
+                append("${prescription.dosageFormName.textOrHyphen()} / ")
                 val dosageValue = prescription.dosageUnitValue?.toDoubleOrNull()?.toInt() ?: "-"
-                append(" ${dosageValue}${prescription.dosageUnitName.textOrHyphen()}/")
-                append(" ${prescription.dosageFrequencyName.textOrHyphen()}/")
+                append("${dosageValue}${prescription.dosageUnitName.textOrHyphen()} / ")
+                append("${prescription.dosageFrequencyName.textOrHyphen()} / ")
                 append(
-                    " ${prescription.prescriptionRemainingDays ?: "-"} ${
+                    "${prescription.prescriptionRemainingDays ?: "-"} ${
                         dayPeriod(
                             prescription.prescriptionRemainingDays,
                             context
                         )
-                    }/"
+                    }"
                 )
-                append(" " + prescription.instructionNote.textOrHyphen())
+                if (!prescription.instructionNote.isNullOrBlank())
+                    append(" / " + prescription.instructionNote)
             }
         }
     }

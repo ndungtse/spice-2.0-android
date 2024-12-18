@@ -391,6 +391,7 @@ class NCDMedicalReviewDiagnosisCardFragment : BaseFragment(), View.OnClickListen
                 patientDetailViewModel.getGenderIsFemale(),
                 NCDMRUtil.getConfirmDiagnoses(getMenu()),
                 patientDetailViewModel.isPregnant(),
+                isDiagnosisMismatch = false,
                 getMenu()
             ).apply {
                 listener = this@NCDMedicalReviewDiagnosisCardFragment

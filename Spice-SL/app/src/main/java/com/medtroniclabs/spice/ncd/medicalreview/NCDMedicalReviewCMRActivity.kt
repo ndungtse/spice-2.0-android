@@ -18,10 +18,12 @@ import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.ORIGIN
 import com.medtroniclabs.spice.common.GeneralErrorDialog
+import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.databinding.ActivityNcdmedicalReviewCmractivityBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.extension.safePopupMenuClickListener
+import com.medtroniclabs.spice.mappingkey.Screening
 import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.EncounterReference
 import com.medtroniclabs.spice.ncd.medicalreview.dialog.NCDTreatmentPlanDialog
@@ -418,7 +420,8 @@ class NCDMedicalReviewCMRActivity : BaseActivity(), View.OnClickListener, AncVis
                 val dialog =
                     NCDTreatmentPlanDialog.newInstance(
                         getPatientId(),
-                        getFhirId()
+                        getFhirId(),
+                        showCHO = showCHO()
                     ) { isPositiveResult, message ->
                         if (isPositiveResult)
                             showSuccessDialogue(
@@ -560,5 +563,16 @@ class NCDMedicalReviewCMRActivity : BaseActivity(), View.OnClickListener, AncVis
         super.onResume()
         initializeStaticDataSave()
         attachObservers()
+    }
+
+    private fun showCHO(): Boolean {
+        patientDetailViewModel.patientDetailsLiveData.value?.data?.let {
+            return SecuredPreference.isAncEnabled() &&
+                    it.gender.equals(Screening.Female, true) &&
+                    it.isPregnant == true &&
+                    it.isDangerSymptom == true &&
+                    CommonUtils.gestationalWeekLimitCheck(it.pregnancyDetails?.lastMenstrualPeriod)
+        }
+        return false
     }
 }

@@ -1892,4 +1892,15 @@ object CommonUtils {
         }
         return false
     }
+
+    fun gestationalWeekLimitCheck(date: String?): Boolean {
+        date?.let {
+            DateUtils.calculateGestationalWeeks(it)?.let { weeks ->
+                if (weeks in 4..40) {
+                    return true
+                }
+            }
+        }
+        return false
+    }
 }

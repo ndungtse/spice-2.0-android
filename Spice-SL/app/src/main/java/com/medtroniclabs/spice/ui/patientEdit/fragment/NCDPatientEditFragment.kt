@@ -147,7 +147,10 @@ class NCDPatientEditFragment : BaseFragment(), FormEventListener, View.OnClickLi
             okayButton = getString(R.string.done),
             callback = {
                 if (activity is NCDPatientEditActivity) {
-                    activity?.finish()
+                    activity?.apply {
+                        setResult(Activity.RESULT_OK, intent)
+                        finish()
+                    }
                 } else {
                     (activity as BaseActivity).redirectToHome()
                 }

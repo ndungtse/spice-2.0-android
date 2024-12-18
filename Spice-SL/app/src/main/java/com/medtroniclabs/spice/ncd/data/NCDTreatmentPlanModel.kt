@@ -10,6 +10,7 @@ data class NCDTreatmentPlanModel(
     val bpCheckFrequency: TreatmentPlanEntity? = null,
     val bgCheckFrequency: TreatmentPlanEntity? = null,
     val hba1cCheckFrequency: TreatmentPlanEntity? = null,
+    val choCheckFrequency: TreatmentPlanEntity? = null,
     val provenance: ProvanceDto = ProvanceDto(),
     val carePlanId: String? = null,
 )
@@ -22,4 +23,5 @@ data class NCDTreatmentPlanModelDetails(
     val bpCheckFrequency: String? = null,
     val bgCheckFrequency: String? = null,
     val hba1cCheckFrequency: String? = null,
+    val choCheckFrequency: String? = null,
 )

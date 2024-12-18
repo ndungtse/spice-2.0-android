@@ -36,6 +36,7 @@ class NCDTreatmentPlanViewModel @Inject constructor(
     var bpCheckFrequency: TreatmentPlanEntity? = null
     var bgCheckFrequency: TreatmentPlanEntity? = null
     var hba1cCheckFrequency: TreatmentPlanEntity? = null
+    var choCheckFrequency: TreatmentPlanEntity? = null
 
     private var frequencies = MutableLiveData<Boolean>()
     val allFrequencies: LiveData<List<TreatmentPlanEntity>> =

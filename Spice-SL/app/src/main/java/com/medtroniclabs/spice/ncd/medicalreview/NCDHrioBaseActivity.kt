@@ -1,9 +1,11 @@
 package com.medtroniclabs.spice.ncd.medicalreview
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.content.ContextCompat
@@ -21,7 +23,7 @@ import com.medtroniclabs.spice.ncd.medicalreview.fragment.NCDScheduleDialog
 import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.HrioViewModel
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
-import com.medtroniclabs.spice.ui.MenuConstants
+import com.medtroniclabs.spice.ui.dialog.GeneralSuccessDialog
 import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.MotherNeonateUtil.toYesNoOrDefault
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 import com.medtroniclabs.spice.ui.patientDelete.NCDDeleteConfirmationDialog
@@ -101,7 +103,7 @@ class NCDHrioBaseActivity : BaseActivity() {
                     patientViewModel.getPatientFHIRId()
                 )
                 intent.putExtra(DefinedParams.ORIGIN, patientViewModel.origin)
-                startActivity(intent)
+                patientEditLauncher.launch(intent)
             }
 
             R.id.schedule -> {
@@ -109,6 +111,12 @@ class NCDHrioBaseActivity : BaseActivity() {
             }
         }
     }
+
+    private val patientEditLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK)
+                init()
+        }
 
     private fun displayScheduleDialog() {
         NCDScheduleDialog.newInstance(
@@ -169,6 +177,29 @@ class NCDHrioBaseActivity : BaseActivity() {
         }
         hrioViewModel.toTriggerPatientDetails.observe(this) {
             init()
+        }
+        patientDeleteViewModel.patientRemoveResponse.observe(this) { resourceState ->
+            when (resourceState.state) {
+                ResourceState.SUCCESS -> {
+                    hideLoading()
+                    GeneralSuccessDialog.newInstance(
+                        title = getString(R.string.delete),
+                        message = getString(R.string.patient_delete_message),
+                        okayButton = getString(R.string.done)
+                    ) { redirectToHome() }.show(supportFragmentManager, GeneralSuccessDialog.TAG)
+                }
+
+                ResourceState.LOADING -> {
+                    showLoading()
+                }
+
+                ResourceState.ERROR -> {
+                    hideLoading()
+                    resourceState.message?.let {
+                        showErrorDialogue(getString(R.string.error), it, false) {}
+                    }
+                }
+            }
         }
     }
 

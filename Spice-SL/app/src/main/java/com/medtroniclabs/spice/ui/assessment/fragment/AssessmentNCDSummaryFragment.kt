@@ -305,7 +305,7 @@ class AssessmentNCDSummaryFragment : BaseFragment(), View.OnClickListener {
             if (subMap.isNotEmpty()) {
                 if (subMap.containsKey(Screening.PHQ4_Score)) {
                     val phq9Score = subMap[Screening.PHQ4_Score]
-                    if (phq9Score is Double) {
+                    if (phq9Score is Number) {
                         showBindingValue(
                             getString(R.string.phq9_score),
                             StringConverter.getPHQ4ReadableName(
@@ -325,7 +325,7 @@ class AssessmentNCDSummaryFragment : BaseFragment(), View.OnClickListener {
             if (subMap.isNotEmpty()) {
                 if (subMap.containsKey(Screening.PHQ4_Score)) {
                     val gad7Score = subMap[Screening.PHQ4_Score]
-                    if (gad7Score is Double) {
+                    if (gad7Score is Number) {
                         showBindingValue(
                             getString(R.string.gad7_score),
                             StringConverter.getPHQ4ReadableName(
@@ -571,7 +571,7 @@ class AssessmentNCDSummaryFragment : BaseFragment(), View.OnClickListener {
                 val subMap = map[it] as Map<String, Any>
                 if (subMap.containsKey(Screening.PHQ4_Score)) {
                     val phq4Score = subMap[Screening.PHQ4_Score]
-                    if (phq4Score is Double) {
+                    if (phq4Score is Number) {
                         showBindingValue(
                             getString(R.string.phq4_score),
                             StringConverter.getPHQ4ReadableName(
@@ -597,18 +597,23 @@ class AssessmentNCDSummaryFragment : BaseFragment(), View.OnClickListener {
     }
 
     private fun updateRedRiskCodes(riskCode: String?, riskMessage: String?) {
-        val hasRiskLevel = !(riskMessage.isNullOrBlank() || riskCode.isNullOrBlank())
-        if (hasRiskLevel) {
+        if (riskMessage.isNullOrBlank())
+            binding.clRedRisk.visibility = View.GONE
+        else {
             binding.clRedRisk.visibility = View.VISIBLE
-            val color = Color.parseColor(riskCode)
+            val color = Color.parseColor(riskCode ?: "#E4CC76")
             binding.clRedRisk.backgroundTintList =
                 ColorStateList.valueOf(color)
-            binding.tvRedRiskStatus.setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
+            binding.tvRedRiskStatus.setTextColor(
+                ContextCompat.getColor(
+                    requireContext(),
+                    R.color.white
+                )
+            )
             binding.tvRedRiskStatus.gravity = Gravity.CENTER
             binding.ivRedRisk.visibility = View.GONE
             binding.tvRedRiskStatus.text = riskMessage ?: ""
-        } else
-            binding.clRedRisk.visibility = View.GONE
+        }
     }
 
     private fun updateRedRiskDetails(riskLevel: String?, riskMessage: String?) {

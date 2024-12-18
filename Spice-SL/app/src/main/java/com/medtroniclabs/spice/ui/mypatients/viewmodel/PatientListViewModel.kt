@@ -170,6 +170,7 @@ class PatientListViewModel @Inject constructor(
     fun filterCount(): Int {
         return listOf(
             patientStatusTag,
+            ncdReferredForTag,
             medicalReviewDueTag,
             ncdMedicalReviewDateTag,
             ncdRedRiskTag,

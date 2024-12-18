@@ -141,6 +141,37 @@
                 app:layout_constraintStart_toStartOf="@+id/tvMedicalReviewFrequencyLbl"
                 app:layout_constraintTop_toBottomOf="@id/tvHbA1cFrequencyLbl" />
 
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvCHOCheckFrequencyLbl"
+                android:layout_width="@dimen/_0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_15sdp"
+                android:fontFamily="@font/inter_regular"
+                android:paddingVertical="@dimen/_12sdp"
+                android:text="@string/cho_check_frequency"
+                android:textColor="@color/table_title"
+                android:textSize="@dimen/_14ssp"
+                app:layout_constraintEnd_toEndOf="@+id/tvBPCheckFrequencyLbl"
+                app:layout_constraintStart_toStartOf="@+id/tvBPCheckFrequencyLbl"
+                app:layout_constraintTop_toBottomOf="@id/etBPCheckFrequency" />
+
+            <androidx.appcompat.widget.AppCompatSpinner
+                android:id="@+id/etCHOCheckFrequency"
+                style="@style/Form_Spinner_Style"
+                android:layout_width="@dimen/_0dp"
+                android:layout_height="wrap_content"
+                android:minHeight="@dimen/_50sdp"
+                app:layout_constraintEnd_toEndOf="@+id/tvBPCheckFrequencyLbl"
+                app:layout_constraintStart_toStartOf="@+id/tvBPCheckFrequencyLbl"
+                app:layout_constraintTop_toBottomOf="@id/tvCHOCheckFrequencyLbl" />
+
+            <androidx.constraintlayout.widget.Group
+                android:id="@+id/choGroup"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                app:constraint_referenced_ids="tvCHOCheckFrequencyLbl, etCHOCheckFrequency" />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <com.google.android.material.divider.MaterialDivider
