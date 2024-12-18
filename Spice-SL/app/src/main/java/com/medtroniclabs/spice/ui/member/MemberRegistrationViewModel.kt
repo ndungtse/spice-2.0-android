@@ -42,6 +42,18 @@ class MemberRegistrationViewModel @Inject constructor(
     var addNewMember: Boolean = false
     var memberDob: String?=null
     var isPhuWalkInsFlow:Boolean? = null
+    val householdHeadDobLiveData = MutableLiveData<String?>()
+
+
+    fun getHouseholdHeadDob(householdId: Long?) {
+        if (householdId != null && householdId != -1L) {
+            viewModelScope.launch(dispatcherIO) {
+                householdHeadDobLiveData.postValue(memberRegistrationRepository.getHouseholdHeadDob(householdId))
+            }
+        } else {
+            householdHeadDobLiveData.postValue(null)
+        }
+    }
 
     fun getFormData(formType: String) {
         viewModelScope.launch(dispatcherIO) {

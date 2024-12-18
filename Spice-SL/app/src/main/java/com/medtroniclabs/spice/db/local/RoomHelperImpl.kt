@@ -1189,4 +1189,8 @@ class RoomHelperImpl @Inject constructor(
     override suspend fun updateMemberDeceasedReason(id: Long, status: Boolean,deceasedReason: String?) {
         memberDAO.updateMemberDeceasedReason(id, status, OfflineSyncStatus.NotSynced,deceasedReason)
     }
+
+    override suspend fun getHouseholdHeadDob(householdId: Long): String {
+       return memberDAO.getHouseholdHeadDob(householdId)
+    }
 }

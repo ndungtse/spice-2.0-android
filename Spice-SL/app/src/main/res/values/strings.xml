@@ -1239,6 +1239,8 @@
     <string name="please_select_a_valid_value_month">"Please enter a valid input for the month (0 to 11) and the week (0 to 4)."</string>
     <string name="select_member_deceased">Select Member Deceased</string>
     <string name="other_signs_and_symptoms">Other Signs and Symptoms</string>
+    <string name="reason_of_death">Reason of Death</string>
+    <string name="deceased">Deceased</string>
 
     <string name="support_label" translatable="false">Please write your issues with the\napplication</string>
     <string name="support" translatable="false">Support</string>

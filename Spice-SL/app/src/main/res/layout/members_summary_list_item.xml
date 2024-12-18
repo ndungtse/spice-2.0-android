@@ -75,6 +75,53 @@
             app:layout_constraintStart_toEndOf="@id/tvPatientIDSeparator"
             app:layout_constraintTop_toTopOf="@id/tvPatientIDLabel" />
 
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/clReasonOfDeath"
+            android:layout_width="@dimen/_0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="@id/tvMemberName"
+            app:layout_constraintTop_toBottomOf="@+id/tvPatientIDLabel">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvReasonForDeathLabel"
+                style="@style/TextStyle_Regular_16"
+                android:layout_width="@dimen/_0dp"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:text="@string/reason_of_death"
+                android:textColor="@color/table_title"
+                app:layout_constraintEnd_toStartOf="@id/tvReasonForDeathLabelSeparator"
+                app:layout_constraintHorizontal_weight="0.3"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvReasonForDeathLabelSeparator"
+                style="@style/TextStyle_Regular_16"
+                android:layout_width="@dimen/_0dp"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:text="@string/separator_colon"
+                app:layout_constraintEnd_toStartOf="@id/tvReasonForDeath"
+                app:layout_constraintHorizontal_weight="0.05"
+                app:layout_constraintStart_toEndOf="@id/tvReasonForDeathLabel"
+                app:layout_constraintTop_toTopOf="@id/tvReasonForDeathLabel" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvReasonForDeath"
+                style="@style/TextStyle_Medium"
+                android:textSize="@dimen/_16ssp"
+                android:textColor="@color/grey_black"
+                android:gravity="start"
+                android:layout_width="@dimen/_0dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_weight="0.6"
+                app:layout_constraintStart_toEndOf="@id/tvReasonForDeathLabelSeparator"
+                app:layout_constraintTop_toTopOf="@id/tvReasonForDeathLabel" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </com.google.android.material.card.MaterialCardView>

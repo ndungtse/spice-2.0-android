@@ -125,4 +125,7 @@ interface MemberDAO {
     @Query("UPDATE HouseholdMember SET household_id = :householdId, household_head_relationship = :defaultRelation, sync_status =:syncStatus, updated_at =:updatedAt  WHERE fhir_id IN (:memberIds)")
     suspend fun updateHouseholdHeadAndRelationShip(memberIds: List<String>, householdId: Long, defaultRelation: String = "",syncStatus: String = OfflineSyncStatus.NotSynced.name, updatedAt: Long = System.currentTimeMillis())
 
+
+    @Query("SELECT date_of_birth FROM HouseholdMember WHERE household_id = :householdId AND household_head_relationship = :houseHoldRelationShip LIMIT 1")
+    suspend fun getHouseholdHeadDob(householdId: Long, houseHoldRelationShip:String= DefinedParams.HosueHoldHead): String
 }

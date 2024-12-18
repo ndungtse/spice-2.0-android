@@ -43,6 +43,8 @@ import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
 import com.medtroniclabs.spice.db.entity.VillageEntity
 import com.medtroniclabs.spice.formgeneration.FormGenerator
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams
+import com.medtroniclabs.spice.formgeneration.config.DefinedParams.Month
+import com.medtroniclabs.spice.formgeneration.config.DefinedParams.Week
 import com.medtroniclabs.spice.formgeneration.listener.FormEventListener
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.model.FormResponse
@@ -52,6 +54,7 @@ import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.no
 import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.villageId
 import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.yes
 import com.medtroniclabs.spice.mappingkey.MemberRegistration
+import com.medtroniclabs.spice.mappingkey.MemberRegistration.dateOfBirth
 import com.medtroniclabs.spice.mappingkey.MemberRegistration.gender
 import com.medtroniclabs.spice.mappingkey.MemberRegistration.householdHeadRelationship
 import com.medtroniclabs.spice.mappingkey.MemberRegistration.isPregnant
@@ -71,6 +74,11 @@ import com.medtroniclabs.spice.ui.household.summary.HouseholdSummaryActivity
 import com.medtroniclabs.spice.ui.household.viewmodel.HouseRegistrationViewModel
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
 import dagger.hilt.android.AndroidEntryPoint
+import timber.log.Timber
+import java.time.LocalDate
+import java.time.Period
+import java.time.format.DateTimeFormatter
+import kotlin.math.abs
 
 @AndroidEntryPoint
 class MemberRegistrationFragment : Fragment(), FormEventListener, View.OnClickListener {
@@ -99,8 +107,11 @@ class MemberRegistrationFragment : Fragment(), FormEventListener, View.OnClickLi
                 EditNewMember
             else
                 AnalyticsDefinedParams.MemberRegistration
+
+        memberRegistrationViewModel.getHouseholdHeadDob(householdRegistrationViewModel.householdId)
         householdRegistrationViewModel.eventName = eventType
         memberRegistrationViewModel.setUserJourney(eventType)
+
         onPhuAddMember()
     }
 
@@ -233,6 +244,7 @@ class MemberRegistrationFragment : Fragment(), FormEventListener, View.OnClickLi
                 }
             }
         }
+
         memberRegistrationViewModel.addnewMemberReq.observe(viewLifecycleOwner) { resourceState ->
             when (resourceState.state) {
                 ResourceState.LOADING -> {
@@ -252,6 +264,10 @@ class MemberRegistrationFragment : Fragment(), FormEventListener, View.OnClickLi
                     (activity as BaseActivity?)?.hideLoading()
                 }
             }
+        }
+
+        memberRegistrationViewModel.householdHeadDobLiveData.observe(viewLifecycleOwner){
+            Timber.d("Household DOB : $it")
         }
     }
 
@@ -372,7 +388,7 @@ class MemberRegistrationFragment : Fragment(), FormEventListener, View.OnClickLi
                 DateUtils.convertDateFormat(it, DATE_FORMAT_yyyyMMddHHmmssZZZZZ, DATE_ddMMyyyy)
             val dateDob = DateUtils.convertStringToDate(it, DATE_FORMAT_yyyyMMddHHmmssZZZZZ)
             formGenerator.getViewByTag(MemberRegistration.dateOfBirth)?.let { view ->
-                if (dateOfBirth.isNotBlank()) {
+                if (memberRegistrationViewModel.isPhuWalkInsFlow == false && dateOfBirth.isNotBlank()) {
                     formGenerator.disableView(view, requireContext())
                 }
                 formGenerator.setValueForView(dateOfBirth, view)
@@ -494,49 +510,125 @@ class MemberRegistrationFragment : Fragment(), FormEventListener, View.OnClickLi
     ) {
     }
 
+
+    private fun showInValidDob(message: String) {
+        formGenerator.getViewByTag(DateOfBirth + errorSuffix)?.apply {
+            visibility = View.VISIBLE
+        }.takeIf { it is TextView }?.let { textView->(textView as TextView).text=
+            message
+        }
+    }
+
     override fun onFormSubmit(resultMap: HashMap<String, Any>?, serverData: List<FormLayout?>?) {
         resultMap?.let { map ->
-            val month = map["month"] as? Int
-            val week = map["week"] as? Int
-            if (month in 0..11 && week in 0..4) {
-                if (memberRegistrationViewModel.medicalReviewFlow) {
-                    memberRegistrationViewModel.addNewMember(map, formGenerator)
-                } else {
-                    if (householdRegistrationViewModel.isMemberRegistration || householdRegistrationViewModel.memberID != -1L) {
-                        if (memberRegistrationViewModel.isPhuWalkInsFlow == true) {
-                            householdRegistrationViewModel.updateMemberAsAssigned(
-                                arguments?.getLong(
-                                    com.medtroniclabs.spice.common.DefinedParams.FhirMemberID
-                                )
-                            )
-                        }
-                        memberRegistrationViewModel.registerMember(
-                            map,
-                            householdRegistrationViewModel.householdId
-                        )
-                    } else {
-                        householdRegistrationViewModel.householdEntityDetail?.let { householdEntity ->
-                            memberRegistrationViewModel.registerHouseThenMember(
-                                householdEntity,
-                                map,
-                                householdRegistrationViewModel.getCurrentLocation(),
-                                householdRegistrationViewModel.initialValue,
-                                householdRegistrationViewModel.signatureFilename
-                            )
-                        }
+            // Hide Error message
+            formGenerator.getViewByTag(DateOfBirth + errorSuffix)?.apply {
+                visibility = View.GONE
+            }
+
+            val month = map[Month] as? Int
+            val week = map[Week] as? Int
+            // Month and Week field validation
+            if (month !in 0..11 && week !in 0..4) {
+                showInValidDob(getString(R.string.please_select_a_valid_value))
+                return
+            }
+
+            // Add member from medical review
+            if (memberRegistrationViewModel.medicalReviewFlow) {
+                memberRegistrationViewModel.addNewMember(map, formGenerator)
+                return
+            }
+
+            // Household Member Create or Edit
+            val dob = map[dateOfBirth] as String
+            if (householdRegistrationViewModel.isMemberRegistration || householdRegistrationViewModel.memberID != -1L) {
+                val relation = map[householdHeadRelationship] as String
+
+                // Showing warning for only new member
+                if (householdRegistrationViewModel.isMemberRegistration) {
+                    isValidRelationAge(dob, relation)?.let { validAgeErrorMessage ->
+                        showInValidDob(validAgeErrorMessage)
+                        return
                     }
                 }
-                formGenerator.getViewByTag(DateOfBirth + errorSuffix)?.apply {
-                    visibility = View.GONE
+
+                if (memberRegistrationViewModel.isPhuWalkInsFlow == true) {
+                    householdRegistrationViewModel.updateMemberAsAssigned(
+                        arguments?.getLong(
+                            com.medtroniclabs.spice.common.DefinedParams.FhirMemberID
+                        )
+                    )
                 }
-            }else{
-                formGenerator.getViewByTag(DateOfBirth + errorSuffix)?.apply {
-                    visibility = View.VISIBLE
-                }.takeIf { it is TextView }?.let { textView->(textView as TextView).text=
-                    getString(R.string.please_select_a_valid_value)
-                }
+
+
+                  memberRegistrationViewModel.registerMember(
+                      map,
+                      householdRegistrationViewModel.householdId
+                  )
+                return
+            }
+
+            // Household with Member create
+            val memberDOB =
+                LocalDate.parse(dob, DateTimeFormatter.ofPattern(DATE_FORMAT_yyyyMMddHHmmssZZZZZ))
+            if (!isValidMinAge(memberDOB)) {
+                showInValidDob("The age of the Household Head must be greater than 10 years.")
+                return
+            }
+
+            householdRegistrationViewModel.householdEntityDetail?.let { householdEntity ->
+                // For Household head
+                memberRegistrationViewModel.registerHouseThenMember(
+                    householdEntity,
+                    map,
+                    householdRegistrationViewModel.getCurrentLocation(),
+                    householdRegistrationViewModel.initialValue,
+                    householdRegistrationViewModel.signatureFilename
+                )
             }
         }
+    }
+
+    private fun isValidRelationAge(dob: String, relation: String): String? {
+        // No Age Validation for Brother or Sister and Other relation
+        if (relation.equals(MemberRegistration.BrotherOrSister, true)
+            || relation.equals(MemberRegistration.OtherRelation, true)
+        ) {
+            return null
+        }
+
+        val memberDOB =
+            LocalDate.parse(dob, DateTimeFormatter.ofPattern(DATE_FORMAT_yyyyMMddHHmmssZZZZZ))
+        // Min Age validation for Wife or Husband
+        if (relation.equals(MemberRegistration.WifeOrHusband, true)) {
+            return if (isValidMinAge(memberDOB)) null else "The Wife or Husband must be at least 10 years old."
+        }
+
+        val headDob = memberRegistrationViewModel.householdHeadDobLiveData.value ?: return null
+        val headDOB = LocalDate.parse(headDob, DateTimeFormatter.ofPattern(DATE_FORMAT_yyyyMMddHHmmssZZZZZ))
+        val ageDifference = Period.between(headDOB, memberDOB).years
+
+        return when (relation) {
+            // Minimum +10 Age Difference for Son or Daughter
+            MemberRegistration.SonOrDaughter -> if (ageDifference >= 10) null else  "The Son or Daughter must be at least 10 years younger than the Household Head."
+
+            // Minimum -10 Age Difference for Father or Mother
+            MemberRegistration.FatherOrMother -> if (ageDifference <= -10) null else "The Father or Mother must be at least 10 years older than the Household Head."
+
+            // Minimum +30 Age Difference for Grandchild
+            MemberRegistration.Grandchild -> if (ageDifference >= 30) null else "A Grandchild must be at least 30 years younger than the Household Head."
+
+            // Minimum -30 Age Difference for Grandparent
+            MemberRegistration.Grandparent -> if (ageDifference <= -30) null else "A Grandparent must be at least 30 years older than the Household Head."
+            else -> null
+        }
+    }
+
+    private fun isValidMinAge(dateOfBirth: LocalDate): Boolean {
+        val today = LocalDate.now()
+        val age = Period.between(dateOfBirth, today).years
+        return age >= 10
     }
 
     override fun onRenderingComplete() {

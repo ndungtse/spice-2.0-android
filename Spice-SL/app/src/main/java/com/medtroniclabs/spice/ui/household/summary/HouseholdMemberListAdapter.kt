@@ -8,6 +8,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
+import com.medtroniclabs.spice.appextensions.invisible
+import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils.getAgeFromDOB
 import com.medtroniclabs.spice.common.CommonUtils.getGenderText
 import com.medtroniclabs.spice.databinding.MembersSummaryListItemBinding
@@ -32,12 +34,21 @@ class HouseholdMemberListAdapter(
     ) {
         val context = holder.context
         val item = houseHoldMembersList[position]
+        holder.binding.clReasonOfDeath.gone()
+        holder.binding.forwardIcon.visible()
         if (item.isActive) {
+            holder.binding.tvMemberName.text = getMemberInfoText(context, item)
+            holder.binding.clPatientRoot.setBackgroundResource(R.drawable.default_color_bg)
             disableAllChildren(holder.binding.root, 1f, true)
         } else {
-            disableAllChildren(holder.binding.root, 0.5f, false)
+            holder.binding.tvMemberName.text = "${getMemberInfoText(context, item)} (${context.getString(R.string.deceased)})"
+            holder.binding.clPatientRoot.setBackgroundResource(R.drawable.drak_grey_bg)
+            holder.binding.clReasonOfDeath.visible()
+            holder.binding.forwardIcon.invisible()
+            holder.binding.tvReasonForDeath.text = item.deceasedReason ?: context.getString(R.string.separator_double_hyphen)
+            disableAllChildren(holder.binding.root, 1f, false)
         }
-        holder.binding.tvMemberName.text = getMemberInfoText(context, item)
+
         holder.binding.tvPatientId.text = item.patientId ?: context.getString(R.string.separator_double_hyphen)
         if(!phuWalkInsFlow) {
         holder.binding.cardPatient.safeClickListener {

@@ -11,5 +11,13 @@ object MemberRegistration {
     var otherFamilyMember = "otherFamilyMember"
     const val householdId = "household_id"
     const val isPregnant= "isPregnant"
-    const val SonDaughter = "Son / Daughter"
+
+    const val WifeOrHusband = "Wife / Husband"
+    const val SonOrDaughter = "Son / Daughter"
+    const val FatherOrMother = "Father / Mother"
+    const val BrotherOrSister = "Brother / Sister"
+    const val Grandchild = "Grandchild"
+    const val Grandparent = "Grandparent"
+    const val OtherRelation = "Other Family Member (specify)"
+
 }

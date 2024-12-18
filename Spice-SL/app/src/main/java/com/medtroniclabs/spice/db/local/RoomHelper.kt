@@ -447,4 +447,6 @@ interface RoomHelper {
 
     suspend fun updateMemberDeceasedReason(id: Long, status: Boolean,deceasedReason: String?)
 
+    suspend fun getHouseholdHeadDob(householdId: Long): String
+
 }

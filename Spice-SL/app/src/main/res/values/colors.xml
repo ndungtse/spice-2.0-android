@@ -113,4 +113,5 @@
     <color name="text_background">#BCB5F7</color>
     <color name="background_ratio">#EB956A</color>
     <color name="background_job_aid">#1A6165DE</color>
+    <color name="light_grey">#D5D5D5</color>
 </resources>
