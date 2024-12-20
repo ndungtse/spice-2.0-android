@@ -36,6 +36,7 @@ const val signatureFolder = "signatures"
 const val imgFileNameExtension = "JPEG"
 
 const val workerUniqueName = "spicePostWorker"
+const val workerUniqueNameForNCD = "spicePostWorkerForNCD"
 fun Context.isGpsEnabled(): Boolean {
     val locationManager = this.getSystemService(Context.LOCATION_SERVICE) as LocationManager
     return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
@@ -102,15 +103,22 @@ fun Context.scheduleSyncWorker() {
 }
 
 fun Context.triggerOneTimeWorker() {
+    val workManager = WorkManager.getInstance(this)
+    //Only work that is in a terminal state (SUCCEEDED, FAILED, or CANCELLED) and has no unfinished dependent work will be pruned.
+    workManager.pruneWork()
     val constraints = Constraints.Builder()
         .setRequiresBatteryNotLow(false)                // Requires battery to not be low
         .build()
-
     val workRequest = OneTimeWorkRequestBuilder<GetSyncStatusWorker>()
         .setConstraints(constraints)
         .build()
-
-    WorkManager.getInstance(this).enqueue(workRequest)
+    val workerInfos = workManager.getWorkInfosForUniqueWork(workerUniqueNameForNCD).get()
+    val noPendingWorker =
+        workerInfos?.filter { it.state == WorkInfo.State.ENQUEUED || it.state == WorkInfo.State.BLOCKED }
+            .isNullOrEmpty()
+    val existingWorkPolicy =
+        if (noPendingWorker) ExistingWorkPolicy.APPEND else ExistingWorkPolicy.KEEP
+    workManager.enqueueUniqueWork(workerUniqueNameForNCD, existingWorkPolicy, workRequest)
 }
 
 private fun observerStatus(workManager: WorkManager) {

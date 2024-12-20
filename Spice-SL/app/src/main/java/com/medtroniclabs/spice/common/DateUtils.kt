@@ -817,10 +817,11 @@ object DateUtils {
     fun convertToTimestampWithoutZone(dateString: String?, isStartOfDay: Boolean): Long? {
         return dateString?.let {
             // Define a custom formatter matching the input format
+            val date = convertDateFormat(it, DATE_FORMAT_yyyyMMddHHmmssZZZZZ, GESTATIONALAGE_CALENDAR)
             val formatter = DateTimeFormatter.ofPattern(DATE_FORMAT_yyyyMMdd_HHmmss)
 
             // Parse the input string into LocalDateTime
-            val localDateTime = LocalDateTime.parse(it, formatter)
+            val localDateTime = LocalDateTime.parse("$date 00:00:00", formatter)
 
             // Adjust for start or end of the day
             val adjustedDateTime = if (isStartOfDay) {
@@ -830,7 +831,7 @@ object DateUtils {
             }
 
             // Convert to timestamp in milliseconds
-            adjustedDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+            adjustedDateTime.toEpochSecond(ZoneOffset.UTC) * 1000
         }
     }
 
@@ -846,5 +847,8 @@ object DateUtils {
     fun getCurrentDayMonthYear(): Triple<Int, Int, Int> {
         val currentDate = LocalDate.now()
         return Triple(currentDate.dayOfMonth, currentDate.monthValue, currentDate.year)
+    }
+    fun dateToLong(dateString: String = getTodayDateDDMMYYYY()): Long? {
+        return convertToTimestampWithoutZone(dateString, false)
     }
 }

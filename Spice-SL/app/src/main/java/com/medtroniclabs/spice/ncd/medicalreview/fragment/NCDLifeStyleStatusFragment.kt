@@ -111,7 +111,7 @@ class NCDLifeStyleStatusFragment : BaseFragment(), View.OnClickListener {
     private fun loadLifeStyleData(it: ArrayList<LifeStyleResponse>) {
         it.forEachIndexed { _, lifeStyle ->
             val answer: String =
-                if (lifeStyle.comments.isNullOrBlank()) getString(R.string.separator_hyphen) else lifeStyle.comments
+                if (lifeStyle.lifestyleAnswer.isNullOrBlank()) getString(R.string.separator_hyphen) else lifeStyle.lifestyleAnswer
                     ?: ""
 
             binding.apply {

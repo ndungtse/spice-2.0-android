@@ -18,6 +18,7 @@ import com.medtroniclabs.spice.formgeneration.extension.safePopupMenuClickListen
 import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.ncd.data.NCDPatientRemoveRequest
 import com.medtroniclabs.spice.ncd.medicalreview.fragment.NCDScheduleDialog
+import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.HrioViewModel
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.MenuConstants
@@ -33,6 +34,7 @@ class NCDHrioBaseActivity : BaseActivity() {
     private lateinit var binding: ActivityNcdhrioBaseBinding
     private val patientViewModel: PatientDetailViewModel by viewModels()
     private val patientDeleteViewModel: NCDPatientDeleteViewModel by viewModels()
+    private val hrioViewModel: HrioViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityNcdhrioBaseBinding.inflate(layoutInflater)
@@ -164,6 +166,9 @@ class NCDHrioBaseActivity : BaseActivity() {
                     showError(true)
                 }
             }
+        }
+        hrioViewModel.toTriggerPatientDetails.observe(this) {
+            init()
         }
     }
 

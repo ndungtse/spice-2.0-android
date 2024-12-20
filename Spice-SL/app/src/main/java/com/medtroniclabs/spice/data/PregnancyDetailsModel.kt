@@ -21,6 +21,7 @@ data class PregnancyDetailsModel(
     var isOnTreatment: Boolean? = null,
     var isPregnancyAnc: Boolean? = null,
     var memberReference: String? = null,
+    var patientReference: String? = null,
     var diagnosis: ArrayList<Map<String, Any>>? = null,
     var actualDeliveryDate: String? = null,
     var diagnosisTime: String? = null,

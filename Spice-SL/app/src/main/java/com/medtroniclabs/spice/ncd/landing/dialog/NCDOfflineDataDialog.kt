@@ -14,6 +14,7 @@ import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.setVisible
 import com.medtroniclabs.spice.appextensions.visible
+import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.databinding.FragmentNcdOfflineDataDialogBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.ncd.landing.viewmodel.NCDOfflineDataViewModel
@@ -64,26 +65,33 @@ class NCDOfflineDataDialog : DialogFragment(), View.OnClickListener {
     private fun attachObservers() {
         viewModel.screeningCount.observe(viewLifecycleOwner) {
             handleScreening()
-
         }
         viewModel.assessmentType.observe(viewLifecycleOwner) {
-            handleScreening()
+        }
+        viewModel.followUpType.observe(viewLifecycleOwner) {
         }
     }
 
     private fun handleScreening() {
         val screening = viewModel.screeningCount.value ?: 0
         val assessment = viewModel.assessmentType.value ?: 0
+        val followUpNeed = if (CommonUtils.isNonCommunity() && CommonUtils.isChp()) {
+            viewModel.followUpType.value ?: 0
+        } else {
+            0
+        }
         binding.apply {
-            btnUpload.setVisible(screening > 0 || assessment > 0)
-            btnOkay.setVisible(screening <= 0 && assessment <= 0)
+            val isFollowUpRequired = CommonUtils.isNonCommunity() && CommonUtils.isChp()
+            btnUpload.setVisible(screening > 0 || assessment > 0 || (isFollowUpRequired && followUpNeed > 0))
+            btnOkay.setVisible(screening <= 0 && assessment <= 0 && !(isFollowUpRequired && followUpNeed > 0))
             screeningTitle.visible()
             assessmentGroup.visible()
+            followUpGroup.setVisible(CommonUtils.isNonCommunity() && CommonUtils.isChp())
         }
-        offlineDataHandling(screening, assessment)
+        offlineDataHandling(screening, assessment, followUpNeed)
     }
 
-    private fun offlineDataHandling(screening: Long, assessment: Long) {
+    private fun offlineDataHandling(screening: Long, assessment: Long, followUpNeed: Long) {
         if (screening > 0) {
             binding.tvMessage.text =
                 if (screening > 1) getString(
@@ -105,6 +113,17 @@ class NCDOfflineDataDialog : DialogFragment(), View.OnClickListener {
                 )
         } else
             binding.tvAssessmentMessage.text = getString(R.string.no_assessed_patients)
+
+        if (followUpNeed > 0) {
+            binding.tvFollowUpMessage.text = if (followUpNeed > 1) getString(
+                R.string.follow_ups,
+                assessment.toString()
+            ) else getString(
+                R.string.follow_up_one
+            )
+        } else {
+            binding.tvFollowUpMessage.text = getString(R.string.no_follow_up)
+        }
     }
 
     private fun initView() {

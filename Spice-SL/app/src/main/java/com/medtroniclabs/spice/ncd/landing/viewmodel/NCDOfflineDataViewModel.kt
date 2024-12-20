@@ -23,6 +23,10 @@ class NCDOfflineDataViewModel @Inject constructor(
             metaRepository.getUnSyncedNCDAssessmentCount()
         }
 
+    val followUpType: LiveData<Long> = toGetCount.switchMap {
+        metaRepository.getUnSyncedNCDFollowUpCount()
+    }
+
     fun getCountOfflineData() {
         toGetCount.value = true
     }

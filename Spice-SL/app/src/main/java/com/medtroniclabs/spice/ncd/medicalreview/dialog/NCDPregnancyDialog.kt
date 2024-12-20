@@ -768,6 +768,10 @@ class NCDPregnancyDialog(private val callback: ((isPositiveResult: Boolean, mess
         }
     }
 
+    fun getPatientReference():String? {
+        return arguments?.getString(NCDMRUtil.PATIENT_REFERENCE)
+    }
+
     override fun onClick(v: View?) {
         when (v?.id) {
             binding.btnConfirm.id -> {
@@ -775,6 +779,7 @@ class NCDPregnancyDialog(private val callback: ((isPositiveResult: Boolean, mess
                     if (validateInputs()) {
                         viewModel.ncdPregnancyCreateModel.apply {
                             memberReference = viewModel.relatedPersonFhirId
+                            patientReference = getPatientReference()
                             ncdPatientStatus = getNcdPatientStatus()
                         }.also {
                             viewModel.ncdPregnancyCreate(it)

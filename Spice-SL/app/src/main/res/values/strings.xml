@@ -1194,4 +1194,9 @@
     <string name="yes_i_confirm">Yes, I Confirm</string>
     <string name="test_review_confirmation_message">Have you observed to confirm the test values and comments uploaded by the Lab Technician?</string>
     <string name="label_with_text">%1$s  :  %2$s</string>
+    <string name="follow_up">Follow-up</string>
+    <string name="follow_ups">%1$s follow-up call result are waiting to upload.</string>
+    <string name="follow_up_one">1 follow-up call result is waiting to upload.</string>
+    <string name="no_follow_up">No follow-up call result found to upload.</string>
+    <string name="date_range">"Date Range"</string>
 </resources>

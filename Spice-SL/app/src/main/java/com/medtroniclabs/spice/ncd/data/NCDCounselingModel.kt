@@ -1,5 +1,6 @@
 package com.medtroniclabs.spice.ncd.data
 
+import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 
 data class NCDCounselingModel(
@@ -39,7 +40,8 @@ data class AssessmentResultModel(
     val assessedDate: String? = null,
     val assessedBy: String? = null,
     val assessedByDisplay: String? = null,
-    val provenance: ProvanceDto = ProvanceDto()
+    val provenance: ProvanceDto = ProvanceDto(),
+    val isNutritionist: Boolean = CommonUtils.isNonCommunity() && CommonUtils.isNutritionist()
 )
 
 data class ResultModel(

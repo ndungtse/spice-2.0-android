@@ -27,4 +27,9 @@ class HrioViewModel @Inject constructor(
             nextVisitResponse.postValue(response)
         }
     }
+
+    var toTriggerPatientDetails = MutableLiveData<Boolean>()
+    fun toTriggerPatientDetails() {
+        toTriggerPatientDetails.value = true
+    }
 }

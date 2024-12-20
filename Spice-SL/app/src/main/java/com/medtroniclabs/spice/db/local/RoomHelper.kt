@@ -432,4 +432,6 @@ interface RoomHelper {
     suspend fun getPatientBasedOnId(id: String): NCDPatientDetailsEntity
 
     suspend fun deleteCallDetails(id: Long)
+
+    fun getUnSyncedNCDFollowUpCount(): LiveData<Long>
 }

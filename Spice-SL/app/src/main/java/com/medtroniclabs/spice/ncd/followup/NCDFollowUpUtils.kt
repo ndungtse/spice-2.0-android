@@ -32,7 +32,7 @@ object NCDFollowUpUtils {
     const val isInitiated = "isInitiated"
     const val today = "today"
     const val tomorrow = "tomorrow"
-    const val customise = "customise"
+    const val customise = "customize"
 
     fun getDaysString(it: Long): Int {
         return if (it == 1L) R.string.day_due else R.string.days_due

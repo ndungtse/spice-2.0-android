@@ -11,6 +11,7 @@ import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.nullIfEmpty
 import com.medtroniclabs.spice.common.DateUtils.calculateAge
 import com.medtroniclabs.spice.common.RoleConstant.CHA
+import com.medtroniclabs.spice.common.RoleConstant.COMMUNITY_HEALTH_ASSISTANT
 import com.medtroniclabs.spice.common.RoleConstant.COMMUNITY_HEALTH_PROMOTER
 import com.medtroniclabs.spice.common.RoleConstant.COMMUNITY_HEALTH_WORKER
 import com.medtroniclabs.spice.common.RoleConstant.HEALTH_SCREENER
@@ -1874,5 +1875,21 @@ object CommonUtils {
         } else {
             DefinedParams.NON_COMMUNITY
         }
+    }
+
+    fun isNutritionist(): Boolean {
+        val userRole = SecuredPreference.getUserDetails()?.roles?.joinToString { it.name }
+        if (userRole != null) {
+            return userRole.contains(RoleConstant.NUTRITIONIST)
+        }
+        return false
+    }
+
+    fun isCha(): Boolean {
+        val userRole = SecuredPreference.getUserDetails()?.roles?.joinToString { it.name }
+        if (userRole != null) {
+            return userRole.contains(COMMUNITY_HEALTH_ASSISTANT)
+        }
+        return false
     }
 }

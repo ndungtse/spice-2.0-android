@@ -188,7 +188,9 @@ class NCDLabTestListActivity : BaseActivity(), View.OnClickListener, Investigati
     override fun onClick(v: View?) {
         when (v?.id) {
             binding.btnDone.id -> {
-                if (investigationGenerator.onValidateInput(true)) {
+                val isDataNotEmpty =
+                    viewModel.investigationListLiveData.value?.isNotEmpty() ?: false
+                if (investigationGenerator.onValidateInput(true) && isDataNotEmpty) {
                     patientDetailViewModel.patientDetailsLiveData.value?.data?.let { data ->
                         viewModel.updateLabTest(
                             geyPayloadForLabTest(investigationGenerator.getResultFromInvestigation()),

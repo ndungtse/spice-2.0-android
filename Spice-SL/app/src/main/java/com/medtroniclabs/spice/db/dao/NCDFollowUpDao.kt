@@ -8,6 +8,7 @@ import androidx.room.Query
 import com.medtroniclabs.spice.db.entity.NCDCallDetails
 import com.medtroniclabs.spice.db.entity.NCDFollowUp
 import com.medtroniclabs.spice.db.entity.NCDPatientDetailsEntity
+import com.medtroniclabs.spice.ncd.followup.NCDFollowUpUtils
 
 @Dao
 interface NCDFollowUpDao {
@@ -41,13 +42,21 @@ interface NCDFollowUpDao {
         AND (
            (:reason IS NULL OR overDueCategories LIKE '%'||LOWER(:reason)||'%')
         )
+        AND ((dueDate IS NOT NULL AND :todayDate IS NOT NULL) AND dueDate <= :todayDate)
     ORDER BY 
-        retryAttempts DESC, 
         CASE 
-            WHEN :isScreened = 1 THEN dueDate
+             WHEN :isScreened IS NULL OR :isScreened = 0 THEN retryAttempts 
+             ELSE NULL 
+        END DESC, 
+        CASE 
+            WHEN :isScreened = 1 THEN 
+                CASE WHEN :type = '${NCDFollowUpUtils.LTFU_Type}' THEN -dueDate ELSE dueDate END
             ELSE NULL
-        END ASC,
-        dueDate DESC, 
+        END,
+        CASE 
+            WHEN :type = '${NCDFollowUpUtils.LTFU_Type}' THEN -dueDate 
+            ELSE dueDate 
+        END,
         patientId DESC
 """)
     fun getFilteredNCDFollowUp(
@@ -57,7 +66,8 @@ interface NCDFollowUpDao {
         dateFirst: Long?,
         dateSecond: Long?,
         isScreened: Boolean?,
-        reason: String?
+        reason: String?,
+        todayDate: Long?
     ): LiveData<List<NCDFollowUp>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -101,4 +111,7 @@ interface NCDFollowUpDao {
 
     @Query("DELETE FROM NCDCallDetails WHERE id = :id")
     suspend fun deleteCallDetails(id: Long)
+
+    @Query("SELECT COUNT(id) FROM NCDCallDetails WHERE isSynced = 0")
+    fun getUnSyncedNCDFollowUpCount(): LiveData<Long>
 }

@@ -41,6 +41,7 @@ import com.medtroniclabs.spice.appextensions.startBackgroundOfflineSync
 import com.medtroniclabs.spice.appextensions.triggerOneTimeWorker
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.appextensions.workerUniqueName
+import com.medtroniclabs.spice.appextensions.workerUniqueNameForNCD
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.REFRESH_FRAGMENT
@@ -58,7 +59,6 @@ import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.ChooseSiteDialogueFragment
 import com.medtroniclabs.spice.ui.PrivacyPolicyFragment
 import com.medtroniclabs.spice.ui.boarding.LoginActivity
-import com.medtroniclabs.spice.ui.dialog.GeneralSuccessDialog
 import com.medtroniclabs.spice.ui.home.HomeScreenFragment
 import com.medtroniclabs.spice.ui.landing.viewmodel.LandingViewModel
 import com.medtroniclabs.spice.ui.mypatients.fragment.PatientSearchFragment
@@ -116,6 +116,13 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
         // Initiate schedule worker
         startSyncWorker()
 
+        // screening and assessment sync
+        if (CommonUtils.isNonCommunity() && !CommonUtils.isCha()) {
+            withNetworkAvailability(online = {
+                this.triggerOneTimeWorker()
+                checkBGSyncStatusForNCD()
+            }, isErrorShow = false)
+        }
         binding = ActivityLandingBinding.inflate(layoutInflater)
         splashScreen.setKeepOnScreenCondition { false }
         setContentView(binding.root)
@@ -351,7 +358,7 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
         val userRole = SecuredPreference.getUserDetails()?.roles?.joinToString { it.name }
         if (userRole != null) {
             // add chp
-            if (userRole.contains(RoleConstant.COMMUNITY_HEALTH_WORKER) || CommonUtils.isChp()) {
+            if (userRole.contains(RoleConstant.COMMUNITY_HEALTH_WORKER) || (CommonUtils.isNonCommunity() && CommonUtils.isChp())) {
                 startBackgroundOfflineSync()
                 checkBGSyncStatus()
             }
@@ -361,14 +368,25 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
     private fun initializeDrawerView() {
         val menu: Menu = binding.navView.menu
         val menuItemToRemove: MenuItem? = menu.findItem(R.id.offline_sync)
+        val changeFacilityMenuItem: MenuItem? = menu.findItem(R.id.changeFacility)
         if (CommonUtils.isCommunity() && !CommonUtils.isChw() && menuItemToRemove != null) {
             menu.removeItem(menuItemToRemove.itemId)
         }
-
-        val changeFacilityMenuItem: MenuItem? = menu.findItem(R.id.changeFacility)
-
-        if ( !CommonUtils.isProvider()  && changeFacilityMenuItem != null) {
+        if (CommonUtils.isCommunity() && !CommonUtils.isProvider() && changeFacilityMenuItem != null) {
             menu.removeItem(changeFacilityMenuItem.itemId)
+        }
+
+        if (CommonUtils.isNonCommunity()) {
+            menuItemToRemove?.let {
+                if (CommonUtils.isCha()) {
+                    menu.removeItem(it.itemId)
+                }
+            }
+            changeFacilityMenuItem?.let {
+                if (CommonUtils.isChp() || CommonUtils.isCha()) {
+                    menu.removeItem(it.itemId)
+                }
+            }
         }
 
         onNavigationItemSelected(binding.navView.menu.findItem(R.id.home))
@@ -593,6 +611,7 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
             if (CommonUtils.isNonCommunity()) {
                 withNetworkAvailability(online = {
                     this.triggerOneTimeWorker()
+                    startSyncWorker()
                 })
             }
         }
@@ -670,8 +689,16 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
     override fun onResume() {
         super.onResume()
         doRefreshForDataUpdate()
-        if (CommonUtils.isChp()) {
-            startSyncWorker()
+    }
+
+    private fun checkBGSyncStatusForNCD() {
+        val workManager = WorkManager.getInstance(this)
+        workManager.getWorkInfosForUniqueWorkLiveData(workerUniqueNameForNCD).observe(this) {
+            if (!it.isNullOrEmpty() && it[0].state == WorkInfo.State.RUNNING) {
+                binding.appBarMain.includeMainContent.syncingHolder.visible()
+            } else {
+                binding.appBarMain.includeMainContent.syncingHolder.gone()
+            }
         }
     }
 

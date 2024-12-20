@@ -165,7 +165,7 @@ class ScheduledSyncWork @AssistedInject constructor(
             return false
         }
         val lastSyncedAt =
-            SecuredPreference.getString(SecuredPreference.EnvironmentKey.SERVER_LAST_SYNCED.name)
+            SecuredPreference.getString(SecuredPreference.EnvironmentKey.NCD_FOLLOW_UP_LAST_SYNCED.name)
         return followUpRepo.fetchSyncNcdFollowUpData(villageIds, lastSyncedAt)
     }
 }

@@ -218,31 +218,24 @@ class NCDFollowUpViewModel @Inject constructor(
             return null
         }
         for (chip in filterByDateRange) {
-           result = when (chip.name.lowercase()) {
-               NCDFollowUpUtils.today -> Pair(startMillis, endMillis)
-               NCDFollowUpUtils.tomorrow -> Pair(startMillis + oneDayMillis, endMillis + oneDayMillis)
-               NCDFollowUpUtils.customise -> {
+            result = when (chip.name.lowercase()) {
+                NCDFollowUpUtils.today -> Pair(startMillis, endMillis)
+                NCDFollowUpUtils.tomorrow -> Pair(
+                    startMillis + oneDayMillis,
+                    endMillis + oneDayMillis
+                )
+
+                NCDFollowUpUtils.customise -> {
                     // Example: Provide a default custom date range or retrieve it from somewhere
                     customDate?.let {
                         Pair(
-                            DateUtils.convertToTimestampWithoutZone(it.startDate?.let { startDate ->
-                                DateUtils.convertDateFormat(
-                                    startDate,
-                                    DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-                                    DATE_FORMAT_yyyyMMdd_HHmmss
-                                )
-                            }, true),
-                            DateUtils.convertToTimestampWithoutZone(it.endDate?.let { endDate ->
-                                DateUtils.convertDateFormat(
-                                    endDate,
-                                    DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-                                    DATE_FORMAT_yyyyMMdd_HHmmss
-                                )
-                            }, false)
+                            DateUtils.convertToTimestampWithoutZone(it.startDate, true),
+                            DateUtils.convertToTimestampWithoutZone(it.endDate, false)
                         )
                     }
                 }
-               else -> null
+
+                else -> null
             }
         }
         return result

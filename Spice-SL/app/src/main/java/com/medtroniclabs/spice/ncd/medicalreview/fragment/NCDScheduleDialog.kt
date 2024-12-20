@@ -76,6 +76,7 @@ class NCDScheduleDialog : DialogFragment(), View.OnClickListener {
             when (resource.state) {
                 ResourceState.SUCCESS -> {
                     hideLoading()
+                    viewModel.toTriggerPatientDetails()
                     dismiss()
                 }
 

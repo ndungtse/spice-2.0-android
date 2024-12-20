@@ -2,6 +2,7 @@ package com.medtroniclabs.spice.ui.mypatients
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
+import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DefinedParams.LIST_LIMIT
 import com.medtroniclabs.spice.common.DefinedParams.PAGE_INDEX
 import com.medtroniclabs.spice.common.SecuredPreference
@@ -86,7 +87,12 @@ class PatientsDataSource(
                     totalCount = response?.entity?.totalCount ?: 0
                     isInitialData = true
                 } else {
-                    totalCount += patientList.size
+                    if (CommonUtils.isCommunity()) {
+                        totalCount += patientList.size
+                    } else {
+                        totalCount = response?.entity?.totalCount ?: 0
+                        isInitialData = true
+                    }
                 }
                 getPatientsCount(totalCount.toString())
             }

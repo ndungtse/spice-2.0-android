@@ -77,6 +77,35 @@
             app:layout_constraintStart_toStartOf="@id/assessmentTitle"
             app:layout_constraintTop_toBottomOf="@id/assessmentTitle" />
 
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/followUpTitle"
+            style="@style/TextStyle_Bold_18"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_20sdp"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:text="@string/follow_up"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvAssessmentMessage" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvFollowUpMessage"
+            style="@style/TextStyle_Regular_18"
+            android:layout_width="0dp"
+            android:layout_marginTop="@dimen/_5sdp"
+            android:layout_marginEnd="@dimen/_15sdp"
+            android:textColor="@color/TextColor1"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@id/followUpTitle"
+            app:layout_constraintTop_toBottomOf="@id/followUpTitle" />
+
+        <androidx.constraintlayout.widget.Group
+            android:id="@+id/followUpGroup"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:constraint_referenced_ids="followUpTitle,tvFollowUpMessage" />
+
         <androidx.constraintlayout.widget.Group
             android:id="@+id/assessmentGroup"
             android:layout_width="0dp"
@@ -90,7 +119,7 @@
             android:layout_height="@dimen/_1sdp"
             android:layout_marginTop="@dimen/_15sdp"
             android:background="@color/edittext_stroke"
-            app:layout_constraintTop_toBottomOf="@+id/tvAssessmentMessage" />
+            app:layout_constraintTop_toBottomOf="@+id/tvFollowUpMessage" />
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btnCancel"

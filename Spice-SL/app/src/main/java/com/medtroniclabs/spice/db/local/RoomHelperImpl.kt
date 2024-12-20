@@ -3,6 +3,7 @@ package com.medtroniclabs.spice.db.local
 import androidx.lifecycle.LiveData
 import androidx.room.Transaction
 import androidx.sqlite.db.SimpleSQLiteQuery
+import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.data.DiseaseCategoryItems
 import com.medtroniclabs.spice.data.DosageFrequency
 import com.medtroniclabs.spice.data.ExaminationListItems
@@ -1098,7 +1099,8 @@ class RoomHelperImpl @Inject constructor(
             dateBasedOnChip?.first,
             dateBasedOnChip?.second,
             isScreened,
-            reason
+            reason,
+            DateUtils.dateToLong()
         )
     }
 
@@ -1153,5 +1155,9 @@ class RoomHelperImpl @Inject constructor(
 
     override suspend fun deleteCallDetails(id: Long) {
         return ncdFollowUpDao.deleteCallDetails(id)
+    }
+
+    override fun getUnSyncedNCDFollowUpCount(): LiveData<Long> {
+        return ncdFollowUpDao.getUnSyncedNCDFollowUpCount()
     }
 }

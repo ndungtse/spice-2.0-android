@@ -772,6 +772,8 @@ class MetaRepository @Inject constructor(
     fun getUnSyncedNCDAssessmentCount() =
         roomHelper.getUnSyncedNCDAssessmentCount()
 
+    fun getUnSyncedNCDFollowUpCount() = roomHelper.getUnSyncedNCDFollowUpCount()
+
     suspend fun getPatientListTransfer(request: NCDPatientTransferNotificationCountRequest): Resource<PatientTransferListResponse> {
         return try {
             val response = apiHelper.getPatientListTransfer(request)
