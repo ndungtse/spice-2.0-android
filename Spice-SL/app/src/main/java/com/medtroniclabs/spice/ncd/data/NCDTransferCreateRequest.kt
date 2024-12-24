@@ -6,5 +6,6 @@ data class NCDTransferCreateRequest(
     val transferSite: Long?,
     val oldSite: Long?,
     val transferReason: String? = null,
-    val patientReference: String? = null
+    val patientReference: String? = null,
+    val memberReference: String? = null
 )

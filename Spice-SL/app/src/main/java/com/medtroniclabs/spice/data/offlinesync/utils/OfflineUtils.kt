@@ -16,9 +16,7 @@ object OfflineUtils {
         SecuredPreference.getDeviceId()?.let {
             map[OfflineConstant.DEVICE_ID] = it
         }
-        if (CommonUtils.isNonCommunity()) {
-            map[DefinedParams.appType] = CommonUtils.isCommunityOrNot()
-        }
+        map[DefinedParams.appType] = CommonUtils.isCommunityOrNot()
         return map
     }
 }

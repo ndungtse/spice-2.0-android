@@ -77,15 +77,19 @@ class NCDFollowUpOfflineSearchFragment : BaseFragment(),
 
     private fun attachObserver() {
         viewModel.getFollowUpData.observe(viewLifecycleOwner) { data ->
-            if (data.isEmpty()) {
+            val villages = viewModel.filterByVillage.map { it.id?.toString().orEmpty() }
+                .takeIf { it.any(String::isNotBlank) } ?: emptyList()
+            val displayData = if (villages.isEmpty()) data else data.filter { it.villageId in villages }
+
+            if (displayData.isEmpty()) {
                 binding.rvPatientList.gone()
                 binding.tvPatientNoFound.gone()
             } else {
                 binding.rvPatientList.visible()
                 binding.tvPatientNoFound.gone()
-                followUpAdapter.submitData(data)
+                followUpAdapter.submitData(displayData)
             }
-            viewModel.totalPatientCountOffline.postValue(data.size)
+            viewModel.totalPatientCountOffline.postValue(displayData.size)
             hideProgressAfterDelay()
         }
         viewModel.updateCallLiveData.observe(viewLifecycleOwner) { resources ->

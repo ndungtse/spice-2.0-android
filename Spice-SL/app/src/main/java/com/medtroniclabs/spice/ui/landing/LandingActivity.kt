@@ -69,6 +69,7 @@ import com.medtroniclabs.spice.ui.patientTransfer.dialog.NCDPatientDetailDialogu
 import com.medtroniclabs.spice.ncd.data.PatientTransferListResponse
 import com.medtroniclabs.spice.ncd.data.NCDPatientTransferUpdateRequest
 import com.medtroniclabs.spice.common.TransferStatusEnum
+import com.medtroniclabs.spice.ncd.landing.viewmodel.NCDOfflineDataViewModel
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 import java.util.concurrent.TimeUnit
 
@@ -80,6 +81,7 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
     lateinit var binding: ActivityLandingBinding
 
     private val viewModel: LandingViewModel by viewModels()
+    private val offlineDataViewModel: NCDOfflineDataViewModel by viewModels()
     private val patientViewModel: PatientDetailViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         val splashScreen = installSplashScreen()
@@ -117,12 +119,7 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
         startSyncWorker()
 
         // screening and assessment sync
-        if (CommonUtils.isNonCommunity() && !CommonUtils.isCha()) {
-            withNetworkAvailability(online = {
-                this.triggerOneTimeWorker()
-                checkBGSyncStatusForNCD()
-            }, isErrorShow = false)
-        }
+        offlineDataViewModel.getCountOfflineData()
         binding = ActivityLandingBinding.inflate(layoutInflater)
         splashScreen.setKeepOnScreenCondition { false }
         setContentView(binding.root)
@@ -136,7 +133,25 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
         attachObserver()
     }
 
+    private fun syncScreeningAndAssessment() {
+        val screening = offlineDataViewModel.screeningCount.value ?: 0
+        val assessment = offlineDataViewModel.assessmentType.value ?: 0
+        if (CommonUtils.isNonCommunity() && (!CommonUtils.isCha() && screening > 0 || assessment > 0)) {
+            withNetworkAvailability(online = {
+                this.triggerOneTimeWorker()
+                checkBGSyncStatusForNCD()
+            }, isErrorShow = false)
+        }
+    }
+
     private fun attachObserver() {
+        offlineDataViewModel.screeningCount.observe(this) {
+            syncScreeningAndAssessment()
+        }
+        offlineDataViewModel.assessmentType.observe(this) {
+        }
+        offlineDataViewModel.followUpType.observe(this) {
+        }
         viewModel.patientListResponse.observe(this) { resoruceState ->
             when (resoruceState.state) {
                 ResourceState.LOADING -> {
@@ -199,6 +214,7 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
                 }
 
                 ResourceState.ERROR -> {
+                    binding.appBarMain.tvNotificationCount.gone()
                     hideLoading()
                 }
 
@@ -211,7 +227,7 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
                         binding.appBarMain.tvNotificationCount.text =
                             setNotificationCount(transferCount)
                     } ?: kotlin.run {
-                        binding.appBarMain.tvNotificationCount.visibility = View.GONE
+                        binding.appBarMain.tvNotificationCount.gone()
                     }
                 }
             }
@@ -610,6 +626,7 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
             if (CommonUtils.isNonCommunity()) {
                 withNetworkAvailability(online = {
                     this.triggerOneTimeWorker()
+                    // i added chp condition inside the method
                     startSyncWorker()
                 })
             }

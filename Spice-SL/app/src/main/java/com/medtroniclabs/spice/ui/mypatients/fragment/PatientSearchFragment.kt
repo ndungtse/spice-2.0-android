@@ -108,8 +108,12 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
                 } else {
                     binding.tvPatientCount.gone()
                     binding.tvNoPatientsFound.text = getString(R.string.no_patients_found)
+                    val isNotShown = patientListViewModel.origin?.lowercase() == MenuConstants.ASSESSMENT.lowercase() || patientListViewModel.origin?.lowercase() == MenuConstants.REGISTRATION.lowercase()
                     if (patientListViewModel.searchText.isBlank()) {
-                        binding.tvNoPatientsFound.gone()
+                        binding.tvNoPatientsFound.visible()
+                        if (isNotShown) {
+                            binding.tvNoPatientsFound.gone()
+                        }
                         binding.btnRegister.gone()
                     } else {
                         binding.tvNoPatientsFound.visible()

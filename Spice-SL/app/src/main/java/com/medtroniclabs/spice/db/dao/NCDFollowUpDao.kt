@@ -22,8 +22,7 @@ interface NCDFollowUpDao {
     SELECT * 
     FROM NCDFollowUp 
     WHERE
-        (:villageIds IS NULL OR villageId IN (:villageIds))
-        AND LOWER(type) = LOWER(:type)
+        LOWER(type) = LOWER(:type)
         AND (
             (:searchText IS NULL OR :searchText = '') 
             OR (
@@ -60,7 +59,6 @@ interface NCDFollowUpDao {
         patientId DESC
 """)
     fun getFilteredNCDFollowUp(
-        villageIds: List<String>?,
         type: String,
         searchText: String?,
         dateFirst: Long?,

@@ -31,8 +31,8 @@ class ScheduledSyncWork @AssistedInject constructor(
     private val syncDelay = 10 * 1000L // 40 Sec
 
     override suspend fun doWork(): Result {
+        val context = applicationContext
         if (CommonUtils.isCommunity()) {
-            val context = applicationContext
             context.showNotification()
 
             //1. Update status for old request Id
@@ -54,7 +54,6 @@ class ScheduledSyncWork @AssistedInject constructor(
             else
                 Result.failure()
         } else {
-            val context = applicationContext
             context.showNotification()
             //1. Update status for old request Id
             if (!getSyncStatusForNCD()) {

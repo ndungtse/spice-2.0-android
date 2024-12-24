@@ -18,7 +18,7 @@ import com.medtroniclabs.spice.db.entity.NCDFollowUp
 import com.medtroniclabs.spice.db.entity.VillageEntity
 import com.medtroniclabs.spice.db.local.RoomHelper
 import com.medtroniclabs.spice.di.IoDispatcher
-import com.medtroniclabs.spice.model.SortModel
+import com.medtroniclabs.spice.mappingkey.Screening
 import com.medtroniclabs.spice.ncd.data.CustomDate
 import com.medtroniclabs.spice.ncd.data.FollowUpUpdateRequest
 import com.medtroniclabs.spice.ncd.data.PatientFollowUpEntity
@@ -54,6 +54,7 @@ class NCDFollowUpViewModel @Inject constructor(
     var dateRange: String? = null
     var totalPatientCount = MutableLiveData<Int?>()
     var filterCount = MutableLiveData<Int>()
+    var sortCount = MutableLiveData<Int>()
     var filterSet = MutableLiveData<Boolean>()
     var getPatientRegisterResponse = SingleLiveEvent<Resource<RegisterCallResponse>>()
     var statusUpdateResponse = SingleLiveEvent<Resource<HashMap<String, Any>>>()
@@ -122,8 +123,6 @@ class NCDFollowUpViewModel @Inject constructor(
     private val searchTextOfflineLiveData = MutableLiveData<Boolean>()
     val getFollowUpData: LiveData<List<NCDFollowUp>> = searchTextOfflineLiveData.switchMap {
         ncdFollowUpRepo.getNCDFollowUpData(
-            filterByVillage.map { it.id?.toString().orEmpty() }
-                .takeIf { list -> list.any { it.isNotBlank() } },
             typeOffline,
             searchTextOffline,
             getDateBasedOnChip(),
@@ -220,9 +219,9 @@ class NCDFollowUpViewModel @Inject constructor(
         for (chip in filterByDateRange) {
             result = when (chip.name.lowercase()) {
                 NCDFollowUpUtils.today -> Pair(startMillis, endMillis)
-                NCDFollowUpUtils.tomorrow -> Pair(
-                    startMillis + oneDayMillis,
-                    endMillis + oneDayMillis
+                Screening.Yesterday.lowercase() -> Pair(
+                    startMillis - oneDayMillis,
+                    endMillis - oneDayMillis
                 )
 
                 NCDFollowUpUtils.customise -> {
@@ -259,6 +258,12 @@ class NCDFollowUpViewModel @Inject constructor(
             else -> null to null
         }
         sortTriple = Pair(triple, list)
+        val count = listOf(
+            sortModel?.isScreeningDueDate,
+            sortModel?.isAssessmentDueDate,
+            sortModel?.isMedicalReviewDueDate
+        ).count { it == true }
+        sortCount.postValue(count)
         searchTextOfflineLiveData.value = true
     }
 }

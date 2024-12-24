@@ -120,26 +120,23 @@ class NCDFollowUpRepo @Inject constructor(
             if (SecuredPreference.getBoolean(SecuredPreference.EnvironmentKey.LINKED_VILLAGE_IDS_ALTER.name)) {
                 roomHelper.deleteAllNCDFollowUp()
                 roomHelper.deleteAllNCDPatientDetails()
+                SecuredPreference.putBoolean(SecuredPreference.EnvironmentKey.LINKED_VILLAGE_IDS_ALTER.name,false)
             }
             // Save follow-up data if it is not empty
-            responseInitialDownload.followUps?.let { followUps ->
-                responseInitialDownload.patientDetails?.let {
-                    if (it.isNotEmpty()) {
-                        it.forEach { data ->
-                            val request = data.id?.let { it1 ->
-                                NCDPatientDetailsEntity(
-                                    id = it1,
-                                    patientDetails = Gson().toJson(data)
-                                )
-                            }
-                            if (request != null) {
-                                roomHelper.insertNCDPatientDetails(request)
-                            }
-                        }
-                    } else {
-                        false
+            responseInitialDownload.patientDetails?.let {
+                it.forEach { data ->
+                    val request = data.id?.let { id ->
+                        NCDPatientDetailsEntity(
+                            id = id,
+                            patientDetails = Gson().toJson(data)
+                        )
+                    }
+                    if (request != null) {
+                        roomHelper.insertNCDPatientDetails(request)
                     }
                 }
+            }
+            responseInitialDownload.followUps?.let { followUps ->
                 val mappedFollowUps = followUps.map { it.toNCDFollowUp() }
                 mappedFollowUps.forEach { roomHelper.insertNCDFollowUp(it) }
                 SecuredPreference.putString(
@@ -153,15 +150,15 @@ class NCDFollowUpRepo @Inject constructor(
                     )
                     SecuredPreference.putInt(
                         SecuredPreference.EnvironmentKey.NCD_FOLLOW_UP_SCREENING_REMAINING_DAYS.name,
-                        it.screeningFollowupRemainingDays ?: 3
+                        it.screeningFollowupRemainingDays ?: 5
                     )
                     SecuredPreference.putInt(
                         SecuredPreference.EnvironmentKey.NCD_FOLLOW_UP_ASSESSMENT_REMAINING_DAYS.name,
-                        it.assessmentFollowupRemainingDays ?: 5
+                        it.assessmentFollowupRemainingDays ?: 7
                     )
                     SecuredPreference.putInt(
                         SecuredPreference.EnvironmentKey.NCD_FOLLOW_UP_MEDICAL_REVIEW_REMAINING_DAYS.name,
-                        it.medicalReviewFollowupRemainingDays ?: 5
+                        it.medicalReviewFollowupRemainingDays ?: 30
                     )
                     SecuredPreference.putInt(
                         SecuredPreference.EnvironmentKey.NCD_FOLLOW_UP_LOST_REMAINING_DAYS.name,
@@ -263,7 +260,6 @@ class NCDFollowUpRepo @Inject constructor(
     }
 
     fun getNCDFollowUpData(
-        villageIds: List<String>?,
         type: String,
         searchText: String,
         dateBasedOnChip: Pair<Long?, Long?>?,
@@ -271,7 +267,7 @@ class NCDFollowUpRepo @Inject constructor(
         reason:String?
     ): LiveData<List<NCDFollowUp>> =
         roomHelper.getNCDFollowUpData(
-            villageIds, type, searchText, dateBasedOnChip, isScreened,
+            type, searchText, dateBasedOnChip, isScreened,
             reason
         )
 

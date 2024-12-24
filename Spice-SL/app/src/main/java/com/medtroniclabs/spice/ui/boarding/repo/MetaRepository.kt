@@ -316,7 +316,7 @@ class MetaRepository @Inject constructor(
         if (allVillages.isNotEmpty()) {
             val storedVillages = SecuredPreference.getLongList(SecuredPreference.EnvironmentKey.LINKED_VILLAGE_IDS.name)
             val newVillages = allVillages.filter { it.isUserVillage }.map { it.id }
-            val hasChanges = storedVillages.isEmpty() || storedVillages != newVillages
+            val hasChanges = storedVillages.isEmpty() || storedVillages.toSet() != newVillages.toSet()
             SecuredPreference.putBoolean(SecuredPreference.EnvironmentKey.LINKED_VILLAGE_IDS_ALTER.name, hasChanges)
             if (hasChanges) {
                 // Update the stored list only if there are changes

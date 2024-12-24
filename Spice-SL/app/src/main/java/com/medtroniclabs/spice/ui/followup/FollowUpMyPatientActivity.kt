@@ -1,6 +1,7 @@
 package com.medtroniclabs.spice.ui.followup
 
 import android.content.Intent
+import android.content.pm.ActivityInfo
 import android.graphics.Typeface
 import android.os.Bundle
 import android.view.MenuItem
@@ -56,6 +57,7 @@ class FollowUpMyPatientActivity : BaseActivity() {
                 getString(R.string.search_patient)
             }
         )
+        setOrientation()
         if (CommonUtils.isCommunity()) {
             initView()
             initObserver()
@@ -67,6 +69,16 @@ class FollowUpMyPatientActivity : BaseActivity() {
             setNCDTabLayout()
             attachObserversForNcd()
             showHideVerticalIcon(false)
+        }
+    }
+
+    private fun setOrientation() {
+        val isTablet =
+            resources.getBoolean(R.bool.isLargeTablet) || resources.getBoolean(R.bool.isTablet)
+        requestedOrientation = if (isTablet) {
+            ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+        } else {
+            ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         }
     }
 
@@ -100,10 +112,12 @@ class FollowUpMyPatientActivity : BaseActivity() {
                 tab?.let {
                     ncdFollowUpViewModel.customDate = null
                     ncdFollowUpViewModel.sortModel = null
+                    binding.llFilter.btnSort.gone()
                     ncdFollowUpViewModel.filterByDateRange = listOf()
                     ncdFollowUpViewModel.filterByVillage = listOf()
                     binding.llExactSearch.etSearchTerm.setText("")
                     ncdFollowUpViewModel.filterCount.postValue(0)
+                    ncdFollowUpViewModel.sortCount.postValue(0)
                     ncdFollowUpViewModel.typeOffline = when (it.position) {
                         0 -> NCDFollowUpUtils.SCREENED
                         1 -> NCDFollowUpUtils.Assessment_Type
@@ -295,9 +309,10 @@ class FollowUpMyPatientActivity : BaseActivity() {
     private fun initViewForNcd() {
         with(binding) {
             llFilter.btnFilter.gone()
-            llFilter.btnSort.visible()
+            llFilter.btnSort.gone()
+            tvPatientNoFound.gone()
             llFilter.btnFilter.text = getString(R.string.filter)
-            llFilter.btnSort.text = getString(R.string.sort_by)
+            llFilter.btnSort.text = getString(R.string.sort)
 
             llFilter.btnFilter.safeClickListener {
                 val fragment =
@@ -341,10 +356,11 @@ class FollowUpMyPatientActivity : BaseActivity() {
                         R.string.patients_found,
                         count
                     )
-                    visibility = View.VISIBLE
+                    visible()
                 }
                 binding.tvPatientNoFound.gone()
                 binding.llFilter.btnFilter.visible()
+                binding.llFilter.btnSort.visible()
             } else {
                 ncdFollowUpViewModel.filterCount.value?.let { count ->
                     if (count == 0) {
@@ -353,8 +369,22 @@ class FollowUpMyPatientActivity : BaseActivity() {
                         binding.llFilter.btnFilter.visible()
                     }
                 } ?: binding.llFilter.btnFilter.gone()
+                ncdFollowUpViewModel.sortCount.value?.let { count ->
+                    if (count == 0) {
+                        binding.llFilter.btnSort.gone()
+                    } else {
+                        binding.llFilter.btnSort.visible()
+                    }
+                } ?: binding.llFilter.btnSort.gone()
                 binding.tvHPatientCount.text = getString(R.string.no_patients_found)
                 binding.tvPatientNoFound.visible()
+            }
+        }
+        ncdFollowUpViewModel.sortCount.observe(this) { count ->
+            if (count > 0) {
+                binding.llFilter.btnSort.text = this.getString(R.string.sort_count, count)
+            } else {
+                binding.llFilter.btnSort.text = getString(R.string.sort)
             }
         }
         ncdFollowUpViewModel.getInitialLiveData.observe(this) { resources ->

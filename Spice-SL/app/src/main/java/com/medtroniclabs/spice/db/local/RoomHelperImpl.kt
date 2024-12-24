@@ -1085,15 +1085,13 @@ class RoomHelperImpl @Inject constructor(
     }
 
     override fun getNCDFollowUpData(
-        villageIds: List<String>?,
         type: String,
         searchText: String,
         dateBasedOnChip: Pair<Long?, Long?>?,
         isScreened: Boolean?,
-        reason:String?
+        reason: String?
     ): LiveData<List<NCDFollowUp>> {
         return ncdFollowUpDao.getFilteredNCDFollowUp(
-            villageIds,
             type,
             searchText,
             dateBasedOnChip?.first,

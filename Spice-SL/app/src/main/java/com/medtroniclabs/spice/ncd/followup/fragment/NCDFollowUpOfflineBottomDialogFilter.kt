@@ -67,7 +67,7 @@ class NCDFollowUpOfflineBottomDialogFilter : BottomSheetDialogFragment(), View.O
     private fun composeStatusListChipView() {
         val itemList = arrayListOf(
             Screening.TODAY,
-            FollowUpDefinedParams.FilterTomorrow.uppercase(),
+            Screening.YESTERDAY.uppercase(),
             FollowUpDefinedParams.FilterCustomize.uppercase()
         )
         val statusList = ArrayList<ChipViewItemModel>()

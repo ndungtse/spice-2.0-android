@@ -408,7 +408,6 @@ interface RoomHelper {
     suspend fun insertNCDFollowUp(followUp: NCDFollowUp): Long
 
     fun getNCDFollowUpData(
-        villageIds: List<String>?,
         type: String,
         searchText: String,
         dateBasedOnChip: Pair<Long?, Long?>?,

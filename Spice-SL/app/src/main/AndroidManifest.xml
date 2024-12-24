@@ -218,8 +218,7 @@
         <activity
             android:name=".ui.followup.FollowUpMyPatientActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
-            android:exported="false"
-            android:screenOrientation="portrait" />
+            android:exported="false" />
         <activity
             android:name=".ncd.medicalreview.NCDMedicalReviewActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"

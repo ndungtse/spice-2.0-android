@@ -343,11 +343,13 @@ class RegistrationFormFragment : BaseFragment(), View.OnClickListener, FormEvent
                                     }
                             }
                             if (validateData.containsKey(Screening.Patient_Id)) {
-                                validateData[Screening.Patient_Id]?.toString()
-                                    .let { patientId ->
-                                        if (!patientId.isNullOrBlank())
-                                            put(Screening.Patient_Id, patientId)
-                                    }
+                                validateData[Screening.Patient_Id]?.let { patientId ->
+                                    put(Screening.Patient_Id, patientId.toString())
+                                } ?: run {
+                                    remove(Screening.Patient_Id)
+                                }
+                            } else {
+                                remove(Screening.Patient_Id)
                             }
                         }
                     }

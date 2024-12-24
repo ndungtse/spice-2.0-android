@@ -309,7 +309,8 @@ class NCDTransferArchiveDialog : DialogFragment(), View.OnClickListener {
                 transferSite = selectedSite?.id,
                 oldSite = SecuredPreference.getOrganizationId(),
                 transferReason = transferReason,
-                patientReference = it.patientId
+                patientReference = it.patientId,
+                memberReference = it.id
             )
             patientTransferViewModel.createPatientTransfer(transferRequest)
 
