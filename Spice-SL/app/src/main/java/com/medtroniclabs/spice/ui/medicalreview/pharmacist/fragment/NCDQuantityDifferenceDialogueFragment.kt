@@ -108,7 +108,7 @@ class NCDQuantityDifferenceDialogueFragment : DialogFragment(), View.OnClickList
     private fun loadMedicationDifferenceDate() {
         binding.rvDifferenceList.removeAllViews()
         val list =
-            viewModel.prescriptionDispenseLiveData.value?.data?.filter { it.prescriptionRemainingDays != it.prescriptionFilledDays }
+            viewModel.prescriptionDispenseLiveData.value?.data?.filter { it.prescriptionFilledDays.numberOrZero() < it.prescriptionRemainingDays.numberOrZero() }
         list?.forEach { model ->
             val lifeStyleBinding = LayoutQuantityDifferenceBinding.inflate(layoutInflater)
             lifeStyleBinding.tvMedicationName.text = model.medicationName.textOrHyphen()
@@ -180,7 +180,7 @@ class NCDQuantityDifferenceDialogueFragment : DialogFragment(), View.OnClickList
 
             R.id.btnDone -> {
                 val filterList =
-                    viewModel.prescriptionDispenseLiveData.value?.data?.filter { it.prescriptionRemainingDays != it.prescriptionFilledDays }
+                    viewModel.prescriptionDispenseLiveData.value?.data?.filter { it.prescriptionFilledDays.numberOrZero() < it.prescriptionRemainingDays.numberOrZero() }
                 if (!filterList.isNullOrEmpty()) {
                     val listWithoutReason = filterList.filter {
                         it.reason != null && it.reason.equals(DefinedParams.DefaultIDLabel)

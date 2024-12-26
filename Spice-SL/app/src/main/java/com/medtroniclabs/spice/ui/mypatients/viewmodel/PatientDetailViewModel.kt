@@ -79,6 +79,14 @@ class PatientDetailViewModel @Inject constructor(
         return patientDetailsLiveData.value?.data?.patientId
     }
 
+    fun getEnrollmentType(): String? {
+        return patientDetailsLiveData.value?.data?.enrollmentType
+    }
+
+    fun getIdentityValue(): String? {
+        return patientDetailsLiveData.value?.data?.identityValue
+    }
+
     fun getChildPatientName(): String? {
         return patientDetailsLiveData.value?.data?.pregnancyDetails?.neonatePatientId
     }

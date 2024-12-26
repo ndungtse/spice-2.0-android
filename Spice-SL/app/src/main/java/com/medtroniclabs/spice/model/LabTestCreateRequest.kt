@@ -7,6 +7,8 @@ import com.medtroniclabs.spice.data.EncounterDetails
 data class LabTestCreateRequest(
     val encounter: EncounterDetails,
     val labTests: ArrayList<LabTestDetails>,
+    val enrollmentType: String? = null,
+    val identityValue: String? = null,
     val requestFrom: String = CommonUtils.requestFrom()
 )
 

@@ -8,5 +8,6 @@ data class RegistrationResponse(
     val programId: String? = null,
     val nationalId: String? = null,
     val phoneNumber: String? = null,
-    val facilityName: String? = null
+    val facilityName: String? = null,
+    val treatmentPlanResponse: Map<String, Any>? = null
 )

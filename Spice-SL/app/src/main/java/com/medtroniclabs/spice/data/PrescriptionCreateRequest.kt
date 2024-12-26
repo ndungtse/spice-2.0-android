@@ -4,6 +4,8 @@ data class PrescriptionCreateRequest(
     val requestFrom: String,
     val encounter: EncounterDetails,
     val patientReference: String? = null,
+    val enrollmentType: String? = null,
+    val identityValue: String? = null,
     val prescriptions: ArrayList<PrescriptionDetails>
 )
 

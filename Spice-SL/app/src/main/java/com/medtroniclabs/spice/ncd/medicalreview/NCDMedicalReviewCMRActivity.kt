@@ -466,6 +466,8 @@ class NCDMedicalReviewCMRActivity : BaseActivity(), View.OnClickListener, AncVis
                 withNetworkAvailability(online = {
                     val intent = Intent(this, NCDPrescriptionActivity::class.java)
                     intent.putExtra(ORIGIN, DefinedParams.MedicalReview)
+                    intent.putExtra(DefinedParams.EnrollmentType, patientDetailViewModel.getEnrollmentType())
+                    intent.putExtra(Screening.identityValue, patientDetailViewModel.getIdentityValue())
                     intent.putExtra(DefinedParams.PatientId, patientDetailViewModel.getPatientId())
                     intent.putExtra(DefinedParams.id, patientDetailViewModel.getPatientFHIRId())
                     intent.putExtra(DefinedParams.PatientVisitId, getEncounterReference())

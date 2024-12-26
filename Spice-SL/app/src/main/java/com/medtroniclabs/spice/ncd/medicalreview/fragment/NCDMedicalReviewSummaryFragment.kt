@@ -45,9 +45,10 @@ class NCDMedicalReviewSummaryFragment : BaseFragment(),View.OnClickListener,
 
     companion object {
         const val TAG = "NCDMedicalReviewSummaryFragment"
-        fun newInstance(visitId: String?,menu:String?): NCDMedicalReviewSummaryFragment {
+        fun newInstance(visitId: String?,menu:String?, memberId: String?): NCDMedicalReviewSummaryFragment {
             return NCDMedicalReviewSummaryFragment().apply {
                 arguments = Bundle().apply {
+                    putString(NCDMRUtil.MEMBER_REFERENCE, memberId)
                     putString(NCDMRUtil.EncounterReference, visitId)
                     putString(NCDMRUtil.MENU_ID, menu)
                 }
@@ -63,6 +64,10 @@ class NCDMedicalReviewSummaryFragment : BaseFragment(),View.OnClickListener,
     }
     private fun getVisitId(): String? {
         return arguments?.getString(NCDMRUtil.EncounterReference)
+    }
+
+    private fun getMemberReference(): String? {
+        return arguments?.getString(NCDMRUtil.MEMBER_REFERENCE)
     }
 
     private fun getConfirmDiagnosisType(): List<String> {
@@ -111,7 +116,7 @@ class NCDMedicalReviewSummaryFragment : BaseFragment(),View.OnClickListener,
         )
         medicalReviewViewModel.createMedicalReview.value?.data?.let {
             withNetworkAvailability(online = {
-                viewModel.fetchSummaryResponse(it.copy(patientVisitId = getVisitId(), diagnosisType = getConfirmDiagnosisType()))
+                viewModel.fetchSummaryResponse(it.copy(memberReference = getMemberReference(), patientVisitId = getVisitId(), diagnosisType = getConfirmDiagnosisType()))
             })
         }
         binding.tvNextMedicalReviewLabel.markMandatory()

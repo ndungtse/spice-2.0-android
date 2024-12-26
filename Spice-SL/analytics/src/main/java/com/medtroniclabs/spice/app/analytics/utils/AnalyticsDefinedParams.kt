@@ -55,4 +55,7 @@ object AnalyticsDefinedParams {
     const val CreatedAt="createdAt"
     const val LastSyncDate="lastSyncDate"
     const val BuildConfig="BuildConfiguration"
+
+    //Non Community
+    const val ScreeningCreation = "ScreeningCreation"
 }

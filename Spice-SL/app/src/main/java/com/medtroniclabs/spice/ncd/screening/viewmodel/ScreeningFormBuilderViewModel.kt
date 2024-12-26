@@ -19,6 +19,7 @@ import com.medtroniclabs.spice.ncd.screening.repo.ScreeningRepository
 import com.medtroniclabs.spice.network.SingleLiveEvent
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.network.utils.ConnectivityManager
+import com.medtroniclabs.spice.ui.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
@@ -26,9 +27,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ScreeningFormBuilderViewModel @Inject constructor(
-    @IoDispatcher private val dispatcherIO: CoroutineDispatcher,
+    @IoDispatcher override var dispatcherIO: CoroutineDispatcher,
     private val screeningRepository: ScreeningRepository
-) : ViewModel() {
+) : BaseViewModel(dispatcherIO) {
 
     private var getMentalQuestion = MutableLiveData<Pair<String, String>>()
     val villageSpinnerLiveData = MutableLiveData<Resource<LocalSpinnerResponse>>()

@@ -70,7 +70,9 @@ class PatientListViewModel @Inject constructor(
                 apiHelper = apiHelper,
                 patientRepository = patientRepository,
                 searchText = searchText,
-                filter = if(CommonUtils.canShowFilter(origin)) getFilter() else null,
+                filter = if (CommonUtils.canShowFilter(origin)) getFilter()
+                else if (CommonUtils.isHRIO()) MedicalReviewFilterModel(enrollmentStatus = DefinedParams.ENROLLED)
+                else null,
                 sort = if(CommonUtils.canShowSort(origin)) getSort() else null,
                 origin = getFormattedOrigin(origin),
                 isPatientListRequired = CommonUtils.isPatientListRequired(origin?.lowercase())
@@ -146,8 +148,7 @@ class PatientListViewModel @Inject constructor(
                 labTestReferredOn = if (isPharmacist) null else getReferredOn(),
                 prescriptionReferredOn = if (isPharmacist) getReferredOn() else null,
                 medicalReviewDate = ncdMedicalReviewDateTag?.map { it.name.lowercase() }?.get(0),
-                enrollmentStatus = if (CommonUtils.isHRIO()) DefinedParams.ENROLLED else ncdRegistrationTag?.map { it.optionalData }
-                    ?.get(0),
+                enrollmentStatus = ncdRegistrationTag?.map { it.optionalData }?.get(0),
                 isRedRiskPatient = redRisk(),
                 cvdRiskLevel = ncdCvdRiskTag?.map { it.optionalData ?: it.name.lowercase() }
                     ?.get(0),

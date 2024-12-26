@@ -13,6 +13,9 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.medtroniclabs.spice.BuildConfig
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.app.analytics.model.UserDetail
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams.HouseholdEdit
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams.ScreeningCreation
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.CommonUtils.addAncEnableOrNot
 import com.medtroniclabs.spice.common.CommonUtils.calculateAverageBloodPressure
@@ -398,6 +401,12 @@ class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener, View.OnC
         resultMap: HashMap<String, Any>,
         serverData: List<FormLayout?>?
     ) {
+        viewModel.setAnalyticsData(
+            UserDetail.startDateTime,
+            eventName = ScreeningCreation,
+            isCompleted = true
+        )
+
         val map = HashMap<String, Any>()
         map.putAll(resultMap)
         calculateBMI(map)

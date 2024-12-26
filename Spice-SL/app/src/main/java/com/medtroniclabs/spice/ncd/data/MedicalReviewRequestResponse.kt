@@ -9,6 +9,8 @@ data class MedicalReviewRequestResponse(
     val isPregnant: Boolean? = null,
     val patientReference: String? = null,
     val encounterReference: String? = null,
+    val enrollmentType: String? = null,
+    var identityValue: String? = null,
     var provenance: ProvanceDto? = null,
     val memberReference: String? = null
 )
@@ -52,6 +54,7 @@ data class Answer(
 )
 
 data class MedicalReviewResponse(
+    val memberReference: String? = null,
     val encounterReference: String? = null,
     val patientReference: String? = null,
     val patientVisitId: String? = null,

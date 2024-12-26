@@ -188,7 +188,9 @@ class InvestigationViewModel @Inject constructor(
                         provenance = ProvanceDto(),
                         visitId = visitId
                     ),
-                    labTestList
+                    labTestList,
+                    enrollmentType = patientDetail.enrollmentType,
+                    identityValue = patientDetail.identityValue
                 )
                 createLabTestLiveData.postValue(investigationRepository.createLabTest(request))
             } catch (e: Exception) {

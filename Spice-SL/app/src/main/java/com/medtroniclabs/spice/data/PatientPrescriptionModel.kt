@@ -11,6 +11,8 @@ data class PatientPrescriptionModel(
     var discontinuedReason: String? = null,
     var lastRefillVisitId: String? = null,
     val patientReference : String? = null,
+    val enrollmentType: String? = null,
+    val identityValue: String? = null,
     val encounterId : String? = null
 
 )

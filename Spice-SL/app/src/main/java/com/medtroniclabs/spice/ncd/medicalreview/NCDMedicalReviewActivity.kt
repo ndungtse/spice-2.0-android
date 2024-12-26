@@ -521,7 +521,7 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
         replaceFragment(
             R.id.obstetricExaminationContainer,
             NCDMedicalReviewSummaryFragment.TAG,
-            NCDMedicalReviewSummaryFragment.newInstance(getEncounterReference(), getMenuId())
+            NCDMedicalReviewSummaryFragment.newInstance(getEncounterReference(), getMenuId(), getPatientId())
         )
     }
 
@@ -801,6 +801,8 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
         withNetworkAvailability(online = {
             val intent = Intent(this, NCDPrescriptionActivity::class.java)
             intent.putExtra(ORIGIN, DefinedParams.MedicalReview)
+            intent.putExtra(DefinedParams.EnrollmentType, patientDetailViewModel.getEnrollmentType())
+            intent.putExtra(Screening.identityValue, patientDetailViewModel.getIdentityValue())
             intent.putExtra(DefinedParams.PatientId, patientDetailViewModel.getPatientId())
             intent.putExtra(DefinedParams.id, patientDetailViewModel.getPatientFHIRId())
             intent.putExtra(DefinedParams.PatientVisitId, getEncounterReference())
@@ -837,8 +839,13 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
     fun hitSummary() {
         withNetworkAvailability(online = {
             val request = NCDMRSummaryRequestResponse(
+                enrollmentType = patientDetailViewModel.getEnrollmentType(),
+                identityValue = patientDetailViewModel.getIdentityValue(),
                 memberReference = patientDetailViewModel.getPatientFHIRId(),
                 patientReference = patientDetailViewModel.getPatientId(),
+                encounterReference = getEncounterReference(),
+                patientVisitId = getEncounterReference(),
+                diagnosisType = getConfirmDiagnoses(getMenuId()),
                 nextMedicalReviewDate = DateUtils.convertDateTimeToDate(
                     summaryViewModel.nextFollowupDate,
                     DateUtils.DATE_ddMMyyyy,
@@ -923,6 +930,8 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
 
     private fun getInitialMedicalReviewData() {
         val request = MedicalReviewRequestResponse(
+            enrollmentType = patientDetailViewModel.getEnrollmentType(),
+            identityValue = patientDetailViewModel.getIdentityValue(),
             patientReference = patientDetailViewModel.getPatientId(),
             memberReference = patientDetailViewModel.getPatientFHIRId(),
             provenance = ProvanceDto(),

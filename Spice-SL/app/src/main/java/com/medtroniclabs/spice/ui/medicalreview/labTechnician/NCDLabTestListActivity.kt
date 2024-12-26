@@ -96,7 +96,7 @@ class NCDLabTestListActivity : BaseActivity(), View.OnClickListener, Investigati
                         message = resource.data?.message
                             ?: getString(R.string.lab_test_result_save),
                         okayButton = getString(R.string.done)
-                    ) { getLabTests() }.show(supportFragmentManager, GeneralSuccessDialog.TAG)
+                    ) { finish() }.show(supportFragmentManager, GeneralSuccessDialog.TAG)
                 }
             }
         }

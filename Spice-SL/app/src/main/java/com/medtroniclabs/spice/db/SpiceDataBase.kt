@@ -7,6 +7,7 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.medtroniclabs.spice.data.CulturesEntity
 import com.medtroniclabs.spice.BuildConfig
+import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.data.DiseaseCategoryItems
 import com.medtroniclabs.spice.data.DosageFrequency
 import com.medtroniclabs.spice.data.ExaminationListItems
@@ -139,6 +140,9 @@ abstract class SpiceDataBase : RoomDatabase() {
 
             /*Migration Scripts*/
             db.addMigrations(SpiceSLMigration.MIGRATION_1_2)
+
+            if (CommonUtils.isNonCommunity())
+                db.fallbackToDestructiveMigration()
 
             return db.build()
         }

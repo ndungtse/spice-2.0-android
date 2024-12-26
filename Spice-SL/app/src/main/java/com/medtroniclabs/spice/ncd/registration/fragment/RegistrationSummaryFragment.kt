@@ -9,6 +9,7 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.DateUtils
+import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.data.model.RegistrationResponse
 import com.medtroniclabs.spice.databinding.CardLayoutBinding
 import com.medtroniclabs.spice.databinding.FragmentRegistrationSummaryBinding
@@ -40,6 +41,43 @@ class RegistrationSummaryFragment : BaseFragment(), View.OnClickListener {
     private fun addChildViews() {
         binding.llForm.removeAllViews()
         addCardView(getString(R.string.bio_data))
+        inflateTreatmentPlanResponse()
+    }
+
+    private fun inflateTreatmentPlanResponse() {
+        viewModel.registrationResponseLiveData.value?.data?.treatmentPlanResponse.let { treatmentPlanMap ->
+            if (treatmentPlanMap?.containsKey(DefinedParams.TreatmentPlan) == true) {
+                treatmentPlanMap[DefinedParams.TreatmentPlan]?.let { list ->
+                    if (list is ArrayList<*>)
+                        addTPCardView(list)
+                }
+            }
+        }
+    }
+
+    private fun addTPCardView(treatmentPlanMap: ArrayList<*>) {
+        val cardBinding = CardLayoutBinding.inflate(layoutInflater)
+        cardBinding.apply {
+            cardTitle.text = getString(R.string.treatment_plan)
+            viewCardBG.setBackgroundColor(requireContext().getColor(R.color.cobalt_blue))
+            cardTitle.setTextColor(requireContext().getColor(R.color.white))
+        }
+
+        cardBinding.llFamilyRoot.let { layout ->
+            treatmentPlanMap.forEach {
+                if (it is Map<*, *>) {
+                    layout.addView(
+                        inflateChildView(
+                            it[DefinedParams.label].toString(),
+                            it[DefinedParams.Value].toString()
+                        )
+                    )
+                }
+            }
+        }
+
+        if (cardBinding.llFamilyRoot.childCount > 0)
+            binding.llForm.addView(cardBinding.root)
     }
 
     private fun addCardView(cardTitle: String) {

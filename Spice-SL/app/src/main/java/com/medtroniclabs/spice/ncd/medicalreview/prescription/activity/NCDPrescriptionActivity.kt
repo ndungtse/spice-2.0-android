@@ -36,6 +36,7 @@ import com.medtroniclabs.spice.databinding.NcdRowPrescriptionBinding
 import com.medtroniclabs.spice.databinding.NcdRowPrescriptionEditBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
+import com.medtroniclabs.spice.mappingkey.Screening
 import com.medtroniclabs.spice.ncd.medicalreview.MedicationListener
 import com.medtroniclabs.spice.ncd.medicalreview.prescription.adapter.NCDDiscontinuedMedicationAdapter
 import com.medtroniclabs.spice.ncd.medicalreview.prescription.adapter.NCDPrescriptionAdapter
@@ -84,6 +85,8 @@ class NCDPrescriptionActivity : BaseActivity(), View.OnClickListener, SignatureL
         prescriptionViewModel.patientReference = intent.getStringExtra(DefinedParams.PatientId)
         prescriptionViewModel.memberReference = intent.getStringExtra(DefinedParams.id)
         prescriptionViewModel.patient_visit_id = intent.getStringExtra(DefinedParams.PatientVisitId)
+        prescriptionViewModel.enrollmentType = intent.getStringExtra(DefinedParams.EnrollmentType)
+        prescriptionViewModel.identityValue = intent.getStringExtra(Screening.identityValue)
         fetchPrescriptionList()
     }
 
@@ -885,6 +888,8 @@ class NCDPrescriptionActivity : BaseActivity(), View.OnClickListener, SignatureL
 
         return PatientPrescriptionModel(
             prescriptions = prescriptionList,
+            enrollmentType = prescriptionViewModel.enrollmentType,
+            identityValue = prescriptionViewModel.identityValue,
             patientVisitId = prescriptionViewModel.patient_visit_id?.toLong()
         )
     }
