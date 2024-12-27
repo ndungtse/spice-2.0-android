@@ -1200,4 +1200,5 @@
     <string name="follow_up_one">1 follow-up call result is waiting to upload.</string>
     <string name="no_follow_up">No follow-up call result found to upload.</string>
     <string name="date_range">"Date Range"</string>
+    <string name="designation">Designation</string>
 </resources>

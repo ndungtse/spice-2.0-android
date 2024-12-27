@@ -31,6 +31,10 @@ data class MetaDataResponse(
 
 )
 
+data class Designation(
+    val name: String? = null,
+)
+
 data class HealthFacility(
     val id: Long,
     val name: String,
@@ -118,6 +122,7 @@ data class UserProfile(
     val countryCode: String?,
     val country: Country?,
     val fhirId: String?,
+    val designation: Designation?,
     val organizations: List<Organization>? = null,
     val villages: List<VillageEntity>? = null,
     val tenantId: Long,

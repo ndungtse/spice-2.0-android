@@ -161,6 +161,43 @@
                         tools:text="Female" />
 
                     <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/tvDesignationLabel"
+                        style="@style/TextStyle_Regular_16"
+                        android:layout_width="@dimen/_0dp"
+                        android:layout_marginTop="@dimen/_16sdp"
+                        android:text="@string/designation"
+                        app:layout_constraintEnd_toStartOf="@id/tvDesignationSeparator"
+                        app:layout_constraintHorizontal_weight="0.3"
+                        app:layout_constraintStart_toEndOf="@id/startGuideline"
+                        app:layout_constraintTop_toBottomOf="@id/tvGenderText" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/tvDesignationSeparator"
+                        style="@style/TextStyle_Regular_16"
+                        android:layout_width="@dimen/_0dp"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_horizontal"
+                        android:text="@string/separator_colon"
+                        app:layout_constraintEnd_toStartOf="@id/tvDesignationText"
+                        app:layout_constraintHorizontal_weight="0.05"
+                        app:layout_constraintStart_toEndOf="@id/tvDesignationLabel"
+                        app:layout_constraintTop_toTopOf="@id/tvDesignationLabel" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/tvDesignationText"
+                        style="@style/TextStyle"
+                        android:layout_width="@dimen/_0dp"
+                        android:layout_height="wrap_content"
+                        android:text=""
+                        android:textColor="@color/secondary_black"
+                        android:textSize="@dimen/_16ssp"
+                        app:layout_constraintEnd_toEndOf="@id/endGuideline"
+                        app:layout_constraintHorizontal_weight="0.6"
+                        app:layout_constraintStart_toEndOf="@id/tvDesignationSeparator"
+                        app:layout_constraintTop_toTopOf="@id/tvDesignationLabel"
+                        tools:text="Medical Officer" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/tvEmailLabel"
                         style="@style/TextStyle_Regular_16"
                         android:layout_width="@dimen/_0dp"
@@ -169,7 +206,7 @@
                         app:layout_constraintEnd_toStartOf="@id/tvEmailSeparator"
                         app:layout_constraintHorizontal_weight="0.3"
                         app:layout_constraintStart_toEndOf="@id/startGuideline"
-                        app:layout_constraintTop_toBottomOf="@id/tvGenderText" />
+                        app:layout_constraintTop_toBottomOf="@id/tvDesignationText" />
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/tvEmailSeparator"

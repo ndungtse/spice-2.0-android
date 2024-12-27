@@ -33,6 +33,11 @@ android {
             versionName = "1.0.0"
             applicationIdSuffix = ".sl"
         }
+        create("tiberbu") {
+            dimension = "version"
+            versionName = "1.0.0"
+            applicationIdSuffix = ".tiberbu"
+        }
     }
 
     signingConfigs {
@@ -61,18 +66,28 @@ android {
             )
             applicationVariants.all {
                 if (buildType.name == "release") {
-                    if (productFlavors[0].name == "sl") {
-                        buildConfigField("String", "API_BASE_URL", "\"https://spice-backend.sl.medtroniclabs.org/\"")
-                        buildConfigField("String", "ADMIN_BASE_URL", "\"https://spiceadmin.sl.medtroniclabs.org/\"")
-                        buildConfigField("String", "SALT", "\"Sp!(e_PrOD_II\"")
-                        buildConfigField("String", "DB_PASSWORD", "\"Med@Tr0ni#Lab$\"")
-                        resValue("string", "spice_app_name", "SPICE 2.0")
-                    } else if (productFlavors[0].name == "africa") {
-                        buildConfigField("String", "API_BASE_URL", "\"https://spice-dev-migration-backend.labsplatform.com/\"")
-                        buildConfigField("String", "ADMIN_BASE_URL", "\"https://spice-dev-migration.labsplatform.com/\"")
-                        buildConfigField("String", "SALT", "\"spice_uat\"")
-                        buildConfigField("String", "DB_PASSWORD", "\"Med@Tr0ni#Lab$\"")
-                        resValue("string", "spice_app_name", "SPICE 2.1")
+                    when (productFlavors[0].name) {
+                        "sl" -> {
+                            buildConfigField("String", "API_BASE_URL", "\"https://spice-backend.sl.medtroniclabs.org/\"")
+                            buildConfigField("String", "ADMIN_BASE_URL", "\"https://spiceadmin.sl.medtroniclabs.org/\"")
+                            buildConfigField("String", "SALT", "\"Sp!(e_PrOD_II\"")
+                            buildConfigField("String", "DB_PASSWORD", "\"Med@Tr0ni#Lab$\"")
+                            resValue("string", "spice_app_name", "SPICE 2.0")
+                        }
+                        "africa" -> {
+                            buildConfigField("String", "API_BASE_URL", "\"https://spice-dev-migration-backend.labsplatform.com/\"")
+                            buildConfigField("String", "ADMIN_BASE_URL", "\"https://spice-dev-migration.labsplatform.com/\"")
+                            buildConfigField("String", "SALT", "\"spice_uat\"")
+                            buildConfigField("String", "DB_PASSWORD", "\"Med@Tr0ni#Lab$\"")
+                            resValue("string", "spice_app_name", "SPICE 2.1")
+                        }
+                        "tiberbu" -> {
+                            buildConfigField("String", "API_BASE_URL", "\"https://spice-dev-backend.tbb.labsplatform.com/\"")
+                            buildConfigField("String", "ADMIN_BASE_URL", "\"https://spice-dev.tbb.labsplatform.com/\"")
+                            buildConfigField("String", "SALT", "\"spice_uat\"")
+                            buildConfigField("String", "DB_PASSWORD", "\"Med@Tr0ni#Lab$\"")
+                            resValue("string", "spice_app_name", "SPICE Tiberbu Dev")
+                        }
                     }
                 }
             }
@@ -84,18 +99,28 @@ android {
             applicationIdSuffix = ".dev"
             applicationVariants.all {
                 if (buildType.name == "debug") {
-                    if (productFlavors[0].name == "sl") {
-                        buildConfigField("String", "API_BASE_URL", "\"https://spice-dev-backend.sl.labsplatform.com/\"")
-                        buildConfigField("String", "ADMIN_BASE_URL", "\"https://spice-dev.sl.labsplatform.com/\"")
-                        buildConfigField("String", "SALT", "\"spice_uat\"")
-                        buildConfigField("String", "DB_PASSWORD", "\"Med@Tr0ni#Lab$\"")
-                        resValue("string", "spice_app_name", "SPICE 2.0 Dev")
-                    } else if (productFlavors[0].name == "africa") {
-                        buildConfigField("String", "API_BASE_URL", "\"https://spice-dev-migration-backend.labsplatform.com/\"")
-                        buildConfigField("String", "ADMIN_BASE_URL", "\"https://spice-dev-migration.labsplatform.com/\"")
-                        buildConfigField("String", "SALT", "\"spice_uat\"")
-                        buildConfigField("String", "DB_PASSWORD", "\"Med@Tr0ni#Lab$\"")
-                        resValue("string", "spice_app_name", "SPICE 2.1 Dev")
+                    when (productFlavors[0].name) {
+                        "sl" -> {
+                            buildConfigField("String", "API_BASE_URL", "\"https://spice-dev-backend.sl.labsplatform.com/\"")
+                            buildConfigField("String", "ADMIN_BASE_URL", "\"https://spice-dev.sl.labsplatform.com/\"")
+                            buildConfigField("String", "SALT", "\"spice_uat\"")
+                            buildConfigField("String", "DB_PASSWORD", "\"Med@Tr0ni#Lab$\"")
+                            resValue("string", "spice_app_name", "SPICE 2.0 Dev")
+                        }
+                        "africa" -> {
+                            buildConfigField("String", "API_BASE_URL", "\"https://spice-dev-migration-backend.labsplatform.com/\"")
+                            buildConfigField("String", "ADMIN_BASE_URL", "\"https://spice-dev-migration.labsplatform.com/\"")
+                            buildConfigField("String", "SALT", "\"spice_uat\"")
+                            buildConfigField("String", "DB_PASSWORD", "\"Med@Tr0ni#Lab$\"")
+                            resValue("string", "spice_app_name", "SPICE 2.1 Dev")
+                        }
+                        "tiberbu" -> {
+                            buildConfigField("String", "API_BASE_URL", "\"https://spice-dev-backend.tbb.labsplatform.com/\"")
+                            buildConfigField("String", "ADMIN_BASE_URL", "\"https://spice-dev.tbb.labsplatform.com/\"")
+                            buildConfigField("String", "SALT", "\"spice_uat\"")
+                            buildConfigField("String", "DB_PASSWORD", "\"Med@Tr0ni#Lab$\"")
+                            resValue("string", "spice_app_name", "SPICE Tiberbu Dev")
+                        }
                     }
                 }
             }

@@ -10,6 +10,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
+import com.medtroniclabs.spice.appextensions.textOrHyphen
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils.getContactNumber
 import com.medtroniclabs.spice.data.UserProfile
@@ -94,6 +95,7 @@ class ProfileDialogFragment : DialogFragment(), View.OnClickListener {
                 getString(R.string.separator_double_hyphen)
             }
             tvGenderText.text = user.gender.takeIf { it?.isNotBlank() == true } ?: getString(R.string.separator_double_hyphen)
+            tvDesignationText.text = user.designation?.name.textOrHyphen()
             tvEmailText.text = user.username.takeIf { it.isNotBlank() } ?: getString(R.string.separator_double_hyphen)
             tvPhoneNumberText.text = getContactNumber(user.phoneNumber.takeIf { it?.isNotBlank() == true }) ?: getString(R.string.separator_double_hyphen)
             if(user.villages.isNullOrEmpty()) {

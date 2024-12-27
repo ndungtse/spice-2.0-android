@@ -2,14 +2,52 @@
   "project_info": {
     "project_number": "791794371431",
     "project_id": "spice-sl-4025b",
-    "storage_bucket": "spice-sl-4025b.appspot.com"
+    "storage_bucket": "spice-sl-4025b.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:791794371431:android:2a253529d0039668247dc2",
+        "mobilesdk_app_id": "1:791794371431:android:4e6be7fca760dad6247dc2",
         "android_client_info": {
-          "package_name": "com.medtroniclabs.spice"
+          "package_name": "com.medtroniclabs.spice.btn.dev"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBC673emo8LJ1W02uein-0y4ZB9A4gi7W8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:791794371431:android:bfd401dac32f1fb1247dc2",
+        "android_client_info": {
+          "package_name": "com.medtroniclabs.spice.btn.staging"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBC673emo8LJ1W02uein-0y4ZB9A4gi7W8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:791794371431:android:d76134b35cf64b5b247dc2",
+        "android_client_info": {
+          "package_name": "com.medtroniclabs.spice.btn.training"
         }
       },
       "oauth_client": [],
@@ -29,6 +67,63 @@
         "mobilesdk_app_id": "1:791794371431:android:aabac04cb743a1ac247dc2",
         "android_client_info": {
           "package_name": "com.medtroniclabs.spice.dev"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBC673emo8LJ1W02uein-0y4ZB9A4gi7W8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:791794371431:android:d58ae09b4003f74c247dc2",
+        "android_client_info": {
+          "package_name": "com.medtroniclabs.spice.ke.dev"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBC673emo8LJ1W02uein-0y4ZB9A4gi7W8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:791794371431:android:c94521bced08c282247dc2",
+        "android_client_info": {
+          "package_name": "com.medtroniclabs.spice.ke.staging"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBC673emo8LJ1W02uein-0y4ZB9A4gi7W8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:791794371431:android:aac34a7f08af0525247dc2",
+        "android_client_info": {
+          "package_name": "com.medtroniclabs.spice.ke.training"
         }
       },
       "oauth_client": [],
@@ -86,6 +181,44 @@
         "mobilesdk_app_id": "1:791794371431:android:9db292b193f43838247dc2",
         "android_client_info": {
           "package_name": "com.medtroniclabs.spice.sl.training"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBC673emo8LJ1W02uein-0y4ZB9A4gi7W8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:791794371431:android:7e8056c81dad8ccd247dc2",
+        "android_client_info": {
+          "package_name": "com.medtroniclabs.spice.ss.dev"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBC673emo8LJ1W02uein-0y4ZB9A4gi7W8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:791794371431:android:3dee8e950226a126247dc2",
+        "android_client_info": {
+          "package_name": "com.medtroniclabs.spice.tiberbu.dev"
         }
       },
       "oauth_client": [],
