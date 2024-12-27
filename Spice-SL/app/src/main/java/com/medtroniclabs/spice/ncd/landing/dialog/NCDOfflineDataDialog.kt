@@ -67,8 +67,10 @@ class NCDOfflineDataDialog : DialogFragment(), View.OnClickListener {
             handleScreening()
         }
         viewModel.assessmentType.observe(viewLifecycleOwner) {
+            handleScreening()
         }
         viewModel.followUpType.observe(viewLifecycleOwner) {
+            handleScreening()
         }
     }
 
@@ -82,8 +84,13 @@ class NCDOfflineDataDialog : DialogFragment(), View.OnClickListener {
         }
         binding.apply {
             val isFollowUpRequired = CommonUtils.isNonCommunity() && CommonUtils.isChp()
-            btnUpload.setVisible(screening > 0 || assessment > 0 || (isFollowUpRequired && followUpNeed > 0))
-            btnOkay.setVisible(screening <= 0 && assessment <= 0 && !(isFollowUpRequired && followUpNeed > 0))
+            if (isFollowUpRequired) {
+                btnUpload.setVisible(screening > 0 || assessment > 0 || followUpNeed > 0)
+                btnOkay.setVisible(screening <= 0 && assessment <= 0 && followUpNeed <= 0)
+            } else {
+                btnUpload.setVisible(screening > 0 || assessment > 0)
+                btnOkay.setVisible(screening <= 0 && assessment <= 0)
+            }
             screeningTitle.visible()
             assessmentGroup.visible()
             followUpGroup.setVisible(CommonUtils.isNonCommunity() && CommonUtils.isChp())
@@ -117,7 +124,7 @@ class NCDOfflineDataDialog : DialogFragment(), View.OnClickListener {
         if (followUpNeed > 0) {
             binding.tvFollowUpMessage.text = if (followUpNeed > 1) getString(
                 R.string.follow_ups,
-                assessment.toString()
+                followUpNeed.toString()
             ) else getString(
                 R.string.follow_up_one
             )

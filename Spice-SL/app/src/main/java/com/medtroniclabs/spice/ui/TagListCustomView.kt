@@ -81,7 +81,6 @@ class TagListCustomView(
                         chipData.second,
                         arrayListOf(
                             NCDMRUtil.SUBSTANCE_DISORDER,
-                            NCDMRUtil.MENTALHEALTH,
                             NCDMRUtil.HYPERTENSION,
                             NCDMRUtil.DIABETES,
                             NCDMRUtil.HIV,

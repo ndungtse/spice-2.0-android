@@ -43,6 +43,8 @@ class NCDMentalHealthViewModel @Inject constructor(
     val resultMentalHealthHashMap = HashMap<String, Any>()
     val resultSubstanceUseHashMap = HashMap<String, Any>()
     private val getSymptomListByTypeForNCD = MutableLiveData<Triple<String,String,Boolean>>()
+    private val getSymptomListByTypeForNCDMentalHealth = MutableLiveData<Triple<String,String,Boolean>>()
+    private val getSymptomListByTypeForNCDSubstanceAbuse = MutableLiveData<Triple<String,String,Boolean>>()
     var selectedMentalHealthListItem  = ArrayList<MultiSelectDropDownModel>()
     var selectedSubstanceListItem  = ArrayList<MultiSelectDropDownModel>()
     val createMentalHealthStatus = MutableLiveData<Resource<HashMap<String, Any>>>()
@@ -56,6 +58,21 @@ class NCDMentalHealthViewModel @Inject constructor(
 
     fun getSymptoms(type: String, gender: String, isPregnant: Boolean) {
         getSymptomListByTypeForNCD.value = Triple(type, gender, isPregnant)
+    }
+
+    val getMHLiveData = getSymptomListByTypeForNCDMentalHealth.switchMap {
+        ncdMedicalReviewRepository.getNCDDiagnosisList(listOf(it.first), it.second, it.third)
+    }
+
+    val getSubstanceAbuseLiveData = getSymptomListByTypeForNCDSubstanceAbuse.switchMap {
+        ncdMedicalReviewRepository.getNCDDiagnosisList(listOf(it.first), it.second, it.third)
+    }
+
+    fun getMH(type: String, gender: String, isPregnant: Boolean) {
+        getSymptomListByTypeForNCDMentalHealth.value = Triple(type, gender, isPregnant)
+    }
+    fun getSubstanceAbuse(type: String, gender: String, isPregnant: Boolean) {
+        getSymptomListByTypeForNCDSubstanceAbuse.value = Triple(type, gender, isPregnant)
     }
 
     fun createMentalHealthStatus(request: NCDMentalHealthStatusRequest) {

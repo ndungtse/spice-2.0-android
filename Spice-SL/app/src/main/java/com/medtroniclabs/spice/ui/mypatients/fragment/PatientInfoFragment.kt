@@ -374,13 +374,13 @@ class PatientInfoFragment : BaseFragment() {
                 setTitleBasedOnRole(data, name)
             )
         }
-
-        val cvdRiskLevel = data.cvdRiskScoreDisplay?.let {
+        val cvdRiskLevel = data.cvdRiskScore?.toLong()?.takeIf { it > 0 }?.let {
             Pair(
                 StringConverter.appendTexts(
-                    it,
-                    "", separator = "-"
-                ), CommonUtils.cvdRiskColorCode(data.cvdRiskScore?.toLong() ?: 0, requireContext())
+                    "${it}%",
+                    data.cvdRiskLevel, separator = "-"
+                ),
+                CommonUtils.cvdRiskColorCode(it, requireContext())
             )
         }
 

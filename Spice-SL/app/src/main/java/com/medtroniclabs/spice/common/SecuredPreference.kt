@@ -527,8 +527,6 @@ object SecuredPreference {
         remove(EnvironmentKey.IS_LABOUR_DELIVERY_LOADED.name)
         remove(EnvironmentKey.IS_UNDER_FIVE_YEARS_LOADED.name)
         remove(EnvironmentKey.IS_NCD_MEDICAL_REVIEW_LOADED.name)
-        remove(EnvironmentKey.IS_COMMUNITY.name)
-        remove(EnvironmentKey.IS_NON_COMMUNITY.name)
         return true
     }
 

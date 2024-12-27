@@ -97,8 +97,6 @@ class NCDMentalHealthFragment : DialogFragment(), View.OnClickListener {
         initView()
         attachObserver()
         setListeners()
-
-        prefillMH()
     }
 
     private fun prefillMH() {
@@ -223,6 +221,16 @@ class NCDMentalHealthFragment : DialogFragment(), View.OnClickListener {
             medicalReviewViewModel.validationForStatus = it
             loadSiteDetails(ArrayList(it))
         }
+        viewModel.getMHLiveData.observe(viewLifecycleOwner) {
+            viewModel.getSubstanceAbuse(
+                NCDMRUtil.SUBSTANCE_DISORDER.lowercase(),
+                getGender(),
+                isPregnant()
+            )
+        }
+        viewModel.getSubstanceAbuseLiveData.observe(viewLifecycleOwner) {
+            prefillMH()
+        }
         viewModel.createMentalHealthStatus.observe(this) { resourceState ->
             when (resourceState.state) {
                 ResourceState.LOADING -> {
@@ -241,23 +249,12 @@ class NCDMentalHealthFragment : DialogFragment(), View.OnClickListener {
         }
     }
 
-    private fun initializeMentalHealthSpinner(mentalHealth: ArrayList<String>) {
-        val dropDownList = ArrayList<MultiSelectDropDownModel>()
-        dropDownList.add(
-            MultiSelectDropDownModel(
-                id = 1,
-                name = NCDMRUtil.Anxiety,
-                value = NCDMRUtil.Anxiety.lowercase()
-            )
-        )
-        dropDownList.add(
-            MultiSelectDropDownModel(
-                id = 2,
-                name = NCDMRUtil.Depression,
-                value = NCDMRUtil.Depression.lowercase()
-            )
-        )
+    private fun initializeMentalHealthSpinner(mentalHealth: List<String>) {
+        val dropDownList = viewModel.getMHLiveData.value
+            ?.map { MultiSelectDropDownModel(it.id, it.name, it.value) }
+            ?: emptyList()
 
+        viewModel.selectedMentalHealthListItem.clear()
         viewModel.selectedMentalHealthListItem.addAll(dropDownList.filter { it.value in mentalHealth })
 
         val adapter = MultiSelectSpinnerAdapter(
@@ -279,22 +276,10 @@ class NCDMentalHealthFragment : DialogFragment(), View.OnClickListener {
     }
 
     private fun initializeSubstanceSpinner(substanceUse: ArrayList<String>) {
-        val dropDownList = ArrayList<MultiSelectDropDownModel>()
-        dropDownList.add(
-            MultiSelectDropDownModel(
-                id = 1,
-                name = NCDMRUtil.ALCOHOL.lowercase().capitalizeFirstChar(),
-                value = NCDMRUtil.ALCOHOL.lowercase()
-            )
-        )
-        dropDownList.add(
-            MultiSelectDropDownModel(
-                id = 2,
-                name = NCDMRUtil.Tobbaco,
-                value = NCDMRUtil.Tobbaco.lowercase()
-            )
-        )
-
+        val dropDownList = viewModel.getSubstanceAbuseLiveData.value
+            ?.map { MultiSelectDropDownModel(it.id, it.name, it.value) }
+            ?: emptyList()
+        viewModel.selectedSubstanceListItem.clear()
         viewModel.selectedSubstanceListItem.addAll(dropDownList.filter { it.value in substanceUse })
 
         val adapter = MultiSelectSpinnerAdapter(
@@ -500,7 +485,11 @@ class NCDMentalHealthFragment : DialogFragment(), View.OnClickListener {
             getGender(),
             isPregnant()
         )
-
+        viewModel.getMH(
+            NCDMRUtil.MENTALHEALTH.lowercase(),
+            getGender(),
+            isPregnant()
+        )
         getSingleSelectionOptions().let {
             val view = SingleSelectionCustomView(requireContext())
             view.tag = NCDPregnancyDialog.DIABETES
@@ -767,7 +756,7 @@ class NCDMentalHealthFragment : DialogFragment(), View.OnClickListener {
                             comments = viewModel.mentalHealthComments.takeIf { !it.isNullOrBlank() },
                             yearOfDiagnosis = viewModel.yearForMentalHealth?.takeIf { true },
                             mentalHealthDisorder = viewModel.selectedMentalHealthListItem.takeIf { it.isNotEmpty() }
-                                ?.map { it.name.lowercase() } as ArrayList<String>?,
+                                ?.mapNotNull { it.value } as ArrayList<String>?
                         ),
                         substanceUseStatus = MentalHealthStatus(
                             id = viewModel.substanceUseStatusId,
@@ -775,7 +764,7 @@ class NCDMentalHealthFragment : DialogFragment(), View.OnClickListener {
                             comments = viewModel.substanceUseComments.takeIf { !it.isNullOrBlank() },
                             yearOfDiagnosis = viewModel.yearForSubstanceUse?.takeIf { true },
                             mentalHealthDisorder = viewModel.selectedSubstanceListItem.takeIf { it.isNotEmpty() }
-                                ?.map { it.name.lowercase() } as ArrayList<String>?,
+                                ?.mapNotNull { it.value } as ArrayList<String>?
                         )
                     )
                     viewModel.createMentalHealthStatus(request)

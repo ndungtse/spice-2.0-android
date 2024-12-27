@@ -86,10 +86,6 @@ class ResourceLoadingScreen : BaseActivity() {
 
                 ResourceState.SUCCESS -> {
                     launchLandingScreen()
-                    if (CommonUtils.isNonCommunity() && connectivityManager.isNetworkAvailable()) {
-                        this.triggerOneTimeWorker()
-                        viewModel.downloadTheFollowUpData()
-                    }
                 }
 
                 ResourceState.ERROR -> {

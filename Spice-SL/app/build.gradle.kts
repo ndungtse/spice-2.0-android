@@ -134,7 +134,7 @@ android {
         create("training") {
             initWith(getByName("release"))
             applicationIdSuffix = ".training"
-            versionNameSuffix = "-(20240829_01)"
+//            versionNameSuffix = "-(20240829_01)"
             isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
@@ -149,8 +149,8 @@ android {
                         buildConfigField("String", "DB_PASSWORD", "\"Med@Tr0ni#Lab$\"")
                         resValue("string", "spice_app_name", "SPICE 2.0 Training")
                     } else if (productFlavors[0].name == "africa") {
-                        buildConfigField("String", "API_BASE_URL", "\"https://spice-training-migration-backend.labsplatform.com/\"")
-                        buildConfigField("String", "ADMIN_BASE_URL", "\"https://spice-training-migration.labsplatform.com/\"")
+                        buildConfigField("String", "API_BASE_URL", "\"https://spice-training-backend.v2.1.labsplatform.com/\"")
+                        buildConfigField("String", "ADMIN_BASE_URL", "\"https://spice-training.v2.1.labsplatform.com/\"")
                         buildConfigField("String", "SALT", "\"spice_uat\"")
                         buildConfigField("String", "DB_PASSWORD", "\"Med@Tr0ni#Lab$\"")
                         resValue("string", "spice_app_name", "SPICE 2.1 Training")

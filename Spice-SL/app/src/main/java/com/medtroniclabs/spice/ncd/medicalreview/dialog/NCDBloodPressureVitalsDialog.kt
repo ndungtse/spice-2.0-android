@@ -267,8 +267,8 @@ class NCDBloodPressureVitalsDialog(private val callback: () -> Unit) : DialogFra
         setupRadioButtons(binding.btnYes)
         setupRadioButtons(binding.btnNo)
         patientViewModel.patientDetailsLiveData.value?.data?.let { patientData ->
-            patientData.weight?.toDoubleOrEmptyString()?.let { binding.etWeight.setText(it) }
-            patientData.height?.toDoubleOrEmptyString()?.let { binding.etHeight.setText(it) }
+            patientData.weight?.takeIf { it > 0 }?.toDoubleOrEmptyString()?.let { binding.etWeight.setText(it) }
+            patientData.height?.takeIf { it > 0 }?.toDoubleOrEmptyString()?.let { binding.etHeight.setText(it) }
             binding.smokingGrp.visibility =
                 if (patientData.isRegularSmoker == null) View.VISIBLE else View.GONE
         }

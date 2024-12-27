@@ -383,18 +383,21 @@ class AssessmentNCDFragment : BaseFragment(), FormEventListener, View.OnClickLis
                 this[Screening.Weight] = weight.toString()
             }
         }
-        screeningDetailsModel?.weight?.let { weight ->
-            screeningDetailsModel.height?.let { height ->
+        screeningDetailsModel?.weight?.takeIf { it > 0 }?.let { weight ->
+            screeningDetailsModel.height?.takeIf { it > 0 }?.let { height ->
                 viewModel.bioMetric?.apply {
                     this[Screening.Weight] = weight.toString()
                     this[Screening.BMI] = CommonUtils.getBMIForNcd(
                         height,
                         weight
-                    )?.toDoubleOrNull() as Double
+                    )?.toDoubleOrNull() ?: 0.0
                 }
             }
         }
-        showHeightWeight(screeningDetailsModel?.height, screeningDetailsModel?.weight)
+        showHeightWeight(
+            screeningDetailsModel?.height?.takeIf { it > 0 },
+            screeningDetailsModel?.weight?.takeIf { it > 0 }
+        )
     }
 
     private fun autoPopulatePregnancyAnc(screeningDetailsModel: PatientListRespModel) {
