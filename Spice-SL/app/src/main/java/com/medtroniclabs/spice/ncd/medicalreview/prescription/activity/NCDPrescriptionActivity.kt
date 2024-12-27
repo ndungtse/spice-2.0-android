@@ -609,7 +609,7 @@ class NCDPrescriptionActivity : BaseActivity(), View.OnClickListener, SignatureL
         } ?: kotlin.run {
             medicationEditBinding.tvUnit.setSelection(0, true)
         }
-        if (SecuredPreference.isTiberbu()) {
+        if (CommonUtils.isTiberbuUser()) {
             medicationEditBinding.spinnerPrescribedDays.visible()
             medicationEditBinding.etPrescribedDays.gone()
             val prescribedDaysAdapter = CustomSpinnerAdapter(this)

@@ -59,7 +59,6 @@ object SecuredPreference {
         PREGNANCY_ANC_ENABLED_SITE,
         IS_TERMS_AND_CONDITIONS_APPROVED,
         IS_DEFAULT_SITE_ID,
-        IS_TIBERBU,
         LINKED_VILLAGE_IDS,
         LINKED_VILLAGE_IDS_ALTER,
         NCD_FOLLOW_UP_LAST_SYNCED,
@@ -499,10 +498,6 @@ object SecuredPreference {
 
     fun getTermsAndConditionsStatus(): Boolean {
         return getBoolean(EnvironmentKey.IS_TERMS_AND_CONDITIONS_APPROVED.name)
-    }
-
-    fun isTiberbu(): Boolean {
-        return getBoolean(EnvironmentKey.IS_TIBERBU.name)
     }
 
     fun putIdentityTypes(types: List<IdentityType>) {

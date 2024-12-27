@@ -39,7 +39,7 @@ object DefinedParams {
     const val label = "label"
     const val color = "color"
     const val Value = "value"
-    const val EnrollmentType = "EnrollmentType" //For Tiberbu
+    const val EnrollmentType = "EnrollmentType"
     const val MenuTitle = "MenuTitle"
     const val PatientId = "PatientId"
     const val ChildPatientId="childPatientId"

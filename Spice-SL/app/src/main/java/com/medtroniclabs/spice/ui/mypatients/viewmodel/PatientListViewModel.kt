@@ -55,6 +55,7 @@ class PatientListViewModel @Inject constructor(
     var origin: String? = null
     var selectedPatientDetails: PatientListRespModel? = null
     val patientVisitLiveData = MutableLiveData<Resource<PatientVisitResponse>>()
+    val isTiberbuUser = CommonUtils.isTiberbuUser()
 
     //Sort
     var isRedRisk: Boolean? = null
@@ -70,16 +71,24 @@ class PatientListViewModel @Inject constructor(
                 apiHelper = apiHelper,
                 patientRepository = patientRepository,
                 searchText = searchText,
-                filter = if (CommonUtils.canShowFilter(origin)) getFilter()
-                else if (CommonUtils.isHRIO()) MedicalReviewFilterModel(enrollmentStatus = DefinedParams.ENROLLED)
-                else null,
-                sort = if(CommonUtils.canShowSort(origin)) getSort() else null,
+                filter = if (isTiberbuUser) null else myFilter(),
+                sort = if (isTiberbuUser) null else mySort(),
                 origin = getFormattedOrigin(origin),
                 isPatientListRequired = CommonUtils.isPatientListRequired(origin?.lowercase())
             ) { getPatientsCount ->
                 totalPatientCount.postValue(getPatientsCount)
             }
         }).flow
+
+    private fun mySort(): SortModel? {
+        return if (CommonUtils.canShowSort(origin)) getSort() else null
+    }
+
+    private fun myFilter(): MedicalReviewFilterModel? {
+        return if (CommonUtils.canShowFilter(origin)) getFilter()
+        else if (CommonUtils.isHRIO()) MedicalReviewFilterModel(enrollmentStatus = DefinedParams.ENROLLED)
+        else null
+    }
 
     private fun getFormattedOrigin(origin: String?): String? {
         return when (origin?.lowercase()) {

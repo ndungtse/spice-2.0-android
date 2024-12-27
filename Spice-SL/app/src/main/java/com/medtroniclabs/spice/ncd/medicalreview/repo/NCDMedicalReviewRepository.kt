@@ -106,10 +106,6 @@ class NCDMedicalReviewRepository @Inject constructor(
                     // Handle Dosage Duration separately
                     roomHelper.deleteDosageDurations()
                     it.dosageDuration?.let { dd ->
-                        SecuredPreference.putBoolean(
-                            SecuredPreference.EnvironmentKey.IS_TIBERBU.name,
-                            true
-                        )
                         roomHelper.insertDosageDurations(dd)
                     }
                 }

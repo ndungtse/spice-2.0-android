@@ -54,8 +54,8 @@ class NCDPrescriptionViewModel @Inject constructor(
     var patient_visit_id: String? = null
     var memberReference: String? = null
     var patientReference: String? = null
-    var enrollmentType: String? = null //For Tiberbu
-    var identityValue: String? = null //For Tiberbu
+    var enrollmentType: String? = null
+    var identityValue: String? = null
     var selectedMedication: MedicationResponse? = null
     var prescriptionUIModel: ArrayList<MedicationResponse>? = null
     val reloadInstruction = MutableLiveData<Boolean>()

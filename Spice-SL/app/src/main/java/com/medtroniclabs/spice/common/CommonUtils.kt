@@ -1903,4 +1903,12 @@ object CommonUtils {
         }
         return false
     }
+
+    fun isTiberbuUser(): Boolean {
+        val userRole = SecuredPreference.getUserDetails()?.roles?.joinToString { it.name }
+        if (userRole != null) {
+            return userRole.contains(RoleConstant.TIBERBU_PROVIDER)
+        }
+        return false
+    }
 }

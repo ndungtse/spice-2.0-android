@@ -393,7 +393,7 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
 
         if (CommonUtils.isNonCommunity()) {
             menuItemToRemove?.let {
-                if (CommonUtils.isCha()) {
+                if (CommonUtils.isTiberbuUser() || CommonUtils.isCha()) {
                     menu.removeItem(it.itemId)
                 }
             }

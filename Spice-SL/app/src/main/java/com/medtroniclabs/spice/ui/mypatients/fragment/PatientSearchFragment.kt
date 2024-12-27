@@ -240,6 +240,7 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
         }
     }
     private fun initViews() {
+        binding.llSortFilter.root.setVisible(!CommonUtils.isTiberbuUser())
         patientListViewModel.origin = arguments?.getString(DefinedParams.ORIGIN)
         binding.bottomCardView.gone()
         binding.llSortFilter.btnFilter.text = getString(R.string.filters)
