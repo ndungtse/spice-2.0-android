@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.Window
 import androidx.fragment.app.DialogFragment
+import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.databinding.NcdMrAlertDialogBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 
@@ -16,7 +17,7 @@ class NCDMRAlertDialog : DialogFragment(), View.OnClickListener {
 
     interface DialogCallback {
         fun onYesClicked()
-        fun onConfirmDiagnosisClicked()
+        fun onConfirmDiagnosisClicked(isBp: Boolean)
     }
 
     fun setDialogCallback(callback: DialogCallback) {
@@ -44,6 +45,7 @@ class NCDMRAlertDialog : DialogFragment(), View.OnClickListener {
         private const val KEY_SHOW_YES = "KEY_SHOW_YES"
         private const val KEY_TEXT_YES = "KEY_TEXT_YES"
         private const val KEY_TEXT_NO = "KEY_TEXT_NO"
+        private const val KEY_TEXT_CF = "KEY_TEXT_CF"
         private const val KEY_SHOW_NO = "KEY_SHOW_NO"
         private const val KEY_SHOW_CLOSE = "KEY_SHOW_CLOSE"
 
@@ -57,7 +59,8 @@ class NCDMRAlertDialog : DialogFragment(), View.OnClickListener {
             ), // Show all by default
             yesText: String = "Yes",          // Default Yes button text
             noText: String = "No",            // Default No button text
-            showConfirm: Boolean = false,     // Default: don't show confirm button
+            showConfirm: Boolean = false, // Default: don't show confirm button
+            cfTest: String = "",
             callback: DialogCallback? = null  // Default callback is null
         ) = NCDMRAlertDialog().apply {
             arguments = Bundle().apply {
@@ -67,6 +70,7 @@ class NCDMRAlertDialog : DialogFragment(), View.OnClickListener {
                 putBoolean(KEY_SHOW_NO, showYesNoClose.second)
                 putBoolean(KEY_SHOW_CLOSE, showYesNoClose.third)
                 putBoolean(KEY_CONFIRM, showConfirm)
+                putString(KEY_TEXT_CF, cfTest)
                 putString(KEY_TEXT_YES, yesText)
                 putString(KEY_TEXT_NO, noText)
             }
@@ -92,7 +96,14 @@ class NCDMRAlertDialog : DialogFragment(), View.OnClickListener {
             }
 
             binding.btnConfirmDiagnosis.id -> {
-                callback?.onConfirmDiagnosisClicked()
+                callback?.onConfirmDiagnosisClicked(
+                    binding.btnConfirmDiagnosis.text.isNotBlank() && binding.btnConfirmDiagnosis.text.trim()
+                        .toString().equals(
+                        getString(
+                            R.string.add_new_reading
+                        ), true
+                    )
+                )
                 dismiss()
             }
         }
@@ -113,6 +124,7 @@ class NCDMRAlertDialog : DialogFragment(), View.OnClickListener {
                 // Set button texts
                 btnYes.text = args.getString(KEY_TEXT_YES)
                 btnNo.text = args.getString(KEY_TEXT_NO)
+                btnConfirmDiagnosis.text = args.getString(KEY_TEXT_CF)?.takeIf { it.isNotBlank() } ?: btnConfirmDiagnosis.text
 
                 // Show or hide buttons based on arguments
                 btnYes.visibility = if (args.getBoolean(KEY_SHOW_YES)) View.VISIBLE else View.GONE

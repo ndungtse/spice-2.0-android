@@ -27,6 +27,7 @@ import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.extension.safePopupMenuClickListener
 import com.medtroniclabs.spice.mappingkey.Screening
 import com.medtroniclabs.spice.model.PatientListRespModel
+import com.medtroniclabs.spice.ncd.assessment.ui.AssessmentReadingActivity
 import com.medtroniclabs.spice.ncd.counseling.activity.NCDCounselingActivity
 import com.medtroniclabs.spice.ncd.counseling.activity.NCDLifestyleActivity
 import com.medtroniclabs.spice.ncd.data.Answer
@@ -864,7 +865,8 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
         fun showErrorDialog(
             message: String,
             showConfirm: Boolean = false,
-            showYesNo: Pair<Boolean, Boolean> = Pair(true, true)
+            showYesNo: Pair<Boolean, Boolean> = Pair(true, true),
+            cfText: String = ""
         ) {
             val existingDialog = supportFragmentManager.findFragmentByTag(NCDMRAlertDialog.TAG)
             if (existingDialog == null) {
@@ -873,8 +875,19 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
                     message = message,
                     showYesNoClose = Triple(showYesNo.first, showYesNo.second, true),
                     showConfirm = showConfirm,
+                    cfTest = cfText,
                     callback = this
                 ).show(supportFragmentManager, NCDMRAlertDialog.TAG)
+            }
+        }
+        // To check the bp is mandatory
+        patientDetailViewModel.recentBP().let {
+            if (it.isBlank()) {
+                showErrorDialog(
+                    getString(R.string.bp_mandatory_warning), cfText = getString(R.string.add_new_reading), showConfirm = true,
+                    showYesNo = Pair(false, false)
+                )
+                return false
             }
         }
 
@@ -1287,10 +1300,26 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
         }
     }
 
-    override fun onConfirmDiagnosisClicked() {
-        withNetworkAvailability(online = {
-            showConfirmDiagnoses(isDiagnosisMismatch = true)
-        })
+    override fun onConfirmDiagnosisClicked(isBp: Boolean) {
+        if (isBp) {
+            addNewReading(true)
+        } else {
+            withNetworkAvailability(online = {
+                showConfirmDiagnoses(isDiagnosisMismatch = true)
+            })
+        }
+    }
+
+    fun addNewReading(isBP: Boolean) {
+        patientDetailViewModel.patientDetailsLiveData.value?.data?.let { detail ->
+            val intent = Intent(this, AssessmentReadingActivity::class.java)
+            intent.putExtra(
+                DefinedParams.FORM_TYPE_ID,
+                if (isBP) DefinedParams.BP_LOG else DefinedParams.GLUCOSE_LOG
+            )
+            intent.putExtra(DefinedParams.IntentPatientDetails, detail)
+            getResult.launch(intent)
+        }
     }
 
     fun showConfirmDiagnoses(isDiagnosisMismatch: Boolean = false) {

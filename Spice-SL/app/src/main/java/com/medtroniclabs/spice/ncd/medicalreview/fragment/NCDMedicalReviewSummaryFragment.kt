@@ -278,9 +278,13 @@ class NCDMedicalReviewSummaryFragment : BaseFragment(),View.OnClickListener,
         (requireActivity() as? NCDMedicalReviewActivity)?.hitSummary()
     }
 
-    override fun onConfirmDiagnosisClicked() {
-        withNetworkAvailability(online = {
-            (requireActivity() as? NCDMedicalReviewActivity)?.showConfirmDiagnoses(isDiagnosisMismatch = true)
-        })
+    override fun onConfirmDiagnosisClicked(isBp:Boolean) {
+        if (isBp) {
+            (requireActivity() as? NCDMedicalReviewActivity)?.addNewReading(true)
+        } else {
+            withNetworkAvailability(online = {
+                (requireActivity() as? NCDMedicalReviewActivity)?.showConfirmDiagnoses(isDiagnosisMismatch = true)
+            })
+        }
     }
 }
