@@ -308,7 +308,7 @@ class AssessmentNCDSummaryFragment : BaseFragment(), View.OnClickListener {
                     if (phq9Score is Number) {
                         showBindingValue(
                             getString(R.string.phq9_score),
-                            StringConverter.getPHQ4ReadableName(
+                            StringConverter.getPHQ9ReadableName(
                                 score = phq9Score.toInt(),
                                 requireContext()
                             )
@@ -328,7 +328,7 @@ class AssessmentNCDSummaryFragment : BaseFragment(), View.OnClickListener {
                     if (gad7Score is Number) {
                         showBindingValue(
                             getString(R.string.gad7_score),
-                            StringConverter.getPHQ4ReadableName(
+                            StringConverter.getGAD7ReadableName(
                                 score = gad7Score.toInt(),
                                 requireContext()
                             )

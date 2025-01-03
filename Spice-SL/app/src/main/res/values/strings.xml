@@ -769,8 +769,10 @@
     <string name="cvd_risk_level">CVD Risk Level</string>
     <string name="phq4_normal">%1$d - Normal</string>
     <string name="phq4_mild">%1$d - Mild</string>
+    <string name="phq9_minimal">%1$d - Minimal</string>
     <string name="phq4_moderate">%1$d - Moderate</string>
     <string name="phq4_severe">%1$d - Severe</string>
+    <string name="phq9_moderately_severe">%1$d - Moderately Severe</string>
     <string name="terms_condition_info_screening"><![CDATA[The healthcare worker will be accepting the terms & conditions on behalf of the screening participant.]]></string>
     <string name="terms_condition_info_enrollment"><![CDATA[The healthcare worker will be accepting the terms & conditions on behalf of the enrollment participant.]]></string>
     <string name="diabetes">Diabetes</string>

@@ -77,6 +77,41 @@ object StringConverter {
             else -> score.toString()
         }
     }
+    fun getPHQ9ReadableName(score: Int, context: Context): String {
+        return when (score) {
+            in 1..4 -> {
+                context.getString(R.string.phq9_minimal, score)
+            }
+
+            in 5..9 -> {
+                context.getString(R.string.phq4_mild, score)
+            }
+
+            in 10..14 -> {
+                context.getString(R.string.phq4_moderate, score)
+            }
+
+            in 15..19 -> {
+                context.getString(R.string.phq9_moderately_severe, score)
+            }
+
+            in 20..27 -> {
+                context.getString(R.string.phq4_severe, score)
+            }
+
+            else -> score.toString()
+        }
+    }
+
+    fun getGAD7ReadableName(score: Int, context: Context): String {
+        return when (score) {
+            in 1..2 -> context.getString(R.string.phq4_normal, score)
+            in 3..5 -> context.getString(R.string.phq4_mild, score)
+            in 6..8 -> context.getString(R.string.phq4_moderate, score)
+            in 9..12 -> context.getString(R.string.phq4_severe, score)
+            else -> score.toString()
+        }
+    }
 
     fun getJsonObject(inputJson: String): JsonObject {
         return Gson().fromJson(inputJson, JsonObject::class.java)
