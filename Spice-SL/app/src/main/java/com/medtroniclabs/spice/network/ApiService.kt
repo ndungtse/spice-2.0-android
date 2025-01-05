@@ -96,7 +96,6 @@ import com.medtroniclabs.spice.ncd.data.AssessmentResultModel
 import com.medtroniclabs.spice.ncd.data.NCDCounselingModel
 import com.medtroniclabs.spice.ncd.data.BPBGListModel
 import com.medtroniclabs.spice.ncd.data.BadgeNotificationModel
-import com.medtroniclabs.spice.ncd.data.LabTestPredictionResponse
 import com.medtroniclabs.spice.ncd.data.MRSummaryResponse
 import com.medtroniclabs.spice.ncd.data.MedicalReviewRequestResponse
 import com.medtroniclabs.spice.ncd.data.MedicalReviewResponse
@@ -516,7 +515,7 @@ interface ApiService {
     suspend fun getNudgesList(@Body prescriptionNudgeRequest: PredictionRequest): Response<APIResponse<PrescriptionNudgeResponse>>
 
     @POST("/spice-service/investigation/prediction")
-    suspend fun getLabTestNudgeList(@Body predictionRequest: PredictionRequest): Response<APIResponse<LabTestPredictionResponse>>
+    suspend fun getLabTestNudgeList(@Body predictionRequest: PredictionRequest): Response<APIResponse<HashMap<String, Any>>>
 
     @POST("/spice-service/follow-up/ncd/list")
     suspend fun ncdFollowUpList(@Body request: FollowUpRequest): APIResponse<List<PatientFollowUpEntity>>

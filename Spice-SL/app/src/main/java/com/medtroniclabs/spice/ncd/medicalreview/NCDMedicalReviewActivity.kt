@@ -776,7 +776,7 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
                     val intent = Intent(this, InvestigationActivity::class.java)
                     intent.putExtra(DefinedParams.PatientId, data.id)
                     intent.putExtra(EncounterReference, getEncounterReference())
-                    intent.putExtra(MemberID, data.id)
+                    intent.putExtra(DefinedParams.PatientReference, data.patientId)
                     intent.putExtra(ORIGIN, getMenuOrigin())
                     getResult.launch(intent)
                 }
@@ -1116,8 +1116,9 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
                             ) {
 
                             }
-                        }
-                    ncdPregnancyDialog.show(supportFragmentManager, NCDPregnancyDialog.TAG)
+                        }.apply {
+                            listener = this@NCDMedicalReviewActivity
+                        }.show(supportFragmentManager, NCDPregnancyDialog.TAG)
                 }
             }
         })

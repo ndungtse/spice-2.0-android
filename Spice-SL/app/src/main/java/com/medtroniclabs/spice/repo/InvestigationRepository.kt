@@ -91,7 +91,18 @@ class InvestigationRepository @Inject constructor(
         }
     }
 
-    suspend fun getLabTestNudgeList(predictionRequest: PredictionRequest) = apiHelper.getLabTestNudgeList(predictionRequest)
+    suspend fun getLabTestNudgeList(predictionRequest: PredictionRequest): Resource<HashMap<String, Any>> {
+        return try {
+            val response = apiHelper.getLabTestNudgeList(predictionRequest)
+            if (response.isSuccessful && response.body()?.status == true) {
+                Resource(state = ResourceState.SUCCESS, data = response.body()?.entity)
+            } else {
+                Resource(state = ResourceState.ERROR)
+            }
+        } catch (_: Exception) {
+            Resource(state = ResourceState.ERROR)
+        }
+    }
 
     private fun getErrorMessage(errorBody: ResponseBody?): String? {
         if (errorBody == null)

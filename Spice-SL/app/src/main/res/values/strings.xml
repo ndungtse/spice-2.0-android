@@ -1204,4 +1204,6 @@
     <string name="no_follow_up">No follow-up call result found to upload.</string>
     <string name="date_range">"Date Range"</string>
     <string name="designation">Designation</string>
+    <string name="renal_function_test">Renal Function Test</string>
+    <string name="and">and</string>
 </resources>

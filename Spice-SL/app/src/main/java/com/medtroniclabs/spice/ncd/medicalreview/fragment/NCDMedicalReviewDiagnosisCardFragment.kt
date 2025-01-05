@@ -13,6 +13,7 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.invisible
+import com.medtroniclabs.spice.appextensions.isVisible
 import com.medtroniclabs.spice.appextensions.setVisible
 import com.medtroniclabs.spice.appextensions.textOrEmpty
 import com.medtroniclabs.spice.appextensions.textOrHyphen
@@ -21,6 +22,7 @@ import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.databinding.FragmentNcdMedicalReviewDiagnosisCardBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
+import com.medtroniclabs.spice.mappingkey.Screening
 import com.medtroniclabs.spice.ncd.assessment.dialog.BPLogListDialog
 import com.medtroniclabs.spice.ncd.assessment.dialog.GlucoseLogListDialog
 import com.medtroniclabs.spice.ncd.assessment.ui.AssessmentReadingActivity
@@ -175,20 +177,17 @@ class NCDMedicalReviewDiagnosisCardFragment : BaseFragment(), View.OnClickListen
             val isContinuous = getInitialMr()
             val isFemalePregnancy = isFemalePregnancy()
             val isMaternal = !getInitialMr() && isFemalePregnancy
-            val isMentalHealth = isMentalHealth()
 
             // Hide all cards initially
             pregnancyCard.root.setVisible(false)
             weightCard.root.setVisible(false)
             eddCard.root.setVisible(false)
             patientStatusCard.root.setVisible(false)
-            mentalHealthCard.root.setVisible(false)
             when {
                 isContinuous -> {
                     pregnancyCard.root.setVisible(isFemalePregnancy)
                     weightCard.root.setVisible(isFemalePregnancy)
                     eddCard.root.setVisible(isFemalePregnancy)
-                    mentalHealthCard.root.setVisible(isMentalHealth)
                 }
 
                 isMaternal -> {
@@ -196,27 +195,30 @@ class NCDMedicalReviewDiagnosisCardFragment : BaseFragment(), View.OnClickListen
                     weightCard.root.setVisible(true)
                     eddCard.root.setVisible(true)
                 }
-
-                isMentalHealth -> {
-                    mentalHealthCard.root.setVisible(true)
-                }
             }
 
             patientDetailViewModel.patientDetailsLiveData.value?.data?.let {
                 mentalHealthCard.apply {
-                    if (it.phq9Score.isNullOrBlank()) {
-                        phq9Value.text = getString(R.string.hyphen_symbol)
-                        tvAssessmentPHQ9.text = getString(R.string.start_assessment)
-                    } else {
-                        phq9Value.text = it.phq9Score.textOrHyphen()
-                        tvAssessmentPHQ9.text = getString(R.string.edit_assessment)
-                    }
-                    if (it.gad7Score.isNullOrBlank()) {
-                        gad7Value.text = getString(R.string.hyphen_symbol)
-                        tvAssessmentGAD7.text = getString(R.string.start_assessment)
-                    } else {
-                        gad7Value.text = it.gad7Score.textOrHyphen()
-                        tvAssessmentGAD7.text = getString(R.string.edit_assessment)
+                    val hasPHQ9: Boolean = it.mentalHealthLevels?.contains(Screening.PHQ9) == true
+                    val hasGAD7: Boolean = it.mentalHealthLevels?.contains(Screening.GAD7) == true
+                    root.setVisible(hasPHQ9 || hasGAD7)
+                    if (root.isVisible()) {
+                        clPHQ9.setVisible(hasPHQ9)
+                        clGAD7.setVisible(hasGAD7)
+                        if (it.phq9Score.isNullOrBlank()) {
+                            phq9Value.text = getString(R.string.hyphen_symbol)
+                            tvAssessmentPHQ9.text = getString(R.string.start_assessment)
+                        } else {
+                            phq9Value.text = it.phq9Score.textOrHyphen()
+                            tvAssessmentPHQ9.text = getString(R.string.edit_assessment)
+                        }
+                        if (it.gad7Score.isNullOrBlank()) {
+                            gad7Value.text = getString(R.string.hyphen_symbol)
+                            tvAssessmentGAD7.text = getString(R.string.start_assessment)
+                        } else {
+                            gad7Value.text = it.gad7Score.textOrHyphen()
+                            tvAssessmentGAD7.text = getString(R.string.edit_assessment)
+                        }
                     }
                 }
             }
@@ -292,10 +294,6 @@ class NCDMedicalReviewDiagnosisCardFragment : BaseFragment(), View.OnClickListen
         return getMenu().equals(DefinedParams.PregnancyANC, true) && getIsFemale()
     }
 
-    private fun isMentalHealth(): Boolean {
-        return getMenu().equals(NCDMRUtil.MENTAL_HEALTH, true)
-    }
-
     override fun onClick(v: View?) {
         when (v) {
             binding.diagnosisCard.tvDiagnosisConfirm -> {
@@ -345,8 +343,9 @@ class NCDMedicalReviewDiagnosisCardFragment : BaseFragment(), View.OnClickListen
                                         title = getString(R.string.error),
                                         message = message
                                     )
-                                }
-                            ncdPregnancyDialog.show(childFragmentManager, NCDPregnancyDialog.TAG)
+                                }.apply {
+                                    listener = this@NCDMedicalReviewDiagnosisCardFragment
+                                }.show(childFragmentManager, NCDPregnancyDialog.TAG)
                         }
                     }
                 })

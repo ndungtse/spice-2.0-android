@@ -429,7 +429,6 @@ class FormGenerator(
                             resultValue?.let {
                                 resultHashMap[id] = resultValue
                             }
-                            callback?.invoke(resultHashMap,id)
                         } else
                             resultHashMap[id] = editable.trim().toString()
                         setConditionalVisibility(serverViewModel, editable.trim().toString())
@@ -438,6 +437,7 @@ class FormGenerator(
                         }
                     }
                 }
+                callback?.invoke(resultHashMap,id)
             }
             (binding.etUserInput.background as? GradientDrawable)?.apply {
                 setStroke(resources.getDimensionPixelSize(R.dimen._1sdp), context.getColor(R.color.edittext_stroke))

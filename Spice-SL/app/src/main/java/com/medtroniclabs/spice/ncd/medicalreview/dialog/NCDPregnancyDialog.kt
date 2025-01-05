@@ -8,7 +8,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.TextView
-import androidx.activity.viewModels
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.constraintlayout.widget.Group
@@ -51,6 +50,7 @@ import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
 import com.medtroniclabs.spice.mappingkey.Screening.Female
 import com.medtroniclabs.spice.mappingkey.Screening.Male
 import com.medtroniclabs.spice.ncd.data.NcdPatientStatus
+import com.medtroniclabs.spice.ncd.medicalreview.NCDDialogDismissListener
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil
 import com.medtroniclabs.spice.ncd.medicalreview.dialog.NCDPatientHistoryDialog.Companion.Diabetes
 import com.medtroniclabs.spice.ncd.medicalreview.dialog.NCDPatientHistoryDialog.Companion.Hypertension
@@ -72,11 +72,11 @@ import java.time.format.DateTimeFormatter
 @AndroidEntryPoint
 class NCDPregnancyDialog(private val callback: ((isPositiveResult: Boolean, message: String) -> Unit)) :
     DialogFragment(), View.OnClickListener {
-
+    var listener: NCDDialogDismissListener? = null
     private lateinit var binding: DialogNcdPregnancyBinding
     private val viewModel: NCDPregnancyViewModel by viewModels()
-    private val patientDetailViewModel: PatientDetailViewModel by viewModels()
-    private val medicalReviewViewModel: NCDMedicalReviewViewModel by activityViewModels()
+    private val patientDetailViewModel: PatientDetailViewModel by activityViewModels()
+    private val medicalReviewViewModel: NCDMedicalReviewViewModel by viewModels()
 
     private lateinit var neonatalOutcomesView: TagListCustomView
     private lateinit var maternalOutcomesView: TagListCustomView
@@ -124,47 +124,45 @@ class NCDPregnancyDialog(private val callback: ((isPositiveResult: Boolean, mess
         attachObserver()
     }
 
-    private fun prefill() {
-        medicalReviewViewModel.ncdPatientDiagnosisStatus.value?.data?.let { responseMap ->
-            (responseMap[NCDMRUtil.NCDPatientStatus] as? Map<*, *>)?.let { ncdMap ->
-                viewModel.id = ncdMap[DefinedParams.ID] as? String
-                //Diabetes
-                (ncdMap[NCDMRUtil.DiabetesStatus] as? String)?.let { diabetesStatus ->
-                    with(binding.ncdDiabetesHypertension.llDiabetes) {
-                        if (childCount > 0) (getChildAt(0) as? SingleSelectionCustomView)?.singleSelectionChildViewsOption(
-                            diabetesStatus
-                        )
+    private fun prefill(responseMap: HashMap<String, Any>) {
+        (responseMap[NCDMRUtil.NCDPatientStatus] as? Map<*, *>)?.let { ncdMap ->
+            viewModel.id = ncdMap[DefinedParams.ID] as? String
+            //Diabetes
+            (ncdMap[NCDMRUtil.DiabetesStatus] as? String)?.let { diabetesStatus ->
+                with(binding.ncdDiabetesHypertension.llDiabetes) {
+                    if (childCount > 0) (getChildAt(0) as? SingleSelectionCustomView)?.singleSelectionChildViewsOption(
+                        diabetesStatus
+                    )
+                }
+            }
+            (ncdMap[NCDMRUtil.DiabetesYearOfDiagnosis] as? String)?.let { diabetesYear ->
+                binding.ncdDiabetesHypertension.etYearOfDiagnosis.setText(diabetesYear)
+            }
+            (ncdMap[NCDMRUtil.DiabetesControlledType] as? String)?.let { diabetesType ->
+                (binding.ncdDiabetesHypertension.tvDiabetesControlledSpinner.adapter as? CustomSpinnerAdapter)?.let {
+                    it.getIndexOfItemByName(diabetesType).let { pos ->
+                        if (pos > 0)
+                            binding.ncdDiabetesHypertension.tvDiabetesControlledSpinner.post {
+                                binding.ncdDiabetesHypertension.tvDiabetesControlledSpinner.setSelection(
+                                    pos,
+                                    false
+                                )
+                            }
                     }
                 }
-                (ncdMap[NCDMRUtil.DiabetesYearOfDiagnosis] as? String)?.let { diabetesYear ->
-                    binding.ncdDiabetesHypertension.etYearOfDiagnosis.setText(diabetesYear)
-                }
-                (ncdMap[NCDMRUtil.DiabetesControlledType] as? String)?.let { diabetesType ->
-                    (binding.ncdDiabetesHypertension.tvDiabetesControlledSpinner.adapter as? CustomSpinnerAdapter)?.let {
-                        it.getIndexOfItemByName(diabetesType).let { pos ->
-                            if (pos > 0)
-                                binding.ncdDiabetesHypertension.tvDiabetesControlledSpinner.post {
-                                    binding.ncdDiabetesHypertension.tvDiabetesControlledSpinner.setSelection(
-                                        pos,
-                                        false
-                                    )
-                                }
-                        }
-                    }
-                }
+            }
 
 
-                //Hypertension
-                (ncdMap[NCDMRUtil.HypertensionStatus] as? String)?.let { hypertensionStatus ->
-                    with(binding.ncdDiabetesHypertension.llHypertension) {
-                        if (childCount > 0) (getChildAt(0) as? SingleSelectionCustomView)?.singleSelectionChildViewsOption(
-                            hypertensionStatus
-                        )
-                    }
+            //Hypertension
+            (ncdMap[NCDMRUtil.HypertensionStatus] as? String)?.let { hypertensionStatus ->
+                with(binding.ncdDiabetesHypertension.llHypertension) {
+                    if (childCount > 0) (getChildAt(0) as? SingleSelectionCustomView)?.singleSelectionChildViewsOption(
+                        hypertensionStatus
+                    )
                 }
-                (ncdMap[NCDMRUtil.HypertensionYearOfDiagnosis] as? String)?.let { hypertensionYear ->
-                    binding.ncdDiabetesHypertension.etYearOfDiagnosisHtn.setText(hypertensionYear)
-                }
+            }
+            (ncdMap[NCDMRUtil.HypertensionYearOfDiagnosis] as? String)?.let { hypertensionYear ->
+                binding.ncdDiabetesHypertension.etYearOfDiagnosisHtn.setText(hypertensionYear)
             }
         }
     }
@@ -408,8 +406,9 @@ class NCDPregnancyDialog(private val callback: ((isPositiveResult: Boolean, mess
         { selectedID, _, _, _ ->
             (selectedID as? String?)?.let { pregnantStatus ->
                 val isPregnant = pregnantStatus.equals(PREGNANT, true)
+                val reClick = isPregnant && binding.clPregnant.visibility == View.VISIBLE
 
-                if ((isPregnant && binding.clPregnant.visibility == View.GONE) || (!isPregnant && binding.clPregnant.visibility == View.VISIBLE)) {
+                if (!reClick) {
                     viewModel.resultPregnantHashMap[PREGNANT_STATUS] = pregnantStatus
 
                     clearFields()
@@ -656,6 +655,24 @@ class NCDPregnancyDialog(private val callback: ((isPositiveResult: Boolean, mess
         viewModel.getSymptomListByTypeForNCDLiveData.observe(viewLifecycleOwner) {
             loadSiteDetails(ArrayList(it))
         }
+        medicalReviewViewModel.ncdPatientDiagnosisStatus.observe(this) { resourceState ->
+            when (resourceState.state) {
+                ResourceState.LOADING -> {
+                    showLoading()
+                }
+
+                ResourceState.SUCCESS -> {
+                    hideLoading()
+                    resourceState.data?.let { responseMap ->
+                        prefill(responseMap)
+                    }
+                }
+
+                ResourceState.ERROR -> {
+                    hideLoading()
+                }
+            }
+        }
     }
 
     private fun loadSiteDetails(data: ArrayList<NCDDiagnosisEntity>) {
@@ -678,7 +695,14 @@ class NCDPregnancyDialog(private val callback: ((isPositiveResult: Boolean, mess
         }
         binding.ncdDiabetesHypertension.tvDiabetesControlledSpinner.adapter = adapter
 
-        prefill()
+        getPatientReference()?.let { patientReference ->
+            medicalReviewViewModel.ncdPatientDiagnosisStatus(HashMap<String, Any>().apply {
+                put(
+                    DefinedParams.PatientReference,
+                    patientReference
+                )
+            })
+        }
     }
 
     private fun clearFields() {
@@ -768,7 +792,7 @@ class NCDPregnancyDialog(private val callback: ((isPositiveResult: Boolean, mess
         }
     }
 
-    fun getPatientReference():String? {
+    private fun getPatientReference():String? {
         return arguments?.getString(NCDMRUtil.PATIENT_REFERENCE)
     }
 
@@ -794,7 +818,7 @@ class NCDPregnancyDialog(private val callback: ((isPositiveResult: Boolean, mess
 
             binding.tvDeliveryDate.id -> showDatePickerDialog(binding.tvDeliveryDate)
 
-            binding.ivClose.id, binding.btnCancel.id -> dismiss()
+            binding.ivClose.id, binding.btnCancel.id -> if (patientDetailViewModel.getNCDInitialMedicalReview()) dismiss() else listener?.closePage()
         }
     }
 
@@ -890,9 +914,10 @@ class NCDPregnancyDialog(private val callback: ((isPositiveResult: Boolean, mess
                 val pregnantTag = "${PREGNANT}_$PREGNANT_STATUS"
                 val notPregnantTag = "${NOT_PREGNANT}_$PREGNANT_STATUS"
 
-                if (isPregnant == true) llPregnant.findViewWithTag<TextView>(pregnantTag)
-                    ?.performClick()
-                else llPregnant.findViewWithTag<TextView>(notPregnantTag)?.performClick()
+                isPregnant?.let { pregnant ->
+                    llPregnant.findViewWithTag<TextView>(if (pregnant) pregnantTag else notPregnantTag)
+                        ?.performClick()
+                }
 
                 etGravida.setText(model.gravida.takeIfNotNull())
                 etParity.setText(model.parity.takeIfNotNull())
@@ -936,15 +961,17 @@ class NCDPregnancyDialog(private val callback: ((isPositiveResult: Boolean, mess
                                 GESTATIONAL_DIABETES -> mcbGestationalDiabetes.isChecked = true
                             }
                         }
-                        if (isOnTreatment == true) {
-                            rbYes.isChecked = true
-                            tvDiagnosesTime.text = model.diagnosisTime?.let {
-                                DateUtils.convertDateFormat(
-                                    it, DATE_FORMAT_yyyyMMdd, DATE_ddMMyyyy
-                                )
+                        if (!mcbNone.isChecked) {
+                            if (isOnTreatment == true) {
+                                rbYes.isChecked = true
+                                tvDiagnosesTime.text = model.diagnosisTime?.let {
+                                    DateUtils.convertDateFormat(
+                                        it, DATE_FORMAT_yyyyMMdd, DATE_ddMMyyyy
+                                    )
+                                }
+                            } else if (isOnTreatment == false) {
+                                rbNo.isChecked = true
                             }
-                        } else if (isOnTreatment == false) {
-                            rbNo.isChecked = true
                         }
                     }
                 }

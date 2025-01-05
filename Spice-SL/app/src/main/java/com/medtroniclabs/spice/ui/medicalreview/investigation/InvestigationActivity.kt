@@ -9,16 +9,12 @@ import androidx.core.widget.addTextChangedListener
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.visible
-import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.databinding.ActivityInvestigationBinding
 import com.medtroniclabs.spice.model.medicalreview.InvestigationModel
 import com.medtroniclabs.spice.model.medicalreview.SearchLabTestResponse
-import com.medtroniclabs.spice.ncd.data.LabTestPredictionResponse
-import com.medtroniclabs.spice.ncd.data.PrescriptionNudgeResponse
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil
-import com.medtroniclabs.spice.ncd.medicalreview.dialog.NCDPregnancyDialog
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.DeleteReasonDialog
@@ -76,10 +72,10 @@ class InvestigationActivity : BaseActivity(), AdapterView.OnItemClickListener,
                 }
             }
         }
-        investigationViewModel.labTestPredictionLivdata.observe(this) { resourceState ->
+        investigationViewModel.labTestPredictionLiveData.observe(this) { resourceState ->
             when (resourceState.state) {
                 ResourceState.SUCCESS -> {
-                    showNudgesDialog(resourceState.data)
+                    resourceState.data?.let { showNudgesDialog(it) }
                 }
 
                 else -> {
@@ -220,31 +216,27 @@ class InvestigationActivity : BaseActivity(), AdapterView.OnItemClickListener,
         investigationViewModel.getLabTestNudgeList()
     }
 
-    private fun showNudgesDialog(data: LabTestPredictionResponse?) {
-        if (data?.HbA1c != null) {
+    private fun showNudgesDialog(data: HashMap<String, Any>) {
+        val hasHbA1c = data.containsKey(NCDMRUtil.HbA1c) && data[NCDMRUtil.HbA1c] != null
+        val hasLipidProfile =
+            data.containsKey(NCDMRUtil.LipidProfile) && data[NCDMRUtil.LipidProfile] != null
+        val hasRenalFunctionTest =
+            data.containsKey(NCDMRUtil.RenalFunctionTest) && data[NCDMRUtil.RenalFunctionTest] != null
+        if (hasHbA1c)
             showHBA1CDialog()
-        } else {
-            if (data != null) {
-                checkLipids(data)
-            }
-        }
+        else if (hasLipidProfile || hasRenalFunctionTest)
+            showLipidsDialog(data)
     }
 
     private fun showHBA1CDialog() {
         HBA1CNudgesDialog.newInstance { isClosed ->
             if (isClosed) {
-                investigationViewModel.labTestPredictionLivdata.value?.data?.let { checkLipids(it) }
+                investigationViewModel.labTestPredictionLiveData.value?.data?.let { showLipidsDialog(it) }
             }
         }.show(supportFragmentManager, HBA1CNudgesDialog.TAG)
     }
 
-    private fun checkLipids(data: LabTestPredictionResponse?) {
-        data?.LipidProfile?.let {
-            showLipidsDialog()
-        }
-    }
-
-    private fun showLipidsDialog() {
+    private fun showLipidsDialog(data: HashMap<String, Any>) {
         LipidsNudgesDialog.newInstance().show(supportFragmentManager, LipidsNudgesDialog.TAG)
     }
 
@@ -287,6 +279,7 @@ class InvestigationActivity : BaseActivity(), AdapterView.OnItemClickListener,
     }
 
     private fun initView() {
+        investigationViewModel.patientReference = intent.getStringExtra(DefinedParams.PatientReference)
         investigationViewModel.patientId = intent.getStringExtra(DefinedParams.PatientId)
         investigationViewModel.encounterId = intent.getStringExtra(DefinedParams.EncounterId)
         investigationViewModel.visitId = intent.getStringExtra(NCDMRUtil.EncounterReference)

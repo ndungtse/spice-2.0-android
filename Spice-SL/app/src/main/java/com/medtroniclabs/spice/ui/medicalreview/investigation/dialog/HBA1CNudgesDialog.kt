@@ -38,8 +38,8 @@ import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.databinding.FragmentHba1cNudgesDialogBinding
 import com.medtroniclabs.spice.ncd.data.HBA1CModel
-import com.medtroniclabs.spice.ncd.data.LabTestPredictionResponse
 import com.medtroniclabs.spice.ncd.data.LabTestResult
+import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.common.composeui.DialogComposeUtils
 import com.medtroniclabs.spice.ui.common.composeui.TextStyles
@@ -90,7 +90,7 @@ class HBA1CNudgesDialog(val callback: (isClosed: Boolean) -> Unit) : DialogFragm
                         .verticalScroll(rememberScrollState())
                         .wrapContentHeight()
                 ) {
-                    val hba1cList by viewModel.labTestPredictionLivdata.observeAsState()
+                    val hba1cList by viewModel.labTestPredictionLiveData.observeAsState()
                     when (hba1cList?.state) {
                         ResourceState.SUCCESS -> {
                             DisplayHBA1CDetails(hba1cList?.data)
@@ -117,15 +117,14 @@ class HBA1CNudgesDialog(val callback: (isClosed: Boolean) -> Unit) : DialogFragm
     }
 
     @Composable
-    private fun DisplayHBA1CDetails(hba1cList: LabTestPredictionResponse?) {
+    private fun DisplayHBA1CDetails(hba1cList: HashMap<String, Any>?) {
         RowCell(
             stringResource(id = R.string.hba1c_recommended_question),
             textStyle = labelTextStyle,
             modifier = Modifier.padding(10.dp)
         )
-        if (hba1cList?.HbA1c?.isNotEmpty() == true) {
-            GenerateHbA1cTable(hba1cList.HbA1c)
-        } else {
+        val dataList = hba1cList?.get(NCDMRUtil.HbA1c) as? ArrayList<*>?
+        if (dataList.isNullOrEmpty()) {
             Text(
                 getString(R.string.no_data_found),
                 modifier = Modifier
@@ -133,7 +132,7 @@ class HBA1CNudgesDialog(val callback: (isClosed: Boolean) -> Unit) : DialogFragm
                     .fillMaxWidth(1f),
                 textAlign = TextAlign.Center
             )
-        }
+        } else GenerateHbA1cTable(dataList)
         GenerateDescription(
             Modifier
                 .fillMaxWidth()
@@ -167,7 +166,7 @@ class HBA1CNudgesDialog(val callback: (isClosed: Boolean) -> Unit) : DialogFragm
 
     @Composable
     private fun GenerateDescription(modifier: Modifier) {
-        val txStyle = TextStyles.labelTextStyle.copy(
+        val txStyle = labelTextStyle.copy(
             color = colorResource(id = R.color.primary_medium_blue),
             fontSize = TextStyles.FontSize_16
         )
@@ -197,7 +196,7 @@ class HBA1CNudgesDialog(val callback: (isClosed: Boolean) -> Unit) : DialogFragm
     }
 
     @Composable
-    fun GenerateHbA1cTable(hba1cList: java.util.ArrayList<HBA1CModel>?) {
+    fun GenerateHbA1cTable(hba1cList: ArrayList<*>) {
         val column1Weight = .5f
         val column2Weight = .5f
         Column(
@@ -213,10 +212,10 @@ class HBA1CNudgesDialog(val callback: (isClosed: Boolean) -> Unit) : DialogFragm
         ) {
             AddTableHeader(column1Weight, column2Weight)
             DialogComposeUtils.DividerWidget()
-            repeat(hba1cList?.size ?: 0) { itemIndex ->
-                val item = hba1cList?.get(itemIndex)
-                if (item != null) {
-                    if ((item.labTestResults.size ?: 0) > 0) {
+            repeat(hba1cList.size) { itemIndex ->
+                val item = hba1cList.get(itemIndex)
+                if (item != null && item is HBA1CModel) {
+                    if (item.labTestResults.size > 0) {
                         repeat(item.labTestResults.size) { index ->
                             item.labTestResults[index].let {
                                 AddResultRows(

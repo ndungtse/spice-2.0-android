@@ -194,6 +194,7 @@ class BloodPressureViewModel @Inject constructor(
             skip = 0
             memberId = patientId
             latestRequired = true
+            sortOrder = -1 //Desc
         }
         viewModelScope.launch(dispatcherIO) {
             bpLogListResponseLiveData.postLoading()

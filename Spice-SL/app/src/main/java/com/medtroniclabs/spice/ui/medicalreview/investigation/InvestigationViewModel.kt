@@ -30,9 +30,9 @@ import com.medtroniclabs.spice.model.RemoveLabTestRequest
 import com.medtroniclabs.spice.model.medicalreview.InvestigationModel
 import com.medtroniclabs.spice.model.medicalreview.SearchLabTestResponse
 import com.medtroniclabs.spice.model.medicalreview.SearchRequestLabTest
-import com.medtroniclabs.spice.ncd.data.LabTestPredictionResponse
 import com.medtroniclabs.spice.ncd.data.PredictionRequest
 import com.medtroniclabs.spice.network.resource.Resource
+import com.medtroniclabs.spice.network.utils.ConnectivityManager
 import com.medtroniclabs.spice.repo.InvestigationRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
@@ -42,10 +42,12 @@ import javax.inject.Inject
 @HiltViewModel
 class InvestigationViewModel @Inject constructor(
     @IoDispatcher private val dispatcherIO: CoroutineDispatcher,
+    private val connectivityManager: ConnectivityManager,
     private val investigationRepository: InvestigationRepository
 ) : ViewModel() {
 
     var patientId: String? = null
+    var patientReference: String? = null
     var encounterId: String? = null
     var visitId: String? = null
     var origin: String? = null
@@ -61,7 +63,7 @@ class InvestigationViewModel @Inject constructor(
 
     val removeLabTestLiveData = MutableLiveData<Resource<Map<String, Any>>>()
 
-    val labTestPredictionLivdata = MutableLiveData<Resource<LabTestPredictionResponse?>>()
+    val labTestPredictionLiveData = MutableLiveData<Resource<HashMap<String, Any>>>()
 
     val markAsReviewedLiveData = MutableLiveData<Resource<APIResponse<HashMap<String, Any>>>>()
 
@@ -309,19 +311,18 @@ class InvestigationViewModel @Inject constructor(
 
     fun getLabTestNudgeList() {
         viewModelScope.launch(dispatcherIO) {
-            try {
-                val response = investigationRepository.getLabTestNudgeList(
-                    predictionRequest = PredictionRequest(patientReference = patientId)
-                )
-                if (response.isSuccessful) {
-                    val res = response.body()
-                    if (res?.status == true) {
-                        labTestPredictionLivdata.postSuccess(res.entity)
-                    }
-                }
-            } catch (e: Exception) {
-                //error Block
+            labTestPredictionLiveData.postLoading()
+            if (!connectivityManager.isNetworkAvailable()) {
+                labTestPredictionLiveData.postError()
+                return@launch
             }
+            labTestPredictionLiveData.postValue(
+                investigationRepository.getLabTestNudgeList(
+                    predictionRequest = PredictionRequest(
+                        patientReference = patientReference
+                    )
+                )
+            )
         }
     }
 

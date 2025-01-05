@@ -646,7 +646,7 @@ class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener, View.OnC
                 } else {
                     formGenerator.getViewByTag(Screening.BloodGlucoseID)?.let { editText ->
                         if (editText is AppCompatEditText) {
-                            editText.setText("")
+                            editText.text?.clear()
                             formGenerator.removeIfContains(Screening.BloodGlucoseID)
                         }
                     }

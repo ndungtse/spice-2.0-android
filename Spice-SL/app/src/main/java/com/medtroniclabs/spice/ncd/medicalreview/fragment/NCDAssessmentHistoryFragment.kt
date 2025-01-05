@@ -221,6 +221,7 @@ class NCDAssessmentHistoryFragment : BaseFragment(), View.OnClickListener {
                 memberId = memberId,
                 latestRequired = true,
                 limit = NCDMRUtil.PageLimit,
+                sortOrder = 1 //Asc
 //                sortField = if (isBP) NCDMRUtil.BPTakenOn else NCDMRUtil.BGTakenOn
             )
 

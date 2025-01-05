@@ -18,14 +18,17 @@ import com.medtroniclabs.spice.databinding.FragmentNcdMedicalReviewSummaryBindin
 import com.medtroniclabs.spice.formgeneration.extension.capitalizeFirstChar
 import com.medtroniclabs.spice.formgeneration.extension.markMandatory
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
+import com.medtroniclabs.spice.mappingkey.Screening
 import com.medtroniclabs.spice.ncd.data.MRSummaryResponse
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil
+import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.MENU_ID
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMedicalReviewActivity
 import com.medtroniclabs.spice.ncd.medicalreview.dialog.NCDMRAlertDialog
 import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDMedicalReviewSummaryViewModel
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDMedicalReviewViewModel
+import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 
 class NCDMedicalReviewSummaryFragment : BaseFragment(),View.OnClickListener,
     NCDMRAlertDialog.DialogCallback {
@@ -33,6 +36,7 @@ class NCDMedicalReviewSummaryFragment : BaseFragment(),View.OnClickListener,
     private lateinit var binding: FragmentNcdMedicalReviewSummaryBinding
     private val viewModel: NCDMedicalReviewSummaryViewModel by activityViewModels()
     private val medicalReviewViewModel: NCDMedicalReviewViewModel by activityViewModels()
+    private val patientDetailViewModel: PatientDetailViewModel by activityViewModels()
     private var datePickerDialog: DatePickerDialog? = null
 
     override fun onCreateView(
@@ -71,7 +75,11 @@ class NCDMedicalReviewSummaryFragment : BaseFragment(),View.OnClickListener,
     }
 
     private fun getConfirmDiagnosisType(): List<String> {
-        return NCDMRUtil.getConfirmDiagnoses(arguments?.getString(NCDMRUtil.MENU_ID))
+        return NCDMRUtil.getConfirmDiagnoses(getType())
+    }
+
+    fun getType(): String? {
+        return arguments?.getString(MENU_ID)
     }
 
     private fun attachObservers() {
@@ -123,6 +131,21 @@ class NCDMedicalReviewSummaryFragment : BaseFragment(),View.OnClickListener,
         binding.tvNextMedicalReviewLabelText.safeClickListener(this)
         binding.btnConfirmDiagnosis.safeClickListener(this)
         binding.btnMedicationPrescribed.safeClickListener(this)
+        getType()?.let { type ->
+            binding.tvObstetricsExaminationLabel.text = CommonUtils.getPhysicalExaminationTitle(
+                requireContext(),
+                type,
+                isFemalePregnant()
+            )
+        }
+    }
+
+    private fun isFemalePregnant(): Boolean {
+        patientDetailViewModel.patientDetailsLiveData.value?.data?.let {
+            return it.gender.equals(Screening.Female, true) &&
+                    it.isPregnant == true
+        }
+        return false
     }
 
     private fun populateData(data: MRSummaryResponse) {

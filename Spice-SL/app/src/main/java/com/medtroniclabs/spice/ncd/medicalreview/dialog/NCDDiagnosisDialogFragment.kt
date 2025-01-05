@@ -169,8 +169,8 @@ class NCDDiagnosisDialogFragment : DialogFragment(), View.OnClickListener {
                         viewModel.getChipLiveData.value?.let { liveData ->
                             data.diagnosis?.mapNotNull { it.value }?.let { values ->
                                 val filteredChips = if (isDiagnosisMismatch()) {
-                                    ncdMedicalReviewViewModel.ncdPatientDiagnosisStatus.value?.data?.let { patientDoagnosisMap ->
-                                        (patientDoagnosisMap[NCDMRUtil.NCDPatientStatus] as? Map<*, *>)?.let { patientStatusMap ->
+                                    ncdMedicalReviewViewModel.ncdPatientDiagnosisStatus.value?.data?.let { patientDiagnosisMap ->
+                                        (patientDiagnosisMap[NCDMRUtil.NCDPatientStatus] as? Map<*, *>)?.let { patientStatusMap ->
                                             val patientDiagnosis = ArrayList<String>()
                                             (patientStatusMap[NCDMRUtil.DiabetesControlledType] as? String)?.let { dia ->
                                                 patientDiagnosis.add(dia)

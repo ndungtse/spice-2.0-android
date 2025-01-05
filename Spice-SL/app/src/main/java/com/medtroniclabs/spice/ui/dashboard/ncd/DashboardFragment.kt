@@ -89,7 +89,7 @@ class DashboardFragment : BaseFragment(), View.OnClickListener {
             val isVisible =
                 cgCalender.getSelectedTags().any { it.name == getString(R.string.customize) }
             if (isVisible) {
-                viewModel.userDashboardDetails.value?.data?.let { showView(true, it) }
+                resetCounts()
                 binding.clDateRange.visible()
             } else {
                 binding.clDateRange.gone()
@@ -102,6 +102,10 @@ class DashboardFragment : BaseFragment(), View.OnClickListener {
         val selectedList = ArrayList<ChipViewItemModel>()
         selectedList.add(ChipViewItemModel(name = getString(R.string.today)))
         cgCalender.addChipItemList(chipItemList, selectedList)
+    }
+
+    private fun resetCounts() {
+        viewModel.userDashboardDetails.value?.data?.let { showView(true, it) }
     }
 
     fun getChip(): ArrayList<ChipViewItemModel> {
@@ -270,6 +274,7 @@ class DashboardFragment : BaseFragment(), View.OnClickListener {
                 DATE_ddMMyyyy
             ).let { stringDate ->
                 if (isFromDate) {
+                    resetCounts()
                     binding.etFromDate.text = stringDate
                     binding.etToDate.text = getString(R.string.empty)
                 } else {

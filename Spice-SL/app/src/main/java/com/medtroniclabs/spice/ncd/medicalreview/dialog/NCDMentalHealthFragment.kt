@@ -240,6 +240,7 @@ class NCDMentalHealthFragment : DialogFragment(), View.OnClickListener {
                 ResourceState.SUCCESS -> {
                     hideLoading()
                     dismiss()
+                    listener?.onDialogDismissed(true)
                 }
 
                 ResourceState.ERROR -> {

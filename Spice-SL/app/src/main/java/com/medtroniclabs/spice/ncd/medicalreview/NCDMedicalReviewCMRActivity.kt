@@ -443,7 +443,7 @@ class NCDMedicalReviewCMRActivity : BaseActivity(), View.OnClickListener, AncVis
                     val intent = Intent(this, InvestigationActivity::class.java)
                     intent.putExtra(DefinedParams.PatientId, data.id)
                     intent.putExtra(EncounterReference, getEncounterReference())
-                    intent.putExtra(DefinedParams.MemberID, data.id)
+                    intent.putExtra(DefinedParams.PatientReference, data.patientId)
                     intent.putExtra(DefinedParams.ORIGIN, getMenuOrigin())
                     getResult.launch(intent)
                 }

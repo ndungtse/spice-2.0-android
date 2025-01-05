@@ -1,7 +1,6 @@
 package com.medtroniclabs.spice.ui.medicalreview.investigation.dialog
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -52,8 +51,7 @@ import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.databinding.FragmentHba1cNudgesDialogBinding
 import com.medtroniclabs.spice.ncd.data.HBA1CModel
-import com.medtroniclabs.spice.ncd.data.LabTestPredictionResponse
-import com.medtroniclabs.spice.ncd.data.LipidProfileTest
+import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.common.composeui.DialogComposeUtils
 import com.medtroniclabs.spice.ui.common.composeui.TextStyles
@@ -103,7 +101,7 @@ class LipidsNudgesDialog : DialogFragment() {
                         .verticalScroll(rememberScrollState())
                         .wrapContentHeight()
                 ) {
-                    val lipidsList by viewModel.labTestPredictionLivdata.observeAsState()
+                    val lipidsList by viewModel.labTestPredictionLiveData.observeAsState()
                     when (lipidsList?.state) {
                         ResourceState.SUCCESS -> {
                             DisplayLipidsDetails(lipidsList?.data)
@@ -125,15 +123,28 @@ class LipidsNudgesDialog : DialogFragment() {
     }
 
     @Composable
-    private fun DisplayLipidsDetails(data: LabTestPredictionResponse?) {
+    private fun DisplayLipidsDetails(hba1cList: HashMap<String, Any>?) {
         var testText = ""
-        var list = data?.LipidProfile?.let {
+        val dataListLP = hba1cList?.get(NCDMRUtil.LipidProfile) as? ArrayList<*>?
+        var list = dataListLP?.let {
             if (it.isNotEmpty()) {
                 testText = getString(R.string.lipid_profile)
                 ArrayList(it)
             } else null
         }
-
+        val dataListRFT = hba1cList?.get(NCDMRUtil.RenalFunctionTest) as? ArrayList<*>?
+        dataListRFT?.let {
+            it.ifEmpty { null }?.let { renalList ->
+                if (list.isNullOrEmpty()) {
+                    testText = getString(R.string.renal_function_test)
+                    list = ArrayList(renalList)
+                } else {
+                    testText =
+                        "$testText ${getString(R.string.and)} ${getString(R.string.renal_function_test)}"
+                    list?.addAll(renalList)
+                }
+            }
+        }
         RowCell(
             stringResource(id = R.string.lipids_recommended_investigations, testText, testText),
             textStyle = TextStyles.labelTextStyle.copy(fontSize = TextStyles.FontSize_16),
@@ -159,7 +170,7 @@ class LipidsNudgesDialog : DialogFragment() {
     }
 
     @Composable
-    private fun GenerateLipidsTable(lipids: ArrayList<LipidProfileTest>?) {
+    private fun GenerateLipidsTable(lipids: ArrayList<*>?) {
         Column(
             modifier = Modifier
                 .padding(horizontal = 10.dp, vertical = 10.dp)
@@ -176,7 +187,7 @@ class LipidsNudgesDialog : DialogFragment() {
             DialogComposeUtils.DividerWidget()
             repeat(lipids?.size ?: 0) { itemIndex ->
                 val item = lipids?.get(itemIndex)
-                if (item != null) {
+                if (item != null && item is HBA1CModel) {
                     var isExpanded by rememberSaveable { mutableStateOf(false) }
                     val resultSize = item.labTestResults.size
                     item.testName?.let {
@@ -201,7 +212,7 @@ class LipidsNudgesDialog : DialogFragment() {
     }
 
     @Composable
-    fun AddResultRowView(size: Int, item: LipidProfileTest, itemIndex: Int, listSize: Int) {
+    fun AddResultRowView(size: Int, item: HBA1CModel, itemIndex: Int, listSize: Int) {
         if (size > 0) {
             AddResultRows(
                 item,
@@ -257,7 +268,7 @@ class LipidsNudgesDialog : DialogFragment() {
 
     @Composable
     private fun AddResultRows(
-        item: LipidProfileTest,
+        item: HBA1CModel,
         listSize: Int
     ) {
         NonLazyGrid(
@@ -268,7 +279,7 @@ class LipidsNudgesDialog : DialogFragment() {
                 .padding(vertical = 10.dp, horizontal = 5.dp)
                 .wrapContentWidth()
         ) { index ->
-            item.labTestResults?.get(index)?.let { resultItem ->
+            item.labTestResults.get(index).let { resultItem ->
                 val style = TextStyles.cellsTextStyle.copy(
                     fontSize = TextStyles.FontSize_14, color = colorResource(
                         id = R.color.text_label_color
@@ -356,7 +367,7 @@ class LipidsNudgesDialog : DialogFragment() {
                     date,
                     DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
                     DateUtils.DATE_FORMAT_ddMMMyyyy
-                ) ?: getString(R.string.hyphen_symbol),
+                ),
                 Modifier
                     .weight(0.2f)
                     .padding(horizontal = 10.dp, vertical = 2.dp),

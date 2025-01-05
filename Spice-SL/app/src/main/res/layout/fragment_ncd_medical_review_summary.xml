@@ -196,7 +196,7 @@
                 style="@style/TextStyle_Regular_16"
                 android:layout_width="@dimen/_0dp"
                 android:layout_marginTop="@dimen/_16sdp"
-                android:text="@string/obstetric_examination"
+                android:text="@string/physical_examinations"
                 app:layout_constraintEnd_toStartOf="@id/tvObstetricsExaminationSeparator"
                 app:layout_constraintHorizontal_weight="0.3"
                 app:layout_constraintStart_toEndOf="@id/startGuideline"

@@ -31,12 +31,6 @@ data class PrescriptionResults(
 data class PredictionRequest(val memberId : String? = null, val patientReference : String? = null)
 
 
-
-data class LabTestPredictionResponse(
-    val HbA1c: ArrayList<HBA1CModel>? = null,
-    val LipidProfile: ArrayList<LipidProfileTest>? = null
-)
-
 data class HBA1CModel(
     val id: String? = null,
     val testName: String? = null,
@@ -52,23 +46,6 @@ data class HBA1CModel(
     val roleName: Any? = null,
     val isReview: Any? = null,
     val resultUpdatedBy: Any? = null
-)
-
-data class LipidProfileTest(
-    val id: String? = null,
-    val testName: String? = null,
-    val testedOn: String? = null,
-    val recommendedBy: String? = null,
-    val recommendedName: String? = null,
-    val recommendedOn: String? = null,
-    val patientId: String? = null,
-    val labTestResults: List<LabTestResult> = emptyList(),
-    val codeDetails: Any? = null,
-    val labTestCustomization: Any? = null,
-    val comments: Any? = null,
-    val roleName: Any? = null,
-    val isReview: Any? = null,
-    val resultUpdatedBy: String? = null
 )
 
 data class LabTestResult(

@@ -6,6 +6,7 @@ data class BPBGListModel(
     var total: Int = 0,
     var limit: Int? = null,
     var skip: Int? = null,
+    var sortOrder: Int? = null,
     var memberId: String? = null,
     var latestRequired: Boolean? = null,
     val latestBpLog: BPLogList?= null,

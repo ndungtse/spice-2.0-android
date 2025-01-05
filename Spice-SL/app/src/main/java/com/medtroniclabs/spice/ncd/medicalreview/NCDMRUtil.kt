@@ -66,6 +66,8 @@ object NCDMRUtil {
     const val bg = "BG"
     const val fbs_code = 1
     const val HbA1c = "HbA1c"
+    const val LipidProfile = "Lipid Profile"
+    const val RenalFunctionTest = "Renal Function Test"
     const val rbs_code = 2
     const val fbs_rbs_code = 3
     const val hba1c_code = 4
@@ -327,6 +329,8 @@ object NCDMRUtil {
             if (!isGlucose) {
                 bioMetricsData[Screening.Height] = height ?: patientData.height
                 bioMetricsData[Screening.Weight] = weight ?: patientData.weight
+                bioMetricsData[Screening.BMI] = get(Screening.BMI)?.toString()
+                bioMetricsData[Screening.BMI_CATEGORY] = get(Screening.BMI_CATEGORY)?.toString()
             }
             put(Screening.BioMetrics, bioMetricsData)
         }
