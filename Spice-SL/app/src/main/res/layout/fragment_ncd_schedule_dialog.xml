@@ -71,7 +71,7 @@
                 android:background="@drawable/edittext_background"
                 android:drawableEnd="@drawable/ic_date_picker_calendar"
                 android:gravity="start|center"
-                android:hint="@string/dd_mmm_yyyy"
+                android:hint="@string/dd_mm_yyyy"
                 android:drawablePadding="@dimen/_5sdp"
                 android:paddingStart="@dimen/_10sdp"
                 android:paddingEnd="@dimen/_0dp"

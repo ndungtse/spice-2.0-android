@@ -90,10 +90,12 @@ class AssessmentReadingActivity : BaseActivity(), FormEventListener, View.OnClic
     private fun populateHeightWeight() {
         viewModel.patientDetails?.let {
             formGenerator.getViewByTag(Screening.Height)?.let { view ->
-                formGenerator.setValueForView(it.height.removeTrailingPointZero(), view)
+                formGenerator.setValueForView(it.height?.takeIf { it > 0.0 }
+                    .removeTrailingPointZero(), view)
             }
             formGenerator.getViewByTag(Screening.Weight)?.let { view ->
-                formGenerator.setValueForView(it.weight.removeTrailingPointZero(), view)
+                formGenerator.setValueForView(it.weight?.takeIf { it > 0.0 }
+                    .removeTrailingPointZero(), view)
             }
         }
     }

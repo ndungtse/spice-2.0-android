@@ -87,12 +87,7 @@ class PatientsDataSource(
                     totalCount = response?.entity?.totalCount ?: 0
                     isInitialData = true
                 } else {
-                    if (CommonUtils.isCommunity()) {
-                        totalCount += patientList.size
-                    } else {
-                        totalCount = response?.entity?.totalCount ?: 0
-                        isInitialData = true
-                    }
+                    totalCount += patientList.size
                 }
                 getPatientsCount(totalCount.toString())
             }
