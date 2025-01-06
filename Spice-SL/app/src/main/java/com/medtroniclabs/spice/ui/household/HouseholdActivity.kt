@@ -61,7 +61,6 @@ class HouseholdActivity : BaseActivity(), OnDialogDismissListener {
         )
         initializeView()
         attachObserver()
-        getCurrentLocation()
         phuMemberRegistration()
     }
 
@@ -226,5 +225,10 @@ class HouseholdActivity : BaseActivity(), OnDialogDismissListener {
                 tag = MemberRegistrationFragment::class.simpleName
             )
     }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        getCurrentLocation()
     }
 }

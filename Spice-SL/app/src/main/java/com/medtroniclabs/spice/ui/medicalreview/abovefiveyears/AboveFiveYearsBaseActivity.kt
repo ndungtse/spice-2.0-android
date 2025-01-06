@@ -76,7 +76,6 @@ class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
         initializeViews()
         initializeListeners()
         attachObserver()
-        getCurrentLocation()
         UserDetail.eventName=AnalyticsDefinedParams.MedicalReviewCreation
         viewModel.setUserJourney(AnalyticsDefinedParams.AboveFiveYears)
     }
@@ -428,7 +427,7 @@ class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
     override fun onClick(view: View) {
         when (view.id) {
             binding.btnSubmit.id -> {
-                postResultInput()
+                withLocationCheck(::postResultInput)
             }
 
             binding.ivPrescription.id -> {
@@ -461,24 +460,30 @@ class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
                 }
 
             binding.btnDone.id -> {
-                patientViewModel.patientDetailsLiveData.value?.data?.let { details ->
-                    viewModel.aboveFiveYearsCreateResponse.value?.data
-                        ?.let { response ->
-                            if (connectivityManager.isNetworkAvailable()) {
-                                response.encounterId?.let { submitEncounterId ->
-                                    response.patientReference?.let {submitPatientReferenceId ->
-                                        viewModel.aboveFiveYearsSummaryCreate(details, submitEncounterId, submitPatientReferenceId)
+                withLocationCheck({
+                    patientViewModel.patientDetailsLiveData.value?.data?.let { details ->
+                        viewModel.aboveFiveYearsCreateResponse.value?.data
+                            ?.let { response ->
+                                if (connectivityManager.isNetworkAvailable()) {
+                                    response.encounterId?.let { submitEncounterId ->
+                                        response.patientReference?.let { submitPatientReferenceId ->
+                                            viewModel.aboveFiveYearsSummaryCreate(
+                                                details,
+                                                submitEncounterId,
+                                                submitPatientReferenceId
+                                            )
+                                        }
                                     }
+                                } else {
+                                    showErrorDialogue(
+                                        getString(R.string.error),
+                                        getString(R.string.no_internet_error),
+                                        isNegativeButtonNeed = false,
+                                    ) {}
                                 }
-                            } else {
-                                showErrorDialogue(
-                                    getString(R.string.error),
-                                    getString(R.string.no_internet_error),
-                                    isNegativeButtonNeed = false,
-                                ) {}
                             }
-                        }
-                }
+                    }
+                })
             }
         }
     }
@@ -566,4 +571,9 @@ class AboveFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
                 }
             }
         }
+
+    override fun onResume() {
+        super.onResume()
+        getCurrentLocation()
+    }
 }

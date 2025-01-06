@@ -1,5 +1,6 @@
 package com.medtroniclabs.spice.ui.assessment.viewmodel
 
+import android.content.Context
 import android.location.Location
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
@@ -14,6 +15,7 @@ import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DateUtils.calculateGestationalAge
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.SecuredPreference
+import com.medtroniclabs.spice.common.SpiceLocationManager
 import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.data.LocalSpinnerResponse
 import com.medtroniclabs.spice.data.model.RecommendedDosageListModel
@@ -94,7 +96,7 @@ class AssessmentViewModel @Inject constructor(
     val formLayoutsLiveData = MutableLiveData<Resource<FormResponse>>()
     val nearestFacilityLiveData = MutableLiveData<Resource<ArrayList<Map<String, Any>>>>()
     var referralStatus: String? = null
-    private var lastLocation: Location? = null
+    var lastLocation: Location? = null
     val facilitySpinnerLiveData = MutableLiveData<Resource<LocalSpinnerResponse>>()
     val memberClinicalLiveData = MutableLiveData<MemberClinicalEntity?>()
     var pncMotherDetailMap: HashMap<String, Any>? = null
@@ -206,7 +208,6 @@ class AssessmentViewModel @Inject constructor(
                         details,
                         menuId,
                         referralResult,
-                        lastLocation,
                         otherDetails,
                         followUpId = followUpId
                     )
@@ -905,6 +906,12 @@ class AssessmentViewModel @Inject constructor(
                     childReferralResult
                 )
             )
+        }
+    }
+    fun fetchCurrentLocation(context: Context) {
+        val locationManager = SpiceLocationManager(context)
+        locationManager.getCurrentLocation {
+            setCurrentLocation(it)
         }
     }
 }

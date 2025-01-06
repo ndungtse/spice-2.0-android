@@ -313,10 +313,13 @@ class AssessmentOtherSymptomSummaryFragment : BaseFragment(), View.OnClickListen
     override fun onClick(view: View) {
         when (view.id) {
             binding.btnDone.id -> {
-                binding.etNextFollowUpDate.text?.let {
-                    updateFollowUpDate(it.trim().toString())
-                }
-                viewModel.updateOtherAssessmentDetails()
+                withLocationCheck({
+                    viewModel.fetchCurrentLocation(requireContext())
+                    binding.etNextFollowUpDate.text?.let {
+                        updateFollowUpDate(it.trim().toString())
+                    }
+                    viewModel.updateOtherAssessmentDetails()
+                })
             }
 
             binding.etNextFollowUpDate.id -> {

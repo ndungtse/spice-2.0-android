@@ -8,6 +8,7 @@ import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
@@ -16,6 +17,7 @@ import com.medtroniclabs.spice.appextensions.isGpsEnabled
 import com.medtroniclabs.spice.appextensions.setTextChangeListener
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.DefinedParams
+import com.medtroniclabs.spice.common.SpiceLocationManager
 import com.medtroniclabs.spice.databinding.ActivityHouseholdSearchBinding
 import com.medtroniclabs.spice.db.response.HouseHoldEntityWithMemberCount
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
@@ -146,21 +148,24 @@ class HouseholdSearchActivity : BaseActivity(), View.OnClickListener {
     override fun onClick(view: View) {
         when (view.id) {
             R.id.btnAddHousehold -> {
-                if (ableToGetLocation())
-                    launchHouseholdActivity()
+                withLocationCheck(::launchHouseholdActivity)
             }
 
             R.id.btnSearch -> {
-                val searchTerm = binding.llExactSearch.etSearchTerm.text.toString()
-                householdListViewModel.setFilterLiveData(search = searchTerm)
+                withLocationCheck({
+                    val searchTerm = binding.llExactSearch.etSearchTerm.text.toString()
+                    householdListViewModel.setFilterLiveData(search = searchTerm)
 //                if (!searchTerm.isNullOrBlank()) {
 //                    householdListViewModel.searchByHouseholdNameOrNo(searchTerm.toString())
 //                }
+                })
             }
 
             R.id.btnFilter -> {
-                FilterBottomSheetDialogFragment.newInstance()
-                    .show(supportFragmentManager, FilterBottomSheetDialogFragment.TAG)
+                withLocationCheck({
+                    FilterBottomSheetDialogFragment.newInstance()
+                        .show(supportFragmentManager, FilterBottomSheetDialogFragment.TAG)
+                })
             }
         }
     }

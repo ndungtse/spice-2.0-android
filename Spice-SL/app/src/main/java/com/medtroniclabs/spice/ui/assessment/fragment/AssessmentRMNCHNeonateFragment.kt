@@ -6,13 +6,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.AppCompatSpinner
 import androidx.fragment.app.activityViewModels
-import com.google.gson.Gson
 import com.medtroniclabs.spice.app.analytics.model.UserDetail
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.appextensions.gone
-import com.medtroniclabs.spice.appextensions.setSuccess
 import com.medtroniclabs.spice.appextensions.visible
-import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.SecuredPreference
@@ -21,7 +18,6 @@ import com.medtroniclabs.spice.databinding.FragmentChildRegistrationBinding
 import com.medtroniclabs.spice.formgeneration.FormGenerator
 import com.medtroniclabs.spice.formgeneration.listener.FormEventListener
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
-import com.medtroniclabs.spice.formgeneration.model.FormResponse
 import com.medtroniclabs.spice.formgeneration.utility.CheckBoxDialog
 import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
 import com.medtroniclabs.spice.mappingkey.MemberRegistration
@@ -209,14 +205,20 @@ class AssessmentRMNCHNeonateFragment : BaseFragment(), View.OnClickListener,
     override fun onClick(v: View) {
         when (v.id) {
             binding.btnSubmit.id -> {
-                if (viewModel.memberClinicalLiveData.value?.clinicalDate == null) {
-                    if (childFormGenerator.formSubmitAction(v)) {
-                        formGenerator.formSubmitAction(v)
-                    }
-                } else {
-                    formGenerator.formSubmitAction(v)
-                }
+                withLocationCheck({
+                    assessmentRMNCHNeonateViewModel.fetchCurrentLocation(requireContext())
+                    handleSubmitFormWithClinicalDateCheck(v) })
             }
+        }
+    }
+
+    private fun handleSubmitFormWithClinicalDateCheck(v: View) {
+        if (viewModel.memberClinicalLiveData.value?.clinicalDate == null) {
+            if (childFormGenerator.formSubmitAction(v)) {
+                formGenerator.formSubmitAction(v)
+            }
+        } else {
+            formGenerator.formSubmitAction(v)
         }
     }
 
@@ -267,7 +269,8 @@ class AssessmentRMNCHNeonateFragment : BaseFragment(), View.OnClickListener,
                                 motherDetailMap,
                                 memberDetail,
                                 assessmentRMNCHNeonateViewModel.childMemberDetailsLiveData.value?.data,
-                                viewModel.followUpId
+                                viewModel.followUpId,
+                                location=assessmentRMNCHNeonateViewModel.getCurrentLocation()
                             )
                         }
                     }

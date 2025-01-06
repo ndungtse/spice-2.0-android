@@ -1,13 +1,21 @@
 package com.medtroniclabs.spice.ui
 
+import android.Manifest
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.provider.Settings
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
+import com.medtroniclabs.spice.BuildConfig
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.appextensions.isFineAndCoarseLocationPermissionGranted
+import com.medtroniclabs.spice.appextensions.isGpsEnabled
 import com.medtroniclabs.spice.common.DefinedParams
+import com.medtroniclabs.spice.common.GeneralErrorDialog
 import com.medtroniclabs.spice.ncd.data.PatientFollowUpEntity
 import com.medtroniclabs.spice.ncd.followup.fragment.NCDFollowUpDialogFragment
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil
@@ -16,6 +24,7 @@ import com.medtroniclabs.spice.ui.home.AssessmentToolsActivity
 import com.medtroniclabs.spice.ui.mypatients.PatientSelectionListenerForFollowUp
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
+
 
 @AndroidEntryPoint
 open class BaseFragment : Fragment(){
@@ -143,4 +152,100 @@ open class BaseFragment : Fragment(){
             ) && !isFemalePregnant
         ) NCDMRUtil.NCD.lowercase() else type
     }
+    fun withLocationCheck(
+        onLocationAvailable: () -> Unit,
+        onLocationNotAvailable: (() -> Unit)? = null
+    ) {
+        when {
+            !requireContext().isGpsEnabled() -> {
+                showTurnOnGPSDialog()
+                onLocationNotAvailable?.invoke()
+            }
+            !requireContext().isFineAndCoarseLocationPermissionGranted() -> {
+                requestLocationPermissions { permissionsGranted ->
+                    if (permissionsGranted) {
+                        onLocationAvailable()
+                    } else {
+                        showErrorDialogue(
+                            title = getString(R.string.gps_disabled_title),
+                            message = getString(R.string.gps_disabled_message),
+                            positiveButtonName = getString(R.string.ok),
+                        ) {
+                            if (it) {
+                                val intent = Intent()
+                                intent.action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
+                                val uri = Uri.fromParts(
+                                    "package",
+                                    BuildConfig.APPLICATION_ID,
+                                    null
+                                )
+                                intent.data = uri
+                                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                                startActivity(intent)
+                                onLocationNotAvailable?.invoke()
+                            }
+                        }
+                    }
+                }
+            }
+            else -> onLocationAvailable()
+        }
+    }
+
+    private var locationPermissionResultCallback: ((Boolean) -> Unit)? = null
+
+    private fun requestLocationPermissions(onResult: (Boolean) -> Unit) {
+        locationPermissionResultCallback = onResult
+        requestPermissionLauncher.launch(
+            arrayOf(
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            )
+        )
+    }
+
+    // Permission launcher
+    private val requestPermissionLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
+            val finePermission = permissions[Manifest.permission.ACCESS_FINE_LOCATION] ?: false
+            val coarsePermission = permissions[Manifest.permission.ACCESS_COARSE_LOCATION] ?: false
+
+            locationPermissionResultCallback?.invoke(finePermission && coarsePermission)
+        }
+    fun showTurnOnGPSDialog() {
+        showErrorDialogue(
+            title = getString(R.string.gps_disabled_title),
+            message = getString(R.string.gps_disabled_message),
+            positiveButtonName = getString(R.string.ok),
+        ) {
+            if (it) {
+                val settingsIntent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+                startActivity(settingsIntent)
+            }
+        }
+    }
+    fun showErrorDialogue(
+        title: String = getString(R.string.error),
+        message: String,
+        isNegativeButtonNeed: Boolean? = null,
+        positiveButtonName: String? = null,
+        okayBtnEnable: Boolean? = null,
+        cancelBtnName: String? = null,
+        callback: ((isPositiveResult: Boolean) -> Unit)
+    ) {
+        val generalErrorDialog =
+            GeneralErrorDialog.newInstance(
+                title,
+                callback,
+                requireContext(),
+                isNegativeButtonNeed ?: false,
+                okayButton = positiveButtonName ?: getString(R.string.ok),
+                cancelButton = cancelBtnName ?: getString(R.string.cancel),
+                messageBtnData = Pair(message, okayBtnEnable ?: true)
+            )
+        val errorFragment = childFragmentManager.findFragmentByTag(GeneralErrorDialog.TAG)
+        if (errorFragment == null)
+            generalErrorDialog.show(childFragmentManager, GeneralErrorDialog.TAG)
+    }
+
 }

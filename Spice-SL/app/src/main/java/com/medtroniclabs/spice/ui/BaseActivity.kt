@@ -1,6 +1,7 @@
 package com.medtroniclabs.spice.ui
 
 import android.content.Context
+import android.Manifest
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.Rect
@@ -16,6 +17,8 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
@@ -26,6 +29,9 @@ import com.google.android.material.snackbar.Snackbar
 import com.medtroniclabs.spice.BuildConfig
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.app.analytics.model.UserDetail
+import com.medtroniclabs.spice.app.analytics.utils.CommonUtils
+import com.medtroniclabs.spice.appextensions.isFineAndCoarseLocationPermissionGranted
+import com.medtroniclabs.spice.appextensions.isGpsEnabled
 import com.medtroniclabs.spice.appextensions.loadAsGif
 import com.medtroniclabs.spice.appextensions.resetImageView
 import com.medtroniclabs.spice.appextensions.setVisible
@@ -546,4 +552,67 @@ open class BaseActivity : SpiceRootActivity() {
             e.printStackTrace()
         }
     }
+
+    fun withLocationCheck(
+        onLocationAvailable: () -> Unit,
+        onLocationNotAvailable: (() -> Unit)? = null
+    ) {
+        when {
+            !isGpsEnabled() -> {
+                showTurnOnGPSDialog()
+                onLocationNotAvailable?.invoke()
+            }
+            !isFineAndCoarseLocationPermissionGranted() -> {
+                requestLocationPermissions { permissionsGranted ->
+                    if (permissionsGranted) {
+                        onLocationAvailable()
+                    } else {
+                        showErrorDialogue(
+                            title = getString(R.string.gps_disabled_title),
+                            message = getString(R.string.gps_disabled_message),
+                            positiveButtonName = getString(R.string.ok),
+                        ) {
+                            if (it) {
+                                val intent = Intent()
+                                intent.action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
+                                val uri = Uri.fromParts(
+                                    "package",
+                                    BuildConfig.APPLICATION_ID,
+                                    null
+                                )
+                                intent.data = uri
+                                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                                startActivity(intent)
+                                onLocationNotAvailable?.invoke()
+                            }
+                        }
+                    }
+                }
+            }
+            else -> onLocationAvailable()
+        }
+    }
+
+    private var locationPermissionResultCallback: ((Boolean) -> Unit)? = null
+
+    private fun requestLocationPermissions(onResult: (Boolean) -> Unit) {
+        locationPermissionResultCallback = onResult
+        requestPermissionLauncher.launch(
+            arrayOf(
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            )
+        )
+    }
+
+    // Permission launcher
+    private val requestPermissionLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
+            val finePermission = permissions[Manifest.permission.ACCESS_FINE_LOCATION] ?: false
+            val coarsePermission = permissions[Manifest.permission.ACCESS_COARSE_LOCATION] ?: false
+
+            locationPermissionResultCallback?.invoke(finePermission && coarsePermission)
+        }
+
+
 }

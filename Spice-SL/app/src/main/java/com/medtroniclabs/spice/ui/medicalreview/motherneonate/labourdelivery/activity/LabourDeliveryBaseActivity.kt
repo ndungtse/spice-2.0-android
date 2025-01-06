@@ -80,7 +80,6 @@ class LabourDeliveryBaseActivity : BaseActivity(), View.OnClickListener, AncVisi
         initializeView()
         attachObserver()
         initializeListener()
-        getCurrentLocation()
         viewModel.patientId = intent.getStringExtra(DefinedParams.PatientId)
         viewModel.isDirectPnc = intent.getBooleanExtra(DefinedParams.DirectPNCFlow,false)
         viewModel.set(this)
@@ -386,9 +385,9 @@ private fun initializeFragment() {
 
 override fun onClick(view: View) {
     when (view.id) {
-        R.id.btnSubmit -> handleSubmitClick()
+        R.id.btnSubmit -> withLocationCheck(::handleSubmitClick)
         binding.btnRefer.id -> handleReferClick()
-        binding.btnDone.id -> handleDoneClick()
+        binding.btnDone.id -> withLocationCheck(::handleDoneClick)
         binding.ivPrescription.id -> handlePrescriptionClick()
         binding.ivInvestigation.id -> handleInvestigationClick()
     }
@@ -581,4 +580,9 @@ private fun onBackPressPopStack() {
 override fun onDialogDismissListener(isFinish: Boolean) {
     startActivityWithoutSplashScreen()
 }
+
+    override fun onResume() {
+        super.onResume()
+        getCurrentLocation()
+    }
 }

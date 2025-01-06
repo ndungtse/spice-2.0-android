@@ -75,6 +75,11 @@ data class HouseHoldMember(
     var deceasedReason: String? = null,
 
     val assignHousehold: Boolean? = null,
+
+    var latitude: Double = 0.0,
+
+    var longitude: Double = 0.0
+
 ) {
 
     @Ignore
@@ -108,7 +113,9 @@ data class HouseHoldMember(
             initial = this.initial,
             version = this.version,
             lastUpdated = this.lastUpdated,
-            deceasedReason = this.deceasedReason
+            deceasedReason = this.deceasedReason,
+            latitude = this.latitude,
+            longitude = this.longitude,
         ).apply {
             fhirId = this@HouseHoldMember.id.toString()
             sync_status = status

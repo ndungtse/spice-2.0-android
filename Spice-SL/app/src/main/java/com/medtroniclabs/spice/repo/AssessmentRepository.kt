@@ -6,6 +6,7 @@ import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.google.gson.reflect.TypeToken
 import com.medtroniclabs.spice.common.DefinedParams
+import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.data.LocalSpinnerResponse
 import com.medtroniclabs.spice.db.entity.AssessmentEntity
@@ -131,10 +132,17 @@ class AssessmentRepository @Inject constructor(
         memberDetails: AssessmentMemberDetails,
         menuId: String?,
         referralResult: Pair<String?, ArrayList<String>>?,
-        lastLocation: Location?,
         otherDetails: HashMap<String, Any>? = null,
         followUpId: Long? = null
     ): Resource<AssessmentEntity> {
+        var latitude =SecuredPreference.getDouble(
+            SecuredPreference.EnvironmentKey.CURRENT_LATITUDE.name,
+            0.0
+        )
+        val longitude = SecuredPreference.getDouble(
+            SecuredPreference.EnvironmentKey.CURRENT_LONGITUDE.name,
+            0.0
+        )
         return try {
             val assessmentEntity = menuId?.let { menu ->
                 AssessmentEntity(
@@ -152,8 +160,8 @@ class AssessmentRepository @Inject constructor(
                     referralStatus = getReferralResult(referralResult?.first),
                     referredReason = referralResult?.second,
                     followUpId = followUpId,
-                    latitude = lastLocation?.latitude ?: 0.0,
-                    longitude = lastLocation?.longitude ?: 0.0
+                    latitude = latitude,
+                    longitude = longitude
                 )
             }
             assessmentEntity?.let {

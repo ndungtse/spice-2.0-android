@@ -1241,6 +1241,8 @@
     <string name="other_signs_and_symptoms">Other Signs and Symptoms</string>
     <string name="reason_of_death">Reason of Death</string>
     <string name="deceased">Deceased</string>
+    <string name="general_danger_sign">General Danger Sign</string>
+    <string name="the_day_s_should_be_less_than_age">The day(s) should be less than Age</string>
 
     <string name="support_label" translatable="false">Please write your issues with the\napplication</string>
     <string name="support" translatable="false">Support</string>

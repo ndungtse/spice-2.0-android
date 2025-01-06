@@ -274,31 +274,36 @@ class AssessmentRMNCHNeonateSummaryFragment : BaseFragment(), View.OnClickListen
 
     }
 
+    private fun handleRMNCHNeonateDone() {
+        assessmentRMNCHNeonateViewModel.fetchCurrentLocation(requireContext())
+        if (binding.etNextFollowUpDate.visibility == View.VISIBLE && binding.etNextFollowUpDate.text.isNotEmpty()) {
+            updateFollowUpDate(binding.etNextFollowUpDate.text.trim().toString())
+        }
+        if (viewModel.otherAssessmentDetails.isEmpty()) {
+            val intent = Intent(requireActivity(), HouseholdSearchActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+            startActivity(intent)
+            requireActivity().finish()
+        } else {
+            val pncDetails = if (binding.resultNeonateCardView.isVisible()) {
+                assessmentRMNCHNeonateViewModel.assessmentSaveLiveData.value?.data
+            } else {
+                viewModel.pncAssessmentSaveLiveData.value?.data
+            }
+
+            assessmentRMNCHNeonateViewModel.updateOtherAssessmentDetails(
+                pncDetails,
+                viewModel.otherAssessmentDetails,
+                viewModel.getCurrentLocation(),
+                viewModel.assessmentUpdateLiveData
+            )
+        }
+    }
+
     override fun onClick(v: View) {
         when (v.id) {
             binding.btnDone.id -> {
-                if (binding.etNextFollowUpDate.visibility == View.VISIBLE && binding.etNextFollowUpDate.text.isNotEmpty()) {
-                    updateFollowUpDate(binding.etNextFollowUpDate.text.trim().toString())
-                }
-                if (viewModel.otherAssessmentDetails.isEmpty()) {
-                    val intent =  Intent(requireActivity(), HouseholdSearchActivity::class.java)
-                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
-                    startActivity(intent)
-                    requireActivity().finish()
-                } else {
-                    val pncDetails = if (binding.resultNeonateCardView.isVisible()) {
-                        assessmentRMNCHNeonateViewModel.assessmentSaveLiveData.value?.data
-                    } else {
-                        viewModel.pncAssessmentSaveLiveData.value?.data
-                    }
-
-                    assessmentRMNCHNeonateViewModel.updateOtherAssessmentDetails(
-                        pncDetails,
-                        viewModel.otherAssessmentDetails,
-                        viewModel.getCurrentLocation(),
-                        viewModel.assessmentUpdateLiveData
-                    )
-                }
+                withLocationCheck(::handleRMNCHNeonateDone)
             }
 
             binding.etNextFollowUpDate.id -> {

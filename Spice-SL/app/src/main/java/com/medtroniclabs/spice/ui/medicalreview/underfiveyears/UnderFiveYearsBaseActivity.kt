@@ -80,7 +80,6 @@ class UnderFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
         attachObserver()
         initializeListeners()
         setAnalytics()
-        getCurrentLocation()
     }
     private fun setAnalytics(){
         UserDetail.eventName= AnalyticsDefinedParams.MedicalReviewCreation
@@ -420,12 +419,12 @@ class UnderFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
         when (v?.id) {
             R.id.btnSubmit -> {
                 if (validateInputs()) {
-                   withNetworkCheck(connectivityManager,::summaryCreate)
+                    withLocationCheck({ withNetworkCheck(connectivityManager, ::summaryCreate) })
                 }
             }
 
             R.id.btnDone -> {
-                withNetworkCheck(connectivityManager,::summaryDone)
+                withLocationCheck({ withNetworkCheck(connectivityManager, ::summaryDone) })
             }
 
             binding.ivPrescription.id -> {
@@ -594,4 +593,8 @@ class UnderFiveYearsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        getCurrentLocation()
+    }
 }

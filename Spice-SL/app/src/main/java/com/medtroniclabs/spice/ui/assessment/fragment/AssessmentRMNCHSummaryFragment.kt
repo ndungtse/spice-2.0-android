@@ -326,21 +326,26 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
         const val TAG: String = "AssessmentRMNCHSummaryFragment"
     }
 
+    private fun handleDoneButtonClick() {
+        viewModel.fetchCurrentLocation(requireContext())
+        if (binding.etNextFollowUpDate.visibility == View.VISIBLE && binding.etNextFollowUpDate.text.isNotEmpty()) {
+            updateFollowUpDate(binding.etNextFollowUpDate.text.trim().toString())
+        }
+        if (viewModel.otherAssessmentDetails.isEmpty()) {
+            val intent = Intent(requireActivity(), HouseholdSearchActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+            startActivity(intent)
+            requireActivity().finish()
+            requireActivity().startBackgroundOfflineSync()
+        } else {
+            viewModel.updateOtherAssessmentDetails()
+        }
+    }
+
     override fun onClick(v: View) {
         when (v.id) {
             R.id.btnDone -> {
-                if (binding.etNextFollowUpDate.visibility == View.VISIBLE && binding.etNextFollowUpDate.text.isNotEmpty()) {
-                    updateFollowUpDate(binding.etNextFollowUpDate.text.trim().toString())
-                }
-                if (viewModel.otherAssessmentDetails.isEmpty()) {
-                    val intent =  Intent(requireActivity(), HouseholdSearchActivity::class.java)
-                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
-                    startActivity(intent)
-                    requireActivity().finish()
-                    requireActivity().startBackgroundOfflineSync()
-                } else {
-                    viewModel.updateOtherAssessmentDetails()
-                }
+                withLocationCheck(::handleDoneButtonClick)
             }
 
             binding.etNextFollowUpDate.id -> {

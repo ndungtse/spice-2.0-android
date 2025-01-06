@@ -2,18 +2,24 @@ package com.medtroniclabs.spice.ui.medicalreview.addnewmember
 
 import android.os.Bundle
 import android.view.View
+import androidx.activity.viewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.invisible
+import com.medtroniclabs.spice.common.SpiceLocationManager
 import com.medtroniclabs.spice.databinding.ActivityAddNewMemberBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.dialog.SuccessDialogFragment
+import com.medtroniclabs.spice.ui.household.viewmodel.HouseRegistrationViewModel
 import com.medtroniclabs.spice.ui.landing.OnDialogDismissListener
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
 import com.medtroniclabs.spice.ui.member.MemberRegistrationFragment
 
 class AddNewMemberActivity : BaseActivity(), View.OnClickListener, OnDialogDismissListener {
     private lateinit var binding: ActivityAddNewMemberBinding
+
+    private val householdRegistrationViewModel: HouseRegistrationViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityAddNewMemberBinding.inflate(layoutInflater)
@@ -98,5 +104,16 @@ class AddNewMemberActivity : BaseActivity(), View.OnClickListener, OnDialogDismi
 
     override fun onDialogDismissListener(isFinish: Boolean) {
         startActivityWithoutSplashScreen()
+    }
+    private fun getCurrentLocation() {
+        val locationManager = SpiceLocationManager(this)
+        locationManager.getCurrentLocation {
+            householdRegistrationViewModel.setCurrentLocation(it)
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        getCurrentLocation()
     }
 }

@@ -92,7 +92,6 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
             }
         )
         attachObservers()
-        getCurrentLocation()
         binding.refreshLayout.setOnRefreshListener {
             swipeRefresh()
         }
@@ -470,8 +469,8 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
             binding.btnLayout.btnNext.id -> validatePregnantDetails()
             binding.ivPrescription.id -> openPrescriptionActivity()
             binding.ivInvestigation.id -> openInvestigationActivity()
-            binding.btnSubmit.id -> validateAndSubmitRequest()
-            binding.btnDone.id -> submitSummary()
+            binding.btnSubmit.id -> withLocationCheck(::validateAndSubmitRequest)
+            binding.btnDone.id -> withLocationCheck(::submitSummary)
             binding.btnRefer.id -> showReferPatientDialog()
             binding.loadingProgress.id -> {}
         }
@@ -941,4 +940,9 @@ class MotherNeonateANCActivity : BaseActivity(), View.OnClickListener, AncVisitC
                 }
             }
         }
+
+    override fun onResume() {
+        super.onResume()
+        getCurrentLocation()
+    }
 }

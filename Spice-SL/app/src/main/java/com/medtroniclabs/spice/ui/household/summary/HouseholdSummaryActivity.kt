@@ -10,10 +10,12 @@ import androidx.appcompat.widget.PopupMenu
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.content.ContextCompat.startActivity
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.appextensions.isVisible
+import com.medtroniclabs.spice.appextensions.loadAsGif
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.MemberID
 import com.medtroniclabs.spice.common.DefinedParams.isMemberRegistration
@@ -33,6 +35,9 @@ import com.medtroniclabs.spice.ui.household.MemberSelectionListener
 import com.medtroniclabs.spice.ui.household.viewmodel.HouseHoldSummaryViewModel
 import com.medtroniclabs.spice.ui.landing.LandingActivity
 import com.medtroniclabs.spice.ui.landing.OnDialogDismissListener
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class HouseholdSummaryActivity : BaseActivity(), MemberSelectionListener, View.OnClickListener, OnDialogDismissListener {
 
@@ -47,6 +52,7 @@ class HouseholdSummaryActivity : BaseActivity(), MemberSelectionListener, View.O
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityHouseholdSummaryBinding.inflate(layoutInflater)
+        showLoading()
         setMainContentView(
             binding.root, isToolbarVisible = true, title = getString(R.string.households)
         )
@@ -86,6 +92,9 @@ class HouseholdSummaryActivity : BaseActivity(), MemberSelectionListener, View.O
             layoutManager =
                 GridLayoutManager(this@HouseholdSummaryActivity, DefinedParams.span_count_1)
             adapter = householdListAdapter
+            adapter?.let {
+                    hideLoading()
+            }
         }
     }
 
@@ -226,25 +235,35 @@ class HouseholdSummaryActivity : BaseActivity(), MemberSelectionListener, View.O
     override fun onClick(v: View?) {
         when (v?.id) {
             R.id.btnFinishRegistration -> {
-                householdSummaryViewModel.householdCardDetailLiveData.value?.let {
-                    val existingFragment =
-                        supportFragmentManager.findFragmentByTag(SuccessDialogFragment.TAG)
-                    if (existingFragment == null) {
-                        SuccessDialogFragment.newInstance(isHousehold = true).show(supportFragmentManager, SuccessDialogFragment.TAG)
-                    }
-                }
+                withLocationCheck(::finishRegistrationFlow)
             }
 
             R.id.btnAddNewMember -> {
-                addNewMember()
+                withLocationCheck(::addNewMember)
             }
             R.id.btnLinkPatient->{
-                val existingFragment =
-                    supportFragmentManager.findFragmentByTag(LinkPatientDialogFragment.TAG)
-                if (existingFragment == null) {
-                    LinkPatientDialogFragment.newInstance(linkHouseholdId,linkMemberId,linkFhirMemberId).show(supportFragmentManager, LinkPatientDialogFragment.TAG)
-                }
+                withLocationCheck (::linkPatient)
             }
+        }
+    }
+
+    private fun finishRegistrationFlow() {
+        householdSummaryViewModel.householdCardDetailLiveData.value?.let {
+            val existingFragment =
+                supportFragmentManager.findFragmentByTag(SuccessDialogFragment.TAG)
+            if (existingFragment == null) {
+                SuccessDialogFragment.newInstance(isHousehold = true)
+                    .show(supportFragmentManager, SuccessDialogFragment.TAG)
+            }
+        }
+    }
+
+    private fun linkPatient() {
+        val existingFragment =
+            supportFragmentManager.findFragmentByTag(LinkPatientDialogFragment.TAG)
+        if (existingFragment == null) {
+            LinkPatientDialogFragment.newInstance(linkHouseholdId, linkMemberId, linkFhirMemberId)
+                .show(supportFragmentManager, LinkPatientDialogFragment.TAG)
         }
     }
 
@@ -279,5 +298,4 @@ class HouseholdSummaryActivity : BaseActivity(), MemberSelectionListener, View.O
             finish()
         }
     }
-
 }

@@ -1,5 +1,6 @@
 package com.medtroniclabs.spice.ui.assessment.viewmodel
 
+import android.content.Context
 import android.location.Location
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -8,6 +9,7 @@ import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.SecuredPreference
+import com.medtroniclabs.spice.common.SpiceLocationManager
 import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.db.entity.AssessmentEntity
 import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
@@ -49,6 +51,9 @@ class AssessmentRMNCHNeonateViewModel @Inject constructor(
 
     var referralStatus: String? = null
 
+    private var lastLocation: Location? = null
+
+
     fun getFormData(formType: String) {
         viewModelScope.launch(dispatcherIO) {
             memberFormLayoutsLiveData.postLoading()
@@ -69,7 +74,8 @@ class AssessmentRMNCHNeonateViewModel @Inject constructor(
         motherDetailMap: HashMap<String, Any>,
         memberDetail: AssessmentMemberDetails,
         childBioDataDetail: HouseholdMemberEntity?,
-        followUpId: Long? = null
+        followUpId: Long? = null,
+        location: Location?
     ) {
         viewModelScope.launch(dispatcherIO) {
             var deathOfNewBorn = false
@@ -86,7 +92,8 @@ class AssessmentRMNCHNeonateViewModel @Inject constructor(
                     memberMap!!,
                     householdId,
                     null,
-                    memberDetail.id
+                    memberDetail.id,
+                    location = location
                 )
                 if (childMemberId != null) {
                     savePNCDetails(
@@ -285,6 +292,19 @@ class AssessmentRMNCHNeonateViewModel @Inject constructor(
                     lastLocation
                 )
             )
+        }
+    }
+    fun setCurrentLocation(location: Location) {
+        this.lastLocation = location
+    }
+
+    fun getCurrentLocation(): Location? {
+        return this.lastLocation
+    }
+    fun fetchCurrentLocation(context: Context) {
+        val locationManager = SpiceLocationManager(context)
+        locationManager.getCurrentLocation {
+            setCurrentLocation(it)
         }
     }
 }

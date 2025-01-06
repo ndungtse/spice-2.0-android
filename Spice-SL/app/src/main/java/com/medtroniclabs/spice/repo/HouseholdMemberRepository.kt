@@ -1,5 +1,6 @@
 package com.medtroniclabs.spice.repo
 
+import android.location.Location
 import androidx.lifecycle.LiveData
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.CommonUtils.getStringOrEmptyString
@@ -34,9 +35,10 @@ class HouseholdMemberRepository @Inject constructor(
         parentReferenceId: Long? = null,
         initial: String? = null,
         signature: String? = null,
-        isPhuWalkInFlow: Boolean? = null
+        isPhuWalkInFlow: Boolean? = null,
+        location: Location?
     ): Long? {
-        val memberEntity = createOrUpdateHouseHoldMemberEntity(map, householdId, entity, parentReferenceId, initial, signature)
+        val memberEntity = createOrUpdateHouseHoldMemberEntity(map, householdId, entity, parentReferenceId, initial, signature,location)
        /* if (memberEntity.patientId == null) {
             return  null
         }*/
@@ -86,7 +88,8 @@ class HouseholdMemberRepository @Inject constructor(
         entity: HouseholdMemberEntity? = null,
         parentReferenceId: Long?,
         initial: String? = null,
-        signature: String? = null
+        signature: String? = null,
+        location: Location?
     ): HouseholdMemberEntity {
         val householdMemberEntity = entity ?: HouseholdMemberEntity()
 
@@ -136,6 +139,10 @@ class HouseholdMemberRepository @Inject constructor(
         } else {
             householdMemberEntity.updatedAt = System.currentTimeMillis()
             householdMemberEntity.sync_status = OfflineSyncStatus.NotSynced
+        }
+        location?.let {
+            householdMemberEntity.latitude = it.latitude
+            householdMemberEntity.longitude = it.longitude
         }
 
         return householdMemberEntity

@@ -112,7 +112,6 @@ class MotherNeonatePncActivity : BaseActivity(), View.OnClickListener, AncVisitC
 
     private fun initialize() {
         attachObservers()
-        getCurrentLocation()
         initStaticDataCall()
         initializeViewModel()
         initializeClickListener()
@@ -570,8 +569,8 @@ class MotherNeonatePncActivity : BaseActivity(), View.OnClickListener, AncVisitC
 
     override fun onClick(v: View?) {
         when (v?.id) {
-            binding.btnSubmit.id ->withNetworkCheck(connectivityManager, ::validateAndSubmitRequest)
-            binding.btnDone.id -> handleBtnDoneClick()
+            binding.btnSubmit.id ->withLocationCheck({withNetworkCheck(connectivityManager, ::validateAndSubmitRequest)})
+            binding.btnDone.id -> withLocationCheck({handleBtnDoneClick()})
             binding.ivPrescription.id -> handleButtonPrescription()
             binding.ivInvestigation.id -> handleInvestigation()
             binding.btnRefer.id -> handleButtonRefer()
@@ -942,6 +941,11 @@ class MotherNeonatePncActivity : BaseActivity(), View.OnClickListener, AncVisitC
         viewModel.labourDeliveryDetails = gson.fromJson(json, CreateLabourDeliveryRequest::class.java)
             viewModel.neonateOutCome = viewModel.labourDeliveryDetails?.motherDTO?.neonateOutcome
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        getCurrentLocation()
     }
 }
 

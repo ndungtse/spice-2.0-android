@@ -56,6 +56,10 @@ data class HouseholdMemberEntity(
 
     var motherReferenceId: Long? = null,
 
-    var deceasedReason: String? = null
+    var deceasedReason: String? = null,
+
+    var latitude: Double = 0.0,
+
+    var longitude: Double = 0.0
 
     ) : BaseEntity()

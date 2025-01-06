@@ -23,6 +23,7 @@ import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.ICCM
 import com.medtroniclabs.spice.common.DefinedParams.True
 import com.medtroniclabs.spice.common.DefinedParams.Yes
+import com.medtroniclabs.spice.common.SpiceLocationManager
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.common.ViewUtils
@@ -77,6 +78,7 @@ import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.otherSigns
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
 import com.medtroniclabs.spice.ui.household.HouseholdSearchActivity
 import org.json.JSONObject
+import timber.log.Timber
 import java.lang.StringBuilder
 
 class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
@@ -600,7 +602,7 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
             }
         }
         bindICCMSummaryView(
-            listSummaryData[0].title ?: getString(R.string.general_danger_signs),
+            getString(R.string.general_danger_sign),
             result
         )
         return isSignContain
@@ -622,23 +624,28 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
     override fun onClick(v: View?) {
         when (v?.id) {
             binding.btnDone.id -> {
-                if (binding.etNextFollowUpDate.text.isNotEmpty()) {
-                    updateFollowUpDate(binding.etNextFollowUpDate.text.trim().toString())
-                }
-                if (viewModel.otherAssessmentDetails.isEmpty()) {
-                    val intent = Intent(requireActivity(), HouseholdSearchActivity::class.java)
-                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
-                    startActivity(intent)
-                    requireActivity().finish()
-                    requireActivity().startBackgroundOfflineSync()
-                } else {
-                    viewModel.updateOtherAssessmentDetails()
-                }
+                withLocationCheck(::assessmentICCMDone)
             }
 
             binding.etNextFollowUpDate.id -> {
                 showDatePickerDialog()
             }
+        }
+    }
+
+    private fun assessmentICCMDone() {
+        viewModel.fetchCurrentLocation(requireContext())
+        if (binding.etNextFollowUpDate.text.isNotEmpty()) {
+            updateFollowUpDate(binding.etNextFollowUpDate.text.trim().toString())
+        }
+        if (viewModel.otherAssessmentDetails.isEmpty()) {
+            val intent = Intent(requireActivity(), HouseholdSearchActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+            startActivity(intent)
+            requireActivity().finish()
+            requireActivity().startBackgroundOfflineSync()
+        } else {
+            viewModel.updateOtherAssessmentDetails()
         }
     }
 
@@ -701,6 +708,12 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
                 item.title,
                 getString(R.string.separator_double_hyphen)
             )
+        }
+    }
+    private fun getCurrentLocation() {
+        val locationManager = SpiceLocationManager(requireActivity())
+        locationManager.getCurrentLocation {
+            viewModel.setCurrentLocation(it)
         }
     }
 

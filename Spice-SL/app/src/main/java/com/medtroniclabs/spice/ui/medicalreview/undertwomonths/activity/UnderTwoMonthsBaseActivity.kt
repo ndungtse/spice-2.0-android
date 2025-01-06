@@ -88,7 +88,6 @@ class UnderTwoMonthsBaseActivity : BaseActivity(), View.OnClickListener, OnDialo
         attachObserver()
         initializeListeners()
         setAnalytics()
-        getCurrentLocation()
     }
     private fun setAnalytics(){
         UserDetail.eventName= AnalyticsDefinedParams.MedicalReviewCreation
@@ -338,11 +337,12 @@ private fun successSummaryDialog() {
 
     private fun handleButtonSubmit() {
         if (validateInputs()) {
-            withNetworkCheck(connectivityManager, ::submitDetails)
+            withLocationCheck({ withNetworkCheck(connectivityManager, ::submitDetails) })
         }
     }
 
-    private fun handleButtonDone() = withNetworkCheck(connectivityManager, ::summaryDoneDetails)
+    private fun handleButtonDone() =
+        withLocationCheck({ withNetworkCheck(connectivityManager, ::summaryDoneDetails) })
 
 
     private fun handlePrescriptionClick() {
@@ -551,4 +551,8 @@ private fun successSummaryDialog() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        getCurrentLocation()
+    }
 }

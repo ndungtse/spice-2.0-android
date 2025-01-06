@@ -132,7 +132,7 @@ class ReferralHistoryActivity : BaseActivity(), AncVisitCallBack {
             ).commit()
     }
 
-    private fun ableToGetLocation(): Boolean {
+     fun ableToGetLocation(): Boolean {
         //Check Location service is enabled
         if (!isGpsEnabled()) {
             showTurnOnGPSDialog()

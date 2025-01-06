@@ -13,6 +13,7 @@ import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.app.analytics.model.UserDetail
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.appextensions.gone
+import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils.extractNumber
 import com.medtroniclabs.spice.common.CommonUtils.isMandateOrNot
 import com.medtroniclabs.spice.common.DateUtils
@@ -240,7 +241,9 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
     override fun onClick(v: View) {
         when (v.id) {
             binding.btnSubmit.id -> {
-                formGenerator.formSubmitAction(v)
+                withLocationCheck({
+                    viewModel.fetchCurrentLocation(requireContext())
+                    formGenerator.formSubmitAction(v) })
             }
         }
     }
@@ -538,7 +541,6 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
     }
 
     override fun onUpdateInstruction(id: String, selectedId: Any?) {
-        Timber.d("onUpdateInstruction $id $selectedId")
         when (id) {
             MUAC -> {
                 val rootSuffixTag = muacStatus + rootSuffix
@@ -574,6 +576,19 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
                         )
                     }
                 }
+            }
+
+            DeathOfMother -> {
+                if (selectedId == false && (viewModel.memberClinicalLiveData.value?.visitCount
+                        ?: 0) >= 1
+                ) {
+                    formGenerator.getViewByTag(RMNCH.lastMenstrualPeriod + formGenerator.rootSuffix)
+                        ?.gone()
+                }else{
+                    formGenerator.getViewByTag(RMNCH.lastMenstrualPeriod + formGenerator.rootSuffix)
+                        ?.visible()
+                }
+
             }
         }
     }

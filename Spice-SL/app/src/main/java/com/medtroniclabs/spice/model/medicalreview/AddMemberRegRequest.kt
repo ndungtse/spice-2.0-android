@@ -1,5 +1,6 @@
 package com.medtroniclabs.spice.model.medicalreview
 
+import androidx.room.ColumnInfo
 import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 
 data class AddMemberRegRequest(
@@ -16,6 +17,8 @@ data class AddMemberRegRequest(
     var provenance:  ProvanceDto? = null,
     var village: String?=null,
     var villageId: String?=null,
+    var latitude: Double = 0.0,
+    var longitude: Double = 0.0
 )
 
 

@@ -39,13 +39,14 @@ import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.villageId
 import com.medtroniclabs.spice.mappingkey.HouseHoldRegistration.yes
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
+import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.household.HouseholdDefinedParams.REGISTRATION
 import com.medtroniclabs.spice.ui.household.viewmodel.HouseRegistrationViewModel
 import com.medtroniclabs.spice.ui.landing.OnDialogDismissListener
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class HouseHoldRegistrationFragment : Fragment(), View.OnClickListener, FormEventListener {
+class HouseHoldRegistrationFragment : BaseFragment(), View.OnClickListener, FormEventListener {
 
     lateinit var binding: FragmentHouseHoldRegistrationBinding
     private lateinit var formGenerator: FormGenerator
@@ -248,7 +249,7 @@ class HouseHoldRegistrationFragment : Fragment(), View.OnClickListener, FormEven
     override fun onClick(v: View?) {
         when (v?.id) {
             R.id.btnNext -> {
-                formGenerator.formSubmitAction(v)
+                withLocationCheck({formGenerator.formSubmitAction(v)})
                 /*if (activity is HouseholdActivity) {
                     (activity as HouseholdActivity).loadFragment(2)
                 }*/

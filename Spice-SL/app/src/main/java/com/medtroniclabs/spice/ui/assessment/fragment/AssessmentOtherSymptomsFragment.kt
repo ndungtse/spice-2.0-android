@@ -280,7 +280,9 @@ class AssessmentOtherSymptomsFragment : BaseFragment(), FormEventListener, View.
     override fun onClick(view: View) {
         when (view.id) {
             binding.btnSubmit.id -> {
-                formGenerator.formSubmitAction(view)
+                withLocationCheck({
+                    viewModel.fetchCurrentLocation(requireContext())
+                    formGenerator.formSubmitAction(view) })
             }
         }
     }

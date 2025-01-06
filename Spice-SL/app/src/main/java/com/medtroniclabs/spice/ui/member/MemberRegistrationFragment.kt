@@ -9,7 +9,6 @@ import android.widget.TextView
 import androidx.appcompat.widget.AppCompatSpinner
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.os.bundleOf
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResult
 import com.google.gson.Gson
@@ -64,6 +63,7 @@ import com.medtroniclabs.spice.mappingkey.MemberRegistration.phoneNumber
 import com.medtroniclabs.spice.mappingkey.MemberRegistration.phoneNumberCategory
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
+import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.DateOfBirth
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.errorSuffix
 import com.medtroniclabs.spice.ui.dialog.SuccessDialogFragment
@@ -81,7 +81,7 @@ import java.time.format.DateTimeFormatter
 import kotlin.math.abs
 
 @AndroidEntryPoint
-class MemberRegistrationFragment : Fragment(), FormEventListener, View.OnClickListener {
+class MemberRegistrationFragment : BaseFragment(), FormEventListener, View.OnClickListener {
 
     private lateinit var binding: FragmentMemberRegistrationBinding
     private lateinit var formGenerator: FormGenerator
@@ -265,10 +265,6 @@ class MemberRegistrationFragment : Fragment(), FormEventListener, View.OnClickLi
                 }
             }
         }
-
-        memberRegistrationViewModel.householdHeadDobLiveData.observe(viewLifecycleOwner){
-            Timber.d("Household DOB : $it")
-        }
     }
 
     private fun launchSummaryOrAssessmentPage() {
@@ -426,18 +422,20 @@ class MemberRegistrationFragment : Fragment(), FormEventListener, View.OnClickLi
         formGenerator = FormGenerator(
             requireContext(), binding.llForm, null, this, binding.scrollView, translate = SecuredPreference.getIsTranslationEnabled()
         ) { map, id->
-            val month = map["month"] as? Int
-            val week = map["week"] as? Int
-            if (month in 0..11 && week in 0..4) {
-                formGenerator.getViewByTag(DateOfBirth + errorSuffix)?.apply {
-                    visibility = View.GONE
-                }
-            }else{
-                formGenerator.getViewByTag(DateOfBirth + errorSuffix)?.apply {
-                    visibility = View.VISIBLE
-                }.takeIf { it is TextView }?.let { textView ->
-                    (textView as TextView).text =
-                        getString(R.string.please_select_a_valid_value_month)
+            if (id == DateOfBirth) {
+                val month = map["month"] as? Int
+                val week = map["week"] as? Int
+                if (month in 0..11 && week in 0..4) {
+                    formGenerator.getViewByTag(DateOfBirth + errorSuffix)?.apply {
+                        visibility = View.GONE
+                    }
+                } else {
+                    formGenerator.getViewByTag(DateOfBirth + errorSuffix)?.apply {
+                        visibility = View.VISIBLE
+                    }.takeIf { it is TextView }?.let { textView ->
+                        (textView as TextView).text =
+                            getString(R.string.please_select_a_valid_value_month)
+                    }
                 }
             }
         }
@@ -529,14 +527,15 @@ class MemberRegistrationFragment : Fragment(), FormEventListener, View.OnClickLi
             val month = map[Month] as? Int
             val week = map[Week] as? Int
             // Month and Week field validation
-            if (month !in 0..11 && week !in 0..4) {
+            if (month !in 0..11 || week !in 0..4) {
                 showInValidDob(getString(R.string.please_select_a_valid_value))
                 return
             }
 
             // Add member from medical review
             if (memberRegistrationViewModel.medicalReviewFlow) {
-                memberRegistrationViewModel.addNewMember(map, formGenerator)
+                memberRegistrationViewModel.addNewMember(map, formGenerator,location=householdRegistrationViewModel.getCurrentLocation()
+                )
                 return
             }
 
@@ -564,7 +563,8 @@ class MemberRegistrationFragment : Fragment(), FormEventListener, View.OnClickLi
 
                   memberRegistrationViewModel.registerMember(
                       map,
-                      householdRegistrationViewModel.householdId
+                      householdRegistrationViewModel.householdId,
+                      location=householdRegistrationViewModel.getCurrentLocation()
                   )
                 return
             }
@@ -681,18 +681,23 @@ class MemberRegistrationFragment : Fragment(), FormEventListener, View.OnClickLi
     override fun onClick(v: View?) {
         when (v?.id) {
             R.id.btnStartAssessment -> {
+                withLocationCheck({
                 memberRegistrationViewModel.startAssessment = true
-                formGenerator.formSubmitAction(v)
+                formGenerator.formSubmitAction(v)})
             }
 
             R.id.btnSubmit -> {
-                memberRegistrationViewModel.startAssessment = false
-                formGenerator.formSubmitAction(v)
+                withLocationCheck({
+                    memberRegistrationViewModel.startAssessment = false
+                    formGenerator.formSubmitAction(v)
+                })
             }
 
             R.id.btnSubmitPhu -> {
-                memberRegistrationViewModel.startAssessment = false
-                formGenerator.formSubmitAction(v)
+                withLocationCheck({
+                    memberRegistrationViewModel.startAssessment = false
+                    formGenerator.formSubmitAction(v)
+                })
             }
         }
     }

@@ -2,12 +2,15 @@ package com.medtroniclabs.spice.ui.boarding
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import androidx.activity.viewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.cancelAllWorker
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.databinding.ActivityForgetPasswordBinding
 import com.medtroniclabs.spice.network.resource.ResourceState
+import com.medtroniclabs.spice.network.utils.ConnectivityManager
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.boarding.fragment.ConfirmPasswordFragment
 import com.medtroniclabs.spice.ui.boarding.fragment.ResetPasswordFragment
@@ -35,19 +38,23 @@ class ForgetPasswordActivity : BaseActivity() {
     }
 
     private fun attachObservers() {
+
         viewModel.resetTokenLiveData.observe(this) {
             if (!it.isNullOrEmpty()) {
                 supportFragmentManager.beginTransaction()
                     .replace(binding.fcEmailFragment.id, ConfirmPasswordFragment()).commit()
-                if (connectivityManager.isNetworkAvailable()) {
-                    viewModel.validateToken(it)
-                } else {
-                    showErrorDialogue(getString(R.string.error), getString(R.string.no_internet_error)){ isPositive ->
-                        if (isPositive) {
-                            redirectToLogin()
+
+                Handler(Looper.getMainLooper()).postDelayed({
+                    if (connectivityManager.isNetworkAvailable()) {
+                        viewModel.validateToken(it)
+                    } else {
+                        showErrorDialogue(getString(R.string.error), getString(R.string.no_internet_error)) { isPositive ->
+                            if (isPositive) {
+                                redirectToLogin()
+                            }
                         }
                     }
-                }
+                }, 500)
             } else {
                 supportFragmentManager.beginTransaction()
                     .add(binding.fcEmailFragment.id, ResetPasswordFragment()).commit()

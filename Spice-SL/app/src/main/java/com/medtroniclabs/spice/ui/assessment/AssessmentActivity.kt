@@ -62,7 +62,6 @@ class AssessmentActivity : BaseActivity() {
         getIntentValue()
         loadFragment()
         attachObservers()
-        getCurrentLocation()
     }
 
     private fun getCurrentLocation() {
@@ -415,5 +414,8 @@ class AssessmentActivity : BaseActivity() {
             }
         }
 
-
+    override fun onResume() {
+        super.onResume()
+        getCurrentLocation()
+    }
 }

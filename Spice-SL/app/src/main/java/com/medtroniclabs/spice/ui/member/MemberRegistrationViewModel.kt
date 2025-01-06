@@ -86,14 +86,26 @@ class MemberRegistrationViewModel @Inject constructor(
                       householdEntity.longitude = it.longitude
                   }
                   val houseHoldId = houseHoldRepository.insertHouseHoldEntity(householdEntity)
-                  registerMember(memberResultMap, houseHoldId, initial, signature)
+                  registerMember(
+                      memberResultMap,
+                      houseHoldId,
+                      initial,
+                      signature,
+                      location
+                  )
               }
           }catch (e: Exception) {
               memberRegistrationLiveData.postError(e.message)
           }
     }
 
-    fun registerMember(map: HashMap<String, Any>, householdId: Long, initial: String? = null, signature: String? = null) {
+    fun registerMember(
+        map: HashMap<String, Any>,
+        householdId: Long,
+        initial: String? = null,
+        signature: String? = null,
+        location: Location?
+    ) {
          memberRegistrationLiveData.postLoading()
         try {
             viewModelScope.launch(dispatcherIO) {
@@ -109,7 +121,8 @@ class MemberRegistrationViewModel @Inject constructor(
                     memberDetailsLiveData.value?.data,
                     initial = initial,
                     signature = signature,
-                    isPhuWalkInFlow = isPhuWalkInsFlow
+                    isPhuWalkInFlow = isPhuWalkInsFlow,
+                    location=location
                 )
                 memberRegistrationRepository.updateHeadPhoneNumber(householdId, map)
                 if (memberId == null) {
@@ -123,7 +136,7 @@ class MemberRegistrationViewModel @Inject constructor(
         }
     }
 
-    fun addNewMember(map: HashMap<String, Any>?, formGenerator: FormGenerator) {
+    fun addNewMember(map: HashMap<String, Any>?, formGenerator: FormGenerator, location: Location?) {
         if (map == null) return
         val villageId = map[MemberRegistration.villageId]?.toString()?.toIntOrNull()
         val addMemberRegRequest = AddMemberRegRequest().apply {
@@ -138,6 +151,10 @@ class MemberRegistrationViewModel @Inject constructor(
             phoneNumberCategory = map[MemberRegistration.phoneNumberCategory]?.toString().orEmpty()
             provenance = ProvanceDto()
             isPregnant = map[MemberRegistration.isPregnant]?.let { CommonUtils.getIsBooleanFromString(it) }
+            location?.let {
+                longitude=location.longitude
+                latitude=location.latitude
+            }
         }
         viewModelScope.launch(dispatcherIO) {
             addnewMemberReq.postLoading()
