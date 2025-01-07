@@ -434,22 +434,18 @@ class PatientInfoFragment : BaseFragment() {
         )
         val isMentalHealth = viewModel.mrMenuId.equals("mentalHealth", ignoreCase = true)
         if (isMentalHealth) {
-            val showPHQ4 =
-                viewModel.patientDetailsLiveData.value?.data?.mentalHealthLevels?.contains(Screening.PHQ4) == true
-            if (showPHQ4) {
-                val phq4Score = data.phq4score ?: requireContext().getString(R.string.hyphen_symbol)
-                val phq4AssessmentType = if (data.phq4score != null) requireContext().getString(R.string.edit_assessment) else requireContext().getString(
-                        R.string.start_assessment
-                    )
-                dataList.add(
-                    mapOf(
-                        DefinedParams.label to requireContext().getString(R.string.phq4_score),
-                        DefinedParams.Value to phq4Score,
-                        Screening.type to phq4AssessmentType,
-                        DefinedParams.color to requireContext().getColor(R.color.medium_high_risk_color)
-                    )
+            val phq4Score = data.phq4score ?: requireContext().getString(R.string.hyphen_symbol)
+            val phq4AssessmentType = if (data.phq4score != null) requireContext().getString(R.string.edit_assessment) else requireContext().getString(
+                R.string.start_assessment
+            )
+            dataList.add(
+                mapOf(
+                    DefinedParams.label to requireContext().getString(R.string.phq4_score),
+                    DefinedParams.Value to phq4Score,
+                    Screening.type to phq4AssessmentType,
+                    DefinedParams.color to requireContext().getColor(R.color.medium_high_risk_color)
                 )
-            }
+            )
             val suicidcalIdeation = data.suicidalIdeation ?: requireContext().getString(
                 R.string.hyphen_symbol
             )

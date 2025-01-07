@@ -104,7 +104,7 @@ class PatientSearchFilterDialog : DialogFragment(), View.OnClickListener {
             patientListViewModel.patientStatusTag
         )
         ncdReferredForTag.addChipItemList(
-            getTodayTomorrowChip(),
+            getYesterdayTodayChip(),
             patientListViewModel.ncdReferredForTag
         )
         ncdMedicalReviewDateTag.addChipItemList(
@@ -240,6 +240,23 @@ class PatientSearchFilterDialog : DialogFragment(), View.OnClickListener {
             ChipViewItemModel(
                 id = 2,
                 name = getString(R.string.on_treatment)
+            )
+        )
+        return chipItemList
+    }
+
+    private fun getYesterdayTodayChip(): ArrayList<ChipViewItemModel> {
+        val chipItemList = ArrayList<ChipViewItemModel>()
+        chipItemList.add(
+            ChipViewItemModel(
+                id = 1,
+                name = getString(R.string.yesterday)
+            )
+        )
+        chipItemList.add(
+            ChipViewItemModel(
+                id = 2,
+                name = getString(R.string.today)
             )
         )
         return chipItemList

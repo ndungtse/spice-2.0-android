@@ -167,8 +167,8 @@ class NCDNutritionistActivity : BaseActivity(), View.OnClickListener {
                         showSuccessDialogue(
                             title = getString(R.string.lifestyle_assessment),
                             message = message
-                        ) { finish() }
-                    } ?: run { finish() }
+                        ) { refreshPage() }
+                    } ?: run { refreshPage() }
                 }
 
                 ResourceState.ERROR -> {
@@ -188,7 +188,6 @@ class NCDNutritionistActivity : BaseActivity(), View.OnClickListener {
                 ResourceState.SUCCESS -> {
                     resource.data?.let {
                         loadPatientInfo(it)
-                        getLifestyleList()
                     }
                 }
 
@@ -197,6 +196,10 @@ class NCDNutritionistActivity : BaseActivity(), View.OnClickListener {
                 }
             }
         }
+    }
+
+    private fun refreshPage() {
+        getLifestyleList()
     }
 
     private fun loadLifeStyleData(it: java.util.ArrayList<LifeStyleResponse>) {
@@ -252,6 +255,9 @@ class NCDNutritionistActivity : BaseActivity(), View.OnClickListener {
             )
         }
         viewModel.patientReference = data.patientId
+
+        getPatientLifestyleData()
+        getLifestyleList()
     }
 
     private fun setClickListener() {
@@ -274,6 +280,7 @@ class NCDNutritionistActivity : BaseActivity(), View.OnClickListener {
     }
 
     private fun loadLifestyleList() {
+        binding.btnDone.isEnabled = false
         val lifestyleList = viewModel.assessmentListLiveData.value?.data?.entityList
         if (lifestyleList.isNullOrEmpty()) {
             lifestyles(false)
@@ -312,7 +319,7 @@ class NCDNutritionistActivity : BaseActivity(), View.OnClickListener {
     private val validation = object : ValidationListener {
         override fun validate() {
             binding.btnDone.isEnabled =
-                viewModel.assessmentListLiveData.value?.data?.entityList?.firstOrNull { !it.lifestyleAssessment.isNullOrBlank() } != null
+                viewModel.assessmentListLiveData.value?.data?.entityList?.firstOrNull { it.assessedBy.isNullOrBlank() && !it.lifestyleAssessment.isNullOrBlank() } != null
         }
     }
 
@@ -323,7 +330,9 @@ class NCDNutritionistActivity : BaseActivity(), View.OnClickListener {
             visitId = viewModel.encounterReference
         )
         viewModel.getAssessmentList(request, true)
+    }
 
+    private fun getPatientLifestyleData() {
         cmrViewModel.getNcdLifeStyleDetails(LifeStyleRequest(patientReference = viewModel.patientReference))
     }
 

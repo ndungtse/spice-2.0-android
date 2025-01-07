@@ -34,7 +34,9 @@ import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.EncounterReference
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.IS_FEMALE
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.IS_INITIAL_MR
+import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.MENTALHEALTH
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.MENU_ID
+import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.SUBSTANCE_DISORDER
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMedicalReviewActivity
 import com.medtroniclabs.spice.ncd.medicalreview.dialog.NCDDiagnosisDialogFragment
 import com.medtroniclabs.spice.ncd.medicalreview.dialog.NCDMentalHealthQuestionDialog
@@ -198,26 +200,30 @@ class NCDMedicalReviewDiagnosisCardFragment : BaseFragment(), View.OnClickListen
             }
 
             patientDetailViewModel.patientDetailsLiveData.value?.data?.let {
-                mentalHealthCard.apply {
-                    val hasPHQ9: Boolean = it.mentalHealthLevels?.contains(Screening.PHQ9) == true
-                    val hasGAD7: Boolean = it.mentalHealthLevels?.contains(Screening.GAD7) == true
-                    root.setVisible(hasPHQ9 || hasGAD7)
-                    if (root.isVisible()) {
-                        clPHQ9.setVisible(hasPHQ9)
-                        clGAD7.setVisible(hasGAD7)
-                        if (it.phq9Score.isNullOrBlank()) {
-                            phq9Value.text = getString(R.string.hyphen_symbol)
-                            tvAssessmentPHQ9.text = getString(R.string.start_assessment)
-                        } else {
-                            phq9Value.text = it.phq9Score.textOrHyphen()
-                            tvAssessmentPHQ9.text = getString(R.string.edit_assessment)
-                        }
-                        if (it.gad7Score.isNullOrBlank()) {
-                            gad7Value.text = getString(R.string.hyphen_symbol)
-                            tvAssessmentGAD7.text = getString(R.string.start_assessment)
-                        } else {
-                            gad7Value.text = it.gad7Score.textOrHyphen()
-                            tvAssessmentGAD7.text = getString(R.string.edit_assessment)
+                if (isMentalHealth()) {
+                    mentalHealthCard.apply {
+                        val hasPHQ9: Boolean =
+                            it.mentalHealthLevels?.contains(Screening.PHQ9) == true
+                        val hasGAD7: Boolean =
+                            it.mentalHealthLevels?.contains(Screening.GAD7) == true
+                        root.setVisible(hasPHQ9 || hasGAD7)
+                        if (root.isVisible()) {
+                            clPHQ9.setVisible(hasPHQ9)
+                            clGAD7.setVisible(hasGAD7)
+                            if (it.phq9Score.isNullOrBlank()) {
+                                phq9Value.text = getString(R.string.hyphen_symbol)
+                                tvAssessmentPHQ9.text = getString(R.string.start_assessment)
+                            } else {
+                                phq9Value.text = it.phq9Score.textOrHyphen()
+                                tvAssessmentPHQ9.text = getString(R.string.edit_assessment)
+                            }
+                            if (it.gad7Score.isNullOrBlank()) {
+                                gad7Value.text = getString(R.string.hyphen_symbol)
+                                tvAssessmentGAD7.text = getString(R.string.start_assessment)
+                            } else {
+                                gad7Value.text = it.gad7Score.textOrHyphen()
+                                tvAssessmentGAD7.text = getString(R.string.edit_assessment)
+                            }
                         }
                     }
                 }
@@ -294,6 +300,10 @@ class NCDMedicalReviewDiagnosisCardFragment : BaseFragment(), View.OnClickListen
         return getMenu().equals(DefinedParams.PregnancyANC, true) && getIsFemale()
     }
 
+    private fun isMentalHealth(): Boolean {
+        return getMenu().equals(NCDMRUtil.mentalHealth, true)
+    }
+
     override fun onClick(v: View?) {
         when (v) {
             binding.diagnosisCard.tvDiagnosisConfirm -> {
@@ -325,27 +335,26 @@ class NCDMedicalReviewDiagnosisCardFragment : BaseFragment(), View.OnClickListen
                     patientDetailViewModel.getPatientFHIRId()?.let { id ->
                         val dialog = childFragmentManager.findFragmentByTag(NCDPregnancyDialog.TAG)
                         if (dialog == null) {
-                            val ncdPregnancyDialog =
-                                NCDPregnancyDialog.newInstance(
-                                    patientDetailViewModel.getPatientId(),
-                                    patientId = id,
-                                    patientDetailViewModel.getGenderIsFemale(),
-                                    patientDetailViewModel.isPregnant(),
-                                    showNCD = !initialReviewed || !hasNCD
-                                ) { isPositiveResult, message ->
-                                    if (isPositiveResult) {
-                                        showSuccessDialogue(
-                                            title = getString(R.string.pregnancy_details),
-                                            message = message,
-                                        )
-                                        (requireActivity() as? NCDMedicalReviewActivity)?.swipeRefresh()
-                                    } else showErrorDialog(
-                                        title = getString(R.string.error),
-                                        message = message
+                            NCDPregnancyDialog.newInstance(
+                                patientDetailViewModel.getPatientId(),
+                                patientId = id,
+                                patientDetailViewModel.getGenderIsFemale(),
+                                patientDetailViewModel.isPregnant(),
+                                showNCD = !initialReviewed || !hasNCD
+                            ) { isPositiveResult, message ->
+                                if (isPositiveResult) {
+                                    showSuccessDialogue(
+                                        title = getString(R.string.pregnancy_details),
+                                        message = message,
                                     )
-                                }.apply {
-                                    listener = this@NCDMedicalReviewDiagnosisCardFragment
-                                }.show(childFragmentManager, NCDPregnancyDialog.TAG)
+                                    (requireActivity() as? NCDMedicalReviewActivity)?.swipeRefresh()
+                                } else showErrorDialog(
+                                    title = getString(R.string.error),
+                                    message = message
+                                )
+                            }.apply {
+                                listener = this@NCDMedicalReviewDiagnosisCardFragment
+                            }.show(childFragmentManager, NCDPregnancyDialog.TAG)
                         }
                     }
                 })
@@ -464,9 +473,7 @@ class NCDMedicalReviewDiagnosisCardFragment : BaseFragment(), View.OnClickListen
     }
 
     override fun closePage() {
-        /*
-      Never used
-       */
+        (childFragmentManager.findFragmentByTag(NCDPregnancyDialog.TAG) as? NCDPregnancyDialog)?.dismiss()
     }
 
     private fun getDiagonsis() {

@@ -35,7 +35,12 @@ class NCDLifestyleActivity : BaseActivity(), View.OnClickListener, CounselingInt
         onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
         binding = ActivityNcdLifestyleBinding.inflate(layoutInflater)
         setMainContentView(
-            binding.root, isToolbarVisible = true, title = getString(R.string.lifestyle_management)
+            binding.root,
+            isToolbarVisible = true,
+            title = getString(R.string.lifestyle_management),
+            callback = {
+                backHandelFlow()
+            }
         )
         saveIntentValues()
         initializeView()
@@ -197,14 +202,19 @@ class NCDLifestyleActivity : BaseActivity(), View.OnClickListener, CounselingInt
     }
 
     private fun backHandelFlow() {
-        if (viewModel.lifestyles.isNullOrEmpty()) finish()
+        if (viewModel.lifestyles.isNullOrEmpty()) closePage()
         else showErrorDialogue(
             getString(R.string.alert),
             getString(R.string.exit_reason_message),
             isNegativeButtonNeed = true
         ) {
-            if (it) finish()
+            if (it) closePage()
         }
+    }
+
+    private fun closePage() {
+        setResult(RESULT_OK, intent)
+        finish()
     }
 
     private fun showRecyclerView() {

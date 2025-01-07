@@ -34,7 +34,10 @@ class NCDCounselingActivity : BaseActivity(), View.OnClickListener, CounselingIn
         setMainContentView(
             binding.root,
             isToolbarVisible = true,
-            title = getString(R.string.psychological_assessment)
+            title = getString(R.string.psychological_assessment),
+            callback = {
+                backHandelFlow()
+            }
         )
         saveIntentValues()
         initializeView()
@@ -169,15 +172,20 @@ class NCDCounselingActivity : BaseActivity(), View.OnClickListener, CounselingIn
     }
 
     private fun backHandelFlow() {
-        if (viewModel.clinicianNotes.isNullOrEmpty()) finish()
+        if (viewModel.clinicianNotes.isNullOrEmpty()) closePage()
         else
             showErrorDialogue(
                 getString(R.string.alert),
                 getString(R.string.exit_reason_message),
                 isNegativeButtonNeed = true
             ) {
-                if (it) finish()
+                if (it) closePage()
             }
+    }
+
+    private fun closePage() {
+        setResult(RESULT_OK, intent)
+        finish()
     }
 
     private fun showRecyclerView() {

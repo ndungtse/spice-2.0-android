@@ -18,6 +18,8 @@ import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.hideKeyboard
 import com.medtroniclabs.spice.appextensions.invisible
+import com.medtroniclabs.spice.appextensions.loadAsGif
+import com.medtroniclabs.spice.appextensions.resetImageView
 import com.medtroniclabs.spice.appextensions.setVisible
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
@@ -240,7 +242,6 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
         }
     }
     private fun initViews() {
-        binding.llSortFilter.root.setVisible(!CommonUtils.isTiberbuUser())
         patientListViewModel.origin = arguments?.getString(DefinedParams.ORIGIN)
         binding.bottomCardView.gone()
         binding.llSortFilter.btnFilter.text = getString(R.string.filters)
@@ -314,8 +315,8 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
         }
         patientsListAdapter.addLoadStateListener {
             val isLoading = it.refresh is LoadState.Loading
-            if (isLoading) binding.loadingProgress.visible()
-            else binding.loadingProgress.gone()
+            if (isLoading) showLoading()
+            else hideLoading()
             if (it.append is LoadState.Loading) {
                 binding.pageProgress.visible()
             } else {
@@ -459,5 +460,19 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
         withNetworkAvailability(online = {
             getPatientList()
         })
+    }
+
+    private fun showLoading() {
+        binding.loadingProgress.visible()
+        binding.loaderImage.apply {
+            loadAsGif(R.drawable.loader_spice)
+        }
+    }
+
+    private fun hideLoading() {
+        binding.loadingProgress.gone()
+        binding.loaderImage.apply {
+            resetImageView()
+        }
     }
 }

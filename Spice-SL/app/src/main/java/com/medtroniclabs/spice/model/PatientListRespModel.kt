@@ -1,9 +1,7 @@
 package com.medtroniclabs.spice.model
 
 import com.google.gson.annotations.SerializedName
-import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.data.history.DiseaseInfo
-import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.ncd.data.NCDDiagnosisGetResponse
 import java.io.Serializable
 
@@ -39,7 +37,6 @@ data class PatientListRespModel(
     val houseHoldNumber: Long? = null,
     val dateOfOnset:String? = null,
     var isPregnant: Boolean? = null,
-    var isDangerSymptom: Boolean? = null,
     var isPregnancyRisk: Boolean? = null,
     var riskPatient: Boolean = false,
     @SerializedName("redRiskPatient")
@@ -106,6 +103,7 @@ data class PregnancyDetails(
     val villageId: String? = null,
     val dateOfDelivery:String?=null,
     val isPregnancyRisk: Boolean? = null,
+    var isDangerSymptoms: Boolean? = null,
     val neonatalOutcomes:String? = null
 ) : Serializable
 data class SearchAndListResponse(

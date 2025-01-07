@@ -19,7 +19,6 @@ import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.ORIGIN
 import com.medtroniclabs.spice.common.GeneralErrorDialog
 import com.medtroniclabs.spice.common.SecuredPreference
-import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.databinding.ActivityNcdmedicalReviewCmractivityBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.extension.safePopupMenuClickListener
@@ -483,7 +482,7 @@ class NCDMedicalReviewCMRActivity : BaseActivity(), View.OnClickListener, AncVis
         bundle.putString(NCDMRUtil.MEMBER_REFERENCE, patientDetailViewModel.getPatientFHIRId())
         bundle.putString(NCDMRUtil.VISIT_ID, getEncounterReference())
         intent.putExtras(bundle)
-        startActivity(intent)
+        getResult.launch(intent)
     }
 
     private fun getMenuOrigin(): String? {
@@ -572,8 +571,8 @@ class NCDMedicalReviewCMRActivity : BaseActivity(), View.OnClickListener, AncVis
             return SecuredPreference.isAncEnabled() &&
                     it.gender.equals(Screening.Female, true) &&
                     it.isPregnant == true &&
-                    it.isDangerSymptom == true &&
-                    CommonUtils.gestationalWeekLimitCheck(it.pregnancyDetails?.lastMenstrualPeriod)
+                    it.pregnancyDetails?.isDangerSymptoms == true &&
+                    CommonUtils.gestationalWeekLimitCheck(it.pregnancyDetails.lastMenstrualPeriod)
         }
         return false
     }

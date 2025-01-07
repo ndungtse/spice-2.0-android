@@ -18,7 +18,6 @@ import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
-import com.medtroniclabs.spice.common.DefinedParams.MemberID
 import com.medtroniclabs.spice.common.DefinedParams.ORIGIN
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
@@ -817,7 +816,7 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
         bundle.putString(NCDMRUtil.MEMBER_REFERENCE, patientDetailViewModel.getPatientFHIRId())
         bundle.putString(NCDMRUtil.VISIT_ID, getEncounterReference())
         intent.putExtras(bundle)
-        startActivity(intent)
+        getResult.launch(intent)
     }
 
     private val getResult =
@@ -844,7 +843,7 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
                 identityValue = patientDetailViewModel.getIdentityValue(),
                 memberReference = patientDetailViewModel.getPatientFHIRId(),
                 patientReference = patientDetailViewModel.getPatientId(),
-                encounterReference = getEncounterReference(),
+                encounterReference = medicalReviewReference(),
                 patientVisitId = getEncounterReference(),
                 diagnosisType = getConfirmDiagnoses(getMenuId()),
                 nextMedicalReviewDate = DateUtils.convertDateTimeToDate(
@@ -858,6 +857,10 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
             )
             summaryViewModel.createNCDMRSummaryCreate(request)
         })
+    }
+
+    private fun medicalReviewReference(): String? {
+        return viewModel.createMedicalReview.value?.data?.encounterReference
     }
 
     private fun handleValidation(): Boolean {
@@ -1346,8 +1349,8 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
             return SecuredPreference.isAncEnabled() &&
                     it.gender.equals(Screening.Female, true) &&
                     it.isPregnant == true &&
-                    it.isDangerSymptom == true &&
-                    CommonUtils.gestationalWeekLimitCheck(it.pregnancyDetails?.lastMenstrualPeriod)
+                    it.pregnancyDetails?.isDangerSymptoms == true &&
+                    CommonUtils.gestationalWeekLimitCheck(it.pregnancyDetails.lastMenstrualPeriod)
         }
         return false
     }

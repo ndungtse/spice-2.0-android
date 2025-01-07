@@ -241,7 +241,7 @@ class NCDPharmacistActivity : BaseActivity(), View.OnClickListener {
     private fun validateCountDifference() {
         viewModel.prescriptionDispenseLiveData.value?.data?.let { list ->
             val differedQuantityList =
-                list.filter { it.prescriptionFilledDays.numberOrZero() < it.prescriptionRemainingDays.numberOrZero() }
+                list.filter { it.prescriptionFilledDays.numberOrZero() < it.dispenseRemainingDays.numberOrZero() }
             if (differedQuantityList.isNotEmpty()) {
                 NCDQuantityDifferenceDialogueFragment.newInstance()
                     .show(supportFragmentManager, NCDQuantityDifferenceDialogueFragment.TAG)

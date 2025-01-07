@@ -1683,6 +1683,9 @@ object CommonUtils {
     }
 
     fun canShowSort(origin: String?): Boolean {
+        if(isTiberbuUser())
+            return false
+
         val isFromMyPatients: Boolean =
             origin?.equals(MenuConstants.MY_PATIENTS_MENU_ID, true) ?: false
 
@@ -1698,6 +1701,9 @@ object CommonUtils {
     }
 
     fun canShowFilter(origin: String?): Boolean {
+        if (isTiberbuUser())
+            return false
+
         val isFromInvestigation: Boolean =
             origin?.equals(MenuConstants.INVESTIGATION, true) ?: false
         val isFromDispense: Boolean = origin?.equals(MenuConstants.DISPENSE, true) ?: false

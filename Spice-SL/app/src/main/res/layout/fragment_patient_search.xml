@@ -57,7 +57,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/_10sdp"
                 android:layout_marginEnd="@dimen/_16sdp"
-                android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/view" />
 
@@ -167,8 +166,8 @@
 
     <RelativeLayout
         android:id="@+id/loadingProgress"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_width="@dimen/_0dp"
+        android:layout_height="@dimen/_0dp"
         android:background="@color/loading_transparent_variant"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -176,19 +175,18 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <com.airbnb.lottie.LottieAnimationView
-            android:id="@+id/spin_kit"
+        <ImageView
+            android:id="@+id/loaderImage"
             android:layout_width="@dimen/_75sdp"
             android:layout_height="@dimen/_75sdp"
             android:layout_centerInParent="true"
             android:layout_gravity="center"
+            android:contentDescription="@string/loading"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:lottie_autoPlay="true"
-            app:lottie_loop="true"
-            app:lottie_rawRes="@raw/loader_spice" />
+            app:layout_constraintTop_toTopOf="parent" />
+
     </RelativeLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

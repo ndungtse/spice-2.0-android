@@ -57,7 +57,6 @@ class NCDCounselorActivity : BaseActivity(), View.OnClickListener {
         setClickListener()
 
         getPatientDetails()
-        getCounselingList()
     }
 
     private val onBackPressedCallback: OnBackPressedCallback =
@@ -108,8 +107,8 @@ class NCDCounselorActivity : BaseActivity(), View.OnClickListener {
                         showSuccessDialogue(
                             title = getString(R.string.psychological_assessment),
                             message = message
-                        ) { finish() }
-                    } ?: run { finish() }
+                        ) { refreshPage() }
+                    } ?: run { refreshPage() }
                 }
 
                 ResourceState.ERROR -> {
@@ -158,6 +157,10 @@ class NCDCounselorActivity : BaseActivity(), View.OnClickListener {
         }
     }
 
+    private fun refreshPage() {
+        getCounselingList()
+    }
+
     private fun loadPatientInfo(data: PatientListRespModel) {
         binding.apply {
             tvProgramId.text = data.programId.textOrHyphen()
@@ -203,6 +206,8 @@ class NCDCounselorActivity : BaseActivity(), View.OnClickListener {
             )
         }
         viewModel.patientReference = data.patientId
+
+        getCounselingList()
     }
 
 
@@ -231,6 +236,7 @@ class NCDCounselorActivity : BaseActivity(), View.OnClickListener {
     }
 
     private fun loadCounselingList() {
+        binding.btnDone.isEnabled = false
         val counselingList = viewModel.assessmentListLiveData.value?.data?.entityList
         if (counselingList.isNullOrEmpty()) {
             counseling(false)
@@ -269,7 +275,7 @@ class NCDCounselorActivity : BaseActivity(), View.OnClickListener {
     private val validation = object : ValidationListener {
         override fun validate() {
             binding.btnDone.isEnabled =
-                viewModel.assessmentListLiveData.value?.data?.entityList?.firstOrNull { !it.counselorAssessment.isNullOrBlank() } != null
+                viewModel.assessmentListLiveData.value?.data?.entityList?.firstOrNull { it.assessedBy.isNullOrBlank() && !it.counselorAssessment.isNullOrBlank() } != null
         }
     }
 
