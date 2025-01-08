@@ -44,6 +44,7 @@ import com.medtroniclabs.spice.formgeneration.FormGenerator
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.Month
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.Week
+import com.medtroniclabs.spice.formgeneration.config.DefinedParams.titleSuffix
 import com.medtroniclabs.spice.formgeneration.listener.FormEventListener
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.model.FormResponse
@@ -57,6 +58,8 @@ import com.medtroniclabs.spice.mappingkey.MemberRegistration.dateOfBirth
 import com.medtroniclabs.spice.mappingkey.MemberRegistration.gender
 import com.medtroniclabs.spice.mappingkey.MemberRegistration.householdHeadRelationship
 import com.medtroniclabs.spice.mappingkey.MemberRegistration.isPregnant
+import com.medtroniclabs.spice.mappingkey.MemberRegistration.isValidMinAge
+import com.medtroniclabs.spice.mappingkey.MemberRegistration.isValidRelationAge
 import com.medtroniclabs.spice.mappingkey.MemberRegistration.name
 import com.medtroniclabs.spice.mappingkey.MemberRegistration.otherFamilyMember
 import com.medtroniclabs.spice.mappingkey.MemberRegistration.phoneNumber
@@ -76,9 +79,7 @@ import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewDefinedParams
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 import java.time.LocalDate
-import java.time.Period
 import java.time.format.DateTimeFormatter
-import kotlin.math.abs
 
 @AndroidEntryPoint
 class MemberRegistrationFragment : BaseFragment(), FormEventListener, View.OnClickListener {
@@ -309,6 +310,14 @@ class MemberRegistrationFragment : BaseFragment(), FormEventListener, View.OnCli
             formGenerator.setValueForView(details.name, view)
         }
 
+        val title = if (details.householdHeadRelationship.isEmpty() ||
+            !details.householdHeadRelationship.equals(HouseholdHead, true)) {
+            getString(R.string.relationship_to_household_head)
+        } else {
+            getString(R.string.relationship_to_household)
+        }
+        updateRelationShipSpinnerTitle(title)
+
         val canDisableHHRelation = !(arguments?.getBoolean(HouseholdDefinedParams.isPhuWalkInsFlow) == true || details.householdHeadRelationship.isEmpty())
 
         if (canDisableHHRelation) {
@@ -441,11 +450,21 @@ class MemberRegistrationFragment : BaseFragment(), FormEventListener, View.OnCli
         }
     }
 
+    private fun updateRelationShipSpinnerTitle(title: String) {
+        val spinnerTitle =
+            formGenerator.getViewByTag(DefinedParams.HouseholdHeadRelationship + titleSuffix)
+        spinnerTitle?.let {
+            val tvTitle = it as TextView
+            tvTitle.text = title
+        }
+    }
+
     private fun handleRelationshipSpinner() {
         val view =
             formGenerator.getViewByTag(DefinedParams.HouseholdHeadRelationship) as AppCompatSpinner
         householdRegistrationViewModel.householdEntityDetail?.let {
             if (it.id == 0L) {
+                updateRelationShipSpinnerTitle(getString(R.string.relationship_to_household))
                 val index =
                     (view.adapter as CustomSpinnerAdapter).getIndexOfItemById(HouseholdHead)
                 view.setSelection(index, true)
@@ -459,6 +478,7 @@ class MemberRegistrationFragment : BaseFragment(), FormEventListener, View.OnCli
             }
         } ?: kotlin.run {
             if (householdRegistrationViewModel.memberID == -1L) {
+                updateRelationShipSpinnerTitle(getString(R.string.relationship_to_household_head))
                 (view.adapter as CustomSpinnerAdapter).removeItemById(HouseholdHead)
             }
         }
@@ -546,7 +566,8 @@ class MemberRegistrationFragment : BaseFragment(), FormEventListener, View.OnCli
 
                 // Showing warning for only new member
                 if (householdRegistrationViewModel.isMemberRegistration) {
-                    isValidRelationAge(dob, relation)?.let { validAgeErrorMessage ->
+                    val headDob = memberRegistrationViewModel.householdHeadDobLiveData.value
+                    isValidRelationAge(requireContext(), dob, relation, headDob)?.let { validAgeErrorMessage ->
                         showInValidDob(validAgeErrorMessage)
                         return
                     }
@@ -573,7 +594,7 @@ class MemberRegistrationFragment : BaseFragment(), FormEventListener, View.OnCli
             val memberDOB =
                 LocalDate.parse(dob, DateTimeFormatter.ofPattern(DATE_FORMAT_yyyyMMddHHmmssZZZZZ))
             if (!isValidMinAge(memberDOB)) {
-                showInValidDob("The age of the Household Head must be greater than 10 years.")
+                showInValidDob(getString(R.string.age_validation_household_head))
                 return
             }
 
@@ -588,47 +609,6 @@ class MemberRegistrationFragment : BaseFragment(), FormEventListener, View.OnCli
                 )
             }
         }
-    }
-
-    private fun isValidRelationAge(dob: String, relation: String): String? {
-        // No Age Validation for Brother or Sister and Other relation
-        if (relation.equals(MemberRegistration.BrotherOrSister, true)
-            || relation.equals(MemberRegistration.OtherRelation, true)
-        ) {
-            return null
-        }
-
-        val memberDOB =
-            LocalDate.parse(dob, DateTimeFormatter.ofPattern(DATE_FORMAT_yyyyMMddHHmmssZZZZZ))
-        // Min Age validation for Wife or Husband
-        if (relation.equals(MemberRegistration.WifeOrHusband, true)) {
-            return if (isValidMinAge(memberDOB)) null else "The Wife or Husband must be at least 10 years old."
-        }
-
-        val headDob = memberRegistrationViewModel.householdHeadDobLiveData.value ?: return null
-        val headDOB = LocalDate.parse(headDob, DateTimeFormatter.ofPattern(DATE_FORMAT_yyyyMMddHHmmssZZZZZ))
-        val ageDifference = Period.between(headDOB, memberDOB).years
-
-        return when (relation) {
-            // Minimum +10 Age Difference for Son or Daughter
-            MemberRegistration.SonOrDaughter -> if (ageDifference >= 10) null else  "The Son or Daughter must be at least 10 years younger than the Household Head."
-
-            // Minimum -10 Age Difference for Father or Mother
-            MemberRegistration.FatherOrMother -> if (ageDifference <= -10) null else "The Father or Mother must be at least 10 years older than the Household Head."
-
-            // Minimum +30 Age Difference for Grandchild
-            MemberRegistration.Grandchild -> if (ageDifference >= 30) null else "A Grandchild must be at least 30 years younger than the Household Head."
-
-            // Minimum -30 Age Difference for Grandparent
-            MemberRegistration.Grandparent -> if (ageDifference <= -30) null else "A Grandparent must be at least 30 years older than the Household Head."
-            else -> null
-        }
-    }
-
-    private fun isValidMinAge(dateOfBirth: LocalDate): Boolean {
-        val today = LocalDate.now()
-        val age = Period.between(dateOfBirth, today).years
-        return age >= 10
     }
 
     override fun onRenderingComplete() {

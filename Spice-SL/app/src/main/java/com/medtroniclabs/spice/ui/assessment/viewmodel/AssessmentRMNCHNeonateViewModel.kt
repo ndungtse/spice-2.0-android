@@ -51,6 +51,19 @@ class AssessmentRMNCHNeonateViewModel @Inject constructor(
 
     var referralStatus: String? = null
 
+    val householdHeadDobLiveData = MutableLiveData<String?>()
+
+
+    fun getHouseholdHeadDob(householdId: Long?) {
+        if (householdId != null && householdId != -1L) {
+            viewModelScope.launch(dispatcherIO) {
+                householdHeadDobLiveData.postValue(householdMemberRepository.getHouseholdHeadDob(householdId))
+            }
+        } else {
+            householdHeadDobLiveData.postValue(null)
+        }
+    }
+
     private var lastLocation: Location? = null
 
 

@@ -40,6 +40,7 @@ object DefinedParams {
     const val Information= "information"
     const val HouseholdHeadRelationship = "household_head_relationship"
     const val Title = "Title"
+    const val titleSuffix = "titleTextView"
     const val AccordionGroup = "accordionGroup"
     const val ChipGroup = "chipGroup"
 }

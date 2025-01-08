@@ -1244,6 +1244,15 @@
     <string name="general_danger_sign">General Danger Sign</string>
     <string name="the_day_s_should_be_less_than_age">The day(s) should be less than Age</string>
 
+    <string name="relationship_to_household">Relationship to Household</string>
+    <string name="relationship_to_household_head">Relationship to Household Head</string>
+    <string name="age_validation_household_head">The age of the Household Head must be greater than 10 years.</string>
+    <string name="age_validation_wife_husband">The Wife or Husband must be at least 10 years old.</string>
+    <string name="age_validation_son_daughter">The Son or Daughter must be at least 10 years younger than the Household Head.</string>
+    <string name="age_validation_father_mother">The Father or Mother must be at least 10 years older than the Household Head.</string>
+    <string name="age_validation_grandchild">A Grandchild must be at least 30 years younger than the Household Head.</string>
+    <string name="age_validation_grandparent">A Grandparent must be at least 30 years older than the Household Head.</string>
+
     <string name="support_label" translatable="false">Please write your issues with the\napplication</string>
     <string name="support" translatable="false">Support</string>
     <string name="comment" translatable="false">Comment</string>

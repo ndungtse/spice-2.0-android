@@ -4,8 +4,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.appcompat.widget.AppCompatSpinner
 import androidx.fragment.app.activityViewModels
+import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.app.analytics.model.UserDetail
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.appextensions.gone
@@ -21,9 +23,11 @@ import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.utility.CheckBoxDialog
 import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
 import com.medtroniclabs.spice.mappingkey.MemberRegistration
+import com.medtroniclabs.spice.mappingkey.MemberRegistration.isValidRelationAge
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.assessment.AssessmentActivity
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentRMNCHNeonateViewModel
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
@@ -90,6 +94,8 @@ class AssessmentRMNCHNeonateFragment : BaseFragment(), View.OnClickListener,
         } ?: kotlin.run {
             binding.llChildForm.visible()
             binding.bioDataFragmentContainer.gone()
+            val householdId = viewModel.memberDetailsLiveData.value?.data?.householdLocalId
+            assessmentRMNCHNeonateViewModel.getHouseholdHeadDob(householdId)
             assessmentRMNCHNeonateViewModel.getFormData(
                 DefinedParams.HOUSEHOLD_MEMBER_REGISTRATION
             )
@@ -100,6 +106,9 @@ class AssessmentRMNCHNeonateFragment : BaseFragment(), View.OnClickListener,
 
 
     private fun attachObservers() {
+        assessmentRMNCHNeonateViewModel.householdHeadDobLiveData.observe(viewLifecycleOwner) {
+
+        }
 
         assessmentRMNCHNeonateViewModel.formLayoutsLiveData.observe(viewLifecycleOwner) { resourceState ->
             when (resourceState.state) {
@@ -164,6 +173,13 @@ class AssessmentRMNCHNeonateFragment : BaseFragment(), View.OnClickListener,
     }
 
     private fun removeHouseHoldHeadMemberRelationShip() {
+        val spinnerTitle =
+            childFormGenerator.getViewByTag(MemberRegistration.householdHeadRelationship + com.medtroniclabs.spice.formgeneration.config.DefinedParams.titleSuffix)
+        spinnerTitle?.let {
+            val tvTitle = it as TextView
+            tvTitle.text = getString(R.string.relationship_to_household_head)
+        }
+
          childFormGenerator.getViewByTag(MemberRegistration.householdHeadRelationship)?.let {view ->
              if (view is AppCompatSpinner){
                  val adapter = view.adapter
@@ -215,7 +231,19 @@ class AssessmentRMNCHNeonateFragment : BaseFragment(), View.OnClickListener,
     private fun handleSubmitFormWithClinicalDateCheck(v: View) {
         if (viewModel.memberClinicalLiveData.value?.clinicalDate == null) {
             if (childFormGenerator.formSubmitAction(v)) {
-                formGenerator.formSubmitAction(v)
+                val map = childFormGenerator.getResultMap()
+                if (map.containsKey(MemberRegistration.dateOfBirth) &&
+                    map.containsKey(MemberRegistration.householdHeadRelationship)) {
+                    val dob = map[MemberRegistration.dateOfBirth] as String
+                    val relation = map[MemberRegistration.householdHeadRelationship] as String
+                    val headDob = assessmentRMNCHNeonateViewModel.householdHeadDobLiveData.value
+                    isValidRelationAge(requireContext(), dob, relation, headDob)?.let { validAgeErrorMessage ->
+                        showInValidDob(validAgeErrorMessage)
+                        return
+                    }
+
+                    formGenerator.formSubmitAction(v)
+                }
             }
         } else {
             formGenerator.formSubmitAction(v)
@@ -246,6 +274,22 @@ class AssessmentRMNCHNeonateFragment : BaseFragment(), View.OnClickListener,
         description: String?,
         dosageListModel: ArrayList<RecommendedDosageListModel>?
     ) {
+    }
+
+
+
+
+    private fun showInValidDob(message: String) {
+        childFormGenerator.getViewByTag(AssessmentDefinedParams.DateOfBirth + AssessmentDefinedParams.errorSuffix)?.apply {
+            visibility = View.VISIBLE
+            childFormGenerator.scrollView?.let { scrollView ->
+                childFormGenerator.scrollToView(scrollView, this)
+            }
+        }.takeIf { it is TextView }?.let { textView->(textView as TextView).text=
+            message
+        }
+
+
     }
 
     override fun onFormSubmit(resultMap: HashMap<String, Any>?, serverData: List<FormLayout?>?) {

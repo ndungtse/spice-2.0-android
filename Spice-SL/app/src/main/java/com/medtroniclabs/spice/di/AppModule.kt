@@ -151,7 +151,7 @@ object AppModule {
     fun provideBaseUrl(): String {
         //return BaseUrlProvider.dynamicURL()
         return BuildConfig.API_BASE_URL
-        //return "http://192.168.22.53/"
+        //return "http://192.168.21.27/"
     }
 
     @Singleton
