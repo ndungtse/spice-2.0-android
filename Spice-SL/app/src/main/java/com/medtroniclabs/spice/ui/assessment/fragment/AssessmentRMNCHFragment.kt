@@ -579,16 +579,13 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
             }
 
             DeathOfMother -> {
-                if (selectedId == false && (viewModel.memberClinicalLiveData.value?.visitCount
-                        ?: 0) >= 1
-                ) {
-                    formGenerator.getViewByTag(RMNCH.lastMenstrualPeriod + formGenerator.rootSuffix)
-                        ?.gone()
-                }else{
-                    formGenerator.getViewByTag(RMNCH.lastMenstrualPeriod + formGenerator.rootSuffix)
-                        ?.visible()
+                val visitCount = viewModel.memberClinicalLiveData.value?.visitCount ?: 0
+                val lmpView = formGenerator.getViewByTag(RMNCH.lastMenstrualPeriod + formGenerator.rootSuffix)
+                if (visitCount >= 1 && selectedId == false) {
+                    lmpView?.gone()
+                } else if (visitCount <= 1 && selectedId == false) {
+                    lmpView?.visible()
                 }
-
             }
         }
     }
