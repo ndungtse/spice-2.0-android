@@ -58,6 +58,7 @@ class GlucoseViewModel @Inject constructor(
             skip = 0
             memberId = patientId
             latestRequired = true
+            sortOrder = -1
         }
         viewModelScope.launch(dispatcherIO) {
             glucoseLogListResponseLiveData.postLoading()

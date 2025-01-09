@@ -11,8 +11,8 @@ data class BPBGListModel(
     var latestRequired: Boolean? = null,
     val latestBpLog: BPLogList?= null,
     val latestGlucoseLog: GlucoseLogList?= null,
-    val bpLogList: ArrayList<BPLogList>? = null,
-    val glucoseLogList: ArrayList<GlucoseLogList>? = null,
+    var bpLogList: ArrayList<BPLogList>? = null,
+    var glucoseLogList: ArrayList<GlucoseLogList>? = null,
     var bpThreshold: BPThreshold? = null,
     var glucoseThreshold: List<GlucoseThreshold>? = null
 )

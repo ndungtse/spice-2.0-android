@@ -79,6 +79,8 @@
                 style="@style/TextStyle_Regular_16_Bold"
                 android:layout_width="@dimen/_0dp"
                 android:text="@string/seperator_hyphen"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintEnd_toEndOf="@id/endGuideline"
                 app:layout_constraintStart_toEndOf="@id/tvDiagnosisSeparator"
                 app:layout_constraintTop_toTopOf="@id/tvDiagnosisLabel" />
 

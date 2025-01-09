@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
@@ -180,11 +181,16 @@ class NCDMedicalReviewSummaryFragment : BaseFragment(),View.OnClickListener,
                 data.confirmDiagnosis?.diagnosisNotes.takeIf { it?.isNotBlank() == true },
                 getString(R.string.hyphen_symbol)
             )
+            val layoutParams = binding.tvDiagnosisText.layoutParams as ConstraintLayout.LayoutParams
             if (!data.confirmDiagnosis?.diagnosis.isNullOrEmpty()) {
+                layoutParams.width = 0 // Set width to 0dp (match_constraint)
                 binding.btnConfirmDiagnosis.gone()
             } else {
+                layoutParams.width = ViewGroup.LayoutParams.WRAP_CONTENT
                 binding.btnConfirmDiagnosis.visible()
             }
+            binding.tvDiagnosisText.layoutParams = layoutParams
+            binding.tvDiagnosisText.requestLayout()
             if (!data.prescriptions.isNullOrEmpty()) {
                 binding.btnMedicationPrescribed.gone()
             } else {

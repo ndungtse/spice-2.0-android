@@ -221,7 +221,7 @@ class NCDAssessmentHistoryFragment : BaseFragment(), View.OnClickListener {
                 memberId = memberId,
                 latestRequired = true,
                 limit = NCDMRUtil.PageLimit,
-                sortOrder = 1 //Asc
+                sortOrder = -1 //Asc
 //                sortField = if (isBP) NCDMRUtil.BPTakenOn else NCDMRUtil.BGTakenOn
             )
 
@@ -271,7 +271,14 @@ class NCDAssessmentHistoryFragment : BaseFragment(), View.OnClickListener {
         hideNoRecordView()
         val bundle = Bundle().apply {
             putString(NCDMRUtil.TAG, BP_TAG)
-            putString(NCDMRUtil.graphDetails, Gson().toJson(log))
+            putString(
+                NCDMRUtil.graphDetails,
+                Gson().toJson(log.apply {
+                    if (!bpLogList.isNullOrEmpty()) {
+                        bpLogList = ArrayList(bpLogList!!.reversed())
+                    }
+                }
+                ))
         }
         binding.tvLineOne.text = getString(R.string.systolic)
         binding.tvLineTwo.text = getString(R.string.diastolic)
@@ -312,7 +319,11 @@ class NCDAssessmentHistoryFragment : BaseFragment(), View.OnClickListener {
             hideNoRecordView()
             val bundle = Bundle().apply {
                 putString(NCDMRUtil.TAG, NCDMRUtil.BG_TAG)
-                putString(NCDMRUtil.graphDetails, Gson().toJson(log))
+                putString(NCDMRUtil.graphDetails, Gson().toJson(log.apply {
+                    if (!glucoseLogList.isNullOrEmpty()) {
+                        glucoseLogList = ArrayList(glucoseLogList!!.reversed())
+                    }
+                }))
             }
             binding.tvLineOne.text = RBS
             binding.tvLineTwo.text = FBS
