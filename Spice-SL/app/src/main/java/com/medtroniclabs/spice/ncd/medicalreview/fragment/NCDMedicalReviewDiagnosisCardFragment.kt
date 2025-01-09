@@ -451,7 +451,7 @@ class NCDMedicalReviewDiagnosisCardFragment : BaseFragment(), View.OnClickListen
         // call the get method
         if (isConfirmed) {
             withNetworkAvailability(online = {
-                getDiagonsis()
+                (requireActivity() as? NCDMedicalReviewActivity)?.swipeRefresh()
             })
         } else {
             //patient status for NCD

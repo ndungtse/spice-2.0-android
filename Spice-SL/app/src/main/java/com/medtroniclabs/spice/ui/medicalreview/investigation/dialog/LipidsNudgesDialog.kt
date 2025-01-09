@@ -46,6 +46,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
+import com.google.gson.Gson
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
@@ -151,7 +152,10 @@ class LipidsNudgesDialog : DialogFragment() {
             modifier = Modifier.padding(10.dp)
         )
         if ((list?.size ?: 0) > 0) {
-            GenerateLipidsTable(list)
+            val data = list?.map {
+                Gson().fromJson(Gson().toJson(it), HBA1CModel::class.java)
+            } ?: emptyList()
+            GenerateLipidsTable(ArrayList(data))
         } else {
             Text(
                 getString(R.string.no_data_found),

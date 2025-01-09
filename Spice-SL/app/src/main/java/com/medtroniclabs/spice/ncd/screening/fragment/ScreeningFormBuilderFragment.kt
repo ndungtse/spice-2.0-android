@@ -55,7 +55,6 @@ import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.HIV
 import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDFormViewModel
 import com.medtroniclabs.spice.ncd.screening.ui.DuplicationNudgeDialog
 import com.medtroniclabs.spice.ncd.screening.ui.ScreeningActivity
-import com.medtroniclabs.spice.ncd.screening.utils.ReferredReason
 import com.medtroniclabs.spice.ncd.screening.viewmodel.GeneralDetailsViewModel
 import com.medtroniclabs.spice.ncd.screening.viewmodel.ScreeningFormBuilderViewModel
 import com.medtroniclabs.spice.network.resource.ResourceState

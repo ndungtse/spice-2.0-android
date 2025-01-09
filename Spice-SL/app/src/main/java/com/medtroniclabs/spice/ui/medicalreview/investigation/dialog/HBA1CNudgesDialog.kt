@@ -34,6 +34,8 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
+import com.google.gson.Gson
+import com.google.gson.internal.LinkedTreeMap
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.databinding.FragmentHba1cNudgesDialogBinding
@@ -123,7 +125,10 @@ class HBA1CNudgesDialog(val callback: (isClosed: Boolean) -> Unit) : DialogFragm
             textStyle = labelTextStyle,
             modifier = Modifier.padding(10.dp)
         )
-        val dataList = hba1cList?.get(NCDMRUtil.HbA1c) as? ArrayList<*>?
+        val rawList = hba1cList?.get(NCDMRUtil.HbA1c) as? ArrayList<LinkedTreeMap<String, Any>>
+        val dataList = rawList?.map {
+            Gson().fromJson(Gson().toJson(it), HBA1CModel::class.java)
+        }
         if (dataList.isNullOrEmpty()) {
             Text(
                 getString(R.string.no_data_found),
@@ -132,7 +137,7 @@ class HBA1CNudgesDialog(val callback: (isClosed: Boolean) -> Unit) : DialogFragm
                     .fillMaxWidth(1f),
                 textAlign = TextAlign.Center
             )
-        } else GenerateHbA1cTable(dataList)
+        } else GenerateHbA1cTable(ArrayList(dataList))
         GenerateDescription(
             Modifier
                 .fillMaxWidth()
@@ -196,7 +201,7 @@ class HBA1CNudgesDialog(val callback: (isClosed: Boolean) -> Unit) : DialogFragm
     }
 
     @Composable
-    fun GenerateHbA1cTable(hba1cList: ArrayList<*>) {
+    fun GenerateHbA1cTable(hba1cList: ArrayList<HBA1CModel>) {
         val column1Weight = .5f
         val column2Weight = .5f
         Column(
@@ -214,29 +219,26 @@ class HBA1CNudgesDialog(val callback: (isClosed: Boolean) -> Unit) : DialogFragm
             DialogComposeUtils.DividerWidget()
             repeat(hba1cList.size) { itemIndex ->
                 val item = hba1cList.get(itemIndex)
-                if (item != null && item is HBA1CModel) {
-                    if (item.labTestResults.size > 0) {
-                        repeat(item.labTestResults.size) { index ->
-                            item.labTestResults[index].let {
-                                AddResultRows(
-                                    item,
-                                    it,
-                                    column1Weight,
-                                    column2Weight
-                                )
-                                AddDivider(itemIndex, hba1cList.size)
-                            }
+                if (item.labTestResults.isNotEmpty()) {
+                    repeat(item.labTestResults.size) { index ->
+                        item.labTestResults[index].let {
+                            AddResultRows(
+                                item,
+                                it,
+                                column1Weight,
+                                column2Weight
+                            )
+                            AddDivider(itemIndex, hba1cList.size)
                         }
-                    } else {
-                        AddResultRows(
-                            item,
-                            null,
-                            column1Weight,
-                            column2Weight
-                        )
-                        AddDivider(itemIndex, hba1cList.size)
                     }
-
+                } else {
+                    AddResultRows(
+                        item,
+                        null,
+                        column1Weight,
+                        column2Weight
+                    )
+                    AddDivider(itemIndex, hba1cList.size)
                 }
             }
         }

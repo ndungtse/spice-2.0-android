@@ -225,18 +225,22 @@ class InvestigationActivity : BaseActivity(), AdapterView.OnItemClickListener,
         if (hasHbA1c)
             showHBA1CDialog()
         else if (hasLipidProfile || hasRenalFunctionTest)
-            showLipidsDialog(data)
+            showLipidsDialog()
     }
 
     private fun showHBA1CDialog() {
         HBA1CNudgesDialog.newInstance { isClosed ->
             if (isClosed) {
-                investigationViewModel.labTestPredictionLiveData.value?.data?.let { showLipidsDialog(it) }
+                investigationViewModel.labTestPredictionLiveData.value?.data?.let {data ->
+                    (data[NCDMRUtil.RenalFunctionTest] ?: data[NCDMRUtil.LipidProfile])?.let {
+                        showLipidsDialog()
+                    }
+                }
             }
         }.show(supportFragmentManager, HBA1CNudgesDialog.TAG)
     }
 
-    private fun showLipidsDialog(data: HashMap<String, Any>) {
+    private fun showLipidsDialog() {
         LipidsNudgesDialog.newInstance().show(supportFragmentManager, LipidsNudgesDialog.TAG)
     }
 

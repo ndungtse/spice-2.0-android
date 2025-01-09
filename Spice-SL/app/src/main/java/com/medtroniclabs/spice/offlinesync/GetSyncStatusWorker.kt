@@ -8,6 +8,7 @@ import androidx.work.WorkerParameters
 import com.google.gson.Gson
 import com.medtroniclabs.spice.appextensions.hideNotification
 import com.medtroniclabs.spice.appextensions.showNotification
+import com.medtroniclabs.spice.appextensions.startBackgroundOfflineSync
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.SecuredPreference
@@ -138,6 +139,9 @@ class GetSyncStatusWorker @AssistedInject constructor(
                     // Return success if both screening and assessment were successful
                     if (screeningSuccess && assessmentSuccess) {
                         context.hideNotification()
+                        if (CommonUtils.isChp()) {
+                            context.startBackgroundOfflineSync()
+                        }
                         return Result.success()
                     }
                 } catch (e: Exception) {

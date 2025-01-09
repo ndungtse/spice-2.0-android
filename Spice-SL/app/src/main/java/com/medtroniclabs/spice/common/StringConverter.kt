@@ -108,7 +108,7 @@ object StringConverter {
             in 1..2 -> context.getString(R.string.phq4_normal, score)
             in 3..5 -> context.getString(R.string.phq4_mild, score)
             in 6..8 -> context.getString(R.string.phq4_moderate, score)
-            in 9..12 -> context.getString(R.string.phq4_severe, score)
+            in 9..21 -> context.getString(R.string.phq4_severe, score)
             else -> score.toString()
         }
     }

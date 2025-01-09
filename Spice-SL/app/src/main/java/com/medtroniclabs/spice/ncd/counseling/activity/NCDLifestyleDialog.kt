@@ -100,6 +100,7 @@ class NCDLifestyleDialog(private val callback: (isPositiveResult: Boolean) -> Un
 
             etOtherNotes.addTextChangedListener {
                 viewModel.otherNote = it?.toString()
+                updateView()
             }
         }
 
@@ -115,7 +116,7 @@ class NCDLifestyleDialog(private val callback: (isPositiveResult: Boolean) -> Un
     private fun updateView() {
         with(viewModel) {
             binding.btnSave.isEnabled =
-                !(lifestyles.isNullOrEmpty() || lifestyleAssessment.isNullOrBlank())
+                !(lifestyles.isNullOrEmpty() || lifestyleAssessment.isNullOrBlank() || otherNote.isNullOrBlank())
         }
     }
 
