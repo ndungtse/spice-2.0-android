@@ -23,7 +23,9 @@ data class Child(
     val phoneNumberCategory: String?,
     val householdId: String?,
     val isChild: Boolean,
-    val householdHeadRelationship: String?
+    val householdHeadRelationship: String?,
+    val latitude: Double? = 0.0,
+    val longitude: Double? = 0.0
 )
 
 data class LabourDTO(

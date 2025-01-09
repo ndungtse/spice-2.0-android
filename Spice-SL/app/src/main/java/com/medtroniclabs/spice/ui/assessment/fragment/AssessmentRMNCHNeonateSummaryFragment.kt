@@ -29,6 +29,7 @@ import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.assessment.AssessmentCommonUtils
+import com.medtroniclabs.spice.ui.assessment.AssessmentCommonUtils.addViewSummaryLayout
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
 import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
@@ -92,6 +93,11 @@ class AssessmentRMNCHNeonateSummaryFragment : BaseFragment(), View.OnClickListen
     private fun displayMotherAndNeonateSummary(it: String) {
         val map = stringToMap(it)
         if (map.containsKey(RMNCH.PNC)) {
+            bindRmnchSummaryView(
+                getString(R.string.patient_status),
+                getStatus(assessmentRMNCHNeonateViewModel.referralStatus) ?: getString(R.string.seperator_hyphen),
+                parentLayout=binding.motherParentLayout
+            )
             addDefaultSummaryView(map)
             showSummaryDetail(
                 map,
@@ -193,6 +199,7 @@ class AssessmentRMNCHNeonateSummaryFragment : BaseFragment(), View.OnClickListen
         parentLayout: LinearLayout,
         value: Resource<FormResponse>?
     ) {
+
         value?.data?.formLayout?.filter { it.family == pnc && it.isSummary == true }
             ?.filterNot { it.id in showQuestionBasedAge() }
             ?.forEach { formlayout ->
@@ -388,5 +395,27 @@ class AssessmentRMNCHNeonateSummaryFragment : BaseFragment(), View.OnClickListen
             questionList.add(AssessmentDefinedParams.ExclusivelyBreastfeeding)
         }
         return questionList
+    }
+    private fun bindRmnchSummaryView(title: String?, value: String?, valueTextColor: Int? = null, parentLayout: LinearLayout,) {
+        value?.let { result ->
+            parentLayout.addView(
+                addViewSummaryLayout(
+                    title,
+                    result,
+                    valueTextColor,
+                    requireContext()
+                )
+            )
+        }
+    }
+    fun getStatus(referralStatus: String?): String? {
+        return when (referralStatus) {
+            ReferralStatus.Referred.name -> getString(R.string.referred)
+            ReferralStatus.OnTreatment.name -> getString(R.string.on_treatment)
+            ReferralStatus.Recovered.name -> getString(R.string.recovered)
+            else -> {
+                null
+            }
+        }
     }
 }

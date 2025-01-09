@@ -31,6 +31,7 @@ import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapterCustom
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.assessment.AssessmentCommonUtils
+import com.medtroniclabs.spice.ui.assessment.AssessmentCommonUtils.addViewSummaryLayout
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.DEATH_OF_MOTHER_KEY
 import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
@@ -113,6 +114,10 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
         viewModel.assessmentStringLiveData.value?.let { mapString ->
             val map = StringConverter.stringToMap(mapString)
             binding.parentLayout.removeAllViews()
+            bindRmnchSummaryView(
+                getString(R.string.patient_status),
+                getStatus(viewModel.referralStatus) ?: getString(R.string.seperator_hyphen)
+            )
             conditionBasedRendering(map)
             addDefaultSummaryView(map)
             viewModel.formLayoutsLiveData.value?.data?.formLayout?.filter { it.isSummary == true }
@@ -445,5 +450,27 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
     }
     private fun getAllIdsExcludingDeathOfMother(formLayouts: FormLayout): String {
         return formLayouts.id  // Exclude "deathOfMother"
+    }
+    private fun bindRmnchSummaryView(title: String?, value: String?, valueTextColor: Int? = null) {
+        value?.let { result ->
+            binding.parentLayout.addView(
+                addViewSummaryLayout(
+                    title,
+                    result,
+                    valueTextColor,
+                    requireContext()
+                )
+            )
+        }
+    }
+    fun getStatus(referralStatus: String?): String? {
+        return when (referralStatus) {
+            ReferralStatus.Referred.name -> getString(R.string.referred)
+            ReferralStatus.OnTreatment.name -> getString(R.string.on_treatment)
+            ReferralStatus.Recovered.name -> getString(R.string.recovered)
+            else -> {
+                null
+            }
+        }
     }
 }

@@ -686,5 +686,4 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
                 visibility = View.GONE
             }
         }
-
 }

@@ -548,7 +548,7 @@ class MemberRegistrationFragment : BaseFragment(), FormEventListener, View.OnCli
             val week = map[Week] as? Int
             // Month and Week field validation
             if (month !in 0..11 || week !in 0..4) {
-                showInValidDob(getString(R.string.please_select_a_valid_value))
+                showInValidDob(getString(R.string.please_select_a_valid_value_month))
                 return
             }
 

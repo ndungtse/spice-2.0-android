@@ -366,7 +366,9 @@ class LabourDeliveryViewModel @Inject constructor(
             householdId = patientDetailModel?.houseHoldId,
             phoneNumber = patientDetailModel?.phoneNumber,
             householdHeadRelationship = patientDetailModel?.relationship,
-            phoneNumberCategory = patientDetailModel?.phoneNumberCategory
+            phoneNumberCategory = patientDetailModel?.phoneNumberCategory,
+            latitude = lastLocation?.latitude ?: 0.0,
+            longitude = lastLocation?.longitude ?: 0.0
         )
     }
 
