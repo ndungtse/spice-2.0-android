@@ -38,69 +38,74 @@
             app:dividerColor="@color/btn_disable_grey"
             app:layout_constraintTop_toBottomOf="@id/tvAddLifestyleLbl" />
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/clBody"
+        <ScrollView
             android:layout_width="match_parent"
             android:layout_height="@dimen/_0dp"
-            android:padding="@dimen/_15sdp"
             app:layout_constraintBottom_toTopOf="@id/divideBottom"
             app:layout_constraintTop_toBottomOf="@id/divideTop">
 
-            <com.google.android.material.chip.ChipGroup
-                android:id="@+id/chipGroup"
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toTopOf="parent" />
+                android:padding="@dimen/_15sdp">
 
-            <TextView
-                android:id="@+id/tvLifestyleAssessmentLbl"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_15sdp"
-                android:fontFamily="@font/inter_regular"
-                android:text="@string/lifestyle_assessment"
-                android:textColor="@color/charcoal_grey"
-                app:layout_constraintTop_toBottomOf="@+id/chipGroup" />
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/chipGroup"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-            <androidx.appcompat.widget.AppCompatEditText
-                android:id="@+id/etLifestyleAssessment"
-                style="@style/Form_Label_Style"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_5sdp"
-                android:background="@drawable/edittext_background"
-                android:fontFamily="@font/inter_regular"
-                android:paddingHorizontal="@dimen/_12sdp"
-                android:paddingVertical="@dimen/_10sdp"
-                android:textColor="@color/black"
-                app:layout_constraintTop_toBottomOf="@id/tvLifestyleAssessmentLbl" />
+                <TextView
+                    android:id="@+id/tvLifestyleAssessmentLbl"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_15sdp"
+                    android:fontFamily="@font/inter_regular"
+                    android:text="@string/lifestyle_assessment"
+                    android:textColor="@color/charcoal_grey"
+                    app:layout_constraintTop_toBottomOf="@+id/chipGroup" />
 
-            <TextView
-                android:id="@+id/tvOtherNotesLbl"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_15sdp"
-                android:fontFamily="@font/inter_regular"
-                android:text="@string/other_notes"
-                android:textColor="@color/charcoal_grey"
-                app:layout_constraintTop_toBottomOf="@+id/etLifestyleAssessment" />
+                <androidx.appcompat.widget.AppCompatEditText
+                    android:id="@+id/etLifestyleAssessment"
+                    style="@style/Form_Label_Style"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:background="@drawable/edittext_background"
+                    android:fontFamily="@font/inter_regular"
+                    android:paddingHorizontal="@dimen/_12sdp"
+                    android:paddingVertical="@dimen/_10sdp"
+                    android:textColor="@color/black"
+                    app:layout_constraintTop_toBottomOf="@id/tvLifestyleAssessmentLbl" />
 
-            <androidx.appcompat.widget.AppCompatEditText
-                android:id="@+id/etOtherNotes"
-                style="@style/Form_Label_Style"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_5sdp"
-                android:background="@drawable/edittext_background"
-                android:fontFamily="@font/inter_regular"
-                android:gravity="top"
-                android:minHeight="@dimen/_80sdp"
-                android:paddingHorizontal="@dimen/_12sdp"
-                android:paddingVertical="@dimen/_10sdp"
-                android:textColor="@color/black"
-                app:layout_constraintTop_toBottomOf="@id/tvOtherNotesLbl" />
+                <TextView
+                    android:id="@+id/tvOtherNotesLbl"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_15sdp"
+                    android:fontFamily="@font/inter_regular"
+                    android:text="@string/other_notes"
+                    android:textColor="@color/charcoal_grey"
+                    app:layout_constraintTop_toBottomOf="@+id/etLifestyleAssessment" />
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
+                <androidx.appcompat.widget.AppCompatEditText
+                    android:id="@+id/etOtherNotes"
+                    style="@style/Form_Label_Style"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:background="@drawable/edittext_background"
+                    android:fontFamily="@font/inter_regular"
+                    android:gravity="top"
+                    android:minHeight="@dimen/_80sdp"
+                    android:paddingHorizontal="@dimen/_12sdp"
+                    android:paddingVertical="@dimen/_10sdp"
+                    android:textColor="@color/black"
+                    app:layout_constraintTop_toBottomOf="@id/tvOtherNotesLbl" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </ScrollView>
 
         <com.google.android.material.divider.MaterialDivider
             android:id="@+id/divideBottom"

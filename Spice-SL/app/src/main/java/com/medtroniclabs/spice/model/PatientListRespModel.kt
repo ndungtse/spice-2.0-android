@@ -49,6 +49,7 @@ data class PatientListRespModel(
     val phoneNumberCategory:String? = null,
     val diagnosis: List<DiseaseInfo>? = null,
     val confirmDiagnosis: NCDDiagnosisGetResponse? = null,
+    val provisionalDiagnosis: ArrayList<String>? = null,
     val pregnancyStatus: String? = null,
     val isRegularSmoker: Boolean? = null,
     val initialReviewed: Boolean? = false,

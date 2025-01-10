@@ -34,6 +34,7 @@ import com.medtroniclabs.spice.ui.home.AssessmentToolsActivity
 import com.medtroniclabs.spice.ui.medicalreview.investigation.InvestigationActivity
 import com.medtroniclabs.spice.ncd.counseling.activity.NCDCounselingActivity
 import com.medtroniclabs.spice.ncd.counseling.activity.NCDLifestyleActivity
+import com.medtroniclabs.spice.ncd.counseling.activity.NCDLifestyleDialog
 import com.medtroniclabs.spice.ncd.medicalreview.fragment.NCDMedicalReviewHistoryFragment
 import com.medtroniclabs.spice.ncd.data.BadgeNotificationModel
 import com.medtroniclabs.spice.ncd.data.NCDPatientRemoveRequest
@@ -339,7 +340,10 @@ class NCDMedicalReviewCMRActivity : BaseActivity(), View.OnClickListener, AncVis
 
     private fun initView() {
         // FOR Nurse ,Visit id(is always null) for other role always have value
-        binding.btnLayout.root.setVisible(!getEncounterReference().isNullOrBlank())
+        if (CommonUtils.isNutritionist())
+            binding.btnMedicalReview.setImageDrawable(getDrawable(R.drawable.start_session))
+        else
+            binding.btnLayout.root.setVisible(!getEncounterReference().isNullOrBlank())
         binding.btnMedicalReview.setVisible(!getEncounterReference().isNullOrBlank())
         val isPsycho = CommonUtils.isPsychologicalFlowEnabled()
         binding.btnLayout.apply {
@@ -406,13 +410,24 @@ class NCDMedicalReviewCMRActivity : BaseActivity(), View.OnClickListener, AncVis
     override fun onClick(v: View?) {
         when (v?.id) {
             binding.btnMedicalReview.id -> {
-                val intent = Intent(this, AssessmentToolsActivity::class.java)
-                intent.putExtra(DefinedParams.FhirId, getFhirId())
-                intent.putExtra(DefinedParams.PatientId, getPatientId())
-                intent.putExtra(DefinedParams.ORIGIN, getOrigin())
-                intent.putExtra(DefinedParams.Gender, getGender())
-                intent.putExtra(EncounterReference, getEncounterReference())
-                startActivity(intent)
+                if (CommonUtils.isNutritionist()) {
+                    patientDetailViewModel.patientDetailsLiveData.value?.data?.let { data ->
+                        val ncdLifestyleDialog = NCDLifestyleDialog.newInstance(
+                            patientDetailViewModel.getPatientId(),
+                            patientDetailViewModel.getPatientFHIRId(),
+                            getEncounterReference()
+                        ) {}
+                        ncdLifestyleDialog.show(supportFragmentManager, NCDLifestyleDialog.TAG)
+                    }
+                } else {
+                    val intent = Intent(this, AssessmentToolsActivity::class.java)
+                    intent.putExtra(DefinedParams.FhirId, getFhirId())
+                    intent.putExtra(DefinedParams.PatientId, getPatientId())
+                    intent.putExtra(DefinedParams.ORIGIN, getOrigin())
+                    intent.putExtra(DefinedParams.Gender, getGender())
+                    intent.putExtra(EncounterReference, getEncounterReference())
+                    startActivity(intent)
+                }
             }
 
             binding.btnLayout.ivTreatmentPlan.id -> {

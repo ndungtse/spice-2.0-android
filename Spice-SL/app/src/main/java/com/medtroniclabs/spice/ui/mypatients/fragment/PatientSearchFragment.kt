@@ -208,7 +208,7 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
                             MenuConstants.DISPENSE.lowercase() -> NCDPharmacistActivity::class.java
                             MenuConstants.LIFESTYLE.lowercase() -> NCDNutritionistActivity::class.java
                             MenuConstants.PSYCHOLOGICAL.lowercase() -> NCDCounselorActivity::class.java
-                            MenuConstants.MY_PATIENTS_MENU_ID.lowercase() -> if (it.initialReviewed == true) NCDMedicalReviewCMRActivity::class.java else AssessmentToolsActivity::class.java
+                            MenuConstants.MY_PATIENTS_MENU_ID.lowercase() -> if (it.initialReviewed == true || CommonUtils.isNutritionist()) NCDMedicalReviewCMRActivity::class.java else AssessmentToolsActivity::class.java
                             else -> null
                         }
                         destinationIntent?.let { destIntent ->

@@ -100,7 +100,7 @@ class NCDMedicalReviewDiagnosisCardFragment : BaseFragment(), View.OnClickListen
                     resourceState.data?.let { data ->
                         val diag = data.diagnosis?.mapNotNull { it.name }
                             ?.let { convertListToString(ArrayList(it)) }
-                        binding.diagnosisCard.tvDiagnosis.text = diag ?: getString(R.string.hyphen_symbol)
+                        binding.diagnosisCard.tvDiagnosis.text = diag ?: getProvisionDiagnosis() ?: getString(R.string.hyphen_symbol)
                         binding.diagnosisCard.tvDiagnosisConfirm.text =
                             if (diag.isNullOrBlank())
                                 getString(R.string.confirm_diagnoses)
@@ -154,6 +154,14 @@ class NCDMedicalReviewDiagnosisCardFragment : BaseFragment(), View.OnClickListen
                 }
             }
         }
+    }
+
+    private fun getProvisionDiagnosis(): String? {
+        patientDetailViewModel.patientDetailsLiveData.value?.data?.provisionalDiagnosis?.let {
+            if (it.isNotEmpty())
+                return "${it.joinToString()} ${getString(R.string.provisional_text)}"
+        }
+        return null
     }
 
     private fun getInitialMr(): Boolean {

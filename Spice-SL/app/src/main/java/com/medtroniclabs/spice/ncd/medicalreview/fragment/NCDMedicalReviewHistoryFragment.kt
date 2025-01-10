@@ -382,7 +382,7 @@ class NCDMedicalReviewHistoryFragment : BaseFragment(), View.OnClickListener {
                 )
             ),
             mapOf(
-                DefinedParams.label to requireContext().getString(R.string.obstetric_examination),
+                DefinedParams.label to requireContext().getString(R.string.examination),
                 DefinedParams.Value to getPhysicalExamination(medicalReviewHistory.medicalReview?.physicalExams)
             )
         )

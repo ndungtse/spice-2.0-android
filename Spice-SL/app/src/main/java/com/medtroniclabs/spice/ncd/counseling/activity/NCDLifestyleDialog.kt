@@ -1,5 +1,6 @@
 package com.medtroniclabs.spice.ncd.counseling.activity
 
+import android.content.res.Configuration
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -11,6 +12,7 @@ import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.loadAsGif
 import com.medtroniclabs.spice.appextensions.resetImageView
 import com.medtroniclabs.spice.appextensions.setDialogPercent
+import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.data.model.ChipViewItemModel
 import com.medtroniclabs.spice.databinding.DialogNcdLifestyleBinding
@@ -184,7 +186,11 @@ class NCDLifestyleDialog(private val callback: (isPositiveResult: Boolean) -> Un
 
     override fun onStart() {
         super.onStart()
-        setDialogPercent(80, 60)
+        val isLandscape = resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+        if (isLandscape)
+            setDialogPercent(60, 90)
+        else
+            setDialogPercent(90, 60)
     }
 
     private fun showLoading() {
