@@ -33,6 +33,8 @@ object NCDFollowUpUtils {
     const val today = "today"
     const val tomorrow = "tomorrow"
     const val customise = "customize"
+    const val REASON_CONSTANT = "FOLLOW_UP"
+    const val medical_review = "medical review"
 
     fun getDaysString(it: Long): Int {
         return if (it == 1L) R.string.day_due else R.string.days_due

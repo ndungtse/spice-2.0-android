@@ -107,7 +107,8 @@ fun Context.triggerOneTimeWorker() {
     //Only work that is in a terminal state (SUCCEEDED, FAILED, or CANCELLED) and has no unfinished dependent work will be pruned.
     workManager.pruneWork()
     val constraints = Constraints.Builder()
-        .setRequiresBatteryNotLow(false)                // Requires battery to not be low
+        .setRequiresBatteryNotLow(false) // Requires battery to not be low
+        .setRequiredNetworkType(NetworkType.CONNECTED)
         .build()
     val workRequest = OneTimeWorkRequestBuilder<GetSyncStatusWorker>()
         .setConstraints(constraints)

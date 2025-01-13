@@ -1115,7 +1115,7 @@ class RoomHelperImpl @Inject constructor(
     @Transaction
     override suspend fun insertNCDCallDetails(followUp: NCDCallDetails): NCDCallDetails? {
         val id = ncdFollowUpDao.insertNCDCallDetails(followUp)
-        if (followUp.reason == "WRONG_NUMBER") {
+        if (followUp.reason == FollowUpDefinedParams.WRONG_NUMBER) {
             // Update isWrongNumber in NCDFollowUp
             ncdFollowUpDao.markAsWrongNumber(followUp.id)
         }

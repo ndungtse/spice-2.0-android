@@ -43,11 +43,13 @@ data class CallDetails(
     val duration: Double? = null,
     val status: String? = null,
     val reason: String? = null,
+    val otherReason: String? = null,
     val patientStatus: String? = null,
     val attempts: Long? = null,
     val latitude: String? = null,
     val longitude: String? = null,
-    val visitedFacilityId: String? = null
+    val visitedFacilityId: Long? = null,
+    val otherVisitedFacilityName: String? = null
 )
 
 data class FollowUpUpdateRequest(

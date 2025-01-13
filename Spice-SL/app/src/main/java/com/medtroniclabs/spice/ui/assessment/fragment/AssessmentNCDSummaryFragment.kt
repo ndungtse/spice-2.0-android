@@ -651,9 +651,7 @@ class AssessmentNCDSummaryFragment : BaseFragment(), View.OnClickListener {
     override fun onClick(v: View?) {
         when (v?.id) {
             binding.btnDone.id -> {
-                if (connectivityManager.isNetworkAvailable()) {
-                    requireContext().triggerOneTimeWorker()
-                }
+                requireContext().triggerOneTimeWorker()
                 (activity as? BaseActivity)?.startActivityWithoutSplashScreen()
             }
         }

@@ -5,6 +5,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
+import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -12,19 +14,26 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.convertToUtcDateTime
+import com.medtroniclabs.spice.appextensions.gone
+import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.CommonUtils.getOptionMap
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.SecuredPreference
+import com.medtroniclabs.spice.data.ShortageReasonEntity
+import com.medtroniclabs.spice.data.model.ChipViewItemModel
 import com.medtroniclabs.spice.data.offlinesync.model.FollowUpCallReason
 import com.medtroniclabs.spice.data.offlinesync.model.FollowUpCallStatus
 import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.databinding.FragmentNcdCallResultBottomDialogBinding
+import com.medtroniclabs.spice.db.entity.HealthFacilityEntity
 import com.medtroniclabs.spice.db.entity.NCDCallDetails
 import com.medtroniclabs.spice.db.entity.NCDFollowUp
+import com.medtroniclabs.spice.formgeneration.extension.markMandatory
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.ui.SingleSelectionCustomView
+import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
 import com.medtroniclabs.spice.ncd.data.CallDetails
 import com.medtroniclabs.spice.ncd.data.FollowUpUpdateRequest
 import com.medtroniclabs.spice.ncd.followup.NCDFollowUpUtils.visited_facility
@@ -32,6 +41,7 @@ import com.medtroniclabs.spice.ncd.followup.NCDFollowUpUtils.will_visit_facility
 import com.medtroniclabs.spice.ncd.followup.NCDFollowUpUtils.wont_visit_facility
 import com.medtroniclabs.spice.ncd.followup.viewmodel.NCDCallResultViewModel
 import com.medtroniclabs.spice.ncd.followup.viewmodel.NCDFollowUpViewModel
+import com.medtroniclabs.spice.ui.TagListCustomView
 import com.medtroniclabs.spice.ui.followup.fragment.CallResultDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -41,6 +51,9 @@ class NCDCallResultBottomDialog : BottomSheetDialogFragment(), View.OnClickListe
     private val viewModel: NCDFollowUpViewModel by activityViewModels()
     private val callResultViewModel: NCDCallResultViewModel by viewModels()
     var data: NCDFollowUp? = null
+    private lateinit var reasonListCustomView: TagListCustomView
+    val adapter by lazy { CustomSpinnerAdapter(requireContext()) }
+
     fun setFollowUpData(value: NCDFollowUp) {
         this.data = value
     }
@@ -73,6 +86,7 @@ class NCDCallResultBottomDialog : BottomSheetDialogFragment(), View.OnClickListe
         fun newInstance() =
             NCDCallResultBottomDialog().apply {
             }
+
         fun newInstance(data: NCDFollowUp) =
             NCDCallResultBottomDialog().apply {
                 setFollowUpData(data)
@@ -88,10 +102,54 @@ class NCDCallResultBottomDialog : BottomSheetDialogFragment(), View.OnClickListe
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        initializeTagView()
         initView()
+        viewModel.getFollowUpReasonList()
+        viewModel.getSites(true)
+        attachObservers()
+        setListeners()
+        binding.etOther.doAfterTextChanged {
+            enableForSuccessFul()
+        }
+    }
+
+    private fun attachObservers() {
         callResultViewModel.getAttempts.observe(viewLifecycleOwner) {
             data?.let { value ->
-                SecuredPreference.putBoolean(SecuredPreference.EnvironmentKey.INITIAL_CALL.name, false)
+                SecuredPreference.putBoolean(
+                    SecuredPreference.EnvironmentKey.INITIAL_CALL.name,
+                    false
+                )
+                val isSuccess = viewModel.callResultHashMap[DefinedParams.CallResult] == FollowUpCallStatus.SUCCESSFUL.name
+
+                    var otherReason: String? = null
+                    val reason = when {
+                        !isSuccess -> viewModel.unSuccessfulHashMap[DefinedParams.UnSuccessful] as? String
+                        (viewModel.patientStatusHashMap[DefinedParams.PatientStatus] as? String)
+                            ?.equals(wont_visit_facility, true) == true -> {
+                            val selectedTagName = reasonListCustomView.getSelectedTags().firstOrNull()?.name
+                            if (selectedTagName.equals(DefinedParams.Other, true)) {
+                                otherReason = binding.etOther.text?.trim().toString()
+                                DefinedParams.Other
+                            } else {
+                                selectedTagName
+                            }
+                        }
+                        else -> null
+                    }
+
+                    val patientStatus = viewModel.patientStatusHashMap[DefinedParams.PatientStatus] as? String
+                    val visitedFacilityId = if (patientStatus.equals(visited_facility, true)) {
+                        viewModel.selectedHealthFacilityId
+                    } else {
+                        null
+                    }
+
+                    val otherVisitedFacilityName = if (viewModel.selectedHealthFacilityName.equals(DefinedParams.Other, true)) {
+                        binding.etOther.text?.trim().toString()
+                    } else {
+                        null
+                    }
                 viewModel.insertNCDCallDetails(
                     NCDCallDetails(
                         id = value.id,
@@ -102,10 +160,12 @@ class NCDCallResultBottomDialog : BottomSheetDialogFragment(), View.OnClickListe
                         callDate = System.currentTimeMillis().convertToUtcDateTime(),
                         status = (viewModel.callResultHashMap[DefinedParams.CallResult] as? String)
                             ?: null,
-                        reason = (viewModel.unSuccessfulHashMap[DefinedParams.UnSuccessful] as? String)
-                            ?: null,
+                        reason = reason,
+                        otherReason = otherReason,
                         patientStatus = (viewModel.patientStatusHashMap[DefinedParams.PatientStatus] as? String)
                             ?: null,
+                        visitedFacilityId = visitedFacilityId,
+                        otherVisitedFacilityName = otherVisitedFacilityName,
                         type = viewModel.typeOffline,
                         attempts = it?.plus(1) ?: 1,
                         createdAt = System.currentTimeMillis(),
@@ -114,6 +174,18 @@ class NCDCallResultBottomDialog : BottomSheetDialogFragment(), View.OnClickListe
                         updatedBy = SecuredPreference.getUserId()
                     )
                 )
+            }
+        }
+        viewModel.getFollowUpReasonList.observe(viewLifecycleOwner) { list ->
+            list?.let {
+                if (list.isNotEmpty()) {
+                    loadDeleteReasonList(it)
+                }
+            }
+        }
+        viewModel.getSitesLiveData.observe(viewLifecycleOwner) {
+            if (it.isNotEmpty()) {
+                loadSiteDetails(ArrayList(it))
             }
         }
     }
@@ -136,12 +208,146 @@ class NCDCallResultBottomDialog : BottomSheetDialogFragment(), View.OnClickListe
         enableForSuccessFul()
         showPatientStatusForSuccess()
         binding.btnDone.safeClickListener(this)
+        binding.tvHealthFacilityTitle.markMandatory()
+    }
+
+    private fun setListeners() {
+        binding.tvHealthFacilitySpinner.onItemSelectedListener =
+            object : AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(
+                    adapterView: AdapterView<*>?, view: View?, pos: Int, itemId: Long
+                ) {
+                    adapter.getData(pos)?.let {
+                        val selectedItem = adapter.getData(position = pos)
+                        selectedItem?.let {
+                            val selectedId = (it[DefinedParams.ID] as? Long) ?: null
+                            val name = it[DefinedParams.NAME ] as String?
+                            if (selectedId != DefinedParams.DefaultSelectID) {
+                                viewModel.selectedHealthFacilityId = selectedId
+                            } else {
+                                viewModel.selectedHealthFacilityId = null
+                            }
+                            viewModel.selectedHealthFacilityName = name
+                            if (name.equals(DefinedParams.Other, true)) {
+                                binding.OtherGroup.visible()
+                                binding.etOther.setText("")
+                                binding.tvOtherError.gone()
+                                binding.tvOtherTitle.text =
+                                    getString(R.string.other_health_facility)
+                                binding.etOther.hint = getString(R.string.health_facility_name)
+                                binding.tvOtherTitle.markMandatory()
+                            } else {
+                                binding.OtherGroup.gone()
+                                binding.tvOtherError.gone()
+                            }
+                        }
+                        enableForSuccessFul()
+                    }
+                }
+
+                override fun onNothingSelected(parent: AdapterView<*>?) {}
+            }
+    }
+
+    private fun loadSiteDetails(data: ArrayList<HealthFacilityEntity>?) {
+        val list = arrayListOf<Map<String, Any>>(
+            hashMapOf(
+                DefinedParams.NAME to DefinedParams.DefaultIDLabel,
+                DefinedParams.ID to DefinedParams.DefaultSelectID
+            )
+        )
+        data?.map { site ->
+            hashMapOf(
+                DefinedParams.ID to site.id,
+                DefinedParams.NAME to site.name,
+                DefinedParams.TenantId to site.tenantId,
+                DefinedParams.FhirId to (site.fhirId ?: 0)
+            )
+        }?.let { list.addAll(it) }
+        list.add(hashMapOf(DefinedParams.NAME to DefinedParams.Other))
+        adapter.setData(list)
+        binding.tvHealthFacilitySpinner.post {
+            binding.tvHealthFacilitySpinner.setSelection(0, false)
+        }
+        binding.tvHealthFacilitySpinner.adapter = adapter
+    }
+
+    private fun initializeTagView() {
+        reasonListCustomView = TagListCustomView(
+            requireContext(),
+            binding.cgReason,
+            otherSingleSelect = true,
+            callBack = { name, _, _ ->
+                if (reasonListCustomView.getSelectedTags()
+                        .firstOrNull { it.name.equals(DefinedParams.Other, true) } != null
+                ) {
+                    binding.OtherGroup.visible()
+                    binding.etOther.setText("")
+                    binding.tvOtherError.gone()
+                    binding.tvOtherTitle.text = getString(R.string.other_reason)
+                    binding.etOther.hint = getString(R.string.other_reason)
+                    binding.tvOtherTitle.markMandatory()
+                } else {
+                    binding.OtherGroup.gone()
+                    binding.tvOtherError.gone()
+                }
+                enableForSuccessFul()
+            }
+        )
+    }
+
+    private fun loadDeleteReasonList(list: List<ShortageReasonEntity>) {
+        val chipItems = ArrayList<ChipViewItemModel>()
+        list.forEachIndexed { index, element ->
+            chipItems.add(
+                ChipViewItemModel(
+                    id = (index + 1).toLong(),
+                    value = element.type,
+                    name = element.name
+                )
+            )
+        }
+        reasonListCustomView.addChipItemList(chipItems, null, diagnosisGrouping(chipItems))
+    }
+
+    private fun diagnosisGrouping(list: List<ChipViewItemModel>?): HashMap<String, MutableList<ChipViewItemModel>>? {
+        return list?.groupByTo(HashMap(), { it.type.toString() }, { it })
     }
 
     private fun enableForSuccessFul() {
         val isCallResultEnabled = viewModel.callResultHashMap.isNotEmpty()
         val isReasonEnabled = viewModel.patientStatusHashMap.isNotEmpty()
-        binding.btnDone.isEnabled = isCallResultEnabled && isReasonEnabled
+
+        val patientStatus = viewModel.patientStatusHashMap[DefinedParams.PatientStatus] as? String
+        val isWontVisitFacility = patientStatus.equals(wont_visit_facility, true)
+        val isVisitFacility = patientStatus.equals(visited_facility, true)
+
+        val selectedTags = reasonListCustomView.getSelectedTags()
+        val hasOtherTag = selectedTags.any { it.name.equals(DefinedParams.Other, true) }
+        val isOtherReasonValid = hasOtherTag && !binding.etOther.text?.trim().isNullOrBlank()
+
+        val isWontVisitConditionValid = !isWontVisitFacility ||
+                (isWontVisitFacility && (selectedTags.isEmpty() || !hasOtherTag || isOtherReasonValid))
+
+        val isHealthFacilitySelected = viewModel.selectedHealthFacilityId != null &&
+                !viewModel.selectedHealthFacilityName.isNullOrBlank() && !viewModel.selectedHealthFacilityName.equals(DefinedParams.DefaultIDLabel,true)
+
+        val isOtherHealthFacility = viewModel.selectedHealthFacilityId == null &&
+                !viewModel.selectedHealthFacilityName.isNullOrBlank() && !viewModel.selectedHealthFacilityName.equals(DefinedParams.DefaultIDLabel,true)
+        val isOtherHealthFacilityValid =
+            viewModel.selectedHealthFacilityName.equals(DefinedParams.Other, true).not() ||
+                    (viewModel.selectedHealthFacilityName.equals(
+                        DefinedParams.Other,
+                        true
+                    ) && !binding.etOther.text?.trim().isNullOrBlank())
+
+        val isVisitFacilityConditionValid = !isVisitFacility ||
+                (isVisitFacility && ((isHealthFacilitySelected && !isOtherHealthFacility)  || (isOtherHealthFacility && isOtherHealthFacilityValid)))
+
+        binding.btnDone.isEnabled = isCallResultEnabled &&
+                isReasonEnabled &&
+                isWontVisitConditionValid &&
+                isVisitFacilityConditionValid
     }
 
     private var callResultSelectionCallback: ((selectedID: Any?, elementId: Pair<String, String?>, serverViewModel: FormLayout, name: String?) -> Unit)? =
@@ -153,6 +359,15 @@ class NCDCallResultBottomDialog : BottomSheetDialogFragment(), View.OnClickListe
             if (newSelection == FollowUpCallStatus.UNSUCCESSFUL.name) {
                 showUnsuccessfulReason()
                 enableForUnSuccessful()
+                binding.tvHealthFacilitySpinner.post {
+                    binding.tvHealthFacilitySpinner.setSelection(0, false)
+                }
+                binding.reasonGroup.gone()
+                binding.OtherGroup.gone()
+                binding.etOther.setText("")
+                viewModel.selectedHealthFacilityId = null
+                viewModel.selectedHealthFacilityName = null
+                binding.healthFacilityGroup.gone()
             } else {
                 showPatientStatusForSuccess()
                 enableForSuccessFul()
@@ -235,33 +450,65 @@ class NCDCallResultBottomDialog : BottomSheetDialogFragment(), View.OnClickListe
     override fun onClick(v: View?) {
         when (v?.id) {
             binding.btnDone.id -> {
-                if ((CommonUtils.isChp()) ) {
+                if ((CommonUtils.isChp())) {
                     // do save flow
                     data?.let { value ->
                         callResultViewModel.getAttemptsById(value.id)
                     }
                 } else {
-                    viewModel.getPatientRegisterResponse.value?.data?.let {
+                    val isSuccess = viewModel.callResultHashMap[DefinedParams.CallResult] == FollowUpCallStatus.SUCCESSFUL.name
+
+                    viewModel.getPatientRegisterResponse.value?.data?.let { data ->
+                        var otherReason: String? = null
+                        val reason = when {
+                            !isSuccess -> viewModel.unSuccessfulHashMap[DefinedParams.UnSuccessful] as? String
+                            (viewModel.patientStatusHashMap[DefinedParams.PatientStatus] as? String)
+                                ?.equals(wont_visit_facility, true) == true -> {
+                                val selectedTagName = reasonListCustomView.getSelectedTags().firstOrNull()?.name
+                                if (selectedTagName.equals(DefinedParams.Other, true)) {
+                                    otherReason = binding.etOther.text?.trim().toString()
+                                    DefinedParams.Other
+                                } else {
+                                    selectedTagName
+                                }
+                            }
+                            else -> null
+                        }
+
+                        val patientStatus = viewModel.patientStatusHashMap[DefinedParams.PatientStatus] as? String
+                        val visitedFacilityId = if (patientStatus.equals(visited_facility, true)) {
+                            viewModel.selectedHealthFacilityId
+                        } else {
+                            null
+                        }
+
+                        val otherVisitedFacilityName = if (viewModel.selectedHealthFacilityName.equals(DefinedParams.Other, true)) {
+                            binding.etOther.text?.trim().toString()
+                        } else {
+                            null
+                        }
+
+                        val callDetails = CallDetails(
+                            callDate = System.currentTimeMillis().convertToUtcDateTime(),
+                            status = viewModel.callResultHashMap[DefinedParams.CallResult] as? String,
+                            reason = reason,
+                            otherReason = otherReason,
+                            patientStatus = patientStatus,
+                            visitedFacilityId = visitedFacilityId,
+                            otherVisitedFacilityName = otherVisitedFacilityName
+                        )
+
                         val request = FollowUpUpdateRequest(
-                            id = it.id,
-                            patientId = it.patientId,
-                            memberId = it.memberId,
+                            id = data.id,
+                            patientId = data.patientId,
+                            memberId = data.memberId,
                             type = viewModel.type,
-                            villageId = it.villageId,
+                            villageId = data.villageId,
                             isInitiated = false,
                             provenance = ProvanceDto(),
-                            followUpDetails = listOf(
-                                CallDetails(
-                                    callDate = System.currentTimeMillis().convertToUtcDateTime(),
-                                    status = (viewModel.callResultHashMap[DefinedParams.CallResult] as? String)
-                                        ?: null,
-                                    reason = (viewModel.unSuccessfulHashMap[DefinedParams.UnSuccessful] as? String)
-                                        ?: null,
-                                    patientStatus = (viewModel.patientStatusHashMap[DefinedParams.PatientStatus] as? String)
-                                        ?: null
-                                )
-                            )
+                            followUpDetails = listOf(callDetails)
                         )
+                        // Proceed with the request object
                         viewModel.updatePatientCallRegister(request)
                     }
                 }
@@ -271,7 +518,7 @@ class NCDCallResultBottomDialog : BottomSheetDialogFragment(), View.OnClickListe
 
     private fun showPatientStatusForSuccess() {
         binding.selectionPatientStatus.removeAllViews()
-        binding.tvPatientStatus.text = "Current Status"
+        binding.tvPatientStatus.text = getString(R.string.current_status)
         getPatientStatusForSuccessData().let {
             val view = SingleSelectionCustomView(binding.root.context)
             view.tag = CallResultDialogFragment.TAG
@@ -291,7 +538,50 @@ class NCDCallResultBottomDialog : BottomSheetDialogFragment(), View.OnClickListe
         { selectedID, _, _, _ ->
             viewModel.patientStatusHashMap[DefinedParams.PatientStatus] = selectedID as String
             enableForSuccessFul()
+            showReason()
         }
+
+    private fun showReason() {
+        if ((viewModel.patientStatusHashMap[DefinedParams.PatientStatus] as? String)?.equals(
+                wont_visit_facility,
+                true
+            ) == true
+        ) {
+            binding.tvHealthFacilitySpinner.post {
+                binding.tvHealthFacilitySpinner.setSelection(0, false)
+            }
+            viewModel.selectedHealthFacilityId = null
+            viewModel.selectedHealthFacilityName = null
+            binding.reasonGroup.visible()
+            binding.OtherGroup.gone()
+            binding.etOther.setText("")
+            binding.healthFacilityGroup.gone()
+        } else if ((viewModel.patientStatusHashMap[DefinedParams.PatientStatus] as? String)?.equals(
+                visited_facility,
+                true
+            ) == true
+        ) {
+            binding.tvHealthFacilitySpinner.post {
+                binding.tvHealthFacilitySpinner.setSelection(0, false)
+            }
+            binding.reasonGroup.gone()
+            binding.OtherGroup.gone()
+            binding.etOther.setText("")
+            viewModel.selectedHealthFacilityId = null
+            viewModel.selectedHealthFacilityName = null
+            binding.healthFacilityGroup.visible()
+        } else {
+            binding.tvHealthFacilitySpinner.post {
+                binding.tvHealthFacilitySpinner.setSelection(0, false)
+            }
+            binding.reasonGroup.gone()
+            binding.OtherGroup.gone()
+            binding.etOther.setText("")
+            viewModel.selectedHealthFacilityId = null
+            viewModel.selectedHealthFacilityName = null
+            binding.healthFacilityGroup.gone()
+        }
+    }
 
 
     private fun getPatientStatusForSuccessData(): ArrayList<Map<String, Any>> {

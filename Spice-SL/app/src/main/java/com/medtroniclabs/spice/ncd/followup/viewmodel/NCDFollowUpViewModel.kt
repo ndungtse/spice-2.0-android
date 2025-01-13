@@ -9,10 +9,10 @@ import androidx.paging.PagingConfig
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.appextensions.postSuccess
 import com.medtroniclabs.spice.common.DateUtils
-import com.medtroniclabs.spice.common.DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
-import com.medtroniclabs.spice.common.DateUtils.DATE_FORMAT_yyyyMMdd_HHmmss
 import com.medtroniclabs.spice.common.DefinedParams
+import com.medtroniclabs.spice.data.ShortageReasonEntity
 import com.medtroniclabs.spice.data.model.ChipViewItemModel
+import com.medtroniclabs.spice.db.entity.HealthFacilityEntity
 import com.medtroniclabs.spice.db.entity.NCDCallDetails
 import com.medtroniclabs.spice.db.entity.NCDFollowUp
 import com.medtroniclabs.spice.db.entity.VillageEntity
@@ -28,6 +28,8 @@ import com.medtroniclabs.spice.ncd.followup.NCDFollowUpUtils
 import com.medtroniclabs.spice.ncd.followup.adapter.NCDFollowUpDataSource
 import com.medtroniclabs.spice.ncd.followup.fragment.NCDFollowUpFilterEnum
 import com.medtroniclabs.spice.ncd.followup.repo.NCDFollowUpRepo
+import com.medtroniclabs.spice.ncd.medicalreview.repo.NCDMedicalReviewRepository
+import com.medtroniclabs.spice.ncd.screening.repo.ScreeningRepository
 import com.medtroniclabs.spice.network.ApiHelper
 import com.medtroniclabs.spice.network.SingleLiveEvent
 import com.medtroniclabs.spice.network.resource.Resource
@@ -44,7 +46,9 @@ class NCDFollowUpViewModel @Inject constructor(
     private val apiHelper: ApiHelper,
     private val ncdFollowUpRepo: NCDFollowUpRepo,
     private var roomHelper: RoomHelper,
-    @IoDispatcher override var dispatcherIO: CoroutineDispatcher
+    @IoDispatcher override var dispatcherIO: CoroutineDispatcher,
+    private var ncdMedicalReviewRepo: NCDMedicalReviewRepository,
+    private val screeningRepository: ScreeningRepository
 ) : BaseViewModel(dispatcherIO) {
     var spanCount: Int = DefinedParams.span_count_1
     var searchText = ""
@@ -140,7 +144,8 @@ class NCDFollowUpViewModel @Inject constructor(
     var filterByVillage: List<ChipViewItemModel> = listOf()
     var filterByDateRange: List<ChipViewItemModel> = listOf()
     var data: NCDFollowUp? = null
-
+    var selectedHealthFacilityId: Long? = null
+    var selectedHealthFacilityName: String? = null
 
     fun filterFollowUpOfflineLiveData() {
         searchTextOfflineLiveData.value = true
@@ -250,8 +255,8 @@ class NCDFollowUpViewModel @Inject constructor(
             NCDFollowUpUtils.LTFU_Type -> {
                 val isAssessmentDue = sortModel?.isAssessmentDueDate == true
                 val value =
-                    if (isAssessmentDue) "assessment" else if (sortModel?.isMedicalReviewDueDate == true)
-                        "medicalReview" else null
+                    if (isAssessmentDue) DefinedParams.Assessment else if (sortModel?.isMedicalReviewDueDate == true)
+                        NCDFollowUpUtils.medical_review else null
                 isAssessmentDue to value
             }
 
@@ -265,5 +270,33 @@ class NCDFollowUpViewModel @Inject constructor(
         ).count { it == true }
         sortCount.postValue(count)
         searchTextOfflineLiveData.value = true
+    }
+
+    val getFollowUpReasonList = MutableLiveData<List<ShortageReasonEntity>>()
+    fun getFollowUpReasonList() {
+        viewModelScope.launch(dispatcherIO) {
+            val deleteList =
+                ncdMedicalReviewRepo.getNCDShortageReason(NCDFollowUpUtils.REASON_CONSTANT)
+            val list = ArrayList(deleteList)
+            if (list.isNotEmpty()) {
+                val itemIndex =
+                    list.indexOfFirst { it.name.contains(DefinedParams.Other, ignoreCase = true) }
+                if (itemIndex >= 0 && (itemIndex + 1) != list.size) {
+                    val item = list.removeAt(itemIndex)
+                    list.add(item)
+                }
+            }
+            getFollowUpReasonList.postValue(list)
+        }
+    }
+
+    private var getSites = MutableLiveData<Boolean>()
+    val getSitesLiveData: LiveData<List<HealthFacilityEntity>> =
+        getSites.switchMap {
+            screeningRepository.getUserHealthFacilityEntity()
+        }
+
+    fun getSites(isTrigger: Boolean) {
+        getSites.value = isTrigger
     }
 }
