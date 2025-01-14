@@ -112,7 +112,11 @@ object FormAutofill {
         val adapter = view.adapter
         if (adapter is CustomSpinnerAdapter) {
             when (value) {
-                is String -> view.setSelection(adapter.getIndexOfItemById(value))
+                is String -> {
+                    val index = adapter.getIndexOfItemById(value)
+                    if (index > 0)
+                        view.setSelection(index)
+                }
             }
         }
     }

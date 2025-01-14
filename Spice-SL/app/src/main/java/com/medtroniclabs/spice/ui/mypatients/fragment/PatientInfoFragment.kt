@@ -384,6 +384,10 @@ class PatientInfoFragment : BaseFragment() {
             )
         }
 
+        val bmiPair = CommonUtils.getBMIFormattedText(
+            requireContext(),
+            data.bmi?.takeIf { it > 0.0 }
+        )
         val dataList = mutableListOf(
             mapOf(
                 DefinedParams.label to requireContext().getString(R.string.registration_date),
@@ -408,15 +412,9 @@ class PatientInfoFragment : BaseFragment() {
             ),
             mapOf(
                 DefinedParams.label to requireContext().getString(R.string.bmi),
-                DefinedParams.Value to (CommonUtils.getBMIFormattedText(
-                    requireContext(),
-                    data.bmi
-                ).first
+                DefinedParams.Value to (bmiPair.first
                     ?: requireContext().getString(R.string.hyphen_symbol)).toString().trim(),
-                DefinedParams.color to CommonUtils.getBMIFormattedText(
-                    requireContext(),
-                    data.bmi
-                ).second
+                DefinedParams.color to bmiPair.second
             ),
             mapOf(
                 DefinedParams.label to requireContext().getString(R.string.national_id),

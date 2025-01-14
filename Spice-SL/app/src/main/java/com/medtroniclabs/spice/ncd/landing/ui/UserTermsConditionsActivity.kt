@@ -13,6 +13,7 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.activity.viewModels
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.appextensions.cancelAllWorker
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.databinding.ActivityUserTermsConditionsBinding
@@ -20,6 +21,7 @@ import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.ncd.landing.viewmodel.UserTermsConditionsViewModel
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
+import com.medtroniclabs.spice.ui.boarding.LoginActivity
 import com.medtroniclabs.spice.ui.landing.LandingActivity
 
 class UserTermsConditionsActivity : BaseActivity(), View.OnClickListener {
@@ -144,8 +146,11 @@ class UserTermsConditionsActivity : BaseActivity(), View.OnClickListener {
     override fun onClick(view: View?) {
         when (view?.id) {
             R.id.btnDecline -> {
-                startActivity(Intent(this, LandingActivity::class.java))
-                finish()
+                if (SecuredPreference.logout()) {
+                    cancelAllWorker()
+                    startActivity(Intent(this, LoginActivity::class.java))
+                    finish()
+                }
             }
 
             R.id.btnAccept -> {

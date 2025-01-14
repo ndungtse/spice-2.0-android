@@ -18,6 +18,7 @@ data class PatientTransfer(
 data class SiteObject(val id: Long, val name: String?)
 
 data class PatientObject(
+    val id: String? = null,
     val firstName: String,
     val lastName: String? = null,
     val age: String,

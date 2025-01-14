@@ -38,9 +38,11 @@ class NCDComorbiditiesFragment : BaseFragment() {
 
     companion object {
         const val TAG = "NCDComorbiditiesFragment"
-        fun newInstance(menuId: String?) = NCDComorbiditiesFragment().apply {
+        const val IS_FEMALE_PREGNANT = "isFemalePregnant"
+        fun newInstance(menuId: String?, isFemalePregnant: Boolean) = NCDComorbiditiesFragment().apply {
             arguments = Bundle().apply {
                 putString(MENU_ID, menuId)
+                putBoolean(IS_FEMALE_PREGNANT, isFemalePregnant)
             }
         }
     }
@@ -49,9 +51,13 @@ class NCDComorbiditiesFragment : BaseFragment() {
         return arguments?.getString(MENU_ID)
     }
 
+    private fun isFemalePregnant(): Boolean {
+        return arguments?.getBoolean(NCDObstetricExaminationFragment.IS_FEMALE_PREGNANT) == true
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.getChips(getType())
+        viewModel.getChips(handleChipType(getType(), isFemalePregnant()))
         setObserver()
         attachObserver()
     }

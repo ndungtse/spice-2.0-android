@@ -1,5 +1,6 @@
 package com.medtroniclabs.spice.ncd.medicalreview.dialog
 
+import android.content.res.Configuration
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,13 +9,16 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
+import com.medtroniclabs.spice.appextensions.invisible
 import com.medtroniclabs.spice.appextensions.loadAsGif
 import com.medtroniclabs.spice.appextensions.resetImageView
+import com.medtroniclabs.spice.appextensions.setDialogPercent
 import com.medtroniclabs.spice.appextensions.visible
+import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.data.model.ChipViewItemModel
 import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
-import com.medtroniclabs.spice.databinding.FragmentNcdDiagnosisBinding
+import com.medtroniclabs.spice.databinding.DialogNcdDiagnosisBinding
 import com.medtroniclabs.spice.db.entity.NCDDiagnosisEntity
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.mappingkey.Screening
@@ -36,7 +40,7 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class NCDDiagnosisDialogFragment : DialogFragment(), View.OnClickListener {
-    private lateinit var binding: FragmentNcdDiagnosisBinding
+    private lateinit var binding: DialogNcdDiagnosisBinding
     private val viewModel: NCDDiagnosisViewModel by viewModels()
     private val ncdMedicalReviewViewModel: NCDMedicalReviewViewModel by viewModels()
     private lateinit var tagListCustomView: TagListCustomView
@@ -46,7 +50,7 @@ class NCDDiagnosisDialogFragment : DialogFragment(), View.OnClickListener {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentNcdDiagnosisBinding.inflate(inflater, container, false)
+        binding = DialogNcdDiagnosisBinding.inflate(inflater, container, false)
         dialog?.window?.setBackgroundDrawableResource(android.R.color.transparent)
         isCancelable = false
         return binding.root
@@ -334,17 +338,49 @@ class NCDDiagnosisDialogFragment : DialogFragment(), View.OnClickListener {
         return isValid
     }
 
-    private fun showLoading() {
-        binding.loadingProgress.visibility = View.VISIBLE
-        binding.loaderImage.apply {
-            loadAsGif(R.drawable.loader_spice)
+    override fun onStart() {
+        super.onStart()
+        handleOrientation()
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        handleOrientation()
+    }
+
+    private fun handleOrientation() {
+        val isTablet = CommonUtils.checkIsTablet(requireContext())
+        val isLandscape = resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+        val width = when {
+            isTablet && isLandscape -> 65
+            else -> 100
+        }
+        val height = when {
+            isTablet && isLandscape -> 90
+            else -> 100
+        }
+        setDialogPercent(width, height)
+    }
+
+    fun showLoading() {
+        binding.apply {
+            btnConfirm.invisible()
+            btnCancel.invisible()
+            loadingProgress.visible()
+            loaderImage.apply {
+                loadAsGif(R.drawable.loader_spice)
+            }
         }
     }
 
-    private fun hideLoading() {
-        binding.loadingProgress.visibility = View.GONE
-        binding.loaderImage.apply {
-            resetImageView()
+    fun hideLoading() {
+        binding.apply {
+            btnConfirm.visible()
+            btnCancel.visible()
+            loadingProgress.gone()
+            loaderImage.apply {
+                resetImageView()
+            }
         }
     }
 }

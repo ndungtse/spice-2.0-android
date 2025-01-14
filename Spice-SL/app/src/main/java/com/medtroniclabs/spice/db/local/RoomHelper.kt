@@ -1,6 +1,7 @@
 package com.medtroniclabs.spice.db.local
 
 import androidx.lifecycle.LiveData
+import com.medtroniclabs.spice.data.CulturesEntity
 import com.medtroniclabs.spice.data.DiseaseCategoryItems
 import com.medtroniclabs.spice.data.DosageFrequency
 import com.medtroniclabs.spice.data.ExaminationListItems
@@ -433,4 +434,7 @@ interface RoomHelper {
     suspend fun deleteCallDetails(id: Long)
 
     fun getUnSyncedNCDFollowUpCount(): LiveData<Long>
+    suspend fun saveCultures(cultures: List<CulturesEntity>)
+    suspend fun getCultures(): List<CulturesEntity>
+    suspend fun deleteCultures()
 }

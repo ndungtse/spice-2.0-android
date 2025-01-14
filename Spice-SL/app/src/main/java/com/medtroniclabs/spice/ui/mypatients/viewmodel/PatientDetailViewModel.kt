@@ -44,6 +44,7 @@ class PatientDetailViewModel @Inject constructor(
     var origin: String? = null
     var mrMenuId: String? = null
     var isCmr: Boolean = false
+    var isRefresh: Boolean = false
 
     var neonateOutCome: String?=null
 

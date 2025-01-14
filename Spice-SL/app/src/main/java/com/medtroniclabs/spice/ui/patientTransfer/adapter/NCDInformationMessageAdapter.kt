@@ -47,9 +47,7 @@ class NCDInformationMessageAdapter(
         holder.binding.btnCancel.safeClickListener {
             listener.onTransferStatusUpdate(
                 TransferStatusEnum.CANCELED.name,
-                model.id,
-                model.tenantId,
-                model.transferReason
+                model
             )
         }
     }

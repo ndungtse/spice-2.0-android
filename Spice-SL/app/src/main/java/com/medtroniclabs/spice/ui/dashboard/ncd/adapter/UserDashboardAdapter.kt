@@ -35,7 +35,7 @@ class UserDashboardAdapter(private val  customize: Boolean, private val userDash
         userDashboardLists[position].let { dashboard ->
             val context = holder.binding.root.context
             holder.binding.apply {
-                tvKey.text = dashboard.first
+                tvKey.text = dashboard.first.uppercase()
                 tvValue.text = if (customize) "0" else dashboard.second.toString()
 
                 if (context.isTablet()) {

@@ -157,7 +157,7 @@ class DashboardFragment : BaseFragment(), View.OnClickListener {
                         it.screened?.let { screenedCount ->
                             userDashboardList.add(
                                 Triple(
-                                    MenuConstants.SCREENING_CONDUCTED,
+                                    getString(R.string.screened),
                                     screenedCount,
                                     R.drawable.ic_screening
                                 )
@@ -166,7 +166,7 @@ class DashboardFragment : BaseFragment(), View.OnClickListener {
                         it.referred?.let { referredCount ->
                             userDashboardList.add(
                                 Triple(
-                                    MenuConstants.NO_OF_REFERRALS,
+                                    getString(R.string.no_of_referrals),
                                     referredCount,
                                     R.drawable.ic_referred
                                 )
@@ -177,7 +177,7 @@ class DashboardFragment : BaseFragment(), View.OnClickListener {
                         it.registered?.let { registeredCount ->
                             userDashboardList.add(
                                 Triple(
-                                    MenuConstants.REGISTRATION_CONDUCTED,
+                                    getString(R.string.registered),
                                     registeredCount,
                                     R.drawable.ic_registration
                                 )
@@ -188,7 +188,7 @@ class DashboardFragment : BaseFragment(), View.OnClickListener {
                         it.assessed?.let { assessedCount ->
                             userDashboardList.add(
                                 Triple(
-                                    MenuConstants.ASSESSMENT_CONDUCTED,
+                                    getString(R.string.assessed),
                                     assessedCount,
                                     R.drawable.ic_assessment
                                 )
@@ -199,7 +199,7 @@ class DashboardFragment : BaseFragment(), View.OnClickListener {
                         it.dispensed?.let { screenedCount ->
                             userDashboardList.add(
                                 Triple(
-                                    MenuConstants.PRESCRIPTIONS_DISPENSED,
+                                    getString(R.string.prescriptions_dispensed),
                                     screenedCount,
                                     R.drawable.ic_dispense
                                 )
@@ -210,7 +210,7 @@ class DashboardFragment : BaseFragment(), View.OnClickListener {
                         it.investigated?.let { assessedCount ->
                             userDashboardList.add(
                                 Triple(
-                                    MenuConstants.INVESTIGATIONS_CONDUCTED,
+                                    getString(R.string.investigations_conducted),
                                     assessedCount,
                                     R.drawable.ic_investigation
                                 )
@@ -221,7 +221,7 @@ class DashboardFragment : BaseFragment(), View.OnClickListener {
                         it.nutritionistLifestyleCount?.let { registeredCount ->
                             userDashboardList.add(
                                 Triple(
-                                    MenuConstants.REVIEWS_CONDUCTED,
+                                    getString(R.string.reviews_conducted),
                                     registeredCount,
                                     R.drawable.ic_lifestyle
                                 )
@@ -232,7 +232,7 @@ class DashboardFragment : BaseFragment(), View.OnClickListener {
                         it.psychologicalNotesCount?.let { referredCount ->
                             userDashboardList.add(
                                 Triple(
-                                    MenuConstants.COUNSELLINGS_CONDUCTED,
+                                    getString(R.string.counsellings_conducted),
                                     referredCount,
                                     R.drawable.ic_psycological_menu
                                 )

@@ -136,10 +136,10 @@ interface MetaDataDAO {
     suspend fun deletePrograms()
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertCultures(culturesEntity: CulturesEntity)
+    suspend fun insertCultures(culturesEntity: List<CulturesEntity>)
 
     @Query("SELECT * FROM CulturesEntity")
-    suspend fun getCultures(): CulturesEntity?
+    suspend fun getCultures(): List<CulturesEntity>
 
     @Query("DELETE FROM CulturesEntity")
     suspend fun deleteCultures()

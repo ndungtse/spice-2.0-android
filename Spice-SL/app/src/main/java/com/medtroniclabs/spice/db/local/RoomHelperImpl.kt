@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.room.Transaction
 import androidx.sqlite.db.SimpleSQLiteQuery
 import com.medtroniclabs.spice.common.DateUtils
+import com.medtroniclabs.spice.data.CulturesEntity
 import com.medtroniclabs.spice.data.DiseaseCategoryItems
 import com.medtroniclabs.spice.data.DosageFrequency
 import com.medtroniclabs.spice.data.ExaminationListItems
@@ -1157,5 +1158,17 @@ class RoomHelperImpl @Inject constructor(
 
     override fun getUnSyncedNCDFollowUpCount(): LiveData<Long> {
         return ncdFollowUpDao.getUnSyncedNCDFollowUpCount()
+    }
+
+    override suspend fun saveCultures(cultures: List<CulturesEntity>) {
+        metaDataDAO.insertCultures(cultures)
+    }
+
+    override suspend fun getCultures(): List<CulturesEntity> {
+        return metaDataDAO.getCultures()
+    }
+
+    override suspend fun deleteCultures() {
+        metaDataDAO.deleteCultures()
     }
 }

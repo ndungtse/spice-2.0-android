@@ -7,5 +7,6 @@ import androidx.room.PrimaryKey
 data class CulturesEntity(
     @PrimaryKey
     val id: Long,
-    val name: String
+    val name: String,
+    val code: String
 )

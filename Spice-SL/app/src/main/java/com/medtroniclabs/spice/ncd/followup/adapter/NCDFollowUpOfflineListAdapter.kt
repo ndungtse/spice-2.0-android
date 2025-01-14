@@ -63,7 +63,7 @@ class NCDFollowUpOfflineListAdapter(val listener: PatientSelectionListenerForFol
                 val overDueCategoriesText = item.overDueCategories
                     ?.asSequence()
                     ?.filter { !it.isNullOrBlank() }
-                    ?.joinToString(", ") { it?.lowercase()?.capitalizeFirstChar() ?: "" }
+                    ?.joinToString(", ") { it?.capitalizeFirstChar() ?: "" }
                 updateReasonSection(
                     label = context.getString(R.string.overdue),
                     text = overDueCategoriesText,

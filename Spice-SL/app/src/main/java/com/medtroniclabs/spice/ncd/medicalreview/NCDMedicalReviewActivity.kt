@@ -10,6 +10,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.view.isVisible
+import androidx.fragment.app.Fragment
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.appextensions.gone
@@ -19,7 +20,6 @@ import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
-import com.medtroniclabs.spice.common.DefinedParams.MemberID
 import com.medtroniclabs.spice.common.DefinedParams.MenuId
 import com.medtroniclabs.spice.common.DefinedParams.ORIGIN
 import com.medtroniclabs.spice.common.SecuredPreference
@@ -623,6 +623,13 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
         hideLoading()
     }
 
+    private fun reloadFragment(container: Int, tag: String, fragment: Fragment) {
+        if (patientDetailViewModel.isRefresh)
+            addOrReuseFragment(container, tag, fragment)
+        else
+            replaceFragment(container, tag, fragment)
+    }
+
     private fun loadFragment(isInitialMR: Boolean) {
         showLoading()
         if (isInitialMR) {
@@ -637,17 +644,17 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
                 btnLayout.btnNext.isAllCaps = true
             }
             showCurrentMedication()
-            addOrReuseFragment(
+            reloadFragment(
                 R.id.comorbiditiesContainer,
                 NCDComorbiditiesFragment.TAG,
-                NCDComorbiditiesFragment.newInstance(getMenuId())
+                NCDComorbiditiesFragment.newInstance(getMenuId(), isFemalePregnant())
             )
-            addOrReuseFragment(
+            reloadFragment(
                 R.id.complicationsContainer,
                 NCDComplicationsFragment.TAG,
                 NCDComplicationsFragment.newInstance()
             )
-            addOrReuseFragment(
+            reloadFragment(
                 R.id.lifestyleAssessmentContainer,
                 NCDLifestyleAssessmentFragment.TAG,
                 NCDLifestyleAssessmentFragment.newInstance()
@@ -664,23 +671,24 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
                 btnLayout.btnNext.text = getString(R.string.submit)
                 btnLayout.btnNext.isAllCaps = true
             }
-            addOrReuseFragment(
+            reloadFragment(
                 R.id.chiefComplaintsContainer,
                 NCDChiefComplaintsFragment.TAG,
-                NCDChiefComplaintsFragment.newInstance(getMenuId())
+                NCDChiefComplaintsFragment.newInstance(getMenuId(), isFemalePregnant())
             )
-            addOrReuseFragment(
+            reloadFragment(
                 R.id.clinicalNotesContainer,
                 NCDClinicalNotesFragment.TAG,
                 NCDClinicalNotesFragment.newInstance()
             )
-            addOrReuseFragment(
+            reloadFragment(
                 R.id.obstetricExaminationContainer,
                 NCDObstetricExaminationFragment.TAG,
                 NCDObstetricExaminationFragment.newInstance(getMenuId(), isFemalePregnant())
             )
         }
         hideLoading()
+        patientDetailViewModel.isRefresh = false
     }
 
     private fun isFemalePregnant(): Boolean {
@@ -1103,31 +1111,30 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
             patientDetailViewModel.getPatientFHIRId()?.let { id ->
                 val dialog = supportFragmentManager.findFragmentByTag(NCDPregnancyDialog.TAG)
                 if (dialog == null) {
-                    val ncdPregnancyDialog =
-                        NCDPregnancyDialog.newInstance(
-                            patientDetailViewModel.getPatientId(),
-                            patientId = id,
-                            patientDetailViewModel.getGenderIsFemale(),
-                            patientDetailViewModel.isPregnant(),
-                            showNCD = !initialReviewed || !hasNCD
-                        ) { isPositiveResult, message ->
-                            if (isPositiveResult) showErrorDialogue(
-                                title = getString(R.string.pregnancy_details),
-                                message = message,
-                                isNegativeButtonNeed = false
-                            ) {
-                                swipeRefresh()
-                            }
-                            else showErrorDialogue(
-                                title = getString(R.string.error),
-                                message = message,
-                                isNegativeButtonNeed = false
-                            ) {
+                    NCDPregnancyDialog.newInstance(
+                        patientDetailViewModel.getPatientId(),
+                        patientId = id,
+                        patientDetailViewModel.getGenderIsFemale(),
+                        patientDetailViewModel.isPregnant(),
+                        showNCD = !initialReviewed || !hasNCD
+                    ) { isPositiveResult, message ->
+                        if (isPositiveResult) showSuccessDialogue(
+                            title = getString(R.string.pregnancy_details),
+                            message = message
+                        ) {
+                            patientDetailViewModel.isRefresh = true
+                            swipeRefresh()
+                        }
+                        else showErrorDialogue(
+                            title = getString(R.string.error),
+                            message = message,
+                            isNegativeButtonNeed = false
+                        ) {
 
-                            }
-                        }.apply {
-                            listener = this@NCDMedicalReviewActivity
-                        }.show(supportFragmentManager, NCDPregnancyDialog.TAG)
+                        }
+                    }.apply {
+                        listener = this@NCDMedicalReviewActivity
+                    }.show(supportFragmentManager, NCDPregnancyDialog.TAG)
                 }
             }
         })

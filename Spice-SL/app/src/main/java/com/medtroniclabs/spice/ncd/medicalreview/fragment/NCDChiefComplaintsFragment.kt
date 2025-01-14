@@ -26,10 +26,12 @@ class NCDChiefComplaintsFragment : BaseFragment() {
 
     companion object {
         const val TAG = "NCDChiefComplaintsFragment"
-        fun newInstance(menuId: String?): NCDChiefComplaintsFragment {
+        const val IS_FEMALE_PREGNANT = "isFemalePregnant"
+        fun newInstance(menuId: String?, isFemalePregnant: Boolean): NCDChiefComplaintsFragment {
             return NCDChiefComplaintsFragment().apply {
                 arguments = Bundle().apply {
                     putString(MENU_ID, menuId)
+                    putBoolean(IS_FEMALE_PREGNANT, isFemalePregnant)
                 }
             }
         }
@@ -39,6 +41,9 @@ class NCDChiefComplaintsFragment : BaseFragment() {
         return arguments?.getString(MENU_ID)
     }
 
+    private fun isFemalePregnant(): Boolean {
+        return arguments?.getBoolean(NCDObstetricExaminationFragment.IS_FEMALE_PREGNANT) == true
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -50,7 +55,7 @@ class NCDChiefComplaintsFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.getChips(getType())
+        viewModel.getChips(handleChipType(getType(), isFemalePregnant()))
         setObserver()
         attachObserver()
         MotherNeonateUtil.initTextWatcherForString(binding.etPhysicalExaminationComments) {

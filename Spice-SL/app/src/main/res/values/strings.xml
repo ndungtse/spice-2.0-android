@@ -1211,4 +1211,13 @@
     <string name="other_reason">Other Reason</string>
     <string name="other_health_facility">Other Health Facility</string>
     <string name="health_facility_name">Health Facility Name</string>
+
+    //User Dashboard
+    <string name="screened">Screened</string>
+    <string name="assessed">Assessed</string>
+    <string name="prescriptions_dispensed">Prescriptions Dispensed</string>
+    <string name="investigations_conducted">Investigations Conducted</string>
+    <string name="reviews_conducted">Reviews Conducted</string>
+    <string name="counsellings_conducted">Counsellings Conducted</string>
+    <string name="no_of_referrals">No of Referrals</string>
 </resources>

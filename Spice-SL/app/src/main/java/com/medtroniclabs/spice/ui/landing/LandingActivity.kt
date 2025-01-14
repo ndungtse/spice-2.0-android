@@ -69,6 +69,8 @@ import com.medtroniclabs.spice.ui.patientTransfer.dialog.NCDPatientDetailDialogu
 import com.medtroniclabs.spice.ncd.data.PatientTransferListResponse
 import com.medtroniclabs.spice.ncd.data.NCDPatientTransferUpdateRequest
 import com.medtroniclabs.spice.common.TransferStatusEnum
+import com.medtroniclabs.spice.ncd.data.PatientTransfer
+import com.medtroniclabs.spice.ncd.landing.dialog.LanguagePreferenceDialog
 import com.medtroniclabs.spice.ncd.landing.viewmodel.NCDOfflineDataViewModel
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 import java.util.concurrent.TimeUnit
@@ -384,8 +386,12 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
         val menu: Menu = binding.navView.menu
         val menuItemToRemove: MenuItem? = menu.findItem(R.id.offline_sync)
         val changeFacilityMenuItem: MenuItem? = menu.findItem(R.id.changeFacility)
+        val switchLanguage: MenuItem? = menu.findItem(R.id.switch_language)
         if (CommonUtils.isCommunity() && !CommonUtils.isChw() && menuItemToRemove != null) {
             menu.removeItem(menuItemToRemove.itemId)
+        }
+        if (CommonUtils.isCommunity() && switchLanguage != null) {
+            menu.removeItem(switchLanguage.itemId)
         }
         if (CommonUtils.isCommunity() && !CommonUtils.isProvider() && changeFacilityMenuItem != null) {
             menu.removeItem(changeFacilityMenuItem.itemId)
@@ -514,11 +520,28 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
                 )
                 return true
             }
+
+            R.id.switch_language -> {
+                binding.drawerLayout.closeDrawer(GravityCompat.START)
+                val languagePreferenceDialog =
+                    LanguagePreferenceDialog.newInstance(languagePreferenceListener)
+                languagePreferenceDialog.show(
+                    supportFragmentManager,
+                    LanguagePreferenceDialog.TAG
+                )
+                return true
+            }
         }
         selectNavigationMenu(item)
         displayScreen(item.itemId)
         binding.drawerLayout.closeDrawer(GravityCompat.START)
         return true
+    }
+
+    private val languagePreferenceListener = object : OnDialogDismissListener {
+        override fun onDialogDismissListener(isFinish: Boolean) {
+            //
+        }
     }
 
     private fun goToOfflineSyncPage() {
@@ -718,7 +741,7 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
         }
     }
 
-    override fun onTransferStatusUpdate(status: String, id: Long, tenantId: Long, reason: String) {
+    override fun onTransferStatusUpdate(status: String, transfer: PatientTransfer) {
         when (status) {
             TransferStatusEnum.REJECTED.name -> {
                 showAlertDialogWithComments(
@@ -739,10 +762,11 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
                         )
                             viewModel.patientTransferUpdate(
                                 NCDPatientTransferUpdateRequest(
-                                    id,
+                                    transfer.id,
                                     transferStatus = status,
                                     rejectReason = rejectionReason,
-                                    memberId = patientViewModel.getPatientMemberId().toString()
+                                    memberReference = transfer.patient.id,
+                                    transferSite = transfer.transferSite
                                 )
                             )
                     }
@@ -757,9 +781,10 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
                 )
                 viewModel.patientTransferUpdate(
                     NCDPatientTransferUpdateRequest(
-                        id,
+                        transfer.id,
                         transferStatus = status,
-                        memberId = patientViewModel.getPatientMemberId().toString()
+                        memberReference = transfer.patient.id,
+                        transferSite = transfer.transferSite
                     )
                 )
             }

@@ -115,8 +115,8 @@ android {
                             resValue("string", "spice_app_name", "SPICE 2.1 Dev")
                         }
                         "tiberbu" -> {
-                            buildConfigField("String", "API_BASE_URL", "\"https://spice-dev-backend.tbb.labsplatform.com/\"")
-                            buildConfigField("String", "ADMIN_BASE_URL", "\"https://spice-dev.tbb.labsplatform.com/\"")
+                            buildConfigField("String", "API_BASE_URL", "\"https://spice-training-back.tiberbu.health/\"")
+                            buildConfigField("String", "ADMIN_BASE_URL", "\"https://spice-training.tiberbu.health/\"")
                             buildConfigField("String", "SALT", "\"spice_uat\"")
                             buildConfigField("String", "DB_PASSWORD", "\"Med@Tr0ni#Lab$\"")
                             resValue("string", "spice_app_name", "SPICE Tiberbu Dev")

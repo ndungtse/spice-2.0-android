@@ -10,6 +10,7 @@ import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.ncd.data.PatientFollowUpEntity
 import com.medtroniclabs.spice.ncd.followup.fragment.NCDFollowUpDialogFragment
+import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil
 import com.medtroniclabs.spice.network.utils.ConnectivityManager
 import com.medtroniclabs.spice.ui.home.AssessmentToolsActivity
 import com.medtroniclabs.spice.ui.mypatients.PatientSelectionListenerForFollowUp
@@ -133,5 +134,13 @@ open class BaseFragment : Fragment(){
             NCDFollowUpDialogFragment.newInstance(listener)
                 .show(childFragmentManager, NCDFollowUpDialogFragment.TAG)
         }
+    }
+
+    fun handleChipType(type: String?, isFemalePregnant: Boolean): String? {
+        return if (type.equals(
+                DefinedParams.PregnancyANC,
+                true
+            ) && !isFemalePregnant
+        ) NCDMRUtil.NCD.lowercase() else type
     }
 }

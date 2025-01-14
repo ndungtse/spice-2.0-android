@@ -35,17 +35,13 @@ class NCDIncomingRequestAdapter(
         holder.binding.btnAccept.safeClickListener {
             listener.onTransferStatusUpdate(
                 TransferStatusEnum.ACCEPTED.name,
-                model.id,
-                model.tenantId,
-                model.transferReason
+                model
             )
         }
         holder.binding.btnReject.safeClickListener {
             listener.onTransferStatusUpdate(
                 TransferStatusEnum.REJECTED.name,
-                model.id,
-                model.tenantId,
-                model.transferReason
+                model
             )
         }
 

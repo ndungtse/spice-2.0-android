@@ -38,7 +38,7 @@ class NCDObstetricExaminationFragment : BaseFragment() {
         return arguments?.getString(MENU_ID)
     }
 
-    fun isFemalePregnant(): Boolean {
+    private fun isFemalePregnant(): Boolean {
         return arguments?.getBoolean(IS_FEMALE_PREGNANT) == true
     }
 
@@ -56,7 +56,7 @@ class NCDObstetricExaminationFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.getChips(getType())
+        viewModel.getChips(handleChipType(getType(), isFemalePregnant()))
         setObserver()
         attachObserver()
         MotherNeonateUtil.initTextWatcherForString(binding.etPhysicalExaminationComments) {

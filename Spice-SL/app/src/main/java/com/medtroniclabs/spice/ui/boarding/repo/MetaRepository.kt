@@ -10,6 +10,7 @@ import com.medtroniclabs.spice.common.RoleConstant.PROVIDER
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.ClinicalWorkflow
 import com.medtroniclabs.spice.data.ConsentFormResponse
+import com.medtroniclabs.spice.data.CulturesEntity
 import com.medtroniclabs.spice.data.FormData
 import com.medtroniclabs.spice.data.FormMetaRequest
 import com.medtroniclabs.spice.data.FormRequest
@@ -20,8 +21,6 @@ import com.medtroniclabs.spice.data.MenuDetail
 import com.medtroniclabs.spice.data.ModelQuestion
 import com.medtroniclabs.spice.data.ProgramEntity
 import com.medtroniclabs.spice.data.UserProfile
-import com.medtroniclabs.spice.ncd.data.NCDPatientTransferNotificationCountRequest
-import com.medtroniclabs.spice.ncd.data.NCDPatientTransferNotificationCountResponse
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowConditionEntity
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowEntity
 import com.medtroniclabs.spice.db.entity.ConsentEntity
@@ -38,6 +37,10 @@ import com.medtroniclabs.spice.db.entity.VillageEntity
 import com.medtroniclabs.spice.db.local.RoomHelper
 import com.medtroniclabs.spice.mappingkey.Screening
 import com.medtroniclabs.spice.ncd.data.DeviceDetails
+import com.medtroniclabs.spice.ncd.data.NCDPatientTransferNotificationCountRequest
+import com.medtroniclabs.spice.ncd.data.NCDPatientTransferNotificationCountResponse
+import com.medtroniclabs.spice.ncd.data.NCDPatientTransferUpdateRequest
+import com.medtroniclabs.spice.ncd.data.PatientTransferListResponse
 import com.medtroniclabs.spice.ncd.data.TermsAndConditionsModel
 import com.medtroniclabs.spice.network.ApiHelper
 import com.medtroniclabs.spice.network.resource.Resource
@@ -45,8 +48,6 @@ import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.MenuConstants
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
 import com.medtroniclabs.spice.ui.medicalreview.utils.MedicalReviewTypeEnums
-import com.medtroniclabs.spice.ncd.data.PatientTransferListResponse
-import com.medtroniclabs.spice.ncd.data.NCDPatientTransferUpdateRequest
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
@@ -801,6 +802,13 @@ class MetaRepository @Inject constructor(
         }
     }
 
-
+    suspend fun getCultures(): Resource<List<CulturesEntity>> {
+        return try {
+            val response = roomHelper.getCultures()
+            Resource(state = ResourceState.SUCCESS, response)
+        } catch (_: Exception) {
+            Resource(state = ResourceState.ERROR)
+        }
+    }
 }
 
