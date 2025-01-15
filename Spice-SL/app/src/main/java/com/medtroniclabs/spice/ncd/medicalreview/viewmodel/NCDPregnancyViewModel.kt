@@ -4,6 +4,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
+import com.medtroniclabs.spice.app.analytics.model.UserDetail
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.SecuredPreference
@@ -13,6 +15,7 @@ import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.ncd.assessment.repo.NCDPregnancyRepo
 import com.medtroniclabs.spice.ncd.medicalreview.repo.NCDMedicalReviewRepository
 import com.medtroniclabs.spice.network.resource.Resource
+import com.medtroniclabs.spice.ui.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
@@ -22,8 +25,8 @@ import javax.inject.Inject
 class NCDPregnancyViewModel @Inject constructor(
     private val ncdPregnancyRepo: NCDPregnancyRepo,
     private val ncdMedicalReviewRepository: NCDMedicalReviewRepository,
-    @IoDispatcher private val dispatcherIO: CoroutineDispatcher
-) : ViewModel() {
+    @IoDispatcher override var dispatcherIO: CoroutineDispatcher
+) : BaseViewModel(dispatcherIO) {
     var id: String? = null
     var isPregnancyAncEnabledSite: Boolean = false
 
@@ -50,6 +53,11 @@ class NCDPregnancyViewModel @Inject constructor(
     fun ncdPregnancyCreate(requestModel: PregnancyDetailsModel) {
         viewModelScope.launch(dispatcherIO) {
             ncdPregnancyCreateResponse.postLoading()
+            setAnalyticsData(
+                UserDetail.startDateTime,
+                eventName = AnalyticsDefinedParams.NCDPatientHistoryCreationForMaternalHealth,
+                isCompleted = true
+            )
             ncdPregnancyCreateResponse.postValue(ncdPregnancyRepo.ncdPregnancyCreate(requestModel))
         }
     }

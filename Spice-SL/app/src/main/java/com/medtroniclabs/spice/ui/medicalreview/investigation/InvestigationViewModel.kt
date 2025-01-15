@@ -5,6 +5,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.medtroniclabs.spice.app.analytics.model.UserDetail
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.appextensions.postSuccess
@@ -34,6 +36,7 @@ import com.medtroniclabs.spice.ncd.data.PredictionRequest
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.network.utils.ConnectivityManager
 import com.medtroniclabs.spice.repo.InvestigationRepository
+import com.medtroniclabs.spice.ui.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
@@ -41,10 +44,10 @@ import javax.inject.Inject
 
 @HiltViewModel
 class InvestigationViewModel @Inject constructor(
-    @IoDispatcher private val dispatcherIO: CoroutineDispatcher,
+    @IoDispatcher override var dispatcherIO: CoroutineDispatcher,
     private val connectivityManager: ConnectivityManager,
     private val investigationRepository: InvestigationRepository
-) : ViewModel() {
+) : BaseViewModel(dispatcherIO) {
 
     var patientId: String? = null
     var patientReference: String? = null
@@ -131,6 +134,11 @@ class InvestigationViewModel @Inject constructor(
             if (investigation.id != null) {
                 removeLabTestLiveData.postLoading()
                 try {
+                    setAnalyticsData(
+                        UserDetail.startDateTime,
+                        eventName = AnalyticsDefinedParams.NCDInvestigationDelete,
+                        isCompleted = true
+                    )
                     val resourceState =
                         investigationRepository.removeLabTest(RemoveLabTestRequest(investigation.id))
                     resourceState.data?.let {
@@ -193,6 +201,11 @@ class InvestigationViewModel @Inject constructor(
                     labTestList,
                     enrollmentType = patientDetail.enrollmentType,
                     identityValue = patientDetail.identityValue
+                )
+                setAnalyticsData(
+                    UserDetail.startDateTime,
+                    eventName = AnalyticsDefinedParams.NCDInvestigationCreation,
+                    isCompleted = true
                 )
                 createLabTestLiveData.postValue(investigationRepository.createLabTest(request))
             } catch (e: Exception) {

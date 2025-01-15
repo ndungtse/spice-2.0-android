@@ -14,6 +14,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.paging.LoadState
 import androidx.recyclerview.widget.GridLayoutManager
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.app.analytics.model.UserDetail
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.hideKeyboard
@@ -21,6 +22,7 @@ import com.medtroniclabs.spice.appextensions.invisible
 import com.medtroniclabs.spice.appextensions.loadAsGif
 import com.medtroniclabs.spice.appextensions.resetImageView
 import com.medtroniclabs.spice.appextensions.setVisible
+import com.medtroniclabs.spice.appextensions.takeIfNotNull
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DefinedParams
@@ -422,6 +424,11 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
 
     private fun networkAvailability() {
         withNetworkAvailability(online = {
+            patientListViewModel.setAnalyticsData(
+                UserDetail.startDateTime,
+                eventName = AnalyticsDefinedParams.NCDSearchPatient + " " + patientListViewModel.origin.takeIf { !it.isNullOrBlank() },
+                isCompleted = true
+            )
             patientListViewModel.searchText =
                 binding.llExactSearch.etPatientSearch.text?.trim().toString()
             getPatientList()

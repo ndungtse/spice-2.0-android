@@ -11,6 +11,8 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.app.analytics.model.UserDetail
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.databinding.FragmentChooseSiteBinding
@@ -134,6 +136,11 @@ class ChooseSiteDialogueFragment : DialogFragment(),
                                 it.chiefdomId
                             )
                             triggerResourceLoading()
+                            viewModel.setAnalyticsData(
+                                UserDetail.startDateTime,
+                                eventName = AnalyticsDefinedParams.NCDChangeFacility,
+                                isCompleted = true
+                            )
                             dismiss()
                         }
                     }, offline = {

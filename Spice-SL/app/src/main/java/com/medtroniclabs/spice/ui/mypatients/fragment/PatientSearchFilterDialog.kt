@@ -7,6 +7,8 @@ import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.app.analytics.model.UserDetail
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.appextensions.setDialogPercent
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
@@ -205,6 +207,11 @@ class PatientSearchFilterDialog : DialogFragment(), View.OnClickListener {
                             it.ncdAssessmentTag.getSelectedTags().takeIf { it.isNotEmpty() }
                     }
                 }
+                patientListViewModel.setAnalyticsData(
+                    UserDetail.startDateTime,
+                    eventName = AnalyticsDefinedParams.NCDPatientFilter,
+                    isCompleted = true
+                )
                 patientListViewModel.setFilter(true)
                 dismiss()
             }

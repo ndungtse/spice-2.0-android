@@ -11,6 +11,8 @@ import android.view.WindowManager
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.app.analytics.model.UserDetail
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.setVisible
 import com.medtroniclabs.spice.appextensions.visible
@@ -162,6 +164,11 @@ class NCDOfflineDataDialog : DialogFragment(), View.OnClickListener {
 
             R.id.btnUpload -> {
                 onDismissListener?.onDialogDismissListener(true)
+                viewModel.setAnalyticsData(
+                    UserDetail.startDateTime,
+                    eventName = AnalyticsDefinedParams.NCDUploadOfflineData,
+                    isCompleted = true
+                )
                 dismiss()
             }
         }

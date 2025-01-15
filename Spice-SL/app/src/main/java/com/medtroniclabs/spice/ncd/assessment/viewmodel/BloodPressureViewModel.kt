@@ -6,10 +6,11 @@ import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.text.color
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.app.analytics.model.UserDetail
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.CommonUtils.getBMIForNcd
@@ -30,6 +31,7 @@ import com.medtroniclabs.spice.ncd.data.BPBGListModel
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil
 import com.medtroniclabs.spice.network.SingleLiveEvent
 import com.medtroniclabs.spice.network.resource.Resource
+import com.medtroniclabs.spice.ui.BaseViewModel
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
@@ -39,9 +41,9 @@ import kotlin.math.roundToInt
 
 @HiltViewModel
 class BloodPressureViewModel @Inject constructor(
-    @IoDispatcher private val dispatcherIO: CoroutineDispatcher,
+    @IoDispatcher override var dispatcherIO: CoroutineDispatcher,
     private val bloodPressureRepo: BloodPressureRepo
-) : ViewModel() {
+) : BaseViewModel(dispatcherIO) {
     var bpLogCreateResponseLiveData = SingleLiveEvent<Resource<APIResponse<HashMap<String, Any>>>>()
     var bpLogListResponseLiveData = SingleLiveEvent<Resource<BPBGListModel>>()
 
@@ -162,7 +164,11 @@ class BloodPressureViewModel @Inject constructor(
         }
     }
 
-    fun createBpLog(hashMap: HashMap<String, Any>, patientDetails: PatientListRespModel) {
+    fun createBpLog(
+        hashMap: HashMap<String, Any>,
+        patientDetails: PatientListRespModel,
+        menuId: String?
+    ) {
         hashMap.apply {
             with(patientDetails) {
                 NCDMRUtil.getBioDataBioMetrics(
@@ -184,6 +190,11 @@ class BloodPressureViewModel @Inject constructor(
         }
         viewModelScope.launch(dispatcherIO) {
             bpLogCreateResponseLiveData.postLoading()
+            setAnalyticsData(
+                UserDetail.startDateTime,
+                eventName = AnalyticsDefinedParams.NCDBloodPressureCreation + " " + menuId,
+                isCompleted = true
+            )
             bpLogCreateResponseLiveData.postValue(bloodPressureRepo.createBpLog(hashMap))
         }
     }

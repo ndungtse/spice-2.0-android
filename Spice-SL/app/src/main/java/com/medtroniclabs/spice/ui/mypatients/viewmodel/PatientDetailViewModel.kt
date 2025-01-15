@@ -1,11 +1,11 @@
 package com.medtroniclabs.spice.ui.mypatients.viewmodel
 
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.medtroniclabs.spice.app.analytics.model.UserDetail
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.common.DefinedParams
-import com.medtroniclabs.spice.data.model.CreateLabourDeliveryRequest
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.model.PatientDetailRequest
 import com.medtroniclabs.spice.model.PatientListRespModel
@@ -15,6 +15,7 @@ import com.medtroniclabs.spice.ncd.data.NCDPregnancyRiskUpdate
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil
 import com.medtroniclabs.spice.ncd.medicalreview.repo.NCDMedicalReviewRepository
 import com.medtroniclabs.spice.network.resource.Resource
+import com.medtroniclabs.spice.ui.BaseViewModel
 import com.medtroniclabs.spice.ui.mypatients.repo.PatientRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
@@ -24,9 +25,9 @@ import javax.inject.Inject
 @HiltViewModel
 class PatientDetailViewModel @Inject constructor(
     private val patientRepository: PatientRepository,
-    @IoDispatcher private val dispatcherIO: CoroutineDispatcher,
+    @IoDispatcher override var dispatcherIO: CoroutineDispatcher,
     private val ncdMedicalReviewRepository: NCDMedicalReviewRepository
-): ViewModel() {
+): BaseViewModel(dispatcherIO) {
 
     var dateOfDelivery: String? =null
     var childPatientDetails: String? = null
@@ -163,6 +164,11 @@ class PatientDetailViewModel @Inject constructor(
     fun ncdGetInstructions() {
         viewModelScope.launch(dispatcherIO) {
             ncdInstructionModelResponse.postLoading()
+            setAnalyticsData(
+                UserDetail.startDateTime,
+                eventName = AnalyticsDefinedParams.NCDInstructionPregnancyRisk,
+                isCompleted = true
+            )
             ncdInstructionModelResponse.postValue(ncdMedicalReviewRepository.ncdGetInstructions())
         }
     }
@@ -170,6 +176,11 @@ class PatientDetailViewModel @Inject constructor(
     fun ncdUpdatePregnancyRisk(request: NCDPregnancyRiskUpdate) {
         viewModelScope.launch(dispatcherIO) {
             updatePregnancyRisk.postLoading()
+            setAnalyticsData(
+                UserDetail.startDateTime,
+                eventName = AnalyticsDefinedParams.NCDUpdatePregnancyRisk,
+                isCompleted = true
+            )
             updatePregnancyRisk.postValue(ncdMedicalReviewRepository.ncdUpdatePregnancyRisk(request))
         }
     }

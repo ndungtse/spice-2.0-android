@@ -13,6 +13,8 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.app.analytics.model.UserDetail
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.appextensions.convertToUtcDateTime
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.visible
@@ -512,6 +514,11 @@ class NCDCallResultBottomDialog : BottomSheetDialogFragment(), View.OnClickListe
                         viewModel.updatePatientCallRegister(request)
                     }
                 }
+                viewModel.setAnalyticsData(
+                    UserDetail.startDateTime,
+                    eventName = AnalyticsDefinedParams.NCDCallResult + " " + viewModel.type,
+                    isCompleted = true
+                )
             }
         }
     }

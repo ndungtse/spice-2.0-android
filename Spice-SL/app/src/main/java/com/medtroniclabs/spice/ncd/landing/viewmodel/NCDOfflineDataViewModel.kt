@@ -4,14 +4,19 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.switchMap
+import com.medtroniclabs.spice.di.IoDispatcher
+import com.medtroniclabs.spice.ui.BaseViewModel
 import com.medtroniclabs.spice.ui.boarding.repo.MetaRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineDispatcher
 import javax.inject.Inject
 
 @HiltViewModel
 class NCDOfflineDataViewModel @Inject constructor(
     private val metaRepository: MetaRepository,
-) : ViewModel() {
+    @IoDispatcher override var dispatcherIO: CoroutineDispatcher
+) : BaseViewModel(dispatcherIO) {
+
     private var toGetCount = MutableLiveData<Boolean>()
     val screeningCount: LiveData<Long> =
         toGetCount.switchMap {

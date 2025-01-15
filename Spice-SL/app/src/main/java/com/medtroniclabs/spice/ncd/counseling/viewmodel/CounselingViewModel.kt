@@ -5,6 +5,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
+import com.medtroniclabs.spice.app.analytics.model.UserDetail
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.common.RoleConstant
 import com.medtroniclabs.spice.common.SecuredPreference
@@ -17,6 +19,7 @@ import com.medtroniclabs.spice.ncd.data.NCDCounselingModel
 import com.medtroniclabs.spice.ncd.data.AssessmentResultModel
 import com.medtroniclabs.spice.ncd.counseling.repo.CounselingRepo
 import com.medtroniclabs.spice.network.SingleLiveEvent
+import com.medtroniclabs.spice.ui.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
@@ -25,9 +28,8 @@ import javax.inject.Inject
 @HiltViewModel
 class CounselingViewModel @Inject constructor(
     private val counselingRepo: CounselingRepo,
-    @IoDispatcher private val dispatcherIO: CoroutineDispatcher
-) :
-    ViewModel() {
+    @IoDispatcher override var dispatcherIO: CoroutineDispatcher
+) : BaseViewModel(dispatcherIO) {
     var patientReference: String? = null
     var memberReference: String? = null
     var encounterReference: String? = null
@@ -64,6 +66,11 @@ class CounselingViewModel @Inject constructor(
     fun createAssessment(request: NCDCounselingModel, lifestyle: Boolean) {
         viewModelScope.launch(dispatcherIO) {
             createAssessmentLiveData.postLoading()
+            setAnalyticsData(
+                UserDetail.startDateTime,
+                eventName = if (lifestyle) AnalyticsDefinedParams.NCDLifestyleManagementCreation else AnalyticsDefinedParams.NCDCounselorCreation,
+                isCompleted = true
+            )
             createAssessmentLiveData.postValue(counselingRepo.createAssessment(request, lifestyle))
         }
     }
@@ -71,6 +78,11 @@ class CounselingViewModel @Inject constructor(
     fun updateAssessment(request: AssessmentResultModel, lifestyle: Boolean) {
         viewModelScope.launch(dispatcherIO) {
             updateAssessmentLiveData.postLoading()
+            setAnalyticsData(
+                UserDetail.startDateTime,
+                eventName = if (lifestyle) AnalyticsDefinedParams.NCDLifestyleManagementUpdated else AnalyticsDefinedParams.NCDCounselorUpdated,
+                isCompleted = true
+            )
             updateAssessmentLiveData.postValue(counselingRepo.updateAssessment(request, lifestyle))
         }
     }
@@ -85,6 +97,11 @@ class CounselingViewModel @Inject constructor(
     fun removeAssessment(request: NCDCounselingModel, lifestyle: Boolean) {
         viewModelScope.launch(dispatcherIO) {
             removeAssessmentLiveData.postLoading()
+            setAnalyticsData(
+                UserDetail.startDateTime,
+                eventName = if (lifestyle) AnalyticsDefinedParams.NCDLifestyleManagementDelete else AnalyticsDefinedParams.NCDCounselorDelete,
+                isCompleted = true
+            )
             removeAssessmentLiveData.postValue(counselingRepo.removeAssessment(request, lifestyle))
         }
     }

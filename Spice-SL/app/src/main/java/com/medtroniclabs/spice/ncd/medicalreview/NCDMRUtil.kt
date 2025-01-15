@@ -115,7 +115,7 @@ object NCDMRUtil {
     const val HypertensionStatus = "hypertensionStatus"
     const val HypertensionYearOfDiagnosis = "hypertensionYearOfDiagnosis"
     const val KnownPatient = "Known Patient"
-
+    const val MENU_Name = "MENU_Name"
 
     fun validateInput(
         isMandatory: Boolean = false,

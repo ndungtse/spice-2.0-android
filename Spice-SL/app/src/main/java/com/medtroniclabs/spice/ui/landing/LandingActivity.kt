@@ -732,6 +732,11 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
                     )
                 ) { isPositiveResult, rejectionReason ->
                     if (isPositiveResult) {
+                        viewModel.setAnalyticsData(
+                            UserDetail.startDateTime,
+                            eventName = AnalyticsDefinedParams.NCDTransferStatus + " " + TransferStatusEnum.REJECTED.name,
+                            isCompleted = true
+                        )
                             viewModel.patientTransferUpdate(
                                 NCDPatientTransferUpdateRequest(
                                     id,
@@ -745,6 +750,11 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
             }
 
             else -> {
+                viewModel.setAnalyticsData(
+                    UserDetail.startDateTime,
+                    eventName = AnalyticsDefinedParams.NCDTransferStatus + " " + status,
+                    isCompleted = true
+                )
                 viewModel.patientTransferUpdate(
                     NCDPatientTransferUpdateRequest(
                         id,

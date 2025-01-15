@@ -5,6 +5,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
+import com.medtroniclabs.spice.app.analytics.model.UserDetail
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.data.APIResponse
 import com.medtroniclabs.spice.data.model.ChipViewItemModel
@@ -17,6 +19,7 @@ import com.medtroniclabs.spice.ncd.assessment.repo.BloodPressureRepo
 import com.medtroniclabs.spice.ncd.assessment.repo.GlucoseRepo
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.repo.AssessmentRepository
+import com.medtroniclabs.spice.ui.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
@@ -25,11 +28,11 @@ import kotlin.math.roundToInt
 
 @HiltViewModel
 class NCDBloodPressureVitalsViewModel @Inject constructor(
-    @IoDispatcher private val dispatcherIO: CoroutineDispatcher,
+    @IoDispatcher override var dispatcherIO: CoroutineDispatcher,
     private val bloodPressureRepo: BloodPressureRepo,
     private var assessmentRepository: AssessmentRepository,
     private val glucoseRepo: GlucoseRepo
-) : ViewModel() {
+) : BaseViewModel(dispatcherIO) {
 
     val resultHashMap = HashMap<String, Any>()
     var bpLog: FormLayout? = null
@@ -71,6 +74,11 @@ class NCDBloodPressureVitalsViewModel @Inject constructor(
     ) {
         viewModelScope.launch(dispatcherIO) {
             bpLogCreateResponseLiveData.postLoading()
+            setAnalyticsData(
+                UserDetail.startDateTime,
+                eventName = AnalyticsDefinedParams.NCDBloodPressureCreationForNurse,
+                isCompleted = true
+            )
             bpLogCreateResponseLiveData.postValue(bloodPressureRepo.createBpLogForNurse(hashMap))
         }
     }
@@ -140,6 +148,11 @@ class NCDBloodPressureVitalsViewModel @Inject constructor(
     fun glucoseLogCreate(result: HashMap<String, Any>) {
         viewModelScope.launch(dispatcherIO) {
             glucoseLogCreateResponseLiveData.postLoading()
+            setAnalyticsData(
+                UserDetail.startDateTime,
+                eventName = AnalyticsDefinedParams.NCDBloodGlucoseCreationForNurse,
+                isCompleted = true
+            )
             glucoseLogCreateResponseLiveData.postValue(glucoseRepo.glucoseLogCreateForNurse(result))
         }
     }

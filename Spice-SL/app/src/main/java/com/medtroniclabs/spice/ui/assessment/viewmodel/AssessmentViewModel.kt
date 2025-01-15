@@ -4,6 +4,8 @@ import android.location.Location
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
+import com.medtroniclabs.spice.app.analytics.model.UserDetail
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.appextensions.postSuccess
@@ -652,6 +654,11 @@ class AssessmentViewModel @Inject constructor(
                         userId = SecuredPreference.getUserId()
                     )
                     val rowId = assessmentRepository.saveAssessmentInformation(assessmentEntity)
+                    setAnalyticsData(
+                        UserDetail.startDateTime,
+                        eventName = AnalyticsDefinedParams.NCDAssessmentCreation + " " + menuId,
+                        isCompleted = true
+                    )
                     assessmentSaveResponse.postSuccess(Pair(rowId, onlineSaveResponse))
                 }
             } catch (e: Exception) {

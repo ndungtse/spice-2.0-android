@@ -5,6 +5,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.medtroniclabs.spice.app.analytics.model.UserDetail
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.appextensions.postSuccess
@@ -31,6 +33,7 @@ import com.medtroniclabs.spice.model.medicalreview.InvestigationModel
 import com.medtroniclabs.spice.model.medicalreview.SearchLabTestResponse
 import com.medtroniclabs.spice.network.SingleLiveEvent
 import com.medtroniclabs.spice.network.resource.Resource
+import com.medtroniclabs.spice.ui.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
@@ -39,8 +42,8 @@ import javax.inject.Inject
 @HiltViewModel
 class NCDLabTestViewModel @Inject constructor(
     private val labTestRepository: NCDLabTestRepository,
-    @IoDispatcher private val dispatcherIO: CoroutineDispatcher
-) : ViewModel() {
+    @IoDispatcher override var dispatcherIO: CoroutineDispatcher
+) : BaseViewModel(dispatcherIO) {
 
     val labTestListLiveData = MutableLiveData<Resource<ArrayList<LabTestListResponse>>>()
     val investigationListLiveData = MutableLiveData<ArrayList<InvestigationModel>>()
@@ -136,6 +139,11 @@ class NCDLabTestViewModel @Inject constructor(
                         provenance = ProvanceDto(),
                     ),
                     labTestList
+                )
+                setAnalyticsData(
+                    UserDetail.startDateTime,
+                    eventName = AnalyticsDefinedParams.NCDInvestigationResultCreation,
+                    isCompleted = true
                 )
                 createLabTestLiveData.postLoading()
                 createLabTestLiveData.postValue(labTestRepository.updateLabTest(request))

@@ -10,6 +10,8 @@ import android.widget.RadioButton
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.app.analytics.model.UserDetail
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.databinding.FragmentSortingDialogBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.network.utils.ConnectivityManager
@@ -124,6 +126,11 @@ class SortDialogFragment : DialogFragment(), View.OnClickListener {
     override fun onClick(view: View) {
         when (view.id) {
             binding.btnDone.id -> {
+                patientListViewModel.setAnalyticsData(
+                    UserDetail.startDateTime,
+                    eventName = AnalyticsDefinedParams.NCDPatientSort,
+                    isCompleted = true
+                )
                 patientListViewModel.setSort(true)
                 dismiss()
             }

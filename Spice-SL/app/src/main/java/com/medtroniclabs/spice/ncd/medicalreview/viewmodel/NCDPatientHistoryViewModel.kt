@@ -4,12 +4,14 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
+import com.medtroniclabs.spice.app.analytics.model.UserDetail
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.di.IoDispatcher
-import com.medtroniclabs.spice.ncd.data.NCDMRSummaryRequestResponse
 import com.medtroniclabs.spice.ncd.data.NCDPatientStatusRequest
 import com.medtroniclabs.spice.ncd.medicalreview.repo.NCDMedicalReviewRepository
 import com.medtroniclabs.spice.network.resource.Resource
+import com.medtroniclabs.spice.ui.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
@@ -17,9 +19,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class NCDPatientHistoryViewModel @Inject constructor(
-    @IoDispatcher private val dispatcherIO: CoroutineDispatcher,
+    @IoDispatcher override var dispatcherIO: CoroutineDispatcher,
     private val ncdMedicalReviewRepository: NCDMedicalReviewRepository
-) : ViewModel() {
+) : BaseViewModel(dispatcherIO) {
 
     var patientStatusId: String? = null
     var id: String? = null
@@ -42,6 +44,11 @@ class NCDPatientHistoryViewModel @Inject constructor(
     fun createNCDPatientStatus(request: NCDPatientStatusRequest) {
         viewModelScope.launch(dispatcherIO) {
             createNCDPatientStatus.postLoading()
+            setAnalyticsData(
+                UserDetail.startDateTime,
+                eventName = AnalyticsDefinedParams.NCDPatientHistoryCreationForNCD,
+                isCompleted = true
+            )
             createNCDPatientStatus.postValue(ncdMedicalReviewRepository.createNCDPatientStatus(request))
         }
     }

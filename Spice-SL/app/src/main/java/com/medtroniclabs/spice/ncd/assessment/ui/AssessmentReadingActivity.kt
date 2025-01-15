@@ -13,7 +13,6 @@ import com.medtroniclabs.spice.common.CommonUtils.calculateAverageBloodPressure
 import com.medtroniclabs.spice.common.CommonUtils.calculateBMI
 import com.medtroniclabs.spice.common.CommonUtils.calculateBloodGlucose
 import com.medtroniclabs.spice.common.CommonUtils.calculateCVDRiskFactor
-import com.medtroniclabs.spice.common.CommonUtils.toDoubleOrEmptyString
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.data.model.RecommendedDosageListModel
@@ -31,6 +30,7 @@ import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.ncd.assessment.viewmodel.AssessmentReadingViewModel
 import com.medtroniclabs.spice.ncd.assessment.viewmodel.BloodPressureViewModel
 import com.medtroniclabs.spice.ncd.assessment.viewmodel.GlucoseViewModel
+import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil
 import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDFormViewModel
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
@@ -325,7 +325,8 @@ class AssessmentReadingActivity : BaseActivity(), FormEventListener, View.OnClic
                         viewModel.patientDetails?.let { details ->
                             bpViewModel.createBpLog(
                                 requestMap,
-                                patientDetails = details
+                                patientDetails = details,
+                                intent.getStringExtra(NCDMRUtil.MENU_Name)
                             )
                         }
                     }
@@ -358,7 +359,8 @@ class AssessmentReadingActivity : BaseActivity(), FormEventListener, View.OnClic
                             viewModel.patientDetails?.let { details ->
                                 glucoseViewModel.glucoseLogCreate(
                                     requestMap,
-                                    patientDetails = details
+                                    patientDetails = details,
+                                    intent.getStringExtra(NCDMRUtil.MENU_Name)
                                 )
                             }
                         }

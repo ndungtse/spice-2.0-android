@@ -11,6 +11,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.view.isVisible
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.isVisible
 import com.medtroniclabs.spice.appextensions.setVisible
@@ -18,6 +19,8 @@ import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
+import com.medtroniclabs.spice.common.DefinedParams.MemberID
+import com.medtroniclabs.spice.common.DefinedParams.MenuId
 import com.medtroniclabs.spice.common.DefinedParams.ORIGIN
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
@@ -43,6 +46,7 @@ import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.EncounterReference
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.MATERNAL_HEALTH
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.MENTAL_HEALTH
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.MENU_ID
+import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.MENU_Name
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.NCD
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.getConfirmDiagnoses
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.getTypeForDiagnoses
@@ -612,7 +616,8 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
                 getEncounterReference(),
                 patientDetailViewModel.getNCDInitialMedicalReview(),
                 patientDetailViewModel.getGenderIsFemale(),
-                getMenuId()
+                getMenuId(),
+                intent.getStringExtra(MENU_ID)
             )
         )
         hideLoading()
@@ -855,7 +860,7 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
                 villageId = patientDetailViewModel.getPatientVillageId(),
                 provenance = ProvanceDto()
             )
-            summaryViewModel.createNCDMRSummaryCreate(request)
+            summaryViewModel.createNCDMRSummaryCreate(request,intent.getStringExtra(MENU_ID))
         })
     }
 
@@ -1045,7 +1050,8 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
             )
         }
         withNetworkCheck(connectivityManager, onNetworkAvailable = {
-            viewModel.createNCDMedicalReview(request)
+            val initialMr = if (patientDetailViewModel.getNCDInitialMedicalReview()) { AnalyticsDefinedParams.NCDContinuousMedicalReviewCreation } else { AnalyticsDefinedParams.NCDInitialMedicalReviewCreation}
+            viewModel.createNCDMedicalReview(request,intent.getStringExtra(MENU_ID),initialMr)
         })
     }
 
@@ -1322,6 +1328,7 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
                 if (isBP) DefinedParams.BP_LOG else DefinedParams.GLUCOSE_LOG
             )
             intent.putExtra(DefinedParams.IntentPatientDetails, detail)
+            intent.putExtra(MENU_Name, intent.getStringExtra(MENU_ID))
             getResult.launch(intent)
         }
     }
@@ -1337,7 +1344,8 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
                 getConfirmDiagnoses(getMenuId()),
                 patientDetailViewModel.isPregnant(),
                 isDiagnosisMismatch = isDiagnosisMismatch,
-                getMenuId()
+                getMenuId(),
+                intent.getStringExtra(MenuId)
             ).apply {
                 listener = this@NCDMedicalReviewActivity
             }.show(supportFragmentManager, NCDDiagnosisDialogFragment.TAG)

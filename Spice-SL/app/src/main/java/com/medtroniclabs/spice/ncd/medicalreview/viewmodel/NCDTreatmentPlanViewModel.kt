@@ -2,9 +2,10 @@ package com.medtroniclabs.spice.ncd.medicalreview.viewmodel
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
+import com.medtroniclabs.spice.app.analytics.model.UserDetail
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.data.APIResponse
 import com.medtroniclabs.spice.db.entity.TreatmentPlanEntity
@@ -13,6 +14,7 @@ import com.medtroniclabs.spice.ncd.data.NCDTreatmentPlanModel
 import com.medtroniclabs.spice.ncd.data.NCDTreatmentPlanModelDetails
 import com.medtroniclabs.spice.ncd.medicalreview.repo.NCDTreatmentPlanRepo
 import com.medtroniclabs.spice.network.resource.Resource
+import com.medtroniclabs.spice.ui.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
@@ -20,9 +22,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class NCDTreatmentPlanViewModel @Inject constructor(
-    @IoDispatcher private val dispatcherIO: CoroutineDispatcher,
+    @IoDispatcher override var dispatcherIO: CoroutineDispatcher,
     private val ncdTreatmentPlanRepo: NCDTreatmentPlanRepo
-) : ViewModel() {
+) : BaseViewModel(dispatcherIO) {
     var patientReference: String? = null
     var memberReference: String? = null
     var carePlanId: String? = null
@@ -60,6 +62,11 @@ class NCDTreatmentPlanViewModel @Inject constructor(
     fun updateNCDTreatmentPlan(request: NCDTreatmentPlanModel) {
         viewModelScope.launch(dispatcherIO) {
             updateNCDTreatmentPlanLiveData.postLoading()
+            setAnalyticsData(
+                UserDetail.startDateTime,
+                eventName = AnalyticsDefinedParams.NCDTreatmentPlanCreation,
+                isCompleted = true
+            )
             updateNCDTreatmentPlanLiveData.postValue(
                 ncdTreatmentPlanRepo.updateNCDTreatmentPlan(
                     request

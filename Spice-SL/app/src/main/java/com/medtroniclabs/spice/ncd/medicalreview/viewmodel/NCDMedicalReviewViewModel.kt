@@ -1,9 +1,8 @@
 package com.medtroniclabs.spice.ncd.medicalreview.viewmodel
 
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.medtroniclabs.spice.app.analytics.model.UserDetail
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.db.entity.NCDDiagnosisEntity
 import com.medtroniclabs.spice.di.IoDispatcher
@@ -12,17 +11,17 @@ import com.medtroniclabs.spice.ncd.data.MedicalReviewRequestResponse
 import com.medtroniclabs.spice.ncd.data.MedicalReviewResponse
 import com.medtroniclabs.spice.ncd.medicalreview.repo.NCDMedicalReviewRepository
 import com.medtroniclabs.spice.network.resource.Resource
+import com.medtroniclabs.spice.ui.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
-import okhttp3.ResponseBody
 import javax.inject.Inject
 
 @HiltViewModel
 class NCDMedicalReviewViewModel @Inject constructor(
     private var ncdMedicalReviewRepo: NCDMedicalReviewRepository,
-    @IoDispatcher private val dispatcherIO: CoroutineDispatcher
-) : ViewModel() {
+    @IoDispatcher override var dispatcherIO: CoroutineDispatcher
+) : BaseViewModel(dispatcherIO) {
     val ncdPatientDiagnosisStatus = MutableLiveData<Resource<HashMap<String, Any>>>()
 
     val ncdMedicalReviewStaticLiveData = MutableLiveData<Resource<Boolean>>()
@@ -42,9 +41,14 @@ class NCDMedicalReviewViewModel @Inject constructor(
         }
     }
 
-    fun createNCDMedicalReview(request: MedicalReviewRequestResponse) {
+    fun createNCDMedicalReview(request: MedicalReviewRequestResponse, menuId: String? = null,initialMr:String) {
         viewModelScope.launch(dispatcherIO) {
             createMedicalReview.postLoading()
+            setAnalyticsData(
+                UserDetail.startDateTime,
+                eventName = "$initialMr $menuId",
+                isCompleted = true
+            )
             createMedicalReview.postValue(
                 ncdMedicalReviewRepo.createNCDMedicalReview(request)
             )

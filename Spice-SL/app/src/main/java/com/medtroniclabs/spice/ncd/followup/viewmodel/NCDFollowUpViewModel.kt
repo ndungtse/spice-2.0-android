@@ -6,6 +6,8 @@ import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
+import com.medtroniclabs.spice.app.analytics.model.UserDetail
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.appextensions.postSuccess
 import com.medtroniclabs.spice.common.DateUtils
@@ -96,12 +98,24 @@ class NCDFollowUpViewModel @Inject constructor(
 
     fun updatePatientCallRegister(request: FollowUpUpdateRequest) {
         viewModelScope.launch(dispatcherIO) {
+            if (request.isInitiated) {
+                setAnalyticsData(
+                    UserDetail.startDateTime,
+                    eventName = AnalyticsDefinedParams.NCDCallInitialed+" "+ request.type.takeIf { !it.isNullOrBlank() },
+                    isCompleted = true
+                )
+            }
             statusUpdateResponse.postLoading()
             statusUpdateResponse.postValue(ncdFollowUpRepo.updatePatientCallRegister(request))
         }
     }
 
     fun filterLiveData() {
+        setAnalyticsData(
+            UserDetail.startDateTime,
+            eventName = AnalyticsDefinedParams.NCDFollowUpFilter + " " + type.takeIf { it.isNotBlank() },
+            isCompleted = true
+        )
         filterSet.postValue(true)
         val count = listOfNotNull(
             dateRange.takeIf { !it.isNullOrBlank() },
@@ -148,6 +162,11 @@ class NCDFollowUpViewModel @Inject constructor(
     var selectedHealthFacilityName: String? = null
 
     fun filterFollowUpOfflineLiveData() {
+        setAnalyticsData(
+            UserDetail.startDateTime,
+            eventName = AnalyticsDefinedParams.NCDFollowUpFilter + " " + typeOffline.takeIf { it.isNotBlank() },
+            isCompleted = true
+        )
         searchTextOfflineLiveData.value = true
         val count = listOfNotNull(
             filterByDateRange.takeIf { !it.isNullOrEmpty() },
@@ -178,6 +197,11 @@ class NCDFollowUpViewModel @Inject constructor(
             try {
                 updateCallLiveData.postLoading()
                 val updatedFollowUp = ncdFollowUpRepo.updatedCallInitiatedCall(value)
+                setAnalyticsData(
+                    UserDetail.startDateTime,
+                    eventName = AnalyticsDefinedParams.NCDCallInitialed+" "+ value.type.takeIf { !it.isNullOrBlank() },
+                    isCompleted = true
+                )
                 updateCallLiveData.postSuccess(updatedFollowUp)
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -248,6 +272,11 @@ class NCDFollowUpViewModel @Inject constructor(
     private var sortTriple: Pair<Boolean?, String?> = Pair(null, null)
 
     fun sortTriple() {
+        setAnalyticsData(
+            UserDetail.startDateTime,
+            eventName = AnalyticsDefinedParams.NCDFollowUpSort + " " + typeOffline.takeIf { it.isNotBlank() },
+            isCompleted = true
+        )
         val (triple, list) = when (typeOffline) {
             NCDFollowUpUtils.SCREENED -> sortModel?.isScreeningDueDate to null
             NCDFollowUpUtils.Assessment_Type -> sortModel?.isAssessmentDueDate to null

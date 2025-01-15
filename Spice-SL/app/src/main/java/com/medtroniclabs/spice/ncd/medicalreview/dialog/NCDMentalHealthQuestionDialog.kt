@@ -9,6 +9,8 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import com.google.gson.Gson
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.app.analytics.model.UserDetail
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.invisible
 import com.medtroniclabs.spice.appextensions.loadAsGif
@@ -464,6 +466,11 @@ class NCDMentalHealthQuestionDialog(private val callback: ((successDialog: Pair<
                     val reqMap = StringConverter.convertStringToMap(it)
                     val request = StringConverter.getJsonObject(
                         Gson().toJson(reqMap)
+                    )
+                    viewModel.setAnalyticsData(
+                        UserDetail.startDateTime,
+                        eventName = AnalyticsDefinedParams.NCDMentalHealthCreation + " " + myFormType().takeIf { data -> !data.isNullOrBlank() },
+                        isCompleted = true
                     )
                     viewModel.ncdMentalHealthMedicalReviewCreate(request, isAssessment())
                 }

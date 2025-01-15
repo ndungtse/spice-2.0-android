@@ -3,6 +3,8 @@ package com.medtroniclabs.spice.ui.patientDelete.viewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.medtroniclabs.spice.app.analytics.model.UserDetail
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.appextensions.postSuccess
@@ -13,6 +15,7 @@ import com.medtroniclabs.spice.ncd.data.NCDPatientRemoveRequest
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil
 import com.medtroniclabs.spice.ncd.medicalreview.repo.NCDMedicalReviewRepository
 import com.medtroniclabs.spice.network.resource.Resource
+import com.medtroniclabs.spice.ui.BaseViewModel
 import com.medtroniclabs.spice.ui.mypatients.repo.PatientRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
@@ -23,8 +26,8 @@ import javax.inject.Inject
 class NCDPatientDeleteViewModel @Inject constructor(
     private var ncdMedicalReviewRepo: NCDMedicalReviewRepository,
     private val patientRepository: PatientRepository,
-    @IoDispatcher private val dispatcherIO: CoroutineDispatcher
-) : ViewModel() {
+    @IoDispatcher override var dispatcherIO: CoroutineDispatcher
+) : BaseViewModel(dispatcherIO) {
 
     val deleteReasonList = MutableLiveData<List<ShortageReasonEntity>>()
     val patientRemoveResponse = MutableLiveData<Resource<Boolean>>()
@@ -47,6 +50,11 @@ class NCDPatientDeleteViewModel @Inject constructor(
     fun ncdPatientRemove(request: NCDPatientRemoveRequest) {
         viewModelScope.launch(dispatcherIO) {
             patientRemoveResponse.postLoading()
+            setAnalyticsData(
+                UserDetail.startDateTime,
+                eventName = AnalyticsDefinedParams.NCDPatientDelete,
+                isCompleted = true
+            )
             patientRemoveResponse.postValue(patientRepository.ncdPatientRemove(request))
         }
     }

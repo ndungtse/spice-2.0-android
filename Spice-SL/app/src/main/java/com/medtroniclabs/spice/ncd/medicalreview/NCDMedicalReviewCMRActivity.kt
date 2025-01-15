@@ -10,6 +10,8 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.widget.PopupMenu
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.app.analytics.model.UserDetail
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.setError
 import com.medtroniclabs.spice.appextensions.setVisible
@@ -420,6 +422,11 @@ class NCDMedicalReviewCMRActivity : BaseActivity(), View.OnClickListener, AncVis
                         ncdLifestyleDialog.show(supportFragmentManager, NCDLifestyleDialog.TAG)
                     }
                 } else {
+                    viewModel.setAnalyticsData(
+                        UserDetail.startDateTime,
+                        eventName = AnalyticsDefinedParams.NCDCMRMedicalReviewCreation,
+                        isCompleted = true
+                    )
                     val intent = Intent(this, AssessmentToolsActivity::class.java)
                     intent.putExtra(DefinedParams.FhirId, getFhirId())
                     intent.putExtra(DefinedParams.PatientId, getPatientId())

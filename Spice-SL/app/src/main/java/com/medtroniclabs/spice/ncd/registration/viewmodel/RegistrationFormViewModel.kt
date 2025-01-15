@@ -3,8 +3,9 @@ package com.medtroniclabs.spice.ncd.registration.viewmodel
 import android.content.Context
 import android.graphics.Bitmap
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.medtroniclabs.spice.app.analytics.model.UserDetail
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.common.CommonUtils
@@ -19,6 +20,7 @@ import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.mappingkey.Screening
 import com.medtroniclabs.spice.ncd.registration.repo.RegistrationRepository
 import com.medtroniclabs.spice.network.resource.Resource
+import com.medtroniclabs.spice.ui.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
@@ -30,10 +32,10 @@ import java.io.FileOutputStream
 import javax.inject.Inject
 
 @HiltViewModel
-class RegistrationFormViewModel @Inject constructor(
-    @IoDispatcher private val dispatcherIO: CoroutineDispatcher,
+class RegistrationFormViewModel  @Inject constructor(
+    @IoDispatcher override var dispatcherIO: CoroutineDispatcher,
     private var registrationRepository: RegistrationRepository
-) : ViewModel() {
+) : BaseViewModel(dispatcherIO) {
     var registrationResponseLiveData = MutableLiveData<Resource<RegistrationResponse>>()
     var validatePatientResponseLiveDate =
         MutableLiveData<Resource<Pair<HashMap<String, Any>, List<FormLayout?>?>>>()
@@ -142,6 +144,11 @@ class RegistrationFormViewModel @Inject constructor(
 
         viewModelScope.launch(dispatcherIO) {
             registrationResponseLiveData.postLoading()
+            setAnalyticsData(
+                UserDetail.startDateTime,
+                eventName = AnalyticsDefinedParams.NCDRegistrationCreation,
+                isCompleted = true
+            )
             registrationResponseLiveData.postValue(registrationRepository.registerPatient(builder.build()))
         }
     }

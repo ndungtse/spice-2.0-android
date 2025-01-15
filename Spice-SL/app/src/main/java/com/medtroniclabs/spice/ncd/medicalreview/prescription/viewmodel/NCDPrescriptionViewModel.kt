@@ -5,6 +5,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
+import com.medtroniclabs.spice.app.analytics.model.UserDetail
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.appextensions.postSuccess
@@ -30,6 +32,7 @@ import com.medtroniclabs.spice.ncd.data.PrescriptionNudgeResponse
 import com.medtroniclabs.spice.ncd.medicalreview.prescription.repo.NCDPrescriptionRepo
 import com.medtroniclabs.spice.network.SingleLiveEvent
 import com.medtroniclabs.spice.network.resource.Resource
+import com.medtroniclabs.spice.ui.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
@@ -42,9 +45,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class NCDPrescriptionViewModel @Inject constructor(
-    @IoDispatcher private val dispatcherIO: CoroutineDispatcher,
+    @IoDispatcher override var dispatcherIO: CoroutineDispatcher,
     private val prescriptionRepository: NCDPrescriptionRepo
-) : ViewModel() {
+) : BaseViewModel(dispatcherIO) {
 
     val medicationListLiveData = MutableLiveData<Resource<ArrayList<MedicationResponse>>>()
     val prescriptionListLiveData = MutableLiveData<Resource<ArrayList<Prescription>>>()
@@ -93,6 +96,11 @@ class NCDPrescriptionViewModel @Inject constructor(
     fun removePrescription(prescriptionId: String, reason: String?) {
         viewModelScope.launch(dispatcherIO) {
             removePrescriptionLiveData.postLoading()
+            setAnalyticsData(
+                UserDetail.startDateTime,
+                eventName = AnalyticsDefinedParams.NCDPrescriptionDelete,
+                isCompleted = true
+            )
             val response = prescriptionRepository.removePrescription(
                 RemovePrescriptionRequest(
                     prescriptionId, ProvanceDto(),
@@ -237,6 +245,11 @@ class NCDPrescriptionViewModel @Inject constructor(
         val dataRequest = Gson().toJson(prescriptionRequest)
         builder.addFormDataPart("prescriptionRequest", dataRequest)
         val requestBody = builder.build()
+        setAnalyticsData(
+            UserDetail.startDateTime,
+            eventName = AnalyticsDefinedParams.NCDPrescriptionCreation,
+            isCompleted = true
+        )
         val response = prescriptionRepository.createPrescriptionRequest(requestBody)
         response.data?.let {
             createPrescriptionLiveData.postSuccess(it)

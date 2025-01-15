@@ -26,6 +26,7 @@ import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.CONFIRM_DIAGNOSIS_TYPE
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.CONFIRM_DIAGNOSIS_TYPE_GET
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.IsPregnant
+import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.MENU_Name
 import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDDiagnosisViewModel
 import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDMedicalReviewViewModel
 import com.medtroniclabs.spice.network.resource.ResourceState
@@ -61,7 +62,8 @@ class NCDDiagnosisDialogFragment : DialogFragment(), View.OnClickListener {
             getTypes: ArrayList<String>,
             isPregnant: Boolean,
             isDiagnosisMismatch: Boolean,
-            type: String? = null
+            type: String? = null,
+            menuName:String? = null
         ) = NCDDiagnosisDialogFragment().apply {
                 arguments = Bundle().apply {
                     putString(DefinedParams.PatientId, patientId)
@@ -72,6 +74,7 @@ class NCDDiagnosisDialogFragment : DialogFragment(), View.OnClickListener {
                     putBoolean(NCDMRUtil.IS_DIAGNOSIS_MISMATCH, isDiagnosisMismatch)
                     putBoolean(IsPregnant, isPregnant)
                     putString(Screening.Type,type)
+                    putString(MENU_Name, menuName)
                 }
             }
     }
@@ -318,7 +321,7 @@ class NCDDiagnosisDialogFragment : DialogFragment(), View.OnClickListener {
             memberReference = getMemberId(),
             type = getTypeForRequest()
         )
-        viewModel.createConfirmDiagonsis(request)
+        viewModel.createConfirmDiagonsis(request,arguments?.getString(MENU_Name))
     }
 
     fun validateInput(): Boolean {

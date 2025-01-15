@@ -5,6 +5,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
 import com.google.gson.JsonObject
+import com.medtroniclabs.spice.app.analytics.model.UserDetail
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.data.model.MultiSelectDropDownModel
 import com.medtroniclabs.spice.di.IoDispatcher
@@ -13,6 +15,7 @@ import com.medtroniclabs.spice.ncd.data.NCDMentalHealthStatusRequest
 import com.medtroniclabs.spice.ncd.medicalreview.repo.NCDMedicalReviewRepository
 import com.medtroniclabs.spice.network.SingleLiveEvent
 import com.medtroniclabs.spice.network.resource.Resource
+import com.medtroniclabs.spice.ui.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
@@ -21,8 +24,8 @@ import javax.inject.Inject
 @HiltViewModel
 class NCDMentalHealthViewModel @Inject constructor(
     private val ncdMedicalReviewRepository: NCDMedicalReviewRepository,
-    @IoDispatcher private val dispatcherIO: CoroutineDispatcher
-) : ViewModel() {
+    @IoDispatcher override var dispatcherIO: CoroutineDispatcher
+) : BaseViewModel(dispatcherIO) {
 
     var patientStatusId: String? = null
     var id: String? = null
@@ -78,6 +81,11 @@ class NCDMentalHealthViewModel @Inject constructor(
     fun createMentalHealthStatus(request: NCDMentalHealthStatusRequest) {
         viewModelScope.launch(dispatcherIO) {
             createMentalHealthStatus.postLoading()
+            setAnalyticsData(
+                UserDetail.startDateTime,
+                eventName = AnalyticsDefinedParams.NCDPatientHistoryCreationForMentalHealth,
+                isCompleted = true
+            )
             createMentalHealthStatus.postValue(ncdMedicalReviewRepository.createMentalHealthStatus(request))
         }
     }

@@ -37,6 +37,7 @@ import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.IS_INITIAL_MR
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.MENTALHEALTH
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.MENU_ID
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.SUBSTANCE_DISORDER
+import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil.MENU_Name
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMedicalReviewActivity
 import com.medtroniclabs.spice.ncd.medicalreview.dialog.NCDDiagnosisDialogFragment
 import com.medtroniclabs.spice.ncd.medicalreview.dialog.NCDMentalHealthQuestionDialog
@@ -72,13 +73,14 @@ class NCDMedicalReviewDiagnosisCardFragment : BaseFragment(), View.OnClickListen
 
     companion object {
         const val TAG = "NCDMedicalReviewDiagnosisCardFragment"
-        fun newInstance(visitId: String?, isInitial: Boolean, isFemale: Boolean, menu: String?) =
+        fun newInstance(visitId: String?, isInitial: Boolean, isFemale: Boolean, menu: String?,menuName:String?) =
             NCDMedicalReviewDiagnosisCardFragment().apply {
                 arguments = Bundle().apply {
                     putString(EncounterReference, visitId)
                     putBoolean(IS_INITIAL_MR, isInitial)
                     putBoolean(IS_FEMALE, isFemale)
                     putString(MENU_ID, menu)
+                    putString(MENU_Name, menuName)
                 }
             }
     }
@@ -408,7 +410,8 @@ class NCDMedicalReviewDiagnosisCardFragment : BaseFragment(), View.OnClickListen
                 NCDMRUtil.getConfirmDiagnoses(getMenu()),
                 patientDetailViewModel.isPregnant(),
                 isDiagnosisMismatch = false,
-                getMenu()
+                getMenu(),
+                arguments?.getString(MENU_Name)
             ).apply {
                 listener = this@NCDMedicalReviewDiagnosisCardFragment
             }.show(childFragmentManager, NCDDiagnosisDialogFragment.TAG)
@@ -502,6 +505,7 @@ class NCDMedicalReviewDiagnosisCardFragment : BaseFragment(), View.OnClickListen
                 DefinedParams.FORM_TYPE_ID,
                 if (isBP) DefinedParams.BP_LOG else DefinedParams.GLUCOSE_LOG
             )
+            intent.putExtra(MENU_Name, arguments?.getString(MENU_Name))
             intent.putExtra(DefinedParams.IntentPatientDetails, detail)
             getResult.launch(intent)
         }

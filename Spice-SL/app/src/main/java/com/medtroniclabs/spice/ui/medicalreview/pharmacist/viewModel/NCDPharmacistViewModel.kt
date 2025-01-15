@@ -3,6 +3,8 @@ package com.medtroniclabs.spice.ui.medicalreview.pharmacist.viewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.medtroniclabs.spice.app.analytics.model.UserDetail
+import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.appextensions.postSuccess
@@ -17,6 +19,7 @@ import com.medtroniclabs.spice.data.ShortageReasonEntity
 import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.network.resource.Resource
+import com.medtroniclabs.spice.ui.BaseViewModel
 import com.medtroniclabs.spice.ui.medicalreview.pharmacist.repo.NCDPharmacistRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
@@ -26,8 +29,8 @@ import javax.inject.Inject
 @HiltViewModel
 class NCDPharmacistViewModel @Inject constructor(
     private var nCDPharmacistRepository: NCDPharmacistRepository,
-    @IoDispatcher private val dispatcherIO: CoroutineDispatcher
-) : ViewModel() {
+    @IoDispatcher override var dispatcherIO: CoroutineDispatcher
+) : BaseViewModel(dispatcherIO) {
 
     var patientVisitId: String? = null
     var memberId: String? = null
@@ -90,7 +93,11 @@ class NCDPharmacistViewModel @Inject constructor(
                 prescriptions = request
             )
             updatePrescriptionLiveData.postLoading()
-
+            setAnalyticsData(
+                UserDetail.startDateTime,
+                eventName = AnalyticsDefinedParams.NCDPrescriptionUpdated,
+                isCompleted = true
+            )
             updatePrescriptionLiveData.postValue(
                 nCDPharmacistRepository.updateDispensePrescription(
                     prescriptionRequest
