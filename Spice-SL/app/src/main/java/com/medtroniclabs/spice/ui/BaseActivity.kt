@@ -194,15 +194,20 @@ open class BaseActivity : SpiceRootActivity() {
 
     fun showErrorSnackBar(
         text: String,
+        default: Int = Snackbar.LENGTH_LONG,
+        durationInMillis: Int? = null
     ) {
         val rootView = findViewById<View>(android.R.id.content) ?: return
-        val snackBar = Snackbar.make(rootView, "", Snackbar.LENGTH_LONG)
+        val snackBar = Snackbar.make(rootView, "", default)
         val binding = ErrorLayoutBinding.inflate(layoutInflater)
         binding.tvErrorMessage.text = text
         snackBar.view.setBackgroundColor(Color.TRANSPARENT)
         val snackBarLayout = snackBar.view as Snackbar.SnackbarLayout
         snackBarLayout.setPadding(0, 0, 0, 0)
         snackBarLayout.addView(binding.root)
+        durationInMillis?.let {
+            snackBar.duration = durationInMillis
+        }
         snackBar.show()
     }
 

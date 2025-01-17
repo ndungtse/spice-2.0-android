@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import com.google.android.material.snackbar.Snackbar
 import com.medtroniclabs.spice.BuildConfig
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.app.analytics.model.UserDetail
@@ -33,7 +34,7 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
     private lateinit var binding: ActivityLoginBinding
     private val viewModel: LoginViewModel by viewModels()
     private var unSyncedDataCount = 0
-
+    private val snackBarDuration = 10000
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityLoginBinding.inflate(layoutInflater)
@@ -104,7 +105,13 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
                             }
                         }
                     } ?: resourceState.message?.let {
-                        showErrorSnackBar(it)
+                        if (it.equals(getString(R.string.invalid_credentials),true)
+                            && CommonUtils.isCommunity()) {
+                            showErrorSnackBar(getString(R.string.invalid_credentials_custom),
+                                Snackbar.LENGTH_INDEFINITE, snackBarDuration)
+                        } else {
+                            showErrorSnackBar(it)
+                        }
                     }
                 }
             }
@@ -194,6 +201,7 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
         binding.tvUserEmailError.visibility = View.GONE
         binding.tvUserPasswordError.visibility = View.GONE
         if (!connectivityManager.isNetworkAvailable()) {
+            showErrorSnackBar(getString(R.string.no_internet_error))
             val isToShowAlert = ((((userName == SecuredPreference.getString(
                 SecuredPreference.EnvironmentKey.USERNAME.name
             )) || (userName == SecuredPreference.getString(

@@ -580,10 +580,11 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
 
             DeathOfMother -> {
                 val visitCount = viewModel.memberClinicalLiveData.value?.visitCount ?: 0
+                val lmb = viewModel.memberClinicalLiveData.value?.clinicalDate
                 val lmpView = formGenerator.getViewByTag(RMNCH.lastMenstrualPeriod + formGenerator.rootSuffix)
                 if (visitCount >= 1 && selectedId == false) {
                     lmpView?.gone()
-                } else if (visitCount <= 1 && selectedId == false) {
+                } else if (visitCount <= 1 && selectedId == false && lmb.isNullOrBlank()) {
                     lmpView?.visible()
                 }
             }

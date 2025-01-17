@@ -451,7 +451,7 @@ object SpiceSLMigration {
         override fun migrate(database: SupportSQLiteDatabase) {
             // Add the new deceasedReason column
             database.execSQL("ALTER TABLE HouseholdMember ADD COLUMN deceasedReason TEXT")
-            database.execSQL("ALTER TABLE HouseholdMember ADD COLUMN latitude REAL")
-            database.execSQL("ALTER TABLE HouseholdMember ADD COLUMN longitude REAL")       }
+            database.execSQL("ALTER TABLE HouseHoldMember ADD COLUMN latitude REAL NOT NULL DEFAULT 0.0")
+            database.execSQL("ALTER TABLE HouseHoldMember ADD COLUMN longitude REAL NOT NULL DEFAULT 0.0")     }
     }
 }

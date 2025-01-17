@@ -171,7 +171,7 @@ class AssessmentRMNCHNeonateViewModel @Inject constructor(
                 assessmentDetail.third,
                 memberDetail,
                 motherReferralResult,
-                null,
+                getCurrentLocation(),
                 otherDetails,
                 Triple(childMemberId, followUpId,deathOfNewborn),
                 childReferralResult

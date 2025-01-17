@@ -900,7 +900,7 @@ class AssessmentViewModel @Inject constructor(
                     null,
                     memberDetail,
                     motherReferralResult,
-                    null,
+                    getCurrentLocation(),
                     otherDetails,
                     Triple(childMemberId, followUpId,deathOfNewborn),
                     childReferralResult

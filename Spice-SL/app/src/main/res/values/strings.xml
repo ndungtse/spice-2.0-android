@@ -1252,6 +1252,8 @@
     <string name="age_validation_father_mother">The Father or Mother must be at least 10 years older than the Household Head.</string>
     <string name="age_validation_grandchild">A Grandchild must be at least 30 years younger than the Household Head.</string>
     <string name="age_validation_grandparent">A Grandparent must be at least 30 years older than the Household Head.</string>
+    <string name="invalid_credentials">Invalid credentials</string>
+    <string name="invalid_credentials_custom">Your username or password might be wrong. Please try again, or click on \'Forgot Password\' for help.</string>
 
     <string name="support_label" translatable="false">Please write your issues with the\napplication</string>
     <string name="support" translatable="false">Support</string>
