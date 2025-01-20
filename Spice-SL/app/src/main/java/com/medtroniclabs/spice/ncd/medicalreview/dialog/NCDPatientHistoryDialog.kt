@@ -98,6 +98,7 @@ class NCDPatientHistoryDialog : DialogFragment(), View.OnClickListener {
         ): NCDPatientHistoryDialog {
             return NCDPatientHistoryDialog().apply {
                 arguments = Bundle().apply {
+                    putString(NCDMRUtil.VISIT_ID,visitId)
                     putString(NCDMRUtil.PATIENT_REFERENCE, patientReference)
                     putString(NCDMRUtil.MEMBER_REFERENCE, memberReference)
                     putBoolean(NCDMRUtil.IS_FEMALE, isFemale)
@@ -109,6 +110,9 @@ class NCDPatientHistoryDialog : DialogFragment(), View.OnClickListener {
 
     private fun getPatientReference(): String? {
         return arguments?.getString(NCDMRUtil.PATIENT_REFERENCE)
+    }
+    private fun getVisitId(): String? {
+        return arguments?.getString(NCDMRUtil.VISIT_ID)
     }
 
     private fun getMemberReference(): String? {
@@ -461,6 +465,7 @@ class NCDPatientHistoryDialog : DialogFragment(), View.OnClickListener {
                         provenance = ProvanceDto(),
                         patientReference = getPatientReference(),
                         memberReference = getMemberReference(),
+                        patientVisitId = getVisitId(),
                         ncdPatientStatus = NcdPatientStatus(
                             id = viewModel.id,
                             diabetesStatus = viewModel.resultDiabetesHashMap[Diabetes] as? String,

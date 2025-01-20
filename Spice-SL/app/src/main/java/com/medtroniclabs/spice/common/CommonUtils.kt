@@ -1208,14 +1208,14 @@ object CommonUtils {
     private fun updateGlucoseLog(hashMap: HashMap<String, Any>, map: Map<*, *>) {
         var isChanged = false
         val subMap = HashMap(map)
-        if (!subMap.containsKey(Screening.BloodGlucoseID) && subMap.containsKey(
+        if (!subMap.containsKey(Screening.Glucose_Value) && subMap.containsKey(
                 lastMealTime
             )
         ) {
             isChanged = true
             subMap.remove(key = lastMealTime)
         }
-        if (subMap.containsKey(Screening.BloodGlucoseID) &&
+        if (subMap.containsKey(Screening.Glucose_Value) &&
             !subMap.containsKey(Screening.BloodGlucoseID + Screening.unitMeasurement_KEY)
         ) {
             isChanged = true

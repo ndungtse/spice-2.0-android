@@ -119,7 +119,9 @@ class NCDFollowUpMRFragment : BaseFragment(), PatientSelectionListenerForFollowU
     }
 
     override fun onSelectedPatientForAssessment(item: PatientFollowUpEntity) {
-        launchAssessment(item, requireContext())
+        withNetworkAvailability(online = {
+            launchAssessment(item, requireContext())
+        })
     }
 
     override fun onSelectedPatientCard(item: PatientFollowUpEntity) {

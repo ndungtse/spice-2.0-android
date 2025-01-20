@@ -430,9 +430,6 @@ class NCDMentalHealthQuestionDialog(private val callback: ((successDialog: Pair<
         //Encounter object [Encounter ID and Provance]
         val provenance = HashMap<String, Any>()
         provenance[DefinedParams.Provenance] = ProvanceDto()
-        viewModel.encounterId?.let {
-            provenance[DefinedParams.id] = it
-        }
         map[AssessmentDefinedParams.encounter] = provenance
 
         when (myFormType()) {

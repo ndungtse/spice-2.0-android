@@ -30,4 +30,5 @@ data class PregnancyDetailsModel(
     var temperature: Int? = null,
     var ncdPatientStatus: NcdPatientStatus? = null,
     val provenance: ProvanceDto = ProvanceDto(),
+    var patientVisitId: String? = null
 )

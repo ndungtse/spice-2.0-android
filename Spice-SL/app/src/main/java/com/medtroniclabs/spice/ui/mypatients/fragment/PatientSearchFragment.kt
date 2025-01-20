@@ -210,6 +210,7 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
                             MenuConstants.DISPENSE.lowercase() -> NCDPharmacistActivity::class.java
                             MenuConstants.LIFESTYLE.lowercase() -> NCDNutritionistActivity::class.java
                             MenuConstants.PSYCHOLOGICAL.lowercase() -> NCDCounselorActivity::class.java
+                            MenuConstants.INVESTIGATION.lowercase() -> NCDLabTestListActivity::class.java
                             MenuConstants.MY_PATIENTS_MENU_ID.lowercase() -> if (it.initialReviewed == true || CommonUtils.isNutritionist()) NCDMedicalReviewCMRActivity::class.java else AssessmentToolsActivity::class.java
                             else -> null
                         }
@@ -342,7 +343,7 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
                 val destinationIntent = when (origin) {
                     MenuConstants.REGISTRATION.lowercase() -> RegistrationActivity::class.java
                     MenuConstants.ASSESSMENT.lowercase() -> AssessmentToolsActivity::class.java
-                    MenuConstants.INVESTIGATION.lowercase() -> NCDLabTestListActivity::class.java
+                    MenuConstants.INVESTIGATION.lowercase(),
                     MenuConstants.LIFESTYLE.lowercase(),
                     MenuConstants.PSYCHOLOGICAL.lowercase(),
                     MenuConstants.MY_PATIENTS_MENU_ID.lowercase(),

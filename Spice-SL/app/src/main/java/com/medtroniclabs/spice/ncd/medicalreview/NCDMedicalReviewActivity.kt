@@ -1112,6 +1112,7 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
                 val dialog = supportFragmentManager.findFragmentByTag(NCDPregnancyDialog.TAG)
                 if (dialog == null) {
                     NCDPregnancyDialog.newInstance(
+                        getEncounterReference(),
                         patientDetailViewModel.getPatientId(),
                         patientId = id,
                         patientDetailViewModel.getGenderIsFemale(),

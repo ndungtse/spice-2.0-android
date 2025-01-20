@@ -15,6 +15,7 @@ import com.medtroniclabs.spice.formgeneration.extension.capitalizeFirstChar
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.model.PatientListRespModel
 import com.medtroniclabs.spice.model.medicalreview.InvestigationModel
+import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.dialog.GeneralSuccessDialog
@@ -145,6 +146,7 @@ class NCDLabTestListActivity : BaseActivity(), View.OnClickListener, Investigati
             false,
             this
         )
+        viewModel.encounterId = intent?.getStringExtra(NCDMRUtil.EncounterReference)
     }
 
     private fun autoPopulateDetails(data: PatientListRespModel?) {

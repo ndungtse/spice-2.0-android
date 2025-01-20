@@ -773,6 +773,7 @@ class NCDPregnancyDialog(private val callback: ((isPositiveResult: Boolean, mess
 
         const val TAG = "NCDPregnancyCreateDialog"
         fun newInstance(
+            visitId:String?,
             patientReference: String?,
             patientId: String,
             isFemale: Boolean,
@@ -782,6 +783,7 @@ class NCDPregnancyDialog(private val callback: ((isPositiveResult: Boolean, mess
         ): NCDPregnancyDialog {
             return NCDPregnancyDialog(callback).apply {
                 arguments = Bundle().apply {
+                    putString(NCDMRUtil.VISIT_ID,visitId)
                     putString(NCDMRUtil.PATIENT_REFERENCE, patientReference)
                     putString(PATIENT_ID, patientId)
                     putBoolean(IS_FEMALE, isFemale)
@@ -796,6 +798,10 @@ class NCDPregnancyDialog(private val callback: ((isPositiveResult: Boolean, mess
         return arguments?.getString(NCDMRUtil.PATIENT_REFERENCE)
     }
 
+    private fun getVisitId():String? {
+        return arguments?.getString(NCDMRUtil.VISIT_ID)
+    }
+
     override fun onClick(v: View?) {
         when (v?.id) {
             binding.btnConfirm.id -> {
@@ -805,6 +811,7 @@ class NCDPregnancyDialog(private val callback: ((isPositiveResult: Boolean, mess
                             memberReference = viewModel.relatedPersonFhirId
                             patientReference = getPatientReference()
                             ncdPatientStatus = getNcdPatientStatus()
+                            patientVisitId = getVisitId()
                         }.also {
                             viewModel.ncdPregnancyCreate(it)
                         }

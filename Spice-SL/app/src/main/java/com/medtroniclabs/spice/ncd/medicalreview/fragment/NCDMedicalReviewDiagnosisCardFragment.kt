@@ -346,6 +346,7 @@ class NCDMedicalReviewDiagnosisCardFragment : BaseFragment(), View.OnClickListen
                         val dialog = childFragmentManager.findFragmentByTag(NCDPregnancyDialog.TAG)
                         if (dialog == null) {
                             NCDPregnancyDialog.newInstance(
+                                visitId = geEncounterReference(),
                                 patientDetailViewModel.getPatientId(),
                                 patientId = id,
                                 patientDetailViewModel.getGenderIsFemale(),
