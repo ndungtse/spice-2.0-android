@@ -1,6 +1,7 @@
 package com.medtroniclabs.spice.ui.member
 
 import android.content.Intent
+import android.location.Location
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -581,11 +582,15 @@ class MemberRegistrationFragment : BaseFragment(), FormEventListener, View.OnCli
                     )
                 }
 
+                val location = Location("").apply {
+                    latitude = SecuredPreference.getDouble(SecuredPreference.EnvironmentKey.CURRENT_LATITUDE.name)
+                    longitude = SecuredPreference.getDouble(SecuredPreference.EnvironmentKey.CURRENT_LONGITUDE.name)
+                }
 
                   memberRegistrationViewModel.registerMember(
                       map,
                       householdRegistrationViewModel.householdId,
-                      location=householdRegistrationViewModel.getCurrentLocation()
+                      location= location
                   )
                 return
             }

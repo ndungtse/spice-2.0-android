@@ -314,7 +314,7 @@ class AssessmentRMNCHNeonateFragment : BaseFragment(), View.OnClickListener,
                                 memberDetail,
                                 assessmentRMNCHNeonateViewModel.childMemberDetailsLiveData.value?.data,
                                 viewModel.followUpId,
-                                location=assessmentRMNCHNeonateViewModel.getCurrentLocation()
+                                location= viewModel.getCurrentLocation()
                             )
                         }
                     }

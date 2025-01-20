@@ -164,7 +164,11 @@ open class BaseFragment : Fragment(){
             !requireContext().isFineAndCoarseLocationPermissionGranted() -> {
                 requestLocationPermissions { permissionsGranted ->
                     if (permissionsGranted) {
-                        onLocationAvailable()
+                        showProgress()
+                        val locationManager = SpiceLocationManager(requireContext())
+                        locationManager.getCurrentLocation {
+                            onLocationAvailable()
+                        }
                     } else {
                         showErrorDialogue(
                             title = getString(R.string.gps_disabled_title),

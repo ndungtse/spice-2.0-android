@@ -56,6 +56,7 @@ class RecommendedDosageFragment : DialogFragment(), View.OnClickListener {
 
     private fun initializeViews() {
         binding.tvHeaderMessage.gone()
+        binding.tvHeader2Message?.gone()
         val ageInMonths =
             viewModel.memberDetailsLiveData.value?.data?.let { convertStringDobToMonths(it.dateOfBirth) }
 
@@ -149,7 +150,17 @@ class RecommendedDosageFragment : DialogFragment(), View.OnClickListener {
                                             requireContext(),
                                             it
                                         )
+                                    }?: kotlin.run {
+                                        binding.tableRecyclerView2.gone()
+                                        binding.table2Col1.gone()
+                                        binding.table2Col2.gone()
+                                        binding.table2Col3.gone()
                                     }
+                                }
+
+                                dosageTableItem[0].warning?.let {
+                                    binding.tvHeader2Message?.visible()
+                                    binding.tvHeader2Message?.text = it
                                 }
                             }
                         }

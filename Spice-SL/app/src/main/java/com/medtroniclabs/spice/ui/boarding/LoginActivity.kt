@@ -105,8 +105,7 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
                             }
                         }
                     } ?: resourceState.message?.let {
-                        if (it.equals(getString(R.string.invalid_credentials),true)
-                            && CommonUtils.isCommunity()) {
+                        if (it.equals(getString(R.string.invalid_credentials),true)) {
                             showErrorSnackBar(getString(R.string.invalid_credentials_custom),
                                 Snackbar.LENGTH_INDEFINITE, snackBarDuration)
                         } else {

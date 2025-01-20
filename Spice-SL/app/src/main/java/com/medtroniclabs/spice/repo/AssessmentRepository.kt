@@ -135,7 +135,7 @@ class AssessmentRepository @Inject constructor(
         otherDetails: HashMap<String, Any>? = null,
         followUpId: Long? = null
     ): Resource<AssessmentEntity> {
-        var latitude =SecuredPreference.getDouble(
+        val latitude =SecuredPreference.getDouble(
             SecuredPreference.EnvironmentKey.CURRENT_LATITUDE.name,
             0.0
         )

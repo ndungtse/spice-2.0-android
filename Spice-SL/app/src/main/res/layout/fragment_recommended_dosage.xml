@@ -194,6 +194,19 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/rvInfoList" />
 
+                <TextView
+                    android:id="@+id/tvHeader2Message"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/grey_black"
+                    android:paddingHorizontal="@dimen/_16sdp"
+                    android:textAlignment="textStart"
+                    android:textSize="@dimen/_16ssp"
+                    android:visibility="gone"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tvHeader2" />
+
                 <TableLayout
                     android:id="@+id/tableHeaderLayout2"
                     android:layout_width="match_parent"
@@ -204,7 +217,7 @@
                     android:layout_marginStart="@dimen/_16sdp"
                     android:layout_marginEnd="@dimen/_16sdp"
                     app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/tvHeader2">
+                    app:layout_constraintTop_toBottomOf="@id/tvHeader2Message">
 
                     <TableRow>
 
