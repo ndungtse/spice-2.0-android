@@ -504,6 +504,7 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
         viewModel.memberClinicalLiveData.value?.let {
             hideOrShowFormBasedOnCondition(it)
         }
+        binding.bioDataFragmentContainer.visible()
     }
 
     private fun hideOrShowFormBasedOnCondition(data: MemberClinicalEntity) {
