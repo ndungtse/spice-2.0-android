@@ -176,7 +176,9 @@ class NCDFollowUpOfflineSearchFragment : BaseFragment(),
         super.onResume()
         showProgress()
         followUpAdapter.submitData(listOf())
-        viewModel.searchLiveDataForOffline("")
+        viewModel.searchLiveDataForOffline(
+            if (viewModel.searchTextOffline.isNotBlank()) viewModel.searchTextOffline else ""
+        )
         if (SecuredPreference.getBoolean(SecuredPreference.EnvironmentKey.INITIAL_CALL.name)) {
             viewModel.getInitial()
         }

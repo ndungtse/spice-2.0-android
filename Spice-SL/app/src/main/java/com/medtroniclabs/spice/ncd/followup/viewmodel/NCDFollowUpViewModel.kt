@@ -132,7 +132,7 @@ class NCDFollowUpViewModel @Inject constructor(
 
     // Follow up Offline
     var selectedFollowUpPatient: NCDFollowUp? = null
-    private var searchTextOffline: String = ""
+    var searchTextOffline: String = ""
     fun searchLiveDataForOffline(text: String) {
         this.searchTextOffline = text
         searchTextOfflineLiveData.value = true

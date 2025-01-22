@@ -561,6 +561,7 @@ class NCDCallResultBottomDialog : BottomSheetDialogFragment(), View.OnClickListe
             viewModel.selectedHealthFacilityName = null
             binding.reasonGroup.visible()
             binding.OtherGroup.gone()
+            viewModel.getFollowUpReasonList()
             binding.etOther.setText("")
             binding.healthFacilityGroup.gone()
         } else if ((viewModel.patientStatusHashMap[DefinedParams.PatientStatus] as? String)?.equals(
@@ -574,6 +575,7 @@ class NCDCallResultBottomDialog : BottomSheetDialogFragment(), View.OnClickListe
             binding.reasonGroup.gone()
             binding.OtherGroup.gone()
             binding.etOther.setText("")
+            viewModel.getFollowUpReasonList()
             viewModel.selectedHealthFacilityId = null
             viewModel.selectedHealthFacilityName = null
             binding.healthFacilityGroup.visible()
@@ -584,6 +586,7 @@ class NCDCallResultBottomDialog : BottomSheetDialogFragment(), View.OnClickListe
             binding.reasonGroup.gone()
             binding.OtherGroup.gone()
             binding.etOther.setText("")
+            viewModel.getFollowUpReasonList()
             viewModel.selectedHealthFacilityId = null
             viewModel.selectedHealthFacilityName = null
             binding.healthFacilityGroup.gone()
