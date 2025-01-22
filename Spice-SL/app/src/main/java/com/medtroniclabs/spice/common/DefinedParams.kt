@@ -16,6 +16,7 @@ object DefinedParams {
     const val MemberID = "memberID"
     const val MenuId = "MenuId"
     const val NAME = "name"
+    const val CULTURE_VALUE = "cultureValue"
     const val id = "id"
     const val ICCM = "ICCM"
     const val TB = "TB"
@@ -249,4 +250,9 @@ object DefinedParams {
     const val ITALIC = "italic"
     const val BOLD_ITALIC = "bold_italic"
     const val appType = "appType"
+
+    const val EN_Locale = "English"
+    const val SW_Locale = "Swahili"
+    const val EN = "en"
+    const val SW = "sw"
 }

@@ -13,6 +13,7 @@ import com.google.android.material.chip.ChipGroup
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.DefinedParams.Other
 import com.medtroniclabs.spice.common.DefinedParams.ENABLED
+import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.model.ChipViewItemModel
 import com.medtroniclabs.spice.databinding.CustomLayoutTagviewComponentBinding
 import com.medtroniclabs.spice.databinding.OtherChipLayoutBinding
@@ -115,7 +116,7 @@ class TagListCustomView(
     }
 
     private fun getChipViewText(chipData: Pair<String?, String>): CharSequence? {
-        return chipData.second
+        return if(SecuredPreference.getIsTranslationEnabled()) chipData.first else chipData.second
     }
 
     private fun autoPopulateChip(selectedChipItemList: List<ChipViewItemModel>?, data: Any, chip: Chip) {
@@ -253,7 +254,7 @@ class TagListCustomView(
     ) {
         val binding = OtherChipLayoutBinding.inflate(LayoutInflater.from(context))
         binding.root.tag = Other
-        binding.tvOther.text = chipData.second
+        binding.tvOther.text = getChipViewText(chipData)
         binding.tvOther.tag = data
         binding.tvOther.setOnClickListener { //Don't change it to safeClickListener
             otherOnClick(binding.tvOther, binding.tagView, chipData)

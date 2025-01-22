@@ -243,10 +243,11 @@ object CommonUtils {
     }
 
 
-    fun getOptionMap(value: String, name: String): Map<String, Any> {
+    fun getOptionMap(value: String, name: String, culture: String? = null): Map<String, Any> {
         val map = HashMap<String, Any>()
         map[DefinedParams.ID] = value
         map[DefinedParams.NAME] = name
+        culture?.let { map[DefinedParams.CULTURE_VALUE] = it }
         return map
     }
 
@@ -1916,5 +1917,22 @@ object CommonUtils {
             return userRole.contains(RoleConstant.TIBERBU_PROVIDER)
         }
         return false
+    }
+
+    fun parseUserLocale(): String {
+        val preference = SecuredPreference.getCultureName()
+        return when {
+            preference.contains(DefinedParams.EN_Locale, ignoreCase = true) ->
+                DefinedParams.EN
+
+            preference.contains(DefinedParams.SW_Locale, ignoreCase = true) ->
+                DefinedParams.SW
+
+            else -> DefinedParams.EN
+        }
+    }
+
+    fun checkIfTranslationEnabled(name: String): Boolean {
+        return name.contains(DefinedParams.SW_Locale, ignoreCase = true)
     }
 }

@@ -74,6 +74,7 @@ import com.medtroniclabs.spice.data.performance.ChwVillageFilterModel
 import com.medtroniclabs.spice.data.performance.FilterPreference
 import com.medtroniclabs.spice.data.performance.PerformanceReportRequest
 import com.medtroniclabs.spice.data.resource.RequestAllEntities
+import com.medtroniclabs.spice.model.CultureLocaleModel
 import com.medtroniclabs.spice.model.LabTestCreateRequest
 import com.medtroniclabs.spice.model.LabTestListRequest
 import com.medtroniclabs.spice.model.LabTestListResponse
@@ -549,4 +550,7 @@ interface ApiService {
 
     @POST("spice-service/investigation/review")
     suspend fun markAsReviewed(@Body request: HashMap<String, Any>): Response<APIResponse<HashMap<String, Any>>>
+
+    @POST("/user-service/user/update-culture")
+    suspend fun cultureLocaleUpdate(@Body request: CultureLocaleModel): Response<APIResponse<HashMap<String, Any>>>
 }

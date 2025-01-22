@@ -47,6 +47,15 @@ class LoginRepository @Inject constructor(
                                         SecuredPreference.EnvironmentKey.IS_TERMS_AND_CONDITIONS_APPROVED.name,
                                         it.isTermsAndConditionsAccepted == true
                                     )
+                                    it.culture?.let { culture ->
+                                        val isEnabled =
+                                            CommonUtils.checkIfTranslationEnabled(culture.name)
+                                        SecuredPreference.setUserPreference(
+                                            culture.id,
+                                            culture.name,
+                                            isEnabled
+                                        )
+                                    }
                                     saveUserNameAndPassword(username, securePassword)
                                 }
                                 Resource(state = ResourceState.SUCCESS, data = response.body())

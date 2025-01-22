@@ -15,6 +15,7 @@ import androidx.core.view.GravityCompat
 import androidx.core.view.forEach
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.work.Constraints
@@ -72,6 +73,7 @@ import com.medtroniclabs.spice.common.TransferStatusEnum
 import com.medtroniclabs.spice.ncd.data.PatientTransfer
 import com.medtroniclabs.spice.ncd.landing.dialog.LanguagePreferenceDialog
 import com.medtroniclabs.spice.ncd.landing.viewmodel.NCDOfflineDataViewModel
+import com.medtroniclabs.spice.ui.landing.viewmodel.LanguagePreferenceViewModel
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 import java.util.concurrent.TimeUnit
 
@@ -85,6 +87,7 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
     private val viewModel: LandingViewModel by viewModels()
     private val offlineDataViewModel: NCDOfflineDataViewModel by viewModels()
     private val patientViewModel: PatientDetailViewModel by viewModels()
+    private val languageViewModel: LanguagePreferenceViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         val splashScreen = installSplashScreen()
         splashScreen.setKeepOnScreenCondition { true }
@@ -125,6 +128,7 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
         binding = ActivityLandingBinding.inflate(layoutInflater)
         splashScreen.setKeepOnScreenCondition { false }
         setContentView(binding.root)
+        languageViewModel.getCultures()
         initializeDrawerView()
         initializeHomeViews()
         updateSideBarFooter()
@@ -231,6 +235,15 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
                     } ?: kotlin.run {
                         binding.appBarMain.tvNotificationCount.gone()
                     }
+                }
+            }
+        }
+        languageViewModel.cultureList.observe(this) { resource ->
+            resource.data?.let {
+                val menu: Menu = binding.navView.menu
+                val switchLanguage: MenuItem? = menu.findItem(R.id.switch_language)
+                if (switchLanguage != null && CommonUtils.isCommunity() && it.size <= 1) {
+                    menu.removeItem(switchLanguage.itemId)
                 }
             }
         }
@@ -540,7 +553,18 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
 
     private val languagePreferenceListener = object : OnDialogDismissListener {
         override fun onDialogDismissListener(isFinish: Boolean) {
-            //
+            showErrorDialogue(
+                message = getString(R.string.language_change_alert),
+                isNegativeButtonNeed = true,
+                cancelBtnName = getString(R.string.no),
+                positiveButtonName = getString(R.string.yes)
+            ) { isPositiveResult ->
+                if (isPositiveResult && SecuredPreference.logout()) {
+                    cancelAllWorker()
+                    startActivity(Intent(this@LandingActivity, LoginActivity::class.java))
+                    finish()
+                }
+            }
         }
     }
 

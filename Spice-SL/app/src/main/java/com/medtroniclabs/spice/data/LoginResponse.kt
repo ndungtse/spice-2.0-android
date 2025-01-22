@@ -15,6 +15,7 @@ data class LoginResponse(
     var timezone: TimeZoneModel? = null,
     var tenantId: Long,
     var cultureId: Long? = null,
+    var culture: CulturesEntity? = null,
     val organizations: ArrayList<OrganizationModel>? = null,
     val isSuperUser: Boolean,
     val isTermsAndConditionsAccepted: Boolean? = null,

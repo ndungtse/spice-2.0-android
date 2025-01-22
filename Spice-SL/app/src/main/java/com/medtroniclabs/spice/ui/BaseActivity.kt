@@ -1,5 +1,6 @@
 package com.medtroniclabs.spice.ui
 
+import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.Rect
@@ -25,11 +26,12 @@ import com.google.android.material.snackbar.Snackbar
 import com.medtroniclabs.spice.BuildConfig
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.app.analytics.model.UserDetail
-import com.medtroniclabs.spice.app.analytics.utils.CommonUtils
 import com.medtroniclabs.spice.appextensions.loadAsGif
 import com.medtroniclabs.spice.appextensions.resetImageView
 import com.medtroniclabs.spice.appextensions.setVisible
+import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DefinedParams.REFRESH_FRAGMENT
+import com.medtroniclabs.spice.common.LocaleHelper
 import com.medtroniclabs.spice.databinding.ActivityBaseBinding
 import com.medtroniclabs.spice.databinding.ErrorLayoutBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
@@ -51,7 +53,7 @@ open class BaseActivity : SpiceRootActivity() {
         binding = ActivityBaseBinding.inflate(layoutInflater)
         setContentView(binding.root)
         UserDetail.startDateTime =
-            CommonUtils.getCurrentDateTimeInLocalTime()
+            com.medtroniclabs.spice.app.analytics.utils.CommonUtils.getCurrentDateTimeInLocalTime()
         setListener()
     }
 
@@ -533,5 +535,15 @@ open class BaseActivity : SpiceRootActivity() {
     fun setRedRiskPatient(isRedRiskPatient: Boolean?) {
         binding.ivRedAlert.setVisible(isRedRiskPatient == true)
         binding.tvRedAlert.setVisible(isRedRiskPatient == true)
+    }
+
+    override fun attachBaseContext(newBase: Context?) {
+        try {
+            super.attachBaseContext(newBase?.let {
+                LocaleHelper.onAttach(it, CommonUtils.parseUserLocale())
+            })
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 }

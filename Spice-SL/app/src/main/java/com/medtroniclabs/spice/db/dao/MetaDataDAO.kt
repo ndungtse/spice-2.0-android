@@ -9,7 +9,6 @@ import com.medtroniclabs.spice.data.CulturesEntity
 import com.medtroniclabs.spice.data.DosageFrequency
 import com.medtroniclabs.spice.data.ProgramEntity
 import com.medtroniclabs.spice.data.UnitMetricEntity
-import com.medtroniclabs.spice.data.VillageInfo
 import com.medtroniclabs.spice.db.entity.ChiefDomEntity
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowConditionEntity
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowEntity
@@ -25,7 +24,6 @@ import com.medtroniclabs.spice.db.entity.NCDAssessmentClinicalWorkflow
 import com.medtroniclabs.spice.db.entity.SignsAndSymptomsEntity
 import com.medtroniclabs.spice.db.entity.UserProfileEntity
 import com.medtroniclabs.spice.db.entity.VillageEntity
-import com.medtroniclabs.spice.db.response.VillageBasicDetails
 
 @Dao
 interface MetaDataDAO {
@@ -148,7 +146,7 @@ interface MetaDataDAO {
     suspend fun saveForm(forms: FormEntity)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertConsent(culturesEntity: ConsentEntity)
+    suspend fun insertConsent(consentEntity: ConsentEntity)
 
     @Query("SELECT formInput FROM ConsentEntity where formType=:formType")
     fun getConsent(formType: String): LiveData<String>

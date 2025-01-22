@@ -385,7 +385,7 @@ class NCDMedicalReviewDiagnosisCardFragment : BaseFragment(), View.OnClickListen
             binding.mentalHealthCard.tvAssessmentPHQ9 -> {
                 patientDetailViewModel.patientDetailsLiveData.value?.data?.let {
                     withNetworkAvailability(online = {
-                        showMentalHealthDialog(AssessmentDefinedParams.phq9, it.phq4score != null)
+                        showMentalHealthDialog(AssessmentDefinedParams.phq9, it.phq9Score != null)
                     })
                 }
             }

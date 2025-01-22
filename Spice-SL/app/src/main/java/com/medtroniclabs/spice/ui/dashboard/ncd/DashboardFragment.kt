@@ -166,7 +166,7 @@ class DashboardFragment : BaseFragment(), View.OnClickListener {
                         it.referred?.let { referredCount ->
                             userDashboardList.add(
                                 Triple(
-                                    getString(R.string.no_of_referrals),
+                                    getString(R.string.referred),
                                     referredCount,
                                     R.drawable.ic_referred
                                 )

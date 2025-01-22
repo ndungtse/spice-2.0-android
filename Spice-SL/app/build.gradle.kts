@@ -27,6 +27,7 @@ android {
         create("africa") {
             dimension = "version"
             versionName = "2.1.0"
+            versionCode = 17
         }
         create("sl") {
             dimension = "version"
@@ -75,9 +76,9 @@ android {
                             resValue("string", "spice_app_name", "SPICE 2.0")
                         }
                         "africa" -> {
-                            buildConfigField("String", "API_BASE_URL", "\"https://spice-dev-migration-backend.labsplatform.com/\"")
+                            buildConfigField("String", "API_BASE_URL", "\"https://spice-backend.af.medtroniclabs.org/\"")
                             buildConfigField("String", "ADMIN_BASE_URL", "\"https://spice-dev-migration.labsplatform.com/\"")
-                            buildConfigField("String", "SALT", "\"spice_uat\"")
+                            buildConfigField("String", "SALT", "\"spice_prod\"")
                             buildConfigField("String", "DB_PASSWORD", "\"Med@Tr0ni#Lab$\"")
                             resValue("string", "spice_app_name", "SPICE 2.1")
                         }
@@ -206,7 +207,7 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.5"
+        kotlinCompilerExtensionVersion = "1.5.6"
     }
 }
 

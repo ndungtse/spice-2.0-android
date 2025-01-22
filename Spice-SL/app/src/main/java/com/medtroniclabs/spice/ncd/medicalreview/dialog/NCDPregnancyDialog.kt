@@ -458,19 +458,22 @@ class NCDPregnancyDialog(private val callback: ((isPositiveResult: Boolean, mess
         val yearOfDiagnosis = ArrayList<Map<String, Any>>()
         yearOfDiagnosis.add(
             CommonUtils.getOptionMap(
-                getString(R.string.na),
+                N_A,
+                N_A,
                 getString(R.string.na)
             )
         )
         yearOfDiagnosis.add(
             CommonUtils.getOptionMap(
-                getString(R.string.new_patient),
+                NEW_PATIENT,
+                NEW_PATIENT,
                 getString(R.string.new_patient)
             )
         )
         yearOfDiagnosis.add(
             CommonUtils.getOptionMap(
-                getString(R.string.known_patient),
+                KNOWN_PATIENT,
+                KNOWN_PATIENT,
                 getString(R.string.known_patient)
             )
         )
@@ -481,12 +484,16 @@ class NCDPregnancyDialog(private val callback: ((isPositiveResult: Boolean, mess
         val pregnantList = ArrayList<Map<String, Any>>()
         pregnantList.add(
             CommonUtils.getOptionMap(
-                PREGNANT, getString(R.string.pregnant)
+                PREGNANT,
+                PREGNANT,
+                getString(R.string.pregnant)
             )
         )
         pregnantList.add(
             CommonUtils.getOptionMap(
-                NOT_PREGNANT, getString(R.string.not_pregnant)
+                NOT_PREGNANT,
+                NOT_PREGNANT,
+                getString(R.string.not_pregnant)
             )
         )
         return pregnantList
@@ -586,23 +593,31 @@ class NCDPregnancyDialog(private val callback: ((isPositiveResult: Boolean, mess
     private fun setPregnancyDiagnoses() {
         val selectedItems = ArrayList<Map<String, Any>>()
         if (binding.mcbNone.isChecked) selectedItems.add(
-            CommonUtils.getOptions(
-                NONE, getString(R.string.none)
+            CommonUtils.getOptionMap(
+                NONE,
+                NONE,
+                getString(R.string.none)
             )
         )
         if (binding.mcbEclampsia.isChecked) selectedItems.add(
-            CommonUtils.getOptions(
-                ECLAMPSIA, getString(R.string.eclampsia)
+            CommonUtils.getOptionMap(
+                ECLAMPSIA,
+                ECLAMPSIA,
+                getString(R.string.eclampsia)
             )
         )
         if (binding.mcbPreEclampsia.isChecked) selectedItems.add(
-            CommonUtils.getOptions(
-                PRE_ECLAMPSIA, getString(R.string.pre_eclampsia)
+            CommonUtils.getOptionMap(
+                PRE_ECLAMPSIA,
+                PRE_ECLAMPSIA,
+                getString(R.string.pre_eclampsia)
             )
         )
         if (binding.mcbGestationalDiabetes.isChecked) selectedItems.add(
-            CommonUtils.getOptions(
-                GESTATIONAL_DIABETES, getString(R.string.gestational_diabetes)
+            CommonUtils.getOptionMap(
+                GESTATIONAL_DIABETES,
+                GESTATIONAL_DIABETES,
+                getString(R.string.gestational_diabetes)
             )
         )
         viewModel.ncdPregnancyCreateModel.diagnosis = selectedItems

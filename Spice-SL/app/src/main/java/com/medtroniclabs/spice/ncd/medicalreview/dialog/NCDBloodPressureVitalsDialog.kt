@@ -23,6 +23,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
+import com.medtroniclabs.spice.appextensions.invisible
 import com.medtroniclabs.spice.appextensions.loadAsGif
 import com.medtroniclabs.spice.appextensions.resetImageView
 import com.medtroniclabs.spice.appextensions.setDialogPercentForWidth
@@ -149,17 +150,25 @@ class NCDBloodPressureVitalsDialog(private val callback: () -> Unit) : DialogFra
         }
     }
 
-    private fun showLoading() {
-        binding.loadingProgress.visibility = View.VISIBLE
-        binding.loaderImage.apply {
-            loadAsGif(R.drawable.loader_spice)
+    fun showLoading() {
+        binding.apply {
+            btnAddReading.invisible()
+            btnCancel.invisible()
+            loadingProgress.visible()
+            loaderImage.apply {
+                loadAsGif(R.drawable.loader_spice)
+            }
         }
     }
 
-    private fun hideLoading() {
-        binding.loadingProgress.visibility = View.GONE
-        binding.loaderImage.apply {
-            resetImageView()
+    fun hideLoading() {
+        binding.apply {
+            btnAddReading.visible()
+            btnCancel.visible()
+            loadingProgress.gone()
+            loaderImage.apply {
+                resetImageView()
+            }
         }
     }
 

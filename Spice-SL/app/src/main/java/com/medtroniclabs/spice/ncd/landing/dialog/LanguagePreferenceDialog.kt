@@ -6,14 +6,24 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
-import android.view.WindowManager
+import android.widget.RadioButton
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.appextensions.gone
+import com.medtroniclabs.spice.appextensions.invisible
+import com.medtroniclabs.spice.appextensions.loadAsGif
+import com.medtroniclabs.spice.appextensions.resetImageView
 import com.medtroniclabs.spice.appextensions.setDialogPercent
+import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
+import com.medtroniclabs.spice.common.SecuredPreference
+import com.medtroniclabs.spice.data.CulturesEntity
 import com.medtroniclabs.spice.databinding.DialogLanguagePreferenceBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
+import com.medtroniclabs.spice.model.CultureLocaleModel
+import com.medtroniclabs.spice.network.resource.ResourceState
+import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.landing.OnDialogDismissListener
 import com.medtroniclabs.spice.ui.landing.viewmodel.LanguagePreferenceViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -45,6 +55,7 @@ class LanguagePreferenceDialog(private val listener: OnDialogDismissListener) : 
         binding = DialogLanguagePreferenceBinding.inflate(inflater, container, false)
         binding.btnConfirm.safeClickListener(this)
         binding.btnCancel.safeClickListener(this)
+        binding.labelHeader.ivClose.safeClickListener(this)
         val window: Window? = dialog?.window
         window?.setBackgroundDrawableResource(android.R.color.transparent)
         return binding.root
@@ -56,10 +67,40 @@ class LanguagePreferenceDialog(private val listener: OnDialogDismissListener) : 
         attachObserver()
     }
 
+    private fun initializeRadioGroup(langList: ArrayList<CulturesEntity>, cultureSelected: Long) {
+        for (i in langList.indices) {
+            val radioButton = RadioButton(requireContext())
+            radioButton.text = langList[i].name
+            radioButton.tag = langList[i].id
+            radioButton.textSize = 16f
+            radioButton.setPadding(16, 15, 0, 15)
+            binding.radioGroup.addView(radioButton)
+
+            if (langList[i].id == cultureSelected) {
+                binding.radioGroup.check(radioButton.id)
+            }
+        }
+        binding.radioGroup.setOnCheckedChangeListener { group, checkedId ->
+            viewModel.selectedCultureId = group.findViewById<RadioButton>(checkedId).tag as Long
+        }
+    }
+
     private fun attachObserver() {
         viewModel.cultureList.observe(viewLifecycleOwner) { resource ->
             resource.data?.let {
-                //
+                initializeRadioGroup(ArrayList(it), SecuredPreference.getCultureId())
+            }
+        }
+        viewModel.cultureUpdateResponse.observe(this) { resourceState ->
+            when (resourceState.state) {
+                ResourceState.LOADING -> showLoading()
+                ResourceState.SUCCESS -> {
+                    hideLoading()
+                    listener.onDialogDismissListener(true)
+                    dismiss()
+                }
+
+                ResourceState.ERROR -> hideLoading()
             }
         }
     }
@@ -87,12 +128,46 @@ class LanguagePreferenceDialog(private val listener: OnDialogDismissListener) : 
 
     override fun onClick(view: View) {
         when (view.id) {
-            R.id.btnCancel -> {
+            binding.labelHeader.ivClose.id, R.id.btnCancel -> {
                 dismiss()
             }
 
             R.id.btnConfirm -> {
-                listener.onDialogDismissListener(true)
+                (activity as? BaseActivity)?.withNetworkAvailability(online = {
+                    updateUserLocale()
+                })
+            }
+        }
+    }
+
+    private fun updateUserLocale() {
+        viewModel.cultureList.value?.data?.firstOrNull { it.id == viewModel.selectedCultureId }?.let {
+            viewModel.cultureLocaleUpdate(
+                CultureLocaleModel(
+                    SecuredPreference.getUserId(), it
+                )
+            )
+        }
+    }
+
+    fun showLoading() {
+        binding.apply {
+            btnConfirm.invisible()
+            btnCancel.invisible()
+            loadingProgress.visible()
+            loaderImage.apply {
+                loadAsGif(R.drawable.loader_spice)
+            }
+        }
+    }
+
+    fun hideLoading() {
+        binding.apply {
+            btnConfirm.visible()
+            btnCancel.visible()
+            loadingProgress.gone()
+            loaderImage.apply {
+                resetImageView()
             }
         }
     }

@@ -10,6 +10,7 @@ import com.medtroniclabs.spice.data.IdentityType
 import com.medtroniclabs.spice.data.LoginResponse
 import com.medtroniclabs.spice.data.offlinesync.model.FollowUpCriteria
 import com.medtroniclabs.spice.mappingkey.Screening
+import com.medtroniclabs.spice.model.CulturePreference
 import java.lang.reflect.Type
 
 
@@ -68,7 +69,8 @@ object SecuredPreference {
         NCD_FOLLOW_UP_MEDICAL_REVIEW_REMAINING_DAYS,
         NCD_FOLLOW_UP_LOST_REMAINING_DAYS,
         INITIAL_CALL,
-        OFFLINE_FOLLOW_UP_SYNC_REQUEST_ID
+        OFFLINE_FOLLOW_UP_SYNC_REQUEST_ID,
+        USER_CULTURE
     }
 
 
@@ -581,4 +583,32 @@ object SecuredPreference {
     fun isAncEnabled(): Boolean {
         return getBoolean(EnvironmentKey.PREGNANCY_ANC_ENABLED_SITE.name)
     }
+
+    fun setUserPreference(locale: Long, name: String, enabled: Boolean) {
+        val culture = getCulturePreference()
+        if (culture == null)
+            saveCulturePreference(CulturePreference(locale, name, enabled))
+        else {
+            culture.cultureId = locale
+            culture.name = name
+            culture.isTranslationEnabled = enabled
+            saveCulturePreference(culture)
+        }
+    }
+
+    fun getIsTranslationEnabled() = getCulturePreference()?.isTranslationEnabled ?: false
+    fun getCultureName() = getCulturePreference()?.name ?: DefinedParams.EN_Locale
+
+    private fun saveCulturePreference(model: CulturePreference) {
+        val culture = Gson().toJson(model)
+        putString(EnvironmentKey.USER_CULTURE.name, culture)
+    }
+
+    private fun getCulturePreference(): CulturePreference? {
+        val userResponseString = getString(EnvironmentKey.USER_CULTURE.name)
+        val type: Type = object : TypeToken<CulturePreference>() {}.type
+        return Gson().fromJson(userResponseString, type)
+    }
+
+    fun getCultureId() = getCulturePreference()?.cultureId ?: 0
 }

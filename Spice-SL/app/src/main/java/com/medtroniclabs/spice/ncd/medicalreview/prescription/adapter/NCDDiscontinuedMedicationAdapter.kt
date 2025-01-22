@@ -62,7 +62,7 @@ class NCDDiscontinuedMedicationAdapter(
             val dosage: String
             val str = dosageUnit.split(" ")
             dosage = str[0].trim()
-            return dosage
+            return dosageUnit
         }
     }
 

@@ -88,6 +88,8 @@ class NCDPatientHistoryDialog : DialogFragment(), View.OnClickListener {
         const val TAG = "NCDPatientHistoryDialog"
         const val Diabetes = "Diabetes"
         const val Hypertension = "Hypertension"
+        const val N_A = "N/A"
+        const val New_Patient = "New Patient"
         const val Known_patient = "Known Patient"
         fun newInstance(
             visitId: String?,
@@ -145,8 +147,8 @@ class NCDPatientHistoryDialog : DialogFragment(), View.OnClickListener {
                 //Diabetes
                 (ncdMap[NCDMRUtil.DiabetesStatus] as? String)?.let { diabetesStatus ->
                     with(binding.ncdDiabetesHypertension.llDiabetes) {
-                        if (childCount > 0) (getChildAt(0) as? SingleSelectionCustomView)?.singleSelectionChildViewsOption(
-                            diabetesStatus
+                        if (childCount > 0) (getChildAt(0) as? SingleSelectionCustomView)?.singleSelectionAutofill(
+                            diabetesStatus + "_${Diabetes}"
                         )
                     }
                 }
@@ -171,8 +173,8 @@ class NCDPatientHistoryDialog : DialogFragment(), View.OnClickListener {
                 //Hypertension
                 (ncdMap[NCDMRUtil.HypertensionStatus] as? String)?.let { hypertensionStatus ->
                     with(binding.ncdDiabetesHypertension.llHypertension) {
-                        if (childCount > 0) (getChildAt(0) as? SingleSelectionCustomView)?.singleSelectionChildViewsOption(
-                            hypertensionStatus
+                        if (childCount > 0) (getChildAt(0) as? SingleSelectionCustomView)?.singleSelectionAutofill(
+                            hypertensionStatus + "_${Hypertension}"
                         )
                     }
                 }
@@ -241,7 +243,6 @@ class NCDPatientHistoryDialog : DialogFragment(), View.OnClickListener {
             hashMapOf<String, Any>().apply {
                 put(DefinedParams.ID, symptoms.id)
                 put(DefinedParams.NAME, symptoms.name)
-                symptoms.value?.let { put(DefinedParams.Value, it) }
             }.takeIf { it.isNotEmpty() }
         }
         adapter.setData(list)
@@ -365,19 +366,22 @@ class NCDPatientHistoryDialog : DialogFragment(), View.OnClickListener {
         val yearOfDiagnosis = ArrayList<Map<String, Any>>()
         yearOfDiagnosis.add(
             CommonUtils.getOptionMap(
-                getString(R.string.na),
+                N_A,
+                N_A,
                 getString(R.string.na)
             )
         )
         yearOfDiagnosis.add(
             CommonUtils.getOptionMap(
-                getString(R.string.new_patient),
+                New_Patient,
+                New_Patient,
                 getString(R.string.new_patient)
             )
         )
         yearOfDiagnosis.add(
             CommonUtils.getOptionMap(
-                getString(R.string.known_patient),
+                Known_patient,
+                Known_patient,
                 getString(R.string.known_patient)
             )
         )
@@ -385,8 +389,8 @@ class NCDPatientHistoryDialog : DialogFragment(), View.OnClickListener {
     }
 
     fun validateInput(): Boolean {
-        val isDiabetesValid = !viewModel.resultDiabetesHashMap.isNullOrEmpty()
-        val isHypertensionValid = !viewModel.resultHypertensionHashMap.isNullOrEmpty()
+        val isDiabetesValid = viewModel.resultDiabetesHashMap.isNotEmpty()
+        val isHypertensionValid = viewModel.resultHypertensionHashMap.isNotEmpty()
         val isValueValid = !viewModel.value.isNullOrBlank()
 
         if (isDiabetesValid) {

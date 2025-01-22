@@ -36,6 +36,7 @@ import com.medtroniclabs.spice.db.entity.UserProfileEntity
 import com.medtroniclabs.spice.db.entity.VillageEntity
 import com.medtroniclabs.spice.db.local.RoomHelper
 import com.medtroniclabs.spice.mappingkey.Screening
+import com.medtroniclabs.spice.model.CultureLocaleModel
 import com.medtroniclabs.spice.ncd.data.DeviceDetails
 import com.medtroniclabs.spice.ncd.data.NCDPatientTransferNotificationCountRequest
 import com.medtroniclabs.spice.ncd.data.NCDPatientTransferNotificationCountResponse
@@ -151,6 +152,11 @@ class MetaRepository @Inject constructor(
                                     )
                                 }
                                 roomHelper.savePrograms(list)
+                            }
+                            cultures?.let { cultureList ->
+                                roomHelper.deleteCultures()
+                                roomHelper.saveCultures(cultureList)
+                                updateCulturesMeta(cultureList)
                             }
                             remainingAttemptsCount?.let { remAttempts ->
                                 SecuredPreference.putInt(
@@ -290,6 +296,30 @@ class MetaRepository @Inject constructor(
         } catch (e: Exception) {
             e.printStackTrace()
             Resource(state = ResourceState.ERROR)
+        }
+    }
+
+    private fun updateCulturesMeta(cultureList: ArrayList<CulturesEntity>) {
+        val currentLocaleId = SecuredPreference.getCultureId()
+        for (i in 0 until cultureList.size) {
+            if (currentLocaleId <= 0) {
+                if (cultureList[i].name.contains(DefinedParams.EN_Locale, ignoreCase = true)) {
+                    SecuredPreference.setUserPreference(
+                        cultureList[i].id,
+                        cultureList[i].name,
+                        false
+                    )
+                    break
+                }
+            } else if (cultureList[i].id == currentLocaleId) {
+                val isEnabled = CommonUtils.checkIfTranslationEnabled(cultureList[i].name)
+                SecuredPreference.setUserPreference(
+                    cultureList[i].id,
+                    cultureList[i].name,
+                    isEnabled
+                )
+                break
+            }
         }
     }
 
@@ -810,5 +840,8 @@ class MetaRepository @Inject constructor(
             Resource(state = ResourceState.ERROR)
         }
     }
+
+    suspend fun cultureLocaleUpdate(localeRequest: CultureLocaleModel) =
+        apiHelper.cultureLocaleUpdate(localeRequest)
 }
 
