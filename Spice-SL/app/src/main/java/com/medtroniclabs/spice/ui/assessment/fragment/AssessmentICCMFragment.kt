@@ -299,7 +299,7 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
     private fun showInstructionDialog(id: String) {
         val titleById = getTitleById(id)
         when (id) {
-            isUnusualSleepy,isVomiting,isConvulsionPastFewDays,isBreastfeed,muacCode, hasOedemaOfBothFeet, chestInDrawing -> {
+            isUnusualSleepy,isVomiting,isConvulsionPastFewDays,isBreastfeed,muacCode, hasOedemaOfBothFeet, chestInDrawing, rdtTest -> {
                 InformationLayoutFragment.newInstance(id, titleById)
                     .show(childFragmentManager, InformationLayoutFragment.TAG)
             }
@@ -324,6 +324,7 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
             isConvulsionPastFewDays -> getString(R.string.job_aid_convulsions)
             isVomiting -> getString(R.string.job_aid_vomiting)
             isBreastfeed -> getString(R.string.job_aid_not_able_to_breastfeed_drink)
+            rdtTest -> getString(R.string.job_aid_reading_result)
             else -> {id}
         }
     }

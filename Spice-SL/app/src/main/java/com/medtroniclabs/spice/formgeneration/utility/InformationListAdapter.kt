@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.medtroniclabs.spice.appextensions.setVisible
 import com.medtroniclabs.spice.databinding.InformationItemListBinding
 import com.medtroniclabs.spice.formgeneration.model.InformationModel
 
@@ -33,7 +34,10 @@ class InformationListAdapter(
             } else{
                 holder.binding.ivItem.visibility = View.GONE
             }
-            holder.binding.tvInfo.text = infoModel.inputText
+        holder.binding.apply {
+            llContainer.setVisible(infoModel.inputText.isNotBlank())
+            tvInfo.text = infoModel.inputText
+        }
     }
 
     override fun getItemCount(): Int {

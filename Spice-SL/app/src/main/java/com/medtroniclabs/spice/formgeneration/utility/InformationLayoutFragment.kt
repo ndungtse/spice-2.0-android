@@ -22,6 +22,7 @@ import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.isConvulsio
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.isUnusualSleepy
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.isVomiting
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.muacCode
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.rdtTest
 
 class InformationLayoutFragment : DialogFragment(), View.OnClickListener {
     lateinit var binding : FragmentInformationLayoutBinding
@@ -64,6 +65,7 @@ class InformationLayoutFragment : DialogFragment(), View.OnClickListener {
             chestInDrawing -> InformationUtils().getChestIndrawingInformation(requireContext())
             isUnusualSleepy,isVomiting,isConvulsionPastFewDays,isBreastfeed->{InformationUtils().getDangerSignsInstructions(requireContext(),arguments?.getString(ID))
             }
+            rdtTest -> { InformationUtils().getRdtTest(requireContext()) }
             else -> null
         }
         binding.rvInfoList.apply {

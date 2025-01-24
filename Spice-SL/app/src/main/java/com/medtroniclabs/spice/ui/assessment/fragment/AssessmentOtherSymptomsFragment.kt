@@ -23,6 +23,7 @@ import com.medtroniclabs.spice.formgeneration.listener.FormEventListener
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.ui.FormResultComposer
 import com.medtroniclabs.spice.formgeneration.utility.CheckBoxDialog
+import com.medtroniclabs.spice.formgeneration.utility.InformationLayoutFragment
 import com.medtroniclabs.spice.formgeneration.utility.RecommendedDosageFragment
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
@@ -138,9 +139,14 @@ class AssessmentOtherSymptomsFragment : BaseFragment(), FormEventListener, View.
     private fun showInstructionDialog(id: String) {
         val titleById = getTitleById(id)
         when (id) {
-            AssessmentDefinedParams.ACT.lowercase()-> {
+            AssessmentDefinedParams.ACT.lowercase() -> {
                 RecommendedDosageFragment.newInstance(id, titleById)
                     .show(childFragmentManager, RecommendedDosageFragment.TAG)
+            }
+
+            AssessmentDefinedParams.rdtTest -> {
+                InformationLayoutFragment.newInstance(id, titleById)
+                    .show(childFragmentManager, InformationLayoutFragment.TAG)
             }
         }
     }
@@ -213,6 +219,7 @@ class AssessmentOtherSymptomsFragment : BaseFragment(), FormEventListener, View.
             AssessmentDefinedParams.muacCode -> getString(R.string.measuring_muac)
             AssessmentDefinedParams.hasOedemaOfBothFeet -> getString(R.string.checking_for_oedema)
             AssessmentDefinedParams.chestInDrawing -> getString(R.string.chest_in_drawing)
+            AssessmentDefinedParams.rdtTest -> getString(R.string.job_aid_reading_result)
             else -> {id}
         }
     }

@@ -10,6 +10,7 @@ import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.isConvulsio
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.isUnusualSleepy
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.isVomiting
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.muacCode
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.rdtTest
 
 class InformationUtils {
 
@@ -98,6 +99,25 @@ class InformationUtils {
             InformationModel(
                 inputText = context.getString(R.string.chest_info_2),
                 type = chestInDrawing
+            )
+        )
+        return informationList
+    }
+
+    fun getRdtTest(context: Context): ArrayList<InformationModel> {
+        val informationList = ArrayList<InformationModel>()
+        informationList.add(
+            InformationModel(
+                imageId = R.drawable.rdt_test_positive,
+                inputText = "",
+                type = rdtTest
+            )
+        )
+        informationList.add(
+            InformationModel(
+                imageId = R.drawable.rdt_test_negative,
+                inputText = "",
+                type = rdtTest
             )
         )
         return informationList

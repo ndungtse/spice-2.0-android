@@ -1254,6 +1254,7 @@
     <string name="age_validation_grandparent">A Grandparent must be at least 30 years older than the Household Head.</string>
     <string name="invalid_credentials">Invalid credentials</string>
     <string name="invalid_credentials_custom">Your username or password might be wrong. Please try again, or click on \'Forgot Password\' for help.</string>
+    <string name="job_aid_reading_result">Job Aid (RDT - Reading Results)</string>
 
     <string name="support_label" translatable="false">Please write your issues with the\napplication</string>
     <string name="support" translatable="false">Support</string>
