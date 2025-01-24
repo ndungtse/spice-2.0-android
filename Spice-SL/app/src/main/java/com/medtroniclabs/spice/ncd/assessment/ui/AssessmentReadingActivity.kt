@@ -14,6 +14,7 @@ import com.medtroniclabs.spice.common.CommonUtils.calculateBMI
 import com.medtroniclabs.spice.common.CommonUtils.calculateBloodGlucose
 import com.medtroniclabs.spice.common.CommonUtils.calculateCVDRiskFactor
 import com.medtroniclabs.spice.common.DefinedParams
+import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.data.model.RecommendedDosageListModel
 import com.medtroniclabs.spice.databinding.ActivityAssessmentReadingBinding
@@ -74,7 +75,7 @@ class AssessmentReadingActivity : BaseActivity(), FormEventListener, View.OnClic
 
     private fun renderAssessmentForm() {
         formGenerator = FormGenerator(
-            this, binding.llForm, listener = this, scrollView = binding.scrollView
+            this, binding.llForm, listener = this, scrollView = binding.scrollView, translate = SecuredPreference.getIsTranslationEnabled()
         ) { map, id ->
             when (id) {
                 Screening.Weight, Screening.Height -> {

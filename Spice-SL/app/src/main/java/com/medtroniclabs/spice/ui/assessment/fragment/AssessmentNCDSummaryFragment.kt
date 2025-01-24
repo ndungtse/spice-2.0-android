@@ -248,20 +248,11 @@ class AssessmentNCDSummaryFragment : BaseFragment(), View.OnClickListener {
         return getString(R.string.separator_hyphen)
     }
 
-    fun getListActual(map: Any?): String? {
-        if (map is Map<*, *> && map.containsKey(DefinedParams.NAME)) {
-            val actual = map[DefinedParams.NAME]
-            if (actual is String)
-                return actual
-        }
-        return null
-    }
-
     private fun getDialogValue(value: Any?, otherSymptoms: String? = null): String {
         val result = StringBuilder()
         if (value is ArrayList<*>) {
             value.forEach { map ->
-                getListActual(map)?.let {
+                CommonUtils.getListActual(map)?.let {
                     result.append(it)
                     result.append(getString(R.string.comma_symbol))
                 }
@@ -347,11 +338,13 @@ class AssessmentNCDSummaryFragment : BaseFragment(), View.OnClickListener {
             val symptomResponseList: ArrayList<MedicalComplianceResponse> = arrayListOf()
             linkedTreeMapList.flatten().forEach { linkedTreeMap ->
                 val name = linkedTreeMap[DefinedParams.NAME] as? String ?: getString(R.string.empty_space)
+                val culture = linkedTreeMap[DefinedParams.cultureValue] as? String
                 val otherCompliance = linkedTreeMap[AssessmentDefinedParams.other_compliance] as? String
 
                 val complianceResponse = MedicalComplianceResponse(
                     name = name,
-                    otherCompliance = otherCompliance
+                    otherCompliance = otherCompliance,
+                    cultureValue = culture
                 )
                 symptomResponseList.add(complianceResponse)
             }
@@ -370,13 +363,15 @@ class AssessmentNCDSummaryFragment : BaseFragment(), View.OnClickListener {
 
         linkedTreeMapList.flatten().forEach { linkedTreeMap ->
             val name = linkedTreeMap[DefinedParams.NAME] as? String ?: getString(R.string.empty_space)
+            val culture = linkedTreeMap[DefinedParams.cultureValue] as? String
             val type = linkedTreeMap[Screening.type] as? String
             val otherSymptom = linkedTreeMap[AssessmentDefinedParams.other_symptom] as? String
 
             val symptomResponse = SymptomResponse(
                 name = name,
                 type = type,
-                otherSymptom = otherSymptom
+                otherSymptom = otherSymptom,
+                cultureValue = culture
             )
             symptomResponseList.add(symptomResponse)
         }
@@ -389,7 +384,9 @@ class AssessmentNCDSummaryFragment : BaseFragment(), View.OnClickListener {
     private fun getSelectedMedicalComplianceText(list: ArrayList<MedicalComplianceResponse>): String {
         val resultString = StringBuilder()
         list.forEachIndexed { index, medicalComplianceResponse ->
-            resultString.append(medicalComplianceResponse.name)
+            resultString.append(
+                medicalComplianceResponse.cultureValue ?: medicalComplianceResponse.name
+            )
             if (list.size > 1 && index == 0) {
                 resultString.append(getString(R.string.empty_space))
                 resultString.append(getString(R.string.separator_hyphen))
@@ -414,7 +411,7 @@ class AssessmentNCDSummaryFragment : BaseFragment(), View.OnClickListener {
     private fun getSelectedSymptomsText(list: ArrayList<SymptomResponse>): String {
         val resultString = StringBuilder()
         list.forEachIndexed { index, symptomResponse ->
-            resultString.append(symptomResponse.name)
+            resultString.append(symptomResponse.cultureValue ?: symptomResponse.name)
             if (!symptomResponse.otherSymptom.isNullOrBlank()) {
                 resultString.append(getString(R.string.empty_space))
                 resultString.append(getString(R.string.separator_hyphen))

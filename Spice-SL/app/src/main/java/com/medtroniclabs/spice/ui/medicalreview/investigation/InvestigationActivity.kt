@@ -10,6 +10,7 @@ import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.DefinedParams
+import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.databinding.ActivityInvestigationBinding
 import com.medtroniclabs.spice.model.medicalreview.InvestigationModel
@@ -292,7 +293,7 @@ class InvestigationActivity : BaseActivity(), AdapterView.OnItemClickListener,
             this@InvestigationActivity,
             binding.llInvestigationHolder,
             binding.nestedScrollView,
-            false,
+            translate = SecuredPreference.getIsTranslationEnabled(),
             this
         )
         investigationViewModel.patientId?.let { patientId ->

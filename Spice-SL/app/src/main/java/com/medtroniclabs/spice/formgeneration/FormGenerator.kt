@@ -149,7 +149,7 @@ class FormGenerator(
     private val resultLauncher: ActivityResultLauncher<Intent>? = null,
     private val listener: FormEventListener,
     var scrollView: NestedScrollView? = null,
-    val translate: Boolean = false,
+    val translate: Boolean,
     private val callback: ((HashMap<String, Any>,String) -> Unit)? = null
 ) : ContextWrapper(context) {
 
@@ -791,7 +791,7 @@ class FormGenerator(
             binding.tvErrorMessage.tag = id + errorSuffix
             binding.etHour.tag = binding.etHour.id
             binding.etMinute.tag = binding.etMinute.id
-            binding.tvTitle.text = title
+            binding.tvTitle.text = translateTitle(titleCulture, title, translate)
             binding.llDate.tag = id + lastMealTypeDateSuffix
             binding.llTimeGroup.tag = id + lastMealTypeMeridiem
             dayOptionsList?.let {
@@ -1482,7 +1482,7 @@ class FormGenerator(
             binding.etUserInput.tag = id
             binding.tvTitle.tag = id + titleSuffix
             binding.tvErrorMessage.tag = id + errorSuffix
-            binding.tvTitle.text = translateTitle(titleCulture, title, false)
+            binding.tvTitle.text = translateTitle(titleCulture, title, translate)
 
             hint?.let {
                 binding.etUserInput.hint = it
@@ -1629,7 +1629,11 @@ class FormGenerator(
             binding.root.tag = id + rootSuffix
             binding.etUserInput.tag = id
             hint?.let {
-                binding.etUserInput.hint = it
+                if (translate) {
+                    binding.etUserInput.hint = hintCulture ?: it
+                } else {
+                    binding.etUserInput.hint = it
+                }
             }
             binding.tvErrorMessage.tag = id + errorSuffix
             if (translate) {
@@ -3399,7 +3403,7 @@ class FormGenerator(
                                 isViewOnly = isViewOnly,
                                 editList = this.mentalHealthEditList,
                                 resultMap = resultHashMap,
-                                translate = false
+                                translate = translate
                             ) { id, question, result, isUnselect, isClicked ->
                                 processMentalHealthResult(
                                     id,

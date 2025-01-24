@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import com.google.gson.Gson
 import com.medtroniclabs.spice.common.CommonUtils
+import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.ExaminationModel
 import com.medtroniclabs.spice.databinding.FragmentExaminationCardBinding
 import com.medtroniclabs.spice.formgeneration.ExaminationGenerator
@@ -51,7 +52,7 @@ class ExaminationCardFragment : BaseFragment(), ExaminationListener {
     }
 
     private fun initView() {
-        examinationGenerator = ExaminationGenerator(binding.root.context, binding.llFamilyRoot,this)
+        examinationGenerator = ExaminationGenerator(binding.root.context, binding.llFamilyRoot,this, translate = SecuredPreference.getIsTranslationEnabled())
     }
 
     override fun onDialogueCheckboxListener(

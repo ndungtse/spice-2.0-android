@@ -16,6 +16,7 @@ object DefinedParams {
     const val MemberID = "memberID"
     const val MenuId = "MenuId"
     const val NAME = "name"
+    const val cultureValue = "cultureValue"
     const val CULTURE_VALUE = "cultureValue"
     const val id = "id"
     const val ICCM = "ICCM"

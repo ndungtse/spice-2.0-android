@@ -9,6 +9,7 @@ import com.medtroniclabs.spice.app.analytics.model.UserDetail
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.TB
+import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.model.RecommendedDosageListModel
 import com.medtroniclabs.spice.databinding.FragmentAssessmentTBBinding
 import com.medtroniclabs.spice.formgeneration.FormGenerator
@@ -83,7 +84,7 @@ class AssessmentTBFragment : BaseFragment(), FormEventListener, View.OnClickList
         )
         formGenerator = FormGenerator(
             requireContext(), binding.llForm, null, this, binding.scrollView,
-            translate = false
+            translate = SecuredPreference.getIsTranslationEnabled()
         )
     }
 

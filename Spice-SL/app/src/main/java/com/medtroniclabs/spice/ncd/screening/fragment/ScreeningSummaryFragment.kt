@@ -20,6 +20,7 @@ import com.medtroniclabs.spice.common.CommonUtils.getDialogValue
 import com.medtroniclabs.spice.common.CommonUtils.getGlucoseUnit
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
+import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.common.StringConverter.getPHQ4ReadableName
 import com.medtroniclabs.spice.databinding.FragmentScreeningSummaryBinding
@@ -87,7 +88,7 @@ class ScreeningSummaryFragment : BaseFragment(), View.OnClickListener {
                     formSummaryReporter.populateSummary(
                         form,
                         map,
-                        false
+                        SecuredPreference.getIsTranslationEnabled()
                     )
                     calculateOtherMetrics(form, map)
                 }
@@ -238,12 +239,16 @@ class ScreeningSummaryFragment : BaseFragment(), View.OnClickListener {
 
         val formLayout = serverData.firstOrNull { it.id.equals(Screening.diabetes, true) } ?: return
         showBindingValue(
-            formLayout.title,
+            translateTitle(formLayout.titleCulture, formLayout.title),
             getDialogValue(
                 subMap[Screening.diabetes],
                 subMap[Screening.diabetesOtherSymptoms] as? String?
             )
         )
+    }
+
+    private fun translateTitle(titleCulture: String?, title: String): String {
+        return if (SecuredPreference.getIsTranslationEnabled()) titleCulture ?: title else title
     }
 
     private fun showPregnancySymptomsSignsChanges(

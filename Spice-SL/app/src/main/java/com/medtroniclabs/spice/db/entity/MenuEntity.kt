@@ -12,7 +12,8 @@ data class MenuEntity(
     val roleName: String? = null,
     val name: String,
     val displayOrder: Int,
-    val subModule: String? = null
+    val subModule: String? = null,
+    val cultureValue: String? = null
 ){
     @Ignore
     var isDisabled: Boolean = false

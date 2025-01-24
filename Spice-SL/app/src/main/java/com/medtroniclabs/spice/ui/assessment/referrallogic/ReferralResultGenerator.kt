@@ -1,10 +1,10 @@
 package com.medtroniclabs.spice.ui.assessment.referrallogic
 
+import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.NoSymptoms
 import com.medtroniclabs.spice.model.assessment.AssessmentMemberDetails
-import com.medtroniclabs.spice.ui.assessment.AssessmentCommonUtils.getListActual
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.Dispensed
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.DryMouthOrTongue
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.FB_MAX_BREATHING
@@ -488,7 +488,7 @@ class ReferralResultGenerator {
         val selectedSignsList = ArrayList<String>()
         if (value is ArrayList<*>) {
             value.forEach { map ->
-                getListActual(map)?.let {
+                CommonUtils.getListActual(map)?.let {
                     selectedSignsList.add(it.lowercase())
                 }
             }
@@ -531,7 +531,7 @@ class ReferralResultGenerator {
         val selectedSignsList = ArrayList<String>()
         if (map.containsKey(symptomType) && map[symptomType] is ArrayList<*>) {
             (map[symptomType] as ArrayList<*>).forEach { result ->
-                getListActual(result)?.let {
+                CommonUtils.getListActual(result)?.let {
                     selectedSignsList.add(it.lowercase())
                 }
             }

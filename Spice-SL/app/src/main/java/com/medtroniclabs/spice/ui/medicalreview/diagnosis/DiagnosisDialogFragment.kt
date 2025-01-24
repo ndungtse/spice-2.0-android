@@ -17,6 +17,7 @@ import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DefinedParams.Other
 import com.medtroniclabs.spice.common.DefinedParams.OtherNotes
+import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.DiagnosisDiseaseModel
 import com.medtroniclabs.spice.data.DiagnosisSaveUpdateRequest
 import com.medtroniclabs.spice.data.DiseaseCategoryItems
@@ -268,7 +269,7 @@ class DiagnosisDialogFragment : DialogFragment(), View.OnClickListener, Diagnosi
 
     private fun initView() {
         handleVisibility()
-        diagnosisGenerator = DiagnosisGenerator(binding.root.context, binding.llFamilyRoot, this)
+        diagnosisGenerator = DiagnosisGenerator(binding.root.context, binding.llFamilyRoot, this, translate = SecuredPreference.getIsTranslationEnabled())
         diseaseCategoryTagView = TagListCustomView(
             binding.root.context, binding.diseaseConditionChipGroup
         ) { name, _, isChecked ->

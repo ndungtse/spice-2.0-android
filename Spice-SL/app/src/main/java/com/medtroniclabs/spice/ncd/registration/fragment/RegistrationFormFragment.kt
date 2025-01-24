@@ -11,6 +11,7 @@ import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.EntityMapper
 import com.medtroniclabs.spice.common.FormAutofill
+import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.data.model.RecommendedDosageListModel
 import com.medtroniclabs.spice.databinding.FragmentRegistrationFormBinding
@@ -63,7 +64,7 @@ class RegistrationFormFragment : BaseFragment(), View.OnClickListener, FormEvent
     private fun initViews() {
         formGenerator = FormGenerator(
             requireContext(), binding.llForm, null, this, binding.scrollView,
-            translate = false
+            translate = SecuredPreference.getIsTranslationEnabled()
         )
 
         binding.btnSubmit.safeClickListener(this)

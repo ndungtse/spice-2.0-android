@@ -15,6 +15,7 @@ import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
+import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.model.RecommendedDosageListModel
 import com.medtroniclabs.spice.databinding.FragmentChildRegistrationBinding
 import com.medtroniclabs.spice.formgeneration.FormGenerator
@@ -74,10 +75,10 @@ class AssessmentRMNCHNeonateFragment : BaseFragment(), View.OnClickListener,
 
         formGenerator = FormGenerator(
             requireContext(), binding.llForm, null, this, binding.scrollView,
-            translate = false
+            translate = SecuredPreference.getIsTranslationEnabled()
         )
         childFormGenerator = FormGenerator(
-            requireContext(), binding.llChildForm, null, this, binding.scrollView, translate = false
+            requireContext(), binding.llChildForm, null, this, binding.scrollView, translate = SecuredPreference.getIsTranslationEnabled()
         )
     }
 

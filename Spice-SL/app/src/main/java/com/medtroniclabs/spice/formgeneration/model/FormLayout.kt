@@ -19,7 +19,6 @@ data class FormLayout(
     var errorMessage: String? = null,
     var cultureErrorMessage: String? = null,
     var disableFutureDate: Boolean? = null,
-    var valueKeyNotNeeded: Boolean? = null,
     var minDate: Long? = null,
     var maxDate: Long? = null,
     var optionsList: ArrayList<Map<String, Any>>?,

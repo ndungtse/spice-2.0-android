@@ -20,6 +20,7 @@ import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
 import com.medtroniclabs.spice.common.DateUtils.getYearMonthAndWeek
 import com.medtroniclabs.spice.common.DefinedParams.DefaultID
+import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.model.RecommendedDosageListModel
 import com.medtroniclabs.spice.databinding.FragmentAssessmentBinding
 import com.medtroniclabs.spice.formgeneration.FormGenerator
@@ -244,7 +245,7 @@ class AssessmentICCMFragment : BaseFragment(), FormEventListener, View.OnClickLi
         )
         formGenerator = FormGenerator(
             requireContext(), binding.llForm, null, this, binding.scrollView,
-            translate = false
+            translate = SecuredPreference.getIsTranslationEnabled()
         )
     }
 

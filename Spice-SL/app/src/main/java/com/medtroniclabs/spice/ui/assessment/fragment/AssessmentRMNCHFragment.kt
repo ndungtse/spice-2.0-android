@@ -18,6 +18,7 @@ import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DateUtils.formatGestationalAge
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.EntityMapper
+import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.model.RecommendedDosageListModel
 import com.medtroniclabs.spice.databinding.FragmentAssessmentRmnchBinding
 import com.medtroniclabs.spice.formgeneration.FormGenerator
@@ -148,7 +149,7 @@ class AssessmentRMNCHFragment : BaseFragment(), View.OnClickListener,
         )
         formGenerator = FormGenerator(
             requireContext(), binding.llForm, null, this, binding.scrollView,
-            translate = false
+            translate = SecuredPreference.getIsTranslationEnabled()
         )
         showRespectiveWorkflow()
     }

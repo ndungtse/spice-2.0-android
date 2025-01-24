@@ -15,7 +15,7 @@ data class SignsAndSymptomsEntity(
     val symptom: String,
     val type: String? = null,
     @ColumnInfo(name = "culture_value")
-    val cultureValue: String? = null,
+    val displayValue: String? = null,
     @ColumnInfo(name = "display_order")
     var displayOrder: Int? = null,
     var value: String? = null

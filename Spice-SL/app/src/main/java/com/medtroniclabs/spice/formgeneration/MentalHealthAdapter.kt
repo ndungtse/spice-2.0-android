@@ -37,7 +37,8 @@ class MentalHealthAdapter(
         val model = list[position]
         inflateAnswerViews(model, holder)
         val question = (model.map[Screening.Questions] as String?) ?: ""
-        val questionCulture = (model.map[DefinedParams.cultureValue] as String?)?:""
+        val questionCulture = (model.map[DefinedParams.cultureValue] as String?)
+            ?: (model.map[DefinedParams.displayValue] as String?) ?: ""
         if (translate){
             if (questionCulture.isNotBlank()){
                 holder.binding.tvQuestion.text = questionCulture

@@ -5,6 +5,7 @@ import android.graphics.Typeface
 import android.view.LayoutInflater
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.No
 import com.medtroniclabs.spice.common.DefinedParams.Yes
@@ -48,7 +49,7 @@ object AssessmentCommonUtils {
         val result = StringBuilder()
         if (value is ArrayList<*>) {
             value.forEach { map ->
-                getListActual(map)?.let {
+                CommonUtils.getListActual(map)?.let {
                     result.append(it)
                     result.append(", ")
                 }
@@ -62,15 +63,6 @@ object AssessmentCommonUtils {
             return result.delete(result.length - 2, result.length).toString()
         }
         return ""
-    }
-
-    fun getListActual(map: Any?): String? {
-        if (map is Map<*, *> && map.containsKey(DefinedParams.NAME)) {
-            val actual = map[DefinedParams.NAME]
-            if (actual is String)
-                return actual
-        }
-        return null
     }
 
     fun addViewSummaryLayout(title: String?, value: String?, valueTextColor: Int? = null, context:Context): ConstraintLayout {

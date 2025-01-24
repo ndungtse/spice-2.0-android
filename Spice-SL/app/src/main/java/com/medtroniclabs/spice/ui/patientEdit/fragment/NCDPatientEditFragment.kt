@@ -69,7 +69,8 @@ class NCDPatientEditFragment : BaseFragment(), FormEventListener, View.OnClickLi
             binding.llForm,
             resultLauncher,
             this,
-            binding.scrollView
+            binding.scrollView,
+            translate = SecuredPreference.getIsTranslationEnabled()
         )
         ncdFormViewModel.getNCDForm(MenuConstants.REGISTRATION.lowercase())
     }
@@ -229,8 +230,8 @@ class NCDPatientEditFragment : BaseFragment(), FormEventListener, View.OnClickLi
         serverViewModel: FormLayout,
         resultMap: Any?
     ) {
-        CheckBoxDialog.newInstance(id, resultMap) { resultMap ->
-            formGenerator.validateCheckboxDialogue(id, serverViewModel, resultMap)
+        CheckBoxDialog.newInstance(id, resultMap) { map ->
+            formGenerator.validateCheckboxDialogue(id, serverViewModel, map)
         }.show(childFragmentManager, CheckBoxDialog.TAG)
     }
 

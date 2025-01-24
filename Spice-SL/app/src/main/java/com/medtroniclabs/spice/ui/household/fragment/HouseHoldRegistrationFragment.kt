@@ -17,6 +17,7 @@ import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams.Househ
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams.HouseholdEdit
 import com.medtroniclabs.spice.common.CommonUtils.getBooleanAsString
 import com.medtroniclabs.spice.common.EntityMapper.getResultSpinnerMapList
+import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.model.RecommendedDosageListModel
 import com.medtroniclabs.spice.databinding.FragmentHouseHoldRegistrationBinding
 import com.medtroniclabs.spice.db.entity.HouseholdEntity
@@ -234,7 +235,7 @@ class HouseHoldRegistrationFragment : Fragment(), View.OnClickListener, FormEven
         }
         formGenerator = FormGenerator(
             requireContext(), binding.llForm, null, this, binding.scrollView,
-            translate = false
+            translate = SecuredPreference.getIsTranslationEnabled()
         )
     }
 

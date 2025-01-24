@@ -242,7 +242,7 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
             resource.data?.let {
                 val menu: Menu = binding.navView.menu
                 val switchLanguage: MenuItem? = menu.findItem(R.id.switch_language)
-                if (switchLanguage != null && CommonUtils.isCommunity() && it.size <= 1) {
+                if (switchLanguage != null && it.size <= 1) {
                     menu.removeItem(switchLanguage.itemId)
                 }
             }
@@ -399,12 +399,8 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
         val menu: Menu = binding.navView.menu
         val menuItemToRemove: MenuItem? = menu.findItem(R.id.offline_sync)
         val changeFacilityMenuItem: MenuItem? = menu.findItem(R.id.changeFacility)
-        val switchLanguage: MenuItem? = menu.findItem(R.id.switch_language)
         if (CommonUtils.isCommunity() && !CommonUtils.isChw() && menuItemToRemove != null) {
             menu.removeItem(menuItemToRemove.itemId)
-        }
-        if (CommonUtils.isCommunity() && switchLanguage != null) {
-            menu.removeItem(switchLanguage.itemId)
         }
         if (CommonUtils.isCommunity() && !CommonUtils.isProvider() && changeFacilityMenuItem != null) {
             menu.removeItem(changeFacilityMenuItem.itemId)

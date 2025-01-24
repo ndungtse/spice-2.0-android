@@ -10,6 +10,7 @@ import android.widget.AdapterView
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.common.DefinedParams
+import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.databinding.FragmentMemberEditDialogBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.model.MemberDetailsSpinnerModel
@@ -52,7 +53,10 @@ class MemberEditDialogFragment() : DialogFragment(), View.OnClickListener {
     }
 
     private fun loadSpinnerData() {
-        val memberAdapter = EditMemberSpinnerAdapter(requireContext())
+        val memberAdapter = EditMemberSpinnerAdapter(
+            requireContext(),
+            translate = SecuredPreference.getIsTranslationEnabled()
+        )
         val dropDownList = ArrayList<MemberDetailsSpinnerModel>()
         dropDownList.add(
             MemberDetailsSpinnerModel(

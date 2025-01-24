@@ -75,10 +75,10 @@ class SingleSelectionMHView : LinearLayout {
         } ?: selectedIdMapTypePair.first?.let { editMap.add(it) }
         this.optionList = optionList
         this.optionList?.forEachIndexed { index, optionValue ->
-            val name = (optionValue[Screening.Answer] as? String) ?: ""
+            val name = (optionValue[Screening.Questions] as? String) ?: ""
             val idValue = (optionValue[DefinedParams.ID] as? Double)?.toLong() ?: -1L
             val score = (optionValue[Screening.Value] as? Double) ?: 0.0
-            val translatedName = optionValue[DefinedParams.cultureValue]
+            val translatedName = optionValue[DefinedParams.cultureValue] ?: optionValue[DefinedParams.displayValue]
             val textView = TextView(viewContext, null, 0, R.style.Form_MH_Style_with_padding)
             val param = LayoutParams(
                 0,

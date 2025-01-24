@@ -36,6 +36,7 @@ import com.medtroniclabs.spice.common.DefinedParams.Yes
 import com.medtroniclabs.spice.common.DefinedParams.female
 import com.medtroniclabs.spice.common.DefinedParams.male
 import com.medtroniclabs.spice.common.EntityMapper.getResultSpinnerMapList
+import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.model.RecommendedDosageListModel
 import com.medtroniclabs.spice.databinding.FragmentMemberRegistrationBinding
 import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
@@ -402,7 +403,7 @@ class MemberRegistrationFragment : Fragment(), FormEventListener, View.OnClickLi
 
     private fun initializeView() {
         formGenerator = FormGenerator(
-            requireContext(), binding.llForm, null, this, binding.scrollView, translate = false
+            requireContext(), binding.llForm, null, this, binding.scrollView, translate = SecuredPreference.getIsTranslationEnabled()
         )
     }
 

@@ -89,7 +89,7 @@ class AssessmentNCDFragment : BaseFragment(), FormEventListener, View.OnClickLis
     private fun initializeFormGenerator() {
         binding.btnSubmit.safeClickListener(this)
         formGenerator = FormGenerator(
-            requireContext(), binding.llForm, listener = this, scrollView = binding.scrollView
+            requireContext(), binding.llForm, listener = this, scrollView = binding.scrollView, translate = SecuredPreference.getIsTranslationEnabled()
         ) { map, id ->
             when (id) {
                 Screening.Weight, Screening.Height -> {
@@ -602,7 +602,7 @@ class AssessmentNCDFragment : BaseFragment(), FormEventListener, View.OnClickLis
             radioButton.buttonTintList = colorStateList
             radioButton.invalidate()
             radioButton.textSizeSsp = AssessmentDefinedParams.SSP16
-            radioButton.text = model.name
+            radioButton.text = model.displayValue ?: model.name
             radioButton.layoutParams = RadioGroup.LayoutParams(
                 RadioGroup.LayoutParams.WRAP_CONTENT,
                 RadioGroup.LayoutParams.WRAP_CONTENT,
@@ -627,7 +627,7 @@ class AssessmentNCDFragment : BaseFragment(), FormEventListener, View.OnClickLis
                     binding.symptomCard.otherComplianceReason.setText(getString(R.string.empty))
                     binding.symptomCard.otherComplianceReason.gone()
                 } else if (parent == 2) {
-                    if (selectedModel.name.startsWith(getString(R.string.other_lowercase), true)) {
+                    if (selectedModel.name.equals(DefinedParams.Other, true)) {
                         binding.symptomCard.otherComplianceReason.visible()
                     } else {
                         binding.symptomCard.otherComplianceReason.setText(getString(R.string.empty))
@@ -683,12 +683,24 @@ class AssessmentNCDFragment : BaseFragment(), FormEventListener, View.OnClickLis
             }
             map[AssessmentDefinedParams.complianceId] = selectedModel.id
             map[DefinedParams.NAME] = selectedModel.name
+            selectedModel.value?.let { value ->
+                map[DefinedParams.Value] = value
+            }
+            selectedModel.displayValue?.let { cultureValue ->
+                map[DefinedParams.cultureValue] = cultureValue
+            }
             viewModel.complianceMap?.add(map)
         } else {
             viewModel.complianceMap = ArrayList()
             map = HashMap()
             map[AssessmentDefinedParams.complianceId] = selectedModel.id
             map[DefinedParams.NAME] = selectedModel.name
+            selectedModel.value?.let { value ->
+                map[DefinedParams.Value] = value
+            }
+            selectedModel.displayValue?.let { cultureValue ->
+                map[DefinedParams.cultureValue] = cultureValue
+            }
             if (selectedModel.childExists) {
                 map[AssessmentDefinedParams.is_child_exists] = true
             }
@@ -858,6 +870,12 @@ class AssessmentNCDFragment : BaseFragment(), FormEventListener, View.OnClickLis
             }
             it.type?.let { type ->
                 map[Screening.type] = type
+            }
+            it.value?.let { value ->
+                map[DefinedParams.Value] = value
+            }
+            it.cultureValue?.let { cultureValue ->
+                map[DefinedParams.cultureValue] = cultureValue
             }
             resultList.add(map)
         }

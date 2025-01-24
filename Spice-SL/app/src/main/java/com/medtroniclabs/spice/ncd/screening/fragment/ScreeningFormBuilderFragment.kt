@@ -123,7 +123,7 @@ class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener, View.OnC
         binding.btnNext.text = getString(R.string.submit)
         formGenerator =
             FormGenerator(
-                requireContext(), binding.llForm, listener = this, scrollView = binding.scrollView
+                requireContext(), binding.llForm, listener = this, scrollView = binding.scrollView, translate = SecuredPreference.getIsTranslationEnabled()
             ) { map, id ->
                 when (id) {
                     Screening.Weight, Screening.Height -> {
@@ -346,8 +346,7 @@ class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener, View.OnC
     ) {
         CheckBoxDialog.newInstance(
             id,
-            resultMap,
-            valueKeyNotNeeded = serverViewModel.valueKeyNotNeeded == true
+            resultMap
         ) { map ->
             formGenerator.validateCheckboxDialogue(id, serverViewModel, map)
         }.show(childFragmentManager, CheckBoxDialog.TAG)

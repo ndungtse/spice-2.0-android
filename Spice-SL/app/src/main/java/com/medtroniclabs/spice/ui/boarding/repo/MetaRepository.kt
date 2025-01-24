@@ -550,7 +550,8 @@ class MetaRepository @Inject constructor(
                     roleName = roleName,
                     name = menu.name,
                     displayOrder = menu.order,
-                    menuId = menu.workflowName ?: menu.name
+                    menuId = menu.workflowName ?: menu.name,
+                    cultureValue = menu.displayValue
                 )
             )
         }

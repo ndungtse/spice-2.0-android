@@ -217,7 +217,7 @@ class FormSummaryReporter(
 
                 is ArrayList<*> -> {
                     value.forEach { map ->
-                        getListActual(map)?.let {
+                        CommonUtils.getListActual(map)?.let {
                             return it
                         }
                     }
@@ -229,15 +229,6 @@ class FormSummaryReporter(
             }
         }
         return ""
-    }
-
-    private fun getListActual(map: Any?): String? {
-        if (map is Map<*, *> && map.containsKey(DefinedParams.NAME)) {
-            val actual = map[DefinedParams.NAME]
-            if (actual is String)
-                return actual
-        }
-        return null
     }
 
     private fun getActual(value: Map<*, *>): String? {
@@ -255,7 +246,7 @@ class FormSummaryReporter(
             val id = map[DefinedParams.ID]
             id?.let {
                 if (it == value)
-                    return map[DefinedParams.NAME] as String
+                    return  map[DefinedParams.cultureValue] as? String ?: map[DefinedParams.NAME] as String
             }
         }
         return null

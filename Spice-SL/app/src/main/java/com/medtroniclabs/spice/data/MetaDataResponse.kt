@@ -107,6 +107,7 @@ data class Menu(
 data class MenuDetail(
     val name: String,
     val order: Int,
+    val displayValue: String? = null,
     val workflowName: String? = null
 )
 

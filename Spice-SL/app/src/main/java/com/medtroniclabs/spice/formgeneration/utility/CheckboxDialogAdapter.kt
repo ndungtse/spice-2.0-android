@@ -12,7 +12,8 @@ import com.medtroniclabs.spice.formgeneration.config.DefinedParams
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 
 class CheckboxDialogAdapter(
-    private val dialogList: List<SignsAndSymptomsEntity>
+    private val dialogList: List<SignsAndSymptomsEntity>,
+    val translate: Boolean = false
 ) :
     RecyclerView.Adapter<CheckboxDialogAdapter.DialogViewHolder>() {
     inner class DialogViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -28,7 +29,7 @@ class CheckboxDialogAdapter(
 
     override fun onBindViewHolder(holder: DialogViewHolder, position: Int) {
         val item = dialogList[position]
-        holder.checkBox.text = item.symptom
+        holder.checkBox.text = if (translate) item.displayValue ?: item.symptom else item.symptom
         holder.checkBox.isChecked = item.isSelected
         holder.Root.safeClickListener {
             checkDataAndUpdate(item, dialogList)
@@ -63,17 +64,18 @@ class CheckboxDialogAdapter(
     }
 
     override fun getItemCount(): Int = dialogList.size
-    fun getSelectedItems(valueKeyNotNeeded: Boolean = false): ArrayList<HashMap<String, Any>> {
+    fun getSelectedItems(): ArrayList<HashMap<String, Any>> {
         val list = dialogList.filter { it.isSelected }
         val selectedItemList = ArrayList<HashMap<String, Any>>()
         list.forEach {
             val map = HashMap<String, Any>()
             map[DefinedParams.ID] = it._id
             map[DefinedParams.NAME] = it.symptom
-            if (!valueKeyNotNeeded) {
-                it.value?.let { value ->
-                    map[DefinedParams.value] = value
-                }
+            it.displayValue?.let { cultureValue ->
+                map[DefinedParams.cultureValue] = cultureValue
+            }
+            it.value?.let { value ->
+                map[DefinedParams.value] = value
             }
             selectedItemList.add(map)
         }

@@ -11,12 +11,11 @@ data class MedicalComplianceEntity(
     val name: String,
     @ColumnInfo(name = "display_order")
     val displayOrder: Int? = null,
-    @ColumnInfo(name = "display_value")
+    @ColumnInfo(name = "culture_value")
     val displayValue: String? = null,
     @ColumnInfo(name = "parent_compliance_id")
     val parentComplianceId: Long? = null,
     @ColumnInfo(name = "child_exists")
     var childExists: Boolean = false,
-    @ColumnInfo(name = "culture_value")
-    val cultureValue: String ?= null
+    val value: String ?= null
 )

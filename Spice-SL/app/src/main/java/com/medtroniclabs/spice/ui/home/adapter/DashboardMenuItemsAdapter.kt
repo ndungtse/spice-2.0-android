@@ -37,7 +37,7 @@ class DashboardMenuItemsAdapter(
 
     override fun onBindViewHolder(holder: ActivitiesViewHolder, position: Int) {
         val model = roleBasedActivitiesList[position]
-        holder.binding.tvTitle.text = model.name
+        holder.binding.tvTitle.text = model.cultureValue ?: model.name
 
         val imageModel = getResourceActivityId(
             model.menuId,

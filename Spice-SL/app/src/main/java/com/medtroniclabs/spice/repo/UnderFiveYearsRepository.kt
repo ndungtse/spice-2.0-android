@@ -69,7 +69,7 @@ class UnderFiveYearsRepository @Inject constructor(
                 _id = examination.id,
                 symptom = examination.name,
                 type = examination.type,
-                cultureValue = null, // Assuming no direct mapping for this field
+                displayValue = null, // Assuming no direct mapping for this field
                 displayOrder = examination.displayOrder,
                 value = examination.value
             )

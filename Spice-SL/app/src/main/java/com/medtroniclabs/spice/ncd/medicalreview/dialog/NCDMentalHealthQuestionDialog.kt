@@ -22,6 +22,7 @@ import com.medtroniclabs.spice.common.CommonUtils.calculateCAGEAIDSCore
 import com.medtroniclabs.spice.common.CommonUtils.calculateSuicidalIdeation
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.FormAutofill
+import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.data.model.RecommendedDosageListModel
 import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
@@ -101,7 +102,8 @@ class NCDMentalHealthQuestionDialog(private val callback: ((successDialog: Pair<
             requireContext(),
             binding.llForm,
             listener = this,
-            scrollView = binding.mentalHealthScrollView
+            scrollView = binding.mentalHealthScrollView,
+            translate = SecuredPreference.getIsTranslationEnabled()
         )
 
         fetchForms()

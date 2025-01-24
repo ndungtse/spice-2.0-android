@@ -22,8 +22,7 @@
         <item
             android:id="@+id/switch_language"
             android:icon="@drawable/ic_translate"
-            android:title="@string/language_preference"
-            android:visible="false" />
+            android:title="@string/language_preference" />
 
         <item
             android:id="@+id/offline_sync"

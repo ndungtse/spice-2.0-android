@@ -7,6 +7,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.text.SpannableStringBuilder
 import com.google.gson.Gson
+import com.google.gson.internal.LinkedTreeMap
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.nullIfEmpty
 import com.medtroniclabs.spice.common.DateUtils.calculateAge
@@ -775,9 +776,9 @@ object CommonUtils {
                     val actualValue = mentalHealthResultMap[mapKey]
                     optionsMap[Screening.MHQuestion] = mapKey as String
                     if (actualValue is HashMap<*, *>) {
-                        (actualValue[Screening.mentalHealthScore] as? Double)?.toInt()?.let {
+                        (actualValue[mentalHealthScore] as? Double)?.toInt()?.let {
                             phqScore += it
-                            optionsMap[Screening.mentalHealthScore] = it
+                            optionsMap[mentalHealthScore] = it
                         }
                         optionsMap[Screening.Question_Id] =
                             actualValue[Screening.Question_Id] as Long
@@ -1223,6 +1224,12 @@ object CommonUtils {
             subMap[Screening.BloodGlucoseID + Screening.unitMeasurement_KEY] =
                 Screening.mmoll
         }
+        if (subMap.containsKey(Screening.diabetes) && subMap[Screening.diabetes] is List<*>) {
+            (subMap[Screening.diabetes] as? ArrayList<*>)?.forEach {
+                if (it is LinkedTreeMap<*, *> && it.contains(DefinedParams.cultureValue))
+                    it.remove(DefinedParams.cultureValue)
+            }
+        }
         if (isChanged) {
             hashMap[Screening.GlucoseLog] = subMap
         }
@@ -1524,8 +1531,9 @@ object CommonUtils {
         } else ""
     }
 
-    private fun getListActual(map: Any?): String? {
-        return (map as? Map<*, *>)?.get(DefinedParams.NAME) as? String
+    fun getListActual(map: Any?): String? {
+        return (map as? Map<*, *>)?.get(DefinedParams.cultureValue) as? String
+            ?: (map as? Map<*, *>)?.get(DefinedParams.NAME) as? String
     }
 
     fun getBMIFormattedText(context: Context, bmi: Double?): Pair<CharSequence?, Int?> {

@@ -6,6 +6,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.databinding.CheckboxDialogLayoutBinding
 import com.medtroniclabs.spice.db.entity.SignsAndSymptomsEntity
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams
@@ -30,16 +31,13 @@ class CheckBoxDialog() : DialogFragment(), View.OnClickListener {
     companion object {
         const val TAG = "CheckBoxDialogComponent"
         private const val KEY_TYPE = "KEY_TYPE"
-        private const val VALUE_KEY_NOT_NEEDED = "VALUE_KEY_NOT_NEEDED"
         fun newInstance(
             key: String,
             resultMap: Any?,
-            valueKeyNotNeeded: Boolean = false,
             callback: (result: ArrayList<HashMap<String, Any>>) -> Unit
         ): CheckBoxDialog {
             val args = Bundle()
             args.putString(KEY_TYPE, key)
-            args.putBoolean(VALUE_KEY_NOT_NEEDED, valueKeyNotNeeded)
             val fragment = CheckBoxDialog(callback, resultMap)
             fragment.arguments = args
             return fragment
@@ -71,17 +69,18 @@ class CheckBoxDialog() : DialogFragment(), View.OnClickListener {
 
     private fun attachObserver() {
         viewModel.symptomTypeListResponse.observe(viewLifecycleOwner) { list ->
-            binding.labelHeader.text = "${getString(R.string.symptoms)}"
+            binding.labelHeader.text = getString(R.string.symptoms)
             if (list.isNotEmpty()) {
                 if (resultMap != null && resultMap is ArrayList<*>) {
                     binding.rvItems.adapter = CheckboxDialogAdapter(
                         getSelectedSymptomList(
                             list,
                             resultMap as ArrayList<*>
-                        )
+                        ),
+                        translate = SecuredPreference.getIsTranslationEnabled()
                     )
                 } else {
-                    binding.rvItems.adapter = CheckboxDialogAdapter(list)
+                    binding.rvItems.adapter = CheckboxDialogAdapter(list, translate = SecuredPreference.getIsTranslationEnabled())
                 }
             } else {
                 binding.rvItems.adapter = null
@@ -134,11 +133,7 @@ class CheckBoxDialog() : DialogFragment(), View.OnClickListener {
                 val adapter = binding.rvItems.adapter
                 if (adapter != null && adapter is CheckboxDialogAdapter) {
                     callback?.invoke(
-                        adapter.getSelectedItems(
-                            requireArguments().getBoolean(
-                                VALUE_KEY_NOT_NEEDED
-                            )
-                        )
+                        adapter.getSelectedItems()
                     )
                     dismiss()
                 }

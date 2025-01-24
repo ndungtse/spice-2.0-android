@@ -9,6 +9,7 @@ class SymptomModel(
     val type: String? = null,
     val viewType: Int = 0,
     var otherSymptom: String? = null,
+    var value: String? = null,
     @SerializedName("culture_value")
     val cultureValue:String? = null
 )

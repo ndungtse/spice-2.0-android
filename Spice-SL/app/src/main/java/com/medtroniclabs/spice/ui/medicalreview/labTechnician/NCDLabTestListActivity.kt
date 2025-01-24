@@ -9,6 +9,7 @@ import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DefinedParams
+import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.databinding.ActivityLabTestListBinding
 import com.medtroniclabs.spice.formgeneration.extension.capitalizeFirstChar
@@ -143,7 +144,7 @@ class NCDLabTestListActivity : BaseActivity(), View.OnClickListener, Investigati
             this@NCDLabTestListActivity,
             binding.llInvestigationHolder,
             binding.nestedScrollView,
-            false,
+            translate = SecuredPreference.getIsTranslationEnabled(),
             this
         )
         viewModel.encounterId = intent?.getStringExtra(NCDMRUtil.EncounterReference)

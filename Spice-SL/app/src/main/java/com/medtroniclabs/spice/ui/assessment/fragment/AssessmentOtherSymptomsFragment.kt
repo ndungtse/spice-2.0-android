@@ -13,6 +13,7 @@ import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.app.analytics.model.UserDetail
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.common.CommonUtils
+import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.model.RecommendedDosageListModel
 import com.medtroniclabs.spice.databinding.FragmentAssessmentOtherSymptomsBinding
 import com.medtroniclabs.spice.formgeneration.FormGenerator
@@ -98,7 +99,7 @@ class AssessmentOtherSymptomsFragment : BaseFragment(), FormEventListener, View.
     private fun initializeFormGenerator() {
         formGenerator = FormGenerator(
             requireContext(), binding.llForm, null, this, binding.scrollView,
-            translate = false
+            translate = SecuredPreference.getIsTranslationEnabled()
         )
     }
 

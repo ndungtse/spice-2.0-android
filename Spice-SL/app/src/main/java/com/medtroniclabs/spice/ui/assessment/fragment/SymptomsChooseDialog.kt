@@ -9,8 +9,8 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.medtroniclabs.spice.R
-import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.DefaultID
+import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.model.SymptomModel
 import com.medtroniclabs.spice.databinding.LayoutChooseSymptomsBinding
 import com.medtroniclabs.spice.db.entity.SignsAndSymptomsEntity
@@ -50,7 +50,7 @@ class SymptomsChooseDialog : DialogFragment(), View.OnClickListener {
 
     private fun attachObserver() {
         viewModel.symptomListResponse.observe(viewLifecycleOwner) {
-            binding.rvSymptom.adapter = SymptomAdapter(getSymptomModelList(it), true)
+            binding.rvSymptom.adapter = SymptomAdapter(getSymptomModelList(it), SecuredPreference.getIsTranslationEnabled())
         }
     }
 
@@ -61,12 +61,12 @@ class SymptomsChooseDialog : DialogFragment(), View.OnClickListener {
             if (selectedSymptoms != null && selectedSymptoms.isNotEmpty()) {
                 val model = selectedSymptoms.find { it.id == symptom._id }
                 if (model != null) {
-                    tempList.add(SymptomModel(symptom._id, symptom.symptom, true,symptom.type, cultureValue = symptom.cultureValue))
+                    tempList.add(SymptomModel(symptom._id, symptom.symptom, true,symptom.type, cultureValue = symptom.displayValue, value = symptom.value))
                 } else {
-                    tempList.add(SymptomModel(symptom._id, symptom.symptom, type = symptom.type, cultureValue = symptom.cultureValue))
+                    tempList.add(SymptomModel(symptom._id, symptom.symptom, type = symptom.type, cultureValue = symptom.displayValue, value = symptom.value))
                 }
             } else {
-                tempList.add(SymptomModel(symptom._id, symptom.symptom, type = symptom.type, cultureValue = symptom.cultureValue))
+                tempList.add(SymptomModel(symptom._id, symptom.symptom, type = symptom.type, cultureValue = symptom.displayValue, value = symptom.value))
             }
         }
 
