@@ -71,6 +71,8 @@ object SecuredPreference {
         INITIAL_CALL,
         OFFLINE_FOLLOW_UP_SYNC_REQUEST_ID,
         USER_CULTURE
+        IS_TERMS_AND_CONDITIONS_APPROVED,
+        OLD_USER_ID
     }
 
 
@@ -484,6 +486,10 @@ object SecuredPreference {
 
     fun getUserId(): Long {
         return getLong(EnvironmentKey.USER_ID.name)
+    }
+
+    fun getOldUserId(): Long {
+        return getLong(EnvironmentKey.OLD_USER_ID.name)
     }
 
     fun getDeviceId(): String? {

@@ -487,6 +487,9 @@ class MetaRepository @Inject constructor(
             SecuredPreference.putString(SecuredPreference.EnvironmentKey.USER_FHIR_ID.name, it)
         }
 
+        val spiceUserId = SecuredPreference.getUserId()
+        SecuredPreference.putLong(SecuredPreference.EnvironmentKey.OLD_USER_ID.name, spiceUserId)
+
         if (!changeFacility) {
             healthFacility.id.let {
                 SecuredPreference.putLong(
