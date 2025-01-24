@@ -13,6 +13,7 @@ import com.medtroniclabs.spice.BuildConfig
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.app.analytics.model.UserDetail
 import com.medtroniclabs.spice.appextensions.hideKeyboard
+import com.medtroniclabs.spice.common.AppConstants.isDifferentLogin
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.EncryptionUtil
@@ -35,6 +36,8 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
     private val viewModel: LoginViewModel by viewModels()
     private var unSyncedDataCount = 0
     private val snackBarDuration = 10000
+    private var isDifferentUseLogin = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityLoginBinding.inflate(layoutInflater)
@@ -119,11 +122,9 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
     }
 
     private fun triggerResourceLoading() {
-        startAsNewActivity(
-            Intent(
-                this@LoginActivity, ResourceLoadingScreen::class.java
-            )
-        )
+        val intent =  Intent(this@LoginActivity, ResourceLoadingScreen::class.java)
+        intent.putExtra(isDifferentLogin, isDifferentUseLogin)
+        startAsNewActivity(intent)
     }
 
     private fun handleOfflineLoginSuccess() {
@@ -226,6 +227,7 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
             return
         }
 
+        isDifferentUseLogin = false
         // Check different account login
         val oldUserName =
             SecuredPreference.getString(SecuredPreference.EnvironmentKey.USERNAME.name)
@@ -237,14 +239,16 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
             )
         ) {
             if (unSyncedDataCount > 0) {
-                showErrorDialogue(
+                /*showErrorDialogue(
                     title = getString(R.string.warning_different_login_title),
                     message = getString(R.string.warning_different_login_message, oldUserName),
                     positiveButtonName = getString(R.string.okay),
                     okayBtnEnable = true,
                 ) {
 
-                }
+                }*/
+                isDifferentUseLogin = true
+                viewModel.doLogin(userName, password)
             } else { // Different user login so clear last synced at
                 SecuredPreference.remove(SecuredPreference.EnvironmentKey.SERVER_LAST_SYNCED.name)
                 viewModel.doLogin(this, userName, password)

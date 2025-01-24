@@ -6,6 +6,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.appextensions.postLoading
+import com.medtroniclabs.spice.appextensions.postSuccess
+import com.medtroniclabs.spice.appextensions.setLoading
+import com.medtroniclabs.spice.appextensions.setSuccess
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.offlinesync.utils.OfflineConstant
 import com.medtroniclabs.spice.di.IoDispatcher
@@ -31,6 +34,7 @@ class ResourceLoadingViewModel @Inject constructor(
     @IoDispatcher private val dispatcherIO: CoroutineDispatcher
 ) : ViewModel() {
 
+    val oldUserDataSync = MutableLiveData<Resource<List<String>?>>()
     val metaDataCompleteLiveData = MutableLiveData<Resource<Boolean>>()
     val deviceDetailsLiveData = MutableLiveData<Resource<DeviceDetails>>()
     val householdsLiveData = MutableLiveData<Resource<Boolean>>()
@@ -41,6 +45,18 @@ class ResourceLoadingViewModel @Inject constructor(
     private val syncDelay = 20 * 1000L // 20 Sec
     var changeFacility = false
 
+
+    fun syncOldUserData() {
+        viewModelScope.launch(dispatcherIO) {
+            oldUserDataSync.postLoading()
+            try {
+                val requestIds = offlineSyncRepository.postOfflineUnSyncedChangesWithMutex(OfflineConstant.SYNC_MODE_MANUAL)
+                oldUserDataSync.postSuccess(requestIds)
+            } catch (e: Exception) {
+                oldUserDataSync.postSuccess(null)
+            }
+        }
+    }
 
     fun getMetaDataInformation() {
         viewModelScope.launch(dispatcherIO) {

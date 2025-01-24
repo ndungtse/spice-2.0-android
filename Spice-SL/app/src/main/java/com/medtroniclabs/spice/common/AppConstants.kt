@@ -12,4 +12,6 @@ object AppConstants {
     val CONFLICT_ERROR_CODE = 409
 
     val exemptionList = listOf("HouseholdActivity", "AssessmentActivity", "FollowUpMyPatientActivity","ScreeningActivity")
+
+    val isDifferentLogin = "isDifferentLogin"
 }

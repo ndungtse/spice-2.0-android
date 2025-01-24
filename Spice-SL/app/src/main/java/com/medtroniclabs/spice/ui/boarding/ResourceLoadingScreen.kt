@@ -6,6 +6,8 @@ import android.view.View
 import androidx.activity.viewModels
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.triggerOneTimeWorker
+import com.medtroniclabs.spice.common.AppConstants
+import com.medtroniclabs.spice.common.AppConstants
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.RoleConstant
@@ -35,10 +37,34 @@ class ResourceLoadingScreen : BaseActivity() {
 
     private fun initView() {
         viewModel.changeFacility = intent.getBooleanExtra(DefinedParams.changeFacility,false)
-        getMetaData()
+        syncAndDownloadInitialData()
+    }
+
+    private fun syncAndDownloadInitialData() {
+        val isDifferentLogin = intent.getBooleanExtra(AppConstants.isDifferentLogin, false)
+        if (isDifferentLogin) {
+            viewModel.syncOldUserData()
+        } else {
+            getMetaData()
+        }
     }
 
     private fun attachObserver() {
+        viewModel.oldUserDataSync.observe(this) { resourceState ->
+            when (resourceState.state) {
+                ResourceState.LOADING -> {
+                    binding.tvOfflineSyncMessage.gone()
+                }
+                ResourceState.SUCCESS -> {
+                    SecuredPreference.remove(SecuredPreference.EnvironmentKey.SERVER_LAST_SYNCED.name)
+                    viewModel.getMetaDataInformation()
+                }
+                ResourceState.ERROR -> {
+                    handleError()
+                }
+            }
+        }
+
         viewModel.deviceDetailsLiveData.observe(this) { resourceState ->
             when (resourceState.state) {
                 ResourceState.LOADING -> {
@@ -139,6 +165,7 @@ class ResourceLoadingScreen : BaseActivity() {
             viewModel.updateDeviceDetails(this)
         else
             viewModel.getMetaDataInformation()
+        }
     }
 
     private fun launchLandingScreen() {
