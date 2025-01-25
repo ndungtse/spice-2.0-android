@@ -4,7 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
@@ -21,12 +21,11 @@ import com.medtroniclabs.spice.data.NCDUserDashboardResponse
 import com.medtroniclabs.spice.data.model.ChipViewItemModel
 import com.medtroniclabs.spice.databinding.FragmentDashboardBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
+import com.medtroniclabs.spice.ncd.medicalreview.CommonEnums
 import com.medtroniclabs.spice.network.resource.ResourceState
-import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.MenuConstants
 import com.medtroniclabs.spice.ui.TagListCustomView
-import com.medtroniclabs.spice.ui.common.ActivityEnum
 import com.medtroniclabs.spice.ui.dashboard.ncd.adapter.UserDashboardAdapter
 import com.medtroniclabs.spice.ui.dashboard.ncd.viewmodel.NCDDashBoardViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -34,7 +33,7 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class DashboardFragment : BaseFragment(), View.OnClickListener {
     private lateinit var binding: FragmentDashboardBinding
-    private val viewModel: NCDDashBoardViewModel by activityViewModels()
+    private val viewModel: NCDDashBoardViewModel by viewModels()
     private lateinit var cgCalender: TagListCustomView
 
     override fun onCreateView(
@@ -85,22 +84,24 @@ class DashboardFragment : BaseFragment(), View.OnClickListener {
 
     private fun initializeChipItem() {
         val chipItemList = getChip()
-        cgCalender = TagListCustomView(requireContext(), binding.cgCalender) { _, _, _ ->
-            val isVisible =
-                cgCalender.getSelectedTags().any { it.name == getString(R.string.customize) }
-            if (isVisible) {
-                resetCounts()
-                binding.clDateRange.visible()
-            } else {
-                binding.clDateRange.gone()
-                binding.etFromDate.text = getString(R.string.empty)
-                binding.etToDate.text = getString(R.string.empty)
+        cgCalender = TagListCustomView(requireContext(), binding.cgCalender) { _, _, isChecked ->
+            if (isChecked) {
+                val isVisible =
+                    cgCalender.getSelectedTags().any { it.value == CommonEnums.CUSTOMISE.value }
+                if (isVisible) {
+                    resetCounts()
+                    binding.clDateRange.visible()
+                } else {
+                    binding.clDateRange.gone()
+                    binding.etFromDate.text = getString(R.string.empty)
+                    binding.etToDate.text = getString(R.string.empty)
 
-                getDashboardList()
+                    getDashboardList()
+                }
             }
         }
         val selectedList = ArrayList<ChipViewItemModel>()
-        selectedList.add(ChipViewItemModel(name = getString(R.string.today)))
+        selectedList.add(chipItemList[0])
         cgCalender.addChipItemList(chipItemList, selectedList)
     }
 
@@ -113,36 +114,41 @@ class DashboardFragment : BaseFragment(), View.OnClickListener {
         chipItemList.add(
             ChipViewItemModel(
                 id = 1,
-                name = getString(R.string.today),
-                value = ActivityEnum.TODAY.fieldName
+                name = CommonEnums.TODAY.name,
+                cultureValue = getString(CommonEnums.TODAY.cultureValue),
+                value = CommonEnums.TODAY.value
             )
         )
         chipItemList.add(
             ChipViewItemModel(
                 id = 2,
-                name = getString(R.string.yesterday),
-                value = ActivityEnum.YESTERDAY.fieldName
+                name = CommonEnums.YESTERDAY.name,
+                cultureValue = getString(CommonEnums.YESTERDAY.cultureValue),
+                value = CommonEnums.YESTERDAY.value
             )
         )
         chipItemList.add(
             ChipViewItemModel(
                 id = 3,
-                name = getString(R.string.this_week),
-                value = ActivityEnum.WEEK.fieldName
+                name = CommonEnums.WEEK.name,
+                cultureValue = getString(CommonEnums.WEEK.cultureValue),
+                value = CommonEnums.WEEK.value
             )
         )
         chipItemList.add(
             ChipViewItemModel(
                 id = 4,
-                name = getString(R.string.this_month),
-                value = ActivityEnum.MONTH.fieldName
+                name = CommonEnums.MONTH.name,
+                cultureValue = getString(CommonEnums.MONTH.cultureValue),
+                value = CommonEnums.MONTH.value
             )
         )
         chipItemList.add(
             ChipViewItemModel(
                 id = 5,
-                name = getString(R.string.customize),
-                value = ActivityEnum.CUSTOMISE.fieldName
+                name = CommonEnums.CUSTOMISE.name,
+                cultureValue = getString(CommonEnums.CUSTOMISE.cultureValue),
+                value = CommonEnums.CUSTOMISE.value
             )
         )
         return chipItemList

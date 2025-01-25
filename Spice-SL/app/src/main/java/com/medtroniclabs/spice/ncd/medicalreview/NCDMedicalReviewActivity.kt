@@ -624,10 +624,10 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
     }
 
     private fun reloadFragment(container: Int, tag: String, fragment: Fragment) {
-        if (patientDetailViewModel.isRefresh)
-            addOrReuseFragment(container, tag, fragment)
-        else
+        if (patientDetailViewModel.forceRefresh)
             replaceFragment(container, tag, fragment)
+        else
+            addOrReuseFragment(container, tag, fragment)
     }
 
     private fun loadFragment(isInitialMR: Boolean) {
@@ -688,7 +688,7 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
             )
         }
         hideLoading()
-        patientDetailViewModel.isRefresh = false
+        patientDetailViewModel.forceRefresh = false
     }
 
     private fun isFemalePregnant(): Boolean {
@@ -1123,8 +1123,7 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
                             title = getString(R.string.pregnancy_details),
                             message = message
                         ) {
-                            patientDetailViewModel.isRefresh = true
-                            swipeRefresh()
+                            forceRefresh()
                         }
                         else showErrorDialogue(
                             title = getString(R.string.error),
@@ -1279,6 +1278,11 @@ class NCDMedicalReviewActivity : BaseActivity(), View.OnClickListener, AncVisitC
             }
         }
         hideLoading()
+    }
+
+    fun forceRefresh() {
+        patientDetailViewModel.forceRefresh = true
+        swipeRefresh()
     }
 
     fun swipeRefresh() {

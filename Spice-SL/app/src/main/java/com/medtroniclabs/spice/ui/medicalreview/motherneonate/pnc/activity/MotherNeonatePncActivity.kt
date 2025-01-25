@@ -398,7 +398,7 @@ class MotherNeonatePncActivity : BaseActivity(), View.OnClickListener, AncVisitC
             view.tag = TAG
             view.addViewElements(
                 it,
-                false,
+                SecuredPreference.getIsTranslationEnabled(),
                 viewModel.resultFlowHashMap,
                 Pair(TAG, null),
                 FormLayout(

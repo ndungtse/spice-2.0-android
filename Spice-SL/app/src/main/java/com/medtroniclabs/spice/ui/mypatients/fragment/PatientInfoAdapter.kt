@@ -9,7 +9,6 @@ import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.setExpandableText
 import com.medtroniclabs.spice.appextensions.takeIfNotNull
-import com.medtroniclabs.spice.appextensions.textOrEmpty
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.databinding.PatientInfoItemBinding

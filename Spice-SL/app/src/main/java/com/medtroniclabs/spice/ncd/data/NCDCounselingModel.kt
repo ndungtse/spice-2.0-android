@@ -11,6 +11,7 @@ data class NCDCounselingModel(
     val patientVisitId: String? = null,
     val provenance: ProvanceDto = ProvanceDto(),
     val lifestyles: List<String>? = null,
+    val cultureLifestyles: List<String>? = null,
     val clinicianNote: String? = null,
     var lifestyleAssessment: String? = null,
     var otherNote: String? = null,

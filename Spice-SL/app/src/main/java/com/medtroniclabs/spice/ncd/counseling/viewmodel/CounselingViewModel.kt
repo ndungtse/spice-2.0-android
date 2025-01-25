@@ -36,6 +36,7 @@ class CounselingViewModel @Inject constructor(
 
     //Lifestyle [Provider & Nutritionist]
     var lifestyles: List<String>? = null
+    var cultureLifestyles: List<String>? = null
     var clinicianNote: String? = null
     var lifestyleAssessment: String? = null
     var otherNote: String? = null

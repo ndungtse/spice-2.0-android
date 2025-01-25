@@ -23,6 +23,7 @@ import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.ICCM
 import com.medtroniclabs.spice.common.DefinedParams.True
 import com.medtroniclabs.spice.common.DefinedParams.Yes
+import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.common.ViewUtils
 import com.medtroniclabs.spice.databinding.FragmentAssessmentIccmSummaryBinding
@@ -107,7 +108,7 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
             view.tag = IsClinicTaken
             view.addViewElements(
                 it,
-                false,
+                SecuredPreference.getIsTranslationEnabled(),
                 viewModel.otherAssessmentDetails,
                 Pair(IsClinicTaken, null),
                 FormLayout(viewType = "", id = "", title = "", visibility = "", optionsList = null),

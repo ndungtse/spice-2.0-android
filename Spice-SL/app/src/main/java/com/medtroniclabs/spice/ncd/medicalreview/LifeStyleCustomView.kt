@@ -65,7 +65,7 @@ class LifeStyleCustomView : LinearLayout {
                 )
                 textView.isSelected = answerModel.isSelected
                 textView.layoutParams = param
-                textView.text = answerModel.name
+                textView.text = answerModel.cultureAnswerValue ?: answerModel.name
                 getBackgroundDrawable(index, lifeStyleUI.lifestyleAnswer)?.let {
                     textView.background = it
                 }

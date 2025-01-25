@@ -22,6 +22,7 @@ import com.medtroniclabs.spice.common.DefinedParams.DefaultIDLabel
 import com.medtroniclabs.spice.common.DefinedParams.ID
 import com.medtroniclabs.spice.common.DefinedParams.NAME
 import com.medtroniclabs.spice.common.DefinedParams.Value
+import com.medtroniclabs.spice.common.DefinedParams.cultureValue
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.databinding.DialogNcdTreatmentPlanBinding
 import com.medtroniclabs.spice.db.entity.TreatmentPlanEntity
@@ -41,11 +42,11 @@ class NCDTreatmentPlanDialog(private val callback: ((isPositiveResult: Boolean, 
     private lateinit var binding: DialogNcdTreatmentPlanBinding
     private val viewModel: NCDTreatmentPlanViewModel by viewModels()
 
-    private val medicalReviewAdapter by lazy { CustomSpinnerAdapter(requireContext()) }
-    private val bPCheckAdapter by lazy { CustomSpinnerAdapter(requireContext()) }
-    private val bGCheckAdapter by lazy { CustomSpinnerAdapter(requireContext()) }
-    private val hbA1cAdapter by lazy { CustomSpinnerAdapter(requireContext()) }
-    private val choAdapter by lazy { CustomSpinnerAdapter(requireContext()) }
+    private val medicalReviewAdapter by lazy { CustomSpinnerAdapter(requireContext(), SecuredPreference.getIsTranslationEnabled()) }
+    private val bPCheckAdapter by lazy { CustomSpinnerAdapter(requireContext(), SecuredPreference.getIsTranslationEnabled()) }
+    private val bGCheckAdapter by lazy { CustomSpinnerAdapter(requireContext(), SecuredPreference.getIsTranslationEnabled()) }
+    private val hbA1cAdapter by lazy { CustomSpinnerAdapter(requireContext(), SecuredPreference.getIsTranslationEnabled()) }
+    private val choAdapter by lazy { CustomSpinnerAdapter(requireContext(), SecuredPreference.getIsTranslationEnabled()) }
 
     companion object {
         const val TAG = "NCDTreatmentPlanDialog"
@@ -186,14 +187,20 @@ class NCDTreatmentPlanDialog(private val callback: ((isPositiveResult: Boolean, 
             val dropDownList = ArrayList<Map<String, Any>>()
             dropDownList.add(
                 hashMapOf<String, Any>(
-                    NAME to DefaultIDLabel, ID to DefaultID
+                    NAME to getString(R.string.please_select), ID to DefaultID
                 )
             )
             for (item in list) {
                 dropDownList.add(
-                    hashMapOf(
-                        NAME to item.name, Value to item
-                    )
+                    item.displayValue?.let { culture ->
+                        hashMapOf(
+                            NAME to item.name, Value to item, cultureValue to culture
+                        )
+                    } ?: run {
+                        hashMapOf(
+                            NAME to item.name, Value to item
+                        )
+                    }
                 )
             }
 

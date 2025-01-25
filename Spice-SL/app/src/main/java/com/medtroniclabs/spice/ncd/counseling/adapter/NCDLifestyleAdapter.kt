@@ -61,8 +61,9 @@ class NCDLifestyleAdapter(private val lifeStyleInterface: CounselingInterface) :
                         otherNotesLayout.root.gone()
                     }
 
-                    tvReferredFor.text =
-                        lifestyles?.joinToString(separator = ", ") ?: run { displayHyphen(context) }
+                    tvReferredFor.text = cultureLifestyles?.joinToString(separator = ", ")
+                        ?: lifestyles?.joinToString(separator = ", ")
+                                ?: run { displayHyphen(context) }
 
                     tvRefDate.text = referredDate?.let {
                         DateUtils.convertDateTimeToDate(

@@ -95,7 +95,6 @@ class NCDPrescriptionActivity : BaseActivity(), View.OnClickListener, SignatureL
     }
 
     private fun initializeView() {
-        binding.btnAddMedicine.isEnabled = false
         prescriptionAdapter = NCDPrescriptionAdapter(this)
         binding.etPrescriptionSearch.apply {
             setOnItemClickListener { _, _, position, _ ->
@@ -108,6 +107,7 @@ class NCDPrescriptionActivity : BaseActivity(), View.OnClickListener, SignatureL
                         val search = getSearchString(it[position])
                         binding.etPrescriptionSearch.setText(search)
                         binding.etPrescriptionSearch.setSelection(search.length)
+                        binding.btnAddMedicine.isEnabled = true
                     }
                 }
             }
@@ -125,11 +125,11 @@ class NCDPrescriptionActivity : BaseActivity(), View.OnClickListener, SignatureL
                 }
 
                 override fun afterTextChanged(p0: Editable?) {
-                    binding.btnAddMedicine.isEnabled =
-                        !binding.etPrescriptionSearch.text.isNullOrBlank()
                     text?.toString()?.let {
                         if (it.isEmpty()) {
                             // default showing all medicines
+                            binding.btnAddMedicine.isEnabled = false
+                            prescriptionViewModel.selectedMedication = null
                         } else {
                             if (it.isNotEmpty() && it.length > SearchLength) {
                                 val medicationSearchRequest =
@@ -428,7 +428,6 @@ class NCDPrescriptionActivity : BaseActivity(), View.OnClickListener, SignatureL
     }
 
     private fun addMedicine() {
-        binding.etPrescriptionSearch.setText("")
         prescriptionViewModel.selectedMedication?.let {
             if (prescriptionViewModel.prescriptionUIModel == null) {
                 prescriptionViewModel.prescriptionUIModel = ArrayList()
@@ -449,7 +448,6 @@ class NCDPrescriptionActivity : BaseActivity(), View.OnClickListener, SignatureL
                 )
                 model.dosage_form_name_entered = it.dosageFormName
                 prescriptionViewModel.prescriptionUIModel!!.add(model)
-                prescriptionViewModel.selectedMedication = null
             } else {
                 val model = MedicationResponse(
                     id = it.id,
@@ -468,10 +466,10 @@ class NCDPrescriptionActivity : BaseActivity(), View.OnClickListener, SignatureL
                 )
                 model.dosage_form_name_entered = it.dosageFormName
                 prescriptionViewModel.prescriptionUIModel!!.add(model)
-                prescriptionViewModel.selectedMedication = null
             }
             loadPrescriptionListData()
         }
+        binding.etPrescriptionSearch.text.clear()
     }
 
     private fun disContinuedResponse(it: ArrayList<Prescription>) {

@@ -91,6 +91,7 @@ import com.medtroniclabs.spice.formgeneration.config.DefinedParams.Year
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.value
 import com.medtroniclabs.spice.common.DefinedParams.BOLD
 import com.medtroniclabs.spice.common.DefinedParams.BOLD_ITALIC
+import com.medtroniclabs.spice.common.DefinedParams.DefaultID
 import com.medtroniclabs.spice.common.DefinedParams.ITALIC
 import com.medtroniclabs.spice.formgeneration.config.ViewType.VIEW_INFORMATION_LABEL
 import com.medtroniclabs.spice.formgeneration.config.ViewType.VIEW_TYPE_DIALOG_CHECKBOX
@@ -1268,8 +1269,8 @@ class FormGenerator(
             val dropDownList = java.util.ArrayList<Map<String, Any>>()
             dropDownList.add(
                 hashMapOf<String, Any>(
-                    DefinedParams.NAME to DefaultIDLabel,
-                    DefinedParams.ID to "-1"
+                    DefinedParams.NAME to getString(R.string.please_select),
+                    DefinedParams.ID to DefaultID
                 )
             )
             if (isMandatory) {
@@ -1465,8 +1466,8 @@ class FormGenerator(
             val dropDownList = java.util.ArrayList<Map<String, Any>>()
             dropDownList.add(
                 hashMapOf<String, Any>(
-                    DefinedParams.NAME to DefaultIDLabel,
-                    DefinedParams.ID to "-1"
+                    DefinedParams.NAME to getString(R.string.please_select),
+                    DefinedParams.ID to DefaultID
                 )
             )
             (view.adapter as CustomSpinnerAdapter).setData(dropDownList)
@@ -1758,8 +1759,10 @@ class FormGenerator(
 
             if (isMandatory) {
                 binding.tvYear.markMandatory()
-                binding.tvWeeks.markMandatory()
-                binding.tvMonths.markMandatory()
+                if (CommonUtils.isCommunity()) {
+                    binding.tvWeeks.markMandatory()
+                    binding.tvMonths.markMandatory()
+                }
                 binding.tvDateOfBirth.markMandatory()
             }
             getFamilyView(family)?.addView(binding.root) ?: kotlin.run {
@@ -3213,8 +3216,8 @@ class FormGenerator(
 
     private fun createDefaultMap(): Map<String, Any> {
         return hashMapOf(
-            DefinedParams.NAME to DefaultIDLabel,
-            DefinedParams.ID to "-1"
+            DefinedParams.NAME to getString(R.string.please_select),
+            DefinedParams.ID to DefaultID
         )
     }
 

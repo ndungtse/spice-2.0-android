@@ -25,6 +25,7 @@ import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
+import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.model.MultiSelectDropDownModel
 import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.databinding.FragmentNCDMentalHealthBinding
@@ -496,7 +497,7 @@ class NCDMentalHealthFragment : DialogFragment(), View.OnClickListener {
             view.tag = NCDPregnancyDialog.DIABETES
             view.addViewElements(
                 it,
-                false,
+                SecuredPreference.getIsTranslationEnabled(),
                 viewModel.resultDiabetesHashMap,
                 Pair(NCDPregnancyDialog.DIABETES, null),
                 FormLayout(viewType = "", id = "", title = "", visibility = "", optionsList = null),
@@ -510,7 +511,7 @@ class NCDMentalHealthFragment : DialogFragment(), View.OnClickListener {
             view.tag = NCDPregnancyDialog.HYPERTENSION
             view.addViewElements(
                 it,
-                false,
+                SecuredPreference.getIsTranslationEnabled(),
                 viewModel.resultHypertensionHashMap,
                 Pair(NCDPregnancyDialog.HYPERTENSION, null),
                 FormLayout(viewType = "", id = "", title = "", visibility = "", optionsList = null),
@@ -524,7 +525,7 @@ class NCDMentalHealthFragment : DialogFragment(), View.OnClickListener {
             view.tag = MENTAL_HEALTH_STATUS
             view.addViewElements(
                 it,
-                false,
+                SecuredPreference.getIsTranslationEnabled(),
                 viewModel.resultMentalHealthHashMap,
                 Pair(MENTAL_HEALTH_STATUS, null),
                 FormLayout(viewType = "", id = "", title = "", visibility = "", optionsList = null),
@@ -538,7 +539,7 @@ class NCDMentalHealthFragment : DialogFragment(), View.OnClickListener {
             view.tag = SUBSTANCE_USE_STATUS
             view.addViewElements(
                 it,
-                false,
+                SecuredPreference.getIsTranslationEnabled(),
                 viewModel.resultSubstanceUseHashMap,
                 Pair(SUBSTANCE_USE_STATUS, null),
                 FormLayout(viewType = "", id = "", title = "", visibility = "", optionsList = null),

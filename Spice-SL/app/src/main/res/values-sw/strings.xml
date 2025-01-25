@@ -36,7 +36,7 @@
     <string name="filters">Vichujio</string>
     <string name="people_registered">%1$d/%2$d</string>
     <string name="investigation">Uchunguzi</string>
-    <string name="investigation_caps">Uchunguzi</string>
+    <string name="investigation_caps">UCHUNGUZI</string>
     <string name="prescription">Dawa</string>
     <string name="prescription_caps">DAWA</string>
     <string name="counselling_caps">USHAURI</string>
@@ -722,9 +722,10 @@
     <string name="neo_natal_death">Kifo cha mtoto mchanga</string>
     <string name="maternal_death">Kifo cha mama mzazi</string>
     <string name="nutrition_caps">Lishe</string>
-    <string name="lifestyle_caps">Mtindo wa maisha</string>
-    <string name="treatment_plan_caps">Mpango wa matibabu</string>
-    <string name="psychological" translatable="false">Kisaikolojia</string>
+    <string name="lifestyle_caps">MTINDO WA MAISHA</string>
+    <string name="treatment_plan_caps">MPANGO WA MATIBABU</string>
+    <string name="psychological">Kisaikolojia</string>
+    <string name="psychological_caps">KISAIKOLOJIA</string>
     <string name="pregnancy">Ujauzito</string>
     <string name="Pregnant">Mjamzito</string>
     <string name="edit_details">Rekebisha taaarifa</string>
@@ -1108,4 +1109,5 @@
     <string name="follow_ups">%1$s follow-up call result are waiting to upload.</string>
     <string name="days_due">%1$s days due</string>
     <string name="day_due">%1$s day due</string>
+    <string name="see_more">&#160;..Zaidi</string>
 </resources>

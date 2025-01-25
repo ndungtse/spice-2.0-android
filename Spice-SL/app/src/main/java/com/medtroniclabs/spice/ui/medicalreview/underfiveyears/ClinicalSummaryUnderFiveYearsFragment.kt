@@ -21,6 +21,7 @@ import com.medtroniclabs.spice.common.DefinedParams.NAME
 import com.medtroniclabs.spice.common.DefinedParams.RED_MAX_MUAC
 import com.medtroniclabs.spice.common.DefinedParams.YELLOW_MAX_MUAC
 import com.medtroniclabs.spice.common.DefinedParams.Value
+import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.MedicalReviewMetaItems
 import com.medtroniclabs.spice.databinding.FragmentUnderFiveYearClinicalSummarryBinding
 import com.medtroniclabs.spice.formgeneration.extension.markMandatory
@@ -154,7 +155,7 @@ class ClinicalSummaryUnderFiveYearsFragment : BaseFragment() {
             view.tag = MOTHER_VITAMIN_TAG
             view.addViewElements(
                 it,
-                false,
+                SecuredPreference.getIsTranslationEnabled(),
                 viewModel.resultMotherVitaminHashMap,
                 Pair(MOTHER_VITAMIN_TAG, null),
                 FormLayout(viewType = "", id = "", title = "", visibility = "", optionsList = null),

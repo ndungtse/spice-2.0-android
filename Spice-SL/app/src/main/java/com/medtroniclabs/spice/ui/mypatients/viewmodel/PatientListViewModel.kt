@@ -145,7 +145,7 @@ class PatientListViewModel @Inject constructor(
         ) {
             MedicalReviewFilterModel(
                 patientStatus = patientStatusTag?.map {
-                    if (it.name.equals(OnTreatment, true)) OnHold else if (it.name.equals(
+                    if (it.name.equals(OnTreatment, true)) OnHold else if (it.value.equals(
                             REFERRED,
                             true
                         )
@@ -153,15 +153,14 @@ class PatientListViewModel @Inject constructor(
                         Active
                     } else ""
                 },
-                visitDate = medicalReviewDueTag?.map { it.name.lowercase() },
+                visitDate = medicalReviewDueTag?.mapNotNull { it.value },
                 labTestReferredOn = if (isPharmacist) null else getReferredOn(),
                 prescriptionReferredOn = if (isPharmacist) getReferredOn() else null,
-                medicalReviewDate = ncdMedicalReviewDateTag?.map { it.name.lowercase() }?.get(0),
-                enrollmentStatus = ncdRegistrationTag?.map { it.optionalData }?.get(0),
+                medicalReviewDate = ncdMedicalReviewDateTag?.mapNotNull { it.value }?.get(0),
+                enrollmentStatus = ncdRegistrationTag?.mapNotNull { it.value }?.get(0),
                 isRedRiskPatient = redRisk(),
-                cvdRiskLevel = ncdCvdRiskTag?.map { it.optionalData ?: it.name.lowercase() }
-                    ?.get(0),
-                assessmentDate = ncdAssessmentTag?.map { it.name.lowercase() }?.get(0)
+                cvdRiskLevel = ncdCvdRiskTag?.mapNotNull { it.value }?.get(0),
+                assessmentDate = ncdAssessmentTag?.mapNotNull { it.value }?.get(0)
             )
         } else {
             null
@@ -169,11 +168,11 @@ class PatientListViewModel @Inject constructor(
     }
 
     private fun getReferredOn(): String? {
-        return ncdReferredForTag?.map { it.name.lowercase() }?.get(0)
+        return ncdReferredForTag?.mapNotNull { it.value }?.get(0)
     }
 
     private fun redRisk(): Boolean? {
-        val noRedRisk = ncdRedRiskTag?.map { it.name.lowercase() }.isNullOrEmpty()
+        val noRedRisk = ncdRedRiskTag?.mapNotNull { it.value }.isNullOrEmpty()
         return if (noRedRisk) null else true
     }
 

@@ -11,6 +11,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResult
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.CommonUtils.getOptionMap
+import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.databinding.FragmentRmnchSelectionDialogBinding
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.ui.SingleSelectionCustomView
@@ -69,7 +70,7 @@ class RMNCHFlowSelectionDialog : DialogFragment(), View.OnClickListener {
             view.tag = TAG
             view.addViewElements(
                 it,
-                false,
+                SecuredPreference.getIsTranslationEnabled(),
                 viewModel.resultRMNCHFlowHashMap,
                 Pair(TAG,null),
                 FormLayout(viewType = "", id = "", title = "", visibility = "", optionsList = null),

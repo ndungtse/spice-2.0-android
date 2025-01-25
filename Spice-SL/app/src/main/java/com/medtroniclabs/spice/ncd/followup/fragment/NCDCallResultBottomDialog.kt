@@ -199,7 +199,7 @@ class NCDCallResultBottomDialog : BottomSheetDialogFragment(), View.OnClickListe
             view.tag = CallResultDialogFragment.TAG
             view.addViewElements(
                 it,
-                false,
+                SecuredPreference.getIsTranslationEnabled(),
                 viewModel.callResultHashMap,
                 Pair(DefinedParams.CallResult, null),
                 FormLayout(viewType = "", id = "", title = "", visibility = "", optionsList = null),
@@ -384,7 +384,7 @@ class NCDCallResultBottomDialog : BottomSheetDialogFragment(), View.OnClickListe
             view.tag = CallResultDialogFragment.TAG
             view.addViewElements(
                 it,
-                false,
+                SecuredPreference.getIsTranslationEnabled(),
                 viewModel.unSuccessfulHashMap,
                 Pair(DefinedParams.UnSuccessful, null),
                 FormLayout(
@@ -531,7 +531,7 @@ class NCDCallResultBottomDialog : BottomSheetDialogFragment(), View.OnClickListe
             view.tag = CallResultDialogFragment.TAG
             view.addViewElements(
                 it,
-                false,
+                SecuredPreference.getIsTranslationEnabled(),
                 viewModel.patientStatusHashMap,
                 Pair(DefinedParams.PatientStatus, null),
                 FormLayout(viewType = "", id = "", title = "", visibility = "", optionsList = null),

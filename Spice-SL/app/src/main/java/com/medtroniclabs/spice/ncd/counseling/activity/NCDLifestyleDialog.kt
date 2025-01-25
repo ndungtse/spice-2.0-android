@@ -12,7 +12,6 @@ import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.loadAsGif
 import com.medtroniclabs.spice.appextensions.resetImageView
 import com.medtroniclabs.spice.appextensions.setDialogPercent
-import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.data.model.ChipViewItemModel
 import com.medtroniclabs.spice.databinding.DialogNcdLifestyleBinding
@@ -110,6 +109,8 @@ class NCDLifestyleDialog(private val callback: (isPositiveResult: Boolean) -> Un
             TagListCustomView(requireContext(), binding.chipGroup) { _, _, _ ->
                 viewModel.lifestyles =
                     tagListCustomView.getSelectedTags().map { it.name }.ifEmpty { null }
+                viewModel.cultureLifestyles =
+                    tagListCustomView.getSelectedTags().mapNotNull { it.cultureValue }.ifEmpty { null }
                 updateView()
             }
         viewModel.getChips()
@@ -126,7 +127,11 @@ class NCDLifestyleDialog(private val callback: (isPositiveResult: Boolean) -> Un
         viewModel.getChipItems.observe(this) {
             val complaintList = it.map { item ->
                 ChipViewItemModel(
-                    id = item.id, name = item.displayValue, type = item.type, value = item.value
+                    id = item.id,
+                    name = item.name,
+                    cultureValue = item.displayValue,
+                    type = item.type,
+                    value = item.value
                 )
             } as ArrayList<ChipViewItemModel>
             tagListCustomView.addChipItemList(complaintList)
@@ -171,6 +176,7 @@ class NCDLifestyleDialog(private val callback: (isPositiveResult: Boolean) -> Un
                 memberReference = memberReference,
                 visitId = encounterReference,
                 lifestyles = lifestyles,
+                cultureLifestyles = cultureLifestyles,
                 lifestyleAssessment = lifestyleAssessment,
                 otherNote = otherNote,
                 referredBy = NCDMRUtil.currentUserId(),

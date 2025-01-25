@@ -214,6 +214,7 @@ class NCDLifestyleAssessmentFragment : BaseFragment() {
                 LifeStyleAnswerUIModel(
                     question = it.name,
                     name = it.name,
+                    cultureAnswerValue = it.displayValue,
                     isAnswerDependent = it.isAnswerDependent,
                     value = it.value
                 )

@@ -358,7 +358,7 @@ class NCDMedicalReviewDiagnosisCardFragment : BaseFragment(), View.OnClickListen
                                         title = getString(R.string.pregnancy_details),
                                         message = message,
                                     )
-                                    (requireActivity() as? NCDMedicalReviewActivity)?.swipeRefresh()
+                                    (requireActivity() as? NCDMedicalReviewActivity)?.forceRefresh()
                                 } else showErrorDialog(
                                     title = getString(R.string.error),
                                     message = message

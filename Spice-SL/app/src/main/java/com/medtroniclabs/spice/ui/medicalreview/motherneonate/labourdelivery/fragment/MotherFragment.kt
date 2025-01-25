@@ -15,6 +15,7 @@ import com.medtroniclabs.spice.common.DefinedParams.Episiotomy
 import com.medtroniclabs.spice.common.DefinedParams.None
 import com.medtroniclabs.spice.common.DefinedParams.StateOfPerineum
 import com.medtroniclabs.spice.common.DefinedParams.Tear
+import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.LabourDeliveryMetaEntity
 import com.medtroniclabs.spice.data.model.ChipViewItemModel
 import com.medtroniclabs.spice.databinding.FragmentMotherBinding
@@ -205,7 +206,7 @@ class MotherFragment : BaseFragment() {
             view.tag = TAG
             view.addViewElements(
                 it,
-                false,
+                SecuredPreference.getIsTranslationEnabled(),
                 viewModel.perineumStateMap,
                 Pair(StateOfPerineum, null),
                 FormLayout(viewType = "", id = "", title = "", visibility = "", optionsList = null),
@@ -221,7 +222,7 @@ class MotherFragment : BaseFragment() {
             view.tag = TAG
             view.addViewElements(
                 it,
-                false,
+                SecuredPreference.getIsTranslationEnabled(),
                 viewModel.perineumStateMap,
                 Pair(Tear, null),
                 FormLayout(viewType = "", id = "", title = "", visibility = "", optionsList = null),

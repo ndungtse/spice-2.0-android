@@ -13,6 +13,7 @@ import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DefinedParams
+import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.model.ChipViewItemModel
 import com.medtroniclabs.spice.databinding.FragmentGeneralExaminationBinding
 import com.medtroniclabs.spice.databinding.FragmentSystemicExaminationsBinding
@@ -180,7 +181,7 @@ class GeneralExaminationFragment : BaseFragment() {
             view.tag = DefinedParams.BreastCondition
             view.addViewElements(
                 it,
-                false,
+                SecuredPreference.getIsTranslationEnabled(),
                 viewModel.breastConditionMap,
                 Pair(DefinedParams.BreastCondition, null),
                 FormLayout(viewType = "", id = "", title = "", visibility = "", optionsList = null),
@@ -195,7 +196,7 @@ class GeneralExaminationFragment : BaseFragment() {
             view.tag = DefinedParams.UterusCondition
             view.addViewElements(
                 it,
-                false,
+                SecuredPreference.getIsTranslationEnabled(),
                 viewModel.uterusConditionMap,
                 Pair(DefinedParams.UterusCondition, null),
                 FormLayout(viewType = "", id = "", title = "", visibility = "", optionsList = null),

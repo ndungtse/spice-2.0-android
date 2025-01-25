@@ -12,6 +12,7 @@ import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.setWidth
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DefinedParams
+import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.databinding.FragmentSelectFlowDialogBinding
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.ui.SingleSelectionCustomView
@@ -162,7 +163,7 @@ class SelectFlowDialog : DialogFragment(), View.OnClickListener {
             view.tag = TAG
             view.addViewElements(
                 it,
-                false,
+                SecuredPreference.getIsTranslationEnabled(),
                 viewModel.resultANCFlowHashMap,
                 Pair(TAG, null),
                 FormLayout(viewType = "", id = "", title = "", visibility = "", optionsList = null),

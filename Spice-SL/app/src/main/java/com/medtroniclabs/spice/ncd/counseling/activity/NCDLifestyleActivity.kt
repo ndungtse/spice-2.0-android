@@ -72,6 +72,8 @@ class NCDLifestyleActivity : BaseActivity(), View.OnClickListener, CounselingInt
         tagListCustomView = TagListCustomView(this, binding.chipGroup) { _, isEmpty, _ ->
             viewModel.lifestyles =
                 tagListCustomView.getSelectedTags().map { it.name }.ifEmpty { null }
+            viewModel.cultureLifestyles =
+                tagListCustomView.getSelectedTags().mapNotNull { it.cultureValue }.ifEmpty { null }
             binding.apply {
                 etClinicalNotes.isEnabled = !isEmpty
                 bottomSheet.btnNext.isEnabled = !isEmpty
@@ -106,7 +108,11 @@ class NCDLifestyleActivity : BaseActivity(), View.OnClickListener, CounselingInt
         viewModel.getChipItems.observe(this) {
             val complaintList = it.map { item ->
                 ChipViewItemModel(
-                    id = item.id, name = item.displayValue, type = item.type, value = item.value
+                    id = item.id,
+                    name = item.name,
+                    cultureValue = item.displayValue,
+                    type = item.type,
+                    value = item.value
                 )
             } as ArrayList<ChipViewItemModel>
             tagListCustomView.addChipItemList(complaintList)
@@ -259,6 +265,7 @@ class NCDLifestyleActivity : BaseActivity(), View.OnClickListener, CounselingInt
                 memberReference = memberReference,
                 visitId = encounterReference,
                 lifestyles = lifestyles,
+                cultureLifestyles = cultureLifestyles,
                 clinicianNote = clinicianNote,
                 referredBy = NCDMRUtil.currentUserId(),
                 referredByDisplay = NCDMRUtil.getUserName(),

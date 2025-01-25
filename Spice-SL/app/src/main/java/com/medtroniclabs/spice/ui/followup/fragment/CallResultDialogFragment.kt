@@ -14,6 +14,7 @@ import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.CallResult
 import com.medtroniclabs.spice.common.DefinedParams.PatientStatus
 import com.medtroniclabs.spice.common.DefinedParams.UnSuccessful
+import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.offlinesync.model.FollowUpCallReason
 import com.medtroniclabs.spice.data.offlinesync.model.FollowUpCallStatus
 import com.medtroniclabs.spice.databinding.FragmentBottomCallResultDialogBinding
@@ -75,7 +76,7 @@ class CallResultDialogFragment : BottomSheetDialogFragment(), View.OnClickListen
             view.tag = TAG
             view.addViewElements(
                 it,
-                false,
+                SecuredPreference.getIsTranslationEnabled(),
                 viewModel.callResultHashMap,
                 Pair(CallResult,null),
                 FormLayout(viewType = "", id = "", title = "", visibility = "", optionsList = null),
@@ -219,7 +220,7 @@ class CallResultDialogFragment : BottomSheetDialogFragment(), View.OnClickListen
             view.tag = TAG
             view.addViewElements(
                 it,
-                false,
+                SecuredPreference.getIsTranslationEnabled(),
                 viewModel.patientStatusHashMap,
                 Pair(PatientStatus,null),
                 FormLayout(viewType = "", id = "", title = "", visibility = "", optionsList = null),
@@ -237,7 +238,7 @@ class CallResultDialogFragment : BottomSheetDialogFragment(), View.OnClickListen
             view.tag = TAG
             view.addViewElements(
                 it,
-                false,
+                SecuredPreference.getIsTranslationEnabled(),
                 viewModel.unSuccessfulHashMap,
                 Pair(UnSuccessful,null),
                 FormLayout(

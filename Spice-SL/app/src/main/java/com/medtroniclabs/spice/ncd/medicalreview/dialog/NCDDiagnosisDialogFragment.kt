@@ -194,6 +194,7 @@ class NCDDiagnosisDialogFragment : DialogFragment(), View.OnClickListener {
                                                 ChipViewItemModel(
                                                     id = item.id,
                                                     name = item.name,
+                                                    cultureValue = item.displayValue,
                                                     type = item.type,
                                                     value = item.value
                                                 )
@@ -207,6 +208,7 @@ class NCDDiagnosisDialogFragment : DialogFragment(), View.OnClickListener {
                                         ChipViewItemModel(
                                             id = item.id,
                                             name = item.name,
+                                            cultureValue = item.displayValue,
                                             type = item.type,
                                             value = item.value
                                         )
@@ -265,6 +267,7 @@ class NCDDiagnosisDialogFragment : DialogFragment(), View.OnClickListener {
             ChipViewItemModel(
                 id = item.id,
                 name = item.name,
+                cultureValue = item.displayValue,
                 type = item.type,
                 value = item.value
             )

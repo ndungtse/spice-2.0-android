@@ -20,6 +20,7 @@ data class LifeStyleAnswer(
     val name: String,
     @SerializedName("is_answer_dependent")
     val isAnswerDependent: Boolean,
+    val displayValue: String? = null,
     val value: String? = null
 )
 

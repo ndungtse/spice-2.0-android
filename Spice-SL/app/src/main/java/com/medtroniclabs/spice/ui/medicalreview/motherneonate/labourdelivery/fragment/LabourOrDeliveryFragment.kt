@@ -20,6 +20,7 @@ import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DateUtils.getCalendarFromString
 import com.medtroniclabs.spice.common.DefinedParams
+import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.ViewUtils
 import com.medtroniclabs.spice.data.LabourDeliveryMetaEntity
 import com.medtroniclabs.spice.data.model.ChipViewItemModel
@@ -217,7 +218,7 @@ class LabourOrDeliveryFragment : BaseFragment() {
             viewTimeOfDeliveryOnset.tag = TAG
             viewTimeOfDeliveryOnset.addViewElements(
                 it,
-                false,
+                SecuredPreference.getIsTranslationEnabled(),
                 viewModel.timeOfLabourOnsetMap,
                 Pair(DefinedParams.TimeOfLabourOnset, null),
                 FormLayout(viewType = "", id = "", title = "", visibility = "", optionsList = null),
@@ -233,7 +234,7 @@ class LabourOrDeliveryFragment : BaseFragment() {
             viewTimeOfDelivery.tag = TAG
             viewTimeOfDelivery.addViewElements(
                 it,
-                false,
+                SecuredPreference.getIsTranslationEnabled(),
                 viewModel.timeOfDeliveryMap,
                 Pair(DefinedParams.TimeOfDelivery, null),
                 FormLayout(

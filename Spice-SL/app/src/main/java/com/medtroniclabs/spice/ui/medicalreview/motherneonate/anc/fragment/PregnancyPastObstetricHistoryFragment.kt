@@ -9,6 +9,7 @@ import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DefinedParams
+import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.model.ChipViewItemModel
 import com.medtroniclabs.spice.databinding.FragmentPregnancyPastObstetricHistoryBinding
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.Other
@@ -100,7 +101,7 @@ class PregnancyPastObstetricHistoryFragment : BaseFragment() {
             view.tag = TAG
             view.addViewElements(
                 it,
-                false,
+                SecuredPreference.getIsTranslationEnabled(),
                 viewModel.resultFlowHashMap,
                 Pair(TAG, null),
                 FormLayout(viewType = "", id = "", title = "", visibility = "", optionsList = null),

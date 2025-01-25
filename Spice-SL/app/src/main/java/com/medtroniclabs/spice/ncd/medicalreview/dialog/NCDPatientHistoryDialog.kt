@@ -22,6 +22,7 @@ import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DateUtils.getCurrentYearAsDouble
 import com.medtroniclabs.spice.common.DefinedParams
+import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.databinding.FragmentNcdPatientHistoryDialogBinding
 import com.medtroniclabs.spice.db.entity.NCDDiagnosisEntity
@@ -48,7 +49,7 @@ class NCDPatientHistoryDialog : DialogFragment(), View.OnClickListener {
     private lateinit var binding: FragmentNcdPatientHistoryDialogBinding
     private val viewModel: NCDPatientHistoryViewModel by viewModels()
     private val medicalReviewViewModel : NCDMedicalReviewViewModel by activityViewModels()
-    val adapter by lazy { CustomSpinnerAdapter(requireContext()) }
+    val adapter by lazy { CustomSpinnerAdapter(requireContext(), SecuredPreference.getIsTranslationEnabled()) }
 
     override fun onStart() {
         super.onStart()
@@ -216,7 +217,6 @@ class NCDPatientHistoryDialog : DialogFragment(), View.OnClickListener {
                 ) {
                     adapter.getData(pos)?.let {
                         val selectedId = (it[DefinedParams.id] as? Long) ?: -1L
-                        val selectedName = it[DefinedParams.NAME] as String?
                         val value = it[DefinedParams.Value] as String?
                         if (selectedId != -1L) {
                             viewModel.value = value
@@ -234,7 +234,7 @@ class NCDPatientHistoryDialog : DialogFragment(), View.OnClickListener {
     private fun loadSiteDetails(data: ArrayList<NCDDiagnosisEntity>) {
         val list = arrayListOf<Map<String, Any>>(
             hashMapOf(
-                DefinedParams.NAME to DefinedParams.DefaultIDLabel,
+                DefinedParams.NAME to getString(R.string.please_select),
                 DefinedParams.ID to DefinedParams.DefaultSelectID
             )
         )
@@ -243,6 +243,8 @@ class NCDPatientHistoryDialog : DialogFragment(), View.OnClickListener {
             hashMapOf<String, Any>().apply {
                 put(DefinedParams.ID, symptoms.id)
                 put(DefinedParams.NAME, symptoms.name)
+                symptoms.displayValue?.let { put(DefinedParams.cultureValue, it) }
+                symptoms.value?.let { put(DefinedParams.Value, it) }
             }.takeIf { it.isNotEmpty() }
         }
         adapter.setData(list)
@@ -283,7 +285,7 @@ class NCDPatientHistoryDialog : DialogFragment(), View.OnClickListener {
             view.tag = Diabetes
             view.addViewElements(
                 it,
-                false,
+                SecuredPreference.getIsTranslationEnabled(),
                 viewModel.resultDiabetesHashMap,
                 Pair(Diabetes, null),
                 FormLayout(viewType = "", id = "", title = "", visibility = "", optionsList = null),
@@ -297,7 +299,7 @@ class NCDPatientHistoryDialog : DialogFragment(), View.OnClickListener {
             view.tag = Hypertension
             view.addViewElements(
                 it,
-                false,
+                SecuredPreference.getIsTranslationEnabled(),
                 viewModel.resultHypertensionHashMap,
                 Pair(Hypertension, null),
                 FormLayout(viewType = "", id = "", title = "", visibility = "", optionsList = null),

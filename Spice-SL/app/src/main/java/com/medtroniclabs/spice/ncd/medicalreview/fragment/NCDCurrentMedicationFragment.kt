@@ -55,7 +55,8 @@ class NCDCurrentMedicationFragment : BaseFragment() {
             val complaintList = it.map { item ->
                 ChipViewItemModel(
                     id = item.id,
-                    name = item.displayValue,
+                    name = item.name,
+                    cultureValue = item.displayValue,
                     type = item.type,
                     value = item.value
                 )

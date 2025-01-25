@@ -864,8 +864,8 @@
     <string name="nutrition_caps">NUTRITION</string>
     <string name="lifestyle_caps">LIFESTYLE</string>
     <string name="treatment_plan_caps">TREATMENT PLAN</string>
-    <string name="psychological" translatable="false">Psychological</string>
-    <string name="psychological_caps" translatable="false">PSYCHOLOGICAL</string>
+    <string name="psychological">Psychological</string>
+    <string name="psychological_caps">PSYCHOLOGICAL</string>
     <string name="pregnancy">Pregnancy</string>
     <string name="Pregnant">Pregnant</string>
     <string name="edit_details">Edit Details</string>
@@ -955,7 +955,7 @@
     <string name="last_assessment_date">Last Assessment Date</string>
     <string name="add_blood_pressure_readings">Add Blood Pressure Readings</string>
     <string name="add_blood_glucose_readings">Add Blood Glucose Readings</string>
-    <string name="see_more" translatable="false">&#160;..More</string>
+    <string name="see_more">&#160;..More</string>
     <string name="diastolic_formatted" translatable="false">%1$s: %2$s %3$s</string>
     <string name="systolic_formatted" translatable="false">%1$s: %2$s %3$s</string>
     <string name="prescription_history">Prescription History</string>

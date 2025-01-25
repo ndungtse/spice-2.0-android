@@ -131,7 +131,8 @@ class NCDDeleteConfirmationDialog() : DialogFragment(), View.OnClickListener {
                 ChipViewItemModel(
                     id = (index + 1).toLong(),
                     value = element.type,
-                    name = element.name
+                    name = element.name,
+                    cultureValue = element.displayValue,
                 )
             )
         }
@@ -182,7 +183,7 @@ class NCDDeleteConfirmationDialog() : DialogFragment(), View.OnClickListener {
     private fun validateInputs(): Boolean {
         var isValid = true
 
-        if (!reasonListCustomView.getSelectedTags().isNullOrEmpty()) {
+        if (reasonListCustomView.getSelectedTags().isNotEmpty()) {
             val selectedReason = getChipValue(reasonListCustomView.getSelectedTags()[0])
             if (selectedReason.contains(DefinedParams.Other)) {
                 if (binding.etOtherReason.text.isNullOrBlank()) {

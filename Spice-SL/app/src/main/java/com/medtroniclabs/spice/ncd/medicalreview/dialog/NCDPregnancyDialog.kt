@@ -37,6 +37,7 @@ import com.medtroniclabs.spice.common.DateUtils.calculateGestationalAge
 import com.medtroniclabs.spice.common.DateUtils.formatGestationalAge
 import com.medtroniclabs.spice.common.DateUtils.getCurrentYearAsDouble
 import com.medtroniclabs.spice.common.DefinedParams
+import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.ViewUtils
 import com.medtroniclabs.spice.data.PregnancyDetailsModel
 import com.medtroniclabs.spice.data.model.ChipViewItemModel
@@ -271,7 +272,7 @@ class NCDPregnancyDialog(private val callback: ((isPositiveResult: Boolean, mess
             view.tag = DIABETES
             view.addViewElements(
                 it,
-                false,
+                SecuredPreference.getIsTranslationEnabled(),
                 viewModel.resultDiabetesHashMap,
                 Pair(DIABETES, null),
                 FormLayout(viewType = "", id = "", title = "", visibility = "", optionsList = null),
@@ -284,7 +285,7 @@ class NCDPregnancyDialog(private val callback: ((isPositiveResult: Boolean, mess
             view.tag = HYPERTENSION
             view.addViewElements(
                 it,
-                false,
+                SecuredPreference.getIsTranslationEnabled(),
                 viewModel.resultHypertensionHashMap,
                 Pair(HYPERTENSION, null),
                 FormLayout(viewType = "", id = "", title = "", visibility = "", optionsList = null),
@@ -297,7 +298,7 @@ class NCDPregnancyDialog(private val callback: ((isPositiveResult: Boolean, mess
             view.tag = PREGNANT_STATUS
             view.addViewElements(
                 it,
-                false,
+                SecuredPreference.getIsTranslationEnabled(),
                 viewModel.resultPregnantHashMap,
                 Pair(PREGNANT_STATUS, null),
                 FormLayout(viewType = "", id = "", title = "", visibility = "", optionsList = null),

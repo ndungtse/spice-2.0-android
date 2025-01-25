@@ -17,6 +17,7 @@ import com.medtroniclabs.spice.appextensions.textOrHyphen
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DefinedParams
+import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.DispensePrescriptionResponse
 import com.medtroniclabs.spice.data.DispenseUpdatePrescriptionRequest
 import com.medtroniclabs.spice.databinding.FragmentNcdQuantityDifferenceDialogueBinding
@@ -114,7 +115,7 @@ class NCDQuantityDifferenceDialogueFragment : DialogFragment(), View.OnClickList
             lifeStyleBinding.tvMedicationName.text = model.medicationName.textOrHyphen()
             lifeStyleBinding.tvPrescribedDays.text = model.dispenseRemainingDays.numberOrZero().toString()
             lifeStyleBinding.tvfilledDays.text = model.prescriptionFilledDays.numberOrZero().toString()
-            val adapter = CustomSpinnerAdapter(requireContext())
+            val adapter = CustomSpinnerAdapter(requireContext(), SecuredPreference.getIsTranslationEnabled())
             adapter.setData(getDropDownList())
             lifeStyleBinding.etReasonSpinner.adapter = adapter
             lifeStyleBinding.etReasonSpinner.onItemSelectedListener =
@@ -165,7 +166,7 @@ class NCDQuantityDifferenceDialogueFragment : DialogFragment(), View.OnClickList
                     prescriptionId = it.prescriptionId,
                     instructionNote = it.instructionNote,
                     prescriptionFilledDays = it.prescriptionFilledDays,
-                    reason = it.discontinuedReason
+                    reason = it.reason
                 )
             )
         }
@@ -233,7 +234,7 @@ class NCDQuantityDifferenceDialogueFragment : DialogFragment(), View.OnClickList
         val dropDownList = ArrayList<Map<String, Any>>()
         dropDownList.add(
             hashMapOf<String, Any>(
-                DefinedParams.NAME to DefinedParams.DefaultIDLabel,
+                DefinedParams.NAME to getString(R.string.please_select),
                 DefinedParams.ID to DefinedParams.DefaultID
             )
         )
@@ -243,7 +244,7 @@ class NCDQuantityDifferenceDialogueFragment : DialogFragment(), View.OnClickList
                 hashMapOf<String, Any>(
                     DefinedParams.NAME to it.name,
                     DefinedParams.ID to it.id,
-                    DefinedParams.displayValue to (it.displayValue ?: it.name)
+                    DefinedParams.cultureValue to it.displayValue
                 )
             )
         }

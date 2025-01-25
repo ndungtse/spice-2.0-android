@@ -15,6 +15,7 @@ import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.data.model.ChipViewItemModel
 import com.medtroniclabs.spice.databinding.FragmentPatientSearchFilterDialogBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
+import com.medtroniclabs.spice.ncd.medicalreview.CommonEnums
 import com.medtroniclabs.spice.ui.TagListCustomView
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientListViewModel
 
@@ -78,7 +79,10 @@ class PatientSearchFilterDialog : DialogFragment(), View.OnClickListener {
                 enableConfirm()
             }
         ncdMedicalReviewDateTag =
-            TagListCustomView(binding.root.context, binding.ncdMedicalReviewDateChipGroup) { _, _, _ ->
+            TagListCustomView(
+                binding.root.context,
+                binding.ncdMedicalReviewDateChipGroup
+            ) { _, _, _ ->
                 enableConfirm()
             }
         ncdRedRiskTag =
@@ -223,13 +227,17 @@ class PatientSearchFilterDialog : DialogFragment(), View.OnClickListener {
         chipItemList.add(
             ChipViewItemModel(
                 id = 1,
-                name = getString(R.string.today)
+                name = CommonEnums.TODAY.name,
+                cultureValue = getString(CommonEnums.TODAY.cultureValue),
+                value = CommonEnums.TODAY.value
             )
         )
         chipItemList.add(
             ChipViewItemModel(
                 id = 2,
-                name = getString(R.string.tomorrow)
+                name = CommonEnums.TOMORROW.name,
+                cultureValue = getString(CommonEnums.TOMORROW.cultureValue),
+                value = CommonEnums.TOMORROW.value
             )
         )
         return chipItemList
@@ -240,13 +248,17 @@ class PatientSearchFilterDialog : DialogFragment(), View.OnClickListener {
         chipItemList.add(
             ChipViewItemModel(
                 id = 1,
-                name = getString(R.string.referred)
+                name = CommonEnums.REFERRED.name,
+                cultureValue = getString(CommonEnums.REFERRED.cultureValue),
+                value = CommonEnums.REFERRED.value
             )
         )
         chipItemList.add(
             ChipViewItemModel(
                 id = 2,
-                name = getString(R.string.on_treatment)
+                name = CommonEnums.ON_TREATMENT.name,
+                cultureValue = getString(CommonEnums.ON_TREATMENT.cultureValue),
+                value = CommonEnums.ON_TREATMENT.value
             )
         )
         return chipItemList
@@ -257,13 +269,17 @@ class PatientSearchFilterDialog : DialogFragment(), View.OnClickListener {
         chipItemList.add(
             ChipViewItemModel(
                 id = 1,
-                name = getString(R.string.yesterday)
+                name = CommonEnums.YESTERDAY.name,
+                cultureValue = getString(CommonEnums.YESTERDAY.cultureValue),
+                value = CommonEnums.YESTERDAY.value
             )
         )
         chipItemList.add(
             ChipViewItemModel(
                 id = 2,
-                name = getString(R.string.today)
+                name = CommonEnums.TODAY.name,
+                cultureValue = getString(CommonEnums.TODAY.cultureValue),
+                value = CommonEnums.TODAY.value
             )
         )
         return chipItemList
@@ -274,13 +290,17 @@ class PatientSearchFilterDialog : DialogFragment(), View.OnClickListener {
         chipItemList.add(
             ChipViewItemModel(
                 id = 1,
-                name = getString(R.string.today)
+                name = CommonEnums.TODAY.name,
+                cultureValue = getString(CommonEnums.TODAY.cultureValue),
+                value = CommonEnums.TODAY.value
             )
         )
         chipItemList.add(
             ChipViewItemModel(
                 id = 2,
-                name = getString(R.string.tomorrow)
+                name = CommonEnums.TOMORROW.name,
+                cultureValue = getString(CommonEnums.TOMORROW.cultureValue),
+                value = CommonEnums.TOMORROW.value
             )
         )
         return chipItemList
@@ -291,15 +311,17 @@ class PatientSearchFilterDialog : DialogFragment(), View.OnClickListener {
         chipItemList.add(
             ChipViewItemModel(
                 id = 1,
-                name = getString(R.string.registered),
-                optionalData = getString(R.string.enrolled_data)
+                name = CommonEnums.ENROLLED.name,
+                cultureValue = getString(CommonEnums.ENROLLED.cultureValue),
+                value = CommonEnums.ENROLLED.value
             )
         )
         chipItemList.add(
             ChipViewItemModel(
                 id = 2,
-                name = getString(R.string.not_registered),
-                optionalData = getString(R.string.not_enrolled_data)
+                name = CommonEnums.NOT_ENROLLED.name,
+                cultureValue = getString(CommonEnums.NOT_ENROLLED.cultureValue),
+                value = CommonEnums.NOT_ENROLLED.value
             )
         )
         return chipItemList
@@ -310,22 +332,25 @@ class PatientSearchFilterDialog : DialogFragment(), View.OnClickListener {
         chipItemList.add(
             ChipViewItemModel(
                 id = 1,
-                name = getString(R.string.high),
-                optionalData =getString(R.string.high_risk_filter)
+                name = CommonEnums.HIGH_RISK.name,
+                cultureValue = getString(CommonEnums.HIGH_RISK.cultureValue),
+                value = CommonEnums.HIGH_RISK.value
             )
         )
         chipItemList.add(
             ChipViewItemModel(
                 id = 2,
-                name = getString(R.string.medium),
-                optionalData =getString(R.string.medium_risk_filter)
+                name = CommonEnums.MEDIUM_RISK.name,
+                cultureValue = getString(CommonEnums.MEDIUM_RISK.cultureValue),
+                value = CommonEnums.MEDIUM_RISK.value
             )
         )
         chipItemList.add(
             ChipViewItemModel(
-                id = 2,
-                name = getString(R.string.low),
-                optionalData =getString(R.string.low_risk_filter)
+                id = 3,
+                name = CommonEnums.LOW_RISK.name,
+                cultureValue = getString(CommonEnums.LOW_RISK.cultureValue),
+                value = CommonEnums.LOW_RISK.value
             )
         )
         return chipItemList
@@ -336,7 +361,9 @@ class PatientSearchFilterDialog : DialogFragment(), View.OnClickListener {
         chipItemList.add(
             ChipViewItemModel(
                 id = 1,
-                name = getString(R.string.red_risk)
+                name = CommonEnums.RED_RISK.name,
+                cultureValue = getString(CommonEnums.RED_RISK.cultureValue),
+                value = CommonEnums.RED_RISK.value
             )
         )
         return chipItemList

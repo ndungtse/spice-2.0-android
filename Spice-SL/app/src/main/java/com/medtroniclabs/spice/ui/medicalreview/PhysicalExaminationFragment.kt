@@ -13,6 +13,7 @@ import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DefinedParams
+import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.model.ChipViewItemModel
 import com.medtroniclabs.spice.databinding.FragmentPhysicalExaminationBinding
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
@@ -56,7 +57,11 @@ class PhysicalExaminationFragment : BaseFragment() {
                 .forEach {
                     chipItemList.add(
                         ChipViewItemModel(
-                            id = it.id, name = it.name, value = it.value
+                            id = it.id,
+                            name = it.name,
+//                            cultureValue = it.displayValue,
+                            type = it.type,
+                            value = it.value
                         )
                     )
                 }
@@ -85,7 +90,7 @@ class PhysicalExaminationFragment : BaseFragment() {
             view.tag = DefinedParams.CongenitalDetect
             view.addViewElements(
                 it,
-                false,
+                SecuredPreference.getIsTranslationEnabled(),
                 viewModel.congenitalDefectMap,
                 Pair(DefinedParams.CongenitalDetect, null),
                 FormLayout(viewType = "", id = "", title = "", visibility = "", optionsList = null),
@@ -117,7 +122,7 @@ class PhysicalExaminationFragment : BaseFragment() {
             view.tag = DefinedParams.CordExamination
             view.addViewElements(
                 it,
-                false,
+                SecuredPreference.getIsTranslationEnabled(),
                 viewModel.cordExaminationMap,
                 Pair(DefinedParams.CordExamination, null),
                 FormLayout(viewType = "", id = "", title = "", visibility = "", optionsList = null),
@@ -160,7 +165,7 @@ class PhysicalExaminationFragment : BaseFragment() {
             view.tag = DefinedParams.BreastCondition
             view.addViewElements(
                 it,
-                false,
+                SecuredPreference.getIsTranslationEnabled(),
                 viewModel.breastCondition,
                 Pair(DefinedParams.BreastCondition, null),
                 FormLayout(viewType = "", id = "", title = "", visibility = "", optionsList = null),
@@ -199,7 +204,7 @@ class PhysicalExaminationFragment : BaseFragment() {
             view.tag = DefinedParams.ExclusiveBreastCondition
             view.addViewElements(
                 it,
-                false,
+                SecuredPreference.getIsTranslationEnabled(),
                 viewModel.exclusiveBreastCondition,
                 Pair(DefinedParams.ExclusiveBreastCondition, null),
                 FormLayout(viewType = "", id = "", title = "", visibility = "", optionsList = null),

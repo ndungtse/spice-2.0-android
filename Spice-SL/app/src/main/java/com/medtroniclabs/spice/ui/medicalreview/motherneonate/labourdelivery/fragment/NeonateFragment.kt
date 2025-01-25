@@ -17,6 +17,7 @@ import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
+import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.data.LabourDeliveryMetaEntity
 import com.medtroniclabs.spice.data.model.ChipViewItemModel
 import com.medtroniclabs.spice.databinding.FragmentNeonateBinding
@@ -145,7 +146,7 @@ class NeonateFragment : BaseFragment() {
             view.tag = TAG
             view.addViewElements(
                 it,
-                false,
+                SecuredPreference.getIsTranslationEnabled(),
                 viewModel.stateOfBaby,
                 Pair(DefinedParams.StateOfBaby, null),
                 FormLayout(viewType = "", id = "", title = "", visibility = "", optionsList = null),
@@ -169,7 +170,7 @@ class NeonateFragment : BaseFragment() {
             view.tag = TAG
             view.addViewElements(
                 it,
-                false,
+                SecuredPreference.getIsTranslationEnabled(),
                 viewModel.genderFlow,
                 Pair(DefinedParams.Gender, null),
                 FormLayout(viewType = "", id = "", title = "", visibility = "", optionsList = null),
