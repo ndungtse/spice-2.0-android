@@ -304,8 +304,10 @@ class NCDCallResultBottomDialog : BottomSheetDialogFragment(), View.OnClickListe
             chipItems.add(
                 ChipViewItemModel(
                     id = (index + 1).toLong(),
-                    value = element.type,
-                    name = element.name
+                    name = element.name,
+                    cultureValue = element.displayValue,
+                    type = element.type,
+                    value = element.value
                 )
             )
         }
@@ -596,14 +598,26 @@ class NCDCallResultBottomDialog : BottomSheetDialogFragment(), View.OnClickListe
 
     private fun getPatientStatusForSuccessData(): ArrayList<Map<String, Any>> {
         val flowList = ArrayList<Map<String, Any>>()
-        flowList.add(getOptionMap(visited_facility, visited_facility))
+        flowList.add(
+            getOptionMap(
+                visited_facility,
+                visited_facility,
+                getString(R.string.visited_facility)
+            )
+        )
         flowList.add(
             getOptionMap(
                 will_visit_facility,
-                will_visit_facility
+                will_visit_facility, getString(R.string.will_visit_facility)
             )
         )
-        flowList.add(getOptionMap(wont_visit_facility, wont_visit_facility))
+        flowList.add(
+            getOptionMap(
+                wont_visit_facility,
+                wont_visit_facility,
+                getString(R.string.wont_visit_facility)
+            )
+        )
         return flowList
     }
 }

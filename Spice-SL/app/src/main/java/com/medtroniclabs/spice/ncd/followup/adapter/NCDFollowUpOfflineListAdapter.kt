@@ -44,7 +44,7 @@ class NCDFollowUpOfflineListAdapter(val listener: PatientSelectionListenerForFol
                 R.string.household_summary_member_info,
                 name,
                 age,
-                gender
+                CommonUtils.translatedGender(context, gender)
             )
             binding.tvPatientName.text = patientInfo
             binding.tvDueInformation.setTextColor(Color.parseColor("#994242"))

@@ -36,8 +36,21 @@ class RegistrationActivity : BaseActivity() {
                 backNavigation()
             }
         )
+        attachObserver()
         getPatientDetails()
-        loadTermsAndConditionsFragment()
+    }
+
+    private fun onBackPressPopStack() {
+        this@RegistrationActivity.finish()
+    }
+
+    private fun attachObserver() {
+        patientDetailViewModel.patientDetailsLiveData.observe(this) { resource ->
+            handleResourceState(
+                resource, onSuccess = { loadTermsAndConditionsFragment() },
+                onBackPressPopStack = ::onBackPressPopStack
+            )
+        }
     }
 
     private fun fixOrientation() {

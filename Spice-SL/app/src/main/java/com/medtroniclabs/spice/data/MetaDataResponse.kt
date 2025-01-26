@@ -82,6 +82,7 @@ data class ClinicalWorkflowCondition(
     val minAge: Int? = null,
     val subModule: String? = null,
     val groupName: String? = null,
+    val displayGroupName: String? = null,
     val moduleType: String,
     val category: String
 )

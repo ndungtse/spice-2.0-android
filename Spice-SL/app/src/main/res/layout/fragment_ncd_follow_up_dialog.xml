@@ -380,6 +380,7 @@
                 android:id="@+id/btnAssessment"
                 android:layout_width="@dimen/_0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/_5sdp"
                 android:background="@drawable/button_white_background"
                 android:paddingHorizontal="@dimen/_30sdp"
                 android:paddingVertical="@dimen/_10sdp"
@@ -397,7 +398,7 @@
                     android:drawablePadding="@dimen/_10sdp"
                     android:fontFamily="@font/inter_bold"
                     android:gravity="center_vertical"
-                    android:text="Start Assessment"
+                    android:text="@string/start_assessment"
                     android:textAllCaps="true"
                     android:textColor="@color/cobalt_blue"
                     android:textSize="@dimen/_14ssp"
@@ -406,25 +407,39 @@
 
             </FrameLayout>
 
-
-            <androidx.appcompat.widget.AppCompatImageView
+            <FrameLayout
                 android:id="@+id/btnCall"
-                android:layout_width="0dp"
+                android:layout_width="@dimen/_0dp"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_margin="@dimen/_8sdp"
+                android:layout_marginStart="@dimen/_5sdp"
                 android:background="@drawable/call_button_selector"
-                android:paddingVertical="@dimen/_12sdp"
-                android:paddingStart="@dimen/_10sdp"
-                android:paddingEnd="@dimen/_10sdp"
-                android:src="@drawable/ic_call_with_text"
-                android:text="@string/call"
-                android:textAllCaps="true"
+                android:paddingHorizontal="@dimen/_30sdp"
+                android:paddingVertical="@dimen/_10sdp"
                 android:visibility="visible"
                 app:layout_constraintBottom_toBottomOf="@id/btnAssessment"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/btnAssessment"
-                app:layout_constraintTop_toTopOf="@id/btnAssessment" />
+                app:layout_constraintTop_toTopOf="@id/btnAssessment">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:drawableLeft="@drawable/ic_follow_up_call"
+                    android:drawablePadding="@dimen/_10sdp"
+                    android:fontFamily="@font/inter_bold"
+                    android:gravity="center_vertical"
+                    android:text="@string/call"
+                    android:textAllCaps="true"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/_14ssp"
+                    android:visibility="visible" />
+
+
+            </FrameLayout>
+
+
+
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>

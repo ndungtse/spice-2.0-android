@@ -1,5 +1,6 @@
 package com.medtroniclabs.spice.ui.dashboard.ncd
 
+import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -289,6 +290,13 @@ class DashboardFragment : BaseFragment(), View.OnClickListener {
             }
             if (!binding.etFromDate.text.isNullOrEmpty() && !binding.etToDate.text.isNullOrEmpty())
                 getDashboardList(true)
+        }
+        datePickerDialog.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.okay)) { dg, _ ->
+            datePickerDialog.onClick(dg, DialogInterface.BUTTON_POSITIVE)
+        }
+
+        datePickerDialog.setButton(DialogInterface.BUTTON_NEGATIVE, getString(R.string.cancel)) { dg, _ ->
+            datePickerDialog.onClick(dg, DialogInterface.BUTTON_NEGATIVE)
         }
         datePickerDialog.show()
     }

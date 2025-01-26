@@ -122,7 +122,7 @@ class NCDFollowUpDialogFragment : DialogFragment() {
                 val age = patient.age?.toString() ?: ""
 
                 // Patient info
-                tvTitle.text = getString(R.string.household_summary_member_info, name, age, gender)
+                tvTitle.text = getString(R.string.household_summary_member_info, name, age, CommonUtils.translatedGender(requireContext(), gender))
 
                 // Diagnosis and referred reasons
                 val isVisible = viewModel.type == SCREENED || viewModel.type == LTFU_Type
@@ -199,7 +199,7 @@ class NCDFollowUpDialogFragment : DialogFragment() {
                 } ?: hyphen
 
                 // Patient info
-                tvTitle.text = getString(R.string.household_summary_member_info, name, age, gender)
+                tvTitle.text = getString(R.string.household_summary_member_info, name, age, CommonUtils.translatedGender(requireContext(), gender))
                 val isVisible = viewModel.typeOffline == SCREENED || viewModel.typeOffline == LTFU_Type
                 tvReasonLabel.setVisible(isVisible)
                 tvReasonText.setVisible(isVisible)

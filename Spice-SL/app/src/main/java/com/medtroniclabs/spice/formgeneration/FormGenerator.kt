@@ -3,6 +3,7 @@ package com.medtroniclabs.spice.formgeneration
 import android.app.DatePickerDialog
 import android.content.Context
 import android.content.ContextWrapper
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Color
@@ -1962,6 +1963,14 @@ class FormGenerator(
         }
         maxDate?.let {
             dialog.datePicker.maxDate = it
+        }
+
+        dialog.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.okay)) { dg, _ ->
+            dialog.onClick(dg, DialogInterface.BUTTON_POSITIVE)
+        }
+
+        dialog.setButton(DialogInterface.BUTTON_NEGATIVE, getString(R.string.cancel)) { dg, _ ->
+            dialog.onClick(dg, DialogInterface.BUTTON_NEGATIVE)
         }
 
         if (disableFutureDate) dialog.datePicker.maxDate = System.currentTimeMillis()

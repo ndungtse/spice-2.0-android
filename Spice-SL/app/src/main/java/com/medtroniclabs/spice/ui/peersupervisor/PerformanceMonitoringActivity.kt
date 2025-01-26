@@ -2,6 +2,7 @@ package com.medtroniclabs.spice.ui.peersupervisor
 
 import android.app.DatePickerDialog
 import android.content.Context
+import android.content.DialogInterface
 import android.os.Bundle
 import android.view.View
 import android.widget.AdapterView
@@ -592,6 +593,14 @@ class PerformanceMonitoringActivity : BaseActivity() {
         }
 
         if (disableFutureDate) dialog.datePicker.maxDate = System.currentTimeMillis()
+
+        dialog.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.okay)) { dg, _ ->
+            dialog.onClick(dg, DialogInterface.BUTTON_POSITIVE)
+        }
+
+        dialog.setButton(DialogInterface.BUTTON_NEGATIVE, getString(R.string.cancel)) { dg, _ ->
+            dialog.onClick(dg, DialogInterface.BUTTON_NEGATIVE)
+        }
 
         dialog.setCancelable(false)
 

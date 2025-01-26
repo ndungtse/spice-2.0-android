@@ -203,7 +203,7 @@ class PatientInfoFragment : BaseFragment() {
         val age = patientListRespModel.birthDate?.let {
             DateUtils.getAgeDescription(patientListRespModel.birthDate, requireContext())
         } ?: (patientListRespModel.age ?: requireContext().getString(R.string.separator_hyphen))
-        setTitle(requireContext().getString(R.string.household_summary_member_info, name.trim(), age, gender.lowercase().capitalizeFirstChar().trim()))
+        setTitle(requireContext().getString(R.string.household_summary_member_info, name.trim(), age, CommonUtils.translatedGender(requireContext(), gender)))
         with(binding) {
             val lastMenstrualDate =
                 patientListRespModel.pregnancyDetails?.lastMenstrualPeriod.takeIf { it?.isNotBlank() == true }?.let {
@@ -516,7 +516,7 @@ class PatientInfoFragment : BaseFragment() {
         return StringConverter.appendTexts(
             firstText = text,
             response.age.toString(),
-            response.gender?.capitalizeFirstChar(),
+            CommonUtils.translatedGender(requireContext(), response.gender),
             separator = getString(R.string.hyphen_symbol)
         ).capitalizeFirstChar()
     }

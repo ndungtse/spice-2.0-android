@@ -387,7 +387,7 @@
                     android:drawablePadding="@dimen/_10sdp"
                     android:fontFamily="@font/inter_bold"
                     android:gravity="center_vertical"
-                    android:text="Start Assessment"
+                    android:text="@string/start_assessment"
                     android:textAllCaps="true"
                     android:textColor="@color/cobalt_blue"
                     android:textSize="@dimen/_14ssp"

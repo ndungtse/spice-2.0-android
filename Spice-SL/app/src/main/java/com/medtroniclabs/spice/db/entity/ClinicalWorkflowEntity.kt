@@ -20,6 +20,7 @@ data class NCDAssessmentClinicalWorkflow(
     val workflowName: String,
     val category: String? = null,
     val groupName: String? = null,
+    val cultureGroupName: String? = null,
     val subModule: String? = null,
     val displayOrder: Int? = null
 )

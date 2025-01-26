@@ -232,7 +232,7 @@
     <string name="chest_in_drawing">Kuvuta kwa kifua</string>
     <string name="patient_on_treatment">Mgonjwa kwenye Matibabu</string>
     <string name="no_refferral_treatment_required">Hakuna rufaa/Hakuna Matibabu Yanayohitajika</string>
-    <string name="select" translatable="false">Chagua</string>
+    <string name="select">Chagua</string>
     <string name="muac_info_1"> Muulize mama aondoe nguo yoyote inayofunika mkono wa kushoto wa mtoto.</string>
     <string name="muac_info_2">Tambua katikati ya mkono wa kushoto wa mtoto. Hii inaweza kufanywa kwa kuchukua kipande cha kamba (au mkanda yenyewe), weka mwisho mmoja kwenye ncha ya bega la mtoto na nyingine kwenye kiwiko</string>
     <string name="muac_info_3">Sasa kunja kamba juu katika kitanzi ili kuiongeza mara mbili ili hatua kwenye kiwiko imewekwa pamoja na hatua kwenye bega na kitanzi kinachoninginia - mwisho wa kitanzi kilichonyooka kinaonyesha katikati.</string>
@@ -391,7 +391,7 @@
     <string name="appearance_label">A-Muonekano</string>
     <string name="respiration_label">R-Upumuaji</string>
     <string name="total_label">Jumla</string>
-    <string name="save" translatable="false">Hifadhi</string>
+    <string name="save">Hifadhi</string>
     <string name="select_disease_category">Chagua kundi la Ugonjwa</string>
     <string name="select_disease_condition">Chagua Hli ya Ugonjwa</string>
     <string name="add_diagnosis">Ongeza Ugonjwa</string>
@@ -580,7 +580,7 @@
     <string name="reset">Rudia kuweka</string>
     <string name="neonateOutcome">matokeo ya neonate</string>
     <string name="stateOfBaby">Hali ya Mtoto</string>
-    <string name="loading" translatable="false">Inatafuta</string>
+    <string name="loading">Inatafuta...</string>
     <string name="chw_name">Jina la CHW</string>
     <string name="no_of_hh">Namba ya HH</string>
     <string name="no_of_member">Namba ya mjumbe</string>
@@ -749,13 +749,13 @@
     <string name="please_specify_the_complication">Tafadhali bainisha athari</string>
     <string name="complications">Athari</string>
     <string name="language_preference">CHAGU LUGHA</string>
-    <string name="assessment_label" translatable="false">Tathmini</string>
+    <string name="assessment_label">Tathmini</string>
     <string name="upload">Ingiza</string>
     <string name="offline_screened_data">Taarifa zilizo nje ya mfumo</string>
     <string name="no_screened_patients">Hakuna wagonjwa wakuingiza wa uchunguzi</string>
     <string name="screened_patient">Mgonjwa 1 wa uchunguzi anagoja kuingizwa</string>
-    <string name="assessed_patient" translatable="false">Mgonjwa 1 aliyepimwa anangojea kuingizwa</string>
-    <string name="no_assessed_patients" translatable="false">Hakuna mgonjwa aliyepimwa wa kuingizwa</string>
+    <string name="assessed_patient">Mgonjwa 1 aliyepimwa anangojea kuingizwa</string>
+    <string name="no_assessed_patients">Hakuna mgonjwa aliyepimwa wa kuingizwa</string>
     <string name="switch_language">Badilisha lugha</string>
     <string name="screening_caps">Uchunguzi</string>
     <string name="comments_on_diagnosis">Maoni kuhusu kudhibitisha uchunguzi</string>
@@ -846,7 +846,7 @@
     <string name="proceed">Endelea</string>
     <string name="mental_health">Afya ya Akili</string>
     <string name="job_aid">Maada wa Kazi</string>
-    <string name="high_risk_confirmation" translatable="false">Una uhakika unataga kuchagua hii kama ishara kali ya ujauzito?</string>
+    <string name="high_risk_confirmation">Una uhakika unataga kuchagua hii kama ishara kali ya ujauzito?</string>
     <string name="no_new_medicines_prescribed_warning">Una uhakika unataka kuendelea kutuma taarifa kabla ya kumuandikia mgonjwa dawa?</string>
     <string name="please_enter_valid_value_between_45_to_120">Tafadhali ingiza kiasi kati ya 45 na 120</string>
     <string name="please_enter_muac_between_0_to_26">Tafadhali ingiza kiasi kati ya 0 na 26.5</string>
@@ -917,14 +917,14 @@
     <string name="medium">Kati</string>
     <string name="medium_risk_filter">Hatari ya wastani</string>
     <string name="low">Chini</string>
-    <string name="treatment_intensification" translatable="false">Matibabu ya kina</string>
-    <string name="presciption_since_last_3" translatable="false">Dawa zilizoandikwa tangu miezi 3 iliyopita</string>
+    <string name="treatment_intensification">Matibabu ya kina</string>
+    <string name="presciption_since_last_3">Dawa zilizoandikwa tangu miezi 3 iliyopita:</string>
     <string name="glucose_rbs">RBS</string>
     <string name="glucose_fbs">FBS</string>
     <string name="glucose_hba1c">HbA1c</string>
     <string name="review_date">Tarehe kuchunguza tena</string>
-    <string name="recommended_investigations" translatable="false">Vipimo vilivyopendekezwa</string>
-    <string name="lipid_profile" translatable="false">Kipimo cha mafuta</string>
+    <string name="recommended_investigations">Vipimo vilivyopendekezwa</string>
+    <string name="lipid_profile">Kipimo cha mafuta</string>
     <string name="low_risk_filter">Hatari ya chini</string>
     <string name="unable_to_drink_or_breastfeed">Hawezi kunywa au kunyonya</string>
     <string name="convulsions">KIizunguzungu</string>
@@ -1090,8 +1090,12 @@
     <string name="information_message_template">%1$s\'smaombi ya kutuma kwenda %2$s ina</string>
     <string name="enrolled">Walioandikishwa</string>
     <string name="high_risk_filter">Hatari kubwa</string>
+    <string name="see_more">&#160;..Zaidi</string>
 
     <string name="language_change_alert">Re-login is required, Do you want to continue?</string>
+    <string name="assessed_patients">%1$s assessed patients are waiting to upload.</string>
+    <string name="quantity_success_message">%1$s - Successfully dispensed  for %2$d days</string>
+    <string name="quantity_difference_message">%1$s - Requested for %2$d days and dispensed for %3$d days</string>
     <string name="min_char_length_validation">Minimum %1$s characters required</string>
     <string name="general_min_max_validation">Entered value should be %1$s to %2$s</string>
     <string name="general_systemic_examinations"><![CDATA[General & Systemic Examinations]]></string>
@@ -1109,5 +1113,11 @@
     <string name="follow_ups">%1$s follow-up call result are waiting to upload.</string>
     <string name="days_due">%1$s days due</string>
     <string name="day_due">%1$s day due</string>
-    <string name="see_more">&#160;..Zaidi</string>
+    <string name="visited_facility">Visited facility</string>
+    <string name="will_visit_facility">Will visit facility</string>
+    <string name="wont_visit_facility">Won\’t visit facility</string>
+    <string name="medication_nudege_card_header_text_prefix">Considering the patient is not at target, would you like to</string>
+    <string name="medication_nudege_card_header_text_sufix">intensify the treatment?</string>
+    <string name="lipids_recommended_investigations">It has been one year since the patient has gone through the %1$s. Would you like to recommend another round of %1$s?</string>
+    <string name="hba1c_recommended_question">It has been three months since the patient has gone through the HbA1c test. Would you like to recommend another round of HbA1c test?</string>
 </resources>

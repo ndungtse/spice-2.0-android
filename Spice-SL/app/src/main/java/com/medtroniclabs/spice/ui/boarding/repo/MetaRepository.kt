@@ -512,6 +512,7 @@ class MetaRepository @Inject constructor(
                     subModule = condition.subModule,
                     moduleType = condition.moduleType,
                     groupName = condition.groupName,
+                    cultureGroupName = condition.displayGroupName,
                     category = condition.category
                 )
 
@@ -740,7 +741,7 @@ class MetaRepository @Inject constructor(
             MenuEntity(
                 id = workflow.id,
                 menuId = workflow.category ?: workflow.workflowName,
-                name = workflow.groupName ?: workflow.name,
+                name = workflow.cultureGroupName ?: workflow.groupName ?: workflow.name,
                 displayOrder = workflow.displayOrder ?: 0,
                 subModule = workflow.subModule
             )

@@ -59,7 +59,7 @@ class PhysicalExaminationFragment : BaseFragment() {
                         ChipViewItemModel(
                             id = it.id,
                             name = it.name,
-//                            cultureValue = it.displayValue,
+                            cultureValue = it.displayValue,
                             type = it.type,
                             value = it.value
                         )

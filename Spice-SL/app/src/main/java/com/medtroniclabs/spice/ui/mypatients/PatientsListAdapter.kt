@@ -40,7 +40,7 @@ class PatientsListAdapter(
                 R.string.household_summary_member_info,
                 name,
                 age,
-                gender
+                CommonUtils.translatedGender(context, gender)
             )
             var leftLbl = context.getString(R.string.empty)
             var rightLbl = context.getString(R.string.empty)

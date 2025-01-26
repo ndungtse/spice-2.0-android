@@ -2,9 +2,11 @@ package com.medtroniclabs.spice.common
 
 import android.app.DatePickerDialog
 import android.content.Context
+import android.content.DialogInterface
 import android.os.Handler
 import android.os.Looper
 import android.widget.DatePicker
+import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.CommonUtils.getMaxDateLimit
 import java.util.Calendar
 
@@ -50,6 +52,19 @@ object ViewUtils {
                 dialog.setOnCancelListener {
                     cancelCallBack.invoke()
                 }
+            }
+            dialog.setButton(
+                DialogInterface.BUTTON_POSITIVE,
+                context.getString(R.string.okay)
+            ) { dg, _ ->
+                dialog.onClick(dg, DialogInterface.BUTTON_POSITIVE)
+            }
+
+            dialog.setButton(
+                DialogInterface.BUTTON_NEGATIVE,
+                context.getString(R.string.cancel)
+            ) { dg, _ ->
+                dialog.onClick(dg, DialogInterface.BUTTON_NEGATIVE)
             }
             Handler(Looper.getMainLooper()).post {
                 dialog.setCancelable(false)

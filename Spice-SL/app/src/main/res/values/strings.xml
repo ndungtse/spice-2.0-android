@@ -246,7 +246,7 @@
     <string name="chest_in_drawing">Chest in-drawing</string>
     <string name="patient_on_treatment">Patient On Treatment</string>
     <string name="no_refferral_treatment_required">No Referral / No Treatment Required</string>
-    <string name="select" translatable="false">Select</string>
+    <string name="select">Select</string>
     <string name="muac_info_1"> Ask the mother to remove any clothing that covers the child’s left arm.</string>
     <string name="muac_info_2"> Identify the midpoint of the child’s left upper arm. This can be done by taking a piece of string (or the tape itself), place one end on the tip of the child’s shoulder and the other on the elbow</string>
     <string name="muac_info_3"> Now bend the string up in a loop to double it so the point at the elbow is placed together with the point on the shoulder with a loop hanging down – the end of the straightened loop indicates the midpoint.</string>
@@ -415,7 +415,7 @@
     <string name="appearance_label">A-Appearance</string>
     <string name="respiration_label">R-Respiration</string>
     <string name="total_label">TOTAL</string>
-    <string name="save" translatable="false">save</string>
+    <string name="save">save</string>
     <string name="select_disease_category">Select Disease Category</string>
     <string name="select_disease_condition">Select Disease Condition</string>
     <string name="add_diagnosis">Add Diagnoses</string>
@@ -490,7 +490,6 @@
     <string name="fb_info_5">When ready to count, press the centre of your timer (Note that the timer beeps every second for 60 seconds; will alarm in 30 seconds and then in 60 seconds before stopping beeping)</string>
     <string name="fb_info_6">Keep counting until the timer stops beeping</string>
     <string name="fast_breathing">Fast Breathing</string>
-    <string name="ddmmyyyy" translatable="false">dd/mm/yyyy</string>
     <string name="phone_number_invalid">Please enter a valid mobile number</string>
     <string name="dob_invalid">Please enter an age between 0 to %1$d</string>
     <string name="zinc_ors_status" translatable="false">(Zinc - %1$s), (ORS - %2$s)</string>
@@ -672,7 +671,7 @@
     <string name="reset">Reset</string>
     <string name="neonateOutcome">Neonate Outcome</string>
     <string name="stateOfBaby">State of Baby</string>
-    <string name="loading" translatable="false">loading...</string>
+    <string name="loading">loading...</string>
     <string name="patient_status_append" translatable="false">%1$s, %2$s</string>
 
     <string name="chw_name">Chw Name</string>
@@ -894,15 +893,15 @@
     // Side menu
     <string name="offline_data">OFFLINE DATA</string>
     <string name="language_preference">LANGUAGE PREFERENCE</string>
-    <string name="assessment_label" translatable="false">Assessment</string>
+    <string name="assessment_label">Assessment</string>
     <string name="upload">Upload</string>
     <string name="offline_screened_data">Offline Screened Data</string>
     <string name="no_screened_patients">No screened patients to upload.</string>
     <string name="screened_patient">1 screened patient is waiting to upload.</string>
     <string name="screened_patients">%1$s screened patients are waiting to upload.</string>
-    <string name="assessed_patients" translatable="false">%1$s assessed patients are waiting to upload.</string>
-    <string name="assessed_patient" translatable="false">1 assessed patient is waiting to upload.</string>
-    <string name="no_assessed_patients" translatable="false">No assessed patients found to upload.</string>
+    <string name="assessed_patients">%1$s assessed patients are waiting to upload.</string>
+    <string name="assessed_patient">1 assessed patient is waiting to upload.</string>
+    <string name="no_assessed_patients">No assessed patients found to upload.</string>
     <string name="switch_language">Switch Language</string>
     <string name="screening_caps">Screening</string>
     <string name="comments_on_diagnosis">Comments on confirming the diagnoses</string>
@@ -963,8 +962,8 @@
     <string name="fill_prescription">Please enter any values to update.</string>
     <string name="prescription_dispensed_successfully">Prescription dispensed successfully</string>
     <string name="reason_for_qualipharm">Qualipharm Response</string>
-    <string name="quantity_success_message" translatable="false">%1$s - Successfully dispensed  for %2$d days</string>
-    <string name="quantity_difference_message" translatable="false">%1$s - Requested for %2$d days and dispensed for %3$d days</string>
+    <string name="quantity_success_message">%1$s - Successfully dispensed  for %2$d days</string>
+    <string name="quantity_difference_message">%1$s - Requested for %2$d days and dispensed for %3$d days</string>
     <string name="out_of_stock_message">%1$s - Out of stock in Qualipharm</string>
     <string name="days_are_required">Days are required</string>
 
@@ -1022,7 +1021,7 @@
 
     //E-Signature
     <string name="or_label"> (OR) </string>
-    <string name="high_risk_confirmation" translatable="false">Are you sure you want to flag this as a High Risk Pregnancy?</string>
+    <string name="high_risk_confirmation">Are you sure you want to flag this as a High Risk Pregnancy?</string>
     <string name="no_new_medicines_prescribed_warning">Are you sure you want to continue submitting the report without prescribing medicine for the patient?</string>
     <string name="please_enter_valid_value_between_45_to_120">Please enter valid value between 45 to 120</string>
     <string name="please_enter_muac_between_0_to_26">Please enter a value between 0 to 26.5</string>
@@ -1120,19 +1119,19 @@
     <string name="medium_risk_filter">Medium risk</string>
     <string name="low">Low</string>
 
-    <string name="treatment_intensification" translatable="false">Treatment Intensification</string>
-    <string name="presciption_since_last_3" translatable="false">Prescription since last 3 months :</string>
-    <string name="medication_nudege_card_header_text_prefix" translatable="false">Considering the patient is not at target, would you like to</string>
-    <string name="medication_nudege_card_header_text_sufix" translatable="false">intensify the treatment?</string>
+    <string name="treatment_intensification">Treatment Intensification</string>
+    <string name="presciption_since_last_3">Prescription since last 3 months:</string>
+    <string name="medication_nudege_card_header_text_prefix">Considering the patient is not at target, would you like to</string>
+    <string name="medication_nudege_card_header_text_sufix">intensify the treatment?</string>
     <string name="glucose_rbs">RBS</string>
     <string name="glucose_fbs">FBS</string>
     <string name="glucose_hba1c">HbA1c</string>
     <string name="review_date">Review Date</string>
 
-    <string name="recommended_investigations" translatable="false">Recommended Investigations</string>
-    <string name="lipids_recommended_investigations" translatable="false">It has been one year since the patient has gone through the %1$s. Would you like to recommend another round of %1$s?</string>
-    <string name="hba1c_recommended_question" translatable="false">It has been three months since the patient has gone through the HbA1c test. Would you like to recommend another round of HbA1c test?</string>
-    <string name="lipid_profile" translatable="false">Lipid Profile</string>
+    <string name="recommended_investigations">Recommended Investigations</string>
+    <string name="lipids_recommended_investigations">It has been one year since the patient has gone through the %1$s. Would you like to recommend another round of %1$s?</string>
+    <string name="hba1c_recommended_question">It has been three months since the patient has gone through the HbA1c test. Would you like to recommend another round of HbA1c test?</string>
+    <string name="lipid_profile">Lipid Profile</string>
     <string name="low_risk_filter">Low risk</string>
     <string name="unable_to_drink_or_breastfeed">Unable to drink or breastfeed</string>
     <string name="convulsions">Convulsions</string>
@@ -1218,4 +1217,8 @@
     <string name="reviews_conducted">Reviews Conducted</string>
     <string name="counsellings_conducted">Counsellings Conducted</string>
     <string name="language_change_alert">Re-login is required, Do you want to continue?</string>
+
+    <string name="visited_facility">Visited facility</string>
+    <string name="will_visit_facility">Will visit facility</string>
+    <string name="wont_visit_facility">Won\’t visit facility</string>
 </resources>

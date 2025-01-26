@@ -1,6 +1,7 @@
 package com.medtroniclabs.spice.ncd.followup.fragment
 
 import android.content.res.ColorStateList
+import android.content.res.Configuration
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -13,6 +14,8 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import com.google.android.material.chip.Chip
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.appextensions.setDialogPercent
+import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.ViewUtils
 import com.medtroniclabs.spice.data.model.ChipViewItemModel
@@ -68,10 +71,26 @@ class NCDFollowUpFilterDialog : DialogFragment(), View.OnClickListener,
 
     override fun onStart() {
         super.onStart()
-        dialog?.window?.setLayout(
-            ViewGroup.LayoutParams.MATCH_PARENT,
-            ViewGroup.LayoutParams.MATCH_PARENT
-        )
+        handleOrientation()
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        handleOrientation()
+    }
+
+    private fun handleOrientation() {
+        val isTablet = CommonUtils.checkIsTablet(requireContext())
+        val isLandscape = resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+        val width = when {
+            isTablet && isLandscape -> 70
+            else -> 100
+        }
+        val height = when {
+            isTablet && isLandscape -> 90
+            else -> 100
+        }
+        setDialogPercent(width, height)
     }
 
     private fun changeUIFromToDateVisibility(checked: Boolean) {
@@ -153,7 +172,9 @@ class NCDFollowUpFilterDialog : DialogFragment(), View.OnClickListener,
         val chipItems = (1..5).map { id ->
             ChipViewItemModel(
                 id = id.toLong(),
-                name = "$id"
+                name = "$id",
+                cultureValue = "$id",
+                value = "$id"
             )
         }.toCollection(ArrayList())
         tagListCustomView.addChipItemList(chipItems, viewModel.remainingAttempts)

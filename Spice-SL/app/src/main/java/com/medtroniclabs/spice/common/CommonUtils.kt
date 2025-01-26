@@ -338,6 +338,14 @@ object CommonUtils {
         }
     }
 
+    fun translatedGender(context: Context, gender: String?): String {
+        return if (gender.equals(DefinedParams.male, true)) {
+            context.getString(R.string.male)
+        } else {
+            context.getString(R.string.female)
+        }
+    }
+
     fun getBooleanAsString(value: Boolean): String {
         return if (value) HouseHoldRegistration.yes else HouseHoldRegistration.no
     }

@@ -14,6 +14,7 @@ import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.invisible
 import com.medtroniclabs.spice.appextensions.visible
+import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.databinding.FollowUpListItemPatientsBinding
 import com.medtroniclabs.spice.formgeneration.extension.capitalizeFirstChar
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
@@ -45,7 +46,7 @@ class NCDPatientFollowUPListAdapter(
                 R.string.household_summary_member_info,
                 name,
                 age,
-                gender
+                CommonUtils.translatedGender(context, gender)
             )
             binding.tvPatientName.text = patientInfo
             binding.tvDueInformation.setTextColor(Color.parseColor("#994242"))
