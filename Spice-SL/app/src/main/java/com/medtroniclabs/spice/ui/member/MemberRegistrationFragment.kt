@@ -541,7 +541,7 @@ class MemberRegistrationFragment : Fragment(), FormEventListener, View.OnClickLi
     }
 
     override fun onAgeUpdateListener(
-        age: String?,
+        age: Int,
         serverData: List<FormLayout?>?,
         resultHashMap: HashMap<String, Any>
     ) {

@@ -253,7 +253,7 @@ class AssessmentOtherSymptomsFragment : BaseFragment(), FormEventListener, View.
     }
 
     override fun onAgeUpdateListener(
-        age: String?,
+        age: Int,
         serverData: List<FormLayout?>?,
         resultHashMap: HashMap<String, Any>
     ) {

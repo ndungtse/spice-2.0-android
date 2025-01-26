@@ -293,6 +293,7 @@
             android:orientation="vertical">
 
             <include
+                android:id="@+id/lHealder"
                 layout="@layout/performance_monitoring_list_view_header"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/_120sdp" />

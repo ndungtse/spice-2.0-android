@@ -19,6 +19,7 @@ import com.medtroniclabs.spice.appextensions.isVisible
 import com.medtroniclabs.spice.appextensions.showView
 import com.medtroniclabs.spice.appextensions.toString
 import com.medtroniclabs.spice.appextensions.visible
+import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DateUtils.DATE_ddMMyyyy
 import com.medtroniclabs.spice.common.DateUtils.getDatePatternDDMMYYYY
@@ -484,6 +485,9 @@ class PerformanceMonitoringActivity : BaseActivity() {
     }
 
     private fun initView() {
+        binding.apply {
+            lHealder.tvLabelChwName.text = if(CommonUtils.isNonCommunity()) getString(R.string.chp_name) else getString(R.string.chw_name)
+        }
         adapter = PerformanceMonitoringAdapter()
         binding.rvPerformanceList.adapter = adapter
         adapter.addLoadStateListener { loadState ->

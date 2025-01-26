@@ -59,7 +59,7 @@ class MultiSelectSpinnerAdapter(
             val checkBox = view.findViewById<CheckBox>(R.id.spinnerCheckbox)
             val itemName = view.findViewById<TextView>(R.id.itemName)
 
-            itemName.text = items[position].name
+            itemName.text = items[position].displayValue ?: items[position].name
             checkBox.setOnCheckedChangeListener(null)
             checkBox.isChecked = checkedItems[position]
 
@@ -83,7 +83,7 @@ class MultiSelectSpinnerAdapter(
 
         } else {
             if (selectedItems.isEmpty()) {
-                textView.text = DefaultIDLabel
+                textView.text = context.getString(R.string.please_select)
             } else {
                 val names = ArrayList<String>()
                 for (i in getSelectedItems().indices) {

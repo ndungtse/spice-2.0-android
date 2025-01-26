@@ -66,12 +66,16 @@ class RegistrationSummaryFragment : BaseFragment(), View.OnClickListener {
         cardBinding.llFamilyRoot.let { layout ->
             treatmentPlanMap.forEach {
                 if (it is Map<*, *>) {
-                    layout.addView(
-                        inflateChildView(
-                            it[DefinedParams.label].toString(),
-                            it[DefinedParams.Value].toString()
+                    val lbl = it[DefinedParams.label]
+                    val value = it[DefinedParams.Value]
+                    if (lbl is String && value is String) {
+                        layout.addView(
+                            inflateChildView(
+                                lbl,
+                                value
+                            )
                         )
-                    )
+                    }
                 }
             }
         }

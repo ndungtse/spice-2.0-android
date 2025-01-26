@@ -333,7 +333,7 @@ class HouseHoldRegistrationFragment : Fragment(), View.OnClickListener, FormEven
     }
 
     override fun onAgeUpdateListener(
-        age: String?,
+        age: Int,
         serverData: List<FormLayout?>?,
         resultHashMap: HashMap<String, Any>
     ) {

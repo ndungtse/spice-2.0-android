@@ -72,7 +72,7 @@
                 android:layout_width="@dimen/_0dp"
                 android:layout_height="wrap_content"
                 android:paddingVertical="@dimen/_10sdp"
-                android:text="@string/height"
+                android:text="@string/height_in_cm"
                 app:layout_constraintEnd_toStartOf="@id/centerLeftGuideline"
                 app:layout_constraintStart_toEndOf="@id/startGuideline"
                 app:layout_constraintTop_toBottomOf="@id/tvTitle" />
@@ -81,7 +81,7 @@
                 android:id="@+id/etHeight"
                 style="@style/Form_Input_Style_BG"
                 android:layout_width="@dimen/_0dp"
-                android:hint="@string/height"
+                android:hint="@string/height_in_cm"
                 android:inputType="numberDecimal"
                 android:paddingHorizontal="@dimen/_12sdp"
                 android:paddingVertical="@dimen/_10sdp"

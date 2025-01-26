@@ -303,14 +303,14 @@
     <string name="birth_history">Birth History</string>
     <string name="breathing_problem_at_birth">Breathing problems at birth</string>
     <string name="clinical_summary"><![CDATA[Clinical Summary & Vital Signs]]></string>
-    <string name="weight_in_kgs">Weight (in Kgs)</string>
+    <string name="weight_in_kgs">Weight (in kgs)</string>
     <string name="waz">WAZ</string>
     <string name="temperature_in_c">Temperature (in &#176;C)</string>
     <string name="temperature">Temperature</string>
     <string name="respiration_rate">Respiration Rate</string>
     <string name="rate">Rate</string>
     <string name="minute">minute</string>
-    <string name="height_in_cms">Height (in cms)</string>
+    <string name="height_in_cm">Height (in cm)</string>
     <string name="whz">WHZ</string>
     <string name="immunisation_status">Immunisation Status</string>
     <string name="repeat_if_60" translatable="false"><![CDATA[Repeat (if >60)]]></string>
@@ -351,7 +351,6 @@
     <string name="no_of_fetus">No. of fetus</string>
     <string name="pregnancy_details">Pregnancy Details</string>
     <string name="gravida">Gravida</string>
-    <string name="height">Height (in cms)</string>
     <string name="height_hint">Height</string>
     <string name="weight">Weight (in kgs)</string>
     <string name="weight_hint">Weight</string>
@@ -615,6 +614,7 @@
     <string name="month_colon">Month :</string>
     <string name="village_colon">Village :</string>
     <string name="chw_colon">CHW :</string>
+    <string name="chp_colon">CHP :</string>
     <string name="from_date_colon">From :</string>
     <string name="toDate_colon">To :</string>
     <string name="_36_weeks"><![CDATA[" (<36 weeks)"]]></string>
@@ -675,6 +675,7 @@
     <string name="patient_status_append" translatable="false">%1$s, %2$s</string>
 
     <string name="chw_name">Chw Name</string>
+    <string name="chp_name">Chp Name</string>
     <string name="no_of_hh">No of HH</string>
     <string name="no_of_member">No Of Member</string>
     <string name="os">OS</string>

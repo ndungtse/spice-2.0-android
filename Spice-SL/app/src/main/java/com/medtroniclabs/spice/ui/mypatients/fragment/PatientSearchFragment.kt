@@ -128,7 +128,7 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
 
                             MenuConstants.ASSESSMENT.lowercase() -> {
                                 binding.tvNoPatientsFound.text =
-                                    getString(R.string.screening_after_search)
+                                    getString(R.string.no_patients_found_perform_screening)
                                 getString(R.string.start_screening)
                             }
 

@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import androidx.appcompat.widget.AppCompatEditText
-import androidx.appcompat.widget.AppCompatSpinner
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.constraintlayout.widget.Group
 import androidx.core.view.isVisible
@@ -30,7 +29,6 @@ import com.medtroniclabs.spice.data.model.MultiSelectDropDownModel
 import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.databinding.FragmentNCDMentalHealthBinding
 import com.medtroniclabs.spice.db.entity.NCDDiagnosisEntity
-import com.medtroniclabs.spice.formgeneration.extension.capitalizeFirstChar
 import com.medtroniclabs.spice.formgeneration.extension.markMandatory
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.model.FormLayout
@@ -43,6 +41,8 @@ import com.medtroniclabs.spice.ncd.data.NCDMentalHealthStatusRequest
 import com.medtroniclabs.spice.ncd.data.NcdPatientStatus
 import com.medtroniclabs.spice.ncd.medicalreview.NCDDialogDismissListener
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil
+import com.medtroniclabs.spice.ncd.medicalreview.dialog.NCDPatientHistoryDialog.Companion.N_A
+import com.medtroniclabs.spice.ncd.medicalreview.dialog.NCDPatientHistoryDialog.Companion.New_Patient
 import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDMedicalReviewViewModel
 import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDMentalHealthViewModel
 import com.medtroniclabs.spice.network.resource.ResourceState
@@ -253,7 +253,7 @@ class NCDMentalHealthFragment : DialogFragment(), View.OnClickListener {
 
     private fun initializeMentalHealthSpinner(mentalHealth: List<String>) {
         val dropDownList = viewModel.getMHLiveData.value
-            ?.map { MultiSelectDropDownModel(it.id, it.name, it.value) }
+            ?.map { MultiSelectDropDownModel(it.id, it.name, it.displayValue, it.value) }
             ?: emptyList()
 
         viewModel.selectedMentalHealthListItem.clear()
@@ -279,7 +279,7 @@ class NCDMentalHealthFragment : DialogFragment(), View.OnClickListener {
 
     private fun initializeSubstanceSpinner(substanceUse: ArrayList<String>) {
         val dropDownList = viewModel.getSubstanceAbuseLiveData.value
-            ?.map { MultiSelectDropDownModel(it.id, it.name, it.value) }
+            ?.map { MultiSelectDropDownModel(it.id, it.name, it.displayValue, it.value) }
             ?: emptyList()
         viewModel.selectedSubstanceListItem.clear()
         viewModel.selectedSubstanceListItem.addAll(dropDownList.filter { it.value in substanceUse })
@@ -305,7 +305,7 @@ class NCDMentalHealthFragment : DialogFragment(), View.OnClickListener {
     private fun loadSiteDetails(data: ArrayList<NCDDiagnosisEntity>) {
         val list = arrayListOf<Map<String, Any>>(
             hashMapOf(
-                DefinedParams.NAME to DefinedParams.DefaultIDLabel,
+                DefinedParams.NAME to getString(R.string.please_select),
                 DefinedParams.ID to DefinedParams.DefaultSelectID
             )
         )
@@ -330,19 +330,22 @@ class NCDMentalHealthFragment : DialogFragment(), View.OnClickListener {
         val yearOfDiagnosis = ArrayList<Map<String, Any>>()
         yearOfDiagnosis.add(
             CommonUtils.getOptionMap(
-                getString(R.string.na),
+                N_A,
+                N_A,
                 getString(R.string.na)
             )
         )
         yearOfDiagnosis.add(
             CommonUtils.getOptionMap(
-                getString(R.string.new_patient),
+                New_Patient,
+                New_Patient,
                 getString(R.string.new_patient)
             )
         )
         yearOfDiagnosis.add(
             CommonUtils.getOptionMap(
-                getString(R.string.known_patient),
+                NCDPatientHistoryDialog.Known_patient,
+                NCDPatientHistoryDialog.Known_patient,
                 getString(R.string.known_patient)
             )
         )

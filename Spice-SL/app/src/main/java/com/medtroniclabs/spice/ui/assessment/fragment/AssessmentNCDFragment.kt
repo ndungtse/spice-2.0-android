@@ -1341,7 +1341,7 @@ class AssessmentNCDFragment : BaseFragment(), FormEventListener, View.OnClickLis
     }
 
     override fun onAgeUpdateListener(
-        age: String?,
+        age: Int,
         serverData: List<FormLayout?>?,
         resultHashMap: HashMap<String, Any>
     ) {

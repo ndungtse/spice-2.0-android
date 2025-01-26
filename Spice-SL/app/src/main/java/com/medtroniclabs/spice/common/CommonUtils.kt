@@ -74,6 +74,9 @@ import java.math.RoundingMode
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.Period
+import java.time.format.DateTimeFormatter
 import java.util.Calendar
 import java.util.Locale
 import kotlin.math.roundToInt
@@ -1155,6 +1158,7 @@ object CommonUtils {
             HashMap(map).let {
                 setType(it, generalData)
                 handleBPLogs(it)
+                handlePregnancyAnc(it)
                 updateGlucoseData(it)
                 it[Screening.UserId] = userId
                 return it
@@ -1162,6 +1166,19 @@ object CommonUtils {
         }
 
         return null
+    }
+
+    private fun handlePregnancyAnc(givenMap: HashMap<String, Any>) {
+        if (givenMap.containsKey(Screening.pregnancyAnc) && givenMap[Screening.pregnancyAnc] is Map<*, *>) {
+            (givenMap[Screening.pregnancyAnc] as Map<*, *>?)?.let { ancMap ->
+                if (ancMap.containsKey(Screening.PregnancySymptoms) && ancMap[Screening.PregnancySymptoms] is List<*>) {
+                    (ancMap[Screening.PregnancySymptoms] as? ArrayList<*>)?.forEach {
+                        if (it is LinkedTreeMap<*, *> && it.contains(DefinedParams.cultureValue))
+                            it.remove(DefinedParams.cultureValue)
+                    }
+                }
+            }
+        }
     }
 
     private fun setType(hashMap: HashMap<String, Any>, generalData: Map<String, Any>?) {
@@ -1950,5 +1967,13 @@ object CommonUtils {
 
     fun checkIfTranslationEnabled(name: String): Boolean {
         return name.contains(DefinedParams.SW_Locale, ignoreCase = true)
+    }
+
+    fun getAgeInYearsByDOB(dob: String) : Int {
+        val formatter = DateTimeFormatter.ofPattern(DateUtils.DATE_ddMMyyyy)
+        val birthDate = LocalDate.parse(dob, formatter)
+        val currentDate = LocalDate.now()
+
+        return Period.between(birthDate, currentDate).years
     }
 }

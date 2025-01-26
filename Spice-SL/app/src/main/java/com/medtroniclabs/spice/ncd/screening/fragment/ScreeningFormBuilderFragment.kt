@@ -512,40 +512,36 @@ class ScreeningFormBuilderFragment : BaseFragment(), FormEventListener, View.OnC
     }
 
     override fun onAgeUpdateListener(
-        age: String?,
+        age: Int,
         serverData: List<FormLayout?>?,
         resultHashMap: HashMap<String, Any>
     ) {
-        age?.toIntOrNull()?.let { inputAge ->
-            var matchingCondition: String? = null
-            val hivViewBasedOnAge =
-                serverData?.filter {
-                    val (matches, condition) = it?.ageCondition?.let { ageConditionList ->
-                        getAgeConditionCategory(inputAge, ageConditionList)
-                    } ?: Pair(false, null)
-                    if (matches) {
-                        matchingCondition = condition
-                    }
-                    matches
+        var matchingCondition: String? = null
+        val hivViewBasedOnAge =
+            serverData?.filter {
+                val (matches, condition) = it?.ageCondition?.let { ageConditionList ->
+                    getAgeConditionCategory(age, ageConditionList)
+                } ?: Pair(false, null)
+                if (matches) {
+                    matchingCondition = condition
                 }
-            val getRemainingHIVBasedViews =
-                serverData?.filter { it?.ageCondition?.contains(matchingCondition)?.not() ?: false }
-            hivViewBasedOnAge?.forEach { formItem ->
-                if (formGenerator.isViewGone(formItem?.id + rootSuffix)) {
-                    formGenerator.getViewByTag(formItem?.id + rootSuffix)?.visibility =
-                        View.VISIBLE
-                }
+                matches
             }
-            getRemainingHIVBasedViews?.forEach { formItem ->
-                if (formGenerator.isViewVisible(formItem?.id ?: "")) {
-                    formGenerator.getViewByTag(formItem?.id + rootSuffix)?.visibility =
-                        View.GONE
-                    formGenerator.getViewByTag(formItem?.id + rootSuffix)
-                        ?.let { formGenerator.resetChildViews(it) }
-                }
+        val getRemainingHIVBasedViews =
+            serverData?.filter { it?.ageCondition?.contains(matchingCondition)?.not() ?: false }
+        hivViewBasedOnAge?.forEach { formItem ->
+            if (formGenerator.isViewGone(formItem?.id + rootSuffix)) {
+                formGenerator.getViewByTag(formItem?.id + rootSuffix)?.visibility =
+                    View.VISIBLE
             }
-        } ?: kotlin.run {
-            resetAllHIVCategoryView(serverData)
+        }
+        getRemainingHIVBasedViews?.forEach { formItem ->
+            if (formGenerator.isViewVisible(formItem?.id ?: "")) {
+                formGenerator.getViewByTag(formItem?.id + rootSuffix)?.visibility =
+                    View.GONE
+                formGenerator.getViewByTag(formItem?.id + rootSuffix)
+                    ?.let { formGenerator.resetChildViews(it) }
+            }
         }
     }
 

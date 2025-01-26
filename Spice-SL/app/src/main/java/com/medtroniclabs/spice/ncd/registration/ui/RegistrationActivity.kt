@@ -59,11 +59,14 @@ class RegistrationActivity : BaseActivity() {
     }
 
     private fun getPatientDetails() {
-        intent?.let {
-            patientDetailViewModel.origin = it.getStringExtra(DefinedParams.ORIGIN)
-            it.getStringExtra(DefinedParams.FhirId)?.let { id ->
-                patientDetailViewModel.getPatients(id, origin = patientDetailViewModel.origin?.lowercase())
-            }
+        patientDetailViewModel.origin = intent?.getStringExtra(DefinedParams.ORIGIN)
+        intent.getStringExtra(DefinedParams.FhirId)?.let { id ->
+            patientDetailViewModel.getPatients(
+                id,
+                origin = patientDetailViewModel.origin?.lowercase()
+            )
+        } ?: run {
+            loadTermsAndConditionsFragment()
         }
     }
 

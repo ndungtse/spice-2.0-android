@@ -256,7 +256,7 @@ class AssessmentReadingActivity : BaseActivity(), FormEventListener, View.OnClic
     }
 
     override fun onAgeUpdateListener(
-        age: String?,
+        age: Int,
         serverData: List<FormLayout?>?,
         resultHashMap: HashMap<String, Any>
     ) {

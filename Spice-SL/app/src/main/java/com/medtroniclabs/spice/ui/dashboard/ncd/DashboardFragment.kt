@@ -85,7 +85,11 @@ class DashboardFragment : BaseFragment(), View.OnClickListener {
 
     private fun initializeChipItem() {
         val chipItemList = getChip()
-        cgCalender = TagListCustomView(requireContext(), binding.cgCalender) { _, _, isChecked ->
+        cgCalender = TagListCustomView(
+            requireContext(),
+            binding.cgCalender,
+            isSelectionRequired = true
+        ) { _, _, isChecked ->
             if (isChecked) {
                 val isVisible =
                     cgCalender.getSelectedTags().any { it.value == CommonEnums.CUSTOMISE.value }
@@ -115,7 +119,7 @@ class DashboardFragment : BaseFragment(), View.OnClickListener {
         chipItemList.add(
             ChipViewItemModel(
                 id = 1,
-                name = CommonEnums.TODAY.name,
+                name = CommonEnums.TODAY.title,
                 cultureValue = getString(CommonEnums.TODAY.cultureValue),
                 value = CommonEnums.TODAY.value
             )
@@ -123,7 +127,7 @@ class DashboardFragment : BaseFragment(), View.OnClickListener {
         chipItemList.add(
             ChipViewItemModel(
                 id = 2,
-                name = CommonEnums.YESTERDAY.name,
+                name = CommonEnums.YESTERDAY.title,
                 cultureValue = getString(CommonEnums.YESTERDAY.cultureValue),
                 value = CommonEnums.YESTERDAY.value
             )
@@ -131,7 +135,7 @@ class DashboardFragment : BaseFragment(), View.OnClickListener {
         chipItemList.add(
             ChipViewItemModel(
                 id = 3,
-                name = CommonEnums.WEEK.name,
+                name = CommonEnums.WEEK.title,
                 cultureValue = getString(CommonEnums.WEEK.cultureValue),
                 value = CommonEnums.WEEK.value
             )
@@ -139,7 +143,7 @@ class DashboardFragment : BaseFragment(), View.OnClickListener {
         chipItemList.add(
             ChipViewItemModel(
                 id = 4,
-                name = CommonEnums.MONTH.name,
+                name = CommonEnums.MONTH.title,
                 cultureValue = getString(CommonEnums.MONTH.cultureValue),
                 value = CommonEnums.MONTH.value
             )
@@ -147,7 +151,7 @@ class DashboardFragment : BaseFragment(), View.OnClickListener {
         chipItemList.add(
             ChipViewItemModel(
                 id = 5,
-                name = CommonEnums.CUSTOMISE.name,
+                name = CommonEnums.CUSTOMISE.title,
                 cultureValue = getString(CommonEnums.CUSTOMISE.cultureValue),
                 value = CommonEnums.CUSTOMISE.value
             )

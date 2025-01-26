@@ -670,7 +670,7 @@ class FormGenerator(
                 instructions?.let {
                     listener.onInstructionClicked(
                         id = id,
-                        title = title,
+                        title = titleCulture ?: title,
                         informationList = it,
                         description = getString(R.string.bp_measure)
                     )
@@ -1726,11 +1726,6 @@ class FormGenerator(
                 }
 
                 override fun afterTextChanged(s: Editable?) {
-                    listener.onAgeUpdateListener(
-                        resultHashMap[Year]?.toString(),
-                        serverData,
-                        resultHashMap
-                    )
                 }
             }
 
@@ -1756,6 +1751,13 @@ class FormGenerator(
                         }
                     }
                 }
+            }
+            binding.etDateOfBirth.addTextChangedListener { dob ->
+                listener.onAgeUpdateListener(
+                    if (dob.isNullOrBlank()) 0 else CommonUtils.getAgeInYearsByDOB(dob.toString()),
+                    serverData,
+                    resultHashMap
+                )
             }
 
             if (isMandatory) {
@@ -3110,7 +3112,7 @@ class FormGenerator(
                     text = setDialogText(mapList)
                 } else if (mapList.size > 1) {
                     text = if (isContainsOther(mapList)) {
-                        "${mapList.size - 1} and ${DefinedParams.Other} ${
+                        "${mapList.size - 1} and ${getString(R.string.other)} ${
                             getString(R.string.symptoms_selected)
                         }"
                     } else {

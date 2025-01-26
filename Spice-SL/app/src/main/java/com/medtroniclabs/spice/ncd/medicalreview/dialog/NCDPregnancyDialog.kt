@@ -51,6 +51,7 @@ import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
 import com.medtroniclabs.spice.mappingkey.Screening.Female
 import com.medtroniclabs.spice.mappingkey.Screening.Male
 import com.medtroniclabs.spice.ncd.data.NcdPatientStatus
+import com.medtroniclabs.spice.ncd.medicalreview.CommonEnums
 import com.medtroniclabs.spice.ncd.medicalreview.NCDDialogDismissListener
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil
 import com.medtroniclabs.spice.ncd.medicalreview.dialog.NCDPatientHistoryDialog.Companion.Diabetes
@@ -423,35 +424,52 @@ class NCDPregnancyDialog(private val callback: ((isPositiveResult: Boolean, mess
         }
 
     private fun neoNatalOutcomes(): ArrayList<ChipViewItemModel> {
-        val items = listOf(
-            Pair(STILL_BIRTH, getString(R.string.still_birth)),
-            Pair(LIVE_BIRTH, getString(R.string.live_birth)),
-            Pair(NEO_NATAL_DEATH, getString(R.string.neo_natal_death))
-        )
         val chipItems = ArrayList<ChipViewItemModel>()
-        items.forEachIndexed { index, element ->
-            chipItems.add(
-                ChipViewItemModel(
-                    id = (index + 1).toLong(), value = element.first, name = element.second
-                )
+        chipItems.add(
+            ChipViewItemModel(
+                id = 1,
+                name = CommonEnums.STILL_BIRTH.title,
+                cultureValue = getString(CommonEnums.STILL_BIRTH.cultureValue),
+                value = CommonEnums.STILL_BIRTH.value
             )
-        }
+        )
+        chipItems.add(
+            ChipViewItemModel(
+                id = 2,
+                name = CommonEnums.LIVE_BIRTH.title,
+                cultureValue = getString(CommonEnums.LIVE_BIRTH.cultureValue),
+                value = CommonEnums.LIVE_BIRTH.value
+            )
+        )
+        chipItems.add(
+            ChipViewItemModel(
+                id = 3,
+                name = CommonEnums.NEO_NATAL_DEATH.title,
+                cultureValue = getString(CommonEnums.NEO_NATAL_DEATH.cultureValue),
+                value = CommonEnums.NEO_NATAL_DEATH.value
+            )
+        )
         return chipItems
     }
 
     private fun maternalOutcomes(): ArrayList<ChipViewItemModel> {
-        val items = listOf(
-            Pair(ALIVE_AND_WELL, getString(R.string.alive_well)),
-            Pair(MATERNAL_DEATH, getString(R.string.maternal_death))
-        )
         val chipItems = ArrayList<ChipViewItemModel>()
-        items.forEachIndexed { index, element ->
-            chipItems.add(
-                ChipViewItemModel(
-                    id = (index + 1).toLong(), value = element.first, name = element.second
-                )
+        chipItems.add(
+            ChipViewItemModel(
+                id = 1,
+                name = CommonEnums.ALIVE_AND_WELL.title,
+                cultureValue = getString(CommonEnums.ALIVE_AND_WELL.cultureValue),
+                value = CommonEnums.ALIVE_AND_WELL.value
             )
-        }
+        )
+        chipItems.add(
+            ChipViewItemModel(
+                id = 2,
+                name = CommonEnums.MATERNAL_DEATH.title,
+                cultureValue = getString(CommonEnums.MATERNAL_DEATH.cultureValue),
+                value = CommonEnums.MATERNAL_DEATH.value
+            )
+        )
         return chipItems
     }
 
@@ -764,13 +782,6 @@ class NCDPregnancyDialog(private val callback: ((isPositiveResult: Boolean, mess
         const val PATIENT_ID = "PATIENT_ID"
         const val IS_FEMALE = "IS_FEMALE"
         const val IS_PREGNANT = "IS_PREGNANT"
-
-        const val STILL_BIRTH = "Still Birth"
-        const val LIVE_BIRTH = "Live Birth"
-        const val NEO_NATAL_DEATH = "Neo Natal Death"
-
-        const val ALIVE_AND_WELL = "Alive & Well"
-        const val MATERNAL_DEATH = "Maternal Death"
 
         const val N_A = "N/A"
         const val NEW_PATIENT = "New Patient"

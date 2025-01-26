@@ -305,7 +305,7 @@ class AssessmentRMNCHNeonateFragment : BaseFragment(), View.OnClickListener,
     }
 
     override fun onAgeUpdateListener(
-        age: String?,
+        age: Int,
         serverData: List<FormLayout?>?,
         resultHashMap: HashMap<String, Any>
     ) {

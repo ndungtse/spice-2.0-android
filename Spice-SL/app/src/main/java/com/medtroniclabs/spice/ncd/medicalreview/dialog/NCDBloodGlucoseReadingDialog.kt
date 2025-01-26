@@ -127,13 +127,17 @@ class NCDBloodGlucoseReadingDialog(private val callback: () -> Unit) : DialogFra
         chipItemList.add(
             ChipViewItemModel(
                 id = 1,
-                name = NCDMRUtil.FBS
+                name = NCDMRUtil.FBS,
+                cultureValue = getString(R.string.fbs),
+                value = NCDMRUtil.FBS
             )
         )
         chipItemList.add(
             ChipViewItemModel(
                 id = 2,
-                name = NCDMRUtil.RBS
+                name = NCDMRUtil.RBS,
+                cultureValue = getString(R.string.rbs),
+                value = NCDMRUtil.RBS,
             )
         )
         return chipItemList

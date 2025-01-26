@@ -297,7 +297,7 @@
     <string name="respiration_rate">Kiwango cha Upumuaji</string>
     <string name="rate">Kiwango cha</string>
     <string name="minute">Dakika</string>
-    <string name="height_in_cms">Urefu (katika cms)</string>
+    <string name="height_in_cm">Urefu (kwa cm)</string>
     <string name="whz">Uzito kwa Urefu</string>
     <string name="immunisation_status">Hali ya Kinga</string>
     <string name="breast_feeding">Kunyonyesha</string>
@@ -336,7 +336,6 @@
     <string name="no_of_fetus">Idadi ya watoto tumboni</string>
     <string name="pregnancy_details">Taarifa za Ujauziuto</string>
     <string name="gravida">Mimba</string>
-    <string name="height">Urefu (katika cms)</string>
     <string name="height_hint">Urefu</string>
     <string name="weight_hint">Uzito</string>
     <string name="bmi">Uwiano wa Uzito na Urefu</string>
@@ -554,7 +553,8 @@
     <string name="year_colon">Mwaka</string>
     <string name="month_colon">Mwezi</string>
     <string name="village_colon">Kijiji</string>
-    <string name="chw_colon">Muhudumu  wa Afya ngazi ya jamii</string>
+    <string name="chw_colon">Muhudumu wa Afya ngazi ya jamii</string>
+    <string name="chp_colon">CHP : </string>
     <string name="from_date_colon">Kutoka</string>
     <string name="toDate_colon">Mpaka</string>
     <string name="change_facility">BADILISHA KITUO</string>
@@ -582,6 +582,7 @@
     <string name="stateOfBaby">Hali ya Mtoto</string>
     <string name="loading">Inatafuta...</string>
     <string name="chw_name">Jina la CHW</string>
+    <string name="chp_name">Jina la CHP</string>
     <string name="no_of_hh">Namba ya HH</string>
     <string name="no_of_member">Namba ya mjumbe</string>
     <string name="os">Imeisha</string>
@@ -760,7 +761,7 @@
     <string name="screening_caps">Uchunguzi</string>
     <string name="comments_on_diagnosis">Maoni kuhusu kudhibitisha uchunguzi</string>
     <string name="select_diagnosis_found">Chagua utambuzi unaopatikana kwa mgonjwa</string>
-    <string name="review_treatment_plan">Rejea  mpango wa matibabu</string>
+    <string name="review_treatment_plan">Rejea mpango wa matibabu</string>
     <string name="medical_review_frequency">Mahudhurio ya kumuona daktari</string>
     <string name="blood_pressure_check_frequency">Mahudhurio ya kupima msukumo wa damu</string>
     <string name="blood_glucose_check_frequency">Mahudhurio ya kupima sukari kwenye damu</string>
@@ -1057,7 +1058,7 @@
     <string name="please_specify_the_comorbidity"> Tafadhali bainisha ugonjwa ambata</string>
     <string name="offline_data">Data ya nje ya mtandao</string>
     <string name="screened_patients">Wagonjwa %1$s wa uchunguzi wanangojea kuingizwa</string>
-    <string name="treatment_plan">Rejea  mpango wa matibabu</string>
+    <string name="treatment_plan">Mpango wa matibabu</string>
     <string name="date_range">"Safu ya tarehe"</string>
     <string name="test_review_confirmation">Kipimo cha uchunguzi kimehakikiwa</string>
     <string name="yes_i_confirm">Ndio, Nathibitisha</string>

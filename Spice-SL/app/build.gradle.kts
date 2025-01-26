@@ -27,7 +27,7 @@ android {
         create("africa") {
             dimension = "version"
             versionName = "2.1.0"
-            versionCode = 17
+            versionCode = 18
         }
         create("sl") {
             dimension = "version"
@@ -59,7 +59,6 @@ android {
     buildTypes {
 
         release {
-            applicationIdSuffix = ".dev"
             isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
