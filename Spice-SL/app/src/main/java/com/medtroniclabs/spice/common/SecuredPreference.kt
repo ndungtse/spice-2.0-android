@@ -436,6 +436,9 @@ object SecuredPreference {
         val community = getBoolean(EnvironmentKey.IS_COMMUNITY.name)
         val nonCommunity = getBoolean(EnvironmentKey.IS_NON_COMMUNITY.name)
         val isTermsAndConditionsApproved = getBoolean(EnvironmentKey.IS_TERMS_AND_CONDITIONS_APPROVED.name)
+        val userFhirId = getString(EnvironmentKey.USER_FHIR_ID.name)
+        val organizationFhirId = getString(EnvironmentKey.ORGANIZATION_FHIR_ID.name)
+        val spiceUserId = getLong(EnvironmentKey.USER_ID.name)
         try {
             preferences.edit().clear().apply()
         } catch (e: Exception) {
@@ -446,6 +449,9 @@ object SecuredPreference {
             putString(EnvironmentKey.USERNAME.name, username)
             putString(EnvironmentKey.PHONE_NUMBER.name, phoneNumber)
             putString(EnvironmentKey.PASSWORD.name, password)
+            putString(EnvironmentKey.USER_FHIR_ID.name, userFhirId)
+            putString(EnvironmentKey.ORGANIZATION_FHIR_ID.name, organizationFhirId)
+            putLong(EnvironmentKey.USER_ID.name, spiceUserId)
             putString(EnvironmentKey.FOLLOW_UP_CRITERIA.name, followUpCriteria)
             requestIds?.let { saveStringArray(EnvironmentKey.OFFLINE_SYNC_REQUEST_ID.name, it) }
             putString(EnvironmentKey.VILLAGE_IDS.name, villageIds)

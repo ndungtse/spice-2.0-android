@@ -248,6 +248,8 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
 
                 }*/
                 isDifferentUseLogin = true
+                val spiceUserId = SecuredPreference.getUserId()
+                SecuredPreference.putLong(SecuredPreference.EnvironmentKey.OLD_USER_ID.name, spiceUserId)
                 viewModel.doLogin(userName, password)
             } else { // Different user login so clear last synced at
                 SecuredPreference.remove(SecuredPreference.EnvironmentKey.SERVER_LAST_SYNCED.name)
