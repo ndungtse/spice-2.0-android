@@ -154,4 +154,9 @@ object AssessmentDefinedParams {
     const val NotApplicable = "Not Applicable"
     const val IsBloodyDiarrhoea = "isBloodyDiarrhoea"
 
+    /*TB Items*/
+    const val HasCoughLastedLonger = "hasCoughLastedLonger"
+    const val HasWeightLoss = "hasWeightLoss"
+    const val HasNightSweatsTB = "hasNightSweats"
+
 }

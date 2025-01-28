@@ -19,6 +19,7 @@ import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.ui.FormResultComposer
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
+import com.medtroniclabs.spice.ui.assessment.referrallogic.ReferralResultGenerator
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
 
 class AssessmentTBFragment : BaseFragment(), FormEventListener, View.OnClickListener {
@@ -41,7 +42,8 @@ class AssessmentTBFragment : BaseFragment(), FormEventListener, View.OnClickList
         viewModel.getMemberDetailsById()
         initView()
         setListeners()
-        viewModel.getFormData(TB.lowercase())
+        viewModel.getFormData(DefinedParams.TB.lowercase())
+        viewModel.getNearestHealthFacility()
         attachObservers()
         viewModel.setUserJourney(AnalyticsDefinedParams.TBAssessement)
     }
@@ -111,11 +113,11 @@ class AssessmentTBFragment : BaseFragment(), FormEventListener, View.OnClickList
         informationList: ArrayList<String>?,
         description: String?,
         dosageListModel: ArrayList<RecommendedDosageListModel>?
-    ) {
-    }
+    ) {}
 
     override fun onFormSubmit(resultMap: HashMap<String, Any>?, serverData: List<FormLayout?>?) {
         resultMap?.let { details ->
+            val referralResult = ReferralResultGenerator().calculateTBReferralResult(details)
             val result = serverData?.let {
                 FormResultComposer().groupValues(
                     context = requireContext(),
@@ -125,7 +127,7 @@ class AssessmentTBFragment : BaseFragment(), FormEventListener, View.OnClickList
                 )
             }
             result?.second?.let {
-                viewModel.saveAssessment(it, null,viewModel.menuId)
+                viewModel.saveAssessment(it, referralResult, viewModel.menuId)
             }
         }
     }
@@ -144,7 +146,6 @@ class AssessmentTBFragment : BaseFragment(), FormEventListener, View.OnClickList
         enteredDays: Int?,
         resultMap: HashMap<String, Any>?
     ) {
-
     }
 
     override fun onAgeCheckForPregnancy() {
@@ -171,5 +172,9 @@ class AssessmentTBFragment : BaseFragment(), FormEventListener, View.OnClickList
                 formGenerator.formSubmitAction(view)
             }
         }
+    }
+
+    fun getCurrentAnsweredStatus(): Boolean {
+        return formGenerator.getResultMap().isNotEmpty()
     }
 }

@@ -5,31 +5,31 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
-import com.medtroniclabs.spice.common.CommonUtils.convertListToString
+import com.medtroniclabs.spice.appextensions.gone
+import com.medtroniclabs.spice.appextensions.visible
+import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.DefaultID
 import com.medtroniclabs.spice.common.DefinedParams.TB
 import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.databinding.FragmentAssessmentTBSummaryBinding
-import com.medtroniclabs.spice.formgeneration.config.DefinedParams.DefaultIDLabel
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
 import com.medtroniclabs.spice.model.AssessmentSummaryModel
 import com.medtroniclabs.spice.ui.assessment.AssessmentCommonUtils
-import com.medtroniclabs.spice.ui.assessment.AssessmentCommonUtils.getListItemValue
 import com.medtroniclabs.spice.ui.assessment.AssessmentCommonUtils.getValueOfKeyFromMap
-import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.CoughTBSummary
-import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.DrenchingNightSweats
-import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.hasCough
-import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.HasNightSweats
-import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.PHUSite1
-import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.PHUSite2
-import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.PHUSite3
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.HasCoughLastedLonger
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.HasNightSweatsTB
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.HasWeightLoss
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.ReferredPHUSite
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.hasCough
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.hasFever
+import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
 
 class AssessmentTBSummaryFragment : Fragment(), View.OnClickListener {
@@ -49,7 +49,6 @@ class AssessmentTBSummaryFragment : Fragment(), View.OnClickListener {
         super.onViewCreated(view, savedInstanceState)
         initView()
         attachObservers()
-        loadPhuSitesList()
         viewModel.setUserJourney(AnalyticsDefinedParams.TBSummaryAssessement)
     }
 
@@ -68,12 +67,13 @@ class AssessmentTBSummaryFragment : Fragment(), View.OnClickListener {
 
     private fun attachObservers() {
         viewModel.assessmentStringLiveData.value?.let {
+            updateStatusBar()
             createSummaryView(createTBListSummaryData(it))
         }
     }
 
     private fun createTBListSummaryData(data: String): MutableList<AssessmentSummaryModel>? {
-        return viewModel.formLayout?.filter { it.isSummary == true }?.map { formLayout ->
+        return viewModel.formLayoutsLiveData.value?.data?.formLayout?.filter { it.isSummary == true }?.map { formLayout ->
             AssessmentSummaryModel(
                 title = formLayout.title,
                 id = formLayout.id,
@@ -101,8 +101,34 @@ class AssessmentTBSummaryFragment : Fragment(), View.OnClickListener {
     }
 
     private fun composeTbSummaryView(listSummaryData: MutableList<AssessmentSummaryModel>) {
-        signsAndSymptoms(listSummaryData)
+        getStatus(viewModel.referralStatus)?.let {
+            bindTbSummaryView(
+                getString(R.string.patient_status),
+                it
+            )
+        }
+
+        listSummaryData.forEach { item ->
+            item.value?.let {
+                when (item.id) {
+                    hasCough -> bindTbSummaryView(item.title, capitalizeYesNo(it))
+                    HasCoughLastedLonger, HasNightSweatsTB, hasFever, HasWeightLoss ->
+                        bindTbSummaryView(removeLastChar(item.title), it)
+                }
+            }
+        }
+
         bindTbSummaryView(getString(R.string.presumptive_tb_no), getString(R.string.seperator_hyphen))
+    }
+
+    private fun removeLastChar(input: String?): String {
+        return input?.let {
+            if (it.isNotEmpty()) it.dropLast(1) else ""
+        } ?: ""
+    }
+
+    private fun capitalizeYesNo(value: String): String {
+        return value.lowercase().replaceFirstChar { it.uppercase() }
     }
 
     private fun bindTbSummaryView(title: String?, value: String?, valueTextColor: Int? = null) {
@@ -116,53 +142,43 @@ class AssessmentTBSummaryFragment : Fragment(), View.OnClickListener {
         )
     }
 
-    private fun signsAndSymptoms(listSummaryData: MutableList<AssessmentSummaryModel>) {
-        val signsList = ArrayList<String>()
-        getListItemValue(hasCough, listSummaryData)?.let {
-            if (it.value?.lowercase() == DefinedParams.Yes.lowercase())
-                signsList.add(CoughTBSummary)
-        }
-        getListItemValue(HasNightSweats, listSummaryData)?.let {
-            if (it.value?.lowercase() == DefinedParams.Yes.lowercase())
-                signsList.add(DrenchingNightSweats)
-        }
-        if (signsList.isNotEmpty()) {
-            bindTbSummaryView(
-                getString(R.string.tb_signs_symptoms),
-                convertListToString(signsList)
-            )
+    private fun updateStatusBar() {
+        when (viewModel.referralStatus) {
+            ReferralStatus.Referred.name -> {
+                viewModel.nearestFacilityLiveData.value?.data?.let { siteList ->
+                    loadPhuSitesList(siteList)
+                }
+                binding.labelPhuReferred.visible()
+                binding.etPhuChange.visible()
+                binding.riskResultLayout.backgroundTintList =
+                    ContextCompat.getColorStateList(requireContext(), R.color.attention_color)
+                binding.riskResultLayout.text = getString(R.string.referred_for_further_assessment)
+            }
+
+            else -> {
+                binding.labelPhuReferred.gone()
+                binding.etPhuChange.gone()
+                binding.riskResultLayout.backgroundTintList =
+                    ContextCompat.getColorStateList(requireContext(), R.color.green_attention_color)
+                binding.riskResultLayout.text = getString(R.string.no_refferral_treatment_required)
+            }
         }
     }
 
-    private fun loadPhuSitesList() {
-        binding.etPhuChange.setSelection(0, true)
-        val dropDownList = ArrayList<Map<String, Any>>()
-        dropDownList.add(
-            hashMapOf<String, Any>(
-                DefinedParams.NAME to DefaultIDLabel,
-                DefinedParams.ID to DefaultID
-            )
-        )
-        dropDownList.add(
-            hashMapOf<String, Any>(
-                DefinedParams.NAME to PHUSite1,
-                DefinedParams.ID to PHUSite1
-            )
-        )
-        dropDownList.add(
-            hashMapOf<String, Any>(
-                DefinedParams.NAME to PHUSite2,
-                DefinedParams.ID to PHUSite2
-            )
-        )
-        dropDownList.add(
-            hashMapOf<String, Any>(
-                DefinedParams.NAME to PHUSite3,
-                DefinedParams.ID to PHUSite3
-            )
-        )
+    private fun getStatus(referralStatus: String?): String? {
+        return when (referralStatus) {
+            ReferralStatus.Referred.name -> getString(R.string.referred)
+            ReferralStatus.OnTreatment.name -> getString(R.string.on_treatment)
+            ReferralStatus.Recovered.name -> getString(R.string.recovered)
+            else -> {
+                null
+            }
+        }
+    }
+
+    private fun loadPhuSitesList(healthFacilityList: ArrayList<Map<String, Any>>) {
         val adapter = CustomSpinnerAdapter(requireContext())
-        adapter.setData(dropDownList)
+        adapter.setData(healthFacilityList)
         binding.etPhuChange.adapter = adapter
         binding.etPhuChange.onItemSelectedListener =
             object : AdapterView.OnItemSelectedListener {
@@ -183,6 +199,7 @@ class AssessmentTBSummaryFragment : Fragment(), View.OnClickListener {
                         }
                     }
                 }
+
                 override fun onNothingSelected(p0: AdapterView<*>?) {
                     /**
                      * this method is not used
@@ -201,5 +218,9 @@ class AssessmentTBSummaryFragment : Fragment(), View.OnClickListener {
     private fun showErrorInSummary() {
         binding.emptyErrorMessage.visibility = View.VISIBLE
         binding.parentLayout.visibility = View.GONE
+    }
+
+    fun getCurrentAnsweredStatus():Boolean {
+        return viewModel.otherAssessmentDetails.isNotEmpty()
     }
 }

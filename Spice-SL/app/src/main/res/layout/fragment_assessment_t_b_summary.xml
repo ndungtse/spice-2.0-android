@@ -102,6 +102,7 @@
                 android:fontFamily="@font/inter_regular"
                 android:textColor="@color/charcoal_grey"
                 android:textSize="@dimen/_14ssp"
+                android:visibility="gone"
                 android:layout_marginStart="@dimen/_16sdp"
                 android:layout_marginTop="@dimen/_16sdp"
                 app:layout_constraintStart_toStartOf="parent"
@@ -109,6 +110,7 @@
 
             <androidx.appcompat.widget.AppCompatSpinner
                 android:id="@+id/etPhuChange"
+                android:visibility="gone"
                 style="@style/Form_Spinner_Style"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"

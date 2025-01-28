@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
 import com.medtroniclabs.spice.app.analytics.model.UserDetail
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
+import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.appextensions.postSuccess

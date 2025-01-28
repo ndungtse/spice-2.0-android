@@ -113,6 +113,10 @@ class AssessmentActivity : BaseActivity() {
             return Pair(fragment.getCurrentAnsweredStatus(), true)
         } else if(fragment is AssessmentNCDFragment) {
             return Pair(fragment.getCurrentAnsweredStatus(), true)
+        } else if (fragment is AssessmentTBFragment) {
+            return Pair(fragment.getCurrentAnsweredStatus(), false)
+        } else if(fragment is AssessmentTBSummaryFragment) {
+            return Pair(fragment.getCurrentAnsweredStatus(), true)
         } else if(fragment is AssessmentNCDSummaryFragment) {
             return Pair(false, false)
         }

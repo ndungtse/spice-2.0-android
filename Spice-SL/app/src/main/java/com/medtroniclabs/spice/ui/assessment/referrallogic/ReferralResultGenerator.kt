@@ -11,6 +11,9 @@ import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.FB_MAX_BREA
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.FB_MAX_MONTH
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.FB_MIN_BREATHING
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.FB_MIN_MONTH
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.HasCoughLastedLonger
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.HasNightSweatsTB
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.HasWeightLoss
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.LittleOrNoUrine
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.NoTearsWhenCrying
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.SkinPinch
@@ -299,6 +302,21 @@ class ReferralResultGenerator {
     fun calculateOtherSymptomsReferralResult(map: HashMap<String, Any>): Pair<String?, ArrayList<String>> {
         calculateSymptomsStatus(map, otherSymptoms)
         calculateFeverStatus(map, ReferralReasons.Fever.name)
+        return Pair(checkStatus(), referralReason)
+    }
+
+
+    fun calculateTBReferralResult(map: HashMap<String, Any>): Pair<String?, ArrayList<String>> {
+        val hasCough = map[hasCough] is Boolean && map[hasCough] == true
+        val hasCoughLastLonger = map.containsKey(HasCoughLastedLonger) && map[HasCoughLastedLonger] is Boolean && map[HasCoughLastedLonger] == true
+        if (hasCough && hasCoughLastLonger) {
+            if ((map[HasNightSweatsTB] is Boolean && map[HasNightSweatsTB] == true) ||
+                (map[HasFever] is Boolean && map[HasFever] == true) ||
+                (map[HasWeightLoss] is Boolean && map[HasWeightLoss] == true) ) {
+                addResultMap("TB Symptoms", ReferralStatus.Referred.name)
+                addReferralReason(referralReason, "TB Symptoms")
+            }
+        }
         return Pair(checkStatus(), referralReason)
     }
 
