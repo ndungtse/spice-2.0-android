@@ -46,11 +46,12 @@ class NCDScheduleDialog : DialogFragment(), View.OnClickListener {
 
     companion object {
         const val TAG = "NCDScheduleDialog"
-        fun newInstance(patientReference: String? = null, memberReference: String? = null) =
+        fun newInstance(patientReference: String? = null, memberReference: String? = null, villageId: String? = null) =
             NCDScheduleDialog().apply {
                 arguments = Bundle().apply {
                     putString(NCDMRUtil.MEMBER_REFERENCE, memberReference)
                     putString(NCDMRUtil.PATIENT_REFERENCE, patientReference)
+                    putString(NCDMRUtil.VillageID, villageId)
                 }
             }
     }
@@ -117,6 +118,7 @@ class NCDScheduleDialog : DialogFragment(), View.OnClickListener {
                     arguments?.getString(NCDMRUtil.MEMBER_REFERENCE)?.let {
                         if (it.isNotBlank()) {
                             val request = NCDMedicalReviewUpdateModel(
+                                villageId = arguments?.getString(NCDMRUtil.VillageID),
                                 patientReference = arguments?.getString(NCDMRUtil.PATIENT_REFERENCE),
                                 memberReference = it,
                                 nextMedicalReviewDate = DateUtils.convertDateTimeToDate(

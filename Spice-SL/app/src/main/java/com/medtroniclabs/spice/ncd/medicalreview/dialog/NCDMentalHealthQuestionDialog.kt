@@ -236,7 +236,7 @@ class NCDMentalHealthQuestionDialog(private val callback: ((successDialog: Pair<
                         }
 
                         if (prefill.isNotEmpty())
-                            FormAutofill.start(formGenerator, prefill)
+                            FormAutofill.start(requireContext(), formGenerator, prefill)
                     }
                 }
             }

@@ -1,10 +1,12 @@
 package com.medtroniclabs.spice.common
 
+import android.content.Context
 import android.widget.EditText
 import android.widget.Spinner
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
+import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.common.DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
 import com.medtroniclabs.spice.common.DateUtils.DATE_ddMMyyyy
 import com.medtroniclabs.spice.common.DateUtils.convertDateFormat
@@ -16,7 +18,7 @@ import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
 import com.medtroniclabs.spice.mappingkey.Screening
 
 object FormAutofill {
-    fun start(formGenerator: FormGenerator, values: Any) {
+    fun start(context: Context, formGenerator: FormGenerator, values: Any) {
         val resultMap = objectToMap(values)
         resultMap.forEach { map ->
             (map.key as? String?)?.let { key ->
@@ -41,7 +43,7 @@ object FormAutofill {
                         is RecyclerView -> {
                             if (view.adapter is MentalHealthAdapter)
                                 (map.value as? ArrayList<Map<String, Any>>)?.let { list ->
-                                    prefillRecyclerView(view, list)
+                                    prefillRecyclerView(context, view, list, key)
                                 }
                         }
                     }
@@ -50,7 +52,12 @@ object FormAutofill {
         }
     }
 
-    private fun prefillRecyclerView(view: RecyclerView, list: ArrayList<Map<String, Any>>) {
+    private fun prefillRecyclerView(
+        context: Context,
+        view: RecyclerView,
+        list: ArrayList<Map<String, Any>>,
+        key: String
+    ) {
         for (i in 0 until list.size) {
             //Getting one by one listItem
             (view.findViewHolderForAdapterPosition(i) as? MentalHealthAdapter.MentalHealthViewHolder)?.let { viewHolder ->
@@ -59,7 +66,7 @@ object FormAutofill {
 
                 val map = list.firstOrNull {
                     (it[Screening.MHQuestion] as? String)?.equals(
-                        questionView.text?.toString(),
+                        questionView.tag?.toString(),
                         true
                     ) == true
                 }
@@ -67,13 +74,26 @@ object FormAutofill {
                 if (!map.isNullOrEmpty())
                     for (j in 0 until inflatedView.childCount) {
                         (inflatedView.getChildAt(j) as? SingleSelectionMHView)?.let { singleSelectionView ->
-                            (map[Screening.MHAnswer] as? String)?.let {
+                            (getTranslatedString(context, map[Screening.MHAnswer] as? String))?.let {
                                 singleSelectionView.prefillSingleSelection(it)
                             }
                         }
                     }
             }
         }
+    }
+
+    private fun getTranslatedString(context: Context, value: String?): String? {
+        return if (SecuredPreference.getIsTranslationEnabled()) {
+            when (value) {
+                Screening.NotAtAll -> context.getString(R.string.not_at_all)
+                Screening.SeveralDays -> context.getString(R.string.several_days)
+                Screening.MoreThanHalfTheDays -> context.getString(R.string.more_than_half_day)
+                Screening.NearlyEveryDay -> context.getString(R.string.nearly_every_day)
+                else -> value
+            }
+        } else
+            value
     }
 
     private fun setTextView(
@@ -99,13 +119,8 @@ object FormAutofill {
     private fun setSingleSelectionCustomView(
         view: SingleSelectionCustomView, key: String, value: Any?
     ) {
-        when (value) {
-            is String -> view.singleSelectionChildViewsOption(value)
-            is Boolean -> {
-                val id = "${value}_$key"
-                view.singleSelectionAutofill(id)
-            }
-        }
+        val id = "${value}_$key"
+        view.singleSelectionAutofill(id)
     }
 
     private fun setSpinner(view: Spinner, value: Any?) {

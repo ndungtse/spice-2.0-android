@@ -48,6 +48,7 @@ class MentalHealthAdapter(
         }else {
             holder.binding.tvQuestion.text = question
         }
+        holder.binding.tvQuestion.tag = question
         val isMandatory = (model.map[Screening.Mandatory] as Boolean?) ?: false
         if (isMandatory) {
             holder.binding.tvQuestion.markMandatory()

@@ -20,6 +20,7 @@ import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.mappingkey.Screening
 import com.medtroniclabs.spice.ncd.data.CustomDate
 import com.medtroniclabs.spice.ncd.followup.viewmodel.NCDFollowUpViewModel
+import com.medtroniclabs.spice.ncd.medicalreview.CommonEnums
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.TagListCustomView
 import com.medtroniclabs.spice.ui.followup.FollowUpDefinedParams
@@ -65,17 +66,31 @@ class NCDFollowUpOfflineBottomDialogFilter : BottomSheetDialogFragment(), View.O
     }
 
     private fun composeStatusListChipView() {
-        val itemList = arrayListOf(
-            Screening.TODAY,
-            Screening.YESTERDAY.uppercase(),
-            FollowUpDefinedParams.FilterCustomize.uppercase()
-        )
         val statusList = ArrayList<ChipViewItemModel>()
-        itemList.forEach {
-            statusList.add(
-                ChipViewItemModel(name = it.lowercase().capitalizeFirstChar())
+        statusList.add(
+            ChipViewItemModel(
+                id = 1,
+                name = CommonEnums.TODAY.title,
+                cultureValue = getString(CommonEnums.TODAY.cultureValue),
+                value = CommonEnums.TODAY.value
             )
-        }
+        )
+        statusList.add(
+            ChipViewItemModel(
+                id = 2,
+                name = CommonEnums.YESTERDAY.title,
+                cultureValue = getString(CommonEnums.YESTERDAY.cultureValue),
+                value = CommonEnums.YESTERDAY.value
+            )
+        )
+        statusList.add(
+            ChipViewItemModel(
+                id = 3,
+                name = CommonEnums.CUSTOMISE.title,
+                cultureValue = getString(CommonEnums.CUSTOMISE.cultureValue),
+                value = CommonEnums.CUSTOMISE.value
+            )
+        )
         dateRangeTagView.addChipItemList(
             statusList,
             viewModel.filterByDateRange

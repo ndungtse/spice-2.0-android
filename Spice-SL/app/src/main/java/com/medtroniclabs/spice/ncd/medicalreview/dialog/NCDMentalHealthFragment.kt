@@ -41,8 +41,6 @@ import com.medtroniclabs.spice.ncd.data.NCDMentalHealthStatusRequest
 import com.medtroniclabs.spice.ncd.data.NcdPatientStatus
 import com.medtroniclabs.spice.ncd.medicalreview.NCDDialogDismissListener
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil
-import com.medtroniclabs.spice.ncd.medicalreview.dialog.NCDPatientHistoryDialog.Companion.N_A
-import com.medtroniclabs.spice.ncd.medicalreview.dialog.NCDPatientHistoryDialog.Companion.New_Patient
 import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDMedicalReviewViewModel
 import com.medtroniclabs.spice.ncd.medicalreview.viewmodel.NCDMentalHealthViewModel
 import com.medtroniclabs.spice.network.resource.ResourceState
@@ -109,8 +107,8 @@ class NCDMentalHealthFragment : DialogFragment(), View.OnClickListener {
                 viewModel.mentalHealthStatusId = mhsMap[DefinedParams.ID] as? String
                 (mhsMap[DefinedParams.Status] as? String)?.let { status ->
                     with(binding.llMentalHealth) {
-                        if (childCount > 0) (getChildAt(0) as? SingleSelectionCustomView)?.singleSelectionChildViewsOption(
-                            status
+                        if (childCount > 0) (getChildAt(0) as? SingleSelectionCustomView)?.singleSelectionAutofill(
+                            status + "_${MENTAL_HEALTH_STATUS}"
                         )
                     }
                 }
@@ -128,8 +126,8 @@ class NCDMentalHealthFragment : DialogFragment(), View.OnClickListener {
                 viewModel.substanceUseStatusId = susMap[DefinedParams.ID] as? String
                 (susMap[DefinedParams.Status] as? String)?.let { status ->
                     with(binding.llSubstanceUse) {
-                        if (childCount > 0) (getChildAt(0) as? SingleSelectionCustomView)?.singleSelectionChildViewsOption(
-                            status
+                        if (childCount > 0) (getChildAt(0) as? SingleSelectionCustomView)?.singleSelectionAutofill(
+                            status + "_${SUBSTANCE_USE_STATUS}"
                         )
                     }
                 }
@@ -156,8 +154,8 @@ class NCDMentalHealthFragment : DialogFragment(), View.OnClickListener {
                 //Diabetes
                 (ncdMap[NCDMRUtil.DiabetesStatus] as? String)?.let { diabetesStatus ->
                     with(binding.ncdDiabetesHypertension.llDiabetes) {
-                        if (childCount > 0) (getChildAt(0) as? SingleSelectionCustomView)?.singleSelectionChildViewsOption(
-                            diabetesStatus
+                        if (childCount > 0) (getChildAt(0) as? SingleSelectionCustomView)?.singleSelectionAutofill(
+                            diabetesStatus + "_${Diabetes}"
                         )
                     }
                 }
@@ -182,8 +180,8 @@ class NCDMentalHealthFragment : DialogFragment(), View.OnClickListener {
                 //Hypertension
                 (ncdMap[NCDMRUtil.HypertensionStatus] as? String)?.let { hypertensionStatus ->
                     with(binding.ncdDiabetesHypertension.llHypertension) {
-                        if (childCount > 0) (getChildAt(0) as? SingleSelectionCustomView)?.singleSelectionChildViewsOption(
-                            hypertensionStatus
+                        if (childCount > 0) (getChildAt(0) as? SingleSelectionCustomView)?.singleSelectionAutofill(
+                            hypertensionStatus + "_${Hypertension}"
                         )
                     }
                 }
@@ -314,6 +312,7 @@ class NCDMentalHealthFragment : DialogFragment(), View.OnClickListener {
             hashMapOf<String, Any>().apply {
                 put(DefinedParams.ID, symptoms.id)
                 put(DefinedParams.NAME, symptoms.name)
+                symptoms.displayValue?.let { put(DefinedParams.cultureValue, it) }
                 symptoms.value?.let { put(DefinedParams.Value, it) }
             }.takeIf { it.isNotEmpty() }
         }
@@ -344,8 +343,8 @@ class NCDMentalHealthFragment : DialogFragment(), View.OnClickListener {
         )
         yearOfDiagnosis.add(
             CommonUtils.getOptionMap(
-                NCDPatientHistoryDialog.Known_patient,
-                NCDPatientHistoryDialog.Known_patient,
+                Known_patient,
+                Known_patient,
                 getString(R.string.known_patient)
             )
         )
@@ -497,12 +496,12 @@ class NCDMentalHealthFragment : DialogFragment(), View.OnClickListener {
         )
         getSingleSelectionOptions().let {
             val view = SingleSelectionCustomView(requireContext())
-            view.tag = NCDPregnancyDialog.DIABETES
+            view.tag = DIABETES
             view.addViewElements(
                 it,
                 SecuredPreference.getIsTranslationEnabled(),
                 viewModel.resultDiabetesHashMap,
-                Pair(NCDPregnancyDialog.DIABETES, null),
+                Pair(DIABETES, null),
                 FormLayout(viewType = "", id = "", title = "", visibility = "", optionsList = null),
                 singleSelectionCallbackForDiabetes
             )
@@ -511,12 +510,12 @@ class NCDMentalHealthFragment : DialogFragment(), View.OnClickListener {
 
         getSingleSelectionOptions().let {
             val view = SingleSelectionCustomView(requireContext())
-            view.tag = NCDPregnancyDialog.HYPERTENSION
+            view.tag = HYPERTENSION
             view.addViewElements(
                 it,
                 SecuredPreference.getIsTranslationEnabled(),
                 viewModel.resultHypertensionHashMap,
-                Pair(NCDPregnancyDialog.HYPERTENSION, null),
+                Pair(HYPERTENSION, null),
                 FormLayout(viewType = "", id = "", title = "", visibility = "", optionsList = null),
                 singleSelectionCallbackForHypertension
             )
@@ -596,7 +595,13 @@ class NCDMentalHealthFragment : DialogFragment(), View.OnClickListener {
         const val TAG = "NCDMentalHealthFragment"
         const val Diabetes = "Diabetes"
         const val Hypertension = "Hypertension"
+
+        const val N_A = "N/A"
+        const val New_Patient = "New Patient"
         const val Known_patient = "Known Patient"
+
+        const val DIABETES = "Diabetes"
+        const val HYPERTENSION = "Hypertension"
 
         const val MENTAL_HEALTH_STATUS = "MentalHealthStatus"
         const val SUBSTANCE_USE_STATUS = "SubstanceUseStatus"
@@ -676,8 +681,8 @@ class NCDMentalHealthFragment : DialogFragment(), View.OnClickListener {
         binding.ncdDiabetesHypertension.tvHypertensionError.setVisible(!isHypertensionValid)
 
         val isKnownDiabetesPatient =
-            (viewModel.resultDiabetesHashMap[NCDPatientHistoryDialog.Diabetes] as? String)?.equals(
-                NCDPatientHistoryDialog.Known_patient,
+            (viewModel.resultDiabetesHashMap[Diabetes] as? String)?.equals(
+                Known_patient,
                 true
             ) == true
 
@@ -690,8 +695,8 @@ class NCDMentalHealthFragment : DialogFragment(), View.OnClickListener {
         }
 
         val isKnownHypertensionPatient =
-            (viewModel.resultHypertensionHashMap[NCDPatientHistoryDialog.Hypertension] as? String)?.equals(
-                NCDPatientHistoryDialog.Known_patient,
+            (viewModel.resultHypertensionHashMap[Hypertension] as? String)?.equals(
+                Known_patient,
                 true
             ) == true
 

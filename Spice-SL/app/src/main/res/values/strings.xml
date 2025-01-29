@@ -1222,4 +1222,9 @@
     <string name="visited_facility">Visited facility</string>
     <string name="will_visit_facility">Will visit facility</string>
     <string name="wont_visit_facility">Won\’t visit facility</string>
+
+    <string name="not_at_all">Not at all</string>
+    <string name="several_days">Several days</string>
+    <string name="more_than_half_day">More than half the days</string>
+    <string name="nearly_every_day">Nearly every day</string>
 </resources>

@@ -10,6 +10,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
+import com.medtroniclabs.spice.appextensions.textOrEmpty
 import com.medtroniclabs.spice.appextensions.textOrHyphen
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils.getContactNumber
@@ -85,15 +86,11 @@ class ProfileDialogFragment : DialogFragment(), View.OnClickListener {
 
     private fun setUserProfileData(user: UserProfile) {
         with(binding) {
-            tvName.text = if (!user.firstName.isNullOrBlank() && !user.lastName.isNullOrBlank()) {
-                requireContext().getString(
-                    R.string.firstname_lastname,
-                    user.firstName,
-                    user.lastName
-                )
-            } else {
-                getString(R.string.separator_double_hyphen)
-            }
+            tvName.text = requireContext().getString(
+                R.string.firstname_lastname,
+                user.firstName.textOrEmpty(),
+                user.lastName.textOrEmpty()
+            )
             tvGenderText.text = user.gender.takeIf { it?.isNotBlank() == true } ?: getString(R.string.separator_double_hyphen)
             tvDesignationText.text = user.designation?.name.textOrHyphen()
             tvEmailText.text = user.username.takeIf { it.isNotBlank() } ?: getString(R.string.separator_double_hyphen)

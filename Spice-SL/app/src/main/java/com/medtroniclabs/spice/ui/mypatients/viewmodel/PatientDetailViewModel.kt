@@ -6,6 +6,8 @@ import com.medtroniclabs.spice.app.analytics.model.UserDetail
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.common.DefinedParams
+import com.medtroniclabs.spice.data.LocalSpinnerResponse
+import com.medtroniclabs.spice.db.entity.ClinicalWorkflowEntity
 import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.model.PatientDetailRequest
 import com.medtroniclabs.spice.model.PatientListRespModel
@@ -47,6 +49,8 @@ class PatientDetailViewModel @Inject constructor(
     var forceRefresh: Boolean = false
 
     var neonateOutCome: String?=null
+
+    val clinicalWorkflowsMenusLiveData = MutableLiveData<List<ClinicalWorkflowEntity>>()
 
     fun getPatients(id: String, assessmentType: String? = null, origin: String? = null) {
         viewModelScope.launch(dispatcherIO) {
@@ -183,6 +187,12 @@ class PatientDetailViewModel @Inject constructor(
                 isCompleted = true
             )
             updatePregnancyRisk.postValue(ncdMedicalReviewRepository.ncdUpdatePregnancyRisk(request))
+        }
+    }
+
+    fun getMenuForClinicalWorkflows() {
+        viewModelScope.launch(dispatcherIO) {
+            clinicalWorkflowsMenusLiveData.postValue(patientRepository.getMenuForClinicalWorkflows())
         }
     }
 }

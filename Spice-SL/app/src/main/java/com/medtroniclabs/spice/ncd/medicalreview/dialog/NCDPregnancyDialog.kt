@@ -132,8 +132,8 @@ class NCDPregnancyDialog(private val callback: ((isPositiveResult: Boolean, mess
             //Diabetes
             (ncdMap[NCDMRUtil.DiabetesStatus] as? String)?.let { diabetesStatus ->
                 with(binding.ncdDiabetesHypertension.llDiabetes) {
-                    if (childCount > 0) (getChildAt(0) as? SingleSelectionCustomView)?.singleSelectionChildViewsOption(
-                        diabetesStatus
+                    if (childCount > 0) (getChildAt(0) as? SingleSelectionCustomView)?.singleSelectionAutofill(
+                        diabetesStatus + "_${DIABETES}"
                     )
                 }
             }
@@ -158,8 +158,8 @@ class NCDPregnancyDialog(private val callback: ((isPositiveResult: Boolean, mess
             //Hypertension
             (ncdMap[NCDMRUtil.HypertensionStatus] as? String)?.let { hypertensionStatus ->
                 with(binding.ncdDiabetesHypertension.llHypertension) {
-                    if (childCount > 0) (getChildAt(0) as? SingleSelectionCustomView)?.singleSelectionChildViewsOption(
-                        hypertensionStatus
+                    if (childCount > 0) (getChildAt(0) as? SingleSelectionCustomView)?.singleSelectionAutofill(
+                        hypertensionStatus + "_${HYPERTENSION}"
                     )
                 }
             }
@@ -720,6 +720,7 @@ class NCDPregnancyDialog(private val callback: ((isPositiveResult: Boolean, mess
             hashMapOf<String, Any>().apply {
                 symptoms.id?.let { put(DefinedParams.ID, it) }
                 symptoms.name?.let { put(DefinedParams.NAME, it) }
+                symptoms.displayValue?.let { put(DefinedParams.cultureValue, it) }
                 symptoms.value?.let { put(DefinedParams.Value, it) }
             }.takeIf { it.isNotEmpty() }
         }

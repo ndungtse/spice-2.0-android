@@ -486,7 +486,10 @@ class PerformanceMonitoringActivity : BaseActivity() {
 
     private fun initView() {
         binding.apply {
-            lHealder.tvLabelChwName.text = if(CommonUtils.isNonCommunity()) getString(R.string.chp_name) else getString(R.string.chw_name)
+            tvRoleTitle.text =
+                if (CommonUtils.isNonCommunity()) getString(R.string.chp_colon) else getString(R.string.chw_colon)
+            lHealder.tvLabelChwName.text =
+                if (CommonUtils.isNonCommunity()) getString(R.string.chp_name) else getString(R.string.chw_name)
         }
         adapter = PerformanceMonitoringAdapter()
         binding.rvPerformanceList.adapter = adapter

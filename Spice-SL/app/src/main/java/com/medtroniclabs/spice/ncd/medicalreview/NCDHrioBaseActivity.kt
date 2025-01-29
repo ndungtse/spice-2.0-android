@@ -121,7 +121,8 @@ class NCDHrioBaseActivity : BaseActivity() {
     private fun displayScheduleDialog() {
         NCDScheduleDialog.newInstance(
             patientViewModel.getPatientId(),
-            patientViewModel.getPatientFHIRId()
+            patientViewModel.getPatientFHIRId(),
+            patientViewModel.getPatientVillageId()
         ).show(supportFragmentManager, NCDScheduleDialog.TAG)
     }
 

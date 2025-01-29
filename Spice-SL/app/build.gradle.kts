@@ -167,18 +167,28 @@ android {
             )
             applicationVariants.all {
                 if (buildType.name == "training") {
-                    if (productFlavors[0].name == "sl") {
-                        buildConfigField("String", "API_BASE_URL", "\"https://spice-training-backend.sl.labsplatform.com/\"")
-                        buildConfigField("String", "ADMIN_BASE_URL", "\"https://spice-training.sl.labsplatform.com/\"")
-                        buildConfigField("String", "SALT", "\"spice_uat\"")
-                        buildConfigField("String", "DB_PASSWORD", "\"Med@Tr0ni#Lab$\"")
-                        resValue("string", "spice_app_name", "SPICE 2.0 Training")
-                    } else if (productFlavors[0].name == "africa") {
-                        buildConfigField("String", "API_BASE_URL", "\"https://spice-training-backend.v2.1.labsplatform.com/\"")
-                        buildConfigField("String", "ADMIN_BASE_URL", "\"https://spice-training.v2.1.labsplatform.com/\"")
-                        buildConfigField("String", "SALT", "\"spice_uat\"")
-                        buildConfigField("String", "DB_PASSWORD", "\"Med@Tr0ni#Lab$\"")
-                        resValue("string", "spice_app_name", "SPICE Training")
+                    when (productFlavors[0].name) {
+                        "sl" -> {
+                            buildConfigField("String", "API_BASE_URL", "\"https://spice-training-backend.sl.labsplatform.com/\"")
+                            buildConfigField("String", "ADMIN_BASE_URL", "\"https://spice-training.sl.labsplatform.com/\"")
+                            buildConfigField("String", "SALT", "\"spice_uat\"")
+                            buildConfigField("String", "DB_PASSWORD", "\"Med@Tr0ni#Lab$\"")
+                            resValue("string", "spice_app_name", "SPICE 2.0 Training")
+                        }
+                        "africa" -> {
+                            buildConfigField("String", "API_BASE_URL", "\"https://spice-training-backend.v2.1.labsplatform.com/\"")
+                            buildConfigField("String", "ADMIN_BASE_URL", "\"https://spice-training.v2.1.labsplatform.com/\"")
+                            buildConfigField("String", "SALT", "\"spice_uat\"")
+                            buildConfigField("String", "DB_PASSWORD", "\"Med@Tr0ni#Lab$\"")
+                            resValue("string", "spice_app_name", "SPICE 2.1 Training")
+                        }
+                        "tiberbu" -> {
+                            buildConfigField("String", "API_BASE_URL", "\"https://spice-training-back.tiberbu.health/\"")
+                            buildConfigField("String", "ADMIN_BASE_URL", "\"https://spice-training.tiberbu.health/\"")
+                            buildConfigField("String", "SALT", "\"spice_uat\"")
+                            buildConfigField("String", "DB_PASSWORD", "\"Med@Tr0ni#Lab$\"")
+                            resValue("string", "spice_app_name", "SPICE Tiberbu Training")
+                        }
                     }
                 }
             }

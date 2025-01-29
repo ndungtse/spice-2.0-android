@@ -290,7 +290,7 @@ class RegistrationFormFragment : BaseFragment(), View.OnClickListener, FormEvent
 
     private fun prePopulate() {
         patientViewModel.patientDetailsLiveData.value?.data?.let {
-            FormAutofill.start(formGenerator, it)
+            FormAutofill.start(requireContext(), formGenerator, it)
         }
     }
 

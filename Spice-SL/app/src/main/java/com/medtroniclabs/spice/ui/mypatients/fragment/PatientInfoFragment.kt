@@ -19,6 +19,7 @@ import com.medtroniclabs.spice.common.DateUtils.DATE_ddMMyyyy
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.IsReferredScreen
 import com.medtroniclabs.spice.common.DefinedParams.OtherNotes
+import com.medtroniclabs.spice.common.EntityMapper
 import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.databinding.FragmentPatientInfoBinding
@@ -98,7 +99,7 @@ class PatientInfoFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initView()
+        viewModel.getMenuForClinicalWorkflows()
         attachObservers()
     }
 
@@ -118,6 +119,9 @@ class PatientInfoFragment : BaseFragment() {
     }
 
     private fun attachObservers() {
+        viewModel.clinicalWorkflowsMenusLiveData.observe(viewLifecycleOwner) { data ->
+            initView()
+        }
         viewModel.patientDetailsLiveData.observe(viewLifecycleOwner) { resource ->
             when (resource.state) {
                 ResourceState.LOADING -> {
@@ -444,33 +448,53 @@ class PatientInfoFragment : BaseFragment() {
                     DefinedParams.color to requireContext().getColor(R.color.medium_high_risk_color)
                 )
             )
-            val suicidcalIdeation = data.suicidalIdeation ?: requireContext().getString(
-                R.string.hyphen_symbol
-            )
-            val type = if (data.suicidalIdeation != null) requireContext().getString(R.string.edit_assessment) else requireContext().getString(
-                    R.string.start_assessment
+            val showSuicidcalIdeation =
+                viewModel.clinicalWorkflowsMenusLiveData.value?.firstOrNull {
+                    it.workflowName.equals(
+                        Screening.suicideScreener,
+                        true
+                    )
+                } != null
+            if (showSuicidcalIdeation) {
+                val suicidcalIdeation = data.suicidalIdeation ?: requireContext().getString(
+                    R.string.hyphen_symbol
                 )
-            dataList.add(
-                mapOf(
-                    DefinedParams.label to requireContext().getString(R.string.suicidal_ideation),
-                    DefinedParams.Value to suicidcalIdeation.capitalizeFirstChar(),
-                    Screening.type to type,
-                    DefinedParams.color to requireContext().getColor(R.color.medium_high_risk_color)
+                val type =
+                    if (data.suicidalIdeation != null) requireContext().getString(R.string.edit_assessment) else requireContext().getString(
+                        R.string.start_assessment
+                    )
+                dataList.add(
+                    mapOf(
+                        DefinedParams.label to requireContext().getString(R.string.suicidal_ideation),
+                        DefinedParams.Value to suicidcalIdeation.capitalizeFirstChar(),
+                        Screening.type to type,
+                        DefinedParams.color to requireContext().getColor(R.color.medium_high_risk_color)
+                    )
                 )
-            )
-            val cageAid = data.cageAid?.toDoubleOrNull()?.toInt()?.toString() ?: requireContext().getString(R.string.hyphen_symbol)
-            val assessmentType =
-                if (data.cageAid != null) requireContext().getString(R.string.edit_assessment) else requireContext().getString(
-                    R.string.start_assessment
+            }
+            val showCageAid =
+                viewModel.clinicalWorkflowsMenusLiveData.value?.firstOrNull {
+                    it.workflowName.equals(
+                        Screening.substanceAbuse,
+                        true
+                    )
+                } != null
+            if (showCageAid) {
+                val cageAid = data.cageAid?.toDoubleOrNull()?.toInt()?.toString()
+                    ?: requireContext().getString(R.string.hyphen_symbol)
+                val assessmentType =
+                    if (data.cageAid != null) requireContext().getString(R.string.edit_assessment) else requireContext().getString(
+                        R.string.start_assessment
+                    )
+                dataList.add(
+                    mapOf(
+                        DefinedParams.label to requireContext().getString(R.string.cage_aid),
+                        DefinedParams.Value to cageAid,
+                        Screening.type to assessmentType,
+                        DefinedParams.color to requireContext().getColor(R.color.medium_high_risk_color)
+                    )
                 )
-            dataList.add(
-                mapOf(
-                    DefinedParams.label to requireContext().getString(R.string.cage_aid),
-                    DefinedParams.Value to cageAid,
-                    Screening.type to assessmentType,
-                    DefinedParams.color to requireContext().getColor(R.color.medium_high_risk_color)
-                )
-            )
+            }
         } else {
             data.cageAid?.let { aid ->
                 if ((aid.toDoubleOrNull()?.toInt() ?: 0) > 0) {

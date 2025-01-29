@@ -1,6 +1,7 @@
 package com.medtroniclabs.spice.ui.mypatients.repo
 
 import com.google.gson.Gson
+import com.medtroniclabs.spice.db.entity.ClinicalWorkflowEntity
 import com.medtroniclabs.spice.db.entity.VillageEntity
 import com.medtroniclabs.spice.db.local.RoomHelper
 import com.medtroniclabs.spice.model.PatientDetailRequest
@@ -20,6 +21,10 @@ class PatientRepository @Inject constructor(
 
     suspend fun getUserVillages(): List<VillageEntity> {
         return roomHelper.getUserVillages()
+    }
+
+    suspend fun getMenuForClinicalWorkflows(): List<ClinicalWorkflowEntity> {
+        return roomHelper.getMenuForClinicalWorkflows()
     }
 
     suspend fun getPatients(

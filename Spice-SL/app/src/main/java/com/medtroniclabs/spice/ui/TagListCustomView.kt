@@ -369,7 +369,7 @@ class TagListCustomView(
     private fun getChipText(data: Any): Pair<String?, String>? {
         return when (data) {
             is ChipViewItemModel -> {
-                Pair(data.cultureValue, data.name)
+                Pair(data.cultureValue ?: data.name, data.name)
             }
             else -> null
         }

@@ -135,7 +135,7 @@ class SingleSelectionCustomView : LinearLayout {
 
     fun singleSelectionAutofill(id: String) {
         forEach {
-            if (it is TextView && it.tag.toString() == id) {
+            if (it is TextView && it.tag.toString().equals(id, true)) {
                 it.performClick()
                 it.isEnabled = false
                 return@forEach

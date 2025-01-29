@@ -1121,4 +1121,9 @@
     <string name="medication_nudege_card_header_text_sufix">intensify the treatment?</string>
     <string name="lipids_recommended_investigations">It has been one year since the patient has gone through the %1$s. Would you like to recommend another round of %1$s?</string>
     <string name="hba1c_recommended_question">It has been three months since the patient has gone through the HbA1c test. Would you like to recommend another round of HbA1c test?</string>
+
+    <string name="not_at_all">Hakuna kabisa</string>
+    <string name="several_days">Siku kadhaa</string>
+    <string name="more_than_half_day">Zaidi ya nusu ya siku</string>
+    <string name="nearly_every_day">Karibu kila siku</string>
 </resources>

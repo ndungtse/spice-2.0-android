@@ -194,4 +194,9 @@ object Screening {
     const val DISTRICT_ID = "districtId"
     const val CHIEFDOM_ID = "chiefdomId"
     const val VILLAGE = "village"
+
+    const val NotAtAll = "Not at all"
+    const val SeveralDays = "Several days"
+    const val MoreThanHalfTheDays = "More than half the days"
+    const val NearlyEveryDay = "Nearly every day"
 }
