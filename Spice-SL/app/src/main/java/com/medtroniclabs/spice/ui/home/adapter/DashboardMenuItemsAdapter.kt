@@ -100,11 +100,15 @@ class DashboardMenuItemsAdapter(
                 R.drawable.ic_cbs_tool
             )
 
-            MenuConstants.TB_MENU_ID -> return ContextCompat.getDrawable(
+            MenuConstants.TB_MENU_ID.lowercase() -> return ContextCompat.getDrawable(
                 context,
                 R.drawable.ic_tb_tool
             )
 
+            MenuConstants.TB_MENU_ID -> return ContextCompat.getDrawable(
+                context,
+                R.drawable.ic_tb_tool
+            )
             MenuConstants.NCD_MENU_ID -> return ContextCompat.getDrawable(
                 context,
                 R.drawable.ic_ncd_tool

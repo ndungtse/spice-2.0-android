@@ -41,7 +41,7 @@ class AssessmentTBFragment : BaseFragment(), FormEventListener, View.OnClickList
         viewModel.getMemberDetailsById()
         initView()
         setListeners()
-        viewModel.getFormData(DefinedParams.TB)
+        viewModel.getFormData(TB.lowercase())
         attachObservers()
         viewModel.setUserJourney(AnalyticsDefinedParams.TBAssessement)
     }

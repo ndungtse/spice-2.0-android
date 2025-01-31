@@ -123,6 +123,7 @@ class PatientMenuFragment : BaseFragment(), MenuSelectionListener {
                     MenuConstants.GENERAL_ID -> menuItem.isDisabled =isGeneralDisabled(dob)
                     MenuConstants.UNDER_AGE_FIVE_TO_TWO_MONTHS_ID -> menuItem.isDisabled =isUnderFiveToTwoMonthsDisabled(dob)
                     MenuConstants.UNDER_AGE_ABOVE_FIVE_YEAR_ID ->menuItem.isDisabled = isUnderAgeAboveFiveYearsDisabled(dob)
+                    MenuConstants.TB_MENU_ID -> menuItem.isDisabled = isGeneralDisabled(dob)
                     else -> {}
 
             }
