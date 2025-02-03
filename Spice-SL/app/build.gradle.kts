@@ -27,7 +27,7 @@ android {
         create("africa") {
             dimension = "version"
             versionName = "2.1.0"
-            versionCode = 18
+            versionCode = 19
         }
         create("sl") {
             dimension = "version"
@@ -76,10 +76,10 @@ android {
                         }
                         "africa" -> {
                             buildConfigField("String", "API_BASE_URL", "\"https://spice-backend.af.medtroniclabs.org/\"")
-                            buildConfigField("String", "ADMIN_BASE_URL", "\"https://spice-dev-migration.labsplatform.com/\"")
+                            buildConfigField("String", "ADMIN_BASE_URL", "\"https://spice-training.v2.1.labsplatform.com/\"")
                             buildConfigField("String", "SALT", "\"spice_prod\"")
                             buildConfigField("String", "DB_PASSWORD", "\"Med@Tr0ni#Lab$\"")
-                            resValue("string", "spice_app_name", "SPICE 2.1")
+                            resValue("string", "spice_app_name", "SPICE")
                         }
                         "tiberbu" -> {
                             buildConfigField("String", "API_BASE_URL", "\"https://spice-dev-backend.tbb.labsplatform.com/\"")
@@ -112,7 +112,7 @@ android {
                             buildConfigField("String", "ADMIN_BASE_URL", "\"https://spice-dev-migration.labsplatform.com/\"")
                             buildConfigField("String", "SALT", "\"spice_uat\"")
                             buildConfigField("String", "DB_PASSWORD", "\"Med@Tr0ni#Lab$\"")
-                            resValue("string", "spice_app_name", "SPICE 2.1 Dev")
+                            resValue("string", "spice_app_name", "SPICE Dev")
                         }
                         "tiberbu" -> {
                             buildConfigField("String", "API_BASE_URL", "\"https://spice-training-back.tiberbu.health/\"")
@@ -178,7 +178,7 @@ android {
                         buildConfigField("String", "ADMIN_BASE_URL", "\"https://spice-training.v2.1.labsplatform.com/\"")
                         buildConfigField("String", "SALT", "\"spice_uat\"")
                         buildConfigField("String", "DB_PASSWORD", "\"Med@Tr0ni#Lab$\"")
-                        resValue("string", "spice_app_name", "SPICE 2.1 Training")
+                        resValue("string", "spice_app_name", "SPICE Training")
                     }
                 }
             }
