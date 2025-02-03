@@ -14,6 +14,7 @@ import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.changePatientStatus
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.invisible
+import com.medtroniclabs.spice.appextensions.setVisible
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils.convertListToString
 import com.medtroniclabs.spice.common.DefinedParams
@@ -60,11 +61,12 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
             return MedicalReviewPatientDiagnosisFragment()
         }
 
-        fun newInstance(isAnc: Boolean,isPnc:Boolean=false, patientId: String?,memberID: String?, id: String?): MedicalReviewPatientDiagnosisFragment {
+        fun newInstance(isAnc: Boolean,isPnc:Boolean=false, patientId: String?,memberID: String?, id: String?,isTB:Boolean = false): MedicalReviewPatientDiagnosisFragment {
             val fragment = MedicalReviewPatientDiagnosisFragment()
             fragment.arguments = Bundle().apply {
                 putBoolean(DefinedParams.PregnancyANC, isAnc)
                 putBoolean(DefinedParams.PregnancyPNC,isPnc)
+                putBoolean(DefinedParams.TB,isTB)
                 putString(DefinedParams.PatientId, patientId)
                 putString(DefinedParams.MemberID, memberID)
                 putString(DefinedParams.ID, id)
@@ -243,6 +245,7 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
         with(binding) {
             val isAnc = arguments?.getBoolean(DefinedParams.PregnancyANC, false)
             val isPnc = arguments?.getBoolean(DefinedParams.PregnancyPNC, false)
+            val isTb = arguments?.getBoolean(DefinedParams.TB, false) ?: false
             if (isAnc == false && isPnc == false) {
                 cardAddWeight.gone()
                 cardBloodPressure.gone()
@@ -255,6 +258,9 @@ class MedicalReviewPatientDiagnosisFragment : BaseFragment(), View.OnClickListen
             retryButtonWeight.safeClickListener(this@MedicalReviewPatientDiagnosisFragment)
             cardDiagnosis.visible()
             cardPatientStatus.visible()
+            cardSiteDisease.setVisible(isTb)
+            cardPatientType.setVisible(isTb)
+            tbLl.setVisible(isTb)
         }
     }
 

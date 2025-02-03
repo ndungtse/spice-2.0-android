@@ -43,4 +43,5 @@ enum class MedicalReviewTypeEnums{
     MOTHER_LABOUR_MEDICAL_REVIEW,
     StateOfPerineum,
     PNCNeonateOutcome,
+    TB
 }

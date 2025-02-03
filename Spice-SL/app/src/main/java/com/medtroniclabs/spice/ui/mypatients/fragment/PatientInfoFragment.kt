@@ -19,6 +19,7 @@ import com.medtroniclabs.spice.common.DateUtils.DATE_ddMMyyyy
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.IsReferredScreen
 import com.medtroniclabs.spice.common.DefinedParams.OtherNotes
+import com.medtroniclabs.spice.common.DefinedParams.TB
 import com.medtroniclabs.spice.common.EntityMapper
 import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
@@ -64,13 +65,15 @@ class PatientInfoFragment : BaseFragment() {
             patientId: String?,
             isAnc: Boolean = false,
             isPnc:Boolean =false,
-            isReferredScreen: Boolean = false
+            isReferredScreen: Boolean = false,
+            isTb:Boolean = false
         ): PatientInfoFragment {
             val fragment = PatientInfoFragment()
             val bundle = Bundle()
             bundle.putString(DefinedParams.PatientId, patientId)
             bundle.putBoolean(ANC, isAnc)
             bundle.putBoolean(PNC,isPnc)
+            bundle.putBoolean(TB,isTb)
             bundle.putBoolean(IsReferredScreen, isReferredScreen)
             fragment.arguments = bundle
             return fragment
@@ -188,7 +191,9 @@ class PatientInfoFragment : BaseFragment() {
     private fun isPnc(): Boolean? {
         return arguments?.getBoolean(PNC, false)
     }
-
+    private fun isTB(): Boolean? {
+        return arguments?.getBoolean(TB, false)
+    }
     private fun isReferredScreen(): Boolean? {
         return arguments?.getBoolean(IsReferredScreen, false)
     }
@@ -268,6 +273,14 @@ class PatientInfoFragment : BaseFragment() {
                             ?.plus(1)
                             ?.toString()
                             ?: "1")
+                    )
+                )
+            }
+            if (isTB() == true) {
+                dataList.add(
+                    mapOf(
+                        DefinedParams.label to requireContext().getString(R.string.presumptive_tb_no),
+                        DefinedParams.Value to "364548"
                     )
                 )
             }

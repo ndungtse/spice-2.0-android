@@ -16,6 +16,7 @@ import com.medtroniclabs.spice.appextensions.isFineAndCoarseLocationPermissionGr
 import com.medtroniclabs.spice.appextensions.isGpsEnabled
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.GeneralErrorDialog
+import com.medtroniclabs.spice.common.SpiceLocationManager
 import com.medtroniclabs.spice.ncd.data.PatientFollowUpEntity
 import com.medtroniclabs.spice.ncd.followup.fragment.NCDFollowUpDialogFragment
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMRUtil

@@ -1,7 +1,7 @@
 package com.medtroniclabs.spice.ui
 
-import android.content.Context
 import android.Manifest
+import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.Rect
@@ -18,7 +18,6 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
@@ -29,7 +28,6 @@ import com.google.android.material.snackbar.Snackbar
 import com.medtroniclabs.spice.BuildConfig
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.app.analytics.model.UserDetail
-import com.medtroniclabs.spice.app.analytics.utils.CommonUtils
 import com.medtroniclabs.spice.appextensions.isFineAndCoarseLocationPermissionGranted
 import com.medtroniclabs.spice.appextensions.isGpsEnabled
 import com.medtroniclabs.spice.appextensions.loadAsGif

@@ -93,8 +93,7 @@ data class FormLayout(
     var ageCondition: ArrayList<String>? = null,
     var workflowType: ArrayList<String>? = null,
     var orderId: Int? = null,
-    var customizedWorkflowId: Double? = null
-    var orderId: Int? = null,
+    var customizedWorkflowId: Double? = null,
     var infoTitle: String? = null
 ) : BaseViewParams
 

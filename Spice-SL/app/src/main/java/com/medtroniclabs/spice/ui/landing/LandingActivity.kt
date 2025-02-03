@@ -15,14 +15,13 @@ import androidx.core.view.GravityCompat
 import androidx.core.view.forEach
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.work.Constraints
 import androidx.work.Data
 import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequest
-import androidx.work.PeriodicWorkRequest
+import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import com.google.android.material.navigation.NavigationView
@@ -32,7 +31,6 @@ import com.medtroniclabs.spice.app.analytics.model.UserDetail
 import com.medtroniclabs.spice.app.analytics.upload.UploadWorker
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.app.analytics.utils.CommonUtils.getAppVersion
-import com.medtroniclabs.spice.app.analytics.utils.CommonUtils.getFileUploadTime
 import com.medtroniclabs.spice.app.analytics.utils.CommonUtils.updateUserIdIfEmpty
 import com.medtroniclabs.spice.appextensions.cancelAllWorker
 import com.medtroniclabs.spice.appextensions.gone
@@ -49,36 +47,36 @@ import com.medtroniclabs.spice.common.DefinedParams.REFRESH_FRAGMENT
 import com.medtroniclabs.spice.common.GeneralErrorDialog
 import com.medtroniclabs.spice.common.RoleConstant
 import com.medtroniclabs.spice.common.SecuredPreference
-import com.medtroniclabs.spice.ncd.data.NCDPatientTransferNotificationCountRequest
+import com.medtroniclabs.spice.common.TransferStatusEnum
 import com.medtroniclabs.spice.databinding.ActivityLandingBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
+import com.medtroniclabs.spice.ncd.data.NCDPatientTransferNotificationCountRequest
+import com.medtroniclabs.spice.ncd.data.NCDPatientTransferUpdateRequest
+import com.medtroniclabs.spice.ncd.data.PatientTransfer
+import com.medtroniclabs.spice.ncd.data.PatientTransferListResponse
+import com.medtroniclabs.spice.ncd.landing.dialog.LanguagePreferenceDialog
 import com.medtroniclabs.spice.ncd.landing.dialog.NCDOfflineDataDialog
 import com.medtroniclabs.spice.ncd.landing.ui.UserTermsConditionsActivity
+import com.medtroniclabs.spice.ncd.landing.viewmodel.NCDOfflineDataViewModel
 import com.medtroniclabs.spice.network.NetworkConstants
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.ChooseSiteDialogueFragment
+import com.medtroniclabs.spice.ui.MenuConstants
 import com.medtroniclabs.spice.ui.PrivacyPolicyFragment
 import com.medtroniclabs.spice.ui.boarding.LoginActivity
 import com.medtroniclabs.spice.ui.home.HomeScreenFragment
 import com.medtroniclabs.spice.ui.landing.viewmodel.LandingViewModel
+import com.medtroniclabs.spice.ui.landing.viewmodel.LanguagePreferenceViewModel
 import com.medtroniclabs.spice.ui.mypatients.fragment.PatientSearchFragment
+import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 import com.medtroniclabs.spice.ui.patientTransfer.NCDApproveRejectListener
 import com.medtroniclabs.spice.ui.patientTransfer.adapter.NCDIncomingRequestAdapter
 import com.medtroniclabs.spice.ui.patientTransfer.adapter.NCDInformationMessageAdapter
 import com.medtroniclabs.spice.ui.patientTransfer.dialog.NCDPatientDetailDialogue
-import com.medtroniclabs.spice.ncd.data.PatientTransferListResponse
-import com.medtroniclabs.spice.ncd.data.NCDPatientTransferUpdateRequest
-import com.medtroniclabs.spice.common.TransferStatusEnum
-import com.medtroniclabs.spice.ui.MenuConstants
 import com.medtroniclabs.spice.ncd.data.NCDSupportRequest
-import com.medtroniclabs.spice.ncd.data.PatientTransfer
-import com.medtroniclabs.spice.ncd.landing.dialog.LanguagePreferenceDialog
 import com.medtroniclabs.spice.ncd.landing.dialog.NCDSupportDialogFragment
 import com.medtroniclabs.spice.ncd.landing.dialog.NCDSupportDialogListener
-import com.medtroniclabs.spice.ncd.landing.viewmodel.NCDOfflineDataViewModel
-import com.medtroniclabs.spice.ui.landing.viewmodel.LanguagePreferenceViewModel
-import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
 import java.util.concurrent.TimeUnit
 
 
@@ -364,19 +362,19 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
         }
     }
     private fun onClickUploadLog(){
-        if (BuildConfig.BUILD_TYPE=="staging"){
-        binding.uploadLog.setOnClickListener {
-            val uploadWorkRequest = OneTimeWorkRequest.Builder(UploadWorker::class.java)
-                .setInputData(periodicUploaderInputData())
-                .setConstraints(
-                    Constraints.Builder()
-                        .setRequiredNetworkType(NetworkType.CONNECTED)
-                        .build()
-                ).build()
+        if (BuildConfig.BUILD_TYPE == "staging") {
+            binding.uploadLog.setOnClickListener {
+                val uploadWorkRequest = OneTimeWorkRequest.Builder(UploadWorker::class.java)
+                    .setInputData(periodicUploaderInputData())
+                    .setConstraints(
+                        Constraints.Builder()
+                            .setRequiredNetworkType(NetworkType.CONNECTED)
+                            .build()
+                    ).build()
                 WorkManager.getInstance(this).enqueue(uploadWorkRequest)
-        }
-            }else{
-                binding.uploadLog.gone()
+            }
+        } else {
+            binding.uploadLog.gone()
         }
 
     }
@@ -784,17 +782,13 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
     }
 
     private fun schedulePeriodicUploadWork(context: Context) {
-        val periodicWorkRequest = PeriodicWorkRequest.Builder(
-            UploadWorker::class.java, 1, TimeUnit.DAYS
-        ).apply {
-            setInputData(periodicUploaderInputData())
-            setInitialDelay(getFileUploadTime(), TimeUnit.MILLISECONDS)
-            setConstraints(
-                Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
-            )
-        }.build()
+        val periodicRequest =
+            PeriodicWorkRequestBuilder<UploadWorker>(1, TimeUnit.DAYS)
+                .setInitialDelay(0, TimeUnit.SECONDS)
+                .setConstraints(Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build())
+                .build()
 
-        WorkManager.getInstance(context).enqueue(periodicWorkRequest)
+        WorkManager.getInstance(context).enqueue(periodicRequest)
     }
 
     private fun periodicUploaderInputData(): Data {

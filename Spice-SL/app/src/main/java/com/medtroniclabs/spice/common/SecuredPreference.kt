@@ -70,8 +70,7 @@ object SecuredPreference {
         NCD_FOLLOW_UP_LOST_REMAINING_DAYS,
         INITIAL_CALL,
         OFFLINE_FOLLOW_UP_SYNC_REQUEST_ID,
-        USER_CULTURE
-        IS_TERMS_AND_CONDITIONS_APPROVED,
+        USER_CULTURE,
         OLD_USER_ID
     }
 

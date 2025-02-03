@@ -624,8 +624,7 @@
     // Screening
     <string name="time_meal_error">Please enter an hour between %1$d to %2$d and a minute between %3$d to %4$d</string>
     <string name="change_facility">CHANGE FACILITY</string>
-    <string name="change_facility">CHANGE FACILITY\n</string>
-    <string name="change_health_facility">CHANGE HEALTH FACILITY</string>
+    <string name="change_health_facility" translatable="false">CHANGE HEALTH FACILITY</string>
     <string name="choose_site">Change Health Facility</string>
     <string name="display_range">Display Range</string>
     <string name="tested_value">Test Value</string>
@@ -1255,6 +1254,13 @@
     <string name="invalid_credentials">Invalid credentials</string>
     <string name="invalid_credentials_custom">Your username or password might be wrong. Please try again, or click on \'Forgot Password\' for help.</string>
     <string name="job_aid_reading_result">Job Aid (RDT - Reading Results)</string>
+    <string name="site_of_disease">Site of Disease</string>
+    <string name="treatment_outcome">Treatment Outcome</string>
+    <string name="edit_weight">View Weight</string>
+    <string name="add_height">Add Height</string>
+    <string name="edit_disease">Edit Disease</string>
+    <string name="patient_type">Patient Type</string>
+    <string name="edit_type">Edit Patient Type</string>
 
     <string name="support_label" translatable="false">Please write your issues with the\napplication</string>
     <string name="support" translatable="false">Support</string>

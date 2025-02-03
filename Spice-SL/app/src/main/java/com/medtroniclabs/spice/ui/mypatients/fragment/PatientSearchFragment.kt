@@ -152,7 +152,7 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
                     }
                 }
                 binding.llSortFilter.btnSort.apply {
-                    if (CommonUtils.isAfrica() && CommonUtils.canShowSort(patientListViewModel.origin)) {
+                    if (CommonUtils.isNonCommunity() && CommonUtils.canShowSort(patientListViewModel.origin)) {
                         visible()
 
                         val sortCount = patientListViewModel.sortCount()
@@ -261,7 +261,7 @@ class PatientSearchFragment : BaseFragment(), PatientSelectionListener, View.OnC
             patientListViewModel.spanCount = DefinedParams.span_count_1
         }
 
-        if (CommonUtils.isAfrica()) {
+        if (CommonUtils.isNonCommunity()) {
             binding.llExactSearch.etPatientSearch.hint = getString(R.string.search_by_national_id)
         }
 

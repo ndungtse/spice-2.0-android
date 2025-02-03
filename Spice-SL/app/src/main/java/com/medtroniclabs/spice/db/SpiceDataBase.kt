@@ -5,9 +5,9 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import com.medtroniclabs.spice.data.CulturesEntity
 import com.medtroniclabs.spice.BuildConfig
 import com.medtroniclabs.spice.common.CommonUtils
+import com.medtroniclabs.spice.data.CulturesEntity
 import com.medtroniclabs.spice.data.DiseaseCategoryItems
 import com.medtroniclabs.spice.data.DosageFrequency
 import com.medtroniclabs.spice.data.ExaminationListItems
@@ -42,7 +42,6 @@ import com.medtroniclabs.spice.db.entity.CallHistory
 import com.medtroniclabs.spice.db.entity.ChiefDomEntity
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowConditionEntity
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowEntity
-import com.medtroniclabs.spice.db.entity.NCDMedicalReviewMetaEntity
 import com.medtroniclabs.spice.db.entity.ConsentEntity
 import com.medtroniclabs.spice.db.entity.ConsentForm
 import com.medtroniclabs.spice.db.entity.DistrictEntity
@@ -54,8 +53,8 @@ import com.medtroniclabs.spice.db.entity.FrequencyEntity
 import com.medtroniclabs.spice.db.entity.HealthFacilityEntity
 import com.medtroniclabs.spice.db.entity.HouseholdEntity
 import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
-import com.medtroniclabs.spice.db.entity.LinkHouseholdMember
 import com.medtroniclabs.spice.db.entity.LifestyleEntity
+import com.medtroniclabs.spice.db.entity.LinkHouseholdMember
 import com.medtroniclabs.spice.db.entity.LinkedVillageEntity
 import com.medtroniclabs.spice.db.entity.MedicalComplianceEntity
 import com.medtroniclabs.spice.db.entity.MentalHealthEntity
@@ -63,6 +62,7 @@ import com.medtroniclabs.spice.db.entity.MenuEntity
 import com.medtroniclabs.spice.db.entity.NCDCallDetails
 import com.medtroniclabs.spice.db.entity.NCDDiagnosisEntity
 import com.medtroniclabs.spice.db.entity.NCDFollowUp
+import com.medtroniclabs.spice.db.entity.NCDMedicalReviewMetaEntity
 import com.medtroniclabs.spice.db.entity.NCDPatientDetailsEntity
 import com.medtroniclabs.spice.db.entity.PregnancyDetail
 import com.medtroniclabs.spice.db.entity.RiskFactorEntity
@@ -82,8 +82,7 @@ import net.zetetic.database.sqlcipher.SupportOpenHelperFactory
         LinkHouseholdMember::class, CallHistory::class, ProgramEntity::class, CulturesEntity::class, ConsentEntity::class,
         MentalHealthEntity::class, MedicalComplianceEntity::class, ChiefDomEntity::class, DistrictEntity::class, ScreeningEntity::class,
         RiskFactorEntity::class, LifestyleEntity::class, NCDMedicalReviewMetaEntity::class, AssessmentNCDEntity::class, UnitMetricEntity::class,
-        DosageFrequency::class, NCDDiagnosisEntity::class, TreatmentPlanEntity::class, ShortageReasonEntity::class, DosageDurationEntity::class, NCDFollowUp::class, NCDCallDetails::class, NCDPatientDetailsEntity::class],
-        DosageFrequency::class, NCDDiagnosisEntity::class, TreatmentPlanEntity::class, ShortageReasonEntity::class, LinkedVillageEntity::class],
+        DosageFrequency::class, NCDDiagnosisEntity::class, TreatmentPlanEntity::class, ShortageReasonEntity::class, DosageDurationEntity::class, NCDFollowUp::class, LinkedVillageEntity::class, NCDCallDetails::class, NCDPatientDetailsEntity::class],
     version = 3
 )
 @TypeConverters(OfflineStatusTypeConverter::class)

@@ -38,6 +38,7 @@ import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.fragment.Selec
 import com.medtroniclabs.spice.ui.medicalreview.underfiveyears.UnderFiveYearsBaseActivity
 import com.medtroniclabs.spice.ui.medicalreview.undertwomonths.activity.UnderTwoMonthsBaseActivity
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMedicalReviewActivity
+import com.medtroniclabs.spice.ui.medicalreview.tb.activity.TBMedicalReviewActivity
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -168,6 +169,10 @@ class PatientMenuFragment : BaseFragment(), MenuSelectionListener {
     private fun startAssessmentToolsActivity(menuId: String) {
         when (menuId) {
             MenuConstants.TB_MENU_ID -> {
+                val intent = Intent(requireContext(), TBMedicalReviewActivity::class.java)
+                intent.putExtra(PatientId, arguments?.getString(PatientId))
+                intent.putExtra(ID, arguments?.getString(ID))
+                startActivity(intent)
             }
 
             MenuConstants.GENERAL_ID -> {

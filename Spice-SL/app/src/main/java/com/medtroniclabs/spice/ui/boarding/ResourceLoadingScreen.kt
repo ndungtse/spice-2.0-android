@@ -7,7 +7,6 @@ import androidx.activity.viewModels
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.triggerOneTimeWorker
 import com.medtroniclabs.spice.common.AppConstants
-import com.medtroniclabs.spice.common.AppConstants
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.RoleConstant
@@ -57,7 +56,7 @@ class ResourceLoadingScreen : BaseActivity() {
                 }
                 ResourceState.SUCCESS -> {
                     SecuredPreference.remove(SecuredPreference.EnvironmentKey.SERVER_LAST_SYNCED.name)
-                    viewModel.getMetaDataInformation()
+                    getMetaData()
                 }
                 ResourceState.ERROR -> {
                     handleError()
@@ -165,7 +164,6 @@ class ResourceLoadingScreen : BaseActivity() {
             viewModel.updateDeviceDetails(this)
         else
             viewModel.getMetaDataInformation()
-        }
     }
 
     private fun launchLandingScreen() {
@@ -183,5 +181,6 @@ class ResourceLoadingScreen : BaseActivity() {
             startActivity(Intent(this, LandingActivity::class.java))
         finish()
     }
+
 
 }

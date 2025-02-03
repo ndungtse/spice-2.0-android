@@ -141,6 +141,10 @@ class SystemicExaminationsFragment : BaseFragment() {
                 R.string.systemic_examinations,
                 false
             )
+            MedicalReviewTypeEnums.TB.name -> {
+                binding.etPhysicalExaminationComments.gone()
+                Pair(R.string.systemic_examinations, false)
+            }
 
             else -> return // Handle other cases or provide a default behavior
         }

@@ -14,6 +14,7 @@ import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.appextensions.setDialogPercent
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
+import com.medtroniclabs.spice.common.DefinedParams.ORIGIN
 import com.medtroniclabs.spice.data.model.ChipViewItemModel
 import com.medtroniclabs.spice.databinding.FragmentPatientSearchFilterDialogBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
