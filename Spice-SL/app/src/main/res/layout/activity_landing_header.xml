@@ -11,10 +11,9 @@
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/ivLogo"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/_14sdp"
-        android:layout_marginBottom="@dimen/_20sdp"
+        android:layout_width="280dp"
+        android:layout_height="60dp"
+        android:layout_marginVertical="@dimen/_10sdp"
         android:scaleType="fitStart"
         android:layout_marginStart="@dimen/_16sdp"
         android:src="@drawable/ic_metronic_harmburg_logo"
