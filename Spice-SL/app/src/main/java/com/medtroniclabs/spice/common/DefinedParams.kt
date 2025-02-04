@@ -21,6 +21,7 @@ object DefinedParams {
     const val id = "id"
     const val ICCM = "ICCM"
     const val TB = "TB"
+    const val TbScreening = "tbScreening"
     const val No = "No"
     const val Yes = "Yes"
     const val yes = "yes"

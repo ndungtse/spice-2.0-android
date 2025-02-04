@@ -15,6 +15,8 @@ import com.medtroniclabs.spice.appextensions.postSuccess
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DateUtils.calculateGestationalAge
 import com.medtroniclabs.spice.common.DefinedParams
+import com.medtroniclabs.spice.common.DefinedParams.TB
+import com.medtroniclabs.spice.common.DefinedParams.TbScreening
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.SpiceLocationManager
 import com.medtroniclabs.spice.common.StringConverter
@@ -494,6 +496,17 @@ class AssessmentViewModel @Inject constructor(
             }
         }
 
+        // Request modification for syncing TB to Backend
+        if (map.containsKey(TB.lowercase())) {
+            val result = map[TB.lowercase()] as? HashMap<Any, Any>
+            if ( result != null && result.containsKey(TbScreening) ) {
+                val value = result[TbScreening] as? HashMap<Any, Any>
+                if (!value.isNullOrEmpty()) {
+                    map.remove(TB.lowercase())
+                    map[TB.lowercase()] = value
+                }
+            }
+        }
         val assessmentDetailBE = StringConverter.convertGivenMapToString(map) ?: ""
         return Pair(assessmentDetail, assessmentDetailBE)
     }

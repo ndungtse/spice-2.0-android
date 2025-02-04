@@ -26,7 +26,7 @@ import com.medtroniclabs.spice.ui.assessment.AssessmentCommonUtils.getValueOfKey
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.HasCoughLastedLonger
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.HasNightSweatsTB
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.HasWeightLoss
-import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.ReferredPHUSite
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.ReferredPHUSiteID
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.hasCough
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.hasFever
 import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
@@ -192,10 +192,10 @@ class AssessmentTBSummaryFragment : Fragment(), View.OnClickListener {
                     selectedItem?.let {
                         val selectedId = it[DefinedParams.id] as String?
                         if (selectedId != DefaultID) {
-                            viewModel.otherAssessmentDetails[ReferredPHUSite] = selectedId.toString()
+                            viewModel.otherAssessmentDetails[ReferredPHUSiteID] = selectedId.toString()
                         } else {
-                            if (viewModel.otherAssessmentDetails.containsKey(ReferredPHUSite))
-                                viewModel.otherAssessmentDetails.remove(ReferredPHUSite)
+                            if (viewModel.otherAssessmentDetails.containsKey(ReferredPHUSiteID))
+                                viewModel.otherAssessmentDetails.remove(ReferredPHUSiteID)
                         }
                     }
                 }
