@@ -43,7 +43,7 @@
                     android:gravity="center"
                     android:maxLines="1"
                     android:text="Home"
-                    android:layout_marginEnd="@dimen/_24sdp"
+                    android:layout_marginEnd="@dimen/_64sdp"
                     android:paddingHorizontal="@dimen/_8sdp"
                     android:textColor="@color/white"
                     android:textSize="@dimen/_16ssp"

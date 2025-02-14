@@ -75,7 +75,7 @@ class FollowUpMyPatientActivity : BaseActivity() {
     private fun setOrientation() {
         val isTablet =
             resources.getBoolean(R.bool.isLargeTablet) || resources.getBoolean(R.bool.isTablet)
-        requestedOrientation = if (isTablet) {
+        requestedOrientation = if (isTablet && CommonUtils.isNonCommunity()) {
             ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
         } else {
             ActivityInfo.SCREEN_ORIENTATION_PORTRAIT

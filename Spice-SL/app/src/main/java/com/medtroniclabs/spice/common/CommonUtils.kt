@@ -8,9 +8,12 @@ import android.graphics.BitmapFactory
 import android.text.SpannableStringBuilder
 import com.google.gson.Gson
 import com.google.gson.internal.LinkedTreeMap
+import com.medtroniclabs.spice.BuildConfig
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.nullIfEmpty
 import com.medtroniclabs.spice.common.DateUtils.calculateAge
+import com.medtroniclabs.spice.common.DefinedParams.BUILD_FLAVOR_AFRICA
+import com.medtroniclabs.spice.common.DefinedParams.BUILD_FLAVOR_SL
 import com.medtroniclabs.spice.common.RoleConstant.CHA
 import com.medtroniclabs.spice.common.RoleConstant.COMMUNITY_HEALTH_ASSISTANT
 import com.medtroniclabs.spice.common.RoleConstant.COMMUNITY_HEALTH_PROMOTER
@@ -1996,5 +1999,13 @@ object CommonUtils {
             // Check if the given date is not lesser than the noOfDayFever
             return daysDifference >= noOfDayFever
         }
+
+    fun isAfrica(): Boolean {
+        return BuildConfig.FLAVOR == BUILD_FLAVOR_AFRICA
+    }
+
+    fun isSL(): Boolean {
+        return BuildConfig.FLAVOR == BUILD_FLAVOR_SL
+    }
 
 }

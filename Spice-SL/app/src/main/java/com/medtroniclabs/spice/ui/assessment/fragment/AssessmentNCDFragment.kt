@@ -110,8 +110,8 @@ class AssessmentNCDFragment : BaseFragment(), FormEventListener, View.OnClickLis
     private fun getPatientDetails() {
         patientDetailViewModel.origin = requireArguments().getString(DefinedParams.ORIGIN)
         requireArguments().getString(DefinedParams.FhirId)?.let { id ->
-            if (CommonUtils.isChp() && requireArguments().getBoolean(MenuConstants.FOLLOW_UP)) {
-                patientDetailViewModel.getPatients(id)
+            if (CommonUtils.isNonCommunity() && CommonUtils.isChp() && requireArguments().getBoolean(MenuConstants.FOLLOW_UP)) {
+                patientDetailViewModel.getPatientsForNCD(id)
             } else {
                 patientDetailViewModel.getPatients(
                     id,

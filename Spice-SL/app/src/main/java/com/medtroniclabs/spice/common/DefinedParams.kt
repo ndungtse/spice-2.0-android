@@ -257,4 +257,6 @@ object DefinedParams {
     const val SW_Locale = "Swahili"
     const val EN = "en"
     const val SW = "sw"
+    const val BUILD_FLAVOR_AFRICA = "africa"
+    const val BUILD_FLAVOR_SL = "sl"
 }

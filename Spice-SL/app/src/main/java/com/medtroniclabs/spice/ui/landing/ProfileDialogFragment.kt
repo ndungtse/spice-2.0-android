@@ -13,6 +13,7 @@ import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.textOrEmpty
 import com.medtroniclabs.spice.appextensions.textOrHyphen
 import com.medtroniclabs.spice.appextensions.visible
+import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.CommonUtils.getContactNumber
 import com.medtroniclabs.spice.data.UserProfile
 import com.medtroniclabs.spice.databinding.FragmentProfileDialogBinding
@@ -79,6 +80,15 @@ class ProfileDialogFragment : DialogFragment(), View.OnClickListener {
     }
 
     private fun initView() {
+        if (CommonUtils.isNonCommunity()){
+            binding.tvDesignationText.visible()
+            binding.tvDesignationLabel.visible()
+            binding.tvDesignationSeparator.visible()
+        } else {
+            binding.tvDesignationText.gone()
+            binding.tvDesignationLabel.gone()
+            binding.tvDesignationSeparator.gone()
+        }
         with(binding) {
             ivClose.safeClickListener(this@ProfileDialogFragment)
         }

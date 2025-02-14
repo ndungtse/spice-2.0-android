@@ -139,9 +139,12 @@ abstract class SpiceDataBase : RoomDatabase() {
             if (!BuildConfig.DEBUG)
                 db.openHelperFactory(factory)
 
-            /*Migration Scripts*/
-            db.addMigrations(SpiceSLMigration.MIGRATION_1_2)
-            db.addMigrations(SpiceSLMigration.MIGRATION_2_3)
+            if (CommonUtils.isSL()) {
+                db.addMigrations(SpiceSLMigration.MIGRATION_1_2)
+                db.addMigrations(SpiceSLMigration.MIGRATION_2_3)
+            } else if (CommonUtils.isAfrica()) {
+                db.addMigrations(SpiceAfricaMigration.MIGRATION_1_2)
+            }
 
             if (CommonUtils.isNonCommunity())
                 db.fallbackToDestructiveMigration()
