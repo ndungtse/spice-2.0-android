@@ -133,6 +133,7 @@ import com.medtroniclabs.spice.ncd.data.FollowUpRequest
 import com.medtroniclabs.spice.ncd.data.FollowUpUpdateRequest
 import com.medtroniclabs.spice.ncd.data.NCDMentalHealthMedicalReviewDetails
 import com.medtroniclabs.spice.ncd.data.NCDMentalHealthStatusRequest
+import com.medtroniclabs.spice.ncd.data.NCDSupportRequest
 import com.medtroniclabs.spice.ncd.data.PatientFollowUpEntity
 import com.medtroniclabs.spice.ncd.data.RegisterCallResponse
 import okhttp3.MultipartBody
@@ -681,5 +682,9 @@ class ApiHelperImpl @Inject constructor(private val apiService: ApiService) : Ap
 
     override suspend fun cultureLocaleUpdate(request: CultureLocaleModel): Response<APIResponse<HashMap<String, Any>>> {
         return apiService.cultureLocaleUpdate(request)
+    }
+
+    override suspend fun createSupportRequest(request: NCDSupportRequest): Response<APIResponse<String>> {
+        return apiService.createSupportRequest(request)
     }
 }

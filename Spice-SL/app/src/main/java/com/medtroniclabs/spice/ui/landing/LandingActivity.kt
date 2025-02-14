@@ -70,8 +70,11 @@ import com.medtroniclabs.spice.ui.patientTransfer.dialog.NCDPatientDetailDialogu
 import com.medtroniclabs.spice.ncd.data.PatientTransferListResponse
 import com.medtroniclabs.spice.ncd.data.NCDPatientTransferUpdateRequest
 import com.medtroniclabs.spice.common.TransferStatusEnum
+import com.medtroniclabs.spice.ncd.data.NCDSupportRequest
 import com.medtroniclabs.spice.ncd.data.PatientTransfer
 import com.medtroniclabs.spice.ncd.landing.dialog.LanguagePreferenceDialog
+import com.medtroniclabs.spice.ncd.landing.dialog.NCDSupportDialogFragment
+import com.medtroniclabs.spice.ncd.landing.dialog.NCDSupportDialogListener
 import com.medtroniclabs.spice.ncd.landing.viewmodel.NCDOfflineDataViewModel
 import com.medtroniclabs.spice.ui.landing.viewmodel.LanguagePreferenceViewModel
 import com.medtroniclabs.spice.ui.mypatients.viewmodel.PatientDetailViewModel
@@ -80,7 +83,7 @@ import java.util.concurrent.TimeUnit
 
 class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedListener,
     DrawerLayout.DrawerListener, View.OnClickListener, OnDialogDismissListener,
-    NCDApproveRejectListener {
+    NCDApproveRejectListener, NCDSupportDialogListener {
 
     lateinit var binding: ActivityLandingBinding
 
@@ -246,6 +249,54 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
                     menu.removeItem(switchLanguage.itemId)
                 }
             }
+        }
+        viewModel.supportResponseLiveData.observe(this) { resourceState ->
+            when (resourceState.state) {
+                ResourceState.LOADING -> {
+                    showLoading()
+                }
+
+                ResourceState.SUCCESS -> {
+                    hideLoading()
+                    resourceState.data?.let {
+                        val generalErrorDialog =
+                            GeneralErrorDialog.newInstance(
+                                getString(R.string.alert),
+                                callback = {},
+                                this,
+                                false,
+                                okayButton = getString(R.string.ok),
+                                messageBtnData = Pair(it, true)
+                            )
+                        val errorFragment = supportFragmentManager.findFragmentByTag(
+                            GeneralErrorDialog.TAG)
+                        if (errorFragment == null) {
+                            generalErrorDialog.show(supportFragmentManager, GeneralErrorDialog.TAG)
+                        }
+                    }
+                }
+
+                ResourceState.ERROR -> {
+                    hideLoading()
+                    resourceState.message?.let {
+                        val generalErrorDialog =
+                            GeneralErrorDialog.newInstance(
+                                getString(R.string.alert),
+                                callback = {},
+                                this,
+                                false,
+                                okayButton = getString(R.string.ok),
+                                messageBtnData = Pair(it, true)
+                            )
+                        val errorFragment = supportFragmentManager.findFragmentByTag(
+                            GeneralErrorDialog.TAG)
+                        if (errorFragment == null) {
+                            generalErrorDialog.show(supportFragmentManager, GeneralErrorDialog.TAG)
+                        }
+                    }
+                }
+            }
+
         }
     }
 
@@ -540,11 +591,28 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
                 )
                 return true
             }
+
+            R.id.support -> {
+                if (CommonUtils.isNonCommunity()) {
+                    launchSupportDialogFragment()
+                }
+                return true
+            }
         }
         selectNavigationMenu(item)
         displayScreen(item.itemId)
         binding.drawerLayout.closeDrawer(GravityCompat.START)
         return true
+    }
+
+    private fun launchSupportDialogFragment() {
+        binding.drawerLayout.closeDrawer(GravityCompat.START)
+        val supportDialogFragment =
+            supportFragmentManager.findFragmentByTag(NCDSupportDialogFragment.TAG)
+        supportDialogFragment ?: NCDSupportDialogFragment.newInstance().show(
+            supportFragmentManager,
+            NCDSupportDialogFragment.TAG
+        )
     }
 
     private val languagePreferenceListener = object : OnDialogDismissListener {
@@ -816,5 +884,24 @@ class LandingActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedL
             .show(supportFragmentManager, NCDPatientDetailDialogue.TAG)
     }
 
+    override fun onSubmitClicked(message: String?) {
+        if (connectivityManager.isNetworkAvailable()) {
+            message?.let {
+                val request =
+                    NCDSupportRequest(
+                        siteId = 6,// need to change
+                        userId = SecuredPreference.getUserId().toString(),
+                        summary = it
+                    )
+                viewModel.createSupportRequest(request)
+            }
+        } else {
+            showErrorDialogue(
+                getString(R.string.error),
+                getString(R.string.no_internet_error),
+                isNegativeButtonNeed = false
+            ) {}
+        }
+    }
 
 }

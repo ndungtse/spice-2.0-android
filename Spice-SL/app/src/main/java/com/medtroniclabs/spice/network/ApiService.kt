@@ -131,6 +131,7 @@ import com.medtroniclabs.spice.ncd.data.NCDRegionSiteModel
 import com.medtroniclabs.spice.ncd.data.RegionSiteResponse
 import com.medtroniclabs.spice.ncd.data.NCDSiteRoleModel
 import com.medtroniclabs.spice.ncd.data.NCDSiteRoleResponse
+import com.medtroniclabs.spice.ncd.data.NCDSupportRequest
 import com.medtroniclabs.spice.ncd.data.PatientFollowUpEntity
 import com.medtroniclabs.spice.ncd.data.PredictionRequest
 import com.medtroniclabs.spice.ncd.data.PrescriptionNudgeResponse
@@ -553,4 +554,7 @@ interface ApiService {
 
     @POST("/user-service/user/update-culture")
     suspend fun cultureLocaleUpdate(@Body request: CultureLocaleModel): Response<APIResponse<HashMap<String, Any>>>
+
+    @POST("/user-service/user/support")
+    suspend fun createSupportRequest(@Body request: NCDSupportRequest): Response<APIResponse<String>>
 }

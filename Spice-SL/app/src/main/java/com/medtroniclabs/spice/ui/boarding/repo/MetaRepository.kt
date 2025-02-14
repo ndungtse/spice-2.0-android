@@ -41,6 +41,7 @@ import com.medtroniclabs.spice.ncd.data.DeviceDetails
 import com.medtroniclabs.spice.ncd.data.NCDPatientTransferNotificationCountRequest
 import com.medtroniclabs.spice.ncd.data.NCDPatientTransferNotificationCountResponse
 import com.medtroniclabs.spice.ncd.data.NCDPatientTransferUpdateRequest
+import com.medtroniclabs.spice.ncd.data.NCDSupportRequest
 import com.medtroniclabs.spice.ncd.data.PatientTransferListResponse
 import com.medtroniclabs.spice.ncd.data.TermsAndConditionsModel
 import com.medtroniclabs.spice.network.ApiHelper
@@ -845,5 +846,14 @@ class MetaRepository @Inject constructor(
 
     suspend fun cultureLocaleUpdate(localeRequest: CultureLocaleModel) =
         apiHelper.cultureLocaleUpdate(localeRequest)
+
+    suspend fun createSupportRequest(request: NCDSupportRequest): Resource<String> {
+        return try {
+            val response = apiHelper.createSupportRequest(request)
+            Resource(state = ResourceState.SUCCESS, data = response.body()?.message)
+        } catch (e: Exception) {
+            Resource(state = ResourceState.ERROR)
+        }
+    }
 }
 

@@ -295,7 +295,7 @@ class InvestigationGenerator(
                     DefinedParams.ID to "-1"
                 )
             )
-            if (isMandatory) {
+            if (isMandatory && !CommonUtils.mandatoryNotRequired()) {
                 binding.tvTitle.markMandatory()
             }
 
@@ -466,7 +466,7 @@ class InvestigationGenerator(
             val existingValue = getCategorizedMap(investigation)[id + unitSuffix]
             setExistingValueToAdapter(existingValue, unitDropDownList, binding.etUserInputSpinner)
 
-            if (isMandatory) {
+            if (isMandatory && !CommonUtils.mandatoryNotRequired()) {
                 binding.tvTitle.markMandatory()
             }
         }
@@ -568,7 +568,7 @@ class InvestigationGenerator(
                 }
             }
 
-            if (isMandatory) {
+            if (isMandatory && !CommonUtils.mandatoryNotRequired()) {
                 binding.tvTitle.markMandatory()
             }
 

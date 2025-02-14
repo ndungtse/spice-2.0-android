@@ -35,6 +35,12 @@
             android:icon="@drawable/ic_menu_privacy_policy"
             android:title="@string/privacy_policy"
             />
+
+        <item
+            android:id="@+id/support"
+            android:icon="@drawable/ic_mail"
+            android:title="@string/support" />
+
         <item
             android:id="@+id/logout"
             android:icon="@drawable/ic_logout"

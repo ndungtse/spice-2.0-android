@@ -1976,4 +1976,8 @@ object CommonUtils {
 
         return Period.between(birthDate, currentDate).years
     }
+
+    fun mandatoryNotRequired(): Boolean {
+        return isNonCommunity() && isProvider()
+    }
 }

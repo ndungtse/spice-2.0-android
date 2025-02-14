@@ -1,5 +1,6 @@
 package com.medtroniclabs.spice.ui.landing.viewmodel
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.medtroniclabs.spice.appextensions.postLoading
@@ -10,6 +11,7 @@ import com.medtroniclabs.spice.di.IoDispatcher
 import com.medtroniclabs.spice.ncd.data.NCDPatientTransferNotificationCountRequest
 import com.medtroniclabs.spice.ncd.data.NCDPatientTransferNotificationCountResponse
 import com.medtroniclabs.spice.ncd.data.NCDPatientTransferUpdateRequest
+import com.medtroniclabs.spice.ncd.data.NCDSupportRequest
 import com.medtroniclabs.spice.ncd.data.PatientTransferListResponse
 import com.medtroniclabs.spice.network.SingleLiveEvent
 import com.medtroniclabs.spice.network.resource.Resource
@@ -36,6 +38,10 @@ class LandingViewModel @Inject constructor(
     var selectedSiteEntity: HealthFacilityEntity ?= null
     val patientUpdateResponse = SingleLiveEvent<Resource<String>>()
     var transferPatientViewId: Long? = null
+    var enteredSupportReason: String? =null
+    private val supportResponseMutableLiveData = SingleLiveEvent<Resource<String>>()
+    val supportResponseLiveData: LiveData<Resource<String>>
+        get() = supportResponseMutableLiveData
 
 
     fun getMenus() {
@@ -77,6 +83,13 @@ class LandingViewModel @Inject constructor(
         viewModelScope.launch(dispatcherIO) {
             patientUpdateResponse.postLoading()
             patientUpdateResponse.postValue(metaRepository.patientTransferUpdate(request))
+        }
+    }
+
+    fun createSupportRequest(request: NCDSupportRequest) {
+        viewModelScope.launch(dispatcherIO) {
+            supportResponseMutableLiveData.postLoading()
+            patientUpdateResponse.postValue(metaRepository.createSupportRequest(request))
         }
     }
 

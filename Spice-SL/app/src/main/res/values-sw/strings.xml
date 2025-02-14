@@ -656,7 +656,7 @@
     <string name="year_of_diagnosis">Mwaka wa ugunduzi</string>
     <string name="new_patient">Mgonjwa mpya</string>
     <string name="known_patient">Mgonjwa anayejulikana</string>
-    <string name="diabetes_controlled_type">Aina ya udhibiti wa kisukari</string>
+    <string name="diabetes_controlled_type">Aina ya wa kisukari</string>
     <string name="patient_history">Historia ya mgonjwa</string>
     <string name="add_new_reading">Ongeza kipimo kipya</string>
     <string name="assessment_date">Tarehe ya uchunguzi</string>
