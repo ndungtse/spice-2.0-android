@@ -43,6 +43,7 @@ class MedicalReviewToolsActivity : BaseActivity() {
             fragment = PatientMenuFragment.newInstance(
                 intent.getStringExtra(DefinedParams.PatientId),
                 intent.getStringExtra(DefinedParams.ID),
+                intent.getStringExtra(DefinedParams.MemberID),
                 intent.getStringExtra(DefinedParams.Gender),
                 intent.getStringExtra(DefinedParams.DOB),
                 childPatientId =intent.getStringExtra(DefinedParams.ChildPatientId),

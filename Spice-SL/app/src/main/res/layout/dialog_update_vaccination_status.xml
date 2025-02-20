@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="@dimen/_600sdp"
+    android:layout_height="wrap_content"
+    android:background="@color/white">
+
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tvVaccinationName"
+        style="@style/Form_Header_Style"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/_16sdp"
+        android:paddingVertical="@dimen/_24sdp"
+        android:paddingEnd="@dimen/_24sdp"
+        android:text="BCG"
+        android:textColor="@color/house_hold_title"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <FrameLayout
+        android:id="@+id/flEpiStatusNudge"
+        android:layout_width="@dimen/_142sdp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/_16sdp"
+        android:minHeight="@dimen/_44sdp"
+        app:layout_constraintBottom_toBottomOf="@+id/tvVaccinationName"
+        app:layout_constraintStart_toEndOf="@+id/tvVaccinationName"
+        app:layout_constraintTop_toTopOf="@+id/tvVaccinationName" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/ivClose"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/_16sdp"
+        app:layout_constraintBottom_toBottomOf="@+id/tvVaccinationName"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/tvVaccinationName"
+        app:srcCompat="@drawable/ic_close" />
+
+    <View
+        android:layout_width="@dimen/_0dp"
+        android:layout_height="1dp"
+        android:background="@color/btn_disable_grey"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvVaccinationName" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/clDateRange"
+        android:layout_width="@dimen/_0dp"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/_16sdp"
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvVaccinationName">
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/labelScheduledDate"
+            android:layout_width="@dimen/_0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/scheduled_date"
+            android:textColor="@color/table_title"
+            android:textSize="@dimen/_14ssp"
+            app:layout_constraintEnd_toStartOf="@+id/labelVaccinationDate"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/labelVaccinationDate"
+            android:layout_width="@dimen/_0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_30sdp"
+            android:text="@string/vaccination_date"
+            android:textColor="@color/table_title"
+            android:textSize="@dimen/_14ssp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/labelScheduledDate"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvScheduledDate"
+            style="@style/Form_Input_Style"
+            android:layout_width="@dimen/_0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="@dimen/_8sdp"
+            android:background="@drawable/edittext_background"
+            android:hint="@string/dd_mm_yyyy"
+            android:inputType="date"
+            android:paddingHorizontal="@dimen/_12sdp"
+            android:paddingVertical="@dimen/_10sdp"
+            android:textColor="@color/grey_black"
+            android:textColorHint="@color/grey_black"
+            app:layout_constraintEnd_toEndOf="@+id/labelScheduledDate"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/labelScheduledDate" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvVaccinationDate"
+            style="@style/Form_Input_Style"
+            android:layout_width="@dimen/_0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="@dimen/_8sdp"
+            android:background="@drawable/edittext_background"
+            android:hint="@string/dd_mm_yyyy"
+            android:inputType="date"
+            android:paddingHorizontal="@dimen/_12sdp"
+            android:paddingVertical="@dimen/_10sdp"
+            android:textColor="@color/grey_black"
+            android:textColorHint="@color/grey_black"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/labelVaccinationDate"
+            app:layout_constraintTop_toBottomOf="@+id/labelVaccinationDate" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/ivDatePicker"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/primary_medium_blue"
+            android:padding="@dimen/_9sdp"
+            android:tint="@color/white"
+            app:layout_constraintBottom_toBottomOf="@+id/tvVaccinationDate"
+            app:layout_constraintEnd_toEndOf="@+id/tvVaccinationDate"
+            app:layout_constraintTop_toTopOf="@+id/tvVaccinationDate"
+            app:srcCompat="@drawable/ic_followup_date" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/etFromDateError"
+            style="@style/TextStyle_Error_14"
+            android:layout_width="@dimen/_0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="@dimen/_8sdp"
+            android:visibility="visible"
+            app:layout_constraintEnd_toEndOf="@+id/tvVaccinationDate"
+            app:layout_constraintStart_toStartOf="@+id/tvVaccinationDate"
+            app:layout_constraintTop_toBottomOf="@+id/tvVaccinationDate" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <View
+        android:layout_width="@dimen/_0dp"
+        android:layout_height="1dp"
+        android:background="@color/btn_disable_grey"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/clDateRange" />
+
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btnVaccinatoinDone"
+        style="@style/Button_Style"
+        android:layout_width="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="@dimen/_16sdp"
+        android:background="@drawable/button_selector_cobalt"
+        android:text="@string/vaccination_done"
+        android:textAllCaps="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/clDateRange" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

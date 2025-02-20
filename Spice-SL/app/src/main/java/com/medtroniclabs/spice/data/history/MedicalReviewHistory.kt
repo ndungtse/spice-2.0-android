@@ -57,6 +57,13 @@ data class ReviewDetails(
     val stateOfBaby:String? = null,
     val birthWeight:String? = null,
     val signs:List<String?>? = null,
+
+    val vaccinated: List<String>? = null,
+    val lastScheduledDate: String? = null,
+    val nextVaccinationDuration: String? = null,
+    val nextVaccinationDose: List<String>? = null,
+    val nextVaccinationDate: String? = null
+
 )
 
 data class DiseaseInfo(

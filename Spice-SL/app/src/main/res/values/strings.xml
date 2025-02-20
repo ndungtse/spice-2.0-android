@@ -1318,4 +1318,14 @@
     <string name="support_label" translatable="false">Please write your issues with the\napplication</string>
     <string name="support" translatable="false">Support</string>
     <string name="comment" translatable="false">Comment</string>
+    <string name="scheduled_date" translatable="false">Scheduled Date</string>
+    <string name="vaccination_date" translatable="false">Vaccination Date</string>
+    <string name="vaccination_taken" translatable="false">Vaccinations Taken </string>
+    <string name="next_vaccination_duration" translatable="false">Next Vaccination Duration</string>
+    <string name="next_vaccination_dose" translatable="false">Next Vaccination Dose</string>
+    <string name="next_vaccination_date" translatable="false">Next Vaccination Date</string>
+
+
+    <string name="date">Date</string>
+    <string name="vaccination_done">Vaccination Done</string>
 </resources>

@@ -1,0 +1,5 @@
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="@color/epi_vaccinated_secondary" />
+    <corners android:radius="8dp" />
+    <stroke android:width="@dimen/_1sdp" android:color="@color/epi_vaccinated_primary"/>
+</shape>

@@ -11,7 +11,9 @@ import com.medtroniclabs.spice.ui.communityprofile.fragments.CommunityProfileSea
 import com.medtroniclabs.spice.ui.communityprofile.fragments.CommunityProfileSummaryFragment
 import com.medtroniclabs.spice.ui.communityprofile.fragments.EditCommunityProfileFragment
 import com.medtroniclabs.spice.ui.communityprofile.viewmodel.CommunityProfileViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class CommunityProfileActivity : BaseActivity() {
 
     private lateinit var binding: ActivityCommunityProfileBinding

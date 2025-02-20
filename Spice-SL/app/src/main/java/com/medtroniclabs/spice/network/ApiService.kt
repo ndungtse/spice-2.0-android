@@ -5,6 +5,8 @@ import com.medtroniclabs.spice.data.APIResponse
 import com.medtroniclabs.spice.data.AboveFiveYearsMetaResponse
 import com.medtroniclabs.spice.data.AboveFiveYearsSummaryDetails
 import com.medtroniclabs.spice.data.AboveFiveYearsSummaryRequest
+import com.medtroniclabs.spice.data.BirthHistoryRequest
+import com.medtroniclabs.spice.data.BirthHistoryResponse
 import com.medtroniclabs.spice.data.DiagnosisDiseaseModel
 import com.medtroniclabs.spice.data.DiagnosisSaveUpdateRequest
 import com.medtroniclabs.spice.data.DispensePrescriptionRequest
@@ -22,12 +24,16 @@ import com.medtroniclabs.spice.data.MedicationSearchRequest
 import com.medtroniclabs.spice.data.MetaDataResponse
 import com.medtroniclabs.spice.data.MotherNeonateAncMetaResponse
 import com.medtroniclabs.spice.data.MotherNeonateAncSummaryModel
+import com.medtroniclabs.spice.data.MotherNeonatePncSummaryRequest
+import com.medtroniclabs.spice.data.MotherNeonatePncSummaryResponse
 import com.medtroniclabs.spice.data.MotherPncResponse
 import com.medtroniclabs.spice.data.NCDUserDashboardRequest
 import com.medtroniclabs.spice.data.NCDUserDashboardResponse
 import com.medtroniclabs.spice.data.NeonatePncResponse
 import com.medtroniclabs.spice.data.PatientStatusRequest
 import com.medtroniclabs.spice.data.PatientStatusResponse
+import com.medtroniclabs.spice.data.PncChildMedicalReview
+import com.medtroniclabs.spice.data.PregnancyDetailsModel
 import com.medtroniclabs.spice.data.Prescription
 import com.medtroniclabs.spice.data.PrescriptionListRequest
 import com.medtroniclabs.spice.data.ReferPatientAPIRequest
@@ -36,11 +42,13 @@ import com.medtroniclabs.spice.data.ReferPatientNameNumber
 import com.medtroniclabs.spice.data.ReferPatientRequest
 import com.medtroniclabs.spice.data.ReferPatientResult
 import com.medtroniclabs.spice.data.RemovePrescriptionRequest
+import com.medtroniclabs.spice.data.SummaryCreateRequest
 import com.medtroniclabs.spice.data.UnderFiveYearsMetaResponse
 import com.medtroniclabs.spice.data.UnderTwoMonthsMetaResponse
 import com.medtroniclabs.spice.data.UserSymptomsEntity
 import com.medtroniclabs.spice.data.history.HistoryEntity
 import com.medtroniclabs.spice.data.history.MedicalReviewHistory
+import com.medtroniclabs.spice.data.history.NCDMedicalReviewHistory
 import com.medtroniclabs.spice.data.model.AboveFiveYearsSubmitRequest
 import com.medtroniclabs.spice.data.model.BpAndWeightRequestModel
 import com.medtroniclabs.spice.data.model.BpAndWeightResponse
@@ -51,28 +59,18 @@ import com.medtroniclabs.spice.data.model.MotherNeonateAncRequest
 import com.medtroniclabs.spice.data.model.MotherNeonatePncRequest
 import com.medtroniclabs.spice.data.model.PatientEncounterResponse
 import com.medtroniclabs.spice.data.model.PncSubmitResponse
+import com.medtroniclabs.spice.data.model.RegistrationResponse
 import com.medtroniclabs.spice.data.model.RequestChangePassword
 import com.medtroniclabs.spice.data.model.ResponseChangePassword
 import com.medtroniclabs.spice.data.offlinesync.model.HouseHold
 import com.medtroniclabs.spice.data.offlinesync.model.RequestGetSyncStatus
 import com.medtroniclabs.spice.data.offlinesync.model.ResponseSignatureUpload
 import com.medtroniclabs.spice.data.offlinesync.model.SyncResponse
-import com.medtroniclabs.spice.data.BirthHistoryRequest
-import com.medtroniclabs.spice.data.BirthHistoryResponse
-import com.medtroniclabs.spice.data.MotherNeonatePncSummaryRequest
-import com.medtroniclabs.spice.data.MotherNeonatePncSummaryResponse
-import com.medtroniclabs.spice.data.SummaryCreateRequest
-import com.medtroniclabs.spice.data.PncChildMedicalReview
-import com.medtroniclabs.spice.data.PregnancyDetailsModel
-import com.medtroniclabs.spice.data.history.NCDMedicalReviewHistory
-import com.medtroniclabs.spice.ncd.data.NCDPatientTransferNotificationCountRequest
-import com.medtroniclabs.spice.ncd.data.NCDPatientTransferNotificationCountResponse
-import com.medtroniclabs.spice.data.model.RegistrationResponse
-import com.medtroniclabs.spice.data.resource.LabourDeliverySummaryRequest
 import com.medtroniclabs.spice.data.performance.CHWPerformanceMonitoring
 import com.medtroniclabs.spice.data.performance.ChwVillageFilterModel
 import com.medtroniclabs.spice.data.performance.FilterPreference
 import com.medtroniclabs.spice.data.performance.PerformanceReportRequest
+import com.medtroniclabs.spice.data.resource.LabourDeliverySummaryRequest
 import com.medtroniclabs.spice.data.resource.RequestAllEntities
 import com.medtroniclabs.spice.model.CultureLocaleModel
 import com.medtroniclabs.spice.model.LabTestCreateRequest
@@ -91,52 +89,62 @@ import com.medtroniclabs.spice.model.medicalreview.AddMemberRegRequest
 import com.medtroniclabs.spice.model.medicalreview.CreateUnderFiveYearsRequest
 import com.medtroniclabs.spice.model.medicalreview.CreateUnderTwoMonthsRequest
 import com.medtroniclabs.spice.model.medicalreview.CreateUnderTwoMonthsResponse
+import com.medtroniclabs.spice.model.medicalreview.RequestCreateImmunisation
+import com.medtroniclabs.spice.model.medicalreview.RequestImmunisationSummaryCreate
+import com.medtroniclabs.spice.model.medicalreview.RequestImmunisationSummaryDetail
+import com.medtroniclabs.spice.model.medicalreview.RequestVaccinationList
+import com.medtroniclabs.spice.model.medicalreview.ResponseCreateImmunisation
+import com.medtroniclabs.spice.model.medicalreview.ResponseImmunisationSummaryCreate
+import com.medtroniclabs.spice.model.medicalreview.ResponseImmunisationSummaryDetails
 import com.medtroniclabs.spice.model.medicalreview.SearchLabTestResponse
 import com.medtroniclabs.spice.model.medicalreview.SearchRequestLabTest
 import com.medtroniclabs.spice.model.medicalreview.SummaryDetails
+import com.medtroniclabs.spice.model.medicalreview.VaccinationDetail
+import com.medtroniclabs.spice.model.medicalreview.WazWhzScoreRequest
+import com.medtroniclabs.spice.model.medicalreview.WazWhzScoreResponse
 import com.medtroniclabs.spice.ncd.data.AssessmentResultModel
-import com.medtroniclabs.spice.ncd.data.NCDCounselingModel
 import com.medtroniclabs.spice.ncd.data.BPBGListModel
 import com.medtroniclabs.spice.ncd.data.BadgeNotificationModel
+import com.medtroniclabs.spice.ncd.data.DeviceDetails
+import com.medtroniclabs.spice.ncd.data.FollowUpRequest
+import com.medtroniclabs.spice.ncd.data.FollowUpUpdateRequest
+import com.medtroniclabs.spice.ncd.data.LifeStyleRequest
+import com.medtroniclabs.spice.ncd.data.LifeStyleResponse
 import com.medtroniclabs.spice.ncd.data.MRSummaryResponse
 import com.medtroniclabs.spice.ncd.data.MedicalReviewRequestResponse
 import com.medtroniclabs.spice.ncd.data.MedicalReviewResponse
+import com.medtroniclabs.spice.ncd.data.NCDCounselingModel
 import com.medtroniclabs.spice.ncd.data.NCDDiagnosisGetRequest
 import com.medtroniclabs.spice.ncd.data.NCDDiagnosisGetResponse
 import com.medtroniclabs.spice.ncd.data.NCDDiagnosisRequestResponse
 import com.medtroniclabs.spice.ncd.data.NCDInstructionModel
 import com.medtroniclabs.spice.ncd.data.NCDMRSummaryRequestResponse
-import com.medtroniclabs.spice.ncd.data.NCDPatientStatusRequest
-import com.medtroniclabs.spice.ncd.data.NCDPregnancyRiskUpdate
-import com.medtroniclabs.spice.ncd.data.NCDTreatmentPlanModel
-import com.medtroniclabs.spice.ncd.data.NCDTreatmentPlanModelDetails
-import com.medtroniclabs.spice.ncd.data.LifeStyleResponse
-import com.medtroniclabs.spice.ncd.data.LifeStyleRequest
 import com.medtroniclabs.spice.ncd.data.NCDMedicalReviewUpdateModel
-import com.medtroniclabs.spice.ncd.data.PatientVisitRequest
-import com.medtroniclabs.spice.ncd.data.PatientVisitResponse
-import com.medtroniclabs.spice.model.medicalreview.WazWhzScoreRequest
-import com.medtroniclabs.spice.model.medicalreview.WazWhzScoreResponse
-import com.medtroniclabs.spice.ncd.data.DeviceDetails
-import com.medtroniclabs.spice.ncd.data.FollowUpRequest
-import com.medtroniclabs.spice.ncd.data.FollowUpUpdateRequest
 import com.medtroniclabs.spice.ncd.data.NCDMentalHealthMedicalReviewDetails
 import com.medtroniclabs.spice.ncd.data.NCDMentalHealthStatusRequest
-import com.medtroniclabs.spice.ncd.data.TermsAndConditionsModel
 import com.medtroniclabs.spice.ncd.data.NCDPatientRemoveRequest
-import com.medtroniclabs.spice.ncd.data.NCDPatientTransferValidate
-import com.medtroniclabs.spice.ncd.data.NCDTransferCreateRequest
-import com.medtroniclabs.spice.ncd.data.PatientTransferListResponse
+import com.medtroniclabs.spice.ncd.data.NCDPatientStatusRequest
+import com.medtroniclabs.spice.ncd.data.NCDPatientTransferNotificationCountRequest
+import com.medtroniclabs.spice.ncd.data.NCDPatientTransferNotificationCountResponse
 import com.medtroniclabs.spice.ncd.data.NCDPatientTransferUpdateRequest
+import com.medtroniclabs.spice.ncd.data.NCDPatientTransferValidate
+import com.medtroniclabs.spice.ncd.data.NCDPregnancyRiskUpdate
 import com.medtroniclabs.spice.ncd.data.NCDRegionSiteModel
-import com.medtroniclabs.spice.ncd.data.RegionSiteResponse
 import com.medtroniclabs.spice.ncd.data.NCDSiteRoleModel
 import com.medtroniclabs.spice.ncd.data.NCDSiteRoleResponse
 import com.medtroniclabs.spice.ncd.data.NCDSupportRequest
+import com.medtroniclabs.spice.ncd.data.NCDTransferCreateRequest
+import com.medtroniclabs.spice.ncd.data.NCDTreatmentPlanModel
+import com.medtroniclabs.spice.ncd.data.NCDTreatmentPlanModelDetails
 import com.medtroniclabs.spice.ncd.data.PatientFollowUpEntity
+import com.medtroniclabs.spice.ncd.data.PatientTransferListResponse
+import com.medtroniclabs.spice.ncd.data.PatientVisitRequest
+import com.medtroniclabs.spice.ncd.data.PatientVisitResponse
 import com.medtroniclabs.spice.ncd.data.PredictionRequest
 import com.medtroniclabs.spice.ncd.data.PrescriptionNudgeResponse
+import com.medtroniclabs.spice.ncd.data.RegionSiteResponse
 import com.medtroniclabs.spice.ncd.data.RegisterCallResponse
+import com.medtroniclabs.spice.ncd.data.TermsAndConditionsModel
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
 import retrofit2.Response
@@ -555,6 +563,19 @@ interface ApiService {
 
     @POST("/user-service/user/update-culture")
     suspend fun cultureLocaleUpdate(@Body request: CultureLocaleModel): Response<APIResponse<HashMap<String, Any>>>
+
+    @POST("/spice-service/immunisation/list")
+    suspend fun getImmunisationList(@Body request: RequestVaccinationList): Response<APIResponse<ArrayList<VaccinationDetail>>>
+
+    @POST("/spice-service/immunisation/create")
+    suspend fun saveImmunisationList(@Body request: RequestCreateImmunisation): Response<APIResponse<ResponseCreateImmunisation>>
+
+    @POST("/spice-service/immunisation/detail")
+    suspend fun getImmunisationSummaryDetails(@Body request: RequestImmunisationSummaryDetail): Response<APIResponse<ResponseImmunisationSummaryDetails>>
+
+    @POST("/spice-service/immunisation/summary-create")
+    suspend fun saveImmunisationSummaryDetails(@Body request: RequestImmunisationSummaryCreate): Response<APIResponse<ResponseImmunisationSummaryCreate>>
+
 
     @POST("/spice-service/community-profile/get-community-profile")
     suspend fun getCommunityProfileDetails(@Body request: HashMap<String, Any>): Response<APIResponse<CommunityProfileDetails>>

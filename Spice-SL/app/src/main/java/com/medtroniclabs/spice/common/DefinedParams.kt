@@ -104,6 +104,7 @@ object DefinedParams {
     const val Above5MedicalReview = "Above5MedicalReview"
     const val Neonate_Birth_Review = "NEONATE_BIRTH_REVIEW"
     const val MotherDeliveryReview="MOTHER_DELIVERY_REVIEW"
+    const val Immunization = "Immunization"
     const val ICCMUNDER2MONTHS = "iccm-under-2M"
     const val ICCM_ABOVE_2M_5Y = "iccm-2M-5Y"
     const val PregnancyAncMedicalReview = "pregnancyAncMedicalReview"

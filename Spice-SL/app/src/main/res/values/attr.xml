@@ -2,4 +2,12 @@
 <resources>
     <bool name="isTablet">false</bool>
     <bool name="isLargeTablet">false</bool>
+
+
+    <declare-styleable name="EpiStatusIconStyle">
+        <attr name="epiStatusType" format="integer" />
+        <attr name="epiIcon" format="reference" />
+        <attr name="epiBackgroundColor" format="color" />
+    </declare-styleable>
+
 </resources>

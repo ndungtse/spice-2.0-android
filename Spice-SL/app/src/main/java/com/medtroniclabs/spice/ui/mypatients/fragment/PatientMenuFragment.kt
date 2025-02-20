@@ -18,6 +18,7 @@ import com.medtroniclabs.spice.common.DefinedParams.DOB
 import com.medtroniclabs.spice.common.DefinedParams.DateOfDelivery
 import com.medtroniclabs.spice.common.DefinedParams.Gender
 import com.medtroniclabs.spice.common.DefinedParams.ID
+import com.medtroniclabs.spice.common.DefinedParams.MemberID
 import com.medtroniclabs.spice.common.DefinedParams.NeonateOutcome
 import com.medtroniclabs.spice.common.DefinedParams.PatientId
 import com.medtroniclabs.spice.common.DefinedParams.female
@@ -38,6 +39,7 @@ import com.medtroniclabs.spice.ui.medicalreview.motherneonate.anc.fragment.Selec
 import com.medtroniclabs.spice.ui.medicalreview.underfiveyears.UnderFiveYearsBaseActivity
 import com.medtroniclabs.spice.ui.medicalreview.undertwomonths.activity.UnderTwoMonthsBaseActivity
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMedicalReviewActivity
+import com.medtroniclabs.spice.ui.medicalreview.epi.ImmunizationActivity
 import com.medtroniclabs.spice.ui.medicalreview.tb.activity.TBMedicalReviewActivity
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -121,9 +123,10 @@ class PatientMenuFragment : BaseFragment(), MenuSelectionListener {
                     }
                 }
 
-                    MenuConstants.GENERAL_ID -> menuItem.isDisabled =isGeneralDisabled(dob)
+                    MenuConstants.GENERAL_ID -> menuItem.isDisabled = isGeneralDisabled(dob)
                     MenuConstants.UNDER_AGE_FIVE_TO_TWO_MONTHS_ID -> menuItem.isDisabled =isUnderFiveToTwoMonthsDisabled(dob)
                     MenuConstants.UNDER_AGE_ABOVE_FIVE_YEAR_ID ->menuItem.isDisabled = isUnderAgeAboveFiveYearsDisabled(dob)
+                    MenuConstants.EPI_ID -> menuItem.isDisabled = !isUnderFifteenMonths(dob)
                     MenuConstants.TB_MENU_ID -> menuItem.isDisabled = isGeneralDisabled(dob)
                     else -> {}
 
@@ -142,6 +145,7 @@ class PatientMenuFragment : BaseFragment(), MenuSelectionListener {
         fun newInstance(
             patientId: String?,
             id: String?,
+            memberId: String?,
             gender: String?,
             dob: String?,
             childPatientId: String?,
@@ -152,6 +156,7 @@ class PatientMenuFragment : BaseFragment(), MenuSelectionListener {
             val bundle = Bundle()
             bundle.putString(PatientId, patientId)
             bundle.putString(ID, id)
+            bundle.putString(MemberID, memberId)
             bundle.putString(Gender, gender)
             bundle.putString(DOB, dob)
             bundle.putString(ChildPatientId, childPatientId)
@@ -211,6 +216,12 @@ class PatientMenuFragment : BaseFragment(), MenuSelectionListener {
             }
 
             MenuConstants.EPI_ID -> {
+                val intent = Intent(requireContext(), ImmunizationActivity::class.java)
+                intent.putExtra(PatientId, arguments?.getString(PatientId))
+                intent.putExtra(DOB, arguments?.getString(DOB))
+                intent.putExtra(ID, arguments?.getString(ID))
+                intent.putExtra(MemberID, arguments?.getString(MemberID))
+                startActivity(intent)
             }
 
             else -> {
@@ -268,5 +279,15 @@ class PatientMenuFragment : BaseFragment(), MenuSelectionListener {
             age.years < 5 -> false
             else -> true
         }
+    }
+
+    private fun isUnderFifteenMonths(dob: String?): Boolean {
+        val maxMonthAgeForEPI = 24
+        if (dob.isNullOrBlank()) return false
+        val age = DateUtils.getV2YearMonthAndWeek(dob)
+        val ageInMonths = (age.years * 12) + age.months
+
+        return ageInMonths < maxMonthAgeForEPI ||
+                (ageInMonths == maxMonthAgeForEPI && age.weeks == 0 && age.days == 0)
     }
 }

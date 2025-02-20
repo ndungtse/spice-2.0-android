@@ -114,5 +114,15 @@
     <color name="background_ratio">#EB956A</color>
     <color name="background_job_aid">#1A6165DE</color>
     <color name="light_grey">#D5D5D5</color>
+
+    <color name="epi_upcoming_primary">#EB956A</color>
+    <color name="epi_upcoming_secondary">#FFEBE1</color>
+    <color name="epi_vaccinated_primary">#54CC90</color>
+    <color name="epi_vaccinated_secondary">#ECFFF5</color>
+    <color name="epi_vaccinated_delay_primary">#6165DE</color>
+    <color name="epi_vaccinated_delay_secondary">#F7EFFF</color>
+    <color name="epi_missed_primary">#994242</color>
+    <color name="epi_missed_secondary">#FFDDDD</color>
+
     <color name="bg_community_statics">#E1E2FC</color>
 </resources>

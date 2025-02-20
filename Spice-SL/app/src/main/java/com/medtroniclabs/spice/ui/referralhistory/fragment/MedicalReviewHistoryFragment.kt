@@ -364,177 +364,233 @@ class MedicalReviewHistoryFragment : BaseFragment(), View.OnClickListener {
 
 
     private fun createMedicalReview(medicalReviewHistory: MedicalReviewHistory): List<Map<String, String?>> {
-        val commonFields = listOf(
-            mapOf(
-                DefinedParams.label to requireContext().getString(R.string.diagnosis),
-                DefinedParams.Value to combineText(
-                    medicalReviewHistory.reviewDetails?.diagnosis?.filter { it.diseaseCategory?.lowercase() != OtherNotes.lowercase() }
-                        ?.map { it.diseaseCategory }?.distinct(),
-                    "",
-                    getString(R.string.separator_double_hyphen)
+        if (medicalReviewHistory.type == DefinedParams.Immunization) {
+            val epiFields = listOf(
+                mapOf(
+                    DefinedParams.label to requireContext().getString(R.string.date_of_review),
+                    DefinedParams.Value to medicalReviewHistory.dateOfReview?.let {
+                        DateUtils.convertDateFormat(
+                            it,
+                            DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+                            DateUtils.DATE_ddMMyyyy
+                        )
+                    }
+                ),
+
+                mapOf(
+                    DefinedParams.label to requireContext().getString(R.string.vaccination_taken),
+                    DefinedParams.Value to (medicalReviewHistory.reviewDetails?.vaccinated?.joinToString(separator = ", ")
+                        ?: getString(R.string.separator_double_hyphen))
+                ),
+
+                mapOf(
+                    DefinedParams.label to requireContext().getString(R.string.scheduled_date),
+                    DefinedParams.Value to (medicalReviewHistory.reviewDetails?.lastScheduledDate?.let {
+                        DateUtils.convertDateFormat(
+                            it,
+                            DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+                            DateUtils.DATE_ddMMyyyy
+                        )
+                    } ?: getString(R.string.separator_double_hyphen))
+                ),
+
+                mapOf(
+                    DefinedParams.label to requireContext().getString(R.string.next_vaccination_duration),
+                    DefinedParams.Value to (medicalReviewHistory.reviewDetails?.nextVaccinationDuration
+                        ?: getString(R.string.separator_double_hyphen))
+                ),
+
+                mapOf(
+                    DefinedParams.label to requireContext().getString(R.string.next_vaccination_dose),
+                    DefinedParams.Value to (medicalReviewHistory.reviewDetails?.nextVaccinationDose?.joinToString(separator = ", ")
+                        ?: getString(R.string.separator_double_hyphen))
+                ),
+
+                mapOf(
+                    DefinedParams.label to requireContext().getString(R.string.scheduled_date),
+                    DefinedParams.Value to (medicalReviewHistory.reviewDetails?.nextVaccinationDate?.let {
+                        DateUtils.convertDateFormat(
+                            it,
+                            DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+                            DateUtils.DATE_ddMMyyyy
+                        )
+                    } ?: getString(R.string.separator_double_hyphen))
                 )
-            ),
-            mapOf(
-                DefinedParams.label to requireContext().getString(R.string.patient_status),
-                DefinedParams.Value to (medicalReviewHistory.reviewDetails?.patientStatus?.takeIf { it.isNotBlank() }
-                    ?.let { requireContext().changePatientStatus(it) }
-                    ?: getString(R.string.separator_double_hyphen))
-            ),
-            mapOf(
-                DefinedParams.label to requireContext().getString(R.string.date_of_review),
-                DefinedParams.Value to medicalReviewHistory.dateOfReview?.let {
-                    DateUtils.convertDateFormat(
-                        it,
-                        DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-                        DateUtils.DATE_ddMMyyyy
+            )
+            return epiFields
+        } else {
+            val commonFields = listOf(
+                mapOf(
+                    DefinedParams.label to requireContext().getString(R.string.diagnosis),
+                    DefinedParams.Value to combineText(
+                        medicalReviewHistory.reviewDetails?.diagnosis?.filter { it.diseaseCategory?.lowercase() != OtherNotes.lowercase() }
+                            ?.map { it.diseaseCategory }?.distinct(),
+                        "",
+                        getString(R.string.separator_double_hyphen)
+                    )
+                ),
+                mapOf(
+                    DefinedParams.label to requireContext().getString(R.string.patient_status),
+                    DefinedParams.Value to (medicalReviewHistory.reviewDetails?.patientStatus?.takeIf { it.isNotBlank() }
+                        ?.let { requireContext().changePatientStatus(it) }
+                        ?: getString(R.string.separator_double_hyphen))
+                ),
+                mapOf(
+                    DefinedParams.label to requireContext().getString(R.string.date_of_review),
+                    DefinedParams.Value to medicalReviewHistory.dateOfReview?.let {
+                        DateUtils.convertDateFormat(
+                            it,
+                            DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+                            DateUtils.DATE_ddMMyyyy
+                        )
+                    }
+                ),
+                mapOf(
+                    DefinedParams.label to requireContext().getString(R.string.presenting_complaints),
+                    DefinedParams.Value to combineText(
+                        CommonUtils.convertAnyToListOfString(medicalReviewHistory.reviewDetails?.presentingComplaints),
+                        medicalReviewHistory.reviewDetails?.presentingComplaintsNotes,
+                        getString(R.string.separator_double_hyphen)
+                    )
+                ),
+                mapOf(
+                    DefinedParams.label to requireContext().getString(R.string.clinical_notes),
+                    DefinedParams.Value to (medicalReviewHistory.reviewDetails?.clinicalNotes?.takeIf { it.isNotBlank() }
+                        ?: getString(R.string.separator_double_hyphen))
+                )
+            )
+            val labourDeliveryNeonate= when (medicalReviewHistory.type?.lowercase()) {
+                MotherDeliveryReview.lowercase() -> {
+                    listOf(
+                        mapOf(
+                            DefinedParams.label to requireContext().getString(R.string.patient_status),
+                            DefinedParams.Value to (medicalReviewHistory.reviewDetails?.patientStatus?.takeIf { it.isNotBlank() }
+                                ?.let { requireContext().changePatientStatus(it) }
+                                ?: getString(R.string.separator_double_hyphen))
+                        ),
+                        mapOf(
+                            DefinedParams.label to requireContext().getString(R.string.date_of_review),
+                            DefinedParams.Value to medicalReviewHistory.dateOfReview?.let {
+                                DateUtils.convertDateFormat(
+                                    it,
+                                    DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+                                    DateUtils.DATE_ddMMyyyy
+                                )
+                            }
+                        ),
+                        mapOf(
+                            DefinedParams.label to requireContext().getString(R.string.date_of_delivery),
+                            DefinedParams.Value to (medicalReviewHistory.reviewDetails?.labourDTO?.dateAndTimeOfDelivery?.let {
+                                calculateDateTime(
+                                    it,
+                                    true
+                                )}?: getString(R.string.separator_double_hyphen))
+
+                        ), mapOf(
+                            DefinedParams.label to requireContext().getString(R.string.date_of_labour_onset),
+                            DefinedParams.Value to (medicalReviewHistory.reviewDetails?.labourDTO?.dateAndTimeOfLabourOnset?.let {
+                                calculateDateTime(
+                                    it,
+                                    true
+                                )}?: getString(R.string.separator_double_hyphen))
+                        ),
+                        mapOf(
+                            DefinedParams.label to requireContext().getString(R.string.delivery_by),
+                            DefinedParams.Value to (medicalReviewHistory.reviewDetails?.labourDTO?.deliveryBy
+                                ?.takeIf { it.isNotBlank() }?: getString(R.string.separator_double_hyphen))
+                        ),
+                        mapOf(
+                            DefinedParams.label to requireContext().getString(R.string.delivery_type),
+                            DefinedParams.Value to (medicalReviewHistory.reviewDetails?.labourDTO?.deliveryType
+                                ?.takeIf { it.isNotBlank() }?: getString(R.string.separator_double_hyphen))
+                        ),
+                        mapOf(
+                            DefinedParams.label to requireContext().getString(R.string.delivery_at),
+                            DefinedParams.Value to (medicalReviewHistory.reviewDetails?.labourDTO?.deliveryAt
+                                ?.takeIf { it.isNotBlank() }?: getString(R.string.separator_double_hyphen))
+                        ),
+                        mapOf(
+                            DefinedParams.label to requireContext().getString(R.string.delivery_status),
+                            DefinedParams.Value to (medicalReviewHistory.reviewDetails?.labourDTO?.deliveryStatus
+                                ?.takeIf { it.isNotBlank() }?: getString(R.string.separator_double_hyphen))
+                        )
                     )
                 }
-            ),
-            mapOf(
-                DefinedParams.label to requireContext().getString(R.string.presenting_complaints),
-                DefinedParams.Value to combineText(
-                    CommonUtils.convertAnyToListOfString(medicalReviewHistory.reviewDetails?.presentingComplaints),
-                    medicalReviewHistory.reviewDetails?.presentingComplaintsNotes,
-                    getString(R.string.separator_double_hyphen)
-                )
-            ),
-            mapOf(
-                DefinedParams.label to requireContext().getString(R.string.clinical_notes),
-                DefinedParams.Value to (medicalReviewHistory.reviewDetails?.clinicalNotes?.takeIf { it.isNotBlank() }
-                    ?: getString(R.string.separator_double_hyphen))
-            )
-        )
-        val labourDeliveryNeonate= when (medicalReviewHistory.type?.lowercase()) {
-            MotherDeliveryReview.lowercase() -> {
-                listOf(
-                    mapOf(
-                        DefinedParams.label to requireContext().getString(R.string.patient_status),
-                        DefinedParams.Value to (medicalReviewHistory.reviewDetails?.patientStatus?.takeIf { it.isNotBlank() }
-                            ?.let { requireContext().changePatientStatus(it) }
-                            ?: getString(R.string.separator_double_hyphen))
-                    ),
-                    mapOf(
-                        DefinedParams.label to requireContext().getString(R.string.date_of_review),
-                        DefinedParams.Value to medicalReviewHistory.dateOfReview?.let {
-                            DateUtils.convertDateFormat(
-                                it,
-                                DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-                                DateUtils.DATE_ddMMyyyy
-                            )
-                        }
-                    ),
-                    mapOf(
-                        DefinedParams.label to requireContext().getString(R.string.date_of_delivery),
-                        DefinedParams.Value to (medicalReviewHistory.reviewDetails?.labourDTO?.dateAndTimeOfDelivery?.let {
-                            calculateDateTime(
-                                it,
-                                true
-                            )}?: getString(R.string.separator_double_hyphen))
+                Neonate_Birth_Review.lowercase()->{
+                    listOf(
+                        mapOf(
+                            DefinedParams.label to requireContext().getString(R.string.patient_status),
+                            DefinedParams.Value to (medicalReviewHistory.reviewDetails?.patientStatus?.takeIf { it.isNotBlank() }
+                                ?.let { requireContext().changePatientStatus(it) }
+                                ?: getString(R.string.separator_double_hyphen))
+                        ),
+                        mapOf(
+                            DefinedParams.label to requireContext().getString(R.string.date_of_review),
+                            DefinedParams.Value to medicalReviewHistory.dateOfReview?.let {
+                                DateUtils.convertDateFormat(
+                                    it,
+                                    DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+                                    DateUtils.DATE_ddMMyyyy
+                                )
+                            }
+                        ),mapOf(
+                            DefinedParams.label to requireContext().getString(R.string.neonateOutcome),
+                            DefinedParams.Value to (medicalReviewHistory.reviewDetails?.neonateOutcome
+                                ?.takeIf { it.isNotBlank() }?: getString(R.string.separator_double_hyphen))
+                        )
+                        ,mapOf(
+                            DefinedParams.label to requireContext().getString(R.string.stateOfBaby),
+                            DefinedParams.Value to (medicalReviewHistory.reviewDetails?.stateOfBaby  ?.takeIf { it.isNotBlank() }?: getString(R.string.separator_double_hyphen))
 
-                    ), mapOf(
-                        DefinedParams.label to requireContext().getString(R.string.date_of_labour_onset),
-                        DefinedParams.Value to (medicalReviewHistory.reviewDetails?.labourDTO?.dateAndTimeOfLabourOnset?.let {
-                            calculateDateTime(
-                                it,
-                                true
-                            )}?: getString(R.string.separator_double_hyphen))
-                    ),
-                    mapOf(
-                        DefinedParams.label to requireContext().getString(R.string.delivery_by),
-                        DefinedParams.Value to (medicalReviewHistory.reviewDetails?.labourDTO?.deliveryBy
-                            ?.takeIf { it.isNotBlank() }?: getString(R.string.separator_double_hyphen))
-                    ),
-                    mapOf(
-                        DefinedParams.label to requireContext().getString(R.string.delivery_type),
-                        DefinedParams.Value to (medicalReviewHistory.reviewDetails?.labourDTO?.deliveryType
-                            ?.takeIf { it.isNotBlank() }?: getString(R.string.separator_double_hyphen))
-                    ),
-                    mapOf(
-                        DefinedParams.label to requireContext().getString(R.string.delivery_at),
-                        DefinedParams.Value to (medicalReviewHistory.reviewDetails?.labourDTO?.deliveryAt
-                            ?.takeIf { it.isNotBlank() }?: getString(R.string.separator_double_hyphen))
-                    ),
-                    mapOf(
-                        DefinedParams.label to requireContext().getString(R.string.delivery_status),
-                        DefinedParams.Value to (medicalReviewHistory.reviewDetails?.labourDTO?.deliveryStatus
-                            ?.takeIf { it.isNotBlank() }?: getString(R.string.separator_double_hyphen))
+                        )
+                        ,mapOf(
+                            DefinedParams.label to requireContext().getString(R.string.signs_Symptoms_observed),
+                            DefinedParams.Value to combineText(medicalReviewHistory.reviewDetails?.signs,
+                                null,getString(R.string.separator_double_hyphen))
+                        )
                     )
-                )
+                }
+                else -> {
+                    commonFields
+                }
             }
-            Neonate_Birth_Review.lowercase()->{
-                listOf(
-                    mapOf(
-                        DefinedParams.label to requireContext().getString(R.string.patient_status),
-                        DefinedParams.Value to (medicalReviewHistory.reviewDetails?.patientStatus?.takeIf { it.isNotBlank() }
-                            ?.let { requireContext().changePatientStatus(it) }
-                            ?: getString(R.string.separator_double_hyphen))
-                    ),
-                    mapOf(
-                        DefinedParams.label to requireContext().getString(R.string.date_of_review),
-                        DefinedParams.Value to medicalReviewHistory.dateOfReview?.let {
-                            DateUtils.convertDateFormat(
-                                it,
-                                DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-                                DateUtils.DATE_ddMMyyyy
-                            )
-                        }
-                    ),mapOf(
-                        DefinedParams.label to requireContext().getString(R.string.neonateOutcome),
-                        DefinedParams.Value to (medicalReviewHistory.reviewDetails?.neonateOutcome
-                            ?.takeIf { it.isNotBlank() }?: getString(R.string.separator_double_hyphen))
-                    )
-                    ,mapOf(
-                        DefinedParams.label to requireContext().getString(R.string.stateOfBaby),
-                        DefinedParams.Value to (medicalReviewHistory.reviewDetails?.stateOfBaby  ?.takeIf { it.isNotBlank() }?: getString(R.string.separator_double_hyphen))
 
-                    )
-                    ,mapOf(
-                        DefinedParams.label to requireContext().getString(R.string.signs_Symptoms_observed),
-                        DefinedParams.Value to combineText(medicalReviewHistory.reviewDetails?.signs,
-                            null,getString(R.string.separator_double_hyphen))
+
+            // TODO Please note: Change the spelling of 'systemicExaminations'
+            //  consistently throughout the project. This may require effort
+            //  and could affect past data fetching, as it currently varies in some requests and responses
+            // after backend change this we need to change variables name
+
+            val additionalFields = when (medicalReviewHistory.type?.lowercase()) {
+                Above5MedicalReview.lowercase() -> mapOf(
+                    DefinedParams.label to requireContext().getString(R.string.systemic_examinations),
+                    DefinedParams.Value to combineText(
+                        medicalReviewHistory.reviewDetails?.systemicExaminations,
+                        medicalReviewHistory.reviewDetails?.systemicExaminationsNotes,
+                        getString(R.string.separator_double_hyphen)
                     )
                 )
+
+                ICCM_ABOVE_2M_5Y.lowercase() -> mapOf(
+                    DefinedParams.label to requireContext().getString(R.string.systemic_examinations),
+                    DefinedParams.Value to combineText(
+                        medicalReviewHistory.reviewDetails?.systemicExamination,
+                        medicalReviewHistory.reviewDetails?.systemicExaminationNotes,
+                        getString(R.string.separator_double_hyphen)
+                    )
+                )
+
+                PregnancyAncMedicalReview.lowercase() -> mapOf(
+                    DefinedParams.label to requireContext().getString(R.string.obstetric_examination),
+                    DefinedParams.Value to combineText(
+                        medicalReviewHistory.reviewDetails?.obstetricExaminations,
+                        medicalReviewHistory.reviewDetails?.obstetricExaminationNotes,
+                        getString(R.string.separator_double_hyphen)
+                    )
+                )
+                else -> null
             }
-            else -> {
-                commonFields
-            }
+            return labourDeliveryNeonate + listOfNotNull(additionalFields)
         }
-
-
-        // TODO Please note: Change the spelling of 'systemicExaminations'
-        //  consistently throughout the project. This may require effort
-        //  and could affect past data fetching, as it currently varies in some requests and responses
-        // after backend change this we need to change variables name
-
-        val additionalFields = when (medicalReviewHistory.type?.lowercase()) {
-            Above5MedicalReview.lowercase() -> mapOf(
-                DefinedParams.label to requireContext().getString(R.string.systemic_examinations),
-                DefinedParams.Value to combineText(
-                    medicalReviewHistory.reviewDetails?.systemicExaminations,
-                    medicalReviewHistory.reviewDetails?.systemicExaminationsNotes,
-                    getString(R.string.separator_double_hyphen)
-                )
-            )
-
-            ICCM_ABOVE_2M_5Y.lowercase() -> mapOf(
-                DefinedParams.label to requireContext().getString(R.string.systemic_examinations),
-                DefinedParams.Value to combineText(
-                    medicalReviewHistory.reviewDetails?.systemicExamination,
-                    medicalReviewHistory.reviewDetails?.systemicExaminationNotes,
-                    getString(R.string.separator_double_hyphen)
-                )
-            )
-
-            PregnancyAncMedicalReview.lowercase() -> mapOf(
-                DefinedParams.label to requireContext().getString(R.string.obstetric_examination),
-                DefinedParams.Value to combineText(
-                    medicalReviewHistory.reviewDetails?.obstetricExaminations,
-                    medicalReviewHistory.reviewDetails?.obstetricExaminationNotes,
-                    getString(R.string.separator_double_hyphen)
-                )
-            )
-            else -> null
-        }
-        return labourDeliveryNeonate + listOfNotNull(additionalFields)
     }
 }

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="@color/epi_vaccinated_primary" /> <!-- Circle color -->
+    <size android:width="16dp" android:height="16dp" /> <!-- Circle size -->
+    <corners android:radius="50dp" /> <!-- Half of the size for a perfect circle -->
+</shape>

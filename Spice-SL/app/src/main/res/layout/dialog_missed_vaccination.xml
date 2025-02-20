@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="@dimen/_600sdp"
+    android:layout_height="match_parent">
+
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tvVaccinationMissed"
+        style="@style/Form_Header_Style"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/_16sdp"
+        android:paddingVertical="@dimen/_24sdp"
+        android:paddingEnd="@dimen/_24sdp"
+        android:text="Vaccination Missed"
+        android:textColor="@color/house_hold_title"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/ivClose"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/_16sdp"
+        app:layout_constraintBottom_toBottomOf="@+id/tvVaccinationMissed"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/tvVaccinationMissed"
+        app:srcCompat="@drawable/ic_close" />
+
+    <View
+        android:layout_width="@dimen/_0dp"
+        android:layout_height="1dp"
+        android:background="@color/btn_disable_grey"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvVaccinationMissed" />
+
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/nsvMissedVaccinationContent"
+        android:layout_width="@dimen/_0dp"
+        android:layout_height="0dp"
+        android:paddingVertical="@dimen/_16sdp"
+        app:layout_constraintBottom_toTopOf="@+id/bottomViewContainer"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvVaccinationMissed">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/_16sdp"
+            android:orientation="vertical">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/labelScheduledDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="You have missed one vaccination"
+                android:textColor="@color/table_title"
+                android:textSize="@dimen/_14ssp"
+                app:layout_constraintEnd_toStartOf="@+id/labelVaccinationDate"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvVaccinationList"
+                android:layout_width="@dimen/_320sdp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_16sdp"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/labelMissedVaccinationTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_16sdp"
+                android:text="Please provide the reason for the missed vaccination - Rotavirus 1*"
+                android:textColor="@color/table_title"
+                android:textSize="@dimen/_14ssp"
+                app:layout_constraintEnd_toStartOf="@+id/labelVaccinationDate"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <androidx.appcompat.widget.AppCompatEditText
+                android:id="@+id/etMissedReason"
+                style="@style/Form_Input_Style"
+                android:layout_marginTop="@dimen/_8sdp"
+                android:layout_width="match_parent"
+                android:background="@drawable/edittext_background"
+                android:inputType="textMultiLine"
+                android:maxLines="3"
+                android:hint="Enter Reason"
+                android:gravity="top|start"
+                android:ellipsize="none"
+                android:scrollHorizontally="false"
+                android:scrollbars="vertical"
+                android:layout_height="@dimen/_90sdp"
+                android:layout_weight="0.8"
+                android:paddingHorizontal="@dimen/_12sdp"
+                android:paddingVertical="@dimen/_10sdp" />
+
+            <LinearLayout
+                android:id="@+id/llNotes"
+                android:layout_marginTop="@dimen/_32sdp"
+                android:background="@drawable/edittext_background"
+                android:layout_width="match_parent"
+                android:minHeight="@dimen/_60sdp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/bottomViewContainer"
+        android:layout_width="@dimen/_0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnNext"
+            style="@style/Button_Style"
+            android:layout_width="@dimen/_160sdp"
+            android:layout_gravity="center"
+            android:layout_margin="@dimen/_16sdp"
+            android:background="@drawable/button_selector_cobalt"
+            android:text="@string/next"
+            android:textAllCaps="true"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnBack"
+            style="@style/Button_Style_cancel"
+            android:layout_width="@dimen/_160sdp"
+            android:layout_gravity="center"
+            android:layout_margin="@dimen/_16sdp"
+            android:text="@string/back"
+            android:textAllCaps="true"
+            app:layout_constraintBottom_toBottomOf="@+id/btnNext"
+            app:layout_constraintEnd_toStartOf="@+id/btnNext"
+            app:layout_constraintTop_toTopOf="@+id/btnNext" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

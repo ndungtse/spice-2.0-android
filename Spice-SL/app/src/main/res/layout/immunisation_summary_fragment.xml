@@ -1,0 +1,389 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/fragment_bg">
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardSummary"
+        style="@style/CardView_Style"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/_10sdp"
+        android:layout_marginTop="@dimen/_10sdp"
+        android:layout_marginEnd="@dimen/_10sdp"
+        app:cardCornerRadius="@dimen/_10sdp"
+        app:layout_constraintBottom_toTopOf="@id/tvClinicalNameLabel"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:strokeWidth="@dimen/_0dp">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="@dimen/_16sdp">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvTitle"
+                style="@style/Form_Header_Style"
+                android:layout_width="0dp"
+                android:background="@color/grey_bg"
+                android:gravity="center"
+                android:padding="@dimen/_10sdp"
+                android:text="@string/result"
+                android:textSize="@dimen/_16ssp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/startGuideline"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_begin="@dimen/_16sdp" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/endGuideline"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_end="@dimen/_16sdp" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/lblVaccinationTaken"
+                style="@style/TextStyle_Regular_16"
+                android:layout_width="@dimen/_0dp"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:text="Vaccinations Taken "
+                app:layout_constraintEnd_toStartOf="@id/tvVaccinationTakenSeparator"
+                app:layout_constraintHorizontal_weight="0.3"
+                app:layout_constraintStart_toEndOf="@id/startGuideline"
+                app:layout_constraintTop_toBottomOf="@id/tvTitle" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvVaccinationTakenSeparator"
+                style="@style/TextStyle_Regular_16"
+                android:layout_width="@dimen/_0dp"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:text="@string/separator_colon"
+                app:layout_constraintEnd_toStartOf="@id/tvVaccinationTaken"
+                app:layout_constraintHorizontal_weight="0.05"
+                app:layout_constraintStart_toEndOf="@id/lblVaccinationTaken"
+                app:layout_constraintTop_toTopOf="@id/lblVaccinationTaken" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvVaccinationTaken"
+                style="@style/TextStyle_Regular_16_Bold"
+                android:layout_width="@dimen/_0dp"
+                android:paddingBottom="@dimen/_8sdp"
+                android:text="@string/seperator_hyphen"
+                app:layout_constraintEnd_toEndOf="@id/endGuideline"
+                app:layout_constraintHorizontal_weight="0.6"
+                app:layout_constraintStart_toEndOf="@id/tvVaccinationTakenSeparator"
+                app:layout_constraintTop_toTopOf="@id/lblVaccinationTaken" />
+
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/lblVaccinationMissed"
+                style="@style/TextStyle_Regular_16"
+                android:layout_width="@dimen/_0dp"
+                android:layout_marginTop="@dimen/_16sdp"
+                android:text="Vaccinations Missed"
+                app:layout_constraintEnd_toStartOf="@id/tvVaccinationMissedSeparator"
+                app:layout_constraintHorizontal_weight="0.3"
+                app:layout_constraintStart_toEndOf="@id/startGuideline"
+                app:layout_constraintTop_toBottomOf="@id/lblVaccinationTaken" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvVaccinationMissedSeparator"
+                style="@style/TextStyle_Regular_16"
+                android:layout_width="@dimen/_0dp"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:text="@string/separator_colon"
+                app:layout_constraintEnd_toStartOf="@id/tvVaccinationMissed"
+                app:layout_constraintHorizontal_weight="0.05"
+                app:layout_constraintStart_toEndOf="@id/lblVaccinationMissed"
+                app:layout_constraintTop_toTopOf="@id/lblVaccinationMissed" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvVaccinationMissed"
+                style="@style/TextStyle_Regular_16_Bold"
+                android:layout_width="@dimen/_0dp"
+                android:text="@string/seperator_hyphen"
+                app:layout_constraintEnd_toEndOf="@id/endGuideline"
+                app:layout_constraintHorizontal_weight="0.6"
+                app:layout_constraintStart_toEndOf="@id/tvVaccinationMissedSeparator"
+                app:layout_constraintTop_toTopOf="@id/lblVaccinationMissed" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/lblScheduledDate"
+                style="@style/TextStyle_Regular_16"
+                android:layout_width="@dimen/_0dp"
+                android:layout_marginTop="@dimen/_16sdp"
+                android:text="@string/scheduled_date"
+                app:layout_constraintEnd_toStartOf="@id/tvScheduledDateSeparator"
+                app:layout_constraintHorizontal_weight="0.3"
+                app:layout_constraintStart_toEndOf="@id/startGuideline"
+                app:layout_constraintTop_toBottomOf="@id/tvVaccinationMissed" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvScheduledDateSeparator"
+                style="@style/TextStyle_Regular_16"
+                android:layout_width="@dimen/_0dp"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:text="@string/separator_colon"
+                app:layout_constraintEnd_toStartOf="@id/tvScheduledDate"
+                app:layout_constraintHorizontal_weight="0.05"
+                app:layout_constraintStart_toEndOf="@id/lblScheduledDate"
+                app:layout_constraintTop_toTopOf="@id/lblScheduledDate" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvScheduledDate"
+                style="@style/TextStyle_Regular_16_Bold"
+                android:layout_width="@dimen/_0dp"
+                android:text="@string/seperator_hyphen"
+                app:layout_constraintEnd_toEndOf="@id/endGuideline"
+                app:layout_constraintHorizontal_weight="0.6"
+                app:layout_constraintStart_toEndOf="@id/tvScheduledDateSeparator"
+                app:layout_constraintTop_toTopOf="@id/lblScheduledDate" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/lblMissedReason"
+                style="@style/TextStyle_Regular_16"
+                android:layout_width="@dimen/_0dp"
+                android:layout_marginTop="@dimen/_16sdp"
+                android:text="Reason for Missed Vaccination"
+                app:layout_constraintEnd_toStartOf="@id/tvMissedReasonSeparator"
+                app:layout_constraintHorizontal_weight="0.3"
+                app:layout_constraintStart_toEndOf="@id/startGuideline"
+                app:layout_constraintTop_toBottomOf="@id/tvScheduledDate" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvMissedReasonSeparator"
+                style="@style/TextStyle_Regular_16"
+                android:layout_width="@dimen/_0dp"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:text="@string/separator_colon"
+                app:layout_constraintEnd_toStartOf="@id/tvMissedReason"
+                app:layout_constraintHorizontal_weight="0.05"
+                app:layout_constraintStart_toEndOf="@id/lblMissedReason"
+                app:layout_constraintTop_toTopOf="@id/lblMissedReason" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvMissedReason"
+                style="@style/TextStyle_Regular_16_Bold"
+                android:layout_width="@dimen/_0dp"
+                android:text="@string/seperator_hyphen"
+                app:layout_constraintEnd_toEndOf="@id/endGuideline"
+                app:layout_constraintHorizontal_weight="0.6"
+                app:layout_constraintStart_toEndOf="@id/tvMissedReasonSeparator"
+                app:layout_constraintTop_toTopOf="@id/lblMissedReason" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/lblNextDuration"
+                style="@style/TextStyle_Regular_16"
+                android:layout_width="@dimen/_0dp"
+                android:layout_marginTop="@dimen/_16sdp"
+                android:text="Next Vaccination Duration"
+                app:layout_constraintEnd_toStartOf="@id/tvNextDurationSeparator"
+                app:layout_constraintHorizontal_weight="0.3"
+                app:layout_constraintStart_toEndOf="@id/startGuideline"
+                app:layout_constraintTop_toBottomOf="@id/tvMissedReason" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvNextDurationSeparator"
+                style="@style/TextStyle_Regular_16"
+                android:layout_width="@dimen/_0dp"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:text="@string/separator_colon"
+                app:layout_constraintEnd_toStartOf="@id/tvNextDuration"
+                app:layout_constraintHorizontal_weight="0.05"
+                app:layout_constraintStart_toEndOf="@id/lblNextDuration"
+                app:layout_constraintTop_toTopOf="@id/lblNextDuration" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvNextDuration"
+                style="@style/TextStyle_Regular_16_Bold"
+                android:layout_width="@dimen/_0dp"
+                android:text="@string/seperator_hyphen"
+                app:layout_constraintEnd_toEndOf="@id/endGuideline"
+                app:layout_constraintHorizontal_weight="0.6"
+                app:layout_constraintStart_toEndOf="@id/tvNextDurationSeparator"
+                app:layout_constraintTop_toTopOf="@id/lblNextDuration" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/lblNextDose"
+                style="@style/TextStyle_Regular_16"
+                android:layout_width="@dimen/_0dp"
+                android:layout_marginTop="@dimen/_16sdp"
+                android:text="Next Vaccination Dose"
+                app:layout_constraintEnd_toStartOf="@id/tvNextDoseSeparator"
+                app:layout_constraintHorizontal_weight="0.3"
+                app:layout_constraintStart_toEndOf="@id/startGuideline"
+                app:layout_constraintTop_toBottomOf="@id/tvNextDuration" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvNextDoseSeparator"
+                style="@style/TextStyle_Regular_16"
+                android:layout_width="@dimen/_0dp"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:text="@string/separator_colon"
+                app:layout_constraintEnd_toStartOf="@id/tvNextDose"
+                app:layout_constraintHorizontal_weight="0.05"
+                app:layout_constraintStart_toEndOf="@id/lblNextDose"
+                app:layout_constraintTop_toTopOf="@id/lblNextDose" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvNextDose"
+                style="@style/TextStyle_Regular_16_Bold"
+                android:layout_width="@dimen/_0dp"
+                android:text="@string/seperator_hyphen"
+                app:layout_constraintEnd_toEndOf="@id/endGuideline"
+                app:layout_constraintHorizontal_weight="0.6"
+                app:layout_constraintStart_toEndOf="@id/tvNextDoseSeparator"
+                app:layout_constraintTop_toTopOf="@id/lblNextDose" />
+
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/lblNextVaccinationDate"
+                style="@style/TextStyle_Regular_16"
+                android:layout_width="@dimen/_0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_16sdp"
+                android:text="Next Vaccination Date"
+                app:layout_constraintBottom_toBottomOf="@+id/tvNextVaccinationDate"
+                app:layout_constraintEnd_toStartOf="@id/tvNextVaccinationDateSeparator"
+                app:layout_constraintHorizontal_weight="0.3"
+                app:layout_constraintStart_toEndOf="@id/startGuideline"
+                app:layout_constraintTop_toBottomOf="@id/tvNextDose" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvNextVaccinationDateSeparator"
+                style="@style/TextStyle_Regular_16"
+                android:layout_width="@dimen/_0dp"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:text="@string/separator_colon"
+                app:layout_constraintBottom_toBottomOf="@+id/tvNextVaccinationDate"
+                app:layout_constraintEnd_toStartOf="@id/tvNextVaccinationDate"
+                app:layout_constraintHorizontal_weight="0.05"
+                app:layout_constraintStart_toEndOf="@id/lblNextVaccinationDate"
+                app:layout_constraintTop_toTopOf="@id/tvNextVaccinationDate" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvNextVaccinationDate"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_16sdp"
+                android:background="@drawable/edittext_background_selector"
+                android:drawableEnd="@drawable/ic_date_picker_calendar"
+                android:gravity="start|center"
+                android:paddingStart="@dimen/_10sdp"
+                android:paddingEnd="@dimen/_0dp"
+                android:textColor="@color/black"
+                android:textSize="@dimen/_16ssp"
+                app:layout_constraintEnd_toEndOf="@id/endGuideline"
+                app:layout_constraintHorizontal_weight="0.6"
+                app:layout_constraintStart_toEndOf="@id/tvNextVaccinationDateSeparator"
+                app:layout_constraintTop_toBottomOf="@id/tvNextDose" />
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tvClinicalNameLabel"
+        style="@style/TextStyle_Regular_16"
+        android:layout_width="wrap_content"
+        android:layout_marginTop="@dimen/_30sdp"
+        android:layout_marginBottom="@dimen/_30sdp"
+        android:text="@string/clinician_name"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/tvClinicalNameSeparator"
+        app:layout_constraintHorizontal_weight="0.4"
+        app:layout_constraintStart_toStartOf="@id/cardSummary"
+        app:layout_constraintTop_toBottomOf="@id/cardSummary" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tvClinicalNameSeparator"
+        style="@style/TextStyle_Regular_16"
+        android:layout_width="@dimen/_0dp"
+        android:layout_height="@dimen/_0dp"
+        android:gravity="center_horizontal"
+        android:text="@string/separator_colon"
+        app:layout_constraintBottom_toBottomOf="@id/tvClinicalNameLabel"
+        app:layout_constraintEnd_toStartOf="@id/tvClinicalName"
+        app:layout_constraintHorizontal_weight="0.1"
+        app:layout_constraintStart_toEndOf="@id/tvClinicalNameLabel"
+        app:layout_constraintTop_toTopOf="@id/tvClinicalNameLabel" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tvClinicalName"
+        style="@style/TextStyle_Regular_16"
+        android:layout_width="@dimen/_0dp"
+        android:fontFamily="@font/inter_medium"
+        android:text="@string/seperator_hyphen"
+        android:textColor="@color/grey_black"
+        app:layout_constraintBottom_toBottomOf="@id/tvClinicalNameLabel"
+        app:layout_constraintEnd_toEndOf="@id/centreGuideline"
+        app:layout_constraintHorizontal_weight="0.5"
+        app:layout_constraintStart_toEndOf="@id/tvClinicalNameSeparator"
+        app:layout_constraintTop_toTopOf="@id/tvClinicalNameLabel" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/centreGuideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.5" />
+
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tvDateOfReviewLabel"
+        style="@style/TextStyle_Regular_16"
+        android:layout_width="wrap_content"
+        android:layout_marginStart="@dimen/_8sdp"
+        android:text="@string/date_of_review"
+        app:layout_constraintBottom_toBottomOf="@id/tvClinicalNameLabel"
+        app:layout_constraintEnd_toStartOf="@id/tvDateOfReviewSeparator"
+        app:layout_constraintHorizontal_weight="0.4"
+        app:layout_constraintStart_toEndOf="@id/centreGuideline"
+        app:layout_constraintTop_toTopOf="@id/tvClinicalNameLabel" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tvDateOfReviewSeparator"
+        style="@style/TextStyle_Regular_16"
+        android:layout_width="@dimen/_0dp"
+        android:layout_height="0dp"
+        android:gravity="center_horizontal"
+        android:text="@string/separator_colon"
+        app:layout_constraintBottom_toBottomOf="@id/tvDateOfReviewLabel"
+        app:layout_constraintEnd_toStartOf="@id/tvDateOfReviewValue"
+        app:layout_constraintHorizontal_weight="0.1"
+        app:layout_constraintStart_toEndOf="@id/tvDateOfReviewLabel"
+        app:layout_constraintTop_toTopOf="@id/tvDateOfReviewLabel" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tvDateOfReviewValue"
+        style="@style/TextStyle_Regular_16"
+        android:layout_width="@dimen/_0dp"
+        android:layout_marginEnd="@dimen/_30sdp"
+        android:fontFamily="@font/inter_medium"
+        android:text="@string/seperator_hyphen"
+        android:textColor="@color/grey_black"
+        app:layout_constraintBottom_toBottomOf="@id/tvDateOfReviewLabel"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_weight="0.5"
+        app:layout_constraintStart_toEndOf="@id/tvDateOfReviewSeparator"
+        app:layout_constraintTop_toTopOf="@id/tvDateOfReviewLabel" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

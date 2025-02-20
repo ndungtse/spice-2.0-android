@@ -1,5 +1,10 @@
 package com.medtroniclabs.spice.appextensions
 
+import java.time.LocalDate
+import java.time.OffsetDateTime
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+
 fun String?.textOrHyphen(): String {
     return if (this.isNullOrBlank()) "-" else this.trim()
 }
@@ -20,4 +25,15 @@ fun Double?.removeTrailingPointZero(): String {
             this.toString()
         }
     }
+}
+
+fun String.getLocalDate(): LocalDate {
+    val offsetDateTime = OffsetDateTime.parse(this)
+    return offsetDateTime.toLocalDate()
+}
+
+fun String.getLongDate(format: String): Long {
+    val formatter = DateTimeFormatter.ofPattern(format)
+    val localDate = LocalDate.parse(this, formatter)
+    return localDate.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
 }

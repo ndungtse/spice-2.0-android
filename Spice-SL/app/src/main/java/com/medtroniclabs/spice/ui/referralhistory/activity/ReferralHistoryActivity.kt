@@ -73,7 +73,7 @@ class ReferralHistoryActivity : BaseActivity(), AncVisitCallBack {
                         message = getString(R.string.something_went_wrong_try_later),
                         positiveButtonName = getString(R.string.ok),
                     ) {
-                        finish()
+                       finish()
                     }
                 }
             }
@@ -188,6 +188,7 @@ class ReferralHistoryActivity : BaseActivity(), AncVisitCallBack {
             ID,
             patientDetailViewModel.patientDetailsId
         )
+        intent.putExtra(DefinedParams.MemberID, patientDetailViewModel.getPatientMemberId())
         intent.putExtra(
             DefinedParams.Gender,
             this.intent.getStringExtra(DefinedParams.Gender)
