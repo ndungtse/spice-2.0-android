@@ -86,6 +86,7 @@ import com.medtroniclabs.spice.model.ReferralData
 import com.medtroniclabs.spice.model.ReferralDetailRequest
 import com.medtroniclabs.spice.model.RemoveLabTestRequest
 import com.medtroniclabs.spice.model.SearchAndListResponse
+import com.medtroniclabs.spice.model.communityprofile.CommunityProfileDetails
 import com.medtroniclabs.spice.model.medicalreview.AddMemberRegRequest
 import com.medtroniclabs.spice.model.medicalreview.CreateUnderFiveYearsRequest
 import com.medtroniclabs.spice.model.medicalreview.CreateUnderTwoMonthsRequest
@@ -290,5 +291,9 @@ interface ApiHelper {
     suspend fun ncdMentalHealthMedicalReviewDetailsS(request: NCDMentalHealthMedicalReviewDetails): Response<APIResponse<HashMap<String, Any>>>
     suspend fun markAsReviewed(request: HashMap<String, Any>): Response<APIResponse<HashMap<String, Any>>>
     suspend fun cultureLocaleUpdate(request: CultureLocaleModel): Response<APIResponse<HashMap<String, Any>>>
+    suspend fun createCommunityProfile(request:HashMap<String,Any>): Response<APIResponse<HashMap<String,Any>>>
+    suspend fun updateCommunityProfile(request: HashMap<String,Any>):Response<APIResponse<HashMap<String,Any>>>
+    suspend fun getCommunityProfile(request:HashMap<String,Any>): Response<APIResponse<CommunityProfileDetails>>
+
     suspend fun createSupportRequest(request: NCDSupportRequest): Response<APIResponse<String>>
 }

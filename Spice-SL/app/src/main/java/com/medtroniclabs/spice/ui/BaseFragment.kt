@@ -253,4 +253,11 @@ open class BaseFragment : Fragment(){
             generalErrorDialog.show(childFragmentManager, GeneralErrorDialog.TAG)
     }
 
+    fun showHomeIcon(){
+        (activity as? BaseActivity)?.hideHomeButton(false)
+    }
+
+    fun hideHomeIcon(){
+        (activity as? BaseActivity)?.hideHomeButton(true)
+    }
 }

@@ -19,6 +19,7 @@ import com.medtroniclabs.spice.db.SpiceDataBase
 import com.medtroniclabs.spice.db.dao.AboveFiveYearsDAO
 import com.medtroniclabs.spice.db.dao.AssessmentDAO
 import com.medtroniclabs.spice.db.dao.CallHistoryDao
+import com.medtroniclabs.spice.db.dao.CommunityDetailsDAO
 import com.medtroniclabs.spice.db.dao.ConsentFormDao
 import com.medtroniclabs.spice.db.dao.DiagnosisDAO
 import com.medtroniclabs.spice.db.dao.ExaminationsComplaintsDAO
@@ -330,6 +331,12 @@ object AppModule {
     @Provides
     fun provideNcdFollowUpDAO(db: SpiceDataBase): NCDFollowUpDao {
         return db.ncdFollowUpDao()
+    }
+
+    @Singleton
+    @Provides
+    fun provideConsentForm(db: SpiceDataBase): CommunityDetailsDAO {
+        return db.communityDetailsDao()
     }
 }
 

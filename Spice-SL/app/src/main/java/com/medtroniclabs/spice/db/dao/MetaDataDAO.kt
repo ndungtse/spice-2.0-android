@@ -9,6 +9,9 @@ import com.medtroniclabs.spice.data.CulturesEntity
 import com.medtroniclabs.spice.data.DosageFrequency
 import com.medtroniclabs.spice.data.ProgramEntity
 import com.medtroniclabs.spice.data.UnitMetricEntity
+import com.medtroniclabs.spice.data.VillageInfo
+import com.medtroniclabs.spice.data.community.CommunityPopulationStatistics
+import com.medtroniclabs.spice.data.community.CommunityProfile
 import com.medtroniclabs.spice.db.entity.ChiefDomEntity
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowConditionEntity
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowEntity
@@ -25,6 +28,8 @@ import com.medtroniclabs.spice.db.entity.NCDAssessmentClinicalWorkflow
 import com.medtroniclabs.spice.db.entity.SignsAndSymptomsEntity
 import com.medtroniclabs.spice.db.entity.UserProfileEntity
 import com.medtroniclabs.spice.db.entity.VillageEntity
+import com.medtroniclabs.spice.db.response.VillageBasicDetails
+import com.medtroniclabs.spice.network.resource.Resource
 
 @Dao
 interface MetaDataDAO {
@@ -263,4 +268,10 @@ interface MetaDataDAO {
 
     @Query("SELECT villageId as id, tenantId, name, villagecode, chiefdomId, countryId, districtId, isUserVillage, chiefdomCode, districtCode FROM LinkedVillageEntity WHERE tenantId = :tenantId")
     suspend fun getLinkedVillages(tenantId: Long): List<VillageEntity>
+
+    @Query("SELECT v.id as villageId, v.name as villageName, COUNT(h.id) as houseHoldCount FROM VillageEntity v LEFT JOIN Household h ON v.id = h.village_id WHERE (:searchText = '' OR v.name LIKE '%' || :searchText || '%') GROUP BY v.id")
+    fun filterCommunityProfile(searchText:String):LiveData<List<CommunityProfile>>
+
+    @Query("SELECT COUNT(DISTINCT household_id) as householdCount,COUNT( CASE WHEN isActive = 1 THEN 1 END) as populationCount,COUNT(CASE WHEN isPregnant = 1 THEN 1 END) as pregnantCount,COUNT(CASE WHEN date(date_of_birth) > date('now','-1 year') THEN 1 END ) as belowOneYearCount,COUNT(CASE WHEN date(date_of_birth) BETWEEN date('now','-5 year') AND date('now','-1 year') THEN 1 END ) as belowFiveYearCount FROM HOUSEHOLDMEMBER WHERE villageId = :villageId")
+    suspend fun getCommunityPopulationStatistics(villageId:Long):CommunityPopulationStatistics
 }

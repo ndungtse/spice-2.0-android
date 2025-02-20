@@ -259,4 +259,14 @@ object DefinedParams {
     const val SW = "sw"
     const val BUILD_FLAVOR_AFRICA = "africa"
     const val BUILD_FLAVOR_SL = "sl"
+    const val COMMUNITY_PROFILE = "community_profile"
+    const val COMMUNITY_ID = "community_id"
+
+    const val COMMUNITY_NAME = "name"
+    const val COMMUNITY_DESC = "description"
+    const val COMMUNITY_REGISTERED_DATE = "communityRegisteredDate"
+    const val VILLAGE_ID = "villageId"
+    const val MARKET_DAYS = "marketDays"
+    const val NEAREST_PHU = "nearestPhu"
+    const val COMMUNITY_REGISTERED ="community_registered"
 }

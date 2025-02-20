@@ -131,6 +131,43 @@
     <style name="TextStyle_Bold_24" parent="TextStyle_Bold">
         <item name="android:textSize">@dimen/_24ssp</item>
     </style>
+
+    <style name="TextStyle_Regular_14_Size" parent="TextStyle_Regular_14">
+        <item name="android:color">@color/table_title</item>
+        <item name="fontFamily">@font/inter_regular</item>
+    </style>
+
+    <style name="TextStyle_Regular_14_Grey" parent="TextStyle_Regular_14">
+        <item name="android:color">@color/grey_black</item>
+        <item name="fontFamily">@font/inter_regular</item>
+    </style>
+    <style name="TextStyle_Bold_14_Grey_Medium" parent="TextStyle_Regular_14">
+        <item name="android:color">@color/grey_black</item>
+        <item name="fontFamily">@font/inter_medium</item>
+    </style>
+    <style name="TextStyle_Bold_14_Size" parent="TextStyle_Regular_14">
+        <item name="android:color">@color/grey_black</item>
+        <item name="fontFamily">@font/inter_bold</item>
+    </style>
+    <style name="TextStyle_Bold_16_black" parent="TextStyle_Bold">
+        <item name="android:textSize">@dimen/_16ssp</item>
+        <item name="android:textColor">@color/house_hold_title</item>
+        <item name="android:fontFamily">@font/inter_bold</item>
+    </style>
+    <style name="TextStyle_Bold_14_black" parent="TextStyle_Bold">
+        <item name="android:textSize">@dimen/_14ssp</item>
+        <item name="android:textColor">@color/house_hold_title</item>
+        <item name="android:fontFamily">@font/inter_bold</item>
+    </style>
+    <style name="TextStyle_Bold_14_black_Medium" parent="TextStyle_Regular_14">
+        <item name="android:color">@color/house_hold_title</item>
+        <item name="fontFamily">@font/inter_medium</item>
+    </style>
+    <style name="TextStyle_Bold_16_Medium_Blue" parent="TextStyle">
+        <item name="android:textSize">@dimen/_16ssp</item>
+        <item name="android:textColor">@color/medium_blue</item>
+        <item name="android:fontFamily">@font/inter_bold</item>
+    </style>
     <!--End of Bold Text Styles-->
 
 

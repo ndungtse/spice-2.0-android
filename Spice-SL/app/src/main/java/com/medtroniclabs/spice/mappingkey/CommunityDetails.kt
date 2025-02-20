@@ -1,0 +1,32 @@
+package com.medtroniclabs.spice.mappingkey
+
+object CommunityDetails {
+    const val NumberOfImprovedWaterSources = "numberOfImprovedWaterSources"
+    const val NumberOfNonImprovedWaterSources = "numberOfNonImprovedWaterSources"
+    const val NumberOfImprovedToilets = "numberOfImprovedToilets"
+    const val NumberOfNonImprovedToilets = "numberOfNonImprovedToilets"
+    const val NumberOfHandPumpsNotFunctional = "numberOfHandPumpsNotFunctional"
+    const val PrimarySchool = "primarySchool"
+    const val JuniorSecondarySchool = "juniorSecondarySchool"
+    const val SeniorSecondarySchool = "seniorSecondarySchool"
+    const val Market = "market"
+    const val CourtBarrie = "courtBarrie"
+    const val Church = "church"
+    const val Mosque = "mosque"
+    const val MobileNetworkCoverage = "mobileNetworkCoverage"
+    const val SelectedNetwork = "selectedNetwork"
+    const val MarketDays = "marketDays"
+    const val ChwHouseInCommunity = "chwHouseInCommunity"
+    const val DescribeLocation = "describeLocation"
+    const val NearestPhu = "nearestPhu"
+    const val EmergencyContactPhu = "emergencyContactPhu"
+    const val AccessRoadToPhu = "accessRoadToPhu"
+    const val EmergencyTransportAvailable = "emergencyTransportAvailable"
+    const val NameOfEmergencyTransportContact = "nameOfEmergencyTransportContact"
+    const val MobileNumberOfEmergencyTransportContact = "mobileNumberOfEmergencyTransportContact"
+    const val NameOfAmbulanceDriver = "nameOfAmbulanceDriver"
+    const val MobileNumberOfAmbulanceDriver = "mobileNumberOfAmbulanceDriver"
+    const val True = "true"
+    const val False = "false"
+
+}

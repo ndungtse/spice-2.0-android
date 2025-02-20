@@ -2,6 +2,7 @@ package com.medtroniclabs.spice.db
 
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
+import androidx.work.impl.Migration_3_4
 
 object SpiceSLMigration {
 
@@ -453,5 +454,21 @@ object SpiceSLMigration {
             database.execSQL("ALTER TABLE HouseholdMember ADD COLUMN deceasedReason TEXT")
             database.execSQL("ALTER TABLE HouseHoldMember ADD COLUMN latitude REAL NOT NULL DEFAULT 0.0")
             database.execSQL("ALTER TABLE HouseHoldMember ADD COLUMN longitude REAL NOT NULL DEFAULT 0.0")     }
+    }
+
+    val Migration_3_4 = object : Migration(3, 4){
+        override fun migrate(database: SupportSQLiteDatabase) {
+            // Create newly added table CallHistory
+            database.execSQL("""
+                CREATE TABLE IF NOT EXISTS CommunityProfileEntity (
+                    id INTEGER PRIMARY KEY villageId NOT NULL,
+                    communityDescription TEXT NOT NULL,
+                    registeredDate TEXT NOT NULL,
+                    payload TEXT NOT NULL,
+                    latitude REAL NOT NULL,
+                    longitude REAL NOT NULL
+                )
+                """.trimIndent())
+        }
     }
 }

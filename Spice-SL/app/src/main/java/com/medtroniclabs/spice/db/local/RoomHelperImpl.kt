@@ -15,7 +15,8 @@ import com.medtroniclabs.spice.data.MedicalReviewMetaItems
 import com.medtroniclabs.spice.data.ProgramEntity
 import com.medtroniclabs.spice.data.ShortageReasonEntity
 import com.medtroniclabs.spice.data.UnitMetricEntity
-import com.medtroniclabs.spice.data.VillageInfo
+import com.medtroniclabs.spice.data.community.CommunityPopulationStatistics
+import com.medtroniclabs.spice.data.community.CommunityProfile
 import com.medtroniclabs.spice.data.model.HouseholdCardDetail
 import com.medtroniclabs.spice.data.offlinesync.model.HHSignatureDetail
 import com.medtroniclabs.spice.data.offlinesync.model.HouseHold
@@ -26,6 +27,7 @@ import com.medtroniclabs.spice.data.offlinesync.utils.OfflineSyncStatus
 import com.medtroniclabs.spice.db.dao.AboveFiveYearsDAO
 import com.medtroniclabs.spice.db.dao.AssessmentDAO
 import com.medtroniclabs.spice.db.dao.CallHistoryDao
+import com.medtroniclabs.spice.db.dao.CommunityDetailsDAO
 import com.medtroniclabs.spice.db.dao.ConsentFormDao
 import com.medtroniclabs.spice.db.dao.DiagnosisDAO
 import com.medtroniclabs.spice.db.dao.ExaminationsComplaintsDAO
@@ -48,6 +50,7 @@ import com.medtroniclabs.spice.db.entity.CallHistory
 import com.medtroniclabs.spice.db.entity.ChiefDomEntity
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowConditionEntity
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowEntity
+import com.medtroniclabs.spice.db.entity.CommunityDetailsEntity
 import com.medtroniclabs.spice.db.entity.ConsentEntity
 import com.medtroniclabs.spice.db.entity.ConsentForm
 import com.medtroniclabs.spice.db.entity.DistrictEntity
@@ -110,7 +113,8 @@ class RoomHelperImpl @Inject constructor(
     private val screeningDAO: ScreeningDAO,
     private val riskFactorDAO: RiskFactorDAO,
     private val ncdMedicalReviewDao: NcdMedicalReviewDao,
-    private val ncdFollowUpDao: NCDFollowUpDao
+    private val ncdFollowUpDao: NCDFollowUpDao,
+    private val communityDAO: CommunityDetailsDAO
 ) : RoomHelper {
     override suspend fun saveHouseHoldEntry(householdEntity: HouseholdEntity): Long {
         return householdDAO.insertHouseHold(householdEntity)
@@ -1192,5 +1196,33 @@ class RoomHelperImpl @Inject constructor(
 
     override suspend fun getHouseholdHeadDob(householdId: Long): String {
        return memberDAO.getHouseholdHeadDob(householdId)
+    }
+
+    override fun getFilterVillagesWithHouseholdsCount(searchInput: String): LiveData<List<CommunityProfile>> {
+        return metaDataDAO.filterCommunityProfile(searchInput)
+    }
+
+    override suspend fun getCommunityStatistics(villageId: Long): CommunityPopulationStatistics {
+        return metaDataDAO.getCommunityPopulationStatistics(villageId)
+    }
+
+    override suspend fun insertCommunityDetails(communityDetailsEntity: CommunityDetailsEntity) {
+        return communityDAO.insertCommunity(communityDetailsEntity)
+    }
+
+    override suspend fun getCommunityDetails(id: Long): CommunityDetailsEntity? {
+        return communityDAO.getCommunityDetailsById(id)
+    }
+
+    override suspend fun updateCommunityDetails(communityDetailsEntity: CommunityDetailsEntity){
+        return communityDAO.updateCommunity(communityDetailsEntity)
+    }
+
+    override suspend fun isCommunityExist(villageId: Long): Int {
+       return communityDAO.isCommunityExists(villageId)
+    }
+
+    override suspend fun updateUnSynStatus(villageId: Long, synStatus: String) {
+        return communityDAO.updateSyncStatus(villageId,synStatus  )
     }
 }

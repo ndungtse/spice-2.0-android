@@ -11,7 +11,8 @@ import com.medtroniclabs.spice.data.MedicalReviewMetaItems
 import com.medtroniclabs.spice.data.ProgramEntity
 import com.medtroniclabs.spice.data.ShortageReasonEntity
 import com.medtroniclabs.spice.data.UnitMetricEntity
-import com.medtroniclabs.spice.data.VillageInfo
+import com.medtroniclabs.spice.data.community.CommunityPopulationStatistics
+import com.medtroniclabs.spice.data.community.CommunityProfile
 import com.medtroniclabs.spice.data.model.HouseholdCardDetail
 import com.medtroniclabs.spice.data.offlinesync.model.HHSignatureDetail
 import com.medtroniclabs.spice.data.offlinesync.model.HouseHold
@@ -26,6 +27,7 @@ import com.medtroniclabs.spice.db.entity.NCDAssessmentClinicalWorkflow
 import com.medtroniclabs.spice.db.entity.ConsentEntity
 import com.medtroniclabs.spice.db.entity.ConsentForm
 import com.medtroniclabs.spice.db.entity.ChiefDomEntity
+import com.medtroniclabs.spice.db.entity.CommunityDetailsEntity
 import com.medtroniclabs.spice.db.entity.NCDMedicalReviewMetaEntity
 import com.medtroniclabs.spice.db.entity.FollowUp
 import com.medtroniclabs.spice.db.entity.FollowUpCall
@@ -449,4 +451,17 @@ interface RoomHelper {
 
     suspend fun getHouseholdHeadDob(householdId: Long): String
 
+    fun getFilterVillagesWithHouseholdsCount(searchInput: String):LiveData<List<CommunityProfile>>
+
+    suspend fun getCommunityStatistics(villageId: Long): CommunityPopulationStatistics
+
+    suspend fun insertCommunityDetails(communityDetailsEntity: CommunityDetailsEntity)
+
+    suspend fun getCommunityDetails(id: Long): CommunityDetailsEntity?
+
+    suspend fun updateCommunityDetails(communityDetailsEntity: CommunityDetailsEntity)
+
+    suspend fun isCommunityExist(villageId:Long):Int
+
+    suspend fun updateUnSynStatus(villageId:Long,synStatus:String)
 }

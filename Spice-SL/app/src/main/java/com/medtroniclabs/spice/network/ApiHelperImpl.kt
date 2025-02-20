@@ -86,6 +86,7 @@ import com.medtroniclabs.spice.model.ReferralData
 import com.medtroniclabs.spice.model.ReferralDetailRequest
 import com.medtroniclabs.spice.model.RemoveLabTestRequest
 import com.medtroniclabs.spice.model.SearchAndListResponse
+import com.medtroniclabs.spice.model.communityprofile.CommunityProfileDetails
 import com.medtroniclabs.spice.model.medicalreview.AddMemberRegRequest
 import com.medtroniclabs.spice.model.medicalreview.CreateUnderFiveYearsRequest
 import com.medtroniclabs.spice.model.medicalreview.CreateUnderTwoMonthsRequest
@@ -682,6 +683,18 @@ class ApiHelperImpl @Inject constructor(private val apiService: ApiService) : Ap
 
     override suspend fun cultureLocaleUpdate(request: CultureLocaleModel): Response<APIResponse<HashMap<String, Any>>> {
         return apiService.cultureLocaleUpdate(request)
+    }
+
+    override suspend fun createCommunityProfile(request: HashMap<String, Any>): Response<APIResponse<HashMap<String, Any>>> {
+       return apiService.createCommunityProfile(request)
+    }
+
+    override suspend fun getCommunityProfile(request: HashMap<String, Any>): Response<APIResponse<CommunityProfileDetails>> {
+       return apiService.getCommunityProfileDetails(request)
+    }
+
+    override suspend fun updateCommunityProfile(request: HashMap<String, Any>): Response<APIResponse<HashMap<String, Any>>> {
+        return apiService.updateCommunityProfile(request)
     }
 
     override suspend fun createSupportRequest(request: NCDSupportRequest): Response<APIResponse<String>> {

@@ -1,0 +1,33 @@
+package com.medtroniclabs.spice.model.communityprofile
+
+data class CommunityProfileDetails(
+    val accessRoadToPhu: Boolean?,
+    val ambulanceDriverMobile: String?,
+    val ambulanceDriverName: String?,
+    val church: Boolean?,
+    val chwHouseInCommunity: Boolean?,
+    val courtBarrie: Boolean?,
+    val describeLocation: String?,
+    val description: String?,
+    val emergencyContactPhu: String?,
+    val emergencyTransportAvailable: String?,
+    val emergencyTransportContactMobile: String?,
+    val emergencyTransportContactName: String?,
+    val juniorSecondarySchool: Boolean?,
+    val market: Boolean?,
+    val marketDays: List<String>?,
+    val mobileNetworkCoverage: Boolean?,
+    val mosque: Boolean?,
+    val name: String?,
+    val nearestPhu: String?,
+    val numberOfHandPumpsNotFunctional: Int?,
+    val numberOfImprovedToilets: Int?,
+    val numberOfImprovedWaterSources: Int?,
+    val numberOfNonImprovedToilets: Int?,
+    val numberOfNonImprovedWaterSources: Int?,
+    val primarySchool: Boolean?,
+    val registerCompleted: String?,
+    val selectedNetwork: String?,
+    val seniorSecondarySchool: Boolean?,
+    val villageId: String?
+)

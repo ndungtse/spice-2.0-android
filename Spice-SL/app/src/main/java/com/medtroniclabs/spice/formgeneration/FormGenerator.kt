@@ -3160,21 +3160,32 @@ class FormGenerator(
         id: String
     ): String {
         var text = ""
-        if (resultHashMap.containsKey(id)) {
+        if(id.equals(getString(R.string.market_days_key),true)){
             val mapList = resultHashMap[id]
-            if (mapList is java.util.ArrayList<*>) {
-                if (mapList.size == 1) {
-                    text = setDialogText(mapList)
-                } else if (mapList.size > 1) {
-                    text = if (isContainsOther(mapList)) {
-                        "${mapList.size - 1} and ${getString(R.string.other)} ${
-                            getString(R.string.symptoms_selected)
-                        }"
+            if(mapList is ArrayList<*>){
+                text = if(mapList.size == 1){
+                    "${mapList.size} ${getString(R.string.market_day_selected)}"
+                }else{
+                    "${mapList.size} ${getString(R.string.market_days_selected)}"
+                }
+            }
+        }else {
+            if (resultHashMap.containsKey(id)) {
+                val mapList = resultHashMap[id]
+                if (mapList is java.util.ArrayList<*>) {
+                    if (mapList.size == 1) {
+                        text = setDialogText(mapList)
+                    } else if (mapList.size > 1) {
+                        text = if (isContainsOther(mapList)) {
+                            "${mapList.size - 1} and ${getString(R.string.other)} ${
+                                getString(R.string.symptoms_selected)
+                            }"
+                        } else {
+                            "${mapList.size} ${getString(R.string.symptoms_selected)}"
+                        }
                     } else {
-                        "${mapList.size} ${getString(R.string.symptoms_selected)}"
+                        text = ""
                     }
-                } else {
-                    text = ""
                 }
             }
         }

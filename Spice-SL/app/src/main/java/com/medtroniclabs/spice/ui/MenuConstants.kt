@@ -32,4 +32,7 @@ object MenuConstants {
     const val PSYCHOLOGICAL = "PSYCHOLOGICAL"
 
     const val INVESTIGATION = "INVESTIGATION"
+    const val NO_OF_REFERRALS = "NO OF REFERRALS"
+
+    const val COMMUNITY_PROFILE = "COMMUNITY PROFILE"
 }

@@ -86,6 +86,7 @@ import com.medtroniclabs.spice.model.ReferralData
 import com.medtroniclabs.spice.model.ReferralDetailRequest
 import com.medtroniclabs.spice.model.RemoveLabTestRequest
 import com.medtroniclabs.spice.model.SearchAndListResponse
+import com.medtroniclabs.spice.model.communityprofile.CommunityProfileDetails
 import com.medtroniclabs.spice.model.medicalreview.AddMemberRegRequest
 import com.medtroniclabs.spice.model.medicalreview.CreateUnderFiveYearsRequest
 import com.medtroniclabs.spice.model.medicalreview.CreateUnderTwoMonthsRequest
@@ -554,6 +555,15 @@ interface ApiService {
 
     @POST("/user-service/user/update-culture")
     suspend fun cultureLocaleUpdate(@Body request: CultureLocaleModel): Response<APIResponse<HashMap<String, Any>>>
+
+    @POST("/spice-service/community-profile/get-community-profile")
+    suspend fun getCommunityProfileDetails(@Body request: HashMap<String, Any>): Response<APIResponse<CommunityProfileDetails>>
+
+    @POST("/spice-service/community-profile/create")
+    suspend fun createCommunityProfile(@Body request: HashMap<String, Any>): Response<APIResponse<HashMap<String, Any>>>
+
+    @POST("/spice-service/community-profile/update")
+    suspend fun updateCommunityProfile(@Body request:HashMap<String,Any>): Response<APIResponse<HashMap<String,Any>>>
 
     @POST("/user-service/user/support")
     suspend fun createSupportRequest(@Body request: NCDSupportRequest): Response<APIResponse<String>>

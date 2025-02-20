@@ -23,6 +23,7 @@ import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.MenuConstants
 import com.medtroniclabs.spice.ui.dashboard.ncd.NCDDashboardViewActivity
 import com.medtroniclabs.spice.ui.common.PatientSearchActivity
+import com.medtroniclabs.spice.ui.communityprofile.CommunityProfileActivity
 import com.medtroniclabs.spice.ui.followup.FollowUpMyPatientActivity
 import com.medtroniclabs.spice.ui.home.adapter.DashboardMenuItemsAdapter
 import com.medtroniclabs.spice.ui.household.HouseholdSearchActivity
@@ -118,6 +119,10 @@ class HomeScreenFragment : BaseFragment(), MenuSelectionListener {
                         startActivity(intent)
                     })
                 }
+            }
+
+            MenuConstants.COMMUNITY_PROFILE -> {
+                startActivity(Intent(requireContext(), CommunityProfileActivity::class.java))
             }
 
             MenuConstants.PerformanceMonitoring_ID -> {

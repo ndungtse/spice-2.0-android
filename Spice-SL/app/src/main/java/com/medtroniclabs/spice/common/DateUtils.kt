@@ -870,4 +870,17 @@ object DateUtils {
             return null
         }
     }
+
+    fun convertUTCString(utcDate: String?,output:String): String {
+            val inputFormat = SimpleDateFormat(DATE_FORMAT_yyyyMMddHHmmss, Locale.getDefault())
+            inputFormat.timeZone = TimeZone.getTimeZone("UTC") // Parse as UTC
+
+            val outputFormat = SimpleDateFormat(output, Locale.getDefault())
+            outputFormat.timeZone = TimeZone.getDefault() // Convert to local time zone
+
+            val date = utcDate?.let {
+                inputFormat.parse(it)  // Convert UTC string to Date object
+            }
+            return outputFormat.format(date) // Format to required output
+        }
 }

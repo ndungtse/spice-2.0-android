@@ -20,6 +20,7 @@ import com.medtroniclabs.spice.db.converters.OfflineStatusTypeConverter
 import com.medtroniclabs.spice.db.dao.AboveFiveYearsDAO
 import com.medtroniclabs.spice.db.dao.AssessmentDAO
 import com.medtroniclabs.spice.db.dao.CallHistoryDao
+import com.medtroniclabs.spice.db.dao.CommunityDetailsDAO
 import com.medtroniclabs.spice.db.dao.ConsentFormDao
 import com.medtroniclabs.spice.db.dao.DiagnosisDAO
 import com.medtroniclabs.spice.db.dao.ExaminationsComplaintsDAO
@@ -42,6 +43,7 @@ import com.medtroniclabs.spice.db.entity.CallHistory
 import com.medtroniclabs.spice.db.entity.ChiefDomEntity
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowConditionEntity
 import com.medtroniclabs.spice.db.entity.ClinicalWorkflowEntity
+import com.medtroniclabs.spice.db.entity.CommunityDetailsEntity
 import com.medtroniclabs.spice.db.entity.ConsentEntity
 import com.medtroniclabs.spice.db.entity.ConsentForm
 import com.medtroniclabs.spice.db.entity.DistrictEntity
@@ -82,7 +84,7 @@ import net.zetetic.database.sqlcipher.SupportOpenHelperFactory
         LinkHouseholdMember::class, CallHistory::class, ProgramEntity::class, CulturesEntity::class, ConsentEntity::class,
         MentalHealthEntity::class, MedicalComplianceEntity::class, ChiefDomEntity::class, DistrictEntity::class, ScreeningEntity::class,
         RiskFactorEntity::class, LifestyleEntity::class, NCDMedicalReviewMetaEntity::class, AssessmentNCDEntity::class, UnitMetricEntity::class,
-        DosageFrequency::class, NCDDiagnosisEntity::class, TreatmentPlanEntity::class, ShortageReasonEntity::class, DosageDurationEntity::class, NCDFollowUp::class, LinkedVillageEntity::class, NCDCallDetails::class, NCDPatientDetailsEntity::class],
+        DosageFrequency::class, NCDDiagnosisEntity::class, TreatmentPlanEntity::class, ShortageReasonEntity::class, DosageDurationEntity::class, NCDFollowUp::class, LinkedVillageEntity::class, NCDCallDetails::class, NCDPatientDetailsEntity::class,CommunityDetailsEntity::class],
     version = 3
 )
 @TypeConverters(OfflineStatusTypeConverter::class)
@@ -115,7 +117,7 @@ abstract class SpiceDataBase : RoomDatabase() {
 
     abstract fun ncdMedicalReviewDao(): NcdMedicalReviewDao
     abstract fun ncdFollowUpDao(): NCDFollowUpDao
-
+    abstract fun communityDetailsDao(): CommunityDetailsDAO
     companion object {
         private const val DATABASE_NAME = "SpiceDataBase"
 

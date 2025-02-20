@@ -202,6 +202,12 @@ class DashboardMenuItemsAdapter(
                 context,
                 R.drawable.ic_investigation
             )
+
+            MenuConstants.COMMUNITY_PROFILE -> return ContextCompat.getDrawable(
+                context,
+                R.drawable.ic_community_profile
+            )
+
             else -> null
         }
     }

@@ -16,13 +16,15 @@ import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
 class CheckBoxDialog() : DialogFragment(), View.OnClickListener {
     private var callback: ((result: ArrayList<HashMap<String, Any>>) -> Unit)? = null
     var resultMap: Any? = null
-
+    var title : String? = null
     constructor(
         callback: (result: ArrayList<HashMap<String, Any>>) -> Unit,
-        resultMap: Any?
+        resultMap: Any?,
+        title:String?
     ) : this() {
         this.callback = callback
         this.resultMap = resultMap
+        this.title = title
     }
 
     lateinit var binding: CheckboxDialogLayoutBinding
@@ -34,11 +36,12 @@ class CheckBoxDialog() : DialogFragment(), View.OnClickListener {
         fun newInstance(
             key: String,
             resultMap: Any?,
+            title:String?=null,
             callback: (result: ArrayList<HashMap<String, Any>>) -> Unit
         ): CheckBoxDialog {
             val args = Bundle()
             args.putString(KEY_TYPE, key)
-            val fragment = CheckBoxDialog(callback, resultMap)
+            val fragment = CheckBoxDialog(callback, resultMap,title)
             fragment.arguments = args
             return fragment
         }
@@ -69,7 +72,11 @@ class CheckBoxDialog() : DialogFragment(), View.OnClickListener {
 
     private fun attachObserver() {
         viewModel.symptomTypeListResponse.observe(viewLifecycleOwner) { list ->
-            binding.labelHeader.text = getString(R.string.symptoms)
+            binding.labelHeader.text = if(title.isNullOrEmpty()) {
+                getString(R.string.symptoms)
+            }else{
+                getString(R.string.market_days)
+            }
             if (list.isNotEmpty()) {
                 if (resultMap != null && resultMap is ArrayList<*>) {
                     binding.rvItems.adapter = CheckboxDialogAdapter(
