@@ -464,4 +464,8 @@ interface RoomHelper {
     suspend fun isCommunityExist(villageId:Long):Int
 
     suspend fun updateUnSynStatus(villageId:Long,synStatus:String)
+
+    suspend fun getHealthFacilityBasedOnVillageId(villageId: Long): List<HealthFacilityEntity>
+
+    suspend fun getAssessment(assessmentId: Long): AssessmentEntity
 }

@@ -91,6 +91,59 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cbsResultCardView"
+                style="@style/CardView_Style"
+                android:layout_width="@dimen/_0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/_6sdp"
+                android:layout_marginVertical="@dimen/_6sdp"
+                app:cardUseCompatPadding="true"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/resultCardView">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/cbsTvTitle"
+                        style="@style/Form_Header_Style"
+                        android:layout_width="match_parent"
+                        android:layout_weight="1"
+                        android:background="@color/grey_bg"
+                        android:gravity="center"
+                        android:padding="@dimen/_10sdp"
+                        android:text="@string/result"
+                        android:textSize="@dimen/_16ssp" />
+
+                    <TextView
+                        android:id="@+id/cbsEmptyErrorMessage"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center_horizontal|center_vertical"
+                        android:paddingVertical="@dimen/_32sdp"
+                        android:text="@string/patient_s_summary_could_not_be_fetched"
+                        android:textColor="@color/red_risk"
+                        android:textSize="@dimen/_16ssp"
+                        android:visibility="visible" />
+
+                    <LinearLayout
+                        android:id="@+id/cbsParentLayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:paddingHorizontal="@dimen/_8sdp"
+                        android:paddingVertical="@dimen/_10sdp"
+                        android:visibility="gone" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
 
             <TextView
                 android:id="@+id/tvLabel"
@@ -105,7 +158,7 @@
                 android:textSize="@dimen/_14ssp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/resultCardView" />
+                app:layout_constraintTop_toBottomOf="@id/cbsResultCardView" />
 
             <androidx.appcompat.widget.AppCompatEditText
                 android:id="@+id/etNotes"
@@ -276,6 +329,27 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/callSupervisor"
+            style="@style/Button_Style"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="@dimen/_8sdp"
+            android:layout_marginEnd="@dimen/_18sdp"
+            android:layout_weight="1"
+            android:background="@drawable/purple_bg"
+            android:clickable="true"
+            android:focusable="true"
+            android:visibility="gone"
+            android:fontFamily="@font/inter_bold"
+            android:paddingHorizontal="@dimen/_24sdp"
+            android:paddingVertical="@dimen/_12sdp"
+            android:text="@string/call_peer_supervisor"
+            android:textAlignment="center"
+            android:textAllCaps="true"
+            android:textColor="@color/blue" />
+
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btnDone"
             style="@style/Button_Style"
@@ -283,6 +357,7 @@
             android:layout_gravity="center"
             android:layout_margin="@dimen/_8sdp"
             android:text="@string/done"
+            android:layout_weight="1"
             android:textAllCaps="true"
             android:textStyle="bold"
             app:layout_constraintTop_toTopOf="parent" />

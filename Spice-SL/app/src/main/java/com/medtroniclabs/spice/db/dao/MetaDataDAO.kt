@@ -274,4 +274,13 @@ interface MetaDataDAO {
 
     @Query("SELECT COUNT(DISTINCT household_id) as householdCount,COUNT( CASE WHEN isActive = 1 THEN 1 END) as populationCount,COUNT(CASE WHEN isPregnant = 1 THEN 1 END) as pregnantCount,COUNT(CASE WHEN date(date_of_birth) > date('now','-1 year') THEN 1 END ) as belowOneYearCount,COUNT(CASE WHEN date(date_of_birth) BETWEEN date('now','-5 year') AND date('now','-1 year') THEN 1 END ) as belowFiveYearCount FROM HOUSEHOLDMEMBER WHERE villageId = :villageId")
     suspend fun getCommunityPopulationStatistics(villageId:Long):CommunityPopulationStatistics
+
+    @Query("""
+    SELECT h.*
+    FROM HealthFacilityEntity h
+    INNER JOIN VillageEntity v ON v.healthFacilityId = h.id
+    WHERE v.id = :villageId
+    """)
+    suspend fun getHealthFacilityBasedOnVillageId(villageId: Long): List<HealthFacilityEntity>
+
 }

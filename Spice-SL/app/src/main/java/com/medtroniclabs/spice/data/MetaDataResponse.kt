@@ -49,7 +49,8 @@ data class HealthFacility(
     val tenantId: Long,
     val fhirId: String?,
     val clinicalWorkflows: ArrayList<ClinicalWorkflow>,
-    val linkedVillages: ArrayList<Village>
+    val linkedVillages: ArrayList<Village>,
+    val phuFocalPersonNumber: Long? = null
 )
 
 data class District(
@@ -131,7 +132,25 @@ data class UserProfile(
     val villages: List<VillageEntity>? = null,
     val tenantId: Long,
     val suiteAccess: List<String>? = null,
-    val supervisor: String?
+    val supervisor: Supervisor? = null
+)
+
+data class Supervisor(
+    val id: Long? = null,
+    val firstName: String? = null,
+    val lastName: String? = null,
+    val gender: String? = null,
+    val phoneNumber: String? = null,
+    val username: String? = null,
+    val countryCode: String? = null,
+    val country: Country? = null,
+    val roles: List<Role>? = null,
+    val organizations: List<Organization>? = null,
+    val tenantId: Long? = null,
+    val fhirId: String? = null,
+    val suiteAccess: List<String>? = null,
+    val villages: List<Village>? = null,
+    val defaultRoleName: String? = null
 )
 
 data class Role(

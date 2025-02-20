@@ -15,8 +15,9 @@ data class AssessmentEntity(
     val patientId: String?, // member - patient Id
     val villageId: String, // Village Id of household
     val assessmentType: String,
-    val assessmentDetails:String,
+    var assessmentDetails:String,
     var otherDetails: String? = null,
+    var callResult: String? = null,
     var isReferred: Boolean = false,
     val referralStatus: ReferralStatus,
     val referredReason: ArrayList<String>?= null,

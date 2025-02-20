@@ -28,6 +28,7 @@ import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
 import com.medtroniclabs.spice.ui.dialog.RMNCHFlowSelectionDialog
 import com.medtroniclabs.spice.ui.home.adapter.DashboardMenuItemsAdapter
 import com.medtroniclabs.spice.ncd.medicalreview.NCDMedicalReviewActivity
+import com.medtroniclabs.spice.ui.cbs.activity.CbsActivity
 
 class ToolsMenuFragment : BaseFragment(), MenuSelectionListener {
 
@@ -115,6 +116,13 @@ class ToolsMenuFragment : BaseFragment(), MenuSelectionListener {
                 }
             }
 
+            MenuConstants.CBS_MENU_ID.uppercase() -> {
+                startCbsActivity(menuId)
+            }
+
+            MenuConstants.CBS_MENU_ID -> {
+                startCbsActivity(menuId)
+            }
             else -> {
                 if (getOrigin().equals(MenuConstants.MY_PATIENTS_MENU_ID, true)) {
                     val intent =
@@ -131,6 +139,17 @@ class ToolsMenuFragment : BaseFragment(), MenuSelectionListener {
                 }
             }
         }
+    }
+
+    private fun startCbsActivity(menuId: String) {
+        val intent = Intent(requireContext(), CbsActivity::class.java)
+        intent.putExtra(DefinedParams.MemberID, viewModel.selectedHouseholdMemberID)
+        intent.putExtra(DefinedParams.DOB, viewModel.selectedMemberDob)
+        intent.putExtra(DefinedParams.FollowUpId, viewModel.followUpId)
+        intent.putExtra(DefinedParams.MenuId, menuId)
+        intent.putExtra(DefinedParams.FhirId, getMemberReference())
+        intent.putExtra(DefinedParams.ORIGIN, getOrigin())
+        startActivity(intent)
     }
 
     private fun startAssessmentActivity(menuId: String, workFlowName: String?) {

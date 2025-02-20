@@ -66,6 +66,11 @@
                         android:id="@+id/dobAge"
                         layout="@layout/summary_layout" />
 
+                    <include
+                        android:id="@+id/dateOfOccurrence"
+                        layout="@layout/summary_layout"
+                        android:visibility="gone" />
+
                 </LinearLayout>
 
             </LinearLayout>

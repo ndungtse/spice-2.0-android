@@ -1231,89 +1231,89 @@
     <string name="several_days">Several days</string>
     <string name="more_than_half_day">More than half the days</string>
     <string name="nearly_every_day">Nearly every day</string>
-    <string name="urgent_referral">Urgent Referral</string>
-    <string name="entered_values_should_contain_only_alphabets">Entered values should contain only alphabets</string>
-    <string name="delivery_at_others">Delivery At(Others)</string>
-    <string name="please_select_a_valid_value">Please select a valid value</string>
-    <string name="please_select_a_valid_value_month">"Please enter a valid input for the month (0 to 11) and the week (0 to 4)."</string>
-    <string name="select_member_deceased">Select Member Deceased</string>
-    <string name="other_signs_and_symptoms">Other Signs and Symptoms</string>
-    <string name="reason_of_death">Reason of Death</string>
-    <string name="deceased">Deceased</string>
-    <string name="general_danger_sign">General Danger Sign</string>
-    <string name="the_day_s_should_be_less_than_age">The day(s) should be less than Age</string>
+    <string name="urgent_referral" translatable="false">Urgent Referral</string>
+    <string name="entered_values_should_contain_only_alphabets" translatable="false">Entered values should contain only alphabets</string>
+    <string name="delivery_at_others" translatable="false">Delivery At(Others)</string>
+    <string name="please_select_a_valid_value" translatable="false">Please select a valid value</string>
+    <string name="please_select_a_valid_value_month" translatable="false">"Please enter a valid input for the month (0 to 11) and the week (0 to 4)."</string>
+    <string name="select_member_deceased" translatable="false">Select Member Deceased</string>
+    <string name="other_signs_and_symptoms" translatable="false">Other Signs and Symptoms</string>
+    <string name="reason_of_death" translatable="false">Reason of Death</string>
+    <string name="deceased" translatable="false">Deceased</string>
+    <string name="general_danger_sign" translatable="false">General Danger Sign</string>
+    <string name="the_day_s_should_be_less_than_age" translatable="false">The day(s) should be less than Age</string>
 
-    <string name="relationship_to_household">Relationship to Household</string>
-    <string name="relationship_to_household_head">Relationship to Household Head</string>
-    <string name="age_validation_household_head">The age of the Household Head must be greater than 10 years.</string>
-    <string name="age_validation_wife_husband">The Wife or Husband must be at least 10 years old.</string>
-    <string name="age_validation_son_daughter">The Son or Daughter must be at least 10 years younger than the Household Head.</string>
-    <string name="age_validation_father_mother">The Father or Mother must be at least 10 years older than the Household Head.</string>
-    <string name="age_validation_grandchild">A Grandchild must be at least 30 years younger than the Household Head.</string>
-    <string name="age_validation_grandparent">A Grandparent must be at least 30 years older than the Household Head.</string>
-    <string name="invalid_credentials">Invalid credentials</string>
-    <string name="invalid_credentials_custom">Your username or password might be wrong. Please try again, or click on \'Forgot Password\' for help.</string>
-    <string name="job_aid_reading_result">Job Aid (RDT - Reading Results)</string>
-    <string name="site_of_disease">Site of Disease</string>
-    <string name="treatment_outcome">Treatment Outcome</string>
-    <string name="edit_weight">View Weight</string>
-    <string name="add_height">Add Height</string>
-    <string name="edit_disease">Edit Disease</string>
-    <string name="patient_type">Patient Type</string>
-    <string name="edit_type">Edit Patient Type</string>
+    <string name="relationship_to_household" translatable="false">Relationship to Household</string>
+    <string name="relationship_to_household_head" translatable="false">Relationship to Household Head</string>
+    <string name="age_validation_household_head" translatable="false">The age of the Household Head must be greater than 10 years.</string>
+    <string name="age_validation_wife_husband" translatable="false">The Wife or Husband must be at least 10 years old.</string>
+    <string name="age_validation_son_daughter" translatable="false">The Son or Daughter must be at least 10 years younger than the Household Head.</string>
+    <string name="age_validation_father_mother" translatable="false">The Father or Mother must be at least 10 years older than the Household Head.</string>
+    <string name="age_validation_grandchild" translatable="false">A Grandchild must be at least 30 years younger than the Household Head.</string>
+    <string name="age_validation_grandparent" translatable="false">A Grandparent must be at least 30 years older than the Household Head.</string>
+    <string name="invalid_credentials" translatable="false">Invalid credentials</string>
+    <string name="invalid_credentials_custom" translatable="false">Your username or password might be wrong. Please try again, or click on \'Forgot Password\' for help.</string>
+    <string name="job_aid_reading_result" translatable="false">Job Aid (RDT - Reading Results)</string>
+    <string name="site_of_disease" translatable="false">Site of Disease</string>
+    <string name="treatment_outcome" translatable="false">Treatment Outcome</string>
+    <string name="edit_weight" translatable="false">View Weight</string>
+    <string name="add_height" translatable="false">Add Height</string>
+    <string name="edit_disease" translatable="false">Edit Disease</string>
+    <string name="patient_type" translatable="false">Patient Type</string>
+    <string name="edit_type" translatable="false">Edit Patient Type</string>
 
-    <string name="community_profile">Community Profile</string>
-    <string name="no_of_households">No of Households(HH)</string>
-    <string name="no_of_communities">%1$d Communities</string>
-    <string name="no_of_community">%1$d Community</string>
-    <string name="profile_details">Profile Details</string>
-    <string name="name_of_community">Name of community</string>
-    <string name="community_boundary_desc">Community boundary description</string>
-    <string name="month_and_year_this_register_is_complete">Month and year this register is complete</string>
-    <string name="community_population_statistics">Community Population Statistics</string>
-    <string name="total_population">Total Population</string>
-    <string name="no_of_household_families">Number of household/families</string>
-    <string name="no_of_women_of_child_bearing_age">Number of women of child-bearing age</string>
-    <string name="no_of_pregnant_women">Number of pregnant women</string>
-    <string name="no_of_child_under_one_year">Number of children under 1 year</string>
-    <string name="no_of_children_under_five_years">Number of children under 5 years</string>
-    <string name="community_name">Community Name</string>
-    <string name="no_of_households_count">: %1$d</string>
-    <string name="market_days">Market Days</string>
-    <string name="market_days_key">marketDays</string>
-    <string name="market_day_selected">day selected</string>
-    <string name="market_days_selected">days selected</string>
-    <string name="registered_completed_on">Register Completed on %1$s</string>
-    <string name="water_and_sanitation_facilities">Water &amp; Sanitation Facilities</string>
-    <string name="no_of_improved_water_sources">Number of improved water resources</string>
-    <string name="no_of_non_improved_water_sources">Number of non-improved water resources</string>
-    <string name="no_of_imporved_toilets">Number of improved toilets</string>
-    <string name="no_of_non_improved_toilets">Number of non-improved toilets</string>
-    <string name="no_of_hand_pumps">Number of hand pumps not in functional</string>
-    <string name="community_details_added_successfully">Community details added successfully</string>
-    <string name="community_details_updated_successfully">Community details updated successfully\n</string>
-    <string name="infrastructure_facilities">Infrastructure Facilities</string>
-    <string name="primary_school">Primary School</string>
-    <string name="junior_secondary_school">Junior Secondary School</string>
-    <string name="senior_secondary_school">Senior Secondary School</string>
-    <string name="market">Market</string>
-    <string name="court_barrie">CourtBarrie</string>
-    <string name="church">Church</string>
-    <string name="mosque">Mosque</string>
-    <string name="mobile_network_coverage">Mobile Network Coverage</string>
-    <string name="selected_network">Selected Network</string>
-    <string name="chw_house_in_this_community">CHW\'s house in this community?</string>
-    <string name="describe_location">Describe Location</string>
-    <string name="nearest_phu">Nearest PHU</string>
-    <string name="emergency_management_plan">Emergency Management Plan</string>
-    <string name="emergency_contact_phu">Emergency Contact Phu</string>
-    <string name="access_road_to_phu">Access road for vehicles to the PHU?</string>
-    <string name="emergency_transport_available">Emergency Transport Available</string>
-    <string name="emergency_transport_contact">Emergency Transport Contact</string>
-    <string name="emergency_transport_contact_no">Emergency Transport Contact no</string>
-    <string name="ambulance_driver">Ambulance Driver</string>
-    <string name="ambulance_driver_contact">Ambulance Driver Contact no</string>
-    <string name="colon">:</string>
+    <string name="community_profile" translatable="false">Community Profile</string>
+    <string name="no_of_households" translatable="false">No of Households(HH)</string>
+    <string name="no_of_communities" translatable="false">%1$d Communities</string>
+    <string name="no_of_community" translatable="false">%1$d Community</string>
+    <string name="profile_details" translatable="false">Profile Details</string>
+    <string name="name_of_community" translatable="false">Name of community</string>
+    <string name="community_boundary_desc" translatable="false">Community boundary description</string>
+    <string name="month_and_year_this_register_is_complete" translatable="false">Month and year this register is complete</string>
+    <string name="community_population_statistics" translatable="false">Community Population Statistics</string>
+    <string name="total_population" translatable="false">Total Population</string>
+    <string name="no_of_household_families" translatable="false">Number of household/families</string>
+    <string name="no_of_women_of_child_bearing_age" translatable="false">Number of women of child-bearing age</string>
+    <string name="no_of_pregnant_women" translatable="false">Number of pregnant women</string>
+    <string name="no_of_child_under_one_year" translatable="false">Number of children under 1 year</string>
+    <string name="no_of_children_under_five_years" translatable="false">Number of children under 5 years</string>
+    <string name="community_name" translatable="false">Community Name</string>
+    <string name="no_of_households_count" translatable="false">: %1$d</string>
+    <string name="market_days" translatable="false">Market Days</string>
+    <string name="market_days_key" translatable="false">marketDays</string>
+    <string name="market_day_selected" translatable="false">day selected</string>
+    <string name="market_days_selected" translatable="false">days selected</string>
+    <string name="registered_completed_on" translatable="false">Register Completed on %1$s</string>
+    <string name="water_and_sanitation_facilities" translatable="false">Water &amp; Sanitation Facilities</string>
+    <string name="no_of_improved_water_sources" translatable="false">Number of improved water resources</string>
+    <string name="no_of_non_improved_water_sources" translatable="false">Number of non-improved water resources</string>
+    <string name="no_of_imporved_toilets" translatable="false">Number of improved toilets</string>
+    <string name="no_of_non_improved_toilets" translatable="false">Number of non-improved toilets</string>
+    <string name="no_of_hand_pumps" translatable="false">Number of hand pumps not in functional</string>
+    <string name="community_details_added_successfully" translatable="false">Community details added successfully</string>
+    <string name="community_details_updated_successfully" translatable="false">Community details updated successfully\n</string>
+    <string name="infrastructure_facilities" translatable="false">Infrastructure Facilities</string>
+    <string name="primary_school" translatable="false">Primary School</string>
+    <string name="junior_secondary_school" translatable="false">Junior Secondary School</string>
+    <string name="senior_secondary_school" translatable="false">Senior Secondary School</string>
+    <string name="market" translatable="false">Market</string>
+    <string name="court_barrie" translatable="false">CourtBarrie</string>
+    <string name="church" translatable="false">Church</string>
+    <string name="mosque" translatable="false">Mosque</string>
+    <string name="mobile_network_coverage" translatable="false">Mobile Network Coverage</string>
+    <string name="selected_network" translatable="false">Selected Network</string>
+    <string name="chw_house_in_this_community" translatable="false">CHW\'s house in this community?</string>
+    <string name="describe_location" translatable="false">Describe Location</string>
+    <string name="nearest_phu" translatable="false">Nearest PHU</string>
+    <string name="emergency_management_plan" translatable="false">Emergency Management Plan</string>
+    <string name="emergency_contact_phu" translatable="false">Emergency Contact Phu</string>
+    <string name="access_road_to_phu" translatable="false">Access road for vehicles to the PHU?</string>
+    <string name="emergency_transport_available" translatable="false">Emergency Transport Available</string>
+    <string name="emergency_transport_contact" translatable="false">Emergency Transport Contact</string>
+    <string name="emergency_transport_contact_no" translatable="false">Emergency Transport Contact no</string>
+    <string name="ambulance_driver" translatable="false">Ambulance Driver</string>
+    <string name="ambulance_driver_contact" translatable="false">Ambulance Driver Contact no</string>
+    <string name="colon" translatable="false">:</string>
 
     <string name="support_label" translatable="false">Please write your issues with the\napplication</string>
     <string name="support" translatable="false">Support</string>
@@ -1326,6 +1326,17 @@
     <string name="next_vaccination_date" translatable="false">Next Vaccination Date</string>
 
 
-    <string name="date">Date</string>
-    <string name="vaccination_done">Vaccination Done</string>
+    <string name="date" translatable="false">Date</string>
+    <string name="vaccination_done" translatable="false">Vaccination Done</string>
+    <string name="cbs_register" translatable="false">CBS Register</string>
+    <string name="date_of_occurrence" translatable="false">Date of Occurrence</string>
+    <string name="informed_ps" translatable="false">Informed PS</string>
+    <string name="ps_not_reachable" translatable="false">PS not Reachable</string>
+    <string name="informed_phu" translatable="false">Informed PHU</string>
+    <string name="phu_not_reachable" translatable="false">PHU not Reachable</string>
+    <string name="linked_phu" translatable="false">Linked PHU</string>
+    <string name="peer_supervisor_number" translatable="false">Peer Supervisor Number</string>
+    <string name="peer_supervisor_name" translatable="false">Peer Supervisor Name</string>
+    <string name="call_peer_supervisor" translatable="false">Call Peer supervisor</string>
+    <string name="emergency_contact_at_PHU" translatable="false">Emergency contact at PHU</string>
 </resources>

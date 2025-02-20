@@ -85,7 +85,7 @@ import net.zetetic.database.sqlcipher.SupportOpenHelperFactory
         MentalHealthEntity::class, MedicalComplianceEntity::class, ChiefDomEntity::class, DistrictEntity::class, ScreeningEntity::class,
         RiskFactorEntity::class, LifestyleEntity::class, NCDMedicalReviewMetaEntity::class, AssessmentNCDEntity::class, UnitMetricEntity::class,
         DosageFrequency::class, NCDDiagnosisEntity::class, TreatmentPlanEntity::class, ShortageReasonEntity::class, DosageDurationEntity::class, NCDFollowUp::class, LinkedVillageEntity::class, NCDCallDetails::class, NCDPatientDetailsEntity::class,CommunityDetailsEntity::class],
-    version = 3
+    version = 4
 )
 @TypeConverters(OfflineStatusTypeConverter::class)
 abstract class SpiceDataBase : RoomDatabase() {
@@ -144,6 +144,7 @@ abstract class SpiceDataBase : RoomDatabase() {
             if (CommonUtils.isSL()) {
                 db.addMigrations(SpiceSLMigration.MIGRATION_1_2)
                 db.addMigrations(SpiceSLMigration.MIGRATION_2_3)
+                db.addMigrations(SpiceSLMigration.MIGRATION_3_4)
             } else if (CommonUtils.isAfrica()) {
                 db.addMigrations(SpiceAfricaMigration.MIGRATION_1_2)
             }

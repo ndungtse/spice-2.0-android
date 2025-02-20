@@ -457,7 +457,8 @@ class MetaRepository @Inject constructor(
                     } else {
                         false
                     },
-                    isUserSite = userHealthFacilities?.any { userSiteFacility -> userSiteFacility.id == healthFacility.id } ?: false
+                    isUserSite = userHealthFacilities?.any { userSiteFacility -> userSiteFacility.id == healthFacility.id } ?: false,
+                    phoneNumber = healthFacility.phuFocalPersonNumber?.toString() ?: ""
                 )
             )
         }
@@ -472,7 +473,8 @@ class MetaRepository @Inject constructor(
                     tenantId = healthFacility.tenantId,
                     fhirId = healthFacility.fhirId,
                     isDefault = healthFacility.id == defaultId,
-                    isUserSite = userHealthFacilities?.any { userSiteFacility -> userSiteFacility.id == healthFacility.id } ?: false
+                    isUserSite = userHealthFacilities?.any { userSiteFacility -> userSiteFacility.id == healthFacility.id } ?: false,
+                    phoneNumber = healthFacility.phuFocalPersonNumber?.toString() ?: null
                 )
             )
         }

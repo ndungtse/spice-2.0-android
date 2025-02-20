@@ -15,6 +15,7 @@ import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.isVisible
+import com.medtroniclabs.spice.appextensions.setVisible
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DefinedParams
@@ -28,14 +29,17 @@ import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapter
 import com.medtroniclabs.spice.network.resource.Resource
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
+import com.medtroniclabs.spice.ui.MenuConstants
 import com.medtroniclabs.spice.ui.assessment.AssessmentCommonUtils
 import com.medtroniclabs.spice.ui.assessment.AssessmentCommonUtils.addViewSummaryLayout
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
 import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
+import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.ANC
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.getValueFromMap
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentRMNCHNeonateViewModel
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
+import com.medtroniclabs.spice.ui.cbs.activity.CbsActivity
 import com.medtroniclabs.spice.ui.household.HouseholdSearchActivity
 
 class AssessmentRMNCHNeonateSummaryFragment : BaseFragment(), View.OnClickListener {
@@ -191,6 +195,7 @@ class AssessmentRMNCHNeonateSummaryFragment : BaseFragment(), View.OnClickListen
         binding.etNextFollowUpDate.addTextChangedListener {
             binding.btnDone.isEnabled = !it.isNullOrEmpty()
         }
+        binding.callSupervisor.safeClickListener(this)
     }
 
     private fun showSummaryDetail(
@@ -316,7 +321,19 @@ class AssessmentRMNCHNeonateSummaryFragment : BaseFragment(), View.OnClickListen
             binding.etNextFollowUpDate.id -> {
                 showDatePickerDialog()
             }
+            binding.callSupervisor.id -> {
+                startCbsActivity(ANC)
+            }
         }
+    }
+
+    private fun startCbsActivity(workFlowName: String) {
+        val intent = Intent(requireContext(), CbsActivity::class.java)
+        intent.putExtra(DefinedParams.MemberID, viewModel.selectedHouseholdMemberId)
+        intent.putExtra(DefinedParams.DOB, viewModel.selectedMemberDob)
+        intent.putExtra(MenuConstants.WorkFlowName, workFlowName)
+        intent.putExtra(DefinedParams.MenuId, DefinedParams.CBS.lowercase())
+        startActivity(intent)
     }
 
     private fun showDatePickerDialog() {
@@ -392,6 +409,7 @@ class AssessmentRMNCHNeonateSummaryFragment : BaseFragment(), View.OnClickListen
     private fun showQuestionBasedAge(): List<String> {
         var questionList = ArrayList<String>()
         if (viewModel.isDeathOfNewborn) {
+            binding.callSupervisor.setVisible(viewModel.isDeathOfNewborn)
             questionList.add(AssessmentDefinedParams.ExclusivelyBreastfeeding)
         }
         return questionList

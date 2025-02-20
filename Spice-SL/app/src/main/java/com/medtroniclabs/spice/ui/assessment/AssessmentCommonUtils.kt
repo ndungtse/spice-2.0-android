@@ -5,11 +5,13 @@ import android.graphics.Typeface
 import android.view.LayoutInflater
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.appextensions.setVisible
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.No
 import com.medtroniclabs.spice.common.DefinedParams.Yes
 import com.medtroniclabs.spice.databinding.AssessmentSummaryLayoutBinding
+import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.model.AssessmentSummaryModel
 
 object AssessmentCommonUtils {
@@ -65,13 +67,31 @@ object AssessmentCommonUtils {
         return ""
     }
 
-    fun addViewSummaryLayout(title: String?, value: String?, valueTextColor: Int? = null, context:Context): ConstraintLayout {
+    fun getListActual(map: Any?): String? {
+        if (map is Map<*, *> && map.containsKey(DefinedParams.NAME)) {
+            val actual = map[DefinedParams.NAME]
+            if (actual is String)
+                return actual
+        }
+        return null
+    }
+
+    fun addViewSummaryLayout(title: String?, value: String?, valueTextColor: Int? = null, context:Context, isCallShown:Boolean = false, callBtnTag : String? = null,   callback: ((String?,String?) -> Unit)? = null): ConstraintLayout {
         val summaryBinding = AssessmentSummaryLayoutBinding.inflate(LayoutInflater.from(context))
         summaryBinding.tvKey.text = title ?: context.getString(R.string.separator_hyphen)
         summaryBinding.tvValue.text = getSummaryValue(context, value)
         valueTextColor?.let {
             summaryBinding.tvValue.setTextColor(it)
             summaryBinding.tvValue.typeface = Typeface.defaultFromStyle(Typeface.BOLD)
+        }
+        summaryBinding.callButton.setVisible(isCallShown)
+        callBtnTag?.let {
+            summaryBinding.callButton.tag = callBtnTag
+            summaryBinding.callButton.safeClickListener{
+                val tag = summaryBinding.callButton.tag as? String ?: ""
+                val value = summaryBinding.tvValue.text as? String ?: ""
+                callback?.invoke(tag, value)
+            }
         }
         return summaryBinding.root
     }

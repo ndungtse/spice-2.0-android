@@ -449,16 +449,16 @@ object SpiceSLMigration {
         }
     }
     val MIGRATION_2_3 = object : Migration(2, 3) {
-        override fun migrate(database: SupportSQLiteDatabase) {
+        override fun migrate(db: SupportSQLiteDatabase) {
             // Add the new deceasedReason column
-            database.execSQL("ALTER TABLE HouseholdMember ADD COLUMN deceasedReason TEXT")
-            database.execSQL("ALTER TABLE HouseHoldMember ADD COLUMN latitude REAL NOT NULL DEFAULT 0.0")
-            database.execSQL("ALTER TABLE HouseHoldMember ADD COLUMN longitude REAL NOT NULL DEFAULT 0.0")     }
+            db.execSQL("ALTER TABLE HouseholdMember ADD COLUMN deceasedReason TEXT")
+            db.execSQL("ALTER TABLE HouseHoldMember ADD COLUMN latitude REAL NOT NULL DEFAULT 0.0")
+            db.execSQL("ALTER TABLE HouseHoldMember ADD COLUMN longitude REAL NOT NULL DEFAULT 0.0")     }
     }
 
-    val Migration_3_4 = object : Migration(3, 4){
+    val MIGRATION_3_4 = object : Migration(3, 4){
         override fun migrate(database: SupportSQLiteDatabase) {
-            // Create newly added table CallHistory
+            // Create newly added table CommunityProfileEntity
             database.execSQL("""
                 CREATE TABLE IF NOT EXISTS CommunityProfileEntity (
                     id INTEGER PRIMARY KEY villageId NOT NULL,
@@ -469,6 +469,9 @@ object SpiceSLMigration {
                     longitude REAL NOT NULL
                 )
                 """.trimIndent())
+            database.execSQL("ALTER TABLE HealthFacilityEntity ADD COLUMN phoneNumber TEXT DEFAULT NULL")
+            database.execSQL("ALTER TABLE VillageEntity ADD COLUMN healthFacilityId INTEGER DEFAULT NULL")
+            database.execSQL("ALTER TABLE AssessmentEntity ADD COLUMN callResult TEXT DEFAULT NULL")
         }
     }
 }

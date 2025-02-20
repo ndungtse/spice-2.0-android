@@ -6,6 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
+import com.medtroniclabs.spice.appextensions.gone
+import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DateUtils.DATE_ddMMyyyy
@@ -17,6 +19,7 @@ import com.medtroniclabs.spice.formgeneration.extension.capitalizeFirstChar
 import com.medtroniclabs.spice.model.assessment.AssessmentMemberDetails
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
+import com.medtroniclabs.spice.ui.MenuConstants
 import com.medtroniclabs.spice.ui.assessment.AssessmentCommonUtils
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
@@ -246,9 +249,17 @@ class BioDataFragment : BaseFragment() {
             binding.dobAge.tvValue.text = getAgeValue(
                 age
             )
-            viewModel.ageInMonth.postValue(age)
-            viewModel.workflowName?.let { workFlowName ->
-                viewModel.getPatientVisitCountByType(workFlowName, id)
+            if (viewModel.menuId.equals(MenuConstants.CBS_MENU_ID, true)) {
+                binding.dateOfOccurrence.root.visible()
+                binding.dateOfOccurrence.tvKey.text = getString(R.string.date_of_occurrence)
+                binding.dateOfOccurrence.tvValue.text =
+                    DateUtils.getTodayDateDDMMYYYY(DATE_ddMMyyyy)
+            } else {
+                binding.dateOfOccurrence.root.gone()
+                viewModel.ageInMonth.postValue(age)
+                viewModel.workflowName?.let { workFlowName ->
+                    viewModel.getPatientVisitCountByType(workFlowName, id)
+                }
             }
         }
     }

@@ -2,6 +2,7 @@ package com.medtroniclabs.spice.ui.assessment.referrallogic
 
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DateUtils
+import com.medtroniclabs.spice.common.DefinedParams.CBS_Referral
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams
 import com.medtroniclabs.spice.formgeneration.config.DefinedParams.NoSymptoms
 import com.medtroniclabs.spice.model.assessment.AssessmentMemberDetails
@@ -317,6 +318,12 @@ class ReferralResultGenerator {
                 addReferralReason(referralReason, "TB Symptoms")
             }
         }
+        return Pair(checkStatus(), referralReason)
+    }
+
+    fun calculateCBSReferralResult(map: HashMap<String, Any>): Pair<String?, ArrayList<String>> {
+        addResultMap(CBS_Referral, ReferralStatus.Referred.name )
+        addReferralReason(referralReason, CBS_Referral)
         return Pair(checkStatus(), referralReason)
     }
 

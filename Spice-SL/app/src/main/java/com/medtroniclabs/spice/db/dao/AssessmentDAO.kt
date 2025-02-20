@@ -78,4 +78,7 @@ interface AssessmentDAO {
     @Query("SELECT COUNT(assessmentDetails) FROM AssessmentNCDEntity WHERE uploadStatus=0")
     fun getUnSyncedNCDAssessmentCount(): LiveData<Long>
 
+    @Query("SELECT * FROM ASSESSMENT WHERE id = :assessmentId")
+    suspend fun getAssessment(assessmentId: Long): AssessmentEntity
+
 }

@@ -10,6 +10,7 @@ import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.data.LocalSpinnerResponse
 import com.medtroniclabs.spice.db.entity.AssessmentEntity
+import com.medtroniclabs.spice.db.entity.HealthFacilityEntity
 import com.medtroniclabs.spice.db.entity.MedicalComplianceEntity
 import com.medtroniclabs.spice.db.entity.MentalHealthEntity
 import com.medtroniclabs.spice.db.entity.SignsAndSymptomsEntity
@@ -173,6 +174,17 @@ class AssessmentRepository @Inject constructor(
             Resource(state = ResourceState.ERROR)
         }
     }
+    suspend fun saveCallResult(assessmentEntity: AssessmentEntity): Resource<AssessmentEntity> {
+        val id = roomHelper.saveAssessment(assessmentEntity)
+        assessmentEntity.id = id
+        return Resource(ResourceState.SUCCESS, assessmentEntity)
+    }
+
+    suspend fun getAssessmentById(assessmentId: Long): Resource<AssessmentEntity> {
+        val data = roomHelper.getAssessment(assessmentId)
+        return Resource(ResourceState.SUCCESS, data)
+    }
+
 
     private fun getReferralResult(result: String?): ReferralStatus {
         return when (result) {
@@ -281,11 +293,20 @@ class AssessmentRepository @Inject constructor(
             dropDownList.add(
                 hashMapOf<String, Any>(
                     DefinedParams.NAME to healthFacilityEntity.name,
-                    DefinedParams.id to healthFacilityEntity.fhirId.toString()
+                    DefinedParams.id to healthFacilityEntity.fhirId.toString(),
+                    DefinedParams.isDefault to healthFacilityEntity.isDefault,
+                    DefinedParams.phoneNumber to (healthFacilityEntity.phoneNumber ?: "")
                 )
             )
         }
         return Resource(state = ResourceState.SUCCESS, data = dropDownList)
+    }
+
+    suspend fun getHealthFacilityBasedOnVillageId(villageId: Long): Resource<List<HealthFacilityEntity>> {
+        return Resource(
+            state = ResourceState.SUCCESS,
+            data = roomHelper.getHealthFacilityBasedOnVillageId(villageId)
+        )
     }
 
     suspend fun getNearestHealthFacility(

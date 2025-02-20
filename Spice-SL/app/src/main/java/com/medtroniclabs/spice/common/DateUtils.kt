@@ -486,9 +486,9 @@ object DateUtils {
         return TimeUnit.DAYS.convert(diffInMillis, TimeUnit.MILLISECONDS)
     }
 
-    fun getTodayDateDDMMYYYY(): String {
+    fun getTodayDateDDMMYYYY(format: String = DATE_FORMAT_yyyyMMddHHmmssZZZZZ): String {
         val calendar = Calendar.getInstance()
-        return getDateString(calendar.time.time, DATE_FORMAT_yyyyMMddHHmmssZZZZZ)
+        return getDateString(calendar.time.time, format)
     }
 
     fun getCurrentDateTimeInMillis(): Long = Instant.now().toEpochMilli()

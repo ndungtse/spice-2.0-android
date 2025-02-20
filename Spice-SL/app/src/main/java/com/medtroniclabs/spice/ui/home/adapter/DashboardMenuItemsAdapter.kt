@@ -72,6 +72,16 @@ class DashboardMenuItemsAdapter(
 
     private fun getResourceActivityId(menuID: String, context: Context, name: String): Drawable? {
         return when (menuID) {
+            MenuConstants.CBS_MENU_ID.lowercase() -> return ContextCompat.getDrawable(
+                context,
+                R.drawable.ic_cbs
+            )
+
+            MenuConstants.CBS_MENU_ID.uppercase() -> return ContextCompat.getDrawable(
+                context,
+                R.drawable.ic_cbs
+            )
+
             MenuConstants.HOUSEHOLD_MENU_ID -> return ContextCompat.getDrawable(
                 context,
                 R.drawable.ic_household
@@ -94,11 +104,6 @@ class DashboardMenuItemsAdapter(
                     return ContextCompat.getDrawable(context, R.drawable.ic_general)
                 }
             }
-
-            MenuConstants.CBS_MENU_ID -> return ContextCompat.getDrawable(
-                context,
-                R.drawable.ic_cbs_tool
-            )
 
             MenuConstants.TB_MENU_ID.lowercase() -> return ContextCompat.getDrawable(
                 context,

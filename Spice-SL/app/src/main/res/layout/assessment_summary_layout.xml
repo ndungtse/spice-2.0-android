@@ -43,4 +43,20 @@
         app:layout_constraintHorizontal_weight="1"
         app:layout_constraintStart_toEndOf="@+id/tvRowSeparator"
         app:layout_constraintTop_toTopOf="@id/tvKey" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/callButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/_18sdp"
+        android:background="@drawable/call_button_selector"
+        android:clickable="true"
+        android:focusable="true"
+        android:visibility="gone"
+        android:paddingHorizontal="@dimen/_20sdp"
+        android:paddingVertical="@dimen/_10sdp"
+        android:src="@drawable/ic_call"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -13,7 +13,9 @@ import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
+import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.startBackgroundOfflineSync
+import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.CommonUtils.convertStringToIntString
 import com.medtroniclabs.spice.common.CommonUtils.getOptionMap
@@ -184,8 +186,20 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
 
     private fun attachObservers() {
         viewModel.assessmentStringLiveData.value?.let { result ->
-            updateStatusBar()
-            createSummaryView(createListSummaryData(result))
+            var isCbs = false
+            createListSummaryData(result)?.let {
+                it.filter { it.title?.lowercase() != General_Danger_Signs.lowercase() }
+                    .forEach { item ->
+                        if (item.id.equals(hasDiarrhoea,true)) {
+                            if (item.value == Yes) {
+                                isCbs = true
+                                binding.cbsResultCardView.gone()
+                            }
+                        }
+                    }
+                updateStatusBar()
+                createSummaryView(it)
+            }
         }
 
         viewModel.nearestFacilityLiveData.observe(viewLifecycleOwner) { resourceState ->
@@ -205,7 +219,7 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
         }
     }
 
-    private fun updateStatusBar() {
+    private fun updateStatusBar(isCbs: Boolean = false) {
         when (viewModel.referralStatus) {
             ReferralStatus.Referred.name -> {
                 viewModel.nearestFacilityLiveData.value?.data?.let { siteList ->
@@ -214,7 +228,7 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
                 binding.phuReferredGroup.visibility = View.VISIBLE
                 binding.riskResultLayout.backgroundTintList =
                     ContextCompat.getColorStateList(requireContext(), R.color.attention_color)
-                if (viewModel.isDangerSignFlow) {
+                if (viewModel.isDangerSignFlow || isCbs) {
                     binding.riskResultLayout.text =
                         getString(R.string.urgent_referral)
                 } else {

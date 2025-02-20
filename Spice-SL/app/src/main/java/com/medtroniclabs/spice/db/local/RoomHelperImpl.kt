@@ -1225,4 +1225,12 @@ class RoomHelperImpl @Inject constructor(
     override suspend fun updateUnSynStatus(villageId: Long, synStatus: String) {
         return communityDAO.updateSyncStatus(villageId,synStatus  )
     }
+
+    override suspend fun getHealthFacilityBasedOnVillageId(villageId: Long): List<HealthFacilityEntity> {
+        return metaDataDAO.getHealthFacilityBasedOnVillageId(villageId)
+    }
+
+    override suspend fun getAssessment(assessmentId: Long): AssessmentEntity {
+        return assessmentDAO.getAssessment(assessmentId)
+    }
 }

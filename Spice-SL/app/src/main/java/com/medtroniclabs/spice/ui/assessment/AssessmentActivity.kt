@@ -173,6 +173,8 @@ class AssessmentActivity : BaseActivity() {
     }
 
     private fun loadSummaryFragment() {
+        val bundle = Bundle()
+        bundle.putString(MenuConstants.WorkFlowName, viewModel.workflowName)
         when (viewModel.menuId) {
             MenuConstants.ICCM_MENU_ID -> {
                 setTitle(Summary.capitalizeFirstChar())
@@ -206,6 +208,7 @@ class AssessmentActivity : BaseActivity() {
                 hideBackButton()
                 replaceFragmentInId<AssessmentRMNCHSummaryFragment>(
                     binding.formsFragmentContainer.id,
+                    bundle = bundle,
                     tag = AssessmentRMNCHSummaryFragment.TAG
                 )
             }

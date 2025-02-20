@@ -15,15 +15,19 @@ import com.medtroniclabs.spice.appextensions.postSuccess
 import com.medtroniclabs.spice.common.DateUtils
 import com.medtroniclabs.spice.common.DateUtils.calculateGestationalAge
 import com.medtroniclabs.spice.common.DefinedParams
+import com.medtroniclabs.spice.common.DefinedParams.CBS
 import com.medtroniclabs.spice.common.DefinedParams.TB
 import com.medtroniclabs.spice.common.DefinedParams.TbScreening
+import com.medtroniclabs.spice.common.DefinedParams.surveillanceDetails
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.SpiceLocationManager
 import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.data.LocalSpinnerResponse
+import com.medtroniclabs.spice.data.UserProfile
 import com.medtroniclabs.spice.data.model.RecommendedDosageListModel
 import com.medtroniclabs.spice.data.model.SymptomModel
 import com.medtroniclabs.spice.db.entity.AssessmentEntity
+import com.medtroniclabs.spice.db.entity.HealthFacilityEntity
 import com.medtroniclabs.spice.db.entity.HouseholdMemberEntity
 import com.medtroniclabs.spice.db.entity.MedicalComplianceEntity
 import com.medtroniclabs.spice.db.entity.MemberClinicalEntity
@@ -71,6 +75,7 @@ import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.otherAncSigns
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.otherChildhoodVisitSigns
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.otherSigns
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.pncChildSigns
+import com.medtroniclabs.spice.ui.boarding.repo.MetaRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
@@ -81,7 +86,8 @@ import javax.inject.Inject
 class AssessmentViewModel @Inject constructor(
     @IoDispatcher override var dispatcherIO: CoroutineDispatcher,
     private var memberRegistrationRepository: HouseholdMemberRepository,
-    private var assessmentRepository: AssessmentRepository
+    private var assessmentRepository: AssessmentRepository,
+    private val metaRepository: MetaRepository
 ) : BaseViewModel(dispatcherIO) {
 
     var selectedHouseholdMemberId = -1L
@@ -129,6 +135,11 @@ class AssessmentViewModel @Inject constructor(
     var formRenderedLiveData = MutableLiveData<Boolean>()
     var muacColor:String? = null
     var hasDiarrhoea:Boolean = false
+    val userProfileLiveData = MutableLiveData<Resource<UserProfile>>()
+    val callResultHashMap = HashMap<String, Any>()
+    val patientHealthFacility = MutableLiveData<Resource<List<HealthFacilityEntity>>>()
+    val callResultSaveLiveData = MutableLiveData<Resource<AssessmentEntity>>()
+    val getAssessmentDetails = MutableLiveData<Resource<AssessmentEntity>>()
 
     val childhoodVisitConditionLiveData = MediatorLiveData<String>().apply {
         addSource(ageInMonth) { age ->
@@ -216,6 +227,26 @@ class AssessmentViewModel @Inject constructor(
                     )
                 )
             }
+        }
+    }
+
+    fun saveCallResult(
+       assessmentEntity: AssessmentEntity,
+       assessmentMap: HashMap<String, Any>? = null
+    ) {
+        viewModelScope.launch(dispatcherIO) {
+            assessmentMap?.let {
+                val assessmentDetail =
+                    getAssessmentDetails(it as HashMap<Any, Any>)
+                assessmentStringLiveData.postValue(assessmentDetail.first)
+            }
+            callResultSaveLiveData.postValue(assessmentRepository.saveCallResult(assessmentEntity))
+        }
+    }
+
+    fun getAssessmentDetailsById(assessmentId: Long) {
+        viewModelScope.launch(dispatcherIO) {
+            getAssessmentDetails.postValue(assessmentRepository.getAssessmentById(assessmentId))
         }
     }
 
@@ -504,6 +535,16 @@ class AssessmentViewModel @Inject constructor(
                 if (!value.isNullOrEmpty()) {
                     map.remove(TB.lowercase())
                     map[TB.lowercase()] = value
+                }
+            }
+        }
+        if (map.containsKey(CBS.lowercase())) {
+            val result = map[CBS.lowercase()] as? HashMap<Any, Any>
+            if (result != null && result.containsKey(surveillanceDetails)) {
+                val value = result[surveillanceDetails] as? HashMap<Any, Any>
+                if (!value.isNullOrEmpty()) {
+                    map.remove(CBS.lowercase())
+                    map[CBS.lowercase()] = value
                 }
             }
         }
@@ -926,6 +967,23 @@ class AssessmentViewModel @Inject constructor(
         val locationManager = SpiceLocationManager(context)
         locationManager.getCurrentLocation {
             setCurrentLocation(it)
+        }
+    }
+
+    fun getUserProfile() {
+        viewModelScope.launch(dispatcherIO) {
+            userProfileLiveData.postLoading()
+            userProfileLiveData.postValue(metaRepository.getUserProfile())
+        }
+    }
+
+    fun getHealthFacilityBasedOnVillageId(villageId: Long) {
+        viewModelScope.launch(dispatcherIO) {
+            patientHealthFacility.postValue(
+                assessmentRepository.getHealthFacilityBasedOnVillageId(
+                    villageId = villageId
+                )
+            )
         }
     }
 }

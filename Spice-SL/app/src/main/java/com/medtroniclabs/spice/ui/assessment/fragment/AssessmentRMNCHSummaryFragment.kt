@@ -14,6 +14,7 @@ import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.app.analytics.utils.AnalyticsDefinedParams
 import com.medtroniclabs.spice.appextensions.gone
+import com.medtroniclabs.spice.appextensions.setVisible
 import com.medtroniclabs.spice.appextensions.startBackgroundOfflineSync
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.DateUtils
@@ -21,6 +22,7 @@ import com.medtroniclabs.spice.common.DateUtils.calculateAgeInMonths
 import com.medtroniclabs.spice.common.DateUtils.convertStringToDate
 import com.medtroniclabs.spice.common.DateUtils.getDateStringFromDate
 import com.medtroniclabs.spice.common.DefinedParams
+import com.medtroniclabs.spice.common.DefinedParams.AssessmentId
 import com.medtroniclabs.spice.common.StringConverter
 import com.medtroniclabs.spice.common.ViewUtils
 import com.medtroniclabs.spice.databinding.FragmentRmnchSummaryBinding
@@ -30,6 +32,7 @@ import com.medtroniclabs.spice.formgeneration.model.FormLayout
 import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapterCustomLayout
 import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseFragment
+import com.medtroniclabs.spice.ui.MenuConstants
 import com.medtroniclabs.spice.ui.assessment.AssessmentCommonUtils
 import com.medtroniclabs.spice.ui.assessment.AssessmentCommonUtils.addViewSummaryLayout
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
@@ -42,6 +45,7 @@ import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.childHoodVisitMaxMonth
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.deathOfBaby
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.getValueFromMap
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
+import com.medtroniclabs.spice.ui.cbs.activity.CbsActivity
 import com.medtroniclabs.spice.ui.household.HouseholdSearchActivity
 
 class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
@@ -73,6 +77,7 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
 
     private fun setListener() {
         binding.btnDone.safeClickListener(this)
+        binding.callSupervisor.safeClickListener(this)
         binding.etNextFollowUpDate.safeClickListener(this)
         binding.etNextFollowUpDate.addTextChangedListener {
             binding.btnDone.isEnabled = !it.isNullOrEmpty()
@@ -174,6 +179,7 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
                     val miscarriageValue = workflowMap[RMNCH.Miscarriage]
                     val deathOfMother = workflowMap[DeathOfMother]
                     val deathOfBaby = workflowMap[deathOfBaby]
+                    showCallBtnForDeathMother(deathOfMother is Boolean && deathOfMother)
                     if ((miscarriageValue is Boolean && miscarriageValue) || (deathOfMother is Boolean && deathOfMother) || (deathOfBaby is Boolean && deathOfBaby)) {
                         binding.etNextFollowUpDate.gone()
                         binding.tvNextFollowupDateTitle.gone()
@@ -186,7 +192,9 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
             }
         }
     }
-
+    private fun showCallBtnForDeathMother(isShow: Boolean) {
+        binding.callSupervisor.setVisible(isShow)
+    }
 
     private fun loadPhuSitesList(siteList: ArrayList<Map<String, Any>>) {
         binding.etPhuChange.background= ContextCompat.getDrawable(requireContext(),R.drawable.edittext_background)
@@ -352,13 +360,26 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
             R.id.btnDone -> {
                 withLocationCheck(::handleDoneButtonClick)
             }
-
+            R.id.callSupervisor -> {
+                viewModel.workflowName?.let { startCbsActivity(it) }
+            }
             binding.etNextFollowUpDate.id -> {
                 showDatePickerDialog()
             }
         }
     }
 
+    private fun startCbsActivity(workFlowName: String) {
+        val intent = Intent(requireContext(), CbsActivity::class.java)
+        intent.putExtra(DefinedParams.MemberID, viewModel.selectedHouseholdMemberId)
+        intent.putExtra(DefinedParams.DOB, viewModel.selectedMemberDob)
+        intent.putExtra(MenuConstants.WorkFlowName, workFlowName)
+        viewModel.assessmentSaveLiveData.value?.data?.id?.let {
+            intent.putExtra(AssessmentId, it)
+        }
+        intent.putExtra(DefinedParams.MenuId, DefinedParams.CBS.lowercase())
+        startActivity(intent)
+    }
     private fun showDatePickerDialog() {
        var yearMonthDate: Triple<Int?, Int?, Int?>? = null
         if (!binding.etNextFollowUpDate.text.isNullOrBlank())
