@@ -212,7 +212,7 @@
     <string name="no_patients_found_perform_screening">No Patients found. Please perform screening to proceed.</string>
     <string name="no_records_found">No Records found.</string>
     <string name="search_by_national_id">Enter Name / ID / Mobile Number</string>
-    <string name="search_by_patient_id_name">Enter Patient ID/Name</string>
+    <string name="search_by_patient_id_name" translatable="false">Enter Patient ID/Name</string>
     <string name="referral_ticket">Referral Ticket</string>
     <string name="cost">Cost</string>
     <string name="next_medical_review">Next Medical Review</string>
@@ -246,7 +246,7 @@
     <string name="checking_for_oedema">Checking for Oedema</string>
     <string name="chest_in_drawing">Chest in-drawing</string>
     <string name="patient_on_treatment">Patient On Treatment</string>
-    <string name="treatment_pneumonia"> Treatment for Pneumonia Amoxicillin 250mg tab</string>
+    <string name="treatment_pneumonia" translatable="false"> Treatment for Pneumonia Amoxicillin 250mg tab</string>
     <string name="no_refferral_treatment_required">No Referral / No Treatment Required</string>
     <string name="select">Select</string>
     <string name="muac_info_1"> Ask the mother to remove any clothing that covers the child’s left arm.</string>

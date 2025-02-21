@@ -27,6 +27,7 @@ import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.HasCoughLas
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.HasNightSweatsTB
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.HasWeightLoss
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.ReferredPHUSiteID
+import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.DateOfOnset
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.hasCough
 import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams.hasFever
 import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
@@ -114,11 +115,19 @@ class AssessmentTBSummaryFragment : Fragment(), View.OnClickListener {
                     hasCough -> bindTbSummaryView(item.title, capitalizeYesNo(it))
                     HasCoughLastedLonger, HasNightSweatsTB, hasFever, HasWeightLoss ->
                         bindTbSummaryView(removeLastChar(item.title), it)
+                    DateOfOnset -> {
+                        bindTbSummaryView(
+                            getString(R.string.date_of_onset),
+                            DateUtils.convertDateFormat(
+                                it,
+                                DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
+                                DateUtils.DATE_ddMMyyyy
+                            )
+                        )
+                    }
                 }
             }
         }
-
-        bindTbSummaryView(getString(R.string.presumptive_tb_no), getString(R.string.seperator_hyphen))
     }
 
     private fun removeLastChar(input: String?): String {

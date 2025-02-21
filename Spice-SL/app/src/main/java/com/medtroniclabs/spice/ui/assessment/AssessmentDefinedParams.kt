@@ -158,5 +158,6 @@ object AssessmentDefinedParams {
     const val HasCoughLastedLonger = "hasCoughLastedLonger"
     const val HasWeightLoss = "hasWeightLoss"
     const val HasNightSweatsTB = "hasNightSweats"
+    const val DateOfOnset = "dateOfOnset"
 
 }
