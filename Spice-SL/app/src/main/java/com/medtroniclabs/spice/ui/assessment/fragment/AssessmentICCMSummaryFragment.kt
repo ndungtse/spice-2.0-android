@@ -1,13 +1,16 @@
 package com.medtroniclabs.spice.ui.assessment.fragment
 
+import android.app.Activity
 import android.app.DatePickerDialog
 import android.content.Intent
 import android.graphics.drawable.GradientDrawable
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.activityViewModels
@@ -36,6 +39,7 @@ import com.medtroniclabs.spice.formgeneration.ui.SingleSelectionCustomView
 import com.medtroniclabs.spice.formgeneration.utility.CustomSpinnerAdapterCustomLayout
 import com.medtroniclabs.spice.model.AssessmentSummaryModel
 import com.medtroniclabs.spice.network.resource.ResourceState
+import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.MenuConstants
 import com.medtroniclabs.spice.ui.assessment.AssessmentCommonUtils.addViewSummaryLayout
@@ -78,16 +82,14 @@ import com.medtroniclabs.spice.ui.assessment.referrallogic.model.ReferralDefined
 import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.otherSigns
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
+import com.medtroniclabs.spice.ui.cbs.fragment.CbsCallResultFragment
 import com.medtroniclabs.spice.ui.household.HouseholdSearchActivity
 import org.json.JSONObject
-import timber.log.Timber
-import java.lang.StringBuilder
 
 class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
     private val viewModel: AssessmentViewModel by activityViewModels()
     lateinit var binding: FragmentAssessmentIccmSummaryBinding
     private var datePickerDialog: DatePickerDialog? = null
-    private var isValid: Boolean = true
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -104,8 +106,124 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
         setListeners()
         attachObservers()
         viewModel.setUserJourney(AnalyticsDefinedParams.ICCMSummaryAssessment)
+        attachObserversForCbs()
     }
 
+    private fun attachObserversForCbs() {
+        viewModel.userProfileLiveData.observe(viewLifecycleOwner) { resourceState ->
+            when (resourceState.state) {
+                ResourceState.LOADING -> {
+                    (activity as? BaseActivity)?.showLoading()
+                }
+
+                ResourceState.SUCCESS -> {
+                    (activity as? BaseActivity)?.hideLoading()
+                    resourceState.data?.let {
+                        viewModel.assessmentStringLiveData.value?.let { result ->
+                            createSummaryViewCbs(createListSummaryData(result))
+                        }
+                    }
+                }
+
+                ResourceState.ERROR -> {
+                    (activity as? BaseActivity)?.hideLoading()
+                }
+            }
+        }
+        viewModel.patientHealthFacility.observe(viewLifecycleOwner) { resourceState ->
+            when (resourceState.state) {
+                ResourceState.LOADING -> {
+                    showProgress()
+                }
+
+                ResourceState.SUCCESS -> {
+                    hideProgress()
+                    binding.callSupervisor.gone()
+                    setEmergencyPHUPhoneNumber()
+                }
+
+                ResourceState.ERROR -> {
+                    hideProgress()
+                }
+            }
+        }
+    }
+
+    private fun setEmergencyPHUPhoneNumber() {
+        val phoneNumber = viewModel.patientHealthFacility.value?.data
+            ?.firstOrNull()
+            ?.phoneNumber
+        val resultPhoneNumber = if (!phoneNumber.isNullOrBlank()) phoneNumber else "-"
+        bindSummaryView(getString(R.string.emergency_contact_at_PHU), resultPhoneNumber, isCallShown = true)
+    }
+
+    private fun createSummaryViewCbs(
+        listSummaryData: MutableList<AssessmentSummaryModel>?
+    ) {
+        listSummaryData?.let { summaryData ->
+            binding.cbsTvTitle.text = getString(R.string.cbs)
+            binding.cbsEmptyErrorMessage.visibility = View.GONE
+            binding.cbsParentLayout.visibility = View.VISIBLE
+            binding.cbsParentLayout.removeAllViews()
+            composeSummaryView(summaryData)
+        } ?: kotlin.run {
+            showErrorInSummaryCbs()
+        }
+    }
+
+    private fun composeSummaryView(listSummaryData: MutableList<AssessmentSummaryModel>) {
+        val cbsList = listOf(DefinedParams.notifiableConditions)
+        listSummaryData.filter { it.value != null && cbsList.contains(it.id) }.forEach { item ->
+            if (item.id.equals(DefinedParams.notifiableConditions, true)) {
+                val otherValue =
+                    listSummaryData.find {
+                        it.id.equals(
+                            DefinedParams.otherNotifiableConditions,
+                            true
+                        )
+                    }?.value
+                val value =
+                    if (otherValue != null) "${item.value} - $otherValue" else item.value
+                bindSummaryView(item.title, value)
+            } else {
+                bindSummaryView(item.title, item.value)
+            }
+        }
+        val supervisor = viewModel.userProfileLiveData.value?.data?.supervisor
+        val supervisorNumber = supervisor?.phoneNumber.takeIf { !it.isNullOrBlank() }
+            ?: getString(R.string.separator_double_hyphen)
+        val supervisorName = supervisor?.let {
+            if (!supervisor.firstName.isNullOrBlank() && !supervisor.lastName.isNullOrBlank()) {
+                requireContext().getString(
+                    R.string.firstname_lastname,
+                    supervisor.firstName,
+                    supervisor.lastName
+                )
+            } else {
+                getString(R.string.separator_double_hyphen)
+            }
+        } ?: getString(R.string.separator_double_hyphen)
+
+        // Handle the case where phoneNumber might be null or empty
+
+        bindSummaryView(getString(R.string.peer_supervisor_name), supervisorName)
+        bindSummaryView(
+            getString(R.string.peer_supervisor_number),
+            supervisorNumber,
+            isCallShown = true
+        )
+        val organizations = viewModel.userProfileLiveData.value?.data?.organizations
+        val linkedPHU = organizations?.takeIf { it.isNotEmpty() }
+            ?.joinToString(", ") { it.name }
+            ?: getString(R.string.hyphen_symbol)
+        bindSummaryView(getString(R.string.linked_phu), linkedPHU)
+    }
+
+
+    private fun showErrorInSummaryCbs() {
+        binding.cbsEmptyErrorMessage.visibility = View.VISIBLE
+        binding.cbsParentLayout.visibility = View.GONE
+    }
     private fun initViews() {
         getClinicTakenData().let {
             val view = SingleSelectionCustomView(binding.root.context)
@@ -193,11 +311,16 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
                         if (item.id.equals(hasDiarrhoea,true)) {
                             if (item.value == Yes) {
                                 isCbs = true
-                                binding.cbsResultCardView.gone()
+                                viewModel.getUserProfile()
+                                viewModel.memberDetailsLiveData.value?.data?.villageId
+                                    ?.takeIf { it.isNotBlank() }
+                                    ?.toLongOrNull()
+                                    ?.let { id -> viewModel.getHealthFacilityBasedOnVillageId(id) }
+                                binding.cbsResultCardView.visible()
                             }
                         }
                     }
-                updateStatusBar()
+                updateStatusBar(isCbs)
                 createSummaryView(it)
             }
         }
@@ -622,6 +745,31 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
         return isSignContain
     }
 
+    private fun bindSummaryView(
+        title: String?,
+        value: String?,
+        valueTextColor: Int? = null,
+        isCallShown: Boolean = false
+    ) {
+        value?.let { result ->
+            binding.cbsParentLayout.addView(
+                addViewSummaryLayout(
+                    title,
+                    result,
+                    valueTextColor,
+                    requireContext(),
+                    isCallShown = isCallShown,
+                    callBtnTag = title,
+                    callback = { tag, value ->
+                        tag?.let {
+                            handleCallBtnClick(tag, value)
+                        }
+                    }
+                )
+            )
+        }
+    }
+
     private fun bindICCMSummaryView(title: String?, value: String?, valueTextColor: Int? = null) {
         value?.let { result ->
             binding.parentLayout.addView(
@@ -634,6 +782,34 @@ class AssessmentICCMSummaryFragment : BaseFragment(), View.OnClickListener {
             )
         }
     }
+
+    var type :String = ""
+    private fun handleCallBtnClick(tag: String, value: String?) {
+        type = if (tag == getString(R.string.peer_supervisor_number)) {
+            DefinedParams.ps
+        } else {
+            DefinedParams.phu
+        }
+        value?.let {
+            navToDial(it)
+        }
+    }
+
+    private fun navToDial(phoneNumber: String?) {
+        phoneNumber?.let {
+            val dialIntent = Intent(Intent.ACTION_DIAL)
+            dialIntent.data = Uri.parse("tel:$it")
+            dialerLauncher.launch(dialIntent)
+        }
+    }
+
+    private val dialerLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK || result.resultCode == Activity.RESULT_CANCELED) {
+                CbsCallResultFragment.newInstance(type)
+                    .show(childFragmentManager, CbsCallResultFragment.TAG)
+            }
+        }
 
     override fun onClick(v: View?) {
         when (v?.id) {

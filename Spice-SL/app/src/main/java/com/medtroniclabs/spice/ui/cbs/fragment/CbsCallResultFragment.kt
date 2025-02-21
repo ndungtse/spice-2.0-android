@@ -66,7 +66,7 @@ class CbsCallResultFragment : BottomSheetDialogFragment(), View.OnClickListener 
         fun newInstance(type: String) =
             CbsCallResultFragment().apply {
                 val bundle = Bundle().apply {
-                    putString("type", type)
+                    putString(DefinedParams.type, type)
                 }
                 arguments = bundle
             }

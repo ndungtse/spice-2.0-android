@@ -1339,4 +1339,6 @@
     <string name="peer_supervisor_name" translatable="false">Peer Supervisor Name</string>
     <string name="call_peer_supervisor" translatable="false">Call Peer supervisor</string>
     <string name="emergency_contact_at_PHU" translatable="false">Emergency contact at PHU</string>
+    <string name="cbs_register_updated" translatable="false">CBS Register Updated!</string>
+    <string name="cbs" translatable="false">CBS</string>
 </resources>

@@ -12,7 +12,6 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
-import com.medtroniclabs.spice.appextensions.startBackgroundOfflineSync
 import com.medtroniclabs.spice.appextensions.visible
 import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.notifiableConditions
@@ -25,14 +24,10 @@ import com.medtroniclabs.spice.network.resource.ResourceState
 import com.medtroniclabs.spice.ui.BaseActivity
 import com.medtroniclabs.spice.ui.BaseFragment
 import com.medtroniclabs.spice.ui.assessment.AssessmentCommonUtils
-import com.medtroniclabs.spice.ui.assessment.referrallogic.utils.ReferralStatus
 import com.medtroniclabs.spice.ui.assessment.rmnch.RMNCH.ANC
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
-import com.medtroniclabs.spice.ui.followup.FollowUpMyPatientActivity
-import com.medtroniclabs.spice.ui.followup.fragment.CallResultDialogFragment
-import com.medtroniclabs.spice.ui.household.HouseholdSearchActivity
+import com.medtroniclabs.spice.ui.dialog.SuccessDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
-import timber.log.Timber
 
 @AndroidEntryPoint
 class CbsSummaryFragment : BaseFragment(),View.OnClickListener {
@@ -69,21 +64,18 @@ class CbsSummaryFragment : BaseFragment(),View.OnClickListener {
     override fun onClick(v: View?) {
         when (v?.id) {
             R.id.btnDone -> {
-                finishSuccessFlow()
+                val existingFragment =
+                    childFragmentManager.findFragmentByTag(SuccessDialogFragment.TAG)
+                if (existingFragment == null) {
+                    SuccessDialogFragment.newInstance(descText = getString(R.string.cbs_register_updated))
+                        .show(childFragmentManager, SuccessDialogFragment.TAG)
+                }
             }
 
             R.id.callSupervisor -> {
                 callPeerSuperior()
             }
         }
-    }
-
-    private fun finishSuccessFlow() {
-        val intent = Intent(requireActivity(), HouseholdSearchActivity::class.java)
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
-        startActivity(intent)
-        requireActivity().finish()
-        requireActivity().startBackgroundOfflineSync()
     }
 
     private fun callPeerSuperior() {
@@ -168,9 +160,8 @@ class CbsSummaryFragment : BaseFragment(),View.OnClickListener {
     private fun createSummaryView(
         listSummaryData: MutableList<AssessmentSummaryModel>?
     ) {
-        Timber.d("$listSummaryData")
         listSummaryData?.let { summaryData ->
-            binding.tvTitle.text = "CBS"
+            binding.tvTitle.text = getString(R.string.cbs)
             binding.emptyErrorMessage.visibility = View.GONE
             binding.parentLayout.visibility = View.VISIBLE
             binding.parentLayout.removeAllViews()
@@ -216,7 +207,7 @@ class CbsSummaryFragment : BaseFragment(),View.OnClickListener {
                 }
             }
             val supervisor = viewModel.userProfileLiveData.value?.data?.supervisor
-            val supervisorNumber = supervisor?.phoneNumber.takeIf { it.isNullOrBlank() }
+            val supervisorNumber = supervisor?.phoneNumber.takeIf { !it.isNullOrBlank() }
                 ?: getString(R.string.separator_double_hyphen)
             val supervisorName = supervisor?.let {
                 if (!supervisor.firstName.isNullOrBlank() && !supervisor.lastName.isNullOrBlank()) {

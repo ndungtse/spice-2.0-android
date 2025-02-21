@@ -18,6 +18,7 @@ import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.common.DefinedParams.CBS
 import com.medtroniclabs.spice.common.DefinedParams.TB
 import com.medtroniclabs.spice.common.DefinedParams.TbScreening
+import com.medtroniclabs.spice.common.DefinedParams.notifiableConditions
 import com.medtroniclabs.spice.common.DefinedParams.surveillanceDetails
 import com.medtroniclabs.spice.common.SecuredPreference
 import com.medtroniclabs.spice.common.SpiceLocationManager
@@ -450,6 +451,12 @@ class AssessmentViewModel @Inject constructor(
                         if (it is HashMap<*, *>) {
                             signsList.add(it[DefinedParams.Value] as String)
                         }
+                    }
+                    diarrhoea[notifiableConditions]?.let { cbs ->
+                        diarrhoea.remove(notifiableConditions)
+                        val cbsData = hashMapOf<String, Any>()
+                        cbsData[notifiableConditions] = cbs
+                        map[CBS.lowercase()] = cbsData
                     }
                     diarrhoea[DiarrhoeaSigns] = signsList
                 }

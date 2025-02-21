@@ -9,8 +9,8 @@ import com.medtroniclabs.spice.appextensions.convertToUtcDateTime
 import com.medtroniclabs.spice.appextensions.postError
 import com.medtroniclabs.spice.appextensions.postLoading
 import com.medtroniclabs.spice.appextensions.postSuccess
+import com.medtroniclabs.spice.common.CommonUtils
 import com.medtroniclabs.spice.common.DefinedParams
-import com.medtroniclabs.spice.data.APIResponse
 import com.medtroniclabs.spice.data.EncounterDetails
 import com.medtroniclabs.spice.data.MedicationRequestObject
 import com.medtroniclabs.spice.data.MedicationResponse
@@ -19,7 +19,6 @@ import com.medtroniclabs.spice.data.Prescription
 import com.medtroniclabs.spice.data.PrescriptionListRequest
 import com.medtroniclabs.spice.data.PrescriptionRequest
 import com.medtroniclabs.spice.data.RemovePrescriptionRequest
-import com.medtroniclabs.spice.data.ResponseDataModel
 import com.medtroniclabs.spice.data.offlinesync.model.ProvanceDto
 import com.medtroniclabs.spice.db.entity.FrequencyEntity
 import com.medtroniclabs.spice.di.IoDispatcher
@@ -265,11 +264,18 @@ class PrescriptionViewModel @Inject constructor(
 
     fun getPrescriptionList(data: PatientListRespModel, isDeleted: Boolean = true) {
         getPrescriptionList(
-            PrescriptionListRequest(
-                patientReference = data.patientReference,
-                memberReference = data.id,
-                isDeleted
-            )
+            if (CommonUtils.isNonCommunity()) {
+                PrescriptionListRequest(
+                    patientReference = data.patientReference,
+                    memberReference = data.id,
+                    isDeleted
+                )
+            } else {
+                PrescriptionListRequest(
+                    data.id,
+                    isActive = isDeleted
+                )
+            }
         )
     }
 

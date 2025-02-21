@@ -11,6 +11,7 @@ import androidx.fragment.app.DialogFragment
 import com.medtroniclabs.spice.R
 import com.medtroniclabs.spice.appextensions.gone
 import com.medtroniclabs.spice.appextensions.invisible
+import com.medtroniclabs.spice.common.DefinedParams
 import com.medtroniclabs.spice.databinding.FragmentSuccessDialogBinding
 import com.medtroniclabs.spice.formgeneration.extension.safeClickListener
 import com.medtroniclabs.spice.ui.household.HouseholdDefinedParams.IsHousehold
@@ -42,11 +43,15 @@ class SuccessDialogFragment : DialogFragment(), View.OnClickListener {
     companion object {
         const val TAG = "SuccessDialogFragment"
 
-        fun newInstance(isHousehold : Boolean = false, isMember : Boolean = false,isPhuLink:Boolean=false): SuccessDialogFragment {
+        fun newInstance(isHousehold : Boolean = false, isMember : Boolean = false,isPhuLink:Boolean=false,
+                        descText: String? = null): SuccessDialogFragment {
             val bundle = Bundle()
             bundle.putBoolean(IsHousehold, isHousehold)
             bundle.putBoolean(IsHouseholdMember, isMember)
             bundle.putBoolean(isPhuWalkInsFlow, isPhuLink)
+            if (!descText.isNullOrBlank()) {
+                bundle.putString(DefinedParams.label, descText)
+            }
             val fragment =  SuccessDialogFragment()
             fragment.arguments = bundle
             return fragment
@@ -73,7 +78,9 @@ class SuccessDialogFragment : DialogFragment(), View.OnClickListener {
 
     private fun attachObserver() {
         binding.householdNo.invisible()
-
+        if (!arguments?.getString(DefinedParams.label).isNullOrBlank()) {
+            binding.successMessage.text = arguments?.getString(DefinedParams.label)
+        }
         if (arguments?.getBoolean(IsHousehold) == true) {
             binding.successMessage.text = getString(R.string.household_successfully)
         }

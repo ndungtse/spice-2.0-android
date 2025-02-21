@@ -18,11 +18,13 @@ import com.medtroniclabs.spice.ui.assessment.AssessmentDefinedParams
 import com.medtroniclabs.spice.ui.assessment.viewmodel.AssessmentViewModel
 import com.medtroniclabs.spice.ui.cbs.fragment.CbsFragment
 import com.medtroniclabs.spice.ui.cbs.fragment.CbsSummaryFragment
+import com.medtroniclabs.spice.ui.household.HouseholdSearchActivity
 import com.medtroniclabs.spice.ui.landing.LandingActivity
+import com.medtroniclabs.spice.ui.landing.OnDialogDismissListener
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class CbsActivity : BaseActivity() {
+class CbsActivity : BaseActivity(), OnDialogDismissListener {
     private lateinit var binding: ActivityAssessmentBinding
     private val viewModel: AssessmentViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,6 +46,18 @@ class CbsActivity : BaseActivity() {
         initView()
         attachObservers()
     }
+    override fun onDialogDismissListener(isFinish: Boolean) {
+        finishSuccessFlow()
+    }
+
+    private fun finishSuccessFlow() {
+        val intent = Intent(this, HouseholdSearchActivity::class.java)
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+        startActivity(intent)
+        this.finish()
+        this.startBackgroundOfflineSync()
+    }
+
     private fun backNavigation(): Pair<Boolean, Boolean> {
         val fragment = supportFragmentManager.findFragmentById(R.id.formsFragmentContainer)
         return if (fragment is CbsFragment) {
